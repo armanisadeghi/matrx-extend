@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import {
   encodeState,
   extractVerifierFromState,
@@ -6,6 +5,7 @@ import {
   generateCodeVerifier,
   generateNonce,
 } from '@/lib/auth/pkce';
+import { describe, expect, it } from 'vitest';
 
 describe('PKCE helpers', () => {
   it('verifier round-trips through state', () => {

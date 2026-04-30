@@ -1,0 +1,170 @@
+/**
+ * Tool catalog → structured spec the agent server (or our DB) can read
+ * verbatim. Each entry mirrors what's needed to register a tool with the
+ * Matrx tools backend:
+ *
+ *   { name, description, tier, input_schema, required_permissions, surface_bundles }
+ *
+ * `input_schema` is a strict JSON Schema produced from the Zod definition.
+ *
+ * Use cases:
+ *   - `pnpm catalog:tools` writes the catalog to disk for diffing against
+ *     the existing DB rows.
+ *   - The Pilot UI's "Tools available" panel renders this same list to
+ *     show users which capabilities the active agent has.
+ */
+
+import { listAllHandlers } from '@/lib/tools/registry';
+import type { ToolTier } from '@/lib/tools/types';
+import { zodToJsonSchema } from 'zod-to-json-schema';
+
+export interface ToolCatalogEntry {
+  name: string;
+  description: string;
+  tier: ToolTier;
+  input_schema: ReturnType<typeof zodToJsonSchema>;
+  /** Chrome `permissions` keys this tool needs. Empty if it only uses standard JS. */
+  required_permissions: string[];
+  /** Which surface bundles include this tool. */
+  surface_bundles: ('assistant' | 'pilot' | 'pilot+privileged')[];
+}
+
+/**
+ * Manually curated permission map. The dispatcher calls real chrome.* APIs
+ * that map to manifest entries — we list them here so the catalog ships an
+ * audit-ready row.
+ */
+const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
+  // page-read (use scripting + activeTab)
+  get_active_tab: ['activeTab'],
+  get_page_selection: ['activeTab', 'scripting'],
+  read_active_page: ['activeTab', 'scripting'],
+  take_screenshot: ['activeTab'],
+  query_elements: ['activeTab', 'scripting'],
+
+  // inspect
+  find_text_on_page: ['activeTab', 'scripting'],
+  get_page_links: ['activeTab', 'scripting'],
+  get_computed_style: ['activeTab', 'scripting'],
+  get_element_at_point: ['activeTab', 'scripting'],
+  inspect_element: ['activeTab', 'scripting'],
+
+  // forms (read)
+  get_form_fields: ['activeTab', 'scripting'],
+
+  // tabs (read)
+  list_open_tabs: ['tabs'],
+  get_tab_groups: ['tabs', 'tabGroups'],
+  get_tab_info: ['tabs'],
+
+  // browser-data (read)
+  search_bookmarks: ['bookmarks'],
+  list_bookmark_tree: ['bookmarks'],
+  search_history: ['history'],
+  list_recent_history: ['history'],
+  list_downloads: ['downloads'],
+
+  // page actions
+  navigate_active_tab: ['tabs', 'activeTab'],
+  click_element: ['activeTab', 'scripting'],
+  type_into_element: ['activeTab', 'scripting'],
+  scroll_page: ['activeTab', 'scripting'],
+  wait_for: ['activeTab', 'scripting'],
+  set_clipboard: ['activeTab', 'scripting', 'clipboardWrite'],
+
+  // keyboard / mouse
+  press_keys: ['activeTab', 'scripting'],
+  hover_element: ['activeTab', 'scripting'],
+  focus_element: ['activeTab', 'scripting'],
+  blur_element: ['activeTab', 'scripting'],
+  right_click_element: ['activeTab', 'scripting'],
+
+  // form actions
+  select_dropdown_option: ['activeTab', 'scripting'],
+  set_checkbox: ['activeTab', 'scripting'],
+  set_radio: ['activeTab', 'scripting'],
+  submit_form: ['activeTab', 'scripting'],
+
+  // tab actions
+  open_new_tab: ['tabs'],
+  close_tab: ['tabs'],
+  switch_to_tab: ['tabs'],
+  duplicate_tab: ['tabs'],
+  pin_tab: ['tabs'],
+  mute_tab: ['tabs'],
+  reload_tab: ['tabs'],
+  go_back: ['tabs'],
+  go_forward: ['tabs'],
+  set_tab_zoom: ['tabs'],
+  move_tab: ['tabs'],
+  create_tab_group: ['tabs', 'tabGroups'],
+  add_tabs_to_group: ['tabs', 'tabGroups'],
+  remove_tabs_from_group: ['tabs', 'tabGroups'],
+  update_tab_group: ['tabGroups'],
+
+  // downloads + notifications
+  download_url: ['downloads'],
+  cancel_download: ['downloads'],
+  notify_user: ['notifications'],
+
+  // ask-user (no chrome perms — uses messaging)
+  ask_user: [],
+  ask_user_choice: [],
+  ask_user_secret: [],
+  request_user_takeover: [],
+
+  // privileged
+  execute_javascript: ['activeTab', 'scripting'],
+  inject_stylesheet: ['activeTab', 'scripting'],
+  remove_stylesheet: ['activeTab', 'scripting'],
+  set_extension_storage: ['storage'],
+  get_extension_storage: ['storage'],
+  list_extension_storage: ['storage'],
+  desktop_run_command: ['nativeMessaging'],
+};
+
+function bundlesForTier(tier: ToolTier): ToolCatalogEntry['surface_bundles'] {
+  if (tier === 'read') return ['assistant', 'pilot', 'pilot+privileged'];
+  if (tier === 'action' || tier === 'ask-user') return ['pilot', 'pilot+privileged'];
+  return ['pilot+privileged'];
+}
+
+export function buildToolCatalog(): ToolCatalogEntry[] {
+  return listAllHandlers().map((h) => ({
+    name: h.name,
+    description: h.description,
+    tier: h.tier,
+    input_schema: zodToJsonSchema(h.argsSchema, {
+      $refStrategy: 'none',
+      target: 'jsonSchema7',
+    }),
+    required_permissions: PERMISSIONS_BY_TOOL[h.name] ?? [],
+    surface_bundles: bundlesForTier(h.tier),
+  }));
+}
+
+export interface ToolCatalogManifest {
+  generated_at: string;
+  source: 'matrx-extend';
+  /** Suitable for the Assistant surface (Chat tab). */
+  assistant_bundle: string[];
+  /** Suitable for the Pilot surface, no privileged tools. */
+  pilot_bundle: string[];
+  /** Pilot + privileged. Trusted agents only. */
+  pilot_with_privileged_bundle: string[];
+  tools: ToolCatalogEntry[];
+}
+
+export function buildToolCatalogManifest(): ToolCatalogManifest {
+  const tools = buildToolCatalog();
+  return {
+    generated_at: new Date().toISOString(),
+    source: 'matrx-extend',
+    assistant_bundle: tools.filter((t) => t.tier === 'read').map((t) => t.name),
+    pilot_bundle: tools
+      .filter((t) => t.tier === 'read' || t.tier === 'action' || t.tier === 'ask-user')
+      .map((t) => t.name),
+    pilot_with_privileged_bundle: tools.map((t) => t.name),
+    tools,
+  };
+}

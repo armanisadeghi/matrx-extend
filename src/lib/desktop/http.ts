@@ -18,7 +18,10 @@ const HEALTH_TIMEOUT_MS = 500;
 const RPC_TIMEOUT_MS = 30_000;
 
 async function getPairToken(): Promise<string | null> {
-  const r = await chrome.storage.local.get([STORAGE_KEYS.DESKTOP_PAIR_TOKEN, STORAGE_KEYS.ACCESS_TOKEN]);
+  const r = await chrome.storage.local.get([
+    STORAGE_KEYS.DESKTOP_PAIR_TOKEN,
+    STORAGE_KEYS.ACCESS_TOKEN,
+  ]);
   const v = r[STORAGE_KEYS.DESKTOP_PAIR_TOKEN] || r[STORAGE_KEYS.ACCESS_TOKEN];
   return typeof v === 'string' ? v : null;
 }

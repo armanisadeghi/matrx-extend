@@ -8,8 +8,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
+import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
+import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
+import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
+import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
+import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
 import {
   type AgxAgent,
   type Conversation,
@@ -20,8 +26,12 @@ import {
 } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
+import { useSettingsStore } from '@/state/settings';
+import { useToolInbox } from '@/state/tool-inbox';
 import {
   ArrowUp,
+  Check,
+  Hand,
   History,
   Lightbulb,
   Mic,
@@ -30,6 +40,7 @@ import {
   ScanLine,
   Sparkles,
   Square,
+  Zap,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -56,10 +67,23 @@ export function ChatView() {
     setMessages,
   } = useChatStore();
   const { send, cancel } = useChatStream();
+  const { variableDefs } = useAgentExecution(selectedAgentId);
+  const getAgentVariables = useChatStore((s) => s.getAgentVariables);
+  const defaultPermissionMode = useSettingsStore((s) => s.defaultPermissionMode);
+  const explicitPermissionMode = useChatStore((s) =>
+    selectedAgentId ? s.permissionMode[selectedAgentId] : undefined,
+  );
+  const permissionMode = explicitPermissionMode ?? defaultPermissionMode;
+  const setPermissionMode = useChatStore((s) => s.setPermissionMode);
   const [agents, setAgents] = useState<AgxAgent[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [agentsLoading, setAgentsLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useToolInbox$Subscribe();
+  const pendingConfirms = useToolInbox((s) => s.pendingConfirms);
+  const pendingAsks = useToolInbox((s) => s.pendingAsks);
+  const timeline = useToolInbox((s) => s.timeline);
 
   useEffect(() => {
     if (!user) return;
@@ -70,6 +94,13 @@ export function ChatView() {
       setAgents(a);
       setConversations(c);
       setAgentsLoading(false);
+
+      // Auto-select user's default agent if nothing is currently selected.
+      const chat = useChatStore.getState();
+      const defaultId = useSettingsStore.getState().defaultAgentId;
+      if (!chat.selectedAgentId && defaultId && a.some((x) => x.id === defaultId)) {
+        chat.setAgent(defaultId);
+      }
     })();
     return () => {
       cancelled = true;
@@ -86,7 +117,7 @@ export function ChatView() {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, pendingConfirms.length, pendingAsks.length, timeline.length]);
 
   const selectedAgent = useMemo(
     () => agents.find((a) => a.id === selectedAgentId) ?? null,
@@ -106,9 +137,19 @@ export function ChatView() {
     if (!agentId) return;
     if (!selectedAgentId && agentId) setAgent(agentId);
     setDraft('');
+    // Pass per-agent variable values along with the message. Empty / missing
+    // values are dropped so the server falls back to the agent's defaults.
+    const rawVars = getAgentVariables(agentId);
+    const variables: Record<string, string> = {};
+    for (const [k, v] of Object.entries(rawVars)) {
+      if (v && v.trim().length > 0) variables[k] = v;
+    }
+    const agentName = agents.find((a) => a.id === agentId)?.name;
     void send(trimmed, {
       agentId,
+      agentName,
       conversationId: selectedConversationId ?? undefined,
+      variables: Object.keys(variables).length > 0 ? variables : undefined,
     });
   };
 
@@ -125,10 +166,18 @@ export function ChatView() {
         selectedAgentId={selectedAgentId}
         selectedConversationId={selectedConversationId}
         conversations={conversations}
+        permissionMode={permissionMode}
+        onPermissionModeChange={(m) => {
+          if (selectedAgentId) setPermissionMode(selectedAgentId, m);
+        }}
         onAgentChange={(v) => setAgent(v || null)}
         onNewChat={handleNewChat}
         onPickConversation={(id) => setConversation(id)}
       />
+
+      {selectedAgentId && variableDefs.length > 0 && (
+        <AgentVariablesPanel agentId={selectedAgentId} defs={variableDefs} />
+      )}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         {messages.length === 0 ? (
@@ -141,6 +190,22 @@ export function ChatView() {
           <div className="space-y-4 px-4 py-4">
             {messages.map((m) => (
               <MessageRow key={m.id} role={m.role} content={m.content} pending={m.pending} />
+            ))}
+
+            {timeline.length > 0 && (
+              <div className="space-y-1.5">
+                {timeline.map((entry) => (
+                  <ToolTimelineRow key={entry.callId} entry={entry} />
+                ))}
+              </div>
+            )}
+
+            {pendingConfirms.map((req) => (
+              <AgentApprovalCard key={req.callId} req={req} />
+            ))}
+
+            {pendingAsks.map((req) => (
+              <AgentAskUserCard key={req.callId} req={req} />
             ))}
           </div>
         )}
@@ -171,6 +236,8 @@ function ChatHeader({
   selectedAgentId,
   selectedConversationId,
   conversations,
+  permissionMode,
+  onPermissionModeChange,
   onAgentChange,
   onNewChat,
   onPickConversation,
@@ -180,6 +247,8 @@ function ChatHeader({
   selectedAgentId: string | null;
   selectedConversationId: string | null;
   conversations: Conversation[];
+  permissionMode: 'ask' | 'act';
+  onPermissionModeChange: (m: 'ask' | 'act') => void;
   onAgentChange: (id: string) => void;
   onNewChat: () => void;
   onPickConversation: (id: string) => void;
@@ -207,7 +276,12 @@ function ChatHeader({
           </SelectContent>
         </Select>
       )}
-      <div className="ml-auto flex items-center">
+      <div className="ml-auto flex items-center gap-1">
+        <PermissionModeChip
+          mode={permissionMode}
+          disabled={!selectedAgentId}
+          onChange={onPermissionModeChange}
+        />
         <Button
           variant="ghost"
           size="icon"
@@ -224,6 +298,88 @@ function ChatHeader({
         />
       </div>
     </div>
+  );
+}
+
+function PermissionModeChip({
+  mode,
+  disabled,
+  onChange,
+}: {
+  mode: 'ask' | 'act';
+  disabled: boolean;
+  onChange: (m: 'ask' | 'act') => void;
+}) {
+  const Icon = mode === 'ask' ? Hand : Zap;
+  const label = mode === 'ask' ? 'Ask before acting' : 'Act without asking';
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={disabled}
+          className={cn(
+            'h-7 gap-1.5 px-2 text-[11px] font-medium text-muted-foreground hover:bg-accent',
+            mode === 'act' && 'text-amber-700 dark:text-amber-400',
+          )}
+          title="Tool permission mode"
+        >
+          <Icon className="size-3.5" />
+          <span className="hidden sm:inline">{label}</span>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-72 p-1" align="end">
+        <ModeOption
+          active={mode === 'ask'}
+          icon={<Hand className="size-4" />}
+          title="Ask before acting"
+          desc="The agent pauses to confirm every browser action."
+          onClick={() => onChange('ask')}
+        />
+        <ModeOption
+          active={mode === 'act'}
+          icon={<Zap className="size-4 text-amber-600 dark:text-amber-400" />}
+          title="Act without asking"
+          desc="The agent runs actions immediately. Privileged tools still confirm."
+          onClick={() => onChange('act')}
+        />
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function ModeOption({
+  active,
+  icon,
+  title,
+  desc,
+  onClick,
+}: {
+  active: boolean;
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'flex w-full items-start gap-2.5 rounded-md px-2.5 py-2 text-left transition-colors hover:bg-accent',
+        active && 'bg-accent',
+      )}
+    >
+      <div className="mt-0.5 shrink-0">{icon}</div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 text-sm font-medium">
+          {title}
+          {active && <Check className="size-3.5 text-primary" />}
+        </div>
+        <div className="text-[11px] leading-snug text-muted-foreground">{desc}</div>
+      </div>
+    </button>
   );
 }
 
@@ -324,9 +480,7 @@ function MessageRow({
   }
   return (
     <div className="prose prose-sm max-w-none text-sm dark:prose-invert prose-p:my-2 prose-pre:my-2">
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-        {content || (pending ? '…' : '')}
-      </ReactMarkdown>
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content || (pending ? '…' : '')}</ReactMarkdown>
     </div>
   );
 }
@@ -492,4 +646,3 @@ function ChevronDownTiny() {
     </svg>
   );
 }
-

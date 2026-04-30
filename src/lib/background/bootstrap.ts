@@ -16,13 +16,14 @@
 
 import { ALARMS, STORAGE_KEYS } from '@/config/env';
 import { refreshAccessToken } from '@/lib/auth/flow';
-import { startDebugRelay, log } from '@/lib/debug/log';
+import { log, startDebugRelay } from '@/lib/debug/log';
 import { desktopRpc, probeDesktop, startDesktopProbeAlarm } from '@/lib/desktop/bridge';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { cancelStream, startStream, type StartStreamArgs } from '@/lib/stream/offscreen-proxy';
+import { type StartStreamArgs, cancelStream, startStream } from '@/lib/stream/offscreen-proxy';
 import { setSupabaseSession } from '@/lib/supabase/client';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
+import { startToolDispatcher } from '@/lib/tools/dispatch';
 
 let bootstrapped = false;
 
@@ -35,7 +36,12 @@ export function bootstrapBackground(): void {
   // ── 1. Register message handlers SYNCHRONOUSLY so they're ready immediately.
   registerHandlers();
 
-  // ── 2. Alarms — also synchronous registration.
+  // ── 2. Tool dispatcher subscribes to STREAM_OPENED + STREAM_CHUNK.
+  //       Per-run permission mode is latched from the chat hook; this default
+  //       only kicks in if the sidepanel forgot to pass one.
+  startToolDispatcher({ defaultPermissionMode: () => 'ask' });
+
+  // ── 3. Alarms — also synchronous registration.
   setupAlarms();
   startDesktopProbeAlarm();
 

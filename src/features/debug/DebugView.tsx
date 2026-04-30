@@ -12,14 +12,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  setBackendEnv,
-  setBackendOverride,
-  useBackendConfig,
-} from '@/config/backend';
+import { setBackendEnv, setBackendOverride, useBackendConfig } from '@/config/backend';
 import type { BackendEnv } from '@/config/env';
 import { pingHealth } from '@/lib/api/routes/health';
-import { type DebugEvent, type LogLevel, type LogSource, log, useDebugStore } from '@/lib/debug/log';
+import {
+  type DebugEvent,
+  type LogLevel,
+  type LogSource,
+  log,
+  useDebugStore,
+} from '@/lib/debug/log';
 import { cn } from '@/lib/utils';
 import {
   Activity,
@@ -32,7 +34,7 @@ import {
   Pause,
   Play,
 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 const SOURCES: LogSource[] = [
   'auth',
@@ -71,10 +73,7 @@ export function DebugView() {
     });
   }, [events, sources, levels, paused, search]);
 
-  const errorCount = useMemo(
-    () => events.filter((e) => e.level === 'error').length,
-    [events],
-  );
+  const errorCount = useMemo(() => events.filter((e) => e.level === 'error').length, [events]);
 
   const toggleSource = (s: LogSource) =>
     setSources((curr) => {
@@ -167,7 +166,7 @@ export function DebugView() {
         {filtered.length === 0 && (
           <div className="px-3 py-12 text-center text-muted-foreground">
             {events.length === 0
-              ? 'No events yet. Use the extension and they\'ll show up here.'
+              ? "No events yet. Use the extension and they'll show up here."
               : 'No events match the current filter.'}
           </div>
         )}

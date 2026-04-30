@@ -31,10 +31,7 @@ export function UserMenu() {
         initial
       )}
       <span
-        className={cn(
-          'absolute -bottom-0 -right-0 size-2 rounded-full ring-2 ring-card',
-          dotClass,
-        )}
+        className={cn('absolute -bottom-0 -right-0 size-2 rounded-full ring-2 ring-card', dotClass)}
       />
     </button>
   );

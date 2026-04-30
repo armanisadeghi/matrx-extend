@@ -7,6 +7,21 @@ export default defineBackground({
   main() {
     console.log('[matrx-extend] background SW starting', { id: chrome.runtime.id });
 
+    // Vite's __vitePreload helper and a few @supabase visibility/storage
+    // shims dereference `document` / `window` in code paths that fire
+    // here even though the SW has no DOM. The libs catch the throw
+    // internally — Chrome still prints it as "Uncaught (in promise)".
+    // Swallow only that specific class so real errors still surface.
+    self.addEventListener('unhandledrejection', (event) => {
+      const reason = event.reason as unknown;
+      if (
+        reason instanceof ReferenceError &&
+        /\b(document|window)\b is not defined/.test(reason.message)
+      ) {
+        event.preventDefault();
+      }
+    });
+
     // Open side panel on action click. Programmatic open requires a user
     // gesture and the action click qualifies.
     chrome.sidePanel

@@ -14,13 +14,13 @@
 
 import { log } from '@/lib/debug/log';
 import {
+  type TypedStreamEvent,
   expandCompactEvent,
   isChunkEvent,
   isCompactEvent,
   isEndEvent,
   isErrorEvent,
   isReasoningChunkEvent,
-  type TypedStreamEvent,
 } from '@gen/stream-events';
 
 export type StreamEvent =
@@ -30,6 +30,13 @@ export type StreamEvent =
   | { type: 'error'; message: string }
   | { type: 'done' };
 
+export interface StreamOpenInfo {
+  conversationId: string | null;
+  requestId: string | null;
+  status: number;
+  contentType: string | null;
+}
+
 export interface StreamFetchOptions {
   url: string;
   body?: unknown;
@@ -37,6 +44,8 @@ export interface StreamFetchOptions {
   parser?: 'rich-events';
   signal?: AbortSignal;
   onEvent: (e: StreamEvent) => void;
+  /** Fires once, as soon as the SSE response opens with 2xx status. */
+  onOpened?: (info: StreamOpenInfo) => void;
 }
 
 export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
@@ -69,11 +78,13 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
   }
   const requestId = res.headers.get('X-Request-ID');
   const conversationId = res.headers.get('X-Conversation-ID');
+  const contentType = res.headers.get('content-type');
   log.success('stream', `← ${opts.url} ${res.status} stream open`, {
     requestId,
     conversationId,
-    contentType: res.headers.get('content-type'),
+    contentType,
   });
+  opts.onOpened?.({ conversationId, requestId, status: res.status, contentType });
 
   const reader = res.body?.getReader();
   if (!reader) {
@@ -109,9 +120,7 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
 
     let event: TypedStreamEvent;
     try {
-      event = isCompactEvent(parsed)
-        ? expandCompactEvent(parsed)
-        : (parsed as TypedStreamEvent);
+      event = isCompactEvent(parsed) ? expandCompactEvent(parsed) : (parsed as TypedStreamEvent);
     } catch (err) {
       log.warn('stream', `failed to normalize line #${lineCount}`, err);
       return;
@@ -147,10 +156,7 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
   }
 }
 
-function dispatch(
-  event: TypedStreamEvent,
-  onEvent: (e: StreamEvent) => void,
-): void {
+function dispatch(event: TypedStreamEvent, onEvent: (e: StreamEvent) => void): void {
   if (isChunkEvent(event)) {
     onEvent({ type: 'text', content: event.data.text });
     return;

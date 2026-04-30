@@ -16,11 +16,19 @@ export const CHANNELS = {
   AUTH_STATE_CHANGED: 'auth:state-changed',
 
   // Streaming
-  STREAM_START: 'stream:start',           // sidepanel → SW: start a new stream
-  STREAM_RUN: 'stream:run',               // SW → offscreen: actually run the fetch
-  STREAM_CANCEL: 'stream:cancel',         // sidepanel → SW: cancel
-  STREAM_KILL: 'stream:kill',             // SW → offscreen: abort the fetch
-  STREAM_CHUNK: 'stream:chunk',           // offscreen → all surfaces
+  STREAM_START: 'stream:start', // sidepanel → SW: start a new stream
+  STREAM_RUN: 'stream:run', // SW → offscreen: actually run the fetch
+  STREAM_CANCEL: 'stream:cancel', // sidepanel → SW: cancel
+  STREAM_KILL: 'stream:kill', // SW → offscreen: abort the fetch
+  STREAM_CHUNK: 'stream:chunk', // offscreen → all surfaces
+  STREAM_OPENED: 'stream:opened', // offscreen → all: { runId, conversationId, requestId } once the SSE response opens
+
+  // Tool dispatch (agent-driven actions in the browser)
+  TOOL_CONFIRM_REQUEST: 'tool:confirm-request', // SW → sidepanel: please render approval card
+  TOOL_CONFIRM_RESPONSE: 'tool:confirm-response', // sidepanel → SW: user clicked allow / deny
+  TOOL_ASK_USER_REQUEST: 'tool:ask-user-request', // SW → sidepanel: agent asked the user a question
+  TOOL_ASK_USER_RESPONSE: 'tool:ask-user-response', // sidepanel → SW: user's answer
+  TOOL_TIMELINE_EVENT: 'tool:timeline-event', // SW → sidepanel: render in the chat (started / completed / error)
 
   // Scrape (sidepanel → content script via chrome.tabs.sendMessage)
   SCRAPE_CAPTURE: 'scrape:capture-page',

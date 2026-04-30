@@ -24,6 +24,7 @@ import {
   collectMetadata,
   collectVideos,
 } from '@/lib/scrape/collectors';
+import { type SeoAudit, runAudit } from '@/lib/seo/audit';
 import { gfm } from '@joplin/turndown-plugin-gfm';
 import { Readability, isProbablyReaderable } from '@mozilla/readability';
 import DOMPurify from 'dompurify';
@@ -48,6 +49,12 @@ export interface SoupResult {
   audio: CollectedAudio[];
   links: CollectedLink[];
   ld_json: unknown[];
+  /**
+   * SEO signals collected at the same moment as everything else, so when the
+   * Scrape capture runs after a scroll, the SEO numbers (image count, missing
+   * alt, word count, etc.) reflect the post-scroll DOM.
+   */
+  seo: SeoAudit;
   raw_html_size: number;
 }
 
@@ -94,6 +101,7 @@ export async function runScrape(
     audio: o.includeImages ? collectAudio() : [],
     links: o.includeLinks ? collectLinks() : [],
     ld_json: o.includeStructured ? collectJsonLd() : [],
+    seo: runAudit(doc),
     raw_html_size: doc.documentElement.outerHTML.length,
   };
 }

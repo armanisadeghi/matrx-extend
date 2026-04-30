@@ -2,13 +2,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { findFirstMatch } from '@/lib/data-pattern/matcher';
+import { runPattern } from '@/lib/data-pattern/run-pattern';
+import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
   type ExtractionPattern,
+  bumpPatternRun,
   fetchPatternsForDomain,
   savePattern,
 } from '@/lib/supabase/queries';
-import { on } from '@/lib/messaging/native';
 import { Crosshair, Loader2, Play, Save } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -84,6 +86,8 @@ export function DataView() {
       domain: host,
       route_pattern: tab.url ? new URL(tab.url).pathname : null,
       list_root_selector: null,
+      kind: 'manual_css',
+      config: {},
       fields: pickedFields.map((f) => ({
         name: f.name,
         selector: f.selector,
@@ -99,34 +103,16 @@ export function DataView() {
     }
   };
 
-  const runPattern = async (pattern: ExtractionPattern) => {
+  const handleRun = async (pattern: ExtractionPattern) => {
     if (!tab.id) return;
     setRunning(true);
     try {
-      const fieldsArg = pattern.fields.map((f) => ({ name: f.name, selector: f.selector }));
-      const result = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: (fields: { name: string; selector: string }[], listRoot: string | null) => {
-          const root: (Element | Document)[] = listRoot
-            ? Array.from(document.querySelectorAll(listRoot))
-            : [document];
-          return root.map((scope) => {
-            const out: Record<string, string | null> = {};
-            for (const f of fields) {
-              const el = (scope as Element | Document).querySelector(f.selector);
-              out[f.name] = el
-                ? ((el as HTMLElement).innerText ?? el.textContent ?? '').trim()
-                : null;
-            }
-            return out;
-          });
-        },
-        args: [fieldsArg, pattern.list_root_selector],
-      });
-      const data = (result?.[0]?.result ?? []) as Record<string, unknown>[];
+      const data = await runPattern(pattern, tab.id);
       setRows(data);
+      void bumpPatternRun(pattern.id, 'ok', data.length);
     } catch (err) {
       console.warn('[matrx-extend] pattern run failed', err);
+      void bumpPatternRun(pattern.id, 'broken', 0);
     } finally {
       setRunning(false);
     }
@@ -150,24 +136,28 @@ export function DataView() {
                 <div className="truncate font-medium text-emerald-700 dark:text-emerald-300">
                   {matched.name}
                 </div>
-                <div className="text-emerald-700/70 dark:text-emerald-300/70">
-                  Matches this URL
-                </div>
+                <div className="text-emerald-700/70 dark:text-emerald-300/70">Matches this URL</div>
               </div>
               <Button
                 size="sm"
                 className="h-7 shrink-0 rounded-full px-3 text-xs"
-                onClick={() => void runPattern(matched)}
+                onClick={() => void handleRun(matched)}
                 disabled={running}
               >
-                {running ? <Loader2 className="size-3.5 animate-spin" /> : <Play className="size-3.5" />}
+                {running ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <Play className="size-3.5" />
+                )}
                 Extract
               </Button>
             </div>
           )}
 
           {hasFields && (
-            <Section label={`${pickedFields.length} field${pickedFields.length === 1 ? '' : 's'} selected`}>
+            <Section
+              label={`${pickedFields.length} field${pickedFields.length === 1 ? '' : 's'} selected`}
+            >
               <div className="space-y-1">
                 {pickedFields.map((f, i) => (
                   <div
@@ -196,7 +186,10 @@ export function DataView() {
                     className="flex items-center justify-between rounded-xl bg-secondary/40 px-3 py-2"
                   >
                     <div className="min-w-0 text-sm">
-                      <div className="truncate font-medium">{p.name}</div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="truncate font-medium">{p.name}</span>
+                        <PatternBadges kind={p.kind} status={p.last_status} />
+                      </div>
                       <div className="text-xs text-muted-foreground">
                         {p.fields.length} field{p.fields.length === 1 ? '' : 's'}
                       </div>
@@ -205,7 +198,7 @@ export function DataView() {
                       size="icon"
                       variant="ghost"
                       className="size-7 shrink-0"
-                      onClick={() => void runPattern(p)}
+                      onClick={() => void handleRun(p)}
                     >
                       <Play className="size-3.5" />
                     </Button>
@@ -273,5 +266,28 @@ function Section({ label, children }: { label: string; children: React.ReactNode
       </div>
       {children}
     </div>
+  );
+}
+
+function PatternBadges({
+  kind,
+  status,
+}: {
+  kind: ExtractionPattern['kind'];
+  status: ExtractionPattern['last_status'];
+}) {
+  return (
+    <span className="flex shrink-0 items-center gap-1">
+      {kind !== 'manual_css' && (
+        <span className="rounded-full bg-secondary px-1.5 py-px text-[9px] font-medium uppercase tracking-wider text-muted-foreground">
+          {kind.replace('_', ' ')}
+        </span>
+      )}
+      {status === 'broken' && (
+        <span className="rounded-full bg-red-500/15 px-1.5 py-px text-[9px] font-medium uppercase tracking-wider text-red-600 dark:text-red-400">
+          broken
+        </span>
+      )}
+    </span>
   );
 }

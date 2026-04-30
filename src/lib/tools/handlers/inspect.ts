@@ -1,0 +1,379 @@
+/**
+ * Page inspection tools — surgical alternatives to read_active_page when the
+ * agent only needs a slice of the page.
+ *
+ *   find_text_on_page    (read) — locate text in the DOM, return matches with
+ *                                 a stable selector + surrounding context.
+ *   get_page_links       (read) — return links from the page, filtered.
+ *   get_computed_style   (read) — read computed CSS for an element.
+ *   get_element_at_point (read) — DOM element at viewport (x, y).
+ *   inspect_element      (read) — snapshot of one element: tag, attrs,
+ *                                 bounding rect, computed style, ancestor
+ *                                 chain.
+ */
+
+import type { ToolHandler } from '@/lib/tools/types';
+import { z } from 'zod';
+
+async function activeTabId(): Promise<number | null> {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  return tab?.id ?? null;
+}
+
+const FindTextArgs = z.object({
+  query: z.string().min(1),
+  /** Case-sensitive match. Default false. */
+  case_sensitive: z.boolean().optional().default(false),
+  /** Treat `query` as a regex. Default false. */
+  regex: z.boolean().optional().default(false),
+  /** Cap on returned matches. Default 20. */
+  limit: z.number().int().positive().max(100).optional().default(20),
+  /** Characters of surrounding context to include. Default 80. */
+  context_chars: z.number().int().min(0).max(500).optional().default(80),
+});
+type FindTextArgs = z.infer<typeof FindTextArgs>;
+
+export const find_text_on_page: ToolHandler<FindTextArgs, unknown> = {
+  name: 'find_text_on_page',
+  tier: 'read',
+  description:
+    'Search visible text on the active tab and return matches with their nearest enclosing element selector + context. Pass regex=true to use a regular expression. Use this when read_active_page would be overkill — e.g. "where on this page does it say \'click here to download\'?".',
+  argsSchema: FindTextArgs,
+  run: async (args) => {
+    const tabId = await activeTabId();
+    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    const [first] = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: (
+        query: string,
+        caseSensitive: boolean,
+        useRegex: boolean,
+        limit: number,
+        ctxChars: number,
+      ) => {
+        function uniqueSelector(el: Element): string {
+          if ('id' in el && (el as { id: string }).id) {
+            return `#${CSS.escape((el as { id: string }).id)}`;
+          }
+          const parts: string[] = [];
+          let n: Element | null = el;
+          while (n && n !== document.body && parts.length < 6) {
+            const current: Element = n;
+            const tag = current.tagName.toLowerCase();
+            const parent = current.parentElement;
+            if (!parent) {
+              parts.unshift(tag);
+              break;
+            }
+            const siblings = Array.from(parent.children).filter(
+              (c: Element) => c.tagName === current.tagName,
+            );
+            const idx = siblings.indexOf(current) + 1;
+            parts.unshift(siblings.length > 1 ? `${tag}:nth-of-type(${idx})` : tag);
+            n = parent;
+          }
+          return parts.join(' > ');
+        }
+        let regex: RegExp;
+        try {
+          regex = useRegex
+            ? new RegExp(query, caseSensitive ? 'g' : 'gi')
+            : new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), caseSensitive ? 'g' : 'gi');
+        } catch (err) {
+          return { ok: false, reason: `bad regex: ${(err as Error).message}` };
+        }
+
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+          acceptNode: (node) => {
+            const parent = node.parentElement;
+            if (!parent) return NodeFilter.FILTER_REJECT;
+            const tag = parent.tagName.toLowerCase();
+            if (tag === 'script' || tag === 'style' || tag === 'noscript') {
+              return NodeFilter.FILTER_REJECT;
+            }
+            const style = window.getComputedStyle(parent);
+            if (style.visibility === 'hidden' || style.display === 'none') {
+              return NodeFilter.FILTER_REJECT;
+            }
+            return NodeFilter.FILTER_ACCEPT;
+          },
+        });
+        const matches: Array<Record<string, unknown>> = [];
+        let node: Node | null;
+        while ((node = walker.nextNode())) {
+          const text = node.textContent ?? '';
+          if (!text.trim()) continue;
+          regex.lastIndex = 0;
+          let m: RegExpExecArray | null;
+          while ((m = regex.exec(text))) {
+            const start = Math.max(0, m.index - ctxChars);
+            const end = Math.min(text.length, m.index + m[0].length + ctxChars);
+            matches.push({
+              text: m[0],
+              context: text.slice(start, end).replace(/\s+/g, ' ').trim(),
+              selector: uniqueSelector(node.parentElement!),
+              tag: node.parentElement?.tagName.toLowerCase(),
+            });
+            if (matches.length >= limit) break;
+            if (m[0].length === 0) regex.lastIndex++;
+          }
+          if (matches.length >= limit) break;
+        }
+        return { count: matches.length, matches };
+      },
+      args: [args.query, args.case_sensitive, args.regex, args.limit, args.context_chars],
+    });
+    return first?.result ?? { count: 0, matches: [] };
+  },
+};
+
+const GetLinksArgs = z
+  .object({
+    /** Substring (or full URL prefix) the href must contain. */
+    href_contains: z.string().optional(),
+    /** Only links whose text matches this substring. Case-insensitive. */
+    text_contains: z.string().optional(),
+    /** Only links whose href is on the SAME origin as the page. Default false. */
+    same_origin_only: z.boolean().optional().default(false),
+    /** Cap on returned links. Default 200. */
+    limit: z.number().int().positive().max(2000).optional().default(200),
+  })
+  .default({});
+type GetLinksArgs = z.infer<typeof GetLinksArgs>;
+
+export const get_page_links: ToolHandler<GetLinksArgs, unknown> = {
+  name: 'get_page_links',
+  tier: 'read',
+  description:
+    'Return anchor links from the active tab. Each entry is { href, text, title, rel, target }. Filter by href substring, link text substring, or same-origin only. Lighter than read_active_page when you only need link discovery.',
+  argsSchema: GetLinksArgs,
+  run: async (args) => {
+    const tabId = await activeTabId();
+    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    const [first] = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: (
+        hrefContains: string | undefined,
+        textContains: string | undefined,
+        sameOriginOnly: boolean,
+        limit: number,
+      ) => {
+        const hrefSub = hrefContains?.toLowerCase();
+        const textSub = textContains?.toLowerCase();
+        const origin = location.origin;
+        const out: Array<Record<string, unknown>> = [];
+        const links = document.querySelectorAll('a[href]');
+        for (const a of Array.from(links)) {
+          const el = a as HTMLAnchorElement;
+          const href = el.href;
+          if (!href || href.startsWith('javascript:')) continue;
+          if (hrefSub && !href.toLowerCase().includes(hrefSub)) continue;
+          const text = (el.innerText ?? el.textContent ?? '').trim();
+          if (textSub && !text.toLowerCase().includes(textSub)) continue;
+          if (sameOriginOnly) {
+            try {
+              if (new URL(href).origin !== origin) continue;
+            } catch {
+              continue;
+            }
+          }
+          out.push({
+            href,
+            text: text.slice(0, 200),
+            title: el.title || null,
+            rel: el.rel || null,
+            target: el.target || null,
+          });
+          if (out.length >= limit) break;
+        }
+        return { count: out.length, total: links.length, links: out };
+      },
+      args: [args.href_contains, args.text_contains, args.same_origin_only, args.limit],
+    });
+    return first?.result ?? { count: 0, links: [] };
+  },
+};
+
+const ComputedStyleArgs = z.object({
+  selector: z.string().min(1),
+  /** List of CSS properties to read. Empty = useful default set. */
+  properties: z.array(z.string()).optional(),
+});
+type ComputedStyleArgs = z.infer<typeof ComputedStyleArgs>;
+
+export const get_computed_style: ToolHandler<ComputedStyleArgs, unknown> = {
+  name: 'get_computed_style',
+  tier: 'read',
+  description:
+    'Read computed CSS for an element. Pass `properties` to limit (e.g. ["color","font-size"]) — without it returns a useful default subset (color, background, font, padding, margin, border, display, position, dimensions). Useful for debugging visual issues or matching styles.',
+  argsSchema: ComputedStyleArgs,
+  run: async (args) => {
+    const tabId = await activeTabId();
+    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    const [first] = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: (selector: string, props: string[] | undefined) => {
+        const el = document.querySelector(selector) as HTMLElement | null;
+        if (!el) return { ok: false, reason: `No element at ${selector}` };
+        const cs = window.getComputedStyle(el);
+        const list =
+          props && props.length > 0
+            ? props
+            : [
+                'color',
+                'background-color',
+                'font-family',
+                'font-size',
+                'font-weight',
+                'line-height',
+                'padding',
+                'margin',
+                'border',
+                'border-radius',
+                'display',
+                'position',
+                'width',
+                'height',
+                'opacity',
+                'visibility',
+                'z-index',
+              ];
+        const styles: Record<string, string> = {};
+        for (const p of list) styles[p] = cs.getPropertyValue(p);
+        const rect = el.getBoundingClientRect();
+        return {
+          ok: true,
+          tag: el.tagName.toLowerCase(),
+          rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+          styles,
+        };
+      },
+      args: [args.selector, args.properties],
+    });
+    return first?.result ?? { ok: false, reason: 'no result' };
+  },
+};
+
+const ElementAtPointArgs = z.object({
+  x: z.number(),
+  y: z.number(),
+});
+type ElementAtPointArgs = z.infer<typeof ElementAtPointArgs>;
+
+export const get_element_at_point: ToolHandler<ElementAtPointArgs, unknown> = {
+  name: 'get_element_at_point',
+  tier: 'read',
+  description:
+    'Identify the DOM element at viewport coordinates (x, y). Returns tag, text, attrs, and a stable selector. Useful when correlating something seen in a screenshot to a clickable element.',
+  argsSchema: ElementAtPointArgs,
+  run: async (args) => {
+    const tabId = await activeTabId();
+    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    const [first] = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: (x: number, y: number) => {
+        function uniqueSelector(el: Element): string {
+          if ('id' in el && (el as { id: string }).id) {
+            return `#${CSS.escape((el as { id: string }).id)}`;
+          }
+          const parts: string[] = [];
+          let n: Element | null = el;
+          while (n && n !== document.body && parts.length < 6) {
+            const current: Element = n;
+            const tag = current.tagName.toLowerCase();
+            const parent = current.parentElement;
+            if (!parent) {
+              parts.unshift(tag);
+              break;
+            }
+            const siblings = Array.from(parent.children).filter(
+              (c: Element) => c.tagName === current.tagName,
+            );
+            const idx = siblings.indexOf(current) + 1;
+            parts.unshift(siblings.length > 1 ? `${tag}:nth-of-type(${idx})` : tag);
+            n = parent;
+          }
+          return parts.join(' > ');
+        }
+        const el = document.elementFromPoint(x, y);
+        if (!el) return { ok: false, reason: 'No element at that point' };
+        const attrs: Record<string, string> = {};
+        for (const a of Array.from(el.attributes)) attrs[a.name] = a.value;
+        return {
+          ok: true,
+          tag: el.tagName.toLowerCase(),
+          text: ((el as HTMLElement).innerText ?? '').slice(0, 200),
+          selector: uniqueSelector(el),
+          attrs,
+        };
+      },
+      args: [args.x, args.y],
+    });
+    return first?.result ?? { ok: false, reason: 'no result' };
+  },
+};
+
+const InspectArgs = z.object({ selector: z.string().min(1) });
+type InspectArgs = z.infer<typeof InspectArgs>;
+
+export const inspect_element: ToolHandler<InspectArgs, unknown> = {
+  name: 'inspect_element',
+  tier: 'read',
+  description:
+    'Deep snapshot of a single element: tag, text, full attributes, bounding rect, key computed styles, ancestor chain (tag + class), and child counts. Useful when a click or type call is failing and you need to understand why.',
+  argsSchema: InspectArgs,
+  run: async (args) => {
+    const tabId = await activeTabId();
+    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    const [first] = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: (selector: string) => {
+        const el = document.querySelector(selector) as HTMLElement | null;
+        if (!el) return { ok: false, reason: `No element at ${selector}` };
+        const attrs: Record<string, string> = {};
+        for (const a of Array.from(el.attributes)) attrs[a.name] = a.value;
+        const cs = window.getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
+        const ancestors: Array<{ tag: string; classes: string[]; id: string | null }> = [];
+        let node: Element | null = el.parentElement;
+        let depth = 0;
+        while (node && depth < 6 && node !== document.body) {
+          ancestors.push({
+            tag: node.tagName.toLowerCase(),
+            classes: Array.from(node.classList),
+            id: node.id || null,
+          });
+          node = node.parentElement;
+          depth++;
+        }
+        return {
+          ok: true,
+          tag: el.tagName.toLowerCase(),
+          text: (el.innerText ?? '').slice(0, 400),
+          attrs,
+          rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+          visible: rect.width > 0 && rect.height > 0,
+          styles: {
+            display: cs.display,
+            visibility: cs.visibility,
+            opacity: cs.opacity,
+            position: cs.position,
+            'pointer-events': cs.pointerEvents,
+          },
+          child_count: el.childElementCount,
+          ancestors,
+        };
+      },
+      args: [args.selector],
+    });
+    return first?.result ?? { ok: false, reason: 'no result' };
+  },
+};
+
+export const inspect_handlers = [
+  find_text_on_page,
+  get_page_links,
+  get_computed_style,
+  get_element_at_point,
+  inspect_element,
+];

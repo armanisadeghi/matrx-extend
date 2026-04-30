@@ -176,11 +176,7 @@ export function SeoView() {
       </div>
 
       <div className="flex shrink-0 gap-2 px-3 pb-3 pt-1">
-        <Button
-          onClick={() => void runAudit()}
-          disabled={running}
-          className="flex-1 rounded-full"
-        >
+        <Button onClick={() => void runAudit()} disabled={running} className="flex-1 rounded-full">
           {running ? <Loader2 className="animate-spin" /> : <Search />}
           {audit ? 'Re-audit' : 'Audit this page'}
         </Button>

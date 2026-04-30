@@ -1,0 +1,204 @@
+import { useActiveTab } from '@/hooks/use-active-tab';
+import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { aiExtractCapturePage } from '@/lib/data-pattern/modes/ai-extract';
+import type { ExtractedRow } from '@/lib/data-pattern/types';
+import { newId } from '@/lib/id';
+import { on, send } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+interface StreamChunk {
+  runId: string;
+  type: 'text' | 'reasoning' | 'event' | 'error' | 'done';
+  payload: {
+    content?: string;
+    eventName?: string;
+    data?: Record<string, unknown>;
+    message?: string;
+  };
+}
+
+interface ExtractionResponse {
+  rows: ExtractedRow[];
+  confidence?: 'high' | 'medium' | 'low';
+  notes?: string;
+  inferred_schema?: unknown;
+}
+
+interface ExtractInput {
+  agentId: string;
+  description: string;
+  outputSchema: object;
+}
+
+/**
+ * Drive the structured-extractor agent. Captures page text from the active
+ * tab, posts to /ai/agent/{agentId} with the extraction variables, accumulates
+ * the streamed JSON response, and parses it on done.
+ *
+ * Distinct from useChatStream — this hook does NOT write to the chat store.
+ * It listens on the same STREAM_CHUNK channel but filters by its own runId
+ * so the two surfaces don't collide.
+ */
+export function useAiExtraction() {
+  const tab = useActiveTab();
+  const [rows, setRows] = useState<ExtractedRow[] | null>(null);
+  const [running, setRunning] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [notes, setNotes] = useState<string | null>(null);
+  const [confidence, setConfidence] = useState<string | null>(null);
+
+  const runIdRef = useRef<string | null>(null);
+  const accumRef = useRef('');
+
+  useEffect(() => {
+    return on<StreamChunk, { ack: true }>(CHANNELS.STREAM_CHUNK, (chunk) => {
+      if (chunk.runId !== runIdRef.current) return { ack: true };
+
+      if (chunk.type === 'text' && chunk.payload.content) {
+        accumRef.current += chunk.payload.content;
+      } else if (chunk.type === 'error') {
+        setError(chunk.payload.message ?? 'stream error');
+        setRunning(false);
+        runIdRef.current = null;
+      } else if (chunk.type === 'done') {
+        try {
+          const parsed = parseAgentResponse(accumRef.current);
+          setRows(parsed.rows);
+          setNotes(parsed.notes ?? null);
+          setConfidence(parsed.confidence ?? null);
+        } catch (e) {
+          setError(`Could not parse agent response: ${e instanceof Error ? e.message : String(e)}`);
+        }
+        setRunning(false);
+        runIdRef.current = null;
+      }
+      return { ack: true };
+    });
+  }, []);
+
+  const extract = useCallback(
+    async (input: ExtractInput) => {
+      if (!tab.id) {
+        setError('No active tab.');
+        return;
+      }
+      if (!input.agentId) {
+        setError('No extraction agent selected.');
+        return;
+      }
+
+      setRunning(true);
+      setError(null);
+      setRows(null);
+      setNotes(null);
+      setConfidence(null);
+      accumRef.current = '';
+
+      let captured: ReturnType<typeof aiExtractCapturePage>;
+      try {
+        const result = await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: aiExtractCapturePage,
+        });
+        captured = result?.[0]?.result as ReturnType<typeof aiExtractCapturePage>;
+        if (!captured) throw new Error('Page capture returned nothing.');
+      } catch (e) {
+        setError(`Could not read page: ${e instanceof Error ? e.message : String(e)}`);
+        setRunning(false);
+        return;
+      }
+
+      const runId = newId('extract');
+      runIdRef.current = runId;
+
+      const body: AgentStartRequest = {
+        user_input: input.description,
+        conversation_id: null,
+        variables: {
+          page_url: captured.url,
+          page_text: captured.page_text,
+          page_metadata: captured.page_metadata,
+          output_schema: input.outputSchema,
+        },
+        context: { page_title: captured.title },
+        stream: true,
+        store: false,
+        source_app: 'matrx-extend',
+        source_feature: 'data-ai-extract',
+        client_tools: [],
+      };
+
+      try {
+        await send(CHANNELS.STREAM_START, {
+          runId,
+          endpoint: agentExecutePath(input.agentId),
+          body,
+          parser: 'rich-events' as const,
+          agentName: null,
+          permissionMode: 'auto',
+        });
+      } catch (e) {
+        setError(`Failed to start extraction: ${e instanceof Error ? e.message : String(e)}`);
+        setRunning(false);
+        runIdRef.current = null;
+      }
+    },
+    [tab.id],
+  );
+
+  const cancel = useCallback(async () => {
+    if (!runIdRef.current) return;
+    await send(CHANNELS.STREAM_CANCEL, { runId: runIdRef.current });
+    setRunning(false);
+    runIdRef.current = null;
+  }, []);
+
+  const reset = useCallback(() => {
+    setRows(null);
+    setError(null);
+    setNotes(null);
+    setConfidence(null);
+  }, []);
+
+  return { rows, running, error, notes, confidence, extract, cancel, reset };
+}
+
+/**
+ * Parse the streamed agent response into our expected envelope.
+ * Tolerates leading/trailing whitespace, code-fenced blocks, and a trailing
+ * narrative line — agents sometimes prefix/suffix the JSON with prose.
+ */
+function parseAgentResponse(raw: string): ExtractionResponse {
+  const trimmed = raw.trim();
+  if (!trimmed) throw new Error('empty response');
+
+  let body = trimmed;
+  const fence = body.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/m);
+  if (fence?.[1]) body = fence[1].trim();
+
+  // Find the outermost JSON object/array if there's wrapping prose.
+  const firstBrace = body.search(/[{[]/);
+  const lastBrace = Math.max(body.lastIndexOf('}'), body.lastIndexOf(']'));
+  if (firstBrace >= 0 && lastBrace > firstBrace) {
+    body = body.slice(firstBrace, lastBrace + 1);
+  }
+
+  const parsed = JSON.parse(body) as unknown;
+
+  if (Array.isArray(parsed)) {
+    return { rows: parsed as ExtractedRow[] };
+  }
+  if (parsed && typeof parsed === 'object') {
+    const obj = parsed as Record<string, unknown>;
+    const rows = Array.isArray(obj.rows) ? (obj.rows as ExtractedRow[]) : [];
+    return {
+      rows,
+      confidence: obj.confidence as 'high' | 'medium' | 'low' | undefined,
+      notes: typeof obj.notes === 'string' ? obj.notes : undefined,
+      inferred_schema: obj.inferred_schema,
+    };
+  }
+
+  throw new Error('agent response was not a JSON object or array');
+}

@@ -1,6 +1,10 @@
 import { STORAGE_KEYS } from '@/config/env';
 import { pingHealth } from '@/lib/api/routes/health';
-import { restoreSupabaseSession, signIn as runSignIn, signOut as runSignOut } from '@/lib/auth/flow';
+import {
+  restoreSupabaseSession,
+  signIn as runSignIn,
+  signOut as runSignOut,
+} from '@/lib/auth/flow';
 import type { UserProfile } from '@/lib/auth/types';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';

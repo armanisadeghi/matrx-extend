@@ -10,12 +10,27 @@ export interface ChatMessage {
   pending?: boolean;
 }
 
+export type PermissionMode = 'ask' | 'act';
+
 interface ChatState {
   selectedAgentId: string | null;
   selectedConversationId: string | null;
   draft: string;
   messages: ChatMessage[];
   isStreaming: boolean;
+  /**
+   * Per-agent variable values, keyed by `<agentId>.<varName>`. Persisted
+   * across reloads so users don't have to re-fill every time. Cleared per
+   * agent via resetAgentVariables.
+   */
+  variableValues: Record<string, string>;
+  /**
+   * Per-agent permission mode for action tools.
+   *   'ask' — agent asks before each mutating tool call (default).
+   *   'act' — agent runs mutating tool calls without prompting.
+   * Privileged tools always confirm regardless. Set/changeable in chat header.
+   */
+  permissionMode: Record<string, PermissionMode>;
   setAgent: (id: string | null) => void;
   setConversation: (id: string | null) => void;
   setDraft: (s: string) => void;
@@ -24,17 +39,26 @@ interface ChatState {
   finalizeAssistant: (id: string) => void;
   setStreaming: (b: boolean) => void;
   setMessages: (ms: ChatMessage[]) => void;
+  setVariable: (agentId: string, name: string, value: string) => void;
+  getAgentVariables: (agentId: string) => Record<string, string>;
+  resetAgentVariables: (agentId: string) => void;
+  setPermissionMode: (agentId: string, mode: PermissionMode) => void;
+  getPermissionMode: (agentId: string | null) => PermissionMode;
   reset: () => void;
 }
 
+const varKey = (agentId: string, name: string) => `${agentId}.${name}`;
+
 export const useChatStore = create<ChatState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       selectedAgentId: null,
       selectedConversationId: null,
       draft: '',
       messages: [],
       isStreaming: false,
+      variableValues: {},
+      permissionMode: {},
       setAgent: (selectedAgentId) => set({ selectedAgentId }),
       setConversation: (selectedConversationId) => set({ selectedConversationId, messages: [] }),
       setDraft: (draft) => set({ draft }),
@@ -49,6 +73,33 @@ export const useChatStore = create<ChatState>()(
         })),
       setStreaming: (isStreaming) => set({ isStreaming }),
       setMessages: (messages) => set({ messages }),
+      setVariable: (agentId, name, value) =>
+        set((s) => ({
+          variableValues: { ...s.variableValues, [varKey(agentId, name)]: value },
+        })),
+      getAgentVariables: (agentId) => {
+        const prefix = `${agentId}.`;
+        const out: Record<string, string> = {};
+        for (const [k, v] of Object.entries(get().variableValues)) {
+          if (k.startsWith(prefix)) out[k.slice(prefix.length)] = v;
+        }
+        return out;
+      },
+      resetAgentVariables: (agentId) =>
+        set((s) => {
+          const prefix = `${agentId}.`;
+          const next: Record<string, string> = {};
+          for (const [k, v] of Object.entries(s.variableValues)) {
+            if (!k.startsWith(prefix)) next[k] = v;
+          }
+          return { variableValues: next };
+        }),
+      setPermissionMode: (agentId, mode) =>
+        set((s) => ({ permissionMode: { ...s.permissionMode, [agentId]: mode } })),
+      getPermissionMode: (agentId) => {
+        if (!agentId) return 'ask';
+        return get().permissionMode[agentId] ?? 'ask';
+      },
       reset: () => set({ messages: [], draft: '', isStreaming: false }),
     }),
     {
@@ -58,6 +109,8 @@ export const useChatStore = create<ChatState>()(
         selectedAgentId: s.selectedAgentId,
         selectedConversationId: s.selectedConversationId,
         draft: s.draft,
+        variableValues: s.variableValues,
+        permissionMode: s.permissionMode,
       }),
     },
   ),

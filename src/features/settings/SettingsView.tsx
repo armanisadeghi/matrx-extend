@@ -1,8 +1,8 @@
 /**
  * Settings — user-facing preferences ONLY.
  *
- * Apple iOS-style: each feature gets its own section header + a grouped card
- * of single-row controls. No descriptive paragraphs, no nested cards.
+ * Apple iOS-style: each feature gets its own collapsible section + a grouped
+ * card of single-row controls. No descriptive paragraphs, no nested cards.
  *
  * Operationally sensitive controls (backend env, URL overrides) live in the
  * admin-gated Debug tab. A regular user MUST NOT be able to repoint the
@@ -10,6 +10,7 @@
  */
 
 import { Button } from '@/components/ui/button';
+import { Collapsible } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -22,16 +23,32 @@ import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/hooks/use-auth';
 import { useDesktopBridge } from '@/hooks/use-desktop';
 import { clearPairToken, setPairToken } from '@/lib/desktop/http';
+import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '@/state/settings';
 import { ChevronRight, LogOut, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+const NONE = '__none__';
 
 export function SettingsView() {
   const { user, signOut, isAdmin } = useAuth();
   const desktop = useDesktopBridge();
   const settings = useSettingsStore();
   const [pairTokenInput, setPairTokenInput] = useState('');
+  const [agents, setAgents] = useState<AgxAgent[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    void (async () => {
+      const a = await fetchUserAgents(user.id);
+      if (!cancelled) setAgents(a);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   const handleClearLocalData = async () => {
     if (
@@ -60,119 +77,191 @@ export function SettingsView() {
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <div className="space-y-4 px-3 pb-3">
-          <Section label="Account">
-            <Row label="Email" value={user?.email ?? '—'} mono />
-            {user?.full_name && <Row label="Name" value={user.full_name} />}
-            {isAdmin && <Row label="Role" value={<Badge>admin</Badge>} />}
-          </Section>
+        <div className="space-y-3 px-3 pb-3">
+          <Collapsible label="Account">
+            <Card>
+              <Row label="Email" value={user?.email ?? '—'} mono />
+              {user?.full_name && <Row label="Name" value={user.full_name} />}
+              {isAdmin && <Row label="Role" value={<Badge>admin</Badge>} />}
+            </Card>
+          </Collapsible>
 
-          <Section label="Appearance">
-            <ControlRow
-              label="Theme"
-              control={
-                <Select
-                  value={settings.theme}
-                  onValueChange={(v) => settings.setTheme(v as typeof settings.theme)}
-                >
-                  <SelectTrigger className="h-7 w-auto gap-1 border-0 bg-transparent px-2 text-sm shadow-none hover:bg-accent focus:ring-0">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent align="end">
-                    <SelectItem value="system">System</SelectItem>
-                    <SelectItem value="light">Light</SelectItem>
-                    <SelectItem value="dark">Dark</SelectItem>
-                  </SelectContent>
-                </Select>
-              }
-            />
-          </Section>
+          <Collapsible label="Appearance">
+            <Card>
+              <ControlRow
+                label="Theme"
+                control={
+                  <PillSelect
+                    value={settings.theme}
+                    onChange={(v) => settings.setTheme(v as typeof settings.theme)}
+                    options={[
+                      { value: 'system', label: 'System' },
+                      { value: 'light', label: 'Light' },
+                      { value: 'dark', label: 'Dark' },
+                    ]}
+                  />
+                }
+              />
+            </Card>
+          </Collapsible>
 
-          <Section label="Chat">
-            <EmptyRow>No options yet</EmptyRow>
-          </Section>
-
-          <Section label="Tasks">
-            <EmptyRow>No options yet</EmptyRow>
-          </Section>
-
-          <Section label="Scrape">
-            <ControlRow
-              label="Deep clean"
-              control={
-                <Switch
-                  checked={settings.scrapeDeepClean}
-                  onCheckedChange={settings.setScrapeDeepClean}
-                />
-              }
-            />
-          </Section>
-
-          <Section label="Data">
-            <EmptyRow>No options yet</EmptyRow>
-          </Section>
-
-          <Section label="SEO">
-            <EmptyRow>No options yet</EmptyRow>
-          </Section>
-
-          <Section label="Desktop bridge">
-            <Row
-              label="Status"
-              value={
-                <span className={desktopColor}>
-                  {desktop.transport === 'none' ? 'Not connected' : desktop.transport}
-                </span>
-              }
-            />
-            {desktop.health?.version && (
-              <Row label="Version" value={`matrx-local v${desktop.health.version}`} mono />
-            )}
-            {desktop.transport !== 'native' && (
-              <div className="flex items-center gap-2 px-3.5 py-2">
-                <Input
-                  value={pairTokenInput}
-                  onChange={(e) => setPairTokenInput(e.target.value)}
-                  placeholder="Pair code"
-                  className="h-7 rounded-full border-0 bg-secondary focus-visible:ring-1"
-                />
-                <Button
-                  size="sm"
-                  className="h-7 rounded-full px-3"
-                  disabled={!pairTokenInput.trim()}
-                  onClick={async () => {
-                    if (pairTokenInput.trim()) {
-                      await setPairToken(pairTokenInput.trim());
-                      setPairTokenInput('');
+          <Collapsible label="Chat">
+            <Card>
+              <ControlRow
+                label="Default agent"
+                control={
+                  <PillSelect
+                    value={settings.defaultAgentId ?? NONE}
+                    onChange={(v) => settings.setDefaultAgentId(v === NONE ? null : v)}
+                    placeholder="None"
+                    options={[
+                      { value: NONE, label: 'None' },
+                      ...agents.map((a) => ({ value: a.id, label: a.name })),
+                    ]}
+                  />
+                }
+              />
+              <ControlRow
+                label="Default mode"
+                control={
+                  <PillSelect
+                    value={settings.defaultPermissionMode}
+                    onChange={(v) =>
+                      settings.setDefaultPermissionMode(v as typeof settings.defaultPermissionMode)
                     }
-                  }}
-                >
-                  Pair
-                </Button>
-              </div>
-            )}
-            {desktop.transport === 'http' && (
-              <ActionRow label="Forget pair code" onClick={() => void clearPairToken()} />
-            )}
-          </Section>
+                    options={[
+                      { value: 'ask', label: 'Ask before acting' },
+                      { value: 'act', label: 'Act without asking' },
+                    ]}
+                  />
+                }
+              />
+              <ControlRow
+                label="Default speed"
+                hint="coming soon"
+                control={
+                  <PillSelect
+                    value={settings.defaultChatSpeed}
+                    onChange={(v) =>
+                      settings.setDefaultChatSpeed(v as typeof settings.defaultChatSpeed)
+                    }
+                    options={[
+                      { value: 'fast', label: 'Fast' },
+                      { value: 'thinking', label: 'Thinking' },
+                    ]}
+                  />
+                }
+              />
+            </Card>
+          </Collapsible>
 
-          <Section label="Privacy">
-            <ActionRow
-              label="Clear local data on this device"
-              icon={<Trash2 className="size-3.5" />}
-              destructive
-              onClick={() => void handleClearLocalData()}
-            />
-          </Section>
+          <Collapsible label="Scrape">
+            <Card>
+              <ControlRow
+                label="Deep clean"
+                control={
+                  <Switch
+                    checked={settings.scrapeDeepClean}
+                    onCheckedChange={settings.setScrapeDeepClean}
+                  />
+                }
+              />
+              <ControlRow
+                label="Auto-scrape on load"
+                hint="coming soon"
+                control={
+                  <Switch
+                    checked={settings.scrapeAutoOnLoad}
+                    onCheckedChange={settings.setScrapeAutoOnLoad}
+                  />
+                }
+              />
+              <ControlRow
+                label="Auto-scrape mode"
+                hint="coming soon"
+                control={
+                  <PillSelect
+                    value={settings.scrapeAutoMode}
+                    onChange={(v) =>
+                      settings.setScrapeAutoMode(v as typeof settings.scrapeAutoMode)
+                    }
+                    options={[
+                      { value: 'capture', label: 'Capture' },
+                      { value: 'scroll-capture', label: 'Scroll & capture' },
+                    ]}
+                  />
+                }
+              />
+            </Card>
+          </Collapsible>
 
-          <Section label="About">
-            <Row
-              label="Version"
-              value={chrome.runtime.getManifest().version}
-              mono
-            />
-            <Row label="Extension ID" value={chrome.runtime.id} mono />
-          </Section>
+          <Collapsible label="Data" defaultOpen={false}>
+            <EmptyCard>No options yet</EmptyCard>
+          </Collapsible>
+
+          <Collapsible label="SEO" defaultOpen={false}>
+            <EmptyCard>No options yet</EmptyCard>
+          </Collapsible>
+
+          <Collapsible label="Desktop bridge">
+            <Card>
+              <Row
+                label="Status"
+                value={
+                  <span className={desktopColor}>
+                    {desktop.transport === 'none' ? 'Not connected' : desktop.transport}
+                  </span>
+                }
+              />
+              {desktop.health?.version && (
+                <Row label="Version" value={`matrx-local v${desktop.health.version}`} mono />
+              )}
+              {desktop.transport !== 'native' && (
+                <div className="flex items-center gap-2 px-3.5 py-2">
+                  <Input
+                    value={pairTokenInput}
+                    onChange={(e) => setPairTokenInput(e.target.value)}
+                    placeholder="Pair code"
+                    className="h-7 rounded-full border-0 bg-secondary focus-visible:ring-1"
+                  />
+                  <Button
+                    size="sm"
+                    className="h-7 rounded-full px-3"
+                    disabled={!pairTokenInput.trim()}
+                    onClick={async () => {
+                      if (pairTokenInput.trim()) {
+                        await setPairToken(pairTokenInput.trim());
+                        setPairTokenInput('');
+                      }
+                    }}
+                  >
+                    Pair
+                  </Button>
+                </div>
+              )}
+              {desktop.transport === 'http' && (
+                <ActionRow label="Forget pair code" onClick={() => void clearPairToken()} />
+              )}
+            </Card>
+          </Collapsible>
+
+          <Collapsible label="Privacy">
+            <Card>
+              <ActionRow
+                label="Clear local data on this device"
+                icon={<Trash2 className="size-3.5" />}
+                destructive
+                onClick={() => void handleClearLocalData()}
+              />
+            </Card>
+          </Collapsible>
+
+          <Collapsible label="About" defaultOpen={false}>
+            <Card>
+              <Row label="Version" value={chrome.runtime.getManifest().version} mono />
+              <Row label="Extension ID" value={chrome.runtime.id} mono />
+            </Card>
+          </Collapsible>
         </div>
       </div>
 
@@ -189,15 +278,18 @@ export function SettingsView() {
   );
 }
 
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
+function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="space-y-1.5">
-      <div className="px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-        {label}
-      </div>
-      <div className="overflow-hidden rounded-xl border bg-card">
-        <div className="divide-y divide-border/60">{children}</div>
-      </div>
+    <div className="overflow-hidden rounded-xl border bg-card">
+      <div className="divide-y divide-border/60">{children}</div>
+    </div>
+  );
+}
+
+function EmptyCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-dashed bg-card/50 px-3.5 py-3 text-xs italic text-muted-foreground/70">
+      {children}
     </div>
   );
 }
@@ -214,18 +306,38 @@ function Row({
   return (
     <div className="flex min-h-9 items-center justify-between gap-3 px-3.5 py-2">
       <span className="shrink-0 text-sm">{label}</span>
-      <div className={cn('min-w-0 truncate text-right text-sm text-muted-foreground', mono && 'font-mono text-xs')}>
+      <div
+        className={cn(
+          'min-w-0 truncate text-right text-sm text-muted-foreground',
+          mono && 'font-mono text-xs',
+        )}
+      >
         {value}
       </div>
     </div>
   );
 }
 
-function ControlRow({ label, control }: { label: string; control: React.ReactNode }) {
+function ControlRow({
+  label,
+  hint,
+  control,
+}: {
+  label: string;
+  hint?: string;
+  control: React.ReactNode;
+}) {
   return (
     <div className="flex min-h-9 items-center justify-between gap-3 px-3.5 py-1.5">
-      <span className="shrink-0 text-sm">{label}</span>
-      <div className="flex items-center">{control}</div>
+      <div className="flex min-w-0 flex-col">
+        <span className="text-sm">{label}</span>
+        {hint && (
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground/70">
+            {hint}
+          </span>
+        )}
+      </div>
+      <div className="flex shrink-0 items-center">{control}</div>
     </div>
   );
 }
@@ -257,9 +369,30 @@ function ActionRow({
   );
 }
 
-function EmptyRow({ children }: { children: React.ReactNode }) {
+function PillSelect({
+  value,
+  onChange,
+  options,
+  placeholder,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+}) {
   return (
-    <div className="px-3.5 py-2.5 text-xs italic text-muted-foreground/70">{children}</div>
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="h-7 w-auto max-w-[180px] gap-1 border-0 bg-transparent px-2 text-sm shadow-none hover:bg-accent focus:ring-0 [&>span]:truncate">
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent align="end">
+        {options.map((o) => (
+          <SelectItem key={o.value} value={o.value}>
+            {o.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 

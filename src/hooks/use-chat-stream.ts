@@ -1,13 +1,19 @@
-import { agentExecutePath, type AgentStartRequest } from '@/lib/api/routes/ai';
+import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { buildChatContext } from '@/lib/chat/build-context';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { assistantToolNames } from '@/lib/tools/registry';
+import { useAuthStore } from '@/state/auth';
 import { type ChatMessage, useChatStore } from '@/state/chat';
+import { useDesktopStore } from '@/state/desktop';
+import { useScrapeStore } from '@/state/scrape';
 import { useCallback, useEffect, useRef } from 'react';
 
 interface SendOptions {
   agentId?: string;
+  agentName?: string;
   conversationId?: string;
   variables?: Record<string, unknown>;
 }
@@ -82,14 +88,44 @@ export function useChatStream() {
     runIdRef.current = runId;
     targetIdRef.current = assistantMsg.id;
 
+    // Assemble the per-message context. We ship EVERYTHING we know about the
+    // active page + extension state. The server matches keys against agent /
+    // system slots and surfaces the rest to the model as a tool-callable hint.
+    // No truncation here — that's the server's job.
+    const user = useAuthStore.getState().user;
+    const desktop = useDesktopStore.getState();
+    const scrape = useScrapeStore.getState().current;
+    let context: Record<string, unknown> = {};
+    try {
+      context = await buildChatContext({
+        user: user ? { id: user.id, email: user.email, full_name: user.full_name ?? null } : null,
+        desktopTransport: desktop.transport,
+        scrape,
+      });
+      log.info('stream', `built context (${Object.keys(context).length} keys)`, {
+        keys: Object.keys(context).sort(),
+      });
+    } catch (err) {
+      log.warn('stream', 'buildChatContext failed; sending without context', err);
+    }
+
+    // Read once at send time so the latched mode follows the run, even if the
+    // user toggles the chip mid-stream.
+    const permissionMode = useChatStore.getState().getPermissionMode(opts.agentId);
+
     const body: AgentStartRequest = {
       user_input: text,
       conversation_id: opts.conversationId ?? null,
       variables: opts.variables ?? null,
+      context,
       stream: true,
       store: true,
       source_app: 'matrx-extend',
       source_feature: 'chat',
+      // Tell the server which client-side tools the agent can call. The
+      // Assistant surface advertises only the read-only set; the Pilot surface
+      // (separate hook later) will advertise pilot_tools.
+      client_tools: assistantToolNames(),
     };
 
     await send(CHANNELS.STREAM_START, {
@@ -97,6 +133,8 @@ export function useChatStream() {
       endpoint: agentExecutePath(opts.agentId),
       body,
       parser: 'rich-events' as const,
+      agentName: opts.agentName ?? null,
+      permissionMode,
     });
   }, []);
 

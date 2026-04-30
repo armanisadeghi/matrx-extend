@@ -1,0 +1,1675 @@
+{
+  "generated_at": "2026-04-30T23:08:02.204Z",
+  "source": "matrx-extend",
+  "assistant_bundle": [
+    "get_active_tab",
+    "get_page_selection",
+    "read_active_page",
+    "take_screenshot",
+    "query_elements",
+    "find_text_on_page",
+    "get_page_links",
+    "get_computed_style",
+    "get_element_at_point",
+    "inspect_element",
+    "list_open_tabs",
+    "get_tab_groups",
+    "get_tab_info",
+    "search_bookmarks",
+    "list_bookmark_tree",
+    "search_history",
+    "list_recent_history",
+    "list_downloads",
+    "get_form_fields",
+    "get_extension_storage",
+    "list_extension_storage"
+  ],
+  "pilot_bundle": [
+    "get_active_tab",
+    "get_page_selection",
+    "read_active_page",
+    "take_screenshot",
+    "query_elements",
+    "find_text_on_page",
+    "get_page_links",
+    "get_computed_style",
+    "get_element_at_point",
+    "inspect_element",
+    "list_open_tabs",
+    "get_tab_groups",
+    "get_tab_info",
+    "search_bookmarks",
+    "list_bookmark_tree",
+    "search_history",
+    "list_recent_history",
+    "list_downloads",
+    "get_form_fields",
+    "get_extension_storage",
+    "list_extension_storage",
+    "navigate_active_tab",
+    "click_element",
+    "type_into_element",
+    "scroll_page",
+    "wait_for",
+    "set_clipboard",
+    "press_keys",
+    "hover_element",
+    "focus_element",
+    "blur_element",
+    "right_click_element",
+    "select_dropdown_option",
+    "set_checkbox",
+    "set_radio",
+    "submit_form",
+    "open_new_tab",
+    "close_tab",
+    "switch_to_tab",
+    "duplicate_tab",
+    "pin_tab",
+    "mute_tab",
+    "reload_tab",
+    "go_back",
+    "go_forward",
+    "set_tab_zoom",
+    "move_tab",
+    "create_tab_group",
+    "add_tabs_to_group",
+    "remove_tabs_from_group",
+    "update_tab_group",
+    "download_url",
+    "cancel_download",
+    "notify_user",
+    "ask_user",
+    "ask_user_choice",
+    "ask_user_secret",
+    "request_user_takeover"
+  ],
+  "pilot_with_privileged_bundle": [
+    "get_active_tab",
+    "get_page_selection",
+    "read_active_page",
+    "take_screenshot",
+    "query_elements",
+    "find_text_on_page",
+    "get_page_links",
+    "get_computed_style",
+    "get_element_at_point",
+    "inspect_element",
+    "list_open_tabs",
+    "get_tab_groups",
+    "get_tab_info",
+    "search_bookmarks",
+    "list_bookmark_tree",
+    "search_history",
+    "list_recent_history",
+    "list_downloads",
+    "get_form_fields",
+    "get_extension_storage",
+    "list_extension_storage",
+    "navigate_active_tab",
+    "click_element",
+    "type_into_element",
+    "scroll_page",
+    "wait_for",
+    "set_clipboard",
+    "press_keys",
+    "hover_element",
+    "focus_element",
+    "blur_element",
+    "right_click_element",
+    "select_dropdown_option",
+    "set_checkbox",
+    "set_radio",
+    "submit_form",
+    "open_new_tab",
+    "close_tab",
+    "switch_to_tab",
+    "duplicate_tab",
+    "pin_tab",
+    "mute_tab",
+    "reload_tab",
+    "go_back",
+    "go_forward",
+    "set_tab_zoom",
+    "move_tab",
+    "create_tab_group",
+    "add_tabs_to_group",
+    "remove_tabs_from_group",
+    "update_tab_group",
+    "download_url",
+    "cancel_download",
+    "notify_user",
+    "ask_user",
+    "ask_user_choice",
+    "ask_user_secret",
+    "request_user_takeover",
+    "execute_javascript",
+    "inject_stylesheet",
+    "remove_stylesheet",
+    "set_extension_storage",
+    "desktop_run_command"
+  ],
+  "tools": [
+    {
+      "name": "get_active_tab",
+      "description": "Return information about the user’s currently focused browser tab: url, title, tab id, window id, status, favicon.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "get_page_selection",
+      "description": "Return the user’s currently selected text on the active tab. Empty string if nothing is selected.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "read_active_page",
+      "description": "Read the active tab and return a structured snapshot: cleaned article (markdown + html), title, byline, full image/video/link/audio lists, JSON-LD, schema types, SEO signals (headings, meta, alt-text coverage). Pass deep=true to scroll the page top→bottom first to trigger lazy-loaded images and infinite-scroll content before reading. Use this whenever you need to understand or quote the page.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "deep": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "take_screenshot",
+      "description": "Capture the visible viewport of the active tab as a base64 PNG (or JPEG). Returns { format, image_base64 }. Useful for vision-capable models or for archival.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string",
+            "enum": ["png", "jpeg"],
+            "default": "png"
+          },
+          "quality": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "query_elements",
+      "description": "Run document.querySelectorAll on the active tab and return up to `limit` matches as { tag, text, attrs }. `attrs` is a list of attribute names to extract. Use this to find CSS selectors that subsequent action tools can target.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          },
+          "attributes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "limit": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 500,
+            "default": 100
+          }
+        },
+        "required": ["selector"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "find_text_on_page",
+      "description": "Search visible text on the active tab and return matches with their nearest enclosing element selector + context. Pass regex=true to use a regular expression. Use this when read_active_page would be overkill — e.g. \"where on this page does it say 'click here to download'?\".",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1
+          },
+          "case_sensitive": {
+            "type": "boolean",
+            "default": false
+          },
+          "regex": {
+            "type": "boolean",
+            "default": false
+          },
+          "limit": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100,
+            "default": 20
+          },
+          "context_chars": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500,
+            "default": 80
+          }
+        },
+        "required": ["query"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "get_page_links",
+      "description": "Return anchor links from the active tab. Each entry is { href, text, title, rel, target }. Filter by href substring, link text substring, or same-origin only. Lighter than read_active_page when you only need link discovery.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "href_contains": {
+            "type": "string"
+          },
+          "text_contains": {
+            "type": "string"
+          },
+          "same_origin_only": {
+            "type": "boolean",
+            "default": false
+          },
+          "limit": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 2000,
+            "default": 200
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "get_computed_style",
+      "description": "Read computed CSS for an element. Pass `properties` to limit (e.g. [\"color\",\"font-size\"]) — without it returns a useful default subset (color, background, font, padding, margin, border, display, position, dimensions). Useful for debugging visual issues or matching styles.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          },
+          "properties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["selector"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "get_element_at_point",
+      "description": "Identify the DOM element at viewport coordinates (x, y). Returns tag, text, attrs, and a stable selector. Useful when correlating something seen in a screenshot to a clickable element.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          }
+        },
+        "required": ["x", "y"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "inspect_element",
+      "description": "Deep snapshot of a single element: tag, text, full attributes, bounding rect, key computed styles, ancestor chain (tag + class), and child counts. Useful when a click or type call is failing and you need to understand why.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["selector"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "list_open_tabs",
+      "description": "List all open browser tabs. Returns id, url, title, windowId, groupId, active flag, status. Use this to discover what the user is working with before deciding which tab to act on.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "all_windows": {
+            "type": "boolean",
+            "default": true
+          },
+          "url": {
+            "type": "string"
+          },
+          "audible": {
+            "type": "boolean"
+          },
+          "loaded_only": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "get_tab_groups",
+      "description": "List every tab group across windows: id, title, color, collapsed flag, and the tab ids inside. Use after list_open_tabs to understand how the user has organized their work.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs", "tabGroups"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "get_tab_info",
+      "description": "Get full information about a specific tab by id. Same fields as list_open_tabs but for a single tab. Returns { ok:false, reason } if the tab is gone.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "required": ["tab_id"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "search_bookmarks",
+      "description": "Search the user's bookmarks by free-text query (matches title and URL). Returns id, title, url, parentId, dateAdded. Use this to find references the user has saved before recommending a fresh web search.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1
+          },
+          "limit": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 500,
+            "default": 50
+          }
+        },
+        "required": ["query"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["bookmarks"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "list_bookmark_tree",
+      "description": "Return the bookmarks folder hierarchy starting at root (or a specific folder_id). Walks up to max_depth levels deep. Each node has { id, title, url|null, children?: [...] }.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "folder_id": {
+            "type": "string"
+          },
+          "max_depth": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 3
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["bookmarks"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "search_history",
+      "description": "Search the user's browsing history. Returns visit metadata for matching pages: { url, title, lastVisitTime, visitCount, typedCount }. Use to recall \"what was that thing I was reading yesterday about X?\" without forcing a new web search.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "default": ""
+          },
+          "start_time_ms": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "end_time_ms": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "max_results": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 1000,
+            "default": 100
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["history"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "list_recent_history",
+      "description": "Return the most recent N pages the user visited within the last `minutes`. Sorted newest-first. Useful as low-cost context for \"what is the user doing right now?\".",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "minutes": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 43200,
+            "default": 60
+          },
+          "max_results": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 1000,
+            "default": 50
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["history"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "list_downloads",
+      "description": "List recent file downloads. Each entry is { id, filename, url, mime, totalBytes, state, startTime }. Useful to verify a download_url tool call landed.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["in_progress", "interrupted", "complete"]
+          },
+          "limit": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 500,
+            "default": 50
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["downloads"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "get_form_fields",
+      "description": "Discover forms on the active tab. For each form, returns id, action, method, and a list of fields: { name, type, value, label, required, placeholder, selector }. Use this BEFORE typing to find the right selector and label so you fill the right field.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "get_extension_storage",
+      "description": "Read a value the agent previously stored via set_extension_storage. Returns { ok, value, exists }. Read-only, so always runs without prompting.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "area": {
+            "type": "string",
+            "enum": ["local", "session"],
+            "default": "local"
+          }
+        },
+        "required": ["key"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["storage"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "list_extension_storage",
+      "description": "List keys + values the agent has stored. Filter by `prefix`. Useful to inspect prior agent state.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "area": {
+            "type": "string",
+            "enum": ["local", "session"],
+            "default": "local"
+          },
+          "prefix": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["storage"],
+      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+    },
+    {
+      "name": "navigate_active_tab",
+      "description": "Navigate the active tab to a URL. Waits for status=complete before resolving (timeout 30s). Returns { url, title, status }.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": ["url"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs", "activeTab"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "click_element",
+      "description": "Click the element matching a CSS selector on the active tab. Use query_elements first to find the right selector. Returns { ok, text, tag } or { ok:false, reason }.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          },
+          "nth": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+          }
+        },
+        "required": ["selector"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "type_into_element",
+      "description": "Set the value of an input / textarea / contenteditable matched by a CSS selector. By default, clears the field first and dispatches input + change events so frameworks (React, Vue, etc.) detect the update.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string"
+          },
+          "clear": {
+            "type": "boolean",
+            "default": true
+          },
+          "dispatch_events": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": ["selector", "text"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "scroll_page",
+      "description": "Scroll the active tab. direction=\"top\"/\"bottom\" go to extremes; \"into-view\" scrolls a CSS-selector match into view; \"by\" scrolls by delta_y pixels.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "direction": {
+            "type": "string",
+            "enum": ["top", "bottom", "into-view", "by"]
+          },
+          "selector": {
+            "type": "string"
+          },
+          "delta_y": {
+            "type": "number"
+          }
+        },
+        "required": ["direction"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "wait_for",
+      "description": "Wait for a condition on the active tab — either the page to fully load (ready_state=true) and/or a selector to appear. Returns { ok, waited_ms }.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string"
+          },
+          "ready_state": {
+            "type": "boolean"
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 60000,
+            "default": 10000
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "set_clipboard",
+      "description": "Write text to the system clipboard.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": ["text"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting", "clipboardWrite"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "press_keys",
+      "description": "Send keyboard input to a page. Pass either a literal string (\"hello world\") or named keys/chords (\"Enter\", \"Control+A\", \"Tab\", \"ArrowDown ArrowDown Enter\"). When `selector` is provided the tool focuses that element first. Useful for triggering submit-on-Enter, navigating menus, dismissing dialogs, and using app keyboard shortcuts.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "keys": {
+            "type": "string",
+            "minLength": 1
+          },
+          "selector": {
+            "type": "string"
+          },
+          "delay_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000,
+            "default": 30
+          }
+        },
+        "required": ["keys"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "hover_element",
+      "description": "Trigger hover on an element by dispatching mouseenter/mouseover/mousemove events. Use this to reveal hover-only tooltips, dropdown menus, or sub-navigation that only appear when the cursor is over a parent.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["selector"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "focus_element",
+      "description": "Move keyboard focus to an element (calls .focus() and scrolls it into view). Use before press_keys when no selector is supplied.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["selector"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "blur_element",
+      "description": "Remove focus from an element. With no selector, blurs whatever currently has focus. Useful before press_keys when shortcuts must hit document instead of an input.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "right_click_element",
+      "description": "Dispatch a contextmenu event on an element (synthetic right-click). Note: most apps respond by showing their own custom menu in the page DOM. Chrome's native context menu cannot be opened by extension scripts.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["selector"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "select_dropdown_option",
+      "description": "Choose an option in a <select> element. Pass exactly ONE of: value (the option's value attr), label (the visible text), or index (0-based). Dispatches change + input events for framework apps.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": ["selector"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "set_checkbox",
+      "description": "Set a checkbox to checked or unchecked, dispatching click + change events so frameworks see the toggle. Use for both <input type=\"checkbox\"> and ARIA-styled toggles where role=\"checkbox\".",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          },
+          "checked": {
+            "type": "boolean"
+          }
+        },
+        "required": ["selector", "checked"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "set_radio",
+      "description": "Pick a radio button from a group. Pass selector pointing at the group container OR any radio input in it, then exactly ONE of value/label/index.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": ["selector"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "submit_form",
+      "description": "Submit a form. By default the tool clicks the form's primary submit button (so HTML5 validation + framework handlers run). Set via_button=false to fall back to HTMLFormElement.submit() — skips validation but works for form elements that lack a button.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "type": "string"
+          },
+          "via_button": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "open_new_tab",
+      "description": "Open a new tab pointing at a URL. Returns the new tab id, window id, and final URL once load begins. Use active=false to background-load reference pages.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "active": {
+            "type": "boolean",
+            "default": true
+          },
+          "pinned": {
+            "type": "boolean",
+            "default": false
+          },
+          "window_id": {
+            "type": "integer"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": ["url"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "close_tab",
+      "description": "Close one or more tabs by id. Pass a single id or an array. Cleaning up reference tabs at the end of a research run is a common use.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_ids": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "minItems": 1
+              }
+            ]
+          }
+        },
+        "required": ["tab_ids"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "switch_to_tab",
+      "description": "Activate (focus) a specific tab and bring its window forward. Use this before per-tab actions that operate on the active tab (click, type, etc).",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "required": ["tab_id"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "duplicate_tab",
+      "description": "Duplicate an existing tab. Returns the new tab id. Useful for branching experiments without losing the original page.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "required": ["tab_id"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "pin_tab",
+      "description": "Pin or unpin a tab. Pinned tabs are smaller and live at the front of the strip.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          },
+          "pinned": {
+            "type": "boolean"
+          }
+        },
+        "required": ["tab_id", "pinned"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "mute_tab",
+      "description": "Mute or unmute a tab.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          },
+          "muted": {
+            "type": "boolean"
+          }
+        },
+        "required": ["tab_id", "muted"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "reload_tab",
+      "description": "Reload a tab (default: the active tab). Pass bypass_cache=true for a hard refresh.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          },
+          "bypass_cache": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "go_back",
+      "description": "Navigate the active tab (or specified tab) one entry back in its session history.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "go_forward",
+      "description": "Navigate the active tab (or specified tab) one entry forward in its session history.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "set_tab_zoom",
+      "description": "Set the zoom level on a tab. 1.0 = 100%, 1.5 = 150%, 0.75 = 75%.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          },
+          "zoom_factor": {
+            "type": "number",
+            "minimum": 0.25,
+            "maximum": 5
+          }
+        },
+        "required": ["zoom_factor"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "move_tab",
+      "description": "Reorder a tab (and optionally move it to another window).",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          },
+          "index": {
+            "type": "integer",
+            "minimum": -1
+          },
+          "window_id": {
+            "type": "integer"
+          }
+        },
+        "required": ["tab_id", "index"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "create_tab_group",
+      "description": "Group a set of tabs together. Returns the new group id. Use this to keep an agent run's sandboxed tabs visually separate from the user's other work.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1
+          },
+          "title": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string",
+            "enum": ["grey", "blue", "red", "yellow", "green", "pink", "purple", "cyan", "orange"]
+          },
+          "window_id": {
+            "type": "integer"
+          },
+          "collapsed": {
+            "type": "boolean"
+          }
+        },
+        "required": ["tab_ids"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs", "tabGroups"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "add_tabs_to_group",
+      "description": "Add tabs to an existing tab group.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "integer"
+          },
+          "tab_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1
+          }
+        },
+        "required": ["group_id", "tab_ids"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs", "tabGroups"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "remove_tabs_from_group",
+      "description": "Detach tabs from whatever group they currently belong to.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1
+          }
+        },
+        "required": ["tab_ids"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabs", "tabGroups"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "update_tab_group",
+      "description": "Rename, recolor, or collapse/expand a tab group.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string",
+            "enum": ["grey", "blue", "red", "yellow", "green", "pink", "purple", "cyan", "orange"]
+          },
+          "collapsed": {
+            "type": "boolean"
+          }
+        },
+        "required": ["group_id"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["tabGroups"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "download_url",
+      "description": "Download a file from a URL into the user's default downloads folder. Returns { ok, download_id, final_filename }. Use save_as=true to surface the Save dialog (good for ambiguous filenames).",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "filename": {
+            "type": "string"
+          },
+          "conflict": {
+            "type": "string",
+            "enum": ["uniquify", "overwrite", "prompt"],
+            "default": "uniquify"
+          },
+          "save_as": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": ["url"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["downloads"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "cancel_download",
+      "description": "Cancel an in-progress download by its download_id.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "download_id": {
+            "type": "integer"
+          }
+        },
+        "required": ["download_id"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["downloads"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "notify_user",
+      "description": "Show a system notification to the user. Use after a long-running task finishes (especially useful when the side panel is hidden). The user can click to focus the extension.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "icon": {
+            "type": "string"
+          },
+          "require_interaction": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": ["title", "message"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["notifications"],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "ask_user",
+      "description": "Ask the human a freeform question. Use this when you need information only the user has (e.g. \"Which date should I book?\"). Returns { answer } or { cancelled: true } if they dismiss.",
+      "tier": "ask-user",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "minLength": 1
+          },
+          "why": {
+            "type": "string"
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 900000,
+            "default": 300000
+          }
+        },
+        "required": ["question"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "ask_user_choice",
+      "description": "Ask the human to pick one of N options. Cleaner than ask_user when the answer is bounded. Returns { answer } (the chosen string) or { cancelled: true }.",
+      "tier": "ask-user",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "minLength": 1
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 2,
+            "maxItems": 20
+          },
+          "why": {
+            "type": "string"
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 900000,
+            "default": 300000
+          }
+        },
+        "required": ["question", "choices"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "ask_user_secret",
+      "description": "Ask the human for a secret value (e.g. a one-time code, last 4 of a card). Input is masked in the UI. The answer flows through the model exactly once and is NOT persisted in the conversation. Returns { answer } or { cancelled: true }.",
+      "tier": "ask-user",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 1
+          },
+          "why": {
+            "type": "string"
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 900000,
+            "default": 300000
+          }
+        },
+        "required": ["prompt"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "request_user_takeover",
+      "description": "Pause the agent and hand control back to the human (e.g. for CAPTCHA, login, payment, or anything tricky for an automated browser). The user signals when they're done and the agent resumes. Returns { resumed: true, note?: string }.",
+      "tier": "ask-user",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "instructions": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["reason", "instructions"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "surface_bundles": ["pilot", "pilot+privileged"]
+    },
+    {
+      "name": "execute_javascript",
+      "description": "Run arbitrary JavaScript on a tab. The `code` is wrapped in `async (arg) => { ... }` and executed; whatever it returns is serialized back. Use sparingly — prefer purpose-built tools (click_element, type_into_element, query_elements). This is the unbounded escape hatch when no other tool fits. ALWAYS prompts for approval, even in act-without-asking mode.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "arg": {},
+          "main_world": {
+            "type": "boolean",
+            "default": false
+          },
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "required": ["code"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot+privileged"]
+    },
+    {
+      "name": "inject_stylesheet",
+      "description": "Inject a CSS stylesheet into the active tab. Use to highlight elements visually for the user, hide noisy chrome, or apply temporary fixes. Privileged because it can mask UI elements. Returns { ok, id? }.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "css": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tab_id": {
+            "type": "integer"
+          },
+          "persist": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": ["css"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot+privileged"]
+    },
+    {
+      "name": "remove_stylesheet",
+      "description": "Remove a previously-injected stylesheet from a tab. Pass the same CSS string used in inject_stylesheet.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "css": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "required": ["css"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["activeTab", "scripting"],
+      "surface_bundles": ["pilot+privileged"]
+    },
+    {
+      "name": "set_extension_storage",
+      "description": "Persist a value under the agent's namespaced storage so it survives across runs. Use for \"remember that I prefer X\", scratchpads, or progress markers between conversations. Privileged because agents shouldn't silently write user data without acknowledgement.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {},
+          "area": {
+            "type": "string",
+            "enum": ["local", "session"],
+            "default": "local"
+          }
+        },
+        "required": ["key"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["storage"],
+      "surface_bundles": ["pilot+privileged"]
+    },
+    {
+      "name": "desktop_run_command",
+      "description": "Invoke a command on the matrx-local desktop bridge. Available commands depend on what matrx-local exposes (file ops, system info, window control, etc.). Returns { ok, data?, error? }. Fails fast with reason=\"desktop unavailable\" if the bridge isn't connected — check via the desktop:availability channel before calling.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "args": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        },
+        "required": ["command"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": ["nativeMessaging"],
+      "surface_bundles": ["pilot+privileged"]
+    }
+  ]
+}

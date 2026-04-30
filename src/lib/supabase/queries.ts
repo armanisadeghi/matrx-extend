@@ -28,11 +28,7 @@ import { z } from 'zod';
  */
 export async function checkIsAdmin(userId: string): Promise<boolean> {
   const c = getSupabase();
-  const { data, error } = await c
-    .from('admins')
-    .select('user_id')
-    .eq('user_id', userId)
-    .limit(1);
+  const { data, error } = await c.from('admins').select('user_id').eq('user_id', userId).limit(1);
   if (error) {
     console.warn('[matrx-extend] checkIsAdmin error', error.message);
     return false;
@@ -40,45 +36,92 @@ export async function checkIsAdmin(userId: string): Promise<boolean> {
   return Array.isArray(data) && data.length > 0;
 }
 
-// ─── Agents (agx_agent) ─────────────────────────────────────────────────────
+// ─── Agents (via agx_get_list_full RPC) ─────────────────────────────────────
+/**
+ * Listing-shape returned by the `agx_get_list_full()` Supabase RPC.
+ *
+ * Why the RPC instead of `from('agx_agent').select(...)`:
+ *   - Includes shared agents and system "builtin" agents the user has access
+ *     to, not just rows on agx_agent the user owns
+ *   - Lighter (no `messages` JSONB, no `variable_definitions`, no `context_slots`)
+ *   - Doesn't leak the agent's "secret sauce" (system instructions etc.)
+ */
 export const AgxAgentSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   description: z.string().nullable(),
-  agent_type: z.string(),
-  variable_definitions: z.unknown().nullable(),
-  tools: z.array(z.string()).nullable(),
-  settings: z.unknown().nullable(),
+  agent_type: z.string().nullable(),
   category: z.string().nullable(),
   tags: z.array(z.string()).nullable(),
-  is_public: z.boolean().nullable(),
+  model_id: z.string().uuid().nullable(),
+  is_active: z.boolean().nullable(),
+  is_archived: z.boolean().nullable(),
+  is_favorite: z.boolean().nullable(),
+  is_owner: z.boolean().nullable(),
+  access_level: z.string().nullable(),
+  shared_by_email: z.string().nullable(),
+  source_agent_id: z.string().uuid().nullable(),
+  user_id: z.string().uuid().nullable(),
+  organization_id: z.string().uuid().nullable(),
+  project_id: z.string().uuid().nullable(),
+  task_id: z.string().uuid().nullable(),
+  created_at: z.string().nullable(),
+  updated_at: z.string().nullable(),
 });
 export type AgxAgent = z.infer<typeof AgxAgentSchema>;
 
-/**
- * Agents the user can pick in the chat composer:
- *   - their own active agents, OR
- *   - public active agents
- * RLS on agx_agent enforces the access boundary; this filter is for UX
- * (drop archived / inactive agents from the picker).
- */
-export async function fetchUserAgents(userId: string): Promise<AgxAgent[]> {
+export async function fetchAgentList(): Promise<AgxAgent[]> {
   const c = getSupabase();
-  const { data, error } = await c
-    .from('agx_agent')
-    .select(
-      'id, name, description, agent_type, variable_definitions, tools, settings, category, tags, is_public',
-    )
-    .or(`user_id.eq.${userId},is_public.eq.true`)
-    .eq('is_active', true)
-    .eq('is_archived', false)
-    .order('is_favorite', { ascending: false, nullsFirst: false })
-    .order('name');
+  const { data, error } = await c.rpc('agx_get_list_full');
   if (error) {
-    console.warn('[matrx-extend] fetchUserAgents error', error.message);
+    console.warn('[matrx-extend] fetchAgentList error', error.message);
     return [];
   }
-  return z.array(AgxAgentSchema).parse(data ?? []);
+  // RLS + RPC body filter actives/non-archived already, but be defensive.
+  const all = z.array(AgxAgentSchema).parse(data ?? []);
+  return all
+    .filter((a) => a.is_active !== false && a.is_archived !== true)
+    .sort((a, b) => {
+      // Favorites first, then alphabetical by name.
+      const fa = a.is_favorite ? 1 : 0;
+      const fb = b.is_favorite ? 1 : 0;
+      if (fa !== fb) return fb - fa;
+      return a.name.localeCompare(b.name);
+    });
+}
+
+/** Backwards-compat shim — older callers reference `fetchUserAgents`. */
+export const fetchUserAgents = (_userId?: string): Promise<AgxAgent[]> => fetchAgentList();
+
+// ─── Agent execution payload (agx_get_execution_full RPC) ───────────────────
+/**
+ * Lazy-loaded when an agent is selected. Has just the runtime essentials —
+ * NO system instructions, NO message history, NO secret sauce.
+ */
+export const AgxAgentExecutionSchema = z.object({
+  id: z.string().uuid(),
+  model_id: z.string().uuid().nullable(),
+  settings: z.unknown().nullable(),
+  variable_definitions: z.unknown().nullable(),
+  context_slots: z.unknown().nullable(),
+  tools: z.array(z.string()).nullable(),
+  custom_tools: z.unknown().nullable(),
+});
+export type AgxAgentExecution = z.infer<typeof AgxAgentExecutionSchema>;
+
+export async function fetchAgentExecution(agentId: string): Promise<AgxAgentExecution | null> {
+  const c = getSupabase();
+  const { data, error } = await c.rpc('agx_get_execution_full', { p_agent_id: agentId });
+  if (error) {
+    console.warn('[matrx-extend] fetchAgentExecution error', error.message);
+    return null;
+  }
+  const rows = z.array(AgxAgentExecutionSchema).safeParse(data ?? []);
+  if (!rows.success) {
+    console.warn('[matrx-extend] fetchAgentExecution shape mismatch', rows.error.format());
+    return null;
+  }
+  return rows.data[0] ?? null;
 }
 
 // ─── Conversations (cx_conversation) ────────────────────────────────────────
@@ -243,12 +286,37 @@ export async function saveCapture(p: SaveCapturePayload): Promise<{ id: string }
 }
 
 // ─── wbx_pattern (extraction patterns) ──────────────────────────────────────
+export const PATTERN_KINDS = [
+  'manual_css',
+  'json_ld',
+  'og_meta',
+  'auto_table',
+  'next_data',
+  'ai_extract',
+  'list_pattern',
+] as const;
+export type PatternKind = (typeof PATTERN_KINDS)[number];
+
+export const FieldSelectorSchema = z.object({
+  type: z.enum(['css', 'xpath', 'text-anchor', 'aria-path']),
+  value: z.string(),
+  confidence: z.number().min(0).max(1).optional(),
+});
+export type FieldSelector = z.infer<typeof FieldSelectorSchema>;
+
 export const ExtractionPatternFieldSchema = z.object({
   name: z.string(),
   selector: z.string(),
+  selectors: z.array(FieldSelectorSchema).optional(),
   xpath_fallback: z.string().optional(),
   attr: z.string().optional(),
   is_list: z.boolean().default(false),
+  transform: z
+    .object({
+      kind: z.enum(['regex', 'date', 'number']),
+      expr: z.string(),
+    })
+    .optional(),
 });
 export type ExtractionPatternField = z.infer<typeof ExtractionPatternFieldSchema>;
 
@@ -260,7 +328,13 @@ export const ExtractionPatternSchema = z.object({
   route_pattern: z.string().nullable(),
   list_root_selector: z.string().nullable(),
   fields: z.array(ExtractionPatternFieldSchema),
+  kind: z.enum(PATTERN_KINDS).default('manual_css'),
+  config: z.unknown().default({}),
+  target_user_table_id: z.string().uuid().nullable().default(null),
   last_used_at: z.string().nullable(),
+  last_run_at: z.string().nullable().default(null),
+  last_status: z.enum(['ok', 'broken', 'never_run']).nullable().default(null),
+  last_run_count: z.number().nullable().default(null),
   created_at: z.string(),
 });
 export type ExtractionPattern = z.infer<typeof ExtractionPatternSchema>;
@@ -280,11 +354,18 @@ export async function fetchPatternsForDomain(domain: string): Promise<Extraction
   return z.array(ExtractionPatternSchema).parse(data ?? []);
 }
 
-export async function savePattern(
-  p: Omit<ExtractionPattern, 'id' | 'user_id' | 'created_at' | 'last_used_at'> & {
-    user_id?: string;
-  },
-): Promise<{ id: string } | null> {
+export type SavePatternInput = {
+  name: string;
+  domain: string;
+  route_pattern: string | null;
+  list_root_selector: string | null;
+  fields: ExtractionPatternField[];
+  kind?: PatternKind;
+  config?: unknown;
+  target_user_table_id?: string | null;
+};
+
+export async function savePattern(p: SavePatternInput): Promise<{ id: string } | null> {
   const c = getSupabase();
   const { data, error } = await c
     .from('wbx_pattern')
@@ -294,6 +375,9 @@ export async function savePattern(
       route_pattern: p.route_pattern,
       list_root_selector: p.list_root_selector,
       fields: p.fields,
+      kind: p.kind ?? 'manual_css',
+      config: p.config ?? {},
+      target_user_table_id: p.target_user_table_id ?? null,
     })
     .select('id')
     .single();
@@ -309,6 +393,27 @@ export async function bumpPatternLastUsed(patternId: string): Promise<void> {
   await c
     .from('wbx_pattern')
     .update({ last_used_at: new Date().toISOString() })
+    .eq('id', patternId);
+}
+
+/**
+ * Update rolling health columns after a pattern run. Status drives the badge
+ * shown next to saved patterns and the backend's broken-pattern queue.
+ */
+export async function bumpPatternRun(
+  patternId: string,
+  status: 'ok' | 'broken',
+  rowCount: number,
+): Promise<void> {
+  const c = getSupabase();
+  await c
+    .from('wbx_pattern')
+    .update({
+      last_run_at: new Date().toISOString(),
+      last_used_at: new Date().toISOString(),
+      last_status: status,
+      last_run_count: rowCount,
+    })
     .eq('id', patternId);
 }
 
@@ -375,9 +480,6 @@ export async function attachSeoRecommendations(
   recommendations: unknown,
 ): Promise<void> {
   const c = getSupabase();
-  const { error } = await c
-    .from('wbx_seo_audit')
-    .update({ recommendations })
-    .eq('id', auditId);
+  const { error } = await c.from('wbx_seo_audit').update({ recommendations }).eq('id', auditId);
   if (error) console.warn('[matrx-extend] attachSeoRecommendations error', error.message);
 }

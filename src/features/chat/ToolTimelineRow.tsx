@@ -1,0 +1,96 @@
+/**
+ * Compact inline row showing what a tool did. Rendered inside the chat scroll
+ * for any timeline entry that's NOT currently being approved/asked. Click the
+ * row to expand args + output JSON.
+ */
+
+import { cn } from '@/lib/utils';
+import { type ToolTimelineEntry, useToolInbox } from '@/state/tool-inbox';
+import { AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+
+export function ToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {
+  const [open, setOpen] = useState(false);
+
+  const Icon =
+    entry.phase === 'started' ? Loader2 : entry.phase === 'error' ? AlertTriangle : CheckCircle2;
+
+  const argSummary = summarize(entry.args);
+
+  return (
+    <div className="rounded-md border bg-card/60 px-2.5 py-1.5 text-[12px]">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center gap-2 text-left"
+      >
+        <Icon
+          className={cn(
+            'size-3.5 shrink-0',
+            entry.phase === 'started' && 'animate-spin text-primary',
+            entry.phase === 'completed' && 'text-emerald-600 dark:text-emerald-400',
+            entry.phase === 'error' && 'text-red-600 dark:text-red-400',
+          )}
+        />
+        <span className="font-mono text-[11px] font-medium">{entry.toolName}</span>
+        {argSummary && <span className="truncate text-muted-foreground">{argSummary}</span>}
+        {entry.phase === 'completed' && entry.endedAt && (
+          <span className="ml-auto text-[10px] text-muted-foreground">
+            {Math.max(1, entry.endedAt - entry.startedAt)}ms
+          </span>
+        )}
+      </button>
+      {open && (
+        <div className="mt-1.5 space-y-1.5 border-t pt-1.5">
+          <DetailBlock label="args" value={entry.args} />
+          {entry.phase === 'completed' && <DetailBlock label="output" value={entry.output} />}
+          {entry.phase === 'error' && entry.message && (
+            <DetailBlock label="error" value={entry.message} />
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DetailBlock({ label, value }: { label: string; value: unknown }) {
+  if (value == null) return null;
+  let body: string;
+  if (typeof value === 'string') body = value;
+  else {
+    try {
+      body = JSON.stringify(value, null, 2);
+    } catch {
+      body = String(value);
+    }
+  }
+  if (!body) return null;
+  return (
+    <div>
+      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+      <pre className="mt-0.5 max-h-48 overflow-auto rounded-md bg-background/60 p-1.5 text-[11px] leading-snug">
+        {body}
+      </pre>
+    </div>
+  );
+}
+
+function summarize(args: unknown): string | null {
+  if (args == null) return null;
+  if (typeof args === 'string') return args.length > 80 ? `${args.slice(0, 80)}…` : args;
+  if (typeof args !== 'object') return String(args);
+  const obj = args as Record<string, unknown>;
+  // Grab the most relevant primitive field.
+  for (const k of ['url', 'selector', 'text', 'question', 'reason']) {
+    const v = obj[k];
+    if (typeof v === 'string' && v) return v.length > 80 ? `${v.slice(0, 80)}…` : v;
+  }
+  const keys = Object.keys(obj);
+  if (keys.length === 0) return null;
+  return keys.slice(0, 3).join(', ');
+}
+
+/** Convenience: pull the timeline & filter helpers from the store. */
+export function useTimelineEntries(): ToolTimelineEntry[] {
+  return useToolInbox((s) => s.timeline);
+}

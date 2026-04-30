@@ -1,4 +1,4 @@
-import { startDebugRelay, log } from '@/lib/debug/log';
+import { log, startDebugRelay } from '@/lib/debug/log';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { createRoot } from 'react-dom/client';

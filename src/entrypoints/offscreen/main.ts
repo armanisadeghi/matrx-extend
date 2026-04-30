@@ -6,8 +6,8 @@
  * touch chrome.storage or the auth flow here.
  */
 
-import { startDebugRelay, log } from '@/lib/debug/log';
 import { streamFetch } from '@/lib/api/stream';
+import { log, startDebugRelay } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 
@@ -22,6 +22,10 @@ interface RunArgs {
   body?: unknown;
   parser?: 'rich-events';
   headers: Record<string, string>;
+  /** Optional agent name passed through from the SW for tool log attribution. */
+  agentName?: string | null;
+  /** Latched permission mode for client tools run during this stream. */
+  permissionMode?: 'ask' | 'act';
 }
 
 on<RunArgs, { ok: true }>(CHANNELS.STREAM_RUN, async (args) => {
@@ -36,6 +40,16 @@ on<RunArgs, { ok: true }>(CHANNELS.STREAM_RUN, async (args) => {
       body: args.body,
       parser: args.parser,
       signal: ctrl.signal,
+      onOpened: (info) => {
+        log.info('stream', `opened ${args.runId}`, info);
+        broadcast(CHANNELS.STREAM_OPENED, {
+          runId: args.runId,
+          conversationId: info.conversationId,
+          requestId: info.requestId,
+          agentName: args.agentName ?? null,
+          permissionMode: args.permissionMode ?? 'ask',
+        });
+      },
       onEvent: (e) => {
         chunkCount++;
         let payload: Record<string, unknown>;

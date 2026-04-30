@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
 import { findFirstMatch, urlMatchesPattern } from '@/lib/data-pattern/matcher';
 import type { ExtractionPattern } from '@/lib/supabase/queries';
+import { describe, expect, it } from 'vitest';
 
 const mkPattern = (overrides: Partial<ExtractionPattern>): ExtractionPattern => ({
   id: '00000000-0000-0000-0000-000000000000',
@@ -10,7 +10,13 @@ const mkPattern = (overrides: Partial<ExtractionPattern>): ExtractionPattern => 
   route_pattern: null,
   list_root_selector: null,
   fields: [],
+  kind: 'manual_css',
+  config: {},
+  target_user_table_id: null,
   last_used_at: null,
+  last_run_at: null,
+  last_status: null,
+  last_run_count: null,
   created_at: '2026-01-01',
   ...overrides,
 });

@@ -14,8 +14,8 @@
  *   log.info('auth', 'sign-in starting', { redirectUri });
  */
 
-import { create } from 'zustand';
 import { newId } from '@/lib/id';
+import { create } from 'zustand';
 
 export type LogLevel = 'info' | 'success' | 'warn' | 'error';
 export type LogSource =

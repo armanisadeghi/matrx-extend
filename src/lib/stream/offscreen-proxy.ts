@@ -68,6 +68,10 @@ export interface StartStreamArgs {
   endpoint: string;
   body?: unknown;
   parser: 'text-chunks' | 'rich-events';
+  /** Optional agent name (for log attribution + UI on the offscreen → SW path). */
+  agentName?: string | null;
+  /** Permission mode for any client tools the agent runs in this stream. */
+  permissionMode?: 'ask' | 'act';
 }
 
 /**
@@ -80,6 +84,8 @@ export interface StreamRunPayload {
   body?: unknown;
   parser: 'text-chunks' | 'rich-events';
   headers: Record<string, string>;
+  agentName?: string | null;
+  permissionMode?: 'ask' | 'act';
 }
 
 export async function startStream(args: StartStreamArgs): Promise<void> {
@@ -103,6 +109,8 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
     body: args.body,
     parser: args.parser,
     headers,
+    agentName: args.agentName ?? null,
+    permissionMode: args.permissionMode,
   };
   // Use STREAM_RUN, not STREAM_START — distinct channel so this doesn't
   // recurse into the SW's own STREAM_START handler.

@@ -1,14 +1,16 @@
 import { AuthGate } from '@/components/AuthGate';
+import { UserMenu } from '@/components/UserMenu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { UserMenu } from '@/components/UserMenu';
 import { ChatView } from '@/features/chat/ChatView';
 import { DataView } from '@/features/data/DataView';
 import { DebugView } from '@/features/debug/DebugView';
 import { ScrapeView } from '@/features/scrape/ScrapeView';
 import { SeoView } from '@/features/seo/SeoView';
 import { SettingsView } from '@/features/settings/SettingsView';
+import { ShowcaseView } from '@/features/showcase/ShowcaseView';
 import { TasksView } from '@/features/tasks/TasksView';
+import { ToolsView } from '@/features/tools/ToolsView';
 import { useAuth } from '@/hooks/use-auth';
 import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
@@ -20,6 +22,8 @@ import {
   ScanLine,
   Search,
   Settings as SettingsIcon,
+  Sparkles,
+  Wrench,
 } from 'lucide-react';
 import { useEffect } from 'react';
 
@@ -64,9 +68,21 @@ export function App() {
                 <TabsTrigger value="seo" className="size-7 p-0" title="SEO">
                   <Search className="size-3.5" />
                 </TabsTrigger>
+                <TabsTrigger value="tools" className="size-7 p-0" title="Tools">
+                  <Wrench className="size-3.5" />
+                </TabsTrigger>
                 <TabsTrigger value="settings" className="size-7 p-0" title="Settings">
                   <SettingsIcon className="size-3.5" />
                 </TabsTrigger>
+                {isAdmin && (
+                  <TabsTrigger
+                    value="showcase"
+                    className="size-7 p-0 data-[state=active]:text-violet-600 dark:data-[state=active]:text-violet-400"
+                    title="Showcase (admin only)"
+                  >
+                    <Sparkles className="size-3.5" />
+                  </TabsTrigger>
+                )}
                 {isAdmin && (
                   <TabsTrigger
                     value="debug"
@@ -97,9 +113,17 @@ export function App() {
             <TabsContent value="seo" className="flex-1 min-h-0">
               <SeoView />
             </TabsContent>
+            <TabsContent value="tools" className="flex-1 min-h-0">
+              <ToolsView />
+            </TabsContent>
             <TabsContent value="settings" className="flex-1 min-h-0">
               <SettingsView />
             </TabsContent>
+            {isAdmin && (
+              <TabsContent value="showcase" className="flex-1 min-h-0">
+                <ShowcaseView />
+              </TabsContent>
+            )}
             {isAdmin && (
               <TabsContent value="debug" className="flex-1 min-h-0">
                 <DebugView />
