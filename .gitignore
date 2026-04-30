@@ -1,36 +1,55 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
+# Dependencies
+node_modules/
+.pnpm-store/
 /.pnp
 .pnp.js
 
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
+# Build output
+.output/
+.wxt/
+dist/
+build/
 /build
+*.tsbuildinfo
 
-# misc
+# Generated
+types/python-generated/
+!types/python-generated/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
-*.pem
+Thumbs.db
 
-# debug
+# Env (committed: .env.development, .env.production, .env.example; ignored: local overrides)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# local env files
-.env*.local
-.env
+# Test artifacts
+coverage/
+/coverage
+playwright-report/
+test-results/
 
-# vercel
-.vercel
+# Python lib/ rule (carried from monorepo conventions). MUST allow our src/lib.
+lib/
+lib64/
+!src/lib/
+!src/lib/**
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Extension secrets
+*.pem
+*.crx
