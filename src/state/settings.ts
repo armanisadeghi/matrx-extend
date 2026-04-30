@@ -1,15 +1,17 @@
-import type { BackendEnv } from '@/config/env';
 import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+/**
+ * UI-only preferences that don't affect cross-context wiring.
+ *
+ * Backend env / URL override are NOT here — they live in chrome.storage.local
+ * under their own keys (see src/config/backend.ts) so every MV3 context
+ * (sidepanel, SW, offscreen) reads the same source of truth.
+ */
 interface SettingsState {
-  backendEnv: BackendEnv;
-  backendOverride: string;
   theme: 'light' | 'dark' | 'system';
   scrapeDeepClean: boolean;
-  setBackendEnv: (env: BackendEnv) => void;
-  setBackendOverride: (s: string) => void;
   setTheme: (t: SettingsState['theme']) => void;
   setScrapeDeepClean: (b: boolean) => void;
 }
@@ -17,12 +19,8 @@ interface SettingsState {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
-      backendEnv: 'prod',
-      backendOverride: '',
       theme: 'system',
       scrapeDeepClean: false,
-      setBackendEnv: (backendEnv) => set({ backendEnv }),
-      setBackendOverride: (backendOverride) => set({ backendOverride }),
       setTheme: (theme) => set({ theme }),
       setScrapeDeepClean: (scrapeDeepClean) => set({ scrapeDeepClean }),
     }),

@@ -487,42 +487,15 @@ offscreen → SW → side panel: stream:chunk { runId, type, payload }
 These are **new** tables we need to add to the Matrx Supabase project:
 
 ```sql
-create table public.extension_scrapes (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users(id) not null default auth.uid(),
-  url text not null,
-  captured_at timestamptz not null default now(),
-  title text, description text, lang text,
-  soup jsonb not null,
-  markdown text,
-  metadata jsonb,
-  ld_json jsonb,
-  media_count integer default 0,
-  pattern_id uuid
-);
-create index extension_scrapes_user_url on public.extension_scrapes(user_id, url);
-alter table public.extension_scrapes enable row level security;
-create policy extension_scrapes_owner on public.extension_scrapes
-  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+All extension-owned tables use the **`wbx_`** prefix (web/browser-captured), parallel to `cx_` (chat) and `agx_` (agent). Apply the SQL files in [migrations/](migrations/) in order:
 
-create table public.extraction_patterns (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users(id) not null default auth.uid(),
-  name text not null,
-  domain text not null,
-  route_pattern text,
-  list_root_selector text,
-  fields jsonb not null,
-  last_used_at timestamptz,
-  created_at timestamptz not null default now()
-);
-create index extraction_patterns_user_domain on public.extraction_patterns(user_id, domain);
-alter table public.extraction_patterns enable row level security;
-create policy extraction_patterns_owner on public.extraction_patterns
-  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
-```
+| Table | Purpose |
+|---|---|
+| `wbx_capture` | Page captures from the Scrape tab (article, media, structured data) |
+| `wbx_pattern` | Saved extraction patterns from the Data tab |
+| `wbx_seo_audit` | SEO audits + AI recommendations from the SEO tab |
 
-`seo_audits` (TBD) is not required for v1 functionality but planned for the SEO tab persistence.
+Tables this extension only **reads** (already in the schema): `agx_agent` (agent picker), `cx_conversation` + `cx_message` (chat history). Research data (`rs_*`) is accessed via FastAPI `/research/*` endpoints, not direct Supabase queries.
 
 ## Out-of-band setup checklist
 

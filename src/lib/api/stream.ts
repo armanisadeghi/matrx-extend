@@ -1,110 +1,184 @@
 /**
- * Streaming client. Two parsers:
- *   - 'text-chunks': simple SSE with text deltas (matches /ai/chat/unified)
- *   - 'rich-events': SSE with typed JSON events (matches /ai/agent/execute, /scraper/*, /research/*)
+ * NDJSON stream consumer.
  *
- * IMPORTANT: long-running streams MUST run inside the offscreen document
- * because the SW can be terminated mid-stream. The side panel proxies
- * stream:start → background → offscreen, and receives stream:chunk back.
+ * Wire format (per Matrx FastAPI backend, mirrors lib/api/stream-parser.ts in
+ * matrx-frontend):
+ *   - Each event is a JSON object on its own line, separated by `\n`
+ *   - Compact events use `{ e: "c", t: "..." }` for chunks /
+ *     `{ e: "r", t: "..." }` for reasoning chunks
+ *   - Standard events use `{ event: "<name>", data: { ... } }`
+ *   - Both are normalized via expandCompactEvent before downstream handling
  *
- * The functions in THIS module are pure stream consumers — they're called
- * from offscreen/main.ts. The orchestration lives in
- * src/lib/stream/offscreen-proxy.ts (SW side) and entrypoints/offscreen/main.ts.
+ * Every raw line is logged so the user can see exactly what came back.
  */
 
-import { getApiBaseUrl } from '@/lib/api/client';
-import { getAccessToken } from '@/lib/auth/flow';
+import { log } from '@/lib/debug/log';
+import {
+  expandCompactEvent,
+  isChunkEvent,
+  isCompactEvent,
+  isEndEvent,
+  isErrorEvent,
+  isReasoningChunkEvent,
+  type TypedStreamEvent,
+} from '@gen/stream-events';
 
 export type StreamEvent =
   | { type: 'text'; content: string }
-  | { type: 'event'; event: Record<string, unknown> }
+  | { type: 'reasoning'; content: string }
+  | { type: 'event'; eventName: string; data: Record<string, unknown> }
   | { type: 'error'; message: string }
   | { type: 'done' };
 
-export interface StreamOptions {
-  endpoint: string;
+export interface StreamFetchOptions {
+  url: string;
   body?: unknown;
-  parser: 'text-chunks' | 'rich-events';
+  headers: Record<string, string>;
+  parser?: 'rich-events';
   signal?: AbortSignal;
   onEvent: (e: StreamEvent) => void;
 }
 
-async function buildHeaders(): Promise<Record<string, string>> {
-  const token = await getAccessToken();
-  return {
-    'Content-Type': 'application/json',
-    Accept: 'text/event-stream',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-}
-
-export async function streamFetch(opts: StreamOptions): Promise<void> {
-  const baseUrl = await getApiBaseUrl();
-  const url = `${baseUrl}${opts.endpoint}`;
-  const headers = await buildHeaders();
-  const res = await fetch(url, {
-    method: 'POST',
-    headers,
-    body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
-    signal: opts.signal,
+export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
+  log.info('stream', `→ POST ${opts.url}`, {
+    auth: !!opts.headers.Authorization,
+    body: opts.body,
   });
+
+  let res: Response;
+  try {
+    res = await fetch(opts.url, {
+      method: 'POST',
+      headers: opts.headers,
+      body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+      signal: opts.signal,
+    });
+  } catch (err) {
+    log.error('stream', `✗ ${opts.url} network error`, err);
+    opts.onEvent({ type: 'error', message: (err as Error).message });
+    opts.onEvent({ type: 'done' });
+    return;
+  }
 
   if (!res.ok) {
     const errText = await res.text().catch(() => res.statusText);
+    log.error('stream', `✗ ${opts.url} ${res.status}`, errText);
     opts.onEvent({ type: 'error', message: `${res.status}: ${errText}` });
     opts.onEvent({ type: 'done' });
     return;
   }
+  const requestId = res.headers.get('X-Request-ID');
+  const conversationId = res.headers.get('X-Conversation-ID');
+  log.success('stream', `← ${opts.url} ${res.status} stream open`, {
+    requestId,
+    conversationId,
+    contentType: res.headers.get('content-type'),
+  });
+
   const reader = res.body?.getReader();
   if (!reader) {
+    log.error('stream', 'no response body reader');
     opts.onEvent({ type: 'error', message: 'No response body' });
     opts.onEvent({ type: 'done' });
     return;
   }
+
   const decoder = new TextDecoder();
   let buffer = '';
+  let lineCount = 0;
+  let parsedCount = 0;
+
+  const handleLine = (raw: string): void => {
+    const trimmed = raw.trim();
+    if (!trimmed) return;
+    lineCount++;
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(trimmed);
+    } catch (err) {
+      log.warn('stream', `unparseable line #${lineCount}`, {
+        raw: trimmed.slice(0, 500),
+        error: (err as Error).message,
+      });
+      return;
+    }
+
+    // Log the raw event before any normalization so the user sees the wire.
+    log.info('stream', `raw event #${lineCount}`, parsed);
+
+    let event: TypedStreamEvent;
+    try {
+      event = isCompactEvent(parsed)
+        ? expandCompactEvent(parsed)
+        : (parsed as TypedStreamEvent);
+    } catch (err) {
+      log.warn('stream', `failed to normalize line #${lineCount}`, err);
+      return;
+    }
+
+    parsedCount++;
+    dispatch(event, opts.onEvent);
+  };
+
   try {
     while (true) {
-      const { done, value } = await reader.read();
+      const { value, done } = await reader.read();
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
       const lines = buffer.split('\n');
       buffer = lines.pop() ?? '';
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed) continue;
-        if (trimmed === 'data: [DONE]') continue;
-        if (!trimmed.startsWith('data: ')) continue;
-        const data = trimmed.slice(6);
-        if (opts.parser === 'text-chunks') {
-          try {
-            const parsed = JSON.parse(data) as Record<string, unknown>;
-            const content =
-              (parsed.content as string | undefined) ??
-              (parsed.text as string | undefined) ??
-              (parsed.delta as string | undefined) ??
-              '';
-            if (content) opts.onEvent({ type: 'text', content });
-          } catch {
-            opts.onEvent({ type: 'text', content: data });
-          }
-        } else {
-          try {
-            const parsed = JSON.parse(data) as Record<string, unknown>;
-            opts.onEvent({ type: 'event', event: parsed });
-          } catch {
-            opts.onEvent({ type: 'event', event: { raw: data } });
-          }
-        }
-      }
+      for (const line of lines) handleLine(line);
     }
+    // Flush pending UTF-8 + any trailing partial line (server may not send a
+    // final newline before closing).
+    buffer += decoder.decode();
+    if (buffer.trim()) handleLine(buffer);
   } catch (err) {
     if ((err as Error).name === 'AbortError') {
-      // Caller cancelled; treat as done without error.
+      log.info('stream', 'aborted by client');
     } else {
+      log.error('stream', 'read failed', err);
       opts.onEvent({ type: 'error', message: (err as Error).message });
     }
   } finally {
+    log.success('stream', `done (${lineCount} lines, ${parsedCount} events)`);
     opts.onEvent({ type: 'done' });
   }
+}
+
+function dispatch(
+  event: TypedStreamEvent,
+  onEvent: (e: StreamEvent) => void,
+): void {
+  if (isChunkEvent(event)) {
+    onEvent({ type: 'text', content: event.data.text });
+    return;
+  }
+  if (isReasoningChunkEvent(event)) {
+    onEvent({ type: 'reasoning', content: event.data.text });
+    return;
+  }
+  if (isErrorEvent(event)) {
+    const data = event.data;
+    onEvent({
+      type: 'error',
+      message: data.user_message ?? data.message ?? 'unknown error',
+    });
+    return;
+  }
+  if (isEndEvent(event)) {
+    onEvent({
+      type: 'event',
+      eventName: 'end',
+      data: (event.data ?? {}) as Record<string, unknown>,
+    });
+    return;
+  }
+  // Phase / completion / tool_event / data / heartbeat / etc — pass through.
+  onEvent({
+    type: 'event',
+    eventName: event.event,
+    data: ((event as { data?: unknown }).data ?? {}) as Record<string, unknown>,
+  });
 }

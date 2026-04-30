@@ -1,7 +1,9 @@
 /**
  * Build-time environment configuration. Values come from .env.* files.
- * Runtime overrides for backend/desktop URLs live in chrome.storage.sync
- * and are read via getApiBaseUrl() / getDesktopUrl() in their respective modules.
+ *
+ * Backend URL selection is RUNTIME-only via src/config/backend.ts — there is
+ * no build-time default backend or URL override. Production is always the
+ * fallback; only an admin can change it at runtime.
  */
 
 export type BackendEnv = 'prod' | 'staging' | 'dev' | 'local';
@@ -23,8 +25,6 @@ export const ENV = {
   SUPABASE_URL: requireEnv('WXT_SUPABASE_URL'),
   SUPABASE_PUBLISHABLE_KEY: requireEnv('WXT_SUPABASE_PUBLISHABLE_KEY'),
   EXTENSION_OAUTH_CLIENT_ID: optionalEnv('WXT_EXTENSION_OAUTH_CLIENT_ID') ?? '',
-  DEFAULT_BACKEND: (optionalEnv('WXT_DEFAULT_BACKEND') ?? 'prod') as BackendEnv,
-  BACKEND_URL_OVERRIDE: optionalEnv('WXT_BACKEND_URL'),
   DESKTOP_LOCAL_URL: optionalEnv('WXT_DESKTOP_LOCAL_URL') ?? 'http://127.0.0.1:22180',
   DESKTOP_NATIVE_HOST: optionalEnv('WXT_DESKTOP_NATIVE_HOST') ?? 'com.matrx.local',
 } as const;
@@ -37,18 +37,16 @@ export const BACKEND_URLS: Readonly<Record<BackendEnv, string>> = {
 };
 
 export const STORAGE_KEYS = {
-  // chrome.storage.sync — small, persistent, cross-device user prefs
   BACKEND_ENV: 'matrx.backend.env',
   BACKEND_URL_OVERRIDE: 'matrx.backend.urlOverride',
   THEME: 'matrx.theme',
-  // chrome.storage.local — extension-local data
   USER_PROFILE: 'matrx.user.profile',
-  ACCESS_TOKEN: 'matrx.auth.accessToken', // promoted to session-only when SW supports it cleanly
+  IS_ADMIN: 'matrx.user.isAdmin',
+  ACCESS_TOKEN: 'matrx.auth.accessToken',
   REFRESH_TOKEN_ENC: 'matrx.auth.refreshTokenEnc',
   REFRESH_TOKEN_IV: 'matrx.auth.refreshTokenIv',
   TOKEN_EXPIRES_AT: 'matrx.auth.expiresAt',
   DESKTOP_PAIR_TOKEN: 'matrx.desktop.pairToken',
-  // chrome.storage.session — short-lived, in-memory
   PKCE_VERIFIER: 'matrx.pkce.verifier',
   PKCE_STATE: 'matrx.pkce.state',
 } as const;

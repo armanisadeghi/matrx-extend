@@ -1,9 +1,13 @@
-import { CHANNELS } from '@/lib/messaging/schemas';
 import type { SoupResult } from '@/lib/scrape/pipeline';
 import { saveCapture } from '@/lib/supabase/queries';
 import { useScrapeStore } from '@/state/scrape';
 import { useCallback } from 'react';
-import { sendMessage } from 'webext-bridge/window';
+
+interface ScrapeMessage {
+  __matrx: true;
+  kind: 'scrape:capture-page';
+  payload: { options: Record<string, unknown> };
+}
 
 export function useScrape() {
   const { current, loading, error, setCurrent, setLoading, setError } = useScrapeStore();
@@ -17,11 +21,12 @@ export function useScrape() {
         setError('No active tab');
         return null;
       }
-      const result = (await sendMessage(
-        CHANNELS.SCRAPE_CAPTURE as never,
-        { tabId: tab.id, options: {} } as never,
-        `content-script@${tab.id}` as never,
-      )) as unknown as SoupResult;
+      const message: ScrapeMessage = {
+        __matrx: true,
+        kind: 'scrape:capture-page',
+        payload: { options: {} },
+      };
+      const result = (await chrome.tabs.sendMessage(tab.id, message)) as SoupResult;
       setCurrent(result);
       return result;
     } catch (err) {

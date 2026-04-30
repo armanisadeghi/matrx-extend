@@ -1,38 +1,48 @@
+/**
+ * AI route definitions. Endpoint paths and request shapes verified against
+ * `types/python-generated/openapi.json` (run `pnpm update-api-types` to refresh).
+ */
+
 import { apiPost } from '@/lib/api/client';
-import { z } from 'zod';
 
-export const UnifiedChatRequestSchema = z.object({
-  conversation_id: z.string().optional(),
-  prompt_id: z.string().optional(),
-  agent_id: z.string().optional(),
-  message: z.string(),
-  variables: z.record(z.unknown()).optional(),
-  ai_model_id: z.string().optional(),
-});
-export type UnifiedChatRequest = z.infer<typeof UnifiedChatRequestSchema>;
+/** POST /ai/agent/{agent_id} — start agent stream. agent_id is in the URL. */
+export const agentExecutePath = (agentId: string): string =>
+  `/ai/agent/${encodeURIComponent(agentId)}`;
 
-export const AgentExecuteRequestSchema = z.object({
-  conversation_id: z.string().optional(),
-  prompt_id: z.string(),
-  message: z.string(),
-  is_builtin: z.boolean().optional(),
-  variables: z.record(z.unknown()).optional(),
-  tools: z.array(z.unknown()).optional(),
-});
-export type AgentExecuteRequest = z.infer<typeof AgentExecuteRequestSchema>;
+/**
+ * AgentStartRequest shape (subset — full schema in api-types.ts).
+ * Matches the live FastAPI route as of 2026-04-30.
+ */
+export interface AgentStartRequest {
+  user_input?: string;
+  variables?: Record<string, unknown> | null;
+  conversation_id?: string | null;
+  is_new?: boolean | null;
+  stream?: boolean;
+  store?: boolean;
+  debug?: boolean;
+  client_tools?: string[];
+  custom_tools?: Record<string, unknown>[];
+  context?: Record<string, unknown>;
+  source_app?: string;
+  source_feature?: string;
+}
 
-export const WARM_PATH = '/ai/agent/warm';
-export const CANCEL_PATH = (requestId: string) => `/ai/cancel/${encodeURIComponent(requestId)}`;
-export const UNIFIED_CHAT_PATH = '/ai/chat/unified';
-export const AGENT_EXECUTE_PATH = '/ai/agent/execute';
+/** POST /ai/chat — direct chat with explicit ai_model_id (not used by extension v1). */
+export const CHAT_PATH = '/ai/chat';
 
-export function warmAgent(promptId: string, isBuiltin = false) {
-  return apiPost<{ status: string; prompt_id: string }>(WARM_PATH, {
-    prompt_id: promptId,
-    is_builtin: isBuiltin,
-  });
+/** POST /ai/agents/{agent_id}/warm — warm an agent before sending. */
+export const agentWarmPath = (agentId: string): string =>
+  `/ai/agents/${encodeURIComponent(agentId)}/warm`;
+
+/** POST /ai/cancel/{request_id} — cancel an in-flight stream. */
+export const cancelPath = (requestId: string): string =>
+  `/ai/cancel/${encodeURIComponent(requestId)}`;
+
+export function warmAgent(agentId: string) {
+  return apiPost<{ status: string }>(agentWarmPath(agentId), {});
 }
 
 export function cancelRequest(requestId: string) {
-  return apiPost<{ status: string; request_id: string }>(CANCEL_PATH(requestId), {});
+  return apiPost<{ status: string }>(cancelPath(requestId), {});
 }

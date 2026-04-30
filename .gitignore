@@ -50,6 +50,8 @@ lib64/
 !src/lib/
 !src/lib/**
 
-# Extension secrets
+# Extension secrets — private key never leaves the machine.
+.secrets/
 *.pem
 *.crx
+*.spki.der

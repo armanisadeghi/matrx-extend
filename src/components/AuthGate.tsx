@@ -16,7 +16,12 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
           syncing your work across devices.
         </p>
       </div>
-      <Button onClick={signIn} disabled={status === 'signing-in'} size="lg">
+      <Button
+        onClick={signIn}
+        disabled={status === 'signing-in'}
+        size="lg"
+        className="rounded-full"
+      >
         {status === 'signing-in' ? (
           <>
             <Loader2 className="animate-spin" /> Opening sign-in…
@@ -28,13 +33,10 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         )}
       </Button>
       {error && (
-        <div className="max-w-sm rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+        <div className="max-w-sm rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
           {error}
         </div>
       )}
-      <div className="absolute bottom-4 text-[10px] text-muted-foreground/70">
-        Authenticated via aimatrx.com
-      </div>
     </div>
   );
 }

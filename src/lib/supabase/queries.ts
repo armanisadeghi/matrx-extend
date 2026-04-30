@@ -2,84 +2,92 @@
  * Direct, RLS-gated Supabase reads from the extension. The publishable key +
  * the user's JWT (set via setSupabaseSession) gates rows server-side.
  *
- * Schema mirror — these tables already exist in the Matrx Supabase project.
- * Patterns ported from matrx-chrome/utils/supabase-queries.ts.
+ * Schema mirror — these tables already exist in the Matrx Supabase project:
+ *   - agx_agent          (Agent definitions, replaces legacy `prompts`)
+ *   - cx_conversation    (Chat conversations)
+ *   - cx_message         (Chat messages — JSONB content[])
+ *
+ * Tables this extension OWNS (created by ./migrations/*.sql):
+ *   - wbx_capture        (Page captures from Scrape tab)
+ *   - wbx_pattern        (Saved Data-tab patterns)
+ *   - wbx_seo_audit      (SEO audits + AI recommendations)
  */
 
 import { getSupabase } from '@/lib/supabase/client';
 import { z } from 'zod';
 
-// ─── AI models ──────────────────────────────────────────────────────────────
-export const AiModelSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string(),
-  common_name: z.string().nullable(),
-  model_class: z.string().nullable(),
-  provider: z.string().nullable(),
-  context_window: z.number().int().nullable(),
-  max_tokens: z.number().int().nullable(),
-  capabilities: z.unknown().nullable(),
-  is_deprecated: z.boolean().nullable(),
-  is_primary: z.boolean().nullable(),
-  is_premium: z.boolean().nullable(),
-});
-export type AiModel = z.infer<typeof AiModelSchema>;
-
-export async function fetchActiveModels(): Promise<AiModel[]> {
+// ─── Admin gate ─────────────────────────────────────────────────────────────
+/**
+ * Checks whether the user has a row in `public.admins`. The table:
+ *   create table public.admins (
+ *     user_id uuid primary key references auth.users(id) on delete cascade,
+ *     created_at timestamptz default now()
+ *   );
+ * Anything debug-related (Debug tab, cross-context relay, advanced toggles)
+ * is gated on this check.
+ */
+export async function checkIsAdmin(userId: string): Promise<boolean> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('ai_model')
-    .select(
-      'id, name, common_name, model_class, provider, context_window, max_tokens, capabilities, is_deprecated, is_primary, is_premium',
-    )
-    .or('is_deprecated.eq.false,is_deprecated.is.null')
-    .order('provider')
-    .order('common_name');
+    .from('admins')
+    .select('user_id')
+    .eq('user_id', userId)
+    .limit(1);
   if (error) {
-    console.warn('[matrx-extend] fetchActiveModels error', error.message);
-    return [];
+    console.warn('[matrx-extend] checkIsAdmin error', error.message);
+    return false;
   }
-  return z.array(AiModelSchema).parse(data ?? []);
+  return Array.isArray(data) && data.length > 0;
 }
 
-export async function fetchPrimaryModels(): Promise<AiModel[]> {
-  const all = await fetchActiveModels();
-  return all.filter((m) => m.is_primary && !m.is_premium);
-}
-
-// ─── Agents (prompts) ───────────────────────────────────────────────────────
-export const AgentPromptSchema = z.object({
+// ─── Agents (agx_agent) ─────────────────────────────────────────────────────
+export const AgxAgentSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   description: z.string().nullable(),
-  variable_defaults: z.record(z.unknown()).nullable(),
-  tools: z.unknown().nullable(),
-  user_id: z.string().uuid().nullable(),
-  settings: z.record(z.unknown()).nullable(),
+  agent_type: z.string(),
+  variable_definitions: z.unknown().nullable(),
+  tools: z.array(z.string()).nullable(),
+  settings: z.unknown().nullable(),
+  category: z.string().nullable(),
+  tags: z.array(z.string()).nullable(),
+  is_public: z.boolean().nullable(),
 });
-export type AgentPrompt = z.infer<typeof AgentPromptSchema>;
+export type AgxAgent = z.infer<typeof AgxAgentSchema>;
 
-export async function fetchUserAgents(userId: string): Promise<AgentPrompt[]> {
+/**
+ * Agents the user can pick in the chat composer:
+ *   - their own active agents, OR
+ *   - public active agents
+ * RLS on agx_agent enforces the access boundary; this filter is for UX
+ * (drop archived / inactive agents from the picker).
+ */
+export async function fetchUserAgents(userId: string): Promise<AgxAgent[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('prompts')
-    .select('id, name, description, variable_defaults, tools, user_id, settings')
-    .eq('user_id', userId)
+    .from('agx_agent')
+    .select(
+      'id, name, description, agent_type, variable_definitions, tools, settings, category, tags, is_public',
+    )
+    .or(`user_id.eq.${userId},is_public.eq.true`)
+    .eq('is_active', true)
+    .eq('is_archived', false)
+    .order('is_favorite', { ascending: false, nullsFirst: false })
     .order('name');
   if (error) {
     console.warn('[matrx-extend] fetchUserAgents error', error.message);
     return [];
   }
-  return z.array(AgentPromptSchema).parse(data ?? []);
+  return z.array(AgxAgentSchema).parse(data ?? []);
 }
 
-// ─── Conversations ──────────────────────────────────────────────────────────
+// ─── Conversations (cx_conversation) ────────────────────────────────────────
 export const ConversationSchema = z.object({
   id: z.string().uuid(),
   user_id: z.string().uuid().nullable(),
   title: z.string().nullable(),
   status: z.string().nullable(),
-  ai_model_id: z.string().uuid().nullable(),
+  last_model_id: z.string().uuid().nullable(),
   message_count: z.number().int().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
@@ -93,7 +101,7 @@ export async function fetchConversationHistory(limit = 30): Promise<Conversation
   const { data, error } = await c
     .from('cx_conversation')
     .select(
-      'id, user_id, title, status, ai_model_id, message_count, created_at, updated_at, deleted_at, metadata',
+      'id, user_id, title, status, last_model_id, message_count, created_at, updated_at, deleted_at, metadata',
     )
     .is('deleted_at', null)
     .eq('status', 'active')
@@ -106,6 +114,7 @@ export async function fetchConversationHistory(limit = 30): Promise<Conversation
   return z.array(ConversationSchema).parse(data ?? []);
 }
 
+// ─── Messages (cx_message) ──────────────────────────────────────────────────
 export const MessageSchema = z.object({
   id: z.string().uuid(),
   conversation_id: z.string().uuid(),
@@ -168,32 +177,7 @@ export function dbMessagesToChatMessages(rows: Message[]): ChatMessageRendered[]
     });
 }
 
-// ─── Extension-owned tables (new — created by this extension) ──────────────
-
-/**
- * extension_scrapes — captures from the Scrape tab. RLS gates by user_id.
- * To be added to the Supabase schema; until then queries gracefully no-op.
- *
- * Suggested DDL:
- *   create table public.extension_scrapes (
- *     id uuid primary key default gen_random_uuid(),
- *     user_id uuid references auth.users(id) not null default auth.uid(),
- *     url text not null,
- *     captured_at timestamptz not null default now(),
- *     title text, description text, lang text,
- *     soup jsonb not null,                -- structured extraction output
- *     markdown text,
- *     metadata jsonb,                     -- og, twitter, schema.org links
- *     ld_json jsonb,                      -- raw JSON-LD blocks
- *     media_count integer default 0,
- *     pattern_id uuid references public.extraction_patterns(id)
- *   );
- *   create index extension_scrapes_user_url on public.extension_scrapes(user_id, url);
- *   alter table public.extension_scrapes enable row level security;
- *   create policy extension_scrapes_owner on public.extension_scrapes
- *     for all using (user_id = auth.uid()) with check (user_id = auth.uid());
- */
-
+// ─── wbx_capture (page captures) ────────────────────────────────────────────
 export const CapturedPageSchema = z.object({
   id: z.string().uuid(),
   url: z.string(),
@@ -205,7 +189,7 @@ export type CapturedPage = z.infer<typeof CapturedPageSchema>;
 export async function lookupCapturedByUrl(url: string): Promise<CapturedPage | null> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('extension_scrapes')
+    .from('wbx_capture')
     .select('id, url, captured_at, title')
     .eq('url', url)
     .order('captured_at', { ascending: false })
@@ -236,7 +220,7 @@ export interface SaveCapturePayload {
 export async function saveCapture(p: SaveCapturePayload): Promise<{ id: string } | null> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('extension_scrapes')
+    .from('wbx_capture')
     .insert({
       url: p.url,
       title: p.title ?? null,
@@ -258,7 +242,7 @@ export async function saveCapture(p: SaveCapturePayload): Promise<{ id: string }
   return data as { id: string };
 }
 
-// ─── Extraction patterns ────────────────────────────────────────────────────
+// ─── wbx_pattern (extraction patterns) ──────────────────────────────────────
 export const ExtractionPatternFieldSchema = z.object({
   name: z.string(),
   selector: z.string(),
@@ -284,7 +268,7 @@ export type ExtractionPattern = z.infer<typeof ExtractionPatternSchema>;
 export async function fetchPatternsForDomain(domain: string): Promise<ExtractionPattern[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('extraction_patterns')
+    .from('wbx_pattern')
     .select('*')
     .eq('domain', domain)
     .order('last_used_at', { ascending: false, nullsFirst: false });
@@ -303,7 +287,7 @@ export async function savePattern(
 ): Promise<{ id: string } | null> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('extraction_patterns')
+    .from('wbx_pattern')
     .insert({
       name: p.name,
       domain: p.domain,
@@ -318,4 +302,82 @@ export async function savePattern(
     return null;
   }
   return data as { id: string };
+}
+
+export async function bumpPatternLastUsed(patternId: string): Promise<void> {
+  const c = getSupabase();
+  await c
+    .from('wbx_pattern')
+    .update({ last_used_at: new Date().toISOString() })
+    .eq('id', patternId);
+}
+
+// ─── wbx_seo_audit (SEO audits + recommendations) ───────────────────────────
+export const SeoAuditRowSchema = z.object({
+  id: z.string().uuid(),
+  url: z.string(),
+  audited_at: z.string(),
+  signals: z.unknown(),
+  recommendations: z.unknown().nullable(),
+  flesch_reading_ease: z.number().nullable(),
+  word_count: z.number().int().nullable(),
+  notes: z.string().nullable(),
+});
+export type SeoAuditRow = z.infer<typeof SeoAuditRowSchema>;
+
+export interface SaveSeoAuditPayload {
+  url: string;
+  signals: unknown;
+  flesch_reading_ease?: number | null;
+  word_count?: number | null;
+  notes?: string | null;
+}
+
+export async function saveSeoAudit(p: SaveSeoAuditPayload): Promise<{ id: string } | null> {
+  const c = getSupabase();
+  const { data, error } = await c
+    .from('wbx_seo_audit')
+    .insert({
+      url: p.url,
+      signals: p.signals,
+      flesch_reading_ease: p.flesch_reading_ease ?? null,
+      word_count: p.word_count ?? null,
+      notes: p.notes ?? null,
+    })
+    .select('id')
+    .single();
+  if (error) {
+    console.warn('[matrx-extend] saveSeoAudit error', error.message);
+    return null;
+  }
+  return data as { id: string };
+}
+
+export async function fetchLatestSeoAuditForUrl(url: string): Promise<SeoAuditRow | null> {
+  const c = getSupabase();
+  const { data, error } = await c
+    .from('wbx_seo_audit')
+    .select('id, url, audited_at, signals, recommendations, flesch_reading_ease, word_count, notes')
+    .eq('url', url)
+    .order('audited_at', { ascending: false })
+    .limit(1);
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return null;
+    console.warn('[matrx-extend] fetchLatestSeoAuditForUrl error', error.message);
+    return null;
+  }
+  const row = (data ?? [])[0];
+  return row ? SeoAuditRowSchema.parse(row) : null;
+}
+
+export async function attachSeoRecommendations(
+  auditId: string,
+  recommendations: unknown,
+): Promise<void> {
+  const c = getSupabase();
+  const { error } = await c
+    .from('wbx_seo_audit')
+    .update({ recommendations })
+    .eq('id', auditId);
+  if (error) console.warn('[matrx-extend] attachSeoRecommendations error', error.message);
 }

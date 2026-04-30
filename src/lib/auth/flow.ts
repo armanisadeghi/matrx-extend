@@ -19,6 +19,7 @@ import {
   generateNonce,
 } from '@/lib/auth/pkce';
 import { type OAuthTokens, OAuthTokensSchema, type UserProfile } from '@/lib/auth/types';
+import { log } from '@/lib/debug/log';
 import { Mutex, truncate } from '@/lib/utils';
 
 const refreshMutex = new Mutex();
@@ -64,7 +65,14 @@ export async function signIn(): Promise<{ user: UserProfile; tokens: OAuthTokens
 
   const url = `${authorizeUrl()}?${params.toString()}`;
 
+  log.info('auth', 'OAuth sign-in starting', {
+    redirectUri,
+    clientId: ENV.EXTENSION_OAUTH_CLIENT_ID,
+    authorizeUrl: url,
+  });
+
   const callbackUrl = await launchWebAuthFlow(url);
+  log.info('auth', 'callback received', { callbackUrl });
   const { code, returnedState } = parseCallbackUrl(callbackUrl);
   if (returnedState !== state) {
     throw new Error('OAuth state mismatch — possible CSRF, ignoring response');
@@ -74,12 +82,15 @@ export async function signIn(): Promise<{ user: UserProfile; tokens: OAuthTokens
     throw new Error('Could not recover code_verifier from state');
   }
 
+  log.info('auth', 'exchanging code for tokens');
   const tokens = await exchangeCode(code, recoveredVerifier, redirectUri);
   await persistTokens(tokens);
   scheduleRefresh(tokens);
 
+  log.info('auth', 'fetching user profile');
   const user = await fetchSupabaseUser(tokens.access_token);
   await chrome.storage.local.set({ [STORAGE_KEYS.USER_PROFILE]: user });
+  log.success('auth', `signed in as ${user.email ?? user.id}`);
   return { user, tokens };
 }
 
@@ -293,4 +304,38 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
 export async function isAuthenticated(): Promise<boolean> {
   const token = await getAccessToken();
   return !!token;
+}
+
+/**
+ * Restore the Supabase JS client's session from chrome.storage.local.
+ *
+ * MUST be called on every context boot (sidepanel mount, SW wake, offscreen
+ * load) — otherwise the local Supabase client has no JWT and RLS treats every
+ * read as anonymous. Symptom: only `is_public=true` rows come back.
+ *
+ * Returns true if a session was restored, false otherwise.
+ */
+export async function restoreSupabaseSession(): Promise<boolean> {
+  const stored = await chrome.storage.local.get([
+    STORAGE_KEYS.ACCESS_TOKEN,
+    STORAGE_KEYS.REFRESH_TOKEN_ENC,
+    STORAGE_KEYS.REFRESH_TOKEN_IV,
+  ]);
+  const access = stored[STORAGE_KEYS.ACCESS_TOKEN] as string | undefined;
+  const ct = stored[STORAGE_KEYS.REFRESH_TOKEN_ENC] as string | undefined;
+  const iv = stored[STORAGE_KEYS.REFRESH_TOKEN_IV] as string | undefined;
+  if (!access || !ct || !iv) {
+    log.info('auth', 'restoreSupabaseSession: no stored tokens');
+    return false;
+  }
+  try {
+    const refresh = await decryptString({ ct, iv });
+    const { setSupabaseSession } = await import('@/lib/supabase/client');
+    await setSupabaseSession(access, refresh);
+    log.success('auth', 'supabase session restored from storage');
+    return true;
+  } catch (err) {
+    log.error('auth', 'restoreSupabaseSession failed', err);
+    return false;
+  }
 }

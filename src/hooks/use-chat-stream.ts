@@ -1,59 +1,51 @@
-import { AGENT_EXECUTE_PATH, UNIFIED_CHAT_PATH } from '@/lib/api/routes/ai';
+import { agentExecutePath, type AgentStartRequest } from '@/lib/api/routes/ai';
+import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
+import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { type ChatMessage, useChatStore } from '@/state/chat';
 import { useCallback, useEffect, useRef } from 'react';
-import { onMessage, sendMessage } from 'webext-bridge/window';
 
 interface SendOptions {
-  promptId?: string;
   agentId?: string;
   conversationId?: string;
   variables?: Record<string, unknown>;
-  /** If true, uses /ai/agent/execute (rich events). Otherwise /ai/chat/unified (text deltas). */
-  agentMode?: boolean;
 }
 
-/**
- * useChatStream wires the side panel chat composer to the offscreen-proxied
- * streaming pipeline.
- *
- * Flow:
- *   send() pushes a user message + a placeholder assistant message, then asks
- *   the SW to start a stream. As stream:chunk events arrive, we append text
- *   to the placeholder. Cancel + finalize transitions handled here.
- */
+interface StreamChunk {
+  runId: string;
+  type: 'text' | 'reasoning' | 'event' | 'error' | 'done';
+  payload: {
+    content?: string;
+    eventName?: string;
+    data?: Record<string, unknown>;
+    message?: string;
+  };
+}
+
 export function useChatStream() {
   const runIdRef = useRef<string | null>(null);
   const targetIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    onMessage(CHANNELS.STREAM_CHUNK, ({ data }) => {
-      const chunk = data as {
-        runId: string;
-        type: 'text' | 'event' | 'error' | 'done';
-        payload: unknown;
-      };
-      if (chunk.runId !== runIdRef.current) return { ignored: true };
+    return on<StreamChunk, { ack: true }>(CHANNELS.STREAM_CHUNK, (chunk) => {
+      if (chunk.runId !== runIdRef.current) return { ack: true };
       const target = targetIdRef.current;
-      if (!target) return { ignored: true };
+      if (!target) return { ack: true };
 
       if (chunk.type === 'text') {
-        const ev = chunk.payload as { content?: string };
-        if (ev.content) useChatStore.getState().appendAssistantText(target, ev.content);
+        if (chunk.payload.content)
+          useChatStore.getState().appendAssistantText(target, chunk.payload.content);
+      } else if (chunk.type === 'reasoning') {
+        // Reasoning chunks are model "thinking" tokens — log only for now.
+        log.info('stream', 'reasoning chunk', chunk.payload.content);
       } else if (chunk.type === 'event') {
-        const ev = (chunk.payload as { event?: { type?: string; content?: string } }).event ?? {};
-        // For rich events from /ai/agent/execute, surface the delta if present.
-        if (ev.type === 'data' || ev.type === 'delta' || ev.type === 'text') {
-          const txt =
-            (ev as { content?: string; delta?: string }).content ??
-            (ev as { delta?: string }).delta ??
-            '';
-          if (txt) useChatStore.getState().appendAssistantText(target, txt);
-        }
+        // Non-text events: phase, completion, tool_event, render_block, etc.
+        // Logged for visibility; chat UI doesn't render them yet.
+        log.info('stream', `event: ${chunk.payload.eventName}`, chunk.payload.data);
       } else if (chunk.type === 'error') {
-        const msg = (chunk.payload as { message?: string }).message ?? 'stream error';
-        useChatStore.getState().appendAssistantText(target, `\n\n_Error:_ ${msg}`);
+        const message = chunk.payload.message ?? 'stream error';
+        useChatStore.getState().appendAssistantText(target, `\n\n_Error:_ ${message}`);
       } else if (chunk.type === 'done') {
         useChatStore.getState().finalizeAssistant(target);
         useChatStore.getState().setStreaming(false);
@@ -64,7 +56,11 @@ export function useChatStream() {
     });
   }, []);
 
-  const send = useCallback(async (text: string, opts: SendOptions = {}) => {
+  const sendMessage = useCallback(async (text: string, opts: SendOptions = {}) => {
+    if (!opts.agentId) {
+      log.error('stream', 'sendMessage called without agentId');
+      return;
+    }
     const userMsg: ChatMessage = {
       id: newId('user'),
       role: 'user',
@@ -86,45 +82,32 @@ export function useChatStream() {
     runIdRef.current = runId;
     targetIdRef.current = assistantMsg.id;
 
-    const useAgent = !!opts.agentMode || !!opts.promptId;
+    const body: AgentStartRequest = {
+      user_input: text,
+      conversation_id: opts.conversationId ?? null,
+      variables: opts.variables ?? null,
+      stream: true,
+      store: true,
+      source_app: 'matrx-extend',
+      source_feature: 'chat',
+    };
 
-    const body = useAgent
-      ? {
-          conversation_id: opts.conversationId,
-          prompt_id: opts.promptId ?? opts.agentId,
-          message: text,
-          variables: opts.variables,
-        }
-      : {
-          conversation_id: opts.conversationId,
-          message: text,
-          variables: opts.variables,
-        };
-
-    await sendMessage(
-      CHANNELS.STREAM_START as never,
-      {
-        runId,
-        endpoint: useAgent ? AGENT_EXECUTE_PATH : UNIFIED_CHAT_PATH,
-        body,
-        parser: useAgent ? 'rich-events' : 'text-chunks',
-      } as never,
-      'background' as never,
-    );
+    await send(CHANNELS.STREAM_START, {
+      runId,
+      endpoint: agentExecutePath(opts.agentId),
+      body,
+      parser: 'rich-events' as const,
+    });
   }, []);
 
   const cancel = useCallback(async () => {
     if (!runIdRef.current) return;
-    await sendMessage(
-      CHANNELS.STREAM_CANCEL as never,
-      { runId: runIdRef.current } as never,
-      'background' as never,
-    );
+    await send(CHANNELS.STREAM_CANCEL, { runId: runIdRef.current });
     if (targetIdRef.current) useChatStore.getState().finalizeAssistant(targetIdRef.current);
     useChatStore.getState().setStreaming(false);
     runIdRef.current = null;
     targetIdRef.current = null;
   }, []);
 
-  return { send, cancel };
+  return { send: sendMessage, cancel };
 }

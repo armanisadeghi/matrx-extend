@@ -110,9 +110,6 @@ importers:
       turndown:
         specifier: ^7.2.0
         version: 7.2.4
-      webext-bridge:
-        specifier: ^6.0.1
-        version: 6.0.1
       zod:
         specifier: ^3.24.0
         version: 3.25.76
@@ -1641,9 +1638,6 @@ packages:
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
 
-  '@types/webextension-polyfill@0.8.3':
-    resolution: {integrity: sha512-GN+Hjzy9mXjWoXKmaicTegv3FJ0WFZ3aYz77Wk8TMp1IY3vEzvzj1vnsa0ggV7vMI1i+PUxe4qqnIJKCzf9aTg==}
-
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
 
@@ -2983,10 +2977,6 @@ packages:
     resolution: {integrity: sha512-yTW+2okrElHiH4fsiz/+/zc0EDo9BDDoC3iKk8dpv1GeRc9nUWzUZHx6TofMWErchhUQR8hY9/Eu1Uja9x1nqA==}
     engines: {node: '>=20.17'}
 
-  nanoevents@6.0.2:
-    resolution: {integrity: sha512-FRS2otuFcPPYDPYViNWQ42+1iZqbXydinkRHTHFxrF4a1CpBfmydR9zkI44WSXAXCyPrkcGtPk5CnpW6Y3lFKQ==}
-    engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
-
   nanoid@3.3.11:
     resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
@@ -3370,10 +3360,6 @@ packages:
     resolution: {integrity: sha512-2G2y++21dhj2R7iHAdd0FIzjGwuKZld+7Pl/bTU6YIkrC2ZMbVUjm+luj6A6V34Rv9XfKJDKpTWu9W4Gse1D9g==}
     engines: {node: '>=14.16'}
 
-  serialize-error@9.1.1:
-    resolution: {integrity: sha512-6uZQLGyUkNA4N+Zii9fYukmNu9PEA1F5rqcwXzN/3LtBjwl2dFBbVZ1Zyn08/CGkB4H440PIemdOQBt1Wvjbrg==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-
   set-value@4.1.0:
     resolution: {integrity: sha512-zTEg4HL0RwVrqcWs3ztF+x1vkxfm0lP+MQQFPiMJTKVceBwEV0A569Ou8l9IYQG8jOZdMVI1hGsc0tmeD2o/Lw==}
     engines: {node: '>=11.0'}
@@ -3546,9 +3532,6 @@ packages:
 
   through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
-
-  tiny-uid@1.1.2:
-    resolution: {integrity: sha512-0beRFXR+fv4C40ND2PqgNjq6iyB1dKXciKJjslLw0kPYCcR82aNd2b+Tt2yy06LimIlvtoehgvrm/fUZCutSfg==}
 
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
@@ -3856,14 +3839,8 @@ packages:
     resolution: {integrity: sha512-rQicL7OwuqWdQWI33JkSXKcp7cuv1mJG8u3jRQwx/8aDsmhbTHs9ZRmNYOL+LX0wX8edIEQX8jj4bB60GoXtKA==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
 
-  webext-bridge@6.0.1:
-    resolution: {integrity: sha512-GruIrN+vNwbxVCi8UW4Dqk5YkcGA9V0ZfJ57jXP9JXHbrsDs5k2N6NNYQR5e+wSCnQpGYOGAGihwUpKlhg8QIw==}
-
   webextension-polyfill@0.10.0:
     resolution: {integrity: sha512-c5s35LgVa5tFaHhrZDnr3FpQpjj1BB+RXhLTYUxGqBVN460HkbM8TBtEqdXWbpTKfzwCcjAZVF7zXCYSKtcp9g==}
-
-  webextension-polyfill@0.9.0:
-    resolution: {integrity: sha512-LTtHb0yR49xa9irkstDxba4GATDAcDw3ncnFH9RImoFwDlW47U95ME5sn5IiQX2ghfaECaf6xyXM8yvClIBkkw==}
 
   webidl-conversions@7.0.0:
     resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
@@ -5206,8 +5183,6 @@ snapshots:
   '@types/unist@2.0.11': {}
 
   '@types/unist@3.0.3': {}
-
-  '@types/webextension-polyfill@0.8.3': {}
 
   '@types/ws@8.18.1':
     dependencies:
@@ -6734,8 +6709,6 @@ snapshots:
 
   nano-spawn@2.1.0: {}
 
-  nanoevents@6.0.2: {}
-
   nanoid@3.3.11: {}
 
   nanospinner@1.2.2:
@@ -7193,10 +7166,6 @@ snapshots:
     dependencies:
       type-fest: 2.19.0
 
-  serialize-error@9.1.1:
-    dependencies:
-      type-fest: 2.19.0
-
   set-value@4.1.0:
     dependencies:
       is-plain-object: 2.0.4
@@ -7351,8 +7320,6 @@ snapshots:
       real-require: 0.2.0
 
   through@2.3.8: {}
-
-  tiny-uid@1.1.2: {}
 
   tinybench@2.9.0: {}
 
@@ -7678,17 +7645,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  webext-bridge@6.0.1:
-    dependencies:
-      '@types/webextension-polyfill': 0.8.3
-      nanoevents: 6.0.2
-      serialize-error: 9.1.1
-      tiny-uid: 1.1.2
-      webextension-polyfill: 0.9.0
-
   webextension-polyfill@0.10.0: {}
-
-  webextension-polyfill@0.9.0: {}
 
   webidl-conversions@7.0.0: {}
 

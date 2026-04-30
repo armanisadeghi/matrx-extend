@@ -1,100 +1,39 @@
 /**
- * Cross-context message channel schemas.
+ * Cross-context message channel registry.
  *
- * Every webext-bridge channel has a Zod schema for both request and response.
- * Channels live here so SW + side panel + content + offscreen import the same
- * type and get free runtime validation.
+ * Wire format: `{ __matrx: true, kind, payload }`. Receivers filter by `kind`.
+ *
+ * IMPORTANT: separate channel names for each direction so the SW doesn't
+ * accidentally catch its own broadcast. Specifically:
+ *
+ *   sidepanel ──STREAM_START──▶ SW
+ *   SW        ──STREAM_RUN────▶ offscreen
+ *   offscreen ──STREAM_CHUNK──▶ all surfaces
  */
 
-import { z } from 'zod';
-
-// ─── auth ───────────────────────────────────────────────────────────────────
-export const AuthStateChangedPayloadSchema = z.object({
-  type: z.literal('auth:state-changed'),
-  user: z
-    .object({
-      id: z.string(),
-      email: z.string().nullable(),
-    })
-    .nullable(),
-});
-export type AuthStateChangedPayload = z.infer<typeof AuthStateChangedPayloadSchema>;
-
-// ─── streaming ──────────────────────────────────────────────────────────────
-export const StreamStartRequestSchema = z.object({
-  runId: z.string().min(1),
-  endpoint: z.string().min(1),
-  body: z.unknown(),
-  parser: z.enum(['text-chunks', 'rich-events']).default('rich-events'),
-});
-export type StreamStartRequest = z.infer<typeof StreamStartRequestSchema>;
-
-export const StreamCancelRequestSchema = z.object({
-  runId: z.string().min(1),
-});
-export type StreamCancelRequest = z.infer<typeof StreamCancelRequestSchema>;
-
-export const StreamChunkSchema = z.object({
-  runId: z.string(),
-  type: z.enum(['text', 'event', 'error', 'done']),
-  payload: z.unknown(),
-});
-export type StreamChunk = z.infer<typeof StreamChunkSchema>;
-
-// ─── scrape ─────────────────────────────────────────────────────────────────
-export const ScrapeCapturePageRequestSchema = z.object({
-  tabId: z.number().int().nonnegative().optional(),
-  options: z
-    .object({
-      includeImages: z.boolean().default(true),
-      includeVideos: z.boolean().default(true),
-      includeLinks: z.boolean().default(true),
-      includeStructured: z.boolean().default(true),
-      preferDefuddle: z.boolean().default(true),
-    })
-    .partial()
-    .default({}),
-});
-export type ScrapeCapturePageRequest = z.infer<typeof ScrapeCapturePageRequestSchema>;
-
-// ─── data picker ────────────────────────────────────────────────────────────
-export const DataPickerEnterRequestSchema = z.object({
-  patternId: z.string().uuid().optional(),
-  domain: z.string().optional(),
-});
-export type DataPickerEnterRequest = z.infer<typeof DataPickerEnterRequestSchema>;
-
-// ─── desktop bridge ─────────────────────────────────────────────────────────
-export const DesktopAvailabilityPayloadSchema = z.object({
-  available: z.boolean(),
-  transport: z.enum(['native', 'http', 'none']),
-  version: z.string().optional(),
-  lastChecked: z.number().int().nonnegative(),
-});
-export type DesktopAvailabilityPayload = z.infer<typeof DesktopAvailabilityPayloadSchema>;
-
-/**
- * Channel name registry. Use these constants instead of string literals.
- */
 export const CHANNELS = {
+  // Auth — broadcast only (no request/response)
   AUTH_STATE_CHANGED: 'auth:state-changed',
-  AUTH_SIGN_IN: 'auth:sign-in',
-  AUTH_SIGN_OUT: 'auth:sign-out',
 
-  STREAM_START: 'stream:start',
-  STREAM_CANCEL: 'stream:cancel',
-  STREAM_CHUNK: 'stream:chunk',
+  // Streaming
+  STREAM_START: 'stream:start',           // sidepanel → SW: start a new stream
+  STREAM_RUN: 'stream:run',               // SW → offscreen: actually run the fetch
+  STREAM_CANCEL: 'stream:cancel',         // sidepanel → SW: cancel
+  STREAM_KILL: 'stream:kill',             // SW → offscreen: abort the fetch
+  STREAM_CHUNK: 'stream:chunk',           // offscreen → all surfaces
 
+  // Scrape (sidepanel → content script via chrome.tabs.sendMessage)
   SCRAPE_CAPTURE: 'scrape:capture-page',
-  SCRAPE_DONE: 'scrape:done',
 
-  DATA_PICKER_ENTER: 'data:picker-enter',
-  DATA_PICKER_EXIT: 'data:picker-exit',
+  // Data picker (content → SW → sidepanel)
   DATA_PICKER_RESULT: 'data:picker-result',
+  DATA_PICKER_EXIT: 'data:picker-exit',
 
+  // Desktop bridge
   DESKTOP_AVAILABILITY: 'desktop:availability',
   DESKTOP_RPC: 'desktop:rpc',
 
+  // Page recognition (content → SW)
   PAGE_NAVIGATED: 'page:navigated',
   PAGE_ALREADY_CAPTURED: 'page:already-captured',
 } as const;

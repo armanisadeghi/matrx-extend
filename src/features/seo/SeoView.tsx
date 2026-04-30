@@ -1,26 +1,42 @@
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import type { SeoAudit } from '@/lib/seo/audit';
-import { Loader2, Search, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { fetchLatestSeoAuditForUrl, saveSeoAudit } from '@/lib/supabase/queries';
+import { CheckCircle2, Loader2, Save, Search, Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export function SeoView() {
   const tab = useActiveTab();
   const [audit, setAudit] = useState<SeoAudit | null>(null);
   const [running, setRunning] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const [previousAuditedAt, setPreviousAuditedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!tab.url) {
+      setPreviousAuditedAt(null);
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      const prev = await fetchLatestSeoAuditForUrl(tab.url as string);
+      if (cancelled) return;
+      setPreviousAuditedAt(prev?.audited_at ?? null);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [tab.url]);
 
   const runAudit = async () => {
     if (!tab.id) return;
     setRunning(true);
+    setSavedId(null);
     try {
       const result = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: () => {
-          // Inline minimal audit. Full audit lives in src/lib/seo/audit.ts and
-          // would be loaded via dynamic import when running in a content script.
           const og: Record<string, string> = {};
           const twitter: Record<string, string> = {};
           document.querySelectorAll('meta').forEach((m) => {
@@ -46,6 +62,8 @@ export function SeoView() {
             document.querySelector<HTMLMetaElement>('meta[name="robots"]')?.content ?? null;
           const canonical =
             document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href ?? null;
+          const text = (document.body?.innerText ?? '').replace(/\s+/g, ' ').trim();
+          const word_count = text ? text.split(/\s+/).length : 0;
           return {
             url: location.href,
             fetched_at: Date.now(),
@@ -60,7 +78,7 @@ export function SeoView() {
             headings,
             links: { internal: 0, external: 0 },
             images: { total: imgs.length, missing_alt },
-            word_count: 0,
+            word_count,
             flesch_reading_ease: null,
             performance: { nav_type: null, duration_ms: null, transfer_size_bytes: null },
           } as SeoAudit;
@@ -75,92 +93,153 @@ export function SeoView() {
     }
   };
 
+  const handleSave = async () => {
+    if (!audit) return;
+    setSaving(true);
+    const r = await saveSeoAudit({
+      url: audit.url,
+      signals: audit,
+      flesch_reading_ease: audit.flesch_reading_ease,
+      word_count: audit.word_count,
+    });
+    setSaving(false);
+    if (r) {
+      setSavedId(r.id);
+      setPreviousAuditedAt(new Date().toISOString());
+    }
+  };
+
   return (
     <div className="flex h-full flex-col">
-      <div className="border-b p-3">
-        <Button onClick={() => void runAudit()} disabled={running} className="w-full">
-          {running ? <Loader2 className="animate-spin" /> : <Search />}
-          Audit this page
-        </Button>
+      <div className="flex h-9 shrink-0 items-center px-3">
+        <span className="text-sm font-medium">SEO audit</span>
+        {previousAuditedAt && (
+          <span className="ml-2 truncate text-xs text-muted-foreground">
+            last {new Date(previousAuditedAt).toLocaleString()}
+          </span>
+        )}
       </div>
-      <ScrollArea className="flex-1">
-        <div className="space-y-3 p-3">
+
+      <div className="flex-1 overflow-y-auto">
+        <div className="space-y-4 px-3 pb-3">
           {!audit ? (
-            <div className="grid place-items-center py-12 text-sm text-muted-foreground">
-              No audit yet — click "Audit this page".
+            <div className="grid place-items-center px-4 py-16 text-center text-sm text-muted-foreground">
+              Run an audit to see metadata, headings, images, and AI recommendations.
             </div>
           ) : (
             <>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">Title & description</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-xs">
-                  <Field
-                    label="Title"
-                    value={audit.title.value}
-                    hint={`${audit.title.length} chars`}
-                  />
-                  <Field
-                    label="Description"
-                    value={audit.description.value ?? '—'}
-                    hint={`${audit.description.length} chars`}
-                  />
-                  <Field label="Canonical" value={audit.canonical ?? '—'} />
-                  <Field label="Robots" value={audit.robots ?? '—'} />
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm flex items-center justify-between">
-                    Headings <Badge variant="secondary">{audit.headings.length}</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-1 text-xs">
-                    {audit.headings.slice(0, 30).map((h, i) => (
-                      <div key={`${h.level}-${i}`} className="truncate">
-                        <span className="text-muted-foreground">H{h.level}</span> {h.text}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">Images</CardTitle>
-                </CardHeader>
-                <CardContent className="text-xs space-y-1">
-                  <div>Total: {audit.images.total}</div>
-                  <div>Missing alt: {audit.images.missing_alt}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <Sparkles className="size-4" /> AI recommendations
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-xs text-muted-foreground">
-                  Wire this up to /ai/agent/execute with an SEO prompt to generate suggestions.
-                </CardContent>
-              </Card>
+              <Section label="Title & description">
+                <Field
+                  label="Title"
+                  value={audit.title.value}
+                  hint={`${audit.title.length} chars`}
+                />
+                <Field
+                  label="Description"
+                  value={audit.description.value ?? '—'}
+                  hint={`${audit.description.length} chars`}
+                />
+                <Field label="Canonical" value={audit.canonical ?? '—'} />
+                <Field label="Robots" value={audit.robots ?? '—'} />
+              </Section>
+
+              <Section label="Headings" hint={String(audit.headings.length)}>
+                <div className="space-y-1 text-xs">
+                  {audit.headings.slice(0, 30).map((h, i) => (
+                    <div key={`${h.level}-${i}`} className="truncate">
+                      <span className="mr-1.5 text-muted-foreground">H{h.level}</span>
+                      {h.text}
+                    </div>
+                  ))}
+                </div>
+              </Section>
+
+              <Section label="Images & content">
+                <div className="grid grid-cols-3 gap-2">
+                  <Stat label="Images" value={audit.images.total} />
+                  <Stat label="Missing alt" value={audit.images.missing_alt} />
+                  <Stat label="Words" value={audit.word_count} />
+                </div>
+              </Section>
+
+              <Section
+                label="AI recommendations"
+                icon={<Sparkles className="size-3.5 text-primary" />}
+              >
+                <div className="text-xs text-muted-foreground">
+                  Wire this up to /ai/agent/execute with an SEO prompt.
+                </div>
+              </Section>
             </>
           )}
         </div>
-      </ScrollArea>
+      </div>
+
+      <div className="flex shrink-0 gap-2 px-3 pb-3 pt-1">
+        <Button
+          onClick={() => void runAudit()}
+          disabled={running}
+          className="flex-1 rounded-full"
+        >
+          {running ? <Loader2 className="animate-spin" /> : <Search />}
+          {audit ? 'Re-audit' : 'Audit this page'}
+        </Button>
+        {audit && (
+          <Button
+            onClick={() => void handleSave()}
+            disabled={saving}
+            variant="secondary"
+            className="rounded-full"
+          >
+            {saving ? <Loader2 className="animate-spin" /> : savedId ? <CheckCircle2 /> : <Save />}
+            {savedId ? 'Saved' : 'Save'}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Section({
+  label,
+  hint,
+  icon,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  icon?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+        {icon}
+        {label}
+        {hint && <span className="ml-auto normal-case tracking-normal">{hint}</span>}
+      </div>
+      {children}
     </div>
   );
 }
 
 function Field({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div>
+    <div className="text-xs">
       <div className="flex items-center justify-between text-muted-foreground">
         <span>{label}</span>
         {hint && <span>{hint}</span>}
       </div>
       <div className="break-words text-foreground">{value}</div>
+    </div>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-xl bg-secondary/40 px-3 py-2.5">
+      <div className="text-lg font-medium tabular-nums">{value}</div>
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
     </div>
   );
 }

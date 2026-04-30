@@ -1,49 +1,32 @@
 /**
  * REST client. Adds bearer token, handles 401 → refresh → retry once.
  * Streaming lives in src/lib/api/stream.ts (offscreen-buffered for >30s safety).
+ *
+ * Backend URL resolution is centralized in src/config/backend.ts. This module
+ * never reads chrome.storage directly and never knows about env vars.
  */
 
-import { BACKEND_URLS, ENV, STORAGE_KEYS } from '@/config/env';
+import { getBackendUrl } from '@/config/backend';
 import { getAccessToken, refreshAccessToken } from '@/lib/auth/flow';
+import { log } from '@/lib/debug/log';
 import type { z } from 'zod';
 
 type ApiSuccess<T> = { ok: true; data: T };
 type ApiFailure = { ok: false; error: string; status: number };
 export type ApiResult<T> = ApiSuccess<T> | ApiFailure;
 
-let cachedBaseUrl: string | null = null;
-
 export async function getApiBaseUrl(): Promise<string> {
-  if (cachedBaseUrl) return cachedBaseUrl;
-
-  // Build-time override wins over everything (used in CI / locked builds).
-  if (ENV.BACKEND_URL_OVERRIDE) {
-    cachedBaseUrl = ENV.BACKEND_URL_OVERRIDE;
-    return cachedBaseUrl;
-  }
-
-  // Runtime override (Settings UI) — chrome.storage.sync
-  const synced = await chrome.storage.sync.get([
-    STORAGE_KEYS.BACKEND_ENV,
-    STORAGE_KEYS.BACKEND_URL_OVERRIDE,
-  ]);
-
-  const urlOverride = synced[STORAGE_KEYS.BACKEND_URL_OVERRIDE] as string | undefined;
-  if (urlOverride && urlOverride.length > 0) {
-    cachedBaseUrl = urlOverride.replace(/\/$/, '');
-    return cachedBaseUrl;
-  }
-
-  const envName =
-    (synced[STORAGE_KEYS.BACKEND_ENV] as keyof typeof BACKEND_URLS | undefined) ??
-    ENV.DEFAULT_BACKEND;
-  cachedBaseUrl = BACKEND_URLS[envName];
-  return cachedBaseUrl;
+  return getBackendUrl();
 }
 
-/** Invalidate cached base URL — call after Settings change it. */
+/**
+ * Compatibility shim — backend.ts already invalidates its cache via
+ * chrome.storage.onChanged whenever the env or override changes, so callers
+ * no longer need to manually flush. Retained as a no-op for any leftover
+ * imports.
+ */
 export function clearApiBaseCache(): void {
-  cachedBaseUrl = null;
+  /* no-op: backend.ts owns invalidation via chrome.storage.onChanged */
 }
 
 async function buildHeaders(extra: Record<string, string> = {}): Promise<Record<string, string>> {
@@ -69,6 +52,9 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   const baseUrl = await getApiBaseUrl();
   const url = `${baseUrl}${opts.path}`;
   const headers = await buildHeaders(opts.headers);
+  const hasAuth = !!headers.Authorization;
+  log.info('api', `→ ${opts.method} ${opts.path}`, { url, auth: hasAuth });
+  const start = performance.now();
   const init: RequestInit = {
     method: opts.method,
     headers,
@@ -77,8 +63,16 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   if (opts.body !== undefined && opts.body !== null) {
     init.body = JSON.stringify(opts.body);
   }
-  const res = await fetch(url, init);
+  let res: Response;
+  try {
+    res = await fetch(url, init);
+  } catch (err) {
+    log.error('api', `✗ ${opts.method} ${opts.path} network error`, err);
+    return { ok: false, status: 0, error: (err as Error).message };
+  }
+  const ms = Math.round(performance.now() - start);
   if (res.status === 401 && opts.retryOn401 !== false) {
+    log.warn('api', `← ${opts.path} 401 — refreshing & retrying`);
     const refreshed = await refreshAccessToken();
     if (refreshed) {
       return rawRequest<T>({ ...opts, retryOn401: false });
@@ -86,15 +80,18 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   }
   if (!res.ok) {
     const text = await res.text().catch(() => res.statusText);
+    log.error('api', `✗ ${opts.method} ${opts.path} ${res.status} (${ms}ms)`, text);
     return { ok: false, status: res.status, error: text || res.statusText };
   }
   if (res.status === 204) {
+    log.success('api', `← ${opts.path} 204 (${ms}ms)`);
     return { ok: true, data: undefined as T };
   }
   const ct = res.headers.get('content-type') ?? '';
   const data = ct.includes('application/json')
     ? ((await res.json()) as T)
     : ((await res.text()) as unknown as T);
+  log.success('api', `← ${opts.method} ${opts.path} ${res.status} (${ms}ms)`);
   return { ok: true, data };
 }
 

@@ -1,8 +1,8 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
 import { useEffect, useState } from 'react';
-import { onMessage } from 'webext-bridge/window';
 
 export interface RecognitionState {
   capturedAt: string | null;
@@ -40,16 +40,18 @@ export function usePageRecognition(): RecognitionState {
   }, [tab.url]);
 
   useEffect(() => {
-    onMessage(CHANNELS.PAGE_ALREADY_CAPTURED, ({ data }) => {
-      const payload = data as { url: string; capturedAt: string; id: string };
-      if (payload.url !== tab.url) return { ignored: true };
-      setState({
-        capturedAt: payload.capturedAt,
-        capturedId: payload.id,
-        loading: false,
-      });
-      return { ack: true };
-    });
+    return on<{ url: string; capturedAt: string; id: string }, { ack: true }>(
+      CHANNELS.PAGE_ALREADY_CAPTURED,
+      (payload) => {
+        if (payload.url !== tab.url) return { ack: true };
+        setState({
+          capturedAt: payload.capturedAt,
+          capturedId: payload.id,
+          loading: false,
+        });
+        return { ack: true };
+      },
+    );
   }, [tab.url]);
 
   return state;

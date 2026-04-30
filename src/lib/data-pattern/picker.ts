@@ -132,7 +132,9 @@ function finish(reason: 'done' | 'cancel') {
   void chrome.runtime.sendMessage({
     __matrx: true,
     kind: reason === 'done' ? 'data:picker-result' : 'data:picker-exit',
-    fields: picked.map((p, i) => ({ name: `field_${i + 1}`, selector: p.selector })),
+    payload: {
+      fields: picked.map((p, i) => ({ name: `field_${i + 1}`, selector: p.selector })),
+    },
   });
   unmountPicker();
 }

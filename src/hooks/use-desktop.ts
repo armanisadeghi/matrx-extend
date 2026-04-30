@@ -1,19 +1,21 @@
+import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { useDesktopStore } from '@/state/desktop';
 import { useEffect } from 'react';
-import { onMessage, sendMessage } from 'webext-bridge/window';
 
 export function useDesktopBridge() {
   const state = useDesktopStore();
   useEffect(() => {
-    onMessage(CHANNELS.DESKTOP_AVAILABILITY as never, (msg: { data: unknown }) => {
-      const payload = msg.data as { transport: 'native' | 'http' | 'none'; lastChecked: number };
-      useDesktopStore.getState().set({
-        transport: payload.transport,
-        lastChecked: payload.lastChecked,
-      });
-      return { ack: true } as never;
-    });
+    return on<{ transport: 'native' | 'http' | 'none'; lastChecked: number }, { ack: true }>(
+      CHANNELS.DESKTOP_AVAILABILITY,
+      (payload) => {
+        useDesktopStore.getState().set({
+          transport: payload.transport,
+          lastChecked: payload.lastChecked,
+        });
+        return { ack: true };
+      },
+    );
   }, []);
   return state;
 }
@@ -22,10 +24,8 @@ export async function callDesktop<T = unknown>(
   command: string,
   args?: Record<string, unknown>,
 ): Promise<{ ok: boolean; data?: T; error?: string }> {
-  const r = (await sendMessage(
-    CHANNELS.DESKTOP_RPC as never,
-    { command, args: args ?? null } as never,
-    'background' as never,
-  )) as { ok: boolean; data?: T; error?: string };
-  return r;
+  return send<{ command: string; args?: Record<string, unknown> }, { ok: boolean; data?: T; error?: string }>(
+    CHANNELS.DESKTOP_RPC,
+    { command, args },
+  );
 }
