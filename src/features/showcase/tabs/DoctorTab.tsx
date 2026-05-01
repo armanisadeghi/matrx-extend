@@ -144,6 +144,42 @@ export function DoctorTab() {
               )}
             </div>
 
+            {diag.sources.repeating_groups.length > 0 && (
+              <div className="space-y-1.5 rounded-xl bg-violet-500/5 ring-1 ring-violet-500/30 p-3 text-xs">
+                <div className="text-[11px] font-medium uppercase tracking-wider text-violet-700 dark:text-violet-400">
+                  Repeating-card patterns
+                </div>
+                <div className="text-[10px] text-muted-foreground">
+                  Direct-child siblings under a common parent that share a structural
+                  fingerprint. The List Pattern tab can extract these.
+                </div>
+                <div className="space-y-1">
+                  {diag.sources.repeating_groups.map((g, i) => (
+                    <div
+                      // biome-ignore lint/suspicious/noArrayIndexKey: render-only.
+                      key={i}
+                      className="space-y-0.5 rounded-lg bg-background/40 px-2 py-1.5"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-full bg-violet-500/15 px-1.5 py-px text-[10px] font-medium text-violet-700 dark:text-violet-400">
+                          {g.count}
+                        </span>
+                        <code className="min-w-0 flex-1 truncate font-mono text-[10px]">
+                          {g.item_selector}
+                        </code>
+                      </div>
+                      <div className="truncate pl-1 text-[10px] text-muted-foreground">
+                        {g.sample_text || '(no sample text)'}
+                      </div>
+                      <div className="truncate pl-1 font-mono text-[10px] opacity-50">
+                        in {g.parent_selector}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="space-y-1.5 rounded-xl bg-secondary/40 p-3 text-xs">
               <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
                 Page signals

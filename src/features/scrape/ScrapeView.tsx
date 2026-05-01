@@ -1,11 +1,21 @@
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
+import { MarkdownView } from '@/components/MarkdownView';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { usePageRecognition } from '@/hooks/use-page-recognition';
 import { useScrape } from '@/hooks/use-scrape';
 import type { CaptureError, CaptureErrorAction } from '@/lib/scrape/capture-error';
-import { stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
+import {
+  articleCopyOptions,
+  fullCaptureCopyOptions,
+  imagesCopyOptions,
+  linksCopyOptions,
+  schemaCopyOptions,
+  seoCopyOptions,
+  videosCopyOptions,
+} from '@/lib/scrape/copy-options';
+import { articleToMarkdown } from '@/lib/scrape/to-markdown';
 import type { SeoAudit } from '@/lib/seo/audit';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/state/auth';
@@ -26,8 +36,6 @@ import {
   VideoIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 
 export function ScrapeView() {
   const {
@@ -74,62 +82,7 @@ export function ScrapeView() {
             <div className="truncate text-sm font-medium">{tab.title ?? '—'}</div>
             <div className="truncate text-xs text-muted-foreground">{tab.url ?? ''}</div>
           </div>
-          {current && (
-            <CopyMenu
-              title="Copy capture"
-              options={[
-                {
-                  label: 'Article (Markdown)',
-                  description: 'Just the cleaned article text',
-                  getContent: () => current.article.content_markdown ?? '',
-                },
-                {
-                  label: 'Page URL',
-                  getContent: () => current.url ?? tab.url ?? '',
-                },
-                {
-                  label: 'For AI agent',
-                  description: 'Article + metadata, wrapped',
-                  ai: true,
-                  getContent: () =>
-                    wrapForAgent({
-                      description: 'an article scraped from a webpage',
-                      source: {
-                        url: current.url ?? tab.url ?? null,
-                        title: current.article.title ?? tab.title ?? null,
-                        capturedAt: Date.now(),
-                      },
-                      meta: {
-                        wordCount: current.article.word_count ?? null,
-                        readingTimeMinutes: current.article.reading_time_minutes ?? null,
-                        extractor: current.article.extractor,
-                      },
-                      format: 'markdown',
-                      content: current.article.content_markdown ?? '',
-                    }),
-                },
-                {
-                  label: 'Full capture (JSON)',
-                  description: 'Article + media + schema',
-                  adminOnly: true,
-                  getContent: () => stringifyJson(current),
-                },
-                {
-                  label: 'Full capture for AI (JSON)',
-                  ai: true,
-                  adminOnly: true,
-                  getContent: () =>
-                    wrapJsonForAgent(current, {
-                      description: "the full Matrx scrape result for a webpage",
-                      source: {
-                        url: current.url ?? tab.url ?? null,
-                        title: current.article.title ?? tab.title ?? null,
-                      },
-                    }),
-                },
-              ]}
-            />
-          )}
+          {current && <CopyMenu title="Copy capture" options={fullCaptureCopyOptions(current)} />}
         </div>
         {recognition.capturedAt && !saved && (
           <div className="mt-2 flex items-center gap-2 rounded-xl bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-700 dark:text-emerald-300">
@@ -174,54 +127,9 @@ export function ScrapeView() {
                       {current.article.extractor} · {current.article.word_count ?? '—'} words ·{' '}
                       {current.article.reading_time_minutes ?? '—'} min read
                     </span>
-                    <CopyMenu
-                      title="Copy article"
-                      options={[
-                        {
-                          label: 'Markdown',
-                          getContent: () => current.article.content_markdown ?? '',
-                        },
-                        {
-                          label: 'Plain text',
-                          getContent: () =>
-                            stripMarkdown(current.article.content_markdown ?? ''),
-                        },
-                        {
-                          label: 'For AI agent',
-                          ai: true,
-                          getContent: () =>
-                            wrapForAgent({
-                              description: 'an article scraped from a webpage',
-                              source: {
-                                url: current.url ?? tab.url ?? null,
-                                title: current.article.title ?? tab.title ?? null,
-                              },
-                              meta: {
-                                wordCount: current.article.word_count ?? null,
-                                readingTimeMinutes: current.article.reading_time_minutes ?? null,
-                              },
-                              format: 'markdown',
-                              content: current.article.content_markdown ?? '',
-                            }),
-                        },
-                        {
-                          label: 'HTML (cleaned)',
-                          adminOnly: true,
-                          getContent: () => current.article.content_html_safe ?? '',
-                        },
-                        {
-                          label: 'Article (JSON)',
-                          adminOnly: true,
-                          getContent: () => stringifyJson(current.article),
-                        },
-                      ]}
-                    />
+                    <CopyMenu title="Copy article" options={articleCopyOptions(current)} />
                   </div>
-                  <div className="prose prose-sm max-w-none text-sm dark:prose-invert">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {current.article.content_markdown ?? '_No clean article extracted._'}
-                    </ReactMarkdown>
-                  </div>
+                  <MarkdownView content={articleToMarkdown(current)} />
                 </div>
               </div>
             </TabsContent>
@@ -231,41 +139,7 @@ export function ScrapeView() {
                 {current.images.length > 0 && (
                   <ListToolbar
                     label={`${current.images.length} image${current.images.length === 1 ? '' : 's'}`}
-                    copyMenu={
-                      <CopyMenu
-                        title="Copy images"
-                        options={[
-                          {
-                            label: 'URLs (one per line)',
-                            getContent: () => current.images.map((i) => i.src).join('\n'),
-                          },
-                          {
-                            label: 'For AI agent',
-                            ai: true,
-                            getContent: () =>
-                              wrapForAgent({
-                                description: 'a list of images extracted from a webpage',
-                                source: {
-                                  url: current.url ?? tab.url ?? null,
-                                  title: current.article.title ?? tab.title ?? null,
-                                },
-                                meta: { count: current.images.length },
-                                format: 'text',
-                                content: current.images
-                                  .map((i) =>
-                                    i.alt ? `${i.src}\n  alt: ${i.alt}` : i.src,
-                                  )
-                                  .join('\n'),
-                              }),
-                          },
-                          {
-                            label: 'JSON',
-                            adminOnly: true,
-                            getContent: () => stringifyJson(current.images),
-                          },
-                        ]}
-                      />
-                    }
+                    copyMenu={<CopyMenu title="Copy images" options={imagesCopyOptions(current)} />}
                   />
                 )}
                 <div className="grid grid-cols-3 gap-1.5 px-3 pb-3">
@@ -301,37 +175,7 @@ export function ScrapeView() {
                 {current.videos.length > 0 && (
                   <ListToolbar
                     label={`${current.videos.length} video${current.videos.length === 1 ? '' : 's'}`}
-                    copyMenu={
-                      <CopyMenu
-                        title="Copy videos"
-                        options={[
-                          {
-                            label: 'URLs (one per line)',
-                            getContent: () => current.videos.map((v) => v.src).join('\n'),
-                          },
-                          {
-                            label: 'For AI agent',
-                            ai: true,
-                            getContent: () =>
-                              wrapForAgent({
-                                description: 'a list of video sources extracted from a webpage',
-                                source: {
-                                  url: current.url ?? tab.url ?? null,
-                                  title: current.article.title ?? tab.title ?? null,
-                                },
-                                meta: { count: current.videos.length },
-                                format: 'text',
-                                content: current.videos.map((v) => v.src).join('\n'),
-                              }),
-                          },
-                          {
-                            label: 'JSON',
-                            adminOnly: true,
-                            getContent: () => stringifyJson(current.videos),
-                          },
-                        ]}
-                      />
-                    }
+                    copyMenu={<CopyMenu title="Copy videos" options={videosCopyOptions(current)} />}
                   />
                 )}
                 <div className="space-y-1 px-3 pb-3">
@@ -366,46 +210,7 @@ export function ScrapeView() {
                 {current.links.length > 0 && (
                   <ListToolbar
                     label={`${current.links.length} link${current.links.length === 1 ? '' : 's'}`}
-                    copyMenu={
-                      <CopyMenu
-                        title="Copy links"
-                        options={[
-                          {
-                            label: 'URLs (one per line)',
-                            getContent: () => current.links.map((l) => l.href).join('\n'),
-                          },
-                          {
-                            label: 'As Markdown list',
-                            getContent: () =>
-                              current.links
-                                .map((l) => `- [${l.text || l.href}](${l.href})`)
-                                .join('\n'),
-                          },
-                          {
-                            label: 'For AI agent',
-                            ai: true,
-                            getContent: () =>
-                              wrapForAgent({
-                                description: 'a list of links extracted from a webpage',
-                                source: {
-                                  url: current.url ?? tab.url ?? null,
-                                  title: current.article.title ?? tab.title ?? null,
-                                },
-                                meta: { count: current.links.length },
-                                format: 'markdown',
-                                content: current.links
-                                  .map((l) => `- [${l.text || l.href}](${l.href})`)
-                                  .join('\n'),
-                              }),
-                          },
-                          {
-                            label: 'JSON',
-                            adminOnly: true,
-                            getContent: () => stringifyJson(current.links),
-                          },
-                        ]}
-                      />
-                    }
+                    copyMenu={<CopyMenu title="Copy links" options={linksCopyOptions(current)} />}
                   />
                 )}
                 <div className="space-y-0.5 px-3 pb-3">
@@ -440,37 +245,7 @@ export function ScrapeView() {
               <div className="h-full overflow-y-auto">
                 <ListToolbar
                   label="SEO audit"
-                  copyMenu={
-                    <CopyMenu
-                      title="Copy SEO audit"
-                      options={[
-                        {
-                          label: 'Summary (text)',
-                          getContent: () =>
-                            seoToText(current.seo, current.url ?? tab.url ?? null),
-                        },
-                        {
-                          label: 'For AI agent',
-                          ai: true,
-                          getContent: () =>
-                            wrapForAgent({
-                              description: 'an SEO audit for a webpage',
-                              source: {
-                                url: current.url ?? tab.url ?? null,
-                                title: current.article.title ?? tab.title ?? null,
-                              },
-                              format: 'text',
-                              content: seoToText(current.seo, current.url ?? tab.url ?? null),
-                            }),
-                        },
-                        {
-                          label: 'JSON',
-                          adminOnly: true,
-                          getContent: () => stringifyJson(current.seo),
-                        },
-                      ]}
-                    />
-                  }
+                  copyMenu={<CopyMenu title="Copy SEO audit" options={seoCopyOptions(current)} />}
                 />
                 <SeoPanel seo={current.seo} />
               </div>
@@ -480,37 +255,7 @@ export function ScrapeView() {
               <div className="h-full overflow-y-auto">
                 <ListToolbar
                   label="Schema & metadata"
-                  copyMenu={
-                    <CopyMenu
-                      title="Copy schema"
-                      options={[
-                        {
-                          label: 'JSON',
-                          getContent: () =>
-                            stringifyJson({
-                              metadata: current.metadata,
-                              ld_json: current.ld_json,
-                            }),
-                        },
-                        {
-                          label: 'For AI agent',
-                          ai: true,
-                          getContent: () =>
-                            wrapJsonForAgent(
-                              { metadata: current.metadata, ld_json: current.ld_json },
-                              {
-                                description:
-                                  'metadata + JSON-LD schema extracted from a webpage',
-                                source: {
-                                  url: current.url ?? tab.url ?? null,
-                                  title: current.article.title ?? tab.title ?? null,
-                                },
-                              },
-                            ),
-                        },
-                      ]}
-                    />
-                  }
+                  copyMenu={<CopyMenu title="Copy schema" options={schemaCopyOptions(current)} />}
                 />
                 <pre className="px-3 pb-3 text-xs whitespace-pre overflow-x-auto">
                   {JSON.stringify(
@@ -682,58 +427,6 @@ function CaptureErrorCard({
       )}
     </div>
   );
-}
-
-function stripMarkdown(md: string): string {
-  return md
-    .replace(/```[\s\S]*?```/g, (m) => m.replace(/```\w*\n?|\n?```$/g, ''))
-    .replace(/`([^`]+)`/g, '$1')
-    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/^#{1,6}\s+/gm, '')
-    .replace(/^>\s?/gm, '')
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
-    .replace(/\*([^*]+)\*/g, '$1')
-    .replace(/_([^_]+)_/g, '$1')
-    .replace(/^[-*+]\s+/gm, '• ')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-}
-
-function seoToText(seo: SeoAudit, url: string | null): string {
-  const lines: string[] = [];
-  if (url) lines.push(`URL: ${url}`);
-  lines.push(`Title (${seo.title.length} chars): ${seo.title.value || '—'}`);
-  lines.push(
-    `Description (${seo.description.length} chars): ${seo.description.value ?? '—'}`,
-  );
-  lines.push(`Canonical: ${seo.canonical ?? '—'}`);
-  lines.push(`Robots: ${seo.robots ?? '—'}`);
-  if (seo.hreflang.length > 0) {
-    lines.push('');
-    lines.push(`Hreflang (${seo.hreflang.length}):`);
-    for (const h of seo.hreflang) lines.push(`  ${h.lang}: ${h.href}`);
-  }
-  if (seo.schema_types.length > 0) {
-    lines.push('');
-    lines.push(`Schema types: ${seo.schema_types.join(', ')}`);
-  }
-  if (seo.headings.length > 0) {
-    lines.push('');
-    lines.push(`Headings (${seo.headings.length}):`);
-    for (const h of seo.headings.slice(0, 50)) lines.push(`  H${h.level}: ${h.text}`);
-    if (seo.headings.length > 50) lines.push(`  …+${seo.headings.length - 50} more`);
-  }
-  lines.push('');
-  lines.push('Page stats:');
-  lines.push(`  Images: ${seo.images.total} (missing alt: ${seo.images.missing_alt})`);
-  lines.push(`  Words: ${seo.word_count}`);
-  lines.push(`  Internal links: ${seo.links.internal}`);
-  lines.push(`  External links: ${seo.links.external}`);
-  if (seo.flesch_reading_ease !== null) {
-    lines.push(`  Flesch reading ease: ${seo.flesch_reading_ease}`);
-  }
-  return lines.join('\n');
 }
 
 function ScrapeTab({

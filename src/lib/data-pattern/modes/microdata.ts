@@ -24,15 +24,17 @@ export const microdataMode: ExtractionMode<MicrodataConfig> = {
 
   detectInPage: (config) => {
     const cfg = (config ?? {}) as { itemtype?: string };
-    const items = Array.from(
+    const all = Array.from(
       document.querySelectorAll<HTMLElement>('[itemscope][itemtype]'),
     );
-    const topLevel = items.filter((el) => !el.parentElement?.closest('[itemscope]'));
-    if (topLevel.length === 0) {
+    if (all.length === 0) {
       return { available: false, summary: 'No microdata on this page' };
     }
+    // Count types across ALL itemscopes — including nested ones. Many pages
+    // wrap repeating Event/Product/Recipe items inside a single top-level
+    // WebPage itemscope; the repeating data is what we want to surface.
     const types = new Map<string, number>();
-    for (const el of topLevel) {
+    for (const el of all) {
       const t = el.getAttribute('itemtype') ?? '';
       const short = t.split('/').pop() ?? t;
       types.set(short, (types.get(short) ?? 0) + 1);
@@ -43,14 +45,15 @@ export const microdataMode: ExtractionMode<MicrodataConfig> = {
       summary = `${c} ${cfg.itemtype} item${c === 1 ? '' : 's'}`;
     } else {
       const parts = Array.from(types.entries())
+        .sort((a, b) => b[1] - a[1])
         .map(([t, n]) => `${n} ${t}`)
         .join(', ');
-      summary = `${topLevel.length} items: ${parts}`;
+      summary = `${all.length} items: ${parts}`;
     }
     return {
       available: true,
       summary,
-      count: cfg.itemtype ? (types.get(cfg.itemtype) ?? 0) : topLevel.length,
+      count: cfg.itemtype ? (types.get(cfg.itemtype) ?? 0) : all.length,
       meta: { types: Object.fromEntries(types) },
     };
   },
@@ -111,18 +114,21 @@ export const microdataMode: ExtractionMode<MicrodataConfig> = {
       return out;
     };
 
-    const items = Array.from(
+    // When user supplies a type filter, return ALL items of that type —
+    // including nested ones (e.g. Event items inside a WebPage wrapper).
+    // When no filter, return top-level only so we don't double-count nested
+    // children that are already represented in their parent.
+    const all = Array.from(
       document.querySelectorAll<HTMLElement>('[itemscope][itemtype]'),
-    ).filter((el) => !el.parentElement?.closest('[itemscope]'));
-
-    const filtered = cfg.itemtype
-      ? items.filter((el) => {
+    );
+    const candidates = cfg.itemtype
+      ? all.filter((el) => {
           const t = el.getAttribute('itemtype') ?? '';
           const short = t.split('/').pop() ?? t;
           return short === cfg.itemtype || t === cfg.itemtype;
         })
-      : items;
+      : all.filter((el) => !el.parentElement?.closest('[itemscope]'));
 
-    return filtered.map(extractItem);
+    return candidates.map(extractItem);
   },
 };

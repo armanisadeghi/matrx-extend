@@ -11,6 +11,17 @@
  * Self-contained — runs across the chrome.scripting boundary.
  */
 
+export interface RepeatingGroup {
+  /** CSS path to the parent that holds the repeating items. */
+  parent_selector: string;
+  /** Structural fingerprint that matches the items (relative to parent). */
+  item_selector: string;
+  /** How many sibling items match. */
+  count: number;
+  /** First ~80 chars of the first item's text — helps identify what they are. */
+  sample_text: string;
+}
+
 export interface PageDiagnostic {
   url: string;
   host: string;
@@ -28,9 +39,10 @@ export interface PageDiagnostic {
     apollo_inline: { present: boolean };
     bpr_guid: { count: number; total_size_bytes: number };
     window_assignments: { name: string; size_bytes: number }[];
+    repeating_groups: RepeatingGroup[];
   };
   // Recommendations: which mode is most likely to work
-  recommendations: { mode: string; reason: string }[];
+  recommendations: { mode: string; reason: string; config?: unknown }[];
   // Lightweight body sample for debugging (first ~500 chars of <main>/<article>/<body>)
   body_sample: string;
   body_total_bytes: number;
@@ -53,6 +65,7 @@ export function pageDiagnosticInPage(): PageDiagnostic {
       apollo_inline: { present: false },
       bpr_guid: { count: 0, total_size_bytes: 0 },
       window_assignments: [],
+      repeating_groups: [],
     },
     recommendations: [],
     body_sample: '',
@@ -98,16 +111,21 @@ export function pageDiagnosticInPage(): PageDiagnostic {
   };
 
   // ── Microdata ───────────────────────────────────────────────────────────
+  // Count ALL itemscopes + their types (including nested). The microdata
+  // mode itself decides whether to extract top-level only or filter by type.
   const microdataEls = Array.from(
     document.querySelectorAll<HTMLElement>('[itemscope][itemtype]'),
   );
-  const topMicrodata = microdataEls.filter((el) => !el.parentElement?.closest('[itemscope]'));
-  const mdTypes = new Set<string>();
-  for (const el of topMicrodata) {
+  const mdTypeCounts = new Map<string, number>();
+  for (const el of microdataEls) {
     const t = el.getAttribute('itemtype') ?? '';
-    mdTypes.add(t.split('/').pop() ?? t);
+    const short = t.split('/').pop() ?? t;
+    mdTypeCounts.set(short, (mdTypeCounts.get(short) ?? 0) + 1);
   }
-  out.sources.microdata = { count: topMicrodata.length, types: Array.from(mdTypes) };
+  const mdTypesSorted = Array.from(mdTypeCounts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([t, n]) => `${t}×${n}`);
+  out.sources.microdata = { count: microdataEls.length, types: mdTypesSorted };
 
   // ── Tables ──────────────────────────────────────────────────────────────
   const tables = Array.from(document.querySelectorAll<HTMLTableElement>('table'));
@@ -192,25 +210,140 @@ export function pageDiagnosticInPage(): PageDiagnostic {
     size_bytes: size,
   }));
 
+  // ── Repeating-card pattern detection ────────────────────────────────────
+  // Walk every parent and find direct children with a repeated structural
+  // fingerprint (tag + filtered class). >=5 siblings = a list-shaped pattern.
+  // This is what makes "click and extract a 400-card page" possible without
+  // any user picking.
+  const STATEFUL_RE =
+    /^(active|hover|focus|focused|selected|open|opened|closed|expanded|collapsed|hidden|visible|loading|disabled)$/i;
+  const AUTOGEN_RE =
+    /^(?:_[\w-]{4,}|[a-z]+_[a-zA-Z0-9_-]{6,}|[a-z]+-[A-Za-z0-9]{5,}|[a-z]{1,3}[A-Z][a-zA-Z0-9]{4,}|css-[a-z0-9]{4,}|jsx-\d+|sc-[a-zA-Z0-9]+|c-[a-zA-Z0-9]{6,})$/;
+  const SKIP_TAGS = new Set([
+    'html',
+    'head',
+    'meta',
+    'link',
+    'script',
+    'style',
+    'noscript',
+    'br',
+    'hr',
+    'svg',
+    'path',
+    'g',
+    'defs',
+    'use',
+  ]);
+  const childFp = (el: Element): string | null => {
+    const tag = el.tagName.toLowerCase();
+    if (SKIP_TAGS.has(tag)) return null;
+    const classes = Array.from(el.classList)
+      .filter((c) => !STATEFUL_RE.test(c) && !AUTOGEN_RE.test(c))
+      .slice(0, 2);
+    if (classes.length > 0) {
+      return tag + classes.map((c) => `.${CSS.escape(c)}`).join('');
+    }
+    if (tag === 'li' || tag === 'article' || tag === 'tr' || tag === 'section') return tag;
+    return null;
+  };
+  const cssPath = (el: Element, depth = 4): string => {
+    const parts: string[] = [];
+    let node: Element | null = el;
+    while (node && parts.length < depth) {
+      if (node.id) {
+        parts.unshift(`#${CSS.escape(node.id)}`);
+        break;
+      }
+      const tag = node.tagName.toLowerCase();
+      const klass = Array.from(node.classList)
+        .filter((c) => !STATEFUL_RE.test(c) && !AUTOGEN_RE.test(c))
+        .slice(0, 1);
+      parts.unshift(klass.length > 0 ? `${tag}.${CSS.escape(klass[0] ?? '')}` : tag);
+      node = node.parentElement;
+    }
+    return parts.join(' > ');
+  };
+
+  const groups: RepeatingGroup[] = [];
+  const seenSelectors = new Set<string>();
+  const allEls = document.querySelectorAll<HTMLElement>('*');
+  for (const parent of Array.from(allEls)) {
+    if (parent.children.length < 5) continue;
+    if (SKIP_TAGS.has(parent.tagName.toLowerCase())) continue;
+    const buckets = new Map<string, Element[]>();
+    for (const c of Array.from(parent.children)) {
+      const fp = childFp(c);
+      if (!fp) continue;
+      const arr = buckets.get(fp) ?? [];
+      arr.push(c);
+      buckets.set(fp, arr);
+    }
+    for (const [fp, items] of buckets) {
+      if (items.length < 5) continue;
+      const parentSel = cssPath(parent);
+      const key = `${parentSel}|${fp}`;
+      if (seenSelectors.has(key)) continue;
+      seenSelectors.add(key);
+      const sample = items[0] as HTMLElement;
+      const sampleText = (sample.innerText ?? '').replace(/\s+/g, ' ').trim().slice(0, 80);
+      groups.push({
+        parent_selector: parentSel,
+        item_selector: fp,
+        count: items.length,
+        sample_text: sampleText,
+      });
+    }
+  }
+  groups.sort((a, b) => b.count - a.count);
+  out.sources.repeating_groups = groups.slice(0, 5);
+
   // ── Body sample ─────────────────────────────────────────────────────────
   const main = document.querySelector('main, article, [role="main"]') ?? document.body;
   const text = (main as HTMLElement)?.innerText ?? document.body.innerText ?? '';
   out.body_total_bytes = text.length;
   out.body_sample = text.replace(/\s+/g, ' ').trim().slice(0, 500);
 
-  // ── Recommendations ─────────────────────────────────────────────────────
+  // ── Recommendations (ranked by likely usefulness) ───────────────────────
+  // Rule of thumb: more rows = better. A 400-Event microdata feed beats a
+  // 1-WebPage one; a 400-card repeating group beats a single JSON-LD block.
+
+  // 1. Microdata with a NON-WebPage type that has many items.
+  const interestingMdType = Array.from(mdTypeCounts.entries())
+    .filter(([t, _n]) => t !== 'WebPage' && t !== 'WebSite' && t !== 'BreadcrumbList')
+    .sort((a, b) => b[1] - a[1])[0];
+  if (interestingMdType && interestingMdType[1] >= 3) {
+    out.recommendations.push({
+      mode: 'microdata',
+      reason: `${interestingMdType[1]} microdata items of type "${interestingMdType[0]}". Microdata tab — set the type filter to "${interestingMdType[0]}".`,
+      config: { itemtype: interestingMdType[0] },
+    });
+  }
+
+  // 2. Repeating-card groups with many siblings.
+  if (out.sources.repeating_groups.length > 0) {
+    const top = out.sources.repeating_groups[0];
+    if (top && top.count >= 5) {
+      out.recommendations.push({
+        mode: 'list_pattern',
+        reason: `${top.count} repeating cards detected (${top.item_selector}). List Pattern will pre-seed; click a sample card and pick fields.`,
+        config: {
+          list_root: top.parent_selector,
+          item_selector: top.item_selector,
+        },
+      });
+    }
+  }
+
+  // 3. JSON-LD.
   if (out.sources.json_ld.count > 0) {
     out.recommendations.push({
       mode: 'json_ld',
-      reason: `Found ${out.sources.json_ld.count} JSON-LD block${out.sources.json_ld.count === 1 ? '' : 's'} (types: ${out.sources.json_ld.types.join(', ') || 'none typed'})`,
+      reason: `${out.sources.json_ld.count} JSON-LD block${out.sources.json_ld.count === 1 ? '' : 's'} (types: ${out.sources.json_ld.types.join(', ') || 'none typed'})`,
     });
   }
-  if (out.sources.microdata.count > 0) {
-    out.recommendations.push({
-      mode: 'microdata',
-      reason: `Found ${out.sources.microdata.count} microdata item${out.sources.microdata.count === 1 ? '' : 's'} (${out.sources.microdata.types.join(', ')})`,
-    });
-  }
+
+  // 4. Framework data sources.
   if (out.sources.next_data.present) {
     out.recommendations.push({
       mode: 'next_data',
@@ -220,13 +353,13 @@ export function pageDiagnosticInPage(): PageDiagnostic {
   if (out.sources.nuxt_data.present) {
     out.recommendations.push({
       mode: 'next_data',
-      reason: `__NUXT_DATA__ present — pick a key path in Framework tab`,
+      reason: '__NUXT_DATA__ present — pick a key path in Framework tab',
     });
   }
   if (out.sources.apollo_dom.present) {
     out.recommendations.push({
       mode: 'next_data',
-      reason: `__APOLLO_STATE__ present — pick a key path in Framework tab`,
+      reason: '__APOLLO_STATE__ present — pick a key path in Framework tab',
     });
   }
   if (out.sources.bpr_guid.count > 0) {
@@ -238,16 +371,31 @@ export function pageDiagnosticInPage(): PageDiagnostic {
   if (out.sources.window_assignments.length > 0) {
     const names = out.sources.window_assignments.map((a) => a.name).join(', ');
     out.recommendations.push({
-      mode: 'network_capture',
-      reason: `Inline window.* state detected (${names}). Framework tab handles common ones; otherwise use Network capture.`,
+      mode: 'next_data',
+      reason: `Inline window.* state: ${names}. Framework tab.`,
     });
   }
+
+  // 5. Tables.
   if (out.sources.tables.usable_count > 0) {
     out.recommendations.push({
       mode: 'auto_table',
       reason: `${out.sources.tables.usable_count} table(s) on the page`,
     });
   }
+
+  // 6. Microdata fallback for low-count types (e.g. just WebPage).
+  if (
+    out.sources.microdata.count > 0 &&
+    !out.recommendations.some((r) => r.mode === 'microdata')
+  ) {
+    out.recommendations.push({
+      mode: 'microdata',
+      reason: `${out.sources.microdata.count} microdata item(s): ${out.sources.microdata.types.join(', ')}. Useful for page-level metadata.`,
+    });
+  }
+
+  // 7. Last resort.
   if (out.recommendations.length === 0) {
     out.recommendations.push({
       mode: 'list_pattern',
