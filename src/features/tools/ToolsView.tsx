@@ -15,6 +15,7 @@
  * runs renders here too.
  */
 
+import { CopyButton } from '@/components/CopyMenu';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -273,19 +274,41 @@ function ToolDetail({ handler }: { handler: AnyToolHandler }) {
     }
   };
 
+  const resultText =
+    result === undefined
+      ? ''
+      : typeof result === 'string'
+        ? result
+        : JSON.stringify(result, null, 2);
+
   return (
     <div className="space-y-2 border-t px-2.5 py-2 text-[11px]">
-      <Section label="description">
+      <Section
+        label="description"
+        trailing={<CopyButton text={handler.name} title="Copy tool name" size="xs" />}
+      >
         <div className="text-foreground/80">{handler.description}</div>
       </Section>
 
-      <Section label="input schema (JSON Schema 7)">
+      <Section
+        label="input schema (JSON Schema 7)"
+        trailing={
+          <CopyButton
+            text={() => JSON.stringify(schema, null, 2)}
+            title="Copy schema JSON"
+            size="xs"
+          />
+        }
+      >
         <pre className="max-h-60 overflow-auto rounded bg-background/60 p-1.5 text-[10px] leading-snug">
           {JSON.stringify(schema, null, 2)}
         </pre>
       </Section>
 
-      <Section label="test runner">
+      <Section
+        label="test runner"
+        trailing={<CopyButton text={() => argsText} title="Copy args JSON" size="xs" />}
+      >
         <Textarea
           value={argsText}
           onChange={(e) => setArgsText(e.target.value)}
@@ -316,16 +339,22 @@ function ToolDetail({ handler }: { handler: AnyToolHandler }) {
       </Section>
 
       {error && (
-        <Section label="error">
+        <Section
+          label="error"
+          trailing={<CopyButton text={error} title="Copy error" size="xs" />}
+        >
           <pre className="max-h-40 overflow-auto rounded bg-red-50 p-1.5 text-[10px] leading-snug text-red-800 dark:bg-red-950/40 dark:text-red-300">
             {error}
           </pre>
         </Section>
       )}
       {result !== undefined && !error && (
-        <Section label="output">
+        <Section
+          label="output"
+          trailing={<CopyButton text={resultText} title="Copy result" size="xs" />}
+        >
           <pre className="max-h-60 overflow-auto rounded bg-background/60 p-1.5 text-[10px] leading-snug">
-            {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
+            {resultText}
           </pre>
         </Section>
       )}
@@ -333,11 +362,22 @@ function ToolDetail({ handler }: { handler: AnyToolHandler }) {
   );
 }
 
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
+function Section({
+  label,
+  trailing,
+  children,
+}: {
+  label: string;
+  trailing?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <div>
-      <div className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">
-        {label}
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">
+          {label}
+        </div>
+        {trailing}
       </div>
       <div className="mt-0.5">{children}</div>
     </div>

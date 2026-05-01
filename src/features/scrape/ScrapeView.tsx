@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { usePageRecognition } from '@/hooks/use-page-recognition';
+import { usePageScrollSync } from '@/hooks/use-page-scroll-sync';
 import { useScrape } from '@/hooks/use-scrape';
 import type { CaptureError, CaptureErrorAction } from '@/lib/scrape/capture-error';
 import {
@@ -29,13 +30,15 @@ import {
   ImageIcon,
   Link as LinkIcon,
   Loader2,
+  Link2,
+  Link2Off,
   PlayCircle,
   RefreshCw,
   RotateCcw,
   Save,
   VideoIcon,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function ScrapeView() {
   const {
@@ -55,6 +58,13 @@ export function ScrapeView() {
   const tab = useActiveTab();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  /**
+   * Side-by-side scroll sync. Off by default — opt-in. Some pages can't
+   * stream scroll events (chrome:// etc.), but the hook degrades silently.
+   */
+  const [scrollSync, setScrollSync] = useState(false);
+  const articleScrollRef = useRef<HTMLDivElement | null>(null);
+  usePageScrollSync(scrollSync, articleScrollRef);
 
   // Clear stale capture state when the user navigates to a new URL.
   // Without this, the panel keeps showing the previous page's article and
@@ -120,13 +130,34 @@ export function ScrapeView() {
             </TabsList>
 
             <TabsContent value="article" className="flex-1 min-h-0">
-              <div className="h-full overflow-y-auto">
+              <div ref={articleScrollRef} className="h-full overflow-y-auto">
                 <div className="space-y-2 px-3 pb-3">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span className="flex-1 truncate">
                       {current.article.extractor} · {current.article.word_count ?? '—'} words ·{' '}
                       {current.article.reading_time_minutes ?? '—'} min read
                     </span>
+                    <button
+                      type="button"
+                      onClick={() => setScrollSync((v) => !v)}
+                      title={
+                        scrollSync
+                          ? 'Stop following the page scroll'
+                          : 'Sync scroll with the live page'
+                      }
+                      className={cn(
+                        'inline-flex size-6 shrink-0 items-center justify-center rounded-md transition-colors',
+                        scrollSync
+                          ? 'bg-primary/15 text-primary hover:bg-primary/20'
+                          : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                      )}
+                    >
+                      {scrollSync ? (
+                        <Link2 className="size-3.5" />
+                      ) : (
+                        <Link2Off className="size-3.5" />
+                      )}
+                    </button>
                     <CopyMenu title="Copy article" options={articleCopyOptions(current)} />
                   </div>
                   <MarkdownView content={articleToMarkdown(current)} />

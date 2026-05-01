@@ -36,35 +36,75 @@ export function articleToMarkdown(soup: SoupResult): string {
 
 /**
  * Post-process article markdown to fix common HTML→md conversion artifacts.
- * Conservative: only changes that match what a CommonMark renderer would do.
+ * Conservative — every transform matches what a CommonMark renderer would
+ * already display.
  *
- *   - Collapse whitespace inside link text:
- *       [\n\nMay\n\n12\n\n](url)  →  [May 12](url)
- *     CommonMark already treats newlines in link text as soft breaks (rendered
- *     as a single space), so this just makes the source match the rendered
- *     output. Helps pages that wrap an `<a>` around multiple block-level
- *     `<div>`s (calendar badges, card-style nav, etc.).
+ * Three patterns we handle:
  *
- *   - Empty-text link shells become bare URLs:
- *       [   ](url)  →  url
+ *   1. Multi-line link text (calendar badges, button labels):
+ *        [\n\nMay\n\n12\n\n](url)  →  [May 12](url)
+ *      CommonMark treats newlines in link text as soft breaks (rendered as
+ *      a single space), so collapsing makes the source match the render.
  *
- * Safe across sites — any markdown that already had clean link text is
- * unchanged. The raw `SoupResult.article.content_markdown` is untouched, so
- * anything reading that field directly is unaffected.
+ *   2. Empty link shells:
+ *        [   ](url)  →  url
+ *
+ *   3. Card-wrapping `<a>` (NYT-style story cards, big nav cards):
+ *        [headline + summary + ![alt](img)](url)
+ *      becomes
+ *        headline + summary + ![alt](img)
+ *
+ *        [Read more →](url)
+ *      The original markdown is *technically valid* but renders poorly:
+ *      the entire card visually becomes one giant link, an embedded image
+ *      lives inside the link text, and the summary loses paragraph breaks.
+ *      Unwrapping preserves all information (image, text, URL) and lets the
+ *      reader actually read the card.
+ *
+ * Trigger for case 3: link text contains an `![…](…)` image. That marker
+ * reliably distinguishes "wraps a block of content" from "labels a phrase".
+ *
+ * The raw `SoupResult.article.content_markdown` is *not* mutated — only the
+ * display + copy path runs through this. Anything that reads the raw field
+ * directly is unaffected.
  */
 export function cleanArticleMarkdown(md: string): string {
   if (!md) return md;
-  // Image alt text first (so the link regex below doesn't double-process them).
+
+  // Pass 1 — collapse whitespace in image alt text (independent of links).
   let out = md.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_m, alt: string, url: string) => {
     const collapsed = alt.replace(/\s+/g, ' ').trim();
     return `![${collapsed}](${url})`;
   });
-  // Then plain links.
-  out = out.replace(/\[([^\]]*)\]\(([^)]+)\)/g, (_m, text: string, url: string) => {
-    const collapsed = text.replace(/\s+/g, ' ').trim();
-    if (!collapsed) return url;
-    return `[${collapsed}](${url})`;
+
+  // Pass 2 — process links. Allow link text to contain a complete image
+  // syntax (otherwise the image's `]` ends our match early and card-style
+  // wrappers slip through). The image alternative is listed *first* so the
+  // engine prefers it over the single-char `[^\[\]]` fallback.
+  const linkRe = /\[((?:!\[[^\]]*\]\([^)]+\)|[^\[\]])*)\]\(([^)]+)\)/g;
+  out = out.replace(linkRe, (_m, text: string, url: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return url;
+
+    const hasNestedImage = /!\[[^\]]*\]\([^)]+\)/.test(trimmed);
+
+    if (!hasNestedImage) {
+      // Standard inline link — collapse whitespace (matches CommonMark render).
+      const collapsed = trimmed.replace(/\s+/g, ' ');
+      if (collapsed === url) return url;
+      return `[${collapsed}](${url})`;
+    }
+
+    // Card-wrapping <a>. Unwrap: keep paragraphs (split on blank lines),
+    // collapse internal whitespace within each paragraph, and append a
+    // "Read more" link so the original URL stays one click away.
+    const paragraphs = trimmed
+      .split(/\n{2,}/)
+      .map((p) => p.replace(/\s+/g, ' ').trim())
+      .filter(Boolean);
+    return `${paragraphs.join('\n\n')}\n\n[Read more →](${url})`;
   });
+
   return out;
 }
 

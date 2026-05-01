@@ -43,8 +43,61 @@ export function mountContentBridge(_ctx: ContentCtx): void {
   if (window.__matrx_bridge_mounted) return;
   window.__matrx_bridge_mounted = true;
 
+  // Scroll sync state. The side panel turns the listener on when the
+  // user enables "Sync scroll" on the Scrape tab; off when they disable it
+  // or close the panel. We use a refcount so multiple subscribers (an
+  // upcoming Pilot tab, a future scroll heatmap, etc.) compose cleanly.
+  let scrollSubs = 0;
+  let rafPending = false;
+  const onScroll = () => {
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(() => {
+      rafPending = false;
+      const docHeight = Math.max(
+        document.documentElement.scrollHeight,
+        document.body?.scrollHeight ?? 0,
+      );
+      const maxScroll = Math.max(0, docHeight - window.innerHeight);
+      const env: Envelope<{ y: number; max: number; viewport: number }> = {
+        __matrx: true,
+        kind: CHANNELS.PAGE_SCROLL,
+        payload: {
+          y: window.scrollY,
+          max: maxScroll,
+          viewport: window.innerHeight,
+        },
+      };
+      chrome.runtime.sendMessage(env).catch(() => undefined);
+    });
+  };
+  const enableScrollEmit = () => {
+    if (scrollSubs === 0) {
+      window.addEventListener('scroll', onScroll, { passive: true });
+      // Send one immediately so a freshly-subscribed listener gets the
+      // current position without waiting for the user to scroll.
+      onScroll();
+    }
+    scrollSubs++;
+  };
+  const disableScrollEmit = () => {
+    if (scrollSubs === 0) return;
+    scrollSubs--;
+    if (scrollSubs === 0) window.removeEventListener('scroll', onScroll);
+  };
+
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     if (!isEnvelope(msg)) return false;
+    if (msg.kind === CHANNELS.PAGE_SCROLL_SUBSCRIBE) {
+      enableScrollEmit();
+      sendResponse({ ok: true });
+      return false;
+    }
+    if (msg.kind === CHANNELS.PAGE_SCROLL_UNSUBSCRIBE) {
+      disableScrollEmit();
+      sendResponse({ ok: true });
+      return false;
+    }
     if (msg.kind !== CHANNELS.SCRAPE_CAPTURE) return false;
     void (async () => {
       try {

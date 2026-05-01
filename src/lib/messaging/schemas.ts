@@ -33,6 +33,14 @@ export const CHANNELS = {
   // Scrape (sidepanel → content script via chrome.tabs.sendMessage)
   SCRAPE_CAPTURE: 'scrape:capture-page',
 
+  // Scroll sync — keep the Scrape tab's article view scrolled in step with
+  // the live page so the user can compare the capture against the source.
+  // sidepanel → content script: turn the in-page scroll listener on/off.
+  PAGE_SCROLL_SUBSCRIBE: 'page:scroll-subscribe',
+  PAGE_SCROLL_UNSUBSCRIBE: 'page:scroll-unsubscribe',
+  // content script → sidepanel via chrome.runtime.sendMessage (broadcast).
+  PAGE_SCROLL: 'page:scroll',
+
   // Tasks user-gated overlay (in-page injected button → sidepanel via chrome.runtime.sendMessage)
   TASKS_USER_GO: 'tasks:user-go',
   TASKS_USER_CANCEL: 'tasks:user-cancel',
