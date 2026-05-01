@@ -134,7 +134,7 @@ export function DoctorTab() {
                       key={i}
                       className="flex items-start gap-2 rounded-lg bg-background/60 px-2 py-1.5"
                     >
-                      <span className="mt-0.5 rounded-full bg-primary/15 px-1.5 py-px text-[9px] font-medium uppercase tracking-wider text-primary">
+                      <span className="mt-0.5 shrink-0 whitespace-nowrap rounded-md bg-primary/15 px-1.5 py-px text-[9px] font-medium uppercase tracking-wider text-primary">
                         {MODE_LABELS[r.mode] ?? r.mode}
                       </span>
                       <span className="text-[11px]">{r.reason}</span>
