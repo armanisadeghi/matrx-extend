@@ -83,6 +83,18 @@ export const read_active_page: ToolHandler<ReadPageArgs, unknown> = {
   run: async (args) => {
     const tab = await activeTab();
     if (!tab?.id) return { ok: false, reason: 'No active tab' };
+    // Pre-flight URL check — same shared classifier the Scrape tab uses.
+    // Saves a confusing Chrome error and an immediate retry loop when we
+    // already know the page is on Chrome's hard-blocklist.
+    const { classifyTabUrl } = await import('@/lib/scrape/capture-error');
+    const urlClass = classifyTabUrl(tab.url);
+    if (urlClass.blocked) {
+      return {
+        ok: false,
+        reason: `Chrome blocks extensions on ${urlClass.reason}. Ask the user to switch to a regular page.`,
+        url: tab.url ?? null,
+      };
+    }
     if (args.deep) {
       const { scrollToLoadLazy } = await import('@/lib/scrape/page-ready');
       await scrollToLoadLazy(tab.id, { delayMs: 100, maxMs: 5000 });
@@ -98,7 +110,16 @@ export const read_active_page: ToolHandler<ReadPageArgs, unknown> = {
       });
       return result;
     } catch (err) {
-      return { ok: false, reason: (err as Error).message };
+      const msg = (err as Error).message;
+      if (msg.includes('Receiving end does not exist')) {
+        return {
+          ok: false,
+          reason:
+            "The page's helper script isn't loaded — usually because the extension was updated since this tab was opened. Ask the user to reload the page.",
+          raw: msg,
+        };
+      }
+      return { ok: false, reason: msg };
     }
   },
 };

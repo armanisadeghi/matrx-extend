@@ -1,7 +1,9 @@
+import { CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
+import { rowsToTsv, stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { cn } from '@/lib/utils';
 import { Braces, Table2 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 type View = 'table' | 'json';
 
@@ -9,6 +11,10 @@ interface ResultPreviewProps {
   rows: Record<string, unknown>[];
   emptyHint?: string;
   maxHeight?: number;
+  /** Source URL/title for AI-wrapped copy. Optional. */
+  source?: { url?: string | null; title?: string | null };
+  /** Mode/recipe label for AI-wrapped copy. Optional. */
+  description?: string;
 }
 
 /**
@@ -16,8 +22,41 @@ interface ResultPreviewProps {
  * table view (good for tabular extraction like Mode D, list pattern) and a
  * raw-JSON view (good for nested objects like JSON-LD or framework data).
  */
-export function ResultPreview({ rows, emptyHint, maxHeight = 320 }: ResultPreviewProps) {
+export function ResultPreview({
+  rows,
+  emptyHint,
+  maxHeight = 320,
+  source,
+  description = 'extracted rows from a webpage',
+}: ResultPreviewProps) {
   const [view, setView] = useState<View>('table');
+
+  const copyOptions = useMemo(
+    () => [
+      {
+        label: 'Copy JSON',
+        description: 'Pretty-printed JSON of all rows.',
+        getContent: () => stringifyJson(rows),
+      },
+      {
+        label: 'Copy TSV',
+        description: 'Tab-separated, ready to paste into a spreadsheet.',
+        getContent: () => rowsToTsv(rows),
+      },
+      {
+        label: 'Copy for AI',
+        description: 'JSON wrapped with source URL + a one-line preamble for chat.',
+        ai: true,
+        getContent: () =>
+          wrapJsonForAgent(rows, {
+            description,
+            source: source ?? {},
+            meta: { row_count: rows.length },
+          }),
+      },
+    ],
+    [rows, source, description],
+  );
 
   if (rows.length === 0) {
     return (
@@ -33,7 +72,8 @@ export function ResultPreview({ rows, emptyHint, maxHeight = 320 }: ResultPrevie
         <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
           {rows.length} row{rows.length === 1 ? '' : 's'}
         </div>
-        <div className="flex gap-1">
+        <div className="flex items-center gap-1">
+          <CopyMenu options={copyOptions} title="Copy" size="sm" />
           <ViewToggle active={view === 'table'} onClick={() => setView('table')}>
             <Table2 className="size-3" /> Table
           </ViewToggle>

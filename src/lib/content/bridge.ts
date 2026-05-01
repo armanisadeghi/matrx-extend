@@ -29,7 +29,20 @@ const isEnvelope = (m: unknown): m is Envelope => {
   );
 };
 
+declare global {
+  interface Window {
+    __matrx_bridge_mounted?: boolean;
+  }
+}
+
 export function mountContentBridge(_ctx: ContentCtx): void {
+  // Guard against double-mounting. Without this, programmatic re-injection
+  // (a likely future fallback for "Receiving end does not exist") would
+  // double-wrap history.pushState/replaceState — every nav would recurse —
+  // and register two onMessage listeners, producing double responses.
+  if (window.__matrx_bridge_mounted) return;
+  window.__matrx_bridge_mounted = true;
+
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     if (!isEnvelope(msg)) return false;
     if (msg.kind !== CHANNELS.SCRAPE_CAPTURE) return false;

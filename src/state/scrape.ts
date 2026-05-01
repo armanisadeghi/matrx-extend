@@ -1,14 +1,15 @@
+import type { CaptureError } from '@/lib/scrape/capture-error';
 import type { SoupResult } from '@/lib/scrape/pipeline';
 import { create } from 'zustand';
 
 interface ScrapeState {
   current: SoupResult | null;
   loading: boolean;
-  error: string | null;
+  error: CaptureError | null;
   alreadyCapturedAt: string | null;
   setCurrent: (s: SoupResult | null) => void;
   setLoading: (b: boolean) => void;
-  setError: (s: string | null) => void;
+  setError: (s: CaptureError | null) => void;
   setAlreadyCaptured: (s: string | null) => void;
 }
 

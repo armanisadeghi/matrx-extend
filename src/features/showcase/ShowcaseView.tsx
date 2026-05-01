@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { cn } from '@/lib/utils';
 import { AiExtractTab } from './tabs/AiExtractTab';
+import { DoctorTab } from './tabs/DoctorTab';
 import { FrameworkTab } from './tabs/FrameworkTab';
 import { JsonLdTab } from './tabs/JsonLdTab';
 import { ListPatternTab } from './tabs/ListPatternTab';
@@ -30,8 +31,9 @@ export function ShowcaseView() {
         <span className="ml-2 truncate text-xs text-muted-foreground">{host || 'no host'}</span>
       </div>
 
-      <Tabs defaultValue="recipes" className="flex flex-1 flex-col min-h-0">
+      <Tabs defaultValue="doctor" className="flex flex-1 flex-col min-h-0">
         <TabsList className="mx-3 mt-1 self-start gap-1 bg-transparent p-0">
+          <ShowcaseTab value="doctor">Doctor</ShowcaseTab>
           <ShowcaseTab value="recipes">Recipes</ShowcaseTab>
           <ShowcaseTab value="prepare">Prepare</ShowcaseTab>
           <ShowcaseTab value="snapshot">Snapshot</ShowcaseTab>
@@ -45,6 +47,9 @@ export function ShowcaseView() {
           <ShowcaseTab value="patterns">Patterns</ShowcaseTab>
         </TabsList>
 
+        <TabsContent value="doctor" className="flex-1 min-h-0">
+          <DoctorTab />
+        </TabsContent>
         <TabsContent value="recipes" className="flex-1 min-h-0">
           <RecipesTab />
         </TabsContent>

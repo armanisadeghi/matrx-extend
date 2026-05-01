@@ -58,27 +58,96 @@ export function FrameworkTab() {
             }
           }
 
-          // Inline Apollo state via regex
-          if (!document.getElementById('__APOLLO_STATE__')) {
-            const scripts = Array.from(
-              document.querySelectorAll<HTMLScriptElement>('script:not([src])'),
+          // Inline window.* state (Indeed _initialData, Redux preloaded, etc.).
+          // Paren-balanced scan + JSON.parse with safe-eval fallback for sites
+          // that ship JS object literals (unquoted keys).
+          const WINDOW_NAMES = [
+            '_initialData',
+            '__INITIAL_STATE__',
+            '__INITIAL_DATA__',
+            '__PRELOADED_STATE__',
+            '__APP_STATE__',
+            '__REDUX_STATE__',
+            '__APOLLO_STATE__',
+            '__SERVER_STATE__',
+          ];
+          const inlineScripts = Array.from(
+            document.querySelectorAll<HTMLScriptElement>('script:not([src])'),
+          );
+          const extractWindow = (name: string): unknown | undefined => {
+            const escName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const lhsRe = new RegExp(
+              `(?:window\\.|self\\.|var\\s+|let\\s+|const\\s+)?${escName}\\s*=\\s*`,
+              'g',
             );
-            for (const s of scripts) {
-              const t = s.textContent ?? '';
-              if (!t.includes('apolloState') && !t.includes('__APOLLO_STATE__')) continue;
-              const m = t.match(
-                /(?:apolloState|__APOLLO_STATE__)["']?\s*[:=]\s*(\{[\s\S]+?\});?\s*$/m,
-              );
-              if (m?.[1]) {
+            for (const s of inlineScripts) {
+              const txt = s.textContent ?? '';
+              if (!txt.includes(name)) continue;
+              lhsRe.lastIndex = 0;
+              let m: RegExpExecArray | null;
+              while ((m = lhsRe.exec(txt))) {
+                const start = m.index + m[0].length;
+                const opener = txt[start];
+                if (opener !== '{' && opener !== '[') continue;
+                let i = start;
+                let depth = 0;
+                let inStr: string | null = null;
+                while (i < txt.length) {
+                  const ch = txt[i];
+                  if (inStr) {
+                    if (ch === '\\') {
+                      i += 2;
+                      continue;
+                    }
+                    if (ch === inStr) inStr = null;
+                    i++;
+                    continue;
+                  }
+                  if (ch === '"' || ch === "'" || ch === '`') {
+                    inStr = ch;
+                    i++;
+                    continue;
+                  }
+                  if (ch === '{' || ch === '[') depth++;
+                  else if (ch === '}' || ch === ']') {
+                    depth--;
+                    if (depth === 0) {
+                      i++;
+                      break;
+                    }
+                  }
+                  i++;
+                }
+                if (depth !== 0) continue;
+                const blob = txt.slice(start, i);
                 try {
-                  out.push({ source: 'apollo', data: JSON.parse(m[1]) });
-                  break;
+                  return JSON.parse(blob);
                 } catch {
-                  // skip
+                  // fall through
+                }
+                if (
+                  /\b(?:function\s*[(*]|=>|eval\s*\(|new\s+Function|XMLHttpRequest|fetch\s*\()/.test(
+                    blob,
+                  )
+                ) {
+                  continue;
+                }
+                if (blob.length > 5_000_000) continue;
+                try {
+                  return new Function(`"use strict";return (${blob});`)();
+                } catch {
+                  // try next match
                 }
               }
             }
+            return undefined;
+          };
+          for (const name of WINDOW_NAMES) {
+            if (name === '__APOLLO_STATE__' && out.some((o) => o.source === 'apollo')) continue;
+            const data = extractWindow(name);
+            if (data !== undefined) out.push({ source: `window.${name}`, data });
           }
+
           return out;
         },
       });

@@ -1,3 +1,4 @@
+import { buildCaptureError, classifyTabUrl } from '@/lib/scrape/capture-error';
 import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
 import type { SoupResult } from '@/lib/scrape/pipeline';
 import { saveCapture, saveSeoAudit } from '@/lib/supabase/queries';
@@ -44,10 +45,22 @@ export function useScrape() {
       setActiveMode(mode);
       setError(null);
       setProgress(null);
+      let tabId: number | null = null;
+      let tabUrl: string | null = null;
       try {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        tabId = tab?.id ?? null;
+        tabUrl = tab?.url ?? null;
         if (!tab?.id) {
-          setError('No active tab');
+          setError(buildCaptureError({ err: new Error('No active tab'), url: tabUrl, tabId }));
+          return null;
+        }
+
+        // Pre-flight URL check. Saves a confusing Chrome error and a wasted
+        // round-trip when we already know the page is on the blocklist.
+        const urlClass = classifyTabUrl(tab.url);
+        if (urlClass.blocked) {
+          setError(buildCaptureError({ err: null, url: tab.url ?? null, tabId: tab.id }));
           return null;
         }
 
@@ -72,7 +85,7 @@ export function useScrape() {
         setCurrent(result);
         return result;
       } catch (err) {
-        setError((err as Error).message);
+        setError(buildCaptureError({ err, url: tabUrl, tabId }));
         return null;
       } finally {
         setLoading(false);
@@ -82,6 +95,25 @@ export function useScrape() {
     },
     [setCurrent, setError, setLoading],
   );
+
+  /**
+   * Reload the active tab. Used by the error card's "Reload page" button —
+   * the most common fix for "Receiving end does not exist" (content script
+   * present in the page but tied to a stale extension instance).
+   */
+  const reloadActiveTab = useCallback(async () => {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab?.id) return false;
+      await chrome.tabs.reload(tab.id);
+      setError(null);
+      return true;
+    } catch {
+      return false;
+    }
+  }, [setError]);
+
+  const clearError = useCallback(() => setError(null), [setError]);
 
   const save = useCallback(
     async (extra: { patternId?: string } = {}) => {
@@ -115,5 +147,15 @@ export function useScrape() {
     [current],
   );
 
-  return { current, loading, activeMode, progress, error, captureActiveTab, save };
+  return {
+    current,
+    loading,
+    activeMode,
+    progress,
+    error,
+    captureActiveTab,
+    reloadActiveTab,
+    clearError,
+    save,
+  };
 }

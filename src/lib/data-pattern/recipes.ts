@@ -57,13 +57,13 @@ export const RECIPES: Recipe[] = [
     config: { ld_type: 'JobPosting' },
   },
   {
-    id: 'indeed-mosaic',
-    label: 'Indeed — Mosaic provider data (window._initialData)',
+    id: 'indeed-initial-data',
+    label: 'Indeed — window._initialData',
     description:
-      'Indeed exposes most page state in window._initialData. Use the Network tab to capture, or Framework tab to navigate the inline JSON.',
+      'Indeed exposes page state on window._initialData (an inline JS object literal, not JSON). The Framework tab uses paren-balanced scan + safe-eval to read it. Pick the right key path from the tree.',
     hosts: ['indeed.com'],
     kind: 'next_data',
-    config: { source: '__NEXT_DATA__', key_path: 'props.pageProps' },
+    config: { source: 'window._initialData', key_path: '' },
   },
 
   // ── Yelp ──────────────────────────────────────────────────────────────────

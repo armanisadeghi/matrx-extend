@@ -142,10 +142,49 @@ export function elementPathSelector(el: Element, depth = 5): string {
 }
 
 /**
+ * STRUCTURAL fingerprint for list-inference. Differs from localFingerprint:
+ * intentionally ignores stable-anchor attributes (data-testid, data-jk,
+ * aria-label) because those are typically UNIQUE PER ITEM in a list and
+ * would cause sibling-matching to always return 1. We want what's common
+ * across siblings (tag + structural class), not what's unique.
+ *
+ * Returns multiple progressively-relaxed selectors so the caller can fall
+ * back from strict (tag+2 classes) to loose (just tag) until siblings match.
+ */
+function listItemFingerprintCandidates(el: Element): string[] {
+  const tag = el.tagName.toLowerCase();
+  const candidates: string[] = [];
+  if (el.classList.length > 0) {
+    const classes = Array.from(el.classList).filter(
+      (c) => !isStateClass(c) && !isAutogenClass(c),
+    );
+    if (classes.length >= 2) {
+      candidates.push(
+        tag + classes.slice(0, 2).map((c) => `.${CSS.escape(c)}`).join(''),
+      );
+    }
+    if (classes.length >= 1) {
+      const c = classes[0];
+      if (c) candidates.push(`${tag}.${CSS.escape(c)}`);
+    }
+  }
+  // Loosest fallback: just the tag. Matches a lot, but useful for repeating
+  // <li>/<article>/<tr>-style lists where classes don't repeat.
+  if (tag === 'li' || tag === 'article' || tag === 'tr') {
+    candidates.push(tag);
+  }
+  // Dedupe while preserving order.
+  return Array.from(new Set(candidates));
+}
+
+/**
  * Find the smallest list scope: walk up from `clicked` and at each ancestor
- * check whether the path-from-ancestor pattern matches >=2 siblings. The
+ * check whether the structural pattern matches >=2 direct siblings. The
  * first ancestor where the pattern matches multiple children is the
  * list_root, and the relative item selector is the matching pattern.
+ *
+ * Tries progressively looser fingerprints at each level (e.g. tag.class.class
+ * → tag.class → tag for li/article/tr).
  */
 export function inferListPattern(
   clicked: Element,
@@ -161,29 +200,29 @@ export function inferListPattern(
   let parent: Element | null = clicked.parentElement;
 
   while (parent) {
-    const itemFp = localFingerprint(item, false);
-    let matches: Element[] = [];
-    try {
-      matches = Array.from(parent.children).filter((c) => {
-        try {
-          return c.matches(itemFp);
-        } catch {
-          return false;
-        }
-      });
-    } catch {
-      matches = [];
+    const candidates = listItemFingerprintCandidates(item);
+    for (const fp of candidates) {
+      let matches: Element[] = [];
+      try {
+        matches = Array.from(parent.children).filter((c) => {
+          try {
+            return c.matches(fp);
+          } catch {
+            return false;
+          }
+        });
+      } catch {
+        matches = [];
+      }
+      if (matches.length >= 2) {
+        return {
+          listRoot: elementPathSelector(parent),
+          itemSelector: fp,
+          itemCount: matches.length,
+          sampleItem: item,
+        };
+      }
     }
-
-    if (matches.length >= 2) {
-      return {
-        listRoot: elementPathSelector(parent),
-        itemSelector: itemFp,
-        itemCount: matches.length,
-        sampleItem: item,
-      };
-    }
-
     // Climb up: the previous "item" becomes a level deeper into the candidate.
     item = parent;
     parent = parent.parentElement;

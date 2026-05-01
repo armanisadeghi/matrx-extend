@@ -4,11 +4,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { usePageRecognition } from '@/hooks/use-page-recognition';
 import { useScrape } from '@/hooks/use-scrape';
+import type { CaptureError, CaptureErrorAction } from '@/lib/scrape/capture-error';
 import { stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import type { SeoAudit } from '@/lib/seo/audit';
 import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/state/auth';
 import { useScrapeStore } from '@/state/scrape';
 import {
+  AlertTriangle,
+  Ban,
   CheckCircle2,
   ChevronsDown,
   Download,
@@ -16,6 +20,8 @@ import {
   Link as LinkIcon,
   Loader2,
   PlayCircle,
+  RefreshCw,
+  RotateCcw,
   Save,
   VideoIcon,
 } from 'lucide-react';
@@ -24,8 +30,19 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 export function ScrapeView() {
-  const { current, loading, activeMode, progress, error, captureActiveTab, save } = useScrape();
+  const {
+    current,
+    loading,
+    activeMode,
+    progress,
+    error,
+    captureActiveTab,
+    reloadActiveTab,
+    clearError,
+    save,
+  } = useScrape();
   const setCurrent = useScrapeStore((s) => s.setCurrent);
+  const isAdmin = useAuthStore((s) => s.isAdmin);
   const recognition = usePageRecognition();
   const tab = useActiveTab();
   const [saving, setSaving] = useState(false);
@@ -121,9 +138,13 @@ export function ScrapeView() {
           </div>
         )}
         {error && (
-          <div className="mt-2 rounded-xl bg-destructive/10 px-3 py-1.5 text-xs text-destructive">
-            {error}
-          </div>
+          <CaptureErrorCard
+            error={error}
+            isAdmin={isAdmin}
+            onReloadTab={() => void reloadActiveTab()}
+            onTryAgain={() => void captureActiveTab({ mode: activeMode ?? 'fast' })}
+            onDismiss={clearError}
+          />
         )}
       </div>
 
@@ -581,6 +602,84 @@ function ListToolbar({
         {label}
       </span>
       {copyMenu}
+    </div>
+  );
+}
+
+const ACTION_LABELS: Record<CaptureErrorAction, { label: string; Icon: typeof RefreshCw }> = {
+  'reload-tab': { label: 'Reload page', Icon: RefreshCw },
+  'try-again': { label: 'Try again', Icon: RotateCcw },
+};
+
+function CaptureErrorCard({
+  error,
+  isAdmin,
+  onReloadTab,
+  onTryAgain,
+  onDismiss,
+}: {
+  error: CaptureError;
+  isAdmin: boolean;
+  onReloadTab: () => void;
+  onTryAgain: () => void;
+  onDismiss: () => void;
+}) {
+  const Icon = error.recoverable ? AlertTriangle : Ban;
+  const tone = error.recoverable
+    ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30'
+    : 'bg-destructive/10 text-destructive border-destructive/30';
+
+  const handleClick = (action: CaptureErrorAction) => {
+    if (action === 'reload-tab') onReloadTab();
+    else if (action === 'try-again') onTryAgain();
+  };
+
+  return (
+    <div className={cn('mt-2 rounded-xl border p-3', tone)}>
+      <div className="flex items-start gap-2">
+        <Icon className="mt-0.5 size-4 shrink-0" />
+        <div className="min-w-0 flex-1 space-y-1">
+          <div className="text-sm font-medium">{error.title}</div>
+          <div className="text-xs leading-relaxed opacity-90">{error.description}</div>
+        </div>
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="text-xs opacity-60 hover:opacity-100"
+          aria-label="Dismiss"
+        >
+          ×
+        </button>
+      </div>
+      {error.actions.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {error.actions.map((action) => {
+            const cfg = ACTION_LABELS[action];
+            const isPrimary = action === error.actions[0];
+            return (
+              <Button
+                key={action}
+                size="sm"
+                variant={isPrimary ? 'default' : 'secondary'}
+                className="h-7 rounded-full text-xs"
+                onClick={() => handleClick(action)}
+              >
+                <cfg.Icon className="size-3.5" /> {cfg.label}
+              </Button>
+            );
+          })}
+        </div>
+      )}
+      {isAdmin && (
+        <details className="mt-3 text-[10px]">
+          <summary className="cursor-pointer select-none font-mono uppercase tracking-wider opacity-70 hover:opacity-100">
+            Diagnostics (admin)
+          </summary>
+          <pre className="mt-2 overflow-x-auto rounded-lg bg-background/60 p-2 font-mono text-[10px] leading-snug text-foreground/80">
+            {JSON.stringify(error, null, 2)}
+          </pre>
+        </details>
+      )}
     </div>
   );
 }

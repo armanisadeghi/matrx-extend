@@ -135,14 +135,20 @@ function onClick(e: Event) {
   if (phase === 'item') {
     const inferred = inferListPattern(t);
     if (!inferred) {
-      setHint('Could not infer a list from that element. Try clicking a different item.');
+      flashHint(
+        'No similar siblings found. Try clicking a higher-level wrapper (the whole card, not text inside it).',
+        'warn',
+      );
       return;
     }
     listRootSel = inferred.listRoot;
     itemSel = inferred.itemSelector;
     sampleItem = inferred.sampleItem;
     highlightSiblings();
-    setHint(`${inferred.itemCount} similar items detected. Now click each field inside one item.`);
+    flashHint(
+      `${inferred.itemCount} similar items detected. Now click each field inside one item, then Done.`,
+      'ok',
+    );
     setBadge(`${inferred.itemCount} items`);
     phase = 'fields';
     return;
@@ -166,6 +172,24 @@ function setHint(text: string) {
   if (!shadow) return;
   const hint = shadow.querySelector('#hint');
   if (hint) hint.textContent = text;
+}
+
+/** Briefly flash the hint to make state changes obvious. */
+function flashHint(text: string, kind: 'ok' | 'warn') {
+  if (!shadow) return;
+  const hint = shadow.querySelector('#hint') as HTMLElement | null;
+  if (!hint) return;
+  hint.textContent = text;
+  hint.style.transition = 'background 200ms, color 200ms';
+  hint.style.padding = '4px 6px';
+  hint.style.borderRadius = '6px';
+  hint.style.color = kind === 'ok' ? '#9aff9a' : '#ffd58f';
+  hint.style.background = kind === 'ok' ? 'rgba(80,180,80,0.15)' : 'rgba(220,150,40,0.15)';
+  setTimeout(() => {
+    if (!hint) return;
+    hint.style.background = 'transparent';
+    hint.style.color = '#888';
+  }, 1600);
 }
 
 function setBadge(text: string) {
