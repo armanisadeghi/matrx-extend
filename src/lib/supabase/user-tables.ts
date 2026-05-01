@@ -13,23 +13,23 @@
  */
 
 import { getSupabase } from '@/lib/supabase/client';
-import { useAuthStore } from '@/state/auth';
 import { z } from 'zod';
 
 /**
- * `table_fields.data_type` is a Postgres ENUM `public.field_data_type`. The
- * default value is `'string'`. Other valid values are not known to the
- * extension yet — until they're, we omit the field on insert and let the DB
- * default apply. The TS type below reflects what we display in the UI; we
- * never send these values across the wire.
+ * Mirrors the Postgres ENUM `public.field_data_type`. Authoritative source is
+ * `select unnest(enum_range(null::field_data_type))` — the RPC
+ * `list_field_data_types()` returns the same values if you ever need them at
+ * runtime. Update this list when new enum values are added.
  */
 export const USER_TABLE_DATA_TYPES = [
   'string',
   'number',
-  'date',
-  'url',
+  'integer',
   'boolean',
+  'date',
+  'datetime',
   'json',
+  'array',
 ] as const;
 export type UserTableDataType = (typeof USER_TABLE_DATA_TYPES)[number];
 
@@ -137,79 +137,45 @@ export interface CreateUserTableInput {
 }
 
 /**
- * Two-step create: insert user_tables row, then bulk-insert table_fields.
- * If field insert fails, we delete the parent so we don't leave a schemaless
- * table behind.
- *
- * Note: user_tables.user_id is NOT NULL with no default, so we provide it
- * explicitly from the auth store. RLS still enforces ownership.
+ * Atomic create via the `create_user_table_with_fields` RPC. Inserts the
+ * user_tables row plus all table_fields rows in one transaction; the function
+ * runs as security_invoker so RLS still applies and `auth.uid()` stamps the
+ * owner server-side.
  */
 export async function createUserTableFromSchema(
   input: CreateUserTableInput,
 ): Promise<{ id: string } | null> {
-  const userId = useAuthStore.getState().user?.id;
-  if (!userId) {
-    console.warn('[matrx-extend] createUserTableFromSchema: not signed in');
-    return null;
-  }
-
   const c = getSupabase();
-
-  const { data: tableRow, error: tableErr } = await c
-    .from('user_tables')
-    .insert({
-      table_name: input.table_name,
-      description: input.description ?? null,
-      user_id: userId,
-      is_public: input.is_public ?? false,
-      organization_id: input.organization_id ?? null,
-      project_id: input.project_id ?? null,
-      task_id: input.task_id ?? null,
-    })
-    .select('id')
-    .single();
-  if (tableErr) {
-    console.warn('[matrx-extend] createUserTableFromSchema (table) error', tableErr.message);
+  const { data, error } = await c.rpc('create_user_table_with_fields', {
+    p_table_name: input.table_name,
+    p_description: input.description ?? null,
+    p_is_public: input.is_public ?? false,
+    p_organization_id: input.organization_id ?? null,
+    p_project_id: input.project_id ?? null,
+    p_task_id: input.task_id ?? null,
+    p_fields: input.fields.map((f) => ({
+      field_name: toSnakeCaseFieldName(f.field_name),
+      display_name: f.display_name || f.field_name,
+      data_type: f.data_type ?? 'string',
+      field_order: f.field_order,
+      is_required: f.is_required ?? false,
+    })),
+  });
+  if (error) {
+    console.warn('[matrx-extend] createUserTableFromSchema error', error.message);
     return null;
   }
-  const tableId = (tableRow as { id: string }).id;
-
-  if (input.fields.length === 0) return { id: tableId };
-
-  // Note on data_type: the column is a Postgres ENUM `public.field_data_type`
-  // with default 'string'. Other valid values are not yet known to the
-  // extension; until they are, omit the field on insert and let the DB default
-  // apply rather than risk an enum-mismatch error.
-  const { error: fieldsErr } = await c
-    .from('table_fields')
-    .insert(
-      input.fields.map((f) => ({
-        table_id: tableId,
-        user_id: userId,
-        field_name: toSnakeCaseFieldName(f.field_name),
-        display_name: f.display_name || f.field_name,
-        field_order: f.field_order,
-        is_required: f.is_required ?? false,
-      })),
-    );
-  if (fieldsErr) {
-    console.warn('[matrx-extend] createUserTableFromSchema (fields) error', fieldsErr.message);
-    await c.from('user_tables').delete().eq('id', tableId);
-    return null;
-  }
-
-  return { id: tableId };
+  return { id: data as string };
 }
 
 /**
- * Append rows to an existing user table. Each row is stored as one
- * table_data row with the row payload in the `data` jsonb column, keyed by
- * the table's `field_name` values.
+ * Append rows to a user table via the `append_rows_to_user_table` RPC.
+ * The RPC stamps user_id from auth.uid() and silently drops keys that
+ * don't match a declared field_name on the target table.
  *
- * Source rows arrive with arbitrary keys (e.g. extracted-data field names).
- * We snake-case-slugify those keys, then drop any that don't appear in the
- * table's schema. table_data.user_id is required by the table; we read it
- * from the auth store.
+ * We slugify keys client-side first so cosmetic keys (e.g. "Event Name")
+ * land on the right field names ("event_name") before the server-side
+ * schema check runs.
  */
 export async function appendRowsToUserTable(
   tableId: string,
@@ -217,41 +183,24 @@ export async function appendRowsToUserTable(
 ): Promise<{ inserted: number } | null> {
   if (rows.length === 0) return { inserted: 0 };
 
-  const userId = useAuthStore.getState().user?.id;
-  if (!userId) {
-    console.warn('[matrx-extend] appendRowsToUserTable: not signed in');
-    return null;
-  }
-
-  const c = getSupabase();
-  const schema = await getUserTableSchema(tableId);
-  const allowed = new Set(schema.map((f) => f.field_name));
-
   const cleanedRows = rows.map((r) => {
     const out: Record<string, unknown> = {};
     for (const k of Object.keys(r)) {
-      const slug = toSnakeCaseFieldName(k);
-      if (allowed.size === 0 || allowed.has(slug)) {
-        out[slug] = r[k];
-      }
+      out[toSnakeCaseFieldName(k)] = r[k];
     }
     return out;
   });
 
-  const { error } = await c
-    .from('table_data')
-    .insert(
-      cleanedRows.map((data) => ({
-        table_id: tableId,
-        user_id: userId,
-        data,
-      })),
-    );
+  const c = getSupabase();
+  const { data, error } = await c.rpc('append_rows_to_user_table', {
+    p_table_id: tableId,
+    p_rows: cleanedRows,
+  });
   if (error) {
     console.warn('[matrx-extend] appendRowsToUserTable error', error.message);
     return null;
   }
-  return { inserted: cleanedRows.length };
+  return { inserted: typeof data === 'number' ? data : 0 };
 }
 
 /**
@@ -261,15 +210,26 @@ export async function appendRowsToUserTable(
  */
 export function inferDataType(value: unknown): UserTableDataType {
   if (value === null || value === undefined) return 'string';
-  if (typeof value === 'number') return 'number';
+  if (typeof value === 'number') return Number.isInteger(value) ? 'integer' : 'number';
   if (typeof value === 'boolean') return 'boolean';
-  if (Array.isArray(value) || (typeof value === 'object' && value !== null)) return 'json';
+  if (Array.isArray(value)) return 'array';
+  if (typeof value === 'object') return 'json';
   if (typeof value === 'string') {
-    if (/^https?:\/\//i.test(value)) return 'url';
-    if (/^\d{4}-\d{2}-\d{2}/.test(value) || !Number.isNaN(Date.parse(value))) {
-      // Only flag as date if the string is short and parseable — avoid catching
-      // long descriptions that happen to start with a parseable substring.
-      if (value.length <= 40) return 'date';
+    // Only attempt date detection on short strings — avoid catching long
+    // descriptions that happen to start with a parseable substring.
+    if (value.length <= 40) {
+      // YYYY-MM-DD with NO time component → date
+      if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return 'date';
+      // ISO 8601 with time, or any string Date.parse can read AND that
+      // contains a time delimiter → datetime
+      if (
+        /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}/.test(value) ||
+        (!Number.isNaN(Date.parse(value)) && /\d{1,2}:\d{2}/.test(value))
+      ) {
+        return 'datetime';
+      }
+      // Date.parse-able short string, no explicit time → date
+      if (!Number.isNaN(Date.parse(value)) && /\d{4}/.test(value)) return 'date';
     }
   }
   return 'string';
