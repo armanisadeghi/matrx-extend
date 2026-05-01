@@ -1,3 +1,4 @@
+import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
@@ -24,6 +25,7 @@ import {
   fetchConversationMessages,
   fetchUserAgents,
 } from '@/lib/supabase/queries';
+import { wrapForAgent } from '@/lib/clipboard/copy';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
 import { useSettingsStore } from '@/state/settings';
@@ -471,7 +473,10 @@ function MessageRow({
 }) {
   if (role === 'user') {
     return (
-      <div className="flex justify-end">
+      <div className="group flex justify-end gap-1">
+        <div className="self-end opacity-0 transition-opacity group-hover:opacity-100">
+          <CopyButton text={content} title="Copy message" size="xs" />
+        </div>
         <div className="max-w-[85%] rounded-2xl bg-secondary px-3.5 py-2 text-sm">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
         </div>
@@ -479,8 +484,34 @@ function MessageRow({
     );
   }
   return (
-    <div className="prose prose-sm max-w-none text-sm dark:prose-invert prose-p:my-2 prose-pre:my-2">
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content || (pending ? '…' : '')}</ReactMarkdown>
+    <div className="group">
+      <div className="prose prose-sm max-w-none text-sm dark:prose-invert prose-p:my-2 prose-pre:my-2">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {content || (pending ? '…' : '')}
+        </ReactMarkdown>
+      </div>
+      {!pending && content && (
+        <div className="mt-1 opacity-0 transition-opacity group-hover:opacity-100">
+          <CopyMenu
+            title="Copy reply"
+            align="start"
+            options={[
+              { label: 'Markdown', getContent: () => content },
+              {
+                label: 'For AI agent',
+                ai: true,
+                description: 'With agent context',
+                getContent: () =>
+                  wrapForAgent({
+                    description: 'a reply from a Matrx AI agent',
+                    format: 'markdown',
+                    content,
+                  }),
+              },
+            ]}
+          />
+        </div>
+      )}
     </div>
   );
 }

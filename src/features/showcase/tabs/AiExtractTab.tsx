@@ -12,6 +12,10 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 type FieldType = 'string' | 'number' | 'date' | 'url' | 'boolean' | 'array';
 const FIELD_TYPES: FieldType[] = ['string', 'number', 'date', 'url', 'boolean', 'array'];
 
+// Built-in extractor agent ID — provisioned in the Matrx project as a public
+// system agent. Used as the default unless the user has their own extractor.
+const STRUCTURED_EXTRACTOR_AGENT_ID = 'c99595d6-7508-4f0d-b7d3-5218a3c69399';
+
 interface SchemaField {
   name: string;
   type: FieldType;
@@ -51,7 +55,10 @@ export function AiExtractTab() {
       if (cancelled) return;
       setAgents(list);
       const preferred =
-        list.find((a) => a.name?.toLowerCase().includes('extract')) ?? list[0];
+        list.find((a) => a.id === STRUCTURED_EXTRACTOR_AGENT_ID) ??
+        list.find((a) => a.name?.toLowerCase().includes('structured extractor')) ??
+        list.find((a) => a.name?.toLowerCase().includes('extract')) ??
+        list[0];
       if (preferred) setAgentId(preferred.id);
     })();
     return () => {

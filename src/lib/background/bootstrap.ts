@@ -127,6 +127,23 @@ function registerHandlers(): void {
     broadcast(CHANNELS.DATA_PICKER_EXIT, {});
     return { ack: true };
   });
+
+  on<unknown, { ack: true }>(CHANNELS.LIST_PICKER_RESULT, (payload) => {
+    broadcast(CHANNELS.LIST_PICKER_RESULT, payload);
+    return { ack: true };
+  });
+
+  on<unknown, { ack: true }>(CHANNELS.LIST_PICKER_EXIT, () => {
+    broadcast(CHANNELS.LIST_PICKER_EXIT, {});
+    return { ack: true };
+  });
+
+  // Network capture: ISOLATED-world relay forwards every intercepted
+  // fetch/XHR via NET_CAPTURE_EVENT. We just rebroadcast — sidepanel buffers.
+  on<unknown, { ack: true }>(CHANNELS.NET_CAPTURE_EVENT, (payload) => {
+    broadcast(CHANNELS.NET_CAPTURE_EVENT, payload);
+    return { ack: true };
+  });
 }
 
 async function rehydrateSupabaseSession(): Promise<void> {

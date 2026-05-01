@@ -20,6 +20,10 @@ import { postToolResults } from '@/lib/api/routes/tool-results';
 import { log } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import {
+  type OptionalPermission,
+  hasOptionalPermissions,
+} from '@/lib/permissions/optional';
 import { lookup as lookupTool } from '@/lib/tools/registry';
 import type {
   AnyToolHandler,
@@ -135,6 +139,22 @@ async function handleCall(
       ctx,
       `args failed schema: ${JSON.stringify(parsed.error.format())}`,
     );
+  }
+
+  // Optional-permission gate. Tools that depend on `debugger`, `cookies`, etc.
+  // declare `required_optional_permissions`. If those aren't granted yet,
+  // surface a structured error so the agent can ask the user to enable them.
+  if (handler.required_optional_permissions?.length) {
+    const granted = await hasOptionalPermissions(
+      handler.required_optional_permissions as OptionalPermission[],
+    );
+    if (!granted) {
+      return finishWithError(
+        handler,
+        ctx,
+        `required optional permission(s) not granted: ${handler.required_optional_permissions.join(', ')}. The user must enable them in Settings → Advanced agent capabilities.`,
+      );
+    }
   }
 
   // Permission gate.

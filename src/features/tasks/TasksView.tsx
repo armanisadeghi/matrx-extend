@@ -1,5 +1,7 @@
+import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
 import {
   type ExtensionScrapeItem,
   type ExtensionScrapeQueue,
@@ -11,6 +13,8 @@ import {
 } from '@/lib/api/routes/research';
 import { getOuterHtml } from '@/lib/scrape/capture-html';
 import { scrollToLoadLazy, settlePage } from '@/lib/scrape/page-ready';
+import { removeCaptureOverlay, showCaptureOverlay } from '@/lib/scrape/user-gate-overlay';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertTriangle,
@@ -21,7 +25,7 @@ import {
   PlayCircle,
   RefreshCw,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type TaskStatus =
   | 'idle'
@@ -71,7 +75,11 @@ export function TasksView() {
     level_3_user_gated: true,
     level_4_paste: true,
   });
-  const [batchRunning, setBatchRunning] = useState(false);
+  const [batchProgress, setBatchProgress] = useState<
+    | { current: number; total: number; succeeded: number; failed: number }
+    | null
+  >(null);
+  const batchRunning = batchProgress !== null;
 
   const {
     data: queue,
@@ -89,6 +97,36 @@ export function TasksView() {
     staleTime: 60_000,
   });
   const error = queryError?.message ?? null;
+
+  // Latest values available to chrome.runtime.onMessage listeners that can't
+  // close over reactive state directly.
+  const queueRef = useRef<ExtensionScrapeQueue | undefined>(undefined);
+  queueRef.current = queue;
+  const statusRef = useRef(statusByItem);
+  statusRef.current = statusByItem;
+
+  // Listen for in-page overlay button clicks (Level 3 capture / cancel).
+  useEffect(() => {
+    const onMessage = (msg: unknown) => {
+      if (!msg || typeof msg !== 'object') return;
+      const m = msg as { __matrx?: boolean; kind?: string; payload?: unknown };
+      if (m.__matrx !== true) return;
+      if (m.kind !== CHANNELS.TASKS_USER_GO && m.kind !== CHANNELS.TASKS_USER_CANCEL) return;
+      const payload = m.payload as { topicId?: string; sourceId?: string } | undefined;
+      if (!payload?.topicId || !payload.sourceId) return;
+      const q = queueRef.current;
+      if (!q) return;
+      const item = q.level_3_user_gated.find(
+        (it) => it.topic_id === payload.topicId && it.source_id === payload.sourceId,
+      );
+      if (!item) return;
+      if (m.kind === CHANNELS.TASKS_USER_GO) void runUserGo(item);
+      else runUserCancel(item);
+    };
+    chrome.runtime.onMessage.addListener(onMessage);
+    return () => chrome.runtime.onMessage.removeListener(onMessage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // After every queue refresh, drop "thin" / "error" badges for items still in
   // the queue — the source has moved up the ladder, so it's effectively a fresh
@@ -123,7 +161,10 @@ export function TasksView() {
     queryClient.invalidateQueries({ queryKey: ['scrape-queue'] });
 
   /** Capture flow for Level 1 / 2 / 3. Level 4 (paste) goes through `runPaste`. */
-  const runAutomated = async (item: ExtensionScrapeItem, level: SubmittableLevel) => {
+  const runAutomated = async (
+    item: ExtensionScrapeItem,
+    level: SubmittableLevel,
+  ): Promise<{ ok: boolean; isGood: boolean }> => {
     const id = itemKey(item);
     const wantsActiveTab = level === 3;
 
@@ -133,11 +174,11 @@ export function TasksView() {
       tab = await chrome.tabs.create({ url: item.url, active: wantsActiveTab });
     } catch (err) {
       setItemState(id, { status: 'error', error: (err as Error).message });
-      return;
+      return { ok: false, isGood: false };
     }
     if (!tab.id) {
       setItemState(id, { status: 'error', error: 'Tab has no id' });
-      return;
+      return { ok: false, isGood: false };
     }
     const tabId = tab.id;
     await waitForTab(tabId);
@@ -150,35 +191,48 @@ export function TasksView() {
 
     if (level === 3) {
       // Stop and surface the tab to the user. They click past obstacles, then
-      // click "Go" — `runUserGo` finishes the flow.
+      // click "Capture page" in the in-page overlay (or "Go" in the side panel).
       try {
         await chrome.tabs.update(tabId, { active: true });
       } catch {
         /* tab may have been closed */
       }
+      void showCaptureOverlay(tabId, item.topic_id, item.source_id, item.topic_name);
       setItemState(id, { status: 'awaiting_user', tabId });
-      return;
+      return { ok: true, isGood: false };
     }
 
-    await captureAndSubmit(item, level, tabId, /* keepTabOpen */ false);
+    return captureAndSubmit(item, level, tabId, /* keepTabOpen */ false);
   };
 
   const runUserGo = async (item: ExtensionScrapeItem) => {
     const id = itemKey(item);
-    const tabId = statusByItem[id]?.tabId;
+    const tabId = statusRef.current[id]?.tabId;
     if (tabId == null) {
       setItemState(id, { status: 'error', error: 'Tab is no longer open' });
       return;
     }
+    void removeCaptureOverlay(tabId);
     await captureAndSubmit(item, 3, tabId, /* keepTabOpen */ true);
   };
 
+  const runUserCancel = (item: ExtensionScrapeItem) => {
+    const id = itemKey(item);
+    const tabId = statusRef.current[id]?.tabId;
+    if (tabId != null) void removeCaptureOverlay(tabId);
+    setStatusByItem((s) => {
+      const { [id]: _drop, ...rest } = s;
+      return rest;
+    });
+  };
+
+  /** Returns whether the submit landed AND whether the parse was good. */
   const captureAndSubmit = async (
     item: ExtensionScrapeItem,
     level: SubmittableLevel,
     tabId: number,
     keepTabOpen: boolean,
-  ) => {
+  ): Promise<{ ok: boolean; isGood: boolean }> => {
     const id = itemKey(item);
     setItemState(id, { status: 'scraping', tabId });
     let html: string;
@@ -186,14 +240,14 @@ export function TasksView() {
       html = await getOuterHtml(tabId);
     } catch (err) {
       setItemState(id, { status: 'error', error: (err as Error).message });
-      return;
+      return { ok: false, isGood: false };
     }
 
     setItemState(id, { status: 'submitting', tabId });
     const result = await submitExtensionContent(item.topic_id, item.source_id, html, level);
     if (!result.ok) {
       setItemState(id, { status: 'error', error: result.error });
-      return;
+      return { ok: false, isGood: false };
     }
 
     if (!keepTabOpen) {
@@ -211,6 +265,7 @@ export function TasksView() {
       nextLevel: next_level ?? undefined,
     });
     void invalidateQueue();
+    return { ok: true, isGood: is_good_scrape };
   };
 
   const runPaste = async (item: ExtensionScrapeItem) => {
@@ -254,19 +309,27 @@ export function TasksView() {
     const targets = [
       ...queue.level_1_quick.map((it) => ({ item: it, level: 1 as const })),
       ...queue.level_2_scroll.map((it) => ({ item: it, level: 2 as const })),
-    ];
+    ].filter(({ item }) => {
+      const cur = statusByItem[itemKey(item)]?.status;
+      return !cur || (!RUNNING_STATUSES.has(cur) && !TERMINAL_STATUSES.has(cur));
+    });
     if (targets.length === 0) return;
-    setBatchRunning(true);
+    setBatchProgress({ current: 0, total: targets.length, succeeded: 0, failed: 0 });
     try {
+      let succeeded = 0;
+      let failed = 0;
+      let current = 0;
       for (const { item, level } of targets) {
-        const id = itemKey(item);
-        const cur = statusByItem[id]?.status;
-        if (cur && (RUNNING_STATUSES.has(cur) || TERMINAL_STATUSES.has(cur))) continue;
+        current++;
+        setBatchProgress({ current, total: targets.length, succeeded, failed });
         // eslint-disable-next-line no-await-in-loop
-        await runAutomated(item, level);
+        const r = await runAutomated(item, level);
+        if (r.ok && r.isGood) succeeded++;
+        else failed++; // !ok or ok-but-thin both count as needs-more-work
+        setBatchProgress({ current, total: targets.length, succeeded, failed });
       }
     } finally {
-      setBatchRunning(false);
+      setBatchProgress(null);
     }
   };
 
@@ -284,16 +347,64 @@ export function TasksView() {
         {queue && (
           <span className="ml-1.5 text-xs text-muted-foreground">{totalAll}</span>
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="ml-auto size-7 text-muted-foreground"
-          onClick={() => void refetch()}
-          title="Refresh"
-          disabled={isFetching}
-        >
-          <RefreshCw className={`size-3.5 ${isFetching ? 'animate-spin' : ''}`} />
-        </Button>
+        <div className="ml-auto flex items-center gap-0.5">
+          {queue && totalAll > 0 && (
+            <CopyMenu
+              title="Copy queue"
+              options={[
+                {
+                  label: 'URLs (one per line)',
+                  getContent: () =>
+                    [
+                      ...queue.level_1_quick,
+                      ...queue.level_2_scroll,
+                      ...queue.level_3_user_gated,
+                      ...queue.level_4_paste,
+                    ]
+                      .map((it) => it.url)
+                      .join('\n'),
+                },
+                {
+                  label: 'For AI agent',
+                  ai: true,
+                  getContent: () => {
+                    const all = [
+                      ...queue.level_1_quick,
+                      ...queue.level_2_scroll,
+                      ...queue.level_3_user_gated,
+                      ...queue.level_4_paste,
+                    ];
+                    return wrapForAgent({
+                      description: 'a queue of pending scrape tasks from Matrx',
+                      meta: { count: all.length },
+                      format: 'text',
+                      content: all
+                        .map((it) =>
+                          `- ${it.topic_name ?? it.topic_id}\n  ${it.url}`,
+                        )
+                        .join('\n'),
+                    });
+                  },
+                },
+                {
+                  label: 'Queue (JSON)',
+                  adminOnly: true,
+                  getContent: () => stringifyJson(queue),
+                },
+              ]}
+            />
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 text-muted-foreground"
+            onClick={() => void refetch()}
+            title="Refresh"
+            disabled={isFetching}
+          >
+            <RefreshCw className={`size-3.5 ${isFetching ? 'animate-spin' : ''}`} />
+          </Button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto">
@@ -412,9 +523,11 @@ export function TasksView() {
             disabled={batchRunning}
             className="w-full rounded-full"
           >
-            {batchRunning ? (
+            {batchProgress ? (
               <>
-                <Loader2 className="animate-spin" /> Running batch…
+                <Loader2 className="animate-spin" />
+                {batchProgress.current} / {batchProgress.total}
+                {batchProgress.succeeded > 0 && ` · ${batchProgress.succeeded} captured`}
               </>
             ) : (
               <>
@@ -490,7 +603,7 @@ function Row({
   const charCount = state?.charCount;
 
   return (
-    <div className="rounded-xl bg-secondary/40 px-3 py-2.5 transition-colors hover:bg-secondary/70">
+    <div className="group rounded-xl bg-secondary/40 px-3 py-2.5 transition-colors hover:bg-secondary/70">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <div className="truncate text-sm font-medium">{item.topic_name}</div>
@@ -505,6 +618,12 @@ function Row({
           <ItemContext item={item} />
         </div>
         <div className="flex shrink-0 items-center gap-2">
+          <CopyButton
+            text={item.url}
+            title="Copy URL"
+            size="xs"
+            className="opacity-0 transition-opacity group-hover:opacity-100"
+          />
           <Status status={status} charCount={charCount} />
           {status === 'awaiting_user' && (
             <Button
@@ -621,12 +740,36 @@ function ItemContext({ item }: { item: ExtensionScrapeItem }) {
     bits.push(`tried L${item.attempted_levels.join(', L')}`);
   }
   if (item.last_char_count != null) bits.push(`last: ${item.last_char_count.toLocaleString()} chars`);
-  if (bits.length === 0) return null;
+  if (item.last_attempt_at) {
+    const ago = relativeTime(item.last_attempt_at);
+    if (ago) bits.push(ago);
+  }
+  if (bits.length === 0 && !item.last_failure_reason) return null;
   return (
-    <div className="mt-0.5 truncate text-[11px] text-muted-foreground/70">
-      {bits.join(' · ')}
+    <div className="mt-0.5 space-y-0.5">
+      {bits.length > 0 && (
+        <div className="truncate text-[11px] text-muted-foreground/70">{bits.join(' · ')}</div>
+      )}
+      {item.last_failure_reason && (
+        <div className="truncate text-[11px] text-muted-foreground/60" title={item.last_failure_reason}>
+          {item.last_failure_reason}
+        </div>
+      )}
     </div>
   );
+}
+
+function relativeTime(iso: string): string | null {
+  const t = Date.parse(iso);
+  if (Number.isNaN(t)) return null;
+  const sec = Math.round((Date.now() - t) / 1000);
+  if (sec < 60) return 'just now';
+  const min = Math.round(sec / 60);
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.round(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  const d = Math.round(hr / 24);
+  return `${d}d ago`;
 }
 
 function Status({ status, charCount }: { status: TaskStatus; charCount?: number }) {

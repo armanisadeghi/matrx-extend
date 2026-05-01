@@ -4,6 +4,12 @@ import { cn } from '@/lib/utils';
 import { AiExtractTab } from './tabs/AiExtractTab';
 import { FrameworkTab } from './tabs/FrameworkTab';
 import { JsonLdTab } from './tabs/JsonLdTab';
+import { ListPatternTab } from './tabs/ListPatternTab';
+import { MicrodataTab } from './tabs/MicrodataTab';
+import { NetworkTab } from './tabs/NetworkTab';
+import { RecipesTab } from './tabs/RecipesTab';
+import { PatternsTab } from './tabs/PatternsTab';
+import { PrepareTab } from './tabs/PrepareTab';
 import { SnapshotTab } from './tabs/SnapshotTab';
 import { TablesTab } from './tabs/TablesTab';
 
@@ -24,20 +30,35 @@ export function ShowcaseView() {
         <span className="ml-2 truncate text-xs text-muted-foreground">{host || 'no host'}</span>
       </div>
 
-      <Tabs defaultValue="snapshot" className="flex flex-1 flex-col min-h-0">
+      <Tabs defaultValue="recipes" className="flex flex-1 flex-col min-h-0">
         <TabsList className="mx-3 mt-1 self-start gap-1 bg-transparent p-0">
+          <ShowcaseTab value="recipes">Recipes</ShowcaseTab>
+          <ShowcaseTab value="prepare">Prepare</ShowcaseTab>
           <ShowcaseTab value="snapshot">Snapshot</ShowcaseTab>
           <ShowcaseTab value="json_ld">JSON-LD</ShowcaseTab>
+          <ShowcaseTab value="microdata">Microdata</ShowcaseTab>
           <ShowcaseTab value="tables">Tables</ShowcaseTab>
           <ShowcaseTab value="framework">Framework</ShowcaseTab>
           <ShowcaseTab value="ai_extract">AI Extract</ShowcaseTab>
+          <ShowcaseTab value="list_pattern">List Pattern</ShowcaseTab>
+          <ShowcaseTab value="network">Network</ShowcaseTab>
+          <ShowcaseTab value="patterns">Patterns</ShowcaseTab>
         </TabsList>
 
+        <TabsContent value="recipes" className="flex-1 min-h-0">
+          <RecipesTab />
+        </TabsContent>
+        <TabsContent value="prepare" className="flex-1 min-h-0">
+          <PrepareTab />
+        </TabsContent>
         <TabsContent value="snapshot" className="flex-1 min-h-0">
           <SnapshotTab />
         </TabsContent>
         <TabsContent value="json_ld" className="flex-1 min-h-0">
           <JsonLdTab />
+        </TabsContent>
+        <TabsContent value="microdata" className="flex-1 min-h-0">
+          <MicrodataTab />
         </TabsContent>
         <TabsContent value="tables" className="flex-1 min-h-0">
           <TablesTab />
@@ -47,6 +68,15 @@ export function ShowcaseView() {
         </TabsContent>
         <TabsContent value="ai_extract" className="flex-1 min-h-0">
           <AiExtractTab />
+        </TabsContent>
+        <TabsContent value="list_pattern" className="flex-1 min-h-0">
+          <ListPatternTab />
+        </TabsContent>
+        <TabsContent value="network" className="flex-1 min-h-0">
+          <NetworkTab />
+        </TabsContent>
+        <TabsContent value="patterns" className="flex-1 min-h-0">
+          <PatternsTab />
         </TabsContent>
       </Tabs>
     </div>

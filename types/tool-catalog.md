@@ -1,14 +1,14 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-04-30T23:08:02.204Z
+Generated: 2026-05-01T00:11:49.153Z
 
-- **Total tools:** 63
-- **Assistant bundle:** 21 tools (read-only)
-- **Pilot bundle:** 58 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 63 tools
+- **Total tools:** 96
+- **Assistant bundle:** 36 tools (read-only)
+- **Pilot bundle:** 76 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 96 tools
 
 
-## Tier: read (21)
+## Tier: read (36)
 
 ### `get_active_tab`
 
@@ -602,7 +602,401 @@ List keys + values the agent has stored. Filter by `prefix`. Useful to inspect p
 }
 ```
 
-## Tier: action (33)
+### `ai_check_availability`
+
+Probe whether on-device AI (Gemini Nano + Summarizer/Translator/Proofreader/etc.) is available in the user's Chrome and ready to use. Returns per-API availability: unavailable | downloadable | downloading | available. Call this once at the start of a session to decide whether to use on-device tools or fall back to cloud.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `ai_summarize`
+
+Summarize a piece of text using on-device Gemini Nano. Free, no network, no token billing. Use BEFORE passing huge page content to the cloud model — pre-summarize it and pass the summary instead. Types: tldr (one paragraph), key-points (bullet list), teaser (sales-y one-liner), headline (single sentence). Lengths: short / medium / long.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "tldr",
+        "key-points",
+        "teaser",
+        "headline"
+      ],
+      "default": "tldr"
+    },
+    "length": {
+      "type": "string",
+      "enum": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "default": "short"
+    }
+  },
+  "required": [
+    "text"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `ai_classify`
+
+Classify text into ONE of the provided labels using on-device Gemini Nano. Returns { label, confidence }. Constrains the output via JSON Schema so the result is always one of the labels you provided. Useful for: routing a message ("question", "command", "greeting"), labeling a page ("article", "spa", "checkout"), gating expensive cloud calls on intent.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 2,
+      "maxItems": 20
+    },
+    "context": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "text",
+    "labels"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `ai_extract_json`
+
+Extract structured data from unstructured text using on-device Gemini Nano. Pass a JSON Schema and the model returns matching JSON. Free, fast, no network. Use for: extracting names/addresses/prices from page text, normalizing form data, parsing semi-structured logs.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema": {},
+    "hint": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "text"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `ai_translate`
+
+Translate text between languages using on-device models. Pass `auto` as source_language to auto-detect. Returns the translated string. Free, no network. Best for short-to-medium text; long documents may chunk the result.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_language": {
+      "type": "string",
+      "minLength": 2,
+      "default": "auto"
+    },
+    "target_language": {
+      "type": "string",
+      "minLength": 2
+    }
+  },
+  "required": [
+    "text",
+    "target_language"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `ai_detect_language`
+
+Detect the language of a piece of text. Returns one or more candidates with confidence. On-device, free.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "text": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "text"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `ai_proofread`
+
+Proofread text for grammar, spelling, and typos using on-device AI. Returns the corrected version. Useful before sending the user-typed content somewhere it will be visible to others.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "text": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "text"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `ai_describe_image`
+
+Multimodal description of a base64-encoded image using on-device Gemini Nano. Pair with `take_screenshot` for cheap visual analysis: "what does this page look like?", "find the submit button in this screenshot", "is there an error message visible?". Free, no network round-trip.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "image_base64": {
+      "type": "string",
+      "minLength": 64
+    },
+    "mime_type": {
+      "type": "string",
+      "enum": [
+        "image/png",
+        "image/jpeg",
+        "image/webp"
+      ],
+      "default": "image/png"
+    },
+    "question": {
+      "type": "string",
+      "default": "Describe this image in detail."
+    }
+  },
+  "required": [
+    "image_base64"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `ai_check_prompt_injection`
+
+Run untrusted text (page content, scraped data, user-supplied input) through an on-device safety check BEFORE passing to a cloud model. Returns { suspicious, reason, severity }. Use as a guardrail when you're about to feed third-party page text into the agent loop. Cheap and offline.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_hint": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "text"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_recently_closed`
+
+List recently-closed tabs and windows the user can restore. Each entry has { id, last_modified, tab? | window? }. Useful when the user says "what was that page I just closed?".
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "max_results": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 25,
+      "default": 25
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `get_cookies`
+
+Read cookies for a URL or domain. Pass `url` (preferred — narrower) OR `domain`, optionally also `name` to filter to one cookie. Returns a list of { name, value, domain, path, secure, httpOnly, sameSite, expirationDate }. Personal data — admin only by default.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_attached_tabs`
+
+Return the list of tab ids currently attached via CDP.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_perf_metrics`
+
+Read Performance.getMetrics for a tab. Returns { Documents, Frames, JSHeapUsedSize, LayoutCount, RecalcStyleCount, ScriptDuration, TaskDuration, … }. Useful when an action triggered chaos and you need to measure it.
+
+- **Required permissions:** `activeTab`
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `webmcp_check_availability`
+
+Check whether WebMCP (`navigator.modelContext.registerTool`) is available in the user's Chrome and whether the active tab has registered any tools. Use this once before calling webmcp_list_page_tools / webmcp_call_page_tool.
+
+- **Required permissions:** `activeTab`, `scripting`
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `webmcp_list_page_tools`
+
+List tools the active tab has registered via `navigator.modelContext.registerTool`. Each entry includes { name, description, inputSchema }. Use these to discover what the page offers before calling webmcp_call_page_tool.
+
+- **Required permissions:** `activeTab`, `scripting`
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+## Tier: action (36)
 
 ### `navigate_active_tab`
 
@@ -1576,6 +1970,73 @@ Show a system notification to the user. Use after a long-running task finishes (
 }
 ```
 
+### `restore_recently_closed`
+
+Restore a recently-closed tab or window. Pass `session_id` from list_recently_closed, or omit to restore the most recent.
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `save_page_as_mhtml`
+
+Snapshot a tab as a self-contained MHTML archive (HTML + every resource inlined). Returns base64 MHTML data. Use for: archival, sharing a frozen page, feeding the agent a stable snapshot it can reanalyze later.
+
+- **Required permissions:** `activeTab`
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `webmcp_call_page_tool`
+
+Invoke a tool registered by the active page via `navigator.modelContext`. Pass the tool name and an arguments object (must match the page's declared input schema). Returns the page tool's result.
+
+- **Required permissions:** `activeTab`, `scripting`
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "arguments": {}
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ## Tier: ask-user (4)
 
 ### `ask_user`
@@ -1716,7 +2177,467 @@ Pause the agent and hand control back to the human (e.g. for CAPTCHA, login, pay
 }
 ```
 
-## Tier: privileged (5)
+## Tier: privileged (20)
+
+### `set_cookie`
+
+Write a cookie. Privileged because it can hijack a user session (CSRF / token-overwrite). Always prompts. Returns the set cookie or { ok:false, reason }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "value": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "secure": {
+      "type": "boolean"
+    },
+    "http_only": {
+      "type": "boolean"
+    },
+    "same_site": {
+      "type": "string",
+      "enum": [
+        "no_restriction",
+        "lax",
+        "strict",
+        "unspecified"
+      ]
+    },
+    "expiration": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "url",
+    "name",
+    "value"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `delete_cookie`
+
+Delete a cookie by url + name.
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "url",
+    "name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_attach`
+
+Attach a Chrome DevTools Protocol session to a tab (defaults to active tab). Required before any other cdp_* tool can run on that tab. Chrome will show a "is being debugged" banner while attached. The session auto-cleans up when the agent run ends; you can also call cdp_detach explicitly.
+
+- **Required permissions:** `activeTab`
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_detach`
+
+Close the CDP session on a tab (defaults to active tab). Removes the debug banner.
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_full_page_screenshot`
+
+Capture the FULL page (not just viewport) as base64. CDP's Page.captureScreenshot with captureBeyondViewport. Use this instead of take_screenshot when the user asks "give me a picture of the whole article" or you need to OCR a long form. Returns { format, image_base64, byte_length }.
+
+- **Required permissions:** `activeTab`
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "png",
+        "jpeg",
+        "webp"
+      ],
+      "default": "png"
+    },
+    "quality": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100,
+      "default": 85
+    },
+    "full_page": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_a11y_tree`
+
+Dump the accessibility tree of the active tab via Accessibility.getFullAXTree. Each node has { role, name, value, description, properties, children }. Use INSTEAD of read_active_page when you want a clean semantic view of the page — it omits decorative DOM and surfaces aria-roles, button labels, form-field associations directly. Best for vision-free reasoning.
+
+- **Required permissions:** `activeTab`
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    },
+    "max_nodes": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 5000,
+      "default": 500
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_input_click_xy`
+
+Synthesize a real mouse click at viewport coordinates (x, y) via Input.dispatchMouseEvent. Bypasses event-handler shadowing, works through shadow DOM and cross-origin iframes (OOPIFs) — the most reliable click in existence. Use when click_element fails because the page intercepts synthetic clicks.
+
+- **Required permissions:** `activeTab`
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "x": {
+      "type": "number"
+    },
+    "y": {
+      "type": "number"
+    },
+    "button": {
+      "type": "string",
+      "enum": [
+        "left",
+        "right",
+        "middle"
+      ],
+      "default": "left"
+    },
+    "click_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3,
+      "default": 1
+    },
+    "tab_id": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "x",
+    "y"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_input_type`
+
+Type literal text into whatever element currently has focus, via Input.insertText. Fires beforeinput / input / compositionend events correctly so React-controlled inputs accept it. Use after focus_element + when type_into_element fails.
+
+- **Required permissions:** `activeTab`
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "text": {
+      "type": "string"
+    },
+    "tab_id": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "text"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_network_capture_start`
+
+Begin capturing every Network event on a tab (default: active). After this, navigate or interact with the page; calls accumulate in a buffer. Use cdp_network_capture_drain to read them. Use cdp_network_capture_stop when finished.
+
+- **Required permissions:** `activeTab`
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_network_capture_drain`
+
+Drain captured Network events from a tab's buffer. Each entry has { request_id, url, method, status, mime_type, request_headers, response_headers, finished, failed, ts_ms }. Use cdp_network_get_body with a request_id to fetch a response body lazily.
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    },
+    "max": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 2000,
+      "default": 100
+    },
+    "url_contains": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_network_capture_stop`
+
+Stop capturing Network events on a tab and clear its buffer.
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_network_get_body`
+
+Fetch the response body for a captured request, by request_id (from cdp_network_capture_drain). Returns { body, base64_encoded }. Bodies are large so we don't buffer them eagerly.
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tab_id": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "request_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_print_pdf`
+
+Print a tab to PDF via Page.printToPDF. Returns base64 PDF data. Useful for archival, sharing, or feeding the PDF to a downstream model.
+
+- **Required permissions:** `activeTab`
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    },
+    "landscape": {
+      "type": "boolean",
+      "default": false
+    },
+    "print_background": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_emulate_device`
+
+Override viewport metrics + user agent on a tab. Use to view a page as iPhone Safari, Pixel Chrome, etc., without leaving the user's window. Reset by calling cdp_clear_emulation.
+
+- **Required permissions:** `activeTab`
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    },
+    "width": {
+      "type": "integer",
+      "minimum": 100
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 100
+    },
+    "device_scale_factor": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "default": 2
+    },
+    "mobile": {
+      "type": "boolean",
+      "default": true
+    },
+    "user_agent": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "width",
+    "height"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `cdp_clear_emulation`
+
+Clear device + UA overrides on a tab.
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
 
 ### `execute_javascript`
 

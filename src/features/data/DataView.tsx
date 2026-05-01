@@ -1,6 +1,8 @@
+import { CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { rowsToTsv, stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { findFirstMatch } from '@/lib/data-pattern/matcher';
 import { runPattern } from '@/lib/data-pattern/run-pattern';
 import { on } from '@/lib/messaging/native';
@@ -183,7 +185,7 @@ export function DataView() {
                 {patterns.map((p) => (
                   <div
                     key={p.id}
-                    className="flex items-center justify-between rounded-xl bg-secondary/40 px-3 py-2"
+                    className="group flex items-center justify-between rounded-xl bg-secondary/40 px-3 py-2"
                   >
                     <div className="min-w-0 text-sm">
                       <div className="flex items-center gap-1.5">
@@ -194,14 +196,47 @@ export function DataView() {
                         {p.fields.length} field{p.fields.length === 1 ? '' : 's'}
                       </div>
                     </div>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="size-7 shrink-0"
-                      onClick={() => void handleRun(p)}
-                    >
-                      <Play className="size-3.5" />
-                    </Button>
+                    <div className="flex shrink-0 items-center gap-0.5">
+                      <CopyMenu
+                        title="Copy pattern"
+                        className="opacity-0 transition-opacity group-hover:opacity-100"
+                        options={[
+                          {
+                            label: 'Selectors (text)',
+                            getContent: () =>
+                              p.fields.map((f) => `${f.name}: ${f.selector}`).join('\n'),
+                          },
+                          {
+                            label: 'For AI agent',
+                            ai: true,
+                            getContent: () =>
+                              wrapJsonForAgent(p, {
+                                description:
+                                  'a saved Matrx data-extraction pattern',
+                                source: { host: p.domain ?? null },
+                                meta: {
+                                  patternName: p.name,
+                                  fieldCount: p.fields.length,
+                                },
+                              }),
+                          },
+                          {
+                            label: 'Full pattern (JSON)',
+                            adminOnly: true,
+                            getContent: () => stringifyJson(p),
+                          },
+                        ]}
+                      />
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="size-7"
+                        onClick={() => void handleRun(p)}
+                        title="Run pattern"
+                      >
+                        <Play className="size-3.5" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -209,7 +244,45 @@ export function DataView() {
           )}
 
           {rows && (
-            <Section label={`Extracted rows (${rows.length})`}>
+            <Section
+              label={`Extracted rows (${rows.length})`}
+              rightSlot={
+                <CopyMenu
+                  title="Copy rows"
+                  options={[
+                    {
+                      label: 'TSV (paste to spreadsheet)',
+                      description: 'Tab-separated rows',
+                      getContent: () => rowsToTsv(rows),
+                    },
+                    {
+                      label: 'JSON',
+                      getContent: () => stringifyJson(rows),
+                    },
+                    {
+                      label: 'For AI agent',
+                      ai: true,
+                      getContent: () =>
+                        wrapForAgent({
+                          description:
+                            'structured data extracted from a webpage using a saved pattern',
+                          source: {
+                            url: tab.url ?? null,
+                            host,
+                            title: tab.title ?? null,
+                          },
+                          meta: {
+                            rowCount: rows.length,
+                            patternMatched: matched?.name ?? null,
+                          },
+                          format: 'json',
+                          content: stringifyJson(rows),
+                        }),
+                    },
+                  ]}
+                />
+              }
+            >
               <pre className="max-h-[320px] overflow-auto whitespace-pre rounded-xl bg-secondary/40 p-3 text-[11px]">
                 {JSON.stringify(rows, null, 2)}
               </pre>
@@ -258,11 +331,22 @@ export function DataView() {
   );
 }
 
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
+function Section({
+  label,
+  rightSlot,
+  children,
+}: {
+  label: string;
+  rightSlot?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <div className="space-y-2">
-      <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-        {label}
+      <div className="flex items-center justify-between">
+        <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+          {label}
+        </div>
+        {rightSlot}
       </div>
       {children}
     </div>

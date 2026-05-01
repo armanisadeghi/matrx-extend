@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-30T23:08:02.204Z",
+  "generated_at": "2026-05-01T00:11:49.153Z",
   "source": "matrx-extend",
   "assistant_bundle": [
     "get_active_tab",
@@ -22,7 +22,22 @@
     "list_downloads",
     "get_form_fields",
     "get_extension_storage",
-    "list_extension_storage"
+    "list_extension_storage",
+    "ai_check_availability",
+    "ai_summarize",
+    "ai_classify",
+    "ai_extract_json",
+    "ai_translate",
+    "ai_detect_language",
+    "ai_proofread",
+    "ai_describe_image",
+    "ai_check_prompt_injection",
+    "list_recently_closed",
+    "get_cookies",
+    "cdp_attached_tabs",
+    "cdp_perf_metrics",
+    "webmcp_check_availability",
+    "webmcp_list_page_tools"
   ],
   "pilot_bundle": [
     "get_active_tab",
@@ -46,6 +61,15 @@
     "get_form_fields",
     "get_extension_storage",
     "list_extension_storage",
+    "ai_check_availability",
+    "ai_summarize",
+    "ai_classify",
+    "ai_extract_json",
+    "ai_translate",
+    "ai_detect_language",
+    "ai_proofread",
+    "ai_describe_image",
+    "ai_check_prompt_injection",
     "navigate_active_tab",
     "click_element",
     "type_into_element",
@@ -79,6 +103,15 @@
     "download_url",
     "cancel_download",
     "notify_user",
+    "list_recently_closed",
+    "restore_recently_closed",
+    "save_page_as_mhtml",
+    "get_cookies",
+    "cdp_attached_tabs",
+    "cdp_perf_metrics",
+    "webmcp_check_availability",
+    "webmcp_list_page_tools",
+    "webmcp_call_page_tool",
     "ask_user",
     "ask_user_choice",
     "ask_user_secret",
@@ -106,6 +139,15 @@
     "get_form_fields",
     "get_extension_storage",
     "list_extension_storage",
+    "ai_check_availability",
+    "ai_summarize",
+    "ai_classify",
+    "ai_extract_json",
+    "ai_translate",
+    "ai_detect_language",
+    "ai_proofread",
+    "ai_describe_image",
+    "ai_check_prompt_injection",
     "navigate_active_tab",
     "click_element",
     "type_into_element",
@@ -139,6 +181,30 @@
     "download_url",
     "cancel_download",
     "notify_user",
+    "list_recently_closed",
+    "restore_recently_closed",
+    "save_page_as_mhtml",
+    "get_cookies",
+    "set_cookie",
+    "delete_cookie",
+    "cdp_attach",
+    "cdp_detach",
+    "cdp_attached_tabs",
+    "cdp_full_page_screenshot",
+    "cdp_a11y_tree",
+    "cdp_input_click_xy",
+    "cdp_input_type",
+    "cdp_network_capture_start",
+    "cdp_network_capture_drain",
+    "cdp_network_capture_stop",
+    "cdp_network_get_body",
+    "cdp_print_pdf",
+    "cdp_perf_metrics",
+    "cdp_emulate_device",
+    "cdp_clear_emulation",
+    "webmcp_check_availability",
+    "webmcp_list_page_tools",
+    "webmcp_call_page_tool",
     "ask_user",
     "ask_user_choice",
     "ask_user_secret",
@@ -161,8 +227,16 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "get_page_selection",
@@ -175,8 +249,17 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "read_active_page",
@@ -194,8 +277,17 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "take_screenshot",
@@ -206,7 +298,10 @@
         "properties": {
           "format": {
             "type": "string",
-            "enum": ["png", "jpeg"],
+            "enum": [
+              "png",
+              "jpeg"
+            ],
             "default": "png"
           },
           "quality": {
@@ -219,8 +314,16 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "query_elements",
@@ -246,12 +349,23 @@
             "default": 100
           }
         },
-        "required": ["selector"],
+        "required": [
+          "selector"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "find_text_on_page",
@@ -285,12 +399,23 @@
             "default": 80
           }
         },
-        "required": ["query"],
+        "required": [
+          "query"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "get_page_links",
@@ -320,8 +445,17 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "get_computed_style",
@@ -341,12 +475,23 @@
             }
           }
         },
-        "required": ["selector"],
+        "required": [
+          "selector"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "get_element_at_point",
@@ -362,12 +507,24 @@
             "type": "number"
           }
         },
-        "required": ["x", "y"],
+        "required": [
+          "x",
+          "y"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "inspect_element",
@@ -381,12 +538,23 @@
             "minLength": 1
           }
         },
-        "required": ["selector"],
+        "required": [
+          "selector"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "list_open_tabs",
@@ -413,8 +581,16 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "get_tab_groups",
@@ -427,8 +603,17 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs", "tabGroups"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs",
+        "tabGroups"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "get_tab_info",
@@ -441,12 +626,22 @@
             "type": "integer"
           }
         },
-        "required": ["tab_id"],
+        "required": [
+          "tab_id"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "search_bookmarks",
@@ -466,12 +661,22 @@
             "default": 50
           }
         },
-        "required": ["query"],
+        "required": [
+          "query"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["bookmarks"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "bookmarks"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "list_bookmark_tree",
@@ -494,8 +699,16 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["bookmarks"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "bookmarks"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "search_history",
@@ -526,8 +739,16 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["history"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "history"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "list_recent_history",
@@ -553,8 +774,16 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["history"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "history"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "list_downloads",
@@ -568,7 +797,11 @@
           },
           "state": {
             "type": "string",
-            "enum": ["in_progress", "interrupted", "complete"]
+            "enum": [
+              "in_progress",
+              "interrupted",
+              "complete"
+            ]
           },
           "limit": {
             "type": "integer",
@@ -581,8 +814,16 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["downloads"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "downloads"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "get_form_fields",
@@ -599,8 +840,17 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "get_extension_storage",
@@ -615,16 +865,29 @@
           },
           "area": {
             "type": "string",
-            "enum": ["local", "session"],
+            "enum": [
+              "local",
+              "session"
+            ],
             "default": "local"
           }
         },
-        "required": ["key"],
+        "required": [
+          "key"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["storage"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "storage"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "list_extension_storage",
@@ -635,7 +898,10 @@
         "properties": {
           "area": {
             "type": "string",
-            "enum": ["local", "session"],
+            "enum": [
+              "local",
+              "session"
+            ],
             "default": "local"
           },
           "prefix": {
@@ -646,8 +912,314 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["storage"],
-      "surface_bundles": ["assistant", "pilot", "pilot+privileged"]
+      "required_permissions": [
+        "storage"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "ai_check_availability",
+      "description": "Probe whether on-device AI (Gemini Nano + Summarizer/Translator/Proofreader/etc.) is available in the user's Chrome and ready to use. Returns per-API availability: unavailable | downloadable | downloading | available. Call this once at the start of a session to decide whether to use on-device tools or fall back to cloud.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "ai_summarize",
+      "description": "Summarize a piece of text using on-device Gemini Nano. Free, no network, no token billing. Use BEFORE passing huge page content to the cloud model — pre-summarize it and pass the summary instead. Types: tldr (one paragraph), key-points (bullet list), teaser (sales-y one-liner), headline (single sentence). Lengths: short / medium / long.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "tldr",
+              "key-points",
+              "teaser",
+              "headline"
+            ],
+            "default": "tldr"
+          },
+          "length": {
+            "type": "string",
+            "enum": [
+              "short",
+              "medium",
+              "long"
+            ],
+            "default": "short"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "ai_classify",
+      "description": "Classify text into ONE of the provided labels using on-device Gemini Nano. Returns { label, confidence }. Constrains the output via JSON Schema so the result is always one of the labels you provided. Useful for: routing a message (\"question\", \"command\", \"greeting\"), labeling a page (\"article\", \"spa\", \"checkout\"), gating expensive cloud calls on intent.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "labels": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 2,
+            "maxItems": 20
+          },
+          "context": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "labels"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "ai_extract_json",
+      "description": "Extract structured data from unstructured text using on-device Gemini Nano. Pass a JSON Schema and the model returns matching JSON. Free, fast, no network. Use for: extracting names/addresses/prices from page text, normalizing form data, parsing semi-structured logs.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "schema": {},
+          "hint": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "ai_translate",
+      "description": "Translate text between languages using on-device models. Pass `auto` as source_language to auto-detect. Returns the translated string. Free, no network. Best for short-to-medium text; long documents may chunk the result.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_language": {
+            "type": "string",
+            "minLength": 2,
+            "default": "auto"
+          },
+          "target_language": {
+            "type": "string",
+            "minLength": 2
+          }
+        },
+        "required": [
+          "text",
+          "target_language"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "ai_detect_language",
+      "description": "Detect the language of a piece of text. Returns one or more candidates with confidence. On-device, free.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "ai_proofread",
+      "description": "Proofread text for grammar, spelling, and typos using on-device AI. Returns the corrected version. Useful before sending the user-typed content somewhere it will be visible to others.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "ai_describe_image",
+      "description": "Multimodal description of a base64-encoded image using on-device Gemini Nano. Pair with `take_screenshot` for cheap visual analysis: \"what does this page look like?\", \"find the submit button in this screenshot\", \"is there an error message visible?\". Free, no network round-trip.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "image_base64": {
+            "type": "string",
+            "minLength": 64
+          },
+          "mime_type": {
+            "type": "string",
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/webp"
+            ],
+            "default": "image/png"
+          },
+          "question": {
+            "type": "string",
+            "default": "Describe this image in detail."
+          }
+        },
+        "required": [
+          "image_base64"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "ai_check_prompt_injection",
+      "description": "Run untrusted text (page content, scraped data, user-supplied input) through an on-device safety check BEFORE passing to a cloud model. Returns { suspicious, reason, severity }. Use as a guardrail when you're about to feed third-party page text into the agent loop. Cheap and offline.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_hint": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "navigate_active_tab",
@@ -661,12 +1233,22 @@
             "format": "uri"
           }
         },
-        "required": ["url"],
+        "required": [
+          "url"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs", "activeTab"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs",
+        "activeTab"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "click_element",
@@ -685,12 +1267,22 @@
             "default": 0
           }
         },
-        "required": ["selector"],
+        "required": [
+          "selector"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "type_into_element",
@@ -715,12 +1307,23 @@
             "default": true
           }
         },
-        "required": ["selector", "text"],
+        "required": [
+          "selector",
+          "text"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "scroll_page",
@@ -731,7 +1334,12 @@
         "properties": {
           "direction": {
             "type": "string",
-            "enum": ["top", "bottom", "into-view", "by"]
+            "enum": [
+              "top",
+              "bottom",
+              "into-view",
+              "by"
+            ]
           },
           "selector": {
             "type": "string"
@@ -740,12 +1348,22 @@
             "type": "number"
           }
         },
-        "required": ["direction"],
+        "required": [
+          "direction"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "wait_for",
@@ -770,8 +1388,16 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "set_clipboard",
@@ -784,12 +1410,23 @@
             "type": "string"
           }
         },
-        "required": ["text"],
+        "required": [
+          "text"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting", "clipboardWrite"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting",
+        "clipboardWrite"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "press_keys",
@@ -812,12 +1449,22 @@
             "default": 30
           }
         },
-        "required": ["keys"],
+        "required": [
+          "keys"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "hover_element",
@@ -831,12 +1478,22 @@
             "minLength": 1
           }
         },
-        "required": ["selector"],
+        "required": [
+          "selector"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "focus_element",
@@ -850,12 +1507,22 @@
             "minLength": 1
           }
         },
-        "required": ["selector"],
+        "required": [
+          "selector"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "blur_element",
@@ -872,8 +1539,16 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "right_click_element",
@@ -887,12 +1562,22 @@
             "minLength": 1
           }
         },
-        "required": ["selector"],
+        "required": [
+          "selector"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "select_dropdown_option",
@@ -916,12 +1601,22 @@
             "minimum": 0
           }
         },
-        "required": ["selector"],
+        "required": [
+          "selector"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "set_checkbox",
@@ -938,12 +1633,23 @@
             "type": "boolean"
           }
         },
-        "required": ["selector", "checked"],
+        "required": [
+          "selector",
+          "checked"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "set_radio",
@@ -967,12 +1673,22 @@
             "minimum": 0
           }
         },
-        "required": ["selector"],
+        "required": [
+          "selector"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "submit_form",
@@ -993,8 +1709,16 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "open_new_tab",
@@ -1023,12 +1747,21 @@
             "minimum": 0
           }
         },
-        "required": ["url"],
+        "required": [
+          "url"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "close_tab",
@@ -1052,12 +1785,21 @@
             ]
           }
         },
-        "required": ["tab_ids"],
+        "required": [
+          "tab_ids"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "switch_to_tab",
@@ -1070,12 +1812,21 @@
             "type": "integer"
           }
         },
-        "required": ["tab_id"],
+        "required": [
+          "tab_id"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "duplicate_tab",
@@ -1088,12 +1839,21 @@
             "type": "integer"
           }
         },
-        "required": ["tab_id"],
+        "required": [
+          "tab_id"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "pin_tab",
@@ -1109,12 +1869,22 @@
             "type": "boolean"
           }
         },
-        "required": ["tab_id", "pinned"],
+        "required": [
+          "tab_id",
+          "pinned"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "mute_tab",
@@ -1130,12 +1900,22 @@
             "type": "boolean"
           }
         },
-        "required": ["tab_id", "muted"],
+        "required": [
+          "tab_id",
+          "muted"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "reload_tab",
@@ -1156,8 +1936,15 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "go_back",
@@ -1174,8 +1961,15 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "go_forward",
@@ -1192,8 +1986,15 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "set_tab_zoom",
@@ -1211,12 +2012,21 @@
             "maximum": 5
           }
         },
-        "required": ["zoom_factor"],
+        "required": [
+          "zoom_factor"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "move_tab",
@@ -1236,12 +2046,22 @@
             "type": "integer"
           }
         },
-        "required": ["tab_id", "index"],
+        "required": [
+          "tab_id",
+          "index"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "create_tab_group",
@@ -1262,7 +2082,17 @@
           },
           "color": {
             "type": "string",
-            "enum": ["grey", "blue", "red", "yellow", "green", "pink", "purple", "cyan", "orange"]
+            "enum": [
+              "grey",
+              "blue",
+              "red",
+              "yellow",
+              "green",
+              "pink",
+              "purple",
+              "cyan",
+              "orange"
+            ]
           },
           "window_id": {
             "type": "integer"
@@ -1271,12 +2101,22 @@
             "type": "boolean"
           }
         },
-        "required": ["tab_ids"],
+        "required": [
+          "tab_ids"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs", "tabGroups"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs",
+        "tabGroups"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "add_tabs_to_group",
@@ -1296,12 +2136,23 @@
             "minItems": 1
           }
         },
-        "required": ["group_id", "tab_ids"],
+        "required": [
+          "group_id",
+          "tab_ids"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs", "tabGroups"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs",
+        "tabGroups"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "remove_tabs_from_group",
@@ -1318,12 +2169,22 @@
             "minItems": 1
           }
         },
-        "required": ["tab_ids"],
+        "required": [
+          "tab_ids"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabs", "tabGroups"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabs",
+        "tabGroups"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "update_tab_group",
@@ -1340,18 +2201,37 @@
           },
           "color": {
             "type": "string",
-            "enum": ["grey", "blue", "red", "yellow", "green", "pink", "purple", "cyan", "orange"]
+            "enum": [
+              "grey",
+              "blue",
+              "red",
+              "yellow",
+              "green",
+              "pink",
+              "purple",
+              "cyan",
+              "orange"
+            ]
           },
           "collapsed": {
             "type": "boolean"
           }
         },
-        "required": ["group_id"],
+        "required": [
+          "group_id"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["tabGroups"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "tabGroups"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "download_url",
@@ -1369,7 +2249,11 @@
           },
           "conflict": {
             "type": "string",
-            "enum": ["uniquify", "overwrite", "prompt"],
+            "enum": [
+              "uniquify",
+              "overwrite",
+              "prompt"
+            ],
             "default": "uniquify"
           },
           "save_as": {
@@ -1377,12 +2261,21 @@
             "default": false
           }
         },
-        "required": ["url"],
+        "required": [
+          "url"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["downloads"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "downloads"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "cancel_download",
@@ -1395,12 +2288,21 @@
             "type": "integer"
           }
         },
-        "required": ["download_id"],
+        "required": [
+          "download_id"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["downloads"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "downloads"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "notify_user",
@@ -1425,12 +2327,782 @@
             "default": false
           }
         },
-        "required": ["title", "message"],
+        "required": [
+          "title",
+          "message"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["notifications"],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_permissions": [
+        "notifications"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "list_recently_closed",
+      "description": "List recently-closed tabs and windows the user can restore. Each entry has { id, last_modified, tab? | window? }. Useful when the user says \"what was that page I just closed?\".",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "max_results": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 25,
+            "default": 25
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [
+        "sessions"
+      ],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "restore_recently_closed",
+      "description": "Restore a recently-closed tab or window. Pass `session_id` from list_recently_closed, or omit to restore the most recent.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [
+        "sessions"
+      ],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "save_page_as_mhtml",
+      "description": "Snapshot a tab as a self-contained MHTML archive (HTML + every resource inlined). Returns base64 MHTML data. Use for: archival, sharing a frozen page, feeding the agent a stable snapshot it can reanalyze later.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "activeTab"
+      ],
+      "required_optional_permissions": [
+        "pageCapture"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "get_cookies",
+      "description": "Read cookies for a URL or domain. Pass `url` (preferred — narrower) OR `domain`, optionally also `name` to filter to one cookie. Returns a list of { name, value, domain, path, secure, httpOnly, sameSite, expirationDate }. Personal data — admin only by default.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [
+        "cookies"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "set_cookie",
+      "description": "Write a cookie. Privileged because it can hijack a user session (CSRF / token-overwrite). Always prompts. Returns the set cookie or { ok:false, reason }.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "string"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "secure": {
+            "type": "boolean"
+          },
+          "http_only": {
+            "type": "boolean"
+          },
+          "same_site": {
+            "type": "string",
+            "enum": [
+              "no_restriction",
+              "lax",
+              "strict",
+              "unspecified"
+            ]
+          },
+          "expiration": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "url",
+          "name",
+          "value"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [
+        "cookies"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "delete_cookie",
+      "description": "Delete a cookie by url + name.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "url",
+          "name"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [
+        "cookies"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_attach",
+      "description": "Attach a Chrome DevTools Protocol session to a tab (defaults to active tab). Required before any other cdp_* tool can run on that tab. Chrome will show a \"is being debugged\" banner while attached. The session auto-cleans up when the agent run ends; you can also call cdp_detach explicitly.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "activeTab"
+      ],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_detach",
+      "description": "Close the CDP session on a tab (defaults to active tab). Removes the debug banner.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_attached_tabs",
+      "description": "Return the list of tab ids currently attached via CDP.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_full_page_screenshot",
+      "description": "Capture the FULL page (not just viewport) as base64. CDP's Page.captureScreenshot with captureBeyondViewport. Use this instead of take_screenshot when the user asks \"give me a picture of the whole article\" or you need to OCR a long form. Returns { format, image_base64, byte_length }.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "png",
+              "jpeg",
+              "webp"
+            ],
+            "default": "png"
+          },
+          "quality": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 85
+          },
+          "full_page": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "activeTab"
+      ],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_a11y_tree",
+      "description": "Dump the accessibility tree of the active tab via Accessibility.getFullAXTree. Each node has { role, name, value, description, properties, children }. Use INSTEAD of read_active_page when you want a clean semantic view of the page — it omits decorative DOM and surfaces aria-roles, button labels, form-field associations directly. Best for vision-free reasoning.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          },
+          "max_nodes": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 5000,
+            "default": 500
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "activeTab"
+      ],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_input_click_xy",
+      "description": "Synthesize a real mouse click at viewport coordinates (x, y) via Input.dispatchMouseEvent. Bypasses event-handler shadowing, works through shadow DOM and cross-origin iframes (OOPIFs) — the most reliable click in existence. Use when click_element fails because the page intercepts synthetic clicks.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "button": {
+            "type": "string",
+            "enum": [
+              "left",
+              "right",
+              "middle"
+            ],
+            "default": "left"
+          },
+          "click_count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3,
+            "default": 1
+          },
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "activeTab"
+      ],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_input_type",
+      "description": "Type literal text into whatever element currently has focus, via Input.insertText. Fires beforeinput / input / compositionend events correctly so React-controlled inputs accept it. Use after focus_element + when type_into_element fails.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "activeTab"
+      ],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_network_capture_start",
+      "description": "Begin capturing every Network event on a tab (default: active). After this, navigate or interact with the page; calls accumulate in a buffer. Use cdp_network_capture_drain to read them. Use cdp_network_capture_stop when finished.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "activeTab"
+      ],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_network_capture_drain",
+      "description": "Drain captured Network events from a tab's buffer. Each entry has { request_id, url, method, status, mime_type, request_headers, response_headers, finished, failed, ts_ms }. Use cdp_network_get_body with a request_id to fetch a response body lazily.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          },
+          "max": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 2000,
+            "default": 100
+          },
+          "url_contains": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_network_capture_stop",
+      "description": "Stop capturing Network events on a tab and clear its buffer.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_network_get_body",
+      "description": "Fetch the response body for a captured request, by request_id (from cdp_network_capture_drain). Returns { body, base64_encoded }. Bodies are large so we don't buffer them eagerly.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "request_id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_print_pdf",
+      "description": "Print a tab to PDF via Page.printToPDF. Returns base64 PDF data. Useful for archival, sharing, or feeding the PDF to a downstream model.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          },
+          "landscape": {
+            "type": "boolean",
+            "default": false
+          },
+          "print_background": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "activeTab"
+      ],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_perf_metrics",
+      "description": "Read Performance.getMetrics for a tab. Returns { Documents, Frames, JSHeapUsedSize, LayoutCount, RecalcStyleCount, ScriptDuration, TaskDuration, … }. Useful when an action triggered chaos and you need to measure it.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "activeTab"
+      ],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_emulate_device",
+      "description": "Override viewport metrics + user agent on a tab. Use to view a page as iPhone Safari, Pixel Chrome, etc., without leaving the user's window. Reset by calling cdp_clear_emulation.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 100
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 100
+          },
+          "device_scale_factor": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "default": 2
+          },
+          "mobile": {
+            "type": "boolean",
+            "default": true
+          },
+          "user_agent": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "width",
+          "height"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "activeTab"
+      ],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "cdp_clear_emulation",
+      "description": "Clear device + UA overrides on a tab.",
+      "tier": "privileged",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tab_id": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [
+        "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "webmcp_check_availability",
+      "description": "Check whether WebMCP (`navigator.modelContext.registerTool`) is available in the user's Chrome and whether the active tab has registered any tools. Use this once before calling webmcp_list_page_tools / webmcp_call_page_tool.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": true,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "webmcp_list_page_tools",
+      "description": "List tools the active tab has registered via `navigator.modelContext.registerTool`. Each entry includes { name, description, inputSchema }. Use these to discover what the page offers before calling webmcp_call_page_tool.",
+      "tier": "read",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": true,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ]
+    },
+    {
+      "name": "webmcp_call_page_tool",
+      "description": "Invoke a tool registered by the active page via `navigator.modelContext`. Pass the tool name and an arguments object (must match the page's declared input schema). Returns the page tool's result.",
+      "tier": "action",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "arguments": {}
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "ask_user",
@@ -1453,12 +3125,19 @@
             "default": 300000
           }
         },
-        "required": ["question"],
+        "required": [
+          "question"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "required_permissions": [],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "ask_user_choice",
@@ -1490,12 +3169,20 @@
             "default": 300000
           }
         },
-        "required": ["question", "choices"],
+        "required": [
+          "question",
+          "choices"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "required_permissions": [],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "ask_user_secret",
@@ -1518,12 +3205,19 @@
             "default": 300000
           }
         },
-        "required": ["prompt"],
+        "required": [
+          "prompt"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "required_permissions": [],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "request_user_takeover",
@@ -1541,12 +3235,20 @@
             "minLength": 1
           }
         },
-        "required": ["reason", "instructions"],
+        "required": [
+          "reason",
+          "instructions"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "required_permissions": [],
-      "surface_bundles": ["pilot", "pilot+privileged"]
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ]
     },
     {
       "name": "execute_javascript",
@@ -1568,12 +3270,21 @@
             "type": "integer"
           }
         },
-        "required": ["code"],
+        "required": [
+          "code"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
     },
     {
       "name": "inject_stylesheet",
@@ -1594,12 +3305,21 @@
             "default": false
           }
         },
-        "required": ["css"],
+        "required": [
+          "css"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
     },
     {
       "name": "remove_stylesheet",
@@ -1616,12 +3336,21 @@
             "type": "integer"
           }
         },
-        "required": ["css"],
+        "required": [
+          "css"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["activeTab", "scripting"],
-      "surface_bundles": ["pilot+privileged"]
+      "required_permissions": [
+        "activeTab",
+        "scripting"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
     },
     {
       "name": "set_extension_storage",
@@ -1637,16 +3366,27 @@
           "value": {},
           "area": {
             "type": "string",
-            "enum": ["local", "session"],
+            "enum": [
+              "local",
+              "session"
+            ],
             "default": "local"
           }
         },
-        "required": ["key"],
+        "required": [
+          "key"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["storage"],
-      "surface_bundles": ["pilot+privileged"]
+      "required_permissions": [
+        "storage"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
     },
     {
       "name": "desktop_run_command",
@@ -1664,12 +3404,20 @@
             "additionalProperties": {}
           }
         },
-        "required": ["command"],
+        "required": [
+          "command"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": ["nativeMessaging"],
-      "surface_bundles": ["pilot+privileged"]
+      "required_permissions": [
+        "nativeMessaging"
+      ],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot+privileged"
+      ]
     }
   ]
 }

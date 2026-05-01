@@ -44,6 +44,22 @@ export default defineConfig({
       'history',
       'bookmarks',
       'notifications',
+      'sessions',
+    ],
+    // Risky / privacy-sensitive permissions live here. Granted at runtime via
+    // chrome.permissions.request from the admin "Advanced agent capabilities"
+    // toggles in Settings. Tools that depend on these declare
+    // `required_optional_permissions` and are gated by the dispatcher.
+    optional_permissions: [
+      'debugger',
+      'cookies',
+      'pageCapture',
+      'userScripts',
+      'proxy',
+      'webRequest',
+      'desktopCapture',
+      'topSites',
+      'management',
     ],
     host_permissions: [
       'https://server.app.matrxserver.com/*',

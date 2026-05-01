@@ -9,6 +9,7 @@
  * extension at staging / dev / localhost from here.
  */
 
+import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapabilities';
 import { Button } from '@/components/ui/button';
 import { Collapsible } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
@@ -244,6 +245,12 @@ export function SettingsView() {
               )}
             </Card>
           </Collapsible>
+
+          {isAdmin && (
+            <Collapsible label="Advanced agent capabilities" defaultOpen={false}>
+              <AdvancedAgentCapabilities />
+            </Collapsible>
+          )}
 
           <Collapsible label="Privacy">
             <Card>

@@ -23,8 +23,16 @@ export interface ToolCatalogEntry {
   description: string;
   tier: ToolTier;
   input_schema: ReturnType<typeof zodToJsonSchema>;
-  /** Chrome `permissions` keys this tool needs. Empty if it only uses standard JS. */
+  /** Chrome `permissions` keys this tool needs (base manifest). */
   required_permissions: string[];
+  /**
+   * Optional permissions the user must grant at runtime via
+   * `chrome.permissions.request`. Tools advertise these so the dispatcher can
+   * gate them and the UI can prompt.
+   */
+  required_optional_permissions: string[];
+  /** Filtered out of non-admin tool bundles. Used for experimental tools. */
+  admin_only: boolean;
   /** Which surface bundles include this tool. */
   surface_bundles: ('assistant' | 'pilot' | 'pilot+privileged')[];
 }
@@ -121,6 +129,48 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   get_extension_storage: ['storage'],
   list_extension_storage: ['storage'],
   desktop_run_command: ['nativeMessaging'],
+
+  // on-device AI (no chrome perms — uses globalThis.LanguageModel et al.)
+  ai_check_availability: [],
+  ai_summarize: [],
+  ai_classify: [],
+  ai_extract_json: [],
+  ai_translate: [],
+  ai_detect_language: [],
+  ai_proofread: [],
+  ai_describe_image: [],
+  ai_check_prompt_injection: [],
+
+  // CDP — base manifest still needs activeTab; the optional `debugger` perm
+  // is checked separately via required_optional_permissions.
+  cdp_attach: ['activeTab'],
+  cdp_detach: [],
+  cdp_attached_tabs: [],
+  cdp_full_page_screenshot: ['activeTab'],
+  cdp_a11y_tree: ['activeTab'],
+  cdp_input_click_xy: ['activeTab'],
+  cdp_input_type: ['activeTab'],
+  cdp_network_capture_start: ['activeTab'],
+  cdp_network_capture_drain: [],
+  cdp_network_capture_stop: [],
+  cdp_network_get_body: [],
+  cdp_print_pdf: ['activeTab'],
+  cdp_perf_metrics: ['activeTab'],
+  cdp_emulate_device: ['activeTab'],
+  cdp_clear_emulation: [],
+
+  // WebMCP — runs in MAIN world
+  webmcp_check_availability: ['activeTab', 'scripting'],
+  webmcp_list_page_tools: ['activeTab', 'scripting'],
+  webmcp_call_page_tool: ['activeTab', 'scripting'],
+
+  // Optional-permission family
+  get_cookies: [],
+  set_cookie: [],
+  delete_cookie: [],
+  save_page_as_mhtml: ['activeTab'],
+  list_recently_closed: [],
+  restore_recently_closed: [],
 };
 
 function bundlesForTier(tier: ToolTier): ToolCatalogEntry['surface_bundles'] {
@@ -139,6 +189,8 @@ export function buildToolCatalog(): ToolCatalogEntry[] {
       target: 'jsonSchema7',
     }),
     required_permissions: PERMISSIONS_BY_TOOL[h.name] ?? [],
+    required_optional_permissions: h.required_optional_permissions ?? [],
+    admin_only: h.admin_only ?? false,
     surface_bundles: bundlesForTier(h.tier),
   }));
 }

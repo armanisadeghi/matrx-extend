@@ -1,5 +1,7 @@
+import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
 import type { SeoAudit } from '@/lib/seo/audit';
 import { fetchLatestSeoAuditForUrl, saveSeoAudit } from '@/lib/supabase/queries';
 import { CheckCircle2, Loader2, Save, Search, Sparkles } from 'lucide-react';
@@ -118,6 +120,35 @@ export function SeoView() {
             last {new Date(previousAuditedAt).toLocaleString()}
           </span>
         )}
+        {audit && (
+          <div className="ml-auto">
+            <CopyMenu
+              title="Copy audit"
+              options={[
+                {
+                  label: 'Summary (text)',
+                  getContent: () => seoAuditToText(audit),
+                },
+                {
+                  label: 'For AI agent',
+                  ai: true,
+                  getContent: () =>
+                    wrapForAgent({
+                      description: 'an SEO audit for a webpage',
+                      source: { url: audit.url, title: audit.title.value },
+                      format: 'text',
+                      content: seoAuditToText(audit),
+                    }),
+                },
+                {
+                  label: 'JSON',
+                  adminOnly: true,
+                  getContent: () => stringifyJson(audit),
+                },
+              ]}
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto">
@@ -221,14 +252,44 @@ function Section({
 
 function Field({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="text-xs">
+    <div className="group text-xs">
       <div className="flex items-center justify-between text-muted-foreground">
         <span>{label}</span>
-        {hint && <span>{hint}</span>}
+        <div className="flex items-center gap-1">
+          {hint && <span>{hint}</span>}
+          {value && value !== '—' && (
+            <CopyButton
+              text={value}
+              title={`Copy ${label.toLowerCase()}`}
+              size="xs"
+              className="opacity-0 transition-opacity group-hover:opacity-100"
+            />
+          )}
+        </div>
       </div>
       <div className="break-words text-foreground">{value}</div>
     </div>
   );
+}
+
+function seoAuditToText(a: SeoAudit): string {
+  const lines: string[] = [];
+  lines.push(`URL: ${a.url}`);
+  lines.push(`Title (${a.title.length} chars): ${a.title.value || '—'}`);
+  lines.push(
+    `Description (${a.description.length} chars): ${a.description.value ?? '—'}`,
+  );
+  lines.push(`Canonical: ${a.canonical ?? '—'}`);
+  lines.push(`Robots: ${a.robots ?? '—'}`);
+  lines.push('');
+  lines.push(`Headings (${a.headings.length}):`);
+  for (const h of a.headings.slice(0, 50)) lines.push(`  H${h.level}: ${h.text}`);
+  if (a.headings.length > 50) lines.push(`  …+${a.headings.length - 50} more`);
+  lines.push('');
+  lines.push('Page stats:');
+  lines.push(`  Images: ${a.images.total} (missing alt: ${a.images.missing_alt})`);
+  lines.push(`  Words: ${a.word_count}`);
+  return lines.join('\n');
 }
 
 function Stat({ label, value }: { label: string; value: number }) {

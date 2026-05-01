@@ -294,6 +294,8 @@ export const PATTERN_KINDS = [
   'next_data',
   'ai_extract',
   'list_pattern',
+  'microdata',
+  'network_capture',
 ] as const;
 export type PatternKind = (typeof PATTERN_KINDS)[number];
 

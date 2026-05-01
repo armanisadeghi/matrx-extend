@@ -138,6 +138,23 @@ function ToolRow({ handler }: { handler: AnyToolHandler }) {
           <div className="flex items-center gap-1.5">
             <span className="font-mono text-[12px] font-medium">{handler.name}</span>
             <TierBadge tier={handler.tier} />
+            {handler.admin_only && (
+              <Badge
+                variant="outline"
+                className="h-4 border-amber-300 bg-amber-50 px-1 py-0 text-[9px] font-medium uppercase tracking-wide text-amber-700 dark:border-amber-700/50 dark:bg-amber-950/30 dark:text-amber-400"
+              >
+                admin
+              </Badge>
+            )}
+            {handler.required_optional_permissions?.length ? (
+              <Badge
+                variant="outline"
+                className="h-4 border-purple-300 bg-purple-50 px-1 py-0 text-[9px] font-medium uppercase tracking-wide text-purple-700 dark:border-purple-700/50 dark:bg-purple-950/30 dark:text-purple-400"
+                title={`Requires: ${handler.required_optional_permissions.join(', ')}`}
+              >
+                opt-perm
+              </Badge>
+            ) : null}
           </div>
           <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
             {handler.description}

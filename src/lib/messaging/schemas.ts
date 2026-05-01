@@ -33,9 +33,20 @@ export const CHANNELS = {
   // Scrape (sidepanel → content script via chrome.tabs.sendMessage)
   SCRAPE_CAPTURE: 'scrape:capture-page',
 
+  // Tasks user-gated overlay (in-page injected button → sidepanel via chrome.runtime.sendMessage)
+  TASKS_USER_GO: 'tasks:user-go',
+  TASKS_USER_CANCEL: 'tasks:user-cancel',
+
   // Data picker (content → SW → sidepanel)
   DATA_PICKER_RESULT: 'data:picker-result',
   DATA_PICKER_EXIT: 'data:picker-exit',
+
+  // List-pattern picker (content → SW → sidepanel)
+  LIST_PICKER_RESULT: 'data:list-picker-result',
+  LIST_PICKER_EXIT: 'data:list-picker-exit',
+
+  // Network capture (ISOLATED-world relay → SW → sidepanel)
+  NET_CAPTURE_EVENT: 'net-capture:event',
 
   // Desktop bridge
   DESKTOP_AVAILABILITY: 'desktop:availability',

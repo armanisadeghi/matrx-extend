@@ -1,7 +1,10 @@
 import { aiExtractMode } from './modes/ai-extract';
 import { autoTableMode } from './modes/auto-table';
 import { jsonLdMode } from './modes/json-ld';
+import { listPatternMode } from './modes/list-pattern';
 import { manualCssMode } from './modes/manual-css';
+import { microdataMode } from './modes/microdata';
+import { networkCaptureMode } from './modes/network-capture';
 import { nextDataMode } from './modes/next-data';
 import { ogMetaMode } from './modes/og-meta';
 import type { ExtractionMode } from './types';
@@ -18,6 +21,9 @@ register(ogMetaMode);
 register(autoTableMode);
 register(nextDataMode);
 register(aiExtractMode);
+register(listPatternMode);
+register(microdataMode);
+register(networkCaptureMode);
 
 export function getMode(id: string): ExtractionMode<unknown> | null {
   return MODES.get(id) ?? null;

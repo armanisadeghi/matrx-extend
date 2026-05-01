@@ -1,0 +1,199 @@
+/**
+ * Curated, host-keyed extraction recipes. The Showcase pre-loads the recipes
+ * for the active host so users can one-click-apply known-good configs.
+ *
+ * Add new recipes here. Each recipe declares a mode + a pre-baked config.
+ * The user can then save it as a wbx_pattern (or tweak first).
+ */
+
+import type { PatternKind } from '@/lib/supabase/queries';
+
+export interface Recipe {
+  /** Unique within this file. */
+  id: string;
+  label: string;
+  description: string;
+  /** Match: any of these hosts (suffix-matched, so `www.linkedin.com` matches `linkedin.com`). */
+  hosts: string[];
+  /** Match: optional path glob (`/jobs/**`, `/in/**`). */
+  routes?: string[];
+  kind: PatternKind;
+  config: Record<string, unknown>;
+  /** Recipes that target a list / many rows are visually marked. */
+  yieldsRows?: boolean;
+}
+
+export const RECIPES: Recipe[] = [
+  // ── LinkedIn ──────────────────────────────────────────────────────────────
+  {
+    id: 'linkedin-jsonld-job',
+    label: 'LinkedIn — JobPosting (JSON-LD)',
+    description:
+      'Public LinkedIn job pages embed a JobPosting JSON-LD with title, company, location, dates, salary.',
+    hosts: ['linkedin.com'],
+    routes: ['/jobs/view/**', '/jobs/**'],
+    kind: 'json_ld',
+    config: { ld_type: 'JobPosting' },
+  },
+  {
+    id: 'linkedin-bpr-included',
+    label: 'LinkedIn — Voyager hydration entities',
+    description:
+      'Aggregates every <code id="bpr-guid-*"> hydration block and surfaces the typed entities under `included[]`. Profiles, posts, companies.',
+    hosts: ['linkedin.com'],
+    kind: 'next_data',
+    config: { source: 'bpr-guid', key_path: 'included' },
+    yieldsRows: true,
+  },
+
+  // ── Indeed ────────────────────────────────────────────────────────────────
+  {
+    id: 'indeed-jsonld-job',
+    label: 'Indeed — JobPosting (JSON-LD)',
+    description: 'Indeed job pages emit a structured JobPosting block with all canonical fields.',
+    hosts: ['indeed.com'],
+    routes: ['/viewjob*', '/jobs*'],
+    kind: 'json_ld',
+    config: { ld_type: 'JobPosting' },
+  },
+  {
+    id: 'indeed-mosaic',
+    label: 'Indeed — Mosaic provider data (window._initialData)',
+    description:
+      'Indeed exposes most page state in window._initialData. Use the Network tab to capture, or Framework tab to navigate the inline JSON.',
+    hosts: ['indeed.com'],
+    kind: 'next_data',
+    config: { source: '__NEXT_DATA__', key_path: 'props.pageProps' },
+  },
+
+  // ── Yelp ──────────────────────────────────────────────────────────────────
+  {
+    id: 'yelp-restaurant-microdata',
+    label: 'Yelp — Restaurant (microdata)',
+    description: 'Yelp business pages publish complete Schema.org microdata for restaurants.',
+    hosts: ['yelp.com'],
+    routes: ['/biz/**'],
+    kind: 'microdata',
+    config: { itemtype: 'Restaurant' },
+  },
+  {
+    id: 'yelp-reviews-microdata',
+    label: 'Yelp — Reviews (microdata)',
+    description: 'Each review is its own Review itemscope with rating, author, date, body.',
+    hosts: ['yelp.com'],
+    routes: ['/biz/**'],
+    kind: 'microdata',
+    config: { itemtype: 'Review' },
+    yieldsRows: true,
+  },
+
+  // ── Glassdoor ─────────────────────────────────────────────────────────────
+  {
+    id: 'glassdoor-apollo',
+    label: 'Glassdoor — Apollo cache',
+    description:
+      'Glassdoor stores listings, reviews, salaries in an Apollo cache. Use Framework tab to navigate.',
+    hosts: ['glassdoor.com'],
+    kind: 'next_data',
+    config: { source: 'apollo', key_path: '' },
+  },
+
+  // ── Amazon ────────────────────────────────────────────────────────────────
+  {
+    id: 'amazon-product-jsonld',
+    label: 'Amazon — Product (JSON-LD)',
+    description: 'Amazon product pages emit Product JSON-LD with name, brand, offers, ratings.',
+    hosts: ['amazon.com', 'amazon.co.uk', 'amazon.de', 'amazon.ca', 'amazon.in'],
+    routes: ['/dp/**', '/gp/product/**'],
+    kind: 'json_ld',
+    config: { ld_type: 'Product' },
+  },
+
+  // ── Hacker News ───────────────────────────────────────────────────────────
+  {
+    id: 'hn-frontpage',
+    label: 'Hacker News — front-page stories',
+    description: 'Click 1 story to seed the list-pattern picker, then click title/score/author.',
+    hosts: ['news.ycombinator.com'],
+    kind: 'list_pattern',
+    config: {
+      list_root: 'table.itemlist tbody, table#hnmain tbody',
+      item_selector: 'tr.athing',
+      field_paths: [
+        { name: 'title', rel_selector: '.titleline > a' },
+        { name: 'url', rel_selector: '.titleline > a', attr: 'href' },
+      ],
+    },
+    yieldsRows: true,
+  },
+
+  // ── Eventbrite ────────────────────────────────────────────────────────────
+  {
+    id: 'eventbrite-event-jsonld',
+    label: 'Eventbrite — Event (JSON-LD)',
+    description: 'Public event pages emit a complete Event JSON-LD with date, venue, prices.',
+    hosts: ['eventbrite.com', 'eventbrite.co.uk', 'eventbrite.ca'],
+    kind: 'json_ld',
+    config: { ld_type: 'Event' },
+  },
+
+  // ── GitHub ────────────────────────────────────────────────────────────────
+  {
+    id: 'github-readme',
+    label: 'GitHub — repo metadata snapshot',
+    description: 'OG/meta + repo description + language + topics.',
+    hosts: ['github.com'],
+    routes: ['/*/*'],
+    kind: 'og_meta',
+    config: {},
+  },
+
+  // ── Recipe sites ──────────────────────────────────────────────────────────
+  {
+    id: 'recipe-jsonld',
+    label: 'Recipe — Recipe (JSON-LD)',
+    description:
+      'Most recipe sites (NYT Cooking, Serious Eats, Allrecipes, Bon Appetit) emit Recipe JSON-LD with ingredients, instructions, nutrition.',
+    hosts: [
+      'cooking.nytimes.com',
+      'seriouseats.com',
+      'allrecipes.com',
+      'bonappetit.com',
+      'foodnetwork.com',
+      'epicurious.com',
+    ],
+    kind: 'json_ld',
+    config: { ld_type: 'Recipe' },
+  },
+];
+
+const hostMatches = (host: string, recipeHost: string): boolean => {
+  return host === recipeHost || host.endsWith(`.${recipeHost}`);
+};
+
+const routeMatches = (path: string, glob: string): boolean => {
+  const re = new RegExp(
+    `^${glob
+      .replace(/\*\*/g, '__DS__')
+      .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+      .replace(/\*/g, '[^/]*')
+      .replace(/__DS__/g, '.*')}$`,
+  );
+  return re.test(path);
+};
+
+export function recipesForUrl(url: string): Recipe[] {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return [];
+  }
+  const host = parsed.host.toLowerCase();
+  const path = parsed.pathname;
+  return RECIPES.filter((r) => {
+    if (!r.hosts.some((h) => hostMatches(host, h))) return false;
+    if (!r.routes || r.routes.length === 0) return true;
+    return r.routes.some((g) => routeMatches(path, g));
+  });
+}

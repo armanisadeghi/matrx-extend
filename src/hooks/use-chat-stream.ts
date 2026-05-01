@@ -113,6 +113,7 @@ export function useChatStream() {
     // user toggles the chip mid-stream.
     const permissionMode = useChatStore.getState().getPermissionMode(opts.agentId);
 
+    const isAdmin = useAuthStore.getState().isAdmin;
     const body: AgentStartRequest = {
       user_input: text,
       conversation_id: opts.conversationId ?? null,
@@ -124,8 +125,9 @@ export function useChatStream() {
       source_feature: 'chat',
       // Tell the server which client-side tools the agent can call. The
       // Assistant surface advertises only the read-only set; the Pilot surface
-      // (separate hook later) will advertise pilot_tools.
-      client_tools: assistantToolNames(),
+      // (separate hook later) will advertise pilot_tools. Admin users see
+      // experimental admin-only tools in their bundle.
+      client_tools: assistantToolNames({ isAdmin }),
     };
 
     await send(CHANNELS.STREAM_START, {

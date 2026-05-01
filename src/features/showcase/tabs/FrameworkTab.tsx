@@ -36,6 +36,49 @@ export function FrameworkTab() {
           tryParse('__NEXT_DATA__', document.getElementById('__NEXT_DATA__'));
           tryParse('__NUXT_DATA__', document.getElementById('__NUXT_DATA__'));
           tryParse('apollo', document.getElementById('__APOLLO_STATE__'));
+
+          // LinkedIn bpr-guid hydration blocks
+          const bprBlocks = Array.from(
+            document.querySelectorAll<HTMLElement>('code[id^="bpr-guid-"]'),
+          );
+          if (bprBlocks.length > 0) {
+            const aggregated: Record<string, unknown> = {};
+            let included: unknown[] = [];
+            for (const b of bprBlocks) {
+              try {
+                const p = JSON.parse(b.textContent ?? '') as Record<string, unknown>;
+                aggregated[b.id] = p;
+                if (Array.isArray(p.included)) included = included.concat(p.included);
+              } catch {
+                // skip
+              }
+            }
+            if (Object.keys(aggregated).length > 0) {
+              out.push({ source: 'bpr-guid', data: { blocks: aggregated, included } });
+            }
+          }
+
+          // Inline Apollo state via regex
+          if (!document.getElementById('__APOLLO_STATE__')) {
+            const scripts = Array.from(
+              document.querySelectorAll<HTMLScriptElement>('script:not([src])'),
+            );
+            for (const s of scripts) {
+              const t = s.textContent ?? '';
+              if (!t.includes('apolloState') && !t.includes('__APOLLO_STATE__')) continue;
+              const m = t.match(
+                /(?:apolloState|__APOLLO_STATE__)["']?\s*[:=]\s*(\{[\s\S]+?\});?\s*$/m,
+              );
+              if (m?.[1]) {
+                try {
+                  out.push({ source: 'apollo', data: JSON.parse(m[1]) });
+                  break;
+                } catch {
+                  // skip
+                }
+              }
+            }
+          }
           return out;
         },
       });

@@ -56,6 +56,22 @@ export interface ToolHandler<TArgs, TResult> {
    */
   argsSchema: z.ZodType<TArgs, z.ZodTypeDef, unknown>;
   run: (args: TArgs, ctx: ToolContext) => Promise<TResult>;
+  /**
+   * If true, this tool is excluded from non-admin users' bundle and won't be
+   * advertised to their agents. The user can still see it in the Tools tab
+   * (filtered by an "admin-only" badge) when they're an admin. Use this for
+   * experimental / risky / privacy-sensitive capabilities until we're ready
+   * to ship them broadly.
+   */
+  admin_only?: boolean;
+  /**
+   * Optional Chrome `permissions` keys this tool requires that are NOT in the
+   * default manifest — i.e. they live in `optional_permissions` and must be
+   * granted at runtime via `chrome.permissions.request`. The dispatcher
+   * checks for these before running and returns a structured error so the
+   * UI can prompt the user.
+   */
+  required_optional_permissions?: string[];
 }
 
 export type AnyToolHandler = ToolHandler<unknown, unknown>;
