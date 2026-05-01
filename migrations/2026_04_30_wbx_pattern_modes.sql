@@ -6,6 +6,7 @@
 -- Requires: 2026_04_30_wbx_pattern.sql applied first.
 -- Optional FK: target_user_table_id references user_tables(id). If your
 --   environment doesn't have user_tables yet, drop the REFERENCES clause.
+-- Applied 05/01/2026 by Arman Sadeghi.
 
 alter table public.wbx_pattern
   add column if not exists kind text not null default 'manual_css',

@@ -1,5 +1,6 @@
 -- Page captures saved from the matrx-extend Chrome extension's Scrape tab.
 -- Apply via Supabase SQL editor (or `psql` connected to the Matrx project).
+-- Applied 05/01/2026 by Arman Sadeghi.
 
 create table if not exists public.wbx_capture (
   id uuid primary key default gen_random_uuid(),

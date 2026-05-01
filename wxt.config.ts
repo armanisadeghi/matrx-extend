@@ -45,17 +45,24 @@ export default defineConfig({
       'bookmarks',
       'notifications',
       'sessions',
+      // Chrome forbids 'debugger' in optional_permissions. CDP client + network
+      // capture need it; keeping it required is the only way to keep them working.
+      'debugger',
     ],
     // Risky / privacy-sensitive permissions live here. Granted at runtime via
     // chrome.permissions.request from the admin "Advanced agent capabilities"
     // toggles in Settings. Tools that depend on these declare
     // `required_optional_permissions` and are gated by the dispatcher.
+    //
+    // NOT INCLUDED HERE (Chrome rejects them in optional_permissions and silently
+    // drops them with a manifest warning):
+    //   - 'debugger' → moved to required `permissions` below; needed by the
+    //     CDP client (src/lib/cdp/client.ts) and the network-capture flow.
+    //   - 'proxy'    → was unused; removed.
     optional_permissions: [
-      'debugger',
       'cookies',
       'pageCapture',
       'userScripts',
-      'proxy',
       'webRequest',
       'desktopCapture',
       'topSites',

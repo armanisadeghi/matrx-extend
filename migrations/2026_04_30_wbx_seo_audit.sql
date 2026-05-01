@@ -1,6 +1,7 @@
 -- SEO audits saved from the matrx-extend SEO tab.
 -- Stores both the raw audit signals and any AI-generated recommendations.
 -- Apply via Supabase SQL editor (or `psql` connected to the Matrx project).
+-- Applied 05/01/2026 by Arman Sadeghi.
 
 create table if not exists public.wbx_seo_audit (
   id uuid primary key default gen_random_uuid(),

@@ -8,7 +8,7 @@ import {
   type PatternKind,
   savePattern,
 } from '@/lib/supabase/queries';
-import { type UserTableDataType, inferSchemaFromRow } from '@/lib/supabase/user-tables';
+import { inferSchemaFromRow } from '@/lib/supabase/user-tables';
 import { CheckCircle2, Loader2, Save } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
@@ -75,13 +75,9 @@ export function SaveAsPattern({
 
       if (target === NEW_TABLE) {
         const created = await createTable({
-          name: newTableName || name || `${host} extraction`,
+          table_name: newTableName || name || `${host} extraction`,
           description: `Auto-created from matrx-extend ${kind} pattern.`,
-          fields: inferredFields as {
-            field_name: string;
-            data_type: UserTableDataType;
-            field_order: number;
-          }[],
+          fields: inferredFields,
         });
         if (!created) {
           setErr('Failed to create user table.');
@@ -173,7 +169,7 @@ export function SaveAsPattern({
             <option value={NEW_TABLE}>+ Create new from these fields…</option>
             {tables?.map((t) => (
               <option key={t.id} value={t.id}>
-                {t.name}
+                {t.table_name}
               </option>
             ))}
           </select>
@@ -198,9 +194,16 @@ export function SaveAsPattern({
               ) : (
                 <div className="max-h-32 space-y-0.5 overflow-y-auto">
                   {inferredFields.map((f) => (
-                    <div key={f.field_name} className="flex items-center justify-between text-[11px]">
-                      <span className="truncate font-mono">{f.field_name}</span>
-                      <span className="ml-2 shrink-0 text-muted-foreground">{f.data_type}</span>
+                    <div key={f.field_name} className="flex items-center justify-between gap-2 text-[11px]">
+                      <span className="min-w-0 truncate">
+                        <span className="truncate font-mono">{f.field_name}</span>
+                        {f.display_name !== f.field_name && (
+                          <span className="ml-1 truncate text-muted-foreground">
+                            ({f.display_name})
+                          </span>
+                        )}
+                      </span>
+                      <span className="shrink-0 text-muted-foreground">{f.data_type}</span>
                     </div>
                   ))}
                 </div>

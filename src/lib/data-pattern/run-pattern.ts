@@ -3,6 +3,16 @@ import { getMode } from './registry';
 import type { DetectionHint, ExtractedRow } from './types';
 
 /**
+ * chrome.scripting.executeScript serializes args via structured clone, which
+ * does NOT permit `undefined` as a top-level value (it does permit undefined
+ * inside objects). Coerce undefined to an empty object so callers can pass
+ * configs through without manually defaulting at every site.
+ */
+function safeArg(v: unknown): unknown {
+  return v === undefined ? {} : v;
+}
+
+/**
  * Mode-aware pattern runner. Replaces inline chrome.scripting calls in DataView.
  * Looks up the pattern's kind in the registry, builds the per-mode config, and
  * executes the mode's runInPage function in the active tab.
@@ -25,7 +35,7 @@ export async function runPattern(
   const result = await chrome.scripting.executeScript({
     target: { tabId },
     func: mode.runInPage as (cfg: unknown) => ExtractedRow[],
-    args: [config],
+    args: [safeArg(config)],
   });
 
   return (result?.[0]?.result ?? []) as ExtractedRow[];
@@ -41,7 +51,7 @@ export async function detectModeInPage(
   const result = await chrome.scripting.executeScript({
     target: { tabId },
     func: mode.detectInPage as (cfg?: unknown) => DetectionHint,
-    args: [config],
+    args: [safeArg(config)],
   });
   return (result?.[0]?.result ?? null) as DetectionHint | null;
 }
@@ -60,7 +70,7 @@ export async function runMode(
   const result = await chrome.scripting.executeScript({
     target: { tabId },
     func: mode.runInPage as (cfg: unknown) => ExtractedRow[],
-    args: [config],
+    args: [safeArg(config)],
   });
   return (result?.[0]?.result ?? []) as ExtractedRow[];
 }

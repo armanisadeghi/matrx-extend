@@ -2,6 +2,7 @@
 -- Drives the matrx-extend Data tab.
 -- Apply via Supabase SQL editor (or `psql` connected to the Matrx project).
 -- Requires: 2026_04_30_wbx_capture.sql applied first.
+-- Applied 05/01/2026 by Arman Sadeghi.
 
 create table if not exists public.wbx_pattern (
   id uuid primary key default gen_random_uuid(),
