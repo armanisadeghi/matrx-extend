@@ -146,11 +146,22 @@ function onClick(e: Event) {
     sampleItem = inferred.sampleItem;
     highlightSiblings();
     flashHint(
-      `${inferred.itemCount} similar items detected. Now click each field inside one item, then Done.`,
+      `${inferred.itemCount} similar items detected. Click fields, OR add suggested fields in the side panel, then Done.`,
       'ok',
     );
     setBadge(`${inferred.itemCount} items`);
     phase = 'fields';
+    // Notify the sidepanel right now — without waiting for Done — so the
+    // Suggested Fields panel can populate immediately.
+    void chrome.runtime.sendMessage({
+      __matrx: true,
+      kind: 'data:list-picker-item-detected',
+      payload: {
+        list_root: listRootSel,
+        item_selector: itemSel,
+        item_count: inferred.itemCount,
+      },
+    });
     return;
   }
 

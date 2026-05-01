@@ -2,9 +2,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useAiExtraction } from '@/hooks/use-ai-extraction';
+import { usePatternFromData } from '@/hooks/use-pattern-from-data';
 import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
 import { useAuthStore } from '@/state/auth';
-import { Loader2, Plus, Sparkles, X } from 'lucide-react';
+import { CheckCircle2, Loader2, Plus, Sparkles, Wand2, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
@@ -15,6 +16,10 @@ const FIELD_TYPES: FieldType[] = ['string', 'number', 'date', 'url', 'boolean', 
 // Built-in extractor agent ID — provisioned in the Matrx project as a public
 // system agent. Used as the default unless the user has their own extractor.
 const STRUCTURED_EXTRACTOR_AGENT_ID = 'c99595d6-7508-4f0d-b7d3-5218a3c69399';
+
+// Built-in "Pattern from Extracted Data" agent — converts AI-extracted rows
+// into a reusable list_pattern config so future runs need no AI.
+const PATTERN_FROM_DATA_AGENT_ID = 'd5a6c513-d62f-4e09-b026-b869d8e3fcb1';
 
 interface SchemaField {
   name: string;
@@ -46,6 +51,13 @@ export function AiExtractTab() {
   const [description, setDescription] = useState('');
   const [fields, setFields] = useState<SchemaField[]>([]);
   const { rows, running, error, notes, confidence, extract, cancel } = useAiExtraction();
+  const {
+    result: patternResult,
+    running: patternRunning,
+    error: patternError,
+    convert: convertToPattern,
+    reset: resetPattern,
+  } = usePatternFromData();
 
   useEffect(() => {
     if (!userId) return;
@@ -206,13 +218,99 @@ export function AiExtractTab() {
         {rows && <ResultPreview rows={rows} />}
 
         {rows && rows.length > 0 && (
-          <div className="flex justify-end">
-            <SaveAsPattern
-              kind="ai_extract"
-              config={{ description, output_schema: outputSchema, agent_id: agentId }}
-              rows={rows}
-              defaultName={description.slice(0, 40) || 'AI extraction'}
-            />
+          <div className="space-y-2">
+            <div className="rounded-xl bg-violet-500/5 p-3 ring-1 ring-violet-500/30">
+              <div className="text-[11px] font-medium uppercase tracking-wider text-violet-700 dark:text-violet-400">
+                Convert to reusable pattern
+              </div>
+              <div className="mt-0.5 text-[11px] text-muted-foreground">
+                Hand the extracted rows + sample HTML to the Pattern-from-Data agent. It returns
+                CSS selectors that re-create these rows with no AI on future runs.
+              </div>
+              {patternResult ? (
+                <div className="mt-2 space-y-2">
+                  <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
+                    <CheckCircle2 className="size-3.5" />
+                    Pattern generated
+                    {patternResult.confidence && (
+                      <span className="rounded-full bg-emerald-500/15 px-1.5 py-px text-[9px] font-medium uppercase tracking-wider">
+                        {patternResult.confidence}
+                      </span>
+                    )}
+                  </div>
+                  <div className="space-y-0.5 rounded-lg bg-background/60 p-2 font-mono text-[10px]">
+                    <div>
+                      <span className="text-muted-foreground">root: </span>
+                      <span className="break-all">{patternResult.config.list_root}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">item: </span>
+                      <span className="break-all">{patternResult.config.item_selector}</span>
+                    </div>
+                    <div className="text-muted-foreground">
+                      {patternResult.config.field_paths.length} field(s):{' '}
+                      {patternResult.config.field_paths.map((f) => f.name).join(', ')}
+                    </div>
+                  </div>
+                  {patternResult.notes && (
+                    <div className="rounded-lg bg-secondary/40 p-2 text-[11px] text-muted-foreground">
+                      {patternResult.notes}
+                    </div>
+                  )}
+                  {patternResult.warnings && patternResult.warnings.length > 0 && (
+                    <ul className="rounded-lg bg-amber-500/10 p-2 text-[11px] text-amber-700 dark:text-amber-400">
+                      {patternResult.warnings.map((w, i) => (
+                        // biome-ignore lint/suspicious/noArrayIndexKey: render-only.
+                        <li key={i}>{w}</li>
+                      ))}
+                    </ul>
+                  )}
+                  <div className="flex justify-end gap-2">
+                    <Button size="sm" variant="ghost" onClick={resetPattern} className="rounded-full">
+                      Discard
+                    </Button>
+                    <SaveAsPattern
+                      kind="list_pattern"
+                      config={patternResult.config}
+                      rows={rows}
+                      defaultName={
+                        description.slice(0, 40) || `Auto-pattern · ${rows.length} items`
+                      }
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-2 flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      void convertToPattern({
+                        agentId: PATTERN_FROM_DATA_AGENT_ID,
+                        userInput: description,
+                        extractedRows: rows,
+                      })
+                    }
+                    disabled={patternRunning}
+                    className="rounded-full"
+                  >
+                    {patternRunning ? <Loader2 className="animate-spin" /> : <Wand2 />}
+                    {patternRunning ? 'Generating pattern…' : 'Convert to reusable pattern'}
+                  </Button>
+                  {patternError && (
+                    <span className="text-[11px] text-destructive">{patternError}</span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end">
+              <SaveAsPattern
+                kind="ai_extract"
+                config={{ description, output_schema: outputSchema, agent_id: agentId }}
+                rows={rows}
+                defaultName={description.slice(0, 40) || 'AI extraction'}
+              />
+            </div>
           </div>
         )}
       </div>

@@ -7,6 +7,7 @@ import {
   type CandidateField,
   inspectCardInPage,
 } from '@/lib/data-pattern/card-inspector';
+import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { runMode } from '@/lib/data-pattern/run-pattern';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -28,6 +29,7 @@ interface FieldPath {
   name: string;
   rel_selector: string;
   attr?: string;
+  transform?: { kind: 'regex'; expr: string };
 }
 
 interface ListPickerResult {
@@ -57,6 +59,8 @@ export function ListPatternTab() {
   const [inspecting, setInspecting] = useState(false);
   const [sampleHtml, setSampleHtml] = useState<string[]>([]);
   const [expandedFieldIdx, setExpandedFieldIdx] = useState<number | null>(null);
+  /** Live per-field sample values, probed using the SAME logic as the runner. */
+  const [sampleValues, setSampleValues] = useState<Record<string, string | null>>({});
 
   useEffect(() => {
     const offResult = on<ListPickerResult, { ack: true }>(
@@ -80,12 +84,37 @@ export function ListPatternTab() {
         return { ack: true };
       },
     );
+    /**
+     * Fires from the picker the MOMENT Phase 1 succeeds — before the user
+     * clicks Done. Sets up the config with no fields so the Suggested Fields
+     * panel populates immediately. The user can then add fields via one-click
+     * suggestions OR keep clicking in the page; final Done merges both.
+     */
+    const offDetected = on<
+      { list_root: string; item_selector: string; item_count: number },
+      { ack: true }
+    >(CHANNELS.LIST_PICKER_ITEM_DETECTED, (payload) => {
+      if (!payload?.list_root || !payload.item_selector) return { ack: true };
+      setConfig((prev) =>
+        prev && prev.list_root === payload.list_root && prev.item_selector === payload.item_selector
+          ? prev
+          : {
+              list_root: payload.list_root,
+              item_selector: payload.item_selector,
+              field_paths: prev?.field_paths ?? [],
+            },
+      );
+      setRows(null);
+      setError(null);
+      return { ack: true };
+    });
     const offExit = on<unknown, { ack: true }>(CHANNELS.LIST_PICKER_EXIT, () => {
       setPicking(false);
       return { ack: true };
     });
     return () => {
       offResult();
+      offDetected();
       offExit();
     };
   }, []);
@@ -116,6 +145,36 @@ export function ListPatternTab() {
       setCandidates(null);
     }
   }, [config?.list_root, config?.item_selector, runInspector]);
+
+  /**
+   * Probe live sample values for every selected field, using EXACTLY the
+   * runner's extraction logic. Re-runs whenever fields change. Debounced so
+   * inline edits don't fire a probe per keystroke.
+   */
+  useEffect(() => {
+    if (!tab.id || !config || config.field_paths.length === 0) {
+      setSampleValues({});
+      return;
+    }
+    const tid = tab.id;
+    const cfgSnapshot = config;
+    const handle = setTimeout(() => {
+      void (async () => {
+        try {
+          const result = await chrome.scripting.executeScript({
+            target: { tabId: tid },
+            func: probeFirstRowInPage,
+            args: [cfgSnapshot],
+          });
+          const row = (result?.[0]?.result as Record<string, string | null> | null) ?? {};
+          setSampleValues(row ?? {});
+        } catch {
+          setSampleValues({});
+        }
+      })();
+    }, 300);
+    return () => clearTimeout(handle);
+  }, [tab.id, config]);
 
   const enterPicker = async () => {
     if (!tab.id) return;
@@ -194,7 +253,12 @@ export function ListPatternTab() {
       ...config,
       field_paths: [
         ...config.field_paths,
-        { name: c.name, rel_selector: c.rel_selector, attr: c.attr },
+        {
+          name: c.name,
+          rel_selector: c.rel_selector,
+          attr: c.attr,
+          transform: c.transform,
+        },
       ],
     });
   };
@@ -404,6 +468,23 @@ export function ListPatternTab() {
                           {f.rel_selector}
                         </code>
                       )}
+                      <div className="pl-5 text-[10px]">
+                        <span className="text-muted-foreground/60">→ </span>
+                        <span
+                          className={cn(
+                            'truncate font-mono',
+                            sampleValues[f.name] == null
+                              ? 'text-amber-600 dark:text-amber-400'
+                              : 'text-emerald-700 dark:text-emerald-400',
+                          )}
+                          title={sampleValues[f.name] ?? '(no match)'}
+                        >
+                          {sampleValues[f.name] == null
+                            ? '(no match in first item)'
+                            : (sampleValues[f.name] ?? '').slice(0, 100)}
+                          {(sampleValues[f.name] ?? '').length > 100 && '…'}
+                        </span>
+                      </div>
                     </div>
                   );
                 })}

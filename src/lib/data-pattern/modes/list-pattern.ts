@@ -1,10 +1,22 @@
 import { z } from 'zod';
 import type { ExtractionMode } from '../types';
 
+const FieldTransformSchema = z.object({
+  kind: z.enum(['regex']),
+  expr: z.string(),
+});
+
 const FieldPathSchema = z.object({
   name: z.string(),
   rel_selector: z.string(),
   attr: z.string().optional(),
+  /**
+   * Optional value transform applied AFTER reading text/attribute. Today
+   * only `regex` is supported — runner runs the regex and returns the
+   * first match. Used by inspector regex-candidates so what you see in the
+   * suggested-fields preview is exactly what the runner produces.
+   */
+  transform: FieldTransformSchema.optional(),
 });
 
 export const listPatternConfigSchema = z.object({
@@ -28,7 +40,13 @@ export const listPatternMode: ExtractionMode<ListPatternConfig> = {
   }),
 
   runInPage: (config) => {
-    type FieldPath = { name: string; rel_selector: string; attr?: string };
+    type Transform = { kind: 'regex'; expr: string };
+    type FieldPath = {
+      name: string;
+      rel_selector: string;
+      attr?: string;
+      transform?: Transform;
+    };
     type Cfg = { list_root: string; item_selector: string; field_paths: FieldPath[] };
     const cfg = config as unknown as Cfg;
 
@@ -47,9 +65,24 @@ export const listPatternMode: ExtractionMode<ListPatternConfig> = {
       items = [];
     }
 
-    const readValue = (el: Element, attr: string | undefined): string => {
-      if (attr) return (el.getAttribute(attr) ?? '').trim();
-      return ((el as HTMLElement).innerText ?? el.textContent ?? '').trim();
+    const readValue = (
+      el: Element,
+      attr: string | undefined,
+      transform: Transform | undefined,
+    ): string => {
+      let v = attr
+        ? (el.getAttribute(attr) ?? '').trim()
+        : ((el as HTMLElement).innerText ?? el.textContent ?? '').trim();
+      if (transform?.kind === 'regex' && transform.expr) {
+        try {
+          const re = new RegExp(transform.expr);
+          const m = re.exec(v);
+          v = m ? m[0] : '';
+        } catch {
+          // bad regex — fall through to original
+        }
+      }
+      return v;
     };
 
     return items.map((item) => {
@@ -58,7 +91,7 @@ export const listPatternMode: ExtractionMode<ListPatternConfig> = {
         try {
           const el =
             f.rel_selector === ':scope' ? item : item.querySelector(f.rel_selector);
-          row[f.name] = el ? readValue(el, f.attr) : null;
+          row[f.name] = el ? readValue(el, f.attr, f.transform) : null;
         } catch {
           row[f.name] = null;
         }
@@ -67,3 +100,69 @@ export const listPatternMode: ExtractionMode<ListPatternConfig> = {
     });
   },
 };
+
+/**
+ * Probe ONE row using the SAME extraction logic as `runInPage`. Used by the
+ * sidepanel's preview row so what the user sees inline matches exactly what
+ * the runner will produce — no second implementation, no drift.
+ */
+export function probeFirstRowInPage(
+  config: ListPatternConfig,
+): Record<string, string | null> | null {
+  type Transform = { kind: 'regex'; expr: string };
+  type FieldPath = {
+    name: string;
+    rel_selector: string;
+    attr?: string;
+    transform?: Transform;
+  };
+  const cfg = config as unknown as {
+    list_root: string;
+    item_selector: string;
+    field_paths: FieldPath[];
+  };
+
+  let scope: ParentNode = document;
+  if (cfg.list_root) {
+    const root = document.querySelector(cfg.list_root);
+    if (root) scope = root;
+  }
+  let item: Element | null;
+  try {
+    item = cfg.item_selector ? (scope as ParentNode).querySelector(cfg.item_selector) : null;
+  } catch {
+    item = null;
+  }
+  if (!item) return null;
+
+  const readValue = (
+    el: Element,
+    attr: string | undefined,
+    transform: Transform | undefined,
+  ): string => {
+    let v = attr
+      ? (el.getAttribute(attr) ?? '').trim()
+      : ((el as HTMLElement).innerText ?? el.textContent ?? '').trim();
+    if (transform?.kind === 'regex' && transform.expr) {
+      try {
+        const re = new RegExp(transform.expr);
+        const m = re.exec(v);
+        v = m ? m[0] : '';
+      } catch {
+        // bad regex
+      }
+    }
+    return v;
+  };
+
+  const row: Record<string, string | null> = {};
+  for (const f of cfg.field_paths) {
+    try {
+      const el = f.rel_selector === ':scope' ? item : item.querySelector(f.rel_selector);
+      row[f.name] = el ? readValue(el, f.attr, f.transform) : null;
+    } catch {
+      row[f.name] = null;
+    }
+  }
+  return row;
+}

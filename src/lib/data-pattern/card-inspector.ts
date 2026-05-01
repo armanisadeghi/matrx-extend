@@ -31,6 +31,13 @@ export interface CandidateField {
   kind: 'microdata' | 'data-attr' | 'link' | 'image' | 'time' | 'regex' | 'text';
   /** Optional human note (e.g. regex pattern that matched). */
   note?: string;
+  /**
+   * Optional value transform. The list-pattern runner applies this AFTER
+   * reading the selector's text/attribute. Critical for regex-discovered
+   * candidates: without it, the runner would return the whole parent text
+   * (e.g. "Las Vegas, NV · Tao Beach · Ages: 21+") instead of just "21+".
+   */
+  transform?: { kind: 'regex'; expr: string };
 }
 
 export interface InspectInput {
@@ -224,6 +231,7 @@ export function inspectCardInPage(input: InspectInput): CandidateField[] {
         label: p.label,
         rel_selector: relSelector(parent),
         sample_value: previewVal(m[0]),
+        transform: { kind: 'regex', expr: p.re.source },
         note: `regex match in ${parent.tagName.toLowerCase()}`,
       });
       break;

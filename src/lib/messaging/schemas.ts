@@ -44,6 +44,13 @@ export const CHANNELS = {
   // List-pattern picker (content → SW → sidepanel)
   LIST_PICKER_RESULT: 'data:list-picker-result',
   LIST_PICKER_EXIT: 'data:list-picker-exit',
+  /**
+   * Fired the moment Phase 1 succeeds (an item is picked, siblings detected),
+   * BEFORE the user clicks Done. Lets the sidepanel show Suggested Fields
+   * immediately so the user can add fields via one-click while still in the
+   * picker, or skip manual picking entirely.
+   */
+  LIST_PICKER_ITEM_DETECTED: 'data:list-picker-item-detected',
 
   // Network capture (ISOLATED-world relay → SW → sidepanel)
   NET_CAPTURE_EVENT: 'net-capture:event',

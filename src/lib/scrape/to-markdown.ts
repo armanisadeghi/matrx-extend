@@ -29,9 +29,43 @@ export function articleToMarkdown(soup: SoupResult): string {
   const meta = articleMetaLine(soup);
   if (meta) lines.push(`*${meta}*`);
   if (a.excerpt) lines.push(`> ${a.excerpt}`);
-  if (a.content_markdown) lines.push(a.content_markdown.trim());
+  if (a.content_markdown) lines.push(cleanArticleMarkdown(a.content_markdown).trim());
   else lines.push('_No clean article extracted._');
   return lines.join('\n\n');
+}
+
+/**
+ * Post-process article markdown to fix common HTML→md conversion artifacts.
+ * Conservative: only changes that match what a CommonMark renderer would do.
+ *
+ *   - Collapse whitespace inside link text:
+ *       [\n\nMay\n\n12\n\n](url)  →  [May 12](url)
+ *     CommonMark already treats newlines in link text as soft breaks (rendered
+ *     as a single space), so this just makes the source match the rendered
+ *     output. Helps pages that wrap an `<a>` around multiple block-level
+ *     `<div>`s (calendar badges, card-style nav, etc.).
+ *
+ *   - Empty-text link shells become bare URLs:
+ *       [   ](url)  →  url
+ *
+ * Safe across sites — any markdown that already had clean link text is
+ * unchanged. The raw `SoupResult.article.content_markdown` is untouched, so
+ * anything reading that field directly is unaffected.
+ */
+export function cleanArticleMarkdown(md: string): string {
+  if (!md) return md;
+  // Image alt text first (so the link regex below doesn't double-process them).
+  let out = md.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_m, alt: string, url: string) => {
+    const collapsed = alt.replace(/\s+/g, ' ').trim();
+    return `![${collapsed}](${url})`;
+  });
+  // Then plain links.
+  out = out.replace(/\[([^\]]*)\]\(([^)]+)\)/g, (_m, text: string, url: string) => {
+    const collapsed = text.replace(/\s+/g, ' ').trim();
+    if (!collapsed) return url;
+    return `[${collapsed}](${url})`;
+  });
+  return out;
 }
 
 function articleMetaLine(soup: SoupResult): string | null {
@@ -179,20 +213,33 @@ export function fullCaptureToMarkdown(soup: SoupResult): string {
 
 /**
  * Strip markdown formatting characters for plain-text targets (Slack, email).
- * Preserves content and whitespace, drops fences/emphasis/links/headings.
+ *
+ * Information-preserving: link URLs and image URLs are *kept*, surfaced as
+ * `text (url)` after the visible text. Earlier versions silently dropped the
+ * URL — that lost data the user might paste somewhere that doesn't render
+ * markdown.
+ *
+ * Bullets keep their indentation depth so nested lists stay readable.
  */
 export function markdownToPlainText(md: string): string {
   return md
     .replace(/```[\s\S]*?```/g, (m) => m.replace(/```\w*\n?|\n?```$/g, ''))
     .replace(/`([^`]+)`/g, '$1')
-    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_m, alt: string, url: string) => {
+      const t = alt.replace(/\s+/g, ' ').trim();
+      return t ? `${t} (${url})` : url;
+    })
+    .replace(/\[([^\]]*)\]\(([^)]+)\)/g, (_m, text: string, url: string) => {
+      const t = text.replace(/\s+/g, ' ').trim();
+      if (!t || t === url) return url;
+      return `${t} (${url})`;
+    })
     .replace(/^#{1,6}\s+/gm, '')
     .replace(/^>\s?/gm, '')
     .replace(/\*\*([^*]+)\*\*/g, '$1')
     .replace(/\*([^*]+)\*/g, '$1')
     .replace(/_([^_]+)_/g, '$1')
-    .replace(/^[-*+]\s+/gm, '• ')
+    .replace(/^([ \t]*)[-*+]\s+/gm, '$1• ')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 }

@@ -138,6 +138,11 @@ function registerHandlers(): void {
     return { ack: true };
   });
 
+  on<unknown, { ack: true }>(CHANNELS.LIST_PICKER_ITEM_DETECTED, (payload) => {
+    broadcast(CHANNELS.LIST_PICKER_ITEM_DETECTED, payload);
+    return { ack: true };
+  });
+
   // Network capture: ISOLATED-world relay forwards every intercepted
   // fetch/XHR via NET_CAPTURE_EVENT. We just rebroadcast — sidepanel buffers.
   on<unknown, { ack: true }>(CHANNELS.NET_CAPTURE_EVENT, (payload) => {

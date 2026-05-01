@@ -1,13 +1,15 @@
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
 import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
 import {
   type ExtensionScrapeItem,
   type ExtensionScrapeQueue,
   type SubmittableLevel,
+  type UserVerdict,
+  applyVerdict,
   getExtensionScrapeQueue,
-  markSourceComplete,
   submitExtensionContent,
   submitPasteContent,
 } from '@/lib/api/routes/research';
@@ -19,11 +21,14 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertTriangle,
   CheckCircle2,
+  CheckCircle,
   ChevronDown,
   ExternalLink,
   Loader2,
   PlayCircle,
   RefreshCw,
+  RotateCcw,
+  Skull,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -45,6 +50,12 @@ interface ItemState {
   charCount?: number;
   error?: string;
   nextLevel?: 1 | 2 | 3 | 4;
+  /** First ~300 chars of the last capture, shown in the verdict card. */
+  preview?: string;
+  /** Set after a user-driven thin L3 capture so the verdict card stays visible. */
+  showVerdictCard?: boolean;
+  /** Verdict request in flight — disables buttons. */
+  verdictPending?: UserVerdict;
 }
 
 const RUNNING_STATUSES: ReadonlySet<TaskStatus> = new Set([
@@ -259,10 +270,15 @@ export function TasksView() {
     }
 
     const { is_good_scrape, char_count, next_level } = result.data;
+    // After a user-driven L3 capture, surface the verdict card if the parse
+    // was thin — they're staring at the page and can give a final answer.
+    const showVerdictCard = !is_good_scrape && level === 3;
     setItemState(id, {
       status: is_good_scrape ? 'success' : 'thin',
       charCount: char_count,
       nextLevel: next_level ?? undefined,
+      preview: showVerdictCard ? extractTextPreview(html) : undefined,
+      showVerdictCard,
     });
     void invalidateQueue();
     return { ok: true, isGood: is_good_scrape };
@@ -289,14 +305,20 @@ export function TasksView() {
     void invalidateQueue();
   };
 
-  const runMarkComplete = async (item: ExtensionScrapeItem) => {
+  const runVerdict = async (item: ExtensionScrapeItem, verdict: UserVerdict) => {
     const id = itemKey(item);
-    const r = await markSourceComplete(item.topic_id, item.source_id);
+    const prev = statusRef.current[id];
+    setStatusByItem((s) => ({ ...s, [id]: { ...prev, status: prev?.status ?? 'idle', verdictPending: verdict } }));
+    const r = await applyVerdict(item.topic_id, item.source_id, verdict);
     if (!r.ok) {
       setItemState(id, { status: 'error', error: r.error });
       return;
     }
-    setItemState(id, { status: 'completed' });
+    // 'retry' requeues the source — the next queue refresh will re-show it.
+    // The other two are terminal and the row will disappear from the queue.
+    setItemState(id, {
+      status: verdict === 'retry' ? 'idle' : 'completed',
+    });
     void invalidateQueue();
   };
 
@@ -449,7 +471,7 @@ export function TasksView() {
                   level={1}
                   state={statusByItem[itemKey(it)]}
                   onRun={() => void runAutomated(it, 1)}
-                  onMarkComplete={() => void runMarkComplete(it)}
+                  onVerdict={(v) => void runVerdict(it, v)}
                 />
               ))}
               {queue.level_2_scroll.map((it) => (
@@ -459,7 +481,7 @@ export function TasksView() {
                   level={2}
                   state={statusByItem[itemKey(it)]}
                   onRun={() => void runAutomated(it, 2)}
-                  onMarkComplete={() => void runMarkComplete(it)}
+                  onVerdict={(v) => void runVerdict(it, v)}
                 />
               ))}
             </Section>
@@ -468,7 +490,7 @@ export function TasksView() {
           {queue && queue.level_3_user_gated.length > 0 && (
             <Section
               title="Needs your help"
-              subtitle="Auto-scrape couldn't get past popups, login, or paywalls. Trigger one, click past the obstacle, then press Go."
+              subtitle="The auto-scraper kept getting thin pages here. Trigger one, get the page fully loaded, then press Go — or resolve it directly."
               count={queue.level_3_user_gated.length}
               open={!!openSections.level_3_user_gated}
               onToggle={() => toggleSection('level_3_user_gated')}
@@ -482,7 +504,7 @@ export function TasksView() {
                   state={statusByItem[itemKey(it)]}
                   onRun={() => void runAutomated(it, 3)}
                   onUserGo={() => void runUserGo(it)}
-                  onMarkComplete={() => void runMarkComplete(it)}
+                  onVerdict={(v) => void runVerdict(it, v)}
                 />
               ))}
             </Section>
@@ -491,7 +513,7 @@ export function TasksView() {
           {queue && queue.level_4_paste.length > 0 && (
             <Section
               title="Manual paste"
-              subtitle="Open the URL in a normal tab, copy the content, paste it here."
+              subtitle="Open the URL in a normal tab, copy the content, paste it here — or resolve directly if the page is gone."
               count={queue.level_4_paste.length}
               open={!!openSections.level_4_paste}
               onToggle={() => toggleSection('level_4_paste')}
@@ -507,7 +529,7 @@ export function TasksView() {
                     value={pasteByItem[id] ?? ''}
                     onChange={(v) => setPasteByItem((p) => ({ ...p, [id]: v }))}
                     onSubmit={() => void runPaste(it)}
-                    onMarkComplete={() => void runMarkComplete(it)}
+                    onVerdict={(v) => void runVerdict(it, v)}
                   />
                 );
               })}
@@ -589,18 +611,19 @@ function Row({
   state,
   onRun,
   onUserGo,
-  onMarkComplete,
+  onVerdict,
 }: {
   item: ExtensionScrapeItem;
   level: 1 | 2 | 3;
   state?: ItemState;
   onRun: () => void;
   onUserGo?: () => void;
-  onMarkComplete: () => void;
+  onVerdict: (verdict: UserVerdict) => void;
 }) {
   const status = state?.status ?? 'idle';
   const errorMsg = state?.error;
   const charCount = state?.charCount;
+  const showVerdictCard = state?.showVerdictCard === true;
 
   return (
     <div className="group rounded-xl bg-secondary/40 px-3 py-2.5 transition-colors hover:bg-secondary/70">
@@ -644,19 +667,21 @@ function Row({
               {level === 3 ? 'Trigger' : 'Run'}
             </Button>
           )}
+          <ResolveMenu
+            onVerdict={onVerdict}
+            pending={state?.verdictPending}
+            includeRetry={item.attempted_levels.length > 0}
+          />
         </div>
       </div>
       {errorMsg && <div className="mt-1.5 text-xs text-destructive">{errorMsg}</div>}
-      {(status === 'idle' || status === 'error') && level >= 2 && (
-        <div className="mt-1.5 flex justify-end">
-          <button
-            type="button"
-            onClick={onMarkComplete}
-            className="text-[11px] text-muted-foreground underline-offset-2 hover:underline"
-          >
-            Mark as complete (no more content)
-          </button>
-        </div>
+      {showVerdictCard && (
+        <VerdictCard
+          charCount={charCount}
+          preview={state?.preview}
+          pending={state?.verdictPending}
+          onVerdict={onVerdict}
+        />
       )}
     </div>
   );
@@ -668,14 +693,14 @@ function PasteRow({
   value,
   onChange,
   onSubmit,
-  onMarkComplete,
+  onVerdict,
 }: {
   item: ExtensionScrapeItem;
   state?: ItemState;
   value: string;
   onChange: (v: string) => void;
   onSubmit: () => void;
-  onMarkComplete: () => void;
+  onVerdict: (verdict: UserVerdict) => void;
 }) {
   const status = state?.status ?? 'idle';
   const errorMsg = state?.error;
@@ -698,7 +723,14 @@ function PasteRow({
           </a>
           <ItemContext item={item} />
         </div>
-        <Status status={status} charCount={charCount} />
+        <div className="flex shrink-0 items-center gap-2">
+          <Status status={status} charCount={charCount} />
+          <ResolveMenu
+            onVerdict={onVerdict}
+            pending={state?.verdictPending}
+            includeRetry={item.attempted_levels.length > 0}
+          />
+        </div>
       </div>
       {!done && (
         <>
@@ -710,14 +742,7 @@ function PasteRow({
             className="w-full resize-y rounded-lg border border-border bg-background px-2 py-1.5 text-xs focus:border-primary focus:outline-none"
             disabled={submitting}
           />
-          <div className="flex items-center justify-between gap-2">
-            <button
-              type="button"
-              onClick={onMarkComplete}
-              className="text-[11px] text-muted-foreground underline-offset-2 hover:underline"
-            >
-              No more content available
-            </button>
+          <div className="flex items-center justify-end gap-2">
             <Button
               size="sm"
               className="h-7 rounded-full px-3 text-xs"
@@ -816,6 +841,185 @@ function Status({ status, charCount }: { status: TaskStatus; charCount?: number 
       <Loader2 className="size-3.5 animate-spin" /> {status}
     </span>
   );
+}
+
+/**
+ * Resolve dropdown — applies a user verdict directly without opening the page.
+ * Verdicts are an OPTIONAL escape hatch; the auto-pipeline handles escalation
+ * fine without them. We never force the user to pick one. "Bot was blocked"
+ * is intentionally absent — when the user is the actor they're already past
+ * any obstacle, so blocked isn't a verdict.
+ */
+function ResolveMenu({
+  onVerdict,
+  pending,
+  includeRetry,
+}: {
+  onVerdict: (verdict: UserVerdict) => void;
+  pending?: UserVerdict;
+  includeRetry: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const choose = (v: UserVerdict) => {
+    setOpen(false);
+    onVerdict(v);
+  };
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          title="Resolve"
+          className="inline-flex h-7 items-center gap-1 rounded-full px-2.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          disabled={pending !== undefined}
+        >
+          {pending ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : (
+            <>
+              Resolve <ChevronDown className="size-3" />
+            </>
+          )}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-64 p-1">
+        <VerdictMenuItem
+          icon={CheckCircle}
+          label="This is the whole page"
+          description="Sparse content is correct — accept and move on."
+          onClick={() => choose('accept_as_is')}
+        />
+        <VerdictMenuItem
+          icon={Skull}
+          label="Page is dead / 404"
+          description="URL is gone. Don't surface this again."
+          onClick={() => choose('dead_link')}
+        />
+        {includeRetry && (
+          <VerdictMenuItem
+            icon={RotateCcw}
+            label="Retry from scratch"
+            description="Throw away the last result and requeue."
+            onClick={() => choose('retry')}
+          />
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function VerdictMenuItem({
+  icon: Icon,
+  label,
+  description,
+  onClick,
+}: {
+  icon: typeof CheckCircle;
+  label: string;
+  description: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex w-full items-start gap-2 rounded-lg px-2.5 py-2 text-left text-sm transition-colors hover:bg-accent"
+    >
+      <Icon className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+      <div className="min-w-0 flex-1">
+        <div className="truncate">{label}</div>
+        <div className="text-[11px] text-muted-foreground">{description}</div>
+      </div>
+    </button>
+  );
+}
+
+/**
+ * Inline card shown after a user-driven L3 capture comes back thin. The user
+ * is staring at the page — show what we got and let them give a final answer
+ * instead of letting the pipeline silently bump to manual paste.
+ */
+function VerdictCard({
+  charCount,
+  preview,
+  pending,
+  onVerdict,
+}: {
+  charCount?: number;
+  preview?: string;
+  pending?: UserVerdict;
+  onVerdict: (verdict: UserVerdict) => void;
+}) {
+  return (
+    <div className="mt-2 space-y-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-2.5">
+      <div className="text-xs font-medium text-amber-700 dark:text-amber-300">
+        Only {charCount?.toLocaleString() ?? '0'} chars extracted. What is it actually?
+      </div>
+      {preview && (
+        <div className="max-h-24 overflow-y-auto rounded bg-background/60 p-2 text-[11px] leading-relaxed text-muted-foreground">
+          {preview}
+        </div>
+      )}
+      <div className="flex flex-wrap gap-1.5">
+        <Button
+          size="sm"
+          className="h-7 rounded-full px-3 text-xs"
+          disabled={pending !== undefined}
+          onClick={() => onVerdict('accept_as_is')}
+        >
+          {pending === 'accept_as_is' ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : (
+            <CheckCircle className="size-3.5" />
+          )}
+          That's the whole page
+        </Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          className="h-7 rounded-full px-3 text-xs"
+          disabled={pending !== undefined}
+          onClick={() => onVerdict('dead_link')}
+        >
+          {pending === 'dead_link' ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : (
+            <Skull className="size-3.5" />
+          )}
+          Page is dead
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-7 rounded-full px-3 text-xs"
+          disabled={pending !== undefined}
+          onClick={() => onVerdict('retry')}
+        >
+          {pending === 'retry' ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : (
+            <RotateCcw className="size-3.5" />
+          )}
+          Retry
+        </Button>
+      </div>
+      <div className="text-[10px] text-muted-foreground">
+        Or do nothing — it'll move to manual paste.
+      </div>
+    </div>
+  );
+}
+
+/** Strip tags + whitespace, return the first ~300 chars for the verdict card. */
+function extractTextPreview(html: string, max = 300): string {
+  const text = html
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (text.length <= max) return text;
+  return `${text.slice(0, max).trim()}…`;
 }
 
 function waitForTab(tabId: number): Promise<void> {

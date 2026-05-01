@@ -27,8 +27,16 @@ export const ScrapeStatusSchema = z.enum([
   'manual',
   'skipped',
   'complete',
+  'dead_link',
 ]);
 export type ScrapeStatus = z.infer<typeof ScrapeStatusSchema>;
+
+/**
+ * User verdicts — optional escape hatch when the auto-pipeline can't decide.
+ * The user being on the page is what makes "blocked" not a verdict — they're
+ * past whatever the obstacle was. See research/docs/EXTENSION_API.md.
+ */
+export type UserVerdict = 'accept_as_is' | 'dead_link' | 'retry';
 
 const captureLevel = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]);
 
@@ -108,14 +116,33 @@ export async function submitPasteContent(
   );
 }
 
+export interface VerdictResponse {
+  source_id: string;
+  verdict: UserVerdict | 'mark_complete';
+  scrape_status: ScrapeStatus;
+  user_verdict_at: string;
+  is_terminal: boolean;
+  next_level: CaptureLevel | null;
+}
+
 /**
- * User says "this page genuinely has no more content" — sets scrape_status=complete,
- * removes from every queue bucket permanently.
+ * User verdict on a source — opt-in escape hatch. Three flavors:
+ *   - 'accept_as_is' → status=complete (the sparse content IS the page)
+ *   - 'dead_link'    → status=dead_link (404, removed, domain dead)
+ *   - 'retry'        → status=pending (throw the last result away, requeue)
+ *
+ * The auto-pipeline still works without verdicts; this just lets the user
+ * end the cycle on their own terms when they know something we can't infer.
  */
-export async function markSourceComplete(topicId: string, sourceId: string) {
-  return apiPost<unknown>(
-    `/research/topics/${encodeURIComponent(topicId)}/sources/${encodeURIComponent(sourceId)}/mark-complete`,
-    {},
+export async function applyVerdict(
+  topicId: string,
+  sourceId: string,
+  verdict: UserVerdict,
+  notes?: string,
+) {
+  return apiPost<VerdictResponse>(
+    `/research/topics/${encodeURIComponent(topicId)}/sources/${encodeURIComponent(sourceId)}/verdict`,
+    notes ? { verdict, notes } : { verdict },
   );
 }
 
