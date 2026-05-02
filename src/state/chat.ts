@@ -1,16 +1,16 @@
-import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import { chromeLocalStorage } from "@/lib/storage/zustand-adapter";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 export interface ChatMessage {
   id: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   timestamp: number;
   pending?: boolean;
 }
 
-export type PermissionMode = 'ask' | 'act';
+export type PermissionMode = "ask" | "act";
 
 interface ChatState {
   selectedAgentId: string | null;
@@ -33,6 +33,16 @@ interface ChatState {
   permissionMode: Record<string, PermissionMode>;
   setAgent: (id: string | null) => void;
   setConversation: (id: string | null) => void;
+  /**
+   * Annotate the current chat with the server-assigned conversation_id.
+   * Distinct from `setConversation`, which is the "switch to a different
+   * thread" action and wipes the visible messages. `adoptConversationId`
+   * is the "we just learned the id of the thread we're already in" path —
+   * called from `useChatStream` when the server emits the X-Conversation-ID
+   * header on the first turn so subsequent turns stay on the same thread.
+   * No-op if the new id matches what's already stored.
+   */
+  adoptConversationId: (id: string) => void;
   setDraft: (s: string) => void;
   pushMessage: (m: ChatMessage) => void;
   appendAssistantText: (id: string, chunk: string) => void;
@@ -54,28 +64,40 @@ export const useChatStore = create<ChatState>()(
     (set, get) => ({
       selectedAgentId: null,
       selectedConversationId: null,
-      draft: '',
+      draft: "",
       messages: [],
       isStreaming: false,
       variableValues: {},
       permissionMode: {},
       setAgent: (selectedAgentId) => set({ selectedAgentId }),
-      setConversation: (selectedConversationId) => set({ selectedConversationId, messages: [] }),
+      setConversation: (selectedConversationId) =>
+        set({ selectedConversationId, messages: [] }),
+      adoptConversationId: (id) =>
+        set((s) =>
+          s.selectedConversationId === id ? s : { selectedConversationId: id },
+        ),
       setDraft: (draft) => set({ draft }),
       pushMessage: (m) => set((s) => ({ messages: [...s.messages, m] })),
       appendAssistantText: (id, chunk) =>
         set((s) => ({
-          messages: s.messages.map((m) => (m.id === id ? { ...m, content: m.content + chunk } : m)),
+          messages: s.messages.map((m) =>
+            m.id === id ? { ...m, content: m.content + chunk } : m,
+          ),
         })),
       finalizeAssistant: (id) =>
         set((s) => ({
-          messages: s.messages.map((m) => (m.id === id ? { ...m, pending: false } : m)),
+          messages: s.messages.map((m) =>
+            m.id === id ? { ...m, pending: false } : m,
+          ),
         })),
       setStreaming: (isStreaming) => set({ isStreaming }),
       setMessages: (messages) => set({ messages }),
       setVariable: (agentId, name, value) =>
         set((s) => ({
-          variableValues: { ...s.variableValues, [varKey(agentId, name)]: value },
+          variableValues: {
+            ...s.variableValues,
+            [varKey(agentId, name)]: value,
+          },
         })),
       getAgentVariables: (agentId) => {
         const prefix = `${agentId}.`;
@@ -95,15 +117,17 @@ export const useChatStore = create<ChatState>()(
           return { variableValues: next };
         }),
       setPermissionMode: (agentId, mode) =>
-        set((s) => ({ permissionMode: { ...s.permissionMode, [agentId]: mode } })),
+        set((s) => ({
+          permissionMode: { ...s.permissionMode, [agentId]: mode },
+        })),
       getPermissionMode: (agentId) => {
-        if (!agentId) return 'ask';
-        return get().permissionMode[agentId] ?? 'ask';
+        if (!agentId) return "ask";
+        return get().permissionMode[agentId] ?? "ask";
       },
-      reset: () => set({ messages: [], draft: '', isStreaming: false }),
+      reset: () => set({ messages: [], draft: "", isStreaming: false }),
     }),
     {
-      name: 'matrx.chat.v1',
+      name: "matrx.chat.v1",
       storage: createJSONStorage(() => chromeLocalStorage),
       partialize: (s) => ({
         selectedAgentId: s.selectedAgentId,
