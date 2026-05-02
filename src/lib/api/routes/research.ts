@@ -46,18 +46,33 @@ export type UserVerdict = 'accept_as_is' | 'dead_link' | 'retry' | 'gated';
 
 const captureLevel = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]);
 
+/**
+ * Items returned by /research/extension/scrape-queue. The contract narrows
+ * the broad ScrapeStatus enum: only sources where the server has given up
+ * (server_gave_up = true) and the user has approved (is_included = true)
+ * appear here, so scrape_status is always 'thin' or 'failed' on this shape.
+ * If the server ever returns 'pending' / 'success' / etc., that's a backend
+ * bug — schema parse will warn and the queue load will fail loudly.
+ */
 export const ExtensionScrapeItemSchema = z.object({
   source_id: z.string().uuid(),
   topic_id: z.string().uuid(),
   topic_name: z.string(),
   url: z.string().url(),
   title: z.string().nullable().optional(),
-  scrape_status: ScrapeStatusSchema,
+  scrape_status: z.enum(['thin', 'failed']),
+  is_included: z.boolean(),
   next_level: captureLevel,
   attempted_levels: z.array(captureLevel).default([]),
   last_attempt_at: z.string().nullable().optional(),
   last_char_count: z.number().nullable().optional(),
   last_failure_reason: z.string().nullable().optional(),
+  // Server-side accounting — always present on queue items by contract.
+  // server_attempts >= 1 and server_gave_up === true on every item here.
+  server_attempts: z.number().int(),
+  last_server_attempt_at: z.string().nullable().optional(),
+  last_server_failure_reason: z.string().nullable().optional(),
+  server_gave_up: z.boolean(),
 });
 export type ExtensionScrapeItem = z.infer<typeof ExtensionScrapeItemSchema>;
 

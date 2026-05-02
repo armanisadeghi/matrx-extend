@@ -895,24 +895,55 @@ function PasteRow({
 }
 
 function ItemContext({ item }: { item: ExtensionScrapeItem }) {
-  const bits: string[] = [];
-  if (item.attempted_levels && item.attempted_levels.length > 0) {
-    bits.push(`tried L${item.attempted_levels.join(', L')}`);
+  // Server line — every item here has been tried by the server and given up
+  // on (server_gave_up = true by queue contract), so this is always shown.
+  const serverBits: string[] = [
+    `server tried ${item.server_attempts}×`,
+  ];
+  if (item.last_server_attempt_at) {
+    const ago = relativeTime(item.last_server_attempt_at);
+    if (ago) serverBits.push(ago);
   }
-  if (item.last_char_count != null) bits.push(`last: ${item.last_char_count.toLocaleString()} chars`);
+
+  // Extension line — only appears once the user has triggered a capture.
+  const extBits: string[] = [];
+  if (item.attempted_levels && item.attempted_levels.length > 0) {
+    extBits.push(`tried L${item.attempted_levels.join(', L')}`);
+  }
+  if (item.last_char_count != null) {
+    extBits.push(`${item.last_char_count.toLocaleString()} chars`);
+  }
   if (item.last_attempt_at) {
     const ago = relativeTime(item.last_attempt_at);
-    if (ago) bits.push(ago);
+    if (ago) extBits.push(ago);
   }
-  if (bits.length === 0 && !item.last_failure_reason) return null;
+
   return (
     <div className="mt-0.5 space-y-0.5">
-      {bits.length > 0 && (
-        <div className="truncate text-[11px] text-muted-foreground/70">{bits.join(' · ')}</div>
-      )}
-      {item.last_failure_reason && (
-        <div className="truncate text-[11px] text-muted-foreground/60" title={item.last_failure_reason}>
-          {item.last_failure_reason}
+      <div
+        className="truncate text-[11px] text-muted-foreground/70"
+        title={item.last_server_failure_reason ?? undefined}
+      >
+        {serverBits.join(' · ')}
+        {item.last_server_failure_reason && (
+          <span className="text-muted-foreground/55">
+            {' — '}
+            {item.last_server_failure_reason}
+          </span>
+        )}
+      </div>
+      {extBits.length > 0 && (
+        <div
+          className="truncate text-[11px] text-muted-foreground/60"
+          title={item.last_failure_reason ?? undefined}
+        >
+          extension: {extBits.join(' · ')}
+          {item.last_failure_reason && (
+            <span className="text-muted-foreground/45">
+              {' — '}
+              {item.last_failure_reason}
+            </span>
+          )}
         </div>
       )}
     </div>
