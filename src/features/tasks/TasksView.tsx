@@ -80,6 +80,13 @@ export function TasksView() {
   const queryClient = useQueryClient();
   const [statusByItem, setStatusByItem] = useState<Record<string, ItemState>>({});
   const [pasteByItem, setPasteByItem] = useState<Record<string, string>>({});
+  /**
+   * Sources whose verdict card is open, pinned to the L3 view regardless of
+   * what the server's queue currently says. The backend may have already
+   * advanced these to L4, but we hold them in L3 until the user resolves
+   * the verdict — otherwise the row owning the card vanishes mid-decision.
+   */
+  const [pinnedL3, setPinnedL3] = useState<Record<string, ExtensionScrapeItem>>({});
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     level_1_quick: true,
     level_2_scroll: true,
@@ -116,13 +123,20 @@ export function TasksView() {
   const statusRef = useRef(statusByItem);
   statusRef.current = statusByItem;
 
-  // Listen for in-page overlay button clicks (Level 3 capture / cancel).
+  // Listen for in-page overlay button clicks (Level 3 capture / cancel /
+  // pre-decided verdicts: dead link, expect thin).
   useEffect(() => {
     const onMessage = (msg: unknown) => {
       if (!msg || typeof msg !== 'object') return;
       const m = msg as { __matrx?: boolean; kind?: string; payload?: unknown };
       if (m.__matrx !== true) return;
-      if (m.kind !== CHANNELS.TASKS_USER_GO && m.kind !== CHANNELS.TASKS_USER_CANCEL) return;
+      const overlayKinds = new Set<string>([
+        CHANNELS.TASKS_USER_GO,
+        CHANNELS.TASKS_USER_CANCEL,
+        CHANNELS.TASKS_USER_DEAD,
+        CHANNELS.TASKS_USER_EXPECT_THIN,
+      ]);
+      if (!m.kind || !overlayKinds.has(m.kind)) return;
       const payload = m.payload as { topicId?: string; sourceId?: string } | undefined;
       if (!payload?.topicId || !payload.sourceId) return;
       const q = queueRef.current;
@@ -132,6 +146,8 @@ export function TasksView() {
       );
       if (!item) return;
       if (m.kind === CHANNELS.TASKS_USER_GO) void runUserGo(item);
+      else if (m.kind === CHANNELS.TASKS_USER_DEAD) void runUserDead(item);
+      else if (m.kind === CHANNELS.TASKS_USER_EXPECT_THIN) void runUserExpectThin(item);
       else runUserCancel(item);
     };
     chrome.runtime.onMessage.addListener(onMessage);
@@ -142,7 +158,10 @@ export function TasksView() {
   // After every queue refresh, drop "thin" / "error" badges for items still in
   // the queue — the source has moved up the ladder, so it's effectively a fresh
   // attempt now and the Run button should reappear. Preserve `awaiting_user`
-  // (mid-flow, has live tabId) and `success` / `completed` (terminal acks).
+  // (mid-flow, has live tabId), `success` / `completed` (terminal acks), and
+  // any item with an open verdict card (the user is mid-decision).
+  // Also drop pinned-to-L3 items if the source is no longer anywhere in the
+  // queue — that means a verdict landed and the source went terminal.
   useEffect(() => {
     if (!queue) return;
     const liveIds = new Set<string>([
@@ -155,11 +174,24 @@ export function TasksView() {
       let changed = false;
       const next: Record<string, ItemState> = {};
       for (const [id, state] of Object.entries(prev)) {
-        if (liveIds.has(id) && (state.status === 'thin' || state.status === 'error')) {
+        const isStaleBadge = state.status === 'thin' || state.status === 'error';
+        if (liveIds.has(id) && isStaleBadge && !state.showVerdictCard) {
           changed = true;
           continue;
         }
         next[id] = state;
+      }
+      return changed ? next : prev;
+    });
+    setPinnedL3((prev) => {
+      let changed = false;
+      const next: Record<string, ExtensionScrapeItem> = {};
+      for (const [id, item] of Object.entries(prev)) {
+        if (!liveIds.has(id)) {
+          changed = true;
+          continue;
+        }
+        next[id] = item;
       }
       return changed ? next : prev;
     });
@@ -227,6 +259,53 @@ export function TasksView() {
     await captureAndSubmit(item, 3, tabId, /* keepTabOpen */ true);
   };
 
+  /**
+   * "Expect thin content" overlay button — capture as normal, but if the
+   * backend says thin, apply accept_as_is automatically. The user has
+   * already seen the page and pre-decided.
+   */
+  const runUserExpectThin = async (item: ExtensionScrapeItem) => {
+    const id = itemKey(item);
+    const tabId = statusRef.current[id]?.tabId;
+    if (tabId == null) {
+      setItemState(id, { status: 'error', error: 'Tab is no longer open' });
+      return;
+    }
+    void removeCaptureOverlay(tabId);
+    await captureAndSubmit(item, 3, tabId, /* keepTabOpen */ true, { acceptThin: true });
+    // Close the tab once we're done — user already gave the verdict implicitly.
+    try {
+      await chrome.tabs.remove(tabId);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  /**
+   * "Page is 404 / dead" overlay button — apply dead_link verdict directly,
+   * no scrape needed. The user can see the page is gone.
+   */
+  const runUserDead = async (item: ExtensionScrapeItem) => {
+    const id = itemKey(item);
+    const tabId = statusRef.current[id]?.tabId;
+    if (tabId != null) void removeCaptureOverlay(tabId);
+    setItemState(id, { status: 'submitting', tabId });
+    const r = await applyVerdict(item.topic_id, item.source_id, 'dead_link');
+    if (!r.ok) {
+      setItemState(id, { status: 'error', error: r.error });
+      return;
+    }
+    setItemState(id, { status: 'completed' });
+    if (tabId != null) {
+      try {
+        await chrome.tabs.remove(tabId);
+      } catch {
+        /* ignore */
+      }
+    }
+    void invalidateQueue();
+  };
+
   const runUserCancel = (item: ExtensionScrapeItem) => {
     const id = itemKey(item);
     const tabId = statusRef.current[id]?.tabId;
@@ -243,6 +322,7 @@ export function TasksView() {
     level: SubmittableLevel,
     tabId: number,
     keepTabOpen: boolean,
+    options: { acceptThin?: boolean } = {},
   ): Promise<{ ok: boolean; isGood: boolean }> => {
     const id = itemKey(item);
     setItemState(id, { status: 'scraping', tabId });
@@ -270,6 +350,20 @@ export function TasksView() {
     }
 
     const { is_good_scrape, char_count, next_level } = result.data;
+
+    // User pre-declared "expect thin" before clicking — auto-apply
+    // accept_as_is on a thin result and skip the verdict card entirely.
+    if (!is_good_scrape && options.acceptThin) {
+      const v = await applyVerdict(item.topic_id, item.source_id, 'accept_as_is');
+      setItemState(id, {
+        status: v.ok ? 'completed' : 'error',
+        charCount: char_count,
+        error: v.ok ? undefined : v.error,
+      });
+      void invalidateQueue();
+      return { ok: v.ok, isGood: false };
+    }
+
     // After a user-driven L3 capture, surface the verdict card if the parse
     // was thin — they're staring at the page and can give a final answer.
     const showVerdictCard = !is_good_scrape && level === 3;
@@ -280,7 +374,16 @@ export function TasksView() {
       preview: showVerdictCard ? extractTextPreview(html) : undefined,
       showVerdictCard,
     });
-    void invalidateQueue();
+    if (showVerdictCard) {
+      // Pin this source to the L3 view so the row hosting the card can't
+      // disappear when the server's queue refreshes (the backend has already
+      // moved the source to L4). Unpinned by `runVerdict` or by the cleanup
+      // useEffect when the source leaves the queue entirely.
+      setPinnedL3((p) => ({ ...p, [id]: item }));
+    } else {
+      // Successful or non-L3 — let the normal queue refresh flow run.
+      void invalidateQueue();
+    }
     return { ok: true, isGood: is_good_scrape };
   };
 
@@ -319,6 +422,11 @@ export function TasksView() {
     setItemState(id, {
       status: verdict === 'retry' ? 'idle' : 'completed',
     });
+    setPinnedL3((p) => {
+      if (!(id in p)) return p;
+      const { [id]: _drop, ...rest } = p;
+      return rest;
+    });
     void invalidateQueue();
   };
 
@@ -355,8 +463,25 @@ export function TasksView() {
     }
   };
 
-  const totalAutomated =
-    (queue?.level_1_quick.length ?? 0) + (queue?.level_2_scroll.length ?? 0);
+  // Pinned-to-L3 sources (those with an open verdict card) override whatever
+  // bucket the server now reports, so the row hosting the card never vanishes
+  // mid-decision. These are filtered out of the other buckets to avoid double
+  // rendering.
+  const pinnedIds = new Set(Object.keys(pinnedL3));
+  const filterPinned = (items: ExtensionScrapeItem[]) =>
+    pinnedIds.size === 0 ? items : items.filter((it) => !pinnedIds.has(itemKey(it)));
+  const displayL1 = queue ? filterPinned(queue.level_1_quick) : [];
+  const displayL2 = queue ? filterPinned(queue.level_2_scroll) : [];
+  const pinnedFromServer = queue ? new Set(queue.level_3_user_gated.map(itemKey)) : new Set<string>();
+  const displayL3 = queue
+    ? [
+        ...Object.values(pinnedL3).filter((it) => !pinnedFromServer.has(itemKey(it))),
+        ...queue.level_3_user_gated,
+      ]
+    : [];
+  const displayL4 = queue ? filterPinned(queue.level_4_paste) : [];
+
+  const totalAutomated = displayL1.length + displayL2.length;
   const totalAll = queue?.totals?.all ?? 0;
 
   const toggleSection = (k: string) =>
@@ -449,7 +574,7 @@ export function TasksView() {
             </div>
           )}
 
-          {queue && (queue.level_1_quick.length > 0 || queue.level_2_scroll.length > 0) && (
+          {queue && (displayL1.length > 0 || displayL2.length > 0) && (
             <Section
               title="Automated"
               subtitle="No interaction needed — extension scrapes for you."
@@ -464,7 +589,7 @@ export function TasksView() {
                 }));
               }}
             >
-              {queue.level_1_quick.map((it) => (
+              {displayL1.map((it) => (
                 <Row
                   key={itemKey(it)}
                   item={it}
@@ -474,7 +599,7 @@ export function TasksView() {
                   onVerdict={(v) => void runVerdict(it, v)}
                 />
               ))}
-              {queue.level_2_scroll.map((it) => (
+              {displayL2.map((it) => (
                 <Row
                   key={itemKey(it)}
                   item={it}
@@ -487,16 +612,16 @@ export function TasksView() {
             </Section>
           )}
 
-          {queue && queue.level_3_user_gated.length > 0 && (
+          {queue && displayL3.length > 0 && (
             <Section
               title="Needs your help"
               subtitle="The auto-scraper kept getting thin pages here. Trigger one, get the page fully loaded, then press Go — or resolve it directly."
-              count={queue.level_3_user_gated.length}
+              count={displayL3.length}
               open={!!openSections.level_3_user_gated}
               onToggle={() => toggleSection('level_3_user_gated')}
               tone="amber"
             >
-              {queue.level_3_user_gated.map((it) => (
+              {displayL3.map((it) => (
                 <Row
                   key={itemKey(it)}
                   item={it}
@@ -510,16 +635,16 @@ export function TasksView() {
             </Section>
           )}
 
-          {queue && queue.level_4_paste.length > 0 && (
+          {queue && displayL4.length > 0 && (
             <Section
               title="Manual paste"
               subtitle="Open the URL in a normal tab, copy the content, paste it here — or resolve directly if the page is gone."
-              count={queue.level_4_paste.length}
+              count={displayL4.length}
               open={!!openSections.level_4_paste}
               onToggle={() => toggleSection('level_4_paste')}
               tone="amber"
             >
-              {queue.level_4_paste.map((it) => {
+              {displayL4.map((it) => {
                 const id = itemKey(it);
                 return (
                   <PasteRow
@@ -1004,7 +1129,7 @@ function VerdictCard({
         </Button>
       </div>
       <div className="text-[10px] text-muted-foreground">
-        Or do nothing — it'll move to manual paste.
+        Or hit refresh to skip — this source will move to manual paste on its own.
       </div>
     </div>
   );

@@ -20,6 +20,14 @@ async function activeTabId(): Promise<number | null> {
   return tab?.id ?? null;
 }
 
+function resolveRef(args: { selector?: string; ref?: string }): string | null {
+  if (args.ref) {
+    const n = args.ref.startsWith('ref:') ? args.ref.slice(4) : args.ref;
+    return `[data-matrx-ref="${n.replace(/"/g, '\\"')}"]`;
+  }
+  return args.selector ?? null;
+}
+
 const PressKeysArgs = z.object({
   /**
    * Sequence to type. May be a literal string ("hello world") or named
@@ -32,6 +40,8 @@ const PressKeysArgs = z.object({
   keys: z.string().min(1),
   /** Optional selector to focus first. Otherwise sent to currently focused el. */
   selector: z.string().optional(),
+  /** Optional ref from read_page (alternative to selector). */
+  ref: z.string().optional(),
   /** Per-key delay in ms. Default 30. */
   delay_ms: z.number().int().min(0).max(1000).optional().default(30),
 });
@@ -41,9 +51,10 @@ export const press_keys: ToolHandler<PressKeysArgs, unknown> = {
   name: 'press_keys',
   tier: 'action',
   description:
-    'Send keyboard input to a page. Pass either a literal string ("hello world") or named keys/chords ("Enter", "Control+A", "Tab", "ArrowDown ArrowDown Enter"). When `selector` is provided the tool focuses that element first. Useful for triggering submit-on-Enter, navigating menus, dismissing dialogs, and using app keyboard shortcuts.',
+    'Send keyboard input to a page. Pass either a literal string ("hello world") or named keys/chords ("Enter", "Control+A", "Tab", "ArrowDown ArrowDown Enter"). When `selector` or `ref` is provided the tool focuses that element first. Useful for triggering submit-on-Enter, navigating menus, dismissing dialogs, and using app keyboard shortcuts.',
   argsSchema: PressKeysArgs,
   run: async (args) => {
+    const sel = resolveRef(args);
     const tabId = await activeTabId();
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
@@ -178,22 +189,29 @@ export const press_keys: ToolHandler<PressKeysArgs, unknown> = {
         }
         return { ok: true, sent: sentEvents.length, target_tag: target?.tagName.toLowerCase() };
       },
-      args: [args.keys, args.selector, args.delay_ms],
+      args: [args.keys, sel ?? undefined, args.delay_ms],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },
 };
 
-const HoverArgs = z.object({ selector: z.string().min(1) });
+const HoverArgs = z
+  .object({
+    selector: z.string().min(1).optional(),
+    ref: z.string().min(1).optional(),
+  })
+  .refine((d) => d.selector || d.ref, { message: 'must provide selector or ref' });
 type HoverArgs = z.infer<typeof HoverArgs>;
 
 export const hover_element: ToolHandler<HoverArgs, unknown> = {
   name: 'hover_element',
   tier: 'action',
   description:
-    'Trigger hover on an element by dispatching mouseenter/mouseover/mousemove events. Use this to reveal hover-only tooltips, dropdown menus, or sub-navigation that only appear when the cursor is over a parent.',
+    'Trigger hover on an element by dispatching mouseenter/mouseover/mousemove events. Pass `ref` from read_page or a CSS `selector`. Reveals hover-only tooltips, dropdown menus, or sub-navigation.',
   argsSchema: HoverArgs,
   run: async (args) => {
+    const sel = resolveRef(args);
+    if (!sel) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await activeTabId();
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
@@ -215,22 +233,29 @@ export const hover_element: ToolHandler<HoverArgs, unknown> = {
         el.dispatchEvent(new MouseEvent('mousemove', init));
         return { ok: true, tag: el.tagName.toLowerCase() };
       },
-      args: [args.selector],
+      args: [sel],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },
 };
 
-const FocusArgs = z.object({ selector: z.string().min(1) });
+const FocusArgs = z
+  .object({
+    selector: z.string().min(1).optional(),
+    ref: z.string().min(1).optional(),
+  })
+  .refine((d) => d.selector || d.ref, { message: 'must provide selector or ref' });
 type FocusArgs = z.infer<typeof FocusArgs>;
 
 export const focus_element: ToolHandler<FocusArgs, unknown> = {
   name: 'focus_element',
   tier: 'action',
   description:
-    'Move keyboard focus to an element (calls .focus() and scrolls it into view). Use before press_keys when no selector is supplied.',
+    'Move keyboard focus to an element. Pass `ref` from read_page or a `selector`. Use before press_keys when no selector is supplied to that tool.',
   argsSchema: FocusArgs,
   run: async (args) => {
+    const sel = resolveRef(args);
+    if (!sel) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await activeTabId();
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
@@ -242,7 +267,7 @@ export const focus_element: ToolHandler<FocusArgs, unknown> = {
         el.focus();
         return { ok: true, focused: document.activeElement === el };
       },
-      args: [args.selector],
+      args: [sel],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },
@@ -277,7 +302,12 @@ export const blur_element: ToolHandler<BlurArgs, unknown> = {
   },
 };
 
-const RightClickArgs = z.object({ selector: z.string().min(1) });
+const RightClickArgs = z
+  .object({
+    selector: z.string().min(1).optional(),
+    ref: z.string().min(1).optional(),
+  })
+  .refine((d) => d.selector || d.ref, { message: 'must provide selector or ref' });
 type RightClickArgs = z.infer<typeof RightClickArgs>;
 
 export const right_click_element: ToolHandler<RightClickArgs, unknown> = {
@@ -287,6 +317,8 @@ export const right_click_element: ToolHandler<RightClickArgs, unknown> = {
     "Dispatch a contextmenu event on an element (synthetic right-click). Note: most apps respond by showing their own custom menu in the page DOM. Chrome's native context menu cannot be opened by extension scripts.",
   argsSchema: RightClickArgs,
   run: async (args) => {
+    const sel = resolveRef(args);
+    if (!sel) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await activeTabId();
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
@@ -308,7 +340,7 @@ export const right_click_element: ToolHandler<RightClickArgs, unknown> = {
         el.dispatchEvent(new MouseEvent('contextmenu', init));
         return { ok: true };
       },
-      args: [args.selector],
+      args: [sel],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },

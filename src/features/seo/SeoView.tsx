@@ -5,7 +5,7 @@ import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
 import type { SeoAudit } from '@/lib/seo/audit';
 import { fetchLatestSeoAuditForUrl, saveSeoAudit } from '@/lib/supabase/queries';
 import { CheckCircle2, Loader2, Save, Search, Sparkles } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function SeoView() {
   const tab = useActiveTab();
@@ -14,6 +14,13 @@ export function SeoView() {
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [previousAuditedAt, setPreviousAuditedAt] = useState<string | null>(null);
+  /**
+   * Tracks the URL we've already auto-run an audit for, so opening the SEO
+   * tab fires once per page (and re-fires on navigation) but doesn't loop
+   * after the audit state updates. Manual "Re-audit" is unrelated — it
+   * always runs on click.
+   */
+  const lastAutoRunUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!tab.url) {
@@ -30,6 +37,20 @@ export function SeoView() {
       cancelled = true;
     };
   }, [tab.url]);
+
+  // Auto-run an audit when the SEO tab gets a fresh URL — first mount, or
+  // user navigates the active tab. Manual "Re-audit" stays as the way to
+  // refresh against the same URL. Errors are already caught + logged inside
+  // runAudit, so a restricted page (chrome://) just no-ops gracefully.
+  useEffect(() => {
+    if (!tab.id || !tab.url) return;
+    if (lastAutoRunUrlRef.current === tab.url) return;
+    lastAutoRunUrlRef.current = tab.url;
+    void runAudit();
+    // runAudit is defined in the component body and reads the latest tab
+    // state via closure; we only want this effect to fire on URL change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab.id, tab.url]);
 
   const runAudit = async () => {
     if (!tab.id) return;

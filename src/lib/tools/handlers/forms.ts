@@ -20,6 +20,14 @@ async function activeTabId(): Promise<number | null> {
   return tab?.id ?? null;
 }
 
+function resolveRef(args: { selector?: string; ref?: string }): string | null {
+  if (args.ref) {
+    const n = args.ref.startsWith('ref:') ? args.ref.slice(4) : args.ref;
+    return `[data-matrx-ref="${n.replace(/"/g, '\\"')}"]`;
+  }
+  return args.selector ?? null;
+}
+
 const FormFieldsArgs = z
   .object({
     /** Optional CSS selector to scope discovery to a particular form. */
@@ -153,13 +161,16 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
   },
 };
 
-const SelectDropdownArgs = z.object({
-  selector: z.string().min(1),
-  /** Provide exactly ONE of: value, label, or index. */
-  value: z.string().optional(),
-  label: z.string().optional(),
-  index: z.number().int().min(0).optional(),
-});
+const SelectDropdownArgs = z
+  .object({
+    selector: z.string().min(1).optional(),
+    ref: z.string().min(1).optional(),
+    /** Provide exactly ONE of: value, label, or index. */
+    value: z.string().optional(),
+    label: z.string().optional(),
+    index: z.number().int().min(0).optional(),
+  })
+  .refine((d) => d.selector || d.ref, { message: 'must provide selector or ref' });
 type SelectDropdownArgs = z.infer<typeof SelectDropdownArgs>;
 
 export const select_dropdown_option: ToolHandler<SelectDropdownArgs, unknown> = {
@@ -169,6 +180,8 @@ export const select_dropdown_option: ToolHandler<SelectDropdownArgs, unknown> = 
     "Choose an option in a <select> element. Pass exactly ONE of: value (the option's value attr), label (the visible text), or index (0-based). Dispatches change + input events for framework apps.",
   argsSchema: SelectDropdownArgs,
   run: async (args) => {
+    const sel = resolveRef(args);
+    if (!sel) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await activeTabId();
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
@@ -209,16 +222,19 @@ export const select_dropdown_option: ToolHandler<SelectDropdownArgs, unknown> = 
           selected: { value: el.value, label: el.options[target]?.textContent?.trim() ?? '' },
         };
       },
-      args: [args.selector, args.value, args.label, args.index],
+      args: [sel, args.value, args.label, args.index],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },
 };
 
-const SetCheckboxArgs = z.object({
-  selector: z.string().min(1),
-  checked: z.boolean(),
-});
+const SetCheckboxArgs = z
+  .object({
+    selector: z.string().min(1).optional(),
+    ref: z.string().min(1).optional(),
+    checked: z.boolean(),
+  })
+  .refine((d) => d.selector || d.ref, { message: 'must provide selector or ref' });
 type SetCheckboxArgs = z.infer<typeof SetCheckboxArgs>;
 
 export const set_checkbox: ToolHandler<SetCheckboxArgs, unknown> = {
@@ -228,6 +244,8 @@ export const set_checkbox: ToolHandler<SetCheckboxArgs, unknown> = {
     'Set a checkbox to checked or unchecked, dispatching click + change events so frameworks see the toggle. Use for both <input type="checkbox"> and ARIA-styled toggles where role="checkbox".',
   argsSchema: SetCheckboxArgs,
   run: async (args) => {
+    const sel = resolveRef(args);
+    if (!sel) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await activeTabId();
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
@@ -246,20 +264,23 @@ export const set_checkbox: ToolHandler<SetCheckboxArgs, unknown> = {
         if (isAriaChecked !== checked) el.click();
         return { ok: true, checked: el.getAttribute('aria-checked') === 'true' };
       },
-      args: [args.selector, args.checked],
+      args: [sel, args.checked],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },
 };
 
-const SetRadioArgs = z.object({
-  /** A selector that resolves to a radio group container, or one of its inputs. */
-  selector: z.string().min(1),
-  /** Match by `value` attr, visible label, or index within the group. */
-  value: z.string().optional(),
-  label: z.string().optional(),
-  index: z.number().int().min(0).optional(),
-});
+const SetRadioArgs = z
+  .object({
+    /** A selector that resolves to a radio group container, or one of its inputs. */
+    selector: z.string().min(1).optional(),
+    ref: z.string().min(1).optional(),
+    /** Match by `value` attr, visible label, or index within the group. */
+    value: z.string().optional(),
+    label: z.string().optional(),
+    index: z.number().int().min(0).optional(),
+  })
+  .refine((d) => d.selector || d.ref, { message: 'must provide selector or ref' });
 type SetRadioArgs = z.infer<typeof SetRadioArgs>;
 
 export const set_radio: ToolHandler<SetRadioArgs, unknown> = {
@@ -269,6 +290,8 @@ export const set_radio: ToolHandler<SetRadioArgs, unknown> = {
     'Pick a radio button from a group. Pass selector pointing at the group container OR any radio input in it, then exactly ONE of value/label/index.',
   argsSchema: SetRadioArgs,
   run: async (args) => {
+    const sel = resolveRef(args);
+    if (!sel) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await activeTabId();
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
@@ -313,7 +336,7 @@ export const set_radio: ToolHandler<SetRadioArgs, unknown> = {
         target.click();
         return { ok: true, value: target.value };
       },
-      args: [args.selector, args.value, args.label, args.index],
+      args: [sel, args.value, args.label, args.index],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },
@@ -371,5 +394,83 @@ export const submit_form: ToolHandler<SubmitFormArgs, unknown> = {
   },
 };
 
+// ─── file_upload ──────────────────────────────────────────────────────────
+
+const FileUploadArgs = z
+  .object({
+    /** Selector or ref pointing at an `<input type="file">`. */
+    selector: z.string().min(1).optional(),
+    ref: z.string().min(1).optional(),
+    /**
+     * Files to attach. Each file is { name, mime, base64 }. base64 is the
+     * file contents WITHOUT the `data:...;base64,` prefix.
+     */
+    files: z
+      .array(
+        z.object({
+          name: z.string().min(1),
+          mime: z.string().min(1).default('application/octet-stream'),
+          base64: z.string().min(1),
+        }),
+      )
+      .min(1),
+  })
+  .refine((d) => d.selector || d.ref, { message: 'must provide selector or ref' });
+type FileUploadArgs = z.infer<typeof FileUploadArgs>;
+
+export const file_upload: ToolHandler<FileUploadArgs, unknown> = {
+  name: 'file_upload',
+  tier: 'action',
+  description:
+    'Attach files to an `<input type="file">` element by selector or ref. IMPORTANT: clicking a file input opens a native dialog the agent cannot see — use this tool instead. Each file in `files` is { name, mime, base64 }. Dispatches `change` so frameworks see the upload. Returns { ok, file_count, names }.',
+  argsSchema: FileUploadArgs,
+  run: async (args) => {
+    const sel = resolveRef(args);
+    if (!sel) return { ok: false, reason: 'must provide selector or ref' };
+    const tabId = await activeTabId();
+    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    try {
+      const [first] = await chrome.scripting.executeScript({
+        target: { tabId },
+        func: (
+          selector: string,
+          files: { name: string; mime: string; base64: string }[],
+        ) => {
+          const el = document.querySelector(selector) as HTMLInputElement | null;
+          if (!el || el.tagName.toLowerCase() !== 'input' || el.type !== 'file') {
+            return { ok: false, reason: `Not a file input at ${selector}` };
+          }
+          const dt = new DataTransfer();
+          for (const f of files) {
+            const bin = atob(f.base64);
+            const arr = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+            const blob = new Blob([arr], { type: f.mime });
+            dt.items.add(new File([blob], f.name, { type: f.mime }));
+          }
+          el.files = dt.files;
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+          return {
+            ok: true,
+            file_count: dt.files.length,
+            names: files.map((f) => f.name),
+          };
+        },
+        args: [sel, args.files],
+      });
+      return first?.result ?? { ok: false, reason: 'no result' };
+    } catch (err) {
+      return { ok: false, reason: (err as Error).message };
+    }
+  },
+};
+
 export const form_read_handlers = [get_form_fields];
-export const form_action_handlers = [select_dropdown_option, set_checkbox, set_radio, submit_form];
+export const form_action_handlers = [
+  select_dropdown_option,
+  set_checkbox,
+  set_radio,
+  submit_form,
+  file_upload,
+];

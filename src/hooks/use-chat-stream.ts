@@ -4,7 +4,7 @@ import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { assistantToolNames } from '@/lib/tools/registry';
+import { coreToolNames } from '@/lib/tools/registry';
 import { useAuthStore } from '@/state/auth';
 import { type ChatMessage, useChatStore } from '@/state/chat';
 import { useDesktopStore } from '@/state/desktop';
@@ -123,11 +123,13 @@ export function useChatStream() {
       store: true,
       source_app: 'matrx-extend',
       source_feature: 'chat',
-      // Tell the server which client-side tools the agent can call. The
-      // Assistant surface advertises only the read-only set; the Pilot surface
-      // (separate hook later) will advertise pilot_tools. Admin users see
-      // experimental admin-only tools in their bundle.
-      client_tools: assistantToolNames({ isAdmin }),
+      // Tell the server which client-side tools the agent can call. We ship
+      // the CORE bundle: a tiny set of always-on essentials plus every
+      // `list_<category>_tools` discovery tool. The agent calls
+      // `list_browser_tools` to enumerate categories, then a category's
+      // list-tool to pull in its full schemas on demand. This keeps the
+      // model's context window small without limiting capability.
+      client_tools: coreToolNames({ isAdmin }),
     };
 
     await send(CHANNELS.STREAM_START, {

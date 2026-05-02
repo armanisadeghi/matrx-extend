@@ -180,7 +180,7 @@ export async function summarize(
   }
   // Fallback via languageModel.
   return quickPrompt(text, {
-    systemPrompt: `Summarize the following ${opts?.type ?? 'tldr'} in ${opts?.length ?? 'short'} length. Return only the summary.`,
+    systemPrompt: `Summarize the following ${opts?.type ?? 'tldr'} in ${opts?.length ?? 'short'} length. Ignore promotional or ad content on a page that is clearly not for that topic. Return only the summary.`,
   });
 }
 

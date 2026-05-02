@@ -20,7 +20,7 @@ import { articleToMarkdown } from '@/lib/scrape/to-markdown';
 import type { SeoAudit } from '@/lib/seo/audit';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/state/auth';
-import { useScrapeStore } from '@/state/scrape';
+import { scrapeLinkKey, useScrapeStore } from '@/state/scrape';
 import {
   AlertTriangle,
   Ban,
@@ -32,11 +32,14 @@ import {
   Loader2,
   Link2,
   Link2Off,
+  Pencil,
   PlayCircle,
+  Plus,
   RefreshCw,
   RotateCcw,
   Save,
   VideoIcon,
+  X,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -47,12 +50,20 @@ export function ScrapeView() {
     activeMode,
     progress,
     error,
+    edited,
     captureActiveTab,
     reloadActiveTab,
     clearError,
     save,
   } = useScrape();
   const setCurrent = useScrapeStore((s) => s.setCurrent);
+  const editArticleMarkdown = useScrapeStore((s) => s.editArticleMarkdown);
+  const removeImage = useScrapeStore((s) => s.removeImage);
+  const addImage = useScrapeStore((s) => s.addImage);
+  const removeVideo = useScrapeStore((s) => s.removeVideo);
+  const addVideo = useScrapeStore((s) => s.addVideo);
+  const removeLink = useScrapeStore((s) => s.removeLink);
+  const addLink = useScrapeStore((s) => s.addLink);
   const isAdmin = useAuthStore((s) => s.isAdmin);
   const recognition = usePageRecognition();
   const tab = useActiveTab();
@@ -65,6 +76,33 @@ export function ScrapeView() {
   const [scrollSync, setScrollSync] = useState(false);
   const articleScrollRef = useRef<HTMLDivElement | null>(null);
   usePageScrollSync(scrollSync, articleScrollRef);
+  /** Article-tab edit state. Local draft so Cancel can discard cleanly. */
+  const [editingArticle, setEditingArticle] = useState(false);
+  const [articleDraft, setArticleDraft] = useState('');
+
+  const beginArticleEdit = () => {
+    setArticleDraft(current?.article.content_markdown ?? '');
+    setEditingArticle(true);
+  };
+  const cancelArticleEdit = () => setEditingArticle(false);
+  const commitArticleEdit = () => {
+    editArticleMarkdown(articleDraft);
+    setEditingArticle(false);
+  };
+
+  /** Re-capture confirm guard — protects unsaved local edits. */
+  const guardedCapture = (mode: 'fast' | 'deep') => {
+    if (
+      edited &&
+      !window.confirm(
+        'You have unsaved edits to this capture. Re-capturing will discard them. Continue?',
+      )
+    ) {
+      return;
+    }
+    setEditingArticle(false);
+    void captureActiveTab({ mode });
+  };
 
   // Clear stale capture state when the user navigates to a new URL.
   // Without this, the panel keeps showing the previous page's article and
@@ -75,6 +113,12 @@ export function ScrapeView() {
       setSaved(false);
     }
   }, [tab.url, current, setCurrent]);
+
+  // Local edits invalidate the "Saved" badge — the persisted row no longer
+  // matches the in-memory state until the user hits Save again.
+  useEffect(() => {
+    if (edited && saved) setSaved(false);
+  }, [edited, saved]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -137,6 +181,21 @@ export function ScrapeView() {
                       {current.article.extractor} · {current.article.word_count ?? '—'} words ·{' '}
                       {current.article.reading_time_minutes ?? '—'} min read
                     </span>
+                    {edited && (
+                      <span className="rounded-full bg-amber-500/15 px-1.5 py-0 text-[9px] font-medium uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                        edited
+                      </span>
+                    )}
+                    {!editingArticle && (
+                      <button
+                        type="button"
+                        onClick={beginArticleEdit}
+                        title="Edit article markdown"
+                        className="inline-flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                      >
+                        <Pencil className="size-3.5" />
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => setScrollSync((v) => !v)}
@@ -160,7 +219,39 @@ export function ScrapeView() {
                     </button>
                     <CopyMenu title="Copy article" options={articleCopyOptions(current)} />
                   </div>
-                  <MarkdownView content={articleToMarkdown(current)} />
+                  {editingArticle ? (
+                    <div className="space-y-2">
+                      <textarea
+                        value={articleDraft}
+                        onChange={(e) => setArticleDraft(e.target.value)}
+                        spellCheck={false}
+                        className="min-h-[60vh] w-full resize-y rounded-xl border bg-background p-3 font-mono text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring"
+                        placeholder="Article markdown — edit freely. Save persists to the in-memory capture; click Save below to write it to the server."
+                      />
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          onClick={commitArticleEdit}
+                          className="rounded-full"
+                        >
+                          <CheckCircle2 /> Apply
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={cancelArticleEdit}
+                          className="rounded-full"
+                        >
+                          Cancel
+                        </Button>
+                        <span className="text-[11px] text-muted-foreground">
+                          Apply updates the in-memory capture. Use Save below to persist.
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <MarkdownView content={articleToMarkdown(current)} />
+                  )}
                 </div>
               </div>
             </TabsContent>
@@ -187,17 +278,34 @@ export function ScrapeView() {
                           loading="lazy"
                         />
                       </a>
-                      <div className="absolute right-1 top-1 opacity-0 transition-opacity group-hover:opacity-100">
+                      <div className="absolute right-1 top-1 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                         <CopyButton
                           text={img.src}
                           title="Copy image URL"
                           size="xs"
                           className="bg-background/80 backdrop-blur"
                         />
+                        <DeleteRowButton
+                          title="Remove image"
+                          onClick={() => removeImage(img.src)}
+                          className="bg-background/80 backdrop-blur"
+                        />
                       </div>
                     </div>
                   ))}
                 </div>
+                <AddItemRow
+                  label="Add image URL"
+                  fields={[
+                    { name: 'src', placeholder: 'https://…' },
+                    { name: 'alt', placeholder: 'alt text (optional)' },
+                  ]}
+                  onAdd={(values) => {
+                    if (!values.src) return false;
+                    addImage({ src: values.src, alt: values.alt || null });
+                    return true;
+                  }}
+                />
               </div>
             </TabsContent>
 
@@ -224,15 +332,25 @@ export function ScrapeView() {
                       >
                         {v.src}
                       </a>
-                      <CopyButton
-                        text={v.src}
-                        title="Copy video URL"
-                        size="xs"
-                        className="opacity-0 transition-opacity group-hover:opacity-100"
-                      />
+                      <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                        <CopyButton text={v.src} title="Copy video URL" size="xs" />
+                        <DeleteRowButton
+                          title="Remove video"
+                          onClick={() => removeVideo(v.src)}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
+                <AddItemRow
+                  label="Add video URL"
+                  fields={[{ name: 'src', placeholder: 'https://…' }]}
+                  onAdd={(values) => {
+                    if (!values.src) return false;
+                    addVideo({ src: values.src });
+                    return true;
+                  }}
+                />
               </div>
             </TabsContent>
 
@@ -247,7 +365,7 @@ export function ScrapeView() {
                 <div className="space-y-0.5 px-3 pb-3">
                   {current.links.map((l) => (
                     <div
-                      key={`${l.href}|${l.text}`}
+                      key={scrapeLinkKey(l.href, l.text)}
                       className="group flex items-start gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-accent"
                     >
                       <LinkIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
@@ -260,15 +378,28 @@ export function ScrapeView() {
                         <div className="truncate">{l.text || l.href}</div>
                         <div className="truncate text-xs text-muted-foreground">{l.href}</div>
                       </a>
-                      <CopyButton
-                        text={l.href}
-                        title="Copy URL"
-                        size="xs"
-                        className="opacity-0 transition-opacity group-hover:opacity-100"
-                      />
+                      <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                        <CopyButton text={l.href} title="Copy URL" size="xs" />
+                        <DeleteRowButton
+                          title="Remove link"
+                          onClick={() => removeLink(scrapeLinkKey(l.href, l.text))}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
+                <AddItemRow
+                  label="Add link"
+                  fields={[
+                    { name: 'href', placeholder: 'https://…' },
+                    { name: 'text', placeholder: 'anchor text (optional)' },
+                  ]}
+                  onAdd={(values) => {
+                    if (!values.href) return false;
+                    addLink({ href: values.href, text: values.text });
+                    return true;
+                  }}
+                />
               </div>
             </TabsContent>
 
@@ -315,7 +446,7 @@ export function ScrapeView() {
       <div className="flex shrink-0 flex-col gap-2 px-3 pb-3 pt-1">
         <div className="flex gap-2">
           <Button
-            onClick={() => void captureActiveTab({ mode: 'fast' })}
+            onClick={() => guardedCapture('fast')}
             disabled={loading}
             className="flex-1 rounded-full"
             title="Capture the page exactly as it is right now"
@@ -331,7 +462,7 @@ export function ScrapeView() {
             )}
           </Button>
           <Button
-            onClick={() => void captureActiveTab({ mode: 'deep' })}
+            onClick={() => guardedCapture('deep')}
             disabled={loading}
             variant="secondary"
             className="flex-1 rounded-full"
@@ -378,6 +509,105 @@ function ListToolbar({
         {label}
       </span>
       {copyMenu}
+    </div>
+  );
+}
+
+function DeleteRowButton({
+  title,
+  onClick,
+  className,
+}: {
+  title: string;
+  onClick: () => void;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        onClick();
+      }}
+      title={title}
+      className={cn(
+        'inline-flex size-5 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/15 hover:text-destructive',
+        className,
+      )}
+    >
+      <X className="size-3" />
+    </button>
+  );
+}
+
+interface AddItemField {
+  name: string;
+  placeholder: string;
+}
+
+function AddItemRow({
+  label,
+  fields,
+  onAdd,
+}: {
+  label: string;
+  fields: AddItemField[];
+  /** Return true to clear the inputs after add; false to keep them (e.g. validation failed). */
+  onAdd: (values: Record<string, string>) => boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [values, setValues] = useState<Record<string, string>>({});
+
+  if (!open) {
+    return (
+      <div className="px-3 pb-3">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-border/70 bg-secondary/20 px-3 py-2 text-xs text-muted-foreground transition-colors hover:bg-secondary/40 hover:text-foreground"
+        >
+          <Plus className="size-3.5" /> {label}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2 px-3 pb-3">
+      <div className="space-y-1.5 rounded-xl border bg-card p-2">
+        {fields.map((f) => (
+          <input
+            key={f.name}
+            value={values[f.name] ?? ''}
+            onChange={(e) => setValues((v) => ({ ...v, [f.name]: e.target.value }))}
+            placeholder={f.placeholder}
+            className="w-full rounded-md bg-background px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        ))}
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            onClick={() => {
+              if (onAdd(values)) setValues({});
+            }}
+            className="h-7 rounded-full text-xs"
+          >
+            <Plus className="size-3.5" /> Add
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => {
+              setValues({});
+              setOpen(false);
+            }}
+            className="h-7 rounded-full text-xs"
+          >
+            Cancel
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

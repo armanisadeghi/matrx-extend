@@ -34,6 +34,8 @@ export async function showCaptureOverlay(
         topicName,
         CHANNELS.TASKS_USER_GO,
         CHANNELS.TASKS_USER_CANCEL,
+        CHANNELS.TASKS_USER_DEAD,
+        CHANNELS.TASKS_USER_EXPECT_THIN,
       ],
     });
   } catch (err) {
@@ -65,6 +67,8 @@ function inPageMount(
   topicName: string,
   goKind: string,
   cancelKind: string,
+  deadKind: string,
+  expectThinKind: string,
 ): void {
   // Idempotent: replace any existing overlay for this source.
   document.getElementById(overlayId)?.remove();
@@ -83,8 +87,8 @@ function inPageMount(
     'border-radius:12px',
     'box-shadow:0 10px 40px rgba(0,0,0,0.35)',
     'padding:12px 14px',
-    'min-width:280px',
-    'max-width:340px',
+    'min-width:300px',
+    'max-width:360px',
     'font-size:13px',
     'line-height:1.4',
     'backdrop-filter:saturate(150%) blur(8px)',
@@ -100,65 +104,80 @@ function inPageMount(
   sub.textContent = `${topicName} · click past popups, then capture.`;
   root.appendChild(sub);
 
-  const row = document.createElement('div');
-  row.style.cssText = 'display:flex;gap:8px;justify-content:flex-end';
+  const allButtons: HTMLButtonElement[] = [];
 
-  const cancel = document.createElement('button');
-  cancel.type = 'button';
-  cancel.textContent = 'Cancel';
-  cancel.style.cssText = [
-    'background:transparent',
-    'color:#d1d5db',
-    'border:1px solid rgba(255,255,255,0.15)',
-    'border-radius:999px',
-    'padding:6px 12px',
-    'font-size:12px',
-    'cursor:pointer',
-  ].join(';');
-  cancel.addEventListener('click', () => {
+  const send = (kind: string) => {
     try {
       chrome.runtime.sendMessage({
         __matrx: true,
-        kind: cancelKind,
+        kind,
         payload: { topicId, sourceId },
       });
     } catch {
       /* runtime may be gone */
     }
-    document.getElementById(overlayId)?.remove();
-  });
-  row.appendChild(cancel);
+  };
 
-  const go = document.createElement('button');
-  go.type = 'button';
-  go.textContent = 'Capture page';
-  go.style.cssText = [
-    'background:#10b981',
-    'color:#fff',
-    'border:none',
-    'border-radius:999px',
-    'padding:6px 14px',
-    'font-size:12px',
-    'font-weight:600',
-    'cursor:pointer',
-  ].join(';');
-  go.addEventListener('click', () => {
-    try {
-      chrome.runtime.sendMessage({
-        __matrx: true,
-        kind: goKind,
-        payload: { topicId, sourceId },
-      });
-    } catch {
-      /* runtime may be gone */
+  const lockButtons = (clickedLabel: string) => {
+    for (const b of allButtons) {
+      b.disabled = true;
+      if (b.textContent === clickedLabel) {
+        b.textContent = clickedLabel.includes('Capture') ? 'Capturing…' : 'Submitting…';
+      } else {
+        b.style.opacity = '0.4';
+      }
     }
-    go.textContent = 'Capturing…';
-    (go as HTMLButtonElement).disabled = true;
-    cancel.style.opacity = '0.5';
-  });
-  row.appendChild(go);
+  };
 
-  root.appendChild(row);
+  const makeBtn = (
+    label: string,
+    kind: string,
+    style: 'primary' | 'secondary' | 'ghost' | 'danger',
+  ): HTMLButtonElement => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = label;
+    const base = [
+      'border:none',
+      'border-radius:999px',
+      'padding:6px 12px',
+      'font-size:12px',
+      'cursor:pointer',
+      'font-weight:500',
+    ];
+    const variants: Record<typeof style, string[]> = {
+      primary: ['background:#10b981', 'color:#fff', 'font-weight:600'],
+      secondary: ['background:rgba(255,255,255,0.1)', 'color:#e5e7eb'],
+      ghost: ['background:transparent', 'color:#d1d5db', 'border:1px solid rgba(255,255,255,0.15)'],
+      danger: ['background:rgba(239,68,68,0.15)', 'color:#fca5a5', 'border:1px solid rgba(239,68,68,0.3)'],
+    };
+    b.style.cssText = [...base, ...variants[style]].join(';');
+    b.addEventListener('click', () => {
+      send(kind);
+      lockButtons(label);
+      // Cancel removes the overlay synchronously; the others wait for the
+      // sidepanel handler to call removeCaptureOverlay.
+      if (kind === cancelKind) document.getElementById(overlayId)?.remove();
+    });
+    allButtons.push(b);
+    return b;
+  };
+
+  // Two-row layout. Top row = primary actions (Capture / Expect thin).
+  // Bottom row = pre-decided verdicts (Page is dead) and Cancel.
+  const topRow = document.createElement('div');
+  topRow.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap';
+  topRow.appendChild(makeBtn('Expect thin content', expectThinKind, 'secondary'));
+  topRow.appendChild(makeBtn('Capture page', goKind, 'primary'));
+
+  const bottomRow = document.createElement('div');
+  bottomRow.style.cssText =
+    'display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:8px';
+  bottomRow.appendChild(makeBtn('Page is 404 / dead', deadKind, 'danger'));
+  bottomRow.appendChild(makeBtn('Cancel', cancelKind, 'ghost'));
+
+  root.appendChild(topRow);
+  root.appendChild(bottomRow);
   document.documentElement.appendChild(root);
 }
 

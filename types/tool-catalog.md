@@ -1,14 +1,418 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-01T00:11:49.153Z
+Generated: 2026-05-02T00:59:39.418Z
 
-- **Total tools:** 96
-- **Assistant bundle:** 36 tools (read-only)
-- **Pilot bundle:** 76 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 96 tools
+- **Total tools:** 118
+- **Assistant bundle:** 55 tools (read-only)
+- **Pilot bundle:** 97 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 118 tools
 
 
-## Tier: read (36)
+## Tier: read (55)
+
+### `list_browser_tools`
+
+Index of every browser-tool category the extension exposes. Returns one entry per category: name, label, description, count of tools, name of the category-specific list tool. To get the full schemas for a category, call its `list_tool` (e.g. `list_page_tools`). Use this whenever the model needs more capabilities than its current toolset offers.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_core_tools`
+
+Full schemas for tools in the "Core" category (core). Always-available essentials: read the active page, take a screenshot, find elements by description, click, type, navigate, ask the user, batch multiple calls. The agent has these without calling any list tool. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_page_tools`
+
+Full schemas for tools in the "Page understanding" category (page). Deep page inspection: accessibility tree with reference IDs, natural-language element search, article-style text extraction, link discovery, computed styles, element-at-point, form-field discovery. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_interact_tools`
+
+Full schemas for tools in the "Page interaction" category (interact). Beyond core click/type: scrolling, keyboard sequences (chords + named keys), hover, focus, blur, right-click, wait-for conditions. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_forms_tools`
+
+Full schemas for tools in the "Forms" category (forms). Form-specific actions: select dropdown options, set checkboxes, pick radio buttons, submit forms, upload files into <input type="file">. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_tabs_tools`
+
+Full schemas for tools in the "Tabs & windows" category (tabs). List, switch, open, close, duplicate, pin, mute, reload tabs. Back/forward navigation, zoom, move tabs between windows. Create and manage tab groups. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_history_tools`
+
+Full schemas for tools in the "Browser history & bookmarks" category (history). Search bookmarks, search browsing history, list recent visits, list downloads, list and restore recently-closed tabs. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_ai_tools`
+
+Full schemas for tools in the "On-device AI (Gemini Nano)" category (ai). Free, offline, on-GPU AI tasks: summarize, classify, extract structured JSON, translate, detect language, proofread, describe images, check for prompt injection. Use these BEFORE expensive cloud calls when quality permits. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_files_tools`
+
+Full schemas for tools in the "Files & system" category (files). Download files, archive page as MHTML, read/write clipboard, show system notifications. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_memory_tools`
+
+Full schemas for tools in the "Agent memory" category (memory). Persistent agent-namespaced storage that survives across runs. Use to remember user preferences, scratchpads, progress markers between conversations. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_ask_tools`
+
+Full schemas for tools in the "Ask the user" category (ask). Pause and ask the human: open question, multiple-choice, secret (masked) input, full takeover (CAPTCHA / login), and plan-approval (propose a plan; the human confirms before you execute). Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_advanced_tools`
+
+Full schemas for tools in the "Advanced (privileged)" category (advanced). Privileged tools that always require user approval: arbitrary JavaScript execution, CSS injection, desktop-bridge commands. Use only when no purpose-built tool fits. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_debug_tools`
+
+Full schemas for tools in the "Debugger / DevTools (admin)" category (debug). Chrome DevTools Protocol: full-page screenshots, accessibility tree dumps, network request capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print, console message reads. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_cookies_tools`
+
+Full schemas for tools in the "Cookies (admin)" category (cookies). Read, set, and delete cookies for any domain. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_webmcp_tools`
+
+Full schemas for tools in the "WebMCP (admin)" category (webmcp). Discover and call tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `browser_batch`
+
+Execute up to 20 read-tier tool calls in one round trip. Pass `calls: [{ name, arguments }]`. Returns `results: [{ name, ok, output | error }]` in order. Action / ask-user / privileged tools are NOT permitted inside a batch — call them individually so the user can approve. Use this for predictable multi-step reads (read_page + take_screenshot + list_open_tabs) where each call is independent.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "calls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "arguments": {}
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 20
+    },
+    "stop_on_error": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "calls"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `read_page`
+
+Return an accessibility-style summary of the active page. Each interactive element gets a reference id (`ref:N`) you can pass to click_element / type_into_element / scroll_into_view / etc. instead of a CSS selector — refs are stable across DOM mutations within the same page lifetime. Pass interactive_only=false to include headings, paragraphs, and labels too. Refs invalidate on navigation; call this again after navigating. Returns { url, title, count, elements: [{ ref, role, name, tag, text, visible, bounds? }] }.
+
+- **Required permissions:** `activeTab`, `scripting`
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    },
+    "interactive_only": {
+      "type": "boolean",
+      "default": true
+    },
+    "include_hidden": {
+      "type": "boolean",
+      "default": false
+    },
+    "max_nodes": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 2000,
+      "default": 200
+    },
+    "include_text": {
+      "type": "boolean",
+      "default": true
+    },
+    "include_bounds": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `find`
+
+Find elements on the active page by natural-language description ("the sign-in button", "the search input near the top", "the link to the pricing page"). Returns matching refs you can immediately pass to interaction tools. Uses on-device AI for matching when available; falls back to text similarity. Always run read_page first OR pass refs through this in the same conversation. Returns { matches: [{ ref, name, role, score, reason }] }.
+
+- **Required permissions:** `activeTab`, `scripting`
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "query": {
+      "type": "string",
+      "minLength": 1
+    },
+    "max_candidates": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 500,
+      "default": 100
+    },
+    "limit": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 20,
+      "default": 5
+    }
+  },
+  "required": [
+    "query"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `get_page_text`
+
+Extract clean readable text from the active page — strips chrome / nav / ads / scripts / hidden DOM. Lighter than read_active_page (which returns full markdown + media + structured data). Best for "read me this article" style asks. Returns { url, title, byline, text, char_count }.
+
+- **Required permissions:** `activeTab`, `scripting`
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    },
+    "max_chars": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 50000,
+      "default": 8000
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
 
 ### `get_active_tab`
 
@@ -996,7 +1400,7 @@ List tools the active tab has registered via `navigator.modelContext.registerToo
 }
 ```
 
-## Tier: action (36)
+## Tier: action (37)
 
 ### `navigate_active_tab`
 
@@ -1024,7 +1428,7 @@ Navigate the active tab to a URL. Waits for status=complete before resolving (ti
 
 ### `click_element`
 
-Click the element matching a CSS selector on the active tab. Use query_elements first to find the right selector. Returns { ok, text, tag } or { ok:false, reason }.
+Click an element on the active tab. Pass `ref` from read_page (preferred — stable across DOM mutations) OR a CSS `selector`. When multiple match a selector, use `nth`. Returns { ok, tag, text } or { ok:false, reason }.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -1037,15 +1441,16 @@ Click the element matching a CSS selector on the active tab. Use query_elements 
       "type": "string",
       "minLength": 1
     },
+    "ref": {
+      "type": "string",
+      "minLength": 1
+    },
     "nth": {
       "type": "integer",
       "minimum": 0,
       "default": 0
     }
   },
-  "required": [
-    "selector"
-  ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
@@ -1053,7 +1458,7 @@ Click the element matching a CSS selector on the active tab. Use query_elements 
 
 ### `type_into_element`
 
-Set the value of an input / textarea / contenteditable matched by a CSS selector. By default, clears the field first and dispatches input + change events so frameworks (React, Vue, etc.) detect the update.
+Set the value of an input / textarea / contenteditable. Pass `ref` from read_page (preferred) OR a CSS `selector`. By default clears the field first and dispatches input + change events so React/Vue see the update.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -1063,6 +1468,10 @@ Set the value of an input / textarea / contenteditable matched by a CSS selector
   "type": "object",
   "properties": {
     "selector": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ref": {
       "type": "string",
       "minLength": 1
     },
@@ -1079,7 +1488,6 @@ Set the value of an input / textarea / contenteditable matched by a CSS selector
     }
   },
   "required": [
-    "selector",
     "text"
   ],
   "additionalProperties": false,
@@ -1089,7 +1497,7 @@ Set the value of an input / textarea / contenteditable matched by a CSS selector
 
 ### `scroll_page`
 
-Scroll the active tab. direction="top"/"bottom" go to extremes; "into-view" scrolls a CSS-selector match into view; "by" scrolls by delta_y pixels.
+Scroll the active tab. direction="top"/"bottom" go to extremes; "into-view" scrolls a selector or `ref` (from read_page) into view; "by" scrolls by delta_y pixels.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -1108,6 +1516,9 @@ Scroll the active tab. direction="top"/"bottom" go to extremes; "into-view" scro
       ]
     },
     "selector": {
+      "type": "string"
+    },
+    "ref": {
       "type": "string"
     },
     "delta_y": {
@@ -1176,7 +1587,7 @@ Write text to the system clipboard.
 
 ### `press_keys`
 
-Send keyboard input to a page. Pass either a literal string ("hello world") or named keys/chords ("Enter", "Control+A", "Tab", "ArrowDown ArrowDown Enter"). When `selector` is provided the tool focuses that element first. Useful for triggering submit-on-Enter, navigating menus, dismissing dialogs, and using app keyboard shortcuts.
+Send keyboard input to a page. Pass either a literal string ("hello world") or named keys/chords ("Enter", "Control+A", "Tab", "ArrowDown ArrowDown Enter"). When `selector` or `ref` is provided the tool focuses that element first. Useful for triggering submit-on-Enter, navigating menus, dismissing dialogs, and using app keyboard shortcuts.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -1190,6 +1601,9 @@ Send keyboard input to a page. Pass either a literal string ("hello world") or n
       "minLength": 1
     },
     "selector": {
+      "type": "string"
+    },
+    "ref": {
       "type": "string"
     },
     "delay_ms": {
@@ -1209,7 +1623,7 @@ Send keyboard input to a page. Pass either a literal string ("hello world") or n
 
 ### `hover_element`
 
-Trigger hover on an element by dispatching mouseenter/mouseover/mousemove events. Use this to reveal hover-only tooltips, dropdown menus, or sub-navigation that only appear when the cursor is over a parent.
+Trigger hover on an element by dispatching mouseenter/mouseover/mousemove events. Pass `ref` from read_page or a CSS `selector`. Reveals hover-only tooltips, dropdown menus, or sub-navigation.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -1221,11 +1635,12 @@ Trigger hover on an element by dispatching mouseenter/mouseover/mousemove events
     "selector": {
       "type": "string",
       "minLength": 1
+    },
+    "ref": {
+      "type": "string",
+      "minLength": 1
     }
   },
-  "required": [
-    "selector"
-  ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
@@ -1233,7 +1648,7 @@ Trigger hover on an element by dispatching mouseenter/mouseover/mousemove events
 
 ### `focus_element`
 
-Move keyboard focus to an element (calls .focus() and scrolls it into view). Use before press_keys when no selector is supplied.
+Move keyboard focus to an element. Pass `ref` from read_page or a `selector`. Use before press_keys when no selector is supplied to that tool.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -1245,11 +1660,12 @@ Move keyboard focus to an element (calls .focus() and scrolls it into view). Use
     "selector": {
       "type": "string",
       "minLength": 1
+    },
+    "ref": {
+      "type": "string",
+      "minLength": 1
     }
   },
-  "required": [
-    "selector"
-  ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
@@ -1290,11 +1706,12 @@ Dispatch a contextmenu event on an element (synthetic right-click). Note: most a
     "selector": {
       "type": "string",
       "minLength": 1
+    },
+    "ref": {
+      "type": "string",
+      "minLength": 1
     }
   },
-  "required": [
-    "selector"
-  ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
@@ -1315,6 +1732,10 @@ Choose an option in a <select> element. Pass exactly ONE of: value (the option's
       "type": "string",
       "minLength": 1
     },
+    "ref": {
+      "type": "string",
+      "minLength": 1
+    },
     "value": {
       "type": "string"
     },
@@ -1326,9 +1747,6 @@ Choose an option in a <select> element. Pass exactly ONE of: value (the option's
       "minimum": 0
     }
   },
-  "required": [
-    "selector"
-  ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
@@ -1349,12 +1767,15 @@ Set a checkbox to checked or unchecked, dispatching click + change events so fra
       "type": "string",
       "minLength": 1
     },
+    "ref": {
+      "type": "string",
+      "minLength": 1
+    },
     "checked": {
       "type": "boolean"
     }
   },
   "required": [
-    "selector",
     "checked"
   ],
   "additionalProperties": false,
@@ -1377,6 +1798,10 @@ Pick a radio button from a group. Pass selector pointing at the group container 
       "type": "string",
       "minLength": 1
     },
+    "ref": {
+      "type": "string",
+      "minLength": 1
+    },
     "value": {
       "type": "string"
     },
@@ -1388,9 +1813,6 @@ Pick a radio button from a group. Pass selector pointing at the group container 
       "minimum": 0
     }
   },
-  "required": [
-    "selector"
-  ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
@@ -1417,6 +1839,61 @@ Submit a form. By default the tool clicks the form's primary submit button (so H
   },
   "additionalProperties": false,
   "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `file_upload`
+
+Attach files to an `<input type="file">` element by selector or ref. IMPORTANT: clicking a file input opens a native dialog the agent cannot see — use this tool instead. Each file in `files` is { name, mime, base64 }. Dispatches `change` so frameworks see the upload. Returns { ok, file_count, names }.
+
+- **Required permissions:** `activeTab`, `scripting`
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "selector": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mime": {
+            "type": "string",
+            "minLength": 1,
+            "default": "application/octet-stream"
+          },
+          "base64": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "name",
+          "base64"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "files"
+  ],
+  "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
 ```
@@ -2037,7 +2514,7 @@ Invoke a tool registered by the active page via `navigator.modelContext`. Pass t
 }
 ```
 
-## Tier: ask-user (4)
+## Tier: ask-user (5)
 
 ### `ask_user`
 
@@ -2177,7 +2654,55 @@ Pause the agent and hand control back to the human (e.g. for CAPTCHA, login, pay
 }
 ```
 
-## Tier: privileged (20)
+### `update_plan`
+
+Propose a step-by-step plan and wait for the user to approve, modify, or reject it. Use this BEFORE a multi-step action sequence so you align on intent up front. Returns { approved: true, note?: string } or { approved: false, note?: string } so you can adjust.
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "maxItems": 40
+    },
+    "reasoning": {
+      "type": "string"
+    },
+    "estimated_minutes": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 240
+    },
+    "timeout_ms": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 900000,
+      "default": 300000
+    }
+  },
+  "required": [
+    "title",
+    "steps"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+## Tier: privileged (21)
 
 ### `set_cookie`
 
@@ -2631,6 +3156,50 @@ Clear device + UA overrides on a tab.
   "properties": {
     "tab_id": {
       "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `read_console_messages`
+
+Read console messages from a tab. Auto-starts CDP console capture if not already running. Filter by level, text regex, or use errors_only=true. Returns { count, messages: [{ level, text, url, line, ts_ms }] }. Console capture stays on until cdp_detach or tab close.
+
+- **Required permissions:** `activeTab`
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_id": {
+      "type": "integer"
+    },
+    "auto_start": {
+      "type": "boolean",
+      "default": true
+    },
+    "max": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 2000,
+      "default": 100
+    },
+    "level_filter": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pattern": {
+      "type": "string"
+    },
+    "errors_only": {
+      "type": "boolean",
+      "default": false
     }
   },
   "additionalProperties": false,

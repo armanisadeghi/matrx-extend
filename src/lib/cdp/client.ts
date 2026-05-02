@@ -22,6 +22,16 @@ const PROTOCOL_VERSION = '1.3';
 const attachedTabs = new Set<number>();
 const networkBuffers = new Map<number, NetworkRecord[]>();
 const networkRequests = new Map<number, Map<string, Partial<NetworkRecord>>>();
+const consoleBuffers = new Map<number, ConsoleRecord[]>();
+
+export interface ConsoleRecord {
+  level: 'log' | 'info' | 'warn' | 'error' | 'debug' | 'verbose' | string;
+  text: string;
+  url?: string;
+  line?: number;
+  column?: number;
+  ts_ms: number;
+}
 
 interface NetworkRecord {
   request_id: string;
@@ -50,13 +60,89 @@ function installListeners() {
       attachedTabs.delete(source.tabId);
       networkBuffers.delete(source.tabId);
       networkRequests.delete(source.tabId);
+      consoleBuffers.delete(source.tabId);
     }
   });
   chrome.debugger.onEvent.addListener((source, method, params) => {
     if (typeof source.tabId !== 'number') return;
-    if (!networkBuffers.has(source.tabId)) return;
-    handleNetworkEvent(source.tabId, method, params as Record<string, unknown>);
+    if (networkBuffers.has(source.tabId)) {
+      handleNetworkEvent(source.tabId, method, params as Record<string, unknown>);
+    }
+    if (consoleBuffers.has(source.tabId)) {
+      handleConsoleEvent(source.tabId, method, params as Record<string, unknown>);
+    }
   });
+}
+
+function handleConsoleEvent(
+  tabId: number,
+  method: string,
+  params: Record<string, unknown>,
+): void {
+  const buf = consoleBuffers.get(tabId);
+  if (!buf) return;
+  if (method === 'Runtime.consoleAPICalled') {
+    const args = (params.args as Array<{ value?: unknown; description?: string }>) ?? [];
+    const text = args
+      .map((a) => (a.value !== undefined ? String(a.value) : (a.description ?? '')))
+      .join(' ');
+    const stack = (params.stackTrace as { callFrames?: Array<{ url?: string; lineNumber?: number; columnNumber?: number }> })?.callFrames?.[0];
+    buf.push({
+      level: String(params.type ?? 'log'),
+      text,
+      url: stack?.url,
+      line: stack?.lineNumber,
+      column: stack?.columnNumber,
+      ts_ms: Date.now(),
+    });
+  } else if (method === 'Runtime.exceptionThrown') {
+    const ex = params.exceptionDetails as
+      | { text?: string; url?: string; lineNumber?: number; columnNumber?: number; exception?: { description?: string } }
+      | undefined;
+    buf.push({
+      level: 'error',
+      text: ex?.exception?.description ?? ex?.text ?? 'unknown exception',
+      url: ex?.url,
+      line: ex?.lineNumber,
+      column: ex?.columnNumber,
+      ts_ms: Date.now(),
+    });
+  }
+}
+
+export async function startConsoleCapture(tabId: number): Promise<void> {
+  installListeners();
+  if (!attachedTabs.has(tabId)) {
+    const r = await attach(tabId);
+    if (!r.ok) throw new Error(`attach failed: ${r.reason}`);
+  }
+  if (!consoleBuffers.has(tabId)) {
+    consoleBuffers.set(tabId, []);
+    await chrome.debugger.sendCommand({ tabId }, 'Runtime.enable');
+  }
+}
+
+export async function stopConsoleCapture(tabId: number): Promise<void> {
+  if (!consoleBuffers.has(tabId)) return;
+  consoleBuffers.delete(tabId);
+}
+
+export function drainConsoleCapture(
+  tabId: number,
+  opts?: { max?: number; level_filter?: string[]; pattern?: RegExp },
+): ConsoleRecord[] {
+  const buf = consoleBuffers.get(tabId);
+  if (!buf) return [];
+  const max = opts?.max ?? 200;
+  let records = buf.splice(0, max);
+  if (opts?.level_filter?.length) {
+    const set = new Set(opts.level_filter);
+    records = records.filter((r) => set.has(r.level));
+  }
+  if (opts?.pattern) {
+    records = records.filter((r) => opts.pattern!.test(r.text));
+  }
+  return records;
 }
 
 function handleNetworkEvent(

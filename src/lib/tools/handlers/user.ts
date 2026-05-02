@@ -130,7 +130,76 @@ export const request_user_takeover: ToolHandler<TakeoverArgs, unknown> = {
     ),
 };
 
-export const user_handlers = [ask_user, ask_user_choice, ask_user_secret, request_user_takeover];
+// ─── update_plan ──────────────────────────────────────────────────────────
+
+const UpdatePlanArgs = z.object({
+  /** A short title for the proposed plan. */
+  title: z.string().min(1),
+  /** Step-by-step plan as a list of strings. */
+  steps: z.array(z.string().min(1)).min(1).max(40),
+  /**
+   * Optional rationale or context explaining WHY this plan addresses the
+   * user's goal. Helps the user evaluate the proposal.
+   */
+  reasoning: z.string().optional(),
+  /** Estimated wall-clock time, in minutes. Optional. */
+  estimated_minutes: z.number().int().positive().max(240).optional(),
+  /** Hard timeout for approval, in ms. Default 5 minutes. */
+  timeout_ms: z
+    .number()
+    .int()
+    .positive()
+    .max(15 * 60_000)
+    .optional()
+    .default(5 * 60_000),
+});
+type UpdatePlanArgs = z.infer<typeof UpdatePlanArgs>;
+
+export const update_plan: ToolHandler<UpdatePlanArgs, unknown> = {
+  name: 'update_plan',
+  tier: 'ask-user',
+  description:
+    'Propose a step-by-step plan and wait for the user to approve, modify, or reject it. Use this BEFORE a multi-step action sequence so you align on intent up front. Returns { approved: true, note?: string } or { approved: false, note?: string } so you can adjust.',
+  argsSchema: UpdatePlanArgs,
+  run: async (args, ctx) => {
+    const renderedSteps = args.steps.map((s, i) => `${i + 1}. ${s}`).join('\n');
+    const body = [
+      `**Plan: ${args.title}**`,
+      args.reasoning ? `\n_${args.reasoning}_` : '',
+      '',
+      renderedSteps,
+      args.estimated_minutes
+        ? `\n_~${args.estimated_minutes} minute${args.estimated_minutes === 1 ? '' : 's'}_`
+        : '',
+      '',
+      'Approve this plan? You may add a note to amend.',
+    ]
+      .filter(Boolean)
+      .join('\n');
+    const r = await awaitUserAnswer(
+      {
+        callId: ctx.callId,
+        question: body,
+        choices: ['Approve', 'Reject'],
+        why: 'Agent is proposing a plan',
+      },
+      args.timeout_ms,
+    );
+    if (r.cancelled) return { approved: false, note: null };
+    return {
+      approved: r.answer?.toLowerCase().startsWith('approve') ?? false,
+      note: r.answer,
+    };
+  },
+};
+
+export const user_handlers = [
+  ask_user,
+  ask_user_choice,
+  ask_user_secret,
+  request_user_takeover,
+  update_plan,
+];
 
 // ─── shared awaiter ────────────────────────────────────────────────────────
 

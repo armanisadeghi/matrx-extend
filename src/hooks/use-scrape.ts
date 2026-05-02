@@ -33,7 +33,16 @@ interface CaptureOptions {
 }
 
 export function useScrape() {
-  const { current, loading, error, setCurrent, setLoading, setError } = useScrapeStore();
+  const {
+    current,
+    loading,
+    error,
+    edited,
+    setCurrent,
+    setLoading,
+    setError,
+    markSaved,
+  } = useScrapeStore();
   /** Which mode is currently running. Null when idle. */
   const [activeMode, setActiveMode] = useState<ScrapeMode | null>(null);
   /** Scroll progress, surfaced for the manual "Scroll & capture" button. */
@@ -142,9 +151,12 @@ export function useScrape() {
         flesch_reading_ease: current.seo.flesch_reading_ease,
         word_count: current.seo.word_count,
       }).catch(() => undefined);
+      // The persisted row now matches the in-memory state — clear the
+      // "edited" flag so the badge disappears and Re-capture stops warning.
+      markSaved();
       return captureRow;
     },
-    [current],
+    [current, markSaved],
   );
 
   return {
@@ -153,6 +165,7 @@ export function useScrape() {
     activeMode,
     progress,
     error,
+    edited,
     captureActiveTab,
     reloadActiveTab,
     clearError,

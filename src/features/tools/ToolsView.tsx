@@ -26,11 +26,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { SmartTestsView } from '@/features/tools/SmartTestsView';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import {
+  ALL_CATEGORIES,
+  CATEGORIES,
+  type ToolCategory,
+  categoryOf,
+} from '@/lib/tools/categories';
 import { listAllHandlers } from '@/lib/tools/registry';
 import type { AnyToolHandler, ToolTier } from '@/lib/tools/types';
 import { cn } from '@/lib/utils';
@@ -48,20 +56,65 @@ import { useMemo, useState } from 'react';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 
 type TierFilter = 'all' | ToolTier;
+type CategoryFilter = 'all' | ToolCategory;
 
 export function ToolsView() {
   const handlers = useMemo(() => listAllHandlers(), []);
+
+  return (
+    <div className="flex h-full flex-col">
+      <div className="flex h-9 shrink-0 items-center justify-between px-3">
+        <div className="flex items-center gap-2">
+          <Wrench className="size-3.5 text-muted-foreground" />
+          <span className="text-sm font-medium">Tools</span>
+          <span className="text-[11px] text-muted-foreground">{handlers.length} total</span>
+        </div>
+      </div>
+
+      <Tabs defaultValue="catalog" className="flex flex-1 flex-col min-h-0">
+        <TabsList className="mx-3 self-start gap-1 bg-transparent p-0">
+          <ToolsTab value="catalog">Catalog</ToolsTab>
+          <ToolsTab value="smart">Smart tests</ToolsTab>
+        </TabsList>
+        <TabsContent value="catalog" className="flex-1 min-h-0">
+          <CatalogPane handlers={handlers} />
+        </TabsContent>
+        <TabsContent value="smart" className="flex-1 min-h-0">
+          <SmartTestsView />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+function ToolsTab({ value, children }: { value: string; children: React.ReactNode }) {
+  return (
+    <TabsTrigger
+      value={value}
+      className={cn(
+        'h-6 rounded-md bg-transparent px-2.5 py-0 text-xs text-muted-foreground shadow-none',
+        'data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-none',
+      )}
+    >
+      {children}
+    </TabsTrigger>
+  );
+}
+
+function CatalogPane({ handlers }: { handlers: AnyToolHandler[] }) {
   const [query, setQuery] = useState('');
   const [tier, setTier] = useState<TierFilter>('all');
+  const [category, setCategory] = useState<CategoryFilter>('all');
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return handlers.filter((h) => {
       if (tier !== 'all' && h.tier !== tier) return false;
+      if (category !== 'all' && categoryOf(h.name) !== category) return false;
       if (!q) return true;
       return h.name.toLowerCase().includes(q) || h.description.toLowerCase().includes(q);
     });
-  }, [handlers, query, tier]);
+  }, [handlers, query, tier, category]);
 
   const counts = useMemo(() => {
     const c: Record<ToolTier, number> = {
@@ -74,33 +127,49 @@ export function ToolsView() {
     return c;
   }, [handlers]);
 
+  const categoryCounts = useMemo(() => {
+    const c: Record<string, number> = {};
+    for (const h of handlers) {
+      const cat = categoryOf(h.name);
+      c[cat] = (c[cat] ?? 0) + 1;
+    }
+    return c;
+  }, [handlers]);
+
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-9 shrink-0 items-center justify-between px-3">
-        <div className="flex items-center gap-2">
-          <Wrench className="size-3.5 text-muted-foreground" />
-          <span className="text-sm font-medium">Tools</span>
-          <span className="text-[11px] text-muted-foreground">{handlers.length} total</span>
+      <div className="flex shrink-0 flex-col gap-1.5 border-b px-3 pb-2 pt-1">
+        <div className="flex items-center gap-1.5">
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by name or description…"
+            className="h-7 flex-1 text-xs"
+          />
+          <Select value={tier} onValueChange={(v) => setTier(v as TierFilter)}>
+            <SelectTrigger className="h-7 w-28 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All ({handlers.length})</SelectItem>
+              <SelectItem value="read">Read ({counts.read})</SelectItem>
+              <SelectItem value="action">Action ({counts.action})</SelectItem>
+              <SelectItem value="ask-user">Ask ({counts['ask-user']})</SelectItem>
+              <SelectItem value="privileged">Privileged ({counts.privileged})</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-      </div>
-
-      <div className="flex shrink-0 items-center gap-1.5 border-b px-3 pb-2">
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by name or description…"
-          className="h-7 flex-1 text-xs"
-        />
-        <Select value={tier} onValueChange={(v) => setTier(v as TierFilter)}>
-          <SelectTrigger className="h-7 w-32 text-xs">
-            <SelectValue />
+        <Select value={category} onValueChange={(v) => setCategory(v as CategoryFilter)}>
+          <SelectTrigger className="h-7 w-full text-xs">
+            <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All ({handlers.length})</SelectItem>
-            <SelectItem value="read">Read ({counts.read})</SelectItem>
-            <SelectItem value="action">Action ({counts.action})</SelectItem>
-            <SelectItem value="ask-user">Ask-user ({counts['ask-user']})</SelectItem>
-            <SelectItem value="privileged">Privileged ({counts.privileged})</SelectItem>
+            <SelectItem value="all">All categories ({handlers.length})</SelectItem>
+            {ALL_CATEGORIES.map((c) => (
+              <SelectItem key={c} value={c}>
+                {CATEGORIES[c].label} ({categoryCounts[c] ?? 0})
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -139,6 +208,12 @@ function ToolRow({ handler }: { handler: AnyToolHandler }) {
           <div className="flex items-center gap-1.5">
             <span className="font-mono text-[12px] font-medium">{handler.name}</span>
             <TierBadge tier={handler.tier} />
+            <Badge
+              variant="outline"
+              className="h-4 border-slate-300 bg-slate-50 px-1 py-0 text-[9px] font-medium uppercase tracking-wide text-slate-700 dark:border-slate-700/50 dark:bg-slate-950/30 dark:text-slate-300"
+            >
+              {categoryOf(handler.name)}
+            </Badge>
             {handler.admin_only && (
               <Badge
                 variant="outline"

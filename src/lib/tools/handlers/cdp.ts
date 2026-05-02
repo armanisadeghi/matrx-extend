@@ -499,6 +499,58 @@ export const cdp_clear_emulation: ToolHandler<ClearEmulationArgs, unknown> = {
   },
 };
 
+// ─── read_console_messages ────────────────────────────────────────────────
+
+const ReadConsoleArgs = z
+  .object({
+    tab_id: z.number().int().optional(),
+    /** Auto-start console capture if it's not already running. Default true. */
+    auto_start: z.boolean().optional().default(true),
+    /** Limit returned messages. Default 100. */
+    max: z.number().int().positive().max(2000).optional().default(100),
+    /** Only return messages at these console levels. */
+    level_filter: z.array(z.string()).optional(),
+    /** Only return messages whose text matches this regex pattern. */
+    pattern: z.string().optional(),
+    /** Convenience: only errors + warnings. Equivalent to level_filter=['error','warn']. */
+    errors_only: z.boolean().optional().default(false),
+  })
+  .default({});
+type ReadConsoleArgs = z.infer<typeof ReadConsoleArgs>;
+
+export const read_console_messages: ToolHandler<ReadConsoleArgs, unknown> = {
+  name: 'read_console_messages',
+  tier: 'privileged',
+  admin_only: true,
+  required_optional_permissions: ['debugger'],
+  description:
+    'Read console messages from a tab. Auto-starts CDP console capture if not already running. Filter by level, text regex, or use errors_only=true. Returns { count, messages: [{ level, text, url, line, ts_ms }] }. Console capture stays on until cdp_detach or tab close.',
+  argsSchema: ReadConsoleArgs,
+  run: async (args) => {
+    const tabId = args.tab_id ?? (await activeTabId());
+    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    if (args.auto_start) {
+      try {
+        await cdp.startConsoleCapture(tabId);
+      } catch (err) {
+        return { ok: false, reason: (err as Error).message };
+      }
+    }
+    const filter = args.errors_only
+      ? ['error', 'warn']
+      : args.level_filter && args.level_filter.length > 0
+        ? args.level_filter
+        : undefined;
+    const pattern = args.pattern ? new RegExp(args.pattern) : undefined;
+    const messages = cdp.drainConsoleCapture(tabId, {
+      max: args.max,
+      level_filter: filter,
+      pattern,
+    });
+    return { ok: true, count: messages.length, messages };
+  },
+};
+
 export const cdp_handlers = [
   cdp_attach,
   cdp_detach,
@@ -515,4 +567,5 @@ export const cdp_handlers = [
   cdp_perf_metrics,
   cdp_emulate_device,
   cdp_clear_emulation,
+  read_console_messages,
 ];

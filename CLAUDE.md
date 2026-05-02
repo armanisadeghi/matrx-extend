@@ -11,12 +11,32 @@
 
 ### Agent harness (the core)
 
-- **96 client-side tools** wired end-to-end through SW dispatcher → permission
-  gate → handler → result POST → timeline event.
+- **118 client-side tools** wired end-to-end through SW dispatcher →
+  permission gate → handler → result POST → timeline event.
+- **Hierarchical discovery** — agents are advertised only the **24-tool core
+  bundle** by default (essentials + every `list_<category>_tools` discovery
+  tool). When they need more, they call `list_browser_tools` to enumerate
+  categories, then a category's list-tool to load its full schemas.
+- **Reference-ID system** — `read_page` tags every interactive element with
+  `data-matrx-ref="N"` and returns refs (`ref:N`) the agent passes to
+  interaction tools instead of brittle CSS selectors. Refs survive DOM
+  mutations within the same page lifetime; invalidate on navigation.
+  `click_element`, `type_into_element`, `scroll_page` (into-view),
+  `hover_element`, `focus_element`, `blur_element`, `right_click_element`,
+  `press_keys`, `select_dropdown_option`, `set_checkbox`, `set_radio`,
+  `submit_form`, `file_upload` all accept either `ref` or `selector`.
+- **`find` (NL element search)** — natural-language description in,
+  matching refs out. Uses on-device Gemini Nano with a JSON-Schema
+  constraint when available; falls back to text similarity.
+- **`browser_batch`** — execute up to 20 read-tier tool calls in one round
+  trip. Action / privileged tools require their normal individual approval.
+- **`update_plan`** — agent proposes a step-by-step plan; user approves /
+  rejects with optional note before execution begins.
 - **4-tier permission model:** `read` (auto) · `action` (Ask/Act) · `ask-user`
   (renders question card) · `privileged` (always confirms, even in Act mode).
-- **3 tool bundles:** assistant (Chat tab, read-only) · pilot (full kit) ·
-  pilot+privileged (trusted agents only).
+- **4 tool bundles:** core (always-on, 24 tools — agent's default surface) ·
+  assistant (legacy: every read-tier tool) · pilot (full kit: read+action+
+  ask) · pilot+privileged (trusted agents only).
 - **Two surfaces:** Assistant Chat tab (current) · Pilot tab (planned, see Roadmap).
 - **Per-agent permission mode** — "Ask before acting" / "Act without asking",
   user-toggleable in chat header chip, persisted per agent.
@@ -28,12 +48,49 @@
 - **Full type safety** — every tool has a Zod schema, dispatcher validates args
   before run, schema failures surface as structured errors.
 
-### Tool list (all 96)
+### Tool categories (the discovery system)
 
-#### Read tier (36 tools)
+The 118 tools are organized into **15 categories**. The agent only sees
+core upfront; everything else is on demand:
+
+| category | tools | list-tool | always-on? |
+|---|---:|---|---|
+| `core` | 11 | `list_core_tools` | ✅ |
+| `page` | 10 | `list_page_tools` | – |
+| `interact` | 7 | `list_interact_tools` | – |
+| `forms` | 5 | `list_forms_tools` | – |
+| `tabs` | 18 | `list_tabs_tools` | – |
+| `history` | 7 | `list_history_tools` | – |
+| `ai` | 9 | `list_ai_tools` | – |
+| `files` | 5 | `list_files_tools` | – |
+| `memory` | 3 | `list_memory_tools` | – |
+| `ask` | 5 | `list_ask_tools` | – |
+| `advanced` | 4 | `list_advanced_tools` | – (privileged) |
+| `debug` | 16 | `list_debug_tools` | – (admin + CDP) |
+| `cookies` | 3 | `list_cookies_tools` | – (admin) |
+| `webmcp` | 3 | `list_webmcp_tools` | – (admin) |
+
+The discovery tools themselves (`list_browser_tools`, `list_<cat>_tools`)
+are also always-on so the agent can ask for any category by name.
+
+### Tool list (all 118)
+
+#### Core (always advertised; 11 tools + 14 discovery tools = 24-tool surface)
+- `list_browser_tools` — discovery root (returns category index)
+- `list_core_tools` — what's in core itself
+- `browser_batch` — N read-tier calls in one round trip
+- `get_active_tab`, `take_screenshot`
+- `read_page` (NEW — accessibility tree + ref system)
+- `find` (NEW — natural-language element search returning refs)
+- `navigate_active_tab`
+- `click_element`, `type_into_element` (now accept ref OR selector)
+- `ask_user`
+
+#### Read tier (54 tools total across categories)
 - **Page reading:** `get_active_tab`, `get_page_selection`, `read_active_page`
   (full scrape with `deep:true` for lazy loaders), `take_screenshot`,
-  `query_elements`
+  `query_elements`, `read_page` (ref system), `find` (NL search),
+  `get_page_text` (Readability-style extraction)
 - **Surgical inspection:** `find_text_on_page`, `get_page_links`,
   `get_computed_style`, `get_element_at_point`, `inspect_element`
 - **Browser context:** `list_open_tabs`, `get_tab_groups`, `get_tab_info`
@@ -51,13 +108,15 @@
 - **Cookies read** (admin + optional `cookies` perm): `get_cookies`
 - **WebMCP** (admin): `webmcp_check_availability`, `webmcp_list_page_tools`
 
-#### Action tier (36 tools)
-- **Page interaction:** `navigate_active_tab`, `click_element`,
+#### Action tier (37 tools)
+- **Page interaction (now ref-aware):** `navigate_active_tab`, `click_element`,
   `type_into_element`, `scroll_page`, `wait_for`, `set_clipboard`
 - **Keyboard / mouse:** `press_keys`, `hover_element`, `focus_element`,
   `blur_element`, `right_click_element`
-- **Form actions:** `select_dropdown_option`, `set_checkbox`, `set_radio`,
-  `submit_form`
+- **Form actions (ref-aware):** `select_dropdown_option`, `set_checkbox`,
+  `set_radio`, `submit_form`, `file_upload` (NEW — base64 file blobs into
+  `<input type="file">` via DataTransfer; bypasses the native dialog the
+  agent can't see)
 - **Tab control:** `open_new_tab`, `close_tab`, `switch_to_tab`,
   `duplicate_tab`, `pin_tab`, `mute_tab`, `reload_tab`, `go_back`,
   `go_forward`, `set_tab_zoom`, `move_tab`
@@ -68,8 +127,10 @@
 - **Page archive** (admin + optional `pageCapture` perm): `save_page_as_mhtml`
 - **WebMCP** (admin): `webmcp_call_page_tool`
 
-#### Ask-user tier (4 tools)
-- `ask_user`, `ask_user_choice`, `ask_user_secret`, `request_user_takeover`
+#### Ask-user tier (5 tools)
+- `ask_user`, `ask_user_choice`, `ask_user_secret`, `request_user_takeover`,
+  `update_plan` (NEW — propose a step-by-step plan; user approves before
+  execution)
 
 #### Privileged tier (20 tools)
 - **Page-level (general):** `execute_javascript`, `inject_stylesheet`,
@@ -80,7 +141,9 @@
   `cdp_full_page_screenshot`, `cdp_input_click_xy`, `cdp_input_type`,
   `cdp_network_capture_start`, `cdp_network_capture_drain`,
   `cdp_network_capture_stop`, `cdp_network_get_body`, `cdp_print_pdf`,
-  `cdp_emulate_device`, `cdp_clear_emulation`
+  `cdp_emulate_device`, `cdp_clear_emulation`, `read_console_messages`
+  (NEW — captures `Runtime.consoleAPICalled` + `exceptionThrown`, filterable
+  by level and regex)
 
 ### Side-panel tabs
 
@@ -284,6 +347,31 @@ sidepanel (React) ──STREAM_START──▶ SW ──STREAM_RUN──▶ offsc
 - **`src/features/tools/ToolsView.tsx`** — visible catalog + manual test runner.
 
 ---
+
+## 🔌 Server-side integration notes (Python / aidream)
+
+The extension exposes a hierarchical tool surface. The Python side is
+expected to do the dynamic registration:
+
+1. **Initial advertisement.** The chat hook ships `client_tools: coreToolNames()`
+   on every start request — currently 24 tools (11 core + 13 list-tools).
+   The agent's tool surface starts there.
+2. **`list_browser_tools` invocation.** When the agent calls this, the
+   extension returns a category index. The server side does NOT need to do
+   anything special — the agent now knows what list-tools exist.
+3. **`list_<category>_tools` invocation.** When the agent calls one of these,
+   the extension returns the full schemas for that category's tools. **The
+   server must observe this call** and add those schemas to the model's
+   tool list for subsequent calls in the same conversation. The schemas are
+   already in JSON-Schema-7 format under `tools[i].input_schema`.
+4. **Agent calls one of the loaded tools.** Standard `tool_event` /
+   `tool_started` flow — the dispatcher in the SW already handles it.
+
+The category metadata is also available statically from the extension's
+catalog dump (`pnpm catalog:tools` → `types/tool-catalog.json`). The Python
+side can pre-build a mapping of `category → tool_schemas` from that file
+and consult it whenever a list-tool is invoked. No live coordination
+required.
 
 ## 📜 Conventions
 

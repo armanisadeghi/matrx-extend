@@ -14,6 +14,7 @@
  *     show users which capabilities the active agent has.
  */
 
+import { CATEGORIES, type ToolCategory, categoryOf } from '@/lib/tools/categories';
 import { listAllHandlers } from '@/lib/tools/registry';
 import type { ToolTier } from '@/lib/tools/types';
 import { zodToJsonSchema } from 'zod-to-json-schema';
@@ -22,6 +23,8 @@ export interface ToolCatalogEntry {
   name: string;
   description: string;
   tier: ToolTier;
+  /** Discovery category this tool belongs to. */
+  category: ToolCategory;
   input_schema: ReturnType<typeof zodToJsonSchema>;
   /** Chrome `permissions` keys this tool needs (base manifest). */
   required_permissions: string[];
@@ -171,6 +174,41 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   save_page_as_mhtml: ['activeTab'],
   list_recently_closed: [],
   restore_recently_closed: [],
+
+  // ─── new (2026-05-01) ────────────────────────────────────────────────
+  // discovery tools
+  list_browser_tools: [],
+  list_core_tools: [],
+  list_page_tools: [],
+  list_interact_tools: [],
+  list_forms_tools: [],
+  list_tabs_tools: [],
+  list_history_tools: [],
+  list_ai_tools: [],
+  list_files_tools: [],
+  list_memory_tools: [],
+  list_ask_tools: [],
+  list_advanced_tools: [],
+  list_debug_tools: [],
+  list_cookies_tools: [],
+  list_webmcp_tools: [],
+
+  // batching
+  browser_batch: [],
+
+  // ref-based page understanding
+  read_page: ['activeTab', 'scripting'],
+  find: ['activeTab', 'scripting'],
+  get_page_text: ['activeTab', 'scripting'],
+
+  // forms additions
+  file_upload: ['activeTab', 'scripting'],
+
+  // CDP additions
+  read_console_messages: ['activeTab'],
+
+  // ask-user additions
+  update_plan: [],
 };
 
 function bundlesForTier(tier: ToolTier): ToolCatalogEntry['surface_bundles'] {
@@ -184,6 +222,7 @@ export function buildToolCatalog(): ToolCatalogEntry[] {
     name: h.name,
     description: h.description,
     tier: h.tier,
+    category: categoryOf(h.name),
     input_schema: zodToJsonSchema(h.argsSchema, {
       $refStrategy: 'none',
       target: 'jsonSchema7',
@@ -195,28 +234,60 @@ export function buildToolCatalog(): ToolCatalogEntry[] {
   }));
 }
 
+export interface CategoryManifestEntry {
+  category: ToolCategory;
+  label: string;
+  description: string;
+  list_tool: string;
+  admin_only: boolean;
+  tool_names: string[];
+}
+
 export interface ToolCatalogManifest {
   generated_at: string;
   source: 'matrx-extend';
+  /** Always-on minimum set + every list_<cat>_tools discovery tool. */
+  core_bundle: string[];
   /** Suitable for the Assistant surface (Chat tab). */
   assistant_bundle: string[];
   /** Suitable for the Pilot surface, no privileged tools. */
   pilot_bundle: string[];
   /** Pilot + privileged. Trusted agents only. */
   pilot_with_privileged_bundle: string[];
+  /** Category index for the hierarchical discovery system. */
+  categories: CategoryManifestEntry[];
   tools: ToolCatalogEntry[];
 }
 
 export function buildToolCatalogManifest(): ToolCatalogManifest {
   const tools = buildToolCatalog();
+  // Build category manifest entries — tool names per category.
+  const categoryEntries: CategoryManifestEntry[] = Object.values(CATEGORIES).map((meta) => ({
+    category: meta.category,
+    label: meta.label,
+    description: meta.description,
+    list_tool: meta.list_tool_name,
+    admin_only: !!meta.admin_only,
+    tool_names: tools.filter((t) => t.category === meta.category).map((t) => t.name),
+  }));
+  // Core bundle = tools in 'core' category PLUS every list_<category>_tools.
+  const listToolNames = Object.values(CATEGORIES).map((m) => m.list_tool_name);
+  const coreBundle = Array.from(
+    new Set([
+      ...tools.filter((t) => t.category === 'core').map((t) => t.name),
+      ...listToolNames,
+    ]),
+  );
   return {
     generated_at: new Date().toISOString(),
     source: 'matrx-extend',
+    core_bundle: coreBundle,
     assistant_bundle: tools.filter((t) => t.tier === 'read').map((t) => t.name),
     pilot_bundle: tools
       .filter((t) => t.tier === 'read' || t.tier === 'action' || t.tier === 'ask-user')
       .map((t) => t.name),
     pilot_with_privileged_bundle: tools.map((t) => t.name),
+    categories: categoryEntries,
     tools,
   };
 }

@@ -35,29 +35,49 @@ export const navigate_active_tab: ToolHandler<NavigateArgs, unknown> = {
   },
 };
 
-const ClickArgs = z.object({
-  selector: z.string().min(1),
-  /** When multiple match, click the Nth (default 0). */
-  nth: z.number().int().min(0).optional().default(0),
-});
+/**
+ * Resolve a selector|ref pair to a concrete CSS selector. Refs are
+ * `data-matrx-ref` attributes attached by `read_page`; passing a ref is
+ * preferred over a selector when you've just read the page.
+ */
+function resolveRef(args: { selector?: string; ref?: string }): string | null {
+  if (args.ref) {
+    const n = args.ref.startsWith('ref:') ? args.ref.slice(4) : args.ref;
+    return `[data-matrx-ref="${n.replace(/"/g, '\\"')}"]`;
+  }
+  return args.selector ?? null;
+}
+
+const ClickArgs = z
+  .object({
+    selector: z.string().min(1).optional(),
+    /** Reference id from read_page (e.g. "ref:42"). Preferred over selector. */
+    ref: z.string().min(1).optional(),
+    /** When multiple match, click the Nth (default 0). */
+    nth: z.number().int().min(0).optional().default(0),
+  })
+  .refine((d) => d.selector || d.ref, {
+    message: 'must provide either `selector` or `ref`',
+  });
 type ClickArgs = z.infer<typeof ClickArgs>;
 
 export const click_element: ToolHandler<ClickArgs, unknown> = {
   name: 'click_element',
   tier: 'action',
   description:
-    'Click the element matching a CSS selector on the active tab. Use query_elements first to find the right selector. Returns { ok, text, tag } or { ok:false, reason }.',
+    'Click an element on the active tab. Pass `ref` from read_page (preferred — stable across DOM mutations) OR a CSS `selector`. When multiple match a selector, use `nth`. Returns { ok, tag, text } or { ok:false, reason }.',
   argsSchema: ClickArgs,
   run: async (args) => {
+    const selector = resolveRef(args);
+    if (!selector) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await activeTabId();
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (selector: string, nth: number) => {
-        const list = document.querySelectorAll(selector);
+      func: (sel: string, nth: number) => {
+        const list = document.querySelectorAll(sel);
         const el = list[nth] as HTMLElement | undefined;
-        if (!el)
-          return { ok: false, reason: `No element at index ${nth} for selector ${selector}` };
+        if (!el) return { ok: false, reason: `No element at index ${nth} for selector ${sel}` };
         el.scrollIntoView({ block: 'center', behavior: 'instant' });
         el.click();
         return {
@@ -66,40 +86,48 @@ export const click_element: ToolHandler<ClickArgs, unknown> = {
           text: (el.innerText ?? '').slice(0, 200),
         };
       },
-      args: [args.selector, args.nth],
+      args: [selector, args.nth],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },
 };
 
-const TypeArgs = z.object({
-  selector: z.string().min(1),
-  text: z.string(),
-  /** Clear the input first. Default true. */
-  clear: z.boolean().optional().default(true),
-  /** Dispatch input/change events so React/Vue/etc. apps see the change. Default true. */
-  dispatch_events: z.boolean().optional().default(true),
-});
+const TypeArgs = z
+  .object({
+    selector: z.string().min(1).optional(),
+    /** Reference id from read_page (e.g. "ref:42"). Preferred over selector. */
+    ref: z.string().min(1).optional(),
+    text: z.string(),
+    /** Clear the input first. Default true. */
+    clear: z.boolean().optional().default(true),
+    /** Dispatch input/change events so React/Vue/etc. apps see the change. Default true. */
+    dispatch_events: z.boolean().optional().default(true),
+  })
+  .refine((d) => d.selector || d.ref, {
+    message: 'must provide either `selector` or `ref`',
+  });
 type TypeArgs = z.infer<typeof TypeArgs>;
 
 export const type_into_element: ToolHandler<TypeArgs, unknown> = {
   name: 'type_into_element',
   tier: 'action',
   description:
-    'Set the value of an input / textarea / contenteditable matched by a CSS selector. By default, clears the field first and dispatches input + change events so frameworks (React, Vue, etc.) detect the update.',
+    'Set the value of an input / textarea / contenteditable. Pass `ref` from read_page (preferred) OR a CSS `selector`. By default clears the field first and dispatches input + change events so React/Vue see the update.',
   argsSchema: TypeArgs,
   run: async (args) => {
+    const selector = resolveRef(args);
+    if (!selector) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await activeTabId();
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (selector: string, text: string, clear: boolean, dispatchEvents: boolean) => {
-        const el = document.querySelector(selector) as
+      func: (sel: string, text: string, clear: boolean, dispatchEvents: boolean) => {
+        const el = document.querySelector(sel) as
           | HTMLInputElement
           | HTMLTextAreaElement
           | HTMLElement
           | null;
-        if (!el) return { ok: false, reason: `No element for selector ${selector}` };
+        if (!el) return { ok: false, reason: `No element for selector ${sel}` };
         el.scrollIntoView({ block: 'center', behavior: 'instant' });
         if (
           'value' in el &&
@@ -124,16 +152,18 @@ export const type_into_element: ToolHandler<TypeArgs, unknown> = {
         }
         return { ok: true, tag: el.tagName.toLowerCase() };
       },
-      args: [args.selector, args.text, args.clear, args.dispatch_events],
+      args: [selector, args.text, args.clear, args.dispatch_events],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },
 };
 
 const ScrollArgs = z.object({
-  /** Either 'top' / 'bottom' / 'into-view' (with selector) / 'by' (with delta_y). */
+  /** Either 'top' / 'bottom' / 'into-view' (with selector or ref) / 'by' (with delta_y). */
   direction: z.enum(['top', 'bottom', 'into-view', 'by']),
   selector: z.string().optional(),
+  /** Ref from read_page (alternative to selector for 'into-view'). */
+  ref: z.string().optional(),
   delta_y: z.number().optional(),
 });
 type ScrollArgs = z.infer<typeof ScrollArgs>;
@@ -142,11 +172,12 @@ export const scroll_page: ToolHandler<ScrollArgs, unknown> = {
   name: 'scroll_page',
   tier: 'action',
   description:
-    'Scroll the active tab. direction="top"/"bottom" go to extremes; "into-view" scrolls a CSS-selector match into view; "by" scrolls by delta_y pixels.',
+    'Scroll the active tab. direction="top"/"bottom" go to extremes; "into-view" scrolls a selector or `ref` (from read_page) into view; "by" scrolls by delta_y pixels.',
   argsSchema: ScrollArgs,
   run: async (args) => {
     const tabId = await activeTabId();
     if (tabId == null) return { ok: false, reason: 'No active tab' };
+    const sel = resolveRef(args);
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
       func: (direction: string, selector: string | undefined, deltaY: number | undefined) => {
@@ -155,7 +186,7 @@ export const scroll_page: ToolHandler<ScrollArgs, unknown> = {
         } else if (direction === 'bottom') {
           window.scrollTo({ top: document.documentElement.scrollHeight });
         } else if (direction === 'into-view') {
-          if (!selector) return { ok: false, reason: 'selector required' };
+          if (!selector) return { ok: false, reason: 'selector or ref required' };
           const el = document.querySelector(selector) as HTMLElement | null;
           if (!el) return { ok: false, reason: `No element for ${selector}` };
           el.scrollIntoView({ block: 'center', behavior: 'instant' });
@@ -165,7 +196,7 @@ export const scroll_page: ToolHandler<ScrollArgs, unknown> = {
         }
         return { ok: true, scrollY: window.scrollY };
       },
-      args: [args.direction, args.selector, args.delta_y],
+      args: [args.direction, sel ?? undefined, args.delta_y],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },
