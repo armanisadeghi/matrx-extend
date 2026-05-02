@@ -13,8 +13,9 @@ import {
   fetchPatternsForDomain,
   savePattern,
 } from '@/lib/supabase/queries';
-import { Crosshair, Loader2, Play, Save } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useAutoExtractStore } from '@/state/auto-extract';
+import { Crosshair, Loader2, Play, Save, XCircle, Zap } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 
 export function DataView() {
   const tab = useActiveTab();
@@ -123,6 +124,19 @@ export function DataView() {
   const matched = patterns ? findFirstMatch(tab.url ?? '', patterns) : null;
   const hasFields = pickedFields.length > 0;
 
+  // Auto-extract: pick up records the global useAutoExtract() hook (mounted
+  // in App.tsx) populated for the current URL. Display rows automatically
+  // without requiring the user to click Run.
+  const autoRecords = useAutoExtractStore((s) => s.records);
+  const autoForUrl = useMemo(() => {
+    const url = tab.url;
+    if (!url) return [];
+    return Array.from(autoRecords.values()).filter((r) => r.url === url);
+  }, [autoRecords, tab.url]);
+  const autoForMatched = matched
+    ? autoForUrl.find((r) => r.pattern.id === matched.id)
+    : undefined;
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-9 shrink-0 items-center px-3">
@@ -135,10 +149,36 @@ export function DataView() {
           {matched && (
             <div className="flex items-center justify-between gap-2 rounded-xl bg-emerald-500/10 px-3 py-2.5">
               <div className="min-w-0 text-xs">
-                <div className="truncate font-medium text-emerald-700 dark:text-emerald-300">
-                  {matched.name}
+                <div className="flex items-center gap-1.5">
+                  <span className="truncate font-medium text-emerald-700 dark:text-emerald-300">
+                    {matched.name}
+                  </span>
+                  {autoForMatched?.status === 'running' && (
+                    <span className="flex items-center gap-1 rounded-full bg-emerald-500/20 px-1.5 py-px text-[9px] font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                      <Loader2 className="size-2.5 animate-spin" />
+                      auto
+                    </span>
+                  )}
+                  {autoForMatched?.status === 'ok' && (
+                    <span className="flex items-center gap-1 rounded-full bg-emerald-500/20 px-1.5 py-px text-[9px] font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                      <Zap className="size-2.5" />
+                      auto · {autoForMatched.rows.length} rows
+                    </span>
+                  )}
+                  {autoForMatched?.status === 'error' && (
+                    <span className="flex items-center gap-1 rounded-full bg-red-500/15 px-1.5 py-px text-[9px] font-medium uppercase tracking-wider text-red-700 dark:text-red-400">
+                      <XCircle className="size-2.5" />
+                      auto failed
+                    </span>
+                  )}
                 </div>
-                <div className="text-emerald-700/70 dark:text-emerald-300/70">Matches this URL</div>
+                <div className="text-emerald-700/70 dark:text-emerald-300/70">
+                  {autoForMatched?.status === 'ok'
+                    ? 'Auto-extracted on page load — no click needed.'
+                    : autoForMatched?.status === 'error'
+                      ? (autoForMatched.error ?? 'Auto-extract failed')
+                      : 'Matches this URL'}
+                </div>
               </div>
               <Button
                 size="sm"
@@ -151,10 +191,24 @@ export function DataView() {
                 ) : (
                   <Play className="size-3.5" />
                 )}
-                Extract
+                {autoForMatched?.status === 'ok' ? 'Re-run' : 'Extract'}
               </Button>
             </div>
           )}
+
+          {autoForMatched?.status === 'ok' &&
+            autoForMatched.rows.length > 0 &&
+            !rows && (
+              <Section
+                label={`Auto-extracted (${autoForMatched.rows.length} rows)`}
+              >
+                <pre className="max-h-[320px] overflow-auto whitespace-pre rounded-xl bg-secondary/40 p-3 text-[11px]">
+                  {JSON.stringify(autoForMatched.rows.slice(0, 50), null, 2)}
+                  {autoForMatched.rows.length > 50 &&
+                    `\n\n…(+${autoForMatched.rows.length - 50} more rows)`}
+                </pre>
+              </Section>
+            )}
 
           {hasFields && (
             <Section

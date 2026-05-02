@@ -1,15 +1,21 @@
 /**
- * Direct Supabase queries against the user-defined dynamic-table system:
- *   - user_tables   (table definitions)
- *   - table_fields  (schema per table)
- *   - table_data    (rows, each as JSONB keyed by field_name)
+ * Direct Supabase queries against the user-defined dynamic-table system
+ * ("UDT" — user-defined data types). Tables (renamed 2026-04-30):
+ *   - udt_datasets        (table definitions, was `user_tables`)
+ *   - udt_dataset_fields  (schema per table, was `table_fields`)
+ *   - udt_dataset_rows    (rows as JSONB keyed by field_name, was `table_data`)
  *
  * These tables already exist in the Matrx Supabase project — the extension
  * does NOT create them. RLS + cascade triggers handle ownership and
  * is_public inheritance server-side.
  *
  * Used by the Structured-Data Showcase to let the user save extracted rows
- * straight into a user-defined knowledge-base table.
+ * straight into a user-defined knowledge-base dataset.
+ *
+ * Note on RPC names: the create + append RPCs (`create_user_table_with_fields`,
+ * `append_rows_to_user_table`) kept their pre-rename names by design — the
+ * server-side migration only renamed tables, not RPC signatures. So the
+ * function calls below still work post-rename.
  */
 
 import { getSupabase } from '@/lib/supabase/client';
@@ -35,7 +41,7 @@ export type UserTableDataType = (typeof USER_TABLE_DATA_TYPES)[number];
 
 /**
  * Slugify an arbitrary string into a snake_case identifier matching the
- * `table_fields.field_name` CHECK constraint: `^[a-z][a-z0-9_]*$`.
+ * `udt_dataset_fields.field_name` CHECK constraint: `^[a-z][a-z0-9_]*$`.
  * Examples:
  *   "@type"        → "type"
  *   "URL"          → "url"
@@ -60,8 +66,9 @@ export function toSnakeCaseFieldName(raw: string): string {
 }
 
 /**
- * Mirrors public.user_tables. Note: the column is `table_name`, not `name`.
- * We expose it as `name` on the TS side for readability.
+ * Mirrors public.udt_datasets (renamed from user_tables 2026-04-30). Column
+ * names were intentionally NOT renamed — `table_name`, `is_public`, etc.
+ * stay as-is so RPC bodies and existing client code keep working.
  */
 export const UserTableSchema = z.object({
   id: z.string().uuid(),
@@ -91,7 +98,7 @@ export type TableField = z.infer<typeof TableFieldSchema>;
 export async function listUserTables(): Promise<UserTable[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('user_tables')
+    .from('udt_datasets')
     .select(
       'id, table_name, description, user_id, is_public, version, organization_id, project_id, task_id, created_at, updated_at',
     )
@@ -108,7 +115,7 @@ export async function listUserTables(): Promise<UserTable[]> {
 export async function getUserTableSchema(tableId: string): Promise<TableField[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('table_fields')
+    .from('udt_dataset_fields')
     .select('id, table_id, field_name, data_type, field_order, validation_rules')
     .eq('table_id', tableId)
     .order('field_order', { ascending: true });
@@ -120,7 +127,7 @@ export async function getUserTableSchema(tableId: string): Promise<TableField[]>
 }
 
 export interface CreateUserTableInput {
-  /** Maps to `user_tables.table_name`. */
+  /** Maps to `udt_datasets.table_name`. */
   table_name: string;
   description?: string;
   is_public?: boolean;
@@ -138,9 +145,10 @@ export interface CreateUserTableInput {
 
 /**
  * Atomic create via the `create_user_table_with_fields` RPC. Inserts the
- * user_tables row plus all table_fields rows in one transaction; the function
- * runs as security_invoker so RLS still applies and `auth.uid()` stamps the
- * owner server-side.
+ * udt_datasets row plus all udt_dataset_fields rows in one transaction; the
+ * RPC runs as security_invoker so RLS still applies and `auth.uid()` stamps
+ * the owner server-side. RPC name kept as-is post-rename — the server only
+ * renamed tables, not function signatures.
  */
 export async function createUserTableFromSchema(
   input: CreateUserTableInput,
@@ -169,9 +177,9 @@ export async function createUserTableFromSchema(
 }
 
 /**
- * Append rows to a user table via the `append_rows_to_user_table` RPC.
- * The RPC stamps user_id from auth.uid() and silently drops keys that
- * don't match a declared field_name on the target table.
+ * Append rows to a dataset via the `append_rows_to_user_table` RPC. The RPC
+ * stamps user_id from auth.uid() and silently drops keys that don't match a
+ * declared field_name on the target dataset. RPC name kept post-rename.
  *
  * We slugify keys client-side first so cosmetic keys (e.g. "Event Name")
  * land on the right field names ("event_name") before the server-side

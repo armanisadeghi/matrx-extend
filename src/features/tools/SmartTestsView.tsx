@@ -6,14 +6,18 @@
  * tool will perform in the wild — most tools are only useful when chained
  * with another (scrape → summarize, screenshot → describe, etc.).
  *
- * Each scenario here simulates the realistic agent flow end-to-end:
- *   1. Capture / read whatever input the tool actually needs in practice
- *   2. Pass it to the tool
- *   3. Time every step and show the result
+ * Each scenario:
+ *   1. Captures / reads whatever input the tool actually needs in practice
+ *   2. Calls the underlying onbox-ai wrapper directly (NOT through the tool
+ *      handler) and passes an `onRequest` callback that fires synchronously
+ *      with the LITERAL payload right before the native API call. We use
+ *      this to display "what the model saw" the moment it's sent — no
+ *      reconstruction, no drift, no waiting for the result.
+ *   3. Times every step and shows the result inline.
  *
- * Use this to decide whether a tool is fast enough to be useful, whether
- * its inputs need capping, or whether we should build a higher-level
- * "compound" tool that does the chain in one call.
+ * If you edit a system prompt in `onbox-ai.ts` or `client.ts`, your edit
+ * shows up here automatically — the panel renders whatever the wrapper
+ * actually emits, not a hand-built copy.
  */
 
 import { CopyButton } from '@/components/CopyMenu';
@@ -27,14 +31,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  ai_check_prompt_injection,
-  ai_classify,
-  ai_describe_image,
-  ai_detect_language,
-  ai_extract_json,
-  ai_proofread,
-  ai_summarize,
-  ai_translate,
+  detectLanguage,
+  proofread,
+  quickPrompt,
+  summarize,
+  translate,
+  type OnboxRequestEvent,
+} from '@/lib/onbox-ai/client';
+import {
   buildClassifySchema,
   buildClassifySystemPrompt,
   buildExtractSystemPrompt,
@@ -65,33 +69,19 @@ const TEST_CTX: ToolContext = {
 
 type Step = { label: string; ms: number; detail?: string };
 
-/**
- * What the model actually saw. Reconstructed from the same builders the
- * handlers use, so this never drifts from the real call.
- */
-interface ModelInput {
-  toolName: string;
-  /** Free-form summary of args (type, length, target language, etc.). */
-  config?: Record<string, unknown>;
-  /** The system / instruction prompt, when the tool builds one. */
-  systemPrompt?: string;
-  /** JSON Schema constraint applied to the response, when applicable. */
-  responseConstraint?: unknown;
-  /** The actual content sent as the user message (text or "[image: …]"). */
-  userInput?: string;
-  /** Notes that are useful but not part of the literal payload. */
-  notes?: string[];
-}
-
 type ScenarioState = {
   running: boolean;
   steps: Step[];
   result?: unknown;
   error?: string;
-  modelInput?: ModelInput;
+  /**
+   * Literal payloads emitted by the onbox-ai wrappers, in firing order.
+   * One entry per native API call; a fallback chain produces multiple.
+   */
+  modelInputs: OnboxRequestEvent[];
 };
 
-const initialState: ScenarioState = { running: false, steps: [] };
+const initialState: ScenarioState = { running: false, steps: [], modelInputs: [] };
 
 export function SmartTestsView() {
   return (
@@ -130,7 +120,6 @@ interface ScenarioCardProps {
   state: ScenarioState;
   controls?: React.ReactNode;
   onRun: () => void;
-  /** Render the "what's the result" section however we want per scenario. */
   renderResult?: (result: unknown) => React.ReactNode;
 }
 
@@ -221,7 +210,7 @@ function ScenarioCard({
             </div>
           )}
 
-          {state.modelInput && <ModelInputPanel input={state.modelInput} />}
+          {state.modelInputs.length > 0 && <ModelInputPanel events={state.modelInputs} />}
 
           {state.error && (
             <div className="flex items-start gap-1.5 rounded-md bg-red-50 p-1.5 text-[10px] text-red-800 dark:bg-red-950/40 dark:text-red-300">
@@ -239,17 +228,17 @@ function ScenarioCard({
   );
 }
 
-/**
- * Collapsible "what we actually sent the model" panel. Built from the same
- * exported helpers the handlers use, so what you see here IS what hits the
- * Prompt API. When the underlying API doesn't accept a system prompt (e.g.
- * the native Summarizer or Translator), we surface the config/options that
- * went in instead.
- */
-function ModelInputPanel({ input }: { input: ModelInput }) {
-  const [open, setOpen] = useState(false);
+/* ─────────────────────────────────────────────────────────────────────────
+ * Model-input panel — renders the LITERAL OnboxRequestEvent(s) emitted by
+ * the wrapper. No reconstruction. If a fallback fired, both events show
+ * up in chronological order so you can see "Summarizer failed → fallback
+ * to languageModel.prompt()" with the actual fallback prompt.
+ * ──────────────────────────────────────────────────────────────────────── */
 
-  const fullText = useMemo(() => modelInputToText(input), [input]);
+function ModelInputPanel({ events }: { events: OnboxRequestEvent[] }) {
+  const [open, setOpen] = useState(true);
+
+  const fullText = useMemo(() => events.map(eventToText).join('\n\n———\n\n'), [events]);
 
   return (
     <div className="rounded-md border border-dashed bg-background/60">
@@ -266,54 +255,100 @@ function ModelInputPanel({ input }: { input: ModelInput }) {
         <span className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">
           input the model saw
         </span>
-        <span className="font-mono text-[10px] text-muted-foreground/80">{input.toolName}</span>
-        <span className="ml-auto" onClick={(e) => e.stopPropagation()}>
-          <CopyButton text={fullText} title="Copy full prompt" size="xs" />
+        <span className="text-[10px] text-muted-foreground/80">
+          {events.length} call{events.length === 1 ? '' : 's'}
+        </span>
+        <span
+          className="ml-auto"
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
+          role="presentation"
+        >
+          <CopyButton text={fullText} title="Copy full payload" size="xs" />
         </span>
       </button>
       {open && (
-        <div className="space-y-1.5 border-t px-2 py-1.5">
-          {input.config && Object.keys(input.config).length > 0 && (
-            <ModelInputSection label="config">
-              <pre className="rounded bg-muted/50 p-1.5 font-mono text-[10px]">
-                {JSON.stringify(input.config, null, 2)}
-              </pre>
-            </ModelInputSection>
-          )}
-          {input.systemPrompt && (
-            <ModelInputSection label="system prompt">
-              <pre className="rounded bg-muted/50 p-1.5 text-[10px] whitespace-pre-wrap break-words">
-                {input.systemPrompt}
-              </pre>
-            </ModelInputSection>
-          )}
-          {input.responseConstraint !== undefined && (
-            <ModelInputSection label="response constraint (JSON Schema)">
-              <pre className="max-h-32 overflow-auto rounded bg-muted/50 p-1.5 font-mono text-[10px]">
-                {JSON.stringify(input.responseConstraint, null, 2)}
-              </pre>
-            </ModelInputSection>
-          )}
-          {input.userInput !== undefined && (
-            <ModelInputSection
-              label={`user input (${input.userInput.length.toLocaleString()} chars)`}
-            >
-              <pre className="max-h-60 overflow-auto rounded bg-muted/50 p-1.5 text-[10px] whitespace-pre-wrap break-words">
-                {input.userInput}
-              </pre>
-            </ModelInputSection>
-          )}
-          {input.notes && input.notes.length > 0 && (
-            <ModelInputSection label="notes">
-              <ul className="list-disc pl-4 text-[10px] text-muted-foreground">
-                {input.notes.map((n, i) => (
-                  <li key={i}>{n}</li>
-                ))}
-              </ul>
-            </ModelInputSection>
-          )}
+        <div className="space-y-2 border-t px-2 py-1.5">
+          {events.map((evt, i) => (
+            <ModelInputEvent key={i} index={i + 1} total={events.length} event={evt} />
+          ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function ModelInputEvent({
+  index,
+  total,
+  event,
+}: {
+  index: number;
+  total: number;
+  event: OnboxRequestEvent;
+}) {
+  const initialPrompts = (event.createOptions?.initialPrompts ?? null) as
+    | Array<{ role: string; content: string }>
+    | null;
+  const systemPrompt = initialPrompts?.find((p) => p.role === 'system')?.content;
+
+  return (
+    <div className="space-y-1.5 rounded border bg-card/60 p-1.5">
+      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+        {total > 1 && <span className="rounded bg-muted px-1 tabular-nums">#{index}</span>}
+        <span className="font-mono">
+          {event.api}.create() → .prompt()
+        </span>
+        <span
+          className={cn(
+            'rounded px-1',
+            event.via === 'native'
+              ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+              : 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
+          )}
+        >
+          {event.via}
+        </span>
+        <span className="ml-auto text-[10px] text-muted-foreground/70">task: {event.task}</span>
+      </div>
+
+      {event.createOptions && Object.keys(event.createOptions).length > 0 && (
+        <ModelInputSection label="create() options">
+          <pre className="rounded bg-muted/50 p-1.5 font-mono text-[10px] whitespace-pre-wrap break-words">
+            {stringifyPayload(event.createOptions)}
+          </pre>
+        </ModelInputSection>
+      )}
+
+      {systemPrompt !== undefined && (
+        <ModelInputSection label="system prompt (extracted from initialPrompts)">
+          <pre className="rounded bg-muted/50 p-1.5 text-[10px] whitespace-pre-wrap break-words">
+            {systemPrompt}
+          </pre>
+        </ModelInputSection>
+      )}
+
+      {event.promptOptions && Object.keys(event.promptOptions).length > 0 && (
+        <ModelInputSection label="prompt() options">
+          <pre className="max-h-32 overflow-auto rounded bg-muted/50 p-1.5 font-mono text-[10px]">
+            {stringifyPayload(event.promptOptions)}
+          </pre>
+        </ModelInputSection>
+      )}
+
+      <ModelInputSection
+        label={`prompt() input${
+          typeof event.promptInput === 'string'
+            ? ` · ${event.promptInput.length.toLocaleString()} chars`
+            : ''
+        }`}
+      >
+        <pre className="max-h-60 overflow-auto rounded bg-muted/50 p-1.5 text-[10px] whitespace-pre-wrap break-words">
+          {typeof event.promptInput === 'string'
+            ? event.promptInput
+            : stringifyPayload(event.promptInput)}
+        </pre>
+      </ModelInputSection>
     </div>
   );
 }
@@ -335,18 +370,36 @@ function ModelInputSection({
   );
 }
 
-function modelInputToText(input: ModelInput): string {
-  const parts: string[] = [`# tool: ${input.toolName}`];
-  if (input.config && Object.keys(input.config).length > 0) {
-    parts.push(`\n## config\n${JSON.stringify(input.config, null, 2)}`);
+function eventToText(event: OnboxRequestEvent): string {
+  const parts: string[] = [
+    `# ${event.api}.${event.via === 'native' ? 'native' : 'fallback'} (task: ${event.task})`,
+  ];
+  if (event.createOptions && Object.keys(event.createOptions).length > 0) {
+    parts.push(`\n## create() options\n${stringifyPayload(event.createOptions)}`);
   }
-  if (input.systemPrompt) parts.push(`\n## system prompt\n${input.systemPrompt}`);
-  if (input.responseConstraint !== undefined) {
-    parts.push(`\n## response constraint\n${JSON.stringify(input.responseConstraint, null, 2)}`);
+  if (event.promptOptions && Object.keys(event.promptOptions).length > 0) {
+    parts.push(`\n## prompt() options\n${stringifyPayload(event.promptOptions)}`);
   }
-  if (input.userInput !== undefined) parts.push(`\n## user input\n${input.userInput}`);
-  if (input.notes?.length) parts.push(`\n## notes\n${input.notes.map((n) => `- ${n}`).join('\n')}`);
+  parts.push(
+    `\n## prompt() input\n${
+      typeof event.promptInput === 'string' ? event.promptInput : stringifyPayload(event.promptInput)
+    }`,
+  );
   return parts.join('\n');
+}
+
+/** JSON.stringify replacer that handles Blob (multimodal) gracefully. */
+function stringifyPayload(value: unknown): string {
+  return JSON.stringify(
+    value,
+    (_key, v) => {
+      if (typeof Blob !== 'undefined' && v instanceof Blob) {
+        return `[Blob ${v.type || 'unknown'} · ${v.size.toLocaleString()} bytes]`;
+      }
+      return v;
+    },
+    2,
+  );
 }
 
 function ResultBlock({
@@ -372,7 +425,8 @@ function ResultBlock({
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
- * Shared helpers — capture-active-page, time-step.
+ * Shared helpers — capture-active-page, time-step, build a stateful
+ * onRequest sink that updates scenario state synchronously.
  * ──────────────────────────────────────────────────────────────────────── */
 
 interface CapturedPage {
@@ -423,6 +477,35 @@ function fmtMs(ms: number): string {
   return `${(ms / 1000).toFixed(2)}s`;
 }
 
+/**
+ * Per-scenario hook — owns state, exposes a runner builder that wires up
+ * the synchronous onRequest sink so model inputs land in the panel the
+ * instant the wrapper fires them.
+ */
+function useScenarioRunner() {
+  const [state, setState] = useState<ScenarioState>(initialState);
+
+  const begin = () => {
+    setState({ running: true, steps: [], modelInputs: [] });
+    const steps: Step[] = [];
+    const events: OnboxRequestEvent[] = [];
+    const pushStep = (label: string, ms: number, detail?: string) => {
+      steps.push({ label, ms, detail });
+      setState((s) => ({ ...s, steps: [...steps] }));
+    };
+    const onRequest = (evt: OnboxRequestEvent) => {
+      events.push(evt);
+      setState((s) => ({ ...s, modelInputs: [...events] }));
+    };
+    const finish = (patch: Partial<ScenarioState>) => {
+      setState((s) => ({ ...s, ...patch, running: false, steps: [...steps], modelInputs: [...events] }));
+    };
+    return { pushStep, onRequest, finish };
+  };
+
+  return { state, begin };
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
  * Scenario: AI summarize active page
  * ──────────────────────────────────────────────────────────────────────── */
@@ -437,44 +520,30 @@ const CHAR_CAPS: Array<{ value: number; label: string }> = [
 ];
 
 function SummarizePageScenario() {
-  const [state, setState] = useState<ScenarioState>(initialState);
+  const { state, begin } = useScenarioRunner();
   const [cap, setCap] = useState(5000);
   const [type, setType] = useState<'tldr' | 'key-points' | 'teaser' | 'headline'>('tldr');
   const [length, setLength] = useState<'short' | 'medium' | 'long'>('short');
 
   const run = async () => {
-    setState({ running: true, steps: [] });
-    const steps: Step[] = [];
-    const push = (label: string, ms: number, detail?: string) => {
-      steps.push({ label, ms, detail });
-      setState((s) => ({ ...s, steps: [...steps] }));
-    };
+    const { pushStep, onRequest, finish } = begin();
     try {
-      const page = await capturePage(push);
+      const page = await capturePage(pushStep);
       const sliced = cap > 0 ? page.markdown.slice(0, cap) : page.markdown;
-      push('truncate', 0, `${sliced.length.toLocaleString()} chars sent to model`);
-      const modelInput: ModelInput = {
-        toolName: 'ai_summarize → Summarizer API',
-        config: { type, length, sharedContext: '(none)' },
-        userInput: sliced,
-        notes: [
-          'The native Summarizer API does not accept a free-form system prompt — only the type/length config above.',
-          'When the API is unavailable, the wrapper falls back to languageModel.prompt() with system prompt: "Summarize the following <type> in <length> length. Return only the summary."',
-        ],
-      };
+      pushStep('truncate', 0, `${sliced.length.toLocaleString()} chars sent to model`);
       const t0 = performance.now();
-      const out = await runHandler(ai_summarize, { text: sliced, type, length });
-      push('summarize', performance.now() - t0, `${type} · ${length}`);
-      setState({ running: false, steps, result: out, modelInput });
+      const out = await summarize(sliced, { type, length, onRequest });
+      pushStep('summarize', performance.now() - t0, `${type} · ${length}`);
+      finish({ result: out });
     } catch (err) {
-      setState({ running: false, steps, error: (err as Error).message });
+      finish({ error: (err as Error).message });
     }
   };
 
   return (
     <ScenarioCard
       title="Summarize active page"
-      blurb="Scrape the page, slice the article markdown, hand it to ai_summarize. Tune the cap to find the latency / quality sweet spot."
+      blurb="Scrape the page, slice the article markdown, hand it to the Summarizer API. Tune the cap to find the latency / quality sweet spot."
       toolNames={['read_active_page', 'ai_summarize']}
       state={state}
       onRun={run}
@@ -483,7 +552,7 @@ function SummarizePageScenario() {
           <div className="flex items-center gap-1">
             <span className="text-[10px] text-muted-foreground">cap</span>
             <Select value={String(cap)} onValueChange={(v) => setCap(Number(v))}>
-              <SelectTrigger className="h-6 w-20 text-[11px]">
+              <SelectTrigger className="h-6 min-w-24 text-[11px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -498,7 +567,7 @@ function SummarizePageScenario() {
           <div className="flex items-center gap-1">
             <span className="text-[10px] text-muted-foreground">type</span>
             <Select value={type} onValueChange={(v) => setType(v as typeof type)}>
-              <SelectTrigger className="h-6 w-24 text-[11px]">
+              <SelectTrigger className="h-6 min-w-32 text-[11px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -512,7 +581,7 @@ function SummarizePageScenario() {
           <div className="flex items-center gap-1">
             <span className="text-[10px] text-muted-foreground">length</span>
             <Select value={length} onValueChange={(v) => setLength(v as typeof length)}>
-              <SelectTrigger className="h-6 w-20 text-[11px]">
+              <SelectTrigger className="h-6 min-w-24 text-[11px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -525,7 +594,7 @@ function SummarizePageScenario() {
         </>
       }
       renderResult={(r) => {
-        const o = r as { ok?: boolean; summary?: string; reason?: string; availability?: string };
+        const o = r as { ok?: boolean; data?: string; reason?: string; availability?: string };
         if (!o?.ok) {
           return (
             <ResultBlock
@@ -534,7 +603,7 @@ function SummarizePageScenario() {
             />
           );
         }
-        return <ResultBlock label="summary" body={o.summary ?? ''} />;
+        return <ResultBlock label="summary" body={o.data ?? ''} />;
       }}
     />
   );
@@ -545,46 +614,55 @@ function SummarizePageScenario() {
  * ──────────────────────────────────────────────────────────────────────── */
 
 function ClassifyPageScenario() {
-  const [state, setState] = useState<ScenarioState>(initialState);
+  const { state, begin } = useScenarioRunner();
   const [labelsText, setLabelsText] = useState(
     'article, landing page, product page, documentation, forum thread, video, search results, app dashboard',
   );
 
   const run = async () => {
-    setState({ running: true, steps: [] });
-    const steps: Step[] = [];
-    const push = (label: string, ms: number, detail?: string) => {
-      steps.push({ label, ms, detail });
-      setState((s) => ({ ...s, steps: [...steps] }));
-    };
+    const { pushStep, onRequest, finish } = begin();
     try {
       const labels = labelsText
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean);
       if (labels.length < 2) throw new Error('Need at least 2 comma-separated labels.');
-      const page = await capturePage(push);
+      const page = await capturePage(pushStep);
       const sliced = page.markdown.slice(0, 3000);
-      push('truncate', 0, `${sliced.length.toLocaleString()} chars`);
-      const modelInput: ModelInput = {
-        toolName: 'ai_classify → languageModel.prompt()',
+      pushStep('truncate', 0, `${sliced.length.toLocaleString()} chars`);
+      const t0 = performance.now();
+      const r = await quickPrompt(sliced, {
         systemPrompt: buildClassifySystemPrompt(labels),
         responseConstraint: buildClassifySchema(labels),
-        userInput: sliced,
-      };
-      const t0 = performance.now();
-      const out = await runHandler(ai_classify, { text: sliced, labels });
-      push('classify', performance.now() - t0, `${labels.length} labels`);
-      setState({ running: false, steps, result: out, modelInput });
+        onRequest,
+        requestTask: 'ai_classify',
+      });
+      pushStep('classify', performance.now() - t0, `${labels.length} labels`);
+      if (!r.ok || !r.data) {
+        finish({ result: { ok: false, reason: r.reason, availability: r.availability } });
+        return;
+      }
+      try {
+        const parsed = JSON.parse(r.data) as { label: string; confidence?: number };
+        finish({ result: { ok: true, label: parsed.label, confidence: parsed.confidence ?? null } });
+      } catch (err) {
+        finish({
+          result: {
+            ok: false,
+            reason: `JSON parse failed: ${(err as Error).message}`,
+            raw: r.data,
+          },
+        });
+      }
     } catch (err) {
-      setState({ running: false, steps, error: (err as Error).message });
+      finish({ error: (err as Error).message });
     }
   };
 
   return (
     <ScenarioCard
       title="Classify active page"
-      blurb="Scrape the page, send the first 3k chars to ai_classify with a custom label set."
+      blurb="Scrape the page, send the first 3k chars to languageModel.prompt() with a label-constrained schema."
       toolNames={['read_active_page', 'ai_classify']}
       state={state}
       onRun={run}
@@ -597,8 +675,20 @@ function ClassifyPageScenario() {
         />
       }
       renderResult={(r) => {
-        const o = r as { ok?: boolean; label?: string; confidence?: number | null; reason?: string };
-        if (!o?.ok) return <ResultBlock label="failed" body={o?.reason ?? 'unknown'} />;
+        const o = r as {
+          ok?: boolean;
+          label?: string;
+          confidence?: number | null;
+          reason?: string;
+          raw?: string;
+        };
+        if (!o?.ok)
+          return (
+            <ResultBlock
+              label="failed"
+              body={`${o?.reason ?? 'unknown'}${o?.raw ? `\n\n--- raw ---\n${o.raw}` : ''}`}
+            />
+          );
         return (
           <ResultBlock
             label="result"
@@ -627,16 +717,11 @@ const DEFAULT_EXTRACT_SCHEMA = {
 };
 
 function ExtractJsonPageScenario() {
-  const [state, setState] = useState<ScenarioState>(initialState);
+  const { state, begin } = useScenarioRunner();
   const [schemaText, setSchemaText] = useState(JSON.stringify(DEFAULT_EXTRACT_SCHEMA, null, 2));
 
   const run = async () => {
-    setState({ running: true, steps: [] });
-    const steps: Step[] = [];
-    const push = (label: string, ms: number, detail?: string) => {
-      steps.push({ label, ms, detail });
-      setState((s) => ({ ...s, steps: [...steps] }));
-    };
+    const { pushStep, onRequest, finish } = begin();
     try {
       let schema: unknown;
       try {
@@ -644,28 +729,41 @@ function ExtractJsonPageScenario() {
       } catch (err) {
         throw new Error(`Schema is not valid JSON: ${(err as Error).message}`);
       }
-      const page = await capturePage(push);
+      const page = await capturePage(pushStep);
       const sliced = page.markdown.slice(0, 5000);
-      push('truncate', 0, `${sliced.length.toLocaleString()} chars`);
-      const modelInput: ModelInput = {
-        toolName: 'ai_extract_json → languageModel.prompt()',
+      pushStep('truncate', 0, `${sliced.length.toLocaleString()} chars`);
+      const t0 = performance.now();
+      const r = await quickPrompt(sliced, {
         systemPrompt: buildExtractSystemPrompt(),
         responseConstraint: schema,
-        userInput: sliced,
-      };
-      const t0 = performance.now();
-      const out = await runHandler(ai_extract_json, { text: sliced, schema });
-      push('extract', performance.now() - t0);
-      setState({ running: false, steps, result: out, modelInput });
+        onRequest,
+        requestTask: 'ai_extract_json',
+      });
+      pushStep('extract', performance.now() - t0);
+      if (!r.ok || !r.data) {
+        finish({ result: { ok: false, reason: r.reason } });
+        return;
+      }
+      try {
+        finish({ result: { ok: true, data: JSON.parse(r.data) } });
+      } catch (err) {
+        finish({
+          result: {
+            ok: false,
+            reason: `JSON parse failed: ${(err as Error).message}`,
+            raw: r.data,
+          },
+        });
+      }
     } catch (err) {
-      setState({ running: false, steps, error: (err as Error).message });
+      finish({ error: (err as Error).message });
     }
   };
 
   return (
     <ScenarioCard
       title="Extract JSON from active page"
-      blurb="Scrape the page, take the first 5k chars, ask ai_extract_json to fill out a schema."
+      blurb="Scrape the page, take the first 5k chars, ask languageModel.prompt() to fill out a schema."
       toolNames={['read_active_page', 'ai_extract_json']}
       state={state}
       onRun={run}
@@ -697,60 +795,55 @@ function ExtractJsonPageScenario() {
  * ──────────────────────────────────────────────────────────────────────── */
 
 function TranslateFirstParagraphScenario() {
-  const [state, setState] = useState<ScenarioState>(initialState);
+  const { state, begin } = useScenarioRunner();
   const [target, setTarget] = useState('es');
 
   const run = async () => {
-    setState({ running: true, steps: [] });
-    const steps: Step[] = [];
-    const push = (label: string, ms: number, detail?: string) => {
-      steps.push({ label, ms, detail });
-      setState((s) => ({ ...s, steps: [...steps] }));
-    };
+    const { pushStep, onRequest, finish } = begin();
     try {
-      const page = await capturePage(push);
-      // First non-trivial paragraph from the markdown.
+      const page = await capturePage(pushStep);
       const para =
         page.markdown
           .split(/\n{2,}/)
           .map((p) => p.trim())
           .find((p) => p.length > 80 && !p.startsWith('#') && !p.startsWith('!'))
           ?.slice(0, 1500) ?? page.markdown.slice(0, 800);
-      push('extract paragraph', 0, `${para.length} chars`);
-      const modelInput: ModelInput = {
-        toolName: 'ai_translate → Translator API',
-        config: { source_language: 'auto (detected per-call)', target_language: target },
-        userInput: para,
-        notes: [
-          'The native Translator API takes only { sourceLanguage, targetLanguage } — no system prompt.',
-          'When source_language is "auto" the wrapper first calls LanguageDetector to pick a source code.',
-        ],
-      };
+      pushStep('extract paragraph', 0, `${para.length} chars`);
+      // First detect source language so the wrapper has it cached. The
+      // detector also fires its own onRequest event so the user sees both
+      // calls (detect + translate) in the input panel.
+      const tDetect = performance.now();
+      const det = await detectLanguage(para, { onRequest });
+      pushStep('detect-source', performance.now() - tDetect);
+      let src = 'en';
+      if (det.ok && det.data && det.data.length > 0) {
+        const first = det.data[0];
+        src =
+          typeof first === 'string'
+            ? first
+            : ((first as unknown as { detectedLanguage?: string })?.detectedLanguage ?? 'en');
+      }
       const t0 = performance.now();
-      const out = await runHandler(ai_translate, {
-        text: para,
-        source_language: 'auto',
-        target_language: target,
-      });
-      push('translate', performance.now() - t0, `→ ${target}`);
-      setState({ running: false, steps, result: { input: para, output: out }, modelInput });
+      const out = await translate(para, src, target, { onRequest });
+      pushStep('translate', performance.now() - t0, `${src} → ${target}`);
+      finish({ result: { input: para, output: out, source: src } });
     } catch (err) {
-      setState({ running: false, steps, error: (err as Error).message });
+      finish({ error: (err as Error).message });
     }
   };
 
   return (
     <ScenarioCard
       title="Translate first paragraph"
-      blurb="Scrape the page, find the first real paragraph, hand it to ai_translate. Auto-detects source language."
-      toolNames={['read_active_page', 'ai_translate']}
+      blurb="Scrape the page, find the first real paragraph, detect its language, then translate. You'll see TWO model-input events: detector + translator."
+      toolNames={['read_active_page', 'ai_detect_language', 'ai_translate']}
       state={state}
       onRun={run}
       controls={
         <div className="flex items-center gap-1">
           <span className="text-[10px] text-muted-foreground">target</span>
           <Select value={target} onValueChange={setTarget}>
-            <SelectTrigger className="h-6 w-24 text-[11px]">
+            <SelectTrigger className="h-6 min-w-36 text-[11px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -768,14 +861,15 @@ function TranslateFirstParagraphScenario() {
       renderResult={(r) => {
         const o = r as {
           input: string;
-          output: { ok?: boolean; translation?: string; reason?: string; source_language?: string };
+          source: string;
+          output: { ok?: boolean; data?: string; reason?: string };
         };
         if (!o.output?.ok)
           return <ResultBlock label="failed" body={o.output?.reason ?? 'unknown'} />;
         return (
           <ResultBlock
-            label={`translation (${o.output.source_language ?? '?'} → ${target})`}
-            body={`--- input ---\n${o.input}\n\n--- output ---\n${o.output.translation ?? ''}`}
+            label={`translation (${o.source} → ${target})`}
+            body={`--- input ---\n${o.input}\n\n--- output ---\n${o.output.data ?? ''}`}
           />
         );
       }}
@@ -788,44 +882,34 @@ function TranslateFirstParagraphScenario() {
  * ──────────────────────────────────────────────────────────────────────── */
 
 function DetectLanguageScenario() {
-  const [state, setState] = useState<ScenarioState>(initialState);
+  const { state, begin } = useScenarioRunner();
 
   const run = async () => {
-    setState({ running: true, steps: [] });
-    const steps: Step[] = [];
-    const push = (label: string, ms: number, detail?: string) => {
-      steps.push({ label, ms, detail });
-      setState((s) => ({ ...s, steps: [...steps] }));
-    };
+    const { pushStep, onRequest, finish } = begin();
     try {
-      const page = await capturePage(push);
+      const page = await capturePage(pushStep);
       const sliced = page.markdown.slice(0, 1500);
-      push('truncate', 0, `${sliced.length.toLocaleString()} chars`);
-      const modelInput: ModelInput = {
-        toolName: 'ai_detect_language → LanguageDetector API',
-        userInput: sliced,
-        notes: ['No system prompt or schema — just the input text.'],
-      };
+      pushStep('truncate', 0, `${sliced.length.toLocaleString()} chars`);
       const t0 = performance.now();
-      const out = await runHandler(ai_detect_language, { text: sliced });
-      push('detect', performance.now() - t0);
-      setState({ running: false, steps, result: out, modelInput });
+      const out = await detectLanguage(sliced, { onRequest });
+      pushStep('detect', performance.now() - t0);
+      finish({ result: out });
     } catch (err) {
-      setState({ running: false, steps, error: (err as Error).message });
+      finish({ error: (err as Error).message });
     }
   };
 
   return (
     <ScenarioCard
       title="Detect page language"
-      blurb="Scrape the page, send first 1.5k chars to ai_detect_language."
+      blurb="Scrape the page, send first 1.5k chars to the LanguageDetector API."
       toolNames={['read_active_page', 'ai_detect_language']}
       state={state}
       onRun={run}
       renderResult={(r) => {
-        const o = r as { ok?: boolean; candidates?: unknown; reason?: string };
+        const o = r as { ok?: boolean; data?: unknown; reason?: string };
         if (!o?.ok) return <ResultBlock label="failed" body={o?.reason ?? 'unknown'} />;
-        return <ResultBlock label="candidates" body={JSON.stringify(o.candidates, null, 2)} />;
+        return <ResultBlock label="candidates" body={JSON.stringify(o.data, null, 2)} />;
       }}
     />
   );
@@ -836,56 +920,47 @@ function DetectLanguageScenario() {
  * ──────────────────────────────────────────────────────────────────────── */
 
 function ProofreadSelectionScenario() {
-  const [state, setState] = useState<ScenarioState>(initialState);
+  const { state, begin } = useScenarioRunner();
 
   const run = async () => {
-    setState({ running: true, steps: [] });
-    const steps: Step[] = [];
-    const push = (label: string, ms: number, detail?: string) => {
-      steps.push({ label, ms, detail });
-      setState((s) => ({ ...s, steps: [...steps] }));
-    };
+    const { pushStep, onRequest, finish } = begin();
     try {
       const tSel = performance.now();
       const sel = (await runHandler(get_page_selection, {})) as {
         text: string;
         selected: boolean;
       };
-      push('get selection', performance.now() - tSel, `${sel.text.length} chars`);
+      pushStep('get selection', performance.now() - tSel, `${sel.text.length} chars`);
       if (!sel.selected || !sel.text.trim()) {
         throw new Error('Nothing is selected on the active page. Highlight some text and retry.');
       }
-      const modelInput: ModelInput = {
-        toolName: 'ai_proofread → Proofreader API',
-        userInput: sel.text,
-        notes: [
-          'The native Proofreader API takes only the text — no system prompt.',
-          'Fallback path uses languageModel.prompt() with: "Proofread the following text. Return JSON with { corrected, corrections: [{ original, suggestion, reason }] }."',
-        ],
-      };
       const t0 = performance.now();
-      const out = await runHandler(ai_proofread, { text: sel.text });
-      push('proofread', performance.now() - t0);
-      setState({ running: false, steps, result: { input: sel.text, output: out }, modelInput });
+      const out = await proofread(sel.text, { onRequest });
+      pushStep('proofread', performance.now() - t0);
+      finish({ result: { input: sel.text, output: out } });
     } catch (err) {
-      setState({ running: false, steps, error: (err as Error).message });
+      finish({ error: (err as Error).message });
     }
   };
 
   return (
     <ScenarioCard
       title="Proofread selection"
-      blurb="Read whatever the user has highlighted on the active page, send to ai_proofread."
+      blurb="Read whatever the user has highlighted on the active page, send to the Proofreader API."
       toolNames={['get_page_selection', 'ai_proofread']}
       state={state}
       onRun={run}
       renderResult={(r) => {
-        const o = r as { input: string; output: Record<string, unknown> & { ok?: boolean } };
-        if (!o.output?.ok) return <ResultBlock label="failed" body={JSON.stringify(o.output, null, 2)} />;
+        const o = r as {
+          input: string;
+          output: { ok?: boolean; data?: { correctedInput: string; corrections?: unknown }; reason?: string };
+        };
+        if (!o.output?.ok)
+          return <ResultBlock label="failed" body={o.output?.reason ?? 'unknown'} />;
         return (
           <ResultBlock
             label="proofread"
-            body={`--- input ---\n${o.input}\n\n--- output ---\n${JSON.stringify(o.output, null, 2)}`}
+            body={`--- input ---\n${o.input}\n\n--- output ---\n${JSON.stringify(o.output.data, null, 2)}`}
           />
         );
       }}
@@ -898,52 +973,51 @@ function ProofreadSelectionScenario() {
  * ──────────────────────────────────────────────────────────────────────── */
 
 function InjectionCheckScenario() {
-  const [state, setState] = useState<ScenarioState>(initialState);
+  const { state, begin } = useScenarioRunner();
 
   const run = async () => {
-    setState({ running: true, steps: [] });
-    const steps: Step[] = [];
-    const push = (label: string, ms: number, detail?: string) => {
-      steps.push({ label, ms, detail });
-      setState((s) => ({ ...s, steps: [...steps] }));
-    };
+    const { pushStep, onRequest, finish } = begin();
     try {
-      const page = await capturePage(push);
+      const page = await capturePage(pushStep);
       const sliced = page.markdown.slice(0, 6000);
-      push('truncate', 0, `${sliced.length.toLocaleString()} chars`);
-      const modelInput: ModelInput = {
-        toolName: 'ai_check_prompt_injection → languageModel.prompt()',
+      pushStep('truncate', 0, `${sliced.length.toLocaleString()} chars`);
+      const t0 = performance.now();
+      const r = await quickPrompt(sliced, {
         systemPrompt: buildInjectionSystemPrompt(page.url),
         responseConstraint: INJECTION_RESPONSE_SCHEMA,
-        userInput: sliced,
-      };
-      const t0 = performance.now();
-      const out = await runHandler(ai_check_prompt_injection, {
-        text: sliced,
-        source_hint: page.url,
+        onRequest,
+        requestTask: 'ai_check_prompt_injection',
       });
-      push('inject-check', performance.now() - t0);
-      setState({ running: false, steps, result: out, modelInput });
+      pushStep('inject-check', performance.now() - t0);
+      if (!r.ok || !r.data) {
+        finish({ result: { ok: false, reason: r.reason } });
+        return;
+      }
+      try {
+        finish({ result: { ok: true, ...JSON.parse(r.data) } });
+      } catch (err) {
+        finish({
+          result: {
+            ok: false,
+            reason: `JSON parse failed: ${(err as Error).message}`,
+            raw: r.data,
+          },
+        });
+      }
     } catch (err) {
-      setState({ running: false, steps, error: (err as Error).message });
+      finish({ error: (err as Error).message });
     }
   };
 
   return (
     <ScenarioCard
       title="Prompt-injection scan"
-      blurb="Scrape the page, run the first 6k chars through ai_check_prompt_injection."
+      blurb="Scrape the page, run the first 6k chars through languageModel.prompt() with a security-analyst system prompt."
       toolNames={['read_active_page', 'ai_check_prompt_injection']}
       state={state}
       onRun={run}
       renderResult={(r) => {
-        const o = r as {
-          ok?: boolean;
-          suspicious?: boolean;
-          severity?: string;
-          reason?: string;
-          excerpts?: string[];
-        };
+        const o = r as Record<string, unknown> & { ok?: boolean };
         if (!o?.ok) return <ResultBlock label="failed" body={JSON.stringify(o, null, 2)} />;
         return <ResultBlock label="verdict" body={JSON.stringify(o, null, 2)} />;
       }}
@@ -955,84 +1029,60 @@ function InjectionCheckScenario() {
  * Scenario: describe first image on the page
  * ──────────────────────────────────────────────────────────────────────── */
 
-async function fetchImageAsBase64(
+async function fetchImageAsBlob(
   url: string,
-): Promise<{ base64: string; mime: 'image/png' | 'image/jpeg' | 'image/webp'; bytes: number }> {
+): Promise<{ blob: Blob; mime: 'image/png' | 'image/jpeg' | 'image/webp'; bytes: number }> {
   const resp = await fetch(url);
   if (!resp.ok) throw new Error(`Image fetch failed: ${resp.status} ${resp.statusText}`);
   const blob = await resp.blob();
-  // Sniff: ai_describe_image only accepts png/jpeg/webp.
   let mime: 'image/png' | 'image/jpeg' | 'image/webp' = 'image/png';
   if (blob.type === 'image/jpeg') mime = 'image/jpeg';
   else if (blob.type === 'image/webp') mime = 'image/webp';
   else if (blob.type === 'image/png') mime = 'image/png';
   else throw new Error(`Unsupported image MIME: ${blob.type || 'unknown'}`);
-  const buf = await blob.arrayBuffer();
-  let binary = '';
-  const bytes = new Uint8Array(buf);
-  const chunk = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunk) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
-  }
-  return { base64: btoa(binary), mime, bytes: bytes.length };
+  return { blob, mime, bytes: blob.size };
 }
 
 function DescribeFirstImageScenario() {
-  const [state, setState] = useState<ScenarioState>(initialState);
+  const { state, begin } = useScenarioRunner();
   const [question, setQuestion] = useState('Describe this image in detail.');
 
   const run = async () => {
-    setState({ running: true, steps: [] });
-    const steps: Step[] = [];
-    const push = (label: string, ms: number, detail?: string) => {
-      steps.push({ label, ms, detail });
-      setState((s) => ({ ...s, steps: [...steps] }));
-    };
+    const { pushStep, onRequest, finish } = begin();
     try {
-      const page = await capturePage(push);
+      const page = await capturePage(pushStep);
       if (!page.first_image_url) throw new Error('No images found on the active page.');
       const tFetch = performance.now();
-      const img = await fetchImageAsBase64(page.first_image_url);
-      push(
-        'fetch image',
-        performance.now() - tFetch,
-        `${(img.bytes / 1024).toFixed(0)} KB · ${img.mime}`,
-      );
-      const modelInput: ModelInput = {
-        toolName: 'ai_describe_image → languageModel.prompt() (multimodal)',
-        config: {
-          mime_type: img.mime,
-          image_bytes: img.bytes,
-          image_base64_chars: img.base64.length,
-        },
-        userInput: `[image: ${page.first_image_url}]\n\n${question}`,
-        notes: [
-          'No system prompt is set. The user message is a multimodal payload: { type: "text", value: <question> } + { type: "image", value: <Blob> }.',
-          'Session is created with expectedInputs: [{ type: "text" }, { type: "image" }].',
-        ],
-      };
+      const { blob, mime, bytes } = await fetchImageAsBlob(page.first_image_url);
+      pushStep('fetch image', performance.now() - tFetch, `${(bytes / 1024).toFixed(0)} KB · ${mime}`);
       const t0 = performance.now();
-      const out = await runHandler(ai_describe_image, {
-        image_base64: img.base64,
-        mime_type: img.mime,
-        question,
-      });
-      push('describe', performance.now() - t0);
-      setState({
-        running: false,
-        steps,
-        result: { url: page.first_image_url, output: out },
-        modelInput,
-      });
+      const out = await quickPrompt(
+        [
+          {
+            role: 'user',
+            content: [
+              { type: 'text', value: question },
+              { type: 'image', value: blob },
+            ],
+          },
+        ],
+        {
+          expectedInputs: [{ type: 'text' }, { type: 'image' }],
+          onRequest,
+          requestTask: 'ai_describe_image',
+        },
+      );
+      pushStep('describe', performance.now() - t0);
+      finish({ result: { url: page.first_image_url, output: out } });
     } catch (err) {
-      setState({ running: false, steps, error: (err as Error).message });
+      finish({ error: (err as Error).message });
     }
   };
 
   return (
     <ScenarioCard
       title="Describe first image"
-      blurb="Scrape the page, fetch the first image URL, base64-encode it, hand to ai_describe_image."
+      blurb="Scrape the page, fetch the first image URL, send it as a multimodal prompt. The Blob shows up as [Blob image/png · X bytes] in the input panel."
       toolNames={['read_active_page', 'fetch', 'ai_describe_image']}
       state={state}
       onRun={run}
@@ -1047,7 +1097,7 @@ function DescribeFirstImageScenario() {
       renderResult={(r) => {
         const o = r as {
           url: string;
-          output: { ok?: boolean; description?: string; reason?: string };
+          output: { ok?: boolean; data?: string; reason?: string };
         };
         return (
           <div className="space-y-1.5">
@@ -1060,7 +1110,7 @@ function DescribeFirstImageScenario() {
               className={cn('max-h-32 rounded-md border bg-muted object-contain')}
             />
             {o.output?.ok ? (
-              <ResultBlock label="description" body={o.output.description ?? ''} />
+              <ResultBlock label="description" body={o.output.data ?? ''} />
             ) : (
               <ResultBlock label="failed" body={o.output?.reason ?? 'unknown'} />
             )}

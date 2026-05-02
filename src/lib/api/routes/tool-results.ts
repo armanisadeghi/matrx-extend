@@ -1,12 +1,12 @@
 /**
  * Submit client-side tool execution results back to the AI loop.
  *
- *   POST /conversations/{conversation_id}/tool_results
+ *   POST /ai/conversations/{conversation_id}/tool_results
  *   body: { results: ClientToolResult[] }
  *
  * The route is durable: if the originating SSE is still live, the existing
  * loop resumes inline. If it's gone, the response sets `continuation_needed`
- * and we open `/conversations/{id}/resume` to keep the agent moving.
+ * and we open `/ai/conversations/{id}/resume` to keep the agent moving.
  */
 
 import { apiPost } from '@/lib/api/client';
@@ -30,11 +30,13 @@ interface ToolResultsResponse {
 }
 
 export async function postToolResults(conversationId: string, results: ClientToolResultBody[]) {
-  log.info('msg', `→ POST /conversations/${conversationId}/tool_results (${results.length})`, {
-    results,
-  });
+  log.info(
+    'msg',
+    `→ POST /ai/conversations/${conversationId}/tool_results (${results.length})`,
+    { results },
+  );
   const r = await apiPost<ToolResultsResponse>(
-    `/conversations/${encodeURIComponent(conversationId)}/tool_results`,
+    `/ai/conversations/${encodeURIComponent(conversationId)}/tool_results`,
     { results },
   );
   if (r.ok) {
@@ -51,4 +53,4 @@ export async function postToolResults(conversationId: string, results: ClientToo
  * offscreen-buffered consumer.
  */
 export const conversationResumePath = (conversationId: string): string =>
-  `/conversations/${encodeURIComponent(conversationId)}/resume`;
+  `/ai/conversations/${encodeURIComponent(conversationId)}/resume`;

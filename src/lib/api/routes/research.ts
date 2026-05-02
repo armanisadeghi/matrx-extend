@@ -28,6 +28,7 @@ export const ScrapeStatusSchema = z.enum([
   'skipped',
   'complete',
   'dead_link',
+  'gated',
 ]);
 export type ScrapeStatus = z.infer<typeof ScrapeStatusSchema>;
 
@@ -35,8 +36,13 @@ export type ScrapeStatus = z.infer<typeof ScrapeStatusSchema>;
  * User verdicts — optional escape hatch when the auto-pipeline can't decide.
  * The user being on the page is what makes "blocked" not a verdict — they're
  * past whatever the obstacle was. See research/docs/EXTENSION_API.md.
+ *   - accept_as_is: the sparse content IS the page
+ *   - dead_link:    URL is gone (404 / removed)
+ *   - retry:        throw away the last result, requeue
+ *   - gated:        page exists but is locked (login / paywall / captcha) —
+ *                   not dead, but stop trying
  */
-export type UserVerdict = 'accept_as_is' | 'dead_link' | 'retry';
+export type UserVerdict = 'accept_as_is' | 'dead_link' | 'retry' | 'gated';
 
 const captureLevel = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]);
 

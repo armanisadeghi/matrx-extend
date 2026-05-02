@@ -46,6 +46,7 @@ export const CHANNELS = {
   TASKS_USER_CANCEL: 'tasks:user-cancel',
   // User looked at the page and decided BEFORE capturing:
   TASKS_USER_DEAD: 'tasks:user-dead', // 404 / page is gone — apply dead_link verdict, no scrape
+  TASKS_USER_GATED: 'tasks:user-gated', // login / paywall / captcha — apply gated verdict, no scrape
   TASKS_USER_EXPECT_THIN: 'tasks:user-expect-thin', // capture, but auto-accept thin result
 
   // Data picker (content → SW → sidepanel)

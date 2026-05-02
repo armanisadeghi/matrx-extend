@@ -1,17 +1,19 @@
 -- Multi-mode extraction support — additive migration on wbx_pattern.
--- Adds: kind discriminator, mode-specific config blob, target user_table link,
+-- Adds: kind discriminator, mode-specific config blob, target dataset link,
 -- and rolling health tracking for scheduled re-runs.
 -- Existing rows automatically get kind='manual_css' via the column default.
 -- Apply via Supabase SQL editor (or `psql` connected to the Matrx project).
 -- Requires: 2026_04_30_wbx_pattern.sql applied first.
--- Optional FK: target_user_table_id references user_tables(id). If your
---   environment doesn't have user_tables yet, drop the REFERENCES clause.
+-- Optional FK: target_user_table_id references udt_datasets(id) (the table
+--   was named `user_tables` until the 2026-04-30 UDT migration; the FK
+--   reference auto-followed). If your environment doesn't have udt_datasets
+--   yet, drop the REFERENCES clause.
 -- Applied 05/01/2026 by Arman Sadeghi.
 
 alter table public.wbx_pattern
   add column if not exists kind text not null default 'manual_css',
   add column if not exists config jsonb not null default '{}'::jsonb,
-  add column if not exists target_user_table_id uuid references public.user_tables(id) on delete set null,
+  add column if not exists target_user_table_id uuid references public.udt_datasets(id) on delete set null,
   add column if not exists last_run_at timestamptz,
   add column if not exists last_status text,
   add column if not exists last_run_count int;
@@ -28,6 +30,6 @@ comment on column public.wbx_pattern.kind is
 comment on column public.wbx_pattern.config is
   'Mode-specific config blob. Shape varies by kind. For manual_css this is empty (data lives in fields/list_root_selector).';
 comment on column public.wbx_pattern.target_user_table_id is
-  'Optional user_tables.id where extracted rows append on each scheduled run.';
+  'Optional udt_datasets.id where extracted rows append on each scheduled run.';
 comment on column public.wbx_pattern.last_status is
   'Rolling status from the last run: ok | broken | never_run.';

@@ -25,6 +25,7 @@ import {
   ChevronDown,
   ExternalLink,
   Loader2,
+  Lock,
   PlayCircle,
   RefreshCw,
   RotateCcw,
@@ -134,6 +135,7 @@ export function TasksView() {
         CHANNELS.TASKS_USER_GO,
         CHANNELS.TASKS_USER_CANCEL,
         CHANNELS.TASKS_USER_DEAD,
+        CHANNELS.TASKS_USER_GATED,
         CHANNELS.TASKS_USER_EXPECT_THIN,
       ]);
       if (!m.kind || !overlayKinds.has(m.kind)) return;
@@ -147,6 +149,7 @@ export function TasksView() {
       if (!item) return;
       if (m.kind === CHANNELS.TASKS_USER_GO) void runUserGo(item);
       else if (m.kind === CHANNELS.TASKS_USER_DEAD) void runUserDead(item);
+      else if (m.kind === CHANNELS.TASKS_USER_GATED) void runUserGated(item);
       else if (m.kind === CHANNELS.TASKS_USER_EXPECT_THIN) void runUserExpectThin(item);
       else runUserCancel(item);
     };
@@ -282,15 +285,19 @@ export function TasksView() {
   };
 
   /**
-   * "Page is 404 / dead" overlay button — apply dead_link verdict directly,
-   * no scrape needed. The user can see the page is gone.
+   * Pre-decided terminal verdict from the in-page overlay. The user looked
+   * at the page and knows it's dead (404) or gated (login/paywall) — no
+   * scrape needed, just record their answer and clean up.
    */
-  const runUserDead = async (item: ExtensionScrapeItem) => {
+  const runUserPreDecided = async (
+    item: ExtensionScrapeItem,
+    verdict: 'dead_link' | 'gated',
+  ) => {
     const id = itemKey(item);
     const tabId = statusRef.current[id]?.tabId;
     if (tabId != null) void removeCaptureOverlay(tabId);
     setItemState(id, { status: 'submitting', tabId });
-    const r = await applyVerdict(item.topic_id, item.source_id, 'dead_link');
+    const r = await applyVerdict(item.topic_id, item.source_id, verdict);
     if (!r.ok) {
       setItemState(id, { status: 'error', error: r.error });
       return;
@@ -305,6 +312,9 @@ export function TasksView() {
     }
     void invalidateQueue();
   };
+
+  const runUserDead = (item: ExtensionScrapeItem) => runUserPreDecided(item, 'dead_link');
+  const runUserGated = (item: ExtensionScrapeItem) => runUserPreDecided(item, 'gated');
 
   const runUserCancel = (item: ExtensionScrapeItem) => {
     const id = itemKey(item);
@@ -1015,6 +1025,12 @@ function ResolveMenu({
           onClick={() => choose('accept_as_is')}
         />
         <VerdictMenuItem
+          icon={Lock}
+          label="Page is gated"
+          description="Login / paywall / captcha. Stop trying."
+          onClick={() => choose('gated')}
+        />
+        <VerdictMenuItem
           icon={Skull}
           label="Page is dead / 404"
           description="URL is gone. Don't surface this again."
@@ -1098,6 +1114,20 @@ function VerdictCard({
             <CheckCircle className="size-3.5" />
           )}
           That's the whole page
+        </Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          className="h-7 rounded-full px-3 text-xs"
+          disabled={pending !== undefined}
+          onClick={() => onVerdict('gated')}
+        >
+          {pending === 'gated' ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : (
+            <Lock className="size-3.5" />
+          )}
+          Gated
         </Button>
         <Button
           size="sm"

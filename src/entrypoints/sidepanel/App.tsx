@@ -12,6 +12,7 @@ import { ShowcaseView } from '@/features/showcase/ShowcaseView';
 import { TasksView } from '@/features/tasks/TasksView';
 import { ToolsView } from '@/features/tools/ToolsView';
 import { useAuth } from '@/hooks/use-auth';
+import { useAutoExtract } from '@/hooks/use-auto-extract';
 import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
 import {
@@ -31,6 +32,10 @@ export function App() {
   const theme = useSettingsStore((s) => s.theme);
   const { isAdmin } = useAuth();
   const errorCount = useDebugStore((s) => s.events.filter((e) => e.level === 'error').length);
+
+  // Mount ONCE: watches active-tab url and auto-runs every saved pattern that
+  // matches. Results land in useAutoExtractStore; DataView reads from there.
+  useAutoExtract();
 
   useEffect(() => {
     const apply = () => {

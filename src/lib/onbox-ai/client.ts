@@ -30,6 +30,35 @@ export interface OnboxResult<T> {
   availability?: Availability;
 }
 
+/**
+ * The literal payload handed to a native on-device API. Emitted via the
+ * optional `onRequest` callback right before the call is made — used for
+ * inspectability/debugging from the side panel's smart-tests UI without
+ * having to reconstruct prompts (which inevitably drifts from the truth).
+ */
+export interface OnboxRequestEvent {
+  /** Which native API was actually invoked. */
+  api: 'languageModel' | 'summarizer' | 'translator' | 'languageDetector' | 'proofreader';
+  /**
+   * 'native' = the dedicated task API (Summarizer, Translator, etc.)
+   * 'fallback-language-model' = falling back to languageModel.prompt() because
+   *   the native task API was missing or threw.
+   */
+  via: 'native' | 'fallback-language-model';
+  /** Higher-level call type, e.g. "summarize" / "translate" / "proofread". */
+  task: string;
+  /** Options passed to {api}.create(). For prompt API includes initialPrompts (system). */
+  createOptions?: Record<string, unknown>;
+  /** Literal first arg to .prompt() — string for text, array for multimodal. */
+  promptInput: unknown;
+  /** Options passed as the second arg to .prompt() — e.g. { responseConstraint }. */
+  promptOptions?: Record<string, unknown>;
+  /** Captured at firing time so the receiver can render relative ordering. */
+  firedAt: number;
+}
+
+export type OnboxOnRequest = (event: OnboxRequestEvent) => void;
+
 interface PromptModel {
   create: (opts?: Record<string, unknown>) => Promise<PromptSession>;
   availability?: () => Promise<Availability>;
@@ -125,6 +154,19 @@ export async function quickPrompt(
     /** JSON Schema constraint — model output must satisfy it. */
     responseConstraint?: unknown;
     expectedInputs?: Array<{ type: 'text' | 'image' | 'audio' }>;
+    /**
+     * Fired synchronously immediately before the native API call, with the
+     * literal payload that's about to be sent. Used by inspector UIs to show
+     * the user exactly what the model received without reconstruction.
+     * Pass-through when called as a fallback from summarize/translate/etc.
+     */
+    onRequest?: OnboxOnRequest;
+    /**
+     * Override the `task` field on the emitted onRequest event. Defaults to
+     * 'languageModel.prompt'. Used by fallback callers to label the event
+     * with a higher-level purpose like 'summarize/fallback'.
+     */
+    requestTask?: string;
   },
 ): Promise<OnboxResult<string>> {
   const ai = getAi();
@@ -135,18 +177,33 @@ export async function quickPrompt(
   if (availability === 'unavailable') {
     return { ok: false, reason: 'on-device model unavailable', availability };
   }
+  const createOpts: Record<string, unknown> = {};
+  if (opts?.systemPrompt) {
+    createOpts.initialPrompts = [{ role: 'system', content: opts.systemPrompt }];
+  }
+  if (opts?.expectedInputs) createOpts.expectedInputs = opts.expectedInputs;
+  const promptOpts = opts?.responseConstraint
+    ? { responseConstraint: opts.responseConstraint }
+    : undefined;
+  // Fire synchronously, BEFORE create() — gives inspectors instant visibility
+  // even while the model is still loading or the prompt is still in flight.
+  try {
+    opts?.onRequest?.({
+      api: 'languageModel',
+      via: opts?.requestTask?.endsWith('/fallback') ? 'fallback-language-model' : 'native',
+      task: opts?.requestTask ?? 'languageModel.prompt',
+      createOptions: createOpts,
+      promptInput: input,
+      promptOptions: promptOpts,
+      firedAt: Date.now(),
+    });
+  } catch (cbErr) {
+    console.warn('[onbox-ai] onRequest callback threw', cbErr);
+  }
   let session: PromptSession | null = null;
   try {
-    const createOpts: Record<string, unknown> = {};
-    if (opts?.systemPrompt) {
-      createOpts.initialPrompts = [{ role: 'system', content: opts.systemPrompt }];
-    }
-    if (opts?.expectedInputs) createOpts.expectedInputs = opts.expectedInputs;
     session = await ai.languageModel.create(createOpts);
-    const out = await session.prompt(
-      input,
-      opts?.responseConstraint ? { responseConstraint: opts.responseConstraint } : undefined,
-    );
+    const out = await session.prompt(input, promptOpts);
     return { ok: true, data: out, availability };
   } catch (err) {
     return { ok: false, reason: (err as Error).message ?? String(err), availability };
@@ -159,17 +216,36 @@ export async function quickPrompt(
  * Run summarizer task. Falls back to languageModel if Summarizer API isn't
  * present.
  */
+function fireOnRequest(cb: OnboxOnRequest | undefined, event: OnboxRequestEvent) {
+  if (!cb) return;
+  try {
+    cb(event);
+  } catch (err) {
+    console.warn('[onbox-ai] onRequest callback threw', err);
+  }
+}
+
 export async function summarize(
   text: string,
-  opts?: { type?: 'tldr' | 'key-points' | 'teaser' | 'headline'; length?: 'short' | 'medium' | 'long' },
+  opts?: {
+    type?: 'tldr' | 'key-points' | 'teaser' | 'headline';
+    length?: 'short' | 'medium' | 'long';
+    onRequest?: OnboxOnRequest;
+  },
 ): Promise<OnboxResult<string>> {
   const ai = getAi();
+  const createOptions = { type: opts?.type ?? 'tldr', length: opts?.length ?? 'short' };
   if (ai?.summarizer) {
     try {
-      const session = await ai.summarizer.create({
-        type: opts?.type ?? 'tldr',
-        length: opts?.length ?? 'short',
+      fireOnRequest(opts?.onRequest, {
+        api: 'summarizer',
+        via: 'native',
+        task: 'summarize',
+        createOptions,
+        promptInput: text,
+        firedAt: Date.now(),
       });
+      const session = await ai.summarizer.create(createOptions);
       const out = await session.prompt(text);
       session.destroy?.();
       return { ok: true, data: out };
@@ -178,9 +254,11 @@ export async function summarize(
       console.warn('[onbox-ai] summarizer failed; falling back', err);
     }
   }
-  // Fallback via languageModel.
+  // Fallback via languageModel — quickPrompt fires its own onRequest.
   return quickPrompt(text, {
     systemPrompt: `Summarize the following ${opts?.type ?? 'tldr'} in ${opts?.length ?? 'short'} length. Ignore promotional or ad content on a page that is clearly not for that topic. Return only the summary.`,
+    onRequest: opts?.onRequest,
+    requestTask: 'summarize/fallback',
   });
 }
 
@@ -188,11 +266,21 @@ export async function translate(
   text: string,
   sourceLanguage: string,
   targetLanguage: string,
+  opts?: { onRequest?: OnboxOnRequest },
 ): Promise<OnboxResult<string>> {
   const ai = getAi();
+  const createOptions = { sourceLanguage, targetLanguage };
   if (ai?.translator) {
     try {
-      const session = await ai.translator.create({ sourceLanguage, targetLanguage });
+      fireOnRequest(opts?.onRequest, {
+        api: 'translator',
+        via: 'native',
+        task: 'translate',
+        createOptions,
+        promptInput: text,
+        firedAt: Date.now(),
+      });
+      const session = await ai.translator.create(createOptions);
       const out = await session.prompt(text);
       session.destroy?.();
       return { ok: true, data: out };
@@ -202,15 +290,27 @@ export async function translate(
   }
   return quickPrompt(text, {
     systemPrompt: `Translate from ${sourceLanguage} to ${targetLanguage}. Return only the translation.`,
+    onRequest: opts?.onRequest,
+    requestTask: 'translate/fallback',
   });
 }
 
-export async function detectLanguage(text: string): Promise<OnboxResult<string[]>> {
+export async function detectLanguage(
+  text: string,
+  opts?: { onRequest?: OnboxOnRequest },
+): Promise<OnboxResult<string[]>> {
   const ai = getAi();
   if (!ai?.languageDetector) {
     return { ok: false, reason: 'languageDetector API unavailable' };
   }
   try {
+    fireOnRequest(opts?.onRequest, {
+      api: 'languageDetector',
+      via: 'native',
+      task: 'detectLanguage',
+      promptInput: text,
+      firedAt: Date.now(),
+    });
     const session = await ai.languageDetector.create();
     const out = (await session.prompt(text)) as unknown;
     session.destroy?.();
@@ -224,10 +324,18 @@ export async function detectLanguage(text: string): Promise<OnboxResult<string[]
 
 export async function proofread(
   text: string,
+  opts?: { onRequest?: OnboxOnRequest },
 ): Promise<OnboxResult<{ correctedInput: string; corrections?: unknown }>> {
   const ai = getAi();
   if (ai?.proofreader) {
     try {
+      fireOnRequest(opts?.onRequest, {
+        api: 'proofreader',
+        via: 'native',
+        task: 'proofread',
+        promptInput: text,
+        firedAt: Date.now(),
+      });
       const session = await ai.proofreader.create();
       const out = (await session.prompt(text)) as unknown as {
         correctedInput?: string;
@@ -247,6 +355,8 @@ export async function proofread(
   const r = await quickPrompt(text, {
     systemPrompt:
       'Proofread the following for grammar, spelling, and typos. Return ONLY the corrected text, no commentary.',
+    onRequest: opts?.onRequest,
+    requestTask: 'proofread/fallback',
   });
   if (!r.ok || !r.data) return { ok: false, reason: r.reason ?? 'proofread failed' };
   return { ok: true, data: { correctedInput: r.data } };

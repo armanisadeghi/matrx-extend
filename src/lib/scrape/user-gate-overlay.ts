@@ -36,6 +36,7 @@ export async function showCaptureOverlay(
         CHANNELS.TASKS_USER_CANCEL,
         CHANNELS.TASKS_USER_DEAD,
         CHANNELS.TASKS_USER_EXPECT_THIN,
+        CHANNELS.TASKS_USER_GATED,
       ],
     });
   } catch (err) {
@@ -69,6 +70,7 @@ function inPageMount(
   cancelKind: string,
   deadKind: string,
   expectThinKind: string,
+  gatedKind: string,
 ): void {
   // Idempotent: replace any existing overlay for this source.
   document.getElementById(overlayId)?.remove();
@@ -164,7 +166,7 @@ function inPageMount(
   };
 
   // Two-row layout. Top row = primary actions (Capture / Expect thin).
-  // Bottom row = pre-decided verdicts (Page is dead) and Cancel.
+  // Bottom row = pre-decided verdicts (404 / gated) and Cancel.
   const topRow = document.createElement('div');
   topRow.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap';
   topRow.appendChild(makeBtn('Expect thin content', expectThinKind, 'secondary'));
@@ -172,9 +174,10 @@ function inPageMount(
 
   const bottomRow = document.createElement('div');
   bottomRow.style.cssText =
-    'display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:8px';
-  bottomRow.appendChild(makeBtn('Page is 404 / dead', deadKind, 'danger'));
+    'display:flex;gap:6px;justify-content:flex-end;align-items:center;margin-top:8px;flex-wrap:wrap';
   bottomRow.appendChild(makeBtn('Cancel', cancelKind, 'ghost'));
+  bottomRow.appendChild(makeBtn('Gated (login/paywall)', gatedKind, 'secondary'));
+  bottomRow.appendChild(makeBtn('Page is 404 / dead', deadKind, 'danger'));
 
   root.appendChild(topRow);
   root.appendChild(bottomRow);
