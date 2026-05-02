@@ -51,22 +51,20 @@ export default defineConfig({
     ],
     // Risky / privacy-sensitive permissions live here. Granted at runtime via
     // chrome.permissions.request from the admin "Advanced agent capabilities"
-    // toggles in Settings. Tools that depend on these declare
-    // `required_optional_permissions` and are gated by the dispatcher.
+    // toggles in Settings.
     //
-    // NOT INCLUDED HERE (Chrome rejects them in optional_permissions and silently
-    // drops them with a manifest warning):
-    //   - 'debugger' → moved to required `permissions` below; needed by the
-    //     CDP client (src/lib/cdp/client.ts) and the network-capture flow.
-    //   - 'proxy'    → was unused; removed.
+    // Only list permissions that are actually used in code — the Chrome Web
+    // Store flags "declared but unused" optional permissions during review,
+    // and any permission listed here also generates a Settings UI toggle via
+    // src/lib/permissions/optional.ts. The two files MUST stay in sync.
+    //
+    // Reserved (re-enable here AND in src/lib/permissions/optional.ts when
+    // wiring up the corresponding tools — see that file for the checklist):
+    //   'userScripts', 'proxy', 'webRequest', 'desktopCapture', 'topSites',
+    //   'management'
     optional_permissions: [
       'cookies',
       'pageCapture',
-      'userScripts',
-      'webRequest',
-      'desktopCapture',
-      'topSites',
-      'management',
     ],
     host_permissions: [
       'https://server.app.matrxserver.com/*',

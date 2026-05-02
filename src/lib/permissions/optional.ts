@@ -8,16 +8,33 @@
  * structured error so the UI can prompt.
  */
 
+// Active optional permissions. Each entry here MUST also appear in
+// `optional_permissions` in wxt.config.ts — otherwise Chrome silently
+// rejects the runtime permission request and the Settings → Advanced
+// toggle for it will fail.
 export type OptionalPermission =
   | 'debugger'
   | 'cookies'
-  | 'pageCapture'
-  | 'userScripts'
-  | 'proxy'
-  | 'webRequest'
-  | 'desktopCapture'
-  | 'topSites'
-  | 'management';
+  | 'pageCapture';
+
+// ─── Reserved for future capabilities ────────────────────────────────────
+// These were previously declared but had no corresponding chrome.<api>
+// usage in code, so they were removed from the manifest to avoid Chrome
+// Web Store "declared but unused" review flags and broken Settings toggles.
+//
+// To re-enable one, do all THREE in lock-step:
+//   1. Add the literal to the OptionalPermission union above.
+//   2. Add an entry to OPTIONAL_PERMISSION_LABELS below.
+//   3. Add the string to optional_permissions in wxt.config.ts.
+//
+// Reserved literals (keep this list in sync with wxt.config.ts comments):
+//   'userScripts'    — execute user-script style modifications
+//   'proxy'          — control the browser's proxy configuration
+//   'webRequest'     — observe network requests for ad blocking / debugging
+//   'desktopCapture' — capture screen / window for screen-sharing flows
+//   'topSites'       — read the user's most-visited sites
+//   'management'     — list and manage other installed extensions
+// ─────────────────────────────────────────────────────────────────────────
 
 export const OPTIONAL_PERMISSION_LABELS: Record<OptionalPermission, { title: string; desc: string }> = {
   debugger: {
@@ -31,30 +48,6 @@ export const OPTIONAL_PERMISSION_LABELS: Record<OptionalPermission, { title: str
   pageCapture: {
     title: 'Page archive (MHTML)',
     desc: 'Snapshot a page as a self-contained MHTML archive (HTML + every resource inlined).',
-  },
-  userScripts: {
-    title: 'User scripts',
-    desc: 'Reserved — execute user-script style modifications (Tampermonkey-like).',
-  },
-  proxy: {
-    title: 'Proxy',
-    desc: 'Reserved — control the browser\'s proxy configuration.',
-  },
-  webRequest: {
-    title: 'Web request observation',
-    desc: 'Reserved — observe network requests for ad blocking / debugging.',
-  },
-  desktopCapture: {
-    title: 'Desktop capture',
-    desc: 'Reserved — capture screen / window for screen-sharing-style workflows.',
-  },
-  topSites: {
-    title: 'Top sites',
-    desc: 'Reserved — read the user\'s most-visited sites.',
-  },
-  management: {
-    title: 'Extension management',
-    desc: 'Reserved — list and manage other installed extensions.',
   },
 };
 
