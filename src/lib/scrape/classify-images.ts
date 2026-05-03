@@ -1,55 +1,74 @@
 /**
- * Split scraped images into "main content" vs "icons & small graphics".
+ * Bucket scraped images into three size tiers so the UI can lay them out
+ * proportionally — real content prominent, smaller graphics tucked below,
+ * favicons and tracking pixels at the very bottom. Nothing is hidden, just
+ * sized and ordered so the panel doesn't look broken on icon-heavy pages.
  *
- * Why we need this: a typical webpage has a handful of real images (heroes,
- * inline photos, screenshots) plus dozens of icons (favicons, social-share,
- * tracking pixels, sprite tiles). Rendering them in the same big-thumb grid
- * makes the panel look broken. Partitioning lets the UI show real content
- * prominently and tuck the small stuff behind an opt-in expander.
+ * Why three tiers and not two: in practice there's a real gap between
+ * favicons (16-48px) and "small but valid" graphics (avatars, social-icons,
+ * inline glyphs at 60-150px). Lumping them together either crowds the main
+ * grid with avatars or buries useful thumbnails alongside trackers.
  *
- * Classification is conservative — when in doubt, keep the image in `main`.
- * Better to show one icon than to hide a real photo.
+ * Classification is conservative — when in doubt, push toward the larger
+ * bucket. Better to show a 70px graphic in `medium` than to bury a real
+ * thumbnail among the favicons.
  */
 
 import type { CollectedImage } from '@/lib/scrape/collectors';
 
 /**
- * Square pixels below which we treat an image as small/icon. Tuned so that
- * favicons (16/32/48px), social icons (24-32px), tracking pixels, and
- * thin dividers fall out, while modest thumbnails (80px+) stay in main.
+ * Threshold cutoffs by `min(width, height)`:
+ *   - icon:    < 48px   (favicons, tracking pixels, tiny inline icons)
+ *   - medium:  48-159   (avatars, small button graphics, social icons)
+ *   - large:   >= 160   (real content thumbnails and hero images)
  */
-const ICON_DIM_THRESHOLD = 64;
+const ICON_MAX = 48;
+const MEDIUM_MAX = 160;
 
 /**
  * URL fragments that strongly suggest "icon" semantics when dimensions are
- * unavailable (e.g. background-images, lazy-loaded SVGs that haven't laid
- * out yet). Conservative — most legitimate photos won't match these.
+ * unavailable (background-images, SVGs that haven't laid out, lazy-loaded
+ * images that haven't been measured yet). Conservative: most legitimate
+ * photo URLs won't match.
  */
 const ICON_URL_HINTS =
   /favicon|\/icon[s]?[/-]|\/sprite[s]?[/-]|\bpixel\.(?:gif|png)|\/1x1\.|spacer\.gif|blank\.gif/i;
 
-export function isSmallImage(img: CollectedImage): boolean {
+export type ImageSize = 'large' | 'medium' | 'icon';
+
+export function classifyImageSize(img: CollectedImage): ImageSize {
   const w = img.width ?? 0;
   const h = img.height ?? 0;
-  if (w > 0 && h > 0) return Math.min(w, h) < ICON_DIM_THRESHOLD;
-  // No reliable dimensions — fall back to URL hints. Background-image
-  // CSS extractions and unloaded lazy images land here.
-  return ICON_URL_HINTS.test(img.src);
+  if (w > 0 && h > 0) {
+    const minDim = Math.min(w, h);
+    if (minDim < ICON_MAX) return 'icon';
+    if (minDim < MEDIUM_MAX) return 'medium';
+    return 'large';
+  }
+  // Unknown dimensions — URL hints, then default to medium (safer than
+  // hiding real content among icons or surfacing trackers among photos).
+  if (ICON_URL_HINTS.test(img.src)) return 'icon';
+  return 'medium';
 }
 
 export interface PartitionedImages {
-  /** Real content — render in the prominent grid. */
-  main: CollectedImage[];
-  /** Icons, favicons, tracking pixels, dividers — render behind a toggle. */
-  small: CollectedImage[];
+  /** Real content — render in a prominent 3-column grid. */
+  large: CollectedImage[];
+  /** Small-but-meaningful graphics — render in a denser secondary grid. */
+  medium: CollectedImage[];
+  /** Favicons, trackers, glyphs — render in a tiny strip at the bottom. */
+  icons: CollectedImage[];
 }
 
 export function partitionImages(images: CollectedImage[]): PartitionedImages {
-  const main: CollectedImage[] = [];
-  const small: CollectedImage[] = [];
+  const large: CollectedImage[] = [];
+  const medium: CollectedImage[] = [];
+  const icons: CollectedImage[] = [];
   for (const img of images) {
-    if (isSmallImage(img)) small.push(img);
-    else main.push(img);
+    const tier = classifyImageSize(img);
+    if (tier === 'large') large.push(img);
+    else if (tier === 'medium') medium.push(img);
+    else icons.push(img);
   }
-  return { main, small };
+  return { large, medium, icons };
 }

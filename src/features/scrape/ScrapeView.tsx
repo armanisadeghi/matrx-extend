@@ -93,23 +93,14 @@ export function ScrapeView() {
 
   /** Re-capture confirm guard — protects unsaved local edits. */
   /**
-   * Split scraped images into main vs icons/small. Real content goes to a
-   * prominent grid; favicons + tracking pixels + tiny graphics get tucked
-   * behind a toggle so the panel doesn't look broken with a sea of tiny
-   * blurry tiles.
+   * Three-tier image partition. All tiers stay visible; sizing/ordering does
+   * the visual heavy lifting so the panel reads well on icon-heavy pages
+   * without hiding anything the user might actually want to see.
    */
   const partitionedImages = useMemo(
     () => partitionImages(current?.images ?? []),
     [current?.images],
   );
-  const [showSmallImages, setShowSmallImages] = useState(false);
-  // If there are no main images but there are small ones, auto-expand —
-  // otherwise the user sees an empty grid with a hidden expander.
-  useEffect(() => {
-    if (partitionedImages.main.length === 0 && partitionedImages.small.length > 0) {
-      setShowSmallImages(true);
-    }
-  }, [partitionedImages.main.length, partitionedImages.small.length]);
 
   const guardedCapture = (mode: 'fast' | 'deep') => {
     if (
@@ -284,79 +275,49 @@ export function ScrapeView() {
                     copyMenu={<CopyMenu title="Copy images" options={imagesCopyOptions(current)} />}
                   />
                 )}
-                <div className="grid grid-cols-3 gap-1.5 px-3 pb-3">
-                  {partitionedImages.main.map((img) => (
-                    <div
-                      key={img.src}
-                      className="group relative aspect-square overflow-hidden rounded-xl bg-secondary/40"
-                    >
-                      <a href={img.src} target="_blank" rel="noreferrer" className="block size-full">
-                        <img
-                          src={img.src}
-                          alt={img.alt ?? ''}
-                          className="size-full object-cover transition-transform group-hover:scale-105"
-                          loading="lazy"
-                        />
-                      </a>
-                      <div className="absolute right-1 top-1 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                        <CopyButton
-                          text={img.src}
-                          title="Copy image URL"
-                          size="xs"
-                          className="bg-background/80 backdrop-blur"
-                        />
-                        <DeleteRowButton
-                          title="Remove image"
-                          onClick={() => removeImage(img.src)}
-                          className="bg-background/80 backdrop-blur"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {partitionedImages.small.length > 0 && (
-                  <div className="px-3 pb-3">
-                    <button
-                      type="button"
-                      onClick={() => setShowSmallImages((v) => !v)}
-                      className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-secondary/30 px-3 py-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
-                    >
-                      {showSmallImages ? 'Hide' : 'Show'} {partitionedImages.small.length}{' '}
-                      icon{partitionedImages.small.length === 1 ? '' : 's'} & small
-                    </button>
-                    {showSmallImages && (
-                      <div className="mt-2 grid grid-cols-6 gap-1">
-                        {partitionedImages.small.map((img) => (
-                          <div
-                            key={img.src}
-                            className="group relative aspect-square overflow-hidden rounded-md bg-secondary/40"
-                            title={img.alt ?? img.src}
-                          >
-                            <a
-                              href={img.src}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="block size-full"
-                            >
-                              <img
-                                src={img.src}
-                                alt={img.alt ?? ''}
-                                className="size-full object-contain p-1"
-                                loading="lazy"
-                              />
-                            </a>
-                            <div className="absolute right-0.5 top-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-                              <DeleteRowButton
-                                title="Remove image"
-                                onClick={() => removeImage(img.src)}
-                                className="bg-background/80 backdrop-blur"
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                {partitionedImages.large.length > 0 && (
+                  <div className="grid grid-cols-3 gap-1.5 px-3 pb-3">
+                    {partitionedImages.large.map((img) => (
+                      <ImageTile
+                        key={img.src}
+                        img={img}
+                        size="large"
+                        onRemove={() => removeImage(img.src)}
+                      />
+                    ))}
                   </div>
+                )}
+                {partitionedImages.medium.length > 0 && (
+                  <ImageSubsection
+                    label={`${partitionedImages.medium.length} smaller image${partitionedImages.medium.length === 1 ? '' : 's'}`}
+                  >
+                    <div className="grid grid-cols-5 gap-1 px-3 pb-3">
+                      {partitionedImages.medium.map((img) => (
+                        <ImageTile
+                          key={img.src}
+                          img={img}
+                          size="medium"
+                          onRemove={() => removeImage(img.src)}
+                        />
+                      ))}
+                    </div>
+                  </ImageSubsection>
+                )}
+                {partitionedImages.icons.length > 0 && (
+                  <ImageSubsection
+                    label={`${partitionedImages.icons.length} icon${partitionedImages.icons.length === 1 ? '' : 's'} & favicon${partitionedImages.icons.length === 1 ? '' : 's'}`}
+                  >
+                    <div className="grid grid-cols-8 gap-0.5 px-3 pb-3">
+                      {partitionedImages.icons.map((img) => (
+                        <ImageTile
+                          key={img.src}
+                          img={img}
+                          size="icon"
+                          onRemove={() => removeImage(img.src)}
+                        />
+                      ))}
+                    </div>
+                  </ImageSubsection>
                 )}
                 <AddItemRow
                   label="Add image URL"
@@ -561,18 +522,89 @@ export function ScrapeView() {
 }
 
 function imagesToolbarLabel({
-  main,
-  small,
+  large,
+  medium,
+  icons,
 }: {
-  main: { length: number };
-  small: { length: number };
+  large: { length: number };
+  medium: { length: number };
+  icons: { length: number };
 }): string {
   const parts: string[] = [];
-  parts.push(`${main.length} image${main.length === 1 ? '' : 's'}`);
-  if (small.length > 0) {
-    parts.push(`${small.length} icon${small.length === 1 ? '' : 's'}`);
-  }
+  parts.push(`${large.length} image${large.length === 1 ? '' : 's'}`);
+  if (medium.length > 0) parts.push(`${medium.length} small`);
+  if (icons.length > 0) parts.push(`${icons.length} icon${icons.length === 1 ? '' : 's'}`);
   return parts.join(' · ');
+}
+
+function ImageSubsection({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <div className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function ImageTile({
+  img,
+  size,
+  onRemove,
+}: {
+  img: { src: string; alt: string | null };
+  size: 'large' | 'medium' | 'icon';
+  onRemove: () => void;
+}) {
+  // `object-cover` for content thumbs (fills the square nicely), `object-contain`
+  // for smaller graphics so logos/icons aren't cropped at the edges. The
+  // checkerboard background keeps transparent assets legible in light + dark.
+  const tileClass =
+    size === 'large'
+      ? 'aspect-square overflow-hidden rounded-xl checkerboard-bg'
+      : size === 'medium'
+        ? 'aspect-square overflow-hidden rounded-lg checkerboard-bg'
+        : 'aspect-square overflow-hidden rounded-md checkerboard-bg';
+  const imgClass =
+    size === 'large'
+      ? 'size-full object-cover transition-transform group-hover:scale-105'
+      : size === 'medium'
+        ? 'size-full object-contain p-1'
+        : 'size-full object-contain p-0.5';
+  return (
+    <div className={cn('group relative', tileClass)} title={img.alt ?? img.src}>
+      <a href={img.src} target="_blank" rel="noreferrer" className="block size-full">
+        <img src={img.src} alt={img.alt ?? ''} className={imgClass} loading="lazy" />
+      </a>
+      <div
+        className={cn(
+          'absolute flex gap-1 opacity-0 transition-opacity group-hover:opacity-100',
+          size === 'icon' ? 'right-0 top-0' : 'right-1 top-1',
+        )}
+      >
+        {size !== 'icon' && (
+          <CopyButton
+            text={img.src}
+            title="Copy image URL"
+            size="xs"
+            className="bg-background/80 backdrop-blur"
+          />
+        )}
+        <DeleteRowButton
+          title="Remove image"
+          onClick={onRemove}
+          className="bg-background/80 backdrop-blur"
+        />
+      </div>
+    </div>
+  );
 }
 
 function ListToolbar({
