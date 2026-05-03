@@ -259,6 +259,59 @@ export interface ToolCatalogManifest {
   tools: ToolCatalogEntry[];
 }
 
+/**
+ * Server-side handoff manifest for the new capability-based agent API.
+ *
+ * The Python `matrx-ai` runtime registers a `browser-dom` capability with:
+ *   - One server-side discovery handler (`load_browser_tools`) that maps a
+ *     category name to the list of tool names to add to the conversation's
+ *     toolset.
+ *   - A payload model the client sends in `client.state["browser-dom"]`
+ *     describing the user's current browser context.
+ *
+ * This manifest is the source of truth for the routing rule. Drop it next
+ * to the server-side handler implementation; the handler reads
+ * `category_routing[args.category]` to know what to queue via
+ * `ctx.queue_tool_changes(add=...)`.
+ */
+export interface ServerCapabilityHandoff {
+  generated_at: string;
+  source: 'matrx-extend';
+  capability_name: 'browser-dom';
+  /** JSON-Schema for the payload — drop into a Pydantic model on the server. */
+  payload_schema: Record<string, unknown>;
+  /**
+   * Tool name(s) the capability brings online unconditionally. The discovery
+   * tool is the only entry point — everything else loads on demand.
+   */
+  always_on_tools: string[];
+  /** category → list of tool names to register when load_browser_tools picks this category. */
+  category_routing: Record<string, string[]>;
+  /**
+   * Per-tool metadata the discovery handler can consult to decide what the
+   * client can actually run. Tools with `admin_only: true` should be filtered
+   * out unless `state.is_admin === true`. Tools with non-empty
+   * `required_optional_permissions` should be filtered out unless
+   * `state.optional_permissions_granted` includes them all.
+   */
+  tool_metadata: Record<
+    string,
+    {
+      tier: ToolTier;
+      category: ToolCategory;
+      admin_only: boolean;
+      required_optional_permissions: string[];
+    }
+  >;
+  /** Total tool counts for sanity. */
+  totals: {
+    tools: number;
+    categories: number;
+    admin_only_tools: number;
+    optional_perm_gated_tools: number;
+  };
+}
+
 export function buildToolCatalogManifest(): ToolCatalogManifest {
   const tools = buildToolCatalog();
   // Build category manifest entries — tool names per category.
@@ -289,5 +342,177 @@ export function buildToolCatalogManifest(): ToolCatalogManifest {
     pilot_with_privileged_bundle: tools.map((t) => t.name),
     categories: categoryEntries,
     tools,
+  };
+}
+
+/**
+ * The client-side payload schema the extension will ship in
+ * `client.state["browser-dom"]`. Stays narrow on purpose — this is for
+ * orchestration (which tools to load), not model-facing facts (those go in
+ * the regular `context` field).
+ */
+const BROWSER_DOM_PAYLOAD_SCHEMA: Record<string, unknown> = {
+  type: 'object',
+  title: 'BrowserDomPayload',
+  description:
+    "Runtime state for the matrx-extend Chrome extension's browser-dom capability. Keeps tool-routing decisions data-driven: the discovery handler can filter the routing map by `is_admin`, by `optional_permissions_granted`, or by inspecting the user's actual browser state.",
+  properties: {
+    current_url: {
+      type: ['string', 'null'],
+      description: 'URL of the active tab. Null if no tab is focused or the URL is restricted.',
+    },
+    current_tab_id: {
+      type: ['integer', 'null'],
+      description: 'Chrome tab id of the active tab.',
+    },
+    current_window_id: {
+      type: ['integer', 'null'],
+      description: 'Chrome window id containing the active tab.',
+    },
+    page_title: {
+      type: ['string', 'null'],
+    },
+    page_lang: {
+      type: ['string', 'null'],
+      description: 'IETF tag from <html lang="…">.',
+    },
+    tab_status: {
+      type: ['string', 'null'],
+      enum: ['loading', 'complete', null],
+    },
+    surface: {
+      type: 'string',
+      enum: ['assistant', 'pilot'],
+      description:
+        'Which side-panel surface initiated the request. Drives default category set: assistant=read-only, pilot=full kit.',
+    },
+    is_admin: {
+      type: 'boolean',
+      description:
+        "True if the user is in `public.admins`. Discovery handler should filter admin-only categories (debug, cookies, webmcp) and admin-only tools when this is false — the model shouldn't even see them.",
+    },
+    permission_mode: {
+      type: 'string',
+      enum: ['ask', 'act'],
+      description:
+        "Per-agent gate the client enforces locally for action-tier tools. Server doesn't enforce, but it's useful for prompt composition (e.g. tell the model 'every action will prompt the user').",
+    },
+    desktop_bridge: {
+      type: 'string',
+      enum: ['native', 'http', 'none'],
+      description:
+        'Whether the matrx-local desktop bridge is reachable. When "none", the discovery handler should skip the `desktop_run_command` tool.',
+    },
+    onbox_ai_available: {
+      type: 'boolean',
+      description:
+        'True if the on-device Gemini Nano (chrome.ai) is exposed in the user\'s Chrome. When false, the discovery handler may want to surface the AI category but include a hint that all ai_* tools will return availability:unavailable.',
+    },
+    optional_permissions_granted: {
+      type: 'array',
+      items: { type: 'string' },
+      description:
+        "Optional Chrome permissions the user has granted at runtime (e.g. ['debugger','cookies','pageCapture']). Discovery handler should filter tools whose `required_optional_permissions` aren't satisfied — those would fail at the dispatcher anyway.",
+    },
+    open_tab_count: {
+      type: ['integer', 'null'],
+      description: 'Number of tabs across all windows. Lightweight signal for "this user has a lot going on".',
+    },
+    extension_version: {
+      type: 'string',
+    },
+    extension_id: {
+      type: 'string',
+    },
+    loaded_categories: {
+      type: 'array',
+      items: { type: 'string' },
+      description:
+        'Categories the agent has already discovered in this conversation. The client tracks this from RESOURCE_CHANGED kind=active_tools events; the server can use it to detect when the model is re-discovering the same category.',
+    },
+  },
+  required: [
+    'current_url',
+    'current_tab_id',
+    'surface',
+    'is_admin',
+    'permission_mode',
+    'desktop_bridge',
+    'onbox_ai_available',
+    'optional_permissions_granted',
+  ],
+  additionalProperties: false,
+};
+
+/**
+ * Recommended always-on tools for the browser-dom capability. The server
+ * team's preference is "probably just load_browser_tools". We list one entry
+ * here on purpose — every other capability the model could need is exactly
+ * one discovery call away. Smaller surface = better decisions.
+ */
+const ALWAYS_ON_TOOLS: string[] = ['load_browser_tools'];
+
+/**
+ * The names of the client-side discovery list-tools — `list_browser_tools`
+ * and the per-category `list_<cat>_tools`. They're internal to the
+ * extension's own discovery flow and don't belong in the server-side
+ * routing payload (the server has its own single `load_browser_tools`).
+ *
+ * Other tools that legitimately START with `list_` (list_bookmark_tree,
+ * list_open_tabs, list_recent_history, etc.) are real read tools and pass
+ * through.
+ */
+function isDiscoveryListTool(name: string): boolean {
+  if (name === 'list_browser_tools') return true;
+  // Per-category discovery list-tools follow the pattern `list_<category>_tools`.
+  const m = /^list_([a-z_]+)_tools$/.exec(name);
+  if (!m || !m[1]) return false;
+  return Object.prototype.hasOwnProperty.call(CATEGORIES, m[1]);
+}
+
+export function buildServerCapabilityHandoff(): ServerCapabilityHandoff {
+  const tools = buildToolCatalog();
+  const categoryRouting: Record<string, string[]> = {};
+  for (const meta of Object.values(CATEGORIES)) {
+    const inCat = tools
+      .filter((t) => t.category === meta.category)
+      // The category list-tools (`list_<cat>_tools`) live in the 'core'
+      // category in our extension. Strip them from the routing payload —
+      // they're noise on the server side, which uses ONE discovery tool
+      // (`load_browser_tools`) instead of N per-category list-tools.
+      // Discovery tools (`list_browser_tools`, `list_<cat>_tools`) are noise on
+    // the server side — it has its own ONE discovery tool. Strip them. Other
+    // legitimate `list_*` tools (list_bookmark_tree, list_recent_history,
+    // list_downloads, list_recently_closed) are real read tools and stay.
+    .filter((t) => !isDiscoveryListTool(t.name))
+      .map((t) => t.name);
+    categoryRouting[meta.category] = inCat;
+  }
+  const toolMetadata: ServerCapabilityHandoff['tool_metadata'] = {};
+  for (const t of tools) {
+    if (isDiscoveryListTool(t.name)) continue;
+    toolMetadata[t.name] = {
+      tier: t.tier,
+      category: t.category,
+      admin_only: t.admin_only,
+      required_optional_permissions: t.required_optional_permissions,
+    };
+  }
+  return {
+    generated_at: new Date().toISOString(),
+    source: 'matrx-extend',
+    capability_name: 'browser-dom',
+    payload_schema: BROWSER_DOM_PAYLOAD_SCHEMA,
+    always_on_tools: ALWAYS_ON_TOOLS,
+    category_routing: categoryRouting,
+    tool_metadata: toolMetadata,
+    totals: {
+      tools: Object.keys(toolMetadata).length,
+      categories: Object.keys(categoryRouting).length,
+      admin_only_tools: Object.values(toolMetadata).filter((m) => m.admin_only).length,
+      optional_perm_gated_tools: Object.values(toolMetadata).filter(
+        (m) => m.required_optional_permissions.length > 0,
+      ).length,
+    },
   };
 }

@@ -26,9 +26,16 @@ interface SettingsState {
   defaultPermissionMode: PermissionMode;
   /** Composer speed default. NOT WIRED YET — placeholder UI only. */
   defaultChatSpeed: ChatSpeed;
+  /**
+   * On the user's first submit on a fresh page, scroll top→bottom (catching
+   * lazy-loaded content), capture, then restore the user's scroll position —
+   * BEFORE the message is sent. Costs 1–4s of perceived latency on the first
+   * submit per page; subsequent submits reuse the deep capture. Off by default.
+   */
+  autoFullScrollOnFirstSubmit: boolean;
 
-  // ─── Scrape auto-capture (NOT WIRED YET) ───────────────────────────────
-  /** Auto-run a scrape on every page load. Coming soon. */
+  // ─── Scrape auto-capture ───────────────────────────────────────────────
+  /** Auto-run a fast scrape on every page load (background). */
   scrapeAutoOnLoad: boolean;
   /** When auto-scraping: plain capture, or scroll-and-capture. Coming soon. */
   scrapeAutoMode: ScrapeAutoMode;
@@ -38,6 +45,7 @@ interface SettingsState {
   setDefaultAgentId: (id: string | null) => void;
   setDefaultPermissionMode: (m: PermissionMode) => void;
   setDefaultChatSpeed: (s: ChatSpeed) => void;
+  setAutoFullScrollOnFirstSubmit: (b: boolean) => void;
   setScrapeAutoOnLoad: (b: boolean) => void;
   setScrapeAutoMode: (m: ScrapeAutoMode) => void;
 }
@@ -50,13 +58,16 @@ export const useSettingsStore = create<SettingsState>()(
       defaultAgentId: null,
       defaultPermissionMode: 'ask',
       defaultChatSpeed: 'fast',
-      scrapeAutoOnLoad: false,
+      autoFullScrollOnFirstSubmit: false,
+      scrapeAutoOnLoad: true,
       scrapeAutoMode: 'capture',
       setTheme: (theme) => set({ theme }),
       setScrapeDeepClean: (scrapeDeepClean) => set({ scrapeDeepClean }),
       setDefaultAgentId: (defaultAgentId) => set({ defaultAgentId }),
       setDefaultPermissionMode: (defaultPermissionMode) => set({ defaultPermissionMode }),
       setDefaultChatSpeed: (defaultChatSpeed) => set({ defaultChatSpeed }),
+      setAutoFullScrollOnFirstSubmit: (autoFullScrollOnFirstSubmit) =>
+        set({ autoFullScrollOnFirstSubmit }),
       setScrapeAutoOnLoad: (scrapeAutoOnLoad) => set({ scrapeAutoOnLoad }),
       setScrapeAutoMode: (scrapeAutoMode) => set({ scrapeAutoMode }),
     }),

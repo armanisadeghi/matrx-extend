@@ -1,4 +1,5 @@
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
+import { Markdown } from '@/components/markdown';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
@@ -12,11 +13,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
+import { ServerToolRow } from '@/features/chat/ServerToolRow';
 import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
 import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
+import { wrapForAgent } from '@/lib/clipboard/copy';
 import {
   type AgxAgent,
   type Conversation,
@@ -25,9 +28,8 @@ import {
   fetchConversationMessages,
   fetchUserAgents,
 } from '@/lib/supabase/queries';
-import { wrapForAgent } from '@/lib/clipboard/copy';
 import { cn } from '@/lib/utils';
-import { useChatStore } from '@/state/chat';
+import { type ServerToolCall, useChatStore } from '@/state/chat';
 import { useSettingsStore } from '@/state/settings';
 import { useToolInbox } from '@/state/tool-inbox';
 import {
@@ -40,13 +42,15 @@ import {
   Pencil,
   Plus,
   ScanLine,
+  Settings2,
+  Sliders,
   Sparkles,
   Square,
   Zap,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { BreathingOrb } from './BreathingOrb';
+import { chatMarkdownRegistry } from './markdown-registry';
 
 const SUGGESTIONS = [
   { icon: Pencil, label: 'Help me with my writing' },
@@ -109,11 +113,31 @@ export function ChatView() {
     };
   }, [user]);
 
+  const loadedConversationIdRef = useRef<string | null>(null);
   useEffect(() => {
-    if (!selectedConversationId) return;
+    if (!selectedConversationId) {
+      // User started a new chat. Forget what we loaded so a later return to
+      // the same thread re-fetches its messages.
+      loadedConversationIdRef.current = null;
+      return;
+    }
+    if (loadedConversationIdRef.current === selectedConversationId) return;
+    // The id can flip null → real mid-stream when the server returns
+    // X-Conversation-ID for a brand-new conversation. In that case the
+    // messages array already holds the in-flight user turn + pending
+    // assistant — don't refetch and clobber them. Just record that this id
+    // is now considered "loaded".
+    const existing = useChatStore.getState().messages;
+    if (existing.length > 0) {
+      loadedConversationIdRef.current = selectedConversationId;
+      return;
+    }
     void (async () => {
       const dbMessages = await fetchConversationMessages(selectedConversationId);
+      // Bail if the user switched threads while we were fetching.
+      if (useChatStore.getState().selectedConversationId !== selectedConversationId) return;
       setMessages(dbMessagesToChatMessages(dbMessages));
+      loadedConversationIdRef.current = selectedConversationId;
     })();
   }, [selectedConversationId, setMessages]);
 
@@ -172,7 +196,13 @@ export function ChatView() {
         onPermissionModeChange={(m) => {
           if (selectedAgentId) setPermissionMode(selectedAgentId, m);
         }}
-        onAgentChange={(v) => setAgent(v || null)}
+        onAgentChange={(v) => {
+          const next = v || null;
+          if (next === selectedAgentId) return;
+          if (isStreaming) cancel();
+          setAgent(next);
+          setConversation(null);
+        }}
         onNewChat={handleNewChat}
         onPickConversation={(id) => setConversation(id)}
       />
@@ -191,7 +221,13 @@ export function ChatView() {
         ) : (
           <div className="space-y-4 px-4 py-4">
             {messages.map((m) => (
-              <MessageRow key={m.id} role={m.role} content={m.content} pending={m.pending} />
+              <MessageRow
+                key={m.id}
+                role={m.role}
+                content={m.content}
+                pending={m.pending}
+                serverTools={m.serverTools}
+              />
             ))}
 
             {timeline.length > 0 && (
@@ -466,10 +502,12 @@ function MessageRow({
   role,
   content,
   pending,
+  serverTools,
 }: {
   role: 'user' | 'assistant';
   content: string;
   pending?: boolean;
+  serverTools?: ServerToolCall[];
 }) {
   if (role === 'user') {
     return (
@@ -478,18 +516,30 @@ function MessageRow({
           <CopyButton text={content} title="Copy message" size="xs" />
         </div>
         <div className="max-w-[85%] rounded-2xl bg-secondary px-3.5 py-2 text-sm">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+          <Markdown content={content} density="compact" />
         </div>
+      </div>
+    );
+  }
+  const hasTools = (serverTools?.length ?? 0) > 0;
+  if (pending && !content && !hasTools) {
+    return (
+      <div className="group">
+        <BreathingOrb size={28} />
       </div>
     );
   }
   return (
     <div className="group">
-      <div className="prose prose-sm max-w-none text-sm dark:prose-invert prose-p:my-2 prose-pre:my-2">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {content || (pending ? '…' : '')}
-        </ReactMarkdown>
-      </div>
+      {hasTools && (
+        <div className="mb-2 space-y-1.5">
+          {serverTools?.map((t) => (
+            <ServerToolRow key={t.callId} tool={t} />
+          ))}
+        </div>
+      )}
+      {pending && !content && hasTools && <BreathingOrb size={20} />}
+      {content && <Markdown content={content} registry={chatMarkdownRegistry} />}
       {!pending && content && (
         <div className="mt-1 opacity-0 transition-opacity group-hover:opacity-100">
           <CopyMenu
@@ -566,7 +616,6 @@ function Composer({
   canSend: boolean;
   placeholder: string;
 }) {
-  const [mode, setMode] = useState<'fast' | 'thinking'>('fast');
   const taRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -609,15 +658,7 @@ function Composer({
             <Plus className="size-4" />
           </button>
 
-          <button
-            type="button"
-            onClick={() => setMode(mode === 'fast' ? 'thinking' : 'fast')}
-            className="ml-1 inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-            title="Mode"
-          >
-            {mode === 'fast' ? 'Fast' : 'Thinking'}
-            <ChevronDownTiny />
-          </button>
+          <ComposerSettingsChip />
 
           <div className="ml-auto flex items-center gap-1">
             <button
@@ -675,5 +716,95 @@ function ChevronDownTiny() {
     >
       <path d="m6 9 6 6 6-6" />
     </svg>
+  );
+}
+
+/**
+ * Composer settings popover. Replaces the previous "Fast / Thinking"
+ * placeholder with a real menu of per-message behavior toggles. The label
+ * summarizes the most distinctive setting that's currently on so the user
+ * can scan state without opening the popover.
+ */
+function ComposerSettingsChip() {
+  const autoScrape = useSettingsStore((s) => s.scrapeAutoOnLoad);
+  const autoFullScroll = useSettingsStore((s) => s.autoFullScrollOnFirstSubmit);
+  const setAutoScrape = useSettingsStore((s) => s.setScrapeAutoOnLoad);
+  const setAutoFullScroll = useSettingsStore((s) => s.setAutoFullScrollOnFirstSubmit);
+
+  const summary = autoFullScroll
+    ? 'Deep page'
+    : autoScrape
+      ? 'Auto page'
+      : 'Manual page';
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="ml-1 inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          title="Page-context settings"
+        >
+          <Sliders className="size-3.5" />
+          {summary}
+          <ChevronDownTiny />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 p-1" align="start">
+        <div className="px-2 py-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+          Page context
+        </div>
+        <SettingRow
+          checked={autoScrape}
+          onChange={setAutoScrape}
+          title="Auto-capture page on load"
+          desc="When a page finishes loading, capture its content + SEO in the background so it's ready in the agent's context the moment you ask. No scroll, fast."
+        />
+        <SettingRow
+          checked={autoFullScroll}
+          onChange={setAutoFullScroll}
+          title="Deep capture on first submit"
+          desc="On your first message about a fresh page, scroll top→bottom to load lazy content, capture, then restore your scroll position — before the message goes out. Adds 1–4s the first time. Subsequent submits reuse the deep capture."
+        />
+        <div className="px-2 pt-1.5 pb-1 text-[10px] text-muted-foreground">
+          More controls (response style, tools surface) coming here.
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function SettingRow({
+  checked,
+  onChange,
+  title,
+  desc,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!checked)}
+      className="flex w-full items-start gap-2.5 rounded-md px-2 py-2 text-left transition-colors hover:bg-accent"
+    >
+      <div
+        className={cn(
+          'mt-0.5 inline-flex size-3.5 shrink-0 items-center justify-center rounded-sm border',
+          checked
+            ? 'border-primary bg-primary text-primary-foreground'
+            : 'border-muted-foreground/40 bg-transparent',
+        )}
+      >
+        {checked && <Check className="size-3" />}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium">{title}</div>
+        <div className="text-[11px] leading-snug text-muted-foreground">{desc}</div>
+      </div>
+    </button>
   );
 }

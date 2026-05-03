@@ -13,6 +13,7 @@ import { TasksView } from '@/features/tasks/TasksView';
 import { ToolsView } from '@/features/tools/ToolsView';
 import { useAuth } from '@/hooks/use-auth';
 import { useAutoExtract } from '@/hooks/use-auto-extract';
+import { useAutoScrape } from '@/hooks/use-auto-scrape';
 import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
 import {
@@ -36,6 +37,11 @@ export function App() {
   // Mount ONCE: watches active-tab url and auto-runs every saved pattern that
   // matches. Results land in useAutoExtractStore; DataView reads from there.
   useAutoExtract();
+
+  // Mount ONCE: when the active tab finishes loading and the
+  // `scrapeAutoOnLoad` setting is enabled, fast-scrape it in the background
+  // and stash in useAutoScrapeStore. The chat hook reads from there on send.
+  useAutoScrape();
 
   useEffect(() => {
     const apply = () => {

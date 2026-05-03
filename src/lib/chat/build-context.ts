@@ -16,6 +16,7 @@
 
 import { log } from '@/lib/debug/log';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
+import type { AutoScrapeRecord } from '@/state/auto-scrape';
 import type { useScrapeStore } from '@/state/scrape';
 
 export interface ContextBuildInputs {
@@ -25,8 +26,15 @@ export interface ContextBuildInputs {
     full_name: string | null;
   } | null;
   desktopTransport: 'native' | 'http' | 'none';
-  /** The current value of `useScrapeStore.current` — null if no capture exists. */
+  /** The current value of `useScrapeStore.current` — null if no manual capture exists. */
   scrape: ReturnType<typeof useScrapeStore.getState>['current'];
+  /**
+   * Background auto-capture (from `useAutoScrapeStore`). Used when there's no
+   * manual scrape — captures the page in the background on load and right
+   * before send so the agent always sees the current state without the user
+   * having to click "Scrape".
+   */
+  autoScrape?: AutoScrapeRecord | null;
 }
 
 /**
@@ -222,10 +230,22 @@ export async function buildChatContext(
     }
   }
 
-  // ── Scrape (only if a current capture matches the active URL) ─────────────
-  const scrape = inputs.scrape;
+  // ── Scrape (manual user-driven capture takes priority over auto) ──────────
   const activeUrl = (ctx.url as string | null | undefined) ?? null;
-  if (scrape && activeUrl && scrape.url === activeUrl) {
+  const manualScrape =
+    inputs.scrape && activeUrl && inputs.scrape.url === activeUrl ? inputs.scrape : null;
+  const autoScrape =
+    inputs.autoScrape && activeUrl && inputs.autoScrape.url === activeUrl
+      ? inputs.autoScrape
+      : null;
+  // Use manual if present, else fall through to auto. Auto is the common
+  // path now that background capture is on by default.
+  const scrape = manualScrape ?? autoScrape?.soup ?? null;
+  const scrapeCapturedAt = manualScrape
+    ? manualScrape.capturedAt
+    : autoScrape?.capturedAt ?? null;
+
+  if (scrape && scrapeCapturedAt !== null) {
     // Article body in every variation we have. NO truncation.
     ctx.clean_content_markdown = scrape.article.content_markdown;
     ctx.clean_content_html = scrape.article.content_html_safe;
@@ -257,8 +277,17 @@ export async function buildChatContext(
     // Metadata bundle (slightly different from page_overview — based on
     // the captured DOM, not the live one).
     ctx.scrape_metadata = scrape.metadata;
-    ctx.scrape_captured_at = new Date(scrape.capturedAt).toISOString();
+    ctx.scrape_captured_at = new Date(scrapeCapturedAt).toISOString();
+    ctx.scrape_age_ms = Math.max(0, Date.now() - scrapeCapturedAt);
     ctx.raw_html_size = scrape.raw_html_size;
+
+    // Provenance — lets the agent reason about freshness + whether lazy
+    // content was caught.
+    ctx.scrape_source = manualScrape ? 'manual' : 'auto-background';
+    ctx.scrape_used_full_scroll = manualScrape ? false : !!autoScrape?.usedFullScroll;
+    if (autoScrape && autoScrape.initialScrollY != null) {
+      ctx.user_scroll_y_before_capture = autoScrape.initialScrollY;
+    }
   }
 
   // ── Capture history for this URL (Supabase recognition row) ───────────────

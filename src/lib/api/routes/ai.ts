@@ -10,8 +10,22 @@ export const agentExecutePath = (agentId: string): string =>
   `/ai/agent/${encodeURIComponent(agentId)}`;
 
 /**
- * AgentStartRequest shape (subset — full schema in api-types.ts).
- * Matches the live FastAPI route as of 2026-04-30.
+ * Capability-based client envelope. Replaces the old `client_tools: string[]`
+ * field. The server registers a `browser-dom` capability whose discovery
+ * tool (`load_browser_tools`) reads `state["browser-dom"]` to decide which
+ * tools to register for this turn.
+ *
+ * Source of truth for the per-capability state shape:
+ *   types/server-handoff/browser-dom-capability.json
+ */
+export interface AgentClientEnvelope {
+  capabilities: string[];
+  state: Record<string, Record<string, unknown>>;
+}
+
+/**
+ * AgentStartRequest shape. Matches the live FastAPI route after the
+ * capability-based agent API rolled out (2026-05-01).
  */
 export interface AgentStartRequest {
   user_input?: string;
@@ -21,8 +35,14 @@ export interface AgentStartRequest {
   stream?: boolean;
   store?: boolean;
   debug?: boolean;
-  client_tools?: string[];
+  /**
+   * Capability declaration + per-capability state. The capability brings
+   * `load_browser_tools` (the discovery tool) online; everything else loads
+   * on demand. Replaces the old `client_tools` field.
+   */
+  client?: AgentClientEnvelope;
   custom_tools?: Record<string, unknown>[];
+  /** Model-facing context (page markdown, SEO, links, etc.). Distinct from `client.state`. */
   context?: Record<string, unknown>;
   source_app?: string;
   source_feature?: string;

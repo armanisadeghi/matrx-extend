@@ -126,7 +126,9 @@ export function useAiExtraction() {
         store: false,
         source_app: 'matrx-extend',
         source_feature: 'data-ai-extract',
-        client_tools: [],
+        // No browser-dom capability needed — this flow is pure extraction
+        // against page text we already captured. The server runs without
+        // any client-side tool round-trips.
       };
 
       try {

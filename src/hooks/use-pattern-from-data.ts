@@ -214,7 +214,9 @@ export function usePatternFromData() {
         store: false,
         source_app: 'matrx-extend',
         source_feature: 'data-pattern-from-data',
-        client_tools: [],
+        // No browser-dom capability needed — this flow synthesizes a CSS
+        // pattern from sample rows the user already extracted, without
+        // any browser tool round-trips.
       };
 
       try {

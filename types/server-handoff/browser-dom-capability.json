@@ -1,0 +1,934 @@
+{
+  "generated_at": "2026-05-03T04:47:00.008Z",
+  "source": "matrx-extend",
+  "capability_name": "browser-dom",
+  "payload_schema": {
+    "type": "object",
+    "title": "BrowserDomPayload",
+    "description": "Runtime state for the matrx-extend Chrome extension's browser-dom capability. Keeps tool-routing decisions data-driven: the discovery handler can filter the routing map by `is_admin`, by `optional_permissions_granted`, or by inspecting the user's actual browser state.",
+    "properties": {
+      "current_url": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "URL of the active tab. Null if no tab is focused or the URL is restricted."
+      },
+      "current_tab_id": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Chrome tab id of the active tab."
+      },
+      "current_window_id": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Chrome window id containing the active tab."
+      },
+      "page_title": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "page_lang": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "description": "IETF tag from <html lang=\"…\">."
+      },
+      "tab_status": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "enum": [
+          "loading",
+          "complete",
+          null
+        ]
+      },
+      "surface": {
+        "type": "string",
+        "enum": [
+          "assistant",
+          "pilot"
+        ],
+        "description": "Which side-panel surface initiated the request. Drives default category set: assistant=read-only, pilot=full kit."
+      },
+      "is_admin": {
+        "type": "boolean",
+        "description": "True if the user is in `public.admins`. Discovery handler should filter admin-only categories (debug, cookies, webmcp) and admin-only tools when this is false — the model shouldn't even see them."
+      },
+      "permission_mode": {
+        "type": "string",
+        "enum": [
+          "ask",
+          "act"
+        ],
+        "description": "Per-agent gate the client enforces locally for action-tier tools. Server doesn't enforce, but it's useful for prompt composition (e.g. tell the model 'every action will prompt the user')."
+      },
+      "desktop_bridge": {
+        "type": "string",
+        "enum": [
+          "native",
+          "http",
+          "none"
+        ],
+        "description": "Whether the matrx-local desktop bridge is reachable. When \"none\", the discovery handler should skip the `desktop_run_command` tool."
+      },
+      "onbox_ai_available": {
+        "type": "boolean",
+        "description": "True if the on-device Gemini Nano (chrome.ai) is exposed in the user's Chrome. When false, the discovery handler may want to surface the AI category but include a hint that all ai_* tools will return availability:unavailable."
+      },
+      "optional_permissions_granted": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Optional Chrome permissions the user has granted at runtime (e.g. ['debugger','cookies','pageCapture']). Discovery handler should filter tools whose `required_optional_permissions` aren't satisfied — those would fail at the dispatcher anyway."
+      },
+      "open_tab_count": {
+        "type": [
+          "integer",
+          "null"
+        ],
+        "description": "Number of tabs across all windows. Lightweight signal for \"this user has a lot going on\"."
+      },
+      "extension_version": {
+        "type": "string"
+      },
+      "extension_id": {
+        "type": "string"
+      },
+      "loaded_categories": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Categories the agent has already discovered in this conversation. The client tracks this from RESOURCE_CHANGED kind=active_tools events; the server can use it to detect when the model is re-discovering the same category."
+      }
+    },
+    "required": [
+      "current_url",
+      "current_tab_id",
+      "surface",
+      "is_admin",
+      "permission_mode",
+      "desktop_bridge",
+      "onbox_ai_available",
+      "optional_permissions_granted"
+    ],
+    "additionalProperties": false
+  },
+  "always_on_tools": [
+    "load_browser_tools"
+  ],
+  "category_routing": {
+    "core": [
+      "browser_batch",
+      "read_page",
+      "find",
+      "get_active_tab",
+      "take_screenshot",
+      "navigate_active_tab",
+      "click_element",
+      "type_into_element",
+      "ask_user"
+    ],
+    "page": [
+      "get_page_text",
+      "get_page_selection",
+      "read_active_page",
+      "query_elements",
+      "find_text_on_page",
+      "get_page_links",
+      "get_computed_style",
+      "get_element_at_point",
+      "inspect_element",
+      "get_form_fields"
+    ],
+    "interact": [
+      "scroll_page",
+      "wait_for",
+      "press_keys",
+      "hover_element",
+      "focus_element",
+      "blur_element",
+      "right_click_element"
+    ],
+    "forms": [
+      "select_dropdown_option",
+      "set_checkbox",
+      "set_radio",
+      "submit_form",
+      "file_upload"
+    ],
+    "tabs": [
+      "list_open_tabs",
+      "get_tab_groups",
+      "get_tab_info",
+      "open_new_tab",
+      "close_tab",
+      "switch_to_tab",
+      "duplicate_tab",
+      "pin_tab",
+      "mute_tab",
+      "reload_tab",
+      "go_back",
+      "go_forward",
+      "set_tab_zoom",
+      "move_tab",
+      "create_tab_group",
+      "add_tabs_to_group",
+      "remove_tabs_from_group",
+      "update_tab_group"
+    ],
+    "history": [
+      "search_bookmarks",
+      "list_bookmark_tree",
+      "search_history",
+      "list_recent_history",
+      "list_downloads",
+      "list_recently_closed",
+      "restore_recently_closed"
+    ],
+    "ai": [
+      "ai_check_availability",
+      "ai_summarize",
+      "ai_classify",
+      "ai_extract_json",
+      "ai_translate",
+      "ai_detect_language",
+      "ai_proofread",
+      "ai_describe_image",
+      "ai_check_prompt_injection"
+    ],
+    "files": [
+      "set_clipboard",
+      "download_url",
+      "cancel_download",
+      "notify_user",
+      "save_page_as_mhtml"
+    ],
+    "memory": [
+      "get_extension_storage",
+      "list_extension_storage",
+      "set_extension_storage"
+    ],
+    "ask": [
+      "ask_user_choice",
+      "ask_user_secret",
+      "request_user_takeover",
+      "update_plan"
+    ],
+    "advanced": [
+      "execute_javascript",
+      "inject_stylesheet",
+      "remove_stylesheet",
+      "desktop_run_command"
+    ],
+    "debug": [
+      "cdp_attach",
+      "cdp_detach",
+      "cdp_attached_tabs",
+      "cdp_full_page_screenshot",
+      "cdp_a11y_tree",
+      "cdp_input_click_xy",
+      "cdp_input_type",
+      "cdp_network_capture_start",
+      "cdp_network_capture_drain",
+      "cdp_network_capture_stop",
+      "cdp_network_get_body",
+      "cdp_print_pdf",
+      "cdp_perf_metrics",
+      "cdp_emulate_device",
+      "cdp_clear_emulation",
+      "read_console_messages"
+    ],
+    "cookies": [
+      "get_cookies",
+      "set_cookie",
+      "delete_cookie"
+    ],
+    "webmcp": [
+      "webmcp_check_availability",
+      "webmcp_list_page_tools",
+      "webmcp_call_page_tool"
+    ]
+  },
+  "tool_metadata": {
+    "browser_batch": {
+      "tier": "read",
+      "category": "core",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "read_page": {
+      "tier": "read",
+      "category": "core",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "find": {
+      "tier": "read",
+      "category": "core",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "get_page_text": {
+      "tier": "read",
+      "category": "page",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "get_active_tab": {
+      "tier": "read",
+      "category": "core",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "get_page_selection": {
+      "tier": "read",
+      "category": "page",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "read_active_page": {
+      "tier": "read",
+      "category": "page",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "take_screenshot": {
+      "tier": "read",
+      "category": "core",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "query_elements": {
+      "tier": "read",
+      "category": "page",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "find_text_on_page": {
+      "tier": "read",
+      "category": "page",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "get_page_links": {
+      "tier": "read",
+      "category": "page",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "get_computed_style": {
+      "tier": "read",
+      "category": "page",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "get_element_at_point": {
+      "tier": "read",
+      "category": "page",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "inspect_element": {
+      "tier": "read",
+      "category": "page",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "list_open_tabs": {
+      "tier": "read",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "get_tab_groups": {
+      "tier": "read",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "get_tab_info": {
+      "tier": "read",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "search_bookmarks": {
+      "tier": "read",
+      "category": "history",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "list_bookmark_tree": {
+      "tier": "read",
+      "category": "history",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "search_history": {
+      "tier": "read",
+      "category": "history",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "list_recent_history": {
+      "tier": "read",
+      "category": "history",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "list_downloads": {
+      "tier": "read",
+      "category": "history",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "get_form_fields": {
+      "tier": "read",
+      "category": "page",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "get_extension_storage": {
+      "tier": "read",
+      "category": "memory",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "list_extension_storage": {
+      "tier": "read",
+      "category": "memory",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "ai_check_availability": {
+      "tier": "read",
+      "category": "ai",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "ai_summarize": {
+      "tier": "read",
+      "category": "ai",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "ai_classify": {
+      "tier": "read",
+      "category": "ai",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "ai_extract_json": {
+      "tier": "read",
+      "category": "ai",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "ai_translate": {
+      "tier": "read",
+      "category": "ai",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "ai_detect_language": {
+      "tier": "read",
+      "category": "ai",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "ai_proofread": {
+      "tier": "read",
+      "category": "ai",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "ai_describe_image": {
+      "tier": "read",
+      "category": "ai",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "ai_check_prompt_injection": {
+      "tier": "read",
+      "category": "ai",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "navigate_active_tab": {
+      "tier": "action",
+      "category": "core",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "click_element": {
+      "tier": "action",
+      "category": "core",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "type_into_element": {
+      "tier": "action",
+      "category": "core",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "scroll_page": {
+      "tier": "action",
+      "category": "interact",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "wait_for": {
+      "tier": "action",
+      "category": "interact",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "set_clipboard": {
+      "tier": "action",
+      "category": "files",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "press_keys": {
+      "tier": "action",
+      "category": "interact",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "hover_element": {
+      "tier": "action",
+      "category": "interact",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "focus_element": {
+      "tier": "action",
+      "category": "interact",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "blur_element": {
+      "tier": "action",
+      "category": "interact",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "right_click_element": {
+      "tier": "action",
+      "category": "interact",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "select_dropdown_option": {
+      "tier": "action",
+      "category": "forms",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "set_checkbox": {
+      "tier": "action",
+      "category": "forms",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "set_radio": {
+      "tier": "action",
+      "category": "forms",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "submit_form": {
+      "tier": "action",
+      "category": "forms",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "file_upload": {
+      "tier": "action",
+      "category": "forms",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "open_new_tab": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "close_tab": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "switch_to_tab": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "duplicate_tab": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "pin_tab": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "mute_tab": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "reload_tab": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "go_back": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "go_forward": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "set_tab_zoom": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "move_tab": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "create_tab_group": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "add_tabs_to_group": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "remove_tabs_from_group": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "update_tab_group": {
+      "tier": "action",
+      "category": "tabs",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "download_url": {
+      "tier": "action",
+      "category": "files",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "cancel_download": {
+      "tier": "action",
+      "category": "files",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "notify_user": {
+      "tier": "action",
+      "category": "files",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "list_recently_closed": {
+      "tier": "read",
+      "category": "history",
+      "admin_only": false,
+      "required_optional_permissions": [
+        "sessions"
+      ]
+    },
+    "restore_recently_closed": {
+      "tier": "action",
+      "category": "history",
+      "admin_only": false,
+      "required_optional_permissions": [
+        "sessions"
+      ]
+    },
+    "save_page_as_mhtml": {
+      "tier": "action",
+      "category": "files",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "pageCapture"
+      ]
+    },
+    "get_cookies": {
+      "tier": "read",
+      "category": "cookies",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "cookies"
+      ]
+    },
+    "set_cookie": {
+      "tier": "privileged",
+      "category": "cookies",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "cookies"
+      ]
+    },
+    "delete_cookie": {
+      "tier": "privileged",
+      "category": "cookies",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "cookies"
+      ]
+    },
+    "cdp_attach": {
+      "tier": "privileged",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "cdp_detach": {
+      "tier": "privileged",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "cdp_attached_tabs": {
+      "tier": "read",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "cdp_full_page_screenshot": {
+      "tier": "privileged",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "cdp_a11y_tree": {
+      "tier": "privileged",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "cdp_input_click_xy": {
+      "tier": "privileged",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "cdp_input_type": {
+      "tier": "privileged",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "cdp_network_capture_start": {
+      "tier": "privileged",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "cdp_network_capture_drain": {
+      "tier": "privileged",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "cdp_network_capture_stop": {
+      "tier": "privileged",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "cdp_network_get_body": {
+      "tier": "privileged",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "cdp_print_pdf": {
+      "tier": "privileged",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "cdp_perf_metrics": {
+      "tier": "read",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "cdp_emulate_device": {
+      "tier": "privileged",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "cdp_clear_emulation": {
+      "tier": "privileged",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "read_console_messages": {
+      "tier": "privileged",
+      "category": "debug",
+      "admin_only": true,
+      "required_optional_permissions": [
+        "debugger"
+      ]
+    },
+    "webmcp_check_availability": {
+      "tier": "read",
+      "category": "webmcp",
+      "admin_only": true,
+      "required_optional_permissions": []
+    },
+    "webmcp_list_page_tools": {
+      "tier": "read",
+      "category": "webmcp",
+      "admin_only": true,
+      "required_optional_permissions": []
+    },
+    "webmcp_call_page_tool": {
+      "tier": "action",
+      "category": "webmcp",
+      "admin_only": true,
+      "required_optional_permissions": []
+    },
+    "ask_user": {
+      "tier": "ask-user",
+      "category": "core",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "ask_user_choice": {
+      "tier": "ask-user",
+      "category": "ask",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "ask_user_secret": {
+      "tier": "ask-user",
+      "category": "ask",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "request_user_takeover": {
+      "tier": "ask-user",
+      "category": "ask",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "update_plan": {
+      "tier": "ask-user",
+      "category": "ask",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "execute_javascript": {
+      "tier": "privileged",
+      "category": "advanced",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "inject_stylesheet": {
+      "tier": "privileged",
+      "category": "advanced",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "remove_stylesheet": {
+      "tier": "privileged",
+      "category": "advanced",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "set_extension_storage": {
+      "tier": "privileged",
+      "category": "memory",
+      "admin_only": false,
+      "required_optional_permissions": []
+    },
+    "desktop_run_command": {
+      "tier": "privileged",
+      "category": "advanced",
+      "admin_only": false,
+      "required_optional_permissions": []
+    }
+  },
+  "totals": {
+    "tools": 103,
+    "categories": 14,
+    "admin_only_tools": 23,
+    "optional_perm_gated_tools": 22
+  }
+}

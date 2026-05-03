@@ -1,0 +1,150 @@
+/**
+ * Build the `client.state["browser-dom"]` payload the server-side
+ * `browser-dom` capability + `load_browser_tools` discovery handler needs
+ * to route which tools to register for this turn.
+ *
+ * Distinct from `buildChatContext`:
+ *   - `buildChatContext` returns ~50 keys of MODEL-FACING facts about the
+ *     active page (markdown, images, SEO, structured data). Big, rich.
+ *   - `build-browser-dom-state` returns ~12 keys of ORCHESTRATION metadata
+ *     (current_url, is_admin, desktop_bridge, granted-perm list). Small,
+ *     structured.
+ *
+ * Both ride on the same request — context as `context`, state as
+ * `client.state["browser-dom"]`. They are read by different code paths
+ * server-side.
+ *
+ * Source of truth for the schema:
+ *   types/server-handoff/browser-dom-capability.json → payload_schema
+ */
+
+import { ALL_OPTIONAL, hasOptionalPermissions } from '@/lib/permissions/optional';
+import { useAuthStore } from '@/state/auth';
+import { useChatStore } from '@/state/chat';
+import { useDesktopStore } from '@/state/desktop';
+
+export interface BrowserDomState {
+  current_url: string | null;
+  current_tab_id: number | null;
+  current_window_id: number | null;
+  page_title: string | null;
+  page_lang: string | null;
+  tab_status: 'loading' | 'complete' | null;
+  surface: 'assistant' | 'pilot';
+  is_admin: boolean;
+  permission_mode: 'ask' | 'act';
+  desktop_bridge: 'native' | 'http' | 'none';
+  onbox_ai_available: boolean;
+  optional_permissions_granted: string[];
+  open_tab_count: number | null;
+  extension_version: string;
+  extension_id: string;
+  loaded_categories: string[];
+}
+
+export interface BuildBrowserDomStateOpts {
+  /** Which surface initiated the request — drives default category visibility on the server. */
+  surface: 'assistant' | 'pilot';
+  /** Agent id, for per-agent permissionMode lookup. */
+  agentId?: string;
+  /** Categories the agent has discovered earlier in this conversation. */
+  loadedCategories?: string[];
+}
+
+async function detectOnboxAi(): Promise<boolean> {
+  try {
+    // Lightweight check — just look for any of the known global hooks.
+    // The full availability probe is the agent's `ai_check_availability`
+    // tool; we just need a yes/no signal here for routing.
+    const g = globalThis as unknown as Record<string, unknown>;
+    if (typeof g.LanguageModel !== 'undefined') return true;
+    if (typeof g.ai === 'object' && g.ai !== null) return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+async function queryActiveTab(): Promise<{
+  id: number | null;
+  windowId: number | null;
+  url: string | null;
+  title: string | null;
+  status: 'loading' | 'complete' | null;
+}> {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    return {
+      id: tab?.id ?? null,
+      windowId: tab?.windowId ?? null,
+      url: tab?.url ?? null,
+      title: tab?.title ?? null,
+      status: (tab?.status as 'loading' | 'complete' | undefined) ?? null,
+    };
+  } catch {
+    return { id: null, windowId: null, url: null, title: null, status: null };
+  }
+}
+
+async function listGrantedOptional(): Promise<string[]> {
+  const granted: string[] = [];
+  for (const p of ALL_OPTIONAL) {
+    if (await hasOptionalPermissions([p])) granted.push(p);
+  }
+  return granted;
+}
+
+async function pageLangFor(tabId: number | null): Promise<string | null> {
+  if (tabId == null) return null;
+  try {
+    const [first] = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => document.documentElement.lang || null,
+    });
+    return (first?.result as string | null) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function countOpenTabs(): Promise<number | null> {
+  try {
+    const tabs = await chrome.tabs.query({});
+    return tabs.length;
+  } catch {
+    return null;
+  }
+}
+
+export async function buildBrowserDomState(
+  opts: BuildBrowserDomStateOpts,
+): Promise<BrowserDomState> {
+  const auth = useAuthStore.getState();
+  const desktop = useDesktopStore.getState();
+  const tab = await queryActiveTab();
+  const [granted, lang, openTabCount, onboxAi] = await Promise.all([
+    listGrantedOptional(),
+    pageLangFor(tab.id),
+    countOpenTabs(),
+    detectOnboxAi(),
+  ]);
+  const permissionMode = useChatStore.getState().getPermissionMode(opts.agentId ?? null);
+  return {
+    current_url: tab.url,
+    current_tab_id: tab.id,
+    current_window_id: tab.windowId,
+    page_title: tab.title,
+    page_lang: lang,
+    tab_status: tab.status,
+    surface: opts.surface,
+    is_admin: auth.isAdmin,
+    permission_mode: permissionMode,
+    desktop_bridge: desktop.transport,
+    onbox_ai_available: onboxAi,
+    optional_permissions_granted: granted,
+    open_tab_count: openTabCount,
+    extension_version: chrome.runtime.getManifest().version,
+    extension_id: chrome.runtime.id,
+    loaded_categories: opts.loadedCategories ?? [],
+  };
+}

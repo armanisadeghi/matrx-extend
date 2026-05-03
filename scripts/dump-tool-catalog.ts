@@ -20,7 +20,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import process from 'node:process';
-import { buildToolCatalogManifest } from '../src/lib/tools/catalog';
+import { buildServerCapabilityHandoff, buildToolCatalogManifest } from '../src/lib/tools/catalog';
 
 interface CliArgs {
   out: string;
@@ -97,6 +97,17 @@ if (args.markdown) {
   writeFileSync(mdPath, toMarkdown(manifest));
   console.log(`✓ wrote markdown summary to ${mdPath}`);
 }
+
+// Server-side handoff bundle for the new capability-based agent API.
+// Drop next to the Python `browser-dom` capability + `load_browser_tools`
+// discovery handler. Source of truth for the routing rule.
+const handoff = buildServerCapabilityHandoff();
+const handoffPath = resolve(process.cwd(), 'types/server-handoff/browser-dom-capability.json');
+ensureDir(handoffPath);
+writeFileSync(handoffPath, JSON.stringify(handoff, null, 2));
+console.log(
+  `✓ wrote server-handoff manifest (${handoff.totals.tools} tools, ${handoff.totals.categories} categories) to ${handoffPath}`,
+);
 
 console.log('');
 console.log('Bundles:');

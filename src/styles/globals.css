@@ -28,6 +28,16 @@
   --radius-sm: calc(var(--radius) - 4px);
 
   --animate-spin-slow: spin 3s linear infinite;
+  --animate-text-shimmer: text-shimmer 2.4s ease-in-out infinite;
+}
+
+@keyframes text-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 :root {
