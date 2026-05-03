@@ -32,7 +32,9 @@ export type TransformName =
   | 'truncate80'
   | 'truncate200'
   | 'lowercase'
-  | 'uppercase';
+  | 'uppercase'
+  | 'formatImageDimensions'
+  | 'formatBytes';
 
 export interface InfoSpec {
   path: string;
@@ -44,7 +46,12 @@ export interface InlineConfig {
   hidden?: PhaseAware<boolean>;
   icon?: PhaseAware<IconName>;
   prefix?: PhaseAware<string>;
-  name?: PhaseAware<string>;
+  /**
+   * Default: titleCase(toolName). Pass `''` to suppress, a literal string to
+   * override, or an `InfoSpec` to pull the name from args/output (e.g. the
+   * category passed into `load_browser_tools`, or the title of the active tab).
+   */
+  name?: PhaseAware<string | InfoSpec>;
   suffix?: PhaseAware<string>;
   info?: PhaseAware<string | InfoSpec>;
   color?: PhaseAware<ColorToken>;
@@ -70,7 +77,10 @@ export type FieldComponentName =
   | 'Code'
   | 'Json'
   | 'Image'
-  | 'Badge';
+  | 'Base64Image'
+  | 'Badge'
+  | 'Chips'
+  | 'TabCard';
 
 export interface KeyDisplay {
   key: string;

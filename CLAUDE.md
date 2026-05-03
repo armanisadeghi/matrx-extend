@@ -514,9 +514,35 @@ Available on demand:
 - `viewport_state` — viewport dimensions + scroll position
 - `prior_capture` — Supabase recognition row when the URL has been captured
 
-Dynamic (added when detected):
-- `article_summary` — when `page_brief.kind === 'article'`
-- `product_data` — when product schema is detected
+Dynamic (added only when detected — the surface "guesses" what the agent
+might want and attaches it):
+- `page_dismissibles` — when modals/banners are on screen. Each item has
+  `kind` (consent | newsletter | paywall | age-gate | app-install | modal),
+  `text_excerpt`, and `close_selector` so the agent can dismiss directly.
+  Targets BrowserArena's #2 universal failure mode.
+- `form_elements` — when forms exist in main area. Full schema per form:
+  fields with type, label, required, validation hints, current value,
+  error message, options for selects/radios, submit_selector. Targets the
+  highest-ROI workflow category in the field.
+- `result_list` — when a repeating-card list (≥5 similar siblings with
+  link anchors) is detected in main. Each item has title, url, price,
+  rating, image_alt. URL-derived item URLs survive virtualized scroll.
+- `pull_request` — when URL matches GitHub/GitLab PR. Provider, repo,
+  PR number, title, author, state (open/merged/closed/draft), base/head
+  branches, files-changed/additions/deletions, top-files-by-churn, review
+  summary (approvals/comments/requested_changes), on_files_tab flag.
+- `email_inbox` — when on Gmail inbox/list view. Provider, view name,
+  unread count, threads with sender/subject/excerpt/time/unread/attachment.
+- `email_thread` — when viewing a single Gmail conversation. Subject,
+  participants, ordered messages (from/time/body_excerpt).
+- `article_summary` — when `page_brief.kind === 'article'`.
+- `product_data` — when product schema is detected.
+
+`page_brief.snapshot.ready` — populated by a 300ms MutationObserver pass.
+Tells the agent whether it's safe to screenshot or read right now:
+`{ document, observed_idle, mutation_count, loading_indicators,
+   pending_images, load_event_ms }`. When `observed_idle: false`, the
+page is mid-render; the agent should `wait_for` before reading.
 
 ### Switching shapes
 

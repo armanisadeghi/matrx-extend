@@ -183,6 +183,13 @@ export async function quickPrompt(
   if (availability === 'unavailable') {
     return { ok: false, reason: 'on-device model unavailable', availability };
   }
+  // Bail fast when the model isn't ready. `create()` blocks on download
+  // (potentially minutes) for 'downloadable' / 'downloading' — this is the
+  // freeze callers saw. The agent falls back to text similarity instead of
+  // hanging on Nano.
+  if (availability === 'downloadable' || availability === 'downloading') {
+    return { ok: false, reason: `on-device model ${availability}`, availability };
+  }
   const createOpts: Record<string, unknown> = {};
   if (opts?.systemPrompt) {
     createOpts.initialPrompts = [{ role: 'system', content: opts.systemPrompt }];
@@ -206,116 +213,20 @@ export async function quickPrompt(
   } catch (cbErr) {
     console.warn('[onbox-ai] onRequest callback threw', cbErr);
   }
-  // Warm-session path: keep a base session alive per createOpts shape and
-  // clone it for each call so model weights stay loaded but conversation
-  // context doesn't leak across calls. Saves the cold-start cost (~hundreds
-  // of ms to >1s on first prep) on every subsequent invocation.
-  const cacheKey = warmSessionKey(createOpts);
+  // Plain create+destroy. We tried a warm-session-with-clone path but it
+  // regressed on Chrome builds that don't expose session.clone() — those
+  // builds did 2× the work of the original. Will revisit with proper
+  // feature detection when there's a clean way to probe clone availability.
   let session: PromptSession | null = null;
-  let isClone = false;
   try {
-    const base = await getOrCreateBaseSession(ai.languageModel, cacheKey, createOpts);
-    if (base?.clone) {
-      session = await base.clone();
-      isClone = true;
-    } else {
-      session = await ai.languageModel.create(createOpts);
-    }
+    session = await ai.languageModel.create(createOpts);
     const out = await session.prompt(input, promptOpts);
-    touchWarmSession(cacheKey);
     return { ok: true, data: out, availability };
   } catch (err) {
-    // If the base session has gone bad, evict it so the next call rebuilds.
-    invalidateWarmSession(cacheKey);
     return { ok: false, reason: (err as Error).message ?? String(err), availability };
   } finally {
-    // Clones are short-lived; the base session stays warm in the cache.
-    if (isClone) session?.destroy?.();
+    session?.destroy?.();
   }
-}
-
-// ─── warm-session cache ─────────────────────────────────────────────────────
-//
-// Sessions are cached by a stable hash of their createOptions. The base
-// session is kept alive; per-call clones are spawned for actual prompts so
-// conversation context never accumulates. An idle timer destroys the base
-// after IDLE_TTL_MS without use.
-
-interface WarmEntry {
-  promise: Promise<PromptSession>;
-  lastUsed: number;
-  timer: ReturnType<typeof setTimeout> | null;
-}
-const warmSessions = new Map<string, WarmEntry>();
-const IDLE_TTL_MS = 5 * 60_000;
-
-function warmSessionKey(createOpts: Record<string, unknown>): string {
-  try {
-    return JSON.stringify(createOpts);
-  } catch {
-    return '__unkeyable__';
-  }
-}
-
-async function getOrCreateBaseSession(
-  model: PromptModel,
-  key: string,
-  createOpts: Record<string, unknown>,
-): Promise<PromptSession> {
-  const existing = warmSessions.get(key);
-  if (existing) {
-    existing.lastUsed = Date.now();
-    return existing.promise;
-  }
-  const promise = model.create(createOpts);
-  const entry: WarmEntry = { promise, lastUsed: Date.now(), timer: null };
-  warmSessions.set(key, entry);
-  scheduleIdleEviction(key);
-  // If the create itself fails, evict so the next caller can retry from scratch.
-  promise.catch(() => warmSessions.delete(key));
-  return promise;
-}
-
-function touchWarmSession(key: string): void {
-  const entry = warmSessions.get(key);
-  if (!entry) return;
-  entry.lastUsed = Date.now();
-  scheduleIdleEviction(key);
-}
-
-function scheduleIdleEviction(key: string): void {
-  const entry = warmSessions.get(key);
-  if (!entry) return;
-  if (entry.timer) clearTimeout(entry.timer);
-  entry.timer = setTimeout(() => {
-    void evictIfIdle(key);
-  }, IDLE_TTL_MS);
-}
-
-async function evictIfIdle(key: string): Promise<void> {
-  const entry = warmSessions.get(key);
-  if (!entry) return;
-  if (Date.now() - entry.lastUsed < IDLE_TTL_MS) {
-    scheduleIdleEviction(key);
-    return;
-  }
-  warmSessions.delete(key);
-  try {
-    const session = await entry.promise;
-    session.destroy?.();
-  } catch {
-    /* base session never resolved — nothing to clean up */
-  }
-}
-
-function invalidateWarmSession(key: string): void {
-  const entry = warmSessions.get(key);
-  if (!entry) return;
-  warmSessions.delete(key);
-  if (entry.timer) clearTimeout(entry.timer);
-  entry.promise
-    .then((s) => s.destroy?.())
-    .catch(() => undefined);
 }
 
 /**

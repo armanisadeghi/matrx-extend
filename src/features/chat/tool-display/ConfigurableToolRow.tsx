@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
 import { Component, type ComponentType, type ReactNode, useState } from 'react';
 import type { ToolTimelineEntry } from '../ToolTimelineRow';
+import { CopyToolButton } from './CopyToolButton';
 import {
   applyTransforms,
   getByPath,
@@ -52,7 +53,8 @@ export function ConfigurableToolRow({ entry, kind, cfg }: Props) {
 
   const prefix = resolvePhase(inline.prefix, phase) ?? '';
   const namePart = resolvePhase(inline.name, phase);
-  const displayName = namePart === undefined ? titleCase(entry.toolName) : namePart;
+  const resolvedName = resolveNamePart(entry, namePart);
+  const displayName = resolvedName === undefined ? titleCase(entry.toolName) : resolvedName;
   const suffix = resolvePhase(inline.suffix, phase) ?? '';
   const infoText = resolveInfo(entry, resolvePhase(inline.info, phase));
 
@@ -63,42 +65,60 @@ export function ConfigurableToolRow({ entry, kind, cfg }: Props) {
   // client: subtle background, no chevron). Keep the look intact.
   const outerClass =
     kind === 'server'
-      ? 'rounded-md border border-border/60 bg-card/40 text-[12px]'
-      : 'rounded-md border bg-card/60 px-2.5 py-1.5 text-[12px]';
-  const buttonClass =
+      ? 'group rounded-md border border-border/60 bg-card/40 text-[12px]'
+      : 'group rounded-md border bg-card/60 px-2.5 py-1.5 text-[12px]';
+  const rowClass =
     kind === 'server'
-      ? 'flex w-full items-center gap-2 px-2.5 py-1.5 text-left hover:bg-muted/30'
-      : 'flex w-full items-center gap-2 text-left';
+      ? 'flex w-full items-center gap-2 px-2.5 py-1.5 hover:bg-muted/30'
+      : 'flex w-full items-center gap-2';
+  const buttonClass = 'flex flex-1 items-center gap-2 text-left';
 
   return (
     <div className={outerClass}>
-      <button type="button" onClick={() => setOpen((v) => !v)} className={buttonClass} aria-expanded={open}>
-        {kind === 'server' && (
-          <ChevronRight
-            className={`size-3 text-muted-foreground transition-transform ${open ? 'rotate-90' : ''}`}
-          />
-        )}
-        <Icon className={cn('size-3.5 shrink-0', colorClass, shouldSpin && 'animate-spin')} />
-        {headerLabel && <span className="truncate text-foreground">{headerLabel}</span>}
-        {infoText && (
-          <span
-            className={cn(
-              'text-muted-foreground',
-              inline.isMultiline ? 'whitespace-pre-wrap' : 'truncate',
-            )}
-          >
-            {infoText}
-          </span>
-        )}
-        {phase !== 'started' && entry.endedAt && (
-          <span className="ml-auto text-[10px] text-muted-foreground">
-            {Math.max(1, entry.endedAt - entry.startedAt)}ms
-          </span>
-        )}
-      </button>
-      {open && (
-        <ExpandedBody entry={entry} kind={kind} cfg={cfg} />
-      )}
+      <div className={rowClass}>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className={buttonClass}
+          aria-expanded={open}
+        >
+          {kind === 'server' && (
+            <ChevronRight
+              className={`size-3 text-muted-foreground transition-transform ${open ? 'rotate-90' : ''}`}
+            />
+          )}
+          <Icon className={cn('size-3.5 shrink-0', colorClass, shouldSpin && 'animate-spin')} />
+          {headerLabel && <span className="truncate text-foreground">{headerLabel}</span>}
+          {infoText && (
+            <span
+              className={cn(
+                'text-muted-foreground',
+                inline.isMultiline ? 'whitespace-pre-wrap' : 'truncate',
+              )}
+            >
+              {infoText}
+            </span>
+          )}
+          {phase !== 'started' && entry.endedAt && (
+            <span className="ml-auto text-[10px] text-muted-foreground">
+              {Math.max(1, entry.endedAt - entry.startedAt)}ms
+            </span>
+          )}
+        </button>
+        <CopyToolButton
+          data={{
+            toolName: entry.toolName,
+            args: entry.args,
+            result: entry.output,
+            message: entry.message,
+            phase,
+            startedAt: entry.startedAt,
+            endedAt: entry.endedAt,
+            callId: entry.callId,
+          }}
+        />
+      </div>
+      {open && <ExpandedBody entry={entry} kind={kind} cfg={cfg} />}
     </div>
   );
 }
@@ -231,7 +251,12 @@ function CustomResultField({
     console.warn(`[tool-display] unknown field component: "${info.component}"`);
     return null;
   }
-  const raw = info.key.includes('.') ? lookupShallow(result, info.key) : result[info.key];
+  const raw =
+    !info.key || info.key === '*'
+      ? result
+      : info.key.includes('.')
+        ? lookupShallow(result, info.key)
+        : result[info.key];
   if (raw == null || raw === '') {
     if (info.fallback) {
       return <FieldComponent value={info.fallback} className={info.className} />;
@@ -293,6 +318,20 @@ function titleCase(name: string): string {
     .filter(Boolean)
     .map((p) => (p[0] ? p[0].toUpperCase() + p.slice(1) : p))
     .join(' ');
+}
+
+/**
+ * `name` accepts a literal string OR an `InfoSpec`. A literal '' suppresses
+ * the auto title-case; a missing/empty `InfoSpec` resolution does the same.
+ * Returns undefined to mean "fall back to titleCase(toolName)".
+ */
+function resolveNamePart(
+  entry: ToolTimelineEntry,
+  value: string | InfoSpec | undefined,
+): string | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value === 'string') return value;
+  return resolveInfo(entry, value);
 }
 
 function resolveInfo(entry: ToolTimelineEntry, info: string | InfoSpec | undefined): string {

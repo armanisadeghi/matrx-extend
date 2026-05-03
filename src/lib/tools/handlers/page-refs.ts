@@ -83,8 +83,43 @@ interface CachedScrape {
   };
 }
 
-const SCRAPE_TTL_MS = 5_000;
+// 60s TTL — refs survive in the DOM as long as the page hasn't been replaced
+// or another read_page hasn't run. URL/tab change invalidates via the chrome
+// listeners below. 5s was too aggressive: agents often think for several
+// seconds between read_page and a follow-up find/click.
+const SCRAPE_TTL_MS = 60_000;
 let lastScrape: CachedScrape | null = null;
+
+/**
+ * External entry point for warming the cache from the context-build pipeline.
+ * Runs a read_page with sensible find-friendly defaults if no fresh entry
+ * exists. Quiet — never throws; just drops on the floor on error.
+ */
+export async function prewarmReadPageCache(tabId: number): Promise<void> {
+  const fresh = getFreshScrape(tabId, { interactive_only: true, include_text: true });
+  if (fresh) return;
+  try {
+    await read_page.run(
+      {
+        tab_id: tabId,
+        interactive_only: true,
+        max_nodes: 200,
+        include_hidden: false,
+        include_text: true,
+        include_bounds: false,
+      },
+      {
+        conversationId: null,
+        runId: 'prewarm',
+        callId: 'prewarm',
+        agentName: null,
+        permissionMode: 'act',
+      } as never,
+    );
+  } catch {
+    /* ignore — pre-warm is best-effort */
+  }
+}
 
 function rememberScrape(s: CachedScrape): void {
   lastScrape = s;

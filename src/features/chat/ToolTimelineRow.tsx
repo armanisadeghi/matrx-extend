@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { ConfigurableToolRow, ToolDisplayBoundary } from './tool-display/ConfigurableToolRow';
+import { CopyToolButton } from './tool-display/CopyToolButton';
 import { toolDisplayRegistry } from './tool-display/registry';
 
 /**
@@ -57,28 +58,42 @@ function DefaultToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {
   const argSummary = summarize(entry.args);
 
   return (
-    <div className="rounded-md border bg-card/60 px-2.5 py-1.5 text-[12px]">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-2 text-left"
-      >
-        <Icon
-          className={cn(
-            'size-3.5 shrink-0',
-            entry.phase === 'started' && 'animate-spin text-primary',
-            entry.phase === 'completed' && 'text-emerald-600 dark:text-emerald-400',
-            entry.phase === 'error' && 'text-red-600 dark:text-red-400',
+    <div className="group rounded-md border bg-card/60 px-2.5 py-1.5 text-[12px]">
+      <div className="flex w-full items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="flex flex-1 items-center gap-2 text-left"
+        >
+          <Icon
+            className={cn(
+              'size-3.5 shrink-0',
+              entry.phase === 'started' && 'animate-spin text-primary',
+              entry.phase === 'completed' && 'text-emerald-600 dark:text-emerald-400',
+              entry.phase === 'error' && 'text-red-600 dark:text-red-400',
+            )}
+          />
+          <span className="font-mono text-[11px] font-medium">{entry.toolName}</span>
+          {argSummary && <span className="truncate text-muted-foreground">{argSummary}</span>}
+          {entry.phase === 'completed' && entry.endedAt && (
+            <span className="ml-auto text-[10px] text-muted-foreground">
+              {Math.max(1, entry.endedAt - entry.startedAt)}ms
+            </span>
           )}
+        </button>
+        <CopyToolButton
+          data={{
+            toolName: entry.toolName,
+            args: entry.args,
+            result: entry.output,
+            message: entry.message,
+            phase: entry.phase,
+            startedAt: entry.startedAt,
+            endedAt: entry.endedAt,
+            callId: entry.callId,
+          }}
         />
-        <span className="font-mono text-[11px] font-medium">{entry.toolName}</span>
-        {argSummary && <span className="truncate text-muted-foreground">{argSummary}</span>}
-        {entry.phase === 'completed' && entry.endedAt && (
-          <span className="ml-auto text-[10px] text-muted-foreground">
-            {Math.max(1, entry.endedAt - entry.startedAt)}ms
-          </span>
-        )}
-      </button>
+      </div>
       {open && (
         <div className="mt-1.5 space-y-1.5 border-t pt-1.5">
           <DetailBlock label="args" value={entry.args} />

@@ -21,6 +21,7 @@ export interface BriefBlock {
     | 'documentation'
     | 'article'
     | 'product'
+    | 'product-listing'
     | 'search-results'
     | 'form'
     | 'login-wall'
@@ -38,6 +39,35 @@ export interface BriefBlock {
    * for orientation; refs come from a fresh read_page on demand.
    */
   main_interactive: Array<{ role: string; name: string; tag: string }>;
+  /**
+   * Dismissible overlays — cookie/consent banners, paywalls, signup walls,
+   * newsletter popups. Each entry includes a stable selector for the close
+   * button when one is found. Empty array when nothing dismissible is up.
+   *
+   * Direct attack on BrowserArena's #2 universal failure mode: agents
+   * struggle to dismiss popups, often hallucinating that they did.
+   */
+  dismissibles: Array<{
+    kind: 'consent' | 'newsletter' | 'app-install' | 'paywall' | 'age-gate' | 'modal';
+    text_excerpt: string;
+    close_selector: string | null;
+    close_label: string | null;
+  }>;
+  /**
+   * Repeating-card list detected in main area (search results, product
+   * listings, item grids). Populated only when ≥5 similar siblings with
+   * link anchors are found. URL-derived item IDs survive virtualized scroll.
+   */
+  result_list: {
+    count: number;
+    items: Array<{
+      title: string;
+      url: string;
+      price: string | null;
+      rating: string | null;
+      image_alt: string | null;
+    }>;
+  } | null;
   /** Counts of what was trimmed — the "more available" honesty signal. */
   more_available: {
     main_interactive_total: number;
@@ -248,29 +278,158 @@ export async function probeActivePage(tabId: number): Promise<PageProbe | null> 
           flags.push('login_wall');
         }
 
-        // Consent / paywall overlay heuristic: large fixed-position overlay.
-        const overlays = Array.from(
-          document.querySelectorAll<HTMLElement>('div, section, dialog, aside'),
+        // ── dismissibles inventory ──────────────────────────────────────────
+        // Find dismissible overlays (modal-sized, high z-index, fixed/sticky)
+        // and their close buttons. Threshold is more permissive than the
+        // "blocking overlay" check above so we catch newsletter popups too.
+        const overlayCandidates = Array.from(
+          document.querySelectorAll<HTMLElement>('div, section, dialog, aside, [role="dialog"]'),
         ).filter((el) => {
           const s = window.getComputedStyle(el);
           if (s.position !== 'fixed' && s.position !== 'sticky') return false;
           const z = parseInt(s.zIndex, 10);
-          if (Number.isNaN(z) || z < 1000) return false;
+          if (Number.isNaN(z) || z < 100) return false;
           const rect = el.getBoundingClientRect();
-          return rect.width > window.innerWidth * 0.5 && rect.height > window.innerHeight * 0.3;
+          // Modal-sized, not just a toast.
+          return rect.width > window.innerWidth * 0.3 && rect.height > window.innerHeight * 0.2;
         });
-        if (overlays.length > 0) {
-          const overlayText = (overlays[0]?.innerText ?? '').toLowerCase();
-          if (/cookie|consent|accept|gdpr|privacy/.test(overlayText)) {
-            flags.push('consent_overlay');
-          } else if (/subscribe|sign up to read|create.*account|paywall/.test(overlayText)) {
-            flags.push('paywall_or_signup_wall');
-          } else if (/verify (your )?age|are you 18|over 21/.test(overlayText)) {
-            flags.push('age_gate');
-          }
+
+        function classifyOverlay(text: string): BriefBlock['dismissibles'][number]['kind'] {
+          const t = text.toLowerCase();
+          if (/cookie|consent|accept all|gdpr|privacy/.test(t)) return 'consent';
+          if (/subscribe|sign up to read|create.*account|continue reading|unlock/.test(t))
+            return 'paywall';
+          if (/verify (your )?age|are you (over )?(18|21)|adult content/.test(t)) return 'age-gate';
+          if (/newsletter|email updates|join our list|stay in the loop|exclusive offers/.test(t))
+            return 'newsletter';
+          if (/install (our )?app|open in app|download the app|get the app/.test(t))
+            return 'app-install';
+          return 'modal';
         }
 
+        function stableSelectorFor(el: Element): string {
+          if (el instanceof HTMLElement && el.id) return `#${CSS.escape(el.id)}`;
+          const aria = el.getAttribute('aria-label');
+          if (aria) return `${el.tagName.toLowerCase()}[aria-label="${CSS.escape(aria)}"]`;
+          const dt = el.getAttribute('data-testid');
+          if (dt) return `${el.tagName.toLowerCase()}[data-testid="${CSS.escape(dt)}"]`;
+          // Fallback: nth-of-type chain (max 4 levels)
+          const parts: string[] = [];
+          let node: Element | null = el;
+          while (node && node !== document.body && parts.length < 4) {
+            const cur: Element = node;
+            const tag = cur.tagName.toLowerCase();
+            const parent = cur.parentElement;
+            if (!parent) {
+              parts.unshift(tag);
+              break;
+            }
+            const sibs = Array.from(parent.children).filter((c) => c.tagName === cur.tagName);
+            const idx = sibs.indexOf(cur) + 1;
+            parts.unshift(sibs.length > 1 ? `${tag}:nth-of-type(${idx})` : tag);
+            node = parent;
+          }
+          return parts.join(' > ');
+        }
+
+        function findCloseButton(
+          el: HTMLElement,
+        ): { selector: string; label: string } | null {
+          const candidates = el.querySelectorAll<HTMLElement>(
+            'button, a, [role="button"], [aria-label]',
+          );
+          for (const c of Array.from(candidates)) {
+            const aria = (c.getAttribute('aria-label') ?? '').toLowerCase();
+            const text = (c.textContent ?? '').trim();
+            const title = (c.getAttribute('title') ?? '').toLowerCase();
+            if (/^(close|dismiss|reject|deny|no thanks|maybe later|not now|decline)$/i.test(text))
+              return { selector: stableSelectorFor(c), label: text };
+            if (/close|dismiss|reject all/.test(aria))
+              return { selector: stableSelectorFor(c), label: aria };
+            if (/close|dismiss/.test(title))
+              return { selector: stableSelectorFor(c), label: title };
+            if (text === '×' || text === '✕' || text === '✖' || text === 'X')
+              return { selector: stableSelectorFor(c), label: 'close icon' };
+          }
+          return null;
+        }
+
+        const dismissibles: BriefBlock['dismissibles'] = [];
+        for (const overlay of overlayCandidates.slice(0, 5)) {
+          const text = (overlay.innerText ?? '').trim();
+          if (!text) continue;
+          const close = findCloseButton(overlay);
+          dismissibles.push({
+            kind: classifyOverlay(text),
+            text_excerpt: text.slice(0, 200),
+            close_selector: close?.selector ?? null,
+            close_label: close?.label ?? null,
+          });
+        }
+        // Map dismissibles → flags for legacy consumers.
+        if (dismissibles.some((d) => d.kind === 'consent')) flags.push('consent_overlay');
+        if (dismissibles.some((d) => d.kind === 'paywall')) flags.push('paywall_or_signup_wall');
+        if (dismissibles.some((d) => d.kind === 'age-gate')) flags.push('age_gate');
+
         if (document.readyState !== 'complete') flags.push('not_ready');
+
+        // ── result list detection ───────────────────────────────────────────
+        // Find the largest cluster of similar siblings in main with link
+        // anchors. Pure pattern detection — works on search results, product
+        // grids, news lists, etc.
+        function detectResultList(): BriefBlock['result_list'] {
+          const root = mainEl ?? document.body;
+          if (!root) return null;
+          const containers = root.querySelectorAll<HTMLElement>(
+            'ul, ol, [role="list"], div, section',
+          );
+          let best: { items: HTMLElement[]; score: number } | null = null;
+          for (const container of Array.from(containers)) {
+            const children = Array.from(container.children) as HTMLElement[];
+            if (children.length < 5) continue;
+            // Tag uniformity check: ≥80% same tag
+            const tagCounts = new Map<string, number>();
+            for (const c of children) {
+              tagCounts.set(c.tagName, (tagCounts.get(c.tagName) ?? 0) + 1);
+            }
+            const dominant = Math.max(...tagCounts.values());
+            if (dominant < children.length * 0.8) continue;
+            // Each item should have a link anchor
+            const withLinks = children.filter((c) => c.querySelector('a[href]'));
+            if (withLinks.length < 5) continue;
+            // Inner text length should be in a reasonable range (not pure links)
+            const avgTextLen =
+              withLinks.reduce((sum, el) => sum + (el.innerText ?? '').length, 0) /
+              withLinks.length;
+            if (avgTextLen < 20 || avgTextLen > 2000) continue;
+            // Score: more items + reasonable text density
+            const score = withLinks.length;
+            if (!best || score > best.score) best = { items: withLinks, score };
+          }
+          if (!best) return null;
+          const items = best.items.slice(0, 30).map((item) => {
+            const link = item.querySelector('a[href]') as HTMLAnchorElement | null;
+            const heading = item.querySelector('h1, h2, h3, h4, h5, [role="heading"]');
+            const title = (heading?.textContent ?? link?.textContent ?? '').trim().slice(0, 200);
+            const itemText = item.innerText ?? '';
+            const priceMatch = itemText.match(
+              /[$€£¥₹]\s*[\d,]+(?:\.\d+)?|\b\d+(?:\.\d+)?\s*(?:USD|EUR|GBP|CAD|AUD)\b/i,
+            );
+            const ratingMatch = itemText.match(
+              /(\d(?:\.\d)?)\s*(?:\/|out of)\s*(?:5|10)|★+|⭐+/,
+            );
+            const img = item.querySelector('img');
+            return {
+              title,
+              url: link?.href ?? '',
+              price: priceMatch?.[0]?.trim() ?? null,
+              rating: ratingMatch?.[0]?.trim() ?? null,
+              image_alt: img?.getAttribute('alt') || null,
+            };
+          });
+          return { count: best.items.length, items };
+        }
+        const resultList = detectResultList();
 
         // ── brief: kind ─────────────────────────────────────────────────────
         let kind: BriefBlock['kind'] = 'unknown';
@@ -296,10 +455,17 @@ export async function probeActivePage(tabId: number): Promise<PageProbe | null> 
         ) {
           kind = 'product';
         } else if (
-          /search|results|query/i.test(location.search) ||
+          // Search-results: explicit search query in URL or role=search box.
+          /\?(?:q|query|search|s)=|\/search\b|\/s\?/i.test(location.href) ||
           document.querySelector('[role="search"]') !== null
         ) {
           kind = 'search-results';
+        } else if (
+          // Product-listing: result list detected with prices on most items.
+          resultList &&
+          resultList.items.filter((i) => i.price !== null).length >= resultList.items.length * 0.5
+        ) {
+          kind = 'product-listing';
         } else if (
           mainTextLen > 1500 &&
           (document.querySelector('article') !== null ||
@@ -356,6 +522,8 @@ export async function probeActivePage(tabId: number): Promise<PageProbe | null> 
             headings,
             primary_action: primaryAction,
             main_interactive: mainSample,
+            dismissibles,
+            result_list: resultList,
             more_available: {
               main_interactive_total: mainInteractive.length,
               chrome_elements: chromeInteractiveCount,

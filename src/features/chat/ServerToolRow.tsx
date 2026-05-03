@@ -13,6 +13,7 @@ import type { ServerToolCall } from '@/state/chat';
 import { AlertTriangle, CheckCircle2, ChevronRight, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { ConfigurableToolRow, ToolDisplayBoundary } from './tool-display/ConfigurableToolRow';
+import { CopyToolButton } from './tool-display/CopyToolButton';
 import { toolDisplayRegistry } from './tool-display/registry';
 import type { ToolTimelineEntry } from './ToolTimelineRow';
 
@@ -55,33 +56,47 @@ function DefaultServerToolRow({ tool }: { tool: ServerToolCall }) {
     tool.phase === 'started' ? Loader2 : tool.phase === 'error' ? AlertTriangle : CheckCircle2;
 
   return (
-    <div className="rounded-md border border-border/60 bg-card/40 text-[12px]">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left hover:bg-muted/30"
-        aria-expanded={open}
-      >
-        <ChevronRight
-          className={`size-3 text-muted-foreground transition-transform ${
-            open ? 'rotate-90' : ''
-          }`}
-        />
-        <Icon
-          className={cn(
-            'size-3.5 shrink-0',
-            tool.phase === 'started' && 'animate-spin text-primary',
-            tool.phase === 'completed' && 'text-emerald-600 dark:text-emerald-400',
-            tool.phase === 'error' && 'text-red-600 dark:text-red-400',
+    <div className="group rounded-md border border-border/60 bg-card/40 text-[12px]">
+      <div className="flex w-full items-center gap-2 px-2.5 py-1.5 hover:bg-muted/30">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="flex flex-1 items-center gap-2 text-left"
+          aria-expanded={open}
+        >
+          <ChevronRight
+            className={`size-3 text-muted-foreground transition-transform ${
+              open ? 'rotate-90' : ''
+            }`}
+          />
+          <Icon
+            className={cn(
+              'size-3.5 shrink-0',
+              tool.phase === 'started' && 'animate-spin text-primary',
+              tool.phase === 'completed' && 'text-emerald-600 dark:text-emerald-400',
+              tool.phase === 'error' && 'text-red-600 dark:text-red-400',
+            )}
+          />
+          <span className="truncate text-foreground">{label}</span>
+          {tool.phase !== 'started' && tool.endedAt && (
+            <span className="ml-auto text-[10px] text-muted-foreground">
+              {Math.max(1, tool.endedAt - tool.startedAt)}ms
+            </span>
           )}
+        </button>
+        <CopyToolButton
+          data={{
+            toolName: tool.toolName,
+            args: tool.args,
+            result: tool.result,
+            message: tool.message,
+            phase: tool.phase,
+            startedAt: tool.startedAt,
+            endedAt: tool.endedAt,
+            callId: tool.callId,
+          }}
         />
-        <span className="truncate text-foreground">{label}</span>
-        {tool.phase !== 'started' && tool.endedAt && (
-          <span className="ml-auto text-[10px] text-muted-foreground">
-            {Math.max(1, tool.endedAt - tool.startedAt)}ms
-          </span>
-        )}
-      </button>
+      </div>
       {open && (
         <div className="space-y-1.5 border-t border-border/60 px-2.5 py-1.5">
           <DetailBlock label="tool" value={tool.toolName} />

@@ -20,7 +20,7 @@ import { type AiModel, fetchActiveModels } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '@/state/settings';
 import { Loader2, X } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export function AdminModelPicker() {
   const overrideId = useSettingsStore((s) => s.modelOverrideId);
@@ -30,10 +30,14 @@ export function AdminModelPicker() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
+  // Ref (not state) so flipping in-flight doesn't re-trigger this effect and
+  // cancel its own pending fetch via the cleanup path.
+  const inFlightRef = useRef(false);
 
   // Lazy-load on first open. The DB rarely changes; cache for the panel's lifetime.
   useEffect(() => {
-    if (!open || models !== null || loading) return;
+    if (!open || models !== null || inFlightRef.current) return;
+    inFlightRef.current = true;
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -46,13 +50,14 @@ export function AdminModelPicker() {
         if (cancelled) return;
         setError((e as Error).message ?? 'Failed to fetch models');
       } finally {
+        inFlightRef.current = false;
         if (!cancelled) setLoading(false);
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [open, models, loading]);
+  }, [open, models]);
 
   const filtered = useMemo(() => {
     if (!models) return [];

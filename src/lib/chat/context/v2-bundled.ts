@@ -25,7 +25,12 @@
 
 import { log } from '@/lib/debug/log';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
+import { prewarmReadPageCache } from '@/lib/tools/handlers/page-refs';
 import type { ContextBuildInputs } from './types';
+import { checkPageReady } from './check-page-ready';
+import { detectEmail, isEmailUrl } from './detect-email';
+import { detectPullRequest, isPullRequestUrl } from './detect-pull-request';
+import { discoverFormsForContext } from './discover-forms';
 import { probeActivePage } from './probe';
 
 export async function buildContextV2Bundled(
@@ -69,7 +74,28 @@ export async function buildContextV2Bundled(
     log.warn('scrape', 'active tab query failed', err);
   }
 
-  const probe = tabId !== null ? await probeActivePage(tabId) : null;
+  // Everything cheap and deterministic, in parallel — fired the moment the
+  // user submits, before the cloud round-trip even starts. By the time the
+  // cloud response wants any of this, it's already in memory.
+  //
+  //   probe         — meta + brief (kind, dismissibles, result_list, ...)
+  //   forms         — full form schema for main-area forms
+  //   page_ready    — safe-to-screenshot signal (300ms observer)
+  //   prewarm       — populate find tool's read_page cache
+  //   pull_request  — only when URL is a GitHub/GitLab PR
+  //   email         — only when URL is Gmail/Outlook/Hey/Superhuman
+  const url = tabMeta?.url ?? '';
+  const tasks = tabId !== null
+    ? Promise.all([
+        probeActivePage(tabId),
+        discoverFormsForContext(tabId),
+        checkPageReady(tabId),
+        prewarmReadPageCache(tabId),
+        isPullRequestUrl(url) ? detectPullRequest(tabId, url) : Promise.resolve(null),
+        isEmailUrl(url) ? detectEmail(tabId, url) : Promise.resolve(null),
+      ])
+    : Promise.resolve([null, null, null, undefined, null, null] as const);
+  const [probe, forms, pageReady, , pullRequest, email] = await tasks;
 
   // Scrape lookup. Prefer manual capture, then auto-background.
   const activeUrl = probe?.url ?? tabMeta?.url ?? null;
@@ -116,6 +142,9 @@ export async function buildContextV2Bundled(
         captured_at: new Date().toISOString(),
         confidence: probe.brief.confidence,
         flags: probe.brief.flags,
+        // Page-ready signal — answers "safe to screenshot/read right now?"
+        // null when the check failed (e.g., tab navigated away mid-build).
+        ready: pageReady,
       },
       structure: trustworthy
         ? {
@@ -138,6 +167,35 @@ export async function buildContextV2Bundled(
   // ── selection — only when present ──────────────────────────────────────
   if (probe?.selection) {
     ctx.selection = probe.selection;
+  }
+
+  // ── page_dismissibles — modal / banner inventory with close-button refs ─
+  // BrowserArena's #2 universal failure mode is agents not dismissing
+  // popups. Surface the inventory + close selectors so the agent can
+  // either auto-dismiss or hand off cleanly. Only attached when something
+  // dismissible is on screen.
+  if (probe && probe.brief.dismissibles.length > 0) {
+    ctx.page_dismissibles = {
+      count: probe.brief.dismissibles.length,
+      items: probe.brief.dismissibles,
+    };
+  }
+
+  // ── form_elements — full form schema for the page's main form(s) ───────
+  // Highest-ROI workflow category in the field (insurance, procurement,
+  // healthcare, cross-portal data entry). Saves a full tool call on the
+  // common path: agent reads context, sees fields, types into them.
+  if (forms) {
+    ctx.form_elements = {
+      count: forms.length,
+      forms,
+    };
+  }
+
+  // ── result_list — repeating-card list (search results, product grids) ──
+  // URL-derived item URLs survive virtualized scroll where refs recycle.
+  if (probe?.brief.result_list) {
+    ctx.result_list = probe.brief.result_list;
   }
 
   // ── page_meta — OG / Twitter / canonical / robots / charset / etc. ─────
@@ -242,12 +300,19 @@ export async function buildContextV2Bundled(
     if (product) ctx.product_data = product;
   }
 
-  // form: the form-detector fired — surface the form fields directly so the
-  // agent doesn't have to call get_form_fields just to see what's there.
-  if (probe?.brief.kind === 'form' || (probe && probe.brief.more_available.forms > 0)) {
-    // We don't run get_form_fields here (it's a separate executeScript) —
-    // the agent can call it. But mark its availability via the brief.
-    // Future work: prefetch form fields when forms count is small.
+  // pull_request: GitHub / GitLab PR pages — dev workflow #1.
+  if (pullRequest) {
+    ctx.pull_request = pullRequest;
+  }
+
+  // email: Gmail / Outlook / Hey / Superhuman. Either inbox-list or
+  // single-thread shape, distinguished by the bundle's `shape` field.
+  if (email) {
+    if (email.shape === 'inbox') {
+      ctx.email_inbox = email;
+    } else {
+      ctx.email_thread = email;
+    }
   }
 
   // ── Capture history (recognition row from Supabase) ──────────────────

@@ -8,6 +8,8 @@
 
 import { MarkdownView } from '@/components/MarkdownView';
 import { cn } from '@/lib/utils';
+import { Globe } from 'lucide-react';
+import { useState } from 'react';
 import type { ComponentType } from 'react';
 import type { FieldComponentName } from './types';
 
@@ -68,6 +70,80 @@ const Image = ({ value, className }: FieldProps) => {
   return <img src={src} className={cn('max-w-full rounded-md', className)} alt="" />;
 };
 
+/**
+ * Renders a base64-encoded image. Accepts:
+ *   - a `data:image/...;base64,...` URI string (used as-is)
+ *   - a raw base64 string (rendered with a `data:image/png;base64,` prefix)
+ *   - an object like `{ image_base64, media_type, width?, height?, byte_length? }`
+ *     (the take_screenshot result shape — assembles the data URI and shows a caption)
+ */
+const Base64Image = ({ value, className }: FieldProps) => {
+  const src = toDataUri(value);
+  if (!src) return null;
+  const meta = imageMeta(value);
+  return (
+    <div className={cn('space-y-1', className)}>
+      <img
+        src={src}
+        alt=""
+        className="max-h-[28rem] w-full rounded-md border border-border/40 object-contain"
+      />
+      {meta && <div className="text-[10px] text-muted-foreground">{meta}</div>}
+    </div>
+  );
+};
+
+function toDataUri(value: unknown): string {
+  if (typeof value === 'string') {
+    return value.startsWith('data:') ? value : `data:image/png;base64,${value}`;
+  }
+  if (value == null || typeof value !== 'object') return '';
+  const obj = value as Record<string, unknown>;
+  const raw = pickString(obj, ['image_base64', 'base64', 'data', 'image']);
+  if (!raw) return '';
+  if (raw.startsWith('data:')) return raw;
+  const mediaType = pickString(obj, ['media_type', 'mediaType', 'mime_type', 'mimeType']) ??
+    formatToMime(pickString(obj, ['format'])) ??
+    'image/png';
+  return `data:${mediaType};base64,${raw}`;
+}
+
+function imageMeta(value: unknown): string {
+  if (value == null || typeof value !== 'object') return '';
+  const obj = value as Record<string, unknown>;
+  const w = obj.width ?? obj.w;
+  const h = obj.height ?? obj.h;
+  const bytes = obj.byte_length ?? obj.byteLength ?? obj.size;
+  const parts: string[] = [];
+  if (typeof w === 'number' && typeof h === 'number') parts.push(`${w}×${h}`);
+  if (typeof bytes === 'number') parts.push(formatBytes(bytes));
+  return parts.join(' · ');
+}
+
+function pickString(obj: Record<string, unknown>, keys: string[]): string | undefined {
+  for (const k of keys) {
+    const v = obj[k];
+    if (typeof v === 'string' && v) return v;
+  }
+  return undefined;
+}
+
+function formatToMime(format: string | undefined): string | undefined {
+  if (!format) return undefined;
+  const f = format.toLowerCase();
+  if (f === 'jpeg' || f === 'jpg') return 'image/jpeg';
+  if (f === 'png') return 'image/png';
+  if (f === 'webp') return 'image/webp';
+  if (f === 'gif') return 'image/gif';
+  return `image/${f}`;
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
 const Badge = ({ value, className }: FieldProps) => (
   <span
     className={cn(
@@ -79,6 +155,80 @@ const Badge = ({ value, className }: FieldProps) => (
   </span>
 );
 
+/**
+ * Renders an array of strings as small pill chips. Non-array values are
+ * rendered as a single chip with their string form. Empty array → null.
+ */
+const Chips = ({ value, className }: FieldProps) => {
+  const items = Array.isArray(value)
+    ? value.map((v) => (v == null ? '' : String(v))).filter(Boolean)
+    : value == null
+      ? []
+      : [String(value)];
+  if (items.length === 0) return null;
+  return (
+    <div className={cn('flex flex-wrap gap-1', className)}>
+      {items.map((item, i) => (
+        <span
+          key={`${item}-${i}`}
+          className="inline-flex rounded-md border border-border/50 bg-muted/40 px-1.5 py-0.5 font-mono text-[10px] text-foreground"
+        >
+          {item}
+        </span>
+      ))}
+    </div>
+  );
+};
+
+/**
+ * Beautiful card for an active-tab record: favicon + title + URL.
+ * Accepts the whole tab object (use with `key: ''`). Reads `fav_icon_url`,
+ * `title`, and `url` keys; tolerates camelCase variants too.
+ */
+const TabCard = ({ value, className }: FieldProps) => {
+  if (value == null || typeof value !== 'object') return null;
+  const obj = value as Record<string, unknown>;
+  const title = pickString(obj, ['title']) ?? '';
+  const url = pickString(obj, ['url']) ?? '';
+  const favicon = pickString(obj, ['fav_icon_url', 'favIconUrl', 'favicon']);
+  const [faviconErr, setFaviconErr] = useState(false);
+  return (
+    <div
+      className={cn(
+        'flex items-start gap-2 rounded-md border border-border/40 bg-background/40 p-2',
+        className,
+      )}
+    >
+      {favicon && !faviconErr ? (
+        <img
+          src={favicon}
+          alt=""
+          className="size-5 shrink-0 rounded-sm object-contain"
+          onError={() => setFaviconErr(true)}
+        />
+      ) : (
+        <Globe className="size-5 shrink-0 text-muted-foreground" />
+      )}
+      <div className="min-w-0 flex-1 space-y-0.5">
+        {title && (
+          <div className="truncate text-[12px] font-medium text-foreground">{title}</div>
+        )}
+        {url && (
+          <a
+            href={url}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="block truncate text-[10px] text-muted-foreground hover:text-foreground hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {url}
+          </a>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export const fieldComponents: Record<FieldComponentName, ComponentType<FieldProps>> = {
   BoldLabel,
   TextDisplay,
@@ -86,5 +236,8 @@ export const fieldComponents: Record<FieldComponentName, ComponentType<FieldProp
   Code,
   Json,
   Image,
+  Base64Image,
   Badge,
+  Chips,
+  TabCard,
 };

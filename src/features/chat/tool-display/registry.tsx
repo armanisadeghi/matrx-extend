@@ -45,4 +45,69 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
       ],
     },
   },
+
+  load_browser_tools: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Boxes', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Loading my',
+        completed: 'Loaded my',
+        error: 'Failed to load my',
+      },
+      // Pull the category out of args so it appears mid-sentence.
+      name: { path: 'args.category' },
+      suffix: 'browser tools',
+      color: { started: 'primary', completed: 'amber', error: 'red' },
+    },
+    args: { hidden: true }, // Already conveyed by the header.
+    results: {
+      displayType: 'custom',
+      keysInfo: [{ key: 'tools_loaded', component: 'Chips' }],
+    },
+  },
+
+  get_active_tab: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Globe', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Reading active tab',
+        error: "Couldn't read active tab",
+      },
+      // Page title takes over the header on success; suppress on the other phases.
+      name: {
+        started: '',
+        completed: { path: 'output.title', transform: 'truncate80' },
+        error: '',
+      },
+      color: { started: 'primary', completed: 'blue', error: 'red' },
+    },
+    args: { hidden: true },
+    results: {
+      displayType: 'custom',
+      keysInfo: [{ key: '', component: 'TabCard' }],
+    },
+  },
+
+  take_screenshot: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Camera', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Capturing screenshot',
+        completed: 'Captured screenshot',
+        error: 'Failed to capture screenshot',
+      },
+      name: '',
+      info: {
+        completed: { path: 'output', transform: 'formatImageDimensions' },
+      },
+      color: { started: 'primary', completed: 'violet', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+    results: {
+      displayType: 'custom',
+      // Empty key = pass the whole result object; Base64Image assembles the data URI
+      // from `image_base64` + `media_type` and shows a small dimensions/size caption.
+      keysInfo: [{ key: '', component: 'Base64Image' }],
+    },
+  },
 };

@@ -85,14 +85,15 @@ Every visual segment is `PhaseAware<T>`: pass a single value to apply to all pha
 interface ToolDisplayEntry {
   inline?: {
     hidden?: PhaseAware<boolean>;
-    icon?: PhaseAware<IconName>;        // any lucide-react export name
-    prefix?: PhaseAware<string>;        // "Getting" / "Got" / "Failed to get"
-    name?: PhaseAware<string>;          // default: titleCase(toolName); pass '' to suppress
+    icon?: PhaseAware<IconName>;           // any lucide-react export name
+    prefix?: PhaseAware<string>;           // "Getting" / "Got" / "Failed to get"
+    name?: PhaseAware<string | InfoSpec>;  // default: titleCase(toolName); '' to suppress;
+                                           // pass an InfoSpec to pull from args/output
     suffix?: PhaseAware<string>;
     info?: PhaseAware<string | InfoSpec>;  // string shorthand = { path: string }
     color?: PhaseAware<ColorToken>;
-    isMultiline?: boolean;              // wrap vs truncate the info segment
-    spinIcon?: PhaseAware<boolean>;     // default: true on 'started' only
+    isMultiline?: boolean;                 // wrap vs truncate the info segment
+    spinIcon?: PhaseAware<boolean>;        // default: true on 'started' only
   };
   args?: {
     hidden?: PhaseAware<boolean>;
@@ -142,6 +143,8 @@ In `registry-transforms.ts`. Add new ones there — same `(unknown) => unknown` 
 | `textClean` | Strips markdown escapes (`\_`, `\*`, `` \` ``), trims whitespace |
 | `truncate80` / `truncate200` | Truncate long strings with an ellipsis |
 | `lowercase` / `uppercase` | Case conversion |
+| `formatImageDimensions` | `{ width, height, ... }` → `"WxH"` (e.g. `2576×1911`). Use with `info.path: 'output'` for image tools. |
+| `formatBytes` | Number → `"123 KB"` / `"4.5 MB"` |
 
 Chain by passing an array: `transform: ['textClean', 'truncate80']`.
 
@@ -156,10 +159,21 @@ In `registry-components.tsx`. Each receives `{ value, className? }`.
 | `Markdown` | `<MarkdownView density="compact">` (full markdown w/ remark-gfm) |
 | `Code` | Pre-formatted scrollable code block |
 | `Json` | Pretty-printed JSON in a code block |
-| `Image` | `<img>` (value must be a URL string) |
+| `Image` | `<img>` — value must be a URL or data-URI string |
+| `Base64Image` | `<img>` from base64 — accepts a string OR an object like `{ image_base64, media_type, width?, height?, byte_length? }` (the screenshot result shape). Renders the image plus a small caption with dimensions and size. |
 | `Badge` | Small pill — good for counts, statuses |
+| `Chips` | An array of strings rendered as a wrapped row of monospace pills. Good for tool lists, tag arrays, etc. Non-array values are coerced to a single chip. |
+| `TabCard` | Favicon + title + clickable URL card — built for `get_active_tab`-style payloads. Reads `fav_icon_url` (or `favIconUrl`/`favicon`), `title`, and `url` keys; falls back to a Globe icon if the favicon fails to load. Use with `key: ''` to pass the whole result. |
 
 When adding a new component: keep it small, accept `unknown` for `value`, never throw.
+
+### Whole-result key convention
+
+`keysInfo[].key` normally points at one field of the result. To pass the **entire result object** to the field component, set `key: ''` (or `key: '*'`). This is how `Base64Image` gets at both `image_base64` and `media_type` in one render — no need to combine fields with a transform.
+
+```ts
+keysInfo: [{ key: '', component: 'Base64Image' }]
+```
 
 ## Result display modes
 
@@ -313,3 +327,83 @@ ctx_get: {
 Reads as: "While running, show a spinner with `Getting Clean Content Markdown` in primary color. After success, swap to a HandGrab icon and `Got Clean Content Markdown` in blue. On error, red AlertTriangle and `Failed to get Clean Content Markdown`. Expanded body shows args as a key-value grid, then a bold label + markdown-rendered content with backslash escapes cleaned."
 
 Use it as the starting template for new entries.
+
+### `name` accepting an `InfoSpec`
+
+Two patterns where this matters:
+
+**Mid-sentence values** (the dynamic word lives between static prefix/suffix):
+
+```ts
+// load_browser_tools — header: "Loading my core browser tools"
+inline: {
+  prefix: { started: 'Loading my', completed: 'Loaded my', error: 'Failed to load my' },
+  name: { path: 'args.category' },  // resolves "core" / "page" / "interact" / …
+  suffix: 'browser tools',
+}
+```
+
+**Title-as-name** (a full descriptive title takes over the label after success):
+
+```ts
+// get_active_tab — header: "Reading active tab" → "<Page Title>" → "Couldn't read…"
+inline: {
+  prefix: { started: 'Reading active tab', error: "Couldn't read active tab" },
+  name: {
+    started: '',                                                // suppress
+    completed: { path: 'output.title', transform: 'truncate80' },
+    error: '',                                                  // suppress
+  },
+}
+```
+
+**Why both `''` and `undefined` matter:**
+- `name: undefined` → falls back to `titleCase(entry.toolName)` (e.g. `Get Active Tab`)
+- `name: ''` → suppresses the segment entirely (no fallback)
+- `name: { path: '...' }` resolving to nothing → empty (no fallback to titleCase)
+
+When you only want a name in some phases, set the others to `''` explicitly — otherwise the auto title-case sneaks back in.
+
+### A second example — `take_screenshot`
+
+Demonstrates: the whole-result key convention, the `Base64Image` field component, and using a transform on the entire output object for the inline info.
+
+```ts
+take_screenshot: {
+  inline: {
+    icon:   { started: 'Loader2', completed: 'Camera', error: 'AlertTriangle' },
+    prefix: {
+      started:   'Capturing screenshot',
+      completed: 'Captured screenshot',
+      error:     'Failed to capture screenshot',
+    },
+    name:   '',
+    info:   { completed: { path: 'output', transform: 'formatImageDimensions' } },
+    color:  { started: 'primary', completed: 'violet', error: 'red' },
+  },
+  args: { displayType: 'key-value' },
+  results: {
+    displayType: 'custom',
+    keysInfo: [{ key: '', component: 'Base64Image' }],
+  },
+}
+```
+
+Reads as: "While capturing, show a spinner with `Capturing screenshot` in primary color. After success, swap to a Camera icon and `Captured screenshot 2576×1911` in violet — dimensions extracted by `formatImageDimensions` reading `width`/`height` off the whole output object. The expanded body renders the actual image inline, with a small caption underneath showing `2576×1911 · 313.0 KB`. On error, red AlertTriangle and `Failed to capture screenshot` with no dimensions."
+
+## Universal copy button
+
+Every row (default and configurable, server and client) has a clipboard icon on the right that appears on hover. Clicking copies the full payload as pretty-printed JSON:
+
+```json
+{
+  "tool": "ctx_get",
+  "phase": "completed",
+  "args": { "key": "clean_content_markdown" },
+  "result": { "label": "...", "content": "..." },
+  "duration_ms": 263,
+  "callId": "..."
+}
+```
+
+Lives in [CopyToolButton.tsx](src/features/chat/tool-display/CopyToolButton.tsx). Each renderer constructs a `ToolCopyData` object and passes it as `data`. The button stops click propagation so it never toggles the row open. Don't add per-tool overrides for it — the universal payload is the right shape for users (paste into bug reports, share with another agent, etc.).
