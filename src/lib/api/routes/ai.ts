@@ -26,6 +26,12 @@ export interface AgentClientEnvelope {
 /**
  * AgentStartRequest shape. Matches the live FastAPI route after the
  * capability-based agent API rolled out (2026-05-01).
+ *
+ * Most fields are user-facing and shipped on every chat. The fields below the
+ * `// ── admin overrides` line come from the OpenAPI spec and are admins-only
+ * — see `useAdminFlagsStore` and `projectAdminFlagsToRequest` for the
+ * per-request projection, plus the dispatcher's defense-in-depth strip when
+ * `isAdmin === false`.
  */
 export interface AgentStartRequest {
   user_input?: string;
@@ -34,7 +40,6 @@ export interface AgentStartRequest {
   is_new?: boolean | null;
   stream?: boolean;
   store?: boolean;
-  debug?: boolean;
   /**
    * Capability declaration + per-capability state. The capability brings
    * `load_browser_tools` (the discovery tool) online; everything else loads
@@ -46,6 +51,34 @@ export interface AgentStartRequest {
   context?: Record<string, unknown>;
   source_app?: string;
   source_feature?: string;
+
+  // ── admin overrides ─────────────────────────────────────────────────────
+  /** Verbose debug events in the SSE stream. Admin-only. */
+  debug?: boolean;
+  /** Save a conversation snapshot at the end of the run. Admin-only. */
+  snapshot?: boolean;
+  /** Render in block mode (structured blocks instead of plain text). Admin-only. */
+  block_mode?: boolean;
+  /** Track this run as a versioned re-execution of an existing turn. Admin-only. */
+  is_version?: boolean;
+  /** Allow the server to lazily create a missing context bucket. Admin-only. */
+  allow_context_create?: boolean;
+  /** Bypass model-response cache for this turn. Admin-only. */
+  cache_bypass?: Record<string, unknown> | null;
+  /** Override agent loop iteration cap. Admin-only. */
+  max_iterations?: number;
+  /** Override per-iteration retry cap. Admin-only. */
+  max_retries_per_iteration?: number;
+  /** Enable / disable the agent's memory layer for this run. Admin-only. */
+  memory?: boolean | null;
+  /** Override the memory model used. Admin-only. */
+  memory_model?: string | null;
+  /** Memory scope — user / project / organization / agent / conversation. Admin-only. */
+  memory_scope?: string;
+  /** LLMParams override blob. Admin-only, power-user. */
+  config_overrides?: Record<string, unknown> | null;
+  /** Variables the agent is allowed to write back. Admin-only. */
+  writable_variables?: string[];
 }
 
 /** POST /ai/chat — direct chat with explicit ai_model_id (not used by extension v1). */

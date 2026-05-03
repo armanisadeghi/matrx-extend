@@ -85,12 +85,19 @@ export const cdp_attached_tabs: ToolHandler<NoArgs, unknown> = {
 const FullPageScreenshotArgs = z
   .object({
     tab_id: z.number().int().optional(),
-    /** image/png or image/jpeg or image/webp. Default png. */
-    format: z.enum(['png', 'jpeg', 'webp']).optional().default('png'),
-    /** 0–100 quality for jpeg/webp. Default 85. */
-    quality: z.number().int().min(1).max(100).optional().default(85),
+    /** image/png or image/jpeg or image/webp. Default jpeg (smaller for vision). */
+    format: z.enum(['png', 'jpeg', 'webp']).optional().default('jpeg'),
+    /** 0–100 quality for jpeg/webp. Default 80. */
+    quality: z.number().int().min(1).max(100).optional().default(80),
     /** Capture below the fold too. Default true (the whole point). */
     full_page: z.boolean().optional().default(true),
+    /**
+     * Capture-time scaling — ratio of CSS pixels to image pixels. Default 1.
+     * Set <1 to capture at lower resolution directly (e.g. 0.5 = half-size).
+     * Cheapest way to keep a full-page capture from blowing past vision-API
+     * token budgets when the page is very tall.
+     */
+    capture_scale: z.number().min(0.1).max(1).optional().default(0.5),
   })
   .default({});
 type FullPageScreenshotArgs = z.infer<typeof FullPageScreenshotArgs>;
@@ -101,7 +108,7 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
   admin_only: true,
   required_optional_permissions: ['debugger'],
   description:
-    'Capture the FULL page (not just viewport) as base64. CDP\'s Page.captureScreenshot with captureBeyondViewport. Use this instead of take_screenshot when the user asks "give me a picture of the whole article" or you need to OCR a long form. Returns { format, image_base64, byte_length }.',
+    "Capture the FULL page (not just viewport) as base64 JPEG at half resolution (defaults). Use instead of take_screenshot for whole-article / long-form pages. Returns { ok, media_type, format, image_base64, byte_length, capture_scale }. The `media_type` field is ready to drop into an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
   argsSchema: FullPageScreenshotArgs,
   run: async (args) => {
     const tabId = args.tab_id ?? (await activeTabId());
@@ -121,7 +128,7 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
           y: 0,
           width: layout.contentSize.width,
           height: layout.contentSize.height,
-          scale: 1,
+          scale: args.capture_scale,
         };
       }
       const result = await cdp.send<{ data: string }>(tabId, 'Page.captureScreenshot', {
@@ -132,7 +139,14 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
       });
       return {
         ok: true,
+        media_type:
+          args.format === 'jpeg'
+            ? 'image/jpeg'
+            : args.format === 'webp'
+              ? 'image/webp'
+              : 'image/png',
         format: args.format,
+        capture_scale: args.capture_scale,
         image_base64: result.data,
         byte_length: result.data.length,
       };

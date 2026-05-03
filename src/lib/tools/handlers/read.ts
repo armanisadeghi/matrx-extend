@@ -126,30 +126,144 @@ export const read_active_page: ToolHandler<ReadPageArgs, unknown> = {
 
 const ScreenshotArgs = z
   .object({
-    /** Currently visible viewport only (full-page would require more work). */
-    format: z.enum(['png', 'jpeg']).default('png'),
-    quality: z.number().int().min(1).max(100).optional(),
+    /**
+     * 'jpeg' (default) is ~10x smaller than 'png' for screenshots and is what
+     * vision models prefer. Pass 'png' only when lossless is required.
+     */
+    format: z.enum(['png', 'jpeg']).default('jpeg'),
+    /** JPEG quality (1–100). Ignored for PNG. Default 80 — sweet spot for vision. */
+    quality: z.number().int().min(1).max(100).optional().default(80),
+    /**
+     * Max length of the longer side, in pixels. Anthropic / OpenAI vision
+     * APIs cap usable image area at ~1.15 MP (e.g. 1568×1568). Larger images
+     * either auto-downscale (paying tokens before the downscale) or get
+     * rejected. Default 1568. Pass 0 to skip resizing entirely.
+     */
+    max_dimension: z.number().int().min(0).max(8192).optional().default(1568),
   })
   .default({});
 type ScreenshotArgs = z.infer<typeof ScreenshotArgs>;
 
-export const take_screenshot: ToolHandler<ScreenshotArgs, unknown> = {
+interface ScreenshotResult {
+  ok: boolean;
+  reason?: string;
+  /** MIME type — `image/jpeg` or `image/png`. Use this verbatim in Anthropic / OpenAI image blocks. */
+  media_type?: string;
+  format?: 'jpeg' | 'png';
+  /** Final width AFTER any resize. */
+  width?: number;
+  /** Final height AFTER any resize. */
+  height?: number;
+  /** Original viewport dimensions before resize. */
+  source_width?: number;
+  source_height?: number;
+  /** Base64-encoded image data WITHOUT the `data:image/...;base64,` prefix. */
+  image_base64?: string;
+  /** Length of the base64 string (chars). Useful for budgeting. */
+  byte_length?: number;
+  /** True if we resized the image to fit `max_dimension`. */
+  resized?: boolean;
+}
+
+/**
+ * Decode the captureVisibleTab data URL, optionally resize, and re-encode at
+ * the requested format/quality. Runs in SW context (OffscreenCanvas + fetch).
+ */
+async function processScreenshot(
+  dataUrl: string,
+  format: 'jpeg' | 'png',
+  quality: number,
+  maxDim: number,
+): Promise<{
+  base64: string;
+  width: number;
+  height: number;
+  sourceWidth: number;
+  sourceHeight: number;
+  resized: boolean;
+}> {
+  // captureVisibleTab returns a data URL; cheapest way to get pixels is fetch().
+  const blob = await fetch(dataUrl).then((r) => r.blob());
+  const bitmap = await createImageBitmap(blob);
+  const sourceWidth = bitmap.width;
+  const sourceHeight = bitmap.height;
+
+  let targetW = sourceWidth;
+  let targetH = sourceHeight;
+  let resized = false;
+  if (maxDim > 0) {
+    const longer = Math.max(sourceWidth, sourceHeight);
+    if (longer > maxDim) {
+      const scale = maxDim / longer;
+      targetW = Math.max(1, Math.round(sourceWidth * scale));
+      targetH = Math.max(1, Math.round(sourceHeight * scale));
+      resized = true;
+    }
+  }
+
+  const canvas = new OffscreenCanvas(targetW, targetH);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    bitmap.close();
+    throw new Error('OffscreenCanvas 2d context unavailable');
+  }
+  ctx.drawImage(bitmap, 0, 0, targetW, targetH);
+  bitmap.close();
+
+  const out = await canvas.convertToBlob({
+    type: format === 'jpeg' ? 'image/jpeg' : 'image/png',
+    quality: format === 'jpeg' ? quality / 100 : undefined,
+  });
+  // Blob → base64 without involving FileReader (which doesn't exist in SW).
+  const buf = await out.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  let bin = '';
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    bin += String.fromCharCode.apply(
+      null,
+      Array.from(bytes.subarray(i, i + chunkSize)),
+    );
+  }
+  const base64 = btoa(bin);
+  return { base64, width: targetW, height: targetH, sourceWidth, sourceHeight, resized };
+}
+
+export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
   name: 'take_screenshot',
   tier: 'read',
   description:
-    'Capture the visible viewport of the active tab as a base64 PNG (or JPEG). Returns { format, image_base64 }. Useful for vision-capable models or for archival.',
+    'Capture the visible viewport of the active tab. Returns { ok, media_type, format, width, height, source_width, source_height, image_base64, byte_length, resized }. Defaults: JPEG q=80, resized so longest side ≤ 1568px (sweet spot for Anthropic / OpenAI vision APIs). Pass `format: "png"` for lossless, `max_dimension: 0` to skip resize. The `media_type` field is ready for direct use in an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.',
   argsSchema: ScreenshotArgs,
   run: async (args) => {
     const tab = await activeTab();
     if (!tab?.windowId) return { ok: false, reason: 'No active tab' };
     try {
+      // Capture in PNG when the caller wants PNG. For JPEG we still ask
+      // captureVisibleTab for PNG and re-encode in our own JPEG step — the
+      // built-in JPEG encoder doesn't honor `quality` consistently across
+      // Chrome versions, and PNG → JPEG via canvas gives us a knob we trust.
       const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {
-        format: args.format,
-        quality: args.quality,
+        format: 'png',
       });
-      const idx = dataUrl.indexOf(',');
-      const base64 = idx >= 0 ? dataUrl.slice(idx + 1) : dataUrl;
-      return { format: args.format, image_base64: base64, byte_length: base64.length };
+      const processed = await processScreenshot(
+        dataUrl,
+        args.format,
+        args.quality,
+        args.max_dimension,
+      );
+      return {
+        ok: true,
+        media_type: args.format === 'jpeg' ? 'image/jpeg' : 'image/png',
+        format: args.format,
+        width: processed.width,
+        height: processed.height,
+        source_width: processed.sourceWidth,
+        source_height: processed.sourceHeight,
+        image_base64: processed.base64,
+        byte_length: processed.base64.length,
+        resized: processed.resized,
+      };
     } catch (err) {
       return { ok: false, reason: (err as Error).message };
     }

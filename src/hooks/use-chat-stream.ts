@@ -7,6 +7,10 @@ import { newId } from "@/lib/id";
 import { on, send } from "@/lib/messaging/native";
 import { CHANNELS } from "@/lib/messaging/schemas";
 import { lookup as lookupTool } from "@/lib/tools/registry";
+import {
+  projectAdminFlagsToRequest,
+  useAdminFlagsStore,
+} from "@/state/admin-flags";
 import { useActiveToolsStore } from "@/state/active-tools";
 import { useAuthStore } from "@/state/auth";
 import { useAutoScrapeStore } from "@/state/auto-scrape";
@@ -307,6 +311,15 @@ export function useChatStream() {
         loadedCategories,
       });
 
+      // Admin-only request overrides (debug, snapshot, block_mode, memory_*,
+      // max_iterations, etc). Stripped if the user isn't an admin — defense
+      // in depth: even a stale store from a previous admin session can't
+      // bleed into a non-admin's request.
+      const isAdmin = useAuthStore.getState().isAdmin;
+      const adminOverrides = isAdmin
+        ? projectAdminFlagsToRequest(useAdminFlagsStore.getState())
+        : {};
+
       const body: AgentStartRequest = {
         user_input: text,
         conversation_id: conversationId,
@@ -316,6 +329,7 @@ export function useChatStream() {
         store: true,
         source_app: "matrx-extend",
         source_feature: "chat",
+        ...adminOverrides,
         // New capability envelope. Replaces the old `client_tools` field.
         // The server's `browser-dom` capability brings `load_browser_tools`
         // online; the model calls it with a category to pull the matching

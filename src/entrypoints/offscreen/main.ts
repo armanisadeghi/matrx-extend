@@ -58,9 +58,15 @@ on<RunArgs, { ok: true }>(CHANNELS.STREAM_RUN, async (args) => {
         else if (e.type === 'event') payload = { eventName: e.eventName, data: e.data };
         else if (e.type === 'error') payload = { message: e.message };
         else payload = {};
-        if (e.type === 'error') log.error('stream', `chunk error ${args.runId}`, e);
-        else if (e.type === 'done')
+        if (e.type === 'error') {
+          // streamFetch already logged the upstream cause with full detail
+          // (network error / 4xx / 5xx body). Don't duplicate that — just
+          // record the message inline so the line is searchable, and skip
+          // the redundant detail blob that was rendering as [object Object].
+          log.warn('stream', `chunk error ${args.runId}: ${e.message ?? '(no message)'}`);
+        } else if (e.type === 'done') {
           log.success('stream', `done ${args.runId} (${chunkCount} chunks)`);
+        }
         broadcast(CHANNELS.STREAM_CHUNK, { runId: args.runId, type: e.type, payload });
       },
     });

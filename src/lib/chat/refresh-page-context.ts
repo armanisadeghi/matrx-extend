@@ -21,8 +21,8 @@
  */
 
 import { log } from '@/lib/debug/log';
-import { CHANNELS } from '@/lib/messaging/schemas';
 import { classifyTabUrl } from '@/lib/scrape/capture-error';
+import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
 import type { SoupResult } from '@/lib/scrape/pipeline';
 import { type AutoScrapeRecord, useAutoScrapeStore } from '@/state/auto-scrape';
@@ -68,19 +68,19 @@ async function setScrollY(tabId: number, y: number): Promise<void> {
   }
 }
 
-async function captureSoup(tabId: number): Promise<SoupResult | null> {
-  try {
-    const result = (await chrome.tabs.sendMessage(tabId, {
-      __matrx: true,
-      kind: CHANNELS.SCRAPE_CAPTURE,
-      payload: { options: {} },
-    })) as SoupResult | { __error: string } | undefined;
-    if (!result || '__error' in result) return null;
-    return result;
-  } catch (err) {
-    log.warn('scrape', 'captureSoup failed', err);
-    return null;
+async function captureSoup(
+  tabId: number,
+  url: string | null | undefined,
+): Promise<SoupResult | null> {
+  const r = await captureWithFallback(tabId, url);
+  if (r.ok && r.soup) return r.soup;
+  // Skip silently when the page is genuinely unreachable (chrome://, file://,
+  // extension pages). Warn for any other failure so genuine breakage stays
+  // visible.
+  if (r.reason !== 'unreachable-url' && r.reason !== 'inject-failed') {
+    log.warn('scrape', `captureSoup ${r.reason}`, { detail: r.detail });
   }
+  return null;
 }
 
 /**
@@ -133,7 +133,7 @@ export async function refreshPageContextBeforeSend(
       } catch (err) {
         log.warn('scrape', 'scrollToLoadLazy failed', err);
       }
-      const soup = await captureSoup(tabId);
+      const soup = await captureSoup(tabId, url);
       // Always try to restore — even if capture failed.
       if (typeof startY === 'number') {
         await setScrollY(tabId, startY);
@@ -158,7 +158,7 @@ export async function refreshPageContextBeforeSend(
     }
 
     // Fast path: re-capture without scrolling.
-    const soup = await captureSoup(tabId);
+    const soup = await captureSoup(tabId, url);
     if (!soup || soup.url !== url) {
       return { action: 'noop', record: cur, reason: 'fast capture failed' };
     }

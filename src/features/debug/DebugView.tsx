@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import { setBackendEnv, setBackendOverride, useBackendConfig } from '@/config/backend';
 import type { BackendEnv } from '@/config/env';
+import { AdminAgentFlagsPanel } from '@/features/debug/AdminAgentFlagsPanel';
 import { pingHealth } from '@/lib/api/routes/health';
 import {
   type DebugEvent,
@@ -119,6 +120,7 @@ export function DebugView() {
     <div className="flex h-full flex-col">
       <div className="space-y-1.5 px-3 pt-1 pb-2">
         <BackendSwitcher />
+        <AdminAgentFlagsPanel />
         <div className="flex items-center gap-1.5">
           <Input
             value={search}

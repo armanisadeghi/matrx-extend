@@ -17,8 +17,7 @@
  * Disabled when `useSettingsStore.scrapeAutoOnLoad` is false.
  */
 
-import { CHANNELS } from '@/lib/messaging/schemas';
-import type { SoupResult } from '@/lib/scrape/pipeline';
+import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import { useAutoScrapeStore } from '@/state/auto-scrape';
 import { useSettingsStore } from '@/state/settings';
 import { useEffect, useRef } from 'react';
@@ -71,28 +70,27 @@ export function useAutoScrape(): void {
       setInFlight(true);
       setError(null);
       try {
-        const result = (await chrome.tabs.sendMessage(tabId, {
-          __matrx: true,
-          kind: CHANNELS.SCRAPE_CAPTURE,
-          payload: { options: {} },
-        })) as SoupResult | { __error: string } | undefined;
-        if (!result) {
-          setError('No response from content script');
+        const r = await captureWithFallback(tabId, url);
+        if (!r.ok || !r.soup) {
+          // For unreachable URLs (chrome://, file://, view-source:, etc.)
+          // and pages where content-script injection failed, we silently
+          // skip — the user is on a page we genuinely can't read, not a
+          // bug to surface.
+          if (r.reason === 'unreachable-url' || r.reason === 'inject-failed') {
+            return;
+          }
+          setError(r.detail ?? r.reason ?? 'auto-scrape failed');
           return;
         }
-        if ('__error' in result) {
-          setError(result.__error);
-          return;
-        }
-        if (result.url !== url) {
+        if (r.soup.url !== url) {
           // Page navigated mid-capture; drop and let the next event re-fire.
           return;
         }
         setRecord({
-          url: result.url,
+          url: r.soup.url,
           capturedAt: Date.now(),
           usedFullScroll: false,
-          soup: result,
+          soup: r.soup,
         });
         lastFiredRef.current = { tabId, url };
       } catch (err) {
