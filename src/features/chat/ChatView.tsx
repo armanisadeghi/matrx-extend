@@ -101,9 +101,22 @@ export function ChatView() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useToolInbox$Subscribe();
-  const pendingConfirms = useToolInbox((s) => s.pendingConfirms);
-  const pendingAsks = useToolInbox((s) => s.pendingAsks);
-  const timeline = useToolInbox((s) => s.timeline);
+  const allPendingConfirms = useToolInbox((s) => s.pendingConfirms);
+  const allPendingAsks = useToolInbox((s) => s.pendingAsks);
+  // Filter pending cards to the active conversation. When the user switches
+  // threads, cards from the previous one stay in the store (the SW timeout
+  // will eventually clear them) but should NOT render in the new thread's
+  // message list. `selectedConversationId === null` matches the
+  // pre-conversation state where the very first turn hasn't received its
+  // server-assigned id yet.
+  const pendingConfirms = useMemo(
+    () => allPendingConfirms.filter((c) => c.conversationId === selectedConversationId),
+    [allPendingConfirms, selectedConversationId],
+  );
+  const pendingAsks = useMemo(
+    () => allPendingAsks.filter((c) => c.conversationId === selectedConversationId),
+    [allPendingAsks, selectedConversationId],
+  );
 
   useEffect(() => {
     if (!user) return;
@@ -157,7 +170,7 @@ export function ChatView() {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages, pendingConfirms.length, pendingAsks.length, timeline.length]);
+  }, [messages, pendingConfirms.length, pendingAsks.length]);
 
   const selectedAgent = useMemo(
     () => agents.find((a) => a.id === selectedAgentId) ?? null,
@@ -235,23 +248,15 @@ export function ChatView() {
         ) : (
           <div className="space-y-4 px-4 py-4">
             {messages.map((m) => (
-              <MessageRow
-                key={m.id}
-                role={m.role}
-                content={m.content}
-                pending={m.pending}
-                serverTools={m.serverTools}
-              />
+              <MessageRow key={m.id} message={m} />
             ))}
 
-            {timeline.length > 0 && (
-              <div className="space-y-1.5">
-                {timeline.map((entry) => (
-                  <ToolTimelineRow key={entry.callId} entry={entry} />
-                ))}
-              </div>
-            )}
-
+            {/*
+              Pending approval / ask cards render BELOW the message list
+              because they're awaiting user action (no message has been
+              produced yet). Filtered to the active conversation in the
+              parent — switching threads hides them automatically.
+            */}
             {pendingConfirms.map((req) => (
               <AgentApprovalCard key={req.callId} req={req} />
             ))}

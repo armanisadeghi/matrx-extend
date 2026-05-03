@@ -180,7 +180,7 @@ export const scroll_page: ToolHandler<ScrollArgs, unknown> = {
     const sel = resolveRef(args);
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (direction: string, selector: string | undefined, deltaY: number | undefined) => {
+      func: (direction: string, selector: string | null, deltaY: number | null) => {
         if (direction === 'top') {
           window.scrollTo({ top: 0 });
         } else if (direction === 'bottom') {
@@ -191,12 +191,12 @@ export const scroll_page: ToolHandler<ScrollArgs, unknown> = {
           if (!el) return { ok: false, reason: `No element for ${selector}` };
           el.scrollIntoView({ block: 'center', behavior: 'instant' });
         } else if (direction === 'by') {
-          if (deltaY === undefined) return { ok: false, reason: 'delta_y required' };
+          if (deltaY === null) return { ok: false, reason: 'delta_y required' };
           window.scrollBy({ top: deltaY });
         }
         return { ok: true, scrollY: window.scrollY };
       },
-      args: [args.direction, sel ?? undefined, args.delta_y],
+      args: [args.direction, sel, args.delta_y ?? null],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },

@@ -90,11 +90,17 @@ function handleResourceChangedEvent(data: Record<string, unknown> | undefined): 
 }
 
 /**
- * Routes a `tool_event` from the stream to the active assistant message's
- * `serverTools` list. Skips client-registry tools — those are dispatched by
- * the SW and surface via `tool-inbox` / `ToolTimelineRow` instead.
+ * Route a `tool_event` from the stream into the active assistant message's
+ * parts array. Server-side AND client-side tools both flow through here —
+ * the only difference is `kind`. Tool entries push as new parts in arrival
+ * order so they interleave correctly with text and reasoning.
+ *
+ * For client tools the SW dispatcher will ALSO emit a TOOL_TIMELINE_EVENT
+ * with the full local output once the tool finishes. That second update
+ * merges into the same part by callId — this stream-side handler just
+ * marks the part as started and seeds the args.
  */
-function handleServerToolEvent(
+function handleToolEvent(
   messageId: string,
   data: Record<string, unknown> | undefined,
 ): void {
@@ -104,29 +110,33 @@ function handleServerToolEvent(
   const toolName = String(data.tool_name ?? "");
   if (!callId || !toolName) return;
 
-  // If this tool is in our client registry, the SW dispatcher is handling it
-  // and the existing tool-inbox timeline will render it. Don't double-track.
-  if (lookupTool(toolName)) return;
-
+  // Determine kind from our client registry. A client-tool execution still
+  // emits tool_event in the SSE (server logs the delegation), so we want to
+  // see it here AND let TOOL_TIMELINE_EVENT update it later.
+  const kind: "server" | "client" = lookupTool(toolName) ? "client" : "server";
   const message = typeof data.message === "string" ? data.message : undefined;
   const inner = (data.data ?? {}) as Record<string, unknown>;
+  const upsert = useChatStore.getState().upsertToolPart;
 
   if (subEvent === "tool_started") {
-    useChatStore.getState().upsertServerTool(messageId, callId, {
+    upsert(messageId, callId, {
+      kind,
       toolName,
       message,
       args: inner.arguments ?? null,
       phase: "started",
     });
   } else if (subEvent === "tool_completed") {
-    useChatStore.getState().upsertServerTool(messageId, callId, {
+    upsert(messageId, callId, {
+      kind,
       toolName,
       message,
       result: inner.result ?? null,
       phase: "completed",
     });
   } else if (subEvent === "tool_error" || subEvent === "tool_failed") {
-    useChatStore.getState().upsertServerTool(messageId, callId, {
+    upsert(messageId, callId, {
+      kind,
       toolName,
       message,
       result: inner.error ?? inner.result ?? null,
@@ -168,17 +178,22 @@ export function useChatStream() {
             .getState()
             .appendAssistantText(target, chunk.payload.content);
       } else if (chunk.type === "reasoning") {
-        // Reasoning chunks are model "thinking" tokens — log only for now.
-        log.info("stream", "reasoning chunk", chunk.payload.content);
+        // Reasoning chunks are model "thinking" tokens. Append to the
+        // active assistant message's parts in arrival order so they show
+        // between text + tool entries exactly where the model produced them.
+        if (chunk.payload.content)
+          useChatStore
+            .getState()
+            .appendAssistantReasoning(target, chunk.payload.content);
       } else if (chunk.type === "event") {
         if (chunk.payload.eventName === "tool_event") {
           // Two side-effects on top of the regular per-message routing:
           // (a) record category-discovery completions so future requests can
-          //     hint `loaded_categories`; (b) hand non-registry tools to
-          //     ServerToolRow.
+          //     hint `loaded_categories`; (b) push the tool entry as a part
+          //     on the active assistant message so it interleaves with text.
           const convId = useChatStore.getState().selectedConversationId;
           handleDiscoveryToolEvent(convId, chunk.payload.data);
-          handleServerToolEvent(target, chunk.payload.data);
+          handleToolEvent(target, chunk.payload.data);
         } else if (
           chunk.payload.eventName === "resource_changed" ||
           chunk.payload.eventName === "RESOURCE_CHANGED"

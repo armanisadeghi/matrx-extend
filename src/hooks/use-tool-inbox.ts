@@ -1,11 +1,14 @@
 /**
  * Subscribes the sidepanel to tool-related broadcasts from the SW dispatcher.
- *   TOOL_CONFIRM_REQUEST → adds to pendingConfirms
- *   TOOL_ASK_USER_REQUEST → adds to pendingAsks
- *   TOOL_TIMELINE_EVENT → upserts into timeline
+ *
+ *   TOOL_CONFIRM_REQUEST   → adds to pendingConfirms (tagged with current convo)
+ *   TOOL_ASK_USER_REQUEST  → adds to pendingAsks
+ *   TOOL_TIMELINE_EVENT    → upserts into the ACTIVE assistant message's parts
+ *                           (chat-store), so the tool entry interleaves with
+ *                           text/reasoning in the order it arrived.
  *
  * Replies (allow/deny, answers) are sent back via TOOL_CONFIRM_RESPONSE /
- * TOOL_ASK_USER_RESPONSE — see useToolInboxActions.
+ * TOOL_ASK_USER_RESPONSE — see respondToConfirm / respondToAsk below.
  */
 
 import { broadcast, on } from '@/lib/messaging/native';
@@ -16,6 +19,7 @@ import type {
   PendingAskUserRequest,
   PendingConfirmRequest,
 } from '@/lib/tools/types';
+import { useChatStore } from '@/state/chat';
 import { useToolInbox } from '@/state/tool-inbox';
 import { useEffect } from 'react';
 
@@ -28,26 +32,55 @@ interface TimelinePayload {
   message?: string;
 }
 
+/**
+ * Find the most recent assistant message in the current conversation. That's
+ * where new tool parts attach — same place text and reasoning chunks land.
+ */
+function activeAssistantMessageId(): string | null {
+  const messages = useChatStore.getState().messages;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i];
+    if (m && m.role === 'assistant') return m.id;
+  }
+  return null;
+}
+
 export function useToolInbox$Subscribe(): void {
   useEffect(() => {
     const offConfirm = on<PendingConfirmRequest, { ack: true }>(
       CHANNELS.TOOL_CONFIRM_REQUEST,
       (payload) => {
-        useToolInbox.getState().addConfirm(payload);
+        const conversationId = useChatStore.getState().selectedConversationId;
+        useToolInbox.getState().addConfirm(payload, conversationId);
         return { ack: true };
       },
     );
     const offAsk = on<PendingAskUserRequest, { ack: true }>(
       CHANNELS.TOOL_ASK_USER_REQUEST,
       (payload) => {
-        useToolInbox.getState().addAsk(payload);
+        const conversationId = useChatStore.getState().selectedConversationId;
+        useToolInbox.getState().addAsk(payload, conversationId);
         return { ack: true };
       },
     );
+    // Tool started/completed/error events route into the active assistant
+    // message's parts array — that's what gets ordering right (tool entries
+    // appear inline at the point they fired) AND conversation isolation
+    // (parts ride with the message; switching conversations replaces the
+    // message list, so old tool entries vanish).
     const offTimeline = on<TimelinePayload, { ack: true }>(
       CHANNELS.TOOL_TIMELINE_EVENT,
       (payload) => {
-        useToolInbox.getState().upsertTimeline(payload);
+        const messageId = activeAssistantMessageId();
+        if (!messageId) return { ack: true };
+        useChatStore.getState().upsertToolPart(messageId, payload.callId, {
+          kind: 'client',
+          toolName: payload.toolName,
+          phase: payload.phase,
+          args: payload.args,
+          result: payload.output,
+          message: payload.message,
+        });
         return { ack: true };
       },
     );

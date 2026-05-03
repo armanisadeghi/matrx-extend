@@ -1,99 +1,76 @@
 /**
- * Sidepanel-side inbox of in-flight client-tool calls.
+ * Sidepanel-side inbox of in-flight CLIENT tool calls.
  *
- *   - `pendingConfirms`   — approval cards waiting on user click
- *   - `pendingAsks`       — agent → human questions waiting on a typed answer
- *   - `timeline`          — every tool started/completed/error, keyed by callId,
- *                          rendered inline in chat between messages
+ *   - `pendingConfirms` — approval cards waiting on user click
+ *   - `pendingAsks`     — agent → human questions waiting on a typed answer
  *
- * Populated by `useToolInbox()` via chrome.runtime broadcasts. Consumed by
- * ChatView to render the cards in their natural place in the conversation.
+ * NOTE: as of 2026-05-03 the global `timeline` was REMOVED. Tool
+ * started/completed/error events now flow into the parts array of the
+ * active assistant message in `useChatStore`. That fixes:
+ *   1. Order — tools render exactly where they fired, between text/reasoning
+ *      parts, instead of piling up in a separate block.
+ *   2. Conversation isolation — switching conversations swaps the message
+ *      list, so tool entries naturally disappear with their parent message.
+ *
+ * Pending cards (`pendingConfirms`, `pendingAsks`) still live in this store
+ * because they're INTERACTIVE — the user has to click before they disappear.
+ * Both are tagged with the conversation_id they belong to; the renderer
+ * filters by current conversation, and `clearForConversation` is called on
+ * conversation switch as a hard reset.
  */
 
-import type { PendingAskUserRequest, PendingConfirmRequest } from '@/lib/tools/types';
+import type {
+  PendingAskUserRequest,
+  PendingConfirmRequest,
+} from '@/lib/tools/types';
 import { create } from 'zustand';
 
-export type TimelinePhase = 'started' | 'completed' | 'error';
+export interface PendingConfirmInbox extends PendingConfirmRequest {
+  /** Conversation this card belongs to. Null = pre-conversation (first turn). */
+  conversationId: string | null;
+}
 
-export interface ToolTimelineEntry {
-  callId: string;
-  toolName: string;
-  startedAt: number;
-  endedAt?: number;
-  phase: TimelinePhase;
-  /** Inputs the agent sent. Surfaced in the card header. */
-  args?: unknown;
-  /** Output of the call (for completed). May be large — UI clips itself. */
-  output?: unknown;
-  /** Error message (for error). */
-  message?: string;
+export interface PendingAskInbox extends PendingAskUserRequest {
+  conversationId: string | null;
 }
 
 interface ToolInboxState {
-  pendingConfirms: PendingConfirmRequest[];
-  pendingAsks: PendingAskUserRequest[];
-  timeline: ToolTimelineEntry[];
+  pendingConfirms: PendingConfirmInbox[];
+  pendingAsks: PendingAskInbox[];
 
-  addConfirm: (req: PendingConfirmRequest) => void;
+  addConfirm: (req: PendingConfirmRequest, conversationId: string | null) => void;
   removeConfirm: (callId: string) => void;
-  addAsk: (req: PendingAskUserRequest) => void;
+  addAsk: (req: PendingAskUserRequest, conversationId: string | null) => void;
   removeAsk: (callId: string) => void;
-  upsertTimeline: (entry: Partial<ToolTimelineEntry> & { callId: string }) => void;
-  clearForConversation: () => void;
+  /** Wipe everything (used on conversation switch / sign-out). */
+  resetAll: () => void;
 }
 
 export const useToolInbox = create<ToolInboxState>((set) => ({
   pendingConfirms: [],
   pendingAsks: [],
-  timeline: [],
 
-  addConfirm: (req) =>
+  addConfirm: (req, conversationId) =>
     set((s) => {
       if (s.pendingConfirms.some((r) => r.callId === req.callId)) return s;
-      return { pendingConfirms: [...s.pendingConfirms, req] };
+      return {
+        pendingConfirms: [...s.pendingConfirms, { ...req, conversationId }],
+      };
     }),
   removeConfirm: (callId) =>
-    set((s) => ({ pendingConfirms: s.pendingConfirms.filter((r) => r.callId !== callId) })),
+    set((s) => ({
+      pendingConfirms: s.pendingConfirms.filter((r) => r.callId !== callId),
+    })),
 
-  addAsk: (req) =>
+  addAsk: (req, conversationId) =>
     set((s) => {
       if (s.pendingAsks.some((r) => r.callId === req.callId)) return s;
-      return { pendingAsks: [...s.pendingAsks, req] };
+      return { pendingAsks: [...s.pendingAsks, { ...req, conversationId }] };
     }),
   removeAsk: (callId) =>
-    set((s) => ({ pendingAsks: s.pendingAsks.filter((r) => r.callId !== callId) })),
+    set((s) => ({
+      pendingAsks: s.pendingAsks.filter((r) => r.callId !== callId),
+    })),
 
-  upsertTimeline: (entry) =>
-    set((s) => {
-      const existing = s.timeline.find((t) => t.callId === entry.callId);
-      if (!existing) {
-        return {
-          timeline: [
-            ...s.timeline,
-            {
-              callId: entry.callId,
-              toolName: entry.toolName ?? '(unknown)',
-              startedAt: Date.now(),
-              phase: entry.phase ?? 'started',
-              args: entry.args,
-              output: entry.output,
-              message: entry.message,
-              endedAt:
-                entry.phase === 'completed' || entry.phase === 'error' ? Date.now() : undefined,
-            },
-          ],
-        };
-      }
-      const merged: ToolTimelineEntry = {
-        ...existing,
-        ...entry,
-        endedAt:
-          entry.phase === 'completed' || entry.phase === 'error' ? Date.now() : existing.endedAt,
-      };
-      return {
-        timeline: s.timeline.map((t) => (t.callId === entry.callId ? merged : t)),
-      };
-    }),
-
-  clearForConversation: () => set({ pendingConfirms: [], pendingAsks: [], timeline: [] }),
+  resetAll: () => set({ pendingConfirms: [], pendingAsks: [] }),
 }));

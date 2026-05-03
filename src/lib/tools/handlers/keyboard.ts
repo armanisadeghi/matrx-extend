@@ -59,7 +59,7 @@ export const press_keys: ToolHandler<PressKeysArgs, unknown> = {
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: async (rawKeys: string, targetSelector: string | undefined, delayMs: number) => {
+      func: async (rawKeys: string, targetSelector: string | null, delayMs: number) => {
         const NAMED_KEYS = new Set([
           'Enter',
           'Escape',
@@ -189,7 +189,7 @@ export const press_keys: ToolHandler<PressKeysArgs, unknown> = {
         }
         return { ok: true, sent: sentEvents.length, target_tag: target?.tagName.toLowerCase() };
       },
-      args: [args.keys, sel ?? undefined, args.delay_ms],
+      args: [args.keys, sel, args.delay_ms],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },

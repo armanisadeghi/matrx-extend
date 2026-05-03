@@ -153,8 +153,8 @@ export const get_page_links: ToolHandler<GetLinksArgs, unknown> = {
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
       func: (
-        hrefContains: string | undefined,
-        textContains: string | undefined,
+        hrefContains: string | null,
+        textContains: string | null,
         sameOriginOnly: boolean,
         limit: number,
       ) => {
@@ -188,7 +188,12 @@ export const get_page_links: ToolHandler<GetLinksArgs, unknown> = {
         }
         return { count: out.length, total: links.length, links: out };
       },
-      args: [args.href_contains, args.text_contains, args.same_origin_only, args.limit],
+      args: [
+        args.href_contains ?? null,
+        args.text_contains ?? null,
+        args.same_origin_only,
+        args.limit,
+      ],
     });
     return first?.result ?? { count: 0, links: [] };
   },
@@ -212,7 +217,7 @@ export const get_computed_style: ToolHandler<ComputedStyleArgs, unknown> = {
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (selector: string, props: string[] | undefined) => {
+      func: (selector: string, props: string[] | null) => {
         const el = document.querySelector(selector) as HTMLElement | null;
         if (!el) return { ok: false, reason: `No element at ${selector}` };
         const cs = window.getComputedStyle(el);
@@ -248,7 +253,7 @@ export const get_computed_style: ToolHandler<ComputedStyleArgs, unknown> = {
           styles,
         };
       },
-      args: [args.selector, args.properties],
+      args: [args.selector, args.properties ?? null],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },

@@ -47,7 +47,7 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (formSelector: string | undefined) => {
+      func: (formSelector: string | null) => {
         function uniqueSelector(el: Element): string {
           if ('id' in el && (el as { id: string }).id) {
             const id = (el as { id: string }).id;
@@ -155,7 +155,7 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
         });
         return { count: items.length, forms: items };
       },
-      args: [args.selector],
+      args: [args.selector ?? null],
     });
     return first?.result ?? { count: 0, forms: [] };
   },
@@ -188,20 +188,20 @@ export const select_dropdown_option: ToolHandler<SelectDropdownArgs, unknown> = 
       target: { tabId },
       func: (
         selector: string,
-        value: string | undefined,
-        label: string | undefined,
-        idx: number | undefined,
+        value: string | null,
+        label: string | null,
+        idx: number | null,
       ) => {
         const el = document.querySelector(selector) as HTMLSelectElement | null;
         if (!el || el.tagName.toLowerCase() !== 'select') {
           return { ok: false, reason: `No <select> at ${selector}` };
         }
         let target = -1;
-        if (value !== undefined) {
+        if (value !== null) {
           target = Array.from(el.options).findIndex((o) => o.value === value);
-        } else if (label !== undefined) {
+        } else if (label !== null) {
           target = Array.from(el.options).findIndex((o) => o.textContent?.trim() === label.trim());
-        } else if (idx !== undefined) {
+        } else if (idx !== null) {
           target = idx;
         }
         if (target < 0 || target >= el.options.length) {
@@ -222,7 +222,7 @@ export const select_dropdown_option: ToolHandler<SelectDropdownArgs, unknown> = 
           selected: { value: el.value, label: el.options[target]?.textContent?.trim() ?? '' },
         };
       },
-      args: [sel, args.value, args.label, args.index],
+      args: [sel, args.value ?? null, args.label ?? null, args.index ?? null],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },
@@ -298,9 +298,9 @@ export const set_radio: ToolHandler<SetRadioArgs, unknown> = {
       target: { tabId },
       func: (
         selector: string,
-        value: string | undefined,
-        label: string | undefined,
-        idx: number | undefined,
+        value: string | null,
+        label: string | null,
+        idx: number | null,
       ) => {
         const probe = document.querySelector(selector) as HTMLElement | null;
         if (!probe) return { ok: false, reason: `No element at ${selector}` };
@@ -314,16 +314,16 @@ export const set_radio: ToolHandler<SetRadioArgs, unknown> = {
         ).filter((r) => (groupName ? r.name === groupName : true));
         if (radios.length === 0) return { ok: false, reason: 'No radios in group' };
         let target: HTMLInputElement | undefined;
-        if (value !== undefined) {
+        if (value !== null) {
           target = radios.find((r) => r.value === value);
-        } else if (label !== undefined) {
+        } else if (label !== null) {
           target = radios.find((r) => {
             const id = r.getAttribute('id');
             const lbl = id ? document.querySelector(`label[for="${CSS.escape(id)}"]`) : null;
             const text = (lbl?.textContent ?? r.closest('label')?.textContent ?? '').trim();
             return text === label.trim();
           });
-        } else if (idx !== undefined) {
+        } else if (idx !== null) {
           target = radios[idx];
         }
         if (!target) {
@@ -336,7 +336,7 @@ export const set_radio: ToolHandler<SetRadioArgs, unknown> = {
         target.click();
         return { ok: true, value: target.value };
       },
-      args: [sel, args.value, args.label, args.index],
+      args: [sel, args.value ?? null, args.label ?? null, args.index ?? null],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },
@@ -363,7 +363,7 @@ export const submit_form: ToolHandler<SubmitFormArgs, unknown> = {
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (selector: string | undefined, viaButton: boolean) => {
+      func: (selector: string | null, viaButton: boolean) => {
         let form: HTMLFormElement | null;
         if (selector) {
           const el = document.querySelector(selector) as Element | null;
@@ -388,7 +388,7 @@ export const submit_form: ToolHandler<SubmitFormArgs, unknown> = {
         }
         return { ok: true, mode: 'submit' };
       },
-      args: [args.selector, args.via_button],
+      args: [args.selector ?? null, args.via_button],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },

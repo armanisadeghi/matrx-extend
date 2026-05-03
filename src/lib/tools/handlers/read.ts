@@ -318,7 +318,7 @@ export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
     try {
       const [first] = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: (selector: string, attrs: string[] | undefined, limit: number) => {
+        func: (selector: string, attrs: string[] | null, limit: number) => {
           const out: Array<Record<string, unknown>> = [];
           const list = document.querySelectorAll(selector);
           const total = list.length;
@@ -344,7 +344,7 @@ export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
           }
           return { total, returned: out.length, items: out };
         },
-        args: [args.selector, args.attributes, args.limit],
+        args: [args.selector, args.attributes ?? null, args.limit],
       });
       return first?.result ?? { total: 0, returned: 0, items: [] };
     } catch (err) {

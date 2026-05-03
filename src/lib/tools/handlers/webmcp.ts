@@ -155,7 +155,7 @@ export const webmcp_call_page_tool: ToolHandler<CallPageToolArgs, unknown> = {
             return { ok: false, reason: (err as Error).message };
           }
         },
-        args: [args.name, args.arguments],
+        args: [args.name, args.arguments ?? null],
       });
       return first?.result ?? { ok: false, reason: 'no result' };
     } catch (err) {

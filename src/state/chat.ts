@@ -3,17 +3,17 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 /**
- * Server-side tool calls that happen during an assistant turn (e.g. SEO
- * lookups, context fetches). Distinct from CLIENT tool calls (browser
- * harness) which flow through `tool-inbox` and render via ToolTimelineRow.
- *
- * Server tools are bound to a specific assistant message so they can render
- * inline within that turn instead of in a global timeline.
+ * One tool invocation captured inside an assistant turn — server-side OR
+ * client-side. Stored as a part on the message itself so tool entries
+ * interleave correctly with text and reasoning in the order they arrived
+ * over the SSE wire.
  */
-export interface ServerToolCall {
+export interface ToolPartCall {
+  /** 'server' = ran in Python; 'client' = ran in our SW dispatcher. */
+  kind: "server" | "client";
   callId: string;
   toolName: string;
-  /** Friendly label from the server: "Executing Seo Get Keyword Data" / "Done". */
+  /** Friendly label the server occasionally sends ("Executing X" / "Done"). */
   message?: string;
   /** Inputs the model passed. Shown when the user expands the row. */
   args?: unknown;
@@ -24,15 +24,44 @@ export interface ServerToolCall {
   endedAt?: number;
 }
 
+/**
+ * Ordered fragment of a message — used so a single assistant turn can be
+ * rendered as text → tool → text → tool → reasoning → text in the exact
+ * order the model produced them. Each new chunk on the SSE either appends
+ * to the last part (when types match) or pushes a new part.
+ */
+export type MessagePart =
+  | { type: "text"; content: string }
+  | { type: "reasoning"; content: string }
+  | { type: "tool"; tool: ToolPartCall };
+
 export interface ChatMessage {
   id: string;
   role: "user" | "assistant";
+  /**
+   * Concatenated plain text — kept as a fast-access summary for things like
+   * conversation list previews. New code paths populate via `parts` and
+   * derive `content` automatically; older DB-hydrated messages still have
+   * `content` set directly with no `parts`.
+   */
   content: string;
+  /**
+   * Ordered parts (text / reasoning / tool) as they arrived in the stream.
+   * Optional for backwards compat — DB-hydrated messages typically don't
+   * have parts and render via `content` only.
+   */
+  parts?: MessagePart[];
   timestamp: number;
   pending?: boolean;
-  /** Server-side tools called during this assistant turn, in arrival order. */
-  serverTools?: ServerToolCall[];
+  /**
+   * Conversation this message belongs to. Set at push time; used to filter
+   * out stale tool inbox entries when the user switches conversations.
+   */
+  conversationId?: string | null;
 }
+
+/** Backwards-compat alias — older callers reference `ServerToolCall`. */
+export type ServerToolCall = ToolPartCall;
 
 export type PermissionMode = "ask" | "act";
 
@@ -69,17 +98,38 @@ interface ChatState {
   adoptConversationId: (id: string) => void;
   setDraft: (s: string) => void;
   pushMessage: (m: ChatMessage) => void;
+  /**
+   * Append a text chunk to the assistant message identified by `id`. If the
+   * last part is already a text part, the chunk is concatenated. Otherwise a
+   * new text part is pushed — preserving stream order so a tool call
+   * mid-response forces the next text chunk into a fresh part on the other
+   * side of the tool entry.
+   */
   appendAssistantText: (id: string, chunk: string) => void;
+  /**
+   * Same arrival-order semantics as `appendAssistantText`, but for
+   * "thinking" tokens (reasoning chunks). Renders as a separate part type
+   * so the UI can style / collapse independently from regular text.
+   */
+  appendAssistantReasoning: (id: string, chunk: string) => void;
   finalizeAssistant: (id: string) => void;
   /**
-   * Upsert a server-side tool call attached to a specific assistant message.
-   * On `tool_started` it appends a new entry; on `tool_completed`/`tool_error`
-   * it merges into the existing one (matched by callId).
+   * Upsert a tool call (server- or client-side) attached to an assistant
+   * message AS A PART. New tools push a fresh `tool` part at the end of the
+   * parts array — this is what makes tool calls interleave with text in the
+   * order they arrived. Subsequent updates (completed / error / output)
+   * merge into the existing part by callId.
    */
+  upsertToolPart: (
+    messageId: string,
+    callId: string,
+    patch: Partial<ToolPartCall> & { kind?: "server" | "client" },
+  ) => void;
+  /** Backwards-compat — older callers used this for server tools only. */
   upsertServerTool: (
     messageId: string,
     callId: string,
-    patch: Partial<ServerToolCall>,
+    patch: Partial<ToolPartCall>,
   ) => void;
   setStreaming: (b: boolean) => void;
   setMessages: (ms: ChatMessage[]) => void;
@@ -104,55 +154,116 @@ export const useChatStore = create<ChatState>()(
       variableValues: {},
       permissionMode: {},
       setAgent: (selectedAgentId) => set({ selectedAgentId }),
-      setConversation: (selectedConversationId) =>
-        set({ selectedConversationId, messages: [] }),
+      setConversation: (selectedConversationId) => {
+        set({ selectedConversationId, messages: [] });
+        // Wipe any pending approval / ask cards from the previous
+        // conversation. They were tied to a different runId; the SW will
+        // time them out on its end. Keeping them visible here would just
+        // confuse the user since responding to them no longer reaches a
+        // listener that cares.
+        // Lazy import — avoids a circular dep with hooks importing chat.
+        import('@/state/tool-inbox').then(({ useToolInbox }) => {
+          useToolInbox.getState().resetAll();
+        });
+      },
       adoptConversationId: (id) =>
         set((s) =>
           s.selectedConversationId === id ? s : { selectedConversationId: id },
         ),
       setDraft: (draft) => set({ draft }),
-      pushMessage: (m) => set((s) => ({ messages: [...s.messages, m] })),
-      upsertServerTool: (messageId, callId, patch) =>
+      pushMessage: (m) =>
+        set((s) => ({
+          messages: [
+            ...s.messages,
+            {
+              ...m,
+              // Tag every newly-pushed message with the current conversation_id.
+              // Used so tool inbox entries arriving for a stale runId don't
+              // bleed into a different conversation's view.
+              conversationId: m.conversationId ?? s.selectedConversationId,
+            },
+          ],
+        })),
+      upsertToolPart: (messageId, callId, patch) =>
         set((s) => ({
           messages: s.messages.map((m) => {
             if (m.id !== messageId) return m;
-            const tools = m.serverTools ?? [];
-            const idx = tools.findIndex((t) => t.callId === callId);
+            const parts = m.parts ?? [];
+            const idx = parts.findIndex(
+              (p) => p.type === "tool" && p.tool.callId === callId,
+            );
             if (idx === -1) {
-              return {
-                ...m,
-                serverTools: [
-                  ...tools,
-                  {
-                    callId,
-                    toolName: patch.toolName ?? "(unknown)",
-                    phase: patch.phase ?? "started",
-                    startedAt: Date.now(),
-                    ...patch,
-                  },
-                ],
+              // First time we see this callId — push a brand new `tool` part
+              // at the END of the array. Crucial for ordering: any text/
+              // reasoning that arrived before this lands BEFORE this part;
+              // anything after lands AFTER (in fresh parts).
+              const fresh: ToolPartCall = {
+                kind: patch.kind ?? "server",
+                callId,
+                toolName: patch.toolName ?? "(unknown)",
+                phase: patch.phase ?? "started",
+                startedAt: Date.now(),
+                ...patch,
               };
+              return { ...m, parts: [...parts, { type: "tool", tool: fresh }] };
             }
-            const existing = tools[idx];
-            if (!existing) return m;
-            const next: ServerToolCall = {
-              ...existing,
+            const existing = parts[idx];
+            if (!existing || existing.type !== "tool") return m;
+            const merged: ToolPartCall = {
+              ...existing.tool,
               ...patch,
               endedAt:
                 patch.phase === "completed" || patch.phase === "error"
                   ? Date.now()
-                  : existing.endedAt,
+                  : existing.tool.endedAt,
             };
-            const updated = [...tools];
-            updated[idx] = next;
-            return { ...m, serverTools: updated };
+            const next = parts.slice();
+            next[idx] = { type: "tool", tool: merged };
+            return { ...m, parts: next };
           }),
         })),
+      // Backwards-compat shim — older code paths called this for server tools.
+      upsertServerTool: (messageId, callId, patch) =>
+        get().upsertToolPart(messageId, callId, { kind: "server", ...patch }),
       appendAssistantText: (id, chunk) =>
         set((s) => ({
-          messages: s.messages.map((m) =>
-            m.id === id ? { ...m, content: m.content + chunk } : m,
-          ),
+          messages: s.messages.map((m) => {
+            if (m.id !== id) return m;
+            const parts = m.parts ?? [];
+            const last = parts[parts.length - 1];
+            // Coalesce into the trailing text part when possible. If the
+            // last part is something else (a tool, or reasoning), push a
+            // new text part — that's what preserves "text → tool → text"
+            // visual ordering.
+            let nextParts: MessagePart[];
+            if (last && last.type === "text") {
+              nextParts = parts.slice(0, -1).concat({
+                type: "text",
+                content: last.content + chunk,
+              });
+            } else {
+              nextParts = parts.concat({ type: "text", content: chunk });
+            }
+            return { ...m, parts: nextParts, content: m.content + chunk };
+          }),
+        })),
+      appendAssistantReasoning: (id, chunk) =>
+        set((s) => ({
+          messages: s.messages.map((m) => {
+            if (m.id !== id) return m;
+            const parts = m.parts ?? [];
+            const last = parts[parts.length - 1];
+            let nextParts: MessagePart[];
+            if (last && last.type === "reasoning") {
+              nextParts = parts.slice(0, -1).concat({
+                type: "reasoning",
+                content: last.content + chunk,
+              });
+            } else {
+              nextParts = parts.concat({ type: "reasoning", content: chunk });
+            }
+            return { ...m, parts: nextParts };
+          }),
         })),
       finalizeAssistant: (id) =>
         set((s) => ({

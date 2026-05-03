@@ -60,7 +60,7 @@ export const execute_javascript: ToolHandler<ExecuteJsArgs, unknown> = {
             return { ok: false, error: (err as Error).message };
           }
         },
-        args: [args.code, args.arg],
+        args: [args.code, args.arg ?? null],
       });
       return first?.result ?? { ok: false, reason: 'no result' };
     } catch (err) {
