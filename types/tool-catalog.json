@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-03T14:51:23.047Z",
+  "generated_at": "2026-05-03T15:46:45.365Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -1117,31 +1117,46 @@
     },
     {
       "name": "take_screenshot",
-      "description": "Capture the visible viewport of the active tab. Returns { ok, media_type, format, width, height, source_width, source_height, image_base64, byte_length, resized }. Defaults: JPEG q=80, resized so longest side ≤ 1568px (sweet spot for Anthropic / OpenAI vision APIs). Pass `format: \"png\"` for lossless, `max_dimension: 0` to skip resize. The `media_type` field is ready for direct use in an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
+      "description": "Capture the visible viewport of the active tab, optimized for vision-API consumption. Default profile 'auto' returns a 'max useful' master image (JPEG q=88 @ 2576px — Opus 4.7's ceiling, the highest any current model uses) at ~600–900 KB; the server is expected to do per-provider final sizing from that master. Use 'auto-final' if the server is a passthrough (1568px JPEG q=85 — fits every provider). Provider-specific profiles when the server already knows the model: 'anthropic-default'/'anthropic-hires', 'openai-original'/'openai-high'/'openai-low', 'gemini-screenshot'/'gemini-overview'/'gemini-2.5-default'. Special-purpose: 'ocr-heavy' (high-q for fine text), 'lossless' (PNG, archival only). Returns { ok, media_type, format, width, height, source_width, source_height, image_base64, byte_length, resized, profile, est_tokens }. The `media_type` field is ready for direct use in an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
       "tier": "read",
       "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {
+          "profile": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "auto-final",
+              "anthropic-default",
+              "anthropic-hires",
+              "openai-original",
+              "openai-high",
+              "openai-low",
+              "gemini-screenshot",
+              "gemini-overview",
+              "gemini-2.5-default",
+              "ocr-heavy",
+              "lossless"
+            ],
+            "default": "auto"
+          },
           "format": {
             "type": "string",
             "enum": [
               "png",
               "jpeg"
-            ],
-            "default": "jpeg"
+            ]
           },
           "quality": {
             "type": "integer",
             "minimum": 1,
-            "maximum": 100,
-            "default": 80
+            "maximum": 100
           },
           "max_dimension": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 8192,
-            "default": 1568
+            "maximum": 8192
           }
         },
         "additionalProperties": false,
@@ -3605,7 +3620,7 @@
     },
     {
       "name": "cdp_full_page_screenshot",
-      "description": "Capture the FULL page (not just viewport) as base64 JPEG at half resolution (defaults). Use instead of take_screenshot for whole-article / long-form pages. Returns { ok, media_type, format, image_base64, byte_length, capture_scale }. The `media_type` field is ready to drop into an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
+      "description": "Capture the FULL page (not just viewport) as base64. Use instead of take_screenshot for whole-article / long-form pages. Pass a `profile` to optimize for a specific vision model (same profile names as take_screenshot). The tool auto-computes capture_scale so the long edge lands at the profile's target. Returns { ok, media_type, format, image_base64, byte_length, capture_scale, profile, est_tokens }. The `media_type` field is ready to drop into an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
       "tier": "privileged",
       "category": "debug",
       "input_schema": {
@@ -3614,20 +3629,36 @@
           "tab_id": {
             "type": "integer"
           },
+          "profile": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "auto-final",
+              "anthropic-default",
+              "anthropic-hires",
+              "openai-original",
+              "openai-high",
+              "openai-low",
+              "gemini-screenshot",
+              "gemini-overview",
+              "gemini-2.5-default",
+              "ocr-heavy",
+              "lossless"
+            ],
+            "default": "auto"
+          },
           "format": {
             "type": "string",
             "enum": [
               "png",
               "jpeg",
               "webp"
-            ],
-            "default": "jpeg"
+            ]
           },
           "quality": {
             "type": "integer",
             "minimum": 1,
-            "maximum": 100,
-            "default": 80
+            "maximum": 100
           },
           "full_page": {
             "type": "boolean",
@@ -3636,8 +3667,7 @@
           "capture_scale": {
             "type": "number",
             "minimum": 0.1,
-            "maximum": 1,
-            "default": 0.5
+            "maximum": 1
           }
         },
         "additionalProperties": false,
