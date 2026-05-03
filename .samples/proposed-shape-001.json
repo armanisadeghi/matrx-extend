@@ -1,0 +1,63 @@
+{
+  "user": {
+    "id": "4cf62e4e-…",
+    "name": "Arman Sadeghi",
+    "email": "arman@armansadeghi.com"
+  },
+  "client": {
+    "surface": "chrome-extension-chat",
+    "extension_version": "0.1.4",
+    "desktop_bridge": "none",
+    "now": "2026-05-03T20:54:40.911Z",
+    "timezone": "America/Los_Angeles",
+    "locale": "en-US",
+    "viewport": { "w": 1440, "h": 900, "scroll_y": 0 }
+  },
+  "page": {
+    "url": "https://inference-docs.cerebras.ai/resources/openai",
+    "title": "OpenAI Compatibility - Cerebras Inference",
+    "description": "Use the OpenAI Client Libraries with Cerebras Inference",
+    "lang": "en",
+    "kind": "documentation",
+    "tab_id": 908906919,
+    "window_id": 908904564,
+    "ready": "complete",
+
+    "snapshot": {
+      "captured_at": "2026-05-03T20:54:40.911Z",
+      "confidence": "high",
+      "flags": []
+    },
+
+    "structure": {
+      "headings": [
+        { "level": 1, "text": "OpenAI Compatibility" },
+        { "level": 2, "text": "Configuring OpenAI to Use Cerebras API" }
+      ],
+      "primary_action": null,
+      "main_interactive": [
+        { "ref": "ref:7", "role": "link", "name": "Get Started" }
+      ]
+    },
+
+    "content": {
+      "excerpt": "...first ~1500 chars of clean markdown...",
+      "word_count": 273,
+      "reading_time_min": 1
+    },
+
+    "more_available": {
+      "full_content_chars": 12400,
+      "all_interactive": 53,
+      "chrome_elements": 35,
+      "links": 53,
+      "images": 5,
+      "videos": 0,
+      "forms": 0,
+      "structured_data": 0,
+      "seo_audit": "available"
+    }
+  },
+
+  "selection": null
+}

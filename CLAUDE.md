@@ -427,6 +427,110 @@ Regenerate both with `pnpm catalog:tools`.
 - **No silent writes**: privileged tier always prompts. Even in Act mode.
 - **Catalog stays in sync**: after any handler change, run
   `pnpm catalog:tools:md` and commit the regenerated JSON + MD.
+- **`chrome.scripting.executeScript` args must be JSON-serializable** —
+  `undefined` is NOT, and Chrome will reject the call with
+  `Error at property 'args': Error at index N: Value is unserializable`
+  before your script runs. When a Zod-optional field has no `.default()`,
+  it can arrive as `undefined`. Coerce with `?? null` at the call site
+  and type the inner func param as `string | null` (not `string | undefined`).
+  Same rule for the inner func — when checking, use `value !== null`, not
+  `value !== undefined`. Bit me on `select_dropdown_option` (2026-05-03);
+  every existing handler is now null-coerced.
+
+---
+
+## 🧱 Context shape (the canonical Surface contract)
+
+This extension is the **reference implementation** for how every Matrx
+Surface should produce per-message context. Other surfaces (chat UI, SMS,
+sandboxes, webhooks) should follow this pattern.
+
+### The four parties (from `docs/ABOUT-MATRX.md`)
+- **Surface** owns the catalog of available keys.
+- **Engineer** decides which keys pre-load into every turn (context_slots).
+- **Agent** retrieves anything else by name on demand.
+- **User** sees only the music.
+
+### Rules for keys
+
+1. **Menu cost, not payload cost.** Each key costs ~one line in the model's
+   advertised-keys list — not its payload size. Big rich bundles are FREE.
+   Don't move state to tools to "save context"; tools cost more (full schema
+   in the prompt) than a context key (one menu line).
+2. **Bundle by mental concept.** One coherent thing → one key. `images`,
+   `images_count`, `videos`, `videos_count` collapse into `page_media`.
+   `og`, `twitter`, `canonical`, `robots` collapse into `page_meta`.
+3. **One source of truth per fact.** If `page.title` and `seo_audit.title`
+   both exist, the second is a bug. Title appears in exactly one place.
+4. **No shallow keys for empty things.** `images_count: 0` is the
+   anti-pattern. Empty arrays / zero counts go inside their bundle, never
+   as standalone keys. If a bundle would be empty, omit the bundle.
+5. **Confidence-gated content.** When `page_brief.snapshot.confidence` is
+   `low` (CAPTCHA, SPA-unhydrated, blocked), `structure` and `content`
+   become `null`. Better to send less than to mislead.
+6. **Honesty signal — `more_available`.** Every brief includes counts of
+   what was trimmed, so the model never treats the brief as "everything."
+7. **Dynamic keys are encouraged.** Surface attaches keys based on detected
+   page state — `form_elements` when there's a form, `product_data` on a
+   product page. No advance declaration needed; the server's context-fetch
+   tool exposes them automatically.
+8. **Keys are public API.** Engineers template `{{page_brief.title}}` etc.
+   into prompts. Renames are breaking changes.
+9. **No implementation details.** Things like `scrape_extractor: "defuddle"`,
+   `raw_html_size`, `scrape_age_ms` are debug noise; they belong in logs,
+   not context.
+10. **No images for the model.** Favicons, OG image URLs, image entries —
+    the text-mode model can't see any of it. Useful via tools (`take_screenshot`,
+    `ai_describe_image`); useless in context.
+
+### Files
+
+- [`src/lib/chat/context/`](./src/lib/chat/context/) — implementation
+  - `index.ts` — dispatcher (reads `matrx.context.shape` storage key)
+  - `shape-config.ts` — shape flag accessor
+  - `probe.ts` — single-round-trip page probe (used by both shapes)
+  - `v2-bundled.ts` — **default**, the canonical shape
+  - `v1-flat.ts` — legacy 65-key shape, admin-toggleable for A/B
+- [`src/lib/chat/build-context.ts`](./src/lib/chat/build-context.ts) — public re-export
+
+### v2 key catalog (the Surface's menu)
+
+Always-attached:
+- `page_brief` — url, title, description, kind, snapshot{captured_at,
+  confidence, flags}, structure{headings, primary_action, main_interactive},
+  content{excerpt, word_count, reading_time_min}, more_available{counts}
+- `user` — id, name, email
+- `client` — surface, extension_version, desktop_bridge, now, timezone, locale
+- `selection` — only when text is selected on the page
+
+Available on demand:
+- `page_meta` — og + twitter + canonical + robots + charset + content_type
+- `page_full_content` — full clean markdown + html + word counts
+- `page_seo_audit` — full SEO audit (headings, alt counts, perf, readability)
+- `page_links` — internal/external links with metadata
+- `page_media` — images + videos + audio (only when something exists)
+- `page_structured_data` — schema.org / JSON-LD blocks (only when present)
+- `tab_state` — tab_id, window_id, tab_index, pinned, incognito, status
+- `viewport_state` — viewport dimensions + scroll position
+- `prior_capture` — Supabase recognition row when the URL has been captured
+
+Dynamic (added when detected):
+- `article_summary` — when `page_brief.kind === 'article'`
+- `product_data` — when product schema is detected
+
+### Switching shapes
+
+Admin → Debug tab → "context" dropdown. Or:
+
+```bash
+# v2-bundled (default)
+chrome.storage.local.set({ "matrx.context.shape": "v2-bundled" })
+# v1-flat (legacy, A/B comparison)
+chrome.storage.local.set({ "matrx.context.shape": "v1-flat" })
+```
+
+The setting is per-extension-install. Future work: per-conversation override
+for side-by-side comparison in a single session.
 
 ---
 

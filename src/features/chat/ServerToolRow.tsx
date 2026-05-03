@@ -12,8 +12,42 @@ import { cn } from '@/lib/utils';
 import type { ServerToolCall } from '@/state/chat';
 import { AlertTriangle, CheckCircle2, ChevronRight, Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { ConfigurableToolRow, ToolDisplayBoundary } from './tool-display/ConfigurableToolRow';
+import { toolDisplayRegistry } from './tool-display/registry';
+import type { ToolTimelineEntry } from './ToolTimelineRow';
 
 export function ServerToolRow({ tool }: { tool: ServerToolCall }) {
+  const cfg = toolDisplayRegistry[tool.toolName];
+  if (cfg) {
+    const entry: ToolTimelineEntry = {
+      callId: tool.callId,
+      toolName: tool.toolName,
+      startedAt: tool.startedAt,
+      endedAt: tool.endedAt,
+      phase: tool.phase,
+      args: tool.args,
+      output: tool.result,
+      message: tool.message,
+    };
+    const fallback = <DefaultServerToolRow tool={tool} />;
+    if (cfg.CustomComponent) {
+      const Custom = cfg.CustomComponent;
+      return (
+        <ToolDisplayBoundary toolName={tool.toolName} fallback={fallback}>
+          <Custom entry={entry} kind="server" />
+        </ToolDisplayBoundary>
+      );
+    }
+    return (
+      <ToolDisplayBoundary toolName={tool.toolName} fallback={fallback}>
+        <ConfigurableToolRow entry={entry} kind="server" cfg={cfg} />
+      </ToolDisplayBoundary>
+    );
+  }
+  return <DefaultServerToolRow tool={tool} />;
+}
+
+function DefaultServerToolRow({ tool }: { tool: ServerToolCall }) {
   const [open, setOpen] = useState(false);
 
   const label = humanLabel(tool);

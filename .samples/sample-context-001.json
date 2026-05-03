@@ -1,0 +1,654 @@
+{
+  "method": "POST",
+  "path": "/ai/agent/9935dadd-2afc-41db-aeac-fc15ee842812",
+  "query_params": {},
+  "headers": {
+    "host": "localhost:8000",
+    "connection": "keep-alive",
+    "content-length": "30009",
+    "sec-ch-ua-platform": "macOS",
+    "authorization": "Bearer eyJhbGciOi...",
+    "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+    "sec-ch-ua-mobile": "?0",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    "accept": "text/event-stream",
+    "dnt": "1",
+    "content-type": "application/json",
+    "origin": "chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "sec-fetch-site": "none",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-storage-access": "active",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "cookie": "[redacted]"
+  },
+  "body": {
+    "user_input": "Can you show me some basic information about Cerebras api details?\n\nGive me a very short and concise response. Can you take a screenshot of this page so we can talk about it?",
+    "conversation_id": null,
+    "variables": {
+      "topic": "Cerebras api details",
+      "applet_description": "My app helps plan vacations."
+    },
+    "context": {
+      "user_id": "4cf62e4e-2679-484f-b652-034e697418df",
+      "user_email": "arman@armansadeghi.com",
+      "user_full_name": "Arman Sadeghi",
+      "current_time": "2026-05-03T20:54:40.911Z",
+      "current_time_local": "Sun May 03 2026 13:54:40 GMT-0700 (Pacific Daylight Time)",
+      "timezone": "America/Los_Angeles",
+      "locale": "en-US",
+      "locales": ["en-US", "en"],
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+      "desktop_bridge_status": "none",
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "extension_version": "0.1.4",
+      "extension_name": "matrx-extend",
+      "surface": "chrome-extension-chat",
+      "url": "https://inference-docs.cerebras.ai/resources/openai",
+      "page_title": "OpenAI Compatibility - Cerebras Inference",
+      "tab_id": 908906919,
+      "window_id": 908904564,
+      "tab_status": "complete",
+      "tab_index": 43,
+      "tab_pinned": false,
+      "tab_incognito": false,
+      "favicon_url": "https://inference-docs.cerebras.ai/mintlify-assets/_mintlify/favicons/cerebras-inference/FcAuEx9Fi3BOAJGk/_generated/favicon/favicon-32x32.png",
+      "page_description": "Use the OpenAI Client Libraries with Cerebras Inference",
+      "page_canonical": "https://inference-docs.cerebras.ai/resources/openai",
+      "page_lang": "en",
+      "page_charset": "utf-8",
+      "page_viewport_meta": "width=device-width, initial-scale=1, viewport-fit=cover",
+      "page_robots": null,
+      "page_referrer": null,
+      "page_ready_state": "complete",
+      "page_content_type": "text/html",
+      "page_og": {
+        "og:description": "Use the OpenAI Client Libraries with Cerebras Inference",
+        "og:image": "https://cerebras-inference.mintlify.app/mintlify-assets/_next/image?url=%2F_mintlify%2Fapi%2Fog%3Fdivision%3DCompatibility%26title%3DOpenAI%2BCompatibility%26description%3DUse%2Bthe%2BOpenAI%2BClient%2BLibraries%2Bwith%2BCerebras%2BInference%26logoLight%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F2.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D98684d23487c722617419a5dbeb0c678%26logoDark%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F1.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D7710d16c35881e9aa3b9c98143774cbb%26primaryColor%3D%2523F1592A%26lightColor%3D%2523FFFFFF%26darkColor%3D%25230C0C0E%26backgroundLight%3D%2523ffffff%26backgroundDark%3D%25230e0e10&w=1200&q=100",
+        "og:image:height": "630",
+        "og:image:width": "1200",
+        "og:title": "OpenAI Compatibility - Cerebras Inference",
+        "og:type": "website",
+        "og:url": "https://inference-docs.cerebras.ai/resources/openai"
+      },
+      "page_twitter": {
+        "twitter:card": "summary_large_image",
+        "twitter:description": "Use the OpenAI Client Libraries with Cerebras Inference",
+        "twitter:image": "https://cerebras-inference.mintlify.app/mintlify-assets/_next/image?url=%2F_mintlify%2Fapi%2Fog%3Fdivision%3DCompatibility%26title%3DOpenAI%2BCompatibility%26description%3DUse%2Bthe%2BOpenAI%2BClient%2BLibraries%2Bwith%2BCerebras%2BInference%26logoLight%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F2.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D98684d23487c722617419a5dbeb0c678%26logoDark%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F1.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D7710d16c35881e9aa3b9c98143774cbb%26primaryColor%3D%2523F1592A%26lightColor%3D%2523FFFFFF%26darkColor%3D%25230C0C0E%26backgroundLight%3D%2523ffffff%26backgroundDark%3D%25230e0e10&w=1200&q=100",
+        "twitter:image:height": "630",
+        "twitter:image:width": "1200",
+        "twitter:title": "OpenAI Compatibility - Cerebras Inference"
+      },
+      "viewport": {
+        "width": 1961,
+        "height": 1289
+      },
+      "scroll_position": {
+        "y": 0,
+        "max": 1289
+      },
+      "selection": null,
+      "has_selection": false,
+      "page_overview": {
+        "url": "https://inference-docs.cerebras.ai/resources/openai",
+        "title": "OpenAI Compatibility - Cerebras Inference",
+        "description": "Use the OpenAI Client Libraries with Cerebras Inference",
+        "canonical": "https://inference-docs.cerebras.ai/resources/openai",
+        "lang": "en",
+        "robots": null,
+        "og": {
+          "og:description": "Use the OpenAI Client Libraries with Cerebras Inference",
+          "og:image": "https://cerebras-inference.mintlify.app/mintlify-assets/_next/image?url=%2F_mintlify%2Fapi%2Fog%3Fdivision%3DCompatibility%26title%3DOpenAI%2BCompatibility%26description%3DUse%2Bthe%2BOpenAI%2BClient%2BLibraries%2Bwith%2BCerebras%2BInference%26logoLight%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F2.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D98684d23487c722617419a5dbeb0c678%26logoDark%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F1.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D7710d16c35881e9aa3b9c98143774cbb%26primaryColor%3D%2523F1592A%26lightColor%3D%2523FFFFFF%26darkColor%3D%25230C0C0E%26backgroundLight%3D%2523ffffff%26backgroundDark%3D%25230e0e10&w=1200&q=100",
+          "og:image:height": "630",
+          "og:image:width": "1200",
+          "og:title": "OpenAI Compatibility - Cerebras Inference",
+          "og:type": "website",
+          "og:url": "https://inference-docs.cerebras.ai/resources/openai"
+        },
+        "twitter": {
+          "twitter:card": "summary_large_image",
+          "twitter:description": "Use the OpenAI Client Libraries with Cerebras Inference",
+          "twitter:image": "https://cerebras-inference.mintlify.app/mintlify-assets/_next/image?url=%2F_mintlify%2Fapi%2Fog%3Fdivision%3DCompatibility%26title%3DOpenAI%2BCompatibility%26description%3DUse%2Bthe%2BOpenAI%2BClient%2BLibraries%2Bwith%2BCerebras%2BInference%26logoLight%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F2.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D98684d23487c722617419a5dbeb0c678%26logoDark%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F1.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D7710d16c35881e9aa3b9c98143774cbb%26primaryColor%3D%2523F1592A%26lightColor%3D%2523FFFFFF%26darkColor%3D%25230C0C0E%26backgroundLight%3D%2523ffffff%26backgroundDark%3D%25230e0e10&w=1200&q=100",
+          "twitter:image:height": "630",
+          "twitter:image:width": "1200",
+          "twitter:title": "OpenAI Compatibility - Cerebras Inference"
+        }
+      },
+      "clean_content_markdown": "We designed the Cerebras API to be mostly compatible with OpenAI\u2019s client libraries, making it simple to configure your existing applications to run on Cerebras and take advantage of our inference capabilities.We also offer dedicated Cerebras Python and Cerebras TypeScript SDKs.\n\n## Configuring OpenAI to Use Cerebras API\n\nTo start using Cerebras with OpenAI\u2019s client libraries, simply pass your Cerebras API key to the `apiKey` parameter and change the `baseURL` to [https://api.cerebras.ai/v1](https://api.cerebras.ai/v1):\n\n## Developer-Level Instructions via System and Developer Roles\n\nThis info is only applicable to the `gpt-oss-120b` model.\n\nFor `gpt-oss-120b`, the API supports both the `system` and `developer` message roles. Both are mapped to a developer-level instruction layer in the prompt hierarchy, elevated above normal user instructions and injected into the model\u2019s internal system prompt. This gives you significant control over the assistant\u2019s tone, style, and behavior while preserving the model\u2019s built-in safety guardrails.The `developer` role is functionally equivalent to `system` \u2013 the `system` role remains supported for backwards compatibility.\n\n### Key Differences from OpenAI\n\nOpenAI\u2019s API distinguishes between `system` and `developer` roles with different behavior. On Cerebras, both roles act at the developer level, meaning they may have stronger influence than `system` messages in OpenAI\u2019s API.As a result, the same prompt may yield different behavior here compared to OpenAI. This is expected.\n\n## Passing Non-Standard Parameters\n\n-   **OpenAI**: Non-standard parameters (e.g., `clear_thinking` for Z.ai GLM) need to be passed through `extra_body`. Standard OpenAI parameters like `reasoning_effort` work directly.\n-   **Cerebras SDK**: Non-standard parameters can be passed in **either** `extra_body` **or** as regular parameters like `model`.\n\nWhen using the OpenAI client with Cerebras API, non-standard parameters must be passed through `extra_body`:\n\nWhen using the Cerebras SDK client, non-standard parameters can be passed as regular parameters:",
+      "clean_content_html": "<div><span>We designed the Cerebras API to be mostly compatible with OpenAI\u2019s client libraries, making it simple to configure your existing applications to run on Cerebras and take advantage of our inference capabilities.</span><span>We also offer dedicated Cerebras Python and Cerebras TypeScript SDKs.</span><h2>Configuring OpenAI to Use Cerebras API</h2> <span>To start using Cerebras with OpenAI\u2019s client libraries, simply pass your Cerebras API key to the <code>apiKey</code> parameter and change the <code>baseURL</code> to <a href=\"https://api.cerebras.ai/v1\">https://api.cerebras.ai/v1</a>:</span><h2>Developer-Level Instructions via System and Developer Roles</h2> <div>This info is only applicable to the <code>gpt-oss-120b</code> model. </div><span>For <code>gpt-oss-120b</code>, the API supports both the <code>system</code> and <code>developer</code> message roles. Both are mapped to a developer-level instruction layer in the prompt hierarchy, elevated above normal user instructions and injected into the model\u2019s internal system prompt. This gives you significant control over the assistant\u2019s tone, style, and behavior while preserving the model\u2019s built-in safety guardrails.</span><span>The <code>developer</code> role is functionally equivalent to <code>system</code> \u2013 the <code>system</code> role remains supported for backwards compatibility.</span><h3>Key Differences from OpenAI</h3> <span>OpenAI\u2019s API distinguishes between <code>system</code> and <code>developer</code> roles with different behavior. On Cerebras, both roles act at the developer level, meaning they may have stronger influence than <code>system</code> messages in OpenAI\u2019s API.</span><span>As a result, the same prompt may yield different behavior here compared to OpenAI. This is expected.</span><h2>Passing Non-Standard Parameters</h2> <ul><li><strong>OpenAI</strong>: Non-standard parameters (e.g., <code>clear_thinking</code> for Z.ai GLM) need to be passed through <code>extra_body</code>. Standard OpenAI parameters like <code>reasoning_effort</code> work directly.</li><li><strong>Cerebras SDK</strong>: Non-standard parameters can be passed in <strong>either</strong> <code>extra_body</code> <strong>or</strong> as regular parameters like <code>model</code>.</li></ul><details><p><span>When using the OpenAI client with Cerebras API, non-standard parameters must be passed through <code>extra_body</code>:</span></p></details><details><p><span>When using the Cerebras SDK client, non-standard parameters can be passed as regular parameters:</span></p></details></div>",
+      "clean_content_excerpt_1000_words": "We designed the Cerebras API to be mostly compatible with OpenAI\u2019s client libraries, making it simple to configure your existing applications to run on Cerebras and take advantage of our inference capabilities.We also offer dedicated Cerebras Python and Cerebras TypeScript SDKs.\n\n## Configuring OpenAI to Use Cerebras API\n\nTo start using Cerebras with OpenAI\u2019s client libraries, simply pass your Cerebras API key to the `apiKey` parameter and change the `baseURL` to [https://api.cerebras.ai/v1](https://api.cerebras.ai/v1):\n\n## Developer-Level Instructions via System and Developer Roles\n\nThis info is only applicable to the `gpt-oss-120b` model.\n\nFor `gpt-oss-120b`, the API supports both the `system` and `developer` message roles. Both are mapped to a developer-level instruction layer in the prompt hierarchy, elevated above normal user instructions and injected into the model\u2019s internal system prompt. This gives you significant control over the assistant\u2019s tone, style, and behavior while preserving the model\u2019s built-in safety guardrails.The `developer` role is functionally equivalent to `system` \u2013 the `system` role remains supported for backwards compatibility.\n\n### Key Differences from OpenAI\n\nOpenAI\u2019s API distinguishes between `system` and `developer` roles with different behavior. On Cerebras, both roles act at the developer level, meaning they may have stronger influence than `system` messages in OpenAI\u2019s API.As a result, the same prompt may yield different behavior here compared to OpenAI. This is expected.\n\n## Passing Non-Standard Parameters\n\n-   **OpenAI**: Non-standard parameters (e.g., `clear_thinking` for Z.ai GLM) need to be passed through `extra_body`. Standard OpenAI parameters like `reasoning_effort` work directly.\n-   **Cerebras SDK**: Non-standard parameters can be passed in **either** `extra_body` **or** as regular parameters like `model`.\n\nWhen using the OpenAI client with Cerebras API, non-standard parameters must be passed through `extra_body`:\n\nWhen using the Cerebras SDK client, non-standard parameters can be passed as regular parameters:",
+      "clean_content_excerpt_300_words": "We designed the Cerebras API to be mostly compatible with OpenAI\u2019s client libraries, making it simple to configure your existing applications to run on Cerebras and take advantage of our inference capabilities.We also offer dedicated Cerebras Python and Cerebras TypeScript SDKs.\n\n## Configuring OpenAI to Use Cerebras API\n\nTo start using Cerebras with OpenAI\u2019s client libraries, simply pass your Cerebras API key to the `apiKey` parameter and change the `baseURL` to [https://api.cerebras.ai/v1](https://api.cerebras.ai/v1):\n\n## Developer-Level Instructions via System and Developer Roles\n\nThis info is only applicable to the `gpt-oss-120b` model.\n\nFor `gpt-oss-120b`, the API supports both the `system` and `developer` message roles. Both are mapped to a developer-level instruction layer in the prompt hierarchy, elevated above normal user instructions and injected into the model\u2019s internal system prompt. This gives you significant control over the assistant\u2019s tone, style, and behavior while preserving the model\u2019s built-in safety guardrails.The `developer` role is functionally equivalent to `system` \u2013 the `system` role remains supported for backwards compatibility.\n\n### Key Differences from OpenAI\n\nOpenAI\u2019s API distinguishes between `system` and `developer` roles with different behavior. On Cerebras, both roles act at the developer level, meaning they may have stronger influence than `system` messages in OpenAI\u2019s API.As a result, the same prompt may yield different behavior here compared to OpenAI. This is expected.\n\n## Passing Non-Standard Parameters\n\n-   **OpenAI**: Non-standard parameters (e.g., `clear_thinking` for Z.ai GLM) need to be passed through `extra_body`. Standard OpenAI parameters like `reasoning_effort` work directly.\n-   **Cerebras SDK**: Non-standard parameters can be passed in **either** `extra_body` **or** as regular parameters like `model`.\n\nWhen using the OpenAI client with Cerebras API, non-standard parameters must be passed through `extra_body`:\n\nWhen using the Cerebras SDK client, non-standard parameters can be passed as regular parameters:",
+      "scrape_extractor": "defuddle",
+      "scrape_word_count": 273,
+      "scrape_reading_time_minutes": 1,
+      "article_title": "OpenAI Compatibility",
+      "article_byline": "Cerebras Inference",
+      "article_excerpt": "Use the OpenAI Client Libraries with Cerebras Inference",
+      "images": [
+        {
+          "src": "https://cdn-cookieyes.com/assets/images/revisit.svg",
+          "alt": "Revisit consent button",
+          "width": 36,
+          "height": 36
+        },
+        {
+          "src": "https://cdn-cookieyes.com/assets/images/close.svg",
+          "alt": null,
+          "width": 10,
+          "height": 10
+        },
+        {
+          "src": "https://cdn-cookieyes.com/assets/images/poweredbtcky.svg",
+          "alt": "Cookieyes logo",
+          "width": 78,
+          "height": 13
+        },
+        {
+          "src": "https://mintcdn.com/cerebras-inference/b3jx4ZXgBWCXv7Rn/logo/2.png?fit=max&auto=format&n=b3jx4ZXgBWCXv7Rn&q=85&s=98684d23487c722617419a5dbeb0c678",
+          "alt": "light logo",
+          "width": 1065,
+          "height": 250
+        },
+        {
+          "src": "https://mintcdn.com/cerebras-inference/b3jx4ZXgBWCXv7Rn/logo/1.png?fit=max&auto=format&n=b3jx4ZXgBWCXv7Rn&q=85&s=7710d16c35881e9aa3b9c98143774cbb",
+          "alt": "dark logo",
+          "width": 1065,
+          "height": 250
+        }
+      ],
+      "images_count": 5,
+      "videos": [],
+      "videos_count": 0,
+      "audio": [],
+      "audio_count": 0,
+      "links": [
+        {
+          "href": "https://www.cookieyes.com/product/cookie-consent/?ref=cypbcyb&utm_source=cookie-banner&utm_medium=powered-by-cookieyes",
+          "text": "",
+          "rel": "noopener"
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/resources/openai#content-area",
+          "text": "Skip to main content",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/",
+          "text": "Cerebras Inference home page",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/introduction",
+          "text": "Docs",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/api-reference/authentication",
+          "text": "API Reference",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/cookbook",
+          "text": "Cookbook",
+          "rel": null
+        },
+        {
+          "href": "https://discord.com/invite/q6bZcMWJVu",
+          "text": "Community",
+          "rel": null
+        },
+        {
+          "href": "https://www.cerebras.net/blog",
+          "text": "Blog",
+          "rel": null
+        },
+        {
+          "href": "https://cloud.cerebras.ai/?utm_source=3pi_docs&utm_campaign=navigation",
+          "text": "Get an API Key",
+          "rel": null
+        },
+        {
+          "href": "https://github.com/Cerebras/cerebras-cloud-sdk-python",
+          "text": "Python SDK",
+          "rel": "noreferrer"
+        },
+        {
+          "href": "https://github.com/Cerebras/cerebras-cloud-sdk-node",
+          "text": "Node.js SDK",
+          "rel": "noreferrer"
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/introduction",
+          "text": "Overview",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/quickstart",
+          "text": "Quickstart",
+          "rel": null
+        },
+        {
+          "href": "https://www.cerebras.ai/pricing",
+          "text": "Pricing",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/support/rate-limits",
+          "text": "Rate Limits",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/capabilities/reasoning",
+          "text": "Reasoning",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/capabilities/streaming",
+          "text": "Streaming Responses",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/capabilities/predicted-outputs",
+          "text": "Predicted OutputsPreview",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/capabilities/structured-outputs",
+          "text": "Structured Outputs",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/capabilities/tool-use",
+          "text": "Tool Calling",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/capabilities/prompt-caching",
+          "text": "Prompt Caching",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/capabilities/payload-optimization",
+          "text": "Payload Optimization",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/capabilities/cepo",
+          "text": "CePO: Cerebras Planning & Optimization\u200b",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/dedicated/overview",
+          "text": "Overview",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/capabilities/batch",
+          "text": "BatchPreview",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/dedicated/management-api",
+          "text": "Management APIPreview",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/capabilities/service-tiers",
+          "text": "Service TiersPreview",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/capabilities/metrics",
+          "text": "Metrics",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/resources/openai",
+          "text": "OpenAI Compatibility",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/resources/glm-47-migration",
+          "text": "Migrate to GLM 4.7",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/console/projects",
+          "text": "Projects",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/resources/designing-for-cerebras",
+          "text": "Designing for Cerebras",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/integrations",
+          "text": "Integrations",
+          "rel": null
+        },
+        {
+          "href": "https://cloud.cerebras.ai/?utm_source=inferencedocs",
+          "text": "API Playground",
+          "rel": null
+        },
+        {
+          "href": "https://status.cerebras.ai/",
+          "text": "Service Status",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/support/error",
+          "text": "Error Codes",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/support/change-log",
+          "text": "Change Log",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/support/deprecation",
+          "text": "Deprecations",
+          "rel": null
+        },
+        {
+          "href": "https://www.cerebras.ai/policies",
+          "text": "Policies",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/support/preview-releases",
+          "text": "Preview Releases",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/resources/openai#configuring-openai-to-use-cerebras-api",
+          "text": "Configuring OpenAI to Use Cerebras API",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/resources/openai#developer-level-instructions-via-system-and-developer-roles",
+          "text": "Developer-Level Instructions via System and Developer Roles",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/resources/openai#key-differences-from-openai",
+          "text": "Key Differences from OpenAI",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/resources/openai#passing-non-standard-parameters",
+          "text": "Passing Non-Standard Parameters",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/resources/openai",
+          "text": "Compatibility",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/llms.txt",
+          "text": "https://inference-docs.cerebras.ai/llms.txt",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/resources/openai#configuring-openai-to-use-cerebras-api",
+          "text": "\u200b",
+          "rel": null
+        },
+        {
+          "href": "https://api.cerebras.ai/v1",
+          "text": "https://api.cerebras.ai/v1",
+          "rel": "noreferrer"
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/resources/openai#developer-level-instructions-via-system-and-developer-roles",
+          "text": "\u200b",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/resources/openai#key-differences-from-openai",
+          "text": "\u200b",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/resources/openai#passing-non-standard-parameters",
+          "text": "\u200b",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/capabilities/metrics",
+          "text": "MetricsPrevious",
+          "rel": null
+        },
+        {
+          "href": "https://inference-docs.cerebras.ai/resources/glm-47-migration",
+          "text": "Migrate to GLM 4.7Next",
+          "rel": null
+        }
+      ],
+      "links_count": 53,
+      "structured_data": [],
+      "schema_types": [],
+      "seo_audit": {
+        "url": "https://inference-docs.cerebras.ai/resources/openai",
+        "fetched_at": 1777841680910,
+        "title": {
+          "value": "OpenAI Compatibility - Cerebras Inference",
+          "length": 41
+        },
+        "description": {
+          "value": "Use the OpenAI Client Libraries with Cerebras Inference",
+          "length": 55
+        },
+        "canonical": "https://inference-docs.cerebras.ai/resources/openai",
+        "robots": null,
+        "hreflang": [],
+        "og": {
+          "og:title": "OpenAI Compatibility - Cerebras Inference",
+          "og:description": "Use the OpenAI Client Libraries with Cerebras Inference",
+          "og:url": "https://inference-docs.cerebras.ai/resources/openai",
+          "og:image": "https://cerebras-inference.mintlify.app/mintlify-assets/_next/image?url=%2F_mintlify%2Fapi%2Fog%3Fdivision%3DCompatibility%26title%3DOpenAI%2BCompatibility%26description%3DUse%2Bthe%2BOpenAI%2BClient%2BLibraries%2Bwith%2BCerebras%2BInference%26logoLight%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F2.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D98684d23487c722617419a5dbeb0c678%26logoDark%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F1.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D7710d16c35881e9aa3b9c98143774cbb%26primaryColor%3D%2523F1592A%26lightColor%3D%2523FFFFFF%26darkColor%3D%25230C0C0E%26backgroundLight%3D%2523ffffff%26backgroundDark%3D%25230e0e10&w=1200&q=100",
+          "og:image:width": "1200",
+          "og:image:height": "630",
+          "og:type": "website"
+        },
+        "twitter": {
+          "twitter:card": "summary_large_image",
+          "twitter:title": "OpenAI Compatibility - Cerebras Inference",
+          "twitter:description": "Use the OpenAI Client Libraries with Cerebras Inference",
+          "twitter:image": "https://cerebras-inference.mintlify.app/mintlify-assets/_next/image?url=%2F_mintlify%2Fapi%2Fog%3Fdivision%3DCompatibility%26title%3DOpenAI%2BCompatibility%26description%3DUse%2Bthe%2BOpenAI%2BClient%2BLibraries%2Bwith%2BCerebras%2BInference%26logoLight%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F2.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D98684d23487c722617419a5dbeb0c678%26logoDark%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F1.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D7710d16c35881e9aa3b9c98143774cbb%26primaryColor%3D%2523F1592A%26lightColor%3D%2523FFFFFF%26darkColor%3D%25230C0C0E%26backgroundLight%3D%2523ffffff%26backgroundDark%3D%25230e0e10&w=1200&q=100",
+          "twitter:image:width": "1200",
+          "twitter:image:height": "630"
+        },
+        "schema_types": [],
+        "headings": [
+          {
+            "level": 5,
+            "text": "Get Started"
+          },
+          {
+            "level": 5,
+            "text": "Capabilities"
+          },
+          {
+            "level": 5,
+            "text": "Dedicated Endpoints"
+          },
+          {
+            "level": 5,
+            "text": "Compatibility"
+          },
+          {
+            "level": 5,
+            "text": "Cloud Console"
+          },
+          {
+            "level": 5,
+            "text": "Resources"
+          },
+          {
+            "level": 5,
+            "text": "Support"
+          },
+          {
+            "level": 1,
+            "text": "OpenAI Compatibility"
+          },
+          {
+            "level": 2,
+            "text": "Documentation Index"
+          },
+          {
+            "level": 2,
+            "text": "\u200bConfiguring OpenAI to Use Cerebras API"
+          },
+          {
+            "level": 2,
+            "text": "\u200bDeveloper-Level Instructions via System and Developer Roles"
+          },
+          {
+            "level": 3,
+            "text": "\u200bKey Differences from OpenAI"
+          },
+          {
+            "level": 2,
+            "text": "\u200bPassing Non-Standard Parameters"
+          }
+        ],
+        "links": {
+          "internal": 42,
+          "external": 12
+        },
+        "images": {
+          "total": 6,
+          "missing_alt": 2
+        },
+        "word_count": 452,
+        "flesch_reading_ease": -3.76,
+        "performance": {
+          "nav_type": "reload",
+          "duration_ms": 1011,
+          "transfer_size_bytes": 55588
+        }
+      },
+      "seo_headings": [
+        {
+          "level": 5,
+          "text": "Get Started"
+        },
+        {
+          "level": 5,
+          "text": "Capabilities"
+        },
+        {
+          "level": 5,
+          "text": "Dedicated Endpoints"
+        },
+        {
+          "level": 5,
+          "text": "Compatibility"
+        },
+        {
+          "level": 5,
+          "text": "Cloud Console"
+        },
+        {
+          "level": 5,
+          "text": "Resources"
+        },
+        {
+          "level": 5,
+          "text": "Support"
+        },
+        {
+          "level": 1,
+          "text": "OpenAI Compatibility"
+        },
+        {
+          "level": 2,
+          "text": "Documentation Index"
+        },
+        {
+          "level": 2,
+          "text": "\u200bConfiguring OpenAI to Use Cerebras API"
+        },
+        {
+          "level": 2,
+          "text": "\u200bDeveloper-Level Instructions via System and Developer Roles"
+        },
+        {
+          "level": 3,
+          "text": "\u200bKey Differences from OpenAI"
+        },
+        {
+          "level": 2,
+          "text": "\u200bPassing Non-Standard Parameters"
+        }
+      ],
+      "scrape_metadata": {
+        "title": "OpenAI Compatibility - Cerebras Inference",
+        "description": "Use the OpenAI Client Libraries with Cerebras Inference",
+        "canonical": "https://inference-docs.cerebras.ai/resources/openai",
+        "lang": "en",
+        "og": {
+          "og:title": "OpenAI Compatibility - Cerebras Inference",
+          "og:description": "Use the OpenAI Client Libraries with Cerebras Inference",
+          "og:url": "https://inference-docs.cerebras.ai/resources/openai",
+          "og:image": "https://cerebras-inference.mintlify.app/mintlify-assets/_next/image?url=%2F_mintlify%2Fapi%2Fog%3Fdivision%3DCompatibility%26title%3DOpenAI%2BCompatibility%26description%3DUse%2Bthe%2BOpenAI%2BClient%2BLibraries%2Bwith%2BCerebras%2BInference%26logoLight%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F2.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D98684d23487c722617419a5dbeb0c678%26logoDark%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F1.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D7710d16c35881e9aa3b9c98143774cbb%26primaryColor%3D%2523F1592A%26lightColor%3D%2523FFFFFF%26darkColor%3D%25230C0C0E%26backgroundLight%3D%2523ffffff%26backgroundDark%3D%25230e0e10&w=1200&q=100",
+          "og:image:width": "1200",
+          "og:image:height": "630",
+          "og:type": "website"
+        },
+        "twitter": {
+          "twitter:card": "summary_large_image",
+          "twitter:title": "OpenAI Compatibility - Cerebras Inference",
+          "twitter:description": "Use the OpenAI Client Libraries with Cerebras Inference",
+          "twitter:image": "https://cerebras-inference.mintlify.app/mintlify-assets/_next/image?url=%2F_mintlify%2Fapi%2Fog%3Fdivision%3DCompatibility%26title%3DOpenAI%2BCompatibility%26description%3DUse%2Bthe%2BOpenAI%2BClient%2BLibraries%2Bwith%2BCerebras%2BInference%26logoLight%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F2.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D98684d23487c722617419a5dbeb0c678%26logoDark%3Dhttps%253A%252F%252Fmintcdn.com%252Fcerebras-inference%252Fb3jx4ZXgBWCXv7Rn%252Flogo%252F1.png%253Ffit%253Dmax%2526auto%253Dformat%2526n%253Db3jx4ZXgBWCXv7Rn%2526q%253D85%2526s%253D7710d16c35881e9aa3b9c98143774cbb%26primaryColor%3D%2523F1592A%26lightColor%3D%2523FFFFFF%26darkColor%3D%25230C0C0E%26backgroundLight%3D%2523ffffff%26backgroundDark%3D%25230e0e10&w=1200&q=100",
+          "twitter:image:width": "1200",
+          "twitter:image:height": "630"
+        },
+        "schemaTypes": []
+      },
+      "scrape_captured_at": "2026-05-03T20:54:40.911Z",
+      "scrape_age_ms": 1,
+      "raw_html_size": 517668,
+      "scrape_source": "auto-background",
+      "scrape_used_full_scroll": true,
+      "user_scroll_y_before_capture": 0
+    },
+    "stream": true,
+    "store": true,
+    "source_app": "matrx-extend",
+    "source_feature": "chat",
+    "config_overrides": {
+      "model": "3fe99fab-882d-4a44-b4c2-5502c1d3fd49"
+    },
+    "client": {
+      "capabilities": ["browser-dom"],
+      "state": {
+        "browser-dom": {
+          "current_url": "https://inference-docs.cerebras.ai/resources/openai",
+          "current_tab_id": 908906919,
+          "current_window_id": 908904564,
+          "page_title": "OpenAI Compatibility - Cerebras Inference",
+          "page_lang": "en",
+          "tab_status": "complete",
+          "surface": "assistant",
+          "is_admin": true,
+          "permission_mode": "act",
+          "desktop_bridge": "none",
+          "onbox_ai_available": true,
+          "optional_permissions_granted": ["debugger"],
+          "open_tab_count": 62,
+          "extension_version": "0.1.4",
+          "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+          "loaded_categories": []
+        }
+      }
+    }
+  },
+  "client": "127.0.0.1:56709"
+}

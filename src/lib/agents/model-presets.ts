@@ -27,42 +27,42 @@ export interface UserModelPreset {
 export const USER_MODEL_PRESETS: UserModelPreset[] = [
   {
     label: 'Max Reasoning',
-    hint: 'Deepest analysis, hardest problems, longest answers.',
+    hint: 'Deepest analysis, hardest problems, longest reasoning.',
     id: '2b6c05fe-c3e9-42b0-897c-edf590295141',
   },
   {
     label: 'High Intelligence',
-    hint: 'Top-tier general-purpose. Default-quality answers.',
+    hint: 'Top-tier analysis, hardest problems, long reasoning.',
     id: '5970727c-37fc-4a0f-88c6-04ea8ca09ec6',
   },
   {
     label: 'Strong Thinking',
-    hint: 'Heavy reasoning + huge context.',
+    hint: 'Deep thinking, Heavy reasoning + great memory.',
     id: '56363cb1-0d87-40b7-8bdc-664901e9f1ef',
   },
   {
     label: 'Reasoning & Math',
-    hint: 'Best for code, math, and logic problems.',
+    hint: 'Highly intelligent, ideal for math and logic problems.',
     id: '3fe99fab-882d-4a44-b4c2-5502c1d3fd49',
   },
   {
     label: 'Lightning Reasoning',
-    hint: 'Quick thinking with high accuracy.',
+    hint: 'Very Quick thinking with extremely high accuracy.',
     id: '0a283352-3488-4646-acac-0072d68c15e0',
   },
   {
     label: 'Fast Reasoning',
-    hint: 'Snappy answers when you need speed.',
+    hint: 'Fast answers with high intelligence and accuracy.',
     id: '98690c27-a650-4c0f-85b1-2444099d6df3',
   },
   {
     label: 'Fast Intelligence',
-    hint: 'Balanced quality + speed.',
+    hint: 'Balanced quality + speed with large very context.',
     id: 'e2150d2f-7dd3-4fad-9d81-6e6ea41d4afd',
   },
   {
     label: 'Standard',
-    hint: 'Cheapest, fastest, fine for casual use.',
+    hint: 'Fast and accurate for simple text tasks + large context.',
     id: 'bd68e0a8-0bf3-400f-85cd-f923736d8025',
   },
 ];

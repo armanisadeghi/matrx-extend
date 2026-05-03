@@ -46,6 +46,8 @@ interface RequestOptions {
   headers?: Record<string, string>;
   signal?: AbortSignal;
   retryOn401?: boolean;
+  /** Suppress the per-request error log line. Caller still gets the structured ApiResult. */
+  silent?: boolean;
 }
 
 async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
@@ -67,7 +69,9 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   try {
     res = await fetch(url, init);
   } catch (err) {
-    log.error('api', `✗ ${opts.method} ${opts.path} network error`, err);
+    if (!opts.silent) {
+      log.error('api', `✗ ${opts.method} ${opts.path} network error`, err);
+    }
     return { ok: false, status: 0, error: (err as Error).message };
   }
   const ms = Math.round(performance.now() - start);
@@ -80,7 +84,9 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   }
   if (!res.ok) {
     const text = await res.text().catch(() => res.statusText);
-    log.error('api', `✗ ${opts.method} ${opts.path} ${res.status} (${ms}ms)`, text);
+    if (!opts.silent) {
+      log.error('api', `✗ ${opts.method} ${opts.path} ${res.status} (${ms}ms)`, text);
+    }
     return { ok: false, status: res.status, error: text || res.statusText };
   }
   if (res.status === 204) {
@@ -95,8 +101,12 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   return { ok: true, data };
 }
 
-export async function apiGet<T>(path: string, signal?: AbortSignal): Promise<ApiResult<T>> {
-  return rawRequest<T>({ method: 'GET', path, signal });
+export async function apiGet<T>(
+  path: string,
+  signal?: AbortSignal,
+  opts?: { silent?: boolean },
+): Promise<ApiResult<T>> {
+  return rawRequest<T>({ method: 'GET', path, signal, silent: opts?.silent });
 }
 
 export async function apiPost<T>(

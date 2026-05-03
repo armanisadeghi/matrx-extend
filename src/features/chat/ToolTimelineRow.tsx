@@ -5,11 +5,50 @@
  */
 
 import { cn } from '@/lib/utils';
-import { type ToolTimelineEntry, useToolInbox } from '@/state/tool-inbox';
 import { AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { ConfigurableToolRow, ToolDisplayBoundary } from './tool-display/ConfigurableToolRow';
+import { toolDisplayRegistry } from './tool-display/registry';
+
+/**
+ * Display shape for a tool entry rendered inline. The chat-store's
+ * `MessagePart` of type 'tool' projects to this shape — kept here so the
+ * row can also be used with a one-shot ad-hoc payload (e.g. the manual
+ * test runner in the Tools tab).
+ */
+export interface ToolTimelineEntry {
+  callId: string;
+  toolName: string;
+  startedAt: number;
+  endedAt?: number;
+  phase: 'started' | 'completed' | 'error';
+  args?: unknown;
+  output?: unknown;
+  message?: string;
+}
 
 export function ToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {
+  const cfg = toolDisplayRegistry[entry.toolName];
+  if (cfg) {
+    const fallback = <DefaultToolTimelineRow entry={entry} />;
+    if (cfg.CustomComponent) {
+      const Custom = cfg.CustomComponent;
+      return (
+        <ToolDisplayBoundary toolName={entry.toolName} fallback={fallback}>
+          <Custom entry={entry} kind="client" />
+        </ToolDisplayBoundary>
+      );
+    }
+    return (
+      <ToolDisplayBoundary toolName={entry.toolName} fallback={fallback}>
+        <ConfigurableToolRow entry={entry} kind="client" cfg={cfg} />
+      </ToolDisplayBoundary>
+    );
+  }
+  return <DefaultToolTimelineRow entry={entry} />;
+}
+
+function DefaultToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {
   const [open, setOpen] = useState(false);
 
   const Icon =
@@ -88,9 +127,4 @@ function summarize(args: unknown): string | null {
   const keys = Object.keys(obj);
   if (keys.length === 0) return null;
   return keys.slice(0, 3).join(', ');
-}
-
-/** Convenience: pull the timeline & filter helpers from the store. */
-export function useTimelineEntries(): ToolTimelineEntry[] {
-  return useToolInbox((s) => s.timeline);
 }

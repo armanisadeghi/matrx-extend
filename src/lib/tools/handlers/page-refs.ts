@@ -43,6 +43,86 @@ export function refToSelector(ref: string): string {
   return `[data-matrx-ref="${n.replace(/"/g, '\\"')}"]`;
 }
 
+// ─── last-scrape cache ──────────────────────────────────────────────────────
+//
+// `read_page` is the slow part of the page-understanding pipeline (executeScript
+// round-trip + DOM walk + ref reassignment). When the agent calls read_page and
+// then immediately calls `find`, the second scrape is wasted work — the DOM
+// hasn't moved. We cache the most recent scrape per tab and let `find` (and
+// future tools) reuse it when fresh and same-url. Refs in the cached result are
+// the live `data-matrx-ref` attributes still on the page, so they remain valid
+// for interaction tools as long as no other read_page has run since.
+//
+// Invalidation: TTL + per-tab URL match + chrome.tabs.onUpdated/onRemoved hooks.
+
+interface ScrapeElement {
+  ref: string;
+  name: string;
+  role: string;
+  tag: string;
+  text?: string;
+  [k: string]: unknown;
+}
+
+interface CachedScrape {
+  tabId: number;
+  url: string;
+  ts: number;
+  args: {
+    interactive_only: boolean;
+    include_hidden: boolean;
+    include_text: boolean;
+  };
+  result: {
+    ok: true;
+    url: string;
+    title: string;
+    count: number;
+    total_candidates: number;
+    elements: ScrapeElement[];
+  };
+}
+
+const SCRAPE_TTL_MS = 5_000;
+let lastScrape: CachedScrape | null = null;
+
+function rememberScrape(s: CachedScrape): void {
+  lastScrape = s;
+}
+
+function getFreshScrape(
+  tabId: number,
+  requirement: { interactive_only?: boolean; include_hidden?: boolean; include_text?: boolean },
+): CachedScrape | null {
+  const s = lastScrape;
+  if (!s) return null;
+  if (s.tabId !== tabId) return null;
+  if (Date.now() - s.ts > SCRAPE_TTL_MS) return null;
+  // Cache must be at least as inclusive as the requirement.
+  if (requirement.interactive_only === false && s.args.interactive_only) return null;
+  if (requirement.include_hidden === true && !s.args.include_hidden) return null;
+  if (requirement.include_text === true && !s.args.include_text) return null;
+  return s;
+}
+
+function invalidateScrape(tabId?: number): void {
+  if (tabId == null) {
+    lastScrape = null;
+  } else if (lastScrape?.tabId === tabId) {
+    lastScrape = null;
+  }
+}
+
+// Wipe cache on navigation / tab removal. Listeners survive SW restarts because
+// the module is loaded fresh on each restart.
+if (typeof chrome !== 'undefined' && chrome.tabs?.onUpdated) {
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+    // 'loading' fires at the start of a navigation; URL field appears here too.
+    if (changeInfo.status === 'loading' || changeInfo.url) invalidateScrape(tabId);
+  });
+  chrome.tabs.onRemoved?.addListener((tabId) => invalidateScrape(tabId));
+}
+
 const ReadPageArgs = z
   .object({
     tab_id: z.number().int().optional(),
@@ -231,7 +311,21 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
           args.include_bounds,
         ],
       });
-      return first?.result ?? { ok: false, reason: 'no result' };
+      const result = first?.result as CachedScrape['result'] | { ok: false; reason: string } | undefined;
+      if (result && 'ok' in result && result.ok) {
+        rememberScrape({
+          tabId,
+          url: result.url,
+          ts: Date.now(),
+          args: {
+            interactive_only: args.interactive_only,
+            include_hidden: args.include_hidden,
+            include_text: args.include_text,
+          },
+          result,
+        });
+      }
+      return result ?? { ok: false, reason: 'no result' };
     } catch (err) {
       return { ok: false, reason: (err as Error).message };
     }
@@ -241,12 +335,15 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
 const FindArgs = z.object({
   /** Natural-language description of the element you want. */
   query: z.string().min(1),
-  /** Maximum candidates to consider from read_page. Default 100. */
-  max_candidates: z.number().int().positive().max(500).optional().default(100),
+  /** Maximum candidates to consider from read_page. Default 30. */
+  max_candidates: z.number().int().positive().max(500).optional().default(30),
   /** Maximum matches to return. Default 5. */
   limit: z.number().int().positive().max(20).optional().default(5),
 });
 type FindArgs = z.infer<typeof FindArgs>;
+
+/** How many text-similarity-prefiltered candidates we send to the LLM. */
+const FIND_AI_CANDIDATES = 20;
 
 export const find: ToolHandler<FindArgs, unknown> = {
   name: 'find',
@@ -258,55 +355,72 @@ export const find: ToolHandler<FindArgs, unknown> = {
     const tabId = await activeTabId();
     if (tabId == null) return { ok: false, reason: 'No active tab' };
 
-    // Re-read so refs are fresh.
-    const readResult = (await read_page.run(
-      {
-        tab_id: tabId,
-        interactive_only: true,
-        max_nodes: args.max_candidates,
-        include_hidden: false,
-        include_text: true,
-        include_bounds: false,
-      },
-      {
-        conversationId: null,
-        runId: 'find-internal',
-        callId: 'find-internal',
-        agentName: null,
-        permissionMode: 'act',
-      } as never,
-    )) as {
-      ok?: boolean;
-      reason?: string;
-      elements?: Array<{
-        ref: string;
-        name: string;
-        role: string;
-        tag: string;
-        text?: string;
-      }>;
-    };
-    if (readResult.ok === false) {
-      return { ok: false, reason: readResult.reason ?? 'read_page failed' };
+    // Reuse a fresh cached scrape if the agent (or a prior tool call) just ran
+    // read_page. Saves the executeScript round-trip + DOM walk on the common
+    // path where read_page → find happens within a few seconds.
+    let candidates: ScrapeElement[];
+    let usedCache = false;
+    const cached = getFreshScrape(tabId, {
+      interactive_only: true,
+      include_text: true,
+    });
+    if (cached) {
+      candidates = cached.result.elements.slice(0, args.max_candidates);
+      usedCache = true;
+    } else {
+      const readResult = (await read_page.run(
+        {
+          tab_id: tabId,
+          interactive_only: true,
+          max_nodes: args.max_candidates,
+          include_hidden: false,
+          include_text: true,
+          include_bounds: false,
+        },
+        {
+          conversationId: null,
+          runId: 'find-internal',
+          callId: 'find-internal',
+          agentName: null,
+          permissionMode: 'act',
+        } as never,
+      )) as { ok?: boolean; reason?: string; elements?: ScrapeElement[] };
+      if (readResult.ok === false) {
+        return { ok: false, reason: readResult.reason ?? 'read_page failed' };
+      }
+      candidates = readResult.elements ?? [];
     }
-    const candidates = readResult.elements ?? [];
-    if (candidates.length === 0) return { ok: true, matches: [] };
+
+    if (candidates.length === 0) return { ok: true, matches: [], used_cache: usedCache };
+
+    // Hybrid retrieval: cheap text-similarity prefilter, then send only the
+    // top-N to the LLM. Smaller prompt = faster decoding, often better matches
+    // because obvious noise is gone before the model sees it.
+    const q = args.query.toLowerCase();
+    const tokens = q.split(/\s+/).filter((t) => t.length > 1);
+    const prefiltered = candidates
+      .map((c) => {
+        const hay = `${c.name} ${c.role} ${c.tag} ${c.text ?? ''}`.toLowerCase();
+        let score = 0;
+        for (const t of tokens) if (hay.includes(t)) score += 1 / Math.max(1, tokens.length);
+        return { c, score };
+      })
+      .sort((a, b) => b.score - a.score);
+    // Always send something to the AI, even if no token hit (lets Nano handle
+    // semantic queries like "the sign-in button" against a "Log in" link).
+    const aiCandidates = (
+      prefiltered.some((x) => x.score > 0)
+        ? prefiltered.filter((x) => x.score > 0).slice(0, FIND_AI_CANDIDATES)
+        : prefiltered.slice(0, FIND_AI_CANDIDATES)
+    ).map((x) => x.c);
 
     // Try AI-backed match first.
-    const indexed = candidates.map((e, i) => ({
-      idx: i,
-      ref: e.ref,
-      role: e.role,
-      name: e.name,
-      tag: e.tag,
-      snippet: (e.text ?? '').slice(0, 100),
-    }));
     const sys =
       'You are a precise element-matching tool. Given a user query and a list of candidate elements (with refs, roles, names, and snippets), pick the best matches. Score 0..1. Return JSON only.';
-    const promptText = `Query: ${args.query}\n\nCandidates:\n${indexed
+    const promptText = `Query: ${args.query}\n\nCandidates:\n${aiCandidates
       .map(
         (c) =>
-          `${c.ref} role=${c.role} tag=${c.tag} name="${c.name}" text="${c.snippet}"`,
+          `${c.ref} role=${c.role} tag=${c.tag} name="${c.name}" text="${(c.text ?? '').slice(0, 100)}"`,
       )
       .join('\n')}`;
     const schema = {
@@ -339,44 +453,37 @@ export const find: ToolHandler<FindArgs, unknown> = {
         const parsed = JSON.parse(ai.data) as {
           matches: Array<{ ref: string; score: number; reason?: string }>;
         };
-        const enriched = parsed.matches
-          .slice(0, args.limit)
-          .map((m) => {
-            const cand = candidates.find((c) => c.ref === m.ref);
-            return {
-              ref: m.ref,
-              score: m.score,
-              reason: m.reason,
-              name: cand?.name,
-              role: cand?.role,
-              tag: cand?.tag,
-            };
-          });
-        return { ok: true, mode: 'ai', matches: enriched };
+        const enriched = parsed.matches.slice(0, args.limit).map((m) => {
+          const cand = candidates.find((c) => c.ref === m.ref);
+          return {
+            ref: m.ref,
+            score: m.score,
+            reason: m.reason,
+            name: cand?.name,
+            role: cand?.role,
+            tag: cand?.tag,
+          };
+        });
+        return { ok: true, mode: 'ai', used_cache: usedCache, matches: enriched };
       } catch {
         // Fall through to text match.
       }
     }
 
-    // Text-similarity fallback. Naive but useful when on-device AI is missing.
-    const q = args.query.toLowerCase();
-    const tokens = q.split(/\s+/).filter((t) => t.length > 1);
-    const scored = candidates.map((c) => {
-      const hay = `${c.name} ${c.role} ${c.tag} ${c.text ?? ''}`.toLowerCase();
-      let score = 0;
-      for (const t of tokens) if (hay.includes(t)) score += 1 / tokens.length;
-      return {
-        ref: c.ref,
-        score,
+    // Text-similarity fallback. Reuse the prefilter scoring so we don't redo
+    // the work — just take the top-K with score > 0.
+    const matches = prefiltered
+      .filter((x) => x.score > 0)
+      .slice(0, args.limit)
+      .map((x) => ({
+        ref: x.c.ref,
+        score: x.score,
         reason: 'text-similarity',
-        name: c.name,
-        role: c.role,
-        tag: c.tag,
-      };
-    });
-    scored.sort((a, b) => b.score - a.score);
-    const matches = scored.filter((m) => m.score > 0).slice(0, args.limit);
-    return { ok: true, mode: 'text', matches };
+        name: x.c.name,
+        role: x.c.role,
+        tag: x.c.tag,
+      }));
+    return { ok: true, mode: 'text', used_cache: usedCache, matches };
   },
 };
 

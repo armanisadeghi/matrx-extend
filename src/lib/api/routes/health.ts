@@ -10,7 +10,7 @@ export const HealthSchema = z.object({
 export type Health = z.infer<typeof HealthSchema>;
 
 export async function healthCheck() {
-  const r = await apiGet<unknown>('/health/');
+  const r = await apiGet<unknown>('/health/', undefined, { silent: true });
   return withSchema(r, HealthSchema);
 }
 
@@ -33,10 +33,5 @@ export async function pingHealth(reason: string): Promise<Health | null> {
     log.success('api', `health ok — ${baseUrl} — ${r.data.status}`, r.data);
     return r.data;
   }
-  log.error('api', `health FAILED ${baseUrl} — ${r.status} ${r.error}`, {
-    baseUrl,
-    status: r.status,
-    error: r.error,
-  });
   return null;
 }

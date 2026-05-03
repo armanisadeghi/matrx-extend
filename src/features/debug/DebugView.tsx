@@ -17,6 +17,12 @@ import type { BackendEnv } from '@/config/env';
 import { AdminAgentFlagsPanel } from '@/features/debug/AdminAgentFlagsPanel';
 import { pingHealth } from '@/lib/api/routes/health';
 import {
+  CONTEXT_SHAPE_STORAGE_KEY,
+  type ContextShape,
+  DEFAULT_CONTEXT_SHAPE,
+  setContextShape,
+} from '@/lib/chat/context/shape-config';
+import {
   type DebugEvent,
   type LogLevel,
   type LogSource,
@@ -35,7 +41,7 @@ import {
   Pause,
   Play,
 } from 'lucide-react';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 const SOURCES: LogSource[] = [
   'auth',
@@ -120,6 +126,7 @@ export function DebugView() {
     <div className="flex h-full flex-col">
       <div className="space-y-1.5 px-3 pt-1 pb-2">
         <BackendSwitcher />
+        <ContextShapeSwitcher />
         <AdminAgentFlagsPanel />
         <div className="flex items-center gap-1.5">
           <Input
@@ -291,6 +298,55 @@ function BackendSwitcher() {
       >
         → {backend.url}
       </span>
+    </div>
+  );
+}
+
+function ContextShapeSwitcher() {
+  const [shape, setShape] = useState<ContextShape>(DEFAULT_CONTEXT_SHAPE);
+
+  useEffect(() => {
+    let cancelled = false;
+    void chrome.storage.local.get([CONTEXT_SHAPE_STORAGE_KEY]).then((r) => {
+      if (cancelled) return;
+      const v = r[CONTEXT_SHAPE_STORAGE_KEY];
+      if (v === 'v1-flat' || v === 'v2-bundled') setShape(v);
+    });
+    const onChanged = (
+      changes: Record<string, chrome.storage.StorageChange>,
+      area: string,
+    ) => {
+      if (area !== 'local') return;
+      const c = changes[CONTEXT_SHAPE_STORAGE_KEY];
+      if (!c) return;
+      const v = c.newValue;
+      if (v === 'v1-flat' || v === 'v2-bundled') setShape(v);
+    };
+    chrome.storage.onChanged.addListener(onChanged);
+    return () => {
+      cancelled = true;
+      chrome.storage.onChanged.removeListener(onChanged);
+    };
+  }, []);
+
+  const change = async (next: ContextShape) => {
+    await setContextShape(next);
+    setShape(next);
+    log.info('sys', `context shape → ${next}`);
+  };
+
+  return (
+    <div className="flex items-center gap-1.5 text-xs">
+      <span className="font-mono text-[10px] text-muted-foreground">context</span>
+      <Select value={shape} onValueChange={(v) => void change(v as ContextShape)}>
+        <SelectTrigger className="h-7 w-auto gap-1 border-0 bg-transparent px-2 text-xs shadow-none hover:bg-accent focus:ring-0">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="v2-bundled">v2 (bundled, default)</SelectItem>
+          <SelectItem value="v1-flat">v1 (legacy flat)</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   );
 }

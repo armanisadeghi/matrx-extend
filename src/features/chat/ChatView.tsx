@@ -42,7 +42,7 @@ import {
   fetchUserAgents,
 } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
-import { type ServerToolCall, useChatStore } from '@/state/chat';
+import { type ChatMessage, type MessagePart, useChatStore } from '@/state/chat';
 import { useSettingsStore } from '@/state/settings';
 import { useToolInbox } from '@/state/tool-inbox';
 import {
@@ -676,55 +676,63 @@ function formatRelative(iso: string): string {
   return new Date(iso).toLocaleDateString();
 }
 
-function MessageRow({
-  role,
-  content,
-  pending,
-  serverTools,
-}: {
-  role: 'user' | 'assistant';
-  content: string;
-  pending?: boolean;
-  serverTools?: ServerToolCall[];
-}) {
-  if (role === 'user') {
+function MessageRow({ message }: { message: ChatMessage }) {
+  if (message.role === 'user') {
     return (
       <div className="group flex justify-end gap-1">
         <div className="self-end opacity-0 transition-opacity group-hover:opacity-100">
-          <CopyButton text={content} title="Copy message" size="xs" />
+          <CopyButton text={message.content} title="Copy message" size="xs" />
         </div>
         <div className="max-w-[85%] rounded-2xl bg-secondary px-3.5 py-2 text-sm">
-          <Markdown content={content} density="compact" />
+          <Markdown content={message.content} density="compact" />
         </div>
       </div>
     );
   }
-  const hasTools = (serverTools?.length ?? 0) > 0;
-  if (pending && !content && !hasTools) {
+
+  // Assistant rendering — prefer the parts array (new path: ordered text /
+  // reasoning / tool entries arriving via the stream). Fall back to a
+  // single `content` block when parts isn't set (DB-hydrated history).
+  const parts = message.parts;
+  const hasParts = (parts?.length ?? 0) > 0;
+  const showOrb = message.pending && !hasParts && !message.content;
+
+  if (showOrb) {
     return (
       <div className="group">
         <BreathingOrb size={28} />
       </div>
     );
   }
+
+  // Build the trailing copy menu from the final concatenated text. Same
+  // shape as before — text-only, no tool internals.
+  const finalText = hasParts
+    ? (parts ?? [])
+        .filter((p) => p.type === 'text')
+        .map((p) => (p as { content: string }).content)
+        .join('')
+    : message.content;
+
   return (
-    <div className="group">
-      {hasTools && (
-        <div className="mb-2 space-y-1.5">
-          {serverTools?.map((t) => (
-            <ServerToolRow key={t.callId} tool={t} />
-          ))}
-        </div>
+    <div className="group space-y-2">
+      {hasParts ? (
+        parts?.map((part, i) => <MessagePartView key={i} part={part} />)
+      ) : message.content ? (
+        <Markdown content={message.content} registry={chatMarkdownRegistry} />
+      ) : null}
+
+      {message.pending && hasParts && parts?.[parts.length - 1]?.type !== 'text' && (
+        <BreathingOrb size={20} />
       )}
-      {pending && !content && hasTools && <BreathingOrb size={20} />}
-      {content && <Markdown content={content} registry={chatMarkdownRegistry} />}
-      {!pending && content && (
+
+      {!message.pending && finalText && (
         <div className="mt-1 opacity-0 transition-opacity group-hover:opacity-100">
           <CopyMenu
             title="Copy reply"
             align="start"
             options={[
-              { label: 'Markdown', getContent: () => content },
+              { label: 'Markdown', getContent: () => finalText },
               {
                 label: 'For AI agent',
                 ai: true,
@@ -733,7 +741,7 @@ function MessageRow({
                   wrapForAgent({
                     description: 'a reply from a Matrx AI agent',
                     format: 'markdown',
-                    content,
+                    content: finalText,
                   }),
               },
             ]}
@@ -741,6 +749,46 @@ function MessageRow({
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * Renders a single MessagePart at its arrival position. Each type owns
+ * its own visual treatment — text uses the chat markdown registry,
+ * reasoning gets a muted "thinking" block, tool entries reuse the
+ * existing ServerToolRow / ToolTimelineRow components.
+ */
+function MessagePartView({ part }: { part: MessagePart }) {
+  if (part.type === 'text') {
+    return part.content ? (
+      <Markdown content={part.content} registry={chatMarkdownRegistry} />
+    ) : null;
+  }
+  if (part.type === 'reasoning') {
+    return part.content ? (
+      <div className="rounded-md border-l-2 border-muted-foreground/30 bg-secondary/30 px-3 py-1.5 text-[12px] italic text-muted-foreground">
+        {part.content}
+      </div>
+    ) : null;
+  }
+  // part.type === 'tool'
+  const t = part.tool;
+  if (t.kind === 'server') {
+    return <ServerToolRow tool={t} />;
+  }
+  return (
+    <ToolTimelineRow
+      entry={{
+        callId: t.callId,
+        toolName: t.toolName,
+        startedAt: t.startedAt,
+        endedAt: t.endedAt,
+        phase: t.phase,
+        args: t.args,
+        output: t.result,
+        message: t.message,
+      }}
+    />
   );
 }
 
@@ -935,14 +983,14 @@ function ComposerSettingsChip() {
           <ChevronDownTiny />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-1" align="start">
+      <PopoverContent className="w-95 p-1" align="start">
         <div className="px-2 py-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
           Model
         </div>
         <ModelPresetRow
           active={modelOverrideId === null}
-          label="Auto"
-          hint="Use the agent's configured model."
+          label="Agent Official"
+          hint="Typically the best results for the task"
           onClick={() => setModelOverrideId(null)}
         />
         {USER_MODEL_PRESETS.map((p) => (
