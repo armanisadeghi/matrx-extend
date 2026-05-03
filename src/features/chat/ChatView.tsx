@@ -9,7 +9,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  ALL_SCOPES,
+  type AgentScope,
+  SCOPE_LABEL,
+  countByScope,
+  filterAgentsByScope,
+  scopeOf,
+} from '@/lib/agents/scope';
 import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
@@ -35,6 +44,7 @@ import { useToolInbox } from '@/state/tool-inbox';
 import {
   ArrowUp,
   Check,
+  ChevronDown,
   Hand,
   History,
   Lightbulb,
@@ -268,6 +278,177 @@ export function ChatView() {
   );
 }
 
+/**
+ * Agent picker — Popover-based replacement for the previous Select.
+ *
+ * The reason it's not a plain Select: we want three persistent toggle pills
+ * (Mine / Shared / System) at the top so the user can scope what's visible
+ * without leaving the dropdown. Default is "Mine" only; the user can flip
+ * any combo on, and the selection persists in settings.
+ *
+ * Scope is computed from the AgxAgent fields the RPC already returns
+ * (`is_owner`, `shared_by_email`, `access_level`) — see lib/agents/scope.ts.
+ */
+function AgentPicker({
+  agents,
+  selectedAgentId,
+  onAgentChange,
+}: {
+  agents: AgxAgent[];
+  selectedAgentId: string | null;
+  onAgentChange: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const scopes = useSettingsStore((s) => s.agentScopes);
+  const toggleScope = useSettingsStore((s) => s.toggleAgentScope);
+
+  // Reset the search box when the popover closes so the next open is fresh.
+  useEffect(() => {
+    if (!open) setQuery('');
+  }, [open]);
+
+  const counts = useMemo(() => countByScope(agents), [agents]);
+  const scoped = useMemo(() => filterAgentsByScope(agents, scopes), [agents, scopes]);
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return scoped;
+    return scoped.filter((a) => {
+      if (a.name.toLowerCase().includes(q)) return true;
+      if (a.description && a.description.toLowerCase().includes(q)) return true;
+      if (a.tags && a.tags.some((t) => t.toLowerCase().includes(q))) return true;
+      return false;
+    });
+  }, [scoped, query]);
+  const selectedAgent = useMemo(
+    () => agents.find((a) => a.id === selectedAgentId) ?? null,
+    [agents, selectedAgentId],
+  );
+  const triggerLabel = selectedAgent?.name ?? 'Select agent';
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="inline-flex h-7 max-w-[180px] items-center gap-1 rounded-md border-0 bg-transparent px-2 text-xs font-medium text-foreground hover:bg-accent focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        >
+          <span className="truncate">{triggerLabel}</span>
+          <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-72 p-0" align="start">
+        <div className="border-b px-2 py-1.5">
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by name, description, tag…"
+            className="h-7 text-xs"
+            autoFocus
+            onKeyDown={(e) => {
+              // Pressing Enter when there's exactly one match selects it.
+              if (e.key === 'Enter' && filtered.length === 1) {
+                e.preventDefault();
+                const only = filtered[0];
+                if (only) {
+                  onAgentChange(only.id);
+                  setOpen(false);
+                }
+              } else if (e.key === 'Escape' && query) {
+                e.preventDefault();
+                setQuery('');
+              }
+            }}
+          />
+        </div>
+        <div className="flex shrink-0 items-center gap-1 border-b px-2 py-1.5">
+          {ALL_SCOPES.map((scope) => {
+            const active = scopes.includes(scope);
+            const count = counts[scope];
+            return (
+              <button
+                key={scope}
+                type="button"
+                onClick={() => toggleScope(scope)}
+                className={cn(
+                  'inline-flex h-6 flex-1 items-center justify-center gap-1 rounded-full px-2 text-[11px] font-medium transition-colors',
+                  active
+                    ? 'bg-primary text-primary-foreground hover:opacity-90'
+                    : 'bg-secondary text-muted-foreground hover:bg-accent hover:text-foreground',
+                )}
+                title={`${SCOPE_LABEL[scope]} (${count})`}
+              >
+                {SCOPE_LABEL[scope]}
+                <span
+                  className={cn(
+                    'rounded-full px-1.5 py-px text-[9px] font-semibold',
+                    active
+                      ? 'bg-primary-foreground/20 text-primary-foreground'
+                      : 'bg-background/80 text-muted-foreground',
+                  )}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="max-h-80 overflow-y-auto p-1">
+          {filtered.length === 0 ? (
+            <div className="px-3 py-8 text-center text-xs text-muted-foreground">
+              {agents.length === 0
+                ? 'No agents — create one in Matrx.'
+                : query.trim()
+                  ? `No agents match "${query.trim()}" within the current scope.`
+                  : 'No agents match the current scope filter.'}
+            </div>
+          ) : (
+            filtered.map((a) => {
+              const isSelected = a.id === selectedAgentId;
+              const scope = scopeOf(a);
+              return (
+                <button
+                  key={a.id}
+                  type="button"
+                  onClick={() => {
+                    onAgentChange(a.id);
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    'flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left transition-colors hover:bg-accent',
+                    isSelected && 'bg-accent',
+                  )}
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="truncate text-sm">{a.name}</span>
+                      {a.is_favorite && (
+                        <Sparkles className="size-3 shrink-0 text-amber-500" />
+                      )}
+                    </div>
+                    {a.description && (
+                      <div className="line-clamp-1 text-[10px] text-muted-foreground">
+                        {a.description}
+                      </div>
+                    )}
+                  </div>
+                  <span
+                    className="shrink-0 rounded-full bg-secondary/80 px-1.5 py-px text-[9px] font-medium uppercase tracking-wide text-muted-foreground"
+                    title={SCOPE_LABEL[scope]}
+                  >
+                    {scope === 'mine' ? '·' : SCOPE_LABEL[scope]}
+                  </span>
+                  {isSelected && <Check className="size-3.5 shrink-0 text-primary" />}
+                </button>
+              );
+            })
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 function ChatHeader({
   agents,
   agentsLoading,
@@ -296,23 +477,11 @@ function ChatHeader({
       {agentsLoading ? (
         <Skeleton className="h-6 w-28" />
       ) : (
-        <Select value={selectedAgentId ?? ''} onValueChange={onAgentChange}>
-          <SelectTrigger className="h-7 w-auto gap-1 border-0 bg-transparent px-2 text-xs font-medium shadow-none hover:bg-accent focus:ring-0 [&>span]:truncate">
-            <SelectValue placeholder="Select agent" />
-          </SelectTrigger>
-          <SelectContent>
-            {agents.length === 0 && (
-              <SelectItem value="__none__" disabled>
-                No agents — create one in Matrx
-              </SelectItem>
-            )}
-            {agents.map((a) => (
-              <SelectItem key={a.id} value={a.id}>
-                {a.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <AgentPicker
+          agents={agents}
+          selectedAgentId={selectedAgentId}
+          onAgentChange={onAgentChange}
+        />
       )}
       <div className="ml-auto flex items-center gap-1">
         <PermissionModeChip

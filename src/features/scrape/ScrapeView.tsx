@@ -7,6 +7,7 @@ import { usePageRecognition } from '@/hooks/use-page-recognition';
 import { usePageScrollSync } from '@/hooks/use-page-scroll-sync';
 import { useScrape } from '@/hooks/use-scrape';
 import type { CaptureError, CaptureErrorAction } from '@/lib/scrape/capture-error';
+import { partitionImages } from '@/lib/scrape/classify-images';
 import {
   articleCopyOptions,
   fullCaptureCopyOptions,
@@ -41,7 +42,7 @@ import {
   VideoIcon,
   X,
 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export function ScrapeView() {
   const {
@@ -91,6 +92,25 @@ export function ScrapeView() {
   };
 
   /** Re-capture confirm guard — protects unsaved local edits. */
+  /**
+   * Split scraped images into main vs icons/small. Real content goes to a
+   * prominent grid; favicons + tracking pixels + tiny graphics get tucked
+   * behind a toggle so the panel doesn't look broken with a sea of tiny
+   * blurry tiles.
+   */
+  const partitionedImages = useMemo(
+    () => partitionImages(current?.images ?? []),
+    [current?.images],
+  );
+  const [showSmallImages, setShowSmallImages] = useState(false);
+  // If there are no main images but there are small ones, auto-expand —
+  // otherwise the user sees an empty grid with a hidden expander.
+  useEffect(() => {
+    if (partitionedImages.main.length === 0 && partitionedImages.small.length > 0) {
+      setShowSmallImages(true);
+    }
+  }, [partitionedImages.main.length, partitionedImages.small.length]);
+
   const guardedCapture = (mode: 'fast' | 'deep') => {
     if (
       edited &&
@@ -260,12 +280,12 @@ export function ScrapeView() {
               <div className="h-full overflow-y-auto">
                 {current.images.length > 0 && (
                   <ListToolbar
-                    label={`${current.images.length} image${current.images.length === 1 ? '' : 's'}`}
+                    label={imagesToolbarLabel(partitionedImages)}
                     copyMenu={<CopyMenu title="Copy images" options={imagesCopyOptions(current)} />}
                   />
                 )}
                 <div className="grid grid-cols-3 gap-1.5 px-3 pb-3">
-                  {current.images.map((img) => (
+                  {partitionedImages.main.map((img) => (
                     <div
                       key={img.src}
                       className="group relative aspect-square overflow-hidden rounded-xl bg-secondary/40"
@@ -294,6 +314,50 @@ export function ScrapeView() {
                     </div>
                   ))}
                 </div>
+                {partitionedImages.small.length > 0 && (
+                  <div className="px-3 pb-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowSmallImages((v) => !v)}
+                      className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-secondary/30 px-3 py-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
+                    >
+                      {showSmallImages ? 'Hide' : 'Show'} {partitionedImages.small.length}{' '}
+                      icon{partitionedImages.small.length === 1 ? '' : 's'} & small
+                    </button>
+                    {showSmallImages && (
+                      <div className="mt-2 grid grid-cols-6 gap-1">
+                        {partitionedImages.small.map((img) => (
+                          <div
+                            key={img.src}
+                            className="group relative aspect-square overflow-hidden rounded-md bg-secondary/40"
+                            title={img.alt ?? img.src}
+                          >
+                            <a
+                              href={img.src}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="block size-full"
+                            >
+                              <img
+                                src={img.src}
+                                alt={img.alt ?? ''}
+                                className="size-full object-contain p-1"
+                                loading="lazy"
+                              />
+                            </a>
+                            <div className="absolute right-0.5 top-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                              <DeleteRowButton
+                                title="Remove image"
+                                onClick={() => removeImage(img.src)}
+                                className="bg-background/80 backdrop-blur"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
                 <AddItemRow
                   label="Add image URL"
                   fields={[
@@ -494,6 +558,21 @@ export function ScrapeView() {
       </div>
     </div>
   );
+}
+
+function imagesToolbarLabel({
+  main,
+  small,
+}: {
+  main: { length: number };
+  small: { length: number };
+}): string {
+  const parts: string[] = [];
+  parts.push(`${main.length} image${main.length === 1 ? '' : 's'}`);
+  if (small.length > 0) {
+    parts.push(`${small.length} icon${small.length === 1 ? '' : 's'}`);
+  }
+  return parts.join(' · ');
 }
 
 function ListToolbar({
