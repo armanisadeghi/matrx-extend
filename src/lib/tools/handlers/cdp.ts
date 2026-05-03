@@ -183,6 +183,12 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
         captureBeyondViewport: args.full_page,
         clip,
       });
+      // Decoded byte size — base64 expands by 4/3 + padding. Provider per-
+      // image caps (Anthropic 5 MB/img API, Gemini 100 MB inline) apply to the
+      // binary, not the base64 string, so report the binary size.
+      const padding =
+        result.data.endsWith('==') ? 2 : result.data.endsWith('=') ? 1 : 0;
+      const decodedBytes = Math.floor((result.data.length * 3) / 4) - padding;
       return {
         ok: true,
         media_type:
@@ -192,7 +198,7 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
         profile: profileName,
         est_tokens: profile.est_tokens,
         image_base64: result.data,
-        byte_length: result.data.length,
+        byte_length: decodedBytes,
       };
     } catch (err) {
       return { ok: false, reason: (err as Error).message };
