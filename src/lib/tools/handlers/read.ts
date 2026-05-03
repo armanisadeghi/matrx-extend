@@ -3,6 +3,7 @@
  */
 
 import { log } from '@/lib/debug/log';
+import { resolveProfile, type ScreenshotProfile } from '@/lib/screenshot/profiles';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
 
@@ -127,19 +128,40 @@ export const read_active_page: ToolHandler<ReadPageArgs, unknown> = {
 const ScreenshotArgs = z
   .object({
     /**
-     * 'jpeg' (default) is ~10x smaller than 'png' for screenshots and is what
-     * vision models prefer. Pass 'png' only when lossless is required.
+     * Provider/model profile to optimize for. The agent server should pass
+     * this when it knows what model the screenshot is going to. `auto` is
+     * the safe default — works for every provider without wasting tokens.
+     * See src/lib/screenshot/profiles.ts for the full preset list.
      */
-    format: z.enum(['png', 'jpeg']).default('jpeg'),
-    /** JPEG quality (1–100). Ignored for PNG. Default 80 — sweet spot for vision. */
-    quality: z.number().int().min(1).max(100).optional().default(80),
+    profile: z
+      .enum([
+        'auto',
+        'auto-final',
+        'anthropic-default',
+        'anthropic-hires',
+        'openai-original',
+        'openai-high',
+        'openai-low',
+        'gemini-screenshot',
+        'gemini-overview',
+        'gemini-2.5-default',
+        'ocr-heavy',
+        'lossless',
+      ])
+      .optional()
+      .default('auto'),
     /**
-     * Max length of the longer side, in pixels. Anthropic / OpenAI vision
-     * APIs cap usable image area at ~1.15 MP (e.g. 1568×1568). Larger images
-     * either auto-downscale (paying tokens before the downscale) or get
-     * rejected. Default 1568. Pass 0 to skip resizing entirely.
+     * Override format. `null` (default) = use the profile's format.
+     * Use only when you have a strong reason to deviate.
      */
-    max_dimension: z.number().int().min(0).max(8192).optional().default(1568),
+    format: z.enum(['png', 'jpeg']).optional(),
+    /** Override quality 1–100. Ignored for PNG. `null` = use profile default. */
+    quality: z.number().int().min(1).max(100).optional(),
+    /**
+     * Override max dimension in pixels. 0 = no resize. `null` = use profile.
+     * Bypasses the per-provider sweet spot — use sparingly.
+     */
+    max_dimension: z.number().int().min(0).max(8192).optional(),
   })
   .default({});
 type ScreenshotArgs = z.infer<typeof ScreenshotArgs>;
@@ -163,6 +185,10 @@ interface ScreenshotResult {
   byte_length?: number;
   /** True if we resized the image to fit `max_dimension`. */
   resized?: boolean;
+  /** The profile used for this capture. */
+  profile?: ScreenshotProfile;
+  /** Approximate token cost for this image at the chosen profile (for budgeting). */
+  est_tokens?: number;
 }
 
 /**
@@ -233,29 +259,30 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
   name: 'take_screenshot',
   tier: 'read',
   description:
-    'Capture the visible viewport of the active tab. Returns { ok, media_type, format, width, height, source_width, source_height, image_base64, byte_length, resized }. Defaults: JPEG q=80, resized so longest side ≤ 1568px (sweet spot for Anthropic / OpenAI vision APIs). Pass `format: "png"` for lossless, `max_dimension: 0` to skip resize. The `media_type` field is ready for direct use in an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.',
+    "Capture the visible viewport of the active tab, optimized for vision-API consumption. Default profile 'auto' returns a 'max useful' master image (JPEG q=88 @ 2576px — Opus 4.7's ceiling, the highest any current model uses) at ~600–900 KB; the server is expected to do per-provider final sizing from that master. Use 'auto-final' if the server is a passthrough (1568px JPEG q=85 — fits every provider). Provider-specific profiles when the server already knows the model: 'anthropic-default'/'anthropic-hires', 'openai-original'/'openai-high'/'openai-low', 'gemini-screenshot'/'gemini-overview'/'gemini-2.5-default'. Special-purpose: 'ocr-heavy' (high-q for fine text), 'lossless' (PNG, archival only). Returns { ok, media_type, format, width, height, source_width, source_height, image_base64, byte_length, resized, profile, est_tokens }. The `media_type` field is ready for direct use in an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
   argsSchema: ScreenshotArgs,
   run: async (args) => {
     const tab = await activeTab();
     if (!tab?.windowId) return { ok: false, reason: 'No active tab' };
+    const profileName = (args.profile ?? 'auto') as ScreenshotProfile;
+    const profile = resolveProfile(profileName);
+    const format = args.format ?? profile.format;
+    const quality = args.quality ?? profile.quality;
+    const maxDim = args.max_dimension ?? profile.max_dimension;
     try {
-      // Capture in PNG when the caller wants PNG. For JPEG we still ask
-      // captureVisibleTab for PNG and re-encode in our own JPEG step — the
-      // built-in JPEG encoder doesn't honor `quality` consistently across
-      // Chrome versions, and PNG → JPEG via canvas gives us a knob we trust.
+      // Capture in PNG when the caller wants PNG output AND no resize. For
+      // every other case we ask captureVisibleTab for PNG and re-encode in
+      // our own step — the built-in JPEG encoder doesn't honor `quality`
+      // consistently across Chrome versions, and PNG → JPEG via canvas gives
+      // us a knob we trust.
       const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {
         format: 'png',
       });
-      const processed = await processScreenshot(
-        dataUrl,
-        args.format,
-        args.quality,
-        args.max_dimension,
-      );
+      const processed = await processScreenshot(dataUrl, format, quality, maxDim);
       return {
         ok: true,
-        media_type: args.format === 'jpeg' ? 'image/jpeg' : 'image/png',
-        format: args.format,
+        media_type: format === 'jpeg' ? 'image/jpeg' : 'image/png',
+        format,
         width: processed.width,
         height: processed.height,
         source_width: processed.sourceWidth,
@@ -263,6 +290,8 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
         image_base64: processed.base64,
         byte_length: processed.base64.length,
         resized: processed.resized,
+        profile: profileName,
+        est_tokens: profile.est_tokens,
       };
     } catch (err) {
       return { ok: false, reason: (err as Error).message };

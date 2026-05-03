@@ -22,6 +22,7 @@
  */
 
 import * as cdp from '@/lib/cdp/client';
+import { resolveProfile, type ScreenshotProfile } from '@/lib/screenshot/profiles';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
 
@@ -85,19 +86,42 @@ export const cdp_attached_tabs: ToolHandler<NoArgs, unknown> = {
 const FullPageScreenshotArgs = z
   .object({
     tab_id: z.number().int().optional(),
-    /** image/png or image/jpeg or image/webp. Default jpeg (smaller for vision). */
-    format: z.enum(['png', 'jpeg', 'webp']).optional().default('jpeg'),
-    /** 0–100 quality for jpeg/webp. Default 80. */
-    quality: z.number().int().min(1).max(100).optional().default(80),
+    /**
+     * Provider/model profile — see src/lib/screenshot/profiles.ts. The
+     * profile sets `format` + `quality` + a target `max_dimension` (used as
+     * the long-edge cap before tile splitting). `auto` is safe for any
+     * provider. Default 'auto'.
+     */
+    profile: z
+      .enum([
+        'auto',
+        'auto-final',
+        'anthropic-default',
+        'anthropic-hires',
+        'openai-original',
+        'openai-high',
+        'openai-low',
+        'gemini-screenshot',
+        'gemini-overview',
+        'gemini-2.5-default',
+        'ocr-heavy',
+        'lossless',
+      ])
+      .optional()
+      .default('auto'),
+    /** Override format. `null` = use profile. */
+    format: z.enum(['png', 'jpeg', 'webp']).optional(),
+    /** Override 0–100 quality. Ignored for PNG. */
+    quality: z.number().int().min(1).max(100).optional(),
     /** Capture below the fold too. Default true (the whole point). */
     full_page: z.boolean().optional().default(true),
     /**
-     * Capture-time scaling — ratio of CSS pixels to image pixels. Default 1.
-     * Set <1 to capture at lower resolution directly (e.g. 0.5 = half-size).
-     * Cheapest way to keep a full-page capture from blowing past vision-API
-     * token budgets when the page is very tall.
+     * Capture-time scaling — ratio of CSS pixels to image pixels.
+     * Default `null` = compute from the page's content height vs the
+     * profile's max_dimension, so the resulting image's long edge ≤ profile.
+     * Pass an explicit number to override (1.0 = 1:1, 0.5 = half-size, etc.).
      */
-    capture_scale: z.number().min(0.1).max(1).optional().default(0.5),
+    capture_scale: z.number().min(0.1).max(1).optional(),
   })
   .default({});
 type FullPageScreenshotArgs = z.infer<typeof FullPageScreenshotArgs>;
@@ -108,45 +132,65 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
   admin_only: true,
   required_optional_permissions: ['debugger'],
   description:
-    "Capture the FULL page (not just viewport) as base64 JPEG at half resolution (defaults). Use instead of take_screenshot for whole-article / long-form pages. Returns { ok, media_type, format, image_base64, byte_length, capture_scale }. The `media_type` field is ready to drop into an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
+    "Capture the FULL page (not just viewport) as base64. Use instead of take_screenshot for whole-article / long-form pages. Pass a `profile` to optimize for a specific vision model (same profile names as take_screenshot). The tool auto-computes capture_scale so the long edge lands at the profile's target. Returns { ok, media_type, format, image_base64, byte_length, capture_scale, profile, est_tokens }. The `media_type` field is ready to drop into an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
   argsSchema: FullPageScreenshotArgs,
   run: async (args) => {
     const tabId = args.tab_id ?? (await activeTabId());
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const att = await cdp.attach(tabId);
     if (!att.ok) return { ok: false, reason: att.reason };
+    const profileName = (args.profile ?? 'auto') as ScreenshotProfile;
+    const profile = resolveProfile(profileName);
+    // Profile.format only knows jpeg/png; CDP also supports webp. If the
+    // caller explicitly asked for webp, honor it; otherwise use the profile's.
+    const format = args.format ?? profile.format;
+    const quality = args.quality ?? profile.quality;
     try {
-      // Get the layout to clip to full page.
-      let clip: Record<string, number> | undefined;
-      if (args.full_page) {
-        const layout = await cdp.send<{
-          contentSize: { width: number; height: number };
-          cssLayoutViewport: { clientWidth: number; clientHeight: number };
-        }>(tabId, 'Page.getLayoutMetrics');
-        clip = {
-          x: 0,
-          y: 0,
-          width: layout.contentSize.width,
-          height: layout.contentSize.height,
-          scale: args.capture_scale,
-        };
+      // Get the layout. We need it both to clip to full page AND to compute
+      // capture_scale when the caller didn't override.
+      const layout = await cdp.send<{
+        contentSize: { width: number; height: number };
+        cssLayoutViewport: { clientWidth: number; clientHeight: number };
+      }>(tabId, 'Page.getLayoutMetrics');
+
+      // Compute capture_scale so the resulting long edge ≤ profile.max_dimension.
+      // Caller's explicit override wins. profile.max_dimension === 0 = no resize.
+      let captureScale: number;
+      if (args.capture_scale != null) {
+        captureScale = args.capture_scale;
+      } else if (profile.max_dimension === 0) {
+        captureScale = 1;
+      } else {
+        const longest = Math.max(layout.contentSize.width, layout.contentSize.height);
+        captureScale = longest <= profile.max_dimension ? 1 : profile.max_dimension / longest;
+        // Clamp to CDP's accepted range.
+        captureScale = Math.max(0.1, Math.min(1, captureScale));
       }
+
+      const clip: Record<string, number> | undefined = args.full_page
+        ? {
+            x: 0,
+            y: 0,
+            width: layout.contentSize.width,
+            height: layout.contentSize.height,
+            scale: captureScale,
+          }
+        : undefined;
+
       const result = await cdp.send<{ data: string }>(tabId, 'Page.captureScreenshot', {
-        format: args.format,
-        quality: args.format === 'png' ? undefined : args.quality,
+        format,
+        quality: format === 'png' ? undefined : quality,
         captureBeyondViewport: args.full_page,
         clip,
       });
       return {
         ok: true,
         media_type:
-          args.format === 'jpeg'
-            ? 'image/jpeg'
-            : args.format === 'webp'
-              ? 'image/webp'
-              : 'image/png',
-        format: args.format,
-        capture_scale: args.capture_scale,
+          format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png',
+        format,
+        capture_scale: captureScale,
+        profile: profileName,
+        est_tokens: profile.est_tokens,
         image_base64: result.data,
         byte_length: result.data.length,
       };
