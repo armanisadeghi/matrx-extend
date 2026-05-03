@@ -93,6 +93,39 @@ export async function fetchAgentList(): Promise<AgxAgent[]> {
 /** Backwards-compat shim — older callers reference `fetchUserAgents`. */
 export const fetchUserAgents = (_userId?: string): Promise<AgxAgent[]> => fetchAgentList();
 
+// ─── ai_model (admin model picker) ──────────────────────────────────────────
+export const AiModelSchema = z.object({
+  id: z.string().uuid(),
+  common_name: z.string(),
+  is_deprecated: z.boolean().nullable(),
+});
+export type AiModel = z.infer<typeof AiModelSchema>;
+
+/**
+ * Fetch active (non-deprecated) AI models. Used by the admin Debug-tab
+ * model picker to override `config_overrides.model` in chat requests. The
+ * server resolves the returned UUID to whatever provider/endpoint backs it,
+ * so the extension never needs to touch model names.
+ */
+export async function fetchActiveModels(): Promise<AiModel[]> {
+  const c = getSupabase();
+  const { data, error } = await c
+    .from('ai_model')
+    .select('id, common_name, is_deprecated')
+    .eq('is_deprecated', false)
+    .order('common_name', { ascending: true });
+  if (error) {
+    console.warn('[matrx-extend] fetchActiveModels error', error.message);
+    return [];
+  }
+  const parsed = z.array(AiModelSchema).safeParse(data ?? []);
+  if (!parsed.success) {
+    console.warn('[matrx-extend] fetchActiveModels shape mismatch', parsed.error.format());
+    return [];
+  }
+  return parsed.data;
+}
+
 // ─── Agent execution payload (agx_get_execution_full RPC) ───────────────────
 /**
  * Lazy-loaded when an agent is selected. Has just the runtime essentials —

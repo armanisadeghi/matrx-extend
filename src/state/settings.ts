@@ -40,6 +40,17 @@ interface SettingsState {
    * submit per page; subsequent submits reuse the deep capture. Off by default.
    */
   autoFullScrollOnFirstSubmit: boolean;
+  /**
+   * Override the agent's default model. UUID from `ai_model.id`. Sent as
+   * `config_overrides.model` on every chat request when set. Null = use the
+   * agent's configured model. Persists across reloads — the user's pick
+   * sticks until they explicitly clear or re-pick.
+   *
+   * Both surfaces write here:
+   *   - Customize popover (curated 8-entry preset list, user-facing)
+   *   - Debug tab admin picker (full ai_model search, admin-only)
+   */
+  modelOverrideId: string | null;
 
   // ─── Scrape auto-capture ───────────────────────────────────────────────
   /** Auto-run a fast scrape on every page load (background). */
@@ -55,6 +66,7 @@ interface SettingsState {
   setAgentScopes: (scopes: AgentScope[]) => void;
   toggleAgentScope: (scope: AgentScope) => void;
   setAutoFullScrollOnFirstSubmit: (b: boolean) => void;
+  setModelOverrideId: (id: string | null) => void;
   setScrapeAutoOnLoad: (b: boolean) => void;
   setScrapeAutoMode: (m: ScrapeAutoMode) => void;
 }
@@ -69,6 +81,7 @@ export const useSettingsStore = create<SettingsState>()(
       defaultChatSpeed: 'fast',
       agentScopes: ['mine'],
       autoFullScrollOnFirstSubmit: false,
+      modelOverrideId: null,
       scrapeAutoOnLoad: true,
       scrapeAutoMode: 'capture',
       setTheme: (theme) => set({ theme }),
@@ -90,6 +103,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
       setAutoFullScrollOnFirstSubmit: (autoFullScrollOnFirstSubmit) =>
         set({ autoFullScrollOnFirstSubmit }),
+      setModelOverrideId: (modelOverrideId) => set({ modelOverrideId }),
       setScrapeAutoOnLoad: (scrapeAutoOnLoad) => set({ scrapeAutoOnLoad }),
       setScrapeAutoMode: (scrapeAutoMode) => set({ scrapeAutoMode }),
     }),

@@ -12,6 +12,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
+  USER_MODEL_LABEL_BY_ID,
+  USER_MODEL_PRESETS,
+} from '@/lib/agents/model-presets';
+import {
   ALL_SCOPES,
   type AgentScope,
   SCOPE_LABEL,
@@ -897,14 +901,21 @@ function ChevronDownTiny() {
 function ComposerSettingsChip() {
   const autoScrape = useSettingsStore((s) => s.scrapeAutoOnLoad);
   const autoFullScroll = useSettingsStore((s) => s.autoFullScrollOnFirstSubmit);
+  const modelOverrideId = useSettingsStore((s) => s.modelOverrideId);
   const setAutoScrape = useSettingsStore((s) => s.setScrapeAutoOnLoad);
   const setAutoFullScroll = useSettingsStore((s) => s.setAutoFullScrollOnFirstSubmit);
+  const setModelOverrideId = useSettingsStore((s) => s.setModelOverrideId);
 
-  const summary = autoFullScroll
-    ? 'Deep page'
-    : autoScrape
-      ? 'Auto page'
-      : 'Manual page';
+  // Trigger label summarizes the most distinctive choice the user has made.
+  // Model override beats page-capture mode because it changes which model
+  // answers — way more impactful than how content gets captured.
+  const summary = modelOverrideId
+    ? (USER_MODEL_LABEL_BY_ID[modelOverrideId] ?? 'Custom model')
+    : autoFullScroll
+      ? 'Deep page'
+      : autoScrape
+        ? 'Auto page'
+        : 'Customize';
 
   return (
     <Popover>
@@ -912,7 +923,7 @@ function ComposerSettingsChip() {
         <button
           type="button"
           className="ml-1 inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          title="Page-context settings"
+          title="Customize this conversation"
         >
           <Sliders className="size-3.5" />
           {summary}
@@ -921,6 +932,25 @@ function ComposerSettingsChip() {
       </PopoverTrigger>
       <PopoverContent className="w-80 p-1" align="start">
         <div className="px-2 py-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+          Model
+        </div>
+        <ModelPresetRow
+          active={modelOverrideId === null}
+          label="Auto"
+          hint="Use the agent's configured model."
+          onClick={() => setModelOverrideId(null)}
+        />
+        {USER_MODEL_PRESETS.map((p) => (
+          <ModelPresetRow
+            key={p.id}
+            active={modelOverrideId === p.id}
+            label={p.label}
+            hint={p.hint}
+            onClick={() => setModelOverrideId(p.id)}
+          />
+        ))}
+
+        <div className="mt-1 px-2 py-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
           Page context
         </div>
         <SettingRow
@@ -935,11 +965,46 @@ function ComposerSettingsChip() {
           title="Deep capture on first submit"
           desc="On your first message about a fresh page, scroll top→bottom to load lazy content, capture, then restore your scroll position — before the message goes out. Adds 1–4s the first time. Subsequent submits reuse the deep capture."
         />
-        <div className="px-2 pt-1.5 pb-1 text-[10px] text-muted-foreground">
-          More controls (response style, tools surface) coming here.
-        </div>
       </PopoverContent>
     </Popover>
+  );
+}
+
+function ModelPresetRow({
+  active,
+  label,
+  hint,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  hint: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'flex w-full items-start gap-2.5 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-accent',
+        active && 'bg-accent',
+      )}
+    >
+      <div
+        className={cn(
+          'mt-0.5 inline-flex size-3.5 shrink-0 items-center justify-center rounded-full border',
+          active
+            ? 'border-primary bg-primary text-primary-foreground'
+            : 'border-muted-foreground/40 bg-transparent',
+        )}
+      >
+        {active && <Check className="size-2.5" />}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium">{label}</div>
+        <div className="text-[11px] leading-snug text-muted-foreground">{hint}</div>
+      </div>
+    </button>
   );
 }
 

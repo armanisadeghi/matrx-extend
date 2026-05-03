@@ -320,6 +320,30 @@ export function useChatStream() {
         ? projectAdminFlagsToRequest(useAdminFlagsStore.getState())
         : {};
 
+      // User-set model override (also editable by admins via the Debug-tab
+      // full picker). Merges into config_overrides.model. The admin's raw
+      // config_overrides_json wins on conflict — admins know what they're
+      // doing. We only set this field when the user has actively picked
+      // something, so the absence of the key means "let server default apply"
+      // — never sent as null.
+      const modelOverrideId = useSettingsStore.getState().modelOverrideId;
+      let configOverrides: Record<string, unknown> | undefined;
+      if (modelOverrideId) {
+        configOverrides = { model: modelOverrideId };
+      }
+      // adminOverrides may already contain a config_overrides field from the
+      // raw JSON path. Merge so admin JSON keys win on conflict, but if only
+      // the user override is set, that flows through cleanly.
+      if (adminOverrides.config_overrides && typeof adminOverrides.config_overrides === 'object') {
+        configOverrides = {
+          ...(configOverrides ?? {}),
+          ...(adminOverrides.config_overrides as Record<string, unknown>),
+        };
+        // Strip from adminOverrides so the spread below doesn't double-set it.
+        // biome-ignore lint/performance/noDelete: rare path, clarity > perf
+        delete adminOverrides.config_overrides;
+      }
+
       const body: AgentStartRequest = {
         user_input: text,
         conversation_id: conversationId,
@@ -330,6 +354,7 @@ export function useChatStream() {
         source_app: "matrx-extend",
         source_feature: "chat",
         ...adminOverrides,
+        ...(configOverrides ? { config_overrides: configOverrides } : {}),
         // New capability envelope. Replaces the old `client_tools` field.
         // The server's `browser-dom` capability brings `load_browser_tools`
         // online; the model calls it with a category to pull the matching

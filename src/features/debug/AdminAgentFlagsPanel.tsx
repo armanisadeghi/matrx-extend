@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { AdminModelPicker } from '@/features/debug/AdminModelPicker';
 import { cn } from '@/lib/utils';
 import {
   type AdminFlagsValues,
@@ -68,6 +69,9 @@ export function AdminAgentFlagsPanel() {
             toggling adds it to the next outgoing body. Cleared on browser restart
             and stripped automatically for non-admin users.
           </p>
+
+          <SectionHeader>Model</SectionHeader>
+          <AdminModelPicker />
 
           <SectionHeader>Tracing</SectionHeader>
           <BoolRow
