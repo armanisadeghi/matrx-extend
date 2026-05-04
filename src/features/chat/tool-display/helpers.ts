@@ -109,6 +109,7 @@ export function applyTransforms(
 
 const COLOR_CLASSES: Record<ColorToken, string> = {
   blue: 'text-blue-600 dark:text-blue-400',
+  sky: 'text-sky-600 dark:text-sky-400',
   emerald: 'text-emerald-600 dark:text-emerald-400',
   amber: 'text-amber-600 dark:text-amber-400',
   red: 'text-red-600 dark:text-red-400',

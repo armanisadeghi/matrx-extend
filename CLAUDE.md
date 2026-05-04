@@ -152,6 +152,12 @@ are also always-on so the agent can ask for any category by name.
 
 - **Chat** — current Assistant surface, ships read-only tools to agents
 - **Tasks** — research scrape queue, agent-driven mode
+- **Agenda** — multi-surface scheduled agent runs. Tasks stored in
+  Supabase (`agenda_task` + `agenda_run`). SW alarm scans every minute,
+  fires Chrome notifications for due tasks. Click notification → opens
+  sidepanel and focuses the task. Supports one-shot, interval, cron,
+  context-match, heartbeat triggers. v0 is notification-driven; auto
+  execution is v1. See [src/lib/agenda/](./src/lib/agenda/).
 - **Scrape** — manual page capture pipeline
 - **Data** — pattern picker + apply
 - **SEO** — audit + AI recommendations
@@ -531,10 +537,20 @@ might want and attaches it):
   PR number, title, author, state (open/merged/closed/draft), base/head
   branches, files-changed/additions/deletions, top-files-by-churn, review
   summary (approvals/comments/requested_changes), on_files_tab flag.
+- `ticket` — when URL matches GitHub Issues, Linear, or Jira. Provider,
+  key (e.g. "ENG-42"), title, state, priority, assignee, reporter, labels,
+  description excerpt, comments count, related items.
 - `email_inbox` — when on Gmail inbox/list view. Provider, view name,
   unread count, threads with sender/subject/excerpt/time/unread/attachment.
 - `email_thread` — when viewing a single Gmail conversation. Subject,
   participants, ordered messages (from/time/body_excerpt).
+- `auth_state` — every page. Cross-cutting "are you signed in here?"
+  with `signed_in: yes | likely | no | unknown`, the visible user_chip
+  when extractable, and supporting signals (sign-out link, profile chip,
+  avatar, sign-in CTA, password field present).
+- `domain_memo` — when a memo exists for the current page's domain.
+  Per-domain notes + structured hints written by the agent via
+  `remember_for_domain`. Persists across sessions.
 - `article_summary` — when `page_brief.kind === 'article'`.
 - `product_data` — when product schema is detected.
 

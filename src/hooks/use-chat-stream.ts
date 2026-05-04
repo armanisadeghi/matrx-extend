@@ -14,7 +14,7 @@ import {
 import { useActiveToolsStore } from "@/state/active-tools";
 import { useAuthStore } from "@/state/auth";
 import { useAutoScrapeStore } from "@/state/auto-scrape";
-import { type ChatMessage, useChatStore } from "@/state/chat";
+import { type ChatMessage, type ToolPartCall, useChatStore } from "@/state/chat";
 import { useDesktopStore } from "@/state/desktop";
 import { useScrapeStore } from "@/state/scrape";
 import { useSettingsStore } from "@/state/settings";
@@ -118,29 +118,34 @@ function handleToolEvent(
   const inner = (data.data ?? {}) as Record<string, unknown>;
   const upsert = useChatStore.getState().upsertToolPart;
 
+  // Only include fields that are actually present so we never overwrite a
+  // real value (e.g. args set by the SW broadcast) with undefined.
+  const base: Partial<ToolPartCall> & { kind: "server" | "client" } = {
+    kind,
+    toolName,
+  };
+  if (message !== undefined) base.message = message;
+
   if (subEvent === "tool_started") {
+    const args = inner.arguments;
     upsert(messageId, callId, {
-      kind,
-      toolName,
-      message,
-      args: inner.arguments ?? null,
+      ...base,
       phase: "started",
+      ...(args !== undefined ? { args } : {}),
     });
   } else if (subEvent === "tool_completed") {
+    const result = inner.result;
     upsert(messageId, callId, {
-      kind,
-      toolName,
-      message,
-      result: inner.result ?? null,
+      ...base,
       phase: "completed",
+      ...(result !== undefined ? { result } : {}),
     });
   } else if (subEvent === "tool_error" || subEvent === "tool_failed") {
+    const errResult = inner.error ?? inner.result;
     upsert(messageId, callId, {
-      kind,
-      toolName,
-      message,
-      result: inner.error ?? inner.result ?? null,
+      ...base,
       phase: "error",
+      ...(errResult !== undefined ? { result: errResult } : {}),
     });
   }
 }

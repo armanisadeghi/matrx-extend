@@ -85,15 +85,17 @@ Every visual segment is `PhaseAware<T>`: pass a single value to apply to all pha
 interface ToolDisplayEntry {
   inline?: {
     hidden?: PhaseAware<boolean>;
-    icon?: PhaseAware<IconName>;           // any lucide-react export name
-    prefix?: PhaseAware<string>;           // "Getting" / "Got" / "Failed to get"
-    name?: PhaseAware<string | InfoSpec>;  // default: titleCase(toolName); '' to suppress;
-                                           // pass an InfoSpec to pull from args/output
+    icon?: PhaseAware<IconName | InfoSpec>;  // lucide name OR InfoSpec resolving to a
+                                              // lucide name OR a URL (rendered as <img>)
+    prefix?: PhaseAware<string>;             // "Getting" / "Got" / "Failed to get"
+    name?: PhaseAware<string | InfoSpec>;    // default: titleCase(toolName); '' to suppress;
+                                              // pass an InfoSpec to pull from args/output
     suffix?: PhaseAware<string>;
-    info?: PhaseAware<string | InfoSpec>;  // string shorthand = { path: string }
+    info?: PhaseAware<string | InfoSpec>;    // string shorthand = { path: string }
     color?: PhaseAware<ColorToken>;
-    isMultiline?: boolean;                 // wrap vs truncate the info segment
-    spinIcon?: PhaseAware<boolean>;        // default: true on 'started' only
+    isMultiline?: boolean;                   // wrap vs truncate the info segment
+    spinIcon?: PhaseAware<boolean>;          // default: true on 'started' only
+    shimmerOnRunning?: boolean;              // shimmer the label while phase=started; default true
   };
   args?: {
     hidden?: PhaseAware<boolean>;
@@ -102,7 +104,9 @@ interface ToolDisplayEntry {
   results?: {
     hidden?: PhaseAware<boolean>;
     displayType?: 'json' | 'key-value' | 'values-only' | 'custom';
-    keysInfo?: KeyDisplay[];            // required when displayType === 'custom'
+    keysInfo?: KeyDisplay[];                 // required when displayType === 'custom'
+    alwaysShow?: boolean;                    // render result content visibly under the row,
+                                              // no click required (use for screenshots, charts)
   };
   CustomComponent?: ComponentType<{ entry: ToolTimelineEntry; kind: 'server' | 'client' }>;
 }
@@ -145,6 +149,7 @@ In `registry-transforms.ts`. Add new ones there — same `(unknown) => unknown` 
 | `lowercase` / `uppercase` | Case conversion |
 | `formatImageDimensions` | `{ width, height, ... }` → `"WxH"` (e.g. `2576×1911`). Use with `info.path: 'output'` for image tools. |
 | `formatBytes` | Number → `"123 KB"` / `"4.5 MB"` |
+| `browserCategoryIcon` | Browser-tools category name → distinct lucide icon (`core` → `Wrench`, `forms` → `FormInput`, `cookies` → `Cookie`, …). Use as the transform on `inline.icon` with `path: 'args.category'`. |
 
 Chain by passing an array: `transform: ['textClean', 'truncate80']`.
 
@@ -175,6 +180,35 @@ When adding a new component: keep it small, accept `unknown` for `value`, never 
 keysInfo: [{ key: '', component: 'Base64Image' }]
 ```
 
+## Visual design philosophy
+
+The chat surface treats tool calls like the Reasoning block — **slim, inline, low-noise**. No borders, no card backgrounds, just `py-0.5` rows with hover affordance. The visual heaviness of a tool row should match its semantic weight: a typical tool call is one log line, not a dashboard widget.
+
+What this means concretely:
+
+- **Inline rows are tiny.** Don't bulk them up with extra info segments unless they earn their space.
+- **Most "rich" content goes in the expanded body.** Click to inspect args + result JSON.
+- **A tool whose result IS the point** (screenshots, charts, favicons) should hoist that content with `results.alwaysShow: true` OR by putting the visual signal in the inline icon (favicons via `InfoSpec`).
+- **Long-running tools** (`find`, AI tools, network-heavy actions) get a shimmering label automatically while phase=started — keep `shimmerOnRunning` enabled (it's the default).
+
+## `results.alwaysShow` — render the result without a click
+
+Set when the result payload IS the user-facing point of the tool. The `keysInfo` content renders directly under the row, visible by default. The click-to-expand still works for inspecting args + raw JSON.
+
+```ts
+// take_screenshot — image is the star, never hide it
+results: {
+  displayType: 'custom',
+  keysInfo: [{ key: '', component: 'Base64Image' }],
+  alwaysShow: true,
+}
+```
+
+When to use it:
+- **Yes**: screenshots, generated images, charts, single-pane media.
+- **Maybe**: a TabCard or Chips list — but consider hoisting the signal into the inline row instead (favicon as icon, count in info).
+- **No**: long text, JSON dumps, list of items — these are better behind a click so the chat doesn't sprawl.
+
 ## Result display modes
 
 `results.displayType` controls how the (typically object) result is shown:
@@ -188,9 +222,21 @@ keysInfo: [{ key: '', component: 'Base64Image' }]
 
 ## Icons + colors
 
-**Icons**: any export name from `lucide-react`. Examples: `HandGrab`, `Database`, `Search`, `Globe`, `Cookie`, `Camera`, `MousePointerClick`, `Keyboard`, `FileText`, `Clipboard`. Unknown names log a warning and fall back to the phase default (`Loader2` / `CheckCircle2` / `AlertTriangle`).
+**Icons**: any export name from `lucide-react`. Examples: `HandGrab`, `Database`, `Search`, `Globe`, `Cookie`, `Camera`, `MousePointerClick`, `Keyboard`, `FileText`, `BookOpenText`, `Wrench`, `Bug`, `Sparkles`, `Plug`, `AppWindow`. Unknown names log a warning and fall back to the phase default (`Loader2` / `CheckCircle2` / `AlertTriangle`).
 
-**Colors**: pick a `ColorToken` — `blue`, `emerald`, `amber`, `red`, `violet`, `slate`, `primary`, `muted`. Resolves to a `text-{color}-600 dark:text-{color}-400` class. **Error phase always wins (forced red)** regardless of the override — keeps error visuals consistent across the app.
+**Dynamic icons (favicons, per-arg icons)**: pass an `InfoSpec` instead of a literal name. The resolved string is auto-detected as a lucide name OR a URL:
+
+```ts
+// Favicon as the inline icon (URL → <img>)
+icon: { completed: { path: 'output.fav_icon_url', fallback: 'Globe' } }
+
+// Per-arg icon via a transform that maps a value to a lucide name
+icon: { completed: { path: 'args.category', transform: 'browserCategoryIcon' } }
+```
+
+When the URL fails to load (favicon 404, CSP block, etc.) the renderer falls back to a Globe icon. When an `InfoSpec` resolves to nothing, falls back to the phase-default lucide icon (use `fallback: 'SomeLucideName'` to override).
+
+**Colors**: pick a `ColorToken` — `blue`, `sky`, `emerald`, `amber`, `red`, `violet`, `slate`, `primary`, `muted`. Resolves to a `text-{color}-600 dark:text-{color}-400` class. **Error phase always wins (forced red)** regardless of the override — keeps error visuals consistent across the app.
 
 ## The CustomComponent escape hatch
 
@@ -407,3 +453,72 @@ Every row (default and configurable, server and client) has a clipboard icon on 
 ```
 
 Lives in [CopyToolButton.tsx](src/features/chat/tool-display/CopyToolButton.tsx). Each renderer constructs a `ToolCopyData` object and passes it as `data`. The button stops click propagation so it never toggles the row open. Don't add per-tool overrides for it — the universal payload is the right shape for users (paste into bug reports, share with another agent, etc.).
+
+## When to reach for `CustomComponent`
+
+The config-driven path covers ~90% of tools. Use `CustomComponent` when the tool needs **interactive** UI — not just a richer display, but inputs the user fills in and submits. Examples:
+
+- **`interaction_ask`** — server-side multi-question questionnaire (radio + toggle inputs). The args carry the spec; the card renders the form, collects answers, and posts them back as a regular user chat message via `useChatStream().send()`. Submission state is persisted per `callId` in a small Zustand store inside the card so the form doesn't reappear after scrolling away. See [InteractionAskCard.tsx](src/features/chat/tool-display/InteractionAskCard.tsx) as the reference implementation for "tool that asks for input".
+
+The pattern for "answer goes back to the agent" tools without a dedicated SSE response channel: format the answer as a chat message and `void send(text, { agentId, conversationId })`. The next agent turn sees it like any other user message.
+
+## Cookbook — phased animations and dynamic icons
+
+### Long-running tool with shimmering query as the label
+
+```ts
+// `find` — natural-language element search; sometimes 10–20s
+find: {
+  inline: {
+    icon: 'Search',                                  // spins on started by default
+    prefix: { started: 'Searching for', completed: 'Found', error: 'Search failed' },
+    name: { path: 'args.query', transform: 'truncate80' },  // query becomes the label
+    info: { completed: { path: 'output.matches.length', fallback: '0' } },
+    suffix: { completed: 'matches' },
+    color: { started: 'primary', completed: 'violet', error: 'red' },
+    // shimmerOnRunning defaults to true — the query shimmers while we search
+  },
+}
+```
+
+While running: spinning Search icon + shimmering "Searching for the sign-in button". On success: violet Search + "Found the sign-in button 3 matches".
+
+### Per-category dynamic icon
+
+```ts
+// `load_browser_tools` — category in args drives the icon
+load_browser_tools: {
+  inline: {
+    icon: {
+      started: 'Loader2',
+      completed: { path: 'args.category', transform: 'browserCategoryIcon' },
+      error: 'AlertTriangle',
+    },
+    prefix: { started: 'Loading my', completed: 'Loaded my', error: 'Failed to load my' },
+    name: { path: 'args.category' },
+    suffix: 'browser tools',
+  },
+}
+```
+
+`forms` category → FormInput icon. `cookies` → Cookie. `debug` → Bug. Add new categories to `BROWSER_CATEGORY_ICONS` in `registry-transforms.ts`.
+
+### Favicon as the inline icon
+
+```ts
+// `get_active_tab` — the tab's own favicon becomes the row icon
+get_active_tab: {
+  inline: {
+    icon: {
+      started: 'Loader2',
+      completed: { path: 'output.fav_icon_url', fallback: 'Globe' },
+      error: 'AlertTriangle',
+    },
+    prefix: { started: 'Reading active tab', error: "Couldn't read active tab" },
+    name: { started: '', completed: { path: 'output.title', transform: 'truncate80' }, error: '' },
+    info: { completed: { path: 'output.url', transform: 'truncate80' } },
+  },
+}
+```
+
+When the URL fails to load (CSP block, 404), it falls back to `Globe` automatically. The whole tab identity (favicon + title + URL) lives in the inline row — no expanded body needed.

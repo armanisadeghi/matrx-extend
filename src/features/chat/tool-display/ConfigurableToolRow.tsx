@@ -12,9 +12,10 @@
  */
 
 import { cn } from '@/lib/utils';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Globe } from 'lucide-react';
 import { Component, type ComponentType, type ReactNode, useState } from 'react';
 import type { ToolTimelineEntry } from '../ToolTimelineRow';
+import { ShimmerText } from '../BreathingOrb';
 import { CopyToolButton } from './CopyToolButton';
 import {
   applyTransforms,
@@ -26,6 +27,7 @@ import {
 import { fieldComponents } from './registry-components';
 import type {
   ArgsConfig,
+  IconName,
   InfoSpec,
   KeyDisplay,
   Phase,
@@ -43,11 +45,11 @@ export function ConfigurableToolRow({ entry, kind, cfg }: Props) {
   const [open, setOpen] = useState(false);
   const phase = entry.phase as Phase;
   const inline = cfg.inline ?? {};
+  const results = cfg.results ?? {};
 
   const inlineHidden = resolvePhase(inline.hidden, phase);
   if (inlineHidden) return null;
 
-  const Icon = resolveIcon(resolvePhase(inline.icon, phase), phase);
   const colorClass = resolveColor(resolvePhase(inline.color, phase), phase);
   const shouldSpin = resolvePhase(inline.spinIcon, phase) ?? phase === 'started';
 
@@ -60,35 +62,40 @@ export function ConfigurableToolRow({ entry, kind, cfg }: Props) {
 
   const headerSegments = [prefix, displayName, suffix].filter((s) => s && s.length > 0);
   const headerLabel = headerSegments.join(' ');
+  const shimmer = phase === 'started' && (inline.shimmerOnRunning ?? true);
 
-  // The two surfaces have different outer shells (server: thin border + chevron,
-  // client: subtle background, no chevron). Keep the look intact.
-  const outerClass =
-    kind === 'server'
-      ? 'group rounded-md border border-border/60 bg-card/40 text-[12px]'
-      : 'group rounded-md border bg-card/60 px-2.5 py-1.5 text-[12px]';
-  const rowClass =
-    kind === 'server'
-      ? 'flex w-full items-center gap-2 px-2.5 py-1.5 hover:bg-muted/30'
-      : 'flex w-full items-center gap-2';
-  const buttonClass = 'flex flex-1 items-center gap-2 text-left';
+  const alwaysShowResults =
+    phase === 'completed' &&
+    results.alwaysShow === true &&
+    !resolvePhase(results.hidden, phase) &&
+    entry.output != null;
 
   return (
-    <div className={outerClass}>
-      <div className={rowClass}>
+    <div className="group rounded py-0.5 pr-1 text-xs hover:bg-muted/40">
+      <div className="flex w-full items-center gap-1.5">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className={buttonClass}
+          className="flex flex-1 items-center gap-1.5 text-left"
           aria-expanded={open}
         >
           {kind === 'server' && (
             <ChevronRight
-              className={`size-3 text-muted-foreground transition-transform ${open ? 'rotate-90' : ''}`}
+              className={`size-3 shrink-0 text-muted-foreground transition-transform ${open ? 'rotate-90' : ''}`}
             />
           )}
-          <Icon className={cn('size-3.5 shrink-0', colorClass, shouldSpin && 'animate-spin')} />
-          {headerLabel && <span className="truncate text-foreground">{headerLabel}</span>}
+          <InlineIcon
+            entry={entry}
+            phase={phase}
+            value={resolvePhase(inline.icon, phase)}
+            colorClass={colorClass}
+            spin={shouldSpin}
+          />
+          {headerLabel && (
+            <span className={cn('truncate text-foreground', shimmer && 'min-w-0')}>
+              {shimmer ? <ShimmerText>{headerLabel}</ShimmerText> : headerLabel}
+            </span>
+          )}
           {infoText && (
             <span
               className={cn(
@@ -118,12 +125,80 @@ export function ConfigurableToolRow({ entry, kind, cfg }: Props) {
           }}
         />
       </div>
-      {open && <ExpandedBody entry={entry} kind={kind} cfg={cfg} />}
+      {alwaysShowResults && (
+        <div className="mt-1 ml-5">
+          <ResultsSection result={entry.output} cfg={results} />
+        </div>
+      )}
+      {open && (
+        <ExpandedBody
+          entry={entry}
+          kind={kind}
+          cfg={cfg}
+          skipResults={alwaysShowResults}
+        />
+      )}
     </div>
   );
 }
 
-function ExpandedBody({ entry, kind, cfg }: Props) {
+/**
+ * Resolve an icon config to a rendered element. Supports:
+ *   - lucide name string ('HandGrab', 'Camera', …)
+ *   - URL string (http(s):// or data:) → renders as <img>
+ *   - InfoSpec → resolved against the entry; the resolved value is then
+ *     either a lucide name OR a URL (auto-detected by prefix).
+ *   - undefined → phase-default lucide icon
+ *
+ * Image load failures fall back to the phase-default lucide icon (or Globe
+ * if we were trying for a URL — keeps the visual polish for things like
+ * favicons that occasionally 404).
+ */
+function InlineIcon({
+  entry,
+  phase,
+  value,
+  colorClass,
+  spin,
+}: {
+  entry: ToolTimelineEntry;
+  phase: Phase;
+  value: IconName | InfoSpec | undefined;
+  colorClass: string;
+  spin: boolean;
+}) {
+  const [imgErr, setImgErr] = useState(false);
+  let resolved: string | undefined;
+  if (typeof value === 'string') {
+    resolved = value;
+  } else if (value && typeof value === 'object') {
+    const text = resolveInfo(entry, value);
+    resolved = text || undefined;
+  }
+  const isUrl =
+    typeof resolved === 'string' && (resolved.startsWith('http') || resolved.startsWith('data:'));
+  if (isUrl && !imgErr && resolved) {
+    return (
+      <img
+        src={resolved}
+        alt=""
+        className={cn('size-3.5 shrink-0 rounded-sm object-contain', colorClass)}
+        onError={() => setImgErr(true)}
+      />
+    );
+  }
+  if (isUrl && imgErr) {
+    return <Globe className={cn('size-3.5 shrink-0', colorClass)} />;
+  }
+  const LucideIcon = resolveIcon(resolved, phase);
+  return <LucideIcon className={cn('size-3.5 shrink-0', colorClass, spin && 'animate-spin')} />;
+}
+
+function ExpandedBody({
+  entry,
+  cfg,
+  skipResults = false,
+}: Props & { skipResults?: boolean }) {
   const phase = entry.phase as Phase;
   const args = cfg.args ?? {};
   const results = cfg.results ?? {};
@@ -132,19 +207,20 @@ function ExpandedBody({ entry, kind, cfg }: Props) {
 
   const showArgs = !argsHidden && entry.args != null;
   const showResults =
-    !resultsHidden && phase === 'completed' && entry.output != null;
+    !skipResults && !resultsHidden && phase === 'completed' && entry.output != null;
   const showError = phase === 'error' && entry.message;
 
-  const wrapperClass =
-    kind === 'server'
-      ? 'space-y-1.5 border-t border-border/60 px-2.5 py-1.5'
-      : 'mt-1.5 space-y-1.5 border-t pt-1.5';
+  if (!showArgs && !showResults && !showError) return null;
 
   return (
-    <div className={wrapperClass}>
+    <div className="mt-1 ml-5 space-y-1.5">
       {showArgs && <ArgsSection args={entry.args} cfg={args} />}
       {showResults && <ResultsSection result={entry.output} cfg={results} />}
-      {showError && <SectionLabel label="error"><pre className={preClass}>{entry.message}</pre></SectionLabel>}
+      {showError && (
+        <SectionLabel label="error">
+          <pre className={preClass}>{entry.message}</pre>
+        </SectionLabel>
+      )}
     </div>
   );
 }

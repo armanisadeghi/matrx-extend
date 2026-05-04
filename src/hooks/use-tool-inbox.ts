@@ -19,7 +19,7 @@ import type {
   PendingAskUserRequest,
   PendingConfirmRequest,
 } from '@/lib/tools/types';
-import { useChatStore } from '@/state/chat';
+import { type ToolPartCall, useChatStore } from '@/state/chat';
 import { useToolInbox } from '@/state/tool-inbox';
 import { useEffect } from 'react';
 
@@ -73,14 +73,18 @@ export function useToolInbox$Subscribe(): void {
       (payload) => {
         const messageId = activeAssistantMessageId();
         if (!messageId) return { ack: true };
-        useChatStore.getState().upsertToolPart(messageId, payload.callId, {
+        // Only set fields that are actually defined on this event. The SW
+        // sends `args` only on `started` and `output` only on `completed`,
+        // so spreading undefined would wipe the args we captured at start.
+        const patch: Partial<ToolPartCall> & { kind: 'client' } = {
           kind: 'client',
           toolName: payload.toolName,
           phase: payload.phase,
-          args: payload.args,
-          result: payload.output,
-          message: payload.message,
-        });
+        };
+        if (payload.args !== undefined) patch.args = payload.args;
+        if (payload.output !== undefined) patch.result = payload.output;
+        if (payload.message !== undefined) patch.message = payload.message;
+        useChatStore.getState().upsertToolPart(messageId, payload.callId, patch);
         return { ack: true };
       },
     );

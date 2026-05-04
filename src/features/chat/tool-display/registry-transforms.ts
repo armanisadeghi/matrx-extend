@@ -43,4 +43,30 @@ export const transforms: Record<TransformName, (v: unknown) => unknown> = {
     if (v < 1024 * 1024) return `${(v / 1024).toFixed(1)} KB`;
     return `${(v / (1024 * 1024)).toFixed(2)} MB`;
   },
+  /**
+   * Browser-tools category name → lucide icon name. Each category gets a
+   * distinct, recognizable icon (Wrench for core, Cookie for cookies, etc.).
+   * Use as the transform on `inline.icon` with `path: 'args.category'`.
+   */
+  browserCategoryIcon: (v) => {
+    if (typeof v !== 'string') return v;
+    return BROWSER_CATEGORY_ICONS[v] ?? 'Boxes';
+  },
+};
+
+const BROWSER_CATEGORY_ICONS: Record<string, string> = {
+  core: 'Wrench',
+  page: 'FileText',
+  interact: 'MousePointerClick',
+  forms: 'FormInput',
+  tabs: 'AppWindow',
+  history: 'History',
+  ai: 'Sparkles',
+  files: 'FileBox',
+  memory: 'Database',
+  ask: 'MessageCircleQuestion',
+  advanced: 'Cog',
+  debug: 'Bug',
+  cookies: 'Cookie',
+  webmcp: 'Plug',
 };

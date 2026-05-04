@@ -290,6 +290,31 @@ export const set_clipboard: ToolHandler<ClipboardArgs, unknown> = {
   },
 };
 
+// ─── sleep ────────────────────────────────────────────────────────────────
+
+const SleepArgs = z
+  .object({
+    /** How long to pause, in milliseconds. Capped at 5 minutes. */
+    ms: z.number().int().min(50).max(300_000),
+    /** Optional human-readable reason — surfaces in the timeline. */
+    reason: z.string().max(200).optional(),
+  })
+  .strict();
+type SleepArgs = z.infer<typeof SleepArgs>;
+
+export const sleep: ToolHandler<SleepArgs, unknown> = {
+  name: 'sleep',
+  tier: 'action',
+  description:
+    'Pause the agent for `ms` milliseconds (50ms–5min). Use when waiting for time-based things the page does on its own — a video to play before capturing transcript, an animation to finish, a debounced search to settle, a rate-limit window to clear. The server is non-blocking during the pause; only the agent waits. Prefer `wait_for` when you have a concrete condition (selector or readyState) — `sleep` is for unconditional waits. Returns { ok, slept_ms }.',
+  argsSchema: SleepArgs,
+  run: async (args) => {
+    const start = Date.now();
+    await new Promise((r) => setTimeout(r, args.ms));
+    return { ok: true, slept_ms: Date.now() - start, reason: args.reason ?? null };
+  },
+};
+
 export const action_handlers = [
   navigate_active_tab,
   click_element,
@@ -297,4 +322,5 @@ export const action_handlers = [
   scroll_page,
   wait_for,
   set_clipboard,
+  sleep,
 ];

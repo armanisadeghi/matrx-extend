@@ -58,12 +58,12 @@ function DefaultToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {
   const argSummary = summarize(entry.args);
 
   return (
-    <div className="group rounded-md border bg-card/60 px-2.5 py-1.5 text-[12px]">
-      <div className="flex w-full items-center gap-2">
+    <div className="group rounded py-0.5 pr-1 text-xs hover:bg-muted/40">
+      <div className="flex w-full items-center gap-1.5">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="flex flex-1 items-center gap-2 text-left"
+          className="flex flex-1 items-center gap-1.5 text-left"
         >
           <Icon
             className={cn(
@@ -95,7 +95,7 @@ function DefaultToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {
         />
       </div>
       {open && (
-        <div className="mt-1.5 space-y-1.5 border-t pt-1.5">
+        <div className="mt-1 ml-5 space-y-1.5">
           <DetailBlock label="args" value={entry.args} />
           {entry.phase === 'completed' && <DetailBlock label="output" value={entry.output} />}
           {entry.phase === 'error' && entry.message && (

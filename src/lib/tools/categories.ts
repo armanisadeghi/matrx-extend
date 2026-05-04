@@ -209,6 +209,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   focus_element: 'interact',
   blur_element: 'interact',
   right_click_element: 'interact',
+  sleep: 'interact',
 
   // ─── forms ──────────────────────────────────────────────────────────────
   select_dropdown_option: 'forms',
@@ -268,6 +269,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   set_extension_storage: 'memory',
   get_extension_storage: 'memory',
   list_extension_storage: 'memory',
+  remember_for_domain: 'memory',
 
   // ─── ask ────────────────────────────────────────────────────────────────
   ask_user_choice: 'ask',

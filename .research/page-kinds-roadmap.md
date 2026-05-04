@@ -6,6 +6,42 @@
 >
 > Status legend: ✅ shipped · 🔨 quick win (implementable today) ·
 > 📋 planned · 🔮 future / bigger lift
+>
+> **How to add a new kind without breaking anything:** see the build guide
+> at [`docs/build-page-kind.md`](../docs/build-page-kind.md).
+
+---
+
+## 0. Snapshot of what's shipped
+
+Cross-cutting infrastructure (everywhere):
+- ✅ §2.1 Banner / modal inventory (`page_dismissibles`)
+- ✅ §2.2 Form schema extractor (`form_elements`)
+- ✅ §2.3 Auth state surface (`auth_state`)
+- ✅ §2.4 Page-ready signal (`page_brief.snapshot.ready`)
+- ✅ §2.5 Per-domain memory (`domain_memo` + `remember_for_domain` tool)
+
+Per-kind detection + bundles:
+- ✅ §3.1 `article` (`article_summary`)
+- ✅ §3.2 `documentation`
+- ✅ §3.3 `product` (`product_data`)
+- ✅ §3.4 `product-listing` / `search-results` (`result_list`)
+- ✅ §3.5 `form` (paired with `form_elements`)
+- ✅ §3.8 `login-wall`
+- ✅ §3.9 `inbox-list` Gmail (`email_inbox`)
+- ✅ §3.10 `email-thread` Gmail (`email_thread`)
+- ✅ §3.13 `code-review-pr` GitHub + GitLab (`pull_request`)
+- ✅ §3.14 `ticket` GitHub Issues + Linear + Jira (`ticket`)
+- ✅ §3.15 `error-page` · §3.16 `captcha` · §3.17 `spa-empty`
+
+Failure / blocker detection: captcha, login-wall, paywall, consent-overlay,
+age-gate, spa-empty, error-page, plus flags for `not_ready` and
+`bot_challenge_or_block`.
+
+Total v2 keys live: **15** always-loaded + on-demand, plus dynamic ones
+that fire only when relevant (`pull_request`, `email_inbox`,
+`email_thread`, `ticket`, `domain_memo`, `auth_state`, `article_summary`,
+`product_data`, `page_dismissibles`, `result_list`, `form_elements`).
 
 ---
 
@@ -112,19 +148,23 @@ only form.
 }
 ```
 
-### 2.3 📋 Auth state surface
+### 2.3 ✅ Auth state surface
 
-**Why:** universal "hand off on login" failure. Saves a turn per session
-("am I already logged in here?").
+**Why:** universal "hand off on login" failure. Saves a turn per session.
 
-**Bundle: `auth_state`** (or fold into `client.state["browser-dom"]`)
+**Bundle: `auth_state`** ✅ shipped — DOM-heuristic (no cookie access).
 ```
 {
-  domain: "github.com",
-  signed_in: true | false | "unknown",
-  user_chip: "armanisadeghi"  // from visible profile element
+  domain,
+  signed_in: "yes" | "likely" | "no" | "unknown",
+  user_chip: string | null,         // visible username when extractable
+  signals: {
+    sign_out_link, profile_chip, avatar_image,
+    sign_in_cta, login_form_visible,
+  }
 }
 ```
+File: [`src/lib/chat/context/check-auth-state.ts`](../src/lib/chat/context/check-auth-state.ts)
 
 ### 2.4 ✅ Page-ready signal
 
@@ -145,18 +185,20 @@ ready: {
 ```
 File: [`src/lib/chat/context/check-page-ready.ts`](../src/lib/chat/context/check-page-ready.ts)
 
-### 2.5 🔮 Per-domain memory
+### 2.5 ✅ Per-domain memory
 
-**Why:** Skyvern's moat in miniature. "Aetna portal expects DOB in
-MM/DD/YYYY"; "the PO submit button is the third primary."
+**Why:** Skyvern's moat in miniature. Compounds across all sessions —
+the agent's first turn on a domain it's seen before is already smarter.
 
-Stored in `chrome.storage.local`, keyed by domain. Surface as a context
-key when a memo exists for the current domain.
-
-**Bundle: `domain_memo`** (only when memo exists)
+**Bundle: `domain_memo`** ✅ shipped — surfaced when a memo exists for
+the current domain (parent-domain memos auto-apply to subdomains).
+**Tool: `remember_for_domain`** ✅ shipped — agent writes via this tool
+whenever it learns something worth remembering.
 ```
 { domain, notes: ["..."], hints: { ... }, last_updated }
 ```
+File: [`src/lib/chat/context/domain-memo.ts`](../src/lib/chat/context/domain-memo.ts) +
+[`src/lib/tools/handlers/memory.ts`](../src/lib/tools/handlers/memory.ts)
 
 ### 2.6 🔮 Console / error stream
 
@@ -307,14 +349,17 @@ context bundle we'd attach when detected, status, notes.
 - Notes: dev workflow #1. GitLab pass is light — extend later.
   File: [`src/lib/chat/context/detect-pull-request.ts`](../src/lib/chat/context/detect-pull-request.ts)
 
-#### 3.14 🔨 `ticket` / `issue-tracker` (Linear / Jira / GitHub Issues / Asana)
-- Detect: domain + URL pattern + presence of status/assignee/priority
-  controls.
-- **Bundle: `ticket`**
+#### 3.14 ✅ `ticket` / `issue-tracker` — GitHub Issues + Linear + Jira
+- Detection ✅ — URL match for `github.com/.../issues/N`,
+  `linear.app/.../issue/KEY`, `*.atlassian.net/browse/KEY`.
+- **Bundle: `ticket`** ✅ shipped.
   ```
-  { id, title, status, priority, assignee, reporter, labels,
-    description_excerpt, comments_count, related_tickets: [...] }
+  { provider, url, key, title, state, priority, assignee, reporter,
+    labels, description_excerpt, comments_count,
+    related: [{ key, title, url }] }
   ```
+- Notes: `Asana` is the obvious next provider to add.
+  File: [`src/lib/chat/context/detect-ticket.ts`](../src/lib/chat/context/detect-ticket.ts)
 
 #### 3.15 ✅ `error-page` / `4xx`/`5xx` (already detected)
 - Already detected.

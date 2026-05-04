@@ -29,6 +29,7 @@ import { download_handlers } from '@/lib/tools/handlers/downloads';
 import { form_action_handlers, form_read_handlers } from '@/lib/tools/handlers/forms';
 import { inspect_handlers } from '@/lib/tools/handlers/inspect';
 import { keyboard_handlers } from '@/lib/tools/handlers/keyboard';
+import { memory_handlers } from '@/lib/tools/handlers/memory';
 import { onbox_ai_handlers } from '@/lib/tools/handlers/onbox-ai';
 import {
   cookies_handlers,
@@ -75,6 +76,8 @@ const ALL: AnyToolHandler[] = [
   // ─── browser-level actions ─────────────────────────────────────────────
   ...tab_action_handlers,
   ...download_handlers,
+  // ─── memory ────────────────────────────────────────────────────────────
+  ...memory_handlers,
   // ─── optional-permission tools ─────────────────────────────────────────
   ...sessions_handlers,
   ...pagecapture_handlers,

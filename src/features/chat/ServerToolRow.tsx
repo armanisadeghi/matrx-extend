@@ -56,16 +56,16 @@ function DefaultServerToolRow({ tool }: { tool: ServerToolCall }) {
     tool.phase === 'started' ? Loader2 : tool.phase === 'error' ? AlertTriangle : CheckCircle2;
 
   return (
-    <div className="group rounded-md border border-border/60 bg-card/40 text-[12px]">
-      <div className="flex w-full items-center gap-2 px-2.5 py-1.5 hover:bg-muted/30">
+    <div className="group rounded py-0.5 pr-1 text-xs hover:bg-muted/40">
+      <div className="flex w-full items-center gap-1.5">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="flex flex-1 items-center gap-2 text-left"
+          className="flex flex-1 items-center gap-1.5 text-left"
           aria-expanded={open}
         >
           <ChevronRight
-            className={`size-3 text-muted-foreground transition-transform ${
+            className={`size-3 shrink-0 text-muted-foreground transition-transform ${
               open ? 'rotate-90' : ''
             }`}
           />
@@ -98,7 +98,7 @@ function DefaultServerToolRow({ tool }: { tool: ServerToolCall }) {
         />
       </div>
       {open && (
-        <div className="space-y-1.5 border-t border-border/60 px-2.5 py-1.5">
+        <div className="mt-1 ml-5 space-y-1.5">
           <DetailBlock label="tool" value={tool.toolName} />
           {tool.args != null && <DetailBlock label="args" value={tool.args} />}
           {tool.phase === 'completed' && tool.result != null && (

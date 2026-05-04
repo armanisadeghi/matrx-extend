@@ -2,6 +2,7 @@ import { AuthGate } from '@/components/AuthGate';
 import { UserMenu } from '@/components/UserMenu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { AgendaView } from '@/features/agenda/AgendaView';
 import { ChatView } from '@/features/chat/ChatView';
 import { DataView } from '@/features/data/DataView';
 import { DebugView } from '@/features/debug/DebugView';
@@ -18,6 +19,7 @@ import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
 import {
   Bug,
+  Calendar,
   Database,
   ListTodo,
   MessageSquare,
@@ -70,6 +72,9 @@ export function App() {
                 <TabsTrigger value="tasks" className="size-7 p-0" title="Tasks">
                   <ListTodo className="size-3.5" />
                 </TabsTrigger>
+                <TabsTrigger value="agenda" className="size-7 p-0" title="Agenda">
+                  <Calendar className="size-3.5" />
+                </TabsTrigger>
                 <TabsTrigger value="scrape" className="size-7 p-0" title="Scrape">
                   <ScanLine className="size-3.5" />
                 </TabsTrigger>
@@ -114,6 +119,9 @@ export function App() {
             </TabsContent>
             <TabsContent value="tasks" className="flex-1 min-h-0">
               <TasksView />
+            </TabsContent>
+            <TabsContent value="agenda" className="flex-1 min-h-0">
+              <AgendaView />
             </TabsContent>
             <TabsContent value="scrape" className="flex-1 min-h-0">
               <ScrapeView />

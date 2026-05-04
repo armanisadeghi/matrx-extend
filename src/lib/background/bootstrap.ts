@@ -15,6 +15,11 @@
  */
 
 import { ALARMS, STORAGE_KEYS } from '@/config/env';
+import {
+  registerAgendaNotificationClicks,
+  scanAndNotify,
+  startAgendaScanner,
+} from '@/lib/agenda/scanner';
 import { refreshAccessToken } from '@/lib/auth/flow';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import { desktopRpc, probeDesktop, startDesktopProbeAlarm } from '@/lib/desktop/bridge';
@@ -44,6 +49,8 @@ export function bootstrapBackground(): void {
   // ── 3. Alarms — also synchronous registration.
   setupAlarms();
   startDesktopProbeAlarm();
+  startAgendaScanner();
+  registerAgendaNotificationClicks();
 
   // ── 3. Async housekeeping: rehydrate Supabase session, probe desktop.
   void rehydrateSupabaseSession();
@@ -76,6 +83,8 @@ function setupAlarms(): void {
           lastChecked: state.lastChecked,
         });
       }
+    } else if (alarm.name === ALARMS.AGENDA_SCAN) {
+      await scanAndNotify();
     }
   });
 }

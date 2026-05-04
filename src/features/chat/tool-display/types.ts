@@ -16,6 +16,7 @@ export type PhaseAware<T> = T | PhaseMap<T>;
 export type IconName = string;
 export type ColorToken =
   | 'blue'
+  | 'sky'
   | 'emerald'
   | 'amber'
   | 'red'
@@ -34,7 +35,8 @@ export type TransformName =
   | 'lowercase'
   | 'uppercase'
   | 'formatImageDimensions'
-  | 'formatBytes';
+  | 'formatBytes'
+  | 'browserCategoryIcon';
 
 export interface InfoSpec {
   path: string;
@@ -44,7 +46,15 @@ export interface InfoSpec {
 
 export interface InlineConfig {
   hidden?: PhaseAware<boolean>;
-  icon?: PhaseAware<IconName>;
+  /**
+   * Lucide icon name OR an `InfoSpec` whose path resolves to either:
+   *   - a lucide icon name (string passed through `transforms` is fine, e.g.
+   *     `browserCategoryIcon` mapping `args.category` → lucide name)
+   *   - a URL (http(s):// or data:) — rendered as an `<img>` instead of a
+   *     lucide component. Useful for favicons.
+   * If the resolution returns nothing, falls back to the phase-default icon.
+   */
+  icon?: PhaseAware<IconName | InfoSpec>;
   prefix?: PhaseAware<string>;
   /**
    * Default: titleCase(toolName). Pass `''` to suppress, a literal string to
@@ -57,6 +67,11 @@ export interface InlineConfig {
   color?: PhaseAware<ColorToken>;
   isMultiline?: boolean;
   spinIcon?: PhaseAware<boolean>;
+  /**
+   * Shimmer the label while phase is `started`. Default: true. Set false to
+   * suppress (e.g. very fast tools where the shimmer is overkill).
+   */
+  shimmerOnRunning?: boolean;
 }
 
 export interface ArgsConfig {
@@ -68,6 +83,13 @@ export interface ResultsConfig {
   hidden?: PhaseAware<boolean>;
   displayType?: 'json' | 'key-value' | 'values-only' | 'custom';
   keysInfo?: KeyDisplay[];
+  /**
+   * When true (and phase is `completed`), render the result content directly
+   * under the row — visible by default, no click required. The click-to-expand
+   * still works for inspecting args + raw JSON. Use for tools whose result
+   * payload IS the point (screenshots, charts).
+   */
+  alwaysShow?: boolean;
 }
 
 export type FieldComponentName =

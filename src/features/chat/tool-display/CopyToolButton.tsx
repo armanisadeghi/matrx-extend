@@ -26,16 +26,26 @@ export interface ToolCopyData {
 /**
  * Build the JSON payload that gets written to the clipboard. Stable shape so
  * downstream tools (the user pasting into a bug report, an LLM, etc.) can
- * rely on it. Omits undefined fields.
+ * rely on it.
+ *
+ * `args` and `result` are ALWAYS present (defaulted to null when missing) so
+ * the user can tell the difference between "no input recorded" and "input
+ * happened to be empty". Other fields are only included when meaningful.
  */
 function buildPayload(data: ToolCopyData): string {
   const payload: Record<string, unknown> = {
     tool: data.toolName,
     phase: data.phase,
+    args: data.args ?? null,
+    result: data.result ?? null,
   };
-  if (data.args !== undefined) payload.args = data.args;
-  if (data.result !== undefined) payload.result = data.result;
-  if (data.message !== undefined) payload.error = data.message;
+  if (data.message !== undefined) {
+    // `message` is a phase-shared field — "Executing X" while running, "Done"
+    // on success, the failure reason on error. Only treat it as an `error`
+    // when the phase actually failed; otherwise emit it as `message`.
+    if (data.phase === 'error') payload.error = data.message;
+    else payload.message = data.message;
+  }
   if (data.endedAt !== undefined) payload.duration_ms = Math.max(0, data.endedAt - data.startedAt);
   if (data.callId !== undefined) payload.callId = data.callId;
   try {

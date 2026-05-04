@@ -55,4 +55,5 @@ export const ALARMS = {
   TOKEN_REFRESH: 'matrx.alarm.tokenRefresh',
   DESKTOP_PROBE: 'matrx.alarm.desktopProbe',
   SCRAPE_QUEUE_POLL: 'matrx.alarm.scrapeQueuePoll',
+  AGENDA_SCAN: 'matrx.alarm.agendaScan',
 } as const;

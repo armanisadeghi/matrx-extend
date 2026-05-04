@@ -27,10 +27,13 @@ import { log } from '@/lib/debug/log';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
 import { prewarmReadPageCache } from '@/lib/tools/handlers/page-refs';
 import type { ContextBuildInputs } from './types';
+import { checkAuthState } from './check-auth-state';
 import { checkPageReady } from './check-page-ready';
 import { detectEmail, isEmailUrl } from './detect-email';
 import { detectPullRequest, isPullRequestUrl } from './detect-pull-request';
+import { detectTicket, isTicketUrl } from './detect-ticket';
 import { discoverFormsForContext } from './discover-forms';
+import { getDomainMemoForUrl } from './domain-memo';
 import { probeActivePage } from './probe';
 
 export async function buildContextV2Bundled(
@@ -93,9 +96,13 @@ export async function buildContextV2Bundled(
         prewarmReadPageCache(tabId),
         isPullRequestUrl(url) ? detectPullRequest(tabId, url) : Promise.resolve(null),
         isEmailUrl(url) ? detectEmail(tabId, url) : Promise.resolve(null),
+        isTicketUrl(url) ? detectTicket(tabId, url) : Promise.resolve(null),
+        url ? checkAuthState(tabId, url) : Promise.resolve(null),
+        url ? getDomainMemoForUrl(url) : Promise.resolve(null),
       ])
-    : Promise.resolve([null, null, null, undefined, null, null] as const);
-  const [probe, forms, pageReady, , pullRequest, email] = await tasks;
+    : Promise.resolve([null, null, null, undefined, null, null, null, null, null] as const);
+  const [probe, forms, pageReady, , pullRequest, email, ticket, authState, domainMemo] =
+    await tasks;
 
   // Scrape lookup. Prefer manual capture, then auto-background.
   const activeUrl = probe?.url ?? tabMeta?.url ?? null;
@@ -305,6 +312,12 @@ export async function buildContextV2Bundled(
     ctx.pull_request = pullRequest;
   }
 
+  // ticket: GitHub Issues / Linear / Jira — completes the dev trifecta
+  // alongside pull_request.
+  if (ticket) {
+    ctx.ticket = ticket;
+  }
+
   // email: Gmail / Outlook / Hey / Superhuman. Either inbox-list or
   // single-thread shape, distinguished by the bundle's `shape` field.
   if (email) {
@@ -313,6 +326,20 @@ export async function buildContextV2Bundled(
     } else {
       ctx.email_thread = email;
     }
+  }
+
+  // auth_state: cross-cutting "are you signed in here?" signal — saves a
+  // turn every session by letting the agent check the sidebar instead of
+  // navigating. Always attached when we have a URL (works on every page).
+  if (authState) {
+    ctx.auth_state = authState;
+  }
+
+  // domain_memo: per-domain memory written via `remember_for_domain`.
+  // Surfaces the agent's accumulated knowledge about this domain so it
+  // doesn't re-learn the same lessons every session.
+  if (domainMemo) {
+    ctx.domain_memo = domainMemo;
   }
 
   // ── Capture history (recognition row from Supabase) ──────────────────
