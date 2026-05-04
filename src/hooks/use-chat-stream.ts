@@ -230,10 +230,10 @@ export function useChatStream() {
   }, []);
 
   const sendMessage = useCallback(
-    async (text: string, opts: SendOptions = {}) => {
+    async (text: string, opts: SendOptions = {}): Promise<string | null> => {
       if (!opts.agentId) {
         log.error("stream", "sendMessage called without agentId");
-        return;
+        return null;
       }
       const userMsg: ChatMessage = {
         id: newId("user"),
@@ -396,6 +396,7 @@ export function useChatStream() {
         agentName: opts.agentName ?? null,
         permissionMode,
       });
+      return runId;
     },
     [],
   );

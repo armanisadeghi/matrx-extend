@@ -302,14 +302,19 @@ export const get_element_at_point: ToolHandler<ElementAtPointArgs, unknown> = {
         }
         const el = document.elementFromPoint(x, y);
         if (!el) return { ok: false, reason: 'No element at that point' };
+        const isPassword =
+          el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
         const attrs: Record<string, string> = {};
-        for (const a of Array.from(el.attributes)) attrs[a.name] = a.value;
+        for (const a of Array.from(el.attributes)) {
+          attrs[a.name] = isPassword && a.name === 'value' ? '***' : a.value;
+        }
         return {
           ok: true,
           tag: el.tagName.toLowerCase(),
           text: ((el as HTMLElement).innerText ?? '').slice(0, 200),
           selector: uniqueSelector(el),
           attrs,
+          ...(isPassword ? { masked: true } : {}),
         };
       },
       args: [args.x, args.y],
@@ -335,8 +340,12 @@ export const inspect_element: ToolHandler<InspectArgs, unknown> = {
       func: (selector: string) => {
         const el = document.querySelector(selector) as HTMLElement | null;
         if (!el) return { ok: false, reason: `No element at ${selector}` };
+        const isPassword =
+          el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
         const attrs: Record<string, string> = {};
-        for (const a of Array.from(el.attributes)) attrs[a.name] = a.value;
+        for (const a of Array.from(el.attributes)) {
+          attrs[a.name] = isPassword && a.name === 'value' ? '***' : a.value;
+        }
         const cs = window.getComputedStyle(el);
         const rect = el.getBoundingClientRect();
         const ancestors: Array<{ tag: string; classes: string[]; id: string | null }> = [];

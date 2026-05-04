@@ -12,11 +12,13 @@ import { SettingsView } from '@/features/settings/SettingsView';
 import { ShowcaseView } from '@/features/showcase/ShowcaseView';
 import { TasksView } from '@/features/tasks/TasksView';
 import { ToolsView } from '@/features/tools/ToolsView';
+import { useAgendaListener } from '@/hooks/use-agenda-listener';
 import { useAuth } from '@/hooks/use-auth';
 import { useAutoExtract } from '@/hooks/use-auto-extract';
 import { useAutoScrape } from '@/hooks/use-auto-scrape';
 import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
+import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import {
   Bug,
   Calendar,
@@ -35,6 +37,8 @@ export function App() {
   const theme = useSettingsStore((s) => s.theme);
   const { isAdmin } = useAuth();
   const errorCount = useDebugStore((s) => s.events.filter((e) => e.level === 'error').length);
+  const tab = useSidepanelTabStore((s) => s.tab);
+  const setTab = useSidepanelTabStore((s) => s.setTab);
 
   // Mount ONCE: watches active-tab url and auto-runs every saved pattern that
   // matches. Results land in useAutoExtractStore; DataView reads from there.
@@ -44,6 +48,19 @@ export function App() {
   // `scrapeAutoOnLoad` setting is enabled, fast-scrape it in the background
   // and stash in useAutoScrapeStore. The chat hook reads from there on send.
   useAutoScrape();
+
+  // Mount ONCE: listens for SW AGENDA_RUN_NOW broadcasts so auto-mode
+  // tasks fire immediately when the sidepanel is open, no click needed.
+  useAgendaListener();
+
+  // Once-per-mount identity log. Surfaces the runtime extension id +
+  // redirect URI in the debug log so any ID drift is visible BEFORE the
+  // user clicks Sign in. See .research/v0.1.4-auth-incident.md for why.
+  useEffect(() => {
+    void import('@/lib/auth/identity').then(({ logExtensionIdentityOnce }) => {
+      logExtensionIdentityOnce();
+    });
+  }, []);
 
   useEffect(() => {
     const apply = () => {
@@ -63,7 +80,11 @@ export function App() {
     <TooltipProvider delayDuration={150}>
       <div className="flex h-full flex-col bg-background text-foreground">
         <AuthGate>
-          <Tabs defaultValue="chat" className="flex flex-1 flex-col min-h-0">
+          <Tabs
+            value={tab}
+            onValueChange={(v) => setTab(v as typeof tab)}
+            className="flex flex-1 flex-col min-h-0"
+          >
             <div className="flex shrink-0 items-center gap-1 px-2 py-1.5">
               <TabsList className="flex flex-1 justify-start gap-0.5 bg-transparent p-0">
                 <TabsTrigger value="chat" className="size-7 p-0" title="Chat">

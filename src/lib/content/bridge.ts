@@ -35,6 +35,21 @@ declare global {
   }
 }
 
+// chrome.runtime.sendMessage throws *synchronously* when the extension
+// context is gone (dev reload, update, disable). The returned-promise
+// .catch() never runs in that case, so unguarded calls escape as
+// "Uncaught Error: Extension context invalidated" — especially loud on
+// SPAs (Gmail) that fire constant history/scroll events into orphaned
+// content scripts. chrome.runtime?.id is undefined once invalidated.
+const safeSend = (env: Envelope): void => {
+  try {
+    if (!chrome.runtime?.id) return;
+    chrome.runtime.sendMessage(env).catch(() => undefined);
+  } catch {
+    // orphaned content script — nothing to do
+  }
+};
+
 export function mountContentBridge(_ctx: ContentCtx): void {
   // Guard against double-mounting. Without this, programmatic re-injection
   // (a likely future fallback for "Receiving end does not exist") would
@@ -68,7 +83,7 @@ export function mountContentBridge(_ctx: ContentCtx): void {
           viewport: window.innerHeight,
         },
       };
-      chrome.runtime.sendMessage(env).catch(() => undefined);
+      safeSend(env);
     });
   };
   const enableScrollEmit = () => {
@@ -122,7 +137,7 @@ export function mountContentBridge(_ctx: ContentCtx): void {
       kind: CHANNELS.PAGE_NAVIGATED,
       payload: { url: location.href },
     };
-    chrome.runtime.sendMessage(env).catch(() => undefined);
+    safeSend(env);
   };
 
   const origPush = history.pushState;

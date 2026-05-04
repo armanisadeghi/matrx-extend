@@ -1,0 +1,743 @@
+{
+  "tools": [
+    {
+      "name": "read_page",
+      "description": "Get an accessibility-tree representation of the page with stable element reference IDs (e.g. ref_1) usable by other tools. Returns all elements by default. If output exceeds max_chars, narrow with ref_id or reduce depth.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab to read from."
+          },
+          "depth": {
+            "type": "number",
+            "description": "Max tree depth to traverse.",
+            "default": 15
+          },
+          "filter": {
+            "type": "string",
+            "enum": ["interactive", "all"],
+            "description": "'interactive' returns only buttons/links/inputs; 'all' returns everything.",
+            "default": "all"
+          },
+          "ref_id": {
+            "type": "string",
+            "description": "Focus on this element and its descendants only."
+          },
+          "max_chars": {
+            "type": "number",
+            "description": "Output character cap.",
+            "default": 50000
+          }
+        },
+        "required": ["tabId"]
+      }
+    },
+    {
+      "name": "find",
+      "description": "Locate elements by natural-language description (e.g. 'search bar', 'add to cart button'). Returns up to 20 matches with reference IDs. Use a more specific query if too many results.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab to search in."
+          },
+          "query": {
+            "type": "string",
+            "description": "Natural-language description of the target element."
+          }
+        },
+        "required": ["tabId", "query"]
+      }
+    },
+    {
+      "name": "get_page_text",
+      "description": "Extract readable text content from a page, prioritizing article body. Use for long-form reading instead of read_page when full DOM is unnecessary.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab to extract text from."
+          },
+          "max_chars": {
+            "type": "number",
+            "description": "Output character cap.",
+            "default": 50000
+          }
+        },
+        "required": ["tabId"]
+      }
+    },
+    {
+      "name": "computer",
+      "description": "Mouse, keyboard, and screenshot interactions. Prefer 'ref' over 'coordinate' when targeting elements; coordinates survive poorly across scrolls and layout changes. Some fields are required only for specific actions (see field descriptions).",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab to act on."
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "left_click",
+              "right_click",
+              "double_click",
+              "triple_click",
+              "type",
+              "key",
+              "scroll",
+              "hover",
+              "screenshot",
+              "wait",
+              "left_click_drag",
+              "zoom",
+              "scroll_to"
+            ],
+            "description": "Action to perform."
+          },
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "[x, y] in viewport pixels. Required for click/hover/scroll/drag end position when no 'ref'."
+          },
+          "ref": {
+            "type": "string",
+            "description": "Element reference from read_page/find. Alternative to coordinate for click/hover. Required for scroll_to."
+          },
+          "text": {
+            "type": "string",
+            "description": "Required for 'type' (text to type) and 'key' (e.g. 'Enter', 'cmd+a', space-separated for sequences)."
+          },
+          "repeat": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 1,
+            "description": "Repeat count for 'key' action."
+          },
+          "modifiers": {
+            "type": "string",
+            "description": "Modifier keys for clicks, e.g. 'ctrl', 'shift', 'cmd+alt'."
+          },
+          "scroll_direction": {
+            "type": "string",
+            "enum": ["up", "down", "left", "right"],
+            "description": "Required for 'scroll'."
+          },
+          "scroll_amount": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 3,
+            "description": "Scroll wheel ticks."
+          },
+          "start_coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "[x, y] start point. Required for 'left_click_drag'."
+          },
+          "duration": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10,
+            "description": "Seconds. Required for 'wait'."
+          },
+          "region": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 4,
+            "maxItems": 4,
+            "description": "[x0, y0, x1, y1] rectangle. Required for 'zoom'."
+          }
+        },
+        "required": ["tabId", "action"]
+      }
+    },
+    {
+      "name": "form_input",
+      "description": "Set the value of a form element by reference. Use string for text inputs, boolean for checkboxes, value or visible text for selects.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab containing the input."
+          },
+          "ref": {
+            "type": "string",
+            "description": "Element reference from read_page/find."
+          },
+          "value": {
+            "type": ["string", "number", "boolean"],
+            "description": "Value to set. Type depends on input kind."
+          }
+        },
+        "required": ["tabId", "ref", "value"]
+      }
+    },
+    {
+      "name": "navigate",
+      "description": "Navigate a tab to a URL, or move through history with 'back'/'forward'. Protocol defaults to https:// if omitted.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab to navigate."
+          },
+          "url": {
+            "type": "string",
+            "description": "Target URL, or 'back' / 'forward'."
+          },
+          "force": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, discard unsaved changes when a 'Leave site?' dialog appears."
+          }
+        },
+        "required": ["tabId", "url"]
+      }
+    },
+    {
+      "name": "tabs_context",
+      "description": "List all tabs in the current group with their tabId, title, and URL. Call when no valid tabId is known.",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "tabs_create",
+      "description": "Create a new empty tab in the current group and return its tabId.",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "browser_batch",
+      "description": "Execute a sequence of tool calls in one round trip. Runs sequentially, stops on first error. Use for predictable multi-step flows (click → type → key). Cannot be nested.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "actions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Tool name to invoke."
+                },
+                "input": {
+                  "type": "object",
+                  "description": "Exact input object for that tool."
+                }
+              },
+              "required": ["name", "input"]
+            }
+          }
+        },
+        "required": ["actions"]
+      }
+    },
+    {
+      "name": "file_upload",
+      "description": "Upload local files to a <input type='file'> element by reference. Do NOT click file inputs — that opens a native picker the agent cannot see.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab containing the file input."
+          },
+          "ref": {
+            "type": "string",
+            "description": "Reference of the file input element."
+          },
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "description": "Absolute local file paths."
+          }
+        },
+        "required": ["tabId", "ref", "paths"]
+      }
+    },
+    {
+      "name": "upload_image",
+      "description": "Upload a previously-captured screenshot or user-provided image to a file input (via ref) or drop target (via coordinate). Provide ref OR coordinate, not both.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Target tab."
+          },
+          "imageId": {
+            "type": "string",
+            "description": "ID of a prior screenshot or uploaded image."
+          },
+          "ref": {
+            "type": "string",
+            "description": "Target element reference (use for hidden file inputs)."
+          },
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "[x, y] drop target for visible drag-and-drop zones."
+          },
+          "filename": {
+            "type": "string",
+            "default": "image.png",
+            "description": "Filename for the uploaded file."
+          }
+        },
+        "required": ["tabId", "imageId"]
+      }
+    },
+    {
+      "name": "read_console_messages",
+      "description": "Read browser console messages (log/warn/error) from a tab. Always pass a 'pattern' to filter — unfiltered output is usually overwhelming.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab to read from."
+          },
+          "pattern": {
+            "type": "string",
+            "description": "Regex filter (e.g. 'error|warning')."
+          },
+          "onlyErrors": {
+            "type": "boolean",
+            "default": false,
+            "description": "Errors and exceptions only."
+          },
+          "limit": {
+            "type": "number",
+            "default": 100,
+            "description": "Max messages returned."
+          },
+          "clear": {
+            "type": "boolean",
+            "default": false,
+            "description": "Clear after reading to avoid duplicates next call."
+          }
+        },
+        "required": ["tabId"]
+      }
+    },
+    {
+      "name": "read_network_requests",
+      "description": "Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cross-domain navigation. Filter with urlPattern to keep output manageable.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab to read from."
+          },
+          "urlPattern": {
+            "type": "string",
+            "description": "Substring filter (e.g. '/api/', 'example.com')."
+          },
+          "limit": {
+            "type": "number",
+            "default": 100,
+            "description": "Max requests returned."
+          },
+          "clear": {
+            "type": "boolean",
+            "default": false,
+            "description": "Clear after reading."
+          }
+        },
+        "required": ["tabId"]
+      }
+    },
+    {
+      "name": "javascript_tool",
+      "description": "Evaluate JavaScript in the page context. Returns the value of the last expression — do NOT use 'return' at top level. Use sparingly; prefer DOM tools when possible.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab to execute in."
+          },
+          "action": {
+            "type": "string",
+            "const": "javascript_exec",
+            "description": "Discriminator; must be 'javascript_exec'."
+          },
+          "text": {
+            "type": "string",
+            "description": "JavaScript source. Last expression is returned."
+          }
+        },
+        "required": ["tabId", "action", "text"]
+      }
+    },
+    {
+      "name": "resize_window",
+      "description": "Resize the browser window containing a tab. Useful for responsive testing.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab whose window to resize."
+          },
+          "width": {
+            "type": "number",
+            "description": "Target width in pixels."
+          },
+          "height": {
+            "type": "number",
+            "description": "Target height in pixels."
+          }
+        },
+        "required": ["tabId", "width", "height"]
+      }
+    },
+    {
+      "name": "tabs",
+      "description": "Manage browser tabs. Actions: 'list' (returns all tabs with IDs/titles/URLs — call when you don't have a tabId), 'create' (opens a new empty tab and returns its ID), 'close' (closes a tab by ID), 'switch' (brings a tab to the foreground so the user sees it), 'reload' (refreshes a tab). tabId is required for close/switch/reload.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["list", "create", "close", "switch", "reload"],
+            "description": "Tab operation to perform."
+          },
+          "tabId": {
+            "type": "number",
+            "description": "Target tab. Required for close, switch, reload."
+          }
+        },
+        "required": ["action"]
+      }
+    },
+    {
+      "name": "update_plan",
+      "description": "Write or revise the plan for the current task and surface it to the user before executing. Use at the start of any non-trivial multi-step task, and again whenever the plan materially changes. Listed domains become approved for the session when the user accepts.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "approach": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "description": "Ordered, concise steps. Aim for 3–7."
+          },
+          "domains": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Domains the plan will visit, e.g. ['github.com', 'stackoverflow.com']."
+          }
+        },
+        "required": ["approach", "domains"]
+      }
+    },
+    {
+      "name": "ask_user",
+      "description": "Pause and ask the user a question when input is needed to proceed (ambiguity, missing info, required confirmation). Use 'confirm' for yes/no, 'choice' for a fixed set of options, 'text' for free-form input. Prefer this over guessing on destructive or sensitive actions.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "description": "The question to show the user."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["confirm", "choice", "text"],
+            "description": "Response type. Default 'text'."
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Choices for type='choice'. Ignored otherwise."
+          },
+          "context": {
+            "type": "string",
+            "description": "Optional one-line context for why you're asking."
+          }
+        },
+        "required": ["question"]
+      }
+    },
+    {
+      "name": "notify_user",
+      "description": "Send a one-way status update to the user without pausing for a response. Use sparingly for milestones in long tasks. Do NOT use to ask questions — use ask_user for that.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "The notification text."
+          },
+          "level": {
+            "type": "string",
+            "enum": ["info", "success", "warning", "error"],
+            "description": "Severity. Default 'info'."
+          }
+        },
+        "required": ["message"]
+      }
+    },
+    {
+      "name": "find_text_on_page",
+      "description": "Literal Ctrl+F-style text search within a tab. Returns matches with surrounding context and refs to the containing elements. Use this instead of get_page_text when you only need to know if/where specific text appears.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab to search."
+          },
+          "query": {
+            "type": "string",
+            "description": "Literal text to find."
+          },
+          "case_sensitive": {
+            "type": "boolean",
+            "description": "Default false."
+          },
+          "regex": {
+            "type": "boolean",
+            "description": "Treat query as a regex. Default false."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Max matches to return. Default 50."
+          }
+        },
+        "required": ["tabId", "query"]
+      }
+    },
+    {
+      "name": "wait_for",
+      "description": "Poll until a condition is met or timeout. Use after navigation or actions that trigger async loads — far more reliable than fixed sleeps. Conditions: 'element' (ref or selector exists and is visible), 'text' (text appears anywhere on page), 'url' (tab URL matches substring or regex), 'network_idle' (no in-flight requests for ~500ms).",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab to watch."
+          },
+          "condition": {
+            "type": "string",
+            "enum": ["element", "text", "url", "network_idle"],
+            "description": "What to wait for."
+          },
+          "target": {
+            "type": "string",
+            "description": "Element ref/selector, text string, or URL pattern. Required for element/text/url."
+          },
+          "timeout_ms": {
+            "type": "number",
+            "description": "Max wait in milliseconds. Default 10000."
+          }
+        },
+        "required": ["tabId", "condition"]
+      }
+    },
+    {
+      "name": "downloads",
+      "description": "Manage file downloads triggered by the page or agent. Actions: 'list' (returns pending/completed downloads with IDs, filenames, sizes, sources), 'confirm' (approves a pending download by ID — required before any file is written), 'cancel' (aborts a pending download). Downloads must be confirmed by the user; the agent should surface them via ask_user before calling 'confirm'.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["list", "confirm", "cancel"],
+            "description": "Download operation."
+          },
+          "downloadId": {
+            "type": "string",
+            "description": "Required for confirm and cancel."
+          }
+        },
+        "required": ["action"]
+      }
+    },
+    {
+      "name": "get_element_details",
+      "description": "Deep inspection of a single element by ref: full attribute set, computed styles, bounding box, visibility, and innerHTML. Use when read_page's summary isn't enough — e.g. reading data-* attributes or checking if something is hidden by CSS. Avoids needing javascript_tool for routine introspection.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab containing the element."
+          },
+          "ref": {
+            "type": "string",
+            "description": "Element reference ID."
+          },
+          "include_html": {
+            "type": "boolean",
+            "description": "Include innerHTML. Default false (can be large)."
+          },
+          "include_styles": {
+            "type": "boolean",
+            "description": "Include computed styles. Default false."
+          }
+        },
+        "required": ["tabId", "ref"]
+      }
+    },
+    {
+      "name": "memory",
+      "description": "Session-scoped scratchpad for stashing structured notes across turns without burning context tokens. Actions: 'set' (write a value to a key), 'get' (read by key), 'list' (all keys), 'delete' (remove a key). Values are stringified; keep them small. Cleared at session end.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["set", "get", "list", "delete"],
+            "description": "Memory operation."
+          },
+          "key": {
+            "type": "string",
+            "description": "Required for set, get, delete."
+          },
+          "value": {
+            "type": "string",
+            "description": "Required for set. Stringify objects before passing."
+          }
+        },
+        "required": ["action"]
+      }
+    },
+    {
+      "name": "read_pdf",
+      "description": "Extract text and structure from a PDF loaded in a browser tab. Use when the tab URL ends in .pdf or read_page returns no useful content. Returns text by page with optional page range.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "tabId": {
+            "type": "number",
+            "description": "Tab displaying the PDF."
+          },
+          "page_start": {
+            "type": "number",
+            "description": "First page (1-indexed). Default 1."
+          },
+          "page_end": {
+            "type": "number",
+            "description": "Last page (1-indexed). Default: last page."
+          },
+          "max_chars": {
+            "type": "number",
+            "description": "Output cap. Default 50000."
+          }
+        },
+        "required": ["tabId"]
+      }
+    },
+    {
+      "name": "gif_creator",
+      "description": "Record browser actions and export as an animated GIF. Actions: 'start_recording', 'stop_recording', 'export' (generates and either downloads or drops onto a page element), 'clear' (discard frames). Take a screenshot right after start and right before stop to capture clean first/last frames.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["start_recording", "stop_recording", "export", "clear"],
+            "description": "Recording operation."
+          },
+          "tabId": {
+            "type": "number",
+            "description": "Tab whose group this applies to."
+          },
+          "download": {
+            "type": "boolean",
+            "description": "Download instead of drag-drop. For 'export' only."
+          },
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "[x, y] drop target. For 'export' when download is false."
+          },
+          "filename": {
+            "type": "string",
+            "description": "Output filename. For 'export' only."
+          },
+          "options": {
+            "type": "object",
+            "description": "Optional GIF rendering toggles. For 'export' only.",
+            "properties": {
+              "showClickIndicators": {
+                "type": "boolean",
+                "description": "Default true."
+              },
+              "showDragPaths": {
+                "type": "boolean",
+                "description": "Default true."
+              },
+              "showActionLabels": {
+                "type": "boolean",
+                "description": "Default true."
+              },
+              "showProgressBar": {
+                "type": "boolean",
+                "description": "Default true."
+              },
+              "showWatermark": {
+                "type": "boolean",
+                "description": "Default true."
+              },
+              "quality": {
+                "type": "number",
+                "minimum": 1,
+                "maximum": 30,
+                "description": "1=best/slowest, 30=worst/fastest. Default 10."
+              }
+            }
+          }
+        },
+        "required": ["action", "tabId"]
+      }
+    }
+  ]
+}

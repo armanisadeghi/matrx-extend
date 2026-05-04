@@ -105,6 +105,8 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
             const type =
               tag === 'input' ? (el as HTMLInputElement).type : tag === 'select' ? 'select' : tag;
             let value: string | boolean | string[] | null = null;
+            let masked = false;
+            let valueLength: number | null = null;
             if (tag === 'select') {
               const sel = el as HTMLSelectElement;
               value = sel.multiple
@@ -112,6 +114,12 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
                 : sel.value;
             } else if (type === 'checkbox' || type === 'radio') {
               value = (el as HTMLInputElement).checked;
+            } else if (type === 'password') {
+              // Never echo password values — autofill may have populated this.
+              const raw = (el as HTMLInputElement).value ?? '';
+              value = raw ? '***' : '';
+              valueLength = raw.length;
+              masked = true;
             } else if ('value' in el) {
               value = (el as HTMLInputElement | HTMLTextAreaElement).value ?? null;
             } else if ((el as HTMLElement).isContentEditable) {
@@ -123,6 +131,7 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
               name: el.getAttribute('name'),
               id: el.getAttribute('id'),
               value,
+              ...(masked ? { masked: true, value_length: valueLength } : {}),
               label: labelFor(el),
               placeholder: el.getAttribute('placeholder'),
               required: (el as HTMLInputElement).required ?? null,

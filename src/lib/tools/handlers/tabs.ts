@@ -59,7 +59,10 @@ export const list_open_tabs: ToolHandler<ListTabsArgs, unknown> = {
         active: t.active,
         pinned: t.pinned,
         status: t.status,
-        favicon_url: t.favIconUrl,
+        // The agent is text-only; data: URI favicons (~600 chars each) are
+        // pure noise and bloat the response massively on tab-heavy users.
+        // Keep http(s) favicons since they're short and occasionally useful.
+        favicon_url: t.favIconUrl?.startsWith('data:') ? null : t.favIconUrl,
         muted: t.mutedInfo?.muted ?? false,
         audible: t.audible ?? false,
         incognito: t.incognito,
@@ -124,7 +127,7 @@ export const get_tab_info: ToolHandler<GetTabInfoArgs, unknown> = {
         active: t.active,
         pinned: t.pinned,
         status: t.status,
-        favicon_url: t.favIconUrl,
+        favicon_url: t.favIconUrl?.startsWith('data:') ? null : t.favIconUrl,
         muted: t.mutedInfo?.muted ?? false,
         audible: t.audible ?? false,
         incognito: t.incognito,
@@ -452,6 +455,32 @@ async function activeTabId(): Promise<number | null> {
   return tab?.id ?? null;
 }
 
+const ResizeWindowArgs = z.object({
+  tab_id: z.number().int().optional(),
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+});
+type ResizeWindowArgs = z.infer<typeof ResizeWindowArgs>;
+
+export const resize_window: ToolHandler<ResizeWindowArgs, unknown> = {
+  name: 'resize_window',
+  tier: 'action',
+  description:
+    "Resize the browser window containing a tab. Useful for responsive testing. If tab_id is omitted, resizes the active tab's window. Note: this changes the OS window size, which in turn changes the viewport.",
+  argsSchema: ResizeWindowArgs,
+  run: async (args) => {
+    const tabId = args.tab_id ?? (await activeTabId());
+    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    const t = await chrome.tabs.get(tabId);
+    if (t.windowId == null) return { ok: false, reason: 'No window for tab' };
+    const win = await chrome.windows.update(t.windowId, {
+      width: args.width,
+      height: args.height,
+    });
+    return { ok: true, window_id: win.id, width: win.width, height: win.height };
+  },
+};
+
 export const tab_read_handlers = [list_open_tabs, get_tab_groups, get_tab_info];
 
 export const tab_action_handlers = [
@@ -466,6 +495,7 @@ export const tab_action_handlers = [
   go_forward,
   set_tab_zoom,
   move_tab,
+  resize_window,
   create_tab_group,
   add_tabs_to_group,
   remove_tabs_from_group,

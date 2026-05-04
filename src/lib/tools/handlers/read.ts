@@ -324,6 +324,8 @@ export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
           const total = list.length;
           for (let i = 0; i < Math.min(list.length, limit); i++) {
             const el = list[i] as HTMLElement;
+            const isPassword =
+              el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
             const item: Record<string, unknown> = {
               index: i,
               tag: el.tagName.toLowerCase(),
@@ -331,13 +333,19 @@ export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
             };
             if (attrs && attrs.length > 0) {
               const a: Record<string, string | null> = {};
-              for (const name of attrs) a[name] = el.getAttribute(name);
+              for (const name of attrs) {
+                const raw = el.getAttribute(name);
+                a[name] = isPassword && name === 'value' && raw ? '***' : raw;
+              }
               item.attrs = a;
             } else {
               const a: Record<string, string> = {};
-              for (const attr of Array.from(el.attributes)) a[attr.name] = attr.value;
+              for (const attr of Array.from(el.attributes)) {
+                a[attr.name] = isPassword && attr.name === 'value' ? '***' : attr.value;
+              }
               item.attrs = a;
             }
+            if (isPassword) item.masked = true;
             const rect = el.getBoundingClientRect();
             item.visible = rect.width > 0 && rect.height > 0;
             out.push(item);

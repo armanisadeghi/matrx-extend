@@ -15,6 +15,7 @@ import {
 import { setBackendEnv, setBackendOverride, useBackendConfig } from '@/config/backend';
 import type { BackendEnv } from '@/config/env';
 import { AdminAgentFlagsPanel } from '@/features/debug/AdminAgentFlagsPanel';
+import { ExtensionIdentityCard } from '@/features/debug/ExtensionIdentityCard';
 import { pingHealth } from '@/lib/api/routes/health';
 import {
   CONTEXT_SHAPE_STORAGE_KEY,
@@ -125,6 +126,12 @@ export function DebugView() {
   return (
     <div className="flex h-full flex-col">
       <div className="space-y-1.5 px-3 pt-1 pb-2">
+        {/*
+          Identity card first — when sign-in is broken, this is the answer.
+          Lives outside the AdminAgentFlagsPanel collapsible so it's visible
+          without an extra click.
+        */}
+        <ExtensionIdentityCard />
         <BackendSwitcher />
         <ContextShapeSwitcher />
         <AdminAgentFlagsPanel />

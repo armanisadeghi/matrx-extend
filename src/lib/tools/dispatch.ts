@@ -24,7 +24,8 @@ import {
   type OptionalPermission,
   hasOptionalPermissions,
 } from '@/lib/permissions/optional';
-import { lookup as lookupTool } from '@/lib/tools/registry';
+import { resolveToolName, suggestSimilar } from '@/lib/tools/aliases';
+import { allToolNames, lookup as lookupTool } from '@/lib/tools/registry';
 import type {
   AnyToolHandler,
   ConfirmResponse,
@@ -93,10 +94,20 @@ export function startToolDispatcher(opts: DispatchOptions): void {
       const toolArgs = ((data.data as { arguments?: unknown })?.arguments ?? {}) as unknown;
       if (!callId || !toolName) return { ack: true };
 
-      const handler = lookupTool(toolName);
+      // First try the literal name; then fall back to the alias map for
+      // legacy "browser_*" DB names and a few model-hallucinated shapes.
+      // See src/lib/tools/aliases.ts for the rationale.
+      let handler = lookupTool(toolName);
+      let resolvedName = toolName;
       if (!handler) {
-        log.warn('sw', `tool '${toolName}' not in registry — passing`, data);
-        return { ack: true };
+        const aliased = resolveToolName(toolName);
+        if (aliased !== toolName) {
+          handler = lookupTool(aliased);
+          if (handler) {
+            resolvedName = aliased;
+            log.info('sw', `tool alias '${toolName}' → '${aliased}'`);
+          }
+        }
       }
 
       const meta = runs.get(chunk.runId);
@@ -108,13 +119,52 @@ export function startToolDispatcher(opts: DispatchOptions): void {
         permissionMode: meta?.permissionMode ?? 'ask',
       };
 
+      if (!handler) {
+        // Surface a structured error back to the server so the model gets a
+        // useful next-turn signal. Silently passing leaves the server to
+        // synthesize "Browser session not found", which the agent can't act on.
+        const suggestions = suggestSimilar(toolName, allToolNames({ isAdmin: true }));
+        const hint = suggestions.length
+          ? ` Did you mean: ${suggestions.join(', ')}? Or call list_browser_tools to see what's available.`
+          : ' Call list_browser_tools to see what is available.';
+        log.warn('sw', `tool '${toolName}' not in registry`, { suggestions });
+        void postUnknownToolError(ctx, toolName, hint).catch((err) =>
+          log.error('sw', `failed to post unknown-tool error for ${toolName}`, err),
+        );
+        return { ack: true };
+      }
+
       // Fire-and-forget — do not block the chunk listener on this.
       void handleCall(handler, toolArgs, ctx, meta).catch((err) =>
-        log.error('sw', `tool dispatch crashed for ${toolName}`, err),
+        log.error('sw', `tool dispatch crashed for ${resolvedName}`, err),
       );
       return { ack: true };
     },
   );
+}
+
+async function postUnknownToolError(
+  ctx: ToolContext,
+  toolName: string,
+  hint: string,
+): Promise<void> {
+  if (!ctx.conversationId) return;
+  const message = `Tool '${toolName}' is not registered in this extension.${hint}`;
+  await postToolResults(ctx.conversationId, [
+    {
+      call_id: ctx.callId,
+      tool_name: toolName,
+      output: null,
+      is_error: true,
+      error_message: message,
+    },
+  ]);
+  broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+    callId: ctx.callId,
+    toolName,
+    phase: 'error',
+    message,
+  });
 }
 
 async function handleCall(

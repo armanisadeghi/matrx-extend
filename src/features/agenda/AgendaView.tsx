@@ -31,7 +31,9 @@ import {
   listMyTasks,
   updateTask,
 } from '@/lib/agenda/queries';
+import { isTaskRunning, runTask } from '@/lib/agenda/runner';
 import { log } from '@/lib/debug/log';
+import { useChatStream } from '@/hooks/use-chat-stream';
 import {
   Calendar,
   Clock,
@@ -51,6 +53,7 @@ export function AgendaView() {
   const [tasks, setTasks] = useState<AgendaTask[] | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [focusTaskId, setFocusTaskId] = useState<string | null>(null);
+  const { send } = useChatStream();
 
   const refresh = useCallback(async () => {
     const list = await listMyTasks();
@@ -67,6 +70,18 @@ export function AgendaView() {
       }
     });
   }, [refresh]);
+
+  // Auto-run focused task when its auth_mode is 'auto'. The SW notification
+  // click flow lands the user here with focus_task_id set; for ask-mode
+  // tasks we just highlight, for auto-mode we go.
+  useEffect(() => {
+    if (!focusTaskId || !tasks) return;
+    const task = tasks.find((t) => t.id === focusTaskId);
+    if (!task) return;
+    if (task.auth_mode === 'auto' && task.enabled && !isTaskRunning(task.id)) {
+      void runTask(task, send).then(() => void refresh());
+    }
+  }, [focusTaskId, tasks, send, refresh]);
 
   return (
     <div className="flex h-full flex-col">
@@ -114,6 +129,7 @@ export function AgendaView() {
                 task={task}
                 highlighted={task.id === focusTaskId}
                 onChanged={refresh}
+                send={send}
               />
             ))}
           </ul>
@@ -129,18 +145,22 @@ function TaskRow({
   task,
   highlighted,
   onChanged,
+  send,
 }: {
   task: AgendaTask;
   highlighted: boolean;
   onChanged: () => Promise<void>;
+  send: ReturnType<typeof useChatStream>['send'];
 }) {
   const [working, setWorking] = useState<'run' | 'toggle' | 'delete' | null>(null);
 
   const runNow = async () => {
     setWorking('run');
     try {
-      await updateTask(task.id, { next_due_at: new Date().toISOString() });
-      log.info('sys', `agenda: task "${task.title}" scheduled to fire on next scan`);
+      // Fires the task through the chat stream pipeline. Switches the
+      // sidepanel to the chat tab so the user sees it run.
+      await runTask(task, send);
+      log.info('sys', `agenda: "${task.title}" running`);
     } finally {
       setWorking(null);
       await onChanged();

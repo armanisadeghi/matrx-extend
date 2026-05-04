@@ -74,6 +74,9 @@ export const CHANNELS = {
   // Page recognition (content → SW)
   PAGE_NAVIGATED: 'page:navigated',
   PAGE_ALREADY_CAPTURED: 'page:already-captured',
+
+  // Agenda (SW → sidepanel)
+  AGENDA_RUN_NOW: 'agenda:run-now', // SW alarm fired an auto task; sidepanel should switch + run
 } as const;
 
 export type ChannelName = (typeof CHANNELS)[keyof typeof CHANNELS];

@@ -108,6 +108,7 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   go_forward: ['tabs'],
   set_tab_zoom: ['tabs'],
   move_tab: ['tabs'],
+  resize_window: ['tabs'],
   create_tab_group: ['tabs', 'tabGroups'],
   add_tabs_to_group: ['tabs', 'tabGroups'],
   remove_tabs_from_group: ['tabs', 'tabGroups'],

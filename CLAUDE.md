@@ -153,11 +153,25 @@ are also always-on so the agent can ask for any category by name.
 - **Chat** — current Assistant surface, ships read-only tools to agents
 - **Tasks** — research scrape queue, agent-driven mode
 - **Agenda** — multi-surface scheduled agent runs. Tasks stored in
-  Supabase (`agenda_task` + `agenda_run`). SW alarm scans every minute,
-  fires Chrome notifications for due tasks. Click notification → opens
-  sidepanel and focuses the task. Supports one-shot, interval, cron,
-  context-match, heartbeat triggers. v0 is notification-driven; auto
-  execution is v1. See [src/lib/agenda/](./src/lib/agenda/).
+  Supabase (`agenda_task` + `agenda_run`). SW alarm scans every minute.
+  Triggers: one-shot, interval, cron, context-match, heartbeat.
+  - **Ask mode**: SW fires Chrome notification → click opens sidepanel
+    + focuses task → user clicks Run-now.
+  - **Auto mode**: SW first attempts a sidepanel broadcast
+    (`AGENDA_RUN_NOW`). If sidepanel is open, runs immediately, no
+    click. If closed, falls back to notification.
+  - **Run-now button** (sidepanel) calls `runTask()` which switches the
+    sidepanel to chat, primes selectedAgentId + selectedConversationId,
+    then sends the task's prompt through the normal chat-stream
+    pipeline. Stream events are filtered by runId so a parallel manual
+    chat doesn't accidentally finish an agenda run row.
+  - **Default agent**: `443dd7ff-e7cc-47b8-907a-0a14834caa48`. Override
+    per task via `agent_id`.
+  - **Heartbeats**: persistent_conversation_id captured from the first
+    run's STREAM_OPENED, then reused on every subsequent run so the
+    agent keeps memory across pulses.
+  See [src/lib/agenda/](./src/lib/agenda/) and the schema in
+  [migrations/2026_05_03_agenda_v0.sql](./migrations/2026_05_03_agenda_v0.sql).
 - **Scrape** — manual page capture pipeline
 - **Data** — pattern picker + apply
 - **SEO** — audit + AI recommendations
@@ -418,6 +432,35 @@ extension changes needed when it lands.
   human-readable spec with example handler + Pydantic model.
 
 Regenerate both with `pnpm catalog:tools`.
+
+## ⚠️ Web Store identity gotcha (v0.1.4 incident)
+
+**The Chrome Web Store replaces the manifest's `key` field on upload with
+its own keypair.** Our local dev build uses the `key` in `wxt.config.ts`
+to produce ID `cihdmkcdjjckfhjpgoedmgfpoljebaml`; the published v0.1.4
+runs under the Store-assigned `hnfolienncfklkgmdjjmhhegglimlamg`. They
+are independent and will never converge.
+
+**Auth implication:** every `chrome.identity.getRedirectURL()` call
+returns `https://<install-id>.chromiumapp.org/`. Supabase rejects the
+authorize call when that URI isn't on its allowlist, with the
+near-instant error "Authorization page could not be loaded".
+
+**Required posture:**
+- `EXPECTED_EXTENSION_IDS` in [`src/config/identity.ts`](./src/config/identity.ts)
+  lists every install ID we expect to see (dev + Web Store + any future
+  beta channels).
+- The same list of `https://<id>.chromiumapp.org/` URIs must be registered
+  in **Supabase → Authentication → URL Configuration → Redirect URLs**.
+  These two lists are the same set; if they drift, sign-in dies.
+- `logExtensionIdentityOnce()` runs on every SW + sidepanel boot. Drift
+  surfaces as a `warn`-level `auth` log and as the red Debug-tab
+  identity card.
+- Adding a new build channel = ONE PR (add ID to the list) + ONE
+  Supabase config change (add the URI). Both must land before the new
+  channel ships to users.
+
+Full incident write-up: [`.research/v0.1.4-auth-incident.md`](./.research/v0.1.4-auth-incident.md).
 
 ## 📜 Conventions
 

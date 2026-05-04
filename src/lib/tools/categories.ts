@@ -233,6 +233,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   go_forward: 'tabs',
   set_tab_zoom: 'tabs',
   move_tab: 'tabs',
+  resize_window: 'tabs',
   create_tab_group: 'tabs',
   add_tabs_to_group: 'tabs',
   remove_tabs_from_group: 'tabs',

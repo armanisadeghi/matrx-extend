@@ -18,6 +18,8 @@
 
 import { ALARMS } from '@/config/env';
 import { log } from '@/lib/debug/log';
+import { send as msgSend } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import {
   type AgendaTask,
   type TriggerConfig,
@@ -53,11 +55,15 @@ export async function scanAndNotify(): Promise<void> {
 }
 
 async function fireDueTask(task: AgendaTask): Promise<void> {
-  if (task.auth_mode === 'ask') {
-    await notifyDue(task);
+  // Auto mode: try the live sidepanel first. If it acks, the run starts
+  // there immediately (no notification, no click). If nothing acks within
+  // a short window, fall back to a notification so the user still sees
+  // the task became due.
+  let routedToSidepanel = false;
+  if (task.auth_mode === 'auto') {
+    routedToSidepanel = await tryBroadcastRunNow(task.id);
+    if (!routedToSidepanel) await notifyDue(task);
   } else {
-    // auto mode — out of scope for v0; downgrade to ask for now.
-    log.info('sw', `agenda: task ${task.id} is auto-mode; v0 routes via notification`);
     await notifyDue(task);
   }
 
@@ -75,6 +81,24 @@ async function fireDueTask(task: AgendaTask): Promise<void> {
     // One-shot tasks auto-disable after firing.
     enabled: task.trigger_type === 'one-shot' ? false : task.enabled,
   });
+}
+
+/**
+ * Returns true if the sidepanel was open and ack'd the broadcast. Uses
+ * the request/response `send` so chrome.runtime.sendMessage rejects when
+ * no listener is registered (sidepanel closed) — that's our fallback
+ * signal to drop a notification instead.
+ */
+async function tryBroadcastRunNow(taskId: string): Promise<boolean> {
+  try {
+    const r = await msgSend<{ taskId: string }, { ack: true } | undefined>(
+      CHANNELS.AGENDA_RUN_NOW,
+      { taskId },
+    );
+    return !!r && (r as { ack?: boolean }).ack === true;
+  } catch {
+    return false;
+  }
 }
 
 async function notifyDue(task: AgendaTask): Promise<void> {

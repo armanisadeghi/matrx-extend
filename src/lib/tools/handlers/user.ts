@@ -12,34 +12,77 @@ import { CHANNELS } from '@/lib/messaging/schemas';
 import type { AskUserResponse, PendingAskUserRequest, ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
 
-const AskArgs = z.object({
-  question: z.string().min(1),
-  why: z.string().optional(),
-  timeout_ms: z
-    .number()
-    .int()
-    .positive()
-    .max(15 * 60_000)
-    .optional()
-    .default(5 * 60_000),
-});
+// Unified shape per canonical (browser_tools_canonical.json:ask_user).
+// `type` dispatches to the right card variant; old single-purpose
+// callers that only pass `{ question }` still work because type defaults
+// to 'text'. `context` is the canonical name for what we previously
+// called `why` — both accepted during migration.
+const AskArgs = z
+  .object({
+    question: z.string().min(1),
+    type: z.enum(['confirm', 'choice', 'text', 'secret']).optional().default('text'),
+    options: z.array(z.string().min(1)).optional(),
+    context: z.string().optional(),
+    why: z.string().optional(),
+    timeout_ms: z
+      .number()
+      .int()
+      .positive()
+      .max(15 * 60_000)
+      .optional()
+      .default(5 * 60_000),
+  })
+  .refine((v) => v.type !== 'choice' || (v.options && v.options.length >= 2), {
+    message: 'options (>=2) is required when type="choice"',
+  });
 type AskArgs = z.infer<typeof AskArgs>;
 
 export const ask_user: ToolHandler<AskArgs, unknown> = {
   name: 'ask_user',
   tier: 'ask-user',
   description:
-    'Ask the human a freeform question. Use this when you need information only the user has (e.g. "Which date should I book?"). Returns { answer } or { cancelled: true } if they dismiss.',
+    "Pause and ask the user a question when input is needed. type='confirm' for yes/no, 'choice' for a fixed set of options, 'text' for free-form input, 'secret' for sensitive input (passwords, API keys, MFA codes — masked in UI and storage). Prefer this over guessing on destructive or sensitive actions. For full control transfer, use request_user_takeover.",
   argsSchema: AskArgs,
-  run: async (args, ctx) =>
-    awaitUserAnswer(
-      {
-        callId: ctx.callId,
-        question: args.question,
-        why: args.why,
-      },
+  run: async (args, ctx) => {
+    const why = args.context ?? args.why;
+    if (args.type === 'confirm') {
+      return awaitUserAnswer(
+        {
+          callId: ctx.callId,
+          question: args.question,
+          choices: ['Yes', 'No'],
+          why,
+        },
+        args.timeout_ms,
+      );
+    }
+    if (args.type === 'choice') {
+      return awaitUserAnswer(
+        {
+          callId: ctx.callId,
+          question: args.question,
+          choices: args.options,
+          why,
+        },
+        args.timeout_ms,
+      );
+    }
+    if (args.type === 'secret') {
+      return awaitUserAnswer(
+        {
+          callId: ctx.callId,
+          question: args.question,
+          secret: true,
+          why,
+        },
+        args.timeout_ms,
+      );
+    }
+    return awaitUserAnswer(
+      { callId: ctx.callId, question: args.question, why },
       args.timeout_ms,
-    ),
+    );
+  },
 };
 
 const ChoiceArgs = z.object({

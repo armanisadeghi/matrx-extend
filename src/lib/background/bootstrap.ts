@@ -21,6 +21,7 @@ import {
   startAgendaScanner,
 } from '@/lib/agenda/scanner';
 import { refreshAccessToken } from '@/lib/auth/flow';
+import { logExtensionIdentityOnce } from '@/lib/auth/identity';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import { desktopRpc, probeDesktop, startDesktopProbeAlarm } from '@/lib/desktop/bridge';
 import { broadcast, on } from '@/lib/messaging/native';
@@ -37,6 +38,10 @@ export function bootstrapBackground(): void {
   bootstrapped = true;
   startDebugRelay();
   log.info('sw', 'background bootstrap (sync)');
+  // Emit the runtime identity bundle (extension id, redirect URI, OAuth
+  // client id) so any future ID drift is visible in the user's debug log
+  // before sign-in is ever attempted. See .research/v0.1.4-auth-incident.md.
+  logExtensionIdentityOnce();
 
   // ── 1. Register message handlers SYNCHRONOUSLY so they're ready immediately.
   registerHandlers();

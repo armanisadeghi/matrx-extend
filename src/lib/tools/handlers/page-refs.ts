@@ -315,8 +315,16 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
             if (el instanceof HTMLAnchorElement && el.href) entry.href = el.href;
             if (el instanceof HTMLInputElement) {
               entry.type = el.type;
-              entry.value = el.value;
-              if (el.type === 'checkbox' || el.type === 'radio') entry.checked = el.checked;
+              // Never echo password/secret values back to the agent — the field
+              // may be autofilled. Surface presence + length only.
+              if (el.type === 'password') {
+                entry.value = el.value ? '***' : '';
+                if (el.value) entry.value_length = el.value.length;
+                entry.masked = true;
+              } else {
+                entry.value = el.value;
+                if (el.type === 'checkbox' || el.type === 'radio') entry.checked = el.checked;
+              }
             }
             if (el instanceof HTMLSelectElement) {
               entry.value = el.value;
