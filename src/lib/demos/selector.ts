@@ -233,11 +233,12 @@ function cssPath(el: Element): string {
       parts.unshift(`${part}#${cssEscape(node.id)}`);
       break;
     }
-    const parent = node.parentElement;
+    const parent: Element | null = node.parentElement;
+    const current: Element = node;
     if (parent) {
-      const siblings = Array.from(parent.children).filter((c) => c.tagName === node!.tagName);
+      const siblings = Array.from(parent.children).filter((c) => c.tagName === current.tagName);
       if (siblings.length > 1) {
-        const idx = siblings.indexOf(node);
+        const idx = siblings.indexOf(current);
         part += `:nth-of-type(${idx + 1})`;
       }
     }

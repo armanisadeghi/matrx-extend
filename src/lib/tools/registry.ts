@@ -42,6 +42,7 @@ import { page_ref_handlers } from '@/lib/tools/handlers/page-refs';
 import { privileged_handlers, privileged_read_handlers } from '@/lib/tools/handlers/privileged';
 import { read_handlers } from '@/lib/tools/handlers/read';
 import { record_handlers } from '@/lib/tools/handlers/record';
+import { demo_handlers } from '@/lib/tools/handlers/demos';
 import { tab_action_handlers, tab_read_handlers } from '@/lib/tools/handlers/tabs';
 import { user_handlers } from '@/lib/tools/handlers/user';
 import { webmcp_handlers } from '@/lib/tools/handlers/webmcp';
@@ -94,6 +95,8 @@ const ALL: AnyToolHandler[] = [
   ...privileged_handlers,
   // ─── recording ─────────────────────────────────────────────────────────
   ...record_handlers,
+  // ─── demos (record & replay) ───────────────────────────────────────────
+  ...demo_handlers,
   // ─── canonical routers ─────────────────────────────────────────────────
   // Registered LAST so canonical names (`wait_for`, etc.) win over any
   // legacy handler with the same name — last-write-wins in BY_NAME.

@@ -49,6 +49,8 @@ export type ToolCategory =
   | 'ask'
   /** Privileged page modifications + desktop bridge. Always confirm. */
   | 'advanced'
+  /** Record / replay user demonstrations. */
+  | 'demos'
   /** Chrome DevTools Protocol — full-page screenshots, a11y tree, network capture, etc. (admin) */
   | 'debug'
   /** Cookies (admin). */
@@ -145,6 +147,13 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     description:
       'Privileged tools that always require user approval: arbitrary JavaScript execution, CSS injection, desktop-bridge commands. Use only when no purpose-built tool fits.',
     list_tool_name: 'list_advanced_tools',
+  },
+  demos: {
+    category: 'demos',
+    label: 'Demos (record & replay)',
+    description:
+      'Record a user demonstration of a workflow once, then replay it on demand with parameter substitution. Self-healing selector chain (matrx-ref → id → testid → ARIA → text → CSS path) survives DOM churn between recording and replay. Use to automate repetitive multi-step workflows: form filling, expense reports, recurring searches, login flows. Replay is privileged — it can click, type, submit, and navigate, so it always asks the user to confirm.',
+    list_tool_name: 'list_demos_tools',
   },
   debug: {
     category: 'debug',
@@ -300,6 +309,13 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   remove_stylesheet: 'advanced',
   desktop_run_command: 'advanced',
   record_gif: 'advanced',
+
+  // ─── demos (record & replay) ────────────────────────────────────────────
+  record_demo: 'demos',
+  list_demos: 'demos',
+  describe_demo: 'demos',
+  replay_demo: 'demos',
+  delete_demo: 'demos',
 
   // ─── debug (admin + CDP) ────────────────────────────────────────────────
   cdp_attach: 'debug',

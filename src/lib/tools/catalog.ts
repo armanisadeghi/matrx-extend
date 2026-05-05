@@ -166,6 +166,13 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   // recording (CDP-backed; uses scripting + downloads on export)
   record_gif: ['activeTab', 'tabs', 'scripting', 'downloads'],
 
+  // demos (uses tabs + scripting + storage + webNavigation for re-injection)
+  record_demo: ['tabs', 'activeTab', 'scripting', 'storage', 'webNavigation'],
+  list_demos: ['storage'],
+  describe_demo: ['storage'],
+  replay_demo: ['tabs', 'activeTab', 'scripting', 'storage'],
+  delete_demo: ['storage'],
+
   // WebMCP — runs in MAIN world
   webmcp_check_availability: ['activeTab', 'scripting'],
   webmcp_list_page_tools: ['activeTab', 'scripting'],
@@ -193,6 +200,7 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   list_memory_tools: [],
   list_ask_tools: [],
   list_advanced_tools: [],
+  list_demos_tools: [],
   list_debug_tools: [],
   list_cookies_tools: [],
   list_webmcp_tools: [],
