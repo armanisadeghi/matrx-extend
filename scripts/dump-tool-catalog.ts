@@ -6,11 +6,17 @@
  *   pnpm catalog:tools --markdown         → also writes types/tool-catalog.md
  *   pnpm catalog:tools --out path/to.json → custom path
  *
- * The JSON is shaped to be diffable against the existing tools table in
- * Supabase: each entry has name, description, tier, input_schema (JSON
- * Schema 7), required Chrome permissions, and which surface bundles
- * include it. To match an existing DB row, line up { name + input_schema }
- * — names can be renamed safely; schemas are the source of truth.
+ * Status: **dev / debug only**. As of the registry redesign
+ * (docs/MATRX_EXTEND_MIGRATION_GUIDE.md, May 2026), aidream loads tool
+ * definitions from `public.tools` in the database, NOT from this catalog.
+ * Adding/renaming a tool requires a SQL seed PR or admin-API call against
+ * aidream — re-running this script does not propagate changes anywhere.
+ *
+ * Useful for: local diff-against-DB checks, the Tools tab UI in the
+ * sidepanel, the matrx-extend-tool-display skill's documentation lookups.
+ *
+ * The previously-emitted `types/server-handoff/browser-dom-capability.json`
+ * was retired with the redesign. We no longer write it.
  *
  * NOTE: this script imports the registry, which transitively imports every
  * handler module. The handlers wrap all `chrome.*` access inside `run()`
@@ -20,7 +26,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import process from 'node:process';
-import { buildServerCapabilityHandoff, buildToolCatalogManifest } from '../src/lib/tools/catalog';
+import { buildToolCatalogManifest } from '../src/lib/tools/catalog';
 
 interface CliArgs {
   out: string;
@@ -97,17 +103,6 @@ if (args.markdown) {
   writeFileSync(mdPath, toMarkdown(manifest));
   console.log(`✓ wrote markdown summary to ${mdPath}`);
 }
-
-// Server-side handoff bundle for the new capability-based agent API.
-// Drop next to the Python `browser-dom` capability + `load_browser_tools`
-// discovery handler. Source of truth for the routing rule.
-const handoff = buildServerCapabilityHandoff();
-const handoffPath = resolve(process.cwd(), 'types/server-handoff/browser-dom-capability.json');
-ensureDir(handoffPath);
-writeFileSync(handoffPath, JSON.stringify(handoff, null, 2));
-console.log(
-  `✓ wrote server-handoff manifest (${handoff.totals.tools} tools, ${handoff.totals.categories} categories) to ${handoffPath}`,
-);
 
 console.log('');
 console.log('Bundles:');

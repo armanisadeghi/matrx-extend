@@ -14,8 +14,11 @@
  * `client.state["browser-dom"]`. They are read by different code paths
  * server-side.
  *
- * Source of truth for the schema:
- *   types/server-handoff/browser-dom-capability.json → payload_schema
+ * Source of truth for the schema: aidream's capability registration in the
+ * Python `matrx-ai` runtime. Keep this TypeScript shape in sync with the
+ * server's expected payload model. See
+ * docs/MATRX_EXTEND_MIGRATION_GUIDE.md for the post-redesign source-of-truth
+ * flow.
  */
 
 import { ALL_OPTIONAL, hasOptionalPermissions } from '@/lib/permissions/optional';

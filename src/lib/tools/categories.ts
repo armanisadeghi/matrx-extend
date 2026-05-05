@@ -199,6 +199,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   get_computed_style: 'page',
   get_element_at_point: 'page',
   inspect_element: 'page',
+  get_element_details: 'page',
   get_form_fields: 'page',
 
   // ─── page interaction ───────────────────────────────────────────────────
@@ -278,11 +279,27 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   request_user_takeover: 'ask',
   update_plan: 'ask',
 
+  // ─── canonical mega-tools (browser_tools_canonical.json) ───────────────
+  // Each occupies the category that best matches its dominant sub-action;
+  // they're surfaced in core via the categoryToolNames pull when an agent
+  // is configured against the canonical groupings.
+  computer: 'core',
+  form_input: 'forms',
+  navigate: 'core',
+  tabs: 'tabs',
+  downloads: 'files',
+  memory: 'memory',
+  clipboard: 'files',
+  upload_file: 'files',
+  drop_file: 'files',
+  read_pdf: 'files',
+
   // ─── advanced (privileged) ──────────────────────────────────────────────
   execute_javascript: 'advanced',
   inject_stylesheet: 'advanced',
   remove_stylesheet: 'advanced',
   desktop_run_command: 'advanced',
+  record_gif: 'advanced',
 
   // ─── debug (admin + CDP) ────────────────────────────────────────────────
   cdp_attach: 'debug',
@@ -301,6 +318,8 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   cdp_emulate_device: 'debug',
   cdp_clear_emulation: 'debug',
   read_console_messages: 'debug',
+  read_network_requests: 'debug',
+  get_request_body: 'debug',
 
   // ─── cookies (admin) ────────────────────────────────────────────────────
   get_cookies: 'cookies',
@@ -311,6 +330,20 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   webmcp_check_availability: 'webmcp',
   webmcp_list_page_tools: 'webmcp',
   webmcp_call_page_tool: 'webmcp',
+
+  // ─── canonical merger routers (2nd wave 2026-05-05) ────────────────────
+  ai: 'ai',
+  cookies: 'cookies',
+  webmcp: 'webmcp',
+  storage: 'memory',
+  tab_groups: 'tabs',
+  bookmarks: 'history',
+  history: 'history',
+  recently_closed: 'history',
+  stylesheet: 'advanced',
+  cdp_session: 'debug',
+  cdp_emulate: 'debug',
+  evaluate_javascript: 'advanced',
 };
 
 export function categoryOf(toolName: string): ToolCategory {

@@ -22,6 +22,8 @@ async function activeTabId(): Promise<number | null> {
 
 const FindTextArgs = z.object({
   query: z.string().min(1),
+  /** Canonical: target tab. */
+  tabId: z.string().optional(),
   /** Case-sensitive match. Default false. */
   case_sensitive: z.boolean().optional().default(false),
   /** Treat `query` as a regex. Default false. */
@@ -40,8 +42,9 @@ export const find_text_on_page: ToolHandler<FindTextArgs, unknown> = {
     'Search visible text on the active tab and return matches with their nearest enclosing element selector + context. Pass regex=true to use a regular expression. Use this when read_active_page would be overkill — e.g. "where on this page does it say \'click here to download\'?".',
   argsSchema: FindTextArgs,
   run: async (args) => {
-    const tabId = await activeTabId();
-    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    const tabId =
+      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ?? (await activeTabId());
+    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
       func: (
@@ -384,10 +387,98 @@ export const inspect_element: ToolHandler<InspectArgs, unknown> = {
   },
 };
 
+// Canonical version (browser_tools_canonical.json:get_element_details).
+// Takes a ref (preferred) instead of a CSS selector, and gates the heavy
+// fields (innerHTML, computed styles) behind opt-in flags. The handler
+// shares its core probe logic with inspect_element but is registered
+// separately so the canonical tool catalog has the exact name.
+const ElementDetailsArgs = z.object({
+  tabId: z.string().optional(),
+  ref: z.string(),
+  include_html: z.boolean().default(false),
+  include_styles: z.boolean().default(false),
+});
+type ElementDetailsArgs = z.infer<typeof ElementDetailsArgs>;
+
+export const get_element_details: ToolHandler<ElementDetailsArgs, unknown> = {
+  name: 'get_element_details',
+  tier: 'read',
+  description:
+    "Deep inspection of a single element by ref: full attribute set, bounding box, visibility, optional computed styles and innerHTML. Use when read_page's summary isn't enough — e.g. reading data-* attributes or checking if something is hidden by CSS. Avoids needing evaluate_javascript for routine introspection. innerHTML is capped at 50 KB; response includes truncated:true when exceeded.",
+  argsSchema: ElementDetailsArgs,
+  run: async (args) => {
+    let tabId: number | null;
+    if (args.tabId) {
+      tabId = Number.parseInt(args.tabId, 10);
+      if (!Number.isFinite(tabId)) return { ok: false, reason: 'Invalid tabId' };
+    } else {
+      tabId = await activeTabId();
+    }
+    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    const refSelector = `[data-matrx-ref="${args.ref.replace(/^ref:/, '')}"]`;
+    const [first] = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: (selector: string, includeHtml: boolean, includeStyles: boolean) => {
+        const el = document.querySelector(selector) as HTMLElement | null;
+        if (!el) return { ok: false, reason: `No element for ${selector}` };
+        const isPassword =
+          el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
+        const attrs: Record<string, string> = {};
+        for (const a of Array.from(el.attributes)) {
+          attrs[a.name] = isPassword && a.name === 'value' ? '***' : a.value;
+        }
+        const rect = el.getBoundingClientRect();
+        const cs = window.getComputedStyle(el);
+        const out: Record<string, unknown> = {
+          ok: true,
+          tag: el.tagName.toLowerCase(),
+          text: (el.innerText ?? '').slice(0, 400),
+          attrs,
+          rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+          visible:
+            rect.width > 0 &&
+            rect.height > 0 &&
+            cs.display !== 'none' &&
+            cs.visibility !== 'hidden' &&
+            cs.opacity !== '0',
+          child_count: el.childElementCount,
+        };
+        if (includeStyles) {
+          out.styles = {
+            display: cs.display,
+            visibility: cs.visibility,
+            opacity: cs.opacity,
+            position: cs.position,
+            'pointer-events': cs.pointerEvents,
+            color: cs.color,
+            'background-color': cs.backgroundColor,
+            font: cs.font,
+            'z-index': cs.zIndex,
+          };
+        }
+        if (includeHtml) {
+          const cap = 50 * 1024;
+          const html = el.innerHTML ?? '';
+          if (html.length > cap) {
+            out.innerHTML = html.slice(0, cap);
+            out.truncated = true;
+          } else {
+            out.innerHTML = html;
+          }
+        }
+        return out;
+      },
+      args: [refSelector, args.include_html, args.include_styles],
+    });
+    return first?.result ?? { ok: false, reason: 'no result' };
+  },
+};
+
 export const inspect_handlers = [
   find_text_on_page,
   get_page_links,
   get_computed_style,
   get_element_at_point,
   inspect_element,
+  get_element_details,
 ];

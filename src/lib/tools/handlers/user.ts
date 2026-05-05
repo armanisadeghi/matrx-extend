@@ -148,10 +148,14 @@ export const ask_user_secret: ToolHandler<SecretArgs, unknown> = {
     ),
 };
 
+// Canonical: { tabId, reason, expected_action }. We previously required
+// `instructions`; canonical names that field `expected_action`. Accept both
+// during the migration; either or neither is fine.
 const TakeoverArgs = z.object({
   reason: z.string().min(1),
-  /** Description of what the user should do before signaling done. */
-  instructions: z.string().min(1),
+  expected_action: z.string().optional(),
+  instructions: z.string().optional(),
+  tabId: z.string().optional(),
 });
 type TakeoverArgs = z.infer<typeof TakeoverArgs>;
 
@@ -159,43 +163,49 @@ export const request_user_takeover: ToolHandler<TakeoverArgs, unknown> = {
   name: 'request_user_takeover',
   tier: 'ask-user',
   description:
-    "Pause the agent and hand control back to the human (e.g. for CAPTCHA, login, payment, or anything tricky for an automated browser). The user signals when they're done and the agent resumes. Returns { resumed: true, note?: string }.",
+    "Hand keyboard/mouse control to the user so they can perform an action the agent cannot or should not (logging in, MFA, CAPTCHA, sensitive form filling, decisions only the user can make). The user types/clicks directly into the page; when they're done they signal completion in the UI. The agent should re-read the page after takeover ends to see what changed. Distinct from ask_user, which is Q&A.",
   argsSchema: TakeoverArgs,
-  run: async (args, ctx) =>
-    awaitUserAnswer(
+  run: async (args, ctx) => {
+    const detail = args.expected_action ?? args.instructions ?? '';
+    return awaitUserAnswer(
       {
         callId: ctx.callId,
-        question: `${args.reason}\n\n${args.instructions}`,
+        question: detail ? `${args.reason}\n\n${detail}` : args.reason,
         // We reuse ask_user's open-text card. Caller types "done" or any note.
         why: 'Agent asked you to take over',
       },
       15 * 60_000,
-    ),
+    );
+  },
 };
 
 // ─── update_plan ──────────────────────────────────────────────────────────
 
-const UpdatePlanArgs = z.object({
-  /** A short title for the proposed plan. */
-  title: z.string().min(1),
-  /** Step-by-step plan as a list of strings. */
-  steps: z.array(z.string().min(1)).min(1).max(40),
-  /**
-   * Optional rationale or context explaining WHY this plan addresses the
-   * user's goal. Helps the user evaluate the proposal.
-   */
-  reasoning: z.string().optional(),
-  /** Estimated wall-clock time, in minutes. Optional. */
-  estimated_minutes: z.number().int().positive().max(240).optional(),
-  /** Hard timeout for approval, in ms. Default 5 minutes. */
-  timeout_ms: z
-    .number()
-    .int()
-    .positive()
-    .max(15 * 60_000)
-    .optional()
-    .default(5 * 60_000),
-});
+// Canonical: { approach: string[], domains: string[] }. We previously took
+// { title, steps, reasoning, estimated_minutes }. Accept both shapes; if
+// `approach` is present we use it as the steps; if `title` is missing we
+// derive one from the first step.
+const UpdatePlanArgs = z
+  .object({
+    title: z.string().optional(),
+    steps: z.array(z.string().min(1)).min(1).max(40).optional(),
+    /** Canonical alias for `steps`. */
+    approach: z.array(z.string().min(1)).min(1).max(40).optional(),
+    /** Canonical: domains the agent intends to visit. Approved on plan accept. */
+    domains: z.array(z.string()).optional(),
+    reasoning: z.string().optional(),
+    estimated_minutes: z.number().int().positive().max(240).optional(),
+    timeout_ms: z
+      .number()
+      .int()
+      .positive()
+      .max(15 * 60_000)
+      .optional()
+      .default(5 * 60_000),
+  })
+  .refine((v) => v.steps != null || v.approach != null, {
+    message: 'either `steps` or `approach` is required',
+  });
 type UpdatePlanArgs = z.infer<typeof UpdatePlanArgs>;
 
 export const update_plan: ToolHandler<UpdatePlanArgs, unknown> = {
@@ -205,12 +215,17 @@ export const update_plan: ToolHandler<UpdatePlanArgs, unknown> = {
     'Propose a step-by-step plan and wait for the user to approve, modify, or reject it. Use this BEFORE a multi-step action sequence so you align on intent up front. Returns { approved: true, note?: string } or { approved: false, note?: string } so you can adjust.',
   argsSchema: UpdatePlanArgs,
   run: async (args, ctx) => {
-    const renderedSteps = args.steps.map((s, i) => `${i + 1}. ${s}`).join('\n');
+    const steps = args.steps ?? args.approach ?? [];
+    const title = args.title ?? steps[0]?.slice(0, 80) ?? 'Proposed plan';
+    const renderedSteps = steps.map((s, i) => `${i + 1}. ${s}`).join('\n');
     const body = [
-      `**Plan: ${args.title}**`,
+      `**Plan: ${title}**`,
       args.reasoning ? `\n_${args.reasoning}_` : '',
       '',
       renderedSteps,
+      args.domains && args.domains.length
+        ? `\n_Will visit: ${args.domains.join(', ')}_`
+        : '',
       args.estimated_minutes
         ? `\n_~${args.estimated_minutes} minute${args.estimated_minutes === 1 ? '' : 's'}_`
         : '',

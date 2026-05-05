@@ -129,12 +129,14 @@ export async function stopConsoleCapture(tabId: number): Promise<void> {
 
 export function drainConsoleCapture(
   tabId: number,
-  opts?: { max?: number; level_filter?: string[]; pattern?: RegExp },
+  opts?: { max?: number; level_filter?: string[]; pattern?: RegExp; clear?: boolean },
 ): ConsoleRecord[] {
   const buf = consoleBuffers.get(tabId);
   if (!buf) return [];
   const max = opts?.max ?? 200;
-  let records = buf.splice(0, max);
+  // Default: drain (remove from buffer). Pass clear:false to peek without removing,
+  // matching canonical `read_console_messages(clear:false)` semantics.
+  let records: ConsoleRecord[] = opts?.clear === false ? buf.slice(0, max) : buf.splice(0, max);
   if (opts?.level_filter?.length) {
     const set = new Set(opts.level_filter);
     records = records.filter((r) => set.has(r.level));

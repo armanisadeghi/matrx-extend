@@ -23,6 +23,8 @@
 import { action_handlers } from '@/lib/tools/handlers/action';
 import { batch_handlers } from '@/lib/tools/handlers/batch';
 import { browser_data_handlers } from '@/lib/tools/handlers/browser-data';
+import { canonical_handlers } from '@/lib/tools/handlers/canonical';
+import { canonical_merger_handlers } from '@/lib/tools/handlers/canonical-mergers';
 import { cdp_handlers } from '@/lib/tools/handlers/cdp';
 import { discover_handlers } from '@/lib/tools/handlers/discover';
 import { download_handlers } from '@/lib/tools/handlers/downloads';
@@ -39,6 +41,7 @@ import {
 import { page_ref_handlers } from '@/lib/tools/handlers/page-refs';
 import { privileged_handlers, privileged_read_handlers } from '@/lib/tools/handlers/privileged';
 import { read_handlers } from '@/lib/tools/handlers/read';
+import { record_handlers } from '@/lib/tools/handlers/record';
 import { tab_action_handlers, tab_read_handlers } from '@/lib/tools/handlers/tabs';
 import { user_handlers } from '@/lib/tools/handlers/user';
 import { webmcp_handlers } from '@/lib/tools/handlers/webmcp';
@@ -89,6 +92,16 @@ const ALL: AnyToolHandler[] = [
   ...user_handlers,
   // ─── privileged ────────────────────────────────────────────────────────
   ...privileged_handlers,
+  // ─── recording ─────────────────────────────────────────────────────────
+  ...record_handlers,
+  // ─── canonical routers ─────────────────────────────────────────────────
+  // Registered LAST so canonical names (`wait_for`, etc.) win over any
+  // legacy handler with the same name — last-write-wins in BY_NAME.
+  ...canonical_handlers,
+  // ─── canonical merger routers (2nd wave 2026-05-05) ────────────────────
+  // ai / cookies / webmcp / storage / tab_groups / bookmarks / history /
+  // recently_closed / stylesheet / cdp_session / cdp_emulate / evaluate_javascript
+  ...canonical_merger_handlers,
 ] as AnyToolHandler[];
 
 const BY_NAME = new Map<string, AnyToolHandler>();

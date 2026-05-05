@@ -24,7 +24,8 @@ import {
   type OptionalPermission,
   hasOptionalPermissions,
 } from '@/lib/permissions/optional';
-import { resolveToolName, suggestSimilar } from '@/lib/tools/aliases';
+import { recordToolEvent } from '@/lib/recording/state';
+import { localFromCanonical, resolveToolName, suggestSimilar } from '@/lib/tools/aliases';
 import { allToolNames, lookup as lookupTool } from '@/lib/tools/registry';
 import type {
   AnyToolHandler,
@@ -90,22 +91,56 @@ export function startToolDispatcher(opts: DispatchOptions): void {
       if (subEvent !== 'tool_started') return { ack: true };
 
       const callId = String(data.call_id ?? '');
-      const toolName = String(data.tool_name ?? '');
+      // Wire name (`tool_name`) is what the model called — possibly namespaced
+      // (`matrx-extend__take_screenshot`) or bundle-aliased (`forms__fill_form`)
+      // per docs/MATRX_EXTEND_MIGRATION_GUIDE.md. Canonical name
+      // (`canonical_name` / `canonicalName`, when aidream Step 2 has shipped)
+      // is aidream's resolved identity (`matrx-extend:take_screenshot`) and
+      // is the more reliable lookup key — it has the bundle alias already
+      // unwound. Prefer it; fall back to wire-name parsing otherwise.
+      const wireName = String(data.tool_name ?? '');
+      const canonicalNameRaw =
+        (data.canonical_name as string | undefined) ??
+        (data.canonicalName as string | undefined) ??
+        null;
       const toolArgs = ((data.data as { arguments?: unknown })?.arguments ?? {}) as unknown;
-      if (!callId || !toolName) return { ack: true };
+      // After Step 2 of the redesign, canonical_name is sufficient on its
+      // own — don't drop the event just because wireName is empty.
+      if (!callId || (!wireName && !canonicalNameRaw)) return { ack: true };
 
-      // First try the literal name; then fall back to the alias map for
-      // legacy "browser_*" DB names and a few model-hallucinated shapes.
-      // See src/lib/tools/aliases.ts for the rationale.
-      let handler = lookupTool(toolName);
-      let resolvedName = toolName;
-      if (!handler) {
-        const aliased = resolveToolName(toolName);
-        if (aliased !== toolName) {
-          handler = lookupTool(aliased);
-          if (handler) {
-            resolvedName = aliased;
-            log.info('sw', `tool alias '${toolName}' → '${aliased}'`);
+      // Resolve to a local registry key.
+      //   1. If aidream provided canonical_name, split off the local part.
+      //   2. Otherwise strip namespace/bundle from the wire name and check
+      //      the legacy alias map.
+      let handler;
+      let resolvedName: string;
+      let bundle: string | null = null;
+      if (canonicalNameRaw) {
+        resolvedName = localFromCanonical(canonicalNameRaw);
+        handler = lookupTool(resolvedName);
+        // Bundle is the canonical namespace (everything before `:`).
+        const colonIdx = canonicalNameRaw.indexOf(':');
+        if (colonIdx > 0) bundle = canonicalNameRaw.slice(0, colonIdx);
+        if (handler && wireName && wireName !== resolvedName) {
+          // The wire name differs from the resolved local — this means the
+          // model called us under a bundle alias (e.g. `forms__fill_form`
+          // for canonical `matrx-extend:fill_form`). Log so we can track
+          // bundle frequency in telemetry.
+          log.info('sw', `tool canonical '${canonicalNameRaw}' (wire='${wireName}')`, { bundle });
+        }
+      } else {
+        // Try the literal first — covers legacy bare names and our own
+        // local handler keys when the wire name is already bare.
+        handler = lookupTool(wireName);
+        if (handler) {
+          resolvedName = wireName;
+        } else {
+          const r = resolveToolName(wireName);
+          handler = lookupTool(r.local);
+          resolvedName = r.local;
+          bundle = r.bundle;
+          if (handler && r.local !== wireName) {
+            log.info('sw', `tool alias '${wireName}' → '${r.local}'`, { bundle });
           }
         }
       }
@@ -123,13 +158,17 @@ export function startToolDispatcher(opts: DispatchOptions): void {
         // Surface a structured error back to the server so the model gets a
         // useful next-turn signal. Silently passing leaves the server to
         // synthesize "Browser session not found", which the agent can't act on.
-        const suggestions = suggestSimilar(toolName, allToolNames({ isAdmin: true }));
+        const suggestions = suggestSimilar(wireName, allToolNames({ isAdmin: true }));
         const hint = suggestions.length
           ? ` Did you mean: ${suggestions.join(', ')}? Or call list_browser_tools to see what's available.`
           : ' Call list_browser_tools to see what is available.';
-        log.warn('sw', `tool '${toolName}' not in registry`, { suggestions });
-        void postUnknownToolError(ctx, toolName, hint).catch((err) =>
-          log.error('sw', `failed to post unknown-tool error for ${toolName}`, err),
+        log.warn('sw', `tool '${wireName}' not in registry`, {
+          canonicalName: canonicalNameRaw,
+          bundle,
+          suggestions,
+        });
+        void postUnknownToolError(ctx, wireName, hint).catch((err) =>
+          log.error('sw', `failed to post unknown-tool error for ${wireName}`, err),
         );
         return { ack: true };
       }
@@ -180,6 +219,7 @@ async function handleCall(
     phase: 'started',
     args: rawArgs,
   });
+  recordToolEvent(handler.name, 'started', rawArgs);
 
   // Validate args.
   const parsed = handler.argsSchema.safeParse(rawArgs);
@@ -207,9 +247,12 @@ async function handleCall(
     }
   }
 
-  // Permission gate.
+  // Permission gate. Mega-tool routers (computer, tabs, …) declare a
+  // `tierFor(args)` so a `screenshot` sub-action can be 'read' while
+  // `left_click` stays 'action' under the same tool name.
+  const effectiveTier = handler.tierFor ? handler.tierFor(parsed.data as never) : handler.tier;
   const needsConfirm =
-    handler.tier === 'privileged' || (handler.tier === 'action' && ctx.permissionMode === 'ask');
+    effectiveTier === 'privileged' || (effectiveTier === 'action' && ctx.permissionMode === 'ask');
   if (needsConfirm) {
     const allowed = await requestConfirmation(handler, parsed.data, ctx, meta);
     if (!allowed.allow) {

@@ -24,6 +24,8 @@ import { refreshAccessToken } from '@/lib/auth/flow';
 import { logExtensionIdentityOnce } from '@/lib/auth/identity';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import { desktopRpc, probeDesktop, startDesktopProbeAlarm } from '@/lib/desktop/bridge';
+import type { CapturedEvent } from '@/lib/demos/event-capture';
+import { onCapturedEvent } from '@/lib/demos/recorder';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { type StartStreamArgs, cancelStream, startStream } from '@/lib/stream/offscreen-proxy';
@@ -154,6 +156,14 @@ function registerHandlers(): void {
 
   on<unknown, { ack: true }>(CHANNELS.LIST_PICKER_ITEM_DETECTED, (payload) => {
     broadcast(CHANNELS.LIST_PICKER_ITEM_DETECTED, payload);
+    return { ack: true };
+  });
+
+  // Demo recording: in-page event-capture function calls
+  // chrome.runtime.sendMessage with a DEMO_EVENT envelope. We forward to
+  // the recorder's per-tab state.
+  on<CapturedEvent, { ack: true }>(CHANNELS.DEMO_EVENT, (payload, sender) => {
+    onCapturedEvent(payload, sender.tab?.id);
     return { ack: true };
   });
 

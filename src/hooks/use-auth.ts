@@ -14,6 +14,22 @@ import { useAuthStore } from '@/state/auth';
 import { useCallback, useEffect } from 'react';
 
 /**
+ * Module-level guard: useAuth is called from ~7 components (header,
+ * AuthGate, UserMenu, ChatView, SettingsView, App, popup). Without this
+ * guard, every consumer's mount fired its own boot — meaning every
+ * sidepanel open triggered N× pingHealth, N× checkIsAdmin, N× session
+ * restore. Now exactly one boot runs per service-worker / sidepanel
+ * lifetime; subsequent useAuth() calls only subscribe to the store.
+ *
+ * Reset on signOut so that the next sign-in triggers a fresh admin
+ * recheck and health ping.
+ */
+let bootRan = false;
+export function resetAuthBootGuard(): void {
+  bootRan = false;
+}
+
+/**
  * Auth runs in the sidepanel context — chrome.identity is available there
  * and we sidestep the SW message-handler race entirely. After a successful
  * sign-in we broadcast AUTH_STATE_CHANGED so the popup, options page, and
@@ -23,8 +39,11 @@ export function useAuth() {
   const { user, isAdmin, status, error, setUser, setIsAdmin, setStatus, setError } = useAuthStore();
 
   // On mount: hydrate user state, restore Supabase session, re-check admin,
-  // then ping health.
+  // then ping health. Guarded so it runs once per sidepanel lifetime even
+  // when N components subscribe to useAuth().
   useEffect(() => {
+    if (bootRan) return;
+    bootRan = true;
     let cancelled = false;
     void (async () => {
       await restoreSupabaseSession();
@@ -92,6 +111,8 @@ export function useAuth() {
     setUser(null);
     setIsAdmin(false);
     broadcast(CHANNELS.AUTH_STATE_CHANGED, { user: null, isAdmin: false });
+    // Allow the next sign-in to re-run the one-time boot work.
+    bootRan = false;
   }, [setUser, setIsAdmin]);
 
   return { user, isAdmin, status, error, signIn, signOut };

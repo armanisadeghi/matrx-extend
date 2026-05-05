@@ -10,7 +10,8 @@ export const HealthSchema = z.object({
 export type Health = z.infer<typeof HealthSchema>;
 
 export async function healthCheck() {
-  const r = await apiGet<unknown>('/health/', undefined, { silent: true });
+  // No trailing slash — `/health/` 307s to `/health` and burns a round trip.
+  const r = await apiGet<unknown>('/health', undefined, { silent: true });
   return withSchema(r, HealthSchema);
 }
 
@@ -27,7 +28,7 @@ export async function healthCheckDetailed() {
  */
 export async function pingHealth(reason: string): Promise<Health | null> {
   const baseUrl = await getApiBaseUrl();
-  log.info('api', `health check (${reason}) → ${baseUrl}/health/`);
+  log.info('api', `health check (${reason}) → ${baseUrl}/health`);
   const r = await healthCheck();
   if (r.ok) {
     log.success('api', `health ok — ${baseUrl} — ${r.data.status}`, r.data);

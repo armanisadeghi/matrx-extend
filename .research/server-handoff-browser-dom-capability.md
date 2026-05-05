@@ -1,9 +1,23 @@
 # Server handoff — `browser-dom` capability
 
+> ⚠️ **OBSOLETE (May 2026)** — superseded by the registry redesign.
+> aidream now loads tool definitions from `public.tools` rows; the
+> `browser-dom-capability.json` file this doc described has been
+> deleted, and `buildServerCapabilityHandoff()` was removed from
+> `src/lib/tools/catalog.ts`.
+>
+> **Current source of truth:** [docs/MATRX_EXTEND_MIGRATION_GUIDE.md](../docs/MATRX_EXTEND_MIGRATION_GUIDE.md)
+> and the aidream `0022_browser_dom` seed.
+>
+> The content below is preserved as a historical reference for the
+> pre-redesign architecture. Do not implement against it.
+>
+> ---
+>
 > Everything the Python `matrx-ai` runtime needs to register the
 > capability + discovery handler for matrx-extend (the Chrome extension).
 >
-> **Source of truth:** [`types/server-handoff/browser-dom-capability.json`](../types/server-handoff/browser-dom-capability.json)
+> **Source of truth (historical):** `types/server-handoff/browser-dom-capability.json`
 > regenerated on every `pnpm catalog:tools`. Copy values from the JSON,
 > not from this doc — the JSON wins on conflict.
 >
@@ -56,7 +70,7 @@ loads on demand. The discovery call is cheap (server-side lookup, no LLM
 round-trip on the routing decision itself).
 
 The full payload schema is in
-[`types/server-handoff/browser-dom-capability.json`](../types/server-handoff/browser-dom-capability.json)
+`types/server-handoff/browser-dom-capability.json` *(deleted May 2026)*
 under `payload_schema` — copy it verbatim into a Pydantic model or use the
 JSON Schema directly if your validator supports it.
 
@@ -282,7 +296,7 @@ short-circuit re-discovery.
 - [ ] `RESOURCE_CHANGED kind=active_tools` event fires on every successful `load_browser_tools` call.
 
 If any check fails, the JSON file at
-[`types/server-handoff/browser-dom-capability.json`](../types/server-handoff/browser-dom-capability.json)
+`types/server-handoff/browser-dom-capability.json` *(deleted May 2026)*
 has the data. Filter rules are encoded in the `tool_metadata` block —
 that's the single piece the handler needs.
 

@@ -15,8 +15,11 @@ export const agentExecutePath = (agentId: string): string =>
  * tool (`load_browser_tools`) reads `state["browser-dom"]` to decide which
  * tools to register for this turn.
  *
- * Source of truth for the per-capability state shape:
- *   types/server-handoff/browser-dom-capability.json
+ * Source of truth for the per-capability state shape: aidream's capability
+ * registration in the Python `matrx-ai` runtime. Keep this TypeScript shape
+ * in sync with the server's expected payload model. See
+ * docs/MATRX_EXTEND_MIGRATION_GUIDE.md for the post-redesign source-of-truth
+ * flow.
  */
 export interface AgentClientEnvelope {
   capabilities: string[];

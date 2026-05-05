@@ -562,16 +562,24 @@ export const cdp_clear_emulation: ToolHandler<ClearEmulationArgs, unknown> = {
 const ReadConsoleArgs = z
   .object({
     tab_id: z.number().int().optional(),
+    /** Canonical alias for tab_id. */
+    tabId: z.string().optional(),
     /** Auto-start console capture if it's not already running. Default true. */
     auto_start: z.boolean().optional().default(true),
-    /** Limit returned messages. Default 100. */
-    max: z.number().int().positive().max(2000).optional().default(100),
+    /** Canonical: limit returned messages. */
+    limit: z.number().int().positive().max(2000).optional(),
+    /** Legacy alias for `limit`. */
+    max: z.number().int().positive().max(2000).optional(),
     /** Only return messages at these console levels. */
     level_filter: z.array(z.string()).optional(),
-    /** Only return messages whose text matches this regex pattern. */
+    /** Canonical: regex filter on message text. Same as `pattern`. */
     pattern: z.string().optional(),
-    /** Convenience: only errors + warnings. Equivalent to level_filter=['error','warn']. */
+    /** Canonical: convenience flag for errors + exceptions only. */
+    onlyErrors: z.boolean().optional(),
+    /** Legacy alias for `onlyErrors`. */
     errors_only: z.boolean().optional().default(false),
+    /** Canonical: clear the buffer after reading. */
+    clear: z.boolean().optional().default(false),
   })
   .default({});
 type ReadConsoleArgs = z.infer<typeof ReadConsoleArgs>;
@@ -585,8 +593,11 @@ export const read_console_messages: ToolHandler<ReadConsoleArgs, unknown> = {
     'Read console messages from a tab. Auto-starts CDP console capture if not already running. Filter by level, text regex, or use errors_only=true. Returns { count, messages: [{ level, text, url, line, ts_ms }] }. Console capture stays on until cdp_detach or tab close.',
   argsSchema: ReadConsoleArgs,
   run: async (args) => {
-    const tabId = args.tab_id ?? (await activeTabId());
-    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    const tabId =
+      args.tab_id ??
+      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ??
+      (await activeTabId());
+    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
     if (args.auto_start) {
       try {
         await cdp.startConsoleCapture(tabId);
@@ -594,18 +605,101 @@ export const read_console_messages: ToolHandler<ReadConsoleArgs, unknown> = {
         return { ok: false, reason: (err as Error).message };
       }
     }
-    const filter = args.errors_only
+    const errorsOnly = args.onlyErrors ?? args.errors_only;
+    const filter = errorsOnly
       ? ['error', 'warn']
       : args.level_filter && args.level_filter.length > 0
         ? args.level_filter
         : undefined;
     const pattern = args.pattern ? new RegExp(args.pattern) : undefined;
+    const max = args.limit ?? args.max ?? 100;
     const messages = cdp.drainConsoleCapture(tabId, {
-      max: args.max,
+      max,
       level_filter: filter,
       pattern,
+      clear: args.clear,
     });
     return { ok: true, count: messages.length, messages };
+  },
+};
+
+// ─── canonical wrappers for network reads (admin-gated for now) ──────────
+//
+// These match the canonical schema names (`read_network_requests`,
+// `get_request_body`) but inherit our CDP-backed implementation. When a
+// non-CDP fallback is built (chrome.webRequest), the admin gate will be
+// dropped. Until then, calling them as a non-admin returns a helpful
+// error pointing the user to grant the `debugger` optional permission.
+
+const ReadNetworkArgs = z
+  .object({
+    tab_id: z.number().int().optional(),
+    tabId: z.string().optional(),
+    urlPattern: z.string().optional(),
+    /** Auto-start capture if it isn't running. Default true. */
+    auto_start: z.boolean().optional().default(true),
+    include_body: z.boolean().optional().default(false),
+    limit: z.number().int().positive().max(2000).optional().default(100),
+    clear: z.boolean().optional().default(false),
+  })
+  .default({});
+type ReadNetworkArgs = z.infer<typeof ReadNetworkArgs>;
+
+export const read_network_requests: ToolHandler<ReadNetworkArgs, unknown> = {
+  name: 'read_network_requests',
+  tier: 'privileged',
+  admin_only: true,
+  required_optional_permissions: ['debugger'],
+  description:
+    "Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cross-domain navigation. Filter with urlPattern to keep output manageable. Response bodies are NOT included by default — use get_request_body to fetch a specific body. The buffer is per-tab and bounded; old entries fall off the back.",
+  argsSchema: ReadNetworkArgs,
+  run: async (args) => {
+    const tabId =
+      args.tab_id ??
+      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ??
+      (await activeTabId());
+    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
+    if (args.auto_start) {
+      try {
+        await cdp.startNetworkCapture(tabId);
+      } catch (err) {
+        return { ok: false, reason: (err as Error).message };
+      }
+    }
+    let records = cdp.drainNetworkCapture(tabId, args.limit);
+    if (args.urlPattern) {
+      const sub = args.urlPattern.toLowerCase();
+      records = records.filter((r) => r.url.toLowerCase().includes(sub));
+    }
+    return { ok: true, count: records.length, records };
+  },
+};
+
+const GetRequestBodyArgs = z.object({
+  tabId: z.string().optional(),
+  tab_id: z.number().int().optional(),
+  requestId: z.string().min(1),
+});
+type GetRequestBodyArgs = z.infer<typeof GetRequestBodyArgs>;
+
+export const get_request_body: ToolHandler<GetRequestBodyArgs, unknown> = {
+  name: 'get_request_body',
+  tier: 'privileged',
+  admin_only: true,
+  required_optional_permissions: ['debugger'],
+  description:
+    "Fetch the response body for a specific request seen by read_network_requests. Returns inline text when small; for large bodies the canonical contract calls for cld_files persistence — current implementation always returns inline.",
+  argsSchema: GetRequestBodyArgs,
+  run: async (args) => {
+    const tabId =
+      args.tab_id ??
+      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ??
+      (await activeTabId());
+    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
+    return cdp_network_get_body.run(
+      { request_id: args.requestId, tab_id: tabId } as never,
+      { callId: '', conversationId: null, runId: '', agentName: null, permissionMode: 'act' },
+    );
   },
 };
 
@@ -626,4 +720,6 @@ export const cdp_handlers = [
   cdp_emulate_device,
   cdp_clear_emulation,
   read_console_messages,
+  read_network_requests,
+  get_request_body,
 ];

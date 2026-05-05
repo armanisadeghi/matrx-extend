@@ -107,6 +107,7 @@ export async function prewarmReadPageCache(tabId: number): Promise<void> {
         include_hidden: false,
         include_text: true,
         include_bounds: false,
+        trigger_lazy_load: false,
       },
       {
         conversationId: null,
@@ -161,8 +162,12 @@ if (typeof chrome !== 'undefined' && chrome.tabs?.onUpdated) {
 const ReadPageArgs = z
   .object({
     tab_id: z.number().int().optional(),
+    /** Canonical alias for tab_id. */
+    tabId: z.string().optional(),
     /** Only return interactive elements (links, buttons, inputs, etc.). Default true. */
     interactive_only: z.boolean().optional().default(true),
+    /** Canonical alias: 'interactive' = interactive_only:true; 'all' = false. */
+    filter: z.enum(['interactive', 'all']).optional(),
     /** Include hidden elements. Default false (visible only). */
     include_hidden: z.boolean().optional().default(false),
     /** Maximum elements to return. Default 200. */
@@ -171,6 +176,10 @@ const ReadPageArgs = z
     include_text: z.boolean().optional().default(true),
     /** Include bounding rectangles. Default false (saves tokens). */
     include_bounds: z.boolean().optional().default(false),
+    /** Force lazy-loaded content to render before snapshotting. */
+    trigger_lazy_load: z.boolean().optional().default(false),
+    /** Output cap (post-serialization). */
+    max_chars: z.number().int().positive().optional(),
   })
   .default({});
 type ReadPageArgs = z.infer<typeof ReadPageArgs>;
@@ -182,8 +191,44 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
     'Return an accessibility-style summary of the active page. Each interactive element gets a reference id (`ref:N`) you can pass to click_element / type_into_element / scroll_into_view / etc. instead of a CSS selector — refs are stable across DOM mutations within the same page lifetime. Pass interactive_only=false to include headings, paragraphs, and labels too. Refs invalidate on navigation; call this again after navigating. Returns { url, title, count, elements: [{ ref, role, name, tag, text, visible, bounds? }] }.',
   argsSchema: ReadPageArgs,
   run: async (args) => {
-    const tabId = args.tab_id ?? (await activeTabId());
-    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    const tabId =
+      args.tab_id ??
+      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ??
+      (await activeTabId());
+    if (tabId == null || !Number.isFinite(tabId))
+      return { ok: false, reason: 'No active tab' };
+    // Canonical 'filter' overrides interactive_only when present.
+    const interactiveOnly =
+      args.filter !== undefined ? args.filter === 'interactive' : args.interactive_only;
+    if (args.trigger_lazy_load) {
+      // Best-effort lazy-load trigger: scroll to bottom, settle, scroll back.
+      try {
+        await chrome.scripting.executeScript({
+          target: { tabId },
+          func: async () => {
+            const startY = window.scrollY;
+            const step = window.innerHeight * 0.8;
+            const maxScrolls = 12;
+            for (let i = 0; i < maxScrolls; i++) {
+              const before = document.documentElement.scrollHeight;
+              window.scrollBy({ top: step, behavior: 'instant' });
+              await new Promise((r) => setTimeout(r, 250));
+              const after = document.documentElement.scrollHeight;
+              if (
+                window.innerHeight + window.scrollY >= after - 4 &&
+                after === before
+              ) {
+                break;
+              }
+            }
+            window.scrollTo({ top: startY, behavior: 'instant' });
+            await new Promise((r) => setTimeout(r, 150));
+          },
+        });
+      } catch {
+        /* lazy-load is best-effort */
+      }
+    }
     try {
       const [first] = await chrome.scripting.executeScript({
         target: { tabId },
@@ -347,7 +392,7 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
           };
         },
         args: [
-          args.interactive_only,
+          interactiveOnly,
           args.include_hidden,
           args.max_nodes,
           args.include_text,
@@ -361,12 +406,27 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
           url: result.url,
           ts: Date.now(),
           args: {
-            interactive_only: args.interactive_only,
+            interactive_only: interactiveOnly,
             include_hidden: args.include_hidden,
             include_text: args.include_text,
           },
           result,
         });
+      }
+      // Canonical max_chars: serialize-then-truncate when an explicit cap is set.
+      if (result && 'ok' in result && result.ok && args.max_chars) {
+        const serialized = JSON.stringify(result);
+        if (serialized.length > args.max_chars) {
+          return {
+            ...result,
+            elements: (result as { elements?: unknown[] }).elements?.slice(
+              0,
+              Math.max(1, Math.floor(args.max_chars / 200)),
+            ),
+            truncated: true,
+            original_count: (result as { count?: number }).count,
+          };
+        }
       }
       return result ?? { ok: false, reason: 'no result' };
     } catch (err) {
@@ -382,6 +442,8 @@ const FindArgs = z.object({
   max_candidates: z.number().int().positive().max(500).optional().default(30),
   /** Maximum matches to return. Default 5. */
   limit: z.number().int().positive().max(20).optional().default(5),
+  /** Canonical: target tab. */
+  tabId: z.string().optional(),
 });
 type FindArgs = z.infer<typeof FindArgs>;
 
@@ -395,8 +457,9 @@ export const find: ToolHandler<FindArgs, unknown> = {
     'Find elements on the active page by natural-language description ("the sign-in button", "the search input near the top", "the link to the pricing page"). Returns matching refs you can immediately pass to interaction tools. Uses on-device AI for matching when available; falls back to text similarity. Always run read_page first OR pass refs through this in the same conversation. Returns { matches: [{ ref, name, role, score, reason }] }.',
   argsSchema: FindArgs,
   run: async (args) => {
-    const tabId = await activeTabId();
-    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    const tabId =
+      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ?? (await activeTabId());
+    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
 
     // Reuse a fresh cached scrape if the agent (or a prior tool call) just ran
     // read_page. Saves the executeScript round-trip + DOM walk on the common
@@ -419,6 +482,7 @@ export const find: ToolHandler<FindArgs, unknown> = {
           include_hidden: false,
           include_text: true,
           include_bounds: false,
+          trigger_lazy_load: false,
         },
         {
           conversationId: null,
@@ -533,6 +597,8 @@ export const find: ToolHandler<FindArgs, unknown> = {
 const PageTextArgs = z
   .object({
     tab_id: z.number().int().optional(),
+    /** Canonical alias for tab_id. */
+    tabId: z.string().optional(),
     /** Cap on returned text length (chars). Default 8000. */
     max_chars: z.number().int().positive().max(50_000).optional().default(8000),
   })
@@ -546,8 +612,12 @@ export const get_page_text: ToolHandler<PageTextArgs, unknown> = {
     'Extract clean readable text from the active page — strips chrome / nav / ads / scripts / hidden DOM. Lighter than read_active_page (which returns full markdown + media + structured data). Best for "read me this article" style asks. Returns { url, title, byline, text, char_count }.',
   argsSchema: PageTextArgs,
   run: async (args) => {
-    const tabId = args.tab_id ?? (await activeTabId());
-    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    const tabId =
+      args.tab_id ??
+      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ??
+      (await activeTabId());
+    if (tabId == null || !Number.isFinite(tabId))
+      return { ok: false, reason: 'No active tab' };
     try {
       const [first] = await chrome.scripting.executeScript({
         target: { tabId },

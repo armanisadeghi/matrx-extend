@@ -57,6 +57,14 @@ export interface ToolHandler<TArgs, TResult> {
   argsSchema: z.ZodType<TArgs, z.ZodTypeDef, unknown>;
   run: (args: TArgs, ctx: ToolContext) => Promise<TResult>;
   /**
+   * Optional dynamic tier resolver — when present, the dispatcher uses
+   * `tierFor(args)` instead of `tier` for permission gating. Useful for
+   * mega-tool routers (`computer`, `tabs`, …) that mix read-only and
+   * mutating sub-actions under one tool name. The base `tier` field is
+   * still the catalog-level default for advertising / docs.
+   */
+  tierFor?: (args: TArgs) => ToolTier;
+  /**
    * If true, this tool is excluded from non-admin users' bundle and won't be
    * advertised to their agents. The user can still see it in the Tools tab
    * (filtered by an "admin-only" badge) when they're an admin. Use this for

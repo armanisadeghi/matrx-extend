@@ -23,6 +23,10 @@ export const CHANNELS = {
   STREAM_CHUNK: 'stream:chunk', // offscreen → all surfaces
   STREAM_OPENED: 'stream:opened', // offscreen → all: { runId, conversationId, requestId } once the SSE response opens
 
+  // Demo recording — content script (in active recording tab) sends a
+  // captured user event to the SW recorder.
+  DEMO_EVENT: 'demos:event',
+
   // Tool dispatch (agent-driven actions in the browser)
   TOOL_CONFIRM_REQUEST: 'tool:confirm-request', // SW → sidepanel: please render approval card
   TOOL_CONFIRM_RESPONSE: 'tool:confirm-response', // sidepanel → SW: user clicked allow / deny
