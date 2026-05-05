@@ -1,6 +1,6 @@
 {
   "name": "matrx-extend",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "private": true,
   "type": "module",
   "description": "Matrx Extend — agentic Chrome extension for chat, tasks, scraping, structured data extraction, and SEO",
