@@ -10,6 +10,11 @@ import { streamFetch } from '@/lib/api/stream';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import {
+  fetchUrlAndParse,
+  type FetchAndParseRequest,
+  type FetchAndParseResult,
+} from '@/lib/scrape/fetch-and-parse';
 
 startDebugRelay();
 log.info('sys', 'offscreen ready');
@@ -87,6 +92,18 @@ on<RunArgs, { ok: true }>(CHANNELS.STREAM_RUN, async (args) => {
   }
   return { ok: true };
 });
+
+// SW asks us to fetch + parse a URL into the standard SoupResult-style
+// envelope. Runs in offscreen because it needs DOMParser + the existing
+// scrape pipeline.
+on<FetchAndParseRequest & { include_extras?: boolean }, FetchAndParseResult>(
+  CHANNELS.OFFSCREEN_FETCH_PAGE,
+  async (payload) => {
+    log.info('stream', `offscreen fetch-page ${payload.url}`);
+    const { include_extras, ...req } = payload;
+    return fetchUrlAndParse(req, { include_extras });
+  },
+);
 
 on<{ runId: string }, { cancelled: boolean }>(CHANNELS.STREAM_KILL, (payload) => {
   const ctrl = inflight.get(payload.runId);

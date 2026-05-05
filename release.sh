@@ -90,12 +90,20 @@ done
 _on_error() {
     local exit_code=$?
     echo "" >&2
-    echo -e "${RED}╔══════════════════════════════════════════════════════════════╗${NC}" >&2
-    echo -e "${RED}║                    RELEASE SCRIPT FAILED                     ║${NC}" >&2
-    echo -e "${RED}║  Exit code: ${exit_code}                                                    ║${NC}" >&2
-    echo -e "${RED}║  The wxt.config.ts key field is restored automatically.       ║${NC}" >&2
-    echo -e "${RED}║  Inspect with: git diff wxt.config.ts                         ║${NC}" >&2
-    echo -e "${RED}╚══════════════════════════════════════════════════════════════╝${NC}" >&2
+    echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" >&2
+    echo -e "${RED}  ✗  RELEASE SCRIPT FAILED  (exit ${exit_code})${NC}" >&2
+    echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" >&2
+    if $KEY_WAS_COMMENTED; then
+        echo -e "${RED}  Key field was commented out by this run; the EXIT trap${NC}" >&2
+        echo -e "${RED}  will restore it. Verify with: git diff wxt.config.ts${NC}" >&2
+    else
+        echo -e "${RED}  wxt.config.ts was NOT modified by this run.${NC}" >&2
+    fi
+    if $VERSION_BUMPED && ! $VERSION_COMMITTED; then
+        echo -e "${RED}  package.json was bumped to ${NEW_VERSION:-?} but not committed.${NC}" >&2
+        echo -e "${RED}  Reverting via: git checkout -- package.json${NC}" >&2
+        git checkout -- package.json 2>/dev/null || true
+    fi
 }
 trap _on_error ERR
 
@@ -110,6 +118,9 @@ trap _on_error ERR
 #
 # So: build local-zip with key, comment-out key, build store-zip, restore key.
 KEY_WAS_COMMENTED=false
+VERSION_BUMPED=false
+VERSION_COMMITTED=false
+NEW_VERSION=""
 
 _key_comment_out() {
     # Idempotent — bails if already commented.
@@ -159,11 +170,27 @@ CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 [[ "$CURRENT_BRANCH" == "$BRANCH" ]] \
     || fail "Not on '$BRANCH' (currently on '$CURRENT_BRANCH'). Switch first."
 
-# Verify the key field is present and uncommented (we depend on this state).
-grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG" \
-    || fail "$WXT_CONFIG does not have an active 'key:' line. Restore it before releasing."
+# Self-heal the key field. If a prior run / manual edit left it commented,
+# restore it now and stage the fix as its own commit. This is the most common
+# way the working tree drifts into a bad state, and we'd rather repair than
+# refuse to run.
+KEY_HEALED=false
+if grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG"; then
+    : # already correct
+elif grep -qE "^[[:space:]]*// key: '" "$WXT_CONFIG"; then
+    warn "wxt.config.ts has key field commented out — restoring before release."
+    if ! $DRY_RUN; then
+        sed -i '' -E "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
+        grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG" \
+            || fail "Could not auto-restore key field — fix manually."
+        KEY_HEALED=true
+        ok "Restored key field automatically"
+    fi
+else
+    fail "$WXT_CONFIG has no recognizable 'key:' line (active or commented). Manual fix required."
+fi
 
-ok "On branch $BRANCH, key field present, tooling available"
+ok "On branch $BRANCH, key field active, tooling available"
 
 # ── Auto-stage uncommitted work ─────────────────────────────────────────────
 step "Sync working tree"
@@ -186,8 +213,25 @@ fi
 # ── Read + compute version ──────────────────────────────────────────────────
 step "Compute next version"
 
-CURRENT_VERSION=$(node -p "require('./package.json').version") \
+# Read base version from HEAD (last committed state) — NOT from the working
+# file. If a prior failed run bumped package.json mid-flight without
+# committing, the file might already be ahead; reading from HEAD gives us a
+# stable anchor so we don't double-bump.
+HEAD_VERSION=$(git show HEAD:package.json | node -e "
+let s=''; process.stdin.on('data',d=>s+=d); process.stdin.on('end',()=>{
+  process.stdout.write(JSON.parse(s).version);
+});") || fail "Could not read version from HEAD:package.json"
+
+WORKING_VERSION=$(node -p "require('./package.json').version") \
     || fail "Could not read version from package.json"
+
+if [[ "$WORKING_VERSION" != "$HEAD_VERSION" ]]; then
+    warn "package.json version diverged from HEAD ($WORKING_VERSION vs $HEAD_VERSION) — resetting to HEAD."
+    git checkout -- package.json
+    WORKING_VERSION="$HEAD_VERSION"
+fi
+
+CURRENT_VERSION="$HEAD_VERSION"
 IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
 case "$BUMP_TYPE" in
     patch) NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))" ;;

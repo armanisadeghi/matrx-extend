@@ -223,6 +223,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   screenshot_region: 'page',
   mutation_watch: 'page',
   extract_microdata: 'page',
+  fetch_url_as_markdown: 'page',
 
   // ─── page interaction ───────────────────────────────────────────────────
   scroll_page: 'interact',

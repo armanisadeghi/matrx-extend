@@ -178,6 +178,9 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   // structured-data extractor
   extract_microdata: ['activeTab', 'scripting'],
 
+  // URL fetch + markdown (no chrome perms; runs through offscreen + host_permissions)
+  fetch_url_as_markdown: [],
+
   // demos (uses tabs + scripting + storage + webNavigation for re-injection)
   record_demo: ['tabs', 'activeTab', 'scripting', 'storage', 'webNavigation'],
   list_demos: ['storage'],

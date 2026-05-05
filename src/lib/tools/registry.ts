@@ -47,6 +47,7 @@ import { guidance_handlers } from '@/lib/tools/handlers/guidance';
 import { extract_handlers } from '@/lib/tools/handlers/extract';
 import { extras_handlers } from '@/lib/tools/handlers/extras';
 import { microdata_handlers } from '@/lib/tools/handlers/microdata';
+import { fetch_handlers } from '@/lib/tools/handlers/fetch';
 import { tab_action_handlers, tab_read_handlers } from '@/lib/tools/handlers/tabs';
 import { user_handlers } from '@/lib/tools/handlers/user';
 import { webmcp_handlers } from '@/lib/tools/handlers/webmcp';
@@ -109,6 +110,8 @@ const ALL: AnyToolHandler[] = [
   ...extras_handlers,
   // ─── structured-data extractor (shares modes with Showcase tab) ────────
   ...microdata_handlers,
+  // ─── URL fetch + parse → markdown (shares scrape pipeline) ─────────────
+  ...fetch_handlers,
   // ─── canonical routers ─────────────────────────────────────────────────
   // Registered LAST so canonical names (`wait_for`, etc.) win over any
   // legacy handler with the same name — last-write-wins in BY_NAME.

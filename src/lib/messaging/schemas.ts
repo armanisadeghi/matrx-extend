@@ -27,6 +27,10 @@ export const CHANNELS = {
   // captured user event to the SW recorder.
   DEMO_EVENT: 'demos:event',
 
+  // SW → offscreen: fetch a URL, parse the HTML, run the scrape pipeline.
+  // Offscreen replies with the SoupResult (or an error envelope).
+  OFFSCREEN_FETCH_PAGE: 'offscreen:fetch-page',
+
   // Guidance — user clicked the in-page Stop button on the recording
   // banner injected during a demo / GIF capture. SW + sidepanel listen.
   GUIDANCE_BANNER_STOP: 'guidance:banner-stop',

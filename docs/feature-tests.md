@@ -228,6 +228,48 @@ Every entry follows this shape:
   If they diverge, a bug landed in only one path; the test recipe is
   to fix the shared mode in `src/lib/data-pattern/modes/`.
 
+### fetch_url_as_markdown
+- **What it does:** Fetch any HTTP(S) URL and return its readable
+  content as Markdown — same defuddle + readability + turndown
+  pipeline the Scrape tab uses against the active page, but pointed
+  at any URL without opening a tab. Runs in the offscreen document
+  (SW lacks DOMParser).
+- **Where to test:** Tools tab → `fetch_url_as_markdown`. Cross-check
+  with the **Scrape** tab on the same URL.
+- **Steps:**
+  1. Tools tab → `fetch_url_as_markdown` → Run with
+     `{ "url": "https://en.wikipedia.org/wiki/Service_worker" }`.
+  2. Inspect `markdown` (the article body), `title`, `metadata`,
+     `extractor` (defuddle / readability / fallback), `word_count`,
+     `http_status: 200`, `final_url`.
+  3. Cross-check: open that URL in a tab, switch to **Scrape** tab,
+     capture — the markdown should match (within whitespace
+     differences from defuddle's confidence threshold).
+- **Expected:**
+  - `ok: true`, `markdown` populated, `metadata.og` and
+    `metadata.twitter` filled when the page declares them.
+  - `truncated: false` for typical articles; `truncated: true`
+    only when content exceeds `max_chars` (default 200_000).
+- **Edge cases worth poking:**
+  - Non-HTML URL (PDF, JSON):
+    `{ "url": "https://example.com/file.pdf" }` →
+    `{ ok: false, reason: "Non-HTML content-type: ..." }`. Use
+    `read_pdf` for PDFs.
+  - Cookies-aware fetch: `{ "url": "...", "use_session": true }`
+    will send the user's cookies. Required for paywalled /
+    logged-in pages.
+  - Redirect chain: `final_url` shows where the fetch ended up.
+  - 404 / 5xx: `ok: false, http_status: 404, reason: "HTTP 404 ..."`.
+  - Big article: `{ "url": "...", "max_chars": 5000 }` →
+    `truncated: true`.
+  - Extras: `{ "url": "...", "include_extras": true }` populates
+    `links`, `images`, `videos`, `seo` (otherwise omitted to keep
+    payloads small).
+- **Cross-check parity:** if the agent tool's `markdown` diverges
+  from the Scrape tab's output for the same URL, the bug is in the
+  shared `src/lib/scrape/pipeline.ts` — fix once, both surfaces
+  recover.
+
 ### record_gif
 - **What it does:** Record browser actions on a tab via CDP screencast
   and export an animated GIF, optionally dropping it onto a page

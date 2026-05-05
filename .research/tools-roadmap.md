@@ -129,20 +129,10 @@ Each turn:
 - **Notes:** also fixes a gap in the demo system (its capture
   function only sees light-DOM ancestors).
 
-### 7. `fetch_url_as_markdown` — Tier 3
-- **Surface:** `both`
-- **Sketch:** `fetch_url_as_markdown({url, follow_redirects?,
-  use_session?})` → `{title, markdown, metadata, http_status,
-  word_count}`. Reuses `defuddle` + `@mozilla/readability` + `turndown`.
-- **Sub-tasks:**
-  - [ ] Run via SW `fetch` (so user cookies attach when
-    `use_session: true`)
-  - [ ] Mirror the existing Scrape-tab pipeline for consistency
-  - [ ] Cap content size with `max_chars` and `truncated` flag
-- **Notes:** unblocks `watch_for_change` and `extract_microdata` for
-  arbitrary URLs.
+### 7. ~~`fetch_url_as_markdown`~~ ✅ SHIPPED 2026-05-05
+Moved to "Recently shipped" below.
 
-### 8. `request_user_paste_image` — Tier 3
+### 7. `request_user_paste_image` — Tier 3
 - **Surface:** mostly `ui-feature` with thin agent-side trigger
 - **Sketch:** agent calls
   `request_user_paste_image({prompt})`. Side panel renders a
