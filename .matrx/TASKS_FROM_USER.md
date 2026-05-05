@@ -22,6 +22,7 @@ Drop anything here — bullets, prose, half-thoughts, voice-transcribed rambling
 4) Video capture via MediaRecorder / chrome.tabCapture (as feature for the user and tool for assistant)
 5) Guidance feature updates: Cloud sync of guidance metadata (currently local-only — only the artifact bytes go to cld_files) (Or pushed to the database, unless we're only talking about the files here)
 6) Add a tab that shows all screenshots we have of the given page. Any time the agent takes a screnenshot, it's saved here and let's give the user the ability to do it as well. 
+7) Eliminate markdown auto-scroll when the user resists it once. 
 
 
 ---

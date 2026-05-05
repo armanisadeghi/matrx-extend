@@ -148,6 +148,28 @@ Moved to "Recently shipped" below.
 
 ## ✅ Recently shipped
 
+### `fetch_url_as_markdown` — 2026-05-05
+Agent tool that fetches any HTTP(S) URL → DOMParser → runs the full
+scrape pipeline (defuddle / readability / turndown / collectors / SEO
+audit) → returns the same shape the Scrape tab uses. No tab opened.
+
+**Cross-working achieved:** routes through the offscreen document
+(SW lacks `DOMParser`) and reuses
+[src/lib/scrape/pipeline.ts](../src/lib/scrape/pipeline.ts) verbatim
+— the same code path the user-facing Scrape tab runs against the
+active page. Improvements to the pipeline benefit both surfaces.
+
+Files:
+- [src/lib/scrape/fetch-and-parse.ts](../src/lib/scrape/fetch-and-parse.ts)
+  (offscreen-side fetch + parse + pipeline)
+- [src/lib/tools/handlers/fetch.ts](../src/lib/tools/handlers/fetch.ts)
+  (SW-side agent tool that RPCs to offscreen)
+- New `OFFSCREEN_FETCH_PAGE` channel in
+  [src/lib/messaging/schemas.ts](../src/lib/messaging/schemas.ts).
+
+Unblocks: `watch_for_change` (now has a tab-free way to evaluate
+predicates against URLs).
+
 ### `extract_microdata` — 2026-05-05
 Single agent tool returning every structured-data signal on the active
 page in one call: snapshot (title / OG / Twitter / canonical), every

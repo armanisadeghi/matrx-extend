@@ -28,6 +28,23 @@ fi
 COMMIT_MSG="$1"
 shift
 
+# Self-heal wxt.config.ts BEFORE staging. The Chrome Web Store flow requires
+# `key:` to be commented out for the upload zip, but the working tree must
+# always carry it ACTIVE so dev unpacked installs keep the stable extension
+# ID (Supabase OAuth redirect depends on it). If a prior run / manual edit
+# left it commented out, git add -A would silently sweep the bad state into
+# the next commit — and pre-flight in release.sh would then bail. Restore
+# now so neither happens.
+WXT_CONFIG="$ROOT/wxt.config.ts"
+if [[ -f "$WXT_CONFIG" ]] && grep -qE "^[[:space:]]*// key: '" "$WXT_CONFIG"; then
+    echo "[ship] wxt.config.ts has key field commented out — restoring before commit." >&2
+    sed -i '' -E "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
+    if ! grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG"; then
+        echo "[ship] FATAL: could not auto-restore key field. Fix wxt.config.ts manually." >&2
+        exit 1
+    fi
+fi
+
 git add -A
 
 if git diff --cached --quiet; then

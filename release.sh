@@ -202,7 +202,11 @@ if [[ -n "$(git status --porcelain)" ]]; then
         preview "Would: git add -A && git commit -m '...'"
     else
         git add -A
-        local_msg="${CUSTOM_MESSAGE:-chore: pre-release sync}"
+        if $KEY_HEALED; then
+            local_msg="fix: restore wxt.config.ts key field for dev install"
+        else
+            local_msg="${CUSTOM_MESSAGE:-chore: pre-release sync}"
+        fi
         git commit -m "$local_msg"
         ok "Committed pre-release changes: $local_msg"
     fi
@@ -293,6 +297,7 @@ const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 pkg.version = '${NEW_VERSION}';
 fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
 "
+VERSION_BUMPED=true
 ok "package.json → ${NEW_VERSION}"
 
 # ── 4. Regen tool catalog ───────────────────────────────────────────────────
@@ -307,14 +312,16 @@ git add package.json types/tool-catalog.json types/tool-catalog.md 2>/dev/null |
 # Only commit files that actually changed
 if ! git diff --cached --quiet; then
     git commit -m "$COMMIT_MSG"
+    VERSION_COMMITTED=true
     ok "Committed: '$COMMIT_MSG'"
 else
     warn "Nothing staged — skipping version-bump commit"
+    VERSION_COMMITTED=true  # nothing to roll back either
 fi
 
 # ── 6. Build LOCAL zip (dev key intact) ─────────────────────────────────────
 step "6/8  Build LOCAL zip (dev key intact)"
-rm -f "$WXT_ZIP_OUT"
+rm -f "$WXT_ZIP_OUT" "$LOCAL_ZIP" "$STORE_ZIP"
 pnpm zip
 [[ -f "$WXT_ZIP_OUT" ]] || fail "Expected $WXT_ZIP_OUT but it was not produced"
 mv "$WXT_ZIP_OUT" "$LOCAL_ZIP"
