@@ -2,7 +2,9 @@
  * SW-side tool dispatcher.
  *
  * Subscribes to STREAM_CHUNK broadcasts. When a chunk is a `tool_event` with
- * `event === "tool_started"` and `tool_name` is in our registry:
+ * `event === "tool_delegated"` (the server's explicit signal that THIS client
+ * should run the tool — server-side tools emit `tool_started`/`tool_completed`
+ * for UI rendering only and must NOT trigger our dispatcher):
  *   1. Resolve the run's conversation_id (cached from STREAM_OPENED)
  *   2. Apply permission policy:
  *        - tier 'read'      → run immediately
@@ -14,6 +16,13 @@
  *   3. Run the handler
  *   4. POST result via /conversations/{id}/tool_results
  *   5. Broadcast a TOOL_TIMELINE_EVENT so the chat UI can render started/done
+ *
+ * Why `tool_delegated` and not `tool_started`: the server emits `tool_started`
+ * for every tool call (including ones it executes itself, MCP, ctx_*, etc.) so
+ * the timeline can render. Gating on `tool_started` caused this dispatcher to
+ * try to resolve every server-side tool name against the local registry and
+ * post a noisy "not registered" error back to the conversation for tools we
+ * were never meant to run. `tool_delegated` is the explicit "your turn" signal.
  */
 
 import { postToolResults } from '@/lib/api/routes/tool-results';
@@ -79,7 +88,11 @@ export function startToolDispatcher(opts: DispatchOptions): void {
     return { ack: true };
   });
 
-  // Watch every stream chunk for tool_started events.
+  // Watch every stream chunk for tool_delegated events. We deliberately
+  // ignore `tool_started` — the server emits that for tools it executes
+  // itself too (ctx_*, MCP, etc.), and resolving those against our local
+  // registry produces noisy "not registered" errors in the conversation log.
+  // `tool_delegated` is the server's explicit "this one is yours" signal.
   on<{ runId: string; type: string; payload: unknown }, { ack: true }>(
     CHANNELS.STREAM_CHUNK,
     async (chunk) => {
@@ -88,7 +101,7 @@ export function startToolDispatcher(opts: DispatchOptions): void {
       if (evt.eventName !== 'tool_event') return { ack: true };
       const data = (evt.data ?? {}) as Record<string, unknown>;
       const subEvent = data.event as string | undefined;
-      if (subEvent !== 'tool_started') return { ack: true };
+      if (subEvent !== 'tool_delegated') return { ack: true };
 
       const callId = String(data.call_id ?? '');
       // Wire name (`tool_name`) is what the model called — possibly namespaced

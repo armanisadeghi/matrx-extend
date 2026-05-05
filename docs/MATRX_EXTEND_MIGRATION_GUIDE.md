@@ -176,16 +176,44 @@ Once the aidream `tool_started` event includes `canonicalName`, switch [`dispatc
 3. **Register the canonical name + schema in aidream's DB.** Two choices:
    - SQL seed PR: add a row to `public.tools` with `name='matrx-extend:<your-tool>'`, `source_app='matrx-extend'`, `category=<your-category>`, `parameters=<flat-prop-dict>`, `gating=<jsonb>`. See the 0022 seed for an exact example.
    - Admin API call: `POST /admin/tools` (when the dashboard ships).
-4. **Assign your tool to the right surfaces.** Insert one `tl_def_surface` row per surface where it should appear:
+4. **Insert the `tl_executor` row.** Without this, aidream's executor concretizer cannot route the tool to us — the server runs into a "no executor" path and the tool never reaches the extension. **This is the step we have most often missed** (auto-fixed once on 2026-05-05 for the guidance/demo tools by re-running the concretizer; don't rely on that).
+   ```sql
+   INSERT INTO public.tl_executor (tool_id, surface, delegated, priority) VALUES
+     ('<tool_uuid>', 'matrx-extend.browser', true, 50);
+   ```
+5. **Assign your tool to the right surfaces.** Insert one `tl_def_surface` row per surface where it should appear:
    ```sql
    INSERT INTO public.tl_def_surface (tool_id, surface_name) VALUES
      ('<tool_uuid>', 'chrome-extension/assistant'),
      ('<tool_uuid>', 'chrome-extension/pilot');
    ```
-5. **Optionally add to a bundle.** If your tool belongs to an existing category bundle, insert into `tl_bundle_member`. If it's a new bundle, create the bundle row first.
-6. **Deploy your matrx-extend handler.** Build + ship the extension as usual.
+6. **Optionally add to a bundle.** If your tool belongs to an existing category bundle, insert into `tl_bundle_member`. If it's a new bundle, create the bundle row first.
+7. **Deploy your matrx-extend handler.** Build + ship the extension as usual.
 
 There's no version handshake step today — aidream doesn't track matrx-extend versions. If you ship a new handler before the DB row exists, the model can't call it (no schema visible). Coordinate the order.
+
+### Template — full seed block per new tool
+
+Copy this and fill in `<tool_uuid>` (or use a `WITH` CTE that inserts into `public.tools` and returns its id):
+
+```sql
+WITH new_tool AS (
+  INSERT INTO public.tools (name, source_app, category, tier, parameters, gating)
+  VALUES ('matrx-extend:<your-tool>', 'matrx-extend', '<category>', '<tier>',
+          '<parameters-jsonb>'::jsonb, '<gating-jsonb>'::jsonb)
+  RETURNING id
+)
+INSERT INTO public.tl_executor (tool_id, surface, delegated, priority)
+SELECT id, 'matrx-extend.browser', true, 50 FROM new_tool;
+
+INSERT INTO public.tl_def_surface (tool_id, surface_name)
+SELECT id, surface_name FROM new_tool, (VALUES
+  ('chrome-extension/assistant'),
+  ('chrome-extension/pilot')
+) AS s(surface_name);
+```
+
+The matrx-ai live-DB invariant tests (`test_browser_tools_db_invariants.py`) catch missing executor rows after the fact, but only post-deploy. Use the template above to skip the round trip.
 
 ---
 

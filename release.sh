@@ -31,8 +31,16 @@
 #   ./release.sh --message "feat: X"     # custom commit message for auto-stash
 #   ./release.sh --skip-types            # skip server type sync (offline)
 #   ./release.sh --skip-typecheck        # skip explicit tsc (still runs inside zip)
+#   ./release.sh --skip-catalog          # skip dev/debug tool-catalog regen
 #   ./release.sh --dry-run               # preview without changing anything
 #   ./release.sh --no-push               # build everything but don't push to remote
+#
+# Note on the catalog step (#4): even WITHOUT --skip-catalog, this step
+# is non-fatal. The tool catalog is dev/debug-only — aidream loads tool
+# definitions from public.tools in the DB, not from this file. If the
+# regen fails (e.g. a handler imports something that touches
+# import.meta.env outside of WXT's build context), the script warns and
+# proceeds. The release ships either way.
 
 set -euo pipefail
 
@@ -65,6 +73,7 @@ CUSTOM_MESSAGE=""
 DRY_RUN=false
 SKIP_TYPES=false
 SKIP_TYPECHECK=false
+SKIP_CATALOG=false
 NO_PUSH=false
 
 while [[ $# -gt 0 ]]; do
@@ -77,6 +86,7 @@ while [[ $# -gt 0 ]]; do
             CUSTOM_MESSAGE="$2"; shift 2 ;;
         --skip-types)     SKIP_TYPES=true; shift ;;
         --skip-typecheck) SKIP_TYPECHECK=true; shift ;;
+        --skip-catalog)   SKIP_CATALOG=true; shift ;;
         --dry-run)        DRY_RUN=true; shift ;;
         --no-push)        NO_PUSH=true; shift ;;
         -h|--help)
@@ -91,19 +101,46 @@ _on_error() {
     local exit_code=$?
     echo "" >&2
     echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" >&2
-    echo -e "${RED}  ✗  RELEASE SCRIPT FAILED  (exit ${exit_code})${NC}" >&2
+    echo -e "${RED}  ✗  RELEASE FAILED — step: ${BOLD}${CURRENT_STEP:-pre-flight}${NC}${RED}  (exit ${exit_code})${NC}" >&2
     echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" >&2
+    echo -e "${RED}  Read the actual error above this banner — that's the${NC}" >&2
+    echo -e "${RED}  underlying cause. Common patterns:${NC}" >&2
+    case "$CURRENT_STEP" in
+        "sync-types")
+            echo -e "${RED}    • TS errors → fix code/types and re-run.${NC}" >&2
+            echo -e "${RED}    • Backend unreachable → use --skip-types to release offline.${NC}" >&2
+            ;;
+        "typecheck")
+            echo -e "${RED}    • Fix the reported TS errors and re-run ./ship.sh.${NC}" >&2
+            ;;
+        "version-bump"|"version-commit")
+            echo -e "${RED}    • Working tree may be in an odd state — check git status.${NC}" >&2
+            ;;
+        "catalog")
+            echo -e "${RED}    • Catalog regen is dev/debug only and should be non-fatal.${NC}" >&2
+            echo -e "${RED}      If you see this, the script's tolerance check itself broke.${NC}" >&2
+            ;;
+        "build-local"|"build-store")
+            echo -e "${RED}    • The build failed — read the Vite/WXT error above.${NC}" >&2
+            ;;
+        "git-push")
+            echo -e "${RED}    • Push failed but everything else succeeded.${NC}" >&2
+            echo -e "${RED}      Re-run: git push origin $BRANCH && git push origin v${NEW_VERSION}${NC}" >&2
+            ;;
+        *)
+            echo -e "${RED}    • Unexpected failure point. Inspect output above.${NC}" >&2
+            ;;
+    esac
+    echo "" >&2
     if $KEY_WAS_COMMENTED; then
-        echo -e "${RED}  Key field was commented out by this run; the EXIT trap${NC}" >&2
-        echo -e "${RED}  will restore it. Verify with: git diff wxt.config.ts${NC}" >&2
-    else
-        echo -e "${RED}  wxt.config.ts was NOT modified by this run.${NC}" >&2
+        echo -e "${RED}  ⤷  wxt.config.ts key was toggled off; EXIT trap will restore it.${NC}" >&2
     fi
     if $VERSION_BUMPED && ! $VERSION_COMMITTED; then
-        echo -e "${RED}  package.json was bumped to ${NEW_VERSION:-?} but not committed.${NC}" >&2
-        echo -e "${RED}  Reverting via: git checkout -- package.json${NC}" >&2
+        echo -e "${RED}  ⤷  package.json was bumped to ${NEW_VERSION} but not committed —${NC}" >&2
+        echo -e "${RED}     reverting now (git checkout -- package.json).${NC}" >&2
         git checkout -- package.json 2>/dev/null || true
     fi
+    echo "" >&2
 }
 trap _on_error ERR
 
@@ -121,6 +158,9 @@ KEY_WAS_COMMENTED=false
 VERSION_BUMPED=false
 VERSION_COMMITTED=false
 NEW_VERSION=""
+CURRENT_STEP=""
+CATALOG_OK=true
+WARNINGS=()
 
 _key_comment_out() {
     # Idempotent — bails if already commented.
@@ -272,6 +312,7 @@ if $DRY_RUN; then
 fi
 
 # ── 1. Sync server API types ────────────────────────────────────────────────
+CURRENT_STEP="sync-types"
 step "1/8  Sync server API types"
 if $SKIP_TYPES; then
     warn "Skipping server type sync (--skip-types)"
@@ -281,6 +322,7 @@ else
 fi
 
 # ── 2. TypeScript typecheck ─────────────────────────────────────────────────
+CURRENT_STEP="typecheck"
 step "2/8  TypeScript typecheck"
 if $SKIP_TYPECHECK; then
     warn "Skipping explicit tsc (--skip-typecheck)"
@@ -290,6 +332,7 @@ else
 fi
 
 # ── 3. Bump version ─────────────────────────────────────────────────────────
+CURRENT_STEP="version-bump"
 step "3/8  Bump version → ${NEW_VERSION}"
 node -e "
 const fs = require('fs');
@@ -300,16 +343,41 @@ fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
 VERSION_BUMPED=true
 ok "package.json → ${NEW_VERSION}"
 
-# ── 4. Regen tool catalog ───────────────────────────────────────────────────
-step "4/8  Regenerate tool catalog"
-pnpm catalog:tools:md
-ok "types/tool-catalog.{json,md} regenerated"
+# ── 4. Regen tool catalog (NON-FATAL) ───────────────────────────────────────
+#
+# Deliberately tolerant. The tool catalog is dev/debug-only per its own
+# docstring — aidream loads tool definitions from public.tools in the DB,
+# NOT from this catalog. Most common failure mode: a tool handler module
+# transitively imports something that touches `import.meta.env`, which
+# tsx (plain Node) doesn't define. Fixing that is a code change, not a
+# release-blocker. We warn and continue.
+CURRENT_STEP="catalog"
+step "4/8  Regenerate tool catalog (non-fatal)"
+if $SKIP_CATALOG; then
+    warn "Skipping catalog regen (--skip-catalog)"
+    CATALOG_OK=false
+    WARNINGS+=("Tool catalog NOT regenerated (--skip-catalog). Catalog files in types/ may be stale.")
+else
+    if pnpm catalog:tools:md; then
+        ok "types/tool-catalog.{json,md} regenerated"
+    else
+        CATALOG_OK=false
+        warn "catalog:tools:md failed — continuing (catalog is dev/debug only)."
+        warn "Most likely cause: a handler module touches import.meta.env at"
+        warn "module load. Inspect with:  pnpm catalog:tools:md  outside this script."
+        WARNINGS+=("Tool catalog regen FAILED (non-blocking). types/tool-catalog.* will be stale until you fix the import-time env issue and run 'pnpm catalog:tools:md' manually.")
+    fi
+fi
 
 # ── 5. Commit version bump ──────────────────────────────────────────────────
+CURRENT_STEP="version-commit"
 step "5/8  Commit version bump"
 COMMIT_MSG="release: ${NEW_TAG}"
-git add package.json types/tool-catalog.json types/tool-catalog.md 2>/dev/null || true
-# Only commit files that actually changed
+git add package.json 2>/dev/null || true
+# Only stage catalog files if regen succeeded — don't commit a stale one.
+if $CATALOG_OK; then
+    git add types/tool-catalog.json types/tool-catalog.md 2>/dev/null || true
+fi
 if ! git diff --cached --quiet; then
     git commit -m "$COMMIT_MSG"
     VERSION_COMMITTED=true
@@ -320,6 +388,7 @@ else
 fi
 
 # ── 6. Build LOCAL zip (dev key intact) ─────────────────────────────────────
+CURRENT_STEP="build-local"
 step "6/8  Build LOCAL zip (dev key intact)"
 rm -f "$WXT_ZIP_OUT" "$LOCAL_ZIP" "$STORE_ZIP"
 pnpm zip
@@ -328,6 +397,7 @@ mv "$WXT_ZIP_OUT" "$LOCAL_ZIP"
 ok "Local zip → $LOCAL_ZIP"
 
 # ── 7. Build STORE zip (key commented out) ──────────────────────────────────
+CURRENT_STEP="build-store"
 step "7/8  Build STORE zip (key removed)"
 _key_comment_out
 rm -f "$WXT_ZIP_OUT"
@@ -349,6 +419,7 @@ if ! unzip -p "$LOCAL_ZIP" manifest.json | grep -q '"key"'; then
 fi
 
 # ── 8. Tag and push ─────────────────────────────────────────────────────────
+CURRENT_STEP="git-push"
 step "8/8  Tag and push"
 git tag "$NEW_TAG"
 ok "Tag $NEW_TAG created"
@@ -360,6 +431,7 @@ else
     git push "$REMOTE" "$NEW_TAG"
     ok "Pushed $BRANCH and $NEW_TAG to $REMOTE"
 fi
+CURRENT_STEP="done"
 
 # ── Final instructions ──────────────────────────────────────────────────────
 LOCAL_SIZE=$(du -h "$LOCAL_ZIP" | cut -f1)
@@ -372,6 +444,15 @@ echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━
 echo -e "${GREEN}  ✓  ${PROJECT_NAME} ${NEW_VERSION} packaged${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
+
+if [[ ${#WARNINGS[@]} -gt 0 ]]; then
+    echo -e "${YELLOW}  ⚠  Non-fatal warnings during release${NC}"
+    for w in "${WARNINGS[@]}"; do
+        echo -e "${YELLOW}     • ${w}${NC}"
+    done
+    echo ""
+fi
+
 echo -e "${BOLD}  Artifacts${NC}"
 echo -e "   Local (dev unpacked) ${DIM}${LOCAL_SIZE}${NC}"
 echo -e "      ${CYAN}${LOCAL_ABS}${NC}"
