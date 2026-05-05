@@ -482,6 +482,25 @@ Full incident write-up: [`.research/v0.1.4-auth-incident.md`](./.research/v0.1.4
 - **No silent writes**: privileged tier always prompts. Even in Act mode.
 - **Catalog stays in sync**: after any handler change, run
   `pnpm catalog:tools:md` and commit the regenerated JSON + MD.
+- **Document tests for everything user-visible**: when you add or
+  meaningfully change any tool, UI surface, or feature, add or update
+  its entry in [`docs/feature-tests.md`](./docs/feature-tests.md)
+  before committing. Keep entries SHORT and SPECIFIC — exact steps a
+  human can follow without reading source code. Each entry: *what it
+  does* (one sentence) → *where to test* (Tools tab / SEO tab / etc.) →
+  *steps* (numbered) → *expected* → *edge cases worth poking*.
+  This file is the single source of truth for "how do I verify X?";
+  letting it drift means future agents (and humans) waste hours
+  rediscovering test paths.
+- **Reuse existing capabilities first**: before building a new
+  extractor / collector / parser, search for prior art. Look in
+  `src/lib/scrape/` (collectors), `src/lib/data-pattern/modes/`
+  (extraction modes used by Showcase tabs), `src/lib/chat/context/`
+  (the v2 context bundle), and `src/features/showcase/tabs/`. When the
+  existing pipeline already does what you need, route through the same
+  primitive — agents and the user-facing UI then share one code path
+  (improvements to either side benefit both). Cross-working is the
+  goal; duplication is a smell.
 - **`chrome.scripting.executeScript` args must be JSON-serializable** —
   `undefined` is NOT, and Chrome will reject the call with
   `Error at property 'args': Error at index N: Value is unserializable`

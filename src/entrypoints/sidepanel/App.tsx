@@ -6,6 +6,7 @@ import { AgendaView } from '@/features/agenda/AgendaView';
 import { ChatView } from '@/features/chat/ChatView';
 import { DataView } from '@/features/data/DataView';
 import { DebugView } from '@/features/debug/DebugView';
+import { GuidanceView } from '@/features/guidance/GuidanceView';
 import { ScrapeView } from '@/features/scrape/ScrapeView';
 import { SeoView } from '@/features/seo/SeoView';
 import { SettingsView } from '@/features/settings/SettingsView';
@@ -20,6 +21,7 @@ import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import {
+  BookOpen,
   Bug,
   Calendar,
   Database,
@@ -102,6 +104,9 @@ export function App() {
                 <TabsTrigger value="data" className="size-7 p-0" title="Data">
                   <Database className="size-3.5" />
                 </TabsTrigger>
+                <TabsTrigger value="guidance" className="size-7 p-0" title="Guidance">
+                  <BookOpen className="size-3.5" />
+                </TabsTrigger>
                 <TabsTrigger value="seo" className="size-7 p-0" title="SEO">
                   <Search className="size-3.5" />
                 </TabsTrigger>
@@ -149,6 +154,9 @@ export function App() {
             </TabsContent>
             <TabsContent value="data" className="flex-1 min-h-0">
               <DataView />
+            </TabsContent>
+            <TabsContent value="guidance" className="flex-1 min-h-0">
+              <GuidanceView />
             </TabsContent>
             <TabsContent value="seo" className="flex-1 min-h-0">
               <SeoView />

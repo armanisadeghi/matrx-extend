@@ -166,6 +166,18 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   // recording (CDP-backed; uses scripting + downloads on export)
   record_gif: ['activeTab', 'tabs', 'scripting', 'downloads'],
 
+  // focused extractors
+  extract_table: ['activeTab', 'scripting'],
+  screenshot_region: ['activeTab', 'scripting'],
+
+  // small utilities
+  get_clipboard: ['activeTab', 'scripting'],
+  tab_audio_inspect: ['tabs'],
+  mutation_watch: ['activeTab', 'scripting'],
+
+  // structured-data extractor
+  extract_microdata: ['activeTab', 'scripting'],
+
   // demos (uses tabs + scripting + storage + webNavigation for re-injection)
   record_demo: ['tabs', 'activeTab', 'scripting', 'storage', 'webNavigation'],
   list_demos: ['storage'],

@@ -15,6 +15,7 @@
  */
 
 import { ALARMS, STORAGE_KEYS } from '@/config/env';
+import { startAudibleLog } from '@/lib/audio/audible-log';
 import {
   registerAgendaNotificationClicks,
   scanAndNotify,
@@ -52,6 +53,10 @@ export function bootstrapBackground(): void {
   //       Per-run permission mode is latched from the chat hook; this default
   //       only kicks in if the sidepanel forgot to pass one.
   startToolDispatcher({ defaultPermissionMode: () => 'ask' });
+
+  // ── 2a. Audio log: track when each tab last produced sound so
+  //        `tab_audio_inspect` can answer "recently audible" queries.
+  startAudibleLog();
 
   // ── 3. Alarms — also synchronous registration.
   setupAlarms();

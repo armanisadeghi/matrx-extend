@@ -43,6 +43,9 @@ import { privileged_handlers, privileged_read_handlers } from '@/lib/tools/handl
 import { read_handlers } from '@/lib/tools/handlers/read';
 import { record_handlers } from '@/lib/tools/handlers/record';
 import { demo_handlers } from '@/lib/tools/handlers/demos';
+import { extract_handlers } from '@/lib/tools/handlers/extract';
+import { extras_handlers } from '@/lib/tools/handlers/extras';
+import { microdata_handlers } from '@/lib/tools/handlers/microdata';
 import { tab_action_handlers, tab_read_handlers } from '@/lib/tools/handlers/tabs';
 import { user_handlers } from '@/lib/tools/handlers/user';
 import { webmcp_handlers } from '@/lib/tools/handlers/webmcp';
@@ -97,6 +100,12 @@ const ALL: AnyToolHandler[] = [
   ...record_handlers,
   // ─── demos (record & replay) ───────────────────────────────────────────
   ...demo_handlers,
+  // ─── focused extractors (table, region screenshot) ─────────────────────
+  ...extract_handlers,
+  // ─── small utilities (clipboard, audio inspect, mutation watch) ────────
+  ...extras_handlers,
+  // ─── structured-data extractor (shares modes with Showcase tab) ────────
+  ...microdata_handlers,
   // ─── canonical routers ─────────────────────────────────────────────────
   // Registered LAST so canonical names (`wait_for`, etc.) win over any
   // legacy handler with the same name — last-write-wins in BY_NAME.

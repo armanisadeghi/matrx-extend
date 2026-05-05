@@ -27,6 +27,13 @@ export const CHANNELS = {
   // captured user event to the SW recorder.
   DEMO_EVENT: 'demos:event',
 
+  // Guidance — user clicked the in-page Stop button on the recording
+  // banner injected during a demo / GIF capture. SW + sidepanel listen.
+  GUIDANCE_BANNER_STOP: 'guidance:banner-stop',
+  // Live recording state changes (idle / demo-recording / gif-recording +
+  // step counts). SW broadcasts; sidepanel updates the header chip.
+  GUIDANCE_RECORDING_STATE: 'guidance:recording-state',
+
   // Tool dispatch (agent-driven actions in the browser)
   TOOL_CONFIRM_REQUEST: 'tool:confirm-request', // SW → sidepanel: please render approval card
   TOOL_CONFIRM_RESPONSE: 'tool:confirm-response', // sidepanel → SW: user clicked allow / deny

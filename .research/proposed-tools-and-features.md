@@ -23,7 +23,7 @@ real gaps. Tier 3 is high-leverage but more niche.
 
 ## Tier 1 — would change what tasks the harness can do
 
-### 1. `record_demo` + `replay_demo` 🔥 STARTING WITH THIS
+### 1. `record_demo` + `replay_demo` ✅ SHIPPED 2026-05-05
 - **Surface:** `both` (heavy agent tool, light UI for save/manage flow)
 - **Why both:** the recording itself is captured automatically by content
   scripts during a user demonstration — no UI dance needed. But saving,
@@ -57,7 +57,7 @@ real gaps. Tier 3 is high-leverage but more niche.
 - **Status:** in progress (see roadmap section 5 — this is the canonical
   implementation of "self-healing selectors + deterministic replay").
 
-### 2. `extract_table`
+### 2. `extract_table` ✅ SHIPPED 2026-05-05
 - **Surface:** `agent-tool` (with optional Data-tab integration later)
 - **Why agent-only:** the user already has the Data tab for picking and
   applying patterns interactively. The agent needs a one-shot, structured
@@ -83,7 +83,7 @@ real gaps. Tier 3 is high-leverage but more niche.
   - UI: existing Agenda tab gets a "Watches" subsection (filters tasks
     by kind).
 
-### 4. `screenshot_region`
+### 4. `screenshot_region` ✅ SHIPPED 2026-05-05
 - **Surface:** `agent-tool`
 - **Why agent-only:** purely a token-efficient cropping primitive for
   vision-API consumption. No UI value — Tools tab can already exercise
@@ -221,13 +221,16 @@ real gaps. Tier 3 is high-leverage but more niche.
 ## Build order
 
 Hard committed:
-1. **Demo system (item 1)** — starting now. The biggest deliverable;
-   spans new content-script + SW state + storage + replay engine + 5
-   agent tools.
-2. `extract_table` — short, high impact, all-agent-tool.
-3. `screenshot_region` — 1-day implementation; cuts vision-API costs
-   immediately.
-4. `accessibility_audit` — pair with the SEO tab work.
+1. ✅ **Demo system (item 1)** — shipped. 5 agent tools, full
+   record/replay engine, self-healing selector chain, sensitive-field
+   auto-parameterization. See [demo-system-design-notes.md](./demo-system-design-notes.md).
+2. ✅ `extract_table` — shipped. Native `<table>` + ARIA `role=table` /
+   `role=grid`, full rowspan/colspan/multi-row-header support via 2D
+   virtual-grid resolution.
+3. ✅ `screenshot_region` — shipped. Ref / selector / rect → cropped
+   screenshot in same envelope as `take_screenshot`. Auto-scrolls
+   off-viewport elements into view, DPR-aware crop.
+4. **Up next: `accessibility_audit`** — pair with the SEO tab work.
 5. `watch_for_change` — pair with the Agenda tab.
 
 Then the rest of Tier 2 + Tier 3, in roughly the order above.

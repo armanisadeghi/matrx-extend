@@ -210,6 +210,10 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   inspect_element: 'page',
   get_element_details: 'page',
   get_form_fields: 'page',
+  extract_table: 'page',
+  screenshot_region: 'page',
+  mutation_watch: 'page',
+  extract_microdata: 'page',
 
   // ─── page interaction ───────────────────────────────────────────────────
   scroll_page: 'interact',
@@ -232,6 +236,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   list_open_tabs: 'tabs',
   get_tab_groups: 'tabs',
   get_tab_info: 'tabs',
+  tab_audio_inspect: 'tabs',
   open_new_tab: 'tabs',
   close_tab: 'tabs',
   switch_to_tab: 'tabs',
@@ -273,6 +278,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   download_url: 'files',
   cancel_download: 'files',
   set_clipboard: 'files',
+  get_clipboard: 'files',
   notify_user: 'files',
   save_page_as_mhtml: 'files',
 

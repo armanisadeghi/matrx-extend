@@ -11,6 +11,7 @@ export type SidepanelTab =
   | 'agenda'
   | 'scrape'
   | 'data'
+  | 'guidance'
   | 'seo'
   | 'tools'
   | 'settings'

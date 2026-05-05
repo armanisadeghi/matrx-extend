@@ -34,6 +34,7 @@ import { detectPullRequest, isPullRequestUrl } from './detect-pull-request';
 import { detectTicket, isTicketUrl } from './detect-ticket';
 import { discoverFormsForContext } from './discover-forms';
 import { getDomainMemoForUrl } from './domain-memo';
+import { getGuidanceForUrl } from './guidance';
 import { probeActivePage } from './probe';
 
 export async function buildContextV2Bundled(
@@ -99,9 +100,10 @@ export async function buildContextV2Bundled(
         isTicketUrl(url) ? detectTicket(tabId, url) : Promise.resolve(null),
         url ? checkAuthState(tabId, url) : Promise.resolve(null),
         url ? getDomainMemoForUrl(url) : Promise.resolve(null),
+        url ? getGuidanceForUrl(url) : Promise.resolve(null),
       ])
-    : Promise.resolve([null, null, null, undefined, null, null, null, null, null] as const);
-  const [probe, forms, pageReady, , pullRequest, email, ticket, authState, domainMemo] =
+    : Promise.resolve([null, null, null, undefined, null, null, null, null, null, null] as const);
+  const [probe, forms, pageReady, , pullRequest, email, ticket, authState, domainMemo, guidance] =
     await tasks;
 
   // Scrape lookup. Prefer manual capture, then auto-background.
@@ -340,6 +342,14 @@ export async function buildContextV2Bundled(
   // doesn't re-learn the same lessons every session.
   if (domainMemo) {
     ctx.domain_memo = domainMemo;
+  }
+
+  // guidance: user-saved clues for this domain — notes, screenshots,
+  // GIFs, demo references. Authored via the Guidance sidepanel tab.
+  // The agent can read text inline, view images via `ai({action:'describe_image'})`,
+  // and replay demos via `replay_demo({demo_id: ...})`.
+  if (guidance) {
+    ctx.guidance = guidance;
   }
 
   // ── Capture history (recognition row from Supabase) ──────────────────

@@ -15,7 +15,8 @@
 export type OptionalPermission =
   | 'debugger'
   | 'cookies'
-  | 'pageCapture';
+  | 'pageCapture'
+  | 'clipboardRead';
 
 // ─── Reserved for future capabilities ────────────────────────────────────
 // These were previously declared but had no corresponding chrome.<api>
@@ -48,6 +49,10 @@ export const OPTIONAL_PERMISSION_LABELS: Record<OptionalPermission, { title: str
   pageCapture: {
     title: 'Page archive (MHTML)',
     desc: 'Snapshot a page as a self-contained MHTML archive (HTML + every resource inlined).',
+  },
+  clipboardRead: {
+    title: 'Clipboard read',
+    desc: 'Read the system clipboard. Required by the get_clipboard tool so the agent can use whatever the user just copied.',
   },
 };
 
