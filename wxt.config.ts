@@ -32,7 +32,7 @@ export default defineConfig({
     // dev installs keep the stable dev ID. Both IDs live in
     // src/config/identity.ts; both redirect URIs are in Supabase Auth.
     // Full incident: .research/v0.1.4-auth-incident.md.
-    key: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1+MJD71hyTGZT40a/vRzeM9dz80VyHsiTm7zq8Yz0NxqVcl9nBx8GELq+FS0GUo1fUQBjqm17zPYtD/w4Y7TAzRY+AFu2wEzaP78b49gir3FEPw9liAhowraluj13Pg5tNPKTH1znL6rAsMi9VTrYm+WDJtj+nKI5CoKKKq0rQTUf/ChGn4Db1CrCnv7H33v9czYHZOBkksvni65uczSnDkx3x0+xH9ApJjiL5ADa2a9IUFwfBWML4AW+Q7jM7ZcegIBxsDtyzStgL7PR67cniI34An6Xsm+VVSyfP2uBP9eZr8FWfdehAmFo4v9WmxuVXAukJ+TuRAczbExT59FpQIDAQAB',
+    // key: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1+MJD71hyTGZT40a/vRzeM9dz80VyHsiTm7zq8Yz0NxqVcl9nBx8GELq+FS0GUo1fUQBjqm17zPYtD/w4Y7TAzRY+AFu2wEzaP78b49gir3FEPw9liAhowraluj13Pg5tNPKTH1znL6rAsMi9VTrYm+WDJtj+nKI5CoKKKq0rQTUf/ChGn4Db1CrCnv7H33v9czYHZOBkksvni65uczSnDkx3x0+xH9ApJjiL5ADa2a9IUFwfBWML4AW+Q7jM7ZcegIBxsDtyzStgL7PR67cniI34An6Xsm+VVSyfP2uBP9eZr8FWfdehAmFo4v9WmxuVXAukJ+TuRAczbExT59FpQIDAQAB',
     permissions: [
       'storage',
       'sidePanel',
