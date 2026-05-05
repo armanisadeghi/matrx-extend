@@ -4,29 +4,60 @@
  * Backend URL selection is RUNTIME-only via src/config/backend.ts — there is
  * no build-time default backend or URL override. Production is always the
  * fallback; only an admin can change it at runtime.
+ *
+ * ⚠ Lazy on purpose. `import.meta.env` is defined by Vite/WXT at build time
+ *   and is `undefined` under plain `tsx`/Node (e.g. when the catalog script
+ *   imports a module that transitively imports this file). Reading env vars
+ *   eagerly at module load would crash any non-Vite tooling. Reads are
+ *   deferred to property access via getters, so files that import ENV but
+ *   never touch its fields (registry walk, catalog dump) load safely.
+ *
+ *   Same rule for any future module: NEVER call requireEnv() at top level.
+ *   Wrap it in a getter, a function, or a closure invoked at runtime.
  */
 
 export type BackendEnv = 'prod' | 'staging' | 'dev' | 'local';
 
+// Defensive read: when import.meta.env itself is undefined (tsx in plain
+// Node), return undefined rather than throwing TypeError on the indexer.
+const readImportMetaEnv = (key: string): string | undefined => {
+  const meta = import.meta as unknown as { env?: Record<string, unknown> };
+  const value = meta.env?.[key];
+  return typeof value === 'string' && value.length > 0 ? value : undefined;
+};
+
 const requireEnv = (key: keyof ImportMetaEnv): string => {
-  const value = import.meta.env[key];
-  if (!value || typeof value !== 'string') {
-    throw new Error(`Missing required env var: ${String(key)}`);
+  const value = readImportMetaEnv(key as string);
+  if (!value) {
+    throw new Error(
+      `Missing required env var: ${String(key)}. ` +
+        'This usually means the module was loaded outside of Vite/WXT ' +
+        '(e.g. a tsx script). Either avoid touching ENV from script context, ' +
+        'or run inside the WXT build.',
+    );
   }
   return value;
 };
 
-const optionalEnv = (key: keyof ImportMetaEnv): string | undefined => {
-  const value = import.meta.env[key];
-  return typeof value === 'string' && value.length > 0 ? value : undefined;
-};
+const optionalEnv = (key: keyof ImportMetaEnv): string | undefined =>
+  readImportMetaEnv(key as string);
 
 export const ENV = {
-  SUPABASE_URL: requireEnv('WXT_SUPABASE_URL'),
-  SUPABASE_PUBLISHABLE_KEY: requireEnv('WXT_SUPABASE_PUBLISHABLE_KEY'),
-  EXTENSION_OAUTH_CLIENT_ID: optionalEnv('WXT_EXTENSION_OAUTH_CLIENT_ID') ?? '',
-  DESKTOP_LOCAL_URL: optionalEnv('WXT_DESKTOP_LOCAL_URL') ?? 'http://127.0.0.1:22180',
-  DESKTOP_NATIVE_HOST: optionalEnv('WXT_DESKTOP_NATIVE_HOST') ?? 'com.matrx.local',
+  get SUPABASE_URL(): string {
+    return requireEnv('WXT_SUPABASE_URL');
+  },
+  get SUPABASE_PUBLISHABLE_KEY(): string {
+    return requireEnv('WXT_SUPABASE_PUBLISHABLE_KEY');
+  },
+  get EXTENSION_OAUTH_CLIENT_ID(): string {
+    return optionalEnv('WXT_EXTENSION_OAUTH_CLIENT_ID') ?? '';
+  },
+  get DESKTOP_LOCAL_URL(): string {
+    return optionalEnv('WXT_DESKTOP_LOCAL_URL') ?? 'http://127.0.0.1:22180';
+  },
+  get DESKTOP_NATIVE_HOST(): string {
+    return optionalEnv('WXT_DESKTOP_NATIVE_HOST') ?? 'com.matrx.local';
+  },
 } as const;
 
 export const BACKEND_URLS: Readonly<Record<BackendEnv, string>> = {

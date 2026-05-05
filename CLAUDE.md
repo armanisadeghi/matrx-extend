@@ -510,6 +510,27 @@ Full incident write-up: [`.research/v0.1.4-auth-incident.md`](./.research/v0.1.4
   Same rule for the inner func — when checking, use `value !== null`, not
   `value !== undefined`. Bit me on `select_dropdown_option` (2026-05-03);
   every existing handler is now null-coerced.
+- **No top-level reads of `import.meta.env` or `chrome.*`** — the registry
+  is walked by `scripts/dump-tool-catalog.ts` under plain `tsx`, where
+  `import.meta.env` is `undefined` and `chrome` is not defined at all.
+  Anything that reads either at module top level will crash catalog
+  generation (and any future Node-side tooling). Defer the read:
+    - For env: use the lazy getters in `src/config/env.ts`. Add new env
+      vars there, never inline `import.meta.env.WXT_*` elsewhere. The
+      file is intentionally written so `import { ENV } from '@/config/env'`
+      is safe to load anywhere; only `ENV.SUPABASE_URL` etc. throw.
+    - For `chrome.*`: read inside a function body, not at module init.
+      Tool handlers already follow this — every `chrome.*` access is
+      inside a `run()` closure. Don't break that pattern by computing
+      a constant from `chrome.identity.getRedirectURL()` at top level.
+  Verify after any handler / config change by running
+  `pnpm catalog:tools:md` — if it crashes with "Cannot read properties of
+  undefined" or `ReferenceError: chrome is not defined`, the import graph
+  has a new top-level offender to find. The release script (`release.sh`)
+  will warn but no longer fail on this; treat the warning as a real bug
+  to fix, not background noise. Bit me on 0.1.7 → 0.1.8 (env.ts crashing
+  the catalog regen; auth/flow.ts had an unused `_REDIRECT_URI = chrome.
+  identity.getRedirectURL()` constant doing the same thing).
 
 ---
 

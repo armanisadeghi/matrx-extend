@@ -1,4 +1,5 @@
 import { chromeLocalStorage } from "@/lib/storage/zustand-adapter";
+import { useToolInbox } from "@/state/tool-inbox";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -161,10 +162,7 @@ export const useChatStore = create<ChatState>()(
         // time them out on its end. Keeping them visible here would just
         // confuse the user since responding to them no longer reaches a
         // listener that cares.
-        // Lazy import — avoids a circular dep with hooks importing chat.
-        import('@/state/tool-inbox').then(({ useToolInbox }) => {
-          useToolInbox.getState().resetAll();
-        });
+        useToolInbox.getState().resetAll();
       },
       adoptConversationId: (id) =>
         set((s) =>

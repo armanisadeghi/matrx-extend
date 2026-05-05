@@ -27,8 +27,6 @@ const refreshMutex = new Mutex();
 const authorizeUrl = (): string => `${ENV.SUPABASE_URL}/auth/v1/oauth/authorize`;
 const tokenUrl = (): string => `${ENV.SUPABASE_URL}/auth/v1/oauth/token`;
 
-const _REDIRECT_URI = chrome.identity?.getRedirectURL ? chrome.identity.getRedirectURL() : '';
-
 export function getRedirectUri(): string {
   // Recompute lazily — chrome.identity is not available in offscreen / content
   // contexts but this module is only imported from SW + UI surfaces.
