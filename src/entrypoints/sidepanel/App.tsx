@@ -7,6 +7,7 @@ import { ChatView } from '@/features/chat/ChatView';
 import { DataView } from '@/features/data/DataView';
 import { DebugView } from '@/features/debug/DebugView';
 import { GuidanceView } from '@/features/guidance/GuidanceView';
+import { NotesView } from '@/features/notes/NotesView';
 import { ScrapeView } from '@/features/scrape/ScrapeView';
 import { SeoView } from '@/features/seo/SeoView';
 import { SettingsView } from '@/features/settings/SettingsView';
@@ -27,6 +28,7 @@ import {
   Database,
   ListTodo,
   MessageSquare,
+  NotebookPen,
   ScanLine,
   Search,
   Settings as SettingsIcon,
@@ -110,6 +112,9 @@ export function App() {
                 <TabsTrigger value="seo" className="size-7 p-0" title="SEO">
                   <Search className="size-3.5" />
                 </TabsTrigger>
+                <TabsTrigger value="notes" className="size-7 p-0" title="Notes">
+                  <NotebookPen className="size-3.5" />
+                </TabsTrigger>
                 <TabsTrigger value="tools" className="size-7 p-0" title="Tools">
                   <Wrench className="size-3.5" />
                 </TabsTrigger>
@@ -160,6 +165,9 @@ export function App() {
             </TabsContent>
             <TabsContent value="seo" className="flex-1 min-h-0">
               <SeoView />
+            </TabsContent>
+            <TabsContent value="notes" className="flex-1 min-h-0">
+              <NotesView />
             </TabsContent>
             <TabsContent value="tools" className="flex-1 min-h-0">
               <ToolsView />

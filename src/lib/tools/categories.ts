@@ -51,6 +51,8 @@ export type ToolCategory =
   | 'advanced'
   /** Record / replay user demonstrations. */
   | 'demos'
+  /** User-saved clues for the agent (notes, screenshots, GIFs, demo refs). */
+  | 'guidance'
   /** Chrome DevTools Protocol — full-page screenshots, a11y tree, network capture, etc. (admin) */
   | 'debug'
   /** Cookies (admin). */
@@ -154,6 +156,13 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     description:
       'Record a user demonstration of a workflow once, then replay it on demand with parameter substitution. Self-healing selector chain (matrx-ref → id → testid → ARIA → text → CSS path) survives DOM churn between recording and replay. Use to automate repetitive multi-step workflows: form filling, expense reports, recurring searches, login flows. Replay is privileged — it can click, type, submit, and navigate, so it always asks the user to confirm.',
     list_tool_name: 'list_demos_tools',
+  },
+  guidance: {
+    category: 'guidance',
+    label: 'Guidance (user-saved clues)',
+    description:
+      "User-saved clues for the agent — domain-scoped notes, screenshots, GIFs, and demo references. Whenever the user opens a tab on a matching domain, the agent's context auto-includes any guidance the user has saved there. Tools here let the agent add more notes (`save_guidance_note`), browse what exists (`list_guidance` / `get_guidance_item`), and remove stale items (`delete_guidance_item`). Captured artifacts (screenshots, GIFs) are created via the Guidance sidepanel tab.",
+    list_tool_name: 'list_guidance_tools',
   },
   debug: {
     category: 'debug',
@@ -322,6 +331,12 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   describe_demo: 'demos',
   replay_demo: 'demos',
   delete_demo: 'demos',
+
+  // ─── guidance (user-saved clues for the agent) ──────────────────────────
+  save_guidance_note: 'guidance',
+  list_guidance: 'guidance',
+  get_guidance_item: 'guidance',
+  delete_guidance_item: 'guidance',
 
   // ─── debug (admin + CDP) ────────────────────────────────────────────────
   cdp_attach: 'debug',

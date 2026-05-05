@@ -185,6 +185,13 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   replay_demo: ['tabs', 'activeTab', 'scripting', 'storage'],
   delete_demo: ['storage'],
 
+  // guidance (user-saved clues — chrome.storage.local-only for the index;
+  // artifact bytes go through cld_files via the UI)
+  save_guidance_note: ['storage'],
+  list_guidance: ['storage'],
+  get_guidance_item: ['storage'],
+  delete_guidance_item: ['storage'],
+
   // WebMCP — runs in MAIN world
   webmcp_check_availability: ['activeTab', 'scripting'],
   webmcp_list_page_tools: ['activeTab', 'scripting'],

@@ -43,6 +43,7 @@ import { privileged_handlers, privileged_read_handlers } from '@/lib/tools/handl
 import { read_handlers } from '@/lib/tools/handlers/read';
 import { record_handlers } from '@/lib/tools/handlers/record';
 import { demo_handlers } from '@/lib/tools/handlers/demos';
+import { guidance_handlers } from '@/lib/tools/handlers/guidance';
 import { extract_handlers } from '@/lib/tools/handlers/extract';
 import { extras_handlers } from '@/lib/tools/handlers/extras';
 import { microdata_handlers } from '@/lib/tools/handlers/microdata';
@@ -100,6 +101,8 @@ const ALL: AnyToolHandler[] = [
   ...record_handlers,
   // ─── demos (record & replay) ───────────────────────────────────────────
   ...demo_handlers,
+  // ─── guidance (user-saved clues for the agent) ─────────────────────────
+  ...guidance_handlers,
   // ─── focused extractors (table, region screenshot) ─────────────────────
   ...extract_handlers,
   // ─── small utilities (clipboard, audio inspect, mutation watch) ────────
