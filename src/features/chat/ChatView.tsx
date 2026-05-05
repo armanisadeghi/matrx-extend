@@ -99,6 +99,10 @@ export function ChatView() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [agentsLoading, setAgentsLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
+  // Once the user scrolls (wheel / touch), we never auto-scroll again until
+  // the next message is sent or the conversation changes. Tracks deliberate
+  // user intent to read older content while a stream keeps producing tokens.
+  const autoScrollLockedRef = useRef(false);
 
   useToolInbox$Subscribe();
   const allPendingConfirms = useToolInbox((s) => s.pendingConfirms);
@@ -168,7 +172,31 @@ export function ChatView() {
     })();
   }, [selectedConversationId, setMessages]);
 
+  // Detect user-initiated scroll gestures and lock further auto-scrolls.
+  // wheel + touchmove only fire on real input (programmatic scrollTo does not
+  // trigger them), so we don't need a "is this scroll programmatic?" guard.
   useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const lock = () => {
+      autoScrollLockedRef.current = true;
+    };
+    el.addEventListener('wheel', lock, { passive: true });
+    el.addEventListener('touchmove', lock, { passive: true });
+    return () => {
+      el.removeEventListener('wheel', lock);
+      el.removeEventListener('touchmove', lock);
+    };
+  }, []);
+
+  // Conversation switch (new chat, agent change, thread pick) re-engages
+  // auto-scroll. Fresh thread = fresh scroll behavior.
+  useEffect(() => {
+    autoScrollLockedRef.current = false;
+  }, [selectedConversationId]);
+
+  useEffect(() => {
+    if (autoScrollLockedRef.current) return;
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, pendingConfirms.length, pendingAsks.length]);
 
@@ -189,6 +217,9 @@ export function ChatView() {
     const agentId = selectedAgentId ?? agents[0]?.id;
     if (!agentId) return;
     if (!selectedAgentId && agentId) setAgent(agentId);
+    // Fresh turn → re-engage auto-scroll, even if the user had scrolled away
+    // during the previous response.
+    autoScrollLockedRef.current = false;
     setDraft('');
     // Pass per-agent variable values along with the message. Empty / missing
     // values are dropped so the server falls back to the agent's defaults.
