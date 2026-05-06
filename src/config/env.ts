@@ -5,58 +5,74 @@
  * no build-time default backend or URL override. Production is always the
  * fallback; only an admin can change it at runtime.
  *
- * ⚠ Lazy on purpose. `import.meta.env` is defined by Vite/WXT at build time
- *   and is `undefined` under plain `tsx`/Node (e.g. when the catalog script
- *   imports a module that transitively imports this file). Reading env vars
- *   eagerly at module load would crash any non-Vite tooling. Reads are
- *   deferred to property access via getters, so files that import ENV but
- *   never touch its fields (registry walk, catalog dump) load safely.
+ * ⚠ Two constraints, both real:
  *
- *   Same rule for any future module: NEVER call requireEnv() at top level.
- *   Wrap it in a getter, a function, or a closure invoked at runtime.
+ *   1. Vite STATICALLY replaces `import.meta.env.WXT_FOO` (literal property
+ *      access) at build time with the actual value. Dynamic access like
+ *      `import.meta.env[key]` is NOT replaced — at runtime, that object
+ *      only contains Vite's built-in keys (MODE/DEV/PROD/SSR). Each env
+ *      var must therefore be referenced by literal name in source.
+ *
+ *   2. The catalog script (scripts/dump-tool-catalog.ts) walks the tool
+ *      registry under plain `tsx`, where `import.meta.env` is undefined.
+ *      The module must therefore be importable without throwing on load
+ *      — reads are deferred via getters and wrapped in try/catch so the
+ *      throw only happens on actual access, not at import time.
+ *
+ *   Together those mean: each env var gets its own getter, with a literal
+ *   `import.meta.env.WXT_FOO` access guarded by try/catch. Don't refactor
+ *   to a generic `getEnv(key)` helper — that breaks Vite's literal-pattern
+ *   replacement and the var disappears at runtime (the 0.1.7 → 0.1.8
+ *   "Missing required env var" incident).
  */
 
 export type BackendEnv = 'prod' | 'staging' | 'dev' | 'local';
 
-// Defensive read: when import.meta.env itself is undefined (tsx in plain
-// Node), return undefined rather than throwing TypeError on the indexer.
-const readImportMetaEnv = (key: string): string | undefined => {
-  const meta = import.meta as unknown as { env?: Record<string, unknown> };
-  const value = meta.env?.[key];
-  return typeof value === 'string' && value.length > 0 ? value : undefined;
-};
-
-const requireEnv = (key: keyof ImportMetaEnv): string => {
-  const value = readImportMetaEnv(key as string);
-  if (!value) {
-    throw new Error(
-      `Missing required env var: ${String(key)}. ` +
-        'This usually means the module was loaded outside of Vite/WXT ' +
-        '(e.g. a tsx script). Either avoid touching ENV from script context, ' +
-        'or run inside the WXT build.',
-    );
+// Wraps a literal `import.meta.env.X` access. In Vite/WXT, the access is
+// replaced at build time with a string literal and this function returns it.
+// In plain tsx (catalog script), `import.meta.env` is undefined and the
+// access throws TypeError; we catch it and return undefined so callers can
+// decide whether to throw a meaningful error or fall back to a default.
+const safeRead = (read: () => unknown): string | undefined => {
+  try {
+    const v = read();
+    return typeof v === 'string' && v.length > 0 ? v : undefined;
+  } catch {
+    return undefined;
   }
-  return value;
 };
 
-const optionalEnv = (key: keyof ImportMetaEnv): string | undefined =>
-  readImportMetaEnv(key as string);
+const required = (label: string, value: string | undefined): string => {
+  if (value) return value;
+  throw new Error(
+    `Missing required env var: ${label}. ` +
+      'This usually means the module was loaded outside of Vite/WXT ' +
+      '(e.g. a tsx script). Either avoid touching ENV from script context, ' +
+      'or run inside the WXT build.',
+  );
+};
 
 export const ENV = {
   get SUPABASE_URL(): string {
-    return requireEnv('WXT_SUPABASE_URL');
+    return required(
+      'WXT_SUPABASE_URL',
+      safeRead(() => import.meta.env.WXT_SUPABASE_URL),
+    );
   },
   get SUPABASE_PUBLISHABLE_KEY(): string {
-    return requireEnv('WXT_SUPABASE_PUBLISHABLE_KEY');
+    return required(
+      'WXT_SUPABASE_PUBLISHABLE_KEY',
+      safeRead(() => import.meta.env.WXT_SUPABASE_PUBLISHABLE_KEY),
+    );
   },
   get EXTENSION_OAUTH_CLIENT_ID(): string {
-    return optionalEnv('WXT_EXTENSION_OAUTH_CLIENT_ID') ?? '';
+    return safeRead(() => import.meta.env.WXT_EXTENSION_OAUTH_CLIENT_ID) ?? '';
   },
   get DESKTOP_LOCAL_URL(): string {
-    return optionalEnv('WXT_DESKTOP_LOCAL_URL') ?? 'http://127.0.0.1:22180';
+    return safeRead(() => import.meta.env.WXT_DESKTOP_LOCAL_URL) ?? 'http://127.0.0.1:22180';
   },
   get DESKTOP_NATIVE_HOST(): string {
-    return optionalEnv('WXT_DESKTOP_NATIVE_HOST') ?? 'com.matrx.local';
+    return safeRead(() => import.meta.env.WXT_DESKTOP_NATIVE_HOST) ?? 'com.matrx.local';
   },
 } as const;
 

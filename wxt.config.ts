@@ -122,6 +122,16 @@ export default defineConfig({
     },
     build: {
       sourcemap: true,
+      // Default 500 kB is noisy for an extension: install is one-time, bundles
+      // load from disk (no network cost), and the remaining oversized chunks
+      // are all already correctly lazy-loaded.
+      //   - AnnotationEditor (~1.6 MB) — tldraw, lazy via React.lazy in
+      //     GuidancePreview, only when the user clicks Annotate.
+      //   - cpp / wasm / lucide-react vendor chunks — split out by Vite,
+      //     loaded on demand when a code block of that language renders.
+      // Sidepanel-tab code is split via React.lazy in App.tsx (see
+      // VIEW_LOADERS), so the eager sidepanel chunk stays small (~90 kB).
+      chunkSizeWarningLimit: 1700,
     },
   }),
   outDir: '.output',

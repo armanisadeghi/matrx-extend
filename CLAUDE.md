@@ -510,27 +510,44 @@ Full incident write-up: [`.research/v0.1.4-auth-incident.md`](./.research/v0.1.4
   Same rule for the inner func — when checking, use `value !== null`, not
   `value !== undefined`. Bit me on `select_dropdown_option` (2026-05-03);
   every existing handler is now null-coerced.
-- **No top-level reads of `import.meta.env` or `chrome.*`** — the registry
-  is walked by `scripts/dump-tool-catalog.ts` under plain `tsx`, where
-  `import.meta.env` is `undefined` and `chrome` is not defined at all.
-  Anything that reads either at module top level will crash catalog
-  generation (and any future Node-side tooling). Defer the read:
-    - For env: use the lazy getters in `src/config/env.ts`. Add new env
-      vars there, never inline `import.meta.env.WXT_*` elsewhere. The
-      file is intentionally written so `import { ENV } from '@/config/env'`
-      is safe to load anywhere; only `ENV.SUPABASE_URL` etc. throw.
-    - For `chrome.*`: read inside a function body, not at module init.
-      Tool handlers already follow this — every `chrome.*` access is
-      inside a `run()` closure. Don't break that pattern by computing
-      a constant from `chrome.identity.getRedirectURL()` at top level.
-  Verify after any handler / config change by running
-  `pnpm catalog:tools:md` — if it crashes with "Cannot read properties of
-  undefined" or `ReferenceError: chrome is not defined`, the import graph
-  has a new top-level offender to find. The release script (`release.sh`)
-  will warn but no longer fail on this; treat the warning as a real bug
-  to fix, not background noise. Bit me on 0.1.7 → 0.1.8 (env.ts crashing
-  the catalog regen; auth/flow.ts had an unused `_REDIRECT_URI = chrome.
-  identity.getRedirectURL()` constant doing the same thing).
+- **Env vars: literal access only, deferred via getters** — `src/config/env.ts`
+  has TWO non-obvious constraints that pull in opposite directions and
+  bit us on 0.1.7 → 0.1.8 → 0.1.9:
+    1. **Vite only replaces LITERAL `import.meta.env.WXT_FOO`** at build
+       time. Dynamic access (`import.meta.env[key]` or
+       `getEnv('WXT_FOO')`) is NOT replaced — at runtime the object
+       only contains Vite's built-ins (`MODE`/`DEV`/`PROD`/`SSR`), so
+       user vars come back undefined and Supabase / OAuth / desktop
+       bridge all silently break. Each env var must appear once as a
+       literal `import.meta.env.WXT_NAME` somewhere in the source.
+    2. **`scripts/dump-tool-catalog.ts` runs under plain `tsx`** where
+       `import.meta.env` is `undefined`. Reading it at module load
+       throws and crashes the catalog regen.
+  The fix in `env.ts` satisfies both: each var has a getter whose body
+  contains a literal `import.meta.env.WXT_NAME` (Vite folds it at build
+  time) wrapped in try/catch via the `safeRead` helper (so tsx returns
+  undefined instead of throwing on import). Don't refactor to a generic
+  `getEnv(key)` — you'll re-break Vite's literal pattern matching.
+  Add new env vars by adding a new getter, never by extending the
+  helper. Verify with: build with `pnpm build`, then
+  `grep "your-secret-value" .output/chrome-mv3/chunks/env-*.js` — the
+  literal must be inlined into the bundle. If it's not, Vite didn't
+  fold it and runtime will see undefined.
+- **No top-level reads of `chrome.*`** — same `tsx`-loadability concern.
+  The registry walk in the catalog script imports every handler;
+  anything that reads `chrome.identity.*`, `chrome.runtime.*`, etc.
+  at module init crashes with `ReferenceError: chrome is not defined`.
+  Tool handlers already wrap `chrome.*` in `run()` closures; don't
+  break that pattern. Bit us when an unused
+  `_REDIRECT_URI = chrome.identity.getRedirectURL()` constant lingered
+  at the top of `src/lib/auth/flow.ts`.
+- **Verify after any handler / config / env-related change** by running
+  `pnpm catalog:tools:md`. If it crashes (`Cannot read properties of
+  undefined`, `ReferenceError: chrome is not defined`, etc.), the
+  import graph has a new top-level offender to find. The release
+  script (`release.sh`) will warn but no longer fail on catalog regen
+  failures — treat the warning as a real bug to fix, not background
+  noise.
 
 ---
 

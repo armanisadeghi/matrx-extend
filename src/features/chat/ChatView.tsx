@@ -55,6 +55,7 @@ import {
   Mic,
   Pencil,
   Plus,
+  RefreshCw,
   ScanLine,
   Settings2,
   Sliders,
@@ -99,10 +100,15 @@ export function ChatView() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [agentsLoading, setAgentsLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
-  // Once the user scrolls (wheel / touch), we never auto-scroll again until
-  // the next message is sent or the conversation changes. Tracks deliberate
-  // user intent to read older content while a stream keeps producing tokens.
-  const autoScrollLockedRef = useRef(false);
+  // Auto-scroll follows the stream only while the user is pinned to the
+  // bottom of the scroll container. ANY scroll away — wheel, touch,
+  // scrollbar drag, keyboard (PageUp/arrow/Home/End/space), Find-in-page —
+  // un-pins and the next streamed chunks stop yanking them back. They
+  // re-pin by scrolling to within a few pixels of the bottom themselves
+  // or by sending a new message. The earlier wheel/touchmove-only listener
+  // missed scrollbar-drag and keyboard scrolling, which is why a single
+  // resistance gesture didn't reliably stop the pull.
+  const pinnedToBottomRef = useRef(true);
 
   useToolInbox$Subscribe();
   const allPendingConfirms = useToolInbox((s) => s.pendingConfirms);
@@ -121,6 +127,8 @@ export function ChatView() {
     () => allPendingAsks.filter((c) => c.conversationId === selectedConversationId),
     [allPendingAsks, selectedConversationId],
   );
+
+  const [agentsRefreshing, setAgentsRefreshing] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -143,6 +151,21 @@ export function ChatView() {
       cancelled = true;
     };
   }, [user]);
+
+  // Manual refresh — engineers iterating on an agent in the dashboard want
+  // a way to pull the latest version (system prompt, tools, model, vars)
+  // without reloading the whole side panel. Keeps the current selection if
+  // the agent still exists in the refreshed list.
+  const refreshAgents = async () => {
+    if (!user || agentsRefreshing) return;
+    setAgentsRefreshing(true);
+    try {
+      const a = await fetchUserAgents(user.id);
+      setAgents(a);
+    } finally {
+      setAgentsRefreshing(false);
+    }
+  };
 
   const loadedConversationIdRef = useRef<string | null>(null);
   useEffect(() => {
@@ -172,32 +195,35 @@ export function ChatView() {
     })();
   }, [selectedConversationId, setMessages]);
 
-  // Detect user-initiated scroll gestures and lock further auto-scrolls.
-  // wheel + touchmove only fire on real input (programmatic scrollTo does not
-  // trigger them), so we don't need a "is this scroll programmatic?" guard.
+  // Track distance-from-bottom on every scroll event. Method-agnostic — works
+  // for wheel, touch, scrollbar drag, keyboard, and find-in-page alike.
+  // 8px tolerance absorbs sub-pixel rounding when content is at the bottom.
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    const lock = () => {
-      autoScrollLockedRef.current = true;
+    const onScroll = () => {
+      const distanceFromBottom = el.scrollHeight - (el.scrollTop + el.clientHeight);
+      pinnedToBottomRef.current = distanceFromBottom <= 8;
     };
-    el.addEventListener('wheel', lock, { passive: true });
-    el.addEventListener('touchmove', lock, { passive: true });
-    return () => {
-      el.removeEventListener('wheel', lock);
-      el.removeEventListener('touchmove', lock);
-    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
   }, []);
 
   // Conversation switch (new chat, agent change, thread pick) re-engages
   // auto-scroll. Fresh thread = fresh scroll behavior.
   useEffect(() => {
-    autoScrollLockedRef.current = false;
+    pinnedToBottomRef.current = true;
   }, [selectedConversationId]);
 
   useEffect(() => {
-    if (autoScrollLockedRef.current) return;
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+    if (!pinnedToBottomRef.current) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    // 'auto' (instant) intentionally — smooth-scroll fires intermediate
+    // `scroll` events at non-zero distances from bottom that would race
+    // the pin detector and incorrectly mark the user as un-pinned mid-
+    // animation, suppressing the next streamed chunk's follow.
+    el.scrollTo({ top: el.scrollHeight, behavior: 'auto' });
   }, [messages, pendingConfirms.length, pendingAsks.length]);
 
   const selectedAgent = useMemo(
@@ -219,7 +245,7 @@ export function ChatView() {
     if (!selectedAgentId && agentId) setAgent(agentId);
     // Fresh turn → re-engage auto-scroll, even if the user had scrolled away
     // during the previous response.
-    autoScrollLockedRef.current = false;
+    pinnedToBottomRef.current = true;
     setDraft('');
     // Pass per-agent variable values along with the message. Empty / missing
     // values are dropped so the server falls back to the agent's defaults.
@@ -247,6 +273,8 @@ export function ChatView() {
       <ChatHeader
         agents={agents}
         agentsLoading={agentsLoading}
+        agentsRefreshing={agentsRefreshing}
+        onRefreshAgents={() => void refreshAgents()}
         selectedAgentId={selectedAgentId}
         selectedConversationId={selectedConversationId}
         conversations={conversations}
@@ -492,6 +520,8 @@ function AgentPicker({
 function ChatHeader({
   agents,
   agentsLoading,
+  agentsRefreshing,
+  onRefreshAgents,
   selectedAgentId,
   selectedConversationId,
   conversations,
@@ -503,6 +533,8 @@ function ChatHeader({
 }: {
   agents: AgxAgent[];
   agentsLoading: boolean;
+  agentsRefreshing: boolean;
+  onRefreshAgents: () => void;
   selectedAgentId: string | null;
   selectedConversationId: string | null;
   conversations: Conversation[];
@@ -517,11 +549,23 @@ function ChatHeader({
       {agentsLoading ? (
         <Skeleton className="h-6 w-28" />
       ) : (
-        <AgentPicker
-          agents={agents}
-          selectedAgentId={selectedAgentId}
-          onAgentChange={onAgentChange}
-        />
+        <>
+          <AgentPicker
+            agents={agents}
+            selectedAgentId={selectedAgentId}
+            onAgentChange={onAgentChange}
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 text-muted-foreground"
+            title="Refresh agents (pull latest edits)"
+            onClick={onRefreshAgents}
+            disabled={agentsRefreshing}
+          >
+            <RefreshCw className={cn('size-3.5', agentsRefreshing && 'animate-spin')} />
+          </Button>
+        </>
       )}
       <div className="ml-auto flex items-center gap-1">
         <PermissionModeChip

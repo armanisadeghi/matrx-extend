@@ -2,31 +2,20 @@ import { AuthGate } from '@/components/AuthGate';
 import { UserMenu } from '@/components/UserMenu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { AgendaView } from '@/features/agenda/AgendaView';
-import { ChatView } from '@/features/chat/ChatView';
-import { DataView } from '@/features/data/DataView';
-import { DebugView } from '@/features/debug/DebugView';
-import { GuidanceView } from '@/features/guidance/GuidanceView';
-import { NotesView } from '@/features/notes/NotesView';
-import { ScrapeView } from '@/features/scrape/ScrapeView';
-import { SeoView } from '@/features/seo/SeoView';
-import { SettingsView } from '@/features/settings/SettingsView';
-import { ShowcaseView } from '@/features/showcase/ShowcaseView';
-import { TasksView } from '@/features/tasks/TasksView';
-import { ToolsView } from '@/features/tools/ToolsView';
 import { useAgendaListener } from '@/hooks/use-agenda-listener';
 import { useAuth } from '@/hooks/use-auth';
 import { useAutoExtract } from '@/hooks/use-auto-extract';
 import { useAutoScrape } from '@/hooks/use-auto-scrape';
 import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
-import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { type SidepanelTab, useSidepanelTabStore } from '@/state/sidepanel-tab';
 import {
   BookOpen,
   Bug,
   Calendar,
   Database,
   ListTodo,
+  Loader2,
   MessageSquare,
   NotebookPen,
   ScanLine,
@@ -35,7 +24,51 @@ import {
   Sparkles,
   Wrench,
 } from 'lucide-react';
-import { useEffect } from 'react';
+import { type ComponentType, lazy, Suspense, useEffect } from 'react';
+
+// Per-tab dynamic imports. Single source of truth for module paths so each
+// view ships in its own chunk and the eager sidepanel bundle stays small.
+// Used both as the loader for `lazy()` and to pre-warm the chunk on tab
+// change (browsers + Vite dedupe identical `import()` calls, so calling the
+// loader twice doesn't double-fetch).
+const VIEW_LOADERS = {
+  chat: () => import('@/features/chat/ChatView').then((m) => ({ default: m.ChatView })),
+  tasks: () => import('@/features/tasks/TasksView').then((m) => ({ default: m.TasksView })),
+  agenda: () =>
+    import('@/features/agenda/AgendaView').then((m) => ({ default: m.AgendaView })),
+  scrape: () =>
+    import('@/features/scrape/ScrapeView').then((m) => ({ default: m.ScrapeView })),
+  data: () => import('@/features/data/DataView').then((m) => ({ default: m.DataView })),
+  guidance: () =>
+    import('@/features/guidance/GuidanceView').then((m) => ({ default: m.GuidanceView })),
+  seo: () => import('@/features/seo/SeoView').then((m) => ({ default: m.SeoView })),
+  notes: () => import('@/features/notes/NotesView').then((m) => ({ default: m.NotesView })),
+  tools: () => import('@/features/tools/ToolsView').then((m) => ({ default: m.ToolsView })),
+  settings: () =>
+    import('@/features/settings/SettingsView').then((m) => ({ default: m.SettingsView })),
+  showcase: () =>
+    import('@/features/showcase/ShowcaseView').then((m) => ({ default: m.ShowcaseView })),
+  debug: () => import('@/features/debug/DebugView').then((m) => ({ default: m.DebugView })),
+} satisfies Record<SidepanelTab, () => Promise<{ default: ComponentType }>>;
+
+const ChatView = lazy(VIEW_LOADERS.chat);
+const TasksView = lazy(VIEW_LOADERS.tasks);
+const AgendaView = lazy(VIEW_LOADERS.agenda);
+const ScrapeView = lazy(VIEW_LOADERS.scrape);
+const DataView = lazy(VIEW_LOADERS.data);
+const GuidanceView = lazy(VIEW_LOADERS.guidance);
+const SeoView = lazy(VIEW_LOADERS.seo);
+const NotesView = lazy(VIEW_LOADERS.notes);
+const ToolsView = lazy(VIEW_LOADERS.tools);
+const SettingsView = lazy(VIEW_LOADERS.settings);
+const ShowcaseView = lazy(VIEW_LOADERS.showcase);
+const DebugView = lazy(VIEW_LOADERS.debug);
+
+const TabFallback = (
+  <div className="flex h-full items-center justify-center text-muted-foreground">
+    <Loader2 className="size-4 animate-spin" />
+  </div>
+);
 
 export function App() {
   const theme = useSettingsStore((s) => s.theme);
@@ -56,6 +89,15 @@ export function App() {
   // Mount ONCE: listens for SW AGENDA_RUN_NOW broadcasts so auto-mode
   // tasks fire immediately when the sidepanel is open, no click needed.
   useAgendaListener();
+
+  // Pre-warm the active tab's chunk. Fires on mount (so the default Chat
+  // view is already fetched by the time Suspense reaches it — no flash on
+  // sidepanel open) and on every tab change (so the second visit to a tab
+  // is instant). Repeat calls hit the browser/Vite import cache; no extra
+  // fetch cost.
+  useEffect(() => {
+    void VIEW_LOADERS[tab]();
+  }, [tab]);
 
   // Once-per-mount identity log. Surfaces the runtime extension id +
   // redirect URI in the debug log so any ID drift is visible BEFORE the
@@ -146,43 +188,67 @@ export function App() {
               <UserMenu />
             </div>
             <TabsContent value="chat" className="flex-1 min-h-0">
-              <ChatView />
+              <Suspense fallback={TabFallback}>
+                <ChatView />
+              </Suspense>
             </TabsContent>
             <TabsContent value="tasks" className="flex-1 min-h-0">
-              <TasksView />
+              <Suspense fallback={TabFallback}>
+                <TasksView />
+              </Suspense>
             </TabsContent>
             <TabsContent value="agenda" className="flex-1 min-h-0">
-              <AgendaView />
+              <Suspense fallback={TabFallback}>
+                <AgendaView />
+              </Suspense>
             </TabsContent>
             <TabsContent value="scrape" className="flex-1 min-h-0">
-              <ScrapeView />
+              <Suspense fallback={TabFallback}>
+                <ScrapeView />
+              </Suspense>
             </TabsContent>
             <TabsContent value="data" className="flex-1 min-h-0">
-              <DataView />
+              <Suspense fallback={TabFallback}>
+                <DataView />
+              </Suspense>
             </TabsContent>
             <TabsContent value="guidance" className="flex-1 min-h-0">
-              <GuidanceView />
+              <Suspense fallback={TabFallback}>
+                <GuidanceView />
+              </Suspense>
             </TabsContent>
             <TabsContent value="seo" className="flex-1 min-h-0">
-              <SeoView />
+              <Suspense fallback={TabFallback}>
+                <SeoView />
+              </Suspense>
             </TabsContent>
             <TabsContent value="notes" className="flex-1 min-h-0">
-              <NotesView />
+              <Suspense fallback={TabFallback}>
+                <NotesView />
+              </Suspense>
             </TabsContent>
             <TabsContent value="tools" className="flex-1 min-h-0">
-              <ToolsView />
+              <Suspense fallback={TabFallback}>
+                <ToolsView />
+              </Suspense>
             </TabsContent>
             <TabsContent value="settings" className="flex-1 min-h-0">
-              <SettingsView />
+              <Suspense fallback={TabFallback}>
+                <SettingsView />
+              </Suspense>
             </TabsContent>
             {isAdmin && (
               <TabsContent value="showcase" className="flex-1 min-h-0">
-                <ShowcaseView />
+                <Suspense fallback={TabFallback}>
+                  <ShowcaseView />
+                </Suspense>
               </TabsContent>
             )}
             {isAdmin && (
               <TabsContent value="debug" className="flex-1 min-h-0">
-                <DebugView />
+                <Suspense fallback={TabFallback}>
+                  <DebugView />
+                </Suspense>
               </TabsContent>
             )}
           </Tabs>

@@ -75,7 +75,7 @@ const COMPONENTS: Components = {
   hr: ({ node: _n, ...props }) => <hr className="my-4 border-border/60" {...props} />,
   a: ({ node: _n, ...props }) => (
     <a
-      className="font-medium text-primary underline-offset-2 hover:underline"
+      className="break-words font-medium text-sky-600 underline underline-offset-2 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"
       target="_blank"
       rel="noreferrer"
       {...props}
