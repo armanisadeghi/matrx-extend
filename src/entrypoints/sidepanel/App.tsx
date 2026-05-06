@@ -46,6 +46,8 @@ const VIEW_LOADERS = {
   tools: () => import('@/features/tools/ToolsView').then((m) => ({ default: m.ToolsView })),
   settings: () =>
     import('@/features/settings/SettingsView').then((m) => ({ default: m.SettingsView })),
+  profile: () =>
+    import('@/features/profile/ProfileView').then((m) => ({ default: m.ProfileView })),
   showcase: () =>
     import('@/features/showcase/ShowcaseView').then((m) => ({ default: m.ShowcaseView })),
   debug: () => import('@/features/debug/DebugView').then((m) => ({ default: m.DebugView })),
@@ -61,6 +63,7 @@ const SeoView = lazy(VIEW_LOADERS.seo);
 const NotesView = lazy(VIEW_LOADERS.notes);
 const ToolsView = lazy(VIEW_LOADERS.tools);
 const SettingsView = lazy(VIEW_LOADERS.settings);
+const ProfileView = lazy(VIEW_LOADERS.profile);
 const ShowcaseView = lazy(VIEW_LOADERS.showcase);
 const DebugView = lazy(VIEW_LOADERS.debug);
 
@@ -235,6 +238,11 @@ export function App() {
             <TabsContent value="settings" className="flex-1 min-h-0">
               <Suspense fallback={TabFallback}>
                 <SettingsView />
+              </Suspense>
+            </TabsContent>
+            <TabsContent value="profile" className="flex-1 min-h-0">
+              <Suspense fallback={TabFallback}>
+                <ProfileView />
               </Suspense>
             </TabsContent>
             {isAdmin && (

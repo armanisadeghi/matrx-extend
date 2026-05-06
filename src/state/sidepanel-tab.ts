@@ -16,6 +16,7 @@ export type SidepanelTab =
   | 'notes'
   | 'tools'
   | 'settings'
+  | 'profile'
   | 'showcase'
   | 'debug';
 
