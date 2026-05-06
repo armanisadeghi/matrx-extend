@@ -308,13 +308,29 @@ export const useChatStore = create<ChatState>()(
     {
       name: "matrx.chat.v1",
       storage: createJSONStorage(() => chromeLocalStorage),
+      // Intentionally NOT persisting `selectedConversationId` — opening
+      // the side panel should always land on a fresh chat. Past
+      // conversations live in the chat header's history picker; the user
+      // can re-open one explicitly. Persisting agent + draft + per-agent
+      // variables keeps the user's setup; persisting the conversation id
+      // would force a re-fetch of the prior thread on every open and
+      // break the "new chat by default" expectation.
       partialize: (s) => ({
         selectedAgentId: s.selectedAgentId,
-        selectedConversationId: s.selectedConversationId,
         draft: s.draft,
         variableValues: s.variableValues,
         permissionMode: s.permissionMode,
       }),
+      // Force selectedConversationId to null on every rehydration. The
+      // storage key is shared with previous installs that DID persist the
+      // conversation id; without this, an old stored value would survive
+      // and re-open the user's last chat. Force-null defends against
+      // that without bumping the storage version (which would wipe
+      // agent + draft + variableValues unnecessarily).
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<ChatState>;
+        return { ...current, ...p, selectedConversationId: null, messages: [] };
+      },
     },
   ),
 );

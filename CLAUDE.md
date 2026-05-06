@@ -11,8 +11,13 @@
 
 ### Agent harness (the core)
 
-- **120 client-side tools** wired end-to-end through SW dispatcher →
-  permission gate → handler → result POST → timeline event.
+- **166 registered client-side tools** (74 read · 136 read+action+ask ·
+  full kit with privileged) wired end-to-end through SW dispatcher →
+  permission gate → handler → result POST → timeline event. The
+  canonical "advertised" surface is smaller — see `CANONICAL_SURFACE`
+  in [src/lib/tools/categories.ts](./src/lib/tools/categories.ts) for
+  the names the server actually shows agents (mega-tool routers like
+  `computer`, `tabs`, `form_input` collapse many granular handlers).
 - **Capability-based discovery (2026-05-01)** — every chat ships a single
   capability `browser-dom` whose only always-on tool is `load_browser_tools`.
   The model calls `load_browser_tools({category})` to pull in the matching
@@ -40,9 +45,18 @@
   rejects with optional note before execution begins.
 - **4-tier permission model:** `read` (auto) · `action` (Ask/Act) · `ask-user`
   (renders question card) · `privileged` (always confirms, even in Act mode).
-- **4 tool bundles:** core (always-on, 24 tools — agent's default surface) ·
-  assistant (legacy: every read-tier tool) · pilot (full kit: read+action+
-  ask) · pilot+privileged (trusted agents only).
+- **4 tool bundles:** core (always-on, 28 entries — agent's default surface) ·
+  assistant (74 read-tier tools) · pilot (136: read+action+ask) ·
+  pilot+privileged (166, trusted agents only).
+- **Per-conversation tab assignment (2026-05-06)** — when the user
+  sends a message, the active tab at that moment is latched as the
+  agent's `assignedTabId` for that turn. All client-side tool handlers
+  (`read_page`, `click_element`, `take_screenshot`, etc.) operate on
+  the assigned tab, NOT on whatever tab Chrome considers active. The
+  user can switch tabs mid-execution without disrupting the agent.
+  Re-assignment happens on the next user message — switch tabs, send
+  again, agent shifts focus. See `getAssignedTab` in
+  [src/lib/tools/handlers/_active-tab.ts](./src/lib/tools/handlers/_active-tab.ts).
 - **Two surfaces:** Assistant Chat tab (current) · Pilot tab (planned, see Roadmap).
 - **Per-agent permission mode** — "Ask before acting" / "Act without asking",
   user-toggleable in chat header chip, persisted per agent.
@@ -56,43 +70,53 @@
 
 ### Tool categories (the discovery system)
 
-The 118 tools are organized into **15 categories**. The agent only sees
-core upfront; everything else is on demand:
+166 tools are registered across **16 categories**. The agent only sees
+core upfront; everything else is on demand. Counts are live as of
+2026-05-06 (regenerate with `pnpm catalog:tools:md`):
 
 | category | tools | list-tool | always-on? |
 |---|---:|---|---|
-| `core` | 11 | `list_core_tools` | ✅ |
-| `page` | 10 | `list_page_tools` | – |
-| `interact` | 7 | `list_interact_tools` | – |
-| `forms` | 5 | `list_forms_tools` | – |
-| `tabs` | 18 | `list_tabs_tools` | – |
-| `history` | 7 | `list_history_tools` | – |
-| `ai` | 9 | `list_ai_tools` | – |
-| `files` | 5 | `list_files_tools` | – |
-| `memory` | 3 | `list_memory_tools` | – |
-| `ask` | 5 | `list_ask_tools` | – |
-| `advanced` | 4 | `list_advanced_tools` | – (privileged) |
-| `debug` | 16 | `list_debug_tools` | – (admin + CDP) |
-| `cookies` | 3 | `list_cookies_tools` | – (admin) |
-| `webmcp` | 3 | `list_webmcp_tools` | – (admin) |
+| `core` | 13 | `list_core_tools` | ✅ |
+| `page` | 16 | `list_page_tools` | – |
+| `interact` | 9 | `list_interact_tools` | – |
+| `forms` | 6 | `list_forms_tools` | – |
+| `tabs` | 22 | `list_tabs_tools` | – |
+| `history` | 10 | `list_history_tools` | – |
+| `ai` | 10 | `list_ai_tools` | – |
+| `files` | 11 | `list_files_tools` | – |
+| `memory` | 6 | `list_memory_tools` | – |
+| `ask` | 4 | `list_ask_tools` | – |
+| `advanced` | 22 | `list_advanced_tools` | – (privileged) |
+| `demos` | 5 | `list_demos_tools` | – |
+| `guidance` | 4 | `list_guidance_tools` | – |
+| `debug` | 20 | `list_debug_tools` | – (admin + CDP) |
+| `cookies` | 4 | `list_cookies_tools` | – (admin) |
+| `webmcp` | 4 | `list_webmcp_tools` | – (admin) |
 
 The discovery tools themselves (`list_browser_tools`, `list_<cat>_tools`)
 are also always-on so the agent can ask for any category by name.
 
-### Tool list (all 118)
+### Tool list
 
-#### Core (always advertised; 11 tools + 14 discovery tools = 24-tool surface)
+> **For the authoritative live list, regenerate with `pnpm catalog:tools:md`
+> and read [types/tool-catalog.md](./types/tool-catalog.md). Counts and
+> rosters drift between releases — the highlights below are the things
+> worth knowing about; don't treat them as exhaustive.**
+
+#### Core (always advertised; 13 tools + 15 discovery tools = 28-entry surface)
 - `list_browser_tools` — discovery root (returns category index)
 - `list_core_tools` — what's in core itself
 - `browser_batch` — N read-tier calls in one round trip
 - `get_active_tab`, `take_screenshot`
-- `read_page` (NEW — accessibility tree + ref system)
-- `find` (NEW — natural-language element search returning refs)
-- `navigate_active_tab`
-- `click_element`, `type_into_element` (now accept ref OR selector)
+- `read_page` — accessibility tree + ref system
+- `find` — natural-language element search returning refs
+- `navigate_active_tab`, `navigate` (canonical mega-tool)
+- `click_element`, `type_into_element` (accept ref OR selector)
+- `computer` (canonical mega-tool: click / type / key / scroll / screenshot
+  under one schema)
 - `ask_user`
 
-#### Read tier (54 tools total across categories)
+#### Read tier (74 tools total across categories)
 - **Page reading:** `get_active_tab`, `get_page_selection`, `read_active_page`
   (full scrape with `deep:true` for lazy loaders), `take_screenshot`,
   `query_elements`, `read_page` (ref system), `find` (NL search),
@@ -114,7 +138,7 @@ are also always-on so the agent can ask for any category by name.
 - **Cookies read** (admin + optional `cookies` perm): `get_cookies`
 - **WebMCP** (admin): `webmcp_check_availability`, `webmcp_list_page_tools`
 
-#### Action tier (37 tools)
+#### Action tier (~62 handlers, including canonical mega-tools)
 - **Page interaction (now ref-aware):** `navigate_active_tab`, `click_element`,
   `type_into_element`, `scroll_page`, `wait_for`, `set_clipboard`
 - **Keyboard / mouse:** `press_keys`, `hover_element`, `focus_element`,
@@ -133,23 +157,37 @@ are also always-on so the agent can ask for any category by name.
 - **Page archive** (admin + optional `pageCapture` perm): `save_page_as_mhtml`
 - **WebMCP** (admin): `webmcp_call_page_tool`
 
-#### Ask-user tier (5 tools)
+#### Ask-user tier (4 tools)
 - `ask_user`, `ask_user_choice`, `ask_user_secret`, `request_user_takeover`,
-  `update_plan` (NEW — propose a step-by-step plan; user approves before
-  execution)
+  `update_plan` — propose a step-by-step plan; user approves before
+  execution.
 
-#### Privileged tier (20 tools)
+#### Privileged tier (~30 tools, action variants of admin/CDP categories)
 - **Page-level (general):** `execute_javascript`, `inject_stylesheet`,
   `remove_stylesheet`, `set_extension_storage`, `desktop_run_command`
 - **Cookies write** (admin + `cookies` optional perm): `set_cookie`,
   `delete_cookie`
+- **Demos:** `replay_demo` (action; can click / type / submit so always
+  asks for confirm) — see Demos category for record/list/describe/delete.
 - **CDP** (admin + `debugger` optional perm): `cdp_attach`, `cdp_detach`,
   `cdp_full_page_screenshot`, `cdp_input_click_xy`, `cdp_input_type`,
   `cdp_network_capture_start`, `cdp_network_capture_drain`,
   `cdp_network_capture_stop`, `cdp_network_get_body`, `cdp_print_pdf`,
-  `cdp_emulate_device`, `cdp_clear_emulation`, `read_console_messages`
-  (NEW — captures `Runtime.consoleAPICalled` + `exceptionThrown`, filterable
-  by level and regex)
+  `cdp_emulate_device`, `cdp_clear_emulation`, `read_console_messages`,
+  `read_network_requests`, `get_request_body` (CDP captures
+  `Runtime.consoleAPICalled` + `exceptionThrown`, filterable by level
+  and regex)
+
+#### Demos & Guidance — user-saved clues for the agent
+- **`demos` (5 tools):** `record_demo`, `list_demos`, `describe_demo`,
+  `replay_demo` (privileged), `delete_demo`. Self-healing selector
+  chain (matrx-ref → id → testid → ARIA → text → CSS path) survives
+  DOM churn between recording and replay.
+- **`guidance` (4 tools):** `save_guidance_note`, `list_guidance`,
+  `get_guidance_item`, `delete_guidance_item`. Domain-scoped notes,
+  screenshots, GIFs, and demo references; auto-attached to the agent's
+  context whenever the user opens a tab on the matching domain.
+  Captured artifacts are created via the Guidance side-panel tab.
 
 ### Side-panel tabs
 
@@ -177,11 +215,22 @@ are also always-on so the agent can ask for any category by name.
   [migrations/2026_05_03_agenda_v0.sql](./migrations/2026_05_03_agenda_v0.sql).
 - **Scrape** — manual page capture pipeline
 - **Data** — pattern picker + apply
+- **Guidance** — user-saved clues for the agent: domain-scoped notes,
+  screenshot grabs, GIF recordings, demo references. Whatever's saved
+  for the current page's domain is auto-attached to every chat sent
+  from that domain. Backs the `guidance` tool category.
 - **SEO** — audit + AI recommendations
+- **Notes** — list / search / folder picker / editor for user-authored
+  notes (separate from guidance — notes are general personal text;
+  guidance is agent-facing clues).
 - **Tools** — full visible catalog of every tool, search + filter, JSON
   argument editor, **Run** button per tool that flows through the same
   dispatcher path the agent uses. Use this to test capabilities directly.
 - **Settings** — user prefs (no operational controls)
+- **Profile** — user account + voice/language preferences (TASK-002).
+- **Showcase** (admin) — internal showcase of context shapes /
+  extraction modes; cross-references the same primitives the chat
+  context bundle uses.
 - **Debug** (admin) — verbose logging, telemetry, optional perms toggles
 
 ### Catalog generators
@@ -277,15 +326,18 @@ Still planned:
 - [ ] postMessage listener on the page side that forwards `__matrx_webmcp_call`
       messages into the SW dispatcher and replies with results
 
-### 5. 📋 Self-healing selectors + deterministic replay
-**Why:** Skyvern 2.0's pattern. AI generates selector → store versioned →
-replay deterministically when DOM is stable, AI fallback when it isn't.
+### 5. 🔨 Self-healing selectors + deterministic replay
+Shipped via the Demos category (`record_demo`, `list_demos`,
+`describe_demo`, `replay_demo`, `delete_demo`): record a workflow once,
+replay with parameter substitution. Self-healing chain
+(matrx-ref → id → testid → ARIA → text → CSS path) survives DOM churn
+between recording and replay. `replay_demo` is privileged.
 
-- [ ] Selector store keyed by `{domain, intent, version}` in
-      `chrome.storage.local`
-- [ ] On replay: try stored selector; on miss, broadcast a "selector broken"
-      event so the agent can re-derive
-- [ ] Tool: `replay_skill(skill_id, args)` that runs a saved sequence
+Still planned:
+- [ ] Skill-level abstraction: `replay_skill(skill_id, args)` that
+      composes multiple demos into one named workflow
+- [ ] On replay miss: broadcast a "selector broken" event so the agent
+      can re-derive without aborting
 
 ### 6. 📋 Cross-tab parallel orchestration
 **Why:** "compare these 5 tabs" — fan out, materialize in side panel.
@@ -336,8 +388,33 @@ Still planned:
 - [ ] Add to base: `system.cpu`, `system.memory`, `system.display`,
       `declarativeNetRequestWithHostAccess`
 
-### 11. 📋 Voice loop, vision-first navigation, timeline scrubbing
-Moonshots from the research. Defer until 1–10 ship.
+### 11. 🔨 Voice loop (TASK-002)
+**Why:** parity with the Next.js app's voice features and hands-free
+agent operation.
+
+Shipped (TASK-002a, 002b, 002b-fix — 2026-05-08):
+- [x] STT/TTS endpoints (Cartesia + Groq) wired through
+      `https://aimatrx.com/api/cartesia` and `/api/audio/transcribe[-url]`
+      with Supabase Bearer auth.
+- [x] Translation via on-device Gemini Nano (`ai_translate`) with
+      server-side fallback if Nano unavailable.
+- [x] Mic button in `ChatView` Composer wired to
+      `useRecordAndTranscribe`. Live-streaming transcript into the
+      textarea, red-pulse + audio-level glow while recording.
+- [x] Offscreen-document refactor (MV3 sidepanel can't reliably
+      `getUserMedia`; capture moved to offscreen w/ reason
+      `USER_MEDIA`). New `MIC_REQUEST → MIC_RUN → MIC_EVENT` channel
+      flow.
+- [x] `useVoicePrefsStore` (zustand → chrome.storage) for voice /
+      language / speed.
+
+Still planned (TASK-002c, 002d):
+- [ ] Speaker button on agent message bubbles + language picker (chat
+      header or settings).
+- [ ] End-to-end test across all 6 languages (en → es/fr/fa/zh/ru).
+
+### 12. 📋 Vision-first navigation, timeline scrubbing
+Moonshots from the research. Defer until 1–11 ship.
 
 ---
 
@@ -360,12 +437,17 @@ sidepanel (React) ──STREAM_START──▶ SW ──STREAM_RUN──▶ offsc
                               ◀──STREAM_CHUNK── all surfaces
 ```
 
-- **`src/lib/tools/types.ts`** — `ToolHandler<T,R>`, tiers, contexts.
+- **`src/lib/tools/types.ts`** — `ToolHandler<T,R>`, tiers, `ToolContext`
+  (includes `assignedTabId` so handlers stick to the agent's tab).
 - **`src/lib/tools/registry.ts`** — `lookup`, `assistantToolNames`,
   `pilotToolNames`, `pilotToolNamesWithPrivileged`.
 - **`src/lib/tools/dispatch.ts`** — SW dispatcher.
 - **`src/lib/tools/handlers/*.ts`** — one file per domain (read, action,
   user, tabs, forms, keyboard, inspect, browser-data, downloads, privileged).
+- **`src/lib/tools/handlers/_active-tab.ts`** — shared
+  `getAssignedTab(ctx)` / `getAssignedTabId(ctx)` helpers that prefer
+  `ctx.assignedTabId` and fall back to `chrome.tabs.query({active:true})`.
+  All handlers use this — never re-introduce a local active-tab query.
 - **`src/lib/tools/catalog.ts`** — JSON Schema generation.
 - **`src/state/tool-inbox.ts`** — sidepanel-side pending confirms / asks /
   timeline.
@@ -480,6 +562,15 @@ Full incident write-up: [`.research/v0.1.4-auth-incident.md`](./.research/v0.1.4
   `chrome.ai`, `navigator.modelContext`, `chrome.debugger`, etc. are missing,
   the tool returns `{ ok: false, reason: 'unavailable' }` rather than throwing.
 - **No silent writes**: privileged tier always prompts. Even in Act mode.
+- **Tab context: never query the active tab directly from a handler**
+  — use `getAssignedTab(ctx)` / `getAssignedTabId(ctx)` from
+  [`src/lib/tools/handlers/_active-tab.ts`](./src/lib/tools/handlers/_active-tab.ts).
+  These prefer `ctx.assignedTabId` (latched at user-message-send time)
+  and fall back to `chrome.tabs.query({active:true, currentWindow:true})`
+  only when no assignment is recorded. This is what keeps the agent
+  pinned to its tab even when the user switches focus mid-execution.
+  If you need to *list* tabs (not "the current one") that's fine —
+  e.g., `list_open_tabs` legitimately calls `chrome.tabs.query({})`.
 - **Catalog stays in sync**: after any handler change, run
   `pnpm catalog:tools:md` and commit the regenerated JSON + MD.
 - **Document tests for everything user-visible**: when you add or

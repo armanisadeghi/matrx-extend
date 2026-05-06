@@ -14,6 +14,7 @@
  *     show users which capabilities the active agent has.
  */
 
+import { ALL_BROWSERS, type SupportedBrowser } from '@/lib/browser/types';
 import { CATEGORIES, type ToolCategory, categoryOf } from '@/lib/tools/categories';
 import { listAllHandlers } from '@/lib/tools/registry';
 import type { ToolTier } from '@/lib/tools/types';
@@ -38,6 +39,14 @@ export interface ToolCatalogEntry {
   admin_only: boolean;
   /** Which surface bundles include this tool. */
   surface_bundles: ('assistant' | 'pilot' | 'pilot+privileged')[];
+  /**
+   * Browsers this tool ships to. Always materialized as a concrete array
+   * in the catalog (a tool with `supportedBrowsers: undefined` becomes
+   * `['chrome', 'firefox', 'safari']` here) so downstream consumers
+   * (Tools tab, server registry, feature-matrix doc generator) don't have
+   * to special-case the omitted-means-all default.
+   */
+  supported_browsers: SupportedBrowser[];
 }
 
 /**
@@ -280,6 +289,9 @@ export function buildToolCatalog(): ToolCatalogEntry[] {
     required_optional_permissions: h.required_optional_permissions ?? [],
     admin_only: h.admin_only ?? false,
     surface_bundles: bundlesForTier(h.tier),
+    supported_browsers: (h.supportedBrowsers
+      ? [...h.supportedBrowsers]
+      : [...ALL_BROWSERS]) as SupportedBrowser[],
   }));
 }
 

@@ -388,6 +388,12 @@ export function useChatStream() {
         },
       };
 
+      // Latch the tab the agent will operate on for the entire run.
+      // `browserDomState.current_tab_id` was just captured a few lines up
+      // (queryActiveTab inside buildBrowserDomState). Passing it through
+      // STREAM_START is what the SW dispatcher uses to pin every tool call
+      // in this turn — so the user can switch tabs mid-execution without
+      // dragging the agent's `read_page`/`click`/`screenshot` along.
       await send(CHANNELS.STREAM_START, {
         runId,
         endpoint: agentExecutePath(opts.agentId),
@@ -395,6 +401,7 @@ export function useChatStream() {
         parser: "rich-events" as const,
         agentName: opts.agentName ?? null,
         permissionMode,
+        assignedTabId: browserDomState.current_tab_id,
       });
       return runId;
     },

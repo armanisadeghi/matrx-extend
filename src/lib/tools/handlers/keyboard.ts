@@ -12,13 +12,9 @@
  *   right_click     (action) — Synthesize a contextmenu event on a selector.
  */
 
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
-
-async function activeTabId(): Promise<number | null> {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  return tab?.id ?? null;
-}
 
 function resolveRef(args: { selector?: string; ref?: string }): string | null {
   if (args.ref) {
@@ -53,9 +49,9 @@ export const press_keys: ToolHandler<PressKeysArgs, unknown> = {
   description:
     'Send keyboard input to a page. Pass either a literal string ("hello world") or named keys/chords ("Enter", "Control+A", "Tab", "ArrowDown ArrowDown Enter"). When `selector` or `ref` is provided the tool focuses that element first. Useful for triggering submit-on-Enter, navigating menus, dismissing dialogs, and using app keyboard shortcuts.',
   argsSchema: PressKeysArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     const sel = resolveRef(args);
-    const tabId = await activeTabId();
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -189,7 +185,12 @@ export const press_keys: ToolHandler<PressKeysArgs, unknown> = {
         }
         return { ok: true, sent: sentEvents.length, target_tag: target?.tagName.toLowerCase() };
       },
-      args: [args.keys, sel, args.delay_ms],
+      // Defensive defaults: chrome.scripting.executeScript rejects `undefined`
+      // as an args[i] element. The canonical merger in canonical.ts calls
+      // press_keys.run() directly (bypassing the Zod parse that would have
+      // applied .default()) so delay_ms can arrive undefined when the agent
+      // omits it. Coerce here. CLAUDE.md "args must be JSON-serializable".
+      args: [args.keys, sel ?? null, args.delay_ms ?? 30],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },
@@ -209,10 +210,10 @@ export const hover_element: ToolHandler<HoverArgs, unknown> = {
   description:
     'Trigger hover on an element by dispatching mouseenter/mouseover/mousemove events. Pass `ref` from read_page or a CSS `selector`. Reveals hover-only tooltips, dropdown menus, or sub-navigation.',
   argsSchema: HoverArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     const sel = resolveRef(args);
     if (!sel) return { ok: false, reason: 'must provide selector or ref' };
-    const tabId = await activeTabId();
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -253,10 +254,10 @@ export const focus_element: ToolHandler<FocusArgs, unknown> = {
   description:
     'Move keyboard focus to an element. Pass `ref` from read_page or a `selector`. Use before press_keys when no selector is supplied to that tool.',
   argsSchema: FocusArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     const sel = resolveRef(args);
     if (!sel) return { ok: false, reason: 'must provide selector or ref' };
-    const tabId = await activeTabId();
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -282,8 +283,8 @@ export const blur_element: ToolHandler<BlurArgs, unknown> = {
   description:
     'Remove focus from an element. With no selector, blurs whatever currently has focus. Useful before press_keys when shortcuts must hit document instead of an input.',
   argsSchema: BlurArgs,
-  run: async (args) => {
-    const tabId = await activeTabId();
+  run: async (args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -316,10 +317,10 @@ export const right_click_element: ToolHandler<RightClickArgs, unknown> = {
   description:
     "Dispatch a contextmenu event on an element (synthetic right-click). Note: most apps respond by showing their own custom menu in the page DOM. Chrome's native context menu cannot be opened by extension scripts.",
   argsSchema: RightClickArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     const sel = resolveRef(args);
     if (!sel) return { ok: false, reason: 'must provide selector or ref' };
-    const tabId = await activeTabId();
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },

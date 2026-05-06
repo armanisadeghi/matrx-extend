@@ -334,6 +334,66 @@ Every entry follows this shape:
 
 ---
 
+### Voice input — Mic button in chat composer (TASK-002a/b)
+- **What it does:** Click the mic icon in the chat composer to dictate; Groq Whisper transcribes in ~2s chunks and the running transcript is written into the textarea live. Click again to stop.
+- **Where to test:** Side panel → Chat tab → composer (bottom).
+- **Prereq:**
+  - Signed in (Bearer token used to call `https://aimatrx.com/api/audio/transcribe`).
+  - Chrome microphone permission granted to the side panel origin (you'll be prompted on first click).
+- **Steps:**
+  1. Open Chat, click the mic icon next to the send button.
+  2. Approve the microphone permission prompt if it appears.
+  3. Speak for 5–10 seconds. Watch the textarea — text should start appearing within ~3 seconds and continue updating.
+  4. Click the mic again. The icon switches to a spinner briefly while the final chunk transcribes, then back to the mic.
+  5. The transcript is in the input, ready to send.
+- **Expected:**
+  - Recording state: button is red-tinted with a soft pulsing glow proportional to mic volume; icon is `MicOff`.
+  - Transcribing state (after stop): button shows a spinning loader.
+  - Idle state: button shows the mic icon.
+  - Live transcript replaces only what was previously transcribed; if you typed text into the box first then clicked mic, your typed text stays at the front.
+- **Edge cases worth poking:**
+  - Sign out, then click mic → alert "Voice input — Not signed in. Please sign in to use voice input."
+  - Click mic, deny mic permission → alert with permission-denied message.
+  - Pause for several seconds mid-recording → transcript shouldn't include "Thank you for watching" or other Whisper silence hallucinations (handled server-side).
+  - Click mic, click mic immediately (no audio) → no error; final transcript is empty.
+
+---
+
+### Tab assignment (TASK-009)
+- **What it does:** Pins every tool call to the tab the agent was started against, regardless of where the user moves focus afterwards.
+- **Where to test:** Chat tab (any conversation that triggers a client-side tool — `read_page`, `take_screenshot`, `click_element`, `computer({action:'screenshot'})` are good).
+- **Prereq:** at least two tabs open, one of them clearly distinguishable from the other (e.g. `wikipedia.org` vs `news.ycombinator.com`).
+- **Steps:**
+  1. Make tab A active, open the side panel, and ask the agent something like "summarize this page" or "click the first link". Watch the streamed work begin.
+  2. Switch to tab B BEFORE the agent finishes (do it during a tool call, ideally between two tool calls).
+  3. Watch what the agent does next.
+- **Expected:**
+  - The agent keeps reading / clicking / screenshotting tab A. Tool results returned to chat reference tab A's URL and title.
+  - Switching tab does NOT redirect the agent's gaze.
+  - The next message you send while tab B is active reassigns the agent — its next turn operates on tab B (this is correct: re-assignment happens on user-message-send).
+- **Edge cases worth poking:**
+  - Close tab A while the agent is still working. The next tool call should fall back gracefully to the focused tab and report an honest "tab closed" / wrong-page result rather than crashing.
+  - Tools tab "Run" button: still operates on whatever tab is focused (no run is in flight, so no assignment exists).
+  - Agenda runs: same behaviour — the assigned tab is whichever one was active when the run kicked off.
+
+---
+
+### Sidepanel default-to-new-chat (TASK-010)
+- **What it does:** Opening the side panel always starts on a fresh chat, even if a previous conversation was active when it was last closed.
+- **Where to test:** Chat tab.
+- **Steps:**
+  1. Open the side panel, send a message in any agent. Wait for the assistant to reply.
+  2. Close the side panel (or close+reopen the browser).
+  3. Open the side panel again.
+- **Expected:**
+  - Chat is empty. Agent picker still shows whatever you last picked. Draft is preserved (intentional — half-typed text shouldn't vanish).
+  - Past conversation still exists — open the chat-header history picker and you can re-select it explicitly.
+- **Edge cases worth poking:**
+  - Switch to another tab in the side panel (Tools, Settings, etc.) and back to Chat → the in-memory chat session for THIS open session persists. Only a fresh sidepanel open resets it.
+  - Send-and-close mid-stream → on next open, the in-flight reply doesn't reappear; you get an empty chat.
+
+---
+
 ## Template (copy when adding a new entry)
 
 ```markdown

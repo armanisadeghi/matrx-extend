@@ -22,12 +22,15 @@ export async function ensureOffscreen(): Promise<void> {
   }
   if (creating) return creating;
   log.info('stream', 'creating offscreen document');
+  // USER_MEDIA is required for getUserMedia from the offscreen doc — voice
+  // input (TASK-002) won't work without it. BLOBS is for the SSE / scrape
+  // pipeline. Multiple reasons are allowed in a single offscreen doc.
   creating = chrome.offscreen
     .createDocument({
       url: OFFSCREEN_PATH,
-      reasons: ['BLOBS' as chrome.offscreen.Reason],
+      reasons: ['BLOBS', 'USER_MEDIA'] as chrome.offscreen.Reason[],
       justification:
-        'Holds long-running fetch ReadableStreams for AI agent and scrape responses; SW lifecycle terminates streams >30s.',
+        'Holds long-running fetch ReadableStreams for AI streams; also captures microphone audio for voice input (side-panel getUserMedia is unreliable in MV3).',
     })
     .then(() => {
       log.success('stream', 'offscreen document created');
@@ -72,6 +75,13 @@ export interface StartStreamArgs {
   agentName?: string | null;
   /** Permission mode for any client tools the agent runs in this stream. */
   permissionMode?: 'ask' | 'act';
+  /**
+   * Tab the agent is pinned to for this run. Captured at message-send time
+   * so tools don't drift onto whatever tab the user happens to focus during
+   * execution. Null when the run isn't tied to a specific page (e.g. an
+   * agenda task where the agent navigates itself).
+   */
+  assignedTabId?: number | null;
 }
 
 /**

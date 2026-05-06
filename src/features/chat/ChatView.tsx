@@ -31,6 +31,7 @@ import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
 import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
+import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
 import { wrapForAgent } from '@/lib/clipboard/copy';
 import {
@@ -52,7 +53,9 @@ import {
   Hand,
   History,
   Lightbulb,
+  Loader2,
   Mic,
+  MicOff,
   Pencil,
   Plus,
   RefreshCw,
@@ -918,6 +921,7 @@ function Composer({
   placeholder: string;
 }) {
   const taRef = useRef<HTMLTextAreaElement>(null);
+  const recordBaselineRef = useRef('');
 
   useEffect(() => {
     const el = taRef.current;
@@ -928,6 +932,32 @@ function Composer({
 
   const showComingSoon = (feature: string) => {
     window.alert(`${feature} — coming soon`);
+  };
+
+  // Voice input — Groq Whisper streaming via the matrx-frontend route.
+  // While recording, every transcribed chunk overwrites the textarea with
+  // the baseline text + the running transcript. On stop, whatever's in the
+  // input is what gets sent.
+  const { isRecording, isTranscribing, audioLevel, startRecording, stopRecording } =
+    useRecordAndTranscribe({
+      streaming: true,
+      onChunkTranscribed: (_snippet, accumulated) => {
+        const baseline = recordBaselineRef.current;
+        const sep = baseline && !baseline.endsWith(' ') ? ' ' : '';
+        onChange(`${baseline}${sep}${accumulated}`);
+      },
+      onError: (msg) => {
+        window.alert(`Voice input — ${msg}`);
+      },
+    });
+
+  const handleMicClick = () => {
+    if (isRecording) {
+      stopRecording();
+      return;
+    }
+    recordBaselineRef.current = value;
+    void startRecording();
   };
 
   const hasText = value.trim().length > 0;
@@ -964,11 +994,33 @@ function Composer({
           <div className="ml-auto flex items-center gap-1">
             <button
               type="button"
-              onClick={() => showComingSoon('Voice input')}
-              className="inline-flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              title="Voice input"
+              onClick={handleMicClick}
+              className={cn(
+                'inline-flex size-8 items-center justify-center rounded-full transition-colors',
+                isRecording
+                  ? 'bg-red-500/15 text-red-600 hover:bg-red-500/25 dark:text-red-400'
+                  : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+              )}
+              title={
+                isRecording
+                  ? 'Stop recording'
+                  : isTranscribing
+                    ? 'Finishing transcription…'
+                    : 'Voice input'
+              }
+              style={
+                isRecording
+                  ? { boxShadow: `0 0 0 ${Math.min(6, Math.round(audioLevel / 12))}px rgba(239,68,68,0.18)` }
+                  : undefined
+              }
             >
-              <Mic className="size-4" />
+              {isRecording ? (
+                <MicOff className="size-4" />
+              ) : isTranscribing ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Mic className="size-4" />
+              )}
             </button>
 
             {isStreaming ? (

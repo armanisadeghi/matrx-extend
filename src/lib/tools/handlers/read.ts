@@ -4,16 +4,12 @@
 
 import { log } from '@/lib/debug/log';
 import { resolveProfile, type ScreenshotProfile } from '@/lib/screenshot/profiles';
+import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
 
 const NoArgs = z.object({}).default({});
 type NoArgs = z.infer<typeof NoArgs>;
-
-async function activeTab(): Promise<chrome.tabs.Tab | null> {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  return tab ?? null;
-}
 
 export const get_active_tab: ToolHandler<NoArgs, unknown> = {
   name: 'get_active_tab',
@@ -21,8 +17,8 @@ export const get_active_tab: ToolHandler<NoArgs, unknown> = {
   description:
     'Return information about the user’s currently focused browser tab: url, title, tab id, window id, status, favicon.',
   argsSchema: NoArgs,
-  run: async () => {
-    const tab = await activeTab();
+  run: async (_args, ctx) => {
+    const tab = await getAssignedTab(ctx);
     if (!tab) return { ok: false, reason: 'No active tab' };
     return {
       tab_id: tab.id,
@@ -44,8 +40,8 @@ export const get_page_selection: ToolHandler<NoArgs, unknown> = {
   description:
     'Return the user’s currently selected text on the active tab. Empty string if nothing is selected.',
   argsSchema: SelectionArgs,
-  run: async () => {
-    const tab = await activeTab();
+  run: async (_args, ctx) => {
+    const tab = await getAssignedTab(ctx);
     if (!tab?.id) return { text: '', selected: false };
     try {
       const [first] = await chrome.scripting.executeScript({
@@ -81,8 +77,8 @@ export const read_active_page: ToolHandler<ReadPageArgs, unknown> = {
   description:
     'Read the active tab and return a structured snapshot: cleaned article (markdown + html), title, byline, full image/video/link/audio lists, JSON-LD, schema types, SEO signals (headings, meta, alt-text coverage). Pass deep=true to scroll the page top→bottom first to trigger lazy-loaded images and infinite-scroll content before reading. Use this whenever you need to understand or quote the page.',
   argsSchema: ReadPageArgs,
-  run: async (args) => {
-    const tab = await activeTab();
+  run: async (args, ctx) => {
+    const tab = await getAssignedTab(ctx);
     if (!tab?.id) return { ok: false, reason: 'No active tab' };
     // Pre-flight URL check — same shared classifier the Scrape tab uses.
     // Saves a confusing Chrome error and an immediate retry loop when we
@@ -100,28 +96,34 @@ export const read_active_page: ToolHandler<ReadPageArgs, unknown> = {
       const { scrollToLoadLazy } = await import('@/lib/scrape/page-ready');
       await scrollToLoadLazy(tab.id, { delayMs: 100, maxMs: 5000 });
     }
-    // Reuse the in-tab scrape pipeline by sending the SCRAPE_CAPTURE message
-    // to that tab's content script — same path the manual Scrape button uses.
-    try {
-      const { CHANNELS } = await import('@/lib/messaging/schemas');
-      const result = await chrome.tabs.sendMessage(tab.id, {
-        __matrx: true,
-        kind: CHANNELS.SCRAPE_CAPTURE,
-        payload: { options: {} },
-      });
-      return result;
-    } catch (err) {
-      const msg = (err as Error).message;
-      if (msg.includes('Receiving end does not exist')) {
-        return {
-          ok: false,
-          reason:
-            "The page's helper script isn't loaded — usually because the extension was updated since this tab was opened. Ask the user to reload the page.",
-          raw: msg,
-        };
-      }
-      return { ok: false, reason: msg };
+    // Reuse the in-tab scrape pipeline through the shared captureWithFallback
+    // helper. captureWithFallback is the same path auto-scrape and the chat
+    // hook's pre-send refresh use — it auto-injects the content script on a
+    // "no receiver" failure (covers stale tabs after extension upgrade) and
+    // returns structured reasons rather than letting raw chrome errors leak.
+    const { captureWithFallback } = await import('@/lib/scrape/capture-with-fallback');
+    const cap = await captureWithFallback(tab.id, tab.url);
+    if (cap.ok) return cap.soup;
+
+    // Map structured failure to the agent-friendly shape the handler used
+    // to return inline. Same hint about reloading the tab when injection
+    // can't recover (e.g. tab opened before the extension installed).
+    if (cap.reason === 'unreachable-url') {
+      return {
+        ok: false,
+        reason: cap.detail ?? 'This URL is not reachable by the extension.',
+        url: tab.url ?? null,
+      };
     }
+    if (cap.reason === 'no-content-script' || cap.reason === 'inject-failed') {
+      return {
+        ok: false,
+        reason:
+          "The page's helper script isn't loaded — usually because the extension was updated since this tab was opened. Ask the user to reload the page.",
+        detail: cap.detail ?? null,
+      };
+    }
+    return { ok: false, reason: cap.detail ?? cap.reason ?? 'capture failed' };
   },
 };
 
@@ -261,8 +263,8 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
   description:
     "Capture the visible viewport of the active tab, optimized for vision-API consumption. Default profile 'auto' returns a 'max useful' master image (JPEG q=88 @ 2576px — Opus 4.7's ceiling, the highest any current model uses) at ~600–900 KB; the server is expected to do per-provider final sizing from that master. Use 'auto-final' if the server is a passthrough (1568px JPEG q=85 — fits every provider). Provider-specific profiles when the server already knows the model: 'anthropic-default'/'anthropic-hires', 'openai-original'/'openai-high'/'openai-low', 'gemini-screenshot'/'gemini-overview'/'gemini-2.5-default'. Special-purpose: 'ocr-heavy' (high-q for fine text), 'lossless' (PNG, archival only). Returns { ok, media_type, format, width, height, source_width, source_height, image_base64, byte_length, resized, profile, est_tokens }. The `media_type` field is ready for direct use in an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
   argsSchema: ScreenshotArgs,
-  run: async (args) => {
-    const tab = await activeTab();
+  run: async (args, ctx) => {
+    const tab = await getAssignedTab(ctx);
     if (!tab?.windowId) return { ok: false, reason: 'No active tab' };
     const profileName = (args.profile ?? 'auto') as ScreenshotProfile;
     const profile = resolveProfile(profileName);
@@ -312,8 +314,8 @@ export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
   description:
     'Run document.querySelectorAll on the active tab and return up to `limit` matches as { tag, text, attrs }. `attrs` is a list of attribute names to extract. Use this to find CSS selectors that subsequent action tools can target.',
   argsSchema: QueryElementsArgs,
-  run: async (args) => {
-    const tab = await activeTab();
+  run: async (args, ctx) => {
+    const tab = await getAssignedTab(ctx);
     if (!tab?.id) return { ok: false, reason: 'No active tab' };
     try {
       const [first] = await chrome.scripting.executeScript({

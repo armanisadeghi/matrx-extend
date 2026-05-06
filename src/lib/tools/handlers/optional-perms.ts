@@ -12,6 +12,7 @@
  * toggles to grant / revoke these at runtime.
  */
 
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
 
@@ -127,14 +128,14 @@ export const save_page_as_mhtml: ToolHandler<SaveAsMhtmlArgs, unknown> = {
   tier: 'action',
   admin_only: true,
   required_optional_permissions: ['pageCapture'],
+  supportedBrowsers: ['chrome'],
   description:
     'Snapshot a tab as a self-contained MHTML archive (HTML + every resource inlined). Returns base64 MHTML data. Use for: archival, sharing a frozen page, feeding the agent a stable snapshot it can reanalyze later.',
   argsSchema: SaveAsMhtmlArgs,
-  run: async (args) => {
-    let tabId = args.tab_id;
+  run: async (args, ctx) => {
+    let tabId: number | null | undefined = args.tab_id;
     if (tabId == null) {
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      tabId = tab?.id;
+      tabId = await getAssignedTabId(ctx);
     }
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     if (!chrome.pageCapture) return { ok: false, reason: 'pageCapture API unavailable' };

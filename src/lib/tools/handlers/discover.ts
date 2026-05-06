@@ -106,6 +106,7 @@ function buildCategoryListTool(category: ToolCategory): ToolHandler<NoArgs, unkn
           tier: h.tier,
           admin_only: !!h.admin_only,
           required_optional_permissions: h.required_optional_permissions ?? [],
+          supported_browsers: (h.supportedBrowsers ?? null) as readonly string[] | null,
           input_schema: zodToJsonSchema(h.argsSchema, {
             $refStrategy: 'none',
             target: 'jsonSchema7',

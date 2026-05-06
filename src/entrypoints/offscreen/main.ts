@@ -6,6 +6,8 @@
  * touch chrome.storage or the auth flow here.
  */
 
+import { handleMicRun } from '@/lib/audio/mic-recorder-offscreen';
+import type { MicRunPayload } from '@/lib/audio/mic-types';
 import { streamFetch } from '@/lib/api/stream';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
@@ -113,4 +115,13 @@ on<{ runId: string }, { cancelled: boolean }>(CHANNELS.STREAM_KILL, (payload) =>
     inflight.delete(payload.runId);
   }
   return { cancelled: !!ctrl };
+});
+
+// Microphone capture runs here (reasons include USER_MEDIA in the offscreen
+// document) because side-panel getUserMedia is unreliable. SW forwards
+// MIC_REQUEST → MIC_RUN; we do the actual MediaRecorder lifecycle and
+// broadcast MIC_EVENT messages back to all surfaces.
+on<MicRunPayload, { ok: boolean }>(CHANNELS.MIC_RUN, async (payload) => {
+  log.info('sys', `mic run: ${payload.action}`);
+  return handleMicRun(payload);
 });

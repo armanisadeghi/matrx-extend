@@ -11,13 +11,9 @@
  *                        is connected.
  */
 
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
-
-async function activeTabId(): Promise<number | null> {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  return tab?.id ?? null;
-}
 
 const ExecuteJsArgs = z.object({
   /**
@@ -41,8 +37,8 @@ export const execute_javascript: ToolHandler<ExecuteJsArgs, unknown> = {
   description:
     'Run arbitrary JavaScript on a tab. The `code` is wrapped in `async (arg) => { ... }` and executed; whatever it returns is serialized back. Use sparingly — prefer purpose-built tools (click_element, type_into_element, query_elements). This is the unbounded escape hatch when no other tool fits. ALWAYS prompts for approval, even in act-without-asking mode.',
   argsSchema: ExecuteJsArgs,
-  run: async (args) => {
-    const tabId = args.tab_id ?? (await activeTabId());
+  run: async (args, ctx) => {
+    const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     try {
       const [first] = await chrome.scripting.executeScript({
@@ -86,8 +82,8 @@ export const inject_stylesheet: ToolHandler<InjectStylesheetArgs, unknown> = {
   description:
     'Inject a CSS stylesheet into the active tab. Use to highlight elements visually for the user, hide noisy chrome, or apply temporary fixes. Privileged because it can mask UI elements. Returns { ok, id? }.',
   argsSchema: InjectStylesheetArgs,
-  run: async (args) => {
-    const tabId = args.tab_id ?? (await activeTabId());
+  run: async (args, ctx) => {
+    const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     try {
       await chrome.scripting.insertCSS({
@@ -113,8 +109,8 @@ export const remove_stylesheet: ToolHandler<RemoveStylesheetArgs, unknown> = {
   description:
     'Remove a previously-injected stylesheet from a tab. Pass the same CSS string used in inject_stylesheet.',
   argsSchema: RemoveStylesheetArgs,
-  run: async (args) => {
-    const tabId = args.tab_id ?? (await activeTabId());
+  run: async (args, ctx) => {
+    const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     try {
       await chrome.scripting.removeCSS({
@@ -212,6 +208,14 @@ type DesktopCommandArgs = z.infer<typeof DesktopCommandArgs>;
 export const desktop_run_command: ToolHandler<DesktopCommandArgs, unknown> = {
   name: 'desktop_run_command',
   tier: 'privileged',
+  // Safari: native messaging is XPC-based and the host must be bundled inside
+  // the wrapping macOS app (Safari Web Extension Handler). The Safari Native
+  // XPC Bridge follow-up project (Appendix A of the Safari port plan) lifts
+  // this restriction by routing through SafariWebExtensionHandler. Until then,
+  // Safari users see this tool absent rather than failing with a confusing
+  // "matrx-local is not running" error. Firefox uses Chrome's stdio shape so
+  // the same connectNative path works there.
+  supportedBrowsers: ['chrome', 'firefox'],
   description:
     'Invoke a command on the matrx-local desktop bridge. Available commands depend on what matrx-local exposes (file ops, system info, window control, etc.). Returns { ok, data?, error? }. Fails fast with reason="desktop unavailable" if the bridge isn\'t connected — check via the desktop:availability channel before calling.',
   argsSchema: DesktopCommandArgs,

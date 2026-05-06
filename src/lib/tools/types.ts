@@ -9,6 +9,7 @@
  *   - description — sent to the agent so it knows what the tool does
  */
 
+import type { BrowserSet } from '@/lib/browser/types';
 import type { z } from 'zod';
 
 export type ToolTier =
@@ -43,6 +44,19 @@ export interface ToolContext {
   agentName: string | null;
   /** Permission mode for this run. */
   permissionMode: 'ask' | 'act';
+  /**
+   * The tab the agent is assigned to operate on for this run. Latched at
+   * STREAM_START time from whichever tab was active when the user sent the
+   * message. Handlers MUST prefer this over `chrome.tabs.query({active})`
+   * — otherwise a user switching tabs mid-execution silently redirects
+   * tool calls onto the wrong page. Use the
+   * `getAssignedTab(ctx)` / `getAssignedTabId(ctx)` helpers in
+   * `src/lib/tools/handlers/_active-tab.ts`. May be null when invoked
+   * outside a chat run (e.g. the Tools tab "Run" button before any
+   * stream is open) — in that case the helpers fall back to the
+   * currently-focused tab.
+   */
+  assignedTabId: number | null;
 }
 
 export interface ToolHandler<TArgs, TResult> {
@@ -80,6 +94,23 @@ export interface ToolHandler<TArgs, TResult> {
    * UI can prompt the user.
    */
   required_optional_permissions?: string[];
+  /**
+   * Browsers this tool ships to. Omit to mean "all three" (chrome, firefox,
+   * safari). Set to e.g. `['chrome']` for tools that depend on
+   * Chrome-only APIs (`chrome.debugger`, `chrome.offscreen`,
+   * `chrome.tabGroups`, `chrome.pageCapture`, `chrome.sidePanel`,
+   * `chrome.runtime.connectNative`).
+   *
+   * The dispatcher rejects calls to tools that aren't supported on the
+   * current browser; the bundle filters omit them from advertised
+   * surfaces; the catalog emits `supported_browsers` for every entry.
+   *
+   * The `tests/browser-gate-lint.test.ts` check (added in Phase 5 of the
+   * Safari port) flags handler code that touches the gated namespaces
+   * without declaring this field — see
+   * `~/.claude/plans/the-system-has-had-lovely-sifakis.md`.
+   */
+  supportedBrowsers?: BrowserSet;
 }
 
 export type AnyToolHandler = ToolHandler<unknown, unknown>;

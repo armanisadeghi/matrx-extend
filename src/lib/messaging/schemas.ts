@@ -92,6 +92,17 @@ export const CHANNELS = {
 
   // Agenda (SW → sidepanel)
   AGENDA_RUN_NOW: 'agenda:run-now', // SW alarm fired an auto task; sidepanel should switch + run
+
+  // Microphone capture for voice input (TASK-002).
+  // getUserMedia in a side panel is unreliable in MV3 — Chrome sometimes
+  // suppresses the prompt and won't re-prompt after a deny. Capture runs
+  // in the offscreen document with reason USER_MEDIA, which works robustly.
+  //
+  //   sidepanel ──MIC_REQUEST──▶ SW (ensures offscreen) ──MIC_RUN──▶ offscreen
+  //   offscreen ──MIC_EVENT─────▶ all surfaces (chunks, level, errors, lifecycle)
+  MIC_REQUEST: 'mic:request',
+  MIC_RUN: 'mic:run',
+  MIC_EVENT: 'mic:event',
 } as const;
 
 export type ChannelName = (typeof CHANNELS)[keyof typeof CHANNELS];

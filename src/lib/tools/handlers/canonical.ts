@@ -43,6 +43,7 @@ import {
   right_click_element,
 } from '@/lib/tools/handlers/keyboard';
 import { take_screenshot } from '@/lib/tools/handlers/read';
+import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import {
   close_tab,
   duplicate_tab,
@@ -153,8 +154,12 @@ export const computer: ToolHandler<ComputerArgs, unknown> = {
       }
       case 'key': {
         if (args.text == null) return { ok: false, reason: "'text' is required for action='key'" };
+        // Construct a shape that matches PressKeysArgs exactly. We're calling
+        // press_keys.run() directly (bypassing the Zod parse that would have
+        // applied .default()), so we have to supply real values — never
+        // `undefined` — for fields that ship as args to executeScript.
         return press_keys.run(
-          { keys: args.text, target: undefined, repeat: args.repeat } as never,
+          { keys: args.text, selector: undefined, ref: undefined, delay_ms: 30 } as never,
           ctx,
         );
       }
@@ -482,7 +487,7 @@ export const tabs: ToolHandler<TabsArgs, unknown> = {
       return open_new_tab.run({ url: args.url, active: true } as never, ctx);
     }
     if (args.action === 'active') {
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      const tab = await getAssignedTab(ctx);
       if (!tab) return { ok: false, reason: 'No active tab' };
       return {
         ok: true,
@@ -645,9 +650,10 @@ export const clipboard: ToolHandler<ClipboardArgs, unknown> = {
       if (args.text == null) return { ok: false, reason: "text required for action='write'" };
       return set_clipboard.run({ text: args.text } as never, ctx);
     }
-    // Read: try navigator.clipboard inside the active tab. The clipboard API
-    // requires a Document context, so we run it via executeScript.
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    // Read: try navigator.clipboard inside the agent's assigned tab. The
+    // clipboard API requires a Document context, so we run it via
+    // executeScript.
+    const tab = await getAssignedTab(ctx);
     if (!tab?.id) return { ok: false, reason: 'No active tab to read clipboard from' };
     const [r] = await chrome.scripting.executeScript({
       target: { tabId: tab.id },

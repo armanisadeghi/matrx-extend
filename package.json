@@ -27,6 +27,7 @@
     "prepare": "wxt prepare && husky || true"
   },
   "dependencies": {
+    "@cartesia/cartesia-js": "^2.2.9",
     "@hookform/resolvers": "^3.10.0",
     "@joplin/turndown-plugin-gfm": "^1.0.61",
     "@mozilla/readability": "^0.6.0",

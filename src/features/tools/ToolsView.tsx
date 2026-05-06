@@ -38,6 +38,7 @@ import {
   CATEGORIES,
   type ToolCategory,
   categoryOf,
+  isCanonicalSurface,
 } from '@/lib/tools/categories';
 import { listAllHandlers } from '@/lib/tools/registry';
 import type { AnyToolHandler, ToolTier } from '@/lib/tools/types';
@@ -57,6 +58,7 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
 
 type TierFilter = 'all' | ToolTier;
 type CategoryFilter = 'all' | ToolCategory;
+type SurfaceFilter = 'canonical' | 'internal' | 'all';
 
 export function ToolsView() {
   const handlers = useMemo(() => listAllHandlers(), []);
@@ -105,16 +107,29 @@ function CatalogPane({ handlers }: { handlers: AnyToolHandler[] }) {
   const [query, setQuery] = useState('');
   const [tier, setTier] = useState<TierFilter>('all');
   const [category, setCategory] = useState<CategoryFilter>('all');
+  const [surface, setSurface] = useState<SurfaceFilter>('canonical');
+
+  const surfaceCounts = useMemo(() => {
+    let canonical = 0;
+    let internal = 0;
+    for (const h of handlers) {
+      if (isCanonicalSurface(h.name)) canonical++;
+      else internal++;
+    }
+    return { canonical, internal, all: handlers.length };
+  }, [handlers]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return handlers.filter((h) => {
+      if (surface === 'canonical' && !isCanonicalSurface(h.name)) return false;
+      if (surface === 'internal' && isCanonicalSurface(h.name)) return false;
       if (tier !== 'all' && h.tier !== tier) return false;
       if (category !== 'all' && categoryOf(h.name) !== category) return false;
       if (!q) return true;
       return h.name.toLowerCase().includes(q) || h.description.toLowerCase().includes(q);
     });
-  }, [handlers, query, tier, category]);
+  }, [handlers, query, tier, category, surface]);
 
   const counts = useMemo(() => {
     const c: Record<ToolTier, number> = {
@@ -159,19 +174,34 @@ function CatalogPane({ handlers }: { handlers: AnyToolHandler[] }) {
             </SelectContent>
           </Select>
         </div>
-        <Select value={category} onValueChange={(v) => setCategory(v as CategoryFilter)}>
-          <SelectTrigger className="h-7 w-full text-xs">
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All categories ({handlers.length})</SelectItem>
-            {ALL_CATEGORIES.map((c) => (
-              <SelectItem key={c} value={c}>
-                {CATEGORIES[c].label} ({categoryCounts[c] ?? 0})
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-1.5">
+          <Select value={surface} onValueChange={(v) => setSurface(v as SurfaceFilter)}>
+            <SelectTrigger
+              className="h-7 flex-1 text-xs"
+              title="Canonical = what the agent sees in chat (DB-active). Internal = mega-tool delegate handlers."
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="canonical">Agent surface ({surfaceCounts.canonical})</SelectItem>
+              <SelectItem value="internal">Internal delegates ({surfaceCounts.internal})</SelectItem>
+              <SelectItem value="all">All handlers ({surfaceCounts.all})</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={category} onValueChange={(v) => setCategory(v as CategoryFilter)}>
+            <SelectTrigger className="h-7 flex-1 text-xs">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All categories ({handlers.length})</SelectItem>
+              {ALL_CATEGORIES.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {CATEGORIES[c].label} ({categoryCounts[c] ?? 0})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-2 py-2">
@@ -326,6 +356,9 @@ function ToolDetail({ handler }: { handler: AnyToolHandler }) {
         callId,
         agentName: 'manual',
         permissionMode: 'act',
+        // Tools-tab "Run" button targets whatever tab is currently
+        // focused — there is no agent assignment to honor here.
+        assignedTabId: null,
       });
       setResult(out);
       broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {

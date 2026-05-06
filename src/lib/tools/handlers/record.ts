@@ -132,6 +132,7 @@ export const record_gif: ToolHandler<RecordGifArgs, unknown> = {
   tier: 'action',
   admin_only: true,
   required_optional_permissions: ['debugger'],
+  supportedBrowsers: ['chrome'],
   tierFor: (args): ToolTier => (READ_ACTIONS.has(args.action) ? 'read' : 'action'),
   description:
     "Record browser actions and export as an animated GIF. Actions: 'start_recording', 'stop_recording', 'export' (generates and either downloads or drops onto a page element), 'clear' (discard frames). Take a screenshot right after start and right before stop to capture clean first/last frames. 'export' returns {file_id, file_url} when not dropping. Drop target accepts ref (preferred) or coordinate.",

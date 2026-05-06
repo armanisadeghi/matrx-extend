@@ -51,6 +51,7 @@ import { fetch_handlers } from '@/lib/tools/handlers/fetch';
 import { tab_action_handlers, tab_read_handlers } from '@/lib/tools/handlers/tabs';
 import { user_handlers } from '@/lib/tools/handlers/user';
 import { webmcp_handlers } from '@/lib/tools/handlers/webmcp';
+import { isBrowserSupported } from '@/lib/browser/detect';
 import {
   CATEGORIES,
   type ToolCategory,
@@ -134,6 +135,9 @@ interface BundleOptions {
 }
 
 function visible(t: AnyToolHandler, opts: BundleOptions): boolean {
+  // Drop tools that don't support the current browser. The check defaults
+  // to "all browsers" when supportedBrowsers is omitted.
+  if (!isBrowserSupported(t.supportedBrowsers)) return false;
   return opts.isAdmin ? true : !t.admin_only;
 }
 

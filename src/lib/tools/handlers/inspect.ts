@@ -12,13 +12,9 @@
  *                                 chain.
  */
 
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
-
-async function activeTabId(): Promise<number | null> {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  return tab?.id ?? null;
-}
 
 const FindTextArgs = z.object({
   query: z.string().min(1),
@@ -41,9 +37,9 @@ export const find_text_on_page: ToolHandler<FindTextArgs, unknown> = {
   description:
     'Search visible text on the active tab and return matches with their nearest enclosing element selector + context. Pass regex=true to use a regular expression. Use this when read_active_page would be overkill — e.g. "where on this page does it say \'click here to download\'?".',
   argsSchema: FindTextArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     const tabId =
-      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ?? (await activeTabId());
+      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ?? (await getAssignedTabId(ctx));
     if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -150,8 +146,8 @@ export const get_page_links: ToolHandler<GetLinksArgs, unknown> = {
   description:
     'Return anchor links from the active tab. Each entry is { href, text, title, rel, target }. Filter by href substring, link text substring, or same-origin only. Lighter than read_active_page when you only need link discovery.',
   argsSchema: GetLinksArgs,
-  run: async (args) => {
-    const tabId = await activeTabId();
+  run: async (args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -215,8 +211,8 @@ export const get_computed_style: ToolHandler<ComputedStyleArgs, unknown> = {
   description:
     'Read computed CSS for an element. Pass `properties` to limit (e.g. ["color","font-size"]) — without it returns a useful default subset (color, background, font, padding, margin, border, display, position, dimensions). Useful for debugging visual issues or matching styles.',
   argsSchema: ComputedStyleArgs,
-  run: async (args) => {
-    const tabId = await activeTabId();
+  run: async (args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -274,8 +270,8 @@ export const get_element_at_point: ToolHandler<ElementAtPointArgs, unknown> = {
   description:
     'Identify the DOM element at viewport coordinates (x, y). Returns tag, text, attrs, and a stable selector. Useful when correlating something seen in a screenshot to a clickable element.',
   argsSchema: ElementAtPointArgs,
-  run: async (args) => {
-    const tabId = await activeTabId();
+  run: async (args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -335,8 +331,8 @@ export const inspect_element: ToolHandler<InspectArgs, unknown> = {
   description:
     'Deep snapshot of a single element: tag, text, full attributes, bounding rect, key computed styles, ancestor chain (tag + class), and child counts. Useful when a click or type call is failing and you need to understand why.',
   argsSchema: InspectArgs,
-  run: async (args) => {
-    const tabId = await activeTabId();
+  run: async (args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -406,13 +402,13 @@ export const get_element_details: ToolHandler<ElementDetailsArgs, unknown> = {
   description:
     "Deep inspection of a single element by ref: full attribute set, bounding box, visibility, optional computed styles and innerHTML. Use when read_page's summary isn't enough — e.g. reading data-* attributes or checking if something is hidden by CSS. Avoids needing evaluate_javascript for routine introspection. innerHTML is capped at 50 KB; response includes truncated:true when exceeded.",
   argsSchema: ElementDetailsArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     let tabId: number | null;
     if (args.tabId) {
       tabId = Number.parseInt(args.tabId, 10);
       if (!Number.isFinite(tabId)) return { ok: false, reason: 'Invalid tabId' };
     } else {
-      tabId = await activeTabId();
+      tabId = await getAssignedTabId(ctx);
     }
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const refSelector = `[data-matrx-ref="${args.ref.replace(/^ref:/, '')}"]`;

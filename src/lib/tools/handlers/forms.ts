@@ -12,13 +12,9 @@
  *                              the form's primary submit button.
  */
 
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
-
-async function activeTabId(): Promise<number | null> {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  return tab?.id ?? null;
-}
 
 function resolveRef(args: { selector?: string; ref?: string }): string | null {
   if (args.ref) {
@@ -42,8 +38,8 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
   description:
     'Discover forms on the active tab. For each form, returns id, action, method, and a list of fields: { name, type, value, label, required, placeholder, selector }. Use this BEFORE typing to find the right selector and label so you fill the right field.',
   argsSchema: FormFieldsArgs,
-  run: async (args) => {
-    const tabId = await activeTabId();
+  run: async (args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -188,10 +184,10 @@ export const select_dropdown_option: ToolHandler<SelectDropdownArgs, unknown> = 
   description:
     "Choose an option in a <select> element. Pass exactly ONE of: value (the option's value attr), label (the visible text), or index (0-based). Dispatches change + input events for framework apps.",
   argsSchema: SelectDropdownArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     const sel = resolveRef(args);
     if (!sel) return { ok: false, reason: 'must provide selector or ref' };
-    const tabId = await activeTabId();
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -252,10 +248,10 @@ export const set_checkbox: ToolHandler<SetCheckboxArgs, unknown> = {
   description:
     'Set a checkbox to checked or unchecked, dispatching click + change events so frameworks see the toggle. Use for both <input type="checkbox"> and ARIA-styled toggles where role="checkbox".',
   argsSchema: SetCheckboxArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     const sel = resolveRef(args);
     if (!sel) return { ok: false, reason: 'must provide selector or ref' };
-    const tabId = await activeTabId();
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -298,10 +294,10 @@ export const set_radio: ToolHandler<SetRadioArgs, unknown> = {
   description:
     'Pick a radio button from a group. Pass selector pointing at the group container OR any radio input in it, then exactly ONE of value/label/index.',
   argsSchema: SetRadioArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     const sel = resolveRef(args);
     if (!sel) return { ok: false, reason: 'must provide selector or ref' };
-    const tabId = await activeTabId();
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -367,8 +363,8 @@ export const submit_form: ToolHandler<SubmitFormArgs, unknown> = {
   description:
     "Submit a form. By default the tool clicks the form's primary submit button (so HTML5 validation + framework handlers run). Set via_button=false to fall back to HTMLFormElement.submit() — skips validation but works for form elements that lack a button.",
   argsSchema: SubmitFormArgs,
-  run: async (args) => {
-    const tabId = await activeTabId();
+  run: async (args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -433,10 +429,10 @@ export const file_upload: ToolHandler<FileUploadArgs, unknown> = {
   description:
     'Attach files to an `<input type="file">` element by selector or ref. IMPORTANT: clicking a file input opens a native dialog the agent cannot see — use this tool instead. Each file in `files` is { name, mime, base64 }. Dispatches `change` so frameworks see the upload. Returns { ok, file_count, names }.',
   argsSchema: FileUploadArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     const sel = resolveRef(args);
     if (!sel) return { ok: false, reason: 'must provide selector or ref' };
-    const tabId = await activeTabId();
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     try {
       const [first] = await chrome.scripting.executeScript({

@@ -74,6 +74,9 @@ export const ENV = {
   get DESKTOP_NATIVE_HOST(): string {
     return safeRead(() => import.meta.env.WXT_DESKTOP_NATIVE_HOST) ?? 'com.matrx.local';
   },
+  get FRONTEND_URL(): string {
+    return safeRead(() => import.meta.env.WXT_FRONTEND_URL) ?? 'https://aimatrx.com';
+  },
 } as const;
 
 export const BACKEND_URLS: Readonly<Record<BackendEnv, string>> = {

@@ -1,3 +1,4 @@
+import { AddToProjectButton } from '@/components/AddToProjectButton';
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { MarkdownView } from '@/components/MarkdownView';
 import { Button } from '@/components/ui/button';
@@ -147,6 +148,7 @@ export function ScrapeView() {
             <div className="truncate text-sm font-medium">{tab.title ?? '—'}</div>
             <div className="truncate text-xs text-muted-foreground">{tab.url ?? ''}</div>
           </div>
+          <AddToProjectButton url={tab.url} title={tab.title} variant="icon" />
           {current && <CopyMenu title="Copy capture" options={fullCaptureCopyOptions(current)} />}
         </div>
         {recognition.capturedAt && !saved && (
