@@ -56,15 +56,17 @@ const isPageCallMessage = (v: unknown): v is PageCallMessage => {
 };
 
 export default defineContentScript({
-  // Match the same allowlist as `src/lib/origin-allowlist.ts`. The two
-  // lists are intentionally separate (Chrome's manifest globs are simpler
-  // than our runtime matcher), but they cover the same set of origins.
+  // Roughly mirrors `src/lib/origin-allowlist.ts` but uses Chrome's
+  // stricter match-pattern grammar (no mid-host wildcards, no port
+  // wildcards). The content script gate is therefore broader than the
+  // runtime allowlist — `matchesAllowedOrigin` below is the actual
+  // security boundary and rejects e.g. non-team Vercel previews.
   matches: [
     'https://*.aimatrx.com/*',
     'https://aimatrx.com/*',
     'https://*.mymatrx.com/*',
     'https://mymatrx.com/*',
-    'https://*-armani-sadeghis-projects.vercel.app/*',
+    'https://*.vercel.app/*',
     'http://localhost/*',
     'http://127.0.0.1/*',
   ],

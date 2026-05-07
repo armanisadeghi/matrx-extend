@@ -33,6 +33,8 @@
  */
 
 import { log } from '@/lib/debug/log';
+import { getEngineBaseUrl } from '@/lib/desktop/discovery';
+import { getPairToken } from '@/lib/desktop/http';
 import { broadcast, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { ensureOffscreen } from '@/lib/stream/offscreen-proxy';
@@ -45,27 +47,95 @@ interface WsStateMessage {
   state: WsState;
 }
 
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+function redactToken(url: string): string {
+  return url.replace(/([?&])token=[^&]+/, '$1token=***');
+}
+
 // ─── Module state ───────────────────────────────────────────────────────────
 
 let lastKnownState: WsState = 'unknown';
+let lastStateChangeAt: number | null = null;
 const messageHandlers = new Set<(payload: unknown) => void>();
 let listenerInstalled = false;
 
 // ─── Public API ─────────────────────────────────────────────────────────────
 
+export interface WsControlResult {
+  ok: boolean;
+  error?: string;
+  /** Where the failure occurred, when it did. */
+  stage?: 'discover' | 'auth' | 'ensure-offscreen' | 'send' | 'open';
+}
+
 /**
  * Lazily ensure the offscreen document exists, then ask it to open the WS.
  * Idempotent — the offscreen-side handler tracks "is the WS already open?"
  * and no-ops if so.
+ *
+ * The wsUrl is resolved HERE (caller-side) and passed to the offscreen
+ * because offscreen documents don't have chrome.storage access — the
+ * discovery cache lives in storage, so the offscreen can't run
+ * getEngineBaseUrl itself. Same pattern as streaming.
+ *
+ * Returns a structured result so callers (notably the Bridges debug panel)
+ * can surface failures. Errors at every stage are caught and reported;
+ * this never throws.
  */
-export async function connectWs(): Promise<void> {
+export async function connectWs(): Promise<WsControlResult> {
   installRouterIfNeeded();
-  await ensureOffscreen();
+  let wsUrl: string;
   try {
-    await send<unknown, { ok: boolean }>(CHANNELS.WS_START, {});
-    log.info('desktop', 'ws connectWs requested');
+    const baseUrl = await getEngineBaseUrl();
+    if (!baseUrl) {
+      return {
+        ok: false,
+        error: 'engine base URL unresolved (matrx-local offline?)',
+        stage: 'discover',
+      };
+    }
+    // Browsers don't allow custom headers on WebSocket — engine reads the
+    // bearer from a `?token=` query param instead of an Authorization header.
+    const token = await getPairToken();
+    if (!token) {
+      return {
+        ok: false,
+        error: 'desktop not paired — open Settings → Pair desktop',
+        stage: 'auth',
+      };
+    }
+    wsUrl =
+      baseUrl.replace(/^http/, 'ws') +
+      `/extension/ws?token=${encodeURIComponent(token)}`;
   } catch (err) {
-    log.warn('desktop', 'ws connectWs failed', (err as Error).message);
+    const error = (err as Error).message;
+    log.warn('desktop', 'ws connectWs discovery failed', error);
+    return { ok: false, error, stage: 'discover' };
+  }
+  try {
+    await ensureOffscreen();
+  } catch (err) {
+    const error = (err as Error).message;
+    log.warn('desktop', 'ws connectWs ensureOffscreen failed', error);
+    return { ok: false, error, stage: 'ensure-offscreen' };
+  }
+  try {
+    const r = await send<{ wsUrl: string }, { ok: boolean; error?: string }>(
+      CHANNELS.WS_START,
+      { wsUrl },
+    );
+    if (r && r.ok === false) {
+      const error = r.error ?? 'unknown error';
+      log.warn('desktop', 'ws connectWs offscreen returned error', error);
+      return { ok: false, error, stage: 'open' };
+    }
+    log.info('desktop', `ws connectWs requested → ${redactToken(wsUrl)}`);
+    return { ok: true };
+  } catch (err) {
+    const error = (err as Error).message;
+    log.warn('desktop', 'ws connectWs send failed', error);
+    return { ok: false, error, stage: 'send' };
   }
 }
 
@@ -73,14 +143,18 @@ export async function connectWs(): Promise<void> {
  * Ask the offscreen-side WS to close. Does NOT tear down the offscreen
  * document — that's owned by the streaming subsystem.
  */
-export async function disconnectWs(): Promise<void> {
+export async function disconnectWs(): Promise<WsControlResult> {
   try {
     await send<unknown, { ok: boolean }>(CHANNELS.WS_STOP, {});
     log.info('desktop', 'ws disconnectWs requested');
+    lastKnownState = 'closed';
+    return { ok: true };
   } catch (err) {
-    log.warn('desktop', 'ws disconnectWs failed', (err as Error).message);
+    const error = (err as Error).message;
+    log.warn('desktop', 'ws disconnectWs failed', error);
+    lastKnownState = 'closed';
+    return { ok: false, error, stage: 'send' };
   }
-  lastKnownState = 'closed';
 }
 
 /**
@@ -116,6 +190,11 @@ export function getWsState(): WsState {
   return lastKnownState;
 }
 
+/** Wall-clock ms of the last state transition observed by this context. */
+export function getWsStateChangedAt(): number | null {
+  return lastStateChangeAt;
+}
+
 // ─── Internal — SW message router ───────────────────────────────────────────
 
 function installRouterIfNeeded(): void {
@@ -137,6 +216,7 @@ function installRouterIfNeeded(): void {
       if (next === 'open' || next === 'closed') {
         if (next !== lastKnownState) {
           log.info('desktop', `ws state: ${lastKnownState} → ${next}`);
+          lastStateChangeAt = Date.now();
         }
         lastKnownState = next;
       }

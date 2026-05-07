@@ -114,18 +114,22 @@ export default defineConfig({
     // extension via chrome.runtime.sendMessage(extId, …). The matches list
     // gates which page origins are allowed to deliver those messages.
     //
-    // Keep in sync with src/lib/origin-allowlist.ts ALLOWED_ORIGIN_PATTERNS.
-    // Both lists answer the same question ("can this origin talk to us?")
-    // for two different transports (externally_connectable here, content
-    // scripts / Broadcast handler in origin-allowlist).
+    // Mirrors src/lib/origin-allowlist.ts ALLOWED_ORIGIN_PATTERNS, but
+    // intentionally LOOSER where Chrome's match-pattern grammar can't
+    // express the runtime rule. Chrome rejects mid-host wildcards
+    // (`*-armani-sadeghis-projects.vercel.app`) — only full-subdomain
+    // wildcards (`*.vercel.app`) are legal. So the manifest opens the
+    // gate to all `*.vercel.app` origins; the runtime matcher in
+    // origin-allowlist.ts (which uses a custom regex) enforces the
+    // narrower per-team restriction.
     //
-    // NOTE: Manifest V3 externally_connectable.matches REJECTS port wildcards
-    // (`http://localhost:*/*`). Bare-host patterns implicitly match any port,
-    // so `http://localhost/*` covers `http://localhost:3000/*`,
-    // `http://localhost:3001/*`, etc.
+    // NOTE: Manifest V3 externally_connectable.matches also REJECTS port
+    // wildcards (`http://localhost:*/*`). Bare-host patterns implicitly
+    // match any port, so `http://localhost/*` covers
+    // `http://localhost:3000/*`, `http://localhost:3001/*`, etc.
     externally_connectable: {
       matches: [
-        'https://*-armani-sadeghis-projects.vercel.app/*',
+        'https://*.vercel.app/*',
         'https://*.aimatrx.com/*',
         'https://*.mymatrx.com/*',
         'http://localhost/*',

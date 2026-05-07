@@ -40,7 +40,14 @@ import {
   setEnginePortOverride,
 } from '@/lib/desktop/discovery';
 import { rpcHttp } from '@/lib/desktop/http';
-import { connectWs, disconnectWs, getWsState, onWsMessage } from '@/lib/desktop/ws-client';
+import {
+  connectWs,
+  disconnectWs,
+  getWsState,
+  getWsStateChangedAt,
+  onWsMessage,
+  type WsControlResult,
+} from '@/lib/desktop/ws-client';
 import {
   connectBroadcast,
   disconnectBroadcast,
@@ -79,6 +86,7 @@ function debugCtx(callId: string) {
     callId,
     agentName: null,
     permissionMode: 'act' as const,
+    assignedTabId: null,
   };
 }
 
@@ -486,7 +494,11 @@ function WsSection() {
   const [lastHash, setLastHash] = useState<string | null>(null);
   const [lastPing, setLastPing] = useState<number | null>(null);
   const [lastPong, setLastPong] = useState<number | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [lastResult, setLastResult] = useState<
+    | { kind: 'connect' | 'disconnect' | 'reconnect'; ts: number; result: WsControlResult }
+    | null
+  >(null);
 
   useEffect(() => {
     const off = onWsMessage((payload) => {
@@ -512,21 +524,33 @@ function WsSection() {
   }, []);
 
   const onConnect = useCallback(async () => {
-    setBusy(true);
-    await connectWs();
-    setBusy(false);
+    setBusy('connect');
+    try {
+      const r = await connectWs();
+      setLastResult({ kind: 'connect', ts: Date.now(), result: r });
+    } finally {
+      setBusy(null);
+    }
   }, []);
   const onDisconnect = useCallback(async () => {
-    setBusy(true);
-    await disconnectWs();
-    setBusy(false);
+    setBusy('disconnect');
+    try {
+      const r = await disconnectWs();
+      setLastResult({ kind: 'disconnect', ts: Date.now(), result: r });
+    } finally {
+      setBusy(null);
+    }
   }, []);
   const onForceReconnect = useCallback(async () => {
-    setBusy(true);
-    await disconnectWs();
-    await new Promise((r) => setTimeout(r, 100));
-    await connectWs();
-    setBusy(false);
+    setBusy('reconnect');
+    try {
+      await disconnectWs();
+      await new Promise((r) => setTimeout(r, 100));
+      const r = await connectWs();
+      setLastResult({ kind: 'reconnect', ts: Date.now(), result: r });
+    } finally {
+      setBusy(null);
+    }
   }, []);
 
   const state = getWsState();
@@ -536,29 +560,67 @@ function WsSection() {
       : state === 'closed'
         ? 'text-amber-500'
         : 'text-muted-foreground';
+  const stateChangedAt = getWsStateChangedAt();
+  const isBusy = busy !== null;
 
   return (
     <Section label="WebSocket">
-      <KV k="state" v={<span className={stateColor}>{state}</span>} />
+      <KV
+        k="state"
+        v={
+          <span>
+            <span className={stateColor}>{state}</span>
+            {stateChangedAt && (
+              <span className="ml-2 text-muted-foreground">
+                (since {new Date(stateChangedAt).toLocaleTimeString()})
+              </span>
+            )}
+          </span>
+        }
+      />
       <KV k="last_ping" v={lastPing ? new Date(lastPing).toLocaleTimeString() : '—'} />
       <KV k="last_pong" v={lastPong ? new Date(lastPong).toLocaleTimeString() : '—'} />
       <KV k="last_tool_catalog_hash" v={lastHash ?? '—'} />
       <div className="flex flex-wrap items-center gap-1.5 pt-1">
-        <Button size="sm" variant="outline" onClick={() => void onConnect()} disabled={busy}>
-          <Plug className="mr-1 size-3.5" /> Connect
+        <Button size="sm" variant="outline" onClick={() => void onConnect()} disabled={isBusy}>
+          <Plug
+            className={cn('mr-1 size-3.5', busy === 'connect' && 'animate-pulse')}
+          />{' '}
+          Connect
         </Button>
-        <Button size="sm" variant="outline" onClick={() => void onDisconnect()} disabled={busy}>
+        <Button size="sm" variant="outline" onClick={() => void onDisconnect()} disabled={isBusy}>
           <Power className="mr-1 size-3.5" /> Disconnect
         </Button>
         <Button
           size="sm"
           variant="outline"
           onClick={() => void onForceReconnect()}
-          disabled={busy}
+          disabled={isBusy}
         >
-          <RefreshCw className={cn('mr-1 size-3.5', busy && 'animate-spin')} /> Force reconnect
+          <RefreshCw
+            className={cn('mr-1 size-3.5', busy === 'reconnect' && 'animate-spin')}
+          />{' '}
+          Force reconnect
         </Button>
+        {busy && (
+          <span className="font-mono text-[11px] text-muted-foreground">
+            {busy}…
+          </span>
+        )}
       </div>
+      {lastResult && (
+        <div
+          className={cn(
+            'rounded bg-secondary/40 p-1.5 font-mono text-[11px]',
+            lastResult.result.ok ? 'text-emerald-500' : 'text-red-500',
+          )}
+        >
+          <span className="text-muted-foreground">
+            {new Date(lastResult.ts).toLocaleTimeString()} · {lastResult.kind}
+          </span>{' '}
+          {lastResult.result.ok ? 'OK' : `FAIL${lastResult.result.stage ? ` @ ${lastResult.result.stage}` : ''}: ${lastResult.result.error ?? '(no error message)'}`}
+        </div>
+      )}
       <div className="space-y-1 pt-1">
         <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
           last 10 inbound frames

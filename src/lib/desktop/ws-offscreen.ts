@@ -30,7 +30,6 @@
 import { log } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { getEngineBaseUrl } from '@/lib/desktop/discovery';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -42,6 +41,12 @@ const RECONNECT_DELAYS_MS = [1_000, 2_000, 4_000, 8_000, 16_000, 30_000] as cons
 
 interface RuntimeState {
   ws: WebSocket | null;
+  /**
+   * URL handed in via the most recent WS_START. Cached so reconnect
+   * attempts after a close don't need a fresh round-trip to the SW —
+   * the offscreen has no chrome.storage access of its own to re-resolve.
+   */
+  wsUrl: string | null;
   /** When did we last see ANY traffic (in or out)? */
   lastActivityAt: number;
   /** Heartbeat interval id. */
@@ -65,6 +70,7 @@ interface RuntimeState {
 
 const state: RuntimeState = {
   ws: null,
+  wsUrl: null,
   lastActivityAt: 0,
   heartbeatTimer: null,
   idleTimer: null,
@@ -84,18 +90,22 @@ export function startWsOffscreenRuntime(): void {
   if (state.initialized) return;
   state.initialized = true;
 
-  on<unknown, { ok: boolean; error?: string }>(CHANNELS.WS_START, async () => {
-    state.stopped = false;
-    if (state.ws && state.ws.readyState === WebSocket.OPEN) {
-      return { ok: true };
-    }
-    try {
-      await openWebSocket();
-      return { ok: true };
-    } catch (err) {
-      return { ok: false, error: (err as Error).message };
-    }
-  });
+  on<{ wsUrl?: string }, { ok: boolean; error?: string }>(
+    CHANNELS.WS_START,
+    async (payload) => {
+      state.stopped = false;
+      if (payload?.wsUrl) state.wsUrl = payload.wsUrl;
+      if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+        return { ok: true };
+      }
+      try {
+        await openWebSocket();
+        return { ok: true };
+      } catch (err) {
+        return { ok: false, error: (err as Error).message };
+      }
+    },
+  );
 
   on<unknown, { ok: boolean }>(CHANNELS.WS_STOP, () => {
     state.stopped = true;
@@ -131,16 +141,22 @@ export function startWsOffscreenRuntime(): void {
 
 let connectingPromise: Promise<void> | null = null;
 
+function redactToken(url: string): string {
+  return url.replace(/([?&])token=[^&]+/, '$1token=***');
+}
+
 async function openWebSocket(): Promise<void> {
   if (connectingPromise) return connectingPromise;
   connectingPromise = (async () => {
     try {
-      const baseUrl = await getEngineBaseUrl();
-      if (!baseUrl) {
-        throw new Error('engine base URL unresolved (matrx-local offline?)');
+      const wsUrl = state.wsUrl;
+      if (!wsUrl) {
+        throw new Error(
+          'no wsUrl cached — caller must send WS_START with a resolved URL first',
+        );
       }
-      const wsUrl = baseUrl.replace(/^http/, 'ws') + '/extension/ws';
-      log.info('desktop-ws-offscreen', `connecting → ${wsUrl}`);
+      const safeUrl = redactToken(wsUrl);
+      log.info('desktop-ws-offscreen', `connecting → ${safeUrl}`);
 
       await new Promise<void>((resolve, reject) => {
         let settled = false;
@@ -159,7 +175,7 @@ async function openWebSocket(): Promise<void> {
         }
 
         const openTimeout = setTimeout(
-          () => settle(new Error('ws open timeout')),
+          () => settle(new Error(`ws open timeout (5s) — ${safeUrl} did not respond`)),
           5_000,
         );
 
@@ -181,13 +197,26 @@ async function openWebSocket(): Promise<void> {
 
         ws.addEventListener('close', (ev) => {
           clearTimeout(openTimeout);
+          // Browsers redact WS handshake failure detail for security, so the
+          // 'error' event arrives empty. The close event right after carries
+          // the only signal we get: a numeric code (1006 = abnormal,
+          // typically connection-refused or no listening server) and an
+          // optional reason string when the server *does* speak the protocol
+          // and rejects with text.
+          const codeMeaning = wsCloseCodeHint(ev.code);
           handleClose(ev.code, ev.reason);
-          settle(new Error(`ws closed before open: ${ev.code} ${ev.reason}`));
+          settle(
+            new Error(
+              `ws closed before open: ${safeUrl} — code=${ev.code}${codeMeaning ? ` (${codeMeaning})` : ''}${ev.reason ? ` reason="${ev.reason}"` : ''}`,
+            ),
+          );
         });
 
-        ws.addEventListener('error', (ev) => {
-          // The 'close' event always follows; only log here.
-          log.warn('desktop-ws-offscreen', 'ws error', ev);
+        ws.addEventListener('error', () => {
+          // The 'error' event itself is opaque (Event with no useful fields).
+          // The 'close' event that always follows carries the diagnostic info.
+          // Log a single hint here so it's clear the error fired.
+          log.warn('desktop-ws-offscreen', `ws error during connect to ${safeUrl}`);
         });
       });
     } finally {
@@ -195,6 +224,33 @@ async function openWebSocket(): Promise<void> {
     }
   })();
   return connectingPromise;
+}
+
+function wsCloseCodeHint(code: number): string | null {
+  // RFC 6455 + Chrome-specific behavior. 1006 is the one we'll see most
+  // here — Chrome uses it whenever the TCP/TLS connection couldn't be
+  // established or the WS handshake failed (404, wrong upgrade response,
+  // server didn't speak websocket, etc.).
+  switch (code) {
+    case 1000:
+      return 'normal closure';
+    case 1001:
+      return 'going away';
+    case 1002:
+      return 'protocol error';
+    case 1003:
+      return 'unsupported data';
+    case 1006:
+      return 'abnormal — engine likely refused, route missing, or not running';
+    case 1008:
+      return 'policy violation';
+    case 1011:
+      return 'server error';
+    case 1015:
+      return 'tls handshake failure';
+    default:
+      return null;
+  }
 }
 
 function closeWebSocket(reason: string): void {
