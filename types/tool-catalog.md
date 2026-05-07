@@ -1,6 +1,6 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-07T08:39:09.224Z
+Generated: 2026-05-07T16:53:27.217Z
 
 - **Total tools:** 168
 - **Assistant bundle:** 74 tools (read-only)
@@ -530,7 +530,7 @@ Read the active tab and return a structured snapshot: cleaned article (markdown 
 
 ### `take_screenshot`
 
-Capture the visible viewport of the active tab, optimized for vision-API consumption. Default profile 'auto' returns a 'max useful' master image (JPEG q=88 @ 2576px — Opus 4.7's ceiling, the highest any current model uses) at ~600–900 KB; the server is expected to do per-provider final sizing from that master. Use 'auto-final' if the server is a passthrough (1568px JPEG q=85 — fits every provider). Provider-specific profiles when the server already knows the model: 'anthropic-default'/'anthropic-hires', 'openai-original'/'openai-high'/'openai-low', 'gemini-screenshot'/'gemini-overview'/'gemini-2.5-default'. Special-purpose: 'ocr-heavy' (high-q for fine text), 'lossless' (PNG, archival only). Returns { ok, media_type, format, width, height, source_width, source_height, image_base64, byte_length, resized, profile, est_tokens }. The `media_type` field is ready for direct use in an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.
+Capture the active tab as an image, optimized for vision-API consumption. `mode: 'visible'` (default) captures the current viewport via captureVisibleTab. `mode: 'full_page'` scroll-and-stitches the full scrollable height via captureVisibleTab + OffscreenCanvas (no extra permissions; ~5s for a 10-screen page; position:fixed elements appear on every tile). Default profile 'auto' returns a 'max useful' master image (JPEG q=88 @ 2576px — Opus 4.7's ceiling, the highest any current model uses) at ~600–900 KB; the server is expected to do per-provider final sizing from that master. Use 'auto-final' if the server is a passthrough (1568px JPEG q=85 — fits every provider). Provider-specific profiles when the server already knows the model: 'anthropic-default'/'anthropic-hires', 'openai-original'/'openai-high'/'openai-low', 'gemini-screenshot'/'gemini-overview'/'gemini-2.5-default'. Special-purpose: 'ocr-heavy' (high-q for fine text), 'lossless' (PNG, archival only). Returns { ok, mode, media_type, format, width, height, source_width, source_height, image_base64, byte_length, resized, profile, est_tokens, tile_count?, truncated? }. The `media_type` field is ready for direct use in an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.
 
 - **Required permissions:** `activeTab`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -586,6 +586,14 @@ Capture the visible viewport of the active tab, optimized for vision-API consump
         "unknown"
       ],
       "default": "unknown"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "visible",
+        "full_page"
+      ],
+      "default": "visible"
     }
   },
   "additionalProperties": false,

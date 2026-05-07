@@ -440,23 +440,27 @@ Every entry follows this shape:
   - The tool is `admin_only` - non-admin users don't see it advertised in chat (still visible in Tools tab when admin).
 
 ### Screenshots tab (TASK-005)
-- **What it does:** Per-page screenshot history. Lists every screenshot ever taken of the active page (canonical URL match), regardless of whether the agent or the user triggered it. The "Take screenshot" button at the bottom calls the same `take_screenshot` handler the agent uses, so user and agent captures share one persistence path (cld_files + `wbx_screenshot` index row).
+- **What it does:** Per-page screenshot history. Lists every screenshot ever taken of the active page (canonical URL match), regardless of whether the agent or the user triggered it. The two buttons at the bottom — **Visible** and **Full page** — both call the same `take_screenshot` handler the agent uses (with `mode: 'visible' | 'full_page'`), so user and agent captures share one persistence path (cld_files + `wbx_screenshot` index row).
 - **Where to test:** Side panel - **Screenshots** tab (camera icon).
 - **Prereq:** apply `migrations/2026_05_08_wbx_screenshot.sql` against the Matrx Supabase project.
 - **Steps:**
   1. Navigate to a regular web page.
-  2. Open Screenshots tab - click **Take screenshot**.
-  3. After it completes, the gallery refreshes with a new card. Click the thumbnail or the open icon to view full size in a new tab; click the link icon to copy the URL; click the trash icon (then Delete) to remove the index row (file in cloud storage is kept).
-  4. Take another screenshot - most-recent first ordering.
-  5. Switch to Chat - ask the agent "take a screenshot of this page" - it lands in the same gallery on next refresh, live via the timeline event.
+  2. Open Screenshots tab - click **Visible**. The current viewport is captured and a card appears in the gallery.
+  3. Click **Full page** on a page taller than one screen. The page scrolls top → bottom (visible to the user; this is expected); after ~1 sec/screen a card appears whose thumbnail is the entire page stitched.
+  4. Click a thumbnail (or the open icon) to view full size in a new tab; click the link icon to copy the URL; click the trash icon (then Delete) to remove the index row (file in cloud storage is kept).
+  5. Switch to Chat - ask the agent "take a screenshot of this page" - it lands in the same gallery on next refresh, live via the timeline event. Ask "take a full-page screenshot" and it uses `mode: 'full_page'`.
 - **Expected:**
-  - Each card shows: thumbnail (lazy-loaded from `file_url`), source label ("You" / "Agent"), relative timestamp, dimensions.
+  - Each card shows: thumbnail (lazy-loaded from `file_url`), source label ("You" / "Agent"), relative timestamp, dimensions. Full-page captures are visibly tall.
   - Refreshes automatically when `take_screenshot` completes anywhere in the side panel.
   - Empty state on a fresh page; skeleton on first load.
+  - If the cld_files upload or `wbx_screenshot` insert fails, an amber warning under the buttons reads "Captured, but failed to save to the gallery."
 - **Edge cases worth poking:**
-  - Restricted URLs (`chrome://`, PDF viewer): button should error inline.
+  - Restricted URLs (`chrome://`, PDF viewer): both buttons should error inline.
   - Same page hit via slightly different URL (http vs https, trailing slash, `www.`) - `normalizeUrl()` collapses them, so screenshots from any variant show on the canonical view.
-  - Network down: handler returns inline image with `file_id: null`; no row added - the gallery still shows previously-saved entries unchanged.
+  - Pages taller than 30 viewports: full-page capture stops at the cap and shows "Page exceeded the 30-screen tile cap; the bottom is cropped."
+  - position:fixed / position:sticky elements (toolbars, cookie banners) repeat on every tile in full-page mode - known limitation; use `cdp_full_page_screenshot` (admin + debugger perm) for a clean single-shot.
+  - Mid-capture navigation: if the user navigates while full-page is running, captures may end up on the new page. The handler restores the original scroll position even on error.
+  - Network down: handler returns inline image with `file_id: null`; no row added - the gallery still shows previously-saved entries unchanged, and the warning surfaces.
 
 ---
 
@@ -473,6 +477,43 @@ Every entry follows this shape:
 - **Edge cases worth poking:**
   - Switch to another tab in the side panel (Tools, Settings, etc.) and back to Chat → the in-memory chat session for THIS open session persists. Only a fresh sidepanel open resets it.
   - Send-and-close mid-stream → on next open, the in-flight reply doesn't reappear; you get an empty chat.
+
+### Showcase — Tables tab (auto_table mode)
+- **What it does:** Detects every `<table>` on the page (≥2 rows) and
+  extracts the chosen one as JSON rows. Auto-handles multi-tier headers
+  inside `<thead>` by expanding `colspan` / `rowspan` into a column-aligned
+  grid and merging tier text with " - " (consecutive duplicates collapsed).
+- **Where to test:** Side panel → Showcase → Tables.
+- **Steps:**
+  1. Open a page with a simple single-header table (e.g. any Wikipedia
+     "List of …" article). Click Extract → headers are the single row;
+     each `<tr>` becomes one row object. No regression vs. legacy behavior.
+  2. Open a page with a two-tier header table (e.g.
+     https://developers.openai.com/api/docs/pricing — top tier
+     "Short context" / "Long context" each `colspan=3`, second tier
+     "Model / Input / Cached input / Output" repeated). Click Extract →
+     keys should be `Model`, `Short context - Input`,
+     `Short context - Cached input`, `Short context - Output`,
+     `Long context - Input`, etc. Every model name lands in the `Model`
+     column; no `col_N` fallback keys.
+  3. Detection summary on a multi-tier table reads `…r×Nc, 2-tier hdr`.
+- **Expected:**
+  - 7-column OpenAI pricing table extracts 6 rows, each with all 7 keys
+    populated and the values aligned to the bottom-tier subcolumn.
+  - Single-tier tables behave exactly as before — headers are the first
+    `<thead> <tr>` (or the first `<tr>` if no `<thead>`); body is `<tbody>`
+    or all `<tr>` minus the header rows.
+- **Edge cases worth poking:**
+  - `rowspan=2` on a corner cell (e.g. "Model" spanning both header tiers)
+    → produces `Model` (not `Model - Model`); the consecutive-duplicate
+    collapse handles this.
+  - Table with header rows inside `<tbody>` (no `<thead>`) → set
+    `header_rows: 2` in the saved-pattern config to override auto-detect.
+  - Empty top-tier cell → drops out of the merge, so the bottom-tier
+    name stands alone.
+  - Tables where data rows have `colspan` / `rowspan` are NOT yet
+    expanded — values still zip positionally. Open a follow-up if a
+    real page hits this.
 
 ### parallel_for_each_tab
 - **What it does:** Fan out the same prompt across N existing tabs (max 8) and collect the results. Each sub-run is its own agent conversation pinned to one tab. Admin-only.

@@ -30,8 +30,10 @@ import {
 import { take_screenshot } from '@/lib/tools/handlers/read';
 import { normalizeUrl } from '@/lib/url/match';
 import {
+  AlertTriangle,
   Camera,
   ExternalLink,
+  FileImage,
   Globe2,
   ImageOff,
   Link2,
@@ -43,6 +45,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
+type CaptureMode = 'visible' | 'full_page';
 
 export function ScreenshotsView() {
   const tab = useActiveTab();
@@ -51,8 +54,9 @@ export function ScreenshotsView() {
   const [rows, setRows] = useState<ScreenshotRow[]>([]);
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [error, setError] = useState<string | null>(null);
-  const [capturing, setCapturing] = useState(false);
+  const [capturingMode, setCapturingMode] = useState<CaptureMode | null>(null);
   const [captureError, setCaptureError] = useState<string | null>(null);
+  const [persistWarning, setPersistWarning] = useState<string | null>(null);
   // Track the URL we last fetched for, so the "tab url change" effect
   // doesn't fire a redundant load while a refresh from the timeline
   // event is still in flight.
@@ -105,70 +109,94 @@ export function ScreenshotsView() {
     return off;
   }, [reload]);
 
-  const captureNow = useCallback(async () => {
-    if (capturing) return;
-    if (!tab.id || !tab.url) {
-      setCaptureError('No active tab');
-      return;
-    }
-    setCaptureError(null);
-    setCapturing(true);
-    const callId = newId('user-screenshot');
-    broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
-      callId,
-      toolName: 'take_screenshot',
-      phase: 'started',
-      args: { capture_source: 'user' },
-    });
-    try {
-      const result = await take_screenshot.run(
-        {
-          profile: 'auto',
-          format: undefined,
-          quality: undefined,
-          max_dimension: undefined,
-          persist: true,
-          capture_source: 'user',
-        } as never,
-        {
-          conversationId: null,
-          runId: 'user-screenshots-tab',
-          callId,
-          agentName: 'user',
-          permissionMode: 'act',
-          assignedTabId: null,
-        },
-      );
-      const r = result as { ok?: boolean; reason?: string };
-      if (r.ok === false) {
-        setCaptureError(r.reason ?? 'Screenshot failed');
+  const captureNow = useCallback(
+    async (mode: CaptureMode) => {
+      if (capturingMode) return;
+      if (!tab.id || !tab.url) {
+        setCaptureError('No active tab');
+        return;
+      }
+      setCaptureError(null);
+      setPersistWarning(null);
+      setCapturingMode(mode);
+      const callId = newId('user-screenshot');
+      broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+        callId,
+        toolName: 'take_screenshot',
+        phase: 'started',
+        args: { capture_source: 'user', mode },
+      });
+      try {
+        const result = await take_screenshot.run(
+          {
+            profile: 'auto',
+            format: undefined,
+            quality: undefined,
+            max_dimension: undefined,
+            persist: true,
+            capture_source: 'user',
+            mode,
+          } as never,
+          {
+            conversationId: null,
+            runId: 'user-screenshots-tab',
+            callId,
+            agentName: 'user',
+            permissionMode: 'act',
+            assignedTabId: null,
+          },
+        );
+        const r = result as {
+          ok?: boolean;
+          reason?: string;
+          screenshot_id?: string | null;
+          file_id?: string | null;
+          truncated?: boolean;
+        };
+        if (r.ok === false) {
+          setCaptureError(r.reason ?? 'Screenshot failed');
+          broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+            callId,
+            toolName: 'take_screenshot',
+            phase: 'error',
+            message: r.reason ?? 'Screenshot failed',
+          });
+        } else {
+          // Capture succeeded but persistence may have failed silently
+          // (uploadFile threw, RLS rejected the row, etc.). The handler
+          // logs to console; surface a hint here so the user knows why
+          // the gallery didn't refresh with a new card.
+          if (!r.screenshot_id || !r.file_id) {
+            setPersistWarning(
+              'Captured, but failed to save to the gallery. Check the SW console for the error.',
+            );
+          } else if (mode === 'full_page' && r.truncated) {
+            setPersistWarning(
+              'Page exceeded the 30-screen tile cap; the bottom is cropped.',
+            );
+          }
+          broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+            callId,
+            toolName: 'take_screenshot',
+            phase: 'completed',
+            output: result,
+          });
+        }
+      } catch (err) {
+        const msg = (err as Error).message ?? 'Screenshot failed';
+        setCaptureError(msg);
         broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
           callId,
           toolName: 'take_screenshot',
           phase: 'error',
-          message: r.reason ?? 'Screenshot failed',
+          message: msg,
         });
-      } else {
-        broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
-          callId,
-          toolName: 'take_screenshot',
-          phase: 'completed',
-          output: result,
-        });
+      } finally {
+        setCapturingMode(null);
       }
-    } catch (err) {
-      const msg = (err as Error).message ?? 'Screenshot failed';
-      setCaptureError(msg);
-      broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
-        callId,
-        toolName: 'take_screenshot',
-        phase: 'error',
-        message: msg,
-      });
-    } finally {
-      setCapturing(false);
-    }
-  }, [capturing, tab.id, tab.url]);
+    },
+    [capturingMode, tab.id, tab.url],
+  );
 
   const onDelete = useCallback(async (id: string) => {
     const ok = await deleteScreenshot(id);
@@ -229,18 +257,48 @@ export function ScreenshotsView() {
         )}
       </div>
 
-      <div className="flex shrink-0 flex-col gap-1 border-t border-border/50 px-3 py-2">
+      <div className="flex shrink-0 flex-col gap-1.5 border-t border-border/50 px-3 py-2">
         {captureError && (
-          <div className="text-xs text-destructive">{captureError}</div>
+          <div className="flex items-start gap-1.5 text-xs text-destructive">
+            <AlertTriangle className="mt-0.5 size-3 shrink-0" />
+            <span>{captureError}</span>
+          </div>
         )}
-        <Button
-          onClick={() => void captureNow()}
-          disabled={capturing || !tab.id || !tab.url}
-          className="w-full rounded-full"
-        >
-          {capturing ? <Loader2 className="size-3.5 animate-spin" /> : <Camera className="size-3.5" />}
-          {capturing ? 'Capturing…' : 'Take screenshot'}
-        </Button>
+        {persistWarning && !captureError && (
+          <div className="flex items-start gap-1.5 text-xs text-amber-600 dark:text-amber-400">
+            <AlertTriangle className="mt-0.5 size-3 shrink-0" />
+            <span>{persistWarning}</span>
+          </div>
+        )}
+        <div className="flex gap-1.5">
+          <Button
+            onClick={() => void captureNow('visible')}
+            disabled={!!capturingMode || !tab.id || !tab.url}
+            className="flex-1 rounded-full"
+            title="Capture the current viewport only"
+          >
+            {capturingMode === 'visible' ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Camera className="size-3.5" />
+            )}
+            {capturingMode === 'visible' ? 'Capturing…' : 'Visible'}
+          </Button>
+          <Button
+            onClick={() => void captureNow('full_page')}
+            disabled={!!capturingMode || !tab.id || !tab.url}
+            variant="secondary"
+            className="flex-1 rounded-full"
+            title="Scroll the page top → bottom and stitch every viewport into one tall image"
+          >
+            {capturingMode === 'full_page' ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <FileImage className="size-3.5" />
+            )}
+            {capturingMode === 'full_page' ? 'Capturing…' : 'Full page'}
+          </Button>
+        </div>
       </div>
     </div>
   );

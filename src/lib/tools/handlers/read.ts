@@ -183,6 +183,17 @@ const ScreenshotArgs = z
      * distinguish at a glance.
      */
     capture_source: z.enum(['agent', 'user', 'unknown']).optional().default('unknown'),
+    /**
+     * Capture scope. `visible` (default) = current viewport only via
+     * captureVisibleTab. `full_page` = scroll-and-stitch the full
+     * scrollable height via captureVisibleTab + OffscreenCanvas. The
+     * full-page path needs no extra permissions but is slower
+     * (captureVisibleTab is rate-limited to ~2/sec, so a 10-screen
+     * page takes ~5 seconds) and may show position:fixed elements on
+     * every tile. Use `cdp_full_page_screenshot` (admin + debugger)
+     * when you need a clean single-shot full page.
+     */
+    mode: z.enum(['visible', 'full_page']).optional().default('visible'),
   })
   .default({});
 type ScreenshotArgs = z.infer<typeof ScreenshotArgs>;
@@ -222,6 +233,16 @@ interface ScreenshotResult {
   file_url?: string | null;
   /** wbx_screenshot row id for this capture, if persistence succeeded. */
   screenshot_id?: string | null;
+  /** `visible` or `full_page` — echoes what was captured. */
+  mode?: 'visible' | 'full_page';
+  /** Full-page only: number of viewport tiles stitched. */
+  tile_count?: number;
+  /**
+   * Full-page only: true when the page exceeded the tile cap and the
+   * bottom was cut off. Caller should treat the image as a "best-effort"
+   * full page in that case.
+   */
+  truncated?: boolean;
 }
 
 /**
@@ -292,7 +313,7 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
   name: 'take_screenshot',
   tier: 'read',
   description:
-    "Capture the visible viewport of the active tab, optimized for vision-API consumption. Default profile 'auto' returns a 'max useful' master image (JPEG q=88 @ 2576px — Opus 4.7's ceiling, the highest any current model uses) at ~600–900 KB; the server is expected to do per-provider final sizing from that master. Use 'auto-final' if the server is a passthrough (1568px JPEG q=85 — fits every provider). Provider-specific profiles when the server already knows the model: 'anthropic-default'/'anthropic-hires', 'openai-original'/'openai-high'/'openai-low', 'gemini-screenshot'/'gemini-overview'/'gemini-2.5-default'. Special-purpose: 'ocr-heavy' (high-q for fine text), 'lossless' (PNG, archival only). Returns { ok, media_type, format, width, height, source_width, source_height, image_base64, byte_length, resized, profile, est_tokens }. The `media_type` field is ready for direct use in an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
+    "Capture the active tab as an image, optimized for vision-API consumption. `mode: 'visible'` (default) captures the current viewport via captureVisibleTab. `mode: 'full_page'` scroll-and-stitches the full scrollable height via captureVisibleTab + OffscreenCanvas (no extra permissions; ~5s for a 10-screen page; position:fixed elements appear on every tile). Default profile 'auto' returns a 'max useful' master image (JPEG q=88 @ 2576px — Opus 4.7's ceiling, the highest any current model uses) at ~600–900 KB; the server is expected to do per-provider final sizing from that master. Use 'auto-final' if the server is a passthrough (1568px JPEG q=85 — fits every provider). Provider-specific profiles when the server already knows the model: 'anthropic-default'/'anthropic-hires', 'openai-original'/'openai-high'/'openai-low', 'gemini-screenshot'/'gemini-overview'/'gemini-2.5-default'. Special-purpose: 'ocr-heavy' (high-q for fine text), 'lossless' (PNG, archival only). Returns { ok, mode, media_type, format, width, height, source_width, source_height, image_base64, byte_length, resized, profile, est_tokens, tile_count?, truncated? }. The `media_type` field is ready for direct use in an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
   argsSchema: ScreenshotArgs,
   run: async (args, ctx) => {
     const tab = await getAssignedTab(ctx);
@@ -304,15 +325,26 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
     const maxDim = args.max_dimension ?? profile.max_dimension;
     const persist = args.persist ?? true;
     const captureSource = (args.capture_source ?? 'unknown') as 'agent' | 'user' | 'unknown';
+    const mode = (args.mode ?? 'visible') as 'visible' | 'full_page';
     try {
-      // Capture in PNG when the caller wants PNG output AND no resize. For
-      // every other case we ask captureVisibleTab for PNG and re-encode in
-      // our own step — the built-in JPEG encoder doesn't honor `quality`
-      // consistently across Chrome versions, and PNG → JPEG via canvas gives
-      // us a knob we trust.
-      const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {
-        format: 'png',
-      });
+      // Both paths feed the same processScreenshot (PNG → optionally
+      // resized → encoded at requested format/quality). The built-in
+      // captureVisibleTab JPEG encoder ignores quality consistently
+      // across Chrome versions, so we always ask for PNG and re-encode.
+      let dataUrl: string;
+      let tileCount: number | undefined;
+      let truncated: boolean | undefined;
+      if (mode === 'full_page') {
+        const { captureFullPage } = await import('@/lib/screenshot/full-page');
+        const fp = await captureFullPage(tab);
+        dataUrl = fp.dataUrl;
+        tileCount = fp.tileCount;
+        truncated = fp.truncated;
+      } else {
+        dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {
+          format: 'png',
+        });
+      }
       const processed = await processScreenshot(dataUrl, format, quality, maxDim);
       const mediaType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
 
@@ -347,6 +379,7 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
 
       return {
         ok: true,
+        mode,
         media_type: mediaType,
         format,
         width: processed.width,
@@ -361,6 +394,8 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
         file_id: fileId,
         file_url: fileUrl,
         screenshot_id: screenshotId,
+        tile_count: tileCount,
+        truncated,
       };
     } catch (err) {
       return { ok: false, reason: (err as Error).message };
