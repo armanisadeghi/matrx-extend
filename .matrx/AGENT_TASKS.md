@@ -85,28 +85,11 @@ The user can record video of the active tab from a UI surface; the agent can do 
 
 ---
 
-### TASK-005: Per-page screenshot history tab
-- **Status:** ready
-- **Created:** 2026-05-06
-- **Source:** "Add a tab that shows all screenshots we have of the given page. Any time the agent takes a screenshot, it's saved here, and let's give the user the ability to do it as well."
-
-**Goal**
-New side-panel tab listing every screenshot of the currently-active page (taken by either the agent or the user). User can also trigger a new screenshot from the tab.
-
-**Subtasks**
-- [ ] Storage model: keyed by URL (canonical URL? URL minus query? user choice?). Add a Supabase table or extend `cld_files` with metadata, depending on how `take_screenshot` already persists today.
-- [ ] Modify `take_screenshot` handler to write to the same store automatically — applies to both agent calls and any user-triggered screenshots.
-- [ ] New tab in the side panel — gallery view, hover preview, click-to-open, delete action.
-- [ ] "Take screenshot" button on the tab calls the same path the agent uses (consistency with the cross-working convention in CLAUDE.md).
-- [ ] Update `docs/feature-tests.md`.
-
-**Notes**
-- Aligns with "Reuse existing capabilities first" from CLAUDE.md — the agent's `take_screenshot` and the user's UI button should share one code path.
-
 ---
 
 ## Completed
 
+- [TASK-005] Per-page screenshot history tab — gallery view in side panel, captures share `take_screenshot` handler, persists to cld_files + new `wbx_screenshot` table keyed by canonical URL ([src/features/screenshots/ScreenshotsView.tsx](../src/features/screenshots/ScreenshotsView.tsx), [src/lib/screenshot/persist.ts](../src/lib/screenshot/persist.ts), [migrations/2026_05_08_wbx_screenshot.sql](../migrations/2026_05_08_wbx_screenshot.sql)) — 2026-05-07 (PENDING_SHA)
 - [TASK-010] BUG: Sidepanel re-opens previous conversation. Dropped `selectedConversationId` from `useChatStore`'s persisted slice and added a `merge` hook that force-nulls it on every rehydration ([src/state/chat.ts](../src/state/chat.ts)). Storage key kept as `matrx.chat.v1` so other persisted prefs (agent, draft, vars, permission mode) survive. 2026-05-06
 - [TASK-009] BUG: Tools follow Chrome's active tab instead of the agent's assigned tab. Added `assignedTabId` to `ToolContext` ([src/lib/tools/types.ts](../src/lib/tools/types.ts)) latched at message-send via STREAM_START ([src/hooks/use-chat-stream.ts](../src/hooks/use-chat-stream.ts) → [src/lib/stream/offscreen-proxy.ts](../src/lib/stream/offscreen-proxy.ts) → [src/lib/background/bootstrap.ts](../src/lib/background/bootstrap.ts) → `recordAssignedTab` in [src/lib/tools/dispatch.ts](../src/lib/tools/dispatch.ts)). New shared helper [src/lib/tools/handlers/_active-tab.ts](../src/lib/tools/handlers/_active-tab.ts) replaces every per-handler `activeTab()` / `activeTabId()`; refactored 16 handler files. Falls back to Chrome's focused tab when no assignment is recorded (Tools-tab "Run", agenda runs without page context). Typecheck + catalog regen clean (166 tools, 16 categories). 2026-05-06
 - [TASK-007] BUG: `computer.action='key'` args[2] unserializable — `press_keys` was passing `args.delay_ms` undefined (canonical merger bypassed Zod default). Fixed in `src/lib/tools/handlers/keyboard.ts` (defensive `?? 30`) + `canonical.ts` (full PressKeysArgs shape). 2026-05-08

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T01:38:35.468Z",
+  "generated_at": "2026-05-07T07:04:44.643Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -1519,6 +1519,19 @@
             "type": "integer",
             "minimum": 0,
             "maximum": 8192
+          },
+          "persist": {
+            "type": "boolean",
+            "default": true
+          },
+          "capture_source": {
+            "type": "string",
+            "enum": [
+              "agent",
+              "user",
+              "unknown"
+            ],
+            "default": "unknown"
           }
         },
         "additionalProperties": false,

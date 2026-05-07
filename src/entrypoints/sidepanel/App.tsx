@@ -13,6 +13,7 @@ import {
   BookOpen,
   Bug,
   Calendar,
+  Camera,
   Database,
   ListTodo,
   Loader2,
@@ -43,6 +44,10 @@ const VIEW_LOADERS = {
     import('@/features/guidance/GuidanceView').then((m) => ({ default: m.GuidanceView })),
   seo: () => import('@/features/seo/SeoView').then((m) => ({ default: m.SeoView })),
   notes: () => import('@/features/notes/NotesView').then((m) => ({ default: m.NotesView })),
+  screenshots: () =>
+    import('@/features/screenshots/ScreenshotsView').then((m) => ({
+      default: m.ScreenshotsView,
+    })),
   tools: () => import('@/features/tools/ToolsView').then((m) => ({ default: m.ToolsView })),
   settings: () =>
     import('@/features/settings/SettingsView').then((m) => ({ default: m.SettingsView })),
@@ -61,6 +66,7 @@ const DataView = lazy(VIEW_LOADERS.data);
 const GuidanceView = lazy(VIEW_LOADERS.guidance);
 const SeoView = lazy(VIEW_LOADERS.seo);
 const NotesView = lazy(VIEW_LOADERS.notes);
+const ScreenshotsView = lazy(VIEW_LOADERS.screenshots);
 const ToolsView = lazy(VIEW_LOADERS.tools);
 const SettingsView = lazy(VIEW_LOADERS.settings);
 const ProfileView = lazy(VIEW_LOADERS.profile);
@@ -160,6 +166,13 @@ export function App() {
                 <TabsTrigger value="notes" className="size-7 p-0" title="Notes">
                   <NotebookPen className="size-3.5" />
                 </TabsTrigger>
+                <TabsTrigger
+                  value="screenshots"
+                  className="size-7 p-0"
+                  title="Screenshots"
+                >
+                  <Camera className="size-3.5" />
+                </TabsTrigger>
                 <TabsTrigger value="tools" className="size-7 p-0" title="Tools">
                   <Wrench className="size-3.5" />
                 </TabsTrigger>
@@ -228,6 +241,11 @@ export function App() {
             <TabsContent value="notes" className="flex-1 min-h-0">
               <Suspense fallback={TabFallback}>
                 <NotesView />
+              </Suspense>
+            </TabsContent>
+            <TabsContent value="screenshots" className="flex-1 min-h-0">
+              <Suspense fallback={TabFallback}>
+                <ScreenshotsView />
               </Suspense>
             </TabsContent>
             <TabsContent value="tools" className="flex-1 min-h-0">

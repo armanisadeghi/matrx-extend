@@ -306,17 +306,40 @@ async function dragFromTo(tabId: number, from: [number, number], to: [number, nu
 }
 
 async function doScreenshot(tabIdStr: string, ctx: Parameters<typeof take_screenshot.run>[1]) {
-  // Reuse the existing capture logic, then upload bytes to cld_files so the
-  // canonical { file_id, file_url } shape can flow into upload_file/drop_file.
+  // Reuse the existing capture logic. `take_screenshot` itself now
+  // uploads to cld_files + indexes in wbx_screenshot via the shared
+  // persistScreenshot helper, so the canonical wrapper just unwraps
+  // the file_id/file_url it returns. No extra upload round-trip.
   const result = await take_screenshot.run(
-    { profile: 'auto', format: undefined, quality: undefined, max_dimension: undefined } as never,
+    {
+      profile: 'auto',
+      format: undefined,
+      quality: undefined,
+      max_dimension: undefined,
+      persist: true,
+      capture_source: 'agent',
+    } as never,
     ctx,
   );
   const r = result as unknown as Record<string, unknown>;
-  if (r.ok !== true || typeof r.image_base64 !== 'string') {
-    return result;
-  }
+  if (r.ok !== true) return result;
   const mime = (r.media_type as string) ?? 'image/jpeg';
+  // Happy path — read.ts persisted to cld_files for us.
+  if (typeof r.file_id === 'string') {
+    return {
+      ok: true,
+      file_id: r.file_id,
+      file_url: (r.file_url as string | null) ?? null,
+      width: r.width,
+      height: r.height,
+      mime_type: mime,
+      tabId: tabIdStr,
+    };
+  }
+  // Fallback — persistence was skipped or failed but we still have the
+  // inline image. Mirror the legacy behaviour: re-upload here so
+  // upload_file/drop_file consumers get a usable file_id.
+  if (typeof r.image_base64 !== 'string') return result;
   const ext = mime.includes('png') ? 'png' : 'jpg';
   const filename = `screenshot-${Date.now()}.${ext}`;
   try {
@@ -332,12 +355,10 @@ async function doScreenshot(tabIdStr: string, ctx: Parameters<typeof take_screen
       width: r.width,
       height: r.height,
       mime_type: mime,
-      // tab_id passthrough for debugging
       tabId: tabIdStr,
     };
   } catch (err) {
     log.error('sw', 'screenshot upload failed; returning inline image', err);
-    // Graceful degradation — keep the inline base64 if cloud upload fails.
     return result;
   }
 }

@@ -14,6 +14,7 @@ export type SidepanelTab =
   | 'guidance'
   | 'seo'
   | 'notes'
+  | 'screenshots'
   | 'tools'
   | 'settings'
   | 'profile'

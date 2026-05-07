@@ -164,6 +164,22 @@ const ScreenshotArgs = z
      * Bypasses the per-provider sweet spot — use sparingly.
      */
     max_dimension: z.number().int().min(0).max(8192).optional(),
+    /**
+     * When true (default), upload the captured image to cld_files and index
+     * it in `wbx_screenshot` keyed by the active tab's canonical URL. The
+     * Screenshots side-panel tab reads from that index. Set to `false` for
+     * one-shot captures the user does not want retained — agents should
+     * almost never set this.
+     */
+    persist: z.boolean().optional().default(true),
+    /**
+     * Marks who initiated the capture. The Screenshots tab uses this to
+     * label rows ("by you" vs "by agent"). Defaults to `unknown`; the
+     * side-panel button passes `'user'`, the agent dispatcher leaves it
+     * unset (which becomes `unknown`), giving us a reliable way to
+     * distinguish at a glance.
+     */
+    capture_source: z.enum(['agent', 'user', 'unknown']).optional().default('unknown'),
   })
   .default({});
 type ScreenshotArgs = z.infer<typeof ScreenshotArgs>;
@@ -191,6 +207,18 @@ interface ScreenshotResult {
   profile?: ScreenshotProfile;
   /** Approximate token cost for this image at the chosen profile (for budgeting). */
   est_tokens?: number;
+  /**
+   * cld_files file_id when the screenshot was persisted to the cloud
+   * store. Populated for every successful capture unless persistence
+   * was suppressed via `persist:false`. The Screenshots side-panel tab
+   * indexes off this — every successful agent or user capture lands in
+   * `wbx_screenshot` keyed by the active page's canonical URL.
+   */
+  file_id?: string | null;
+  /** Always-fetchable URL for the persisted image (CDN if public, signed otherwise). May be null when neither configured. */
+  file_url?: string | null;
+  /** wbx_screenshot row id for this capture, if persistence succeeded. */
+  screenshot_id?: string | null;
 }
 
 /**
@@ -271,6 +299,8 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
     const format = args.format ?? profile.format;
     const quality = args.quality ?? profile.quality;
     const maxDim = args.max_dimension ?? profile.max_dimension;
+    const persist = args.persist ?? true;
+    const captureSource = (args.capture_source ?? 'unknown') as 'agent' | 'user' | 'unknown';
     try {
       // Capture in PNG when the caller wants PNG output AND no resize. For
       // every other case we ask captureVisibleTab for PNG and re-encode in
@@ -281,9 +311,40 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
         format: 'png',
       });
       const processed = await processScreenshot(dataUrl, format, quality, maxDim);
+      const mediaType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+
+      // Persist to cld_files + wbx_screenshot index. Both the agent's
+      // `take_screenshot` calls and the user's "Take screenshot" button
+      // come through this same handler, so this is the single
+      // cross-working entry point for the Screenshots tab. Persistence
+      // failures are logged but don't fail the call — the inline image
+      // is still useful even when the cloud round-trip is unavailable.
+      let fileId: string | null = null;
+      let fileUrl: string | null = null;
+      let screenshotId: string | null = null;
+      if (persist) {
+        try {
+          const { persistScreenshot } = await import('@/lib/screenshot/persist');
+          const persisted = await persistScreenshot({
+            tab,
+            base64: processed.base64,
+            mimeType: mediaType,
+            format,
+            width: processed.width,
+            height: processed.height,
+            source: captureSource,
+          });
+          fileId = persisted.fileId;
+          fileUrl = persisted.fileUrl;
+          screenshotId = persisted.screenshotId;
+        } catch (err) {
+          log.warn('sw', 'screenshot persistence failed; returning inline only', err);
+        }
+      }
+
       return {
         ok: true,
-        media_type: format === 'jpeg' ? 'image/jpeg' : 'image/png',
+        media_type: mediaType,
         format,
         width: processed.width,
         height: processed.height,
@@ -294,6 +355,9 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
         resized: processed.resized,
         profile: profileName,
         est_tokens: profile.est_tokens,
+        file_id: fileId,
+        file_url: fileUrl,
+        screenshot_id: screenshotId,
       };
     } catch (err) {
       return { ok: false, reason: (err as Error).message };

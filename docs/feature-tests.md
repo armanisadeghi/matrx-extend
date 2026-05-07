@@ -378,6 +378,27 @@ Every entry follows this shape:
 
 ---
 
+### Screenshots tab (TASK-005)
+- **What it does:** Per-page screenshot history. Lists every screenshot ever taken of the active page (canonical URL match), regardless of whether the agent or the user triggered it. The "Take screenshot" button at the bottom calls the same `take_screenshot` handler the agent uses, so user and agent captures share one persistence path (cld_files + `wbx_screenshot` index row).
+- **Where to test:** Side panel - **Screenshots** tab (camera icon).
+- **Prereq:** apply `migrations/2026_05_08_wbx_screenshot.sql` against the Matrx Supabase project.
+- **Steps:**
+  1. Navigate to a regular web page.
+  2. Open Screenshots tab - click **Take screenshot**.
+  3. After it completes, the gallery refreshes with a new card. Click the thumbnail or the open icon to view full size in a new tab; click the link icon to copy the URL; click the trash icon (then Delete) to remove the index row (file in cloud storage is kept).
+  4. Take another screenshot - most-recent first ordering.
+  5. Switch to Chat - ask the agent "take a screenshot of this page" - it lands in the same gallery on next refresh, live via the timeline event.
+- **Expected:**
+  - Each card shows: thumbnail (lazy-loaded from `file_url`), source label ("You" / "Agent"), relative timestamp, dimensions.
+  - Refreshes automatically when `take_screenshot` completes anywhere in the side panel.
+  - Empty state on a fresh page; skeleton on first load.
+- **Edge cases worth poking:**
+  - Restricted URLs (`chrome://`, PDF viewer): button should error inline.
+  - Same page hit via slightly different URL (http vs https, trailing slash, `www.`) - `normalizeUrl()` collapses them, so screenshots from any variant show on the canonical view.
+  - Network down: handler returns inline image with `file_id: null`; no row added - the gallery still shows previously-saved entries unchanged.
+
+---
+
 ### Sidepanel default-to-new-chat (TASK-010)
 - **What it does:** Opening the side panel always starts on a fresh chat, even if a previous conversation was active when it was last closed.
 - **Where to test:** Chat tab.

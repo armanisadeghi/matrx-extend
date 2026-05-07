@@ -518,3 +518,100 @@ export async function attachSeoRecommendations(
   const { error } = await c.from('wbx_seo_audit').update({ recommendations }).eq('id', auditId);
   if (error) console.warn('[matrx-extend] attachSeoRecommendations error', error.message);
 }
+
+// ─── wbx_screenshot (per-page screenshot history) ───────────────────────────
+export const ScreenshotSourceSchema = z.enum(['agent', 'user', 'unknown']);
+export type ScreenshotSource = z.infer<typeof ScreenshotSourceSchema>;
+
+export const ScreenshotRowSchema = z.object({
+  id: z.string().uuid(),
+  page_url_canonical: z.string(),
+  page_url_full: z.string(),
+  page_title: z.string().nullable(),
+  file_id: z.string().uuid(),
+  file_url: z.string().nullable(),
+  width: z.number().int().nullable(),
+  height: z.number().int().nullable(),
+  mime_type: z.string().nullable(),
+  byte_length: z.number().int().nullable(),
+  source: ScreenshotSourceSchema,
+  captured_at: z.string(),
+});
+export type ScreenshotRow = z.infer<typeof ScreenshotRowSchema>;
+
+export interface SaveScreenshotPayload {
+  page_url_canonical: string;
+  page_url_full: string;
+  page_title?: string | null;
+  file_id: string;
+  file_url?: string | null;
+  width?: number | null;
+  height?: number | null;
+  mime_type?: string | null;
+  byte_length?: number | null;
+  source: ScreenshotSource;
+}
+
+/**
+ * Insert a screenshot index row. The image bytes themselves must already
+ * be in cld_files via uploadFile(); this function only stores the pointer
+ * + per-page metadata so the Screenshots side-panel tab can list them.
+ */
+export async function saveScreenshot(
+  p: SaveScreenshotPayload,
+): Promise<{ id: string } | null> {
+  const c = getSupabase();
+  const { data, error } = await c
+    .from('wbx_screenshot')
+    .insert({
+      page_url_canonical: p.page_url_canonical,
+      page_url_full: p.page_url_full,
+      page_title: p.page_title ?? null,
+      file_id: p.file_id,
+      file_url: p.file_url ?? null,
+      width: p.width ?? null,
+      height: p.height ?? null,
+      mime_type: p.mime_type ?? null,
+      byte_length: p.byte_length ?? null,
+      source: p.source,
+    })
+    .select('id')
+    .single();
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return null;
+    console.warn('[matrx-extend] saveScreenshot error', error.message);
+    return null;
+  }
+  return data as { id: string };
+}
+
+export async function fetchScreenshotsForUrl(
+  pageUrlCanonical: string,
+  limit = 100,
+): Promise<ScreenshotRow[]> {
+  const c = getSupabase();
+  const { data, error } = await c
+    .from('wbx_screenshot')
+    .select(
+      'id, page_url_canonical, page_url_full, page_title, file_id, file_url, width, height, mime_type, byte_length, source, captured_at',
+    )
+    .eq('page_url_canonical', pageUrlCanonical)
+    .order('captured_at', { ascending: false })
+    .limit(limit);
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return [];
+    console.warn('[matrx-extend] fetchScreenshotsForUrl error', error.message);
+    return [];
+  }
+  return z.array(ScreenshotRowSchema).parse(data ?? []);
+}
+
+export async function deleteScreenshot(id: string): Promise<boolean> {
+  const c = getSupabase();
+  const { error } = await c.from('wbx_screenshot').delete().eq('id', id);
+  if (error) {
+    console.warn('[matrx-extend] deleteScreenshot error', error.message);
+    return false;
+  }
+  return true;
+}
