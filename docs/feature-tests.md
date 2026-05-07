@@ -538,6 +538,43 @@ Every entry follows this shape:
     tools render the inline approval card before each call (privileged
     tools always confirm).
 
+### Cryptographic run receipts (CLAUDE.md #8)
+- **What it does:** every tool call gets signed with a device-bound
+  Ed25519 key, appended to a local audit log, and exposed via a
+  Shield-icon "Show receipt" button on every timeline row.
+- **Where to test:** Chat tab + Settings → Advanced → Audit key.
+- **Prereq:** signed in as admin (Audit key card is admin-only).
+- **Steps:**
+  1. Run any tool from the agent (or the Tools tab "Run" button — same
+     dispatcher path).
+  2. Hover the resulting timeline row. The Shield button reveals next
+     to the Copy button.
+  3. Click Shield → modal opens showing the receipt JSON.
+  4. Confirm the green "Signature valid" banner with the active
+     `publicKeyId`.
+  5. Click "Copy JWS" — clipboard now contains
+     `<header>.<payload>.<sig>` compact JWS.
+  6. Open Settings → Advanced agent capabilities → Audit key. Note the
+     public-key ID and receipt count. Click "Export public key" — JWK
+     copied. Click "Re-key" → confirm. Receipt count is preserved.
+  7. Run another tool. Verify the new receipt's `publicKeyId` matches
+     the new active key. Open an old receipt — it still shows
+     "Signature valid" (verified against the retired key in history).
+- **Expected:**
+  - Receipt JSON contains `v`, `publicKeyId`, `callId`, `toolName`,
+    `argsHash`, `outputHash`, `ok`, `startedAt`, `completedAt`,
+    `conversationId`, `runId`, `signature`.
+  - The audit log caps at 1000 entries (FIFO).
+- **Edge cases worth poking:**
+  - Run a tool that errors (e.g. invalid args) → receipt still
+    appended with `ok: false` and `outputHash: '...'` (hash of null).
+  - Crash a handler mid-run (kill the SW with Inspect Service Worker)
+    → the partial receipt with `outputHash: 'pending'` and `ok: null`
+    remains in the log.
+  - Clear local data (Settings → Privacy → Clear local data) →
+    verifying receipts copied externally before the wipe shows
+    "public key '...' is not on file".
+
 ---
 
 ## Template (copy when adding a new entry)

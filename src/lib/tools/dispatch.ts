@@ -26,6 +26,8 @@
  */
 
 import { postToolResults } from '@/lib/api/routes/tool-results';
+import { appendReceipt } from '@/lib/audit/log';
+import { PENDING_OUTPUT, buildReceipt } from '@/lib/audit/receipt';
 import { BROWSER, isBrowserSupported } from '@/lib/browser/detect';
 import { log } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
@@ -318,6 +320,7 @@ async function handleCall(
   ctx: ToolContext,
   meta: RunMeta | undefined,
 ): Promise<void> {
+  const startedAt = Date.now();
   log.info('sw', `tool ${handler.name} call_id=${ctx.callId}`, rawArgs);
   broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
     callId: ctx.callId,
@@ -327,14 +330,20 @@ async function handleCall(
   });
   recordToolEvent(handler.name, 'started', rawArgs);
 
+  // Roadmap item #8 — partial cryptographic receipt at start. Best-effort:
+  // signing failures must not block tool execution. Fire-and-forget.
+  void emitPartialReceipt(handler.name, rawArgs, ctx, startedAt);
+
+  // Local fail closure — captures rawArgs + startedAt so the completed
+  // receipt covers them on every error exit. `finishWithError` itself
+  // doesn't take args, so we wrap it here.
+  const fail = (message: string): Promise<void> =>
+    finishWithError(handler, ctx, message, rawArgs, startedAt);
+
   // Validate args.
   const parsed = handler.argsSchema.safeParse(rawArgs);
   if (!parsed.success) {
-    return finishWithError(
-      handler,
-      ctx,
-      `args failed schema: ${JSON.stringify(parsed.error.format())}`,
-    );
+    return fail(`args failed schema: ${JSON.stringify(parsed.error.format())}`);
   }
 
   // Browser-support gate. Defense-in-depth — registry filters already drop
@@ -342,9 +351,7 @@ async function handleCall(
   // re-advertises (e.g. after a server-side cache lag), reject cleanly here
   // instead of crashing inside a Chrome-only API call.
   if (!isBrowserSupported(handler.supportedBrowsers)) {
-    return finishWithError(
-      handler,
-      ctx,
+    return fail(
       `tool '${handler.name}' is not supported on ${BROWSER}. Supported browsers: ${(handler.supportedBrowsers ?? []).join(', ') || 'none'}.`,
     );
   }
@@ -357,9 +364,7 @@ async function handleCall(
       handler.required_optional_permissions as OptionalPermission[],
     );
     if (!granted) {
-      return finishWithError(
-        handler,
-        ctx,
+      return fail(
         `required optional permission(s) not granted: ${handler.required_optional_permissions.join(', ')}. The user must enable them in Settings → Advanced agent capabilities.`,
       );
     }
@@ -375,7 +380,7 @@ async function handleCall(
     const tab = await getAssignedTab(ctx);
     const accessErr = await requireHostAccessFor(tab?.url);
     if (accessErr) {
-      return finishWithError(handler, ctx, accessErr.reason + ' ' + accessErr.remediation);
+      return fail(accessErr.reason + ' ' + accessErr.remediation);
     }
   }
 
@@ -390,7 +395,7 @@ async function handleCall(
   // reference page outside the group to inform an action inside it).
   const pilotErr = await enforcePilotGroupScope(handler, ctx);
   if (pilotErr) {
-    return finishWithError(handler, ctx, pilotErr);
+    return fail(pilotErr);
   }
 
   // Permission gate. Mega-tool routers (computer, tabs, …) declare a
@@ -402,7 +407,7 @@ async function handleCall(
   if (needsConfirm) {
     const allowed = await requestConfirmation(handler, parsed.data, ctx, meta);
     if (!allowed.allow) {
-      return finishWithError(handler, ctx, allowed.reason ?? 'User denied this action');
+      return fail(allowed.reason ?? 'User denied this action');
     }
   }
 
@@ -411,7 +416,7 @@ async function handleCall(
   try {
     result = await handler.run(parsed.data as never, ctx);
   } catch (err) {
-    return finishWithError(handler, ctx, (err as Error)?.message ?? String(err));
+    return fail((err as Error)?.message ?? String(err));
   }
 
   await postResult(handler, ctx, result);
@@ -421,15 +426,26 @@ async function handleCall(
     phase: 'completed',
     output: result,
   });
+  // Roadmap item #8 — completed receipt. Fire-and-forget; signing
+  // problems get logged but never block the response.
+  void emitCompletedReceipt(handler.name, rawArgs, result, true, ctx, startedAt);
 }
 
 async function finishWithError(
   handler: AnyToolHandler,
   ctx: ToolContext,
   message: string,
+  rawArgs?: unknown,
+  startedAt?: number,
 ): Promise<void> {
   log.error('sw', `tool ${handler.name} error`, message);
   await postResult(handler, ctx, null, true, message);
+  // Roadmap item #8 — receipt for the failed call. Only emitted when we
+  // have the original args + startedAt (i.e. the in-handleCall path).
+  // The unknown-tool error path doesn't reach this function.
+  if (startedAt !== undefined) {
+    void emitCompletedReceipt(handler.name, rawArgs, null, false, ctx, startedAt);
+  }
   broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
     callId: ctx.callId,
     toolName: handler.name,
@@ -642,5 +658,64 @@ export async function handleWebmcpCall(
       message,
     });
     return { ok: false, error: message };
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Cryptographic run receipts (roadmap item #8)                       */
+/*                                                                    */
+/* Both helpers are fire-and-forget. Signing exceptions are caught    */
+/* here so the dispatcher hot path is never blocked or aborted by a   */
+/* receipt-side problem. The audit log itself is also defensive (see  */
+/* `appendReceipt` in `lib/audit/log.ts`).                            */
+/* ------------------------------------------------------------------ */
+
+async function emitPartialReceipt(
+  toolName: string,
+  rawArgs: unknown,
+  ctx: ToolContext,
+  startedAt: number,
+): Promise<void> {
+  try {
+    const receipt = await buildReceipt({
+      callId: ctx.callId,
+      toolName,
+      args: rawArgs,
+      output: PENDING_OUTPUT,
+      ok: null,
+      startedAt,
+      completedAt: null,
+      conversationId: ctx.conversationId,
+      runId: ctx.runId,
+    });
+    await appendReceipt(receipt);
+  } catch (err) {
+    log.warn('sw', `audit receipt (partial) failed for ${toolName}`, err);
+  }
+}
+
+async function emitCompletedReceipt(
+  toolName: string,
+  rawArgs: unknown,
+  output: unknown,
+  ok: boolean,
+  ctx: ToolContext,
+  startedAt: number,
+): Promise<void> {
+  try {
+    const receipt = await buildReceipt({
+      callId: ctx.callId,
+      toolName,
+      args: rawArgs,
+      output,
+      ok,
+      startedAt,
+      completedAt: Date.now(),
+      conversationId: ctx.conversationId,
+      runId: ctx.runId,
+    });
+    await appendReceipt(receipt);
+  } catch (err) {
+    log.warn('sw', `audit receipt (completed) failed for ${toolName}`, err);
   }
 }

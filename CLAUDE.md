@@ -370,15 +370,34 @@ Shipped:
 - [x] `list_recently_closed` (read) · `restore_recently_closed` (action) —
       `sessions` optional permission
 
-### 8. 📋 Cryptographic run receipts
+### 8. ✅ Cryptographic run receipts
 **Why:** killer feature for compliance / regulated verticals. Auditor needs
 chain-of-custody.
 
-- [ ] Sign every tool call (callId + args + output hash + timestamp) with a
-      device-bound key (WebCrypto Ed25519)
-- [ ] Append to local audit log + optionally push to backend
-- [ ] Export receipt as JWS / verifiable JSON
-- [ ] "Show receipt" button on every timeline row
+Shipped:
+- [x] Sign every tool call (callId + args hash + output hash + timestamp +
+      runId + conversationId) with a device-bound WebCrypto Ed25519
+      keypair persisted in `chrome.storage.local` (key
+      `matrx.audit.deviceKey`). Both partial (start) and full (completion)
+      receipts are emitted so even crashed calls leave a trail. See
+      [src/lib/audit/](./src/lib/audit/).
+- [x] Append to local audit log (`matrx.audit.log`) — FIFO ring capped at
+      1000 entries. `appendReceipt` is fire-and-forget and best-effort;
+      signing failures never block tool execution. Backend push is
+      future work — receipts can already be exported individually.
+- [x] Export receipt as JWS compact-serialization (RFC 7515, `alg=EdDSA`,
+      `kid=publicKeyId`) via `exportReceiptJws`. The receipt body also
+      carries an in-line ed25519 signature over its canonical-JSON form
+      so an exported JSON row stays verifiable against the public-key
+      history without any external library.
+- [x] "Show receipt" Shield-icon button on every `ToolTimelineRow`
+      (hover-reveal, same pattern as `CopyToolButton`). Opens a modal
+      showing the JSON, signature-verification status, and Copy-JSON /
+      Copy-JWS buttons. Settings → Advanced agent capabilities → Audit
+      key card lets the user view the active public-key ID, re-key
+      (confirmation-gated, retains the previous key in
+      `matrx.audit.publicKeyHistory` so prior receipts still verify),
+      and export the active public key JWK to the clipboard.
 
 ### 9. ✅ Pilot tab + tab-group sandbox
 **Why:** the user wanted two surfaces — Assistant (Chat) and Pilot

@@ -5,8 +5,9 @@
  */
 
 import { cn } from '@/lib/utils';
-import { AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Loader2, Shield } from 'lucide-react';
 import { useState } from 'react';
+import { ToolReceiptDialog } from './ToolReceiptDialog';
 import { ConfigurableToolRow, ToolDisplayBoundary } from './tool-display/ConfigurableToolRow';
 import { CopyToolButton } from './tool-display/CopyToolButton';
 import { toolDisplayRegistry } from './tool-display/registry';
@@ -51,6 +52,7 @@ export function ToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {
 
 function DefaultToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {
   const [open, setOpen] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(false);
 
   const Icon =
     entry.phase === 'started' ? Loader2 : entry.phase === 'error' ? AlertTriangle : CheckCircle2;
@@ -81,6 +83,7 @@ function DefaultToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {
             </span>
           )}
         </button>
+        <ShowReceiptButton callId={entry.callId} onOpen={() => setShowReceipt(true)} />
         <CopyToolButton
           data={{
             toolName: entry.toolName,
@@ -103,7 +106,43 @@ function DefaultToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {
           )}
         </div>
       )}
+      {showReceipt && (
+        <ToolReceiptDialog
+          callId={entry.callId}
+          toolName={entry.toolName}
+          onClose={() => setShowReceipt(false)}
+        />
+      )}
     </div>
+  );
+}
+
+/**
+ * Hover-reveal button mounted on every timeline row that opens the
+ * cryptographic receipt for the call. Uses the same opacity-0
+ * group-hover pattern as `CopyToolButton` so it never adds visual
+ * noise to the row at rest.
+ */
+function ShowReceiptButton({
+  callId,
+  onOpen,
+}: {
+  callId: string;
+  onOpen: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        onOpen();
+      }}
+      title="Show receipt"
+      aria-label={`Show receipt for ${callId}`}
+      className="inline-flex size-5 shrink-0 items-center justify-center rounded text-muted-foreground opacity-0 transition-opacity hover:bg-muted/60 hover:text-foreground focus:opacity-100 group-hover:opacity-100"
+    >
+      <Shield className="size-3" />
+    </button>
   );
 }
 

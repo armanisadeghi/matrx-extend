@@ -15,6 +15,7 @@
  */
 
 import { Switch } from '@/components/ui/switch';
+import { AuditKeyCard } from '@/features/settings/AuditKeyCard';
 import {
   ALL_OPTIONAL,
   ALL_OPTIONAL_HOSTS,
@@ -99,6 +100,7 @@ export function AdvancedAgentCapabilities() {
   }
 
   return (
+    <div className="space-y-3">
     <div className="space-y-2 rounded-2xl border bg-card p-3">
       <div className="text-[11px] font-medium uppercase tracking-wider text-amber-700 dark:text-amber-400">
         Admin · advanced agent capabilities
@@ -169,6 +171,8 @@ export function AdvancedAgentCapabilities() {
           </div>
         </>
       )}
+    </div>
+      <AuditKeyCard />
     </div>
   );
 }
