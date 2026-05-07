@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly WXT_EXTENSION_OAUTH_CLIENT_ID?: string;
   readonly WXT_DESKTOP_LOCAL_URL?: string;
   readonly WXT_DESKTOP_NATIVE_HOST?: string;
+  readonly WXT_FRONTEND_URL?: string;
 }
 
 interface ImportMeta {

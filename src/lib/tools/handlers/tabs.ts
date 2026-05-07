@@ -14,6 +14,7 @@
  * tier subset.
  */
 
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
 
@@ -74,6 +75,7 @@ export const list_open_tabs: ToolHandler<ListTabsArgs, unknown> = {
 export const get_tab_groups: ToolHandler<NoArgs, unknown> = {
   name: 'get_tab_groups',
   tier: 'read',
+  supportedBrowsers: ['chrome'],
   description:
     'List every tab group across windows: id, title, color, collapsed flag, and the tab ids inside. Use after list_open_tabs to understand how the user has organized their work.',
   argsSchema: NoArgs,
@@ -268,8 +270,8 @@ export const reload_tab: ToolHandler<ReloadTabArgs, unknown> = {
   tier: 'action',
   description: 'Reload a tab (default: the active tab). Pass bypass_cache=true for a hard refresh.',
   argsSchema: ReloadTabArgs,
-  run: async (args) => {
-    const tabId = args.tab_id ?? (await activeTabId());
+  run: async (args, ctx) => {
+    const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     await chrome.tabs.reload(tabId, { bypassCache: args.bypass_cache });
     return { ok: true, tab_id: tabId };
@@ -288,8 +290,8 @@ export const go_back: ToolHandler<NavigateBackForwardArgs, unknown> = {
   tier: 'action',
   description: 'Navigate the active tab (or specified tab) one entry back in its session history.',
   argsSchema: NavigateBackForwardArgs,
-  run: async (args) => {
-    const tabId = args.tab_id ?? (await activeTabId());
+  run: async (args, ctx) => {
+    const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     await chrome.tabs.goBack(tabId);
     return { ok: true };
@@ -302,8 +304,8 @@ export const go_forward: ToolHandler<NavigateBackForwardArgs, unknown> = {
   description:
     'Navigate the active tab (or specified tab) one entry forward in its session history.',
   argsSchema: NavigateBackForwardArgs,
-  run: async (args) => {
-    const tabId = args.tab_id ?? (await activeTabId());
+  run: async (args, ctx) => {
+    const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     await chrome.tabs.goForward(tabId);
     return { ok: true };
@@ -322,8 +324,8 @@ export const set_tab_zoom: ToolHandler<SetZoomArgs, unknown> = {
   tier: 'action',
   description: 'Set the zoom level on a tab. 1.0 = 100%, 1.5 = 150%, 0.75 = 75%.',
   argsSchema: SetZoomArgs,
-  run: async (args) => {
-    const tabId = args.tab_id ?? (await activeTabId());
+  run: async (args, ctx) => {
+    const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     await chrome.tabs.setZoom(tabId, args.zoom_factor);
     return { ok: true, zoom_factor: args.zoom_factor };
@@ -372,6 +374,7 @@ type CreateGroupArgs = z.infer<typeof CreateGroupArgs>;
 export const create_tab_group: ToolHandler<CreateGroupArgs, unknown> = {
   name: 'create_tab_group',
   tier: 'action',
+  supportedBrowsers: ['chrome'],
   description:
     "Group a set of tabs together. Returns the new group id. Use this to keep an agent run's sandboxed tabs visually separate from the user's other work.",
   argsSchema: CreateGroupArgs,
@@ -400,6 +403,7 @@ type AddToGroupArgs = z.infer<typeof AddToGroupArgs>;
 export const add_tabs_to_group: ToolHandler<AddToGroupArgs, unknown> = {
   name: 'add_tabs_to_group',
   tier: 'action',
+  supportedBrowsers: ['chrome'],
   description: 'Add tabs to an existing tab group.',
   argsSchema: AddToGroupArgs,
   run: async (args) => {
@@ -416,6 +420,7 @@ type RemoveFromGroupArgs = z.infer<typeof RemoveFromGroupArgs>;
 export const remove_tabs_from_group: ToolHandler<RemoveFromGroupArgs, unknown> = {
   name: 'remove_tabs_from_group',
   tier: 'action',
+  supportedBrowsers: ['chrome'],
   description: 'Detach tabs from whatever group they currently belong to.',
   argsSchema: RemoveFromGroupArgs,
   run: async (args) => {
@@ -437,6 +442,7 @@ type UpdateGroupArgs = z.infer<typeof UpdateGroupArgs>;
 export const update_tab_group: ToolHandler<UpdateGroupArgs, unknown> = {
   name: 'update_tab_group',
   tier: 'action',
+  supportedBrowsers: ['chrome'],
   description: 'Rename, recolor, or collapse/expand a tab group.',
   argsSchema: UpdateGroupArgs,
   run: async (args) => {
@@ -449,11 +455,6 @@ export const update_tab_group: ToolHandler<UpdateGroupArgs, unknown> = {
     return { ok: true };
   },
 };
-
-async function activeTabId(): Promise<number | null> {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  return tab?.id ?? null;
-}
 
 const ResizeWindowArgs = z.object({
   tab_id: z.number().int().optional(),
@@ -468,8 +469,8 @@ export const resize_window: ToolHandler<ResizeWindowArgs, unknown> = {
   description:
     "Resize the browser window containing a tab. Useful for responsive testing. If tab_id is omitted, resizes the active tab's window. Note: this changes the OS window size, which in turn changes the viewport.",
   argsSchema: ResizeWindowArgs,
-  run: async (args) => {
-    const tabId = args.tab_id ?? (await activeTabId());
+  run: async (args, ctx) => {
+    const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const t = await chrome.tabs.get(tabId);
     if (t.windowId == null) return { ok: false, reason: 'No window for tab' };

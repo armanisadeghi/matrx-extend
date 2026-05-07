@@ -26,6 +26,7 @@
  */
 
 import { postToolResults } from '@/lib/api/routes/tool-results';
+import { BROWSER, isBrowserSupported } from '@/lib/browser/detect';
 import { log } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -51,9 +52,40 @@ interface RunMeta {
   agentName: string | null;
   /** Domains allowed for the rest of THIS conversation. */
   trustedThisConversation: Set<string>;
+  /**
+   * Tab the agent is pinned to for this run. Captured at message-send
+   * time (sidepanel's `useChatStream`), recorded here BEFORE the SSE
+   * opens so STREAM_OPENED — which can race with the first tool_event —
+   * doesn't have to carry it. Null until `recordAssignedTab` is called
+   * for this runId.
+   */
+  assignedTabId: number | null;
 }
 
 const runs = new Map<string, RunMeta>();
+
+/**
+ * Latch the assigned tab BEFORE the SSE opens. Called from the SW's
+ * STREAM_START handler so the dispatcher has the tab id ready by the time
+ * the first `tool_delegated` arrives. Idempotent — the runs map is keyed
+ * by runId; STREAM_OPENED merges into the same row a moment later.
+ */
+export function recordAssignedTab(runId: string, assignedTabId: number | null): void {
+  const existing = runs.get(runId);
+  if (existing) {
+    existing.assignedTabId = assignedTabId;
+    return;
+  }
+  // STREAM_OPENED hasn't landed yet — seed the row so it isn't lost.
+  runs.set(runId, {
+    conversationId: null,
+    requestId: null,
+    permissionMode: 'ask',
+    agentName: null,
+    trustedThisConversation: new Set<string>(),
+    assignedTabId,
+  });
+}
 
 interface DispatchOptions {
   defaultPermissionMode: () => 'ask' | 'act';
@@ -77,12 +109,17 @@ export function startToolDispatcher(opts: DispatchOptions): void {
     },
     { ack: true }
   >(CHANNELS.STREAM_OPENED, (payload) => {
+    // Preserve any assignedTabId that was latched via recordAssignedTab
+    // before STREAM_OPENED arrived — its trustedThisConversation set is
+    // brand-new for every run so we always start it fresh here.
+    const prior = runs.get(payload.runId);
     runs.set(payload.runId, {
       conversationId: payload.conversationId,
       requestId: payload.requestId,
       permissionMode: payload.permissionMode ?? opts.defaultPermissionMode(),
       agentName: payload.agentName ?? null,
-      trustedThisConversation: new Set<string>(),
+      trustedThisConversation: prior?.trustedThisConversation ?? new Set<string>(),
+      assignedTabId: prior?.assignedTabId ?? null,
     });
     log.info('sw', `tool dispatcher tracking run=${payload.runId}`, payload);
     return { ack: true };
@@ -165,6 +202,7 @@ export function startToolDispatcher(opts: DispatchOptions): void {
         callId,
         agentName: meta?.agentName ?? null,
         permissionMode: meta?.permissionMode ?? 'ask',
+        assignedTabId: meta?.assignedTabId ?? null,
       };
 
       if (!handler) {
@@ -241,6 +279,18 @@ async function handleCall(
       handler,
       ctx,
       `args failed schema: ${JSON.stringify(parsed.error.format())}`,
+    );
+  }
+
+  // Browser-support gate. Defense-in-depth — registry filters already drop
+  // unsupported tools from advertised bundles, but if a stale catalog ever
+  // re-advertises (e.g. after a server-side cache lag), reject cleanly here
+  // instead of crashing inside a Chrome-only API call.
+  if (!isBrowserSupported(handler.supportedBrowsers)) {
+    return finishWithError(
+      handler,
+      ctx,
+      `tool '${handler.name}' is not supported on ${BROWSER}. Supported browsers: ${(handler.supportedBrowsers ?? []).join(', ') || 'none'}.`,
     );
   }
 

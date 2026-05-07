@@ -29,13 +29,9 @@
  */
 
 import { quickPrompt } from '@/lib/onbox-ai/client';
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
-
-async function activeTabId(): Promise<number | null> {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  return tab?.id ?? null;
-}
 
 /** Convert ref string ("ref:42" or "42") to the data-attribute selector. */
 export function refToSelector(ref: string): string {
@@ -190,11 +186,11 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
   description:
     'Return an accessibility-style summary of the active page. Each interactive element gets a reference id (`ref:N`) you can pass to click_element / type_into_element / scroll_into_view / etc. instead of a CSS selector — refs are stable across DOM mutations within the same page lifetime. Pass interactive_only=false to include headings, paragraphs, and labels too. Refs invalidate on navigation; call this again after navigating. Returns { url, title, count, elements: [{ ref, role, name, tag, text, visible, bounds? }] }.',
   argsSchema: ReadPageArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     const tabId =
       args.tab_id ??
       (args.tabId ? Number.parseInt(args.tabId, 10) : null) ??
-      (await activeTabId());
+      (await getAssignedTabId(ctx));
     if (tabId == null || !Number.isFinite(tabId))
       return { ok: false, reason: 'No active tab' };
     // Canonical 'filter' overrides interactive_only when present.
@@ -456,9 +452,9 @@ export const find: ToolHandler<FindArgs, unknown> = {
   description:
     'Find elements on the active page by natural-language description ("the sign-in button", "the search input near the top", "the link to the pricing page"). Returns matching refs you can immediately pass to interaction tools. Uses on-device AI for matching when available; falls back to text similarity. Always run read_page first OR pass refs through this in the same conversation. Returns { matches: [{ ref, name, role, score, reason }] }.',
   argsSchema: FindArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     const tabId =
-      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ?? (await activeTabId());
+      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ?? (await getAssignedTabId(ctx));
     if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
 
     // Reuse a fresh cached scrape if the agent (or a prior tool call) just ran
@@ -611,11 +607,11 @@ export const get_page_text: ToolHandler<PageTextArgs, unknown> = {
   description:
     'Extract clean readable text from the active page — strips chrome / nav / ads / scripts / hidden DOM. Lighter than read_active_page (which returns full markdown + media + structured data). Best for "read me this article" style asks. Returns { url, title, byline, text, char_count }.',
   argsSchema: PageTextArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     const tabId =
       args.tab_id ??
       (args.tabId ? Number.parseInt(args.tabId, 10) : null) ??
-      (await activeTabId());
+      (await getAssignedTabId(ctx));
     if (tabId == null || !Number.isFinite(tabId))
       return { ok: false, reason: 'No active tab' };
     try {

@@ -14,13 +14,9 @@
  * Admin-only initially while the API stabilizes.
  */
 
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
-
-async function activeTabId(): Promise<number | null> {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  return tab?.id ?? null;
-}
 
 const NoArgs = z.object({}).default({});
 type NoArgs = z.infer<typeof NoArgs>;
@@ -32,8 +28,8 @@ export const webmcp_check_availability: ToolHandler<NoArgs, unknown> = {
   description:
     'Check whether WebMCP (`navigator.modelContext.registerTool`) is available in the user\'s Chrome and whether the active tab has registered any tools. Use this once before calling webmcp_list_page_tools / webmcp_call_page_tool.',
   argsSchema: NoArgs,
-  run: async () => {
-    const tabId = await activeTabId();
+  run: async (_args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     try {
       const [first] = await chrome.scripting.executeScript({
@@ -62,8 +58,8 @@ export const webmcp_list_page_tools: ToolHandler<NoArgs, unknown> = {
   description:
     'List tools the active tab has registered via `navigator.modelContext.registerTool`. Each entry includes { name, description, inputSchema }. Use these to discover what the page offers before calling webmcp_call_page_tool.',
   argsSchema: NoArgs,
-  run: async () => {
-    const tabId = await activeTabId();
+  run: async (_args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     try {
       const [first] = await chrome.scripting.executeScript({
@@ -117,8 +113,8 @@ export const webmcp_call_page_tool: ToolHandler<CallPageToolArgs, unknown> = {
   description:
     'Invoke a tool registered by the active page via `navigator.modelContext`. Pass the tool name and an arguments object (must match the page\'s declared input schema). Returns the page tool\'s result.',
   argsSchema: CallPageToolArgs,
-  run: async (args) => {
-    const tabId = await activeTabId();
+  run: async (args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     try {
       const [first] = await chrome.scripting.executeScript({

@@ -193,3 +193,76 @@ export async function updateSource(
 export async function requeueSource(topicId: string, sourceId: string) {
   return updateSource(topicId, sourceId, { scrape_status: 'pending' });
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Topic picker — endpoints required for the "Add this page to a project" UX.
+// Spec for the server team lives at aidream/docs/EXTENSION_TOPIC_PICKER_API.md.
+// Until those endpoints ship the calls below will 404; the UI handles that
+// gracefully (shows "endpoint not available yet" instead of an opaque error).
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const ResearchTopicSummarySchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  source_count: z.number().int().optional(),
+  updated_at: z.string().nullable().optional(),
+});
+export type ResearchTopicSummary = z.infer<typeof ResearchTopicSummarySchema>;
+
+export async function listTopics() {
+  const r = await apiGet<unknown>('/research/topics');
+  if (!r.ok) return r;
+  const parsed = z.array(ResearchTopicSummarySchema).safeParse(r.data);
+  if (!parsed.success) {
+    console.warn('[matrx-extend] /research/topics failed schema', parsed.error.format());
+    return { ok: false as const, status: 0, error: 'Schema validation failed' };
+  }
+  return { ok: true as const, data: parsed.data };
+}
+
+export interface AddSourceRequest {
+  url: string;
+  title?: string;
+  source_type?: string;
+}
+
+/**
+ * Idempotent on (topic_id, url): if a source already exists at this URL in
+ * the topic, the server returns the existing row (200), no duplicate.
+ */
+export async function addSourceToTopic(
+  topicId: string,
+  body: AddSourceRequest,
+) {
+  return apiPost<ResearchSource>(
+    `/research/topics/${encodeURIComponent(topicId)}/sources`,
+    body,
+  );
+}
+
+export const SourceUrlMatchSchema = z.object({
+  source_id: z.string().uuid(),
+  topic_id: z.string().uuid(),
+  topic_name: z.string(),
+});
+export type SourceUrlMatch = z.infer<typeof SourceUrlMatchSchema>;
+
+/**
+ * Cross-topic discovery: which topics already contain this URL? Optional —
+ * if the server hasn't shipped this endpoint yet, the picker just skips
+ * the "already in: X" inline hint.
+ */
+export async function findSourcesByUrl(url: string) {
+  const r = await apiGet<unknown>(
+    `/research/sources/by-url?url=${encodeURIComponent(url)}`,
+  );
+  if (!r.ok) return r;
+  const parsed = z
+    .object({ matches: z.array(SourceUrlMatchSchema) })
+    .safeParse(r.data);
+  if (!parsed.success) {
+    console.warn('[matrx-extend] /research/sources/by-url failed schema', parsed.error.format());
+    return { ok: false as const, status: 0, error: 'Schema validation failed' };
+  }
+  return { ok: true as const, data: parsed.data };
+}

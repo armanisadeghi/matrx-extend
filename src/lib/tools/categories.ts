@@ -24,6 +24,7 @@
  * already invoked.
  */
 
+import { isBrowserSupported } from '@/lib/browser/detect';
 import type { AnyToolHandler, ToolTier } from '@/lib/tools/types';
 
 export type ToolCategory =
@@ -388,6 +389,117 @@ export function categoryOf(toolName: string): ToolCategory {
   return CATEGORY_BY_TOOL[toolName] ?? 'advanced';
 }
 
+/**
+ * The canonical surface — names that exist as active rows in `public.tl_def`
+ * (the DB the server uses to advertise tools to agents). Everything else
+ * the registry exports is either:
+ *   - an internal delegate that a mega-tool router calls (`click_element`
+ *     called by `computer.action='left_click'`, `take_screenshot` by
+ *     `computer.action='screenshot'`, etc.), or
+ *   - a `list_<category>_tools` discovery tool registered via
+ *     `discover_handlers` (these aren't in this list — they're admin-only
+ *     scaffolding the agent rarely sees).
+ *
+ * The Tools tab uses this to default-filter the list down to "what the
+ * agent actually sees in chat" instead of dumping all 149 internal handlers.
+ *
+ * Keep in lockstep with the DB. Regenerate the DB diff with the script in
+ * `scripts/dump-tool-catalog.ts` if anything looks off.
+ */
+export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
+  // ─── core (advertised on every chat) ────────────────────────────────────
+  'list_browser_tools',
+  'browser_batch',
+  'read_page',
+  'find',
+  'ask_user',
+  // ─── canonical mega-tool routers ────────────────────────────────────────
+  'computer',
+  'navigate',
+  'tabs',
+  'tab_groups',
+  'form_input',
+  'submit_form',
+  'wait_for',
+  'sleep',
+  'clipboard',
+  'downloads',
+  'memory',
+  'storage',
+  'upload_file',
+  'drop_file',
+  'read_pdf',
+  'ai',
+  'bookmarks',
+  'history',
+  'recently_closed',
+  'stylesheet',
+  'evaluate_javascript',
+  'cookies',
+  'webmcp',
+  'cdp_session',
+  'cdp_emulate',
+  // ─── page understanding (kept granular) ─────────────────────────────────
+  'read_active_page',
+  'query_elements',
+  'get_page_selection',
+  'find_text_on_page',
+  'get_page_links',
+  'get_page_text',
+  'get_element_at_point',
+  'get_element_details',
+  'get_form_fields',
+  'inspect_element',
+  'get_computed_style',
+  'extract_microdata',
+  'extract_table',
+  'fetch_url_as_markdown',
+  'mutation_watch',
+  'screenshot_region',
+  'tab_audio_inspect',
+  // ─── ask + plan ─────────────────────────────────────────────────────────
+  'request_user_takeover',
+  'update_plan',
+  'ask_user_choice',
+  'ask_user_secret',
+  // ─── files / windows ────────────────────────────────────────────────────
+  'notify_user',
+  'save_page_as_mhtml',
+  'resize_window',
+  // ─── recording / demos / guidance ───────────────────────────────────────
+  'record_gif',
+  'record_demo',
+  'list_demos',
+  'describe_demo',
+  'replay_demo',
+  'delete_demo',
+  'save_guidance_note',
+  'list_guidance',
+  'get_guidance_item',
+  'delete_guidance_item',
+  // ─── memory write (granular kept) ───────────────────────────────────────
+  'remember_for_domain',
+  // ─── debug / CDP (admin) ────────────────────────────────────────────────
+  'cdp_a11y_tree',
+  'cdp_full_page_screenshot',
+  'cdp_input_click_xy',
+  'cdp_input_type',
+  'cdp_perf_metrics',
+  'cdp_print_pdf',
+  'cdp_network_capture_start',
+  'cdp_network_capture_drain',
+  'cdp_network_capture_stop',
+  'cdp_network_get_body',
+  'read_console_messages',
+  'read_network_requests',
+  'get_request_body',
+  'desktop_run_command',
+]);
+
+export function isCanonicalSurface(toolName: string): boolean {
+  return CANONICAL_SURFACE.has(toolName);
+}
+
 export function toolsInCategory(
   handlers: AnyToolHandler[],
   category: ToolCategory,
@@ -395,7 +507,9 @@ export function toolsInCategory(
 ): AnyToolHandler[] {
   return handlers.filter(
     (h) =>
-      categoryOf(h.name) === category && (opts.isAdmin ? true : !h.admin_only),
+      categoryOf(h.name) === category &&
+      isBrowserSupported(h.supportedBrowsers) &&
+      (opts.isAdmin ? true : !h.admin_only),
   );
 }
 

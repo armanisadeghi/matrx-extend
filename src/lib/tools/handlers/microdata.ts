@@ -19,6 +19,7 @@
  */
 import { z } from 'zod';
 import { runMode } from '@/lib/data-pattern/run-pattern';
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 
 const KIND_VALUES = ['snapshot', 'json_ld', 'microdata'] as const;
@@ -71,19 +72,14 @@ interface ExtractMicrodataResult {
   counts?: { json_ld: number; microdata: number };
 }
 
-async function activeTabId(): Promise<number | null> {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  return tab?.id ?? null;
-}
-
 export const extract_microdata: ToolHandler<ExtractMicrodataArgs, ExtractMicrodataResult> = {
   name: 'extract_microdata',
   tier: 'read',
   description:
     "Extract every structured-data signal on the active page in one call: { snapshot, json_ld, microdata, schema_org_types, counts }. `snapshot` is the OG/Twitter/canonical/JSON-LD snapshot used by the Showcase tab. `json_ld` returns each JSON-LD block (flattens @graph; honors `ld_type` filter). `microdata` walks every [itemscope][itemtype] tree (honors `itemtype` filter). `schema_org_types` unions all detected types so you can answer 'is this a Product page?' in one read. Same code paths as the user-facing Showcase → JSON-LD / Microdata / Snapshot sub-tabs, so improvements to either surface flow both ways.",
   argsSchema: ExtractMicrodataArgs,
-  run: async (args) => {
-    const tabId = await activeTabId();
+  run: async (args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
 
     const kinds: Set<Kind> = new Set(args.kinds ?? KIND_VALUES);

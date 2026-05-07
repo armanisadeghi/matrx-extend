@@ -348,6 +348,7 @@ export const tab_groups: ToolHandler<TabGroupsArgs, unknown> = {
   name: 'tab_groups',
   tier: 'action',
   tierFor: (args): ToolTier => (args.action === 'list' ? 'read' : 'action'),
+  supportedBrowsers: ['chrome'],
   description:
     "Manage tab groups. Actions: 'list' (returns all groups across windows), 'create' (groups `tab_ids` together; optional `title`/`color`), 'add' (puts more `tab_ids` into existing `group_id`), 'remove' (ungroups `tab_ids`), 'update' (rename/recolor/collapse `group_id`).",
   argsSchema: TabGroupsArgs,
@@ -551,6 +552,7 @@ export const cdp_session: ToolHandler<CdpSessionArgs, unknown> = {
   tierFor: (args): ToolTier => (args.action === 'list' ? 'read' : 'privileged'),
   admin_only: true,
   required_optional_permissions: ['debugger'],
+  supportedBrowsers: ['chrome'],
   description:
     "Manage Chrome DevTools Protocol attachments. Actions: 'attach' (begin debugger session on `tab_id` — required before any other cdp_* tool), 'detach' (end session), 'list' (which tabs are currently attached). Admin + `debugger` permission.",
   argsSchema: CdpSessionArgs,
@@ -589,6 +591,7 @@ export const cdp_emulate: ToolHandler<CdpEmulateArgs, unknown> = {
   tier: 'privileged',
   admin_only: true,
   required_optional_permissions: ['debugger'],
+  supportedBrowsers: ['chrome'],
   description:
     "Override viewport / device metrics on an attached CDP tab for responsive testing. Actions: 'set' (apply `width`+`height`+optional `device_scale_factor`/`mobile`/`user_agent`), 'clear' (revert overrides). Tab must be attached via cdp_session first.",
   argsSchema: CdpEmulateArgs,

@@ -79,6 +79,7 @@ export default defineConfig({
       'https://staging.server.app.matrxserver.com/*',
       'https://dev.server.app.matrxserver.com/*',
       'http://localhost:8000/*',
+      'https://aimatrx.com/*',
       'https://*.aimatrx.com/*',
       'https://txzxabzwovsujtloxrus.supabase.co/*',
       'http://127.0.0.1:22180/*',

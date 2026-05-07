@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-06T22:32:29.175Z",
+  "generated_at": "2026-05-07T01:38:35.468Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -745,6 +745,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -766,6 +771,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -787,6 +797,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -808,6 +823,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -829,6 +849,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -850,6 +875,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -871,6 +901,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -892,6 +927,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -913,6 +953,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -934,6 +979,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -955,6 +1005,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -976,6 +1031,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -997,6 +1057,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1018,6 +1083,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1039,6 +1109,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1060,6 +1135,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1081,6 +1161,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1128,6 +1213,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1196,6 +1286,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1242,6 +1337,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1279,6 +1379,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1302,6 +1407,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1326,6 +1436,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1355,6 +1470,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1414,6 +1534,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1457,6 +1582,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1511,6 +1641,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1552,6 +1687,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1589,6 +1729,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1623,6 +1768,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1654,6 +1804,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1692,6 +1847,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1729,6 +1889,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1753,6 +1918,9 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -1782,6 +1950,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1818,6 +1991,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1851,6 +2029,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1892,6 +2075,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1928,6 +2116,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1969,6 +2162,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -1997,6 +2195,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2035,6 +2238,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2070,6 +2278,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2091,6 +2304,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2138,6 +2356,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2179,6 +2402,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2211,6 +2439,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2249,6 +2482,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2277,6 +2515,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2305,6 +2548,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2346,6 +2594,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2377,6 +2630,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2407,6 +2665,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2443,6 +2706,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2488,6 +2756,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2532,6 +2805,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2567,6 +2845,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2597,6 +2880,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2629,6 +2917,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2671,6 +2964,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2702,6 +3000,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2733,6 +3036,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2760,6 +3068,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2791,6 +3104,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2832,6 +3150,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2869,6 +3192,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2910,6 +3238,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -2941,6 +3274,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3002,6 +3340,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3046,6 +3389,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3085,6 +3433,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3113,6 +3466,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3141,6 +3499,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3173,6 +3536,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3205,6 +3573,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3235,6 +3608,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3261,6 +3639,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3287,6 +3670,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3320,6 +3708,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3356,6 +3749,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3393,6 +3791,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3449,6 +3852,9 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -3486,6 +3892,9 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -3519,6 +3928,9 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -3567,6 +3979,9 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -3612,6 +4027,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3640,6 +4060,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3681,6 +4106,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3721,6 +4151,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3751,6 +4186,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3777,6 +4217,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3805,6 +4250,9 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -3838,6 +4286,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3900,6 +4353,11 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3933,6 +4391,11 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -3960,6 +4423,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -3985,6 +4451,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4008,6 +4477,9 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4075,6 +4547,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4108,6 +4583,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4159,6 +4637,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4191,6 +4672,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4218,6 +4702,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4252,6 +4739,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4277,6 +4767,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4308,6 +4801,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4343,6 +4839,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4372,6 +4871,9 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4422,6 +4924,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4447,6 +4952,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4511,6 +5019,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4560,6 +5071,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4594,6 +5108,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -4618,6 +5135,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -4642,6 +5164,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -4673,6 +5200,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -4729,6 +5261,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -4775,6 +5312,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -4811,6 +5353,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -4847,6 +5394,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -4908,6 +5460,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -4945,6 +5502,11 @@
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -4981,6 +5543,11 @@
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5013,6 +5580,11 @@
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5050,6 +5622,11 @@
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5082,6 +5659,10 @@
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox"
       ]
     },
     {
@@ -5168,6 +5749,9 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -5284,6 +5868,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5307,6 +5896,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5337,6 +5931,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5380,6 +5979,11 @@
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5409,6 +6013,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5449,6 +6058,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5476,6 +6090,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5506,6 +6125,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5535,6 +6159,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5580,6 +6209,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5672,6 +6306,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5708,6 +6347,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5731,6 +6375,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5785,6 +6434,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5827,6 +6481,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5876,6 +6535,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -5967,6 +6631,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6005,6 +6674,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6039,6 +6713,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6098,6 +6777,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6139,6 +6823,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6178,6 +6867,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6211,6 +6905,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6263,6 +6962,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6302,6 +7006,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6346,6 +7055,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6386,6 +7100,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6452,6 +7171,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6517,6 +7241,11 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6555,6 +7284,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6591,6 +7325,11 @@
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6656,6 +7395,9 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -6703,6 +7445,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6753,6 +7500,11 @@
         "assistant",
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6788,6 +7540,11 @@
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6831,6 +7588,11 @@
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {
@@ -6868,6 +7630,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -6922,6 +7687,9 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {
@@ -6958,6 +7726,11 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     }
   ]

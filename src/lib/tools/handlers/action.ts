@@ -6,13 +6,9 @@
  * arrives once we add the `tabs` + `tabGroups` permissions to the manifest.
  */
 
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
-
-async function activeTabId(): Promise<number | null> {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  return tab?.id ?? null;
-}
 
 const NavigateArgs = z.object({
   url: z.string().url(),
@@ -25,8 +21,8 @@ export const navigate_active_tab: ToolHandler<NavigateArgs, unknown> = {
   description:
     'Navigate the active tab to a URL. Waits for status=complete before resolving (timeout 30s). Returns { url, title, status }.',
   argsSchema: NavigateArgs,
-  run: async (args) => {
-    const tabId = await activeTabId();
+  run: async (args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     await chrome.tabs.update(tabId, { url: args.url });
     await waitForLoad(tabId, 30_000);
@@ -67,10 +63,10 @@ export const click_element: ToolHandler<ClickArgs, unknown> = {
   description:
     'Click an element on the active tab. Pass `ref` from read_page (preferred — stable across DOM mutations) OR a CSS `selector`. When multiple match a selector, use `nth`. Returns { ok, tag, text } or { ok:false, reason }.',
   argsSchema: ClickArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     const selector = resolveRef(args);
     if (!selector) return { ok: false, reason: 'must provide selector or ref' };
-    const tabId = await activeTabId();
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -114,10 +110,10 @@ export const type_into_element: ToolHandler<TypeArgs, unknown> = {
   description:
     'Set the value of an input / textarea / contenteditable. Pass `ref` from read_page (preferred) OR a CSS `selector`. By default clears the field first and dispatches input + change events so React/Vue see the update.',
   argsSchema: TypeArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     const selector = resolveRef(args);
     if (!selector) return { ok: false, reason: 'must provide selector or ref' };
-    const tabId = await activeTabId();
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -174,8 +170,8 @@ export const scroll_page: ToolHandler<ScrollArgs, unknown> = {
   description:
     'Scroll the active tab. direction="top"/"bottom" go to extremes; "into-view" scrolls a selector or `ref` (from read_page) into view; "by" scrolls by delta_y pixels.',
   argsSchema: ScrollArgs,
-  run: async (args) => {
-    const tabId = await activeTabId();
+  run: async (args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const sel = resolveRef(args);
     const [first] = await chrome.scripting.executeScript({
@@ -218,8 +214,8 @@ export const wait_for: ToolHandler<WaitArgs, unknown> = {
   description:
     'Wait for a condition on the active tab — either the page to fully load (ready_state=true) and/or a selector to appear. Returns { ok, waited_ms }.',
   argsSchema: WaitArgs,
-  run: async (args) => {
-    const tabId = await activeTabId();
+  run: async (args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const start = Date.now();
     if (args.ready_state) await waitForLoad(tabId, args.timeout_ms);
@@ -271,8 +267,8 @@ export const set_clipboard: ToolHandler<ClipboardArgs, unknown> = {
   tier: 'action',
   description: 'Write text to the system clipboard.',
   argsSchema: ClipboardArgs,
-  run: async (args) => {
-    const tabId = await activeTabId();
+  run: async (args, ctx) => {
+    const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },

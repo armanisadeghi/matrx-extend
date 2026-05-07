@@ -65,6 +65,9 @@ const TEST_CTX: ToolContext = {
   callId: 'smart-test',
   agentName: 'manual',
   permissionMode: 'act',
+  // No assignment in test mode — handlers fall back to the focused tab,
+  // which is what the user is looking at when they hit Run.
+  assignedTabId: null,
 };
 
 type Step = { label: string; ms: number; detail?: string };

@@ -1,10 +1,13 @@
 /**
  * The tool-display registry. Map a tool name (the raw `toolName` string —
- * e.g. `ctx_get`, `read_page`) to a `ToolDisplayEntry` and the chat surfaces
- * (`ToolTimelineRow` for client tools, `ServerToolRow` for server tools)
- * will route through `ConfigurableToolRow` instead of their generic default.
+ * e.g. `computer`, `tabs`, `read_page`) to a `ToolDisplayEntry` and the chat
+ * surfaces (`ToolTimelineRow` for client tools, `ServerToolRow` for server
+ * tools) will route through `ConfigurableToolRow` instead of their generic
+ * default.
  *
- * Anything not registered keeps rendering exactly as it does today.
+ * Anything not registered keeps rendering exactly as it does today (the
+ * default ToolTimelineRow). Default rendering is fine — these entries are
+ * only here to give frequently-called tools a more useful row.
  *
  * Adding a new entry:
  *   1. Add a key here. The minimum useful shape is `{ inline: { ... } }`.
@@ -12,6 +15,13 @@
  *      `prefix: { started: 'Getting', completed: 'Got', error: 'Failed to get' }`.
  *   3. For result rendering, pick a `displayType`. `'custom'` lets you map
  *      individual result keys to field components (see `keysInfo` below).
+ *
+ * Mega-tool tip:
+ *   The canonical tools (`computer`, `tabs`, `ai`, `navigate`, …) dispatch
+ *   on an `args.action` enum. Each gets a paired `<x>ActionVerb` /
+ *   `<x>ActionPresent` / `<x>ActionIcon` transform in registry-transforms.ts
+ *   that resolves a human-readable label + icon from the action — so a
+ *   single registry entry can render every sub-action correctly.
  *
  * Field components live in `./registry-components.tsx`.
  * Transforms live in `./registry-transforms.ts`.
@@ -21,6 +31,7 @@ import { InteractionAskCard } from './InteractionAskCard';
 import type { ToolDisplayEntry } from './types';
 
 export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
+  // ─── Server-side tools ────────────────────────────────────────────────
   // Server-side multi-question questionnaire tool. The args carry the spec
   // (introduction + array of {id, prompt, component_type, options?}); without
   // a custom component the user just sees an opaque "Done" row and can never
@@ -29,7 +40,6 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
   interaction_ask: {
     CustomComponent: InteractionAskCard,
   },
-
 
   ctx_get: {
     inline: {
@@ -83,57 +93,7 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     },
   },
 
-  get_active_tab: {
-    inline: {
-      // Favicon as the icon: the URL flows from args/output via InfoSpec; the
-      // renderer detects the http(s) prefix and renders an <img> instead of a
-      // lucide component, falling back to Globe if the favicon 404s.
-      icon: {
-        started: 'Loader2',
-        completed: { path: 'output.fav_icon_url', fallback: 'Globe' },
-        error: 'AlertTriangle',
-      },
-      prefix: {
-        started: 'Reading active tab',
-        error: "Couldn't read active tab",
-      },
-      name: {
-        started: '',
-        completed: { path: 'output.title', transform: 'truncate80' },
-        error: '',
-      },
-      info: { completed: { path: 'output.url', transform: 'truncate80' } },
-      color: { started: 'primary', completed: 'blue', error: 'red' },
-    },
-    args: { hidden: true },
-    // Favicon + title + URL already in the inline row — no extra body needed.
-  },
-
-  take_screenshot: {
-    inline: {
-      icon: { started: 'Loader2', completed: 'Camera', error: 'AlertTriangle' },
-      prefix: {
-        started: 'Capturing screenshot',
-        completed: 'Captured screenshot',
-        error: 'Failed to capture screenshot',
-      },
-      name: '',
-      info: {
-        completed: { path: 'output', transform: 'formatImageDimensions' },
-      },
-      color: { started: 'primary', completed: 'violet', error: 'red' },
-    },
-    args: { hidden: true },
-    results: {
-      displayType: 'custom',
-      // Empty key = pass the whole result object; Base64Image assembles the data URI
-      // from `image_base64` + `media_type` and shows a small dimensions/size caption.
-      keysInfo: [{ key: '', component: 'Base64Image' }],
-      // The whole point of take_screenshot IS the image — show it directly,
-      // no click required.
-      alwaysShow: true,
-    },
-  },
+  // ─── Core (always advertised) ─────────────────────────────────────────
 
   read_page: {
     inline: {
@@ -150,23 +110,6 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     },
     args: { hidden: true },
     // The result is huge (full a11y tree). Default JSON in the expanded view is fine.
-  },
-
-  click_element: {
-    inline: {
-      // MousePointerClick across all phases gives a consistent "clicking" identity;
-      // the label shimmer + spin override on started signals "in progress".
-      icon: 'MousePointerClick',
-      prefix: {
-        started: 'Clicking',
-        completed: 'Clicked',
-        error: 'Failed to click',
-      },
-      name: '',
-      info: { path: 'args.ref' },
-      color: { started: 'primary', completed: 'emerald', error: 'red' },
-    },
-    args: { displayType: 'key-value' },
   },
 
   find: {
@@ -188,5 +131,828 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
       color: { started: 'primary', completed: 'violet', error: 'red' },
     },
     args: { displayType: 'key-value' },
+  },
+
+  browser_batch: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Layers', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Running batch',
+        completed: 'Ran batch',
+        error: 'Batch failed',
+      },
+      name: '',
+      info: { path: 'args.calls.length', fallback: '0' },
+      suffix: 'calls',
+      color: { started: 'primary', completed: 'amber', error: 'red' },
+    },
+    args: { displayType: 'json' },
+  },
+
+  ask_user: {
+    inline: {
+      icon: 'MessageCircleQuestion',
+      prefix: {
+        started: 'Asking you',
+        completed: 'Asked',
+        error: 'Question failed',
+      },
+      name: { path: 'args.question', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  // ─── Mega-tool routers (the agent's primary surface) ──────────────────
+
+  computer: {
+    inline: {
+      icon: {
+        started: 'Loader2',
+        completed: { path: 'args.action', transform: 'computerActionIcon' },
+        error: 'AlertTriangle',
+      },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'computerActionPresent' },
+        completed: { path: 'args.action', transform: 'computerActionVerb' },
+        error: { path: 'args.action', transform: 'computerActionPresent', fallback: 'Computer' },
+      },
+      // For typed text and click refs, append a short hint of the target/value.
+      info: {
+        path: 'args.text',
+        transform: 'truncate80',
+        fallback: '',
+      },
+      color: { started: 'primary', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+    results: {
+      // The screenshot sub-action returns a file_id but no inline base64 (the
+      // canonical contract uploads to cld_files first). Default key-value is
+      // fine — the user sees file_id + dimensions inline.
+      displayType: 'key-value',
+    },
+  },
+
+  navigate: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Compass', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.url', transform: 'navigateActionPresent', fallback: 'Navigating' },
+        completed: { path: 'args.url', transform: 'navigateActionVerb', fallback: 'Navigated' },
+        error: 'Navigate failed',
+      },
+      info: { path: 'args.url', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'blue', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  tabs: {
+    inline: {
+      icon: {
+        started: 'Loader2',
+        completed: { path: 'args.action', transform: 'tabsActionIcon' },
+        error: 'AlertTriangle',
+      },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'tabsActionPresent' },
+        completed: { path: 'args.action', transform: 'tabsActionVerb' },
+        error: { path: 'args.action', transform: 'tabsActionPresent', fallback: 'Tabs' },
+      },
+      info: { path: 'args.url', transform: 'truncate80', fallback: '' },
+      color: { started: 'primary', completed: 'amber', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  tab_groups: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Group', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'tabGroupsActionPresent' },
+        completed: { path: 'args.action', transform: 'tabGroupsActionVerb' },
+        error: { path: 'args.action', transform: 'tabGroupsActionPresent', fallback: 'Tab groups' },
+      },
+      color: { started: 'primary', completed: 'amber', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  form_input: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'FormInput', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Filling',
+        completed: 'Filled',
+        error: 'Failed to fill',
+      },
+      name: { path: 'args.ref' },
+      info: { path: 'args.value', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  submit_form: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'SendHorizontal', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Submitting form',
+        completed: 'Submitted form',
+        error: 'Form submit failed',
+      },
+      name: '',
+      color: { started: 'primary', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  wait_for: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Hourglass', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.condition', transform: 'waitForConditionPresent', fallback: 'Waiting' },
+        completed: { path: 'args.condition', transform: 'waitForConditionVerb', fallback: 'Waited' },
+        error: 'Wait timed out',
+      },
+      info: { path: 'args.target', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  sleep: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Moon', error: 'AlertTriangle' },
+      prefix: { started: 'Sleeping', completed: 'Slept', error: 'Sleep failed' },
+      name: '',
+      info: { path: 'args.ms' },
+      suffix: 'ms',
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  // ─── AI / files / utilities ──────────────────────────────────────────
+
+  ai: {
+    inline: {
+      icon: {
+        started: 'Loader2',
+        completed: { path: 'args.action', transform: 'aiActionIcon' },
+        error: 'AlertTriangle',
+      },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'aiActionPresent' },
+        completed: { path: 'args.action', transform: 'aiActionVerb' },
+        error: { path: 'args.action', transform: 'aiActionPresent', fallback: 'AI' },
+      },
+      color: { started: 'primary', completed: 'violet', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  clipboard: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Clipboard', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'clipboardActionPresent' },
+        completed: { path: 'args.action', transform: 'clipboardActionVerb' },
+        error: 'Clipboard failed',
+      },
+      info: { path: 'args.text', transform: 'truncate80', fallback: '' },
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  downloads: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Download', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'downloadsActionPresent' },
+        completed: { path: 'args.action', transform: 'downloadsActionVerb' },
+        error: { path: 'args.action', transform: 'downloadsActionPresent', fallback: 'Downloads' },
+      },
+      info: { path: 'args.url', transform: 'truncate80', fallback: '' },
+      color: { started: 'primary', completed: 'amber', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  upload_file: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Upload', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Uploading file to',
+        completed: 'Uploaded file to',
+        error: 'Upload failed for',
+      },
+      name: { path: 'args.ref' },
+      info: { path: 'args.file_ids.length', fallback: '0' },
+      suffix: 'file(s)',
+      color: { started: 'primary', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  drop_file: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Move', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Dropping file on',
+        completed: 'Dropped file on',
+        error: 'Drop failed on',
+      },
+      name: { path: 'args.ref', fallback: 'coordinate' },
+      color: { started: 'primary', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  read_pdf: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'FileText', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Reading PDF',
+        completed: 'Read PDF',
+        error: 'PDF read failed',
+      },
+      name: '',
+      info: { completed: { path: 'output.page_count', fallback: '' } },
+      suffix: { completed: 'pages' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  // ─── Memory & storage ────────────────────────────────────────────────
+
+  memory: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Database', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'memoryActionPresent' },
+        completed: { path: 'args.action', transform: 'memoryActionVerb' },
+        error: { path: 'args.action', transform: 'memoryActionPresent', fallback: 'Memory' },
+      },
+      info: { path: 'args.key', fallback: '' },
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  storage: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'HardDrive', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'storageActionPresent' },
+        completed: { path: 'args.action', transform: 'storageActionVerb' },
+        error: { path: 'args.action', transform: 'storageActionPresent', fallback: 'Storage' },
+      },
+      info: { path: 'args.key', fallback: '' },
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  remember_for_domain: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'NotebookPen', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Remembering note for',
+        completed: 'Remembered note for',
+        error: 'Failed to remember',
+      },
+      name: { path: 'args.domain' },
+      color: { started: 'primary', completed: 'amber', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  // ─── History / bookmarks / closed ────────────────────────────────────
+
+  history: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'History', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'historyActionPresent' },
+        completed: { path: 'args.action', transform: 'historyActionVerb' },
+        error: { path: 'args.action', transform: 'historyActionPresent', fallback: 'History' },
+      },
+      info: { path: 'args.query', transform: 'truncate80', fallback: '' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  bookmarks: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Bookmark', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'bookmarksActionPresent' },
+        completed: { path: 'args.action', transform: 'bookmarksActionVerb' },
+        error: { path: 'args.action', transform: 'bookmarksActionPresent', fallback: 'Bookmarks' },
+      },
+      info: { path: 'args.query', transform: 'truncate80', fallback: '' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  recently_closed: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Undo2', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'recentlyClosedActionPresent' },
+        completed: { path: 'args.action', transform: 'recentlyClosedActionVerb' },
+        error: 'Recently-closed failed',
+      },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  // ─── Cookies / WebMCP / stylesheet ───────────────────────────────────
+
+  cookies: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Cookie', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'cookiesActionPresent' },
+        completed: { path: 'args.action', transform: 'cookiesActionVerb' },
+        error: { path: 'args.action', transform: 'cookiesActionPresent', fallback: 'Cookies' },
+      },
+      info: { path: 'args.url', transform: 'truncate80', fallback: '' },
+      color: { started: 'primary', completed: 'amber', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  webmcp: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Plug', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'webmcpActionPresent' },
+        completed: { path: 'args.action', transform: 'webmcpActionVerb' },
+        error: { path: 'args.action', transform: 'webmcpActionPresent', fallback: 'WebMCP' },
+      },
+      info: { path: 'args.tool', transform: 'truncate80', fallback: '' },
+      color: { started: 'primary', completed: 'violet', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  stylesheet: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Palette', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'stylesheetActionPresent' },
+        completed: { path: 'args.action', transform: 'stylesheetActionVerb' },
+        error: 'Stylesheet failed',
+      },
+      color: { started: 'primary', completed: 'violet', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  evaluate_javascript: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Code2', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Evaluating JavaScript',
+        completed: 'Evaluated JavaScript',
+        error: 'JavaScript failed',
+      },
+      name: '',
+      color: { started: 'primary', completed: 'red', error: 'red' },
+    },
+    args: { displayType: 'json' },
+  },
+
+  // ─── CDP / debug (admin) ─────────────────────────────────────────────
+
+  cdp_session: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Bug', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'cdpSessionActionPresent' },
+        completed: { path: 'args.action', transform: 'cdpSessionActionVerb' },
+        error: 'Debugger failed',
+      },
+      color: { started: 'primary', completed: 'red', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  cdp_emulate: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Smartphone', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: { path: 'args.action', transform: 'cdpEmulateActionPresent' },
+        completed: { path: 'args.action', transform: 'cdpEmulateActionVerb' },
+        error: 'Emulation failed',
+      },
+      color: { started: 'primary', completed: 'amber', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  read_console_messages: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Terminal', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Reading console',
+        completed: 'Read console',
+        error: 'Console read failed',
+      },
+      name: '',
+      info: { completed: { path: 'output.messages.length', fallback: '0' } },
+      suffix: { completed: 'messages' },
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  read_network_requests: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Network', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Reading network',
+        completed: 'Read network',
+        error: 'Network read failed',
+      },
+      name: '',
+      info: { completed: { path: 'output.requests.length', fallback: '0' } },
+      suffix: { completed: 'requests' },
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  // ─── Demos / guidance ────────────────────────────────────────────────
+
+  record_demo: {
+    inline: {
+      icon: { started: 'Circle', completed: 'CircleDot', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: 'Recording demo',
+        completed: 'Demo recorded',
+        error: 'Recording failed',
+      },
+      info: { path: 'args.action' },
+      color: { started: 'red', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  replay_demo: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Play', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Replaying demo',
+        completed: 'Replayed demo',
+        error: 'Replay failed',
+      },
+      name: { path: 'args.demo_id', transform: 'truncate80' },
+      info: { completed: { path: 'output.steps_executed', fallback: '0' } },
+      suffix: { completed: 'steps' },
+      color: { started: 'primary', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  list_demos: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'List', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Listing demos',
+        completed: 'Listed demos',
+        error: 'Failed to list demos',
+      },
+      name: '',
+      info: { completed: { path: 'output.demos.length', fallback: '0' } },
+      suffix: { completed: 'demos' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { hidden: true },
+  },
+
+  describe_demo: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'FileSearch', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Describing demo',
+        completed: 'Described demo',
+        error: 'Describe failed',
+      },
+      name: { path: 'args.demo_id', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  delete_demo: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Trash2', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Deleting demo',
+        completed: 'Deleted demo',
+        error: 'Delete failed',
+      },
+      name: { path: 'args.demo_id', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'red', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  record_gif: {
+    inline: {
+      icon: { started: 'Circle', completed: 'Film', error: 'AlertTriangle' },
+      prefix: '',
+      name: {
+        started: 'Recording GIF',
+        completed: 'GIF recorded',
+        error: 'GIF recording failed',
+      },
+      info: { path: 'args.action' },
+      color: { started: 'red', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  save_guidance_note: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'StickyNote', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Saving note for',
+        completed: 'Saved note for',
+        error: 'Failed to save note for',
+      },
+      name: { path: 'args.domain' },
+      info: { path: 'args.text', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'amber', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  list_guidance: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'BookOpen', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Listing guidance for',
+        completed: 'Listed guidance for',
+        error: 'Failed to list guidance for',
+      },
+      name: { path: 'args.domain', fallback: 'all domains' },
+      info: { completed: { path: 'output.items.length', fallback: '0' } },
+      suffix: { completed: 'items' },
+      color: { started: 'primary', completed: 'amber', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  get_guidance_item: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'BookOpen', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Getting guidance item',
+        completed: 'Got guidance item',
+        error: 'Failed to get guidance item',
+      },
+      name: { path: 'args.id', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'amber', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  delete_guidance_item: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Trash2', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Deleting guidance item',
+        completed: 'Deleted guidance item',
+        error: 'Delete failed',
+      },
+      name: { path: 'args.id', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'red', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  // ─── Plan + takeover ─────────────────────────────────────────────────
+
+  update_plan: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'ListChecks', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Proposing plan',
+        completed: 'Plan updated',
+        error: 'Plan failed',
+      },
+      name: '',
+      info: { path: 'args.steps.length', fallback: '' },
+      suffix: 'steps',
+      color: { started: 'primary', completed: 'amber', error: 'red' },
+    },
+    args: { displayType: 'json' },
+  },
+
+  request_user_takeover: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Hand', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Asking you to take over',
+        completed: 'Handed off to you',
+        error: 'Takeover failed',
+      },
+      name: '',
+      info: { path: 'args.reason', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  notify_user: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Bell', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Sending notification',
+        completed: 'Notified',
+        error: 'Notify failed',
+      },
+      name: '',
+      info: { path: 'args.title', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  resize_window: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Maximize2', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Resizing window',
+        completed: 'Resized window',
+        error: 'Resize failed',
+      },
+      name: '',
+      info: { path: 'args.width', fallback: '' },
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  // ─── Page-understanding granular reads ───────────────────────────────
+
+  read_active_page: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'BookOpen', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Reading active page',
+        completed: 'Read active page',
+        error: 'Failed to read page',
+      },
+      name: '',
+      info: { completed: { path: 'output.title', transform: 'truncate80' } },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { hidden: true },
+  },
+
+  query_elements: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Crosshair', error: 'AlertTriangle' },
+      prefix: { started: 'Querying', completed: 'Found', error: 'Query failed' },
+      name: { path: 'args.selector', transform: 'truncate80' },
+      info: { completed: { path: 'output.count', fallback: '0' } },
+      suffix: { completed: 'matches' },
+      color: { started: 'primary', completed: 'violet', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  find_text_on_page: {
+    inline: {
+      icon: 'Search',
+      prefix: { started: 'Finding text', completed: 'Found text', error: 'Find failed' },
+      name: { path: 'args.text', transform: 'truncate80' },
+      info: { completed: { path: 'output.count', fallback: '0' } },
+      suffix: { completed: 'matches' },
+      color: { started: 'primary', completed: 'violet', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  get_page_links: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Link', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Getting page links',
+        completed: 'Got page links',
+        error: 'Failed to get links',
+      },
+      name: '',
+      info: { completed: { path: 'output.links.length', fallback: '0' } },
+      suffix: { completed: 'links' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { hidden: true },
+  },
+
+  get_page_text: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'FileText', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Extracting article text',
+        completed: 'Extracted article text',
+        error: 'Text extraction failed',
+      },
+      name: '',
+      info: { completed: { path: 'output.word_count', fallback: '' } },
+      suffix: { completed: 'words' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { hidden: true },
+  },
+
+  get_page_selection: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'TextCursorInput', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Reading selection',
+        completed: 'Read selection',
+        error: 'Selection failed',
+      },
+      name: '',
+      info: { completed: { path: 'output.text', transform: 'truncate80' } },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { hidden: true },
+  },
+
+  get_element_at_point: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Crosshair', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Probing element at',
+        completed: 'Got element at',
+        error: 'Probe failed at',
+      },
+      name: '',
+      info: { path: 'args.x' },
+      color: { started: 'primary', completed: 'violet', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  get_element_details: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Inspect', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Inspecting element',
+        completed: 'Inspected element',
+        error: 'Inspect failed',
+      },
+      name: { path: 'args.ref' },
+      color: { started: 'primary', completed: 'violet', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  get_form_fields: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'FormInput', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Reading form fields',
+        completed: 'Read form fields',
+        error: 'Read failed',
+      },
+      name: '',
+      info: { completed: { path: 'output.fields.length', fallback: '0' } },
+      suffix: { completed: 'fields' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { hidden: true },
   },
 };

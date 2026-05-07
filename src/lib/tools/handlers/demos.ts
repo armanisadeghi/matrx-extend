@@ -23,6 +23,7 @@ import { deleteDemo as storageDeleteDemo, getDemo, listDemos, makeDemoId, saveDe
 import { discardRecording, getActiveRecording, startRecording, stopRecording } from '@/lib/demos/recorder';
 import { replayDemo } from '@/lib/demos/replayer';
 import type { Demo, DemoParameter, DemoStep } from '@/lib/demos/types';
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler, ToolTier } from '@/lib/tools/types';
 
 // ─── record_demo ───────────────────────────────────────────────────────────
@@ -61,7 +62,7 @@ export const record_demo: ToolHandler<RecordDemoArgs, unknown> = {
   description:
     "Record a user demonstration that can later be replayed by the agent. Actions: 'start' (begin recording on a tab; clicks, typed text, submits, navigations, and scrolls are captured automatically as the user demonstrates), 'stop' (save the recording with a name + parameter declarations; sensitive fields like passwords are auto-parameterised), 'discard' (throw away the in-flight recording without saving), 'status' (read; report whether a recording is active and how many steps have been captured). Coach the user: ask them to walk through the workflow, then call stop when they say they're done. Saved demos are replayed via `replay_demo`.",
   argsSchema: RecordDemoArgs,
-  run: async (args) => {
+  run: async (args, ctx) => {
     if (args.action === 'status') {
       const state = getActiveRecording();
       if (!state) return { ok: true, recording: false };
@@ -77,11 +78,10 @@ export const record_demo: ToolHandler<RecordDemoArgs, unknown> = {
     }
 
     if (args.action === 'start') {
-      let tabId = args.tab_id;
+      let tabId: number | null | undefined = args.tab_id;
       if (tabId == null) {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (!tab?.id) return { ok: false, reason: 'No active tab.' };
-        tabId = tab.id;
+        tabId = await getAssignedTabId(ctx);
+        if (tabId == null) return { ok: false, reason: 'No active tab.' };
       }
       const r = await startRecording(tabId);
       return r.ok

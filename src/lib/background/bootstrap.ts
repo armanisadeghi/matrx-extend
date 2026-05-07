@@ -39,10 +39,16 @@ import { connectBroadcast } from '@/lib/frontend-bridge/broadcast';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
-import { type StartStreamArgs, cancelStream, startStream } from '@/lib/stream/offscreen-proxy';
+import type { MicRequestPayload, MicRunPayload } from '@/lib/audio/mic-types';
+import {
+  ensureOffscreen,
+  type StartStreamArgs,
+  cancelStream,
+  startStream,
+} from '@/lib/stream/offscreen-proxy';
 import { setSupabaseSession } from '@/lib/supabase/client';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
-import { handleWebmcpCall, startToolDispatcher } from '@/lib/tools/dispatch';
+import { handleWebmcpCall, recordAssignedTab, startToolDispatcher } from '@/lib/tools/dispatch';
 import { registerToolsOnActiveTab } from '@/lib/webmcp/register';
 
 let bootstrapped = false;
@@ -151,12 +157,38 @@ function setupAlarms(): void {
 
 function registerHandlers(): void {
   on<StartStreamArgs, { ok: boolean }>(CHANNELS.STREAM_START, async (payload) => {
+    // Latch the assigned tab BEFORE forwarding to offscreen so the
+    // dispatcher has it ready by the time the first tool_event lands. This
+    // is what keeps the agent pinned to the user's tab even if the user
+    // switches focus while the stream is running.
+    if (payload.runId) {
+      recordAssignedTab(payload.runId, payload.assignedTabId ?? null);
+    }
     await startStream(payload);
     return { ok: true };
   });
 
   on<{ runId: string }, { ok: boolean }>(CHANNELS.STREAM_CANCEL, async (payload) => {
     await cancelStream(payload.runId);
+    return { ok: true };
+  });
+
+  // Mic capture (TASK-002): sidepanel asks the SW to run a mic action;
+  // SW ensures offscreen is up, then forwards via MIC_RUN. The actual
+  // MediaRecorder lives in the offscreen document where USER_MEDIA reason
+  // grants reliable mic access.
+  on<MicRequestPayload, { ok: boolean }>(CHANNELS.MIC_REQUEST, async (payload) => {
+    await ensureOffscreen();
+    const runPayload: MicRunPayload = payload;
+    const res = await chrome.runtime
+      .sendMessage({ __matrx: true, kind: CHANNELS.MIC_RUN, payload: runPayload })
+      .catch((err) => {
+        log.error('sys', `mic forward failed`, err);
+        return null;
+      });
+    if (res && typeof res === 'object' && '__error' in res) {
+      throw new Error((res as { __error: string }).__error);
+    }
     return { ok: true };
   });
 

@@ -1,7 +1,9 @@
+import { AddToProjectButton } from '@/components/AddToProjectButton';
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useActiveTab } from '@/hooks/use-active-tab';
 import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
 import {
   type ExtensionScrapeItem,
@@ -17,6 +19,8 @@ import { getOuterHtml } from '@/lib/scrape/capture-html';
 import { scrollToLoadLazy, settlePage } from '@/lib/scrape/page-ready';
 import { removeCaptureOverlay, showCaptureOverlay } from '@/lib/scrape/user-gate-overlay';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { urlsMatch } from '@/lib/url/match';
+import { cn } from '@/lib/utils';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertTriangle,
@@ -30,8 +34,9 @@ import {
   RefreshCw,
   RotateCcw,
   Skull,
+  Target,
 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 type TaskStatus =
   | 'idle'
@@ -79,6 +84,7 @@ function itemKey(it: ExtensionScrapeItem): string {
 
 export function TasksView() {
   const queryClient = useQueryClient();
+  const activeTab = useActiveTab();
   const [statusByItem, setStatusByItem] = useState<Record<string, ItemState>>({});
   const [pasteByItem, setPasteByItem] = useState<Record<string, string>>({});
   /**
@@ -214,22 +220,42 @@ export function TasksView() {
     const id = itemKey(item);
     const wantsActiveTab = level === 3;
 
-    setItemState(id, { status: 'navigating' });
-    let tab: chrome.tabs.Tab;
-    try {
-      tab = await chrome.tabs.create({ url: item.url, active: wantsActiveTab });
-    } catch (err) {
-      setItemState(id, { status: 'error', error: (err as Error).message });
-      return { ok: false, isGood: false };
-    }
-    if (!tab.id) {
-      setItemState(id, { status: 'error', error: 'Tab has no id' });
-      return { ok: false, isGood: false };
-    }
-    const tabId = tab.id;
-    await waitForTab(tabId);
+    // Reuse the active tab if the user is already on this URL — opening a
+    // duplicate tab is wasteful and confusing. The page is loaded; we can
+    // skip the navigate-and-wait step entirely.
+    const reuseActive =
+      activeTab.id != null && activeTab.url != null && urlsMatch(activeTab.url, item.url);
 
-    if (level >= 2) {
+    setItemState(id, { status: 'navigating' });
+    let tabId: number;
+    if (reuseActive) {
+      tabId = activeTab.id!;
+      if (wantsActiveTab) {
+        try {
+          await chrome.tabs.update(tabId, { active: true });
+        } catch {
+          /* tab may have closed mid-click */
+        }
+      }
+    } else {
+      let tab: chrome.tabs.Tab;
+      try {
+        tab = await chrome.tabs.create({ url: item.url, active: wantsActiveTab });
+      } catch (err) {
+        setItemState(id, { status: 'error', error: (err as Error).message });
+        return { ok: false, isGood: false };
+      }
+      if (!tab.id) {
+        setItemState(id, { status: 'error', error: 'Tab has no id' });
+        return { ok: false, isGood: false };
+      }
+      tabId = tab.id;
+      await waitForTab(tabId);
+    }
+
+    // Skip the auto-settle/scroll when reusing the active tab — the user is
+    // already looking at the page; jumping the scroll would be jarring.
+    if (level >= 2 && !reuseActive) {
       setItemState(id, { status: 'preparing', tabId });
       await settlePage(tabId);
       await scrollToLoadLazy(tabId);
@@ -494,6 +520,25 @@ export function TasksView() {
   const totalAutomated = displayL1.length + displayL2.length;
   const totalAll = queue?.totals?.all ?? 0;
 
+  // Items in the queue that match the URL the user is currently viewing.
+  // Used to surface a top-of-list banner so they don't have to hunt the row
+  // out of a long queue, and so Run/Trigger reuses the active tab instead
+  // of opening a duplicate.
+  const matchingItems = useMemo(() => {
+    if (!queue || !activeTab.url) return [];
+    const all = [
+      ...queue.level_1_quick,
+      ...queue.level_2_scroll,
+      ...queue.level_3_user_gated,
+      ...queue.level_4_paste,
+    ];
+    return all.filter((it) => urlsMatch(it.url, activeTab.url));
+  }, [queue, activeTab.url]);
+  const matchingIds = useMemo(
+    () => new Set(matchingItems.map(itemKey)),
+    [matchingItems],
+  );
+
   const toggleSection = (k: string) =>
     setOpenSections((s) => ({ ...s, [k]: !s[k] }));
 
@@ -551,6 +596,7 @@ export function TasksView() {
               ]}
             />
           )}
+          <AddToProjectButton url={activeTab.url} title={activeTab.title} variant="icon" />
           <Button
             variant="ghost"
             size="icon"
@@ -563,6 +609,18 @@ export function TasksView() {
           </Button>
         </div>
       </div>
+
+      {matchingItems.length > 0 && (
+        <ActiveTabMatchBanner
+          items={matchingItems}
+          onCapture={(it) => {
+            const lvl = it.next_level;
+            if (lvl === 4) return;
+            void runAutomated(it, lvl as SubmittableLevel);
+          }}
+          onVerdict={(it, v) => void runVerdict(it, v)}
+        />
+      )}
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-3 px-3 pb-3">
@@ -605,6 +663,7 @@ export function TasksView() {
                   item={it}
                   level={1}
                   state={statusByItem[itemKey(it)]}
+                  isOnPage={matchingIds.has(itemKey(it))}
                   onRun={() => void runAutomated(it, 1)}
                   onVerdict={(v) => void runVerdict(it, v)}
                 />
@@ -615,6 +674,7 @@ export function TasksView() {
                   item={it}
                   level={2}
                   state={statusByItem[itemKey(it)]}
+                  isOnPage={matchingIds.has(itemKey(it))}
                   onRun={() => void runAutomated(it, 2)}
                   onVerdict={(v) => void runVerdict(it, v)}
                 />
@@ -637,6 +697,7 @@ export function TasksView() {
                   item={it}
                   level={3}
                   state={statusByItem[itemKey(it)]}
+                  isOnPage={matchingIds.has(itemKey(it))}
                   onRun={() => void runAutomated(it, 3)}
                   onUserGo={() => void runUserGo(it)}
                   onVerdict={(v) => void runVerdict(it, v)}
@@ -661,6 +722,7 @@ export function TasksView() {
                     key={id}
                     item={it}
                     state={statusByItem[id]}
+                    isOnPage={matchingIds.has(id)}
                     value={pasteByItem[id] ?? ''}
                     onChange={(v) => setPasteByItem((p) => ({ ...p, [id]: v }))}
                     onSubmit={() => void runPaste(it)}
@@ -694,6 +756,60 @@ export function TasksView() {
           </Button>
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Sticky-ish banner shown when the active tab URL matches a queued source.
+ * Tells the user "you're on a queued page" with quick actions, so they don't
+ * have to hunt for the row in a long list. Multiple matches are unusual but
+ * possible (same URL added to two topics) — we render one card per match.
+ */
+function ActiveTabMatchBanner({
+  items,
+  onCapture,
+  onVerdict,
+}: {
+  items: ExtensionScrapeItem[];
+  onCapture: (item: ExtensionScrapeItem) => void;
+  onVerdict: (item: ExtensionScrapeItem, verdict: UserVerdict) => void;
+}) {
+  return (
+    <div className="shrink-0 space-y-1.5 border-b border-emerald-500/20 bg-emerald-500/5 px-3 py-2">
+      {items.map((it) => {
+        const lvl = it.next_level;
+        const ctaLabel =
+          lvl === 4 ? 'Use paste' : lvl === 3 ? 'Capture this tab' : 'Capture this tab';
+        return (
+          <div key={`${it.topic_id}:${it.source_id}`} className="flex items-center gap-2">
+            <Target className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-xs font-medium text-emerald-800 dark:text-emerald-200">
+                You're on a queued source — {it.topic_name}
+              </div>
+              <div className="truncate text-[11px] text-muted-foreground">
+                {lvl === 4
+                  ? 'L4 paste — copy the content and paste it in the row below.'
+                  : `Ready to capture at L${lvl} without opening a new tab.`}
+              </div>
+            </div>
+            {lvl !== 4 && (
+              <Button
+                size="sm"
+                className="h-7 rounded-full bg-emerald-600 px-3 text-xs hover:bg-emerald-700"
+                onClick={() => onCapture(it)}
+              >
+                {ctaLabel}
+              </Button>
+            )}
+            <ResolveMenu
+              onVerdict={(v) => onVerdict(it, v)}
+              includeRetry={it.attempted_levels.length > 0}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -744,6 +860,7 @@ function Row({
   item,
   level,
   state,
+  isOnPage,
   onRun,
   onUserGo,
   onVerdict,
@@ -751,6 +868,7 @@ function Row({
   item: ExtensionScrapeItem;
   level: 1 | 2 | 3;
   state?: ItemState;
+  isOnPage?: boolean;
   onRun: () => void;
   onUserGo?: () => void;
   onVerdict: (verdict: UserVerdict) => void;
@@ -761,10 +879,22 @@ function Row({
   const showVerdictCard = state?.showVerdictCard === true;
 
   return (
-    <div className="group rounded-xl bg-secondary/40 px-3 py-2.5 transition-colors hover:bg-secondary/70">
+    <div
+      className={cn(
+        'group rounded-xl bg-secondary/40 px-3 py-2.5 transition-colors hover:bg-secondary/70',
+        isOnPage && 'bg-emerald-500/10 ring-1 ring-emerald-500/40 hover:bg-emerald-500/15',
+      )}
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-medium">{item.topic_name}</div>
+          <div className="flex items-center gap-1.5">
+            <div className="truncate text-sm font-medium">{item.topic_name}</div>
+            {isOnPage && (
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-500/20 px-1.5 py-0 text-[9px] font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                <Target className="size-2.5" /> on this page
+              </span>
+            )}
+          </div>
           <a
             href={item.url}
             target="_blank"
@@ -795,11 +925,12 @@ function Row({
           {(status === 'idle' || status === 'error') && (
             <Button
               size="sm"
-              variant={level === 3 ? 'default' : 'ghost'}
+              variant={level === 3 || isOnPage ? 'default' : 'ghost'}
               className="h-7 rounded-full px-3 text-xs"
               onClick={onRun}
+              title={isOnPage ? 'Capture the active tab' : undefined}
             >
-              {level === 3 ? 'Trigger' : 'Run'}
+              {isOnPage ? 'Capture this tab' : level === 3 ? 'Trigger' : 'Run'}
             </Button>
           )}
           <ResolveMenu
@@ -825,6 +956,7 @@ function Row({
 function PasteRow({
   item,
   state,
+  isOnPage,
   value,
   onChange,
   onSubmit,
@@ -832,6 +964,7 @@ function PasteRow({
 }: {
   item: ExtensionScrapeItem;
   state?: ItemState;
+  isOnPage?: boolean;
   value: string;
   onChange: (v: string) => void;
   onSubmit: () => void;
@@ -844,10 +977,22 @@ function PasteRow({
   const done = status === 'success' || status === 'completed';
 
   return (
-    <div className="space-y-2 rounded-xl bg-secondary/40 px-3 py-2.5">
+    <div
+      className={cn(
+        'space-y-2 rounded-xl bg-secondary/40 px-3 py-2.5',
+        isOnPage && 'bg-emerald-500/10 ring-1 ring-emerald-500/40',
+      )}
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-medium">{item.topic_name}</div>
+          <div className="flex items-center gap-1.5">
+            <div className="truncate text-sm font-medium">{item.topic_name}</div>
+            {isOnPage && (
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-500/20 px-1.5 py-0 text-[9px] font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                <Target className="size-2.5" /> on this page
+              </span>
+            )}
+          </div>
           <a
             href={item.url}
             target="_blank"

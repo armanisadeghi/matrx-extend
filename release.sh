@@ -9,17 +9,18 @@
 #   5.  Bump version           (default --patch; --minor / --major supported)
 #   6.  Regen tool catalog     (pnpm catalog:tools:md)
 #   7.  Commit version bump + regenerated catalog
-#   8.  Build LOCAL zip with the dev `key` intact
-#         → .output/matrx-extend-<ver>-local.zip
-#         (install this unpacked → stable dev ID cihdmkcdjjckfhjpgoedmgfpoljebaml,
-#          OAuth redirect works, dev experience unbroken)
-#   9.  Comment out the `key` field in wxt.config.ts
-#   10. Build STORE zip without the dev key
+#   8.  Comment out the `key` field in wxt.config.ts
+#   9.  Build STORE zip without the dev key
 #         → .output/matrx-extend-<ver>-store.zip
 #         (this is the file you upload to the Chrome Web Store dashboard)
-#   11. Restore the `key` field in wxt.config.ts
+#   10. Restore the `key` field in wxt.config.ts
 #         (also enforced by an EXIT trap — never leaves the working tree
 #          in a state that breaks dev OAuth)
+#   11. Build LOCAL zip with the dev `key` intact
+#         → .output/matrx-extend-<ver>-local.zip
+#         (also leaves .output/chrome-mv3/ as the keyed dev build, so
+#          "Load unpacked" → stable ID cihdmkcdjjckfhjpgoedmgfpoljebaml,
+#          OAuth redirect works, dev experience unbroken)
 #   12. Push branch + tag to origin
 #   13. Print final upload instructions
 #
@@ -387,20 +388,18 @@ else
     VERSION_COMMITTED=true  # nothing to roll back either
 fi
 
-# ── 6. Build LOCAL zip (dev key intact) ─────────────────────────────────────
-CURRENT_STEP="build-local"
-step "6/8  Build LOCAL zip (dev key intact)"
-rm -f "$WXT_ZIP_OUT" "$LOCAL_ZIP" "$STORE_ZIP"
-pnpm zip
-[[ -f "$WXT_ZIP_OUT" ]] || fail "Expected $WXT_ZIP_OUT but it was not produced"
-mv "$WXT_ZIP_OUT" "$LOCAL_ZIP"
-ok "Local zip → $LOCAL_ZIP"
-
-# ── 7. Build STORE zip (key commented out) ──────────────────────────────────
+# ── 6. Build STORE zip (key commented out) ──────────────────────────────────
+#
+# IMPORTANT: store goes FIRST, local goes SECOND. `pnpm zip` rebuilds
+# .output/chrome-mv3/ in place each time, so whichever build runs last
+# is the one a "Load unpacked" install will pick up. We want that to be
+# the LOCAL build (key intact, stable dev ID) — otherwise the unpacked
+# install gets a random ID and Supabase OAuth dies with "Authorization
+# page could not be loaded."
 CURRENT_STEP="build-store"
-step "7/8  Build STORE zip (key removed)"
+step "6/8  Build STORE zip (key removed)"
+rm -f "$WXT_ZIP_OUT" "$LOCAL_ZIP" "$STORE_ZIP"
 _key_comment_out
-rm -f "$WXT_ZIP_OUT"
 pnpm zip
 [[ -f "$WXT_ZIP_OUT" ]] || fail "Expected $WXT_ZIP_OUT but it was not produced"
 
@@ -413,9 +412,27 @@ ok "Store zip → $STORE_ZIP"
 
 _key_restore  # restore eagerly (the EXIT trap will also catch any miss)
 
+# ── 7. Build LOCAL zip (dev key intact) — leaves chrome-mv3/ usable ─────────
+CURRENT_STEP="build-local"
+step "7/8  Build LOCAL zip (dev key intact)"
+rm -f "$WXT_ZIP_OUT"
+pnpm zip
+[[ -f "$WXT_ZIP_OUT" ]] || fail "Expected $WXT_ZIP_OUT but it was not produced"
+mv "$WXT_ZIP_OUT" "$LOCAL_ZIP"
+ok "Local zip → $LOCAL_ZIP"
+
 # Sanity check: the local manifest MUST contain a "key" field.
 if ! unzip -p "$LOCAL_ZIP" manifest.json | grep -q '"key"'; then
     warn "Local zip is missing the key field — dev OAuth will break for unpacked installs."
+fi
+
+# Sanity check: the unpacked .output/chrome-mv3/ — what "Load unpacked"
+# picks up — MUST also have the key field. If it doesn't, a prior store
+# build clobbered it and we have a regression.
+if [[ -f "$OUTPUT_DIR/chrome-mv3/manifest.json" ]]; then
+    if ! grep -q '"key"' "$OUTPUT_DIR/chrome-mv3/manifest.json"; then
+        fail "$OUTPUT_DIR/chrome-mv3/manifest.json is missing the key field — unpacked dev install would break OAuth."
+    fi
 fi
 
 # ── 8. Tag and push ─────────────────────────────────────────────────────────

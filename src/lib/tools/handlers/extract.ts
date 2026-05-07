@@ -16,12 +16,8 @@
  */
 import { z } from 'zod';
 import { resolveProfile, type ScreenshotProfile } from '@/lib/screenshot/profiles';
+import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
-
-async function activeTab(): Promise<chrome.tabs.Tab | null> {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  return tab ?? null;
-}
 
 // ─── extract_table ─────────────────────────────────────────────────────────
 const ExtractTableArgs = z
@@ -72,8 +68,8 @@ export const extract_table: ToolHandler<ExtractTableArgs, ExtractTableResult> = 
   description:
     "Extract a table on the active page as structured JSON. Handles native <table> with thead/tbody, rowspan/colspan, multi-row headers, and ARIA role=\"table\" / role=\"grid\" patterns. Provide `ref` (preferred) from a prior read_page, or `selector` (any CSS), or omit both to pick the largest visible table. Returns { columns: [{ index, path: [headerLevels...] }], rows: [{ cells: [{ value, is_header, colspan?, rowspan? }] }], merged_cells, row_count, column_count }. Use this instead of cell-by-cell scraping — one call versus dozens.",
   argsSchema: ExtractTableArgs,
-  run: async (args) => {
-    const tab = await activeTab();
+  run: async (args, ctx) => {
+    const tab = await getAssignedTab(ctx);
     if (!tab?.id) return { ok: false, reason: 'No active tab' };
     try {
       const [first] = await chrome.scripting.executeScript({
@@ -487,8 +483,8 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
   description:
     "Capture a bounded region of the active tab's viewport. Provide `ref` (preferred) from a prior read_page, OR `selector`, OR an explicit viewport `rect: {x,y,w,h}`. The handler scrolls the target into view if needed, captures the visible viewport, then crops to the resolved rect (with optional `padding` in CSS px). Returns the same shape as take_screenshot: { media_type, format, width, height, image_base64, byte_length, source_rect }. Use this for focused vision-API calls on a specific component — 5-20× cheaper than a full-page screenshot.",
   argsSchema: ScreenshotRegionArgs,
-  run: async (args) => {
-    const tab = await activeTab();
+  run: async (args, ctx) => {
+    const tab = await getAssignedTab(ctx);
     if (!tab?.id || !tab.windowId) return { ok: false, reason: 'No active tab' };
 
     // 1. Resolve the rect — either explicit or derived from ref/selector.
