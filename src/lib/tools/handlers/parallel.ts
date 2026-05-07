@@ -45,6 +45,7 @@ import {
   type ParallelSubRun,
   type ParallelSubRunStatus,
 } from '@/state/parallel-runs';
+import { getPilotSessionSnapshot } from '@/state/pilot';
 import { z } from 'zod';
 
 const MAX_TABS = 8;
@@ -457,6 +458,30 @@ export const parallel_for_each_tab: ToolHandler<ParallelArgs, unknown> = {
         ok: false,
         error: `unknown tab id(s): ${tabsCheck.unknown.join(', ')}. Call list_open_tabs to find valid ids.`,
       };
+    }
+
+    // 1b. Pilot group scoping (CLAUDE.md item #9). When a Pilot session is
+    //     active, every requested tab must live inside the session's tab
+    //     group. Otherwise the parent surface is the Assistant Chat, which
+    //     can fan out across the user's tabs freely. Failing here keeps
+    //     all sub-runs constrained to the sandbox without touching the
+    //     dispatcher (each sub-run also carries `recordAssignedTab` for
+    //     its tab id, which the dispatcher's pilot gate would catch — but
+    //     refusing up front avoids spawning N child agents only to have
+    //     each one fail mid-call).
+    const pilot = getPilotSessionSnapshot();
+    if (pilot.active && pilot.groupId != null) {
+      const outside: number[] = [];
+      for (const id of args.tab_ids) {
+        const tab = tabsCheck.tabs.get(id);
+        if (!tab || tab.groupId !== pilot.groupId) outside.push(id);
+      }
+      if (outside.length) {
+        return {
+          ok: false,
+          error: `pilot_group_violation: tab(s) ${outside.join(', ')} are not part of the active Pilot session group (${pilot.groupId}). Pass only tab ids that belong to the Pilot tab group.`,
+        };
+      }
     }
 
     // 2. Resolve agent id + auth.

@@ -496,6 +496,50 @@ Every entry follows this shape:
 
 ---
 
+### pilot_tab
+- **What it does:** Side panel tab (admin-only) that runs an agent inside a
+  sandboxed Chrome tab group. Action-tier tools are constrained to tabs in
+  the group; the assistant Chat tab is unaffected.
+- **Where to test:** Side panel → **Pilot** tab (Crosshair icon, emerald
+  accent — appears next to Chat).
+- **Prereq:** Signed in as admin.
+- **Steps:**
+  1. Click the Pilot tab. Empty state explains the surface.
+  2. Click **Start Pilot** in the header. Chrome opens a new tab group
+     (blue, titled "Pilot") seeded with the currently active tab. The
+     header switches to **End** with the group id + tab count.
+  3. Send a message like `take a screenshot of this tab`. The agent uses
+     the pilot toolset (full read+action+ask kit) and the screenshot
+     comes from a tab inside the group.
+  4. Open another tab OUTSIDE the group (Cmd-T). Then ask the agent to
+     `click_element ref:1 on tab id <outside-tab-id>`.
+  5. Click **End**. Every tab in the group closes.
+- **Expected:**
+  - Step 2: a new tab group appears in the tab strip, painted blue with
+    title "Pilot".
+  - Step 3: tool calls succeed; assigned tab is the seed tab inside the group.
+  - Step 4: dispatcher returns `pilot_group_violation: tab N is not part of
+    the active Pilot session group (M)`. Agent sees the error and can
+    recover.
+  - Step 5: tabs gone, header reverts to "Start Pilot".
+- **Edge cases worth poking:**
+  - Manually close the last tab in the group while a session is active →
+    `chrome.tabs.onRemoved` listener resets the session; the Pilot view
+    flips back to the empty state without the user clicking End.
+  - Right-click the group → Ungroup. `chrome.tabGroups.onRemoved` resets
+    the session.
+  - Run `parallel_for_each_tab` with a tab id from outside the group →
+    rejected up front with `pilot_group_violation`, no LLM calls made.
+  - Start a Pilot session, then close the side panel and reopen. The
+    session is restored from `chrome.storage.local` (key
+    `matrxPilotSession`); the group still exists in Chrome and is still
+    bound to the agent.
+  - Switch the permission chip to **Ask before acting** → action-tier
+    tools render the inline approval card before each call (privileged
+    tools always confirm).
+
+---
+
 ## Template (copy when adding a new entry)
 
 ```markdown

@@ -57,7 +57,9 @@
   Re-assignment happens on the next user message — switch tabs, send
   again, agent shifts focus. See `getAssignedTab` in
   [src/lib/tools/handlers/_active-tab.ts](./src/lib/tools/handlers/_active-tab.ts).
-- **Two surfaces:** Assistant Chat tab (current) · Pilot tab (planned, see Roadmap).
+- **Two surfaces:** Assistant Chat tab · Pilot tab (admin-only, drives a
+  sandboxed Chrome tab group with the full read+action+ask agent toolkit —
+  see Roadmap item #9).
 - **Per-agent permission mode** — "Ask before acting" / "Act without asking",
   user-toggleable in chat header chip, persisted per agent.
 - **Domain trust** — "Allow + remember for this conversation" auto-allows
@@ -378,16 +380,49 @@ chain-of-custody.
 - [ ] Export receipt as JWS / verifiable JSON
 - [ ] "Show receipt" button on every timeline row
 
-### 9. 📋 Pilot tab + tab-group sandbox
-**Why:** the user wants two surfaces — Assistant (current Chat) and Pilot
-(drives the browser in its own tab group).
+### 9. ✅ Pilot tab + tab-group sandbox
+**Why:** the user wanted two surfaces — Assistant (Chat) and Pilot
+(drives the browser in its own tab group). Pilot is admin-only initially
+per the experimental → admin first → GA convention.
 
-- [ ] New `<PilotView>` cloning ChatView with `pilotToolNames()` instead of
-      `assistantToolNames()`
-- [ ] On first user message: open the active tab into a fresh Chrome tab group,
-      record `groupId` + `windowId` in pilot session state
-- [ ] All pilot actions scoped to that group only (filter by groupId)
-- [ ] "End Pilot session" closes the group
+Shipped:
+- [x] New `<PilotView>` ([src/features/chat/PilotView.tsx](./src/features/chat/PilotView.tsx))
+      cloning the ChatView render tree (intentional — the two surfaces will
+      diverge as Pilot grows plan-mode / receipts / sub-task spawning).
+      Uses `surface: 'pilot'` in the browser-dom state so the server-side
+      discovery handler can route the full read+action+ask kit. Defaults
+      to 'act' permission mode — Pilot is meant to be more autonomous.
+- [x] Pilot session state ([src/state/pilot.ts](./src/state/pilot.ts)) —
+      zustand + chrome.storage.local. `startSession({agentId})` creates
+      a fresh tab group seeded with the active tab, paints it blue +
+      titles it "Pilot", latches `{groupId, windowId, agentId, startedAt}`.
+      `endSession()` queries every tab in the group and removes them
+      (Chrome auto-deletes the empty group).
+- [x] Dispatcher group scoping ([src/lib/tools/dispatch.ts](./src/lib/tools/dispatch.ts)
+      `enforcePilotGroupScope`). When a session is active, action / privileged
+      tools whose `assignedTabId` lives outside the group return a
+      structured `pilot_group_violation` error. Read-tier tools are unrestricted
+      (introspection across the user's other tabs is still useful).
+- [x] `parallel_for_each_tab` group enforcement
+      ([src/lib/tools/handlers/parallel.ts](./src/lib/tools/handlers/parallel.ts)) —
+      every tab id in the args must belong to the active session's group.
+      Up-front rejection avoids spawning N child agents only to fail mid-flight.
+- [x] Lifecycle listeners
+      ([src/lib/background/bootstrap.ts](./src/lib/background/bootstrap.ts)
+      `registerPilotLifecycleListeners`). `chrome.tabGroups.onRemoved`
+      and `chrome.tabs.onRemoved` watch for external dissolution
+      (last tab closed manually, group ungrouped via right-click) and
+      reset the persisted session record so the Pilot view doesn't
+      stay stuck.
+- [x] Sidepanel tab registration
+      ([src/entrypoints/sidepanel/App.tsx](./src/entrypoints/sidepanel/App.tsx)) —
+      Crosshair icon (emerald accent) next to Chat. Admin-gated.
+- [x] Parallel pilot chat store + stream hook
+      ([src/state/pilot-chat.ts](./src/state/pilot-chat.ts),
+      [src/hooks/use-pilot-chat-stream.ts](./src/hooks/use-pilot-chat-stream.ts))
+      so the Pilot conversation thread is independent of the Assistant's
+      messages — switching tabs in the side panel doesn't blur the two
+      conversations.
 
 ### 10. ✅ Manifest hygiene
 Shipped:

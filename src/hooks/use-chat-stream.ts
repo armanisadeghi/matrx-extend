@@ -25,6 +25,23 @@ interface SendOptions {
   agentName?: string;
   conversationId?: string;
   variables?: Record<string, unknown>;
+  /**
+   * Surface initiating this run. Drives the `client.state["browser-dom"]`
+   * `surface` field — the server's discovery handler reads it to pick the
+   * right default tool category set. Default 'assistant' preserves
+   * existing behavior; the Pilot view passes 'pilot'.
+   */
+  surface?: 'assistant' | 'pilot';
+  /**
+   * Override the source feature reported in telemetry. Defaults to 'chat'.
+   * Pilot runs report 'pilot' so server-side analytics can split the two.
+   */
+  sourceFeature?: string;
+  /**
+   * When provided, the run pins to this tab id instead of the active tab.
+   * Pilot uses this to keep every tool call inside the session's tab group.
+   */
+  assignedTabId?: number | null;
 }
 
 interface StreamChunk {
@@ -325,11 +342,21 @@ export function useChatStream() {
       // short-circuit re-discovery.
       const conversationId = opts.conversationId ?? null;
       const loadedCategories = useActiveToolsStore.getState().getLoaded(conversationId);
+      const surface = opts.surface ?? "assistant";
       const browserDomState = await buildBrowserDomState({
-        surface: "assistant",
+        surface,
         agentId: opts.agentId,
         loadedCategories,
       });
+      // Pilot pins every run to a tab inside its session group so the
+      // dispatcher's group-scoping gate accepts the call. The PilotView
+      // computes the target tab and passes it explicitly; falling back to
+      // the active-tab id (the default) would let any focused tab leak
+      // into the run, defeating the sandbox.
+      const effectiveAssignedTabId =
+        opts.assignedTabId !== undefined
+          ? opts.assignedTabId
+          : browserDomState.current_tab_id;
 
       // Admin-only request overrides (debug, snapshot, block_mode, memory_*,
       // max_iterations, etc). Stripped if the user isn't an admin — defense
@@ -372,7 +399,7 @@ export function useChatStream() {
         stream: true,
         store: true,
         source_app: "matrx-extend",
-        source_feature: "chat",
+        source_feature: opts.sourceFeature ?? "chat",
         ...adminOverrides,
         ...(configOverrides ? { config_overrides: configOverrides } : {}),
         // New capability envelope. Replaces the old `client_tools` field.
@@ -401,7 +428,7 @@ export function useChatStream() {
         parser: "rich-events" as const,
         agentName: opts.agentName ?? null,
         permissionMode,
-        assignedTabId: browserDomState.current_tab_id,
+        assignedTabId: effectiveAssignedTabId,
       });
       return runId;
     },

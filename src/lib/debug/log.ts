@@ -30,7 +30,9 @@ export type LogSource =
   | 'msg'
   | 'ui'
   | 'sys'
-  | 'frontend-bridge';
+  | 'frontend-bridge'
+  | 'pilot'
+  | 'pilot-stream';
 
 export interface DebugEvent {
   id: string;

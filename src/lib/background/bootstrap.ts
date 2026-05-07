@@ -56,6 +56,7 @@ import { lookupCapturedByUrl } from '@/lib/supabase/queries';
 import { startContentScriptRegistrar } from '@/lib/permissions/content-scripts';
 import { handleWebmcpCall, recordAssignedTab, startToolDispatcher } from '@/lib/tools/dispatch';
 import { registerToolsOnActiveTab } from '@/lib/webmcp/register';
+import { usePilotStore } from '@/state/pilot';
 
 let bootstrapped = false;
 
@@ -132,6 +133,14 @@ export function bootstrapBackground(): void {
   //       the active transport, that connection IS the reverse channel and
   //       we skip WS.
   registerWsReverseInvocationHandler();
+
+  // ── 8. Pilot session lifecycle (CLAUDE.md roadmap item #9).
+  //       Watch for tab / group removal so we can reset the persisted pilot
+  //       session record when its group disappears externally (last tab
+  //       closed by the user, group dissolved, etc.). Without this the
+  //       sidepanel would think a pilot session is still active and refuse
+  //       new actions until the user explicitly clicked "End Session".
+  registerPilotLifecycleListeners();
 }
 
 let lastDesktopTransport: 'native' | 'http' | 'none' | null = null;
@@ -592,6 +601,60 @@ async function handleCatalogStale(): Promise<void> {
     log.success('sw', 'capabilities refetched and stashed');
   } catch (err) {
     log.warn('sw', 'capabilities refetch threw', (err as Error).message);
+  }
+}
+
+/**
+ * Pilot lifecycle listeners — CLAUDE.md roadmap item #9.
+ *
+ * The Pilot session ties an agent run to a specific Chrome tab group.
+ * If that group disappears for any reason that didn't go through
+ * `usePilotStore.endSession()` (user manually closed the last tab, user
+ * removed the group from the strip, Chrome restored a session without it),
+ * we need to reset the persisted record so the Pilot view UI doesn't keep
+ * showing "session active" forever.
+ *
+ * Two signals catch every disappearance path:
+ *   - `chrome.tabs.onRemoved` fires when the LAST tab in the group goes
+ *     away; Chrome auto-removes the (now-empty) group. The check here
+ *     scans the group: if zero tabs remain, reset.
+ *   - `chrome.tabGroups.onRemoved` fires when the group is dissolved
+ *     directly (user right-clicks → ungroup, etc.).
+ *
+ * Both listeners read the persisted session through the zustand store —
+ * which itself is hydrated from `chrome.storage.local`, so the SW always
+ * has the latest record even after a wake from idle.
+ */
+function registerPilotLifecycleListeners(): void {
+  if (chrome.tabGroups?.onRemoved) {
+    chrome.tabGroups.onRemoved.addListener((group) => {
+      const session = usePilotStore.getState().session;
+      if (session.active && session.groupId === group.id) {
+        log.info('pilot', `tabGroups.onRemoved → resetting session group=${group.id}`);
+        usePilotStore.getState().resetLocal();
+      }
+    });
+  } else {
+    log.warn('pilot', 'chrome.tabGroups.onRemoved unavailable — cannot watch for external group dissolution');
+  }
+  if (chrome.tabs?.onRemoved) {
+    chrome.tabs.onRemoved.addListener(async () => {
+      const session = usePilotStore.getState().session;
+      if (!session.active || session.groupId == null) return;
+      // Has the group gone empty? Chrome auto-removes empty groups, but
+      // tabGroups.onRemoved fires AFTER the last tab's onRemoved settles —
+      // so on some platforms the group is briefly observable. Cheaper and
+      // more robust to count surviving tabs.
+      try {
+        const survivors = await chrome.tabs.query({ groupId: session.groupId });
+        if (survivors.length === 0) {
+          log.info('pilot', 'tabs.onRemoved → group empty, resetting session');
+          usePilotStore.getState().resetLocal();
+        }
+      } catch {
+        /* the group may already be gone — onRemoved listener will catch it */
+      }
+    });
   }
 }
 

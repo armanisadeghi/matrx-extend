@@ -42,6 +42,7 @@ import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import { recordToolEvent } from '@/lib/recording/state';
 import { localFromCanonical, resolveToolName, suggestSimilar } from '@/lib/tools/aliases';
 import { allToolNames, lookup as lookupTool } from '@/lib/tools/registry';
+import { getPilotSessionSnapshot } from '@/state/pilot';
 import type {
   AnyToolHandler,
   ConfirmResponse,
@@ -238,6 +239,55 @@ export function startToolDispatcher(opts: DispatchOptions): void {
   );
 }
 
+/**
+ * Roadmap item #9 — Pilot group sandbox.
+ *
+ * When a Pilot session is active, every mutating tool call (action /
+ * privileged tier) must operate on a tab inside the session's tab group.
+ * This is the centralized choke point that keeps individual handlers
+ * unaware of pilot mode.
+ *
+ * Returns null when the call is allowed; otherwise returns a remediation
+ * string that the dispatcher reports back to the agent.
+ *
+ * Tabs in the dispatcher come in two flavours:
+ *   - The handler's `assignedTabId` (set at message-send via
+ *     `recordAssignedTab`). When the Pilot view sends a message it
+ *     pins to one of the group's tabs, so we can verify against that.
+ *   - Cross-tab orchestrators (e.g. `parallel_for_each_tab`) read
+ *     their own `tab_ids` argument; they enforce the group check
+ *     themselves and never reach this gate.
+ *
+ * Read-tier tools and ask-user tools are allowed unconditionally —
+ * neither mutates state.
+ */
+async function enforcePilotGroupScope(
+  handler: AnyToolHandler,
+  ctx: ToolContext,
+): Promise<string | null> {
+  const session = getPilotSessionSnapshot();
+  if (!session.active || session.groupId == null) return null;
+  // Resolve the effective tier (mega-tool routers use tierFor on the parsed
+  // args, but we don't have those here yet — fall back to the catalog tier
+  // so the gate is conservative).
+  if (handler.tier === 'read' || handler.tier === 'ask-user') return null;
+  // No tab assigned → tools that don't touch tabs (e.g. desktop_run_command,
+  // ask_user) shouldn't be blocked by the group constraint. Action tools that
+  // genuinely target a tab will have one set by recordAssignedTab.
+  const tabId = ctx.assignedTabId;
+  if (tabId == null) return null;
+  let tab: chrome.tabs.Tab;
+  try {
+    tab = await chrome.tabs.get(tabId);
+  } catch {
+    return `pilot_group_violation: tab ${tabId} no longer exists; the Pilot session may have closed it. Start a new session or pick another tab inside the group.`;
+  }
+  if (tab.groupId !== session.groupId) {
+    return `pilot_group_violation: tab ${tabId} is not part of the active Pilot session group (${session.groupId}). Pilot tools may only act on tabs inside the session's tab group.`;
+  }
+  return null;
+}
+
 async function postUnknownToolError(
   ctx: ToolContext,
   toolName: string,
@@ -327,6 +377,20 @@ async function handleCall(
     if (accessErr) {
       return finishWithError(handler, ctx, accessErr.reason + ' ' + accessErr.remediation);
     }
+  }
+
+  // Pilot group sandbox (roadmap item #9). When a Pilot session is active
+  // every action-tier (or privileged) tool MUST target a tab that lives
+  // inside the session's tab group. The Pilot surface advertises the full
+  // read+action+ask kit; without this gate, an action call from a Pilot
+  // run could mutate the user's unrelated work tabs.
+  //
+  // Read-tier tools are allowed everywhere — they don't mutate state, and
+  // restricting them would block introspection (e.g. the agent reading a
+  // reference page outside the group to inform an action inside it).
+  const pilotErr = await enforcePilotGroupScope(handler, ctx);
+  if (pilotErr) {
+    return finishWithError(handler, ctx, pilotErr);
   }
 
   // Permission gate. Mega-tool routers (computer, tabs, …) declare a

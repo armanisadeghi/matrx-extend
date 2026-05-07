@@ -15,6 +15,7 @@ import {
   Bug,
   Calendar,
   Camera,
+  Crosshair,
   Database,
   ListTodo,
   Loader2,
@@ -35,6 +36,8 @@ import { type ComponentType, lazy, Suspense, useEffect } from 'react';
 // loader twice doesn't double-fetch).
 const VIEW_LOADERS = {
   chat: () => import('@/features/chat/ChatView').then((m) => ({ default: m.ChatView })),
+  pilot: () =>
+    import('@/features/chat/PilotView').then((m) => ({ default: m.PilotView })),
   tasks: () => import('@/features/tasks/TasksView').then((m) => ({ default: m.TasksView })),
   agenda: () =>
     import('@/features/agenda/AgendaView').then((m) => ({ default: m.AgendaView })),
@@ -60,6 +63,7 @@ const VIEW_LOADERS = {
 } satisfies Record<SidepanelTab, () => Promise<{ default: ComponentType }>>;
 
 const ChatView = lazy(VIEW_LOADERS.chat);
+const PilotView = lazy(VIEW_LOADERS.pilot);
 const TasksView = lazy(VIEW_LOADERS.tasks);
 const AgendaView = lazy(VIEW_LOADERS.agenda);
 const ScrapeView = lazy(VIEW_LOADERS.scrape);
@@ -152,6 +156,15 @@ export function App() {
                 <TabsTrigger value="chat" className="size-7 p-0" title="Chat">
                   <MessageSquare className="size-3.5" />
                 </TabsTrigger>
+                {isAdmin && (
+                  <TabsTrigger
+                    value="pilot"
+                    className="size-7 p-0 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400"
+                    title="Pilot (admin only — sandboxed tab group)"
+                  >
+                    <Crosshair className="size-3.5" />
+                  </TabsTrigger>
+                )}
                 <TabsTrigger value="tasks" className="size-7 p-0" title="Tasks">
                   <ListTodo className="size-3.5" />
                 </TabsTrigger>
@@ -215,6 +228,13 @@ export function App() {
                 <ChatView />
               </Suspense>
             </TabsContent>
+            {isAdmin && (
+              <TabsContent value="pilot" className="flex-1 min-h-0">
+                <Suspense fallback={TabFallback}>
+                  <PilotView />
+                </Suspense>
+              </TabsContent>
+            )}
             <TabsContent value="tasks" className="flex-1 min-h-0">
               <Suspense fallback={TabFallback}>
                 <TasksView />
