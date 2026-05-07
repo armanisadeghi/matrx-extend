@@ -127,6 +127,18 @@ export const CHANNELS = {
   MIC_REQUEST: 'mic:request',
   MIC_RUN: 'mic:run',
   MIC_EVENT: 'mic:event',
+
+  // Tab video capture (TASK-003).
+  // Same offscreen-document pattern as the mic protocol — MediaRecorder
+  // lives in the offscreen doc with reason USER_MEDIA. The SW resolves a
+  // chrome.tabCapture stream id (10s expiry) and ships it to offscreen.
+  //
+  //   sidepanel ──VIDEO_REQUEST──▶ SW (resolves streamId, ensures offscreen)
+  //                                ──VIDEO_RUN─────▶ offscreen
+  //   offscreen ──VIDEO_EVENT─────▶ all surfaces (lifecycle, error, complete)
+  VIDEO_REQUEST: 'video:request',
+  VIDEO_RUN: 'video:run',
+  VIDEO_EVENT: 'video:event',
 } as const;
 
 export type ChannelName = (typeof CHANNELS)[keyof typeof CHANNELS];

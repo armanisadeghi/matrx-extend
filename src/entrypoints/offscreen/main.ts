@@ -8,6 +8,8 @@
 
 import { handleMicRun } from '@/lib/audio/mic-recorder-offscreen';
 import type { MicRunPayload } from '@/lib/audio/mic-types';
+import { handleVideoRun } from '@/lib/video/video-recorder-offscreen';
+import type { VideoRunPayload } from '@/lib/video/video-types';
 import { streamFetch } from '@/lib/api/stream';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import { startWsOffscreenRuntime } from '@/lib/desktop/ws-offscreen';
@@ -131,4 +133,13 @@ on<{ runId: string }, { cancelled: boolean }>(CHANNELS.STREAM_KILL, (payload) =>
 on<MicRunPayload, { ok: boolean }>(CHANNELS.MIC_RUN, async (payload) => {
   log.info('sys', `mic run: ${payload.action}`);
   return handleMicRun(payload);
+});
+
+// Tab/display video capture (TASK-003). Offscreen holds the MediaStream +
+// MediaRecorder for the active session and broadcasts the encoded blob via
+// VIDEO_EVENT.complete on stop. The SW pre-resolves the chrome.tabCapture
+// streamId before forwarding so this side never touches chrome.tabCapture.
+on<VideoRunPayload, { ok: boolean; reason?: string }>(CHANNELS.VIDEO_RUN, async (payload) => {
+  log.info('sys', `video run: ${payload.action} (${payload.sessionId})`);
+  return handleVideoRun(payload);
 });

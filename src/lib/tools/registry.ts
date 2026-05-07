@@ -42,6 +42,7 @@ import { page_ref_handlers } from '@/lib/tools/handlers/page-refs';
 import { privileged_handlers, privileged_read_handlers } from '@/lib/tools/handlers/privileged';
 import { read_handlers } from '@/lib/tools/handlers/read';
 import { record_handlers } from '@/lib/tools/handlers/record';
+import { video_handlers } from '@/lib/tools/handlers/video';
 import { demo_handlers } from '@/lib/tools/handlers/demos';
 import { guidance_handlers } from '@/lib/tools/handlers/guidance';
 import { extract_handlers } from '@/lib/tools/handlers/extract';
@@ -101,6 +102,8 @@ const ALL: AnyToolHandler[] = [
   ...privileged_handlers,
   // ─── recording ─────────────────────────────────────────────────────────
   ...record_handlers,
+  // ─── tab video recording (TASK-003) ───────────────────────────────────
+  ...video_handlers,
   // ─── demos (record & replay) ───────────────────────────────────────────
   ...demo_handlers,
   // ─── guidance (user-saved clues for the agent) ─────────────────────────

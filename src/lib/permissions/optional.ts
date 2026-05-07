@@ -16,7 +16,8 @@ export type OptionalPermission =
   | 'debugger'
   | 'cookies'
   | 'pageCapture'
-  | 'clipboardRead';
+  | 'clipboardRead'
+  | 'tabCapture';
 
 // ─── Reserved for future capabilities ────────────────────────────────────
 // These were previously declared but had no corresponding chrome.<api>
@@ -53,6 +54,10 @@ export const OPTIONAL_PERMISSION_LABELS: Record<OptionalPermission, { title: str
   clipboardRead: {
     title: 'Clipboard read',
     desc: 'Read the system clipboard. Required by the get_clipboard tool so the agent can use whatever the user just copied.',
+  },
+  tabCapture: {
+    title: 'Tab video capture',
+    desc: 'Record video (and optionally audio) of the active tab via MediaRecorder. Required by the record_tab_video tool and the Tools tab Recorder.',
   },
 };
 

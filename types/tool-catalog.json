@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T07:04:44.643Z",
+  "generated_at": "2026-05-07T07:07:44.496Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -212,6 +212,7 @@
     "request_user_takeover",
     "update_plan",
     "record_gif",
+    "record_tab_video",
     "record_demo",
     "list_demos",
     "describe_demo",
@@ -373,6 +374,7 @@
     "set_extension_storage",
     "desktop_run_command",
     "record_gif",
+    "record_tab_video",
     "record_demo",
     "list_demos",
     "describe_demo",
@@ -638,6 +640,7 @@
         "remove_stylesheet",
         "desktop_run_command",
         "record_gif",
+        "record_tab_video",
         "stylesheet",
         "evaluate_javascript"
       ]
@@ -5757,6 +5760,47 @@
       ],
       "required_optional_permissions": [
         "debugger"
+      ],
+      "admin_only": true,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
+      ]
+    },
+    {
+      "name": "record_tab_video",
+      "description": "Record video of a browser tab and upload it to cld_files. Args: { durationMs (default 5000, max 60000), audio (default false), tabId? (defaults to assigned tab), filename? }. The recording happens via chrome.tabCapture + MediaRecorder in the offscreen document. Returns { ok, file_id, file_url, mime_type, duration_ms, size_bytes }. Requires the `tabCapture` optional permission — when missing, the call returns ok:false with a remediation hint pointing the user at Settings → Advanced → Tab video capture.",
+      "tier": "action",
+      "category": "advanced",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "durationMs": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 60000,
+            "default": 5000
+          },
+          "audio": {
+            "type": "boolean",
+            "default": false
+          },
+          "tabId": {
+            "type": "integer"
+          },
+          "filename": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [
+        "tabCapture"
       ],
       "admin_only": true,
       "surface_bundles": [

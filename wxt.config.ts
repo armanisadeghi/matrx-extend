@@ -73,6 +73,7 @@ export default defineConfig({
       'cookies',
       'pageCapture',
       'clipboardRead',
+      'tabCapture',
     ],
     host_permissions: [
       'https://server.app.matrxserver.com/*',

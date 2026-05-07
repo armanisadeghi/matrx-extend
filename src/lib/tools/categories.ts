@@ -326,6 +326,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   remove_stylesheet: 'advanced',
   desktop_run_command: 'advanced',
   record_gif: 'advanced',
+  record_tab_video: 'advanced',
 
   // ─── demos (record & replay) ────────────────────────────────────────────
   record_demo: 'demos',
@@ -468,6 +469,7 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'resize_window',
   // ─── recording / demos / guidance ───────────────────────────────────────
   'record_gif',
+  'record_tab_video',
   'record_demo',
   'list_demos',
   'describe_demo',

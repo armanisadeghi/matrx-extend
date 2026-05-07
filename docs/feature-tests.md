@@ -378,6 +378,33 @@ Every entry follows this shape:
 
 ---
 
+### record_tab_video / Tools - Recorder pane (TASK-003)
+- **What it does:** Records video (and optionally audio) of the active tab via `chrome.tabCapture` + MediaRecorder, uploads to `cld_files`, and shows the result in a recording list. Same offscreen-document pipeline as mic capture (TASK-002). Available as both a user UI (Tools tab - Recorder sub-tab) and an admin-only agent tool (`record_tab_video`).
+- **Where to test:** Side panel - **Tools** tab - **Recorder** sub-tab. Also Tools - Catalog - search `record_tab_video` for the agent path.
+- **Prereq:** Settings - **Advanced agent capabilities** - toggle on **Tab video capture**. Chrome will prompt; accept. (The Recorder pane will request it for you on first use; toggling in Settings ahead of time avoids the prompt.)
+- **Steps (UI surface):**
+  1. Open any regular web page in the active tab.
+  2. Side panel - Tools - Recorder.
+  3. Adjust **Duration (sec)** (1-60) and toggle **Capture audio** as desired.
+  4. Click **Record**. The status badge flips to Recording, the red dot pulses, and the elapsed timer ticks.
+  5. Either let the duration timer auto-stop, or click **Stop** to cut it short.
+  6. Status flips to Uploading - then a row appears in the Recordings list with: tab title, capture timestamp, duration, size, mime type.
+  7. Click **Open** on the row to view the video in a new tab via the cld_files URL. Click **file_id** to copy the canonical id for use in agent prompts.
+- **Steps (agent surface):**
+  1. Tools tab - Catalog - filter to admin / advanced - find `record_tab_video`.
+  2. Hit Run with `{ "durationMs": 5000, "audio": false }`.
+  3. Approve the action prompt (Action tier in Ask mode).
+  4. Result includes `{ ok: true, file_id, file_url, mime_type, duration_ms, size_bytes }`.
+- **Expected:**
+  - Recordings appear most-recent first; the list survives sidepanel reload via `chrome.storage.local`.
+  - Without the `tabCapture` permission granted, both surfaces fail cleanly: agent tool returns `{ ok:false, reason: "required optional permission(s) not granted: tabCapture..." }`; UI surface shows an error banner with a "Dismiss" button.
+- **Edge cases worth poking:**
+  - Restricted URLs (`chrome://`, PDF viewer): `getMediaStreamId` rejects - the recorder shows the error banner.
+  - Trigger Stop early - the upload still produces a valid (shorter) WebM.
+  - Recordings persist a maximum of 50 entries; older ones drop off.
+  - Audio toggle on - the encoded WebM contains both tracks (mime type: `video/webm;codecs=vp9,opus` or fallback).
+  - The tool is `admin_only` - non-admin users don't see it advertised in chat (still visible in Tools tab when admin).
+
 ### Screenshots tab (TASK-005)
 - **What it does:** Per-page screenshot history. Lists every screenshot ever taken of the active page (canonical URL match), regardless of whether the agent or the user triggered it. The "Take screenshot" button at the bottom calls the same `take_screenshot` handler the agent uses, so user and agent captures share one persistence path (cld_files + `wbx_screenshot` index row).
 - **Where to test:** Side panel - **Screenshots** tab (camera icon).

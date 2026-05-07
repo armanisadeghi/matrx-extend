@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { RecorderPane } from '@/features/tools/RecorderPane';
 import { SmartTestsView } from '@/features/tools/SmartTestsView';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
@@ -77,12 +78,16 @@ export function ToolsView() {
         <TabsList className="mx-3 self-start gap-1 bg-transparent p-0">
           <ToolsTab value="catalog">Catalog</ToolsTab>
           <ToolsTab value="smart">Smart tests</ToolsTab>
+          <ToolsTab value="recorder">Recorder</ToolsTab>
         </TabsList>
         <TabsContent value="catalog" className="flex-1 min-h-0">
           <CatalogPane handlers={handlers} />
         </TabsContent>
         <TabsContent value="smart" className="flex-1 min-h-0">
           <SmartTestsView />
+        </TabsContent>
+        <TabsContent value="recorder" className="flex-1 min-h-0">
+          <RecorderPane />
         </TabsContent>
       </Tabs>
     </div>

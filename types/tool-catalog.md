@@ -1,11 +1,11 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-06T21:18:05.401Z
+Generated: 2026-05-07T07:07:44.496Z
 
-- **Total tools:** 166
+- **Total tools:** 167
 - **Assistant bundle:** 74 tools (read-only)
-- **Pilot bundle:** 136 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 166 tools
+- **Pilot bundle:** 137 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 167 tools
 
 
 ## Tier: read (74)
@@ -573,6 +573,19 @@ Capture the visible viewport of the active tab, optimized for vision-API consump
       "type": "integer",
       "minimum": 0,
       "maximum": 8192
+    },
+    "persist": {
+      "type": "boolean",
+      "default": true
+    },
+    "capture_source": {
+      "type": "string",
+      "enum": [
+        "agent",
+        "user",
+        "unknown"
+      ],
+      "default": "unknown"
     }
   },
   "additionalProperties": false,
@@ -2133,7 +2146,7 @@ Read browsing history. Actions: 'search' (free-text against title/URL; pass `que
 }
 ```
 
-## Tier: action (57)
+## Tier: action (58)
 
 ### `navigate_active_tab`
 
@@ -3416,6 +3429,39 @@ Record browser actions and export as an animated GIF. Actions: 'start_recording'
     "action",
     "tabId"
   ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `record_tab_video`
+
+Record video of a browser tab and upload it to cld_files. Args: { durationMs (default 5000, max 60000), audio (default false), tabId? (defaults to assigned tab), filename? }. The recording happens via chrome.tabCapture + MediaRecorder in the offscreen document. Returns { ok, file_id, file_url, mime_type, duration_ms, size_bytes }. Requires the `tabCapture` optional permission — when missing, the call returns ok:false with a remediation hint pointing the user at Settings → Advanced → Tab video capture.
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "durationMs": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 60000,
+      "default": 5000
+    },
+    "audio": {
+      "type": "boolean",
+      "default": false
+    },
+    "tabId": {
+      "type": "integer"
+    },
+    "filename": {
+      "type": "string"
+    }
+  },
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }

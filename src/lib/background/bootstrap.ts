@@ -46,6 +46,11 @@ import {
   cancelStream,
   startStream,
 } from '@/lib/stream/offscreen-proxy';
+import type {
+  VideoErrorEvent,
+  VideoRequestPayload,
+  VideoRunPayload,
+} from '@/lib/video/video-types';
 import { setSupabaseSession } from '@/lib/supabase/client';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
 import { handleWebmcpCall, recordAssignedTab, startToolDispatcher } from '@/lib/tools/dispatch';
@@ -189,6 +194,79 @@ function registerHandlers(): void {
     if (res && typeof res === 'object' && '__error' in res) {
       throw new Error((res as { __error: string }).__error);
     }
+    return { ok: true };
+  });
+
+  // Video capture (TASK-003): sidepanel asks the SW to run a tab/display
+  // recording. Same offscreen pattern as mic, plus a tab-capture stream id
+  // resolution step here in the SW (chrome.tabCapture lives only in the SW
+  // context). On 'start' for source==='tab' we resolve the streamId and
+  // forward; on 'stop' we just forward the action.
+  on<VideoRequestPayload, { ok: boolean }>(CHANNELS.VIDEO_REQUEST, async (payload) => {
+    if (payload.action === 'start' && (payload.source ?? 'tab') === 'tab') {
+      if (payload.targetTabId == null) {
+        broadcast(CHANNELS.VIDEO_EVENT, {
+          type: 'error',
+          sessionId: payload.sessionId,
+          message: 'targetTabId is required for tab capture',
+          code: 'NO_TARGET_TAB',
+        } satisfies VideoErrorEvent);
+        return { ok: false };
+      }
+      if (!chrome.tabCapture?.getMediaStreamId) {
+        broadcast(CHANNELS.VIDEO_EVENT, {
+          type: 'error',
+          sessionId: payload.sessionId,
+          message:
+            'tabCapture API unavailable. Enable in Settings → Advanced → Tab video capture.',
+          code: 'API_UNAVAILABLE',
+        } satisfies VideoErrorEvent);
+        return { ok: false };
+      }
+      let streamId: string;
+      try {
+        streamId = await new Promise<string>((resolve, reject) => {
+          chrome.tabCapture.getMediaStreamId(
+            { targetTabId: payload.targetTabId! },
+            (id) => {
+              const err = chrome.runtime.lastError;
+              if (err) reject(new Error(err.message ?? 'getMediaStreamId failed'));
+              else if (!id) reject(new Error('empty streamId'));
+              else resolve(id);
+            },
+          );
+        });
+      } catch (err) {
+        broadcast(CHANNELS.VIDEO_EVENT, {
+          type: 'error',
+          sessionId: payload.sessionId,
+          message: `tab capture stream id failed: ${(err as Error).message}`,
+          code: 'STREAM_ID_FAILED',
+        } satisfies VideoErrorEvent);
+        return { ok: false };
+      }
+      await ensureOffscreen();
+      const runPayload: VideoRunPayload = { ...payload, streamId };
+      await chrome.runtime
+        .sendMessage({ __matrx: true, kind: CHANNELS.VIDEO_RUN, payload: runPayload })
+        .catch((err) => {
+          log.error('sys', 'video forward failed', err);
+          broadcast(CHANNELS.VIDEO_EVENT, {
+            type: 'error',
+            sessionId: payload.sessionId,
+            message: `forward to offscreen failed: ${(err as Error).message}`,
+            code: 'FORWARD_FAILED',
+          } satisfies VideoErrorEvent);
+        });
+      return { ok: true };
+    }
+    // 'stop' action or non-tab source — pass through. getDisplayMedia runs
+    // inside the offscreen document where the picker is permitted.
+    await ensureOffscreen();
+    const runPayload: VideoRunPayload = { ...payload };
+    await chrome.runtime
+      .sendMessage({ __matrx: true, kind: CHANNELS.VIDEO_RUN, payload: runPayload })
+      .catch((err) => log.error('sys', 'video forward failed', err));
     return { ok: true };
   });
 
