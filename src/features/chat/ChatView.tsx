@@ -26,7 +26,9 @@ import {
 import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
+import { LanguagePicker } from '@/features/chat/LanguagePicker';
 import { ServerToolRow } from '@/features/chat/ServerToolRow';
+import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
 import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
@@ -571,6 +573,7 @@ function ChatHeader({
         </>
       )}
       <div className="ml-auto flex items-center gap-1">
+        <LanguagePicker />
         <PermissionModeChip
           mode={permissionMode}
           disabled={!selectedAgentId}
@@ -805,7 +808,7 @@ function MessageRow({ message }: { message: ChatMessage }) {
       )}
 
       {!message.pending && finalText && (
-        <div className="mt-1 opacity-0 transition-opacity group-hover:opacity-100">
+        <div className="mt-1 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
           <CopyMenu
             title="Copy reply"
             align="start"
@@ -824,6 +827,7 @@ function MessageRow({ message }: { message: ChatMessage }) {
               },
             ]}
           />
+          <SpeakerButton text={finalText} />
         </div>
       )}
     </div>
