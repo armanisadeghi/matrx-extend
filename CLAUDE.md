@@ -398,6 +398,22 @@ Shipped:
       (confirmation-gated, retains the previous key in
       `matrx.audit.publicKeyHistory` so prior receipts still verify),
       and export the active public key JWK to the clipboard.
+- [x] **Schema v2 + full path coverage (2026-05-07).** Receipt schema
+      bumped to `v: 2` with an optional `origin` tag (`agent`, `pilot`,
+      `parallel`, `webmcp`). The verifier accepts BOTH v1 and v2 — old
+      receipts in existing audit logs continue to verify; their absent
+      `origin` is preserved during canonical-JSON re-serialization so
+      the original signature still matches. The WebMCP path
+      (`handleWebmcpCall`) now emits its own partial + completed
+      receipts (origin='webmcp') — that path bypasses the streaming
+      dispatcher's chunk listener so it previously had no audit
+      coverage. The streaming dispatcher classifies origin per call:
+      runId starts with `parrun-` → 'parallel'; conversation matches an
+      active Pilot session → 'pilot'; otherwise 'agent'. The Audit-key
+      card in Settings now shows the last 20 receipts with a chip-set
+      origin filter so admins can confirm coverage across every tool
+      execution path. Unit tests in `tests/unit/receipt.test.ts` cover
+      every origin tag plus a v1-shape backward-compat case.
 
 ### 9. ✅ Pilot tab + tab-group sandbox
 **Why:** the user wanted two surfaces — Assistant (Chat) and Pilot

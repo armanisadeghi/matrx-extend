@@ -11,8 +11,12 @@
  * walks the public-key history so receipts continue to verify after
  * the user re-keys.
  *
- * Schema is versioned via `v` so we can introduce v=2 later without
- * breaking the verifier.
+ * Schema is versioned via `v`:
+ *   - v=1: original shape (no `origin` field).
+ *   - v=2: adds `origin` (agent | pilot | parallel | webmcp) so the
+ *          audit log can distinguish call provenance for compliance
+ *          and filtering. Verification accepts BOTH v1 and v2 — old
+ *          receipts in existing logs continue to verify.
  *
  * JWS export uses the compact serialization defined by RFC 7515:
  *   `BASE64URL(protected) . BASE64URL(payload) . BASE64URL(signature)`
@@ -26,11 +30,35 @@ import {
   getPublicKeyById,
 } from '@/lib/audit/device-key';
 
-export const RECEIPT_SCHEMA_VERSION = 1 as const;
+/**
+ * Current schema version emitted by this build. The verifier accepts
+ * any version listed in `SUPPORTED_SCHEMA_VERSIONS` so older receipts
+ * continue to verify after a schema bump.
+ */
+export const RECEIPT_SCHEMA_VERSION = 2 as const;
+
+/**
+ * Schema versions whose receipts the verifier still accepts. We must
+ * never drop entries here without first migrating any persisted
+ * receipts that match — doing so would invalidate signatures we've
+ * already promised would verify forever.
+ */
+export const SUPPORTED_SCHEMA_VERSIONS = [1, 2] as const;
+export type SupportedSchemaVersion = (typeof SUPPORTED_SCHEMA_VERSIONS)[number];
+
+/**
+ * Origin tag — where the tool call came from. Stored only on v2+
+ * receipts; absent on v1.
+ *   - `agent`    → standard streaming dispatcher (Assistant Chat).
+ *   - `pilot`    → call inside an active Pilot session (group sandbox).
+ *   - `parallel` → sub-run spawned by `parallel_for_each_tab`.
+ *   - `webmcp`   → page → SW invocation via `navigator.modelContext.callTool`.
+ */
+export type ReceiptOrigin = 'agent' | 'pilot' | 'parallel' | 'webmcp';
 
 export interface ToolReceipt {
-  /** Schema version. Bump when the signed-body shape changes. */
-  v: typeof RECEIPT_SCHEMA_VERSION;
+  /** Schema version. v1 = original shape; v2 = adds optional `origin`. */
+  v: SupportedSchemaVersion;
   /** First 16 hex chars of sha-256 over the public-key JWK. */
   publicKeyId: string;
   /** Tool-call ID assigned by the server. Stable across started/completed. */
@@ -50,6 +78,13 @@ export interface ToolReceipt {
   conversationId: string | null;
   /** Stream / run identifier — groups all calls within one agent turn. */
   runId: string;
+  /**
+   * Origin of the call. Optional on the type so we can also represent
+   * historical v1 receipts; in practice every v2 receipt this build
+   * produces sets it explicitly. Absent on v1; the verifier doesn't
+   * require it.
+   */
+  origin?: ReceiptOrigin;
   /** base64url(ed25519 signature over canonical-JSON of the body). */
   signature: string;
 }
@@ -116,6 +151,12 @@ export interface BuildReceiptInput {
   completedAt: number | null;
   conversationId: string | null;
   runId: string;
+  /**
+   * Origin tag for the call. Defaults to `'agent'` (the standard
+   * streaming dispatcher) for backward-compat with call sites that
+   * pre-date schema v2.
+   */
+  origin?: ReceiptOrigin;
 }
 
 export const PENDING_OUTPUT = Symbol('matrx.audit.pending');
@@ -147,6 +188,7 @@ export async function buildReceipt(input: BuildReceiptInput): Promise<ToolReceip
     completedAt: input.completedAt,
     conversationId: input.conversationId,
     runId: input.runId,
+    origin: input.origin ?? 'agent',
   };
 
   const canonical = canonicalJson(body as unknown as Record<string, unknown>);
@@ -176,9 +218,17 @@ export interface VerifyResult {
  * `{ valid: false, reason }` for any failure mode (key not on file,
  * tampered body, malformed signature) so the UI can render a meaningful
  * message.
+ *
+ * Backward compatibility: accepts every version listed in
+ * `SUPPORTED_SCHEMA_VERSIONS`. The body that gets re-canonicalized for
+ * verification is `{ ...receipt, signature stripped }` — meaning if a
+ * receipt's body originally lacked the `origin` field (v1), it stays
+ * absent during verification and the original signature still matches.
+ * Conversely, v2 receipts include `origin` in the canonical body so
+ * tampering with that tag invalidates the signature.
  */
 export async function verifyReceipt(receipt: ToolReceipt): Promise<VerifyResult> {
-  if (receipt.v !== RECEIPT_SCHEMA_VERSION) {
+  if (!(SUPPORTED_SCHEMA_VERSIONS as readonly number[]).includes(receipt.v as number)) {
     return { valid: false, reason: `unsupported schema version v=${String(receipt.v)}` };
   }
   const jwk = await getPublicKeyById(receipt.publicKeyId);

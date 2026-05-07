@@ -27,7 +27,7 @@
 
 import { postToolResults } from '@/lib/api/routes/tool-results';
 import { appendReceipt } from '@/lib/audit/log';
-import { PENDING_OUTPUT, buildReceipt } from '@/lib/audit/receipt';
+import { PENDING_OUTPUT, type ReceiptOrigin, buildReceipt } from '@/lib/audit/receipt';
 import { BROWSER, isBrowserSupported } from '@/lib/browser/detect';
 import { log } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
@@ -330,15 +330,30 @@ async function handleCall(
   });
   recordToolEvent(handler.name, 'started', rawArgs);
 
+  // Roadmap item #8 — provenance tag for the receipt. Origin detection is
+  // intentionally cheap and source-of-truth-driven:
+  //   - parallel sub-runs use a `runId` produced by `newId('parrun')` in
+  //     `src/lib/tools/handlers/parallel.ts`, which always begins with
+  //     'parrun-'. Sub-run conversation_ids are server-assigned and not
+  //     globally distinguishable from a human turn, so the runId prefix
+  //     is the only stable signal here.
+  //   - pilot calls flow through the SAME chunk listener as Assistant
+  //     calls; the only stable signal is that the run's conversation
+  //     matches the active Pilot session's conversationId. Note that
+  //     this is captured at message send-time (Pilot's first turn) and
+  //     persists across the session.
+  //   - everything else is the standard agent chat.
+  const origin: ReceiptOrigin = detectOrigin(ctx);
+
   // Roadmap item #8 — partial cryptographic receipt at start. Best-effort:
   // signing failures must not block tool execution. Fire-and-forget.
-  void emitPartialReceipt(handler.name, rawArgs, ctx, startedAt);
+  void emitPartialReceipt(handler.name, rawArgs, ctx, startedAt, origin);
 
   // Local fail closure — captures rawArgs + startedAt so the completed
   // receipt covers them on every error exit. `finishWithError` itself
   // doesn't take args, so we wrap it here.
   const fail = (message: string): Promise<void> =>
-    finishWithError(handler, ctx, message, rawArgs, startedAt);
+    finishWithError(handler, ctx, message, rawArgs, startedAt, origin);
 
   // Validate args.
   const parsed = handler.argsSchema.safeParse(rawArgs);
@@ -428,7 +443,7 @@ async function handleCall(
   });
   // Roadmap item #8 — completed receipt. Fire-and-forget; signing
   // problems get logged but never block the response.
-  void emitCompletedReceipt(handler.name, rawArgs, result, true, ctx, startedAt);
+  void emitCompletedReceipt(handler.name, rawArgs, result, true, ctx, startedAt, origin);
 }
 
 async function finishWithError(
@@ -437,6 +452,7 @@ async function finishWithError(
   message: string,
   rawArgs?: unknown,
   startedAt?: number,
+  origin?: ReceiptOrigin,
 ): Promise<void> {
   log.error('sw', `tool ${handler.name} error`, message);
   await postResult(handler, ctx, null, true, message);
@@ -444,7 +460,7 @@ async function finishWithError(
   // have the original args + startedAt (i.e. the in-handleCall path).
   // The unknown-tool error path doesn't reach this function.
   if (startedAt !== undefined) {
-    void emitCompletedReceipt(handler.name, rawArgs, null, false, ctx, startedAt);
+    void emitCompletedReceipt(handler.name, rawArgs, null, false, ctx, startedAt, origin);
   }
   broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
     callId: ctx.callId,
@@ -639,6 +655,15 @@ export async function handleWebmcpCall(
     }
   }
 
+  // Roadmap item #8 (receipt-coverage gap fix) — WebMCP calls do NOT
+  // travel through the streaming dispatcher's chunk listener, so the
+  // standard `emitPartialReceipt` / `emitCompletedReceipt` calls at the
+  // top of `handleCall` never fire for them. Emit them here ourselves
+  // so every external page-driven invocation lands in the audit log
+  // with `origin: 'webmcp'` for chain-of-custody.
+  const startedAt = Date.now();
+  void emitPartialReceipt(handler.name, parsed.data, ctx, startedAt, 'webmcp');
+
   try {
     const result = await handler.run(parsed.data as never, ctx);
     broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
@@ -647,6 +672,7 @@ export async function handleWebmcpCall(
       phase: 'completed',
       output: result,
     });
+    void emitCompletedReceipt(handler.name, parsed.data, result, true, ctx, startedAt, 'webmcp');
     return { ok: true, result };
   } catch (err) {
     const message = (err as Error)?.message ?? String(err);
@@ -657,6 +683,7 @@ export async function handleWebmcpCall(
       phase: 'error',
       message,
     });
+    void emitCompletedReceipt(handler.name, parsed.data, null, false, ctx, startedAt, 'webmcp');
     return { ok: false, error: message };
   }
 }
@@ -675,6 +702,7 @@ async function emitPartialReceipt(
   rawArgs: unknown,
   ctx: ToolContext,
   startedAt: number,
+  origin: ReceiptOrigin = 'agent',
 ): Promise<void> {
   try {
     const receipt = await buildReceipt({
@@ -687,6 +715,7 @@ async function emitPartialReceipt(
       completedAt: null,
       conversationId: ctx.conversationId,
       runId: ctx.runId,
+      origin,
     });
     await appendReceipt(receipt);
   } catch (err) {
@@ -701,6 +730,7 @@ async function emitCompletedReceipt(
   ok: boolean,
   ctx: ToolContext,
   startedAt: number,
+  origin: ReceiptOrigin = 'agent',
 ): Promise<void> {
   try {
     const receipt = await buildReceipt({
@@ -713,9 +743,44 @@ async function emitCompletedReceipt(
       completedAt: Date.now(),
       conversationId: ctx.conversationId,
       runId: ctx.runId,
+      origin,
     });
     await appendReceipt(receipt);
   } catch (err) {
     log.warn('sw', `audit receipt (completed) failed for ${toolName}`, err);
   }
+}
+
+/**
+ * Decide which {@link ReceiptOrigin} tag the receipt for the current
+ * call should carry.
+ *
+ * Detection order (first match wins):
+ *   1. Run id starts with 'parrun-' → the call is a sub-run inside a
+ *      `parallel_for_each_tab` fan-out. Sub-runs always come through
+ *      `handleCall` (the streaming dispatcher), but the runId pattern
+ *      uniquely identifies them — see `newId('parrun')` in
+ *      `lib/tools/handlers/parallel.ts`.
+ *   2. Pilot session is active AND its conversationId matches the
+ *      current ctx.conversationId. The Pilot surface latches its
+ *      conversationId on the first turn (see `usePilotChatStore`),
+ *      so any subsequent tool call on the same conversation is from
+ *      the Pilot agent — even when the Assistant tab is also open.
+ *   3. Otherwise → 'agent' (standard streaming dispatcher).
+ *
+ * WebMCP calls never reach `handleCall`; their origin tag is set
+ * directly inside `handleWebmcpCall`.
+ */
+function detectOrigin(ctx: ToolContext): ReceiptOrigin {
+  if (ctx.runId.startsWith('parrun-')) return 'parallel';
+  const pilot = getPilotSessionSnapshot();
+  if (
+    pilot.active &&
+    pilot.conversationId !== null &&
+    ctx.conversationId !== null &&
+    pilot.conversationId === ctx.conversationId
+  ) {
+    return 'pilot';
+  }
+  return 'agent';
 }

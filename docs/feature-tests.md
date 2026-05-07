@@ -561,10 +561,31 @@ Every entry follows this shape:
      the new active key. Open an old receipt — it still shows
      "Signature valid" (verified against the retired key in history).
 - **Expected:**
-  - Receipt JSON contains `v`, `publicKeyId`, `callId`, `toolName`,
-    `argsHash`, `outputHash`, `ok`, `startedAt`, `completedAt`,
-    `conversationId`, `runId`, `signature`.
+  - Receipt JSON contains `v` (now `2`), `publicKeyId`, `callId`,
+    `toolName`, `argsHash`, `outputHash`, `ok`, `startedAt`,
+    `completedAt`, `conversationId`, `runId`, `origin`, `signature`.
   - The audit log caps at 1000 entries (FIFO).
+- **Origin coverage (schema v2, 2026-05-07):** the receipt now carries
+  an `origin` tag identifying which dispatch path produced it. Verify
+  every path lands a receipt with the right origin:
+  1. **agent** — send any message in the Assistant Chat tab and run a
+     tool. Settings → Audit key → "Recent receipts" should show a row
+     with the blue `agent` chip.
+  2. **pilot** — Pilot tab → Start Pilot session → ask the agent to
+     "take a screenshot of this tab". The new row uses the violet
+     `pilot` chip.
+  3. **parallel** — Chat tab → ask the agent to call
+     `parallel_for_each_tab` across two open tabs (admin only). Sub-run
+     tool calls land with the amber `parallel` chip; the parent call
+     itself stays `agent`.
+  4. **webmcp** — open devtools console on a connected page (e.g.
+     `aimatrx.com`) and run
+     `await navigator.modelContext.callTool('matrx.get_active_tab', {})`.
+     The new row uses the emerald `webmcp` chip and has
+     `conversationId: null` (WebMCP calls aren't tied to a conversation).
+  5. Use the chip-set filter at the top of "Recent receipts" to narrow
+     the list to one origin; counts on each chip match the underlying
+     log.
 - **Edge cases worth poking:**
   - Run a tool that errors (e.g. invalid args) → receipt still
     appended with `ok: false` and `outputHash: '...'` (hash of null).
@@ -574,6 +595,10 @@ Every entry follows this shape:
   - Clear local data (Settings → Privacy → Clear local data) →
     verifying receipts copied externally before the wipe shows
     "public key '...' is not on file".
+  - Old v1 receipts in an existing audit log: receipts that were
+    signed before schema v2 lack the `origin` field. They should still
+    open in the receipt modal with a green "Signature valid" banner;
+    the Recent-receipts panel renders them as `agent`.
 
 ---
 
