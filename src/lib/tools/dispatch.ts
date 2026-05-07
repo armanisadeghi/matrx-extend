@@ -518,6 +518,7 @@ export async function handleWebmcpCall(
     callId,
     agentName: null,
     permissionMode: opts.permissionMode,
+    assignedTabId: null,
   };
 
   const effectiveTier = handler.tierFor ? handler.tierFor(parsed.data as never) : handler.tier;
