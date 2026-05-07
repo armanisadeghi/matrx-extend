@@ -60,6 +60,7 @@ type ClickArgs = z.infer<typeof ClickArgs>;
 export const click_element: ToolHandler<ClickArgs, unknown> = {
   name: 'click_element',
   tier: 'action',
+  requires_broad_host_access: true,
   description:
     'Click an element on the active tab. Pass `ref` from read_page (preferred — stable across DOM mutations) OR a CSS `selector`. When multiple match a selector, use `nth`. Returns { ok, tag, text } or { ok:false, reason }.',
   argsSchema: ClickArgs,
@@ -107,6 +108,7 @@ type TypeArgs = z.infer<typeof TypeArgs>;
 export const type_into_element: ToolHandler<TypeArgs, unknown> = {
   name: 'type_into_element',
   tier: 'action',
+  requires_broad_host_access: true,
   description:
     'Set the value of an input / textarea / contenteditable. Pass `ref` from read_page (preferred) OR a CSS `selector`. By default clears the field first and dispatches input + change events so React/Vue see the update.',
   argsSchema: TypeArgs,
@@ -167,6 +169,7 @@ type ScrollArgs = z.infer<typeof ScrollArgs>;
 export const scroll_page: ToolHandler<ScrollArgs, unknown> = {
   name: 'scroll_page',
   tier: 'action',
+  requires_broad_host_access: true,
   description:
     'Scroll the active tab. direction="top"/"bottom" go to extremes; "into-view" scrolls a selector or `ref` (from read_page) into view; "by" scrolls by delta_y pixels.',
   argsSchema: ScrollArgs,
@@ -211,6 +214,7 @@ type WaitArgs = z.infer<typeof WaitArgs>;
 export const wait_for: ToolHandler<WaitArgs, unknown> = {
   name: 'wait_for',
   tier: 'action',
+  requires_broad_host_access: true,
   description:
     'Wait for a condition on the active tab — either the page to fully load (ready_state=true) and/or a selector to appear. Returns { ok, waited_ms }.',
   argsSchema: WaitArgs,

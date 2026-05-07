@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T07:07:44.496Z",
+  "generated_at": "2026-05-07T07:55:09.823Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -743,6 +743,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -769,6 +770,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -795,6 +797,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -821,6 +824,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -847,6 +851,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -873,6 +878,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -899,6 +905,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -925,6 +932,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -951,6 +959,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -977,6 +986,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1003,6 +1013,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1029,6 +1040,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1055,6 +1067,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1081,6 +1094,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1107,6 +1121,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "assistant",
@@ -1133,6 +1148,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "assistant",
@@ -1159,6 +1175,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "assistant",
@@ -1211,6 +1228,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1284,6 +1302,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1335,6 +1354,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1377,6 +1397,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1405,6 +1426,7 @@
         "activeTab"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1434,6 +1456,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1468,6 +1491,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1545,6 +1569,7 @@
         "activeTab"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1593,6 +1618,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1652,6 +1678,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1698,6 +1725,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1740,6 +1768,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1779,6 +1808,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1815,6 +1845,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1858,6 +1889,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1900,6 +1932,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1929,6 +1962,7 @@
         "tabGroups"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -1961,6 +1995,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2002,6 +2037,7 @@
         "bookmarks"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2040,6 +2076,7 @@
         "bookmarks"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2086,6 +2123,7 @@
         "history"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2127,6 +2165,7 @@
         "history"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2173,6 +2212,7 @@
         "downloads"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2206,6 +2246,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2249,6 +2290,7 @@
         "storage"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2289,6 +2331,7 @@
         "storage"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2315,6 +2358,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2367,6 +2411,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2413,6 +2458,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2450,6 +2496,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2493,6 +2540,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2526,6 +2574,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2559,6 +2608,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2605,6 +2655,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2641,6 +2692,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -2677,6 +2729,7 @@
         "activeTab"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -2718,6 +2771,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -2768,6 +2822,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -2817,6 +2872,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -2857,6 +2913,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": true,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -2892,6 +2949,7 @@
         "clipboardWrite"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -2929,6 +2987,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -2976,6 +3035,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3012,6 +3072,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3048,6 +3109,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3080,6 +3142,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3116,6 +3179,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3162,6 +3226,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3204,6 +3269,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3250,6 +3316,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3286,6 +3353,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3352,6 +3420,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3401,6 +3470,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3445,6 +3515,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3478,6 +3549,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3511,6 +3583,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3548,6 +3621,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3585,6 +3659,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3620,6 +3695,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3651,6 +3727,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3682,6 +3759,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3720,6 +3798,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3761,6 +3840,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3803,6 +3883,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3864,6 +3945,7 @@
         "tabGroups"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3904,6 +3986,7 @@
         "tabGroups"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3940,6 +4023,7 @@
         "tabGroups"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -3991,6 +4075,7 @@
         "tabGroups"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -4039,6 +4124,7 @@
         "downloads"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -4072,6 +4158,7 @@
         "downloads"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -4118,6 +4205,7 @@
         "notifications"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -4163,6 +4251,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -4197,6 +4286,7 @@
       "required_optional_permissions": [
         "sessions"
       ],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -4229,6 +4319,7 @@
       "required_optional_permissions": [
         "sessions"
       ],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -4262,6 +4353,7 @@
       "required_optional_permissions": [
         "pageCapture"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot",
@@ -4297,6 +4389,7 @@
       "required_optional_permissions": [
         "cookies"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "assistant",
@@ -4366,6 +4459,7 @@
       "required_optional_permissions": [
         "cookies"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -4404,6 +4498,7 @@
       "required_optional_permissions": [
         "cookies"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -4436,6 +4531,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -4464,6 +4560,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -4488,6 +4585,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "assistant",
@@ -4560,6 +4658,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -4596,6 +4695,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -4650,6 +4750,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -4685,6 +4786,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -4715,6 +4817,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -4752,6 +4855,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -4780,6 +4884,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -4814,6 +4919,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -4852,6 +4958,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -4882,6 +4989,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "assistant",
@@ -4937,6 +5045,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -4965,6 +5074,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -5032,6 +5142,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -5084,6 +5195,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -5121,6 +5233,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -5146,6 +5259,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "assistant",
@@ -5175,6 +5289,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "assistant",
@@ -5212,6 +5327,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot",
@@ -5273,6 +5389,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -5324,6 +5441,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -5365,6 +5483,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -5406,6 +5525,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -5472,6 +5592,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -5515,6 +5636,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
@@ -5556,6 +5678,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
@@ -5593,6 +5716,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
@@ -5635,6 +5759,7 @@
         "storage"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
@@ -5672,6 +5797,7 @@
         "nativeMessaging"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
@@ -5761,6 +5887,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot",
@@ -5802,6 +5929,7 @@
       "required_optional_permissions": [
         "tabCapture"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot",
@@ -5921,6 +6049,7 @@
         "webNavigation"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -5948,6 +6077,7 @@
         "storage"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -5983,6 +6113,7 @@
         "storage"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -6033,6 +6164,7 @@
         "storage"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
@@ -6066,6 +6198,7 @@
         "storage"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -6111,6 +6244,7 @@
         "storage"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -6142,6 +6276,7 @@
         "storage"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -6177,6 +6312,7 @@
         "storage"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -6212,6 +6348,7 @@
         "storage"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -6261,6 +6398,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -6358,6 +6496,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -6400,6 +6539,7 @@
       "required_optional_permissions": [
         "clipboardRead"
       ],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -6427,6 +6567,7 @@
         "tabs"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -6486,6 +6627,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -6533,6 +6675,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -6587,6 +6730,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -6684,6 +6828,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -6727,6 +6872,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -6766,6 +6912,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -6830,6 +6977,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -6876,6 +7024,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -6919,6 +7068,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -6958,6 +7108,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -7014,6 +7165,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -7059,6 +7211,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -7108,6 +7261,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -7152,6 +7306,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -7223,6 +7378,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -7295,6 +7451,7 @@
       "required_optional_permissions": [
         "cookies"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -7337,6 +7494,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot",
@@ -7379,6 +7537,7 @@
         "storage"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
@@ -7448,6 +7607,7 @@
         "tabGroups"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -7497,6 +7657,7 @@
         "bookmarks"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -7552,6 +7713,7 @@
         "history"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "assistant",
@@ -7593,6 +7755,7 @@
       "required_optional_permissions": [
         "sessions"
       ],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot",
@@ -7642,6 +7805,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": false,
       "surface_bundles": [
         "pilot+privileged"
@@ -7684,6 +7848,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -7741,6 +7906,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
@@ -7780,6 +7946,7 @@
         "scripting"
       ],
       "required_optional_permissions": [],
+      "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"

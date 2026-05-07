@@ -376,17 +376,35 @@ chain-of-custody.
 - [ ] All pilot actions scoped to that group only (filter by groupId)
 - [ ] "End Pilot session" closes the group
 
-### 10. 🔨 Manifest hygiene
+### 10. ✅ Manifest hygiene
 Shipped:
 - [x] `optional_permissions`: `debugger`, `cookies`, `pageCapture`,
       `userScripts`, `proxy`, `webRequest`, `desktopCapture`, `topSites`,
       `management`
 - [x] Added to base: `sessions`
-
-Still planned:
-- [ ] Move `<all_urls>` to `optional_host_permissions`
-- [ ] Add to base: `system.cpu`, `system.memory`, `system.display`,
-      `declarativeNetRequestWithHostAccess`
+- [x] Move `<all_urls>` to `optional_host_permissions` (2026-05-07).
+      Settings → Advanced agent capabilities → "All sites access" toggle
+      requests / revokes via `chrome.permissions.request({origins:['<all_urls>']})`.
+      Persistent content-script auto-registers via
+      `chrome.scripting.registerContentScripts` when the grant flips on
+      (see [src/lib/permissions/content-scripts.ts](./src/lib/permissions/content-scripts.ts)).
+      `wxt.config.ts` adds a `build:manifestGenerated` hook to strip WXT's
+      auto-add of `<all_urls>` from base `host_permissions` (otherwise
+      WXT's runtime-CS handling promotes the optional pattern back into
+      base). Tools that need broad host access declare
+      `requires_broad_host_access: true` on the handler; the dispatcher
+      gates them at run time and returns a structured remediation error
+      pointing the user at Settings. Currently flagged: `read_active_page`,
+      `read_page`, `find`, `get_page_text`, `query_elements`,
+      `find_text_on_page`, `get_page_links`, `get_computed_style`,
+      `get_element_at_point`, `inspect_element`, `get_element_details`,
+      `click_element`, `type_into_element`, `scroll_page`, `wait_for`.
+- [x] Add to base: `system.cpu`, `system.memory`, `system.display`,
+      `declarativeNetRequestWithHostAccess` (2026-05-07; preemptive — no
+      consumer code yet but the CLAUDE.md item explicitly listed them as
+      "Add to base", and they don't widen the install-dialog warnings —
+      `system.*` permissions are silent and DNR-with-host-access is
+      gated by whatever host_permissions the user grants).
 
 ### 11. 🔨 Voice loop (TASK-002)
 **Why:** parity with the Next.js app's voice features and hands-free

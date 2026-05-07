@@ -34,6 +34,7 @@ type FindTextArgs = z.infer<typeof FindTextArgs>;
 export const find_text_on_page: ToolHandler<FindTextArgs, unknown> = {
   name: 'find_text_on_page',
   tier: 'read',
+  requires_broad_host_access: true,
   description:
     'Search visible text on the active tab and return matches with their nearest enclosing element selector + context. Pass regex=true to use a regular expression. Use this when read_active_page would be overkill — e.g. "where on this page does it say \'click here to download\'?".',
   argsSchema: FindTextArgs,
@@ -143,6 +144,7 @@ type GetLinksArgs = z.infer<typeof GetLinksArgs>;
 export const get_page_links: ToolHandler<GetLinksArgs, unknown> = {
   name: 'get_page_links',
   tier: 'read',
+  requires_broad_host_access: true,
   description:
     'Return anchor links from the active tab. Each entry is { href, text, title, rel, target }. Filter by href substring, link text substring, or same-origin only. Lighter than read_active_page when you only need link discovery.',
   argsSchema: GetLinksArgs,
@@ -208,6 +210,7 @@ type ComputedStyleArgs = z.infer<typeof ComputedStyleArgs>;
 export const get_computed_style: ToolHandler<ComputedStyleArgs, unknown> = {
   name: 'get_computed_style',
   tier: 'read',
+  requires_broad_host_access: true,
   description:
     'Read computed CSS for an element. Pass `properties` to limit (e.g. ["color","font-size"]) — without it returns a useful default subset (color, background, font, padding, margin, border, display, position, dimensions). Useful for debugging visual issues or matching styles.',
   argsSchema: ComputedStyleArgs,
@@ -267,6 +270,7 @@ type ElementAtPointArgs = z.infer<typeof ElementAtPointArgs>;
 export const get_element_at_point: ToolHandler<ElementAtPointArgs, unknown> = {
   name: 'get_element_at_point',
   tier: 'read',
+  requires_broad_host_access: true,
   description:
     'Identify the DOM element at viewport coordinates (x, y). Returns tag, text, attrs, and a stable selector. Useful when correlating something seen in a screenshot to a clickable element.',
   argsSchema: ElementAtPointArgs,
@@ -328,6 +332,7 @@ type InspectArgs = z.infer<typeof InspectArgs>;
 export const inspect_element: ToolHandler<InspectArgs, unknown> = {
   name: 'inspect_element',
   tier: 'read',
+  requires_broad_host_access: true,
   description:
     'Deep snapshot of a single element: tag, text, full attributes, bounding rect, key computed styles, ancestor chain (tag + class), and child counts. Useful when a click or type call is failing and you need to understand why.',
   argsSchema: InspectArgs,
@@ -399,6 +404,7 @@ type ElementDetailsArgs = z.infer<typeof ElementDetailsArgs>;
 export const get_element_details: ToolHandler<ElementDetailsArgs, unknown> = {
   name: 'get_element_details',
   tier: 'read',
+  requires_broad_host_access: true,
   description:
     "Deep inspection of a single element by ref: full attribute set, bounding box, visibility, optional computed styles and innerHTML. Use when read_page's summary isn't enough — e.g. reading data-* attributes or checking if something is hidden by CSS. Avoids needing evaluate_javascript for routine introspection. innerHTML is capped at 50 KB; response includes truncated:true when exceeded.",
   argsSchema: ElementDetailsArgs,

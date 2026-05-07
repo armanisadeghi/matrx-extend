@@ -6,6 +6,22 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   srcDir: 'src',
+  // Roadmap item #10 (manifest hygiene): WXT auto-adds every content script's
+  // `matches` patterns into base `host_permissions`, including those declared
+  // `registration: 'runtime'`. We declare `<all_urls>` ONLY in
+  // `optional_host_permissions` so the install dialog doesn't ask for full
+  // web access. The hook below strips WXT's auto-add of `<all_urls>` from
+  // `host_permissions` after the manifest is generated, leaving the optional
+  // entry in place.
+  hooks: {
+    'build:manifestGenerated': (_wxt, manifest) => {
+      if (Array.isArray(manifest.host_permissions)) {
+        manifest.host_permissions = manifest.host_permissions.filter(
+          (p) => p !== '<all_urls>',
+        );
+      }
+    },
+  },
   manifest: ({ mode }) => ({
     name: 'Matrx Extend',
     short_name: 'Matrx',
@@ -55,6 +71,21 @@ export default defineConfig({
       // Chrome forbids 'debugger' in optional_permissions. CDP client + network
       // capture need it; keeping it required is the only way to keep them working.
       'debugger',
+      // Roadmap item #10 (manifest hygiene): added preemptively so future
+      // tools that need them don't trigger a re-install permission prompt.
+      // - system.cpu / system.memory / system.display: chrome.system.* APIs
+      //   for hardware/display info (planned: agent diagnostics, multi-display
+      //   pilot orchestration).
+      // - declarativeNetRequestWithHostAccess: declarative request modification
+      //   gated by host permission (planned: privacy-respecting request
+      //   blocking / rewriting per active host).
+      // None of these widen the install-dialog warnings beyond what users
+      // already see; the system.* trio is silent, and DNR-with-host-access
+      // is gated by whatever host_permissions the user grants.
+      'system.cpu',
+      'system.memory',
+      'system.display',
+      'declarativeNetRequestWithHostAccess',
     ],
     // Risky / privacy-sensitive permissions live here. Granted at runtime via
     // chrome.permissions.request from the admin "Advanced agent capabilities"
@@ -75,6 +106,10 @@ export default defineConfig({
       'clipboardRead',
       'tabCapture',
     ],
+    // Required hosts — the matrx server tiers, the admin app, the matrx-local
+    // engine, and Supabase. These are essential for boot (auth, RPCs, agent
+    // streaming) and must be granted at install time. Anything broader lives
+    // in optional_host_permissions below.
     host_permissions: [
       'https://server.app.matrxserver.com/*',
       'https://staging.server.app.matrxserver.com/*',
@@ -84,8 +119,19 @@ export default defineConfig({
       'https://*.aimatrx.com/*',
       'https://txzxabzwovsujtloxrus.supabase.co/*',
       'http://127.0.0.1:22180/*',
-      '<all_urls>',
     ],
+    // <all_urls> moved out of host_permissions (roadmap item #10). The user
+    // grants it at runtime via Settings → Advanced agent capabilities → "All
+    // sites access". Until granted, content scripts that declare
+    // matches: ['<all_urls>'] (data picker, list picker, content bridge)
+    // only run on the explicit hosts above; tools that need scripting on
+    // arbitrary URLs return a structured "host access required" error
+    // pointing the user to Settings.
+    //
+    // The OPTIONAL_HOST_PERMISSION_LABELS registry in
+    // src/lib/permissions/optional.ts mirrors this list and drives the
+    // Settings UI toggles. Keep the two in sync.
+    optional_host_permissions: ['<all_urls>'],
     side_panel: {
       default_path: 'sidepanel.html',
     },

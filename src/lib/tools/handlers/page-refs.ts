@@ -183,6 +183,7 @@ type ReadPageArgs = z.infer<typeof ReadPageArgs>;
 export const read_page: ToolHandler<ReadPageArgs, unknown> = {
   name: 'read_page',
   tier: 'read',
+  requires_broad_host_access: true,
   description:
     'Return an accessibility-style summary of the active page. Each interactive element gets a reference id (`ref:N`) you can pass to click_element / type_into_element / scroll_into_view / etc. instead of a CSS selector — refs are stable across DOM mutations within the same page lifetime. Pass interactive_only=false to include headings, paragraphs, and labels too. Refs invalidate on navigation; call this again after navigating. Returns { url, title, count, elements: [{ ref, role, name, tag, text, visible, bounds? }] }.',
   argsSchema: ReadPageArgs,
@@ -449,6 +450,7 @@ const FIND_AI_CANDIDATES = 20;
 export const find: ToolHandler<FindArgs, unknown> = {
   name: 'find',
   tier: 'read',
+  requires_broad_host_access: true,
   description:
     'Find elements on the active page by natural-language description ("the sign-in button", "the search input near the top", "the link to the pricing page"). Returns matching refs you can immediately pass to interaction tools. Uses on-device AI for matching when available; falls back to text similarity. Always run read_page first OR pass refs through this in the same conversation. Returns { matches: [{ ref, name, role, score, reason }] }.',
   argsSchema: FindArgs,
@@ -604,6 +606,7 @@ type PageTextArgs = z.infer<typeof PageTextArgs>;
 export const get_page_text: ToolHandler<PageTextArgs, unknown> = {
   name: 'get_page_text',
   tier: 'read',
+  requires_broad_host_access: true,
   description:
     'Extract clean readable text from the active page — strips chrome / nav / ads / scripts / hidden DOM. Lighter than read_active_page (which returns full markdown + media + structured data). Best for "read me this article" style asks. Returns { url, title, byline, text, char_count }.',
   argsSchema: PageTextArgs,
