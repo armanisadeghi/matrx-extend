@@ -117,6 +117,14 @@ export const CHANNELS = {
   // Agenda (SW → sidepanel)
   AGENDA_RUN_NOW: 'agenda:run-now', // SW alarm fired an auto task; sidepanel should switch + run
 
+  // Parallel-runs orchestration (SW → sidepanel) — `parallel_for_each_tab`
+  // tool spawns N child agent streams; each lifecycle event (started, text
+  // delta, data, completed, error, timeout, session_finished) is broadcast
+  // here so the Tasks tab's ParallelRunsPanel can render live status
+  // without each surface having to subscribe to STREAM_CHUNK with N
+  // sub-runIds.
+  PARALLEL_RUN_EVENT: 'parallel:run-event',
+
   // Microphone capture for voice input (TASK-002).
   // getUserMedia in a side panel is unreliable in MV3 — Chrome sometimes
   // suppresses the prompt and won't re-prompt after a deny. Capture runs

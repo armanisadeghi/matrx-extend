@@ -6,6 +6,7 @@ import { useAgendaListener } from '@/hooks/use-agenda-listener';
 import { useAuth } from '@/hooks/use-auth';
 import { useAutoExtract } from '@/hooks/use-auto-extract';
 import { useAutoScrape } from '@/hooks/use-auto-scrape';
+import { useParallelEventBridge } from '@/hooks/use-parallel-event-bridge';
 import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
 import { type SidepanelTab, useSidepanelTabStore } from '@/state/sidepanel-tab';
@@ -98,6 +99,12 @@ export function App() {
   // Mount ONCE: listens for SW AGENDA_RUN_NOW broadcasts so auto-mode
   // tasks fire immediately when the sidepanel is open, no click needed.
   useAgendaListener();
+
+  // Mount ONCE: listens for SW PARALLEL_RUN_EVENT broadcasts emitted by
+  // the `parallel_for_each_tab` tool. Mirrors lifecycle into the
+  // sidepanel-side parallel-runs store so the Tasks tab's panel always
+  // has fresh state — even before the user opens that tab.
+  useParallelEventBridge();
 
   // Pre-warm the active tab's chunk. Fires on mount (so the default Chat
   // view is already fetched by the time Suspense reaches it — no flash on

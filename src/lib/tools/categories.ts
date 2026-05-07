@@ -327,6 +327,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   desktop_run_command: 'advanced',
   record_gif: 'advanced',
   record_tab_video: 'advanced',
+  parallel_for_each_tab: 'advanced',
 
   // ─── demos (record & replay) ────────────────────────────────────────────
   record_demo: 'demos',

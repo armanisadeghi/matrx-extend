@@ -1,5 +1,6 @@
 import { AddToProjectButton } from '@/components/AddToProjectButton';
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
+import { ParallelRunsPanel } from '@/features/tasks/ParallelRunsPanel';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -624,6 +625,9 @@ export function TasksView() {
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-3 px-3 pb-3">
+          {/* CLAUDE.md item #6 — live status for `parallel_for_each_tab`
+              orchestrations. Self-hides when no sessions exist. */}
+          <ParallelRunsPanel />
           {isPending && !error && (
             <>
               <Skeleton className="h-12 w-full rounded-xl" />

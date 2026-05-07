@@ -1,11 +1,11 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-07T07:53:20.891Z
+Generated: 2026-05-07T08:11:49.721Z
 
-- **Total tools:** 167
+- **Total tools:** 168
 - **Assistant bundle:** 74 tools (read-only)
-- **Pilot bundle:** 137 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 167 tools
+- **Pilot bundle:** 138 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 168 tools
 
 
 ## Tier: read (74)
@@ -2146,7 +2146,7 @@ Read browsing history. Actions: 'search' (free-text against title/URL; pass `que
 }
 ```
 
-## Tier: action (58)
+## Tier: action (59)
 
 ### `navigate_active_tab`
 
@@ -3352,6 +3352,58 @@ Invoke a tool registered by the active page via `navigator.modelContext`. Pass t
   },
   "required": [
     "name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `parallel_for_each_tab`
+
+Fan the same prompt out across N existing tabs (max 8) and collect the results. Each sub-run gets its own conversation pinned to a specific tab; results come back per-tab once all sub-runs finish (or time out — Promise.allSettled, one tab failing doesn't kill the others). Args: { tab_ids: number[], sub_prompt: string, agent_id?: string, timeout_ms?: number, merge_strategy?: 'per_tab' | 'concat' | 'json_array' }. Returns merged results in the chosen shape. Use the `list_open_tabs` tool first to discover tab ids. The sub-runs inherit the parent run's permission mode — keep them in 'act' mode for unattended fan-out, but be cautious: each sub-run is a real LLM call and bills accordingly.
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tab_ids": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "minItems": 1,
+      "maxItems": 8
+    },
+    "sub_prompt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agent_id": {
+      "type": "string"
+    },
+    "timeout_ms": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 120000,
+      "default": 60000
+    },
+    "merge_strategy": {
+      "type": "string",
+      "enum": [
+        "per_tab",
+        "concat",
+        "json_array"
+      ],
+      "default": "per_tab"
+    }
+  },
+  "required": [
+    "tab_ids",
+    "sub_prompt"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

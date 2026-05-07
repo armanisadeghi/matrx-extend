@@ -339,13 +339,26 @@ Still planned:
 - [ ] On replay miss: broadcast a "selector broken" event so the agent
       can re-derive without aborting
 
-### 6. 📋 Cross-tab parallel orchestration
+### 6. ✅ Cross-tab parallel orchestration
 **Why:** "compare these 5 tabs" — fan out, materialize in side panel.
 Already have `list_open_tabs` + per-tab actions; needs an orchestrator.
 
-- [ ] `parallel_for_each_tab(tab_ids, sub_prompt)` — runs N agent calls in
-      parallel, one per tab, returns merged results
-- [ ] UI for showing N parallel timelines side-by-side
+Shipped:
+- [x] `parallel_for_each_tab(tab_ids, sub_prompt, ...)` — admin-only,
+      action-tier tool ([src/lib/tools/handlers/parallel.ts](./src/lib/tools/handlers/parallel.ts))
+      that fans out N child agent streams (max 8), one per tab, each pinned
+      via `recordAssignedTab` BEFORE the SSE opens. `Promise.allSettled`
+      so one tab failing doesn't kill the rest. Per-sub-run wall-clock
+      timeout aborts via STREAM_KILL. Three merge strategies: `per_tab`
+      (default), `concat`, `json_array`.
+- [x] UI for showing parallel runs side-by-side: small status panel
+      ([src/features/tasks/ParallelRunsPanel.tsx](./src/features/tasks/ParallelRunsPanel.tsx))
+      mounted at the top of the Tasks tab. Live X-of-N progress, expandable
+      per-sub-run row showing status pill + accumulated text + error.
+      Bridge listens for `PARALLEL_RUN_EVENT` broadcasts so the SW-side
+      handler stays sidepanel-agnostic. Full N-column live timeline grid
+      remains a follow-up; this smaller panel covers the core "is it
+      working?" need.
 
 ### 7. ✅ Privileged additions — cookies, pageCapture, sessions
 Shipped:

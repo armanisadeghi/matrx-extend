@@ -38,6 +38,7 @@ import {
   pagecapture_handlers,
   sessions_handlers,
 } from '@/lib/tools/handlers/optional-perms';
+import { parallel_handlers } from '@/lib/tools/handlers/parallel';
 import { page_ref_handlers } from '@/lib/tools/handlers/page-refs';
 import { privileged_handlers, privileged_read_handlers } from '@/lib/tools/handlers/privileged';
 import { read_handlers } from '@/lib/tools/handlers/read';
@@ -100,6 +101,8 @@ const ALL: AnyToolHandler[] = [
   ...user_handlers,
   // ─── privileged ────────────────────────────────────────────────────────
   ...privileged_handlers,
+  // ─── parallel orchestration (CLAUDE.md item #6) ────────────────────────
+  ...parallel_handlers,
   // ─── recording ─────────────────────────────────────────────────────────
   ...record_handlers,
   // ─── tab video recording (TASK-003) ───────────────────────────────────

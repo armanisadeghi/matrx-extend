@@ -474,6 +474,26 @@ Every entry follows this shape:
   - Switch to another tab in the side panel (Tools, Settings, etc.) and back to Chat → the in-memory chat session for THIS open session persists. Only a fresh sidepanel open resets it.
   - Send-and-close mid-stream → on next open, the in-flight reply doesn't reappear; you get an empty chat.
 
+### parallel_for_each_tab
+- **What it does:** Fan out the same prompt across N existing tabs (max 8) and collect the results. Each sub-run is its own agent conversation pinned to one tab. Admin-only.
+- **Where to test:** Side panel → **Chat** tab; **Tasks** tab shows the live status panel.
+- **Prereq:** Signed in as admin. Open at least 3 tabs you want to fan out across (e.g. three Wikipedia article URLs).
+- **Steps:**
+  1. Open 3 unrelated Wikipedia articles in separate tabs (find their tab ids via `list_open_tabs`).
+  2. In Chat, send: `use parallel_for_each_tab to summarize each in 2 sentences with tab_ids=[<a>,<b>,<c>], merge_strategy="concat"`.
+  3. Switch to the **Tasks** tab while it runs.
+- **Expected:**
+  - Tasks tab shows a "Parallel runs" card with 3 sub-runs.
+  - Each sub-run progresses pending → running → completed; the card header shows "X running" / "Y done" badges live.
+  - Click a sub-run row to expand and see the streamed text per tab.
+  - Final tool result (back in Chat) is a concat-merged string with `## Tab <id>` headers and one summary per tab.
+- **Edge cases worth poking:**
+  - Pass an unknown tab id → tool returns `ok: false` with the list of unknown ids; no LLM calls made.
+  - Pass `timeout_ms: 2000` against a slow tab → that sub-run shows `timeout` pill; the others still complete; final result has `status: "timeout"` for that tab.
+  - Pass `merge_strategy: "json_array"` → result is an array of `{ tab_id, ok, data, error }` objects (best when the sub-prompt produces structured `data` events).
+  - Pass `tab_ids` of length 9 → rejected at the Zod layer with "array must contain at most 8 elements".
+  - Dismiss the "X" on a session card mid-stream → row clears from UI; sub-runs continue server-side until done.
+
 ---
 
 ## Template (copy when adding a new entry)
