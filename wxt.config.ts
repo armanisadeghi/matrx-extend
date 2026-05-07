@@ -108,6 +108,29 @@ export default defineConfig({
         matches: ['<all_urls>'],
       },
     ],
+    // Phase 2 C1.a — frontend bridge. The matrx-frontend admin app at
+    // aimatrx.com (and per-PR Vercel previews / local dev) talks to this
+    // extension via chrome.runtime.sendMessage(extId, …). The matches list
+    // gates which page origins are allowed to deliver those messages.
+    //
+    // Keep in sync with src/lib/origin-allowlist.ts ALLOWED_ORIGIN_PATTERNS.
+    // Both lists answer the same question ("can this origin talk to us?")
+    // for two different transports (externally_connectable here, content
+    // scripts / Broadcast handler in origin-allowlist).
+    //
+    // NOTE: Manifest V3 externally_connectable.matches REJECTS port wildcards
+    // (`http://localhost:*/*`). Bare-host patterns implicitly match any port,
+    // so `http://localhost/*` covers `http://localhost:3000/*`,
+    // `http://localhost:3001/*`, etc.
+    externally_connectable: {
+      matches: [
+        'https://*-armani-sadeghis-projects.vercel.app/*',
+        'https://*.aimatrx.com/*',
+        'https://*.mymatrx.com/*',
+        'http://localhost/*',
+        'http://127.0.0.1/*',
+      ],
+    },
     ...(mode === 'development'
       ? { content_security_policy: { extension_pages: "script-src 'self'; object-src 'self'" } }
       : {}),

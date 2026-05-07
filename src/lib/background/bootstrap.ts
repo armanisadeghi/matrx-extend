@@ -23,16 +23,27 @@ import {
 } from '@/lib/agenda/scanner';
 import { refreshAccessToken } from '@/lib/auth/flow';
 import { logExtensionIdentityOnce } from '@/lib/auth/identity';
+import { hydrateBridgeTrafficEnabled, recordBridgeTraffic } from '@/lib/debug/bridge-traffic';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import { desktopRpc, probeDesktop, startDesktopProbeAlarm } from '@/lib/desktop/bridge';
+import { connectWs, onWsMessage, sendWs } from '@/lib/desktop/ws-client';
 import type { CapturedEvent } from '@/lib/demos/event-capture';
 import { onCapturedEvent } from '@/lib/demos/recorder';
+import {
+  FRONTEND_RPC_CHANNEL,
+  FrontendRpcEnvelopeSchema,
+  type FrontendRpcResponse,
+  handleFrontendRpc,
+} from '@/lib/frontend-bridge/handler';
+import { connectBroadcast } from '@/lib/frontend-bridge/broadcast';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
 import { type StartStreamArgs, cancelStream, startStream } from '@/lib/stream/offscreen-proxy';
 import { setSupabaseSession } from '@/lib/supabase/client';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
-import { startToolDispatcher } from '@/lib/tools/dispatch';
+import { handleWebmcpCall, startToolDispatcher } from '@/lib/tools/dispatch';
+import { registerToolsOnActiveTab } from '@/lib/webmcp/register';
 
 let bootstrapped = false;
 
@@ -40,6 +51,8 @@ export function bootstrapBackground(): void {
   if (bootstrapped) return;
   bootstrapped = true;
   startDebugRelay();
+  // Restore the Debug → Bridges traffic-buffer flag (off by default; persisted).
+  void hydrateBridgeTrafficEnabled();
   log.info('sw', 'background bootstrap (sync)');
   // Emit the runtime identity bundle (extension id, redirect URI, OAuth
   // client id) so any future ID drift is visible in the user's debug log
@@ -72,7 +85,36 @@ export function bootstrapBackground(): void {
       transport: state.transport,
       lastChecked: state.lastChecked,
     });
+    // Phase 2 C2.a — open the persistent WS only when HTTP transport is
+    // active. Native messaging IS already a long-lived bidirectional
+    // channel; doubling up would waste resources.
+    if (state.transport === 'http') {
+      void connectWs();
+    }
   });
+
+  // ── 4. WebMCP page-side bridge: when an allowlisted page finishes
+  //       loading, register matrx-extend's tools on its
+  //       `navigator.modelContext` so external agents on the page can
+  //       discover and call them.
+  registerWebmcpTabUpdateGate();
+
+  // ── 5. Phase 2 C1 — externally_connectable bridge from matrx-frontend.
+  //       Allowlisted page origins (configured in wxt.config.ts) can talk
+  //       to us via chrome.runtime.sendMessage(extId, FRONTEND_RPC envelope).
+  registerFrontendRpcExternalListener();
+
+  // ── 6. Phase 2 C1.c — Supabase Broadcast subscriber for the same
+  //       FRONTEND_RPC envelope shape (per-user channel). Best-effort:
+  //       failures log warnings, don't throw.
+  void connectBroadcast();
+
+  // ── 7. Phase 2 C2 — persistent WebSocket reverse channel with matrx-local.
+  //       Wired via the offscreen document (long-lived) — opens lazily when
+  //       the desktop bridge is reachable over HTTP. If native messaging is
+  //       the active transport, that connection IS the reverse channel and
+  //       we skip WS.
+  registerWsReverseInvocationHandler();
 }
 
 let lastDesktopTransport: 'native' | 'http' | 'none' | null = null;
@@ -88,12 +130,18 @@ function setupAlarms(): void {
       // Only broadcast when transport actually changes — every-30s probes
       // were drowning the debug log.
       if (state.transport !== lastDesktopTransport) {
+        const prev = lastDesktopTransport;
         lastDesktopTransport = state.transport;
         log.info('desktop', `transport changed → ${state.transport}`);
         broadcast(CHANNELS.DESKTOP_AVAILABILITY, {
           transport: state.transport,
           lastChecked: state.lastChecked,
         });
+        // Phase 2 C2 — open WS when HTTP transport just became active
+        // (and we weren't on HTTP before).
+        if (state.transport === 'http' && prev !== 'http') {
+          void connectWs();
+        }
       }
     } else if (alarm.name === ALARMS.AGENDA_SCAN) {
       await scanAndNotify();
@@ -178,6 +226,257 @@ function registerHandlers(): void {
     broadcast(CHANNELS.NET_CAPTURE_EVENT, payload);
     return { ack: true };
   });
+
+  // WebMCP: pages on the allowlist (see src/lib/origin-allowlist.ts) can
+  // call our registered tools through `navigator.modelContext.callTool`.
+  // The webmcp-bridge content script forwards each call here; we resolve
+  // the handler, run it, and reply with `{ ok, result?, error? }`.
+  on<
+    { callId: string; toolName: string; args: unknown },
+    { ok: boolean; result?: unknown; error?: string }
+  >(CHANNELS.WEBMCP_CALL, async (payload, sender) => {
+    const senderUrl = sender.tab?.url ?? sender.url ?? '';
+    if (!senderUrl || !matchesAllowedOrigin(senderUrl)) {
+      return { ok: false, error: 'webmcp: origin not allowed' };
+    }
+    const mode = await readDefaultPermissionMode();
+    return handleWebmcpCall(payload, { permissionMode: mode });
+  });
+}
+
+async function readDefaultPermissionMode(): Promise<'ask' | 'act'> {
+  try {
+    const r = await chrome.storage.local.get(['matrx.settings']);
+    const settings = r['matrx.settings'] as { defaultPermissionMode?: 'ask' | 'act' } | undefined;
+    if (settings?.defaultPermissionMode === 'act') return 'act';
+  } catch {
+    // fall through to default
+  }
+  return 'ask';
+}
+
+function registerWebmcpTabUpdateGate(): void {
+  chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+    if (changeInfo.status !== 'complete') return;
+    const url = tab.url;
+    if (!url || !matchesAllowedOrigin(url)) return;
+    try {
+      const isAdmin = await readIsAdmin();
+      const result = await registerToolsOnActiveTab({ isAdmin, tabId });
+      if (result.ok) {
+        log.info('sw',`registered ${result.count ?? 0} tools on ${url}`);
+      } else if (result.reason && result.reason !== 'WebMCP unavailable') {
+        // Don't log "WebMCP unavailable" — it's the expected state on
+        // any Chrome older than 146.
+        log.info('sw',`register skipped: ${result.reason}`, { url });
+      }
+    } catch (err) {
+      log.warn('sw', `webmcp register failed`, err);
+    }
+  });
+}
+
+async function readIsAdmin(): Promise<boolean> {
+  try {
+    const r = await chrome.storage.local.get([STORAGE_KEYS.IS_ADMIN]);
+    return r[STORAGE_KEYS.IS_ADMIN] === true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Phase 2 C1.b — listen for `chrome.runtime.sendMessage(extId, envelope)`
+ * from allowlisted page origins (configured in `wxt.config.ts`'s
+ * `externally_connectable.matches`). Validate the origin against the same
+ * allowlist used by WebMCP, validate the envelope shape with Zod, route
+ * through `handleFrontendRpc`.
+ */
+function registerFrontendRpcExternalListener(): void {
+  if (!chrome.runtime.onMessageExternal) {
+    log.warn('sw', 'chrome.runtime.onMessageExternal unavailable — frontend bridge disabled');
+    return;
+  }
+  chrome.runtime.onMessageExternal.addListener((msg, sender, sendResponse) => {
+    // Filter to FRONTEND_RPC envelopes only — Chrome may also deliver
+    // messages from other extensions / contexts.
+    if (
+      !msg ||
+      typeof msg !== 'object' ||
+      (msg as { channel?: unknown }).channel !== FRONTEND_RPC_CHANNEL
+    ) {
+      // Not for us; let other listeners (if any) handle it.
+      return false;
+    }
+
+    // Origin gate. Manifest's externally_connectable already gates ON
+    // ORIGIN at the platform layer, but we double-check defensively
+    // because Chrome's ID-based externally_connectable (NOT used here)
+    // bypasses host matching.
+    const senderUrl = sender.url ?? sender.origin ?? '';
+    if (!senderUrl || !matchesAllowedOrigin(senderUrl)) {
+      const requestId =
+        typeof (msg as { requestId?: unknown }).requestId === 'string'
+          ? (msg as { requestId: string }).requestId
+          : '';
+      const reply: FrontendRpcResponse = {
+        ok: false,
+        error: 'origin not allowed',
+        requestId,
+      };
+      sendResponse(reply);
+      log.warn('sw', `frontend-rpc rejected from ${senderUrl}`);
+      return false;
+    }
+
+    const parsed = FrontendRpcEnvelopeSchema.safeParse(msg);
+    if (!parsed.success) {
+      const requestId =
+        typeof (msg as { requestId?: unknown }).requestId === 'string'
+          ? (msg as { requestId: string }).requestId
+          : '';
+      const reply: FrontendRpcResponse = {
+        ok: false,
+        error: `invalid envelope: ${JSON.stringify(parsed.error.format())}`,
+        requestId,
+      };
+      sendResponse(reply);
+      return false;
+    }
+
+    handleFrontendRpc(parsed.data, { url: senderUrl, origin: sender.origin })
+      .then((response) => {
+        // Optional Debug-tab buffer (no-op when disabled).
+        recordBridgeTraffic({
+          stream: 'frontend-rpc',
+          direction: 'in',
+          action: parsed.data.action,
+          requestId: parsed.data.requestId,
+          sender: senderUrl,
+          payload: parsed.data.payload,
+          response,
+          ok: response.ok,
+          error: response.ok ? undefined : response.error,
+        });
+        try {
+          sendResponse(response);
+        } catch {
+          // Channel may have closed; nothing we can do.
+        }
+      })
+      .catch((err) => {
+        const reply: FrontendRpcResponse = {
+          ok: false,
+          error: (err as Error)?.message ?? 'handler crashed',
+          requestId: parsed.data.requestId,
+        };
+        recordBridgeTraffic({
+          stream: 'frontend-rpc',
+          direction: 'in',
+          action: parsed.data.action,
+          requestId: parsed.data.requestId,
+          sender: senderUrl,
+          payload: parsed.data.payload,
+          response: reply,
+          ok: false,
+          error: reply.error,
+        });
+        try {
+          sendResponse(reply);
+        } catch {
+          /* channel closed */
+        }
+      });
+    return true; // keep the message channel open for async sendResponse
+  });
+  log.info('sw', 'frontend-rpc external listener installed');
+}
+
+/**
+ * Phase 2 C2 — register an inbound handler for the WS reverse channel.
+ *
+ * Two kinds of inbound payloads:
+ *
+ *   1. `{ type: "extension.invoke", callId, toolName, args }` — matrx-local
+ *      asks the browser to run a registered tool. Routed through the same
+ *      `handleWebmcpCall` path used by WebMCP and FRONTEND_RPC for uniform
+ *      permission gating.
+ *
+ *   2. `{ type: "ws.catalog-stale" }` — the offscreen document detected a
+ *      tool_catalog_hash mismatch on a pong. Kick off a background HTTP
+ *      RPC `capabilities` refetch so the cached desktop capability state
+ *      is brought back in sync.
+ */
+function registerWsReverseInvocationHandler(): void {
+  onWsMessage((payload) => {
+    if (!payload || typeof payload !== 'object') return;
+    const p = payload as Record<string, unknown>;
+    const type = p.type as string | undefined;
+
+    if (type === 'extension.invoke') {
+      void handleExtensionInvoke(p);
+      return;
+    }
+    if (type === 'ws.catalog-stale') {
+      void handleCatalogStale();
+      return;
+    }
+    // pong / other server frames are observed via this hook for telemetry
+    // but require no SW action.
+  });
+}
+
+async function handleExtensionInvoke(p: Record<string, unknown>): Promise<void> {
+  const callId = typeof p.callId === 'string' ? p.callId : '';
+  const toolName = typeof p.toolName === 'string' ? p.toolName : '';
+  const args = p.args;
+  if (!callId || !toolName) {
+    log.warn('sw', 'ws extension.invoke missing callId/toolName', p);
+    return;
+  }
+  const permissionMode = await readDefaultPermissionMode();
+  const result = await handleWebmcpCall(
+    { callId, toolName, args },
+    { permissionMode },
+  );
+  // Wire result back to the engine.
+  const wireFrame = result.ok
+    ? { type: 'extension.result', callId, ok: true, result: result.result }
+    : {
+        type: 'extension.result',
+        callId,
+        ok: false,
+        error: result.error ?? 'tool failed',
+      };
+  try {
+    await sendWs(wireFrame);
+  } catch (err) {
+    log.warn('sw', `ws extension.result send failed for ${callId}`, (err as Error).message);
+  }
+}
+
+async function handleCatalogStale(): Promise<void> {
+  log.info('sw', 'ws catalog-stale → refetching capabilities');
+  try {
+    const r = await desktopRpc({ command: 'capabilities' });
+    if (!r.ok) {
+      log.warn('sw', 'capabilities refetch failed', r.error);
+      return;
+    }
+    // The bridge state caches health, not capabilities — stash the result
+    // under a stable key so any UI that wants the freshest catalog can pick
+    // it up. We deliberately don't add a new typed cache module here; the
+    // raw RPC response is sufficient until the consumer arrives.
+    await chrome.storage.local.set({
+      'matrx.desktop.lastCapabilities': {
+        data: r.data,
+        fetchedAt: Date.now(),
+      },
+    });
+    log.success('sw', 'capabilities refetched and stashed');
+  } catch (err) {
+    log.warn('sw', 'capabilities refetch threw', (err as Error).message);
+  }
 }
 
 async function rehydrateSupabaseSession(): Promise<void> {

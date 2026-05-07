@@ -90,6 +90,30 @@ export const CHANNELS = {
   PAGE_NAVIGATED: 'page:navigated',
   PAGE_ALREADY_CAPTURED: 'page:already-captured',
 
+  // WebMCP page → SW: a page registered via navigator.modelContext invoked
+  // one of our tools. The webmcp-bridge content script forwards the call
+  // here; the dispatcher runs the handler and replies with the result.
+  WEBMCP_CALL: 'webmcp:call',
+
+  // Frontend bridge (Phase 2 C1) — matrx-frontend admin app sends RPC
+  // envelopes via chrome.runtime.sendMessage(extId, …) (externally_connectable)
+  // or via Supabase Broadcast. This channel constant is for cross-context
+  // messaging WITHIN the extension (e.g., side panel calling the same
+  // routing). The externally-connectable listener uses the literal string
+  // "FRONTEND_RPC" as the envelope's `channel` field, NOT this Chrome
+  // message kind.
+  FRONTEND_RPC: 'frontend:rpc',
+
+  // Persistent WebSocket reverse channel (Phase 2 C2) — offscreen ↔ SW
+  // proxy messages used by ws-client.ts. The actual on-the-wire WS frames
+  // use their own JSON schema (see ws-client.ts) — these channels are
+  // strictly offscreen-document plumbing.
+  WS_SEND: 'ws:send', // SW → offscreen: forward this payload over the WS
+  WS_MESSAGE: 'ws:message', // offscreen → SW: an inbound WS frame
+  WS_STATE: 'ws:state', // offscreen → SW: open / closed transitions
+  WS_START: 'ws:start', // SW → offscreen: open the WS (idempotent)
+  WS_STOP: 'ws:stop', // SW → offscreen: close the WS
+
   // Agenda (SW → sidepanel)
   AGENDA_RUN_NOW: 'agenda:run-now', // SW alarm fired an auto task; sidepanel should switch + run
 } as const;

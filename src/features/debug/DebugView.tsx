@@ -15,6 +15,7 @@ import {
 import { setBackendEnv, setBackendOverride, useBackendConfig } from '@/config/backend';
 import type { BackendEnv } from '@/config/env';
 import { AdminAgentFlagsPanel } from '@/features/debug/AdminAgentFlagsPanel';
+import { BridgesView } from '@/features/debug/BridgesView';
 import { ExtensionIdentityCard } from '@/features/debug/ExtensionIdentityCard';
 import { pingHealth } from '@/lib/api/routes/health';
 import {
@@ -61,6 +62,7 @@ const LEVELS: LogLevel[] = ['info', 'success', 'warn', 'error'];
 export function DebugView() {
   const events = useDebugStore((s) => s.events);
   const clear = useDebugStore((s) => s.clear);
+  const [subview, setSubview] = useState<'log' | 'bridges'>('log');
   const [sources, setSources] = useState<Set<LogSource>>(new Set(SOURCES));
   const [levels, setLevels] = useState<Set<LogLevel>>(new Set(LEVELS));
   const [paused, setPaused] = useState(false);
@@ -135,49 +137,85 @@ export function DebugView() {
         <BackendSwitcher />
         <ContextShapeSwitcher />
         <AdminAgentFlagsPanel />
-        <div className="flex items-center gap-1.5">
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search…"
-            className="h-7 flex-1 rounded-full border-0 bg-secondary/40 px-3 text-xs focus-visible:ring-1"
-          />
-          <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
-            {filtered.length}/{events.length}
-          </span>
-          {errorCount > 0 && (
-            <span className="font-mono text-[10px] tabular-nums text-destructive">
-              {errorCount} err
-            </span>
-          )}
-          <IconBtn title={paused ? 'Resume' : 'Pause'} onClick={() => setPaused((p) => !p)}>
-            {paused ? <Play className="size-3.5" /> : <Pause className="size-3.5" />}
-          </IconBtn>
-          <IconBtn title="Copy all" onClick={() => void copyAll()}>
-            {copied ? (
-              <CheckCircle2 className="size-3.5 text-emerald-500" />
-            ) : (
-              <Clipboard className="size-3.5" />
+        <div className="flex items-center gap-1 rounded-full bg-secondary/40 p-0.5">
+          <button
+            type="button"
+            onClick={() => setSubview('log')}
+            className={cn(
+              'flex-1 rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors',
+              subview === 'log'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
             )}
-          </IconBtn>
-          <IconBtn title="Download .log" onClick={downloadAll}>
-            <Download className="size-3.5" />
-          </IconBtn>
-          <IconBtn title="Clear" onClick={clear}>
-            <Eraser className="size-3.5" />
-          </IconBtn>
+          >
+            Log
+          </button>
+          <button
+            type="button"
+            onClick={() => setSubview('bridges')}
+            className={cn(
+              'flex-1 rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors',
+              subview === 'bridges'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            Bridges
+          </button>
         </div>
-        <Filters
-          options={SOURCES}
-          active={sources as Set<string>}
-          onToggle={(v) => toggleSource(v as LogSource)}
-        />
-        <Filters
-          options={LEVELS}
-          active={levels as Set<string>}
-          onToggle={(v) => toggleLevel(v as LogLevel)}
-        />
+        {subview === 'log' && (
+          <>
+            <div className="flex items-center gap-1.5">
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search…"
+                className="h-7 flex-1 rounded-full border-0 bg-secondary/40 px-3 text-xs focus-visible:ring-1"
+              />
+              <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
+                {filtered.length}/{events.length}
+              </span>
+              {errorCount > 0 && (
+                <span className="font-mono text-[10px] tabular-nums text-destructive">
+                  {errorCount} err
+                </span>
+              )}
+              <IconBtn title={paused ? 'Resume' : 'Pause'} onClick={() => setPaused((p) => !p)}>
+                {paused ? <Play className="size-3.5" /> : <Pause className="size-3.5" />}
+              </IconBtn>
+              <IconBtn title="Copy all" onClick={() => void copyAll()}>
+                {copied ? (
+                  <CheckCircle2 className="size-3.5 text-emerald-500" />
+                ) : (
+                  <Clipboard className="size-3.5" />
+                )}
+              </IconBtn>
+              <IconBtn title="Download .log" onClick={downloadAll}>
+                <Download className="size-3.5" />
+              </IconBtn>
+              <IconBtn title="Clear" onClick={clear}>
+                <Eraser className="size-3.5" />
+              </IconBtn>
+            </div>
+            <Filters
+              options={SOURCES}
+              active={sources as Set<string>}
+              onToggle={(v) => toggleSource(v as LogSource)}
+            />
+            <Filters
+              options={LEVELS}
+              active={levels as Set<string>}
+              onToggle={(v) => toggleLevel(v as LogLevel)}
+            />
+          </>
+        )}
       </div>
+      {subview === 'bridges' && (
+        <div className="flex-1 overflow-y-auto">
+          <BridgesView />
+        </div>
+      )}
+      {subview === 'log' && (
       <div className="flex-1 overflow-y-auto font-mono text-[11px]">
         {filtered.length === 0 && (
           <div className="px-3 py-12 text-center text-muted-foreground">
@@ -225,6 +263,7 @@ export function DebugView() {
           );
         })}
       </div>
+      )}
     </div>
   );
 }

@@ -4,9 +4,16 @@
  * 127.0.0.1 is exempt from Private Network Access prompts in current Chrome,
  * so this works without CORS preflight juggling. Bearer token via a one-time
  * pairing flow (Settings → Pair desktop), persisted in chrome.storage.local.
+ *
+ * The base URL is no longer hardcoded — `getEngineBaseUrl()` (in
+ * `discovery.ts`) resolves the port at runtime by checking the user override,
+ * then a cached probe, then probing 22140-22159 in parallel. If discovery
+ * fails entirely, both `probeHttp` and `rpcHttp` degrade gracefully so the
+ * capability detector at `bridge.ts` flips to `transport: 'none'`.
  */
 
-import { ENV, STORAGE_KEYS } from '@/config/env';
+import { STORAGE_KEYS } from '@/config/env';
+import { getEngineBaseUrl, invalidateEnginePortCache } from '@/lib/desktop/discovery';
 import {
   type DesktopHealth,
   DesktopHealthSchema,
@@ -35,29 +42,42 @@ export async function clearPairToken(): Promise<void> {
 }
 
 export async function probeHttp(): Promise<DesktopHealth | null> {
+  const baseUrl = await getEngineBaseUrl();
+  if (!baseUrl) return null;
   try {
-    const res = await timedFetch(
-      `${ENV.DESKTOP_LOCAL_URL}/health`,
-      { method: 'GET' },
-      HEALTH_TIMEOUT_MS,
-    );
-    if (!res.ok) return null;
+    const res = await timedFetch(`${baseUrl}/health`, { method: 'GET' }, HEALTH_TIMEOUT_MS);
+    if (!res.ok) {
+      // The cached port responded with non-2xx, which usually means we hit
+      // some other unrelated service on that port. Drop the cache so the
+      // next probe re-discovers a real engine.
+      await invalidateEnginePortCache();
+      return null;
+    }
     const json = await res.json();
     const parsed = DesktopHealthSchema.safeParse(json);
-    return parsed.success ? parsed.data : null;
+    if (!parsed.success) {
+      await invalidateEnginePortCache();
+      return null;
+    }
+    return parsed.data;
   } catch {
+    await invalidateEnginePortCache();
     return null;
   }
 }
 
 export async function rpcHttp(req: DesktopRpcRequest): Promise<DesktopRpcResponse> {
+  const baseUrl = await getEngineBaseUrl();
+  if (!baseUrl) {
+    return { ok: false, error: 'desktop engine not reachable — start matrx-local or set the port override in Settings' };
+  }
   const token = await getPairToken();
   if (!token) {
     return { ok: false, error: 'desktop not paired — open Settings → Pair desktop' };
   }
   try {
     const res = await timedFetch(
-      `${ENV.DESKTOP_LOCAL_URL}/extension/rpc`,
+      `${baseUrl}/extension/rpc`,
       {
         method: 'POST',
         headers: {
@@ -70,11 +90,17 @@ export async function rpcHttp(req: DesktopRpcRequest): Promise<DesktopRpcRespons
     );
     if (!res.ok) {
       const errText = await res.text().catch(() => res.statusText);
+      // 5xx / connection-refused-shaped errors invalidate the cache so the
+      // next call re-discovers (engine may have restarted on a new port).
+      if (res.status >= 500 || res.status === 0) {
+        await invalidateEnginePortCache();
+      }
       return { ok: false, error: `${res.status}: ${errText}` };
     }
     const json = await res.json();
     return json as DesktopRpcResponse;
   } catch (err) {
+    await invalidateEnginePortCache();
     return { ok: false, error: (err as Error).message };
   }
 }

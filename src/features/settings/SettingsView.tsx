@@ -23,6 +23,11 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/hooks/use-auth';
 import { useDesktopBridge } from '@/hooks/use-desktop';
+import {
+  getEnginePortOverride,
+  invalidateEnginePortCache,
+  setEnginePortOverride,
+} from '@/lib/desktop/discovery';
 import { clearPairToken, setPairToken } from '@/lib/desktop/http';
 import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
@@ -38,6 +43,8 @@ export function SettingsView() {
   const settings = useSettingsStore();
   const [pairTokenInput, setPairTokenInput] = useState('');
   const [agents, setAgents] = useState<AgxAgent[]>([]);
+  const [enginePortInput, setEnginePortInput] = useState('');
+  const [enginePortSaved, setEnginePortSaved] = useState<number | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -50,6 +57,34 @@ export function SettingsView() {
       cancelled = true;
     };
   }, [user]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const p = await getEnginePortOverride();
+      if (cancelled) return;
+      setEnginePortSaved(p);
+      setEnginePortInput(p === null ? '' : String(p));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleSaveEnginePort = async () => {
+    const trimmed = enginePortInput.trim();
+    if (trimmed === '') {
+      await setEnginePortOverride(null);
+      await invalidateEnginePortCache();
+      setEnginePortSaved(null);
+      return;
+    }
+    const n = Number(trimmed);
+    if (!Number.isInteger(n) || n < 1 || n > 65535) return;
+    await setEnginePortOverride(n);
+    await invalidateEnginePortCache();
+    setEnginePortSaved(n);
+  };
 
   const handleClearLocalData = async () => {
     if (
@@ -243,6 +278,31 @@ export function SettingsView() {
               {desktop.transport === 'http' && (
                 <ActionRow label="Forget pair code" onClick={() => void clearPairToken()} />
               )}
+              <div className="flex items-center gap-2 px-3.5 py-2">
+                <span className="shrink-0 text-sm">Local engine port</span>
+                <Input
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={enginePortInput}
+                  onChange={(e) =>
+                    setEnginePortInput(e.target.value.replace(/[^0-9]/g, ''))
+                  }
+                  placeholder="auto"
+                  className="h-7 w-20 rounded-full border-0 bg-secondary text-right focus-visible:ring-1"
+                />
+                <Button
+                  size="sm"
+                  className="h-7 rounded-full px-3"
+                  onClick={() => void handleSaveEnginePort()}
+                >
+                  {enginePortSaved === null ? 'Set' : 'Save'}
+                </Button>
+                {enginePortSaved !== null && (
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground/70">
+                    override
+                  </span>
+                )}
+              </div>
             </Card>
           </Collapsible>
 

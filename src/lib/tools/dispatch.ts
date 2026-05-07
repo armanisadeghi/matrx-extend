@@ -394,3 +394,108 @@ function requestConfirmation(
     broadcast(CHANNELS.TOOL_CONFIRM_REQUEST, req);
   });
 }
+
+interface WebmcpCallPayload {
+  callId: string;
+  toolName: string;
+  args: unknown;
+}
+
+interface WebmcpCallResponse {
+  ok: boolean;
+  result?: unknown;
+  error?: string;
+}
+
+/**
+ * Handle a WebMCP page → SW tool call. Looks up the registered handler,
+ * validates args, runs it through the same permission gate the
+ * server-driven path uses, and returns a structured response.
+ *
+ * Restrictions vs. the streaming dispatcher:
+ *   - Only `read` and `action` tier tools are callable from a page. Other
+ *     tiers (`ask-user`, `privileged`) are refused with a structured error,
+ *     since the page has no UX surface for the inline approval cards.
+ *   - Confirmation prompts in `ask` mode still use the same TOOL_CONFIRM
+ *     channel — the chat sidepanel renders them. If no sidepanel is open,
+ *     the confirmation times out after 5 minutes (matches the existing
+ *     dispatcher behaviour).
+ */
+export async function handleWebmcpCall(
+  payload: WebmcpCallPayload,
+  opts: { permissionMode: 'ask' | 'act' },
+): Promise<WebmcpCallResponse> {
+  const { callId, toolName, args } = payload;
+  if (!callId || !toolName) {
+    return { ok: false, error: 'webmcp: missing callId or toolName' };
+  }
+
+  const handler = lookupTool(toolName) ?? lookupTool(resolveToolName(toolName).local);
+  if (!handler) {
+    return { ok: false, error: `webmcp: tool '${toolName}' not registered` };
+  }
+
+  if (handler.tier === 'ask-user' || handler.tier === 'privileged') {
+    return {
+      ok: false,
+      error: `webmcp: tool '${toolName}' is ${handler.tier}-tier and not callable from a page`,
+    };
+  }
+
+  const parsed = handler.argsSchema.safeParse(args);
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: `webmcp: args failed schema: ${JSON.stringify(parsed.error.format())}`,
+    };
+  }
+
+  if (handler.required_optional_permissions?.length) {
+    const granted = await hasOptionalPermissions(
+      handler.required_optional_permissions as OptionalPermission[],
+    );
+    if (!granted) {
+      return {
+        ok: false,
+        error: `webmcp: required optional permission(s) not granted: ${handler.required_optional_permissions.join(', ')}`,
+      };
+    }
+  }
+
+  const ctx: ToolContext = {
+    conversationId: null,
+    runId: `webmcp-${callId}`,
+    callId,
+    agentName: null,
+    permissionMode: opts.permissionMode,
+  };
+
+  const effectiveTier = handler.tierFor ? handler.tierFor(parsed.data as never) : handler.tier;
+  if (effectiveTier === 'action' && opts.permissionMode === 'ask') {
+    const allowed = await requestConfirmation(handler, parsed.data, ctx, undefined);
+    if (!allowed.allow) {
+      return { ok: false, error: allowed.reason ?? 'User denied this action' };
+    }
+  }
+
+  try {
+    const result = await handler.run(parsed.data as never, ctx);
+    broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+      callId,
+      toolName: handler.name,
+      phase: 'completed',
+      output: result,
+    });
+    return { ok: true, result };
+  } catch (err) {
+    const message = (err as Error)?.message ?? String(err);
+    log.error('sw', `webmcp ${handler.name} error`, message);
+    broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+      callId,
+      toolName: handler.name,
+      phase: 'error',
+      message,
+    });
+    return { ok: false, error: message };
+  }
+}

@@ -8,6 +8,7 @@
 
 import { streamFetch } from '@/lib/api/stream';
 import { log, startDebugRelay } from '@/lib/debug/log';
+import { startWsOffscreenRuntime } from '@/lib/desktop/ws-offscreen';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
@@ -18,6 +19,12 @@ import {
 
 startDebugRelay();
 log.info('sys', 'offscreen ready');
+
+// Phase 2 C2.a — co-locate the persistent WS reverse channel runtime in the
+// same offscreen document. MV3 permits only one offscreen document per
+// extension; the streaming reasons (BLOBS) keep this doc alive, and the WS
+// runtime piggybacks on that same lifetime.
+startWsOffscreenRuntime();
 
 const inflight = new Map<string, AbortController>();
 

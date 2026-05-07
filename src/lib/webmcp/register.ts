@@ -7,19 +7,21 @@
  *   1. We call this from a content script or via chrome.scripting MAIN-world
  *      injection. The script registers each tool's name + description +
  *      input schema with `navigator.modelContext.registerTool`.
- *   2. When something calls one of our registered tools, the page-side stub
- *      sends `{ __matrx_webmcp_call: true, name, args }` over postMessage.
- *      A listener installed on the same tab forwards to the SW dispatcher
- *      and returns the response.
+ *   2. When the page invokes a registered tool, the run-stub posts
+ *      `{ __matrx_webmcp_call: true, callId, toolName, args }` to the
+ *      window. The `webmcp-bridge` content script (see
+ *      `src/entrypoints/webmcp-bridge.content.ts`) listens for these,
+ *      forwards them to the SW via `chrome.runtime.sendMessage`, and
+ *      replies with `{ __matrx_webmcp_result: true, callId, ok, result,
+ *      error }` keyed by the same `callId`.
  *
  * Feature-gated: WebMCP shipped in Chrome 146 (Feb 2026). On older Chromes,
- * `register()` is a no-op.
+ * `registerToolsOnActiveTab` returns `{ ok: false, reason: 'WebMCP unavailable' }`.
  *
- * STATUS: scaffold. The dispatcher integration (item 2) is left for the
- * Pilot tab milestone — the registration half is what's interesting now,
- * since it lets our tools show up in the Chrome built-in AI tool picker
- * and similar surfaces where being "available" matters even before any
- * external agent calls us.
+ * The race condition fix: each `run()` invocation generates a fresh
+ * `callId` (via `crypto.randomUUID`) and the response listener keys on
+ * `data.callId === ourCallId`. Multiple in-flight calls of the same tool
+ * therefore can't crosstalk.
  */
 
 import { listAllHandlers } from '@/lib/tools/registry';
@@ -46,25 +48,35 @@ export function buildRegistrablePilotTools(opts: { isAdmin?: boolean } = {}): To
 }
 
 /**
- * Inject WebMCP registrations into the active tab. Only operates when the
- * page exposes `navigator.modelContext.registerTool`. Returns the count of
+ * Inject WebMCP registrations into a tab. Only operates when the page
+ * exposes `navigator.modelContext.registerTool`. Returns the count of
  * tools registered.
  *
- * NOTE: this only registers the SHAPE — when the page actually invokes one
- * of our tools, we still need a postMessage listener on the page side that
- * forwards into the SW. Wire that during the Pilot tab milestone.
+ * Pass `tabId` to target a specific tab (e.g. from a `chrome.tabs.onUpdated`
+ * gate). Without it, falls back to the active tab in the focused window
+ * (useful for manual / debug invocations).
+ *
+ * The page → SW round-trip is handled by the `webmcp-bridge` content
+ * script (`src/entrypoints/webmcp-bridge.content.ts`), which listens for
+ * `__matrx_webmcp_call` events posted by the run-stub installed below
+ * and dispatches them through `WEBMCP_CALL` to the SW handler.
  */
 export async function registerToolsOnActiveTab(opts: {
   isAdmin?: boolean;
+  tabId?: number;
 } = {}): Promise<{ ok: boolean; count?: number; reason?: string }> {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab?.id) return { ok: false, reason: 'No active tab' };
+  let tabId = opts.tabId;
+  if (typeof tabId !== 'number') {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id) return { ok: false, reason: 'No active tab' };
+    tabId = tab.id;
+  }
 
   const tools = buildRegistrablePilotTools({ isAdmin: opts.isAdmin });
 
   try {
     const [first] = await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
+      target: { tabId },
       world: 'MAIN',
       func: (specs: ToolSpec[]) => {
         const mc = (navigator as unknown as {
@@ -87,26 +99,53 @@ export async function registerToolsOnActiveTab(opts: {
               inputSchema: t.inputSchema,
               run: (args: unknown) =>
                 new Promise((resolve, reject) => {
-                  // Page-side stub forwards the call back to the extension.
+                  // Per-call ID isolates concurrent invocations of the
+                  // same tool. The bridge content script echoes it back
+                  // verbatim in the response.
+                  const callId =
+                    typeof crypto !== 'undefined' &&
+                    typeof crypto.randomUUID === 'function'
+                      ? crypto.randomUUID()
+                      : `webmcp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+                  let timer: number | undefined;
                   const handler = (event: MessageEvent) => {
+                    if (event.source !== window) return;
                     const data = event.data as
-                      | { __matrx_webmcp_response?: true; toolName?: string; result?: unknown; error?: string }
+                      | {
+                          __matrx_webmcp_result?: true;
+                          callId?: string;
+                          ok?: boolean;
+                          result?: unknown;
+                          error?: string;
+                        }
                       | undefined;
                     if (
-                      data?.__matrx_webmcp_response &&
-                      data.toolName === t.name
+                      !data ||
+                      data.__matrx_webmcp_result !== true ||
+                      data.callId !== callId
                     ) {
-                      window.removeEventListener('message', handler);
-                      if (data.error) reject(new Error(data.error));
-                      else resolve(data.result);
+                      return;
+                    }
+                    window.removeEventListener('message', handler);
+                    if (timer !== undefined) clearTimeout(timer);
+                    if (data.ok && !data.error) {
+                      resolve(data.result);
+                    } else {
+                      reject(new Error(data.error ?? 'matrx tool error'));
                     }
                   };
                   window.addEventListener('message', handler);
                   window.postMessage(
-                    { __matrx_webmcp_call: true, toolName: t.name, args },
-                    '*',
+                    {
+                      __matrx_webmcp_call: true,
+                      callId,
+                      toolName: t.name,
+                      args,
+                    },
+                    window.location.origin,
                   );
-                  setTimeout(() => {
+                  timer = window.setTimeout(() => {
                     window.removeEventListener('message', handler);
                     reject(new Error('matrx tool timeout'));
                   }, 60_000);

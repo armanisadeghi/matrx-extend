@@ -24,11 +24,13 @@ export type LogSource =
   | 'stream'
   | 'scrape'
   | 'desktop'
+  | 'desktop-ws-offscreen'
   | 'supabase'
   | 'sw'
   | 'msg'
   | 'ui'
-  | 'sys';
+  | 'sys'
+  | 'frontend-bridge';
 
 export interface DebugEvent {
   id: string;
