@@ -117,7 +117,7 @@ export default defineConfig({
       'http://localhost:8000/*',
       'https://aimatrx.com/*',
       'https://*.aimatrx.com/*',
-      'https://txzxabzwovsujtloxrus.supabase.co/*',
+      'https://db.matrxserver.com/*',
       'http://127.0.0.1:22180/*',
     ],
     // <all_urls> moved out of host_permissions (roadmap item #10). The user

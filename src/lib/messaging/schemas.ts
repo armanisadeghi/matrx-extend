@@ -117,6 +117,11 @@ export const CHANNELS = {
   // Agenda (SW → sidepanel)
   AGENDA_RUN_NOW: 'agenda:run-now', // SW alarm fired an auto task; sidepanel should switch + run
 
+  // Context menus (SW → sidepanel). Right-click → "Ask Matrx about
+  // selection" stashes the selected text and broadcasts here; the
+  // sidepanel switches to the chat tab and pre-fills the draft.
+  CHAT_DRAFT_FROM_SELECTION: 'chat:draft-from-selection',
+
   // Parallel-runs orchestration (SW → sidepanel) — `parallel_for_each_tab`
   // tool spawns N child agent streams; each lifecycle event (started, text
   // delta, data, completed, error, timeout, session_finished) is broadcast

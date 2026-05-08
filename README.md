@@ -415,7 +415,7 @@ Copy `.env.example` (already there as `.env.development` / `.env.production`) an
 
 | Var | Required | Notes |
 |---|---|---|
-| `WXT_SUPABASE_URL` | yes | Project URL — `https://txzxabzwovsujtloxrus.supabase.co` |
+| `WXT_SUPABASE_URL` | yes | Project URL — `https://db.matrxserver.com` |
 | `WXT_SUPABASE_PUBLISHABLE_KEY` | yes | New `sb_publishable_*` key (replaces legacy anon key) |
 | `WXT_EXTENSION_OAUTH_CLIENT_ID` | yes for sign-in | Public PKCE client registered in Supabase OAuth dashboard with redirect `https://<EXTENSION_ID>.chromiumapp.org/` |
 | `WXT_DEFAULT_BACKEND` | optional | `prod` / `staging` / `dev` / `local` |

@@ -6,6 +6,7 @@ import { useAgendaListener } from '@/hooks/use-agenda-listener';
 import { useAuth } from '@/hooks/use-auth';
 import { useAutoExtract } from '@/hooks/use-auto-extract';
 import { useAutoScrape } from '@/hooks/use-auto-scrape';
+import { useContextMenuListener } from '@/hooks/use-context-menu-listener';
 import { useParallelEventBridge } from '@/hooks/use-parallel-event-bridge';
 import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
@@ -109,6 +110,11 @@ export function App() {
   // sidepanel-side parallel-runs store so the Tasks tab's panel always
   // has fresh state — even before the user opens that tab.
   useParallelEventBridge();
+
+  // Mount ONCE: listens for the right-click "Ask Matrx about selection"
+  // context menu (SW-side) and drains any cold-open pending draft from
+  // chrome.storage.session.
+  useContextMenuListener();
 
   // Pre-warm the active tab's chunk. Fires on mount (so the default Chat
   // view is already fetched by the time Suspense reaches it — no flash on

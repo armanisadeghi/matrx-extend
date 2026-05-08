@@ -53,6 +53,7 @@ import type {
 } from '@/lib/video/video-types';
 import { setSupabaseSession } from '@/lib/supabase/client';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
+import { setupContextMenus } from '@/lib/context-menus/setup';
 import { startContentScriptRegistrar } from '@/lib/permissions/content-scripts';
 import { handleWebmcpCall, recordAssignedTab, startToolDispatcher } from '@/lib/tools/dispatch';
 import { registerToolsOnActiveTab } from '@/lib/webmcp/register';
@@ -133,6 +134,11 @@ export function bootstrapBackground(): void {
   //       the active transport, that connection IS the reverse channel and
   //       we skip WS.
   registerWsReverseInvocationHandler();
+
+  // ── 7b. Right-click context menus. "Ask Matrx about \"%s\"" pre-fills
+  //        the chat draft with the page selection; "Open Matrx side panel"
+  //        is a fallback for users who haven't pinned the action button.
+  setupContextMenus();
 
   // ── 8. Pilot session lifecycle (CLAUDE.md roadmap item #9).
   //       Watch for tab / group removal so we can reset the persisted pilot
