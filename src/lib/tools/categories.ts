@@ -169,7 +169,7 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'debug',
     label: 'Debugger / DevTools (admin)',
     description:
-      'Chrome DevTools Protocol: full-page screenshots, accessibility tree dumps, network request capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print, console message reads.',
+      'Chrome DevTools Protocol: full-page screenshots, accessibility tree dumps, network request capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print, console message reads. Plus host diagnostics: CPU / memory / display info and active declarativeNetRequest blocking rules.',
     list_tool_name: 'list_debug_tools',
     admin_only: true,
   },
@@ -361,6 +361,11 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   read_console_messages: 'debug',
   read_network_requests: 'debug',
   get_request_body: 'debug',
+  // System / DNR diagnostics — admin, read-only. Live in `debug` because
+  // they're "what's happening on the host / what rules are active?"
+  // diagnostic tools, same family as the CDP read-side.
+  get_system_info: 'debug',
+  list_network_blocking_rules: 'debug',
 
   // ─── cookies (admin) ────────────────────────────────────────────────────
   get_cookies: 'cookies',

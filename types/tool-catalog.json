@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-08T20:32:53.321Z",
+  "generated_at": "2026-05-08T20:56:00.306Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -88,6 +88,8 @@
     "get_cookies",
     "cdp_attached_tabs",
     "cdp_perf_metrics",
+    "get_system_info",
+    "list_network_blocking_rules",
     "webmcp_check_availability",
     "webmcp_list_page_tools",
     "list_demos",
@@ -203,6 +205,8 @@
     "get_cookies",
     "cdp_attached_tabs",
     "cdp_perf_metrics",
+    "get_system_info",
+    "list_network_blocking_rules",
     "webmcp_check_availability",
     "webmcp_list_page_tools",
     "webmcp_call_page_tool",
@@ -361,6 +365,8 @@
     "read_console_messages",
     "read_network_requests",
     "get_request_body",
+    "get_system_info",
+    "list_network_blocking_rules",
     "webmcp_check_availability",
     "webmcp_list_page_tools",
     "webmcp_call_page_tool",
@@ -678,7 +684,7 @@
     {
       "category": "debug",
       "label": "Debugger / DevTools (admin)",
-      "description": "Chrome DevTools Protocol: full-page screenshots, accessibility tree dumps, network request capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print, console message reads.",
+      "description": "Chrome DevTools Protocol: full-page screenshots, accessibility tree dumps, network request capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print, console message reads. Plus host diagnostics: CPU / memory / display info and active declarativeNetRequest blocking rules.",
       "list_tool": "list_debug_tools",
       "admin_only": true,
       "tool_names": [
@@ -700,6 +706,8 @@
         "read_console_messages",
         "read_network_requests",
         "get_request_body",
+        "get_system_info",
+        "list_network_blocking_rules",
         "cdp_session",
         "cdp_emulate"
       ]
@@ -1112,7 +1120,7 @@
     },
     {
       "name": "list_debug_tools",
-      "description": "Full schemas for tools in the \"Debugger / DevTools (admin)\" category (debug). Chrome DevTools Protocol: full-page screenshots, accessibility tree dumps, network request capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print, console message reads. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "description": "Full schemas for tools in the \"Debugger / DevTools (admin)\" category (debug). Chrome DevTools Protocol: full-page screenshots, accessibility tree dumps, network request capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print, console message reads. Plus host diagnostics: CPU / memory / display info and active declarativeNetRequest blocking rules. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
       "category": "advanced",
       "input_schema": {
@@ -5247,6 +5255,62 @@
       "requires_broad_host_access": false,
       "admin_only": true,
       "surface_bundles": [
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
+      ]
+    },
+    {
+      "name": "get_system_info",
+      "description": "Snapshot of the host device: CPU (architecture, model, core count, per-core load), memory (total / available bytes), and connected displays (id, name, bounds, DPR, primary flag). Useful for fan-out sizing, screenshot scaling, and memory-pressure-aware pagination. Read-only and admin-gated.",
+      "tier": "read",
+      "category": "debug",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "system.cpu",
+        "system.memory",
+        "system.display"
+      ],
+      "required_optional_permissions": [],
+      "requires_broad_host_access": false,
+      "admin_only": true,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
+      ]
+    },
+    {
+      "name": "list_network_blocking_rules",
+      "description": "List the active declarativeNetRequest rules for this extension: dynamic (persisted across reloads) and session (in-memory only). Diagnostic for \"why is request X being blocked / redirected?\" when our own privacy-respecting blocking rules are in effect. Read-only, admin-gated, returns rule definitions only — does not surface any traffic.",
+      "tier": "read",
+      "category": "debug",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [
+        "declarativeNetRequestWithHostAccess"
+      ],
+      "required_optional_permissions": [],
+      "requires_broad_host_access": false,
+      "admin_only": true,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
         "pilot+privileged"
       ],
       "supported_browsers": [

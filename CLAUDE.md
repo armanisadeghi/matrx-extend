@@ -91,7 +91,7 @@ core upfront; everything else is on demand. Counts are live as of
 | `advanced` | 22 | `list_advanced_tools` | – (privileged) |
 | `demos` | 5 | `list_demos_tools` | – |
 | `guidance` | 4 | `list_guidance_tools` | – |
-| `debug` | 20 | `list_debug_tools` | – (admin + CDP) |
+| `debug` | 22 | `list_debug_tools` | – (admin + CDP / system) |
 | `cookies` | 4 | `list_cookies_tools` | – (admin) |
 | `webmcp` | 4 | `list_webmcp_tools` | – (admin) |
 
@@ -483,11 +483,15 @@ Shipped:
       `get_element_at_point`, `inspect_element`, `get_element_details`,
       `click_element`, `type_into_element`, `scroll_page`, `wait_for`.
 - [x] Add to base: `system.cpu`, `system.memory`, `system.display`,
-      `declarativeNetRequestWithHostAccess` (2026-05-07; preemptive — no
-      consumer code yet but the CLAUDE.md item explicitly listed them as
-      "Add to base", and they don't widen the install-dialog warnings —
-      `system.*` permissions are silent and DNR-with-host-access is
-      gated by whatever host_permissions the user grants).
+      `declarativeNetRequestWithHostAccess` (2026-05-07; initially
+      preemptive). **2026-05-08: wired to real consumers** so the CWS
+      reviewer's "declared but unused" rule isn't tripped — the same
+      rule that flagged `contextMenus` on the v0.1.4 published build.
+      `chrome.system.cpu/memory/display` are exercised by the new
+      admin-only `get_system_info` diagnostic tool; the DNR permission
+      is exercised by `list_network_blocking_rules`. Both live in the
+      `debug` category, read-tier, no side effects. Handlers in
+      [src/lib/tools/handlers/system-info.ts](./src/lib/tools/handlers/system-info.ts).
 
 ### 11. 🔨 Voice loop (TASK-002)
 **Why:** parity with the Next.js app's voice features and hands-free

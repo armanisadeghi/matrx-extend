@@ -178,6 +178,11 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   cdp_emulate_device: ['activeTab'],
   cdp_clear_emulation: [],
 
+  // System / DNR diagnostics. Each row exercises exactly the manifest
+  // permission listed; no host or activeTab needed.
+  get_system_info: ['system.cpu', 'system.memory', 'system.display'],
+  list_network_blocking_rules: ['declarativeNetRequestWithHostAccess'],
+
   // recording (CDP-backed; uses scripting + downloads on export)
   record_gif: ['activeTab', 'tabs', 'scripting', 'downloads'],
 

@@ -398,6 +398,34 @@ fi
 # page could not be loaded."
 CURRENT_STEP="build-store"
 step "6/8  Build STORE zip (key removed)"
+
+# Purge stale zips from previous releases. If we leave them around,
+# the file picker in the Chrome Web Store dashboard shows every prior
+# version's store zip alongside the new one — and "0.1.4" sorts
+# next to "0.1.14" in most file pickers, so it's trivially easy to
+# grab the wrong file. The CWS rejected v0.1.14's upload exactly this
+# way (manifest version 0.1.4, "not larger than published 0.1.4").
+# After this purge, .output/ holds exactly the two zips this run is
+# about to produce — nothing else to mis-click.
+#
+# Safety: the source of truth for any prior release is its git tag;
+# a contributor who actually needs an older zip can always
+# `git checkout vX.Y.Z && pnpm zip`. There's no value in preserving
+# build artifacts here.
+STALE_ZIPS=$(find "$OUTPUT_DIR" -maxdepth 1 -type f \( \
+    -name "${PROJECT_NAME}-*-store.zip" -o \
+    -name "${PROJECT_NAME}-*-local.zip" -o \
+    -name "${PROJECT_NAME}-*-chrome.zip" \
+\) 2>/dev/null | wc -l | tr -d ' ')
+if [[ "$STALE_ZIPS" -gt 0 ]]; then
+    find "$OUTPUT_DIR" -maxdepth 1 -type f \( \
+        -name "${PROJECT_NAME}-*-store.zip" -o \
+        -name "${PROJECT_NAME}-*-local.zip" -o \
+        -name "${PROJECT_NAME}-*-chrome.zip" \
+    \) -delete
+    ok "Purged $STALE_ZIPS stale zip(s) from $OUTPUT_DIR/"
+fi
+
 rm -f "$WXT_ZIP_OUT" "$LOCAL_ZIP" "$STORE_ZIP"
 _key_comment_out
 pnpm zip
@@ -481,7 +509,11 @@ echo -e "   ${CYAN}1.${NC} Open the Chrome Web Store dashboard:"
 echo -e "      ${CYAN}${WEBSTORE_UPLOAD_URL}${NC}"
 echo -e "   ${CYAN}2.${NC} Pick the Matrx Extend item, click ${BOLD}\"Package\"${NC} → ${BOLD}\"Upload new package\"${NC}"
 echo -e "   ${CYAN}3.${NC} Drop the ${BOLD}store${NC} zip:"
-echo -e "      ${CYAN}${STORE_ABS}${NC}"
+echo -e ""
+echo -e "      ${BOLD}${GREEN}${STORE_ABS}${NC}"
+echo -e ""
+echo -e "      ${DIM}(.output/ contains ONLY this version's zips —${NC}"
+echo -e "      ${DIM} prior releases were purged so you can't mis-click.)${NC}"
 echo -e "   ${CYAN}4.${NC} Update the change-notes field, then ${BOLD}\"Submit for review\"${NC}"
 echo -e "   ${CYAN}5.${NC} For local dev: install the ${BOLD}local${NC} zip unpacked at chrome://extensions"
 echo -e "      (or just ${DIM}pnpm dev${NC})"
@@ -490,3 +522,10 @@ echo -e "${DIM}  Reminder: never upload the local zip — it carries the dev key
 echo -e "${DIM}  and the Web Store will reject it. Full incident:${NC}"
 echo -e "${DIM}    .research/v0.1.4-auth-incident.md${NC}"
 echo ""
+
+# Reveal the store zip in Finder on macOS so the upload-file picker
+# opens to a folder that contains exactly the file you want — no
+# scrolling past nine prior-version zips.
+if [[ "$(uname -s)" == "Darwin" ]] && command -v open >/dev/null 2>&1; then
+    open -R "$STORE_ABS" 2>/dev/null || true
+fi

@@ -1,14 +1,14 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-08T20:32:53.321Z
+Generated: 2026-05-08T20:56:00.306Z
 
-- **Total tools:** 168
-- **Assistant bundle:** 74 tools (read-only)
-- **Pilot bundle:** 138 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 168 tools
+- **Total tools:** 170
+- **Assistant bundle:** 76 tools (read-only)
+- **Pilot bundle:** 140 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 170 tools
 
 
-## Tier: read (74)
+## Tier: read (76)
 
 ### `list_browser_tools`
 
@@ -250,7 +250,7 @@ Full schemas for tools in the "Guidance (user-saved clues)" category (guidance).
 
 ### `list_debug_tools`
 
-Full schemas for tools in the "Debugger / DevTools (admin)" category (debug). Chrome DevTools Protocol: full-page screenshots, accessibility tree dumps, network request capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print, console message reads. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+Full schemas for tools in the "Debugger / DevTools (admin)" category (debug). Chrome DevTools Protocol: full-page screenshots, accessibility tree dumps, network request capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print, console message reads. Plus host diagnostics: CPU / memory / display info and active declarativeNetRequest blocking rules. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1498,6 +1498,40 @@ Read Performance.getMetrics for a tab. Returns { Documents, Frames, JSHeapUsedSi
       "type": "integer"
     }
   },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `get_system_info`
+
+Snapshot of the host device: CPU (architecture, model, core count, per-core load), memory (total / available bytes), and connected displays (id, name, bounds, DPR, primary flag). Useful for fan-out sizing, screenshot scaling, and memory-pressure-aware pagination. Read-only and admin-gated.
+
+- **Required permissions:** `system.cpu`, `system.memory`, `system.display`
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_network_blocking_rules`
+
+List the active declarativeNetRequest rules for this extension: dynamic (persisted across reloads) and session (in-memory only). Diagnostic for "why is request X being blocked / redirected?" when our own privacy-respecting blocking rules are in effect. Read-only, admin-gated, returns rule definitions only — does not surface any traffic.
+
+- **Required permissions:** `declarativeNetRequestWithHostAccess`
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
   "additionalProperties": false,
   "default": {},
   "$schema": "http://json-schema.org/draft-07/schema#"

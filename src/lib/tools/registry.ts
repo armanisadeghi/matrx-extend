@@ -43,6 +43,7 @@ import { page_ref_handlers } from '@/lib/tools/handlers/page-refs';
 import { privileged_handlers, privileged_read_handlers } from '@/lib/tools/handlers/privileged';
 import { read_handlers } from '@/lib/tools/handlers/read';
 import { record_handlers } from '@/lib/tools/handlers/record';
+import { system_info_handlers } from '@/lib/tools/handlers/system-info';
 import { video_handlers } from '@/lib/tools/handlers/video';
 import { demo_handlers } from '@/lib/tools/handlers/demos';
 import { guidance_handlers } from '@/lib/tools/handlers/guidance';
@@ -95,6 +96,8 @@ const ALL: AnyToolHandler[] = [
   ...pagecapture_handlers,
   ...cookies_handlers,
   ...cdp_handlers,
+  // ─── system / DNR diagnostics (admin) ──────────────────────────────────
+  ...system_info_handlers,
   // ─── webmcp ────────────────────────────────────────────────────────────
   ...webmcp_handlers,
   // ─── ask-user ──────────────────────────────────────────────────────────
