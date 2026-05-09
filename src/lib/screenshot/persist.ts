@@ -17,6 +17,8 @@
 
 import { uploadFile } from '@/lib/api/routes/files';
 import { log } from '@/lib/debug/log';
+import { broadcast } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { saveScreenshot, type ScreenshotSource } from '@/lib/supabase/queries';
 import { normalizeUrl } from '@/lib/url/match';
 
@@ -36,6 +38,26 @@ export interface PersistResult {
   fileId: string | null;
   fileUrl: string | null;
   screenshotId: string | null;
+}
+
+/**
+ * Payload for the SCREENSHOT_SAVED broadcast. Receivers (the Screenshots
+ * side-panel gallery) can either re-query Supabase for the canonical URL
+ * or optimistically prepend a row built from these fields.
+ */
+export interface ScreenshotSavedPayload {
+  screenshotId: string;
+  fileId: string;
+  fileUrl: string | null;
+  pageUrlCanonical: string;
+  pageUrlFull: string;
+  pageTitle: string | null;
+  width: number;
+  height: number;
+  mimeType: string;
+  byteLength: number;
+  source: ScreenshotSource;
+  capturedAt: string;
 }
 
 /**
@@ -100,6 +122,31 @@ export async function persistScreenshot(input: PersistInput): Promise<PersistRes
     screenshotId = row?.id ?? null;
   } catch (err) {
     log.warn('sw', 'persistScreenshot — wbx_screenshot insert failed', err);
+  }
+
+  // Notify any open Screenshots tab to refresh — independent of the
+  // tool dispatcher's TOOL_TIMELINE_EVENT (which only fires for the
+  // streaming-agent code path; the user's "Take screenshot" button
+  // and the Tools-tab manual run both bypass that). Same-context
+  // listeners won't receive this (chrome.runtime.sendMessage doesn't
+  // loop back to the sender), so the gallery additionally refreshes
+  // locally on the user-button path.
+  if (screenshotId && fileId) {
+    const payload: ScreenshotSavedPayload = {
+      screenshotId,
+      fileId,
+      fileUrl,
+      pageUrlCanonical: canonical,
+      pageUrlFull: url,
+      pageTitle: input.tab.title ?? null,
+      width: input.width,
+      height: input.height,
+      mimeType: input.mimeType,
+      byteLength: byteLength ?? 0,
+      source: input.source,
+      capturedAt: new Date().toISOString(),
+    };
+    broadcast(CHANNELS.SCREENSHOT_SAVED, payload);
   }
 
   return { fileId, fileUrl, screenshotId };

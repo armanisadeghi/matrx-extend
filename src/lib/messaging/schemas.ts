@@ -122,6 +122,18 @@ export const CHANNELS = {
   // sidepanel switches to the chat tab and pre-fills the draft.
   CHAT_DRAFT_FROM_SELECTION: 'chat:draft-from-selection',
 
+  // Screenshot persistence (any context → all surfaces). Broadcast by
+  // `persistScreenshot()` after a successful upload + index insert, so
+  // the Screenshots side-panel tab can refresh its gallery without
+  // depending on TOOL_TIMELINE_EVENT (which only fires for tool calls
+  // routed through the streaming dispatcher — the user's "Take
+  // screenshot" button bypasses the dispatcher and chrome.runtime
+  // broadcasts don't loop back to the sender's own context). Agent-
+  // initiated captures broadcast from the SW; user-initiated captures
+  // broadcast from the sidepanel (the gallery additionally refreshes
+  // locally on the user-button path to cover the no-self-loopback gap).
+  SCREENSHOT_SAVED: 'screenshot:saved',
+
   // Parallel-runs orchestration (SW → sidepanel) — `parallel_for_each_tab`
   // tool spawns N child agent streams; each lifecycle event (started, text
   // delta, data, completed, error, timeout, session_finished) is broadcast

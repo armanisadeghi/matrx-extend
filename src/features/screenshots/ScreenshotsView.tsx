@@ -11,9 +11,17 @@
  *
  * Live-refreshes when:
  *   - The active tab's URL changes (re-query for the new page).
- *   - A `take_screenshot` tool call completes (broadcast on the
- *     TOOL_TIMELINE_EVENT channel — both the agent dispatcher and the
- *     Tools tab manual run emit this).
+ *   - A screenshot is persisted anywhere (broadcast on the
+ *     SCREENSHOT_SAVED channel by `persistScreenshot()`). Covers the
+ *     agent path (broadcast originates in the SW so the sidepanel
+ *     receives it) and the Tools-tab path. The user-button path on
+ *     this same view broadcasts from the sidepanel itself —
+ *     chrome.runtime.sendMessage does not loop back to the sender's
+ *     own context, so we additionally call reload() inline after a
+ *     successful capture below to cover that gap.
+ *   - A `take_screenshot` tool call completes via the streaming
+ *     dispatcher (TOOL_TIMELINE_EVENT, agent path only — kept for
+ *     backwards compatibility with tool calls that fail to persist).
  */
 
 import { Button } from '@/components/ui/button';
@@ -27,6 +35,7 @@ import {
   deleteScreenshot,
   fetchScreenshotsForUrl,
 } from '@/lib/supabase/queries';
+import type { ScreenshotSavedPayload } from '@/lib/screenshot/persist';
 import { take_screenshot } from '@/lib/tools/handlers/read';
 import { normalizeUrl } from '@/lib/url/match';
 import {
@@ -93,15 +102,35 @@ export function ScreenshotsView() {
     void reload(canonicalUrl);
   }, [canonicalUrl, reload]);
 
-  // Refresh on `take_screenshot` completion (agent or Tools-tab run).
+  // Refresh on a successful screenshot persistence. Fires for every
+  // capture path that calls persistScreenshot — agent dispatcher, Tools
+  // tab manual run, or another sidepanel tab. The user-button capture
+  // on THIS view will not be received here (Chrome doesn't loop back a
+  // chrome.runtime.sendMessage to the sender's own context); the inline
+  // reload after `captureNow` covers that case.
+  useEffect(() => {
+    const off = on<ScreenshotSavedPayload, { ack: true }>(
+      CHANNELS.SCREENSHOT_SAVED,
+      (evt) => {
+        if (evt.pageUrlCanonical === lastFetchedUrlRef.current) {
+          void reload(lastFetchedUrlRef.current);
+        }
+        return { ack: true };
+      },
+    );
+    return off;
+  }, [reload]);
+
+  // Belt-and-suspenders: also listen for TOOL_TIMELINE_EVENT completions of
+  // `take_screenshot` (the streaming-dispatcher path). If persistScreenshot
+  // failed to insert the row but the tool itself returned ok, this still
+  // triggers a refresh so the gallery doesn't appear stale.
   useEffect(() => {
     const off = on<
       { callId: string; toolName: string; phase: string },
       { ack: true }
     >(CHANNELS.TOOL_TIMELINE_EVENT, (evt) => {
       if (evt.toolName === 'take_screenshot' && evt.phase === 'completed') {
-        // Use the latched URL so a navigation that happens during the
-        // refresh doesn't accidentally pull data for the old page.
         void reload(lastFetchedUrlRef.current);
       }
       return { ack: true };
@@ -181,6 +210,14 @@ export function ScreenshotsView() {
             phase: 'completed',
             output: result,
           });
+          // Same-context broadcasts don't loop back, so refresh the
+          // gallery directly when this view is the originator. The
+          // agent / Tools-tab paths broadcast from a different context
+          // (SW or another sidepanel), so their listeners pick up
+          // SCREENSHOT_SAVED above.
+          if (r.screenshot_id) {
+            void reload(lastFetchedUrlRef.current);
+          }
         }
       } catch (err) {
         const msg = (err as Error).message ?? 'Screenshot failed';
@@ -195,7 +232,7 @@ export function ScreenshotsView() {
         setCapturingMode(null);
       }
     },
-    [capturingMode, tab.id, tab.url],
+    [capturingMode, tab.id, tab.url, reload],
   );
 
   const onDelete = useCallback(async (id: string) => {
