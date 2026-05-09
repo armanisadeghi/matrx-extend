@@ -375,7 +375,7 @@ async function handleCall(
     );
     if (!granted) {
       return fail(
-        `required optional permission(s) not granted: ${handler.required_optional_permissions.join(', ')}. The user must enable them in Settings → Advanced agent capabilities.`,
+        `Required permission(s) not granted: ${handler.required_optional_permissions.join(', ')}. Open Settings → Advanced agent capabilities to enable, or ask the user to enable them.`,
       );
     }
   }

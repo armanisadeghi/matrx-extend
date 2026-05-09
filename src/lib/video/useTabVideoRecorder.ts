@@ -40,6 +40,13 @@ export type RecorderStatus =
   | 'uploading'
   | 'error';
 
+/** Sub-state for the optional-permission dialog flow. */
+export type TabCapturePermissionState =
+  | 'unknown'
+  | 'prompt'
+  | 'denied'
+  | 'granted';
+
 export interface UseTabVideoRecorderResult {
   status: RecorderStatus;
   errorMessage: string | null;
@@ -49,9 +56,20 @@ export interface UseTabVideoRecorderResult {
   lastDurationMs: number | null;
   /** Active session id; null when idle. */
   sessionId: string | null;
+  /**
+   * Whether the consumer should render the in-app permission dialog. The
+   * `permissionMode` decides which dialog body to show.
+   */
+  permissionDialogOpen: boolean;
+  permissionMode: 'prompt' | 'denied';
+  /** Begin the recording flow. May open the permission dialog first. */
   start: (opts: { tabId: number; durationMs: number; audio: boolean }) => Promise<void>;
   stop: () => Promise<void>;
   reset: () => void;
+  /** Called when the user clicks the dialog's primary CTA. */
+  confirmPermissionDialog: () => Promise<void>;
+  /** Called when the user dismisses the dialog. */
+  closePermissionDialog: () => void;
 }
 
 function newSessionId(): string {
@@ -80,6 +98,10 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
   const [elapsedMs, setElapsedMs] = useState(0);
   const [lastDurationMs, setLastDurationMs] = useState<number | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [permissionDialogOpen, setPermissionDialogOpen] = useState(false);
+  const [permissionMode, setPermissionMode] = useState<'prompt' | 'denied'>(
+    'prompt',
+  );
 
   const sessionIdRef = useRef<string | null>(null);
   const startTimeRef = useRef<number>(0);
@@ -89,6 +111,11 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
     url: null,
   });
   const audioRef = useRef<boolean>(false);
+  const pendingStartRef = useRef<{
+    tabId: number;
+    durationMs: number;
+    audio: boolean;
+  } | null>(null);
   const addRecording = useRecordingsStore((s) => s.add);
 
   const stopTick = useCallback(() => {
@@ -210,22 +237,8 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
     };
   }, [handleComplete, stopTick]);
 
-  const start = useCallback(
+  const launchRecording = useCallback(
     async (opts: { tabId: number; durationMs: number; audio: boolean }) => {
-      setErrorMessage(null);
-      setStatus('permission');
-      const granted = await hasOptionalPermissions(['tabCapture']);
-      if (!granted) {
-        const ok = await requestOptionalPermission('tabCapture');
-        if (!ok) {
-          setStatus('error');
-          setErrorMessage(
-            'Tab capture permission was not granted. Enable it in Settings → Advanced → Tab video capture.',
-          );
-          return;
-        }
-      }
-
       // Snapshot the tab so we can label the recording entry once it lands.
       try {
         const tab = await chrome.tabs.get(opts.tabId);
@@ -271,6 +284,61 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
     [],
   );
 
+  const start = useCallback(
+    async (opts: { tabId: number; durationMs: number; audio: boolean }) => {
+      setErrorMessage(null);
+      setStatus('permission');
+      const granted = await hasOptionalPermissions(['tabCapture']);
+      if (granted) {
+        await launchRecording(opts);
+        return;
+      }
+      // Defer the actual recording start until the user OKs the dialog.
+      // Reset back to idle so the Start button isn't stuck mid-flight.
+      pendingStartRef.current = opts;
+      setPermissionMode('prompt');
+      setPermissionDialogOpen(true);
+      setStatus('idle');
+    },
+    [launchRecording],
+  );
+
+  const confirmPermissionDialog = useCallback(async () => {
+    if (permissionMode === 'denied') {
+      // Open the extension's own permission page in a new tab. We navigate
+      // FOR the user — they don't get a "go to chrome://extensions" lecture.
+      try {
+        await chrome.tabs.create({
+          url: `chrome://extensions/?id=${chrome.runtime.id}`,
+        });
+      } catch (err) {
+        log.warn('sys', 'open extension permissions failed', err);
+      }
+      setPermissionDialogOpen(false);
+      pendingStartRef.current = null;
+      return;
+    }
+
+    // prompt mode — request the optional permission. If granted, run the
+    // pending start; if denied, flip the dialog into denied mode.
+    const ok = await requestOptionalPermission('tabCapture');
+    if (!ok) {
+      setPermissionMode('denied');
+      return;
+    }
+    setPermissionDialogOpen(false);
+    const pending = pendingStartRef.current;
+    pendingStartRef.current = null;
+    if (pending) {
+      await launchRecording(pending);
+    }
+  }, [permissionMode, launchRecording]);
+
+  const closePermissionDialog = useCallback(() => {
+    setPermissionDialogOpen(false);
+    pendingStartRef.current = null;
+  }, []);
+
   const stop = useCallback(async () => {
     const id = sessionIdRef.current;
     if (!id) return;
@@ -293,8 +361,12 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
     elapsedMs,
     lastDurationMs,
     sessionId,
+    permissionDialogOpen,
+    permissionMode,
     start,
     stop,
     reset,
+    confirmPermissionDialog,
+    closePermissionDialog,
   };
 }

@@ -269,7 +269,7 @@ function registerHandlers(): void {
           type: 'error',
           sessionId: payload.sessionId,
           message:
-            'tabCapture API unavailable. Enable in Settings → Advanced → Tab video capture.',
+            'Tab video capture not granted. Enable it from the Recorder pane in the Tools tab.',
           code: 'API_UNAVAILABLE',
         } satisfies VideoErrorEvent);
         return { ok: false };

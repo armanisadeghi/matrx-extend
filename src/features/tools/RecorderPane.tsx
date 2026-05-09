@@ -18,6 +18,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { TabCaptureDialog } from '@/features/tools/TabCaptureDialog';
 import {
   type RecordingEntry,
   useRecordingsStore,
@@ -101,8 +102,19 @@ function StatusBadge({ status }: { status: RecorderStatus }) {
 }
 
 export function RecorderPane() {
-  const { status, errorMessage, elapsedMs, lastDurationMs, start, stop, reset } =
-    useTabVideoRecorder();
+  const {
+    status,
+    errorMessage,
+    elapsedMs,
+    lastDurationMs,
+    permissionDialogOpen,
+    permissionMode,
+    start,
+    stop,
+    reset,
+    confirmPermissionDialog,
+    closePermissionDialog,
+  } = useTabVideoRecorder();
   const entries = useRecordingsStore((s) => s.entries);
   const hydrated = useRecordingsStore((s) => s.hydrated);
   const hydrate = useRecordingsStore((s) => s.hydrate);
@@ -161,6 +173,7 @@ export function RecorderPane() {
   }, [isRecording, elapsedMs, durationSec]);
 
   return (
+    <>
     <div className="flex h-full flex-col">
       <div className="shrink-0 space-y-3 border-b px-3 pb-3 pt-2">
         <div className="flex items-center justify-between">
@@ -316,6 +329,14 @@ export function RecorderPane() {
         )}
       </div>
     </div>
+    {permissionDialogOpen && (
+      <TabCaptureDialog
+        mode={permissionMode}
+        onConfirm={() => void confirmPermissionDialog()}
+        onClose={closePermissionDialog}
+      />
+    )}
+    </>
   );
 }
 
