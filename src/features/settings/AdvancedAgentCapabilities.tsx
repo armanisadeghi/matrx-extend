@@ -6,10 +6,6 @@
  * agent dispatcher. Disabling removes the permission via
  * `chrome.permissions.remove`.
  *
- * Two registries are rendered:
- *   - API permissions     (debugger, cookies, pageCapture, …)
- *   - Host permissions    (<all_urls>) — moved here per roadmap item #10
- *
  * Shown ONLY for admins because the underlying tools are still labelled
  * `admin_only` and filtered out of regular users' bundles.
  */
@@ -18,24 +14,17 @@ import { Switch } from '@/components/ui/switch';
 import { AuditKeyCard } from '@/features/settings/AuditKeyCard';
 import {
   ALL_OPTIONAL,
-  ALL_OPTIONAL_HOSTS,
-  OPTIONAL_HOST_PERMISSION_LABELS,
   OPTIONAL_PERMISSION_LABELS,
-  type OptionalHostPermission,
   type OptionalPermission,
-  hasOptionalHostPermissions,
   hasOptionalPermissions,
-  removeOptionalHostPermission,
   removeOptionalPermission,
-  requestOptionalHostPermission,
   requestOptionalPermission,
 } from '@/lib/permissions/optional';
 import { useEffect, useState } from 'react';
 
 export function AdvancedAgentCapabilities() {
   const [granted, setGranted] = useState<Set<OptionalPermission>>(new Set());
-  const [hostGranted, setHostGranted] = useState<Set<OptionalHostPermission>>(new Set());
-  const [busy, setBusy] = useState<OptionalPermission | OptionalHostPermission | null>(null);
+  const [busy, setBusy] = useState<OptionalPermission | null>(null);
 
   useEffect(() => {
     void refresh();
@@ -55,12 +44,6 @@ export function AdvancedAgentCapabilities() {
       if (await hasOptionalPermissions([p])) next.add(p);
     }
     setGranted(next);
-
-    const nextHosts = new Set<OptionalHostPermission>();
-    for (const h of ALL_OPTIONAL_HOSTS) {
-      if (await hasOptionalHostPermissions([h])) nextHosts.add(h);
-    }
-    setHostGranted(nextHosts);
   }
 
   async function toggle(perm: OptionalPermission, on: boolean) {
@@ -72,25 +55,6 @@ export function AdvancedAgentCapabilities() {
           const n = new Set(s);
           if (on) n.add(perm);
           else n.delete(perm);
-          return n;
-        });
-      }
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  async function toggleHost(origin: OptionalHostPermission, on: boolean) {
-    setBusy(origin);
-    try {
-      const ok = on
-        ? await requestOptionalHostPermission(origin)
-        : await removeOptionalHostPermission(origin);
-      if (ok) {
-        setHostGranted((s) => {
-          const n = new Set(s);
-          if (on) n.add(origin);
-          else n.delete(origin);
           return n;
         });
       }
@@ -135,42 +99,6 @@ export function AdvancedAgentCapabilities() {
           );
         })}
       </div>
-
-      {ALL_OPTIONAL_HOSTS.length > 0 && (
-        <>
-          <div className="pt-2 text-[11px] font-medium uppercase tracking-wider text-amber-700 dark:text-amber-400">
-            Host access
-          </div>
-          <div className="space-y-1.5 pt-1">
-            {ALL_OPTIONAL_HOSTS.map((h) => {
-              const meta = OPTIONAL_HOST_PERMISSION_LABELS[h];
-              const isOn = hostGranted.has(h);
-              return (
-                <label
-                  key={h}
-                  className="flex cursor-pointer items-start gap-2.5 rounded-md px-1 py-1.5 hover:bg-accent/40"
-                >
-                  <Switch
-                    checked={isOn}
-                    onCheckedChange={(v) => void toggleHost(h, v)}
-                    disabled={busy === h}
-                    className="mt-0.5"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 text-sm font-medium">
-                      {meta.title}
-                      <span className="font-mono text-[10px] text-muted-foreground">{h}</span>
-                    </div>
-                    <div className="text-[11px] leading-snug text-muted-foreground">
-                      {meta.desc}
-                    </div>
-                  </div>
-                </label>
-              );
-            })}
-          </div>
-        </>
-      )}
     </div>
       <AuditKeyCard />
     </div>

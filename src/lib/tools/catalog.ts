@@ -35,12 +35,6 @@ export interface ToolCatalogEntry {
    * gate them and the UI can prompt.
    */
   required_optional_permissions: string[];
-  /**
-   * True when the tool needs broad host access (`<all_urls>`). Granted at
-   * runtime via Settings → Advanced agent capabilities → "All sites access"
-   * (mirrors `optional_host_permissions` in the manifest).
-   */
-  requires_broad_host_access: boolean;
   /** Filtered out of non-admin tool bundles. Used for experimental tools. */
   admin_only: boolean;
   /** Which surface bundles include this tool. */
@@ -298,7 +292,6 @@ export function buildToolCatalog(): ToolCatalogEntry[] {
     }),
     required_permissions: PERMISSIONS_BY_TOOL[h.name] ?? [],
     required_optional_permissions: h.required_optional_permissions ?? [],
-    requires_broad_host_access: h.requires_broad_host_access ?? false,
     admin_only: h.admin_only ?? false,
     surface_bundles: bundlesForTier(h.tier),
     supported_browsers: (h.supportedBrowsers

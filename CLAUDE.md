@@ -465,23 +465,6 @@ Shipped:
       `userScripts`, `proxy`, `webRequest`, `desktopCapture`, `topSites`,
       `management`
 - [x] Added to base: `sessions`
-- [x] Move `<all_urls>` to `optional_host_permissions` (2026-05-07).
-      Settings → Advanced agent capabilities → "All sites access" toggle
-      requests / revokes via `chrome.permissions.request({origins:['<all_urls>']})`.
-      Persistent content-script auto-registers via
-      `chrome.scripting.registerContentScripts` when the grant flips on
-      (see [src/lib/permissions/content-scripts.ts](./src/lib/permissions/content-scripts.ts)).
-      `wxt.config.ts` adds a `build:manifestGenerated` hook to strip WXT's
-      auto-add of `<all_urls>` from base `host_permissions` (otherwise
-      WXT's runtime-CS handling promotes the optional pattern back into
-      base). Tools that need broad host access declare
-      `requires_broad_host_access: true` on the handler; the dispatcher
-      gates them at run time and returns a structured remediation error
-      pointing the user at Settings. Currently flagged: `read_active_page`,
-      `read_page`, `find`, `get_page_text`, `query_elements`,
-      `find_text_on_page`, `get_page_links`, `get_computed_style`,
-      `get_element_at_point`, `inspect_element`, `get_element_details`,
-      `click_element`, `type_into_element`, `scroll_page`, `wait_for`.
 - [x] Add to base: `system.cpu`, `system.memory`, `system.display`,
       `declarativeNetRequestWithHostAccess` (2026-05-07; initially
       preemptive). **2026-05-08: wired to real consumers** so the CWS
@@ -492,6 +475,18 @@ Shipped:
       is exercised by `list_network_blocking_rules`. Both live in the
       `debug` category, read-tier, no side effects. Handlers in
       [src/lib/tools/handlers/system-info.ts](./src/lib/tools/handlers/system-info.ts).
+
+Reverted (UX regression):
+- [ ] Move `<all_urls>` to `optional_host_permissions` — REVERTED
+      2026-05-08. Real applications don't ask users to go into
+      chrome://extensions to grant permissions; `<all_urls>` is back
+      in base `host_permissions`. The runtime gate
+      (`requires_broad_host_access` flag, `_host-access.ts` helper, the
+      `startContentScriptRegistrar` runtime CS bootstrap, and the
+      Settings → Advanced "All sites access" toggle) was removed.
+      Tools that previously refused with "Open Settings → Advanced
+      agent capabilities → 'All sites access'" now run unconditionally
+      because the broad host grant is unconditional from install.
 
 ### 11. 🔨 Voice loop (TASK-002)
 **Why:** parity with the Next.js app's voice features and hands-free

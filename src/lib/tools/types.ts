@@ -95,23 +95,6 @@ export interface ToolHandler<TArgs, TResult> {
    */
   required_optional_permissions?: string[];
   /**
-   * If true, this tool needs broad host access (`<all_urls>`) to operate on
-   * arbitrary websites — e.g. it executes scripts on the assigned tab, sends
-   * messages to a content script that declares `matches: ['<all_urls>']`,
-   * or fetches arbitrary URLs from a content-script context.
-   *
-   * Roadmap item #10 moved `<all_urls>` from base host_permissions to
-   * optional_host_permissions, so this flag lets the dispatcher reject
-   * with a clear remediation message when the user hasn't granted it yet.
-   *
-   * Tools that only operate on the explicit hosts in base host_permissions
-   * (server.app.matrxserver.com, aimatrx.com, the matrx-local engine, etc.)
-   * should NOT set this. The dispatcher narrows the check to the assigned
-   * tab's URL when available so tools can run on baseline-allowed hosts
-   * even without the broad grant.
-   */
-  requires_broad_host_access?: boolean;
-  /**
    * Browsers this tool ships to. Omit to mean "all three" (chrome, firefox,
    * safari). Set to e.g. `['chrome']` for tools that depend on
    * Chrome-only APIs (`chrome.debugger`, `chrome.offscreen`,

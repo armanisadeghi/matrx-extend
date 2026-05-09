@@ -21,9 +21,7 @@
 
 import { log } from '@/lib/debug/log';
 import {
-  hasOptionalHostPermissions,
   hasOptionalPermissions,
-  requestOptionalHostPermission,
   requestOptionalPermission,
 } from '@/lib/permissions/optional';
 import {
@@ -111,17 +109,11 @@ export async function hasPermissionOrAlways(
 }
 
 async function isLiveGranted(permission: GatedPermission): Promise<boolean> {
-  if (permission.kind === 'host') {
-    return hasOptionalHostPermissions([permission.pattern]);
-  }
   return hasOptionalPermissions([permission.name]);
 }
 
 async function requestPermission(permission: GatedPermission): Promise<boolean> {
   try {
-    if (permission.kind === 'host') {
-      return await requestOptionalHostPermission(permission.pattern);
-    }
     return await requestOptionalPermission(permission.name);
   } catch (err) {
     log.warn('sys', 'permission request threw', (err as Error).message);

@@ -5,8 +5,6 @@ import {
 } from '@/lib/scrape/capture-error';
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
-import { ensurePermission } from '@/lib/permissions/gate';
-import { hasAllUrlsHostAccess, isUrlAlreadyCovered } from '@/lib/permissions/optional';
 import { saveCapture, saveSeoAudit } from '@/lib/supabase/queries';
 import { useScrapeStore } from '@/state/scrape';
 import { useCallback, useState } from 'react';
@@ -73,31 +71,6 @@ export function useScrape() {
           return null;
         }
 
-        // Permission gate. If Chrome already covers this URL (base
-        // host_permissions OR a previously-granted <all_urls>), this
-        // is a no-op. Otherwise: surface the frictionless 4-button
-        // prompt (Deny / Allow / Always / Autonomous) before attempting
-        // capture.
-        if (tab.url && !(await isUrlAlreadyCovered(tab.url))) {
-          const gate = await ensurePermission({
-            permission: { kind: 'host', pattern: '<all_urls>' },
-            feature: 'Read this page',
-            reason:
-              "Matrx Extend needs access to this site to capture its content. By default the extension only operates on AI Matrx's own domains. Grant access to use it on any website.",
-          });
-          if (!gate.granted) {
-            setError(
-              buildCaptureErrorFromResult({
-                result: { ok: false, reason: 'inject-failed', detail: 'user declined permission' },
-                url: tabUrl,
-                tabId,
-                allUrlsGranted: false,
-              }),
-            );
-            return null;
-          }
-        }
-
         if (mode === 'deep') {
           // NOTE: no settlePage here. The user already sees the rendered page
           // before clicking — settling adds latency without value. Tasks
@@ -112,23 +85,17 @@ export function useScrape() {
 
         // Route through captureWithFallback (the same path auto-scrape and
         // read_active_page use) so a missing content script triggers an
-        // inject retry instead of a hard "no-receiver" failure. When the
-        // fallback ALSO fails — typically because <all_urls> isn't
-        // granted — surface the specific "needs-all-sites" error with
-        // its one-click recovery instead of the misleading "page needs a
-        // refresh" classification.
+        // inject retry instead of a hard "no-receiver" failure.
         const cap = await captureWithFallback(tab.id, tab.url ?? null);
         if (cap.ok && cap.soup) {
           setCurrent(cap.soup);
           return cap.soup;
         }
-        const allUrlsGranted = await hasAllUrlsHostAccess();
         setError(
           buildCaptureErrorFromResult({
             result: { ok: false, reason: cap.reason, detail: cap.detail },
             url: tabUrl,
             tabId,
-            allUrlsGranted,
           }),
         );
         return null;

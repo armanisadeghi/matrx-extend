@@ -332,40 +332,6 @@ Every entry follows this shape:
 - **Expected:** Toggle state matches what `chrome.permissions.contains`
   reports.
 
-### Side panel — Settings → Advanced → "All sites access" (roadmap #10)
-- **What it does:** Grants / revokes broad host access (`<all_urls>`) at
-  runtime. Without this, tools that operate on arbitrary websites
-  (`read_active_page`, `read_page`, `find`, `click_element`,
-  `type_into_element`, etc.) refuse with a structured
-  `host_access_required` error pointing back to Settings. Tools that
-  only operate on baseline-allowed hosts (the matrx server, aimatrx.com,
-  the matrx-local engine) keep working without it.
-- **Where to test:** Side panel → Settings → Advanced agent
-  capabilities → **Host access** group.
-- **Steps:**
-  1. With the toggle OFF, navigate to any third-party site (e.g.
-     `https://example.com`).
-  2. Tools tab → `read_active_page` → Run with `{}`.
-- **Expected (toggle off):** Result includes
-  `Host access not granted for https://example.com/.` and a
-  remediation message pointing at Settings → Advanced.
-- **Steps (continued):**
-  3. Flip the toggle ON. Chrome prompts; accept.
-  4. Re-run `read_active_page`.
-- **Expected (toggle on):** Tool returns the page snapshot as usual.
-- **Edge cases worth poking:**
-  - With toggle OFF, run `read_active_page` while on
-    `https://aimatrx.com` — should succeed (baseline host).
-  - Flip toggle OFF after granting → content script stops auto-injecting
-    on new tabs; on-demand `executeScript` calls fail per-URL until
-    re-granted.
-  - Grant once, then close + reopen the side panel → toggle reflects
-    the granted state on reload (state comes from
-    `chrome.permissions.contains`, not local storage).
-  - In `chrome://extensions/?id=<ext id>` → Details → Site access, you
-    should see "On all sites" appear / disappear in lock-step with the
-    toggle.
-
 ---
 
 ### Voice input — Mic button in chat composer (TASK-002a/b)

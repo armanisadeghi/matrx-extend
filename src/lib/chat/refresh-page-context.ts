@@ -21,8 +21,6 @@
  */
 
 import { log } from '@/lib/debug/log';
-import { ensurePermission } from '@/lib/permissions/gate';
-import { isUrlAlreadyCovered } from '@/lib/permissions/optional';
 import { classifyTabUrl } from '@/lib/scrape/capture-error';
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
@@ -109,32 +107,9 @@ export async function refreshPageContextBeforeSend(
   if (urlClass.blocked) {
     return { action: 'noop', record: store.current, reason: `blocked url (${urlClass.reason})` };
   }
-
-  // Permission gate. If we don't already cover this URL via base or
-  // previously-granted optional permissions, prompt the user with the
-  // 4-button modal before shipping a chat message the agent can't
-  // action. The gate is a no-op when permission is already in place
-  // OR when the user previously chose Always / Autonomous, so a
-  // happy-path send pays no cost. If the user denies, we still ship
-  // the message — the agent simply gets no page context for this
-  // turn (same as if the user were on chrome://newtab), which is
-  // strictly better than blocking the send.
-  if (!(await isUrlAlreadyCovered(url))) {
-    const gate = await ensurePermission({
-      permission: { kind: 'host', pattern: '<all_urls>' },
-      feature: 'Read this page for the agent',
-      reason:
-        "Matrx Extend needs access to this site to capture page content for the agent. By default the extension only operates on AI Matrx's own domains. Grant access to use it on any website.",
-    });
-    if (!gate.granted) {
-      // Best-effort silent: agent runs without page context this turn.
-      return {
-        action: 'noop',
-        record: store.current,
-        reason: 'user declined site access',
-      };
-    }
-  }
+  // Host access is granted at install via base `<all_urls>` host_permissions.
+  // Nothing to gate here; chrome://blocklist URLs are caught by classifyTabUrl
+  // above.
 
   const cur = store.current;
   const haveFresh =

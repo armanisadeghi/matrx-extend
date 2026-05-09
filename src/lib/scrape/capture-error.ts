@@ -14,17 +14,10 @@ export type CaptureErrorClass =
   | 'no-tab'
   /** Host permission missing or denied for this URL. */
   | 'no-host-permission'
-  /**
-   * `<all_urls>` optional host permission is not granted, so we can't
-   * inject content scripts or read the page on this URL. The fix is the
-   * Settings → Advanced → "All sites access" toggle, surfaced as a
-   * one-click `grant-all-sites` action below.
-   */
-  | 'needs-all-sites'
   /** Anything else. */
   | 'unknown';
 
-export type CaptureErrorAction = 'reload-tab' | 'try-again' | 'grant-all-sites';
+export type CaptureErrorAction = 'reload-tab' | 'try-again';
 
 export interface CaptureError {
   class: CaptureErrorClass;
@@ -80,28 +73,15 @@ export function classifyTabUrl(
 
 /**
  * Classify a captureWithFallback result into a CaptureError.
- *
- * The key reason this exists: when `<all_urls>` is not granted, the
- * sendMessage path errors with "Receiving end does not exist" (no
- * content script on the page), the inject fallback errors with
- * "Cannot access contents of url..." (no host permission), and either
- * one in isolation looks recoverable-by-reload-tab. They aren't —
- * reloading the tab does nothing about a missing optional permission.
- *
- * Callers should pass `allUrlsGranted` (already-resolved) so this stays
- * synchronous; the async permission check lives at the call site
- * because it usually races with a follow-up retry attempt.
  */
 export function buildCaptureErrorFromResult({
   result,
   url,
   tabId,
-  allUrlsGranted,
 }: {
   result: { ok: false; reason?: string; detail?: string };
   url: string | null;
   tabId: number | null;
-  allUrlsGranted: boolean;
 }): CaptureError {
   const at = new Date().toISOString();
   const rawMessage = result.detail ?? null;
@@ -133,28 +113,6 @@ export function buildCaptureErrorFromResult({
       tabId,
       actions: [],
       recoverable: false,
-      at,
-    };
-  }
-
-  // The two failure shapes that point straight at the optional grant:
-  //   - inject-failed (chrome.scripting refused — usually no host permission)
-  //   - no-content-script (sendMessage and inject both refused)
-  // If <all_urls> isn't granted, that's the real cause — say so loudly.
-  if (
-    (result.reason === 'inject-failed' || result.reason === 'no-content-script') &&
-    !allUrlsGranted
-  ) {
-    return {
-      class: 'needs-all-sites',
-      title: 'All Sites access is needed for this page',
-      description:
-        'This extension only operates on Matrx-owned hosts by default. To use it on other websites, grant "All sites access" in Settings. One click — Chrome will prompt you to confirm.',
-      rawMessage,
-      url,
-      tabId,
-      actions: ['grant-all-sites', 'try-again'],
-      recoverable: true,
       at,
     };
   }
@@ -286,19 +244,15 @@ export function buildCaptureError({
     msg.includes('extension manifest must request permission') ||
     msg.includes("'<all_urls>' or 'activetab' permission is required")
   ) {
-    // We moved `<all_urls>` to optional_host_permissions in v0.1.13.
-    // Until the user toggles "All sites access" on, every URL outside
-    // the explicit base host list (matrxserver / aimatrx / supabase /
-    // localhost) hits this error. The fix is one click — surface that.
     return {
-      class: 'needs-all-sites',
-      title: 'All Sites access is needed for this page',
+      class: 'no-host-permission',
+      title: 'No permission for this page',
       description:
-        'This extension only operates on Matrx-owned hosts by default. To use it on other websites, grant "All sites access" in Settings. One click — Chrome will prompt you to confirm.',
+        "Chrome blocked the extension from reading this page. The URL may be in a sandboxed origin Chrome doesn't allow.",
       rawMessage,
       url,
       tabId,
-      actions: ['grant-all-sites', 'try-again'],
+      actions: ['try-again'],
       recoverable: true,
       at,
     };

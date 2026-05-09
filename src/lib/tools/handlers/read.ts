@@ -74,9 +74,6 @@ type ReadPageArgs = z.infer<typeof ReadPageArgs>;
 export const read_active_page: ToolHandler<ReadPageArgs, unknown> = {
   name: 'read_active_page',
   tier: 'read',
-  // Reads any tab the user happens to be on. Needs <all_urls> host access
-  // unless the page is one of the explicit hosts in base host_permissions.
-  requires_broad_host_access: true,
   description:
     'Read the active tab and return a structured snapshot: cleaned article (markdown + html), title, byline, full image/video/link/audio lists, JSON-LD, schema types, SEO signals (headings, meta, alt-text coverage). Pass deep=true to scroll the page top→bottom first to trigger lazy-loaded images and infinite-scroll content before reading. Use this whenever you need to understand or quote the page.',
   argsSchema: ReadPageArgs,
@@ -413,7 +410,6 @@ type QueryElementsArgs = z.infer<typeof QueryElementsArgs>;
 export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
   name: 'query_elements',
   tier: 'read',
-  requires_broad_host_access: true,
   description:
     'Run document.querySelectorAll on the active tab and return up to `limit` matches as { tag, text, attrs }. `attrs` is a list of attribute names to extract. Use this to find CSS selectors that subsequent action tools can target.',
   argsSchema: QueryElementsArgs,

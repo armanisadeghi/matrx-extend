@@ -40,9 +40,10 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 export type PermissionVerdict = 'deny' | 'allow' | 'always' | 'autonomous';
 
 /** Permissions we know how to gate. Mirrors lib/permissions/optional.ts. */
-export type GatedPermission =
-  | { kind: 'host'; pattern: '<all_urls>' }
-  | { kind: 'api'; name: 'cookies' | 'pageCapture' | 'clipboardRead' | 'tabCapture' | 'debugger' };
+export type GatedPermission = {
+  kind: 'api';
+  name: 'cookies' | 'pageCapture' | 'clipboardRead' | 'tabCapture' | 'debugger';
+};
 
 export interface PermissionPromptRequest {
   /** Stable id so concurrent callers can dedupe / await. */
@@ -132,7 +133,5 @@ export const usePermissionPromptsStore = create<PermissionPromptsState>()(
 
 /** Stable cache key for a permission. */
 export function keyOf(permission: GatedPermission): string {
-  return permission.kind === 'host'
-    ? `host:${permission.pattern}`
-    : `api:${permission.name}`;
+  return `api:${permission.name}`;
 }

@@ -36,11 +36,6 @@ import {
   type OptionalPermission,
   hasOptionalPermissions,
 } from '@/lib/permissions/optional';
-import {
-  requireAllUrlsHostAccess,
-  requireHostAccessFor,
-} from '@/lib/tools/handlers/_host-access';
-import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import { recordToolEvent } from '@/lib/recording/state';
 import { localFromCanonical, resolveToolName, suggestSimilar } from '@/lib/tools/aliases';
 import { allToolNames, lookup as lookupTool } from '@/lib/tools/registry';
@@ -385,20 +380,6 @@ async function handleCall(
     }
   }
 
-  // Host-access gate (roadmap item #10). When a tool declares
-  // `requires_broad_host_access`, check whether the assigned tab's URL is
-  // actually covered by current host permissions. If yes, run; if not, fail
-  // clean. This lets tools work on baseline-allowed hosts (the matrx server,
-  // aimatrx.com, matrx-local engine) without the user having to flip the
-  // <all_urls> toggle, while still gating arbitrary websites until they do.
-  if (handler.requires_broad_host_access) {
-    const tab = await getAssignedTab(ctx);
-    const accessErr = await requireHostAccessFor(tab?.url);
-    if (accessErr) {
-      return fail(accessErr.reason + ' ' + accessErr.remediation);
-    }
-  }
-
   // Pilot group sandbox (roadmap item #9). When a Pilot session is active
   // every action-tier (or privileged) tool MUST target a tab that lives
   // inside the session's tab group. The Pilot surface advertises the full
@@ -624,17 +605,6 @@ export async function handleWebmcpCall(
         ok: false,
         error: `webmcp: required optional permission(s) not granted: ${handler.required_optional_permissions.join(', ')}`,
       };
-    }
-  }
-
-  // webmcp host-access gate. The webmcp call site doesn't propagate the
-  // page URL to the dispatcher, so check the broader <all_urls> grant — if
-  // the user hasn't granted it, refuse to run a broad-host-access tool from
-  // an arbitrary page.
-  if (handler.requires_broad_host_access) {
-    const accessErr = await requireAllUrlsHostAccess();
-    if (accessErr) {
-      return { ok: false, error: `webmcp: ${accessErr.reason} ${accessErr.remediation}` };
     }
   }
 

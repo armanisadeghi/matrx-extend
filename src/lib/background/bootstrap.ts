@@ -54,7 +54,6 @@ import type {
 import { setSupabaseSession } from '@/lib/supabase/client';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
 import { setupContextMenus } from '@/lib/context-menus/setup';
-import { startContentScriptRegistrar } from '@/lib/permissions/content-scripts';
 import { handleWebmcpCall, recordAssignedTab, startToolDispatcher } from '@/lib/tools/dispatch';
 import { registerToolsOnActiveTab } from '@/lib/webmcp/register';
 import { usePilotStore } from '@/state/pilot';
@@ -80,11 +79,6 @@ export function bootstrapBackground(): void {
   //       Per-run permission mode is latched from the chat hook; this default
   //       only kicks in if the sidepanel forgot to pass one.
   startToolDispatcher({ defaultPermissionMode: () => 'ask' });
-
-  // ── 2b. Reconcile the persistent <all_urls> content script with the
-  //        optional host grant (roadmap item #10). When granted, the script
-  //        auto-injects on every page; when revoked, it stops.
-  startContentScriptRegistrar();
 
   // ── 2a. Audio log: track when each tab last produced sound so
   //        `tab_audio_inspect` can answer "recently audible" queries.
