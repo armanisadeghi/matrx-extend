@@ -189,6 +189,15 @@ export default defineConfig({
       chunkSizeWarningLimit: 1700,
     },
   }),
+  // Dev server port. WXT defaults to 3000 (with fallbacks 3001-3010), which
+  // collides with matrx-frontend's Next.js dev server. Pin to 3025 — clearly
+  // off the beaten path and out of conflict with the sibling app.
+  // `strictPort: true` is set automatically by WXT when a port is specified.
+  dev: {
+    server: {
+      port: 3025,
+    },
+  },
   outDir: '.output',
   imports: false,
 });

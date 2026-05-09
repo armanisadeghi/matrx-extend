@@ -366,16 +366,24 @@ async function handleCall(
     );
   }
 
-  // Optional-permission gate. Tools that depend on `debugger`, `cookies`, etc.
-  // declare `required_optional_permissions`. If those aren't granted yet,
-  // surface a structured error so the agent can ask the user to enable them.
+  // Optional-permission gate. Tools that depend on optional Chrome
+  // permissions (e.g. `cookies`, `pageCapture`, `tabCapture`) declare
+  // `required_optional_permissions`. The dispatcher itself can't request
+  // them — `chrome.permissions.request` requires a user gesture which
+  // the SW context lacks — so when the perm isn't granted yet we return
+  // a structured error that GUIDES the agent to ask the user, with
+  // enough detail that the next agent turn can call `ask_user` with the
+  // exact remediation. The user-facing prompt happens through that path
+  // (or via the in-app toggle in Settings → Advanced), never by us
+  // refusing them outright.
   if (handler.required_optional_permissions?.length) {
     const granted = await hasOptionalPermissions(
       handler.required_optional_permissions as OptionalPermission[],
     );
     if (!granted) {
+      const perms = handler.required_optional_permissions.join(', ');
       return fail(
-        `Required permission(s) not granted: ${handler.required_optional_permissions.join(', ')}. Open Settings → Advanced agent capabilities to enable, or ask the user to enable them.`,
+        `permission_not_yet_granted: this tool needs the optional Chrome permission(s) [${perms}]. Use ask_user to request the user enable it via the Advanced agent capabilities toggle, then retry. Do not give up — the user can grant the permission and the next call will succeed.`,
       );
     }
   }
@@ -603,7 +611,7 @@ export async function handleWebmcpCall(
     if (!granted) {
       return {
         ok: false,
-        error: `webmcp: required optional permission(s) not granted: ${handler.required_optional_permissions.join(', ')}`,
+        error: `webmcp: tool needs optional permission(s) [${handler.required_optional_permissions.join(', ')}] — user can grant via Advanced agent capabilities`,
       };
     }
   }

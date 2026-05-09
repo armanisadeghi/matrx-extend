@@ -37,7 +37,11 @@ import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
 import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
-import { getMicPermissionState } from '@/lib/audio/mic-permission';
+import {
+  getMicPermissionState,
+  hasUserApprovedMic,
+  rememberUserApprovedMic,
+} from '@/lib/audio/mic-permission';
 import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
 import { wrapForAgent } from '@/lib/clipboard/copy';
@@ -98,7 +102,11 @@ const SUGGESTIONS = [
 function formatMicErrorForUser(message: string, code?: string): string {
   switch (code) {
     case 'PERMISSION_DENIED':
-      return 'Microphone access required. Click the mic button to grant permission.';
+      // PERMISSION_DENIED is normally caught upstream and routed into the
+      // recovery modal; if it ever lands here as an inline banner, just
+      // tell the user to click again — the next click runs a fresh live
+      // request which may succeed or open the recovery modal.
+      return 'Microphone access required. Click the mic button to try again.';
     case 'NO_DEVICE':
       return 'No microphone detected. Plug one in or check your system audio input settings.';
     case 'DEVICE_BUSY':
@@ -1038,38 +1046,57 @@ function Composer({
     setVoiceError(null);
     setVoiceWarning(null);
     recordBaselineRef.current = value;
+    // Persist that the user has interacted with the mic flow so a future
+    // click skips the in-app explainer. The actual `getUserMedia` may
+    // still surface Chrome's native prompt; if the user blocks it, the
+    // mic-error path above flips the dialog to 'denied' mode — but we
+    // never refuse a click outright based on past denials.
+    void rememberUserApprovedMic();
     void startRecording();
   };
 
+  // Click handler for the mic button. Rule (no terminal denied state):
+  // every click either (a) starts a live `getUserMedia` attempt, or
+  // (b) opens the in-app explainer whose primary action triggers a live
+  // attempt. We NEVER refuse the click based on a past denial — Chrome
+  // may have changed state since, and the only way to know is to ask
+  // it live.
   const handleMicClick = async () => {
     if (isRecording) {
       stopRecording();
       return;
     }
+    // Quick hint — when Chrome already reports `granted`, skip the
+    // explainer. Same when the user has previously approved through our
+    // flow. Either way, the next step is a live attempt; a real failure
+    // (revoked, hardware gone) flips the modal to 'denied' from the
+    // mic-error path above, NOT from this pre-flight.
     const state = await getMicPermissionState();
     if (state === 'granted') {
       beginRecording();
       return;
     }
-    if (state === 'denied') {
-      setMicDialogMode('denied');
+    const approved = await hasUserApprovedMic();
+    if (approved) {
+      // User has approved at least once before. Skip the explainer and
+      // try directly. If the live attempt rejects with NotAllowedError,
+      // `onError` above will set micDialogMode='denied' so the user gets
+      // the recovery modal — without us ever refusing them up front.
+      beginRecording();
       return;
     }
-    if (state === 'prompt') {
-      setMicDialogMode('prompt');
-      return;
-    }
-    // 'unsupported' — `navigator.permissions.query` isn't available.
-    // Try recording anyway; the offscreen doc's `getUserMedia` will
-    // surface NotAllowedError → MIC_EVENT.error → onError above.
-    beginRecording();
+    // First-time user (or storage unavailable). Show the explainer so
+    // they understand what about to happen before Chrome's native
+    // prompt fires from the offscreen doc.
+    setMicDialogMode('prompt');
   };
 
   const handleMicDialogConfirm = () => {
     if (micDialogMode === 'prompt') {
       // User said yes to our in-app explainer. Close the modal and kick
       // off recording — `getUserMedia` in the offscreen doc surfaces
-      // Chrome's native permission prompt now.
+      // Chrome's native permission prompt now. If it rejects, the
+      // mic-error path flips us into 'denied' mode for recovery.
       setMicDialogMode(null);
       beginRecording();
       return;
@@ -1077,9 +1104,8 @@ function Composer({
     if (micDialogMode === 'denied') {
       // Open Chrome's site-permission settings page in a new tab. We
       // use the global content-settings/microphone deep-link because
-      // the per-extension permission lives there. The user finds the
-      // extension entry, flips Block → Allow, comes back, clicks mic
-      // again — which now shows the 'prompt' state.
+      // the per-extension permission lives there. We navigate FOR the
+      // user — they don't get a "type chrome://..." instruction.
       try {
         void chrome.tabs.create({ url: 'chrome://settings/content/microphone' });
       } catch {

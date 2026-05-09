@@ -286,6 +286,9 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
 
   const start = useCallback(
     async (opts: { tabId: number; durationMs: number; audio: boolean }) => {
+      // Rule (no terminal denied state): a click always either starts the
+      // operation or opens the explainer that triggers a live request.
+      // We NEVER refuse based on a stored "previously denied" flag.
       setErrorMessage(null);
       setStatus('permission');
       const granted = await hasOptionalPermissions(['tabCapture']);
@@ -293,8 +296,10 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
         await launchRecording(opts);
         return;
       }
-      // Defer the actual recording start until the user OKs the dialog.
-      // Reset back to idle so the Start button isn't stuck mid-flight.
+      // Always show the prompt explainer. The user's primary-CTA click
+      // runs a live `chrome.permissions.request` — Chrome decides what
+      // happens next. If that returns false we flip to recovery mode;
+      // we never refuse the start based on prior history.
       pendingStartRef.current = opts;
       setPermissionMode('prompt');
       setPermissionDialogOpen(true);
@@ -306,7 +311,7 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
   const confirmPermissionDialog = useCallback(async () => {
     if (permissionMode === 'denied') {
       // Open the extension's own permission page in a new tab. We navigate
-      // FOR the user — they don't get a "go to chrome://extensions" lecture.
+      // FOR the user — no "type chrome://..." instructions.
       try {
         await chrome.tabs.create({
           url: `chrome://extensions/?id=${chrome.runtime.id}`,
@@ -319,8 +324,11 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
       return;
     }
 
-    // prompt mode — request the optional permission. If granted, run the
-    // pending start; if denied, flip the dialog into denied mode.
+    // prompt mode — request the optional permission live. The button is
+    // a user gesture so Chrome will surface the native dialog. If the
+    // user accepts → grant, run pending start. If they dismiss → flip
+    // into recovery mode, but the NEXT click on the Record button still
+    // re-opens the prompt and re-requests; we never persist the denial.
     const ok = await requestOptionalPermission('tabCapture');
     if (!ok) {
       setPermissionMode('denied');

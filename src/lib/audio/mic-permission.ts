@@ -1,26 +1,25 @@
 /**
- * Pre-flight microphone permission state for the chat composer's mic
- * button.
+ * Mic permission helpers for the chat composer's mic button.
  *
- * Why this exists separately from `mic-recorder-offscreen.ts`: the recorder
- * lives in the offscreen document because Chrome MV3 side panels can't
- * reliably hold a `getUserMedia` MediaStream. But the side panel (where
- * the button lives) CAN call `navigator.permissions.query({name:
- * 'microphone'})` cheaply and synchronously, and the answer is enough to
- * decide whether to:
+ * Design rule (Arman, May 2026 — "no terminal denied state"):
  *
- *   - 'granted'    → start recording immediately, no UX needed.
- *   - 'prompt'     → show the in-app explainer modal so the user knows
- *                    what's about to happen, THEN trigger getUserMedia
- *                    in the offscreen doc (which surfaces the native
- *                    Chrome prompt).
- *   - 'denied'     → show the "blocked, here's how to unblock" modal —
- *                    Chrome refuses to re-prompt programmatically once
- *                    denied, so we deep-link to the chrome://settings
- *                    page that holds the actual fix.
- *   - 'unsupported' → fall back to attempting getUserMedia anyway and
- *                    hope for the best (very rare path).
+ *   - The user clicks → we ATTEMPT the live operation (or live request).
+ *     Outcome of the live attempt drives UI; never a stored "previously
+ *     denied" flag.
+ *   - When the user has approved at least once, persist that fact so we
+ *     don't show the in-app explainer again. We never persist a denial —
+ *     the next click always tries again.
+ *   - When `getUserMedia` rejects with NotAllowedError after a click, we
+ *     pop the recovery modal whose primary CTA opens the settings page
+ *     programmatically. The user is never told to type a chrome:// URL.
+ *
+ * Why we still keep `getMicPermissionState`: as a hint to skip the
+ * "Enable voice input?" explainer when Chrome already reports `granted`,
+ * and to launch the explainer for first-time users. It is NEVER used to
+ * refuse outright.
  */
+
+const APPROVED_KEY = 'matrx.audio.userApprovedMic';
 
 export type MicPermissionState = 'granted' | 'denied' | 'prompt' | 'unsupported';
 
@@ -41,5 +40,29 @@ export async function getMicPermissionState(): Promise<MicPermissionState> {
     return 'unsupported';
   } catch {
     return 'unsupported';
+  }
+}
+
+/**
+ * Has the user previously approved mic access via our flow? When `true`,
+ * future clicks skip the in-app explainer and try `getUserMedia` directly.
+ * If that live attempt later fails (e.g. user revoked the permission via
+ * Chrome settings) we surface the recovery modal — we NEVER refuse based
+ * on this flag.
+ */
+export async function hasUserApprovedMic(): Promise<boolean> {
+  try {
+    const got = await chrome.storage?.local?.get?.(APPROVED_KEY);
+    return Boolean(got?.[APPROVED_KEY]);
+  } catch {
+    return false;
+  }
+}
+
+export async function rememberUserApprovedMic(): Promise<void> {
+  try {
+    await chrome.storage?.local?.set?.({ [APPROVED_KEY]: true });
+  } catch {
+    /* storage unavailable — best-effort */
   }
 }
