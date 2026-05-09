@@ -37,6 +37,7 @@ import {
   Pencil,
   PlayCircle,
   Plus,
+  Globe,
   RefreshCw,
   RotateCcw,
   Save,
@@ -728,6 +729,7 @@ function AddItemRow({
 const ACTION_LABELS: Record<CaptureErrorAction, { label: string; Icon: typeof RefreshCw }> = {
   'reload-tab': { label: 'Reload page', Icon: RefreshCw },
   'try-again': { label: 'Try again', Icon: RotateCcw },
+  'grant-all-sites': { label: 'Grant All Sites access', Icon: Globe },
 };
 
 function CaptureErrorCard({
@@ -748,9 +750,27 @@ function CaptureErrorCard({
     ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30'
     : 'bg-destructive/10 text-destructive border-destructive/30';
 
-  const handleClick = (action: CaptureErrorAction) => {
-    if (action === 'reload-tab') onReloadTab();
-    else if (action === 'try-again') onTryAgain();
+  const handleClick = async (action: CaptureErrorAction) => {
+    if (action === 'reload-tab') {
+      onReloadTab();
+      return;
+    }
+    if (action === 'try-again') {
+      onTryAgain();
+      return;
+    }
+    if (action === 'grant-all-sites') {
+      // Lazy-imported because this card lives in the eager view bundle and
+      // the permissions module pulls in a small label registry.
+      const { requestOptionalHostPermission } = await import('@/lib/permissions/optional');
+      const granted = await requestOptionalHostPermission('<all_urls>');
+      if (granted) {
+        // Permission is now live — retry the capture immediately so the user
+        // sees success rather than having to click "Try again" themselves.
+        onTryAgain();
+      }
+      return;
+    }
   };
 
   return (

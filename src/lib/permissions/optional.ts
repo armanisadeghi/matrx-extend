@@ -165,3 +165,25 @@ export async function listGrantedOptionalHosts(): Promise<OptionalHostPermission
 export async function hasAllUrlsHostAccess(): Promise<boolean> {
   return hasOptionalHostPermissions(['<all_urls>']);
 }
+
+/**
+ * Is this specific URL covered by any of our currently-granted host
+ * permissions (base OR optional)?
+ *
+ * Used by the permission gate to decide whether a prompt is needed —
+ * if the URL is already covered (e.g., because it's on a Matrx-owned
+ * host listed in base host_permissions, or because <all_urls> was
+ * previously granted), we skip the prompt and silently proceed.
+ *
+ * Chrome's `permissions.contains({origins})` answers this exactly.
+ */
+export async function isUrlAlreadyCovered(url: string): Promise<boolean> {
+  try {
+    const u = new URL(url);
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return false;
+    const origin = `${u.protocol}//${u.host}/*`;
+    return await chrome.permissions.contains({ origins: [origin] });
+  } catch {
+    return false;
+  }
+}

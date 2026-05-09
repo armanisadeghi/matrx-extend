@@ -1,4 +1,5 @@
 import { AuthGate } from '@/components/AuthGate';
+import { PermissionPromptModal } from '@/components/PermissionPromptModal';
 import { UserMenu } from '@/components/UserMenu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -150,6 +151,10 @@ export function App() {
 
   return (
     <TooltipProvider delayDuration={150}>
+      {/* Mounted at App root (outside AuthGate) so it overlays every
+          surface and works even on auth screens. Renders nothing when
+          there's no active prompt; see lib/permissions/gate.ts. */}
+      <PermissionPromptModal />
       <div className="flex h-full flex-col bg-background text-foreground">
         <AuthGate>
           <Tabs
