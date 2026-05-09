@@ -241,7 +241,11 @@ export function useChunkedRecordAndTranscribe({
         }
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Chunk transcription failed';
-        console.error(`[chunked-transcription] chunk ${idx} failed:`, msg);
+        console.error('[matrx-audio] chunk transcription failed', {
+          chunkIndex: idx,
+          message: msg,
+          apiRoute: AUDIO_API_ROUTES.TRANSCRIBE,
+        });
         failedIndicesRef.current.push(idx);
         setFailedChunkCount(failedIndicesRef.current.length);
         if (safetyIdRef.current) {
@@ -333,7 +337,10 @@ export function useChunkedRecordAndTranscribe({
     try {
       await audioSafetyStore.createEntry(safetyId, sessionId, 'audio/webm');
     } catch (err) {
-      console.warn('[chunked-transcription] IndexedDB init failed, continuing without persistence:', err);
+      console.warn(
+        '[matrx-audio] IndexedDB init failed, continuing without crash-safety persistence',
+        err,
+      );
       safetyIdRef.current = '';
     }
 
@@ -341,6 +348,9 @@ export function useChunkedRecordAndTranscribe({
       await sendMicRequest({ action: 'start', chunkDurationMs });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to start recording';
+      console.error('[matrx-audio] startRecording — MIC_REQUEST forward failed', err);
+      // Surface to UI. Code is undefined here — the SW-side forwarding
+      // failure is distinct from the offscreen MicErrorEvent codes.
       onErrorRef.current?.(msg);
     }
   }, [chunkDurationMs]);
@@ -354,6 +364,7 @@ export function useChunkedRecordAndTranscribe({
       await sendMicRequest({ action: 'stop' });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to stop recording';
+      console.error('[matrx-audio] stopRecording forward failed', err);
       onErrorRef.current?.(msg);
     }
   }, []);
@@ -363,6 +374,7 @@ export function useChunkedRecordAndTranscribe({
       await sendMicRequest({ action: 'pause' });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to pause recording';
+      console.error('[matrx-audio] pauseRecording forward failed', err);
       onErrorRef.current?.(msg);
     }
   }, []);
@@ -372,6 +384,7 @@ export function useChunkedRecordAndTranscribe({
       await sendMicRequest({ action: 'resume' });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to resume recording';
+      console.error('[matrx-audio] resumeRecording forward failed', err);
       onErrorRef.current?.(msg);
     }
   }, []);

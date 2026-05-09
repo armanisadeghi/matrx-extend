@@ -87,10 +87,16 @@ export function useCartesiaSpeaker({
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || `Token fetch failed: ${res.status}`);
+        const detail = body.error || body.details || (await res.text().catch(() => ''));
+        throw new Error(
+          detail
+            ? `TTS auth failed (${res.status}): ${detail}`
+            : `TTS auth failed (HTTP ${res.status}). Try signing out and back in.`,
+        );
       }
       data = await res.json();
     } catch (err) {
+      console.error('[matrx-audio] Cartesia token fetch failed', err);
       if (mountedRef.current) setPhase('error');
       throw err;
     }
@@ -113,6 +119,7 @@ export function useCartesiaSpeaker({
 
       websocketRef.current = ws;
     } catch (err) {
+      console.error('[matrx-audio] Cartesia websocket connect failed', err);
       if (mountedRef.current) setPhase('error');
       throw err;
     }
@@ -154,7 +161,7 @@ export function useCartesiaSpeaker({
         if (mountedRef.current) setPhase('idle');
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Speech failed';
-        console.error('[useCartesiaSpeaker]', msg);
+        console.error('[matrx-audio] speak failed', err);
         onErrorRef.current?.(msg);
         if (mountedRef.current) setPhase('error');
       }
@@ -168,7 +175,9 @@ export function useCartesiaSpeaker({
         await playerRef.current.pause();
         if (mountedRef.current) setPhase('paused');
       } catch (err) {
-        console.error('[useCartesiaSpeaker] pause failed:', err);
+        console.error('[matrx-audio] WebPlayer pause failed', err);
+        const msg = err instanceof Error ? err.message : 'Pause failed';
+        onErrorRef.current?.(msg);
         if (mountedRef.current) setPhase('idle');
       }
     }
@@ -180,7 +189,9 @@ export function useCartesiaSpeaker({
         await playerRef.current.resume();
         if (mountedRef.current) setPhase('playing');
       } catch (err) {
-        console.error('[useCartesiaSpeaker] resume failed:', err);
+        console.error('[matrx-audio] WebPlayer resume failed', err);
+        const msg = err instanceof Error ? err.message : 'Resume failed';
+        onErrorRef.current?.(msg);
         if (mountedRef.current) setPhase('idle');
       }
     }
@@ -191,7 +202,9 @@ export function useCartesiaSpeaker({
       try {
         await playerRef.current.stop();
       } catch (err) {
-        console.error('[useCartesiaSpeaker] stop failed:', err);
+        // Stop is best-effort — surface to console but don't error the
+        // user (they were just trying to stop playback anyway).
+        console.error('[matrx-audio] WebPlayer stop failed', err);
       }
     }
     if (mountedRef.current) setPhase('idle');

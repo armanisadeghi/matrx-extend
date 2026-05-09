@@ -203,17 +203,53 @@ function registerHandlers(): void {
   // SW ensures offscreen is up, then forwards via MIC_RUN. The actual
   // MediaRecorder lives in the offscreen document where USER_MEDIA reason
   // grants reliable mic access.
+  //
+  // Failure surfacing — every error path BOTH throws (so the sidepanel's
+  // try/catch around sendMicRequest fires onError and the inline banner
+  // shows) AND broadcasts a MIC_EVENT.error (so any other open surface
+  // listening for mic events sees the failure too). Silent failures here
+  // are forbidden — the user's mic button would otherwise hang in the
+  // pre-start state with no signal.
   on<MicRequestPayload, { ok: boolean }>(CHANNELS.MIC_REQUEST, async (payload) => {
-    await ensureOffscreen();
-    const runPayload: MicRunPayload = payload;
-    const res = await chrome.runtime
-      .sendMessage({ __matrx: true, kind: CHANNELS.MIC_RUN, payload: runPayload })
-      .catch((err) => {
-        log.error('sys', `mic forward failed`, err);
-        return null;
+    try {
+      await ensureOffscreen();
+    } catch (err) {
+      const message = (err as Error).message ?? 'Failed to open offscreen document';
+      log.error('sys', '[matrx-audio] ensureOffscreen failed', err);
+      broadcast(CHANNELS.MIC_EVENT, {
+        type: 'error',
+        message: `Couldn't start the microphone backend: ${message}`,
+        code: 'OFFSCREEN_UNAVAILABLE',
       });
-    if (res && typeof res === 'object' && '__error' in res) {
-      throw new Error((res as { __error: string }).__error);
+      throw new Error(message);
+    }
+    const runPayload: MicRunPayload = payload;
+    let res: { __error?: string } | { ok?: true } | null = null;
+    try {
+      res = (await chrome.runtime.sendMessage({
+        __matrx: true,
+        kind: CHANNELS.MIC_RUN,
+        payload: runPayload,
+      })) as { __error?: string } | { ok?: true } | null;
+    } catch (err) {
+      const message = (err as Error).message ?? 'Mic forwarding failed';
+      log.error('sys', '[matrx-audio] MIC_RUN forward failed', err);
+      broadcast(CHANNELS.MIC_EVENT, {
+        type: 'error',
+        message: `Couldn't reach the mic backend: ${message}`,
+        code: 'FORWARD_FAILED',
+      });
+      throw new Error(message);
+    }
+    if (res && typeof res === 'object' && '__error' in res && res.__error) {
+      const message = res.__error;
+      log.error('sys', '[matrx-audio] MIC_RUN handler returned error', message);
+      broadcast(CHANNELS.MIC_EVENT, {
+        type: 'error',
+        message: `Mic backend error: ${message}`,
+        code: 'MIC_RUN_FAILED',
+      });
+      throw new Error(message);
     }
     return { ok: true };
   });

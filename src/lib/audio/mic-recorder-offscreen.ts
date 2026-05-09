@@ -143,8 +143,24 @@ function createRecorder(): MediaRecorder {
       emit(ev);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to package chunk';
-      emit({ type: 'error', message: msg } as MicErrorEvent);
+      console.error('[matrx-audio] chunk packaging failed', { chunkIndex: idx, msg });
+      emit({ type: 'error', message: msg, code: 'CHUNK_PACKAGE_FAILED' } as MicErrorEvent);
     }
+  };
+
+  // Surface MediaRecorder runtime errors. Without this listener, a mid-
+  // recording failure (codec error, source detached, OOM) goes silent
+  // and the user sees nothing transcribed.
+  mr.onerror = (event: Event) => {
+    const ev = event as Event & { error?: { name?: string; message?: string } };
+    const name = ev.error?.name ?? 'MediaRecorderError';
+    const message = ev.error?.message ?? 'MediaRecorder failed';
+    console.error('[matrx-audio] MediaRecorder error', { chunkIndex: idx, name, message });
+    emit({
+      type: 'error',
+      message: `${name}: ${message}`,
+      code: 'RECORDER_ERROR',
+    } as MicErrorEvent);
   };
 
   mr.start(100);
@@ -204,7 +220,12 @@ async function startRecording(chunkDurationMs?: number): Promise<void> {
           : e.name === 'NotReadableError' || e.name === 'TrackStartError'
             ? 'DEVICE_BUSY'
             : 'UNKNOWN_ERROR';
-    emit({ type: 'error', message: e.message || 'Microphone access failed', code } as MicErrorEvent);
+    console.error('[matrx-audio] getUserMedia failed', { code, name: e.name, message: e.message });
+    emit({
+      type: 'error',
+      message: e.message || 'Microphone access failed',
+      code,
+    } as MicErrorEvent);
     return;
   }
 

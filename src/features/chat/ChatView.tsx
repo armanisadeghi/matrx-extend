@@ -49,6 +49,7 @@ import { type ChatMessage, type MessagePart, useChatStore } from '@/state/chat';
 import { useSettingsStore } from '@/state/settings';
 import { useToolInbox } from '@/state/tool-inbox';
 import {
+  AlertTriangle,
   ArrowUp,
   Check,
   ChevronDown,
@@ -78,6 +79,29 @@ const SUGGESTIONS = [
   { icon: Lightbulb, label: 'Help me make a decision' },
   { icon: ScanLine, label: 'Analyze the current page' },
 ];
+
+/**
+ * Map raw mic / transcription errors to short user-actionable messages.
+ * The canonical error codes are emitted by mic-recorder-offscreen.ts.
+ * Anything else (forwarding failures, HTTP errors, etc.) we just pass
+ * through with a hint about what failed.
+ */
+function formatMicErrorForUser(message: string, code?: string): string {
+  switch (code) {
+    case 'PERMISSION_DENIED':
+      return "Mic access denied. Open chrome://extensions, find AI Matrx, click Details, and toggle the microphone permission on. If it's already on, click Site permissions and allow chrome-extension://* to use the microphone.";
+    case 'NO_DEVICE':
+      return 'No microphone detected. Plug one in or check your system audio input settings.';
+    case 'DEVICE_BUSY':
+      return 'Microphone is in use by another app. Close any other recording app (Zoom, Teams, OBS, etc.) and try again.';
+    case 'UNKNOWN_ERROR':
+      return `Mic failed: ${message || 'unknown error'}. Try unplugging and replugging the microphone.`;
+    default:
+      // Sign-in / network / HTTP errors land here. The message comes from
+      // the underlying throw and is already user-friendly.
+      return message || 'Voice input failed.';
+  }
+}
 
 export function ChatView() {
   const { user } = useAuth();
@@ -942,32 +966,103 @@ function Composer({
   // While recording, every transcribed chunk overwrites the textarea with
   // the baseline text + the running transcript. On stop, whatever's in the
   // input is what gets sent.
-  const { isRecording, isTranscribing, audioLevel, startRecording, stopRecording } =
-    useRecordAndTranscribe({
-      streaming: true,
-      onChunkTranscribed: (_snippet, accumulated) => {
-        const baseline = recordBaselineRef.current;
-        const sep = baseline && !baseline.endsWith(' ') ? ' ' : '';
-        onChange(`${baseline}${sep}${accumulated}`);
-      },
-      onError: (msg) => {
-        window.alert(`Voice input — ${msg}`);
-      },
-    });
+  //
+  // Failure modes (any of these MUST surface to the user — silent failures
+  // are unacceptable):
+  //   - getUserMedia rejects in offscreen (NotAllowed / NotFound / etc.) —
+  //     forwarded as MIC_EVENT.error → onError → inline banner.
+  //   - SW → offscreen forwarding fails (offscreen not yet listening,
+  //     transient sendMessage failure) — startRecording's try/catch
+  //     surfaces via onError.
+  //   - Per-chunk transcription HTTP fails (auth, network, server) —
+  //     onChunkError fires; we accumulate failed-chunk count and show
+  //     a soft warning so the user can decide to retry.
+  //   - Final transcription returned no text — onTranscriptionComplete
+  //     fires with empty text; user just sees nothing typed (we leave a
+  //     hint).
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+  const [voiceWarning, setVoiceWarning] = useState<string | null>(null);
+
+  const {
+    isRecording,
+    isTranscribing,
+    audioLevel,
+    failedChunkCount,
+    startRecording,
+    stopRecording,
+  } = useRecordAndTranscribe({
+    streaming: true,
+    onChunkTranscribed: (_snippet, accumulated) => {
+      const baseline = recordBaselineRef.current;
+      const sep = baseline && !baseline.endsWith(' ') ? ' ' : '';
+      onChange(`${baseline}${sep}${accumulated}`);
+    },
+    onChunkError: (idx, msg) => {
+      console.error('[matrx-audio] chunk transcription failed', { idx, msg });
+      // Don't replace a hard error — keep this as a soft warning unless
+      // we're already showing something more important.
+      setVoiceWarning(`Some audio failed to transcribe (chunk ${idx}): ${msg}`);
+    },
+    onError: (msg, code) => {
+      console.error('[matrx-audio] mic error', { msg, code });
+      setVoiceError(formatMicErrorForUser(msg, code));
+    },
+  });
 
   const handleMicClick = () => {
     if (isRecording) {
       stopRecording();
       return;
     }
+    setVoiceError(null);
+    setVoiceWarning(null);
     recordBaselineRef.current = value;
     void startRecording();
+  };
+
+  const dismissVoiceMessages = () => {
+    setVoiceError(null);
+    setVoiceWarning(null);
   };
 
   const hasText = value.trim().length > 0;
 
   return (
     <div className="px-3 pb-3 pt-1">
+      {(voiceError || (voiceWarning && !voiceError)) && (
+        <div
+          role="alert"
+          className={cn(
+            'mb-2 flex items-start gap-2 rounded-md border px-3 py-2 text-xs',
+            voiceError
+              ? 'border-red-500/30 bg-red-500/5 text-red-700 dark:text-red-400'
+              : 'border-amber-500/30 bg-amber-500/5 text-amber-700 dark:text-amber-400',
+          )}
+        >
+          <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
+          <div className="flex-1 leading-snug">
+            <span className="font-medium">
+              {voiceError ? 'Voice input failed' : 'Voice input — partial failure'}
+            </span>
+            <span className="mt-0.5 block opacity-90">
+              {voiceError ?? voiceWarning}
+            </span>
+            {!voiceError && failedChunkCount > 0 && (
+              <span className="mt-0.5 block opacity-75">
+                {failedChunkCount} chunk{failedChunkCount === 1 ? '' : 's'} dropped — your transcript may be incomplete.
+              </span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={dismissVoiceMessages}
+            className="ml-1 shrink-0 rounded p-0.5 opacity-60 hover:opacity-100"
+            aria-label="Dismiss"
+          >
+            <span aria-hidden>×</span>
+          </button>
+        </div>
+      )}
       <div className="rounded-2xl border bg-card shadow-sm transition-shadow focus-within:shadow">
         <textarea
           ref={taRef}
@@ -1003,14 +1098,18 @@ function Composer({
                 'inline-flex size-8 items-center justify-center rounded-full transition-colors',
                 isRecording
                   ? 'bg-red-500/15 text-red-600 hover:bg-red-500/25 dark:text-red-400'
-                  : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                  : voiceError
+                    ? 'text-red-600 hover:bg-red-500/15 dark:text-red-400'
+                    : 'text-muted-foreground hover:bg-accent hover:text-foreground',
               )}
               title={
-                isRecording
-                  ? 'Stop recording'
-                  : isTranscribing
-                    ? 'Finishing transcription…'
-                    : 'Voice input'
+                voiceError
+                  ? voiceError
+                  : isRecording
+                    ? 'Stop recording'
+                    : isTranscribing
+                      ? 'Finishing transcription…'
+                      : 'Voice input'
               }
               style={
                 isRecording
