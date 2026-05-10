@@ -72,6 +72,16 @@ export function bootstrapBackground(): void {
   // before sign-in is ever attempted. See .research/v0.1.4-auth-incident.md.
   logExtensionIdentityOnce();
 
+  // ── 0. Close any STALE offscreen document that survived an extension
+  //       reload. MV3 offscreen documents can outlive a SW reload — when the
+  //       user runs `pnpm build` and reloads the extension, the sidepanel
+  //       loads NEW JS but the offscreen keeps running OLD JS. That's how
+  //       the v0.1.16 audio bug shipped: sidepanel expected base64 strings,
+  //       offscreen broadcast ArrayBuffer (which JSON-serializes to `{}`).
+  //       Closing eagerly here guarantees the next `ensureOffscreen` call
+  //       creates a fresh document with the latest bundle.
+  void closeStaleOffscreenOnBoot();
+
   // ── 1. Register message handlers SYNCHRONOUSLY so they're ready immediately.
   registerHandlers();
 
@@ -694,6 +704,57 @@ function registerPilotLifecycleListeners(): void {
         /* the group may already be gone — onRemoved listener will catch it */
       }
     });
+  }
+}
+
+/**
+ * Close any offscreen document that survived an extension reload.
+ *
+ * MV3 offscreen documents are NOT torn down when the SW restarts (e.g. after
+ * `pnpm build` + reload), so they can keep running stale JS while the rest
+ * of the extension is on the new bundle. The most common symptom is the
+ * audio path: sidepanel expects base64 strings (the post-50b09f9 contract)
+ * but a stale offscreen still broadcasts ArrayBuffer, which
+ * `chrome.runtime.sendMessage`'s JSON serializer flattens to `{}`. The
+ * sidepanel's `base64ToBlob` then chokes on a non-string input.
+ *
+ * Closing here, once per SW boot, is the cheap blanket fix: the next
+ * `ensureOffscreen()` call creates a fresh document with the latest code.
+ * This is fire-and-forget — failures must never block bootstrap.
+ */
+async function closeStaleOffscreenOnBoot(): Promise<void> {
+  try {
+    let exists = false;
+    if (chrome.runtime.getContexts) {
+      try {
+        const contexts = await chrome.runtime.getContexts({
+          contextTypes: ['OFFSCREEN_DOCUMENT' as chrome.runtime.ContextType],
+        });
+        exists = contexts.length > 0;
+      } catch {
+        /* fall through to hasDocument */
+      }
+    }
+    if (!exists && 'hasDocument' in chrome.offscreen) {
+      try {
+        exists = await (
+          chrome.offscreen as { hasDocument: () => Promise<boolean> }
+        ).hasDocument();
+      } catch {
+        /* fall through */
+      }
+    }
+    if (!exists) {
+      log.info('sw', 'no stale offscreen to close');
+      return;
+    }
+    await chrome.offscreen.closeDocument();
+    log.info('sw', 'closed stale offscreen document on boot');
+  } catch (err) {
+    // Don't crash bootstrap — worst case the user runs into the original
+    // stale-offscreen symptom and we surface it via the defensive base64
+    // decoder guard instead.
+    log.warn('sw', 'closeStaleOffscreenOnBoot failed', (err as Error)?.message);
   }
 }
 

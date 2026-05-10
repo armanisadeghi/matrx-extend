@@ -53,8 +53,27 @@ export async function arrayBufferToBase64(buffer: ArrayBuffer): Promise<string> 
   return blobToBase64(new Blob([buffer]));
 }
 
+/**
+ * Reject non-string input loudly. The senders in this codebase always emit
+ * base64 strings; a `{}` here means a stale context (typically a stale
+ * offscreen doc from before 50b09f9) is broadcasting raw ArrayBuffer, which
+ * `chrome.runtime.sendMessage`'s JSON serializer flattens to `{}`. Without
+ * this guard `atob({})` throws `InvalidCharacterError` from native code
+ * with no hint about the actual root cause.
+ */
+function describeNonString(value: unknown): string {
+  if (value === null) return 'null';
+  return Object.prototype.toString.call(value);
+}
+
 /** Decode a base64 string back into a Blob with the given mime type. */
 export function base64ToBlob(base64: string, mimeType: string): Blob {
+  if (typeof base64 !== 'string') {
+    throw new TypeError(
+      `base64ToBlob: expected string, got ${typeof base64} (${describeNonString(base64)}). ` +
+        'Sender may be running stale code that broadcasts ArrayBuffer — reload the extension.',
+    );
+  }
   const binStr = atob(base64);
   const len = binStr.length;
   const u8 = new Uint8Array(len);
@@ -64,6 +83,12 @@ export function base64ToBlob(base64: string, mimeType: string): Blob {
 
 /** Decode a base64 string back into a fresh ArrayBuffer. */
 export function base64ToArrayBuffer(base64: string): ArrayBuffer {
+  if (typeof base64 !== 'string') {
+    throw new TypeError(
+      `base64ToArrayBuffer: expected string, got ${typeof base64} (${describeNonString(base64)}). ` +
+        'Sender may be running stale code that broadcasts ArrayBuffer — reload the extension.',
+    );
+  }
   const binStr = atob(base64);
   const len = binStr.length;
   const buffer = new ArrayBuffer(len);

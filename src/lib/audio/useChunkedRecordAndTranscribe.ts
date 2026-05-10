@@ -344,6 +344,29 @@ export function useChunkedRecordAndTranscribe({
         stopDurationTimer();
         onErrorRef.current?.(event.message, event.code);
       } else if (event.type === 'chunk') {
+        // event.data MUST be a base64 string after 50b09f9. If it isn't,
+        // an old offscreen build is broadcasting raw ArrayBuffer (which
+        // `chrome.runtime.sendMessage`'s JSON serializer collapses to `{}`).
+        // Bail loudly with an actionable hint instead of letting `atob`
+        // throw a confusing native InvalidCharacterError mid-pipeline.
+        if (typeof event.data !== 'string') {
+          const dataKind = event.data === null ? 'null' : typeof event.data;
+          log.error(
+            'audio',
+            'hook: chunk has non-string data — stale offscreen, reload the extension',
+            {
+              chunkIndex: event.chunkIndex,
+              dataKind,
+              mimeType: event.mimeType,
+            },
+          );
+          onErrorRef.current?.(
+            'Audio pipeline mismatch: the offscreen document is running stale code. ' +
+              'Reload the extension from chrome://extensions and try again.',
+            'STALE_OFFSCREEN',
+          );
+          return false;
+        }
         // event.data is a base64 string (chrome.runtime.sendMessage uses
         // JSON, not structured clone). Decode back to a Blob before
         // sending to Whisper. See @/lib/messaging/binary-transport.
