@@ -99,6 +99,19 @@ interface RecorderState {
   mimeType: string;
   /** Per-chunk session-relative window. Set on creation, finalized on stop. */
   chunkTimings: Map<number, { tStart: number; tEnd: number }>;
+  /**
+   * Resolver set by `stopRecording` immediately before calling
+   * `recorder.stop()`. The current recorder's `onstop` resolves it AFTER
+   * the final chunk has been encoded + broadcast, so `stopRecording`
+   * can reliably emit `MIC_EVENT.stopped` only AFTER the final chunk
+   * has reached the hook.
+   *
+   * Crucially: rotation (`rotateChunk`) does NOT set this resolver. Its
+   * `onstop` calls the resolver as a no-op (it's null) and the rotation
+   * stays fire-and-forget for performance. Only the explicit stop path
+   * waits — so we never lose the user's tail audio.
+   */
+  onStopComplete: (() => void) | null;
 }
 
 const state: RecorderState = {
@@ -117,6 +130,7 @@ const state: RecorderState = {
   chunkDurationMs: DEFAULT_CHUNK_MS,
   mimeType: 'audio/webm',
   chunkTimings: new Map(),
+  onStopComplete: null,
 };
 
 function emit(event: MicEvent): void {
@@ -227,40 +241,55 @@ function createRecorder(): MediaRecorder {
     }
   };
   mr.onstop = async () => {
-    const timing = state.chunkTimings.get(idx);
-    if (timing) timing.tEnd = sessionRelativeSec();
-    const blob = new Blob(chunks, { type: state.mimeType });
-    log.info('audio', 'recorder onstop', {
-      chunkIndex: idx,
-      blobSize: blob.size,
-      partsCount: chunks.length,
-    });
-    if (blob.size === 0) return;
     try {
-      // Encode to base64 — chrome.runtime.sendMessage uses JSON, NOT
-      // structured clone, so an ArrayBuffer would round-trip as `{}`
-      // and Whisper would transcribe silence. See binary-transport.ts.
-      const data = await blobToBase64(blob);
-      const ev: MicChunkEvent = {
-        type: 'chunk',
+      const timing = state.chunkTimings.get(idx);
+      if (timing) timing.tEnd = sessionRelativeSec();
+      const blob = new Blob(chunks, { type: state.mimeType });
+      log.info('audio', 'recorder onstop', {
         chunkIndex: idx,
-        data,
-        mimeType: state.mimeType,
-        tStart: timing?.tStart ?? 0,
-        tEnd: timing?.tEnd ?? 0,
-      };
-      log.success('audio', 'broadcast chunk', {
-        chunkIndex: idx,
-        originalBytes: blob.size,
-        base64Length: data.length,
-        tStart: ev.tStart,
-        tEnd: ev.tEnd,
+        blobSize: blob.size,
+        partsCount: chunks.length,
       });
-      emit(ev);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to package chunk';
-      log.error('audio', 'chunk packaging failed', { chunkIndex: idx, msg, err });
-      emit({ type: 'error', message: msg, code: 'CHUNK_PACKAGE_FAILED' } as MicErrorEvent);
+      if (blob.size === 0) return;
+      try {
+        // Encode to base64 — chrome.runtime.sendMessage uses JSON, NOT
+        // structured clone, so an ArrayBuffer would round-trip as `{}`
+        // and Whisper would transcribe silence. See binary-transport.ts.
+        const data = await blobToBase64(blob);
+        const ev: MicChunkEvent = {
+          type: 'chunk',
+          chunkIndex: idx,
+          data,
+          mimeType: state.mimeType,
+          tStart: timing?.tStart ?? 0,
+          tEnd: timing?.tEnd ?? 0,
+        };
+        log.success('audio', 'broadcast chunk', {
+          chunkIndex: idx,
+          originalBytes: blob.size,
+          base64Length: data.length,
+          tStart: ev.tStart,
+          tEnd: ev.tEnd,
+        });
+        emit(ev);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Failed to package chunk';
+        log.error('audio', 'chunk packaging failed', { chunkIndex: idx, msg, err });
+        emit({ type: 'error', message: msg, code: 'CHUNK_PACKAGE_FAILED' } as MicErrorEvent);
+      }
+    } finally {
+      // Signal completion to anyone waiting on this recorder's stop. Only
+      // the explicit `stopRecording` path sets `onStopComplete`; rotation
+      // leaves it null so this is a no-op for fire-and-forget rotations.
+      // Wrapped in `finally` so a packaging error still releases the
+      // waiter — otherwise an unrelated crash mid-encode would hang
+      // `MIC_EVENT.stopped` forever and the hook would never fire
+      // `maybeFireFinal`.
+      const resolver = state.onStopComplete;
+      if (resolver) {
+        state.onStopComplete = null;
+        resolver();
+      }
     }
   };
 
@@ -498,6 +527,13 @@ async function startRecording(chunkDurationMs?: number): Promise<void> {
   });
 }
 
+/** Hard upper bound on how long we'll wait for the final recorder's
+ *  `onstop` to complete. WebM Opus encoding of a ~10s chunk is fast (tens
+ *  of ms in practice); 5s is a safety net for pathologically slow devices.
+ *  If we hit this, something went wrong inside `onstop` — bail out so the
+ *  user isn't stuck with a hung mic button, but log loudly. */
+const STOP_COMPLETION_TIMEOUT_MS = 5000;
+
 async function stopRecording(): Promise<void> {
   log.info('audio', 'stopRecording invoked', {
     hadRecorder: !!state.recorder,
@@ -509,11 +545,53 @@ async function stopRecording(): Promise<void> {
   const mr = state.recorder;
   state.recorder = null;
   if (mr && mr.state !== 'inactive') {
-    // The 'stop' handler will fire ondataavailable and broadcast the final
-    // chunk asynchronously. Don't tear down the stream until after it has
-    // had a chance to flush — give it a tick.
-    mr.stop();
-    await new Promise((r) => setTimeout(r, 50));
+    // CORRECTNESS-CRITICAL: wait for the recorder's `onstop` to finish
+    // its async work (chunk encoded + broadcast emitted) BEFORE we emit
+    // `MIC_EVENT.stopped`. Without this, the hook can see `stopped`
+    // before the final `chunk` event, which races `pendingRef.current`
+    // back to 0 prematurely and `maybeFireFinal` emits
+    // `onTranscriptionComplete` with the tail of the user's audio
+    // missing. The user's bar: "NEVER ever lose even a single
+    // millisecond of your audio" — exactly this path.
+    //
+    // Pattern: install `state.onStopComplete` BEFORE `recorder.stop()`
+    // so the `onstop` we're about to trigger sees it. The recorder
+    // factory's `onstop` wraps its body in try/finally and resolves
+    // `onStopComplete` in the finally block — even a packaging error
+    // releases this waiter, so we never hang. A 5s safety timeout
+    // guards against the truly pathological case (e.g. encoder hang).
+    await new Promise<void>((resolve) => {
+      let settled = false;
+      const settle = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve();
+      };
+      state.onStopComplete = () => {
+        log.info('audio', 'stopRecording: final chunk broadcast complete');
+        settle();
+      };
+      const timer = setTimeout(() => {
+        log.warn(
+          'audio',
+          `stopRecording: final-chunk wait timed out after ${STOP_COMPLETION_TIMEOUT_MS}ms — proceeding`,
+        );
+        // Detach the resolver so a late `onstop` doesn't try to call
+        // a stale closure. The chunk broadcast (if it eventually
+        // arrives) is still useful for the hook's transcript merge;
+        // we just won't gate `stopped` on it.
+        state.onStopComplete = null;
+        settle();
+      }, STOP_COMPLETION_TIMEOUT_MS);
+      try {
+        mr.stop();
+      } catch (err) {
+        log.error('audio', 'stopRecording: recorder.stop() threw', err);
+        state.onStopComplete = null;
+        settle();
+      }
+    });
   }
 
   teardownStream();
