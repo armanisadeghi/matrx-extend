@@ -107,13 +107,12 @@ export function RecorderPane() {
     errorMessage,
     elapsedMs,
     lastDurationMs,
-    permissionDialogOpen,
-    permissionMode,
+    recoveryDialogOpen,
     start,
     stop,
     reset,
-    confirmPermissionDialog,
-    closePermissionDialog,
+    confirmRecoveryDialog,
+    closeRecoveryDialog,
   } = useTabVideoRecorder();
   const entries = useRecordingsStore((s) => s.entries);
   const hydrated = useRecordingsStore((s) => s.hydrated);
@@ -329,11 +328,10 @@ export function RecorderPane() {
         )}
       </div>
     </div>
-    {permissionDialogOpen && (
+    {recoveryDialogOpen && (
       <TabCaptureDialog
-        mode={permissionMode}
-        onConfirm={() => void confirmPermissionDialog()}
-        onClose={closePermissionDialog}
+        onConfirm={() => void confirmRecoveryDialog()}
+        onClose={closeRecoveryDialog}
       />
     )}
     </>

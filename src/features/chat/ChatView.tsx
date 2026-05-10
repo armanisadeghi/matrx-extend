@@ -27,20 +27,13 @@ import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
 import { LanguagePicker } from '@/features/chat/LanguagePicker';
-import {
-  MicPermissionDialog,
-  type MicPermissionDialogMode,
-} from '@/features/chat/MicPermissionDialog';
+import { MicPermissionDialog } from '@/features/chat/MicPermissionDialog';
 import { ServerToolRow } from '@/features/chat/ServerToolRow';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
 import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
-import {
-  hasUserApprovedMic,
-  rememberUserApprovedMic,
-} from '@/lib/audio/mic-permission';
 import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
 import { wrapForAgent } from '@/lib/clipboard/copy';
@@ -92,11 +85,11 @@ const SUGGESTIONS = [
  * Map raw mic / transcription errors to short user-actionable messages.
  * The canonical error codes are emitted by mic-recorder-offscreen.ts.
  *
- * NOTE: PERMISSION_DENIED is handled by MicPermissionDialog (see
- * `handleMicClick`); the inline banner is only shown if the dialog flow
- * was bypassed (e.g. the permission was revoked mid-recording). Anything
- * else (forwarding failures, HTTP errors, etc.) we just pass through with
- * a hint about what failed.
+ * NOTE: PERMISSION_DENIED is normally routed into the recovery modal
+ * (see `onError` in the composer); it only falls through to this
+ * banner if for some reason the modal flow was bypassed. Everything
+ * else (forwarding failures, HTTP errors, etc.) we just pass through
+ * with a hint about what failed.
  */
 function formatMicErrorForUser(message: string, code?: string): string {
   switch (code) {
@@ -998,13 +991,10 @@ function Composer({
   //     hint).
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [voiceWarning, setVoiceWarning] = useState<string | null>(null);
-  // The permission-grant modal. When non-null, the modal is rendered with
-  // the matching mode. 'prompt' is shown the FIRST time the user clicks
-  // mic (gives them a chance to opt in before Chrome's native dialog
-  // appears in a context they may not see clearly); 'denied' is shown
-  // when the permission state is already 'denied' (Chrome refuses to
-  // re-prompt programmatically, so we deep-link to the settings page).
-  const [micDialogMode, setMicDialogMode] = useState<MicPermissionDialogMode | null>(null);
+  // Recovery modal — opens ONLY after Chrome rejects a real `getUserMedia`
+  // request. Never used as a pre-attempt explainer. Chrome's own native
+  // permission prompt is the only "asking" UI the user should see.
+  const [micRecoveryOpen, setMicRecoveryOpen] = useState(false);
 
   const {
     isRecording,
@@ -1028,13 +1018,12 @@ function Composer({
     },
     onError: (msg, code) => {
       console.error('[matrx-audio] mic error', { msg, code });
-      // PERMISSION_DENIED that arrives here means Chrome's native prompt
-      // returned 'denied' even though we initiated from the in-app modal,
-      // OR the permission was revoked between two recordings. Either
-      // way, push the user back into the denied-state modal so they have
-      // a clear path to fix it instead of staring at a red banner.
+      // PERMISSION_DENIED means Chrome's native prompt returned 'denied'
+      // (or the permission was revoked between recordings). This is the
+      // ONLY path that opens the recovery modal — never a pre-emptive
+      // explainer; only after a real Chrome rejection.
       if (code === 'PERMISSION_DENIED') {
-        setMicDialogMode('denied');
+        setMicRecoveryOpen(true);
         return;
       }
       setVoiceError(formatMicErrorForUser(msg, code));
@@ -1045,69 +1034,36 @@ function Composer({
     setVoiceError(null);
     setVoiceWarning(null);
     recordBaselineRef.current = value;
-    // Persist that the user has interacted with the mic flow so a future
-    // click skips the in-app explainer. The actual `getUserMedia` may
-    // still surface Chrome's native prompt; if the user blocks it, the
-    // mic-error path above flips the dialog to 'denied' mode — but we
-    // never refuse a click outright based on past denials.
-    void rememberUserApprovedMic();
     void startRecording();
   };
 
-  // Click handler for the mic button. Rule (no claims about prior state):
-  // every click either (a) starts a live `getUserMedia` attempt, or
-  // (b) opens the neutral explainer whose primary action triggers a
-  // live attempt. We NEVER consult `navigator.permissions.query` — its
-  // result for extensions is unreliable across contexts (SW vs sidepanel
-  // vs offscreen) and not actionable. The only authoritative answer
-  // is the live attempt itself.
-  const handleMicClick = async () => {
+  // Click handler for the mic button. Always attempts the live
+  // `getUserMedia` request immediately. Chrome handles the prompt UI
+  // itself — native dialog on first ask, silent success when granted,
+  // silent rejection when denied. Our recovery modal opens ONLY from
+  // the `onError` PERMISSION_DENIED branch above (after a real Chrome
+  // rejection), never as pre-attempt UI.
+  const handleMicClick = () => {
     if (isRecording) {
       stopRecording();
       return;
     }
-    // If the user has previously approved through our flow, skip the
-    // explainer and just attempt `getUserMedia` directly. If the
-    // permission was revoked since approval, the live request fails and
-    // the `onError` path flips the modal to 'denied' for recovery —
-    // that's the only way the recovery UI is ever reached.
-    const approved = await hasUserApprovedMic();
-    if (approved) {
-      beginRecording();
-      return;
-    }
-    // First-time user. Show the neutral explainer so they understand
-    // what's about to happen before Chrome's native prompt fires from
-    // the offscreen doc. The explainer makes NO claims about prior
-    // state — it just says "click Allow microphone, Chrome will ask".
-    setMicDialogMode('prompt');
+    beginRecording();
   };
 
-  const handleMicDialogConfirm = () => {
-    if (micDialogMode === 'prompt') {
-      // User said yes to our in-app explainer. Close the modal and kick
-      // off recording — `getUserMedia` in the offscreen doc surfaces
-      // Chrome's native permission prompt now. If it rejects, the
-      // mic-error path flips us into 'denied' mode for recovery.
-      setMicDialogMode(null);
-      beginRecording();
-      return;
+  const handleMicRecoveryConfirm = () => {
+    // Open Chrome's site-permission settings page in a new tab. We
+    // navigate FOR the user — they don't get a "type chrome://..."
+    // instruction. The per-extension mic permission lives here.
+    try {
+      void chrome.tabs.create({ url: 'chrome://settings/content/microphone' });
+    } catch {
+      /* tab API may be unavailable in some test contexts */
     }
-    if (micDialogMode === 'denied') {
-      // Open Chrome's site-permission settings page in a new tab. We
-      // use the global content-settings/microphone deep-link because
-      // the per-extension permission lives there. We navigate FOR the
-      // user — they don't get a "type chrome://..." instruction.
-      try {
-        void chrome.tabs.create({ url: 'chrome://settings/content/microphone' });
-      } catch {
-        /* tab API may be unavailable in some test contexts */
-      }
-      setMicDialogMode(null);
-    }
+    setMicRecoveryOpen(false);
   };
 
-  const handleMicDialogClose = () => setMicDialogMode(null);
+  const handleMicRecoveryClose = () => setMicRecoveryOpen(false);
 
   const dismissVoiceMessages = () => {
     setVoiceError(null);
@@ -1118,11 +1074,10 @@ function Composer({
 
   return (
     <>
-      {micDialogMode !== null && (
+      {micRecoveryOpen && (
         <MicPermissionDialog
-          mode={micDialogMode}
-          onConfirm={handleMicDialogConfirm}
-          onClose={handleMicDialogClose}
+          onConfirm={handleMicRecoveryConfirm}
+          onClose={handleMicRecoveryClose}
         />
       )}
     <div className="px-3 pb-3 pt-1">
@@ -1190,7 +1145,7 @@ function Composer({
           <div className="ml-auto flex items-center gap-1">
             <button
               type="button"
-              onClick={() => void handleMicClick()}
+              onClick={handleMicClick}
               className={cn(
                 'inline-flex size-8 items-center justify-center rounded-full transition-colors',
                 isRecording

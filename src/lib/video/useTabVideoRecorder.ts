@@ -40,13 +40,6 @@ export type RecorderStatus =
   | 'uploading'
   | 'error';
 
-/** Sub-state for the optional-permission dialog flow. */
-export type TabCapturePermissionState =
-  | 'unknown'
-  | 'prompt'
-  | 'denied'
-  | 'granted';
-
 export interface UseTabVideoRecorderResult {
   status: RecorderStatus;
   errorMessage: string | null;
@@ -57,19 +50,19 @@ export interface UseTabVideoRecorderResult {
   /** Active session id; null when idle. */
   sessionId: string | null;
   /**
-   * Whether the consumer should render the in-app permission dialog. The
-   * `permissionMode` decides which dialog body to show.
+   * Whether the consumer should render the recovery dialog. Opens ONLY
+   * after Chrome rejects a real `chrome.permissions.request` call —
+   * never as pre-attempt UI.
    */
-  permissionDialogOpen: boolean;
-  permissionMode: 'prompt' | 'denied';
-  /** Begin the recording flow. May open the permission dialog first. */
+  recoveryDialogOpen: boolean;
+  /** Begin the recording flow. */
   start: (opts: { tabId: number; durationMs: number; audio: boolean }) => Promise<void>;
   stop: () => Promise<void>;
   reset: () => void;
-  /** Called when the user clicks the dialog's primary CTA. */
-  confirmPermissionDialog: () => Promise<void>;
-  /** Called when the user dismisses the dialog. */
-  closePermissionDialog: () => void;
+  /** Called when the user clicks "Open extension permissions". */
+  confirmRecoveryDialog: () => Promise<void>;
+  /** Called when the user dismisses the recovery dialog. */
+  closeRecoveryDialog: () => void;
 }
 
 function newSessionId(): string {
@@ -98,10 +91,7 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
   const [elapsedMs, setElapsedMs] = useState(0);
   const [lastDurationMs, setLastDurationMs] = useState<number | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [permissionDialogOpen, setPermissionDialogOpen] = useState(false);
-  const [permissionMode, setPermissionMode] = useState<'prompt' | 'denied'>(
-    'prompt',
-  );
+  const [recoveryDialogOpen, setRecoveryDialogOpen] = useState(false);
 
   const sessionIdRef = useRef<string | null>(null);
   const startTimeRef = useRef<number>(0);
@@ -111,11 +101,6 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
     url: null,
   });
   const audioRef = useRef<boolean>(false);
-  const pendingStartRef = useRef<{
-    tabId: number;
-    durationMs: number;
-    audio: boolean;
-  } | null>(null);
   const addRecording = useRecordingsStore((s) => s.add);
 
   const stopTick = useCallback(() => {
@@ -286,66 +271,46 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
 
   const start = useCallback(
     async (opts: { tabId: number; durationMs: number; audio: boolean }) => {
-      // Rule (no claims about prior state): a click always either starts
-      // the operation or opens the neutral explainer whose primary CTA
-      // triggers a live `chrome.permissions.request`. The 'denied' mode
-      // is only reached by transitioning from 'prompt' after a real
-      // request rejection — never as a starting state.
+      // Always attempt the live permission request immediately. Chrome's
+      // own native dialog is the only "asking" UI the user should see;
+      // we never compete with it via a pre-attempt explainer modal.
+      // If Chrome already has the permission, the request resolves true
+      // silently. If not, Chrome shows its native prompt — and only on
+      // rejection do we open our recovery dialog (with one-click access
+      // to the extension's permission page).
       setErrorMessage(null);
       setStatus('permission');
-      // Optimization (acceptable): if Chrome already has the permission,
-      // skip the explainer and start recording. The fallback path for
-      // 'not granted' is "show the prompt explainer", not "show denied".
       const granted = await hasOptionalPermissions(['tabCapture']);
       if (granted) {
         await launchRecording(opts);
         return;
       }
-      pendingStartRef.current = opts;
-      setPermissionMode('prompt');
-      setPermissionDialogOpen(true);
-      setStatus('idle');
+      const ok = await requestOptionalPermission('tabCapture');
+      if (!ok) {
+        setStatus('idle');
+        setRecoveryDialogOpen(true);
+        return;
+      }
+      await launchRecording(opts);
     },
     [launchRecording],
   );
 
-  const confirmPermissionDialog = useCallback(async () => {
-    if (permissionMode === 'denied') {
-      // Open the extension's own permission page in a new tab. We navigate
-      // FOR the user — no "type chrome://..." instructions.
-      try {
-        await chrome.tabs.create({
-          url: `chrome://extensions/?id=${chrome.runtime.id}`,
-        });
-      } catch (err) {
-        log.warn('sys', 'open extension permissions failed', err);
-      }
-      setPermissionDialogOpen(false);
-      pendingStartRef.current = null;
-      return;
+  const confirmRecoveryDialog = useCallback(async () => {
+    // Open the extension's own permission page in a new tab. We navigate
+    // FOR the user — no "type chrome://..." instructions.
+    try {
+      await chrome.tabs.create({
+        url: `chrome://extensions/?id=${chrome.runtime.id}`,
+      });
+    } catch (err) {
+      log.warn('sys', 'open extension permissions failed', err);
     }
+    setRecoveryDialogOpen(false);
+  }, []);
 
-    // prompt mode — request the optional permission live. The button is
-    // a user gesture so Chrome will surface the native dialog. If the
-    // user accepts → grant, run pending start. If they dismiss → flip
-    // into recovery mode, but the NEXT click on the Record button still
-    // re-opens the prompt and re-requests; we never persist the denial.
-    const ok = await requestOptionalPermission('tabCapture');
-    if (!ok) {
-      setPermissionMode('denied');
-      return;
-    }
-    setPermissionDialogOpen(false);
-    const pending = pendingStartRef.current;
-    pendingStartRef.current = null;
-    if (pending) {
-      await launchRecording(pending);
-    }
-  }, [permissionMode, launchRecording]);
-
-  const closePermissionDialog = useCallback(() => {
-    setPermissionDialogOpen(false);
-    pendingStartRef.current = null;
+  const closeRecoveryDialog = useCallback(() => {
+    setRecoveryDialogOpen(false);
   }, []);
 
   const stop = useCallback(async () => {
@@ -370,12 +335,11 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
     elapsedMs,
     lastDurationMs,
     sessionId,
-    permissionDialogOpen,
-    permissionMode,
+    recoveryDialogOpen,
     start,
     stop,
     reset,
-    confirmPermissionDialog,
-    closePermissionDialog,
+    confirmRecoveryDialog,
+    closeRecoveryDialog,
   };
 }
