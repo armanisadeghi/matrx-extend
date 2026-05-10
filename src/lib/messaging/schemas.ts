@@ -152,6 +152,15 @@ export const CHANNELS = {
   MIC_REQUEST: 'mic:request',
   MIC_RUN: 'mic:run',
   MIC_EVENT: 'mic:event',
+  // Mic permission grant popup → all surfaces. The dedicated
+  // `mic-grant.html` popup window calls `getUserMedia` from a real
+  // Chrome window context (where the native permission prompt is
+  // reliable, unlike sidepanel + offscreen contexts) and broadcasts
+  // the outcome here. The side panel listens to auto-retry recording
+  // on grant.
+  //
+  // Payload: `{ granted: boolean; reason?: string; errorName?: string }`.
+  MIC_GRANT_RESULT: 'mic:grant-result',
 
   // Tab video capture (TASK-003).
   // Same offscreen-document pattern as the mic protocol — MediaRecorder

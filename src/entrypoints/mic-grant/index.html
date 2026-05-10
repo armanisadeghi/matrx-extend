@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=400, initial-scale=1.0" />
+    <title>Enable microphone</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          'Helvetica Neue',
+          Arial,
+          sans-serif;
+        background: #ffffff;
+        color: #0f172a;
+      }
+      @media (prefers-color-scheme: dark) {
+        html,
+        body {
+          background: #0b0f17;
+          color: #e5e7eb;
+        }
+      }
+      .wrap {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        padding: 20px;
+        height: 100vh;
+      }
+      h1 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+      p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.45;
+        color: #475569;
+      }
+      @media (prefers-color-scheme: dark) {
+        p {
+          color: #94a3b8;
+        }
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: auto;
+      }
+      button {
+        appearance: none;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: opacity 0.15s ease;
+      }
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+      button.primary {
+        background: #2563eb;
+        color: white;
+      }
+      button.primary:hover:not(:disabled) {
+        opacity: 0.92;
+      }
+      button.secondary {
+        background: transparent;
+        border-color: #cbd5e1;
+        color: inherit;
+      }
+      @media (prefers-color-scheme: dark) {
+        button.secondary {
+          border-color: #334155;
+        }
+      }
+      button.secondary:hover:not(:disabled) {
+        background: rgba(148, 163, 184, 0.12);
+      }
+      .status {
+        font-size: 12px;
+        line-height: 1.4;
+        min-height: 32px;
+      }
+      .status.ok {
+        color: #15803d;
+      }
+      .status.err {
+        color: #b91c1c;
+      }
+      @media (prefers-color-scheme: dark) {
+        .status.ok {
+          color: #4ade80;
+        }
+        .status.err {
+          color: #f87171;
+        }
+      }
+      .icon {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Enable microphone</h1>
+      <p>
+        Click below to allow microphone access. Chrome will ask for permission
+        next to the address bar.
+      </p>
+      <div id="status" class="status" aria-live="polite"></div>
+      <div class="row">
+        <button id="allow" class="primary" type="button">Allow microphone</button>
+        <button id="close" class="secondary" type="button">Close</button>
+      </div>
+    </div>
+    <script type="module" src="./index.ts"></script>
+  </body>
+</html>

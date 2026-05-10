@@ -11,8 +11,8 @@
  * `onClose`. The destructive variant shows red emphasis on the confirm
  * button for delete-style operations.
  *
- * Visual style mirrors `MicPermissionDialog` / `TabCaptureDialog` so the
- * three modals feel like one consistent system.
+ * Visual style mirrors `TabCaptureDialog` so the modals feel like one
+ * consistent system.
  */
 
 import { AlertTriangle, X } from 'lucide-react';
@@ -52,7 +52,7 @@ export function ConfirmDialog({
 }: Props) {
   // Esc closes the dialog. Native `<dialog>` would handle this for free
   // but using it here would conflict with the existing modal styling
-  // pattern shared with MicPermissionDialog / TabCaptureDialog.
+  // pattern shared with TabCaptureDialog.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {

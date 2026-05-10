@@ -1,7 +1,7 @@
 /**
  * In-app recovery modal shown ONLY after Chrome itself has rejected a
  * `chrome.permissions.request({permissions: ['tabCapture']})` call.
- * Mirrors `MicPermissionDialog` — recovery UI only, never pre-attempt UI.
+ * Recovery UI only, never pre-attempt UI.
  *
  * Chrome's own permission infrastructure handles the "asking" UI for
  * optional permission requests. Our extension never competes with it.

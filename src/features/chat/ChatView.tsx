@@ -27,7 +27,6 @@ import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
 import { LanguagePicker } from '@/features/chat/LanguagePicker';
-import { MicPermissionDialog } from '@/features/chat/MicPermissionDialog';
 import { ServerToolRow } from '@/features/chat/ServerToolRow';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
@@ -35,6 +34,7 @@ import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
 import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
 import { wrapForAgent } from '@/lib/clipboard/copy';
 import {
@@ -85,19 +85,17 @@ const SUGGESTIONS = [
  * Map raw mic / transcription errors to short user-actionable messages.
  * The canonical error codes are emitted by mic-recorder-offscreen.ts.
  *
- * NOTE: PERMISSION_DENIED is normally routed into the recovery modal
- * (see `onError` in the composer); it only falls through to this
- * banner if for some reason the modal flow was bypassed. Everything
- * else (forwarding failures, HTTP errors, etc.) we just pass through
- * with a hint about what failed.
+ * NOTE: PERMISSION_DENIED is normally routed into the dedicated mic-grant
+ * popup window (see `onError` in the composer); it only falls through to
+ * this banner if `chrome.windows.create` itself fails. Everything else
+ * (forwarding failures, HTTP errors, etc.) we just pass through with a
+ * hint about what failed.
  */
 function formatMicErrorForUser(message: string, code?: string): string {
   switch (code) {
     case 'PERMISSION_DENIED':
-      // PERMISSION_DENIED is normally caught upstream and routed into the
-      // recovery modal; if it ever lands here as an inline banner, just
-      // tell the user to click again — the next click runs a fresh live
-      // request which may succeed or open the recovery modal.
+      // Fallback only — the canonical PERMISSION_DENIED path opens the
+      // mic-grant popup so Chrome can prompt for permission reliably.
       return 'Microphone access required. Click the mic button to try again.';
     case 'NO_DEVICE':
       return 'No microphone detected. Plug one in or check your system audio input settings.';
@@ -987,10 +985,6 @@ function Composer({
   //     hint).
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [voiceWarning, setVoiceWarning] = useState<string | null>(null);
-  // Recovery modal — opens ONLY after Chrome rejects a real `getUserMedia`
-  // request. Never used as a pre-attempt explainer. Chrome's own native
-  // permission prompt is the only "asking" UI the user should see.
-  const [micRecoveryOpen, setMicRecoveryOpen] = useState(false);
 
   const {
     isRecording,
@@ -1015,11 +1009,28 @@ function Composer({
     onError: (msg, code) => {
       console.error('[matrx-audio] mic error', { msg, code });
       // PERMISSION_DENIED means Chrome's native prompt returned 'denied'
-      // (or the permission was revoked between recordings). This is the
-      // ONLY path that opens the recovery modal — never a pre-emptive
-      // explainer; only after a real Chrome rejection.
+      // (or permission has never been granted for this extension). MV3
+      // sidepanel + offscreen contexts can't reliably surface Chrome's
+      // native getUserMedia prompt, so we open a dedicated popup window
+      // instead — a real Chrome window where the prompt fires reliably.
+      // Once the user grants there, the side panel auto-retries via the
+      // MIC_GRANT_RESULT listener below.
       if (code === 'PERMISSION_DENIED') {
-        setMicRecoveryOpen(true);
+        try {
+          void chrome.windows.create({
+            url: chrome.runtime.getURL('mic-grant.html'),
+            type: 'popup',
+            width: 400,
+            height: 280,
+            focused: true,
+          });
+        } catch (err) {
+          // chrome.windows.create should always succeed in extension
+          // contexts; if it doesn't, surface the original mic error so
+          // the user sees something rather than a silent no-op.
+          console.error('[matrx-audio] failed to open mic-grant popup', err);
+          setVoiceError(formatMicErrorForUser(msg, code));
+        }
         return;
       }
       setVoiceError(formatMicErrorForUser(msg, code));
@@ -1033,66 +1044,53 @@ function Composer({
     void startRecording();
   };
 
+  // Listen for the mic-grant popup's outcome. On grant we automatically
+  // resume recording so the user doesn't have to click the mic button a
+  // second time after granting permission. On denial the popup itself
+  // tells the user how to fix it; we just leave the side panel idle.
+  useEffect(() => {
+    const listener = (msg: unknown): boolean | undefined => {
+      if (
+        typeof msg !== 'object' ||
+        msg === null ||
+        (msg as Record<string, unknown>).__matrx !== true ||
+        (msg as Record<string, unknown>).kind !== CHANNELS.MIC_GRANT_RESULT
+      ) {
+        return false;
+      }
+      const payload = (msg as { payload: { granted: boolean } }).payload;
+      if (payload?.granted) {
+        beginRecording();
+      }
+      return false;
+    };
+    chrome.runtime.onMessage.addListener(listener);
+    return () => chrome.runtime.onMessage.removeListener(listener);
+    // beginRecording closes over `value` (textarea baseline) and
+    // `startRecording`. Re-binding is cheap and we want the listener to
+    // always reflect the latest baseline — so depend on those.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
   // Click handler for the mic button.
   //
-  // Canonical MV3 pattern for offscreen + mic: the actual recording lives
-  // in the offscreen document, but Chrome's native permission prompt UI
-  // is unreliable when triggered from an invisible offscreen page. So we
-  // ALSO call `getUserMedia` here in the sidepanel — a visible,
-  // user-gesture context where Chrome reliably surfaces the prompt.
-  //
-  // Both contexts share the `chrome-extension://<id>` origin, so once the
-  // user grants here, offscreen's subsequent `getUserMedia` succeeds
-  // silently against the same per-origin grant. The sidepanel-acquired
-  // stream is immediately stopped — we never record from this context.
-  //
-  // Defense-in-depth: if the sidepanel call somehow succeeds but
-  // offscreen's still rejects (rare OS / Chrome edge cases), the
-  // offscreen MIC_EVENT.error path still routes a PERMISSION_DENIED
-  // through `onError` into the recovery modal.
-  //
-  // Do NOT remove this dual-trigger. Without it, first-time users see
-  // the mic button do nothing visible, then a recovery modal — because
-  // Chrome failed to surface its own prompt from offscreen.
-  const handleMicClick = async () => {
+  // We DON'T pre-flight `getUserMedia` from the sidepanel anymore —
+  // Chrome's MV3 sidepanel context rejects the call silently with
+  // NotAllowedError without ever showing the native prompt. Instead, we
+  // call `beginRecording()` directly, which kicks recording off in the
+  // offscreen document. If permission is already granted for the
+  // extension origin, offscreen's getUserMedia succeeds silently and the
+  // user never sees a prompt. If it's not granted, offscreen's
+  // PERMISSION_DENIED error routes through `onError` above, which opens
+  // the dedicated mic-grant popup window — the only context where Chrome
+  // reliably shows its prompt.
+  const handleMicClick = () => {
     if (isRecording) {
       stopRecording();
       return;
     }
-    let stream: MediaStream | null = null;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (err) {
-      const e = err as DOMException;
-      if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
-        setMicRecoveryOpen(true);
-        return;
-      }
-      setVoiceError(formatMicErrorForUser(e.message ?? 'Microphone access failed', e.name));
-      return;
-    } finally {
-      // Drop the sidepanel-acquired stream — we only used it to surface the
-      // prompt. Recording itself runs in the offscreen document.
-      stream?.getTracks().forEach((t) => t.stop());
-    }
-    // Permission is now granted at the extension origin. Offscreen's
-    // getUserMedia call inside beginRecording will inherit the grant.
     beginRecording();
   };
-
-  const handleMicRecoveryConfirm = () => {
-    // Open Chrome's site-permission settings page in a new tab. We
-    // navigate FOR the user — they don't get a "type chrome://..."
-    // instruction. The per-extension mic permission lives here.
-    try {
-      void chrome.tabs.create({ url: 'chrome://settings/content/microphone' });
-    } catch {
-      /* tab API may be unavailable in some test contexts */
-    }
-    setMicRecoveryOpen(false);
-  };
-
-  const handleMicRecoveryClose = () => setMicRecoveryOpen(false);
 
   const dismissVoiceMessages = () => {
     setVoiceError(null);
@@ -1102,13 +1100,6 @@ function Composer({
   const hasText = value.trim().length > 0;
 
   return (
-    <>
-      {micRecoveryOpen && (
-        <MicPermissionDialog
-          onConfirm={handleMicRecoveryConfirm}
-          onClose={handleMicRecoveryClose}
-        />
-      )}
     <div className="px-3 pb-3 pt-1">
       {(voiceError || (voiceWarning && !voiceError)) && (
         <div
@@ -1227,7 +1218,6 @@ function Composer({
         </div>
       </div>
     </div>
-    </>
   );
 }
 
