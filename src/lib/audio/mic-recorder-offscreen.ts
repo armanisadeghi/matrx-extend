@@ -51,11 +51,31 @@ import type {
   MicRunPayload,
 } from './mic-types';
 
-const DEFAULT_CHUNK_MS = 2000;
+/**
+ * Steady-state rotation cadence — every chunk after the front-loaded ones
+ * captures this many ms of audio. Ported verbatim from matrx-frontend's
+ * `useChunkedRecordAndTranscribe.ts` (the matrx-frontend rotation schedule
+ * is the proven baseline; this file is the offscreen-side mirror because
+ * MV3 sidepanel mic capture is unreliable).
+ *
+ * Chunk-by-chunk durations (all values from matrx-frontend):
+ *   - chunk 0 → 3000ms
+ *   - chunk 1 → 3000ms
+ *   - chunk 2 → 4000ms   (the hook combos blobs 0+1+2 here → ~10s)
+ *   - chunk 3+ → 10000ms (steady state; well within Whisper's
+ *                         optimal 30s window and far under Vercel's
+ *                         4.5MB body limit at 16kHz webm/opus)
+ *
+ * The previous extend-side schedule (1.5s/2s/3s, 2s default) over-rotated
+ * — every 2s a new chunk meant Whisper got 2-second snippets that often
+ * cut mid-word. matrx-frontend's longer steady-state window is what
+ * makes its transcription quality noticeably better.
+ */
+const DEFAULT_CHUNK_MS = 10000;
 const LEVEL_BROADCAST_HZ = 10;
-const FIRST_CHUNK_MS = 1500;
-const SECOND_CHUNK_MS = 2000;
-const THIRD_CHUNK_MS = 3000;
+const FIRST_CHUNK_MS = 3000;
+const SECOND_CHUNK_MS = 3000;
+const THIRD_CHUNK_MS = 4000;
 /** Max time to wait for an initially-muted track to unmute before giving up. */
 const UNMUTE_WAIT_MS = 1500;
 /** If no audio data arrives within this window of starting, raise the alarm. */

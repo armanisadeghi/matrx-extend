@@ -37,7 +37,10 @@ export const AUDIO_LIMITS = {
   MAX_FILE_SIZE_BYTES: 100 * 1024 * 1024,
   MAX_DURATION_SECONDS: 3_600,
   WARN_DURATION_SECONDS: 3_000,
-  CHUNK_DURATION_MS: 2_000,
+  // Steady-state chunk window after the front-loaded first three chunks.
+  // Ported from matrx-frontend (10s = under Vercel's 4.5MB body limit at
+  // 16kHz webm/opus, and well within Whisper's ~30s optimal segment).
+  CHUNK_DURATION_MS: 10_000,
   ESTIMATED_BYTES_PER_SECOND: 16_000,
   MIN_CHUNK_BYTES: 1_024,
 } as const;

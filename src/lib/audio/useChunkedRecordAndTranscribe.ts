@@ -22,7 +22,7 @@ import { log } from '@/lib/debug/log';
 import { base64ToBlob } from '@/lib/messaging/binary-transport';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { audioSafetyStore } from './audioSafetyStore';
-import { AUDIO_API_ROUTES, AUDIO_LIMITS } from './constants';
+import { AUDIO_API_ROUTES, AUDIO_LIMITS, VERCEL_LIMITS } from './constants';
 import type { MicEvent, MicRequestPayload } from './mic-types';
 import type { TranscriptionOptions, TranscriptionResult } from './types';
 
@@ -153,9 +153,88 @@ export function useChunkedRecordAndTranscribe({
     }
   }, []);
 
+  /**
+   * Fallback transcription path. Concatenates all captured chunk blobs and
+   * POSTs the full audio to `/api/audio/transcribe`. Used when one or more
+   * streaming chunks failed mid-recording so the visible transcript is
+   * incomplete; succeeding here restores the full text.
+   *
+   * Adapted from matrx-frontend's `audioFallbackUpload.ts`. The frontend
+   * uploads via Supabase Storage and uses `/transcribe-url` to bypass
+   * Vercel's 4.5MB function body limit. The extension has no equivalent
+   * upload helper, so we fall back to direct POST and only attempt when
+   * the concatenated blob fits under the Vercel cap (~4.7 minutes of
+   * 16kHz webm/opus). Anything larger short-circuits and the user keeps
+   * whatever partial transcript was assembled — the IndexedDB safety net
+   * still preserves the audio for manual recovery.
+   */
+  const runFallbackTranscription = useCallback(async (): Promise<TranscriptionResult | null> => {
+    if (allChunkBlobsRef.current.length === 0) return null;
+
+    const mimeType = allChunkBlobsRef.current[0]?.type || 'audio/webm';
+    const fullBlob = new Blob(allChunkBlobsRef.current, { type: mimeType });
+    if (fullBlob.size < AUDIO_LIMITS.MIN_CHUNK_BYTES) return null;
+    if (fullBlob.size > VERCEL_LIMITS.MAX_BODY_BYTES) {
+      log.warn('audio', 'fallback skipped: full blob exceeds Vercel direct-upload limit', {
+        bytes: fullBlob.size,
+        cap: VERCEL_LIMITS.MAX_BODY_BYTES,
+      });
+      return { success: false, text: '', error: 'Recording too large for fallback upload' };
+    }
+
+    try {
+      const opts = transcriptionOptionsRef.current;
+      const ext = mimeType.includes('webm') ? 'webm' : 'wav';
+      const form = new FormData();
+      form.append('file', new File([fullBlob], `full.${ext}`, { type: mimeType }));
+      if (opts?.language) form.append('language', opts.language);
+      if (opts?.prompt) form.append('prompt', opts.prompt);
+
+      const token = await getAccessToken();
+      if (!token) throw new Error('Not signed in');
+
+      log.info('audio', 'fallback: full-blob transcribe POST', {
+        bytes: fullBlob.size,
+        url: AUDIO_API_ROUTES.TRANSCRIBE,
+      });
+      const res = await fetch(AUDIO_API_ROUTES.TRANSCRIBE, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: form,
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        const msg = data?.error || data?.details || `HTTP ${res.status}`;
+        log.error('audio', 'fallback: transcribe POST failed', { status: res.status, body: data });
+        return { success: false, text: '', error: msg };
+      }
+      log.success('audio', 'fallback: transcribe POST done', {
+        textLen: typeof data?.text === 'string' ? data.text.length : 0,
+      });
+      return { success: true, text: data.text || '' };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Fallback transcription failed';
+      log.error('audio', 'fallback: failed', { msg, err });
+      return { success: false, text: '', error: msg };
+    }
+  }, []);
+
   const maybeFireFinal = useCallback(async () => {
     if (!isStoppingRef.current || pendingRef.current > 0) return;
-    const finalText = accumulatedRef.current.trim();
+
+    const hasFailures = failedIndicesRef.current.length > 0;
+    let finalText = accumulatedRef.current.trim();
+
+    if (hasFailures && allChunkBlobsRef.current.length > 0) {
+      const fallbackResult = await runFallbackTranscription();
+      if (fallbackResult?.success && fallbackResult.text.trim()) {
+        finalText = fallbackResult.text.trim();
+        accumulatedRef.current = finalText;
+        setLiveTranscript(finalText);
+        await persistText(finalText);
+      }
+    }
+
     setIsTranscribing(false);
     if (safetyIdRef.current) {
       try {
@@ -165,7 +244,7 @@ export function useChunkedRecordAndTranscribe({
       }
     }
     onTranscriptionCompleteRef.current?.({ success: true, text: finalText });
-  }, []);
+  }, [runFallbackTranscription, persistText]);
 
   const transcribeBlob = useCallback(
     async (blob: Blob, idx: number, tStart: number, tEnd: number) => {
