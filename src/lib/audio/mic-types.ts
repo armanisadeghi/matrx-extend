@@ -23,10 +23,15 @@ export interface MicChunkEvent {
   type: 'chunk';
   chunkIndex: number;
   /**
-   * Raw audio bytes for this chunk. ArrayBuffer is structured-cloneable, so
-   * it survives chrome.runtime.sendMessage with no encoding overhead.
+   * base64-encoded WebM bytes; decode via `base64ToBlob()` from
+   * `@/lib/messaging/binary-transport` before use.
+   *
+   * Why base64 and not ArrayBuffer: chrome.runtime.sendMessage uses JSON
+   * serialization (NOT structured clone), so an ArrayBuffer here would
+   * round-trip as `{}` and Whisper would transcribe silence. Base64 is
+   * JSON-safe, lossless, and ~4/3 the original byte count.
    */
-  data: ArrayBuffer;
+  data: string;
   mimeType: string;
   tStart: number; // session-relative seconds, paused time excluded
   tEnd: number;

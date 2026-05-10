@@ -12,6 +12,8 @@
  * `complete` event before the new session's `started`).
  */
 
+import { log } from '@/lib/debug/log';
+import { blobToBase64 } from '@/lib/messaging/binary-transport';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import type {
@@ -187,17 +189,26 @@ async function startRecording(payload: VideoRunPayload): Promise<void> {
     }
     try {
       const blob = new Blob(state.chunks, { type: state.mimeType });
-      const buffer = await blob.arrayBuffer();
+      // Encode to base64 — chrome.runtime.sendMessage uses JSON, NOT
+      // structured clone, so an ArrayBuffer would round-trip as `{}`
+      // and the recording would arrive empty. See binary-transport.ts.
+      const data = await blobToBase64(blob);
       const ev: VideoCompleteEvent = {
         type: 'complete',
         sessionId: state.sessionId,
-        data: buffer,
+        data,
         mimeType: state.mimeType,
         durationMs,
-        sizeBytes: buffer.byteLength,
+        sizeBytes: blob.size,
         source: state.source,
         audio: state.audio,
       };
+      log.success('sys', 'video: broadcast complete', {
+        sessionId: state.sessionId,
+        originalBytes: blob.size,
+        base64Length: data.length,
+        durationMs,
+      });
       emit(ev);
     } catch (err) {
       emit({

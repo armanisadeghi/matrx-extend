@@ -20,6 +20,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { uploadFile } from '@/lib/api/routes/files';
 import { log } from '@/lib/debug/log';
+import { base64ToBlob } from '@/lib/messaging/binary-transport';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
   hasOptionalPermissions,
@@ -120,7 +121,7 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
   }, [stopTick]);
 
   const handleComplete = useCallback(
-    async (data: ArrayBuffer, mimeType: string, durationMs: number, source: 'tab' | 'display') => {
+    async (data: string, mimeType: string, durationMs: number, source: 'tab' | 'display') => {
       setStatus('uploading');
       setLastDurationMs(durationMs);
       const ext = extensionFor(mimeType);
@@ -129,11 +130,16 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
         : 'tab';
       const filename = `${titleBase}-${Date.now()}.${ext}`;
 
-      // Copy through a fresh ArrayBuffer to ensure Blob's TS BlobPart
-      // contract is satisfied (no SharedArrayBuffer coercion).
-      const buffer = new ArrayBuffer(data.byteLength);
-      new Uint8Array(buffer).set(new Uint8Array(data));
-      const blob = new Blob([buffer], { type: mimeType });
+      // `data` is a base64 string (chrome.runtime.sendMessage uses JSON,
+      // not structured clone). Decode back to a Blob before upload.
+      // See @/lib/messaging/binary-transport.
+      const blob = base64ToBlob(data, mimeType);
+      log.info('sys', 'video: complete received', {
+        base64Length: data.length,
+        decodedBytes: blob.size,
+        durationMs,
+        source,
+      });
 
       try {
         const upload = await uploadFile(blob, filename, {

@@ -19,6 +19,7 @@
  */
 
 import { log } from '@/lib/debug/log';
+import { base64ToArrayBuffer } from '@/lib/messaging/binary-transport';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { ensureOffscreen } from '@/lib/stream/offscreen-proxy';
 import type {
@@ -135,9 +136,14 @@ export async function runVideoCapture(
         finish({ ok: false, reason: e.message });
       } else if (event.type === 'complete') {
         const e = event as VideoCompleteEvent;
+        // The wire payload is base64 (chrome.runtime.sendMessage uses JSON,
+        // not structured clone). Decode back to ArrayBuffer at this
+        // boundary so the public RunVideoCaptureResult contract stays
+        // a plain binary buffer for callers.
+        const buffer = e.data ? base64ToArrayBuffer(e.data) : new ArrayBuffer(0);
         finish({
           ok: true,
-          data: e.data,
+          data: buffer,
           mimeType: e.mimeType,
           durationMs: e.durationMs,
           sizeBytes: e.sizeBytes,

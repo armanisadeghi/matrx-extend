@@ -39,6 +39,7 @@
  */
 
 import { log } from '@/lib/debug/log';
+import { blobToBase64 } from '@/lib/messaging/binary-transport';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import type {
@@ -216,18 +217,22 @@ function createRecorder(): MediaRecorder {
     });
     if (blob.size === 0) return;
     try {
-      const buffer = await blob.arrayBuffer();
+      // Encode to base64 — chrome.runtime.sendMessage uses JSON, NOT
+      // structured clone, so an ArrayBuffer would round-trip as `{}`
+      // and Whisper would transcribe silence. See binary-transport.ts.
+      const data = await blobToBase64(blob);
       const ev: MicChunkEvent = {
         type: 'chunk',
         chunkIndex: idx,
-        data: buffer,
+        data,
         mimeType: state.mimeType,
         tStart: timing?.tStart ?? 0,
         tEnd: timing?.tEnd ?? 0,
       };
       log.success('audio', 'broadcast chunk', {
         chunkIndex: idx,
-        bytes: buffer.byteLength,
+        originalBytes: blob.size,
+        base64Length: data.length,
         tStart: ev.tStart,
         tEnd: ev.tEnd,
       });

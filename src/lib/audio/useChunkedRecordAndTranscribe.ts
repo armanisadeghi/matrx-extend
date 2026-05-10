@@ -19,6 +19,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getAccessToken } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
+import { base64ToBlob } from '@/lib/messaging/binary-transport';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { audioSafetyStore } from './audioSafetyStore';
 import { AUDIO_API_ROUTES, AUDIO_LIMITS } from './constants';
@@ -343,10 +344,14 @@ export function useChunkedRecordAndTranscribe({
         stopDurationTimer();
         onErrorRef.current?.(event.message, event.code);
       } else if (event.type === 'chunk') {
-        const blob = new Blob([event.data], { type: event.mimeType });
+        // event.data is a base64 string (chrome.runtime.sendMessage uses
+        // JSON, not structured clone). Decode back to a Blob before
+        // sending to Whisper. See @/lib/messaging/binary-transport.
+        const blob = base64ToBlob(event.data, event.mimeType);
         log.info('audio', 'hook: chunk received', {
           chunkIndex: event.chunkIndex,
-          bytes: blob.size,
+          base64Length: event.data.length,
+          decodedBytes: blob.size,
           mimeType: event.mimeType,
           tStart: event.tStart,
           tEnd: event.tEnd,

@@ -71,15 +71,22 @@ export interface VideoCompleteEvent {
   type: 'complete';
   sessionId: string;
   /**
-   * Encoded video bytes. ArrayBuffer survives chrome.runtime.sendMessage as a
-   * structured clone with no overhead. Empty (size 0) if the recording produced
-   * no data.
+   * base64-encoded WebM bytes; decode via `base64ToBlob()` /
+   * `base64ToArrayBuffer()` from `@/lib/messaging/binary-transport`
+   * before use.
+   *
+   * Why base64 and not ArrayBuffer: chrome.runtime.sendMessage uses JSON
+   * serialization (NOT structured clone), so an ArrayBuffer here would
+   * round-trip as `{}` and the recorded bytes would be lost. Base64 is
+   * JSON-safe, lossless, and ~4/3 the original byte count.
+   *
+   * Empty string ('') if the recording produced no data.
    */
-  data: ArrayBuffer;
+  data: string;
   mimeType: string;
   /** Wall-clock duration the MediaRecorder ran in milliseconds. */
   durationMs: number;
-  /** Total payload size in bytes (== data.byteLength, included for readability). */
+  /** Original (decoded) payload size in bytes. */
   sizeBytes: number;
   source: VideoSource;
   audio: boolean;
