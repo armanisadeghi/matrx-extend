@@ -55,6 +55,7 @@ import { usePilotStore } from '@/state/pilot';
 import { useSettingsStore } from '@/state/settings';
 import { useToolInbox } from '@/state/tool-inbox';
 import {
+  AlertTriangle,
   ArrowUp,
   Check,
   ChevronDown,
@@ -110,6 +111,7 @@ export function PilotView() {
   const [agentsLoading, setAgentsLoading] = useState(true);
   const [agentsRefreshing, setAgentsRefreshing] = useState(false);
   const [groupTabCount, setGroupTabCount] = useState<number | null>(null);
+  const [sessionError, setSessionError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const pinnedToBottomRef = useRef(true);
 
@@ -307,9 +309,10 @@ export function PilotView() {
   const handleStartSession = async () => {
     const agentId = selectedAgentId ?? agents[0]?.id;
     if (!agentId) {
-      window.alert('Pick an agent before starting a Pilot session.');
+      setSessionError('Pick an agent before starting a Pilot session.');
       return;
     }
+    setSessionError(null);
     if (!selectedAgentId) setAgent(agentId);
     await startSession({ agentId });
     handleNewChat();
@@ -367,6 +370,24 @@ export function PilotView() {
 
       {selectedAgentId && variableDefs.length > 0 && (
         <AgentVariablesPanel agentId={selectedAgentId} defs={variableDefs} />
+      )}
+
+      {sessionError && (
+        <div
+          role="alert"
+          className="mx-3 mt-2 flex items-start gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs text-amber-700 dark:text-amber-400"
+        >
+          <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
+          <div className="flex-1 leading-snug">{sessionError}</div>
+          <button
+            type="button"
+            onClick={() => setSessionError(null)}
+            className="ml-1 shrink-0 rounded p-0.5 opacity-60 hover:opacity-100"
+            aria-label="Dismiss"
+          >
+            <span aria-hidden>×</span>
+          </button>
+        </div>
       )}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto">

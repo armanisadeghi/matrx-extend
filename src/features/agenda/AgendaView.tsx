@@ -12,6 +12,7 @@
  */
 
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -153,6 +154,7 @@ function TaskRow({
   send: ReturnType<typeof useChatStream>['send'];
 }) {
   const [working, setWorking] = useState<'run' | 'toggle' | 'delete' | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const runNow = async () => {
     setWorking('run');
@@ -177,8 +179,8 @@ function TaskRow({
     }
   };
 
-  const remove = async () => {
-    if (!confirm(`Delete task "${task.title}"?`)) return;
+  const performRemove = async () => {
+    setDeleteOpen(false);
     setWorking('delete');
     try {
       await deleteTask(task.id);
@@ -253,11 +255,21 @@ function TaskRow({
           className="size-7 p-0 text-destructive"
           title="Delete"
           disabled={!!working}
-          onClick={remove}
+          onClick={() => setDeleteOpen(true)}
         >
           <Trash2 className="size-3.5" />
         </Button>
       </div>
+      <ConfirmDialog
+        open={deleteOpen}
+        title="Delete task?"
+        description={`Delete task "${task.title}"?`}
+        confirmLabel="Delete"
+        destructive
+        busy={working === 'delete'}
+        onConfirm={() => void performRemove()}
+        onClose={() => setDeleteOpen(false)}
+      />
     </li>
   );
 }

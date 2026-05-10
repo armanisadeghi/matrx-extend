@@ -11,6 +11,7 @@
  * before the next list refetch.
  */
 
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { MarkdownView } from '@/components/MarkdownView';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -51,6 +52,7 @@ export function NoteEditor({ noteId }: { noteId: string }) {
   const [draft, setDraft] = useState<DraftState | null>(null);
   const [savingState, setSavingState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const draftRef = useRef<DraftState | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inflightRef = useRef(false);
@@ -160,11 +162,8 @@ export function NoteEditor({ noteId }: { noteId: string }) {
     [persist],
   );
 
-  const onDelete = async () => {
-    if (
-      !confirm('Delete this note? It will be marked deleted but recoverable from the main app.')
-    )
-      return;
+  const performDelete = async () => {
+    setDeleteOpen(false);
     const ok = await softDeleteNote(noteId);
     if (ok) {
       await queryClient.invalidateQueries({ queryKey: ['notes', 'list'] });
@@ -238,13 +237,23 @@ export function NoteEditor({ noteId }: { noteId: string }) {
             size="sm"
             variant="ghost"
             className="size-7 p-0 text-destructive"
-            onClick={() => void onDelete()}
+            onClick={() => setDeleteOpen(true)}
             title="Delete note"
           >
             <Trash2 className="size-3.5" />
           </Button>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={deleteOpen}
+        title="Delete this note?"
+        description="It will be marked deleted but is recoverable from the main app."
+        confirmLabel="Delete"
+        destructive
+        onConfirm={() => void performDelete()}
+        onClose={() => setDeleteOpen(false)}
+      />
 
       <div className="flex shrink-0 flex-col gap-2 border-b border-border/50 px-3 py-2">
         <Input

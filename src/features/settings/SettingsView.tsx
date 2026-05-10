@@ -12,6 +12,7 @@
 import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapabilities';
 import { Button } from '@/components/ui/button';
 import { Collapsible } from '@/components/ui/collapsible';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -45,6 +46,7 @@ export function SettingsView() {
   const [agents, setAgents] = useState<AgxAgent[]>([]);
   const [enginePortInput, setEnginePortInput] = useState('');
   const [enginePortSaved, setEnginePortSaved] = useState<number | null>(null);
+  const [clearLocalDataOpen, setClearLocalDataOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -86,14 +88,8 @@ export function SettingsView() {
     setEnginePortSaved(n);
   };
 
-  const handleClearLocalData = async () => {
-    if (
-      !window.confirm(
-        'Clear all locally cached extension data on this device?\n\nYou will be signed out. Your chats, captures and patterns saved on the server are NOT affected.',
-      )
-    ) {
-      return;
-    }
+  const handleClearLocalDataConfirmed = async () => {
+    setClearLocalDataOpen(false);
     await chrome.storage.local.clear();
     await chrome.storage.session.clear().catch(() => undefined);
     await signOut();
@@ -318,10 +314,22 @@ export function SettingsView() {
                 label="Clear local data on this device"
                 icon={<Trash2 className="size-3.5" />}
                 destructive
-                onClick={() => void handleClearLocalData()}
+                onClick={() => setClearLocalDataOpen(true)}
               />
             </Card>
           </Collapsible>
+
+          <ConfirmDialog
+            open={clearLocalDataOpen}
+            title="Clear local data?"
+            description={
+              'Clear all locally cached extension data on this device?\n\nYou will be signed out. Your chats, captures and patterns saved on the server are NOT affected.'
+            }
+            confirmLabel="Clear & sign out"
+            destructive
+            onConfirm={() => void handleClearLocalDataConfirmed()}
+            onClose={() => setClearLocalDataOpen(false)}
+          />
 
           <Collapsible label="About" defaultOpen={false}>
             <Card>

@@ -1,5 +1,6 @@
 import { AddToProjectButton } from '@/components/AddToProjectButton';
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { MarkdownView } from '@/components/MarkdownView';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -81,6 +82,8 @@ export function ScrapeView() {
   /** Article-tab edit state. Local draft so Cancel can discard cleanly. */
   const [editingArticle, setEditingArticle] = useState(false);
   const [articleDraft, setArticleDraft] = useState('');
+  /** Pending re-capture mode while waiting on the unsaved-edits confirm. */
+  const [pendingCaptureMode, setPendingCaptureMode] = useState<'fast' | 'deep' | null>(null);
 
   const beginArticleEdit = () => {
     setArticleDraft(current?.article.content_markdown ?? '');
@@ -104,14 +107,20 @@ export function ScrapeView() {
   );
 
   const guardedCapture = (mode: 'fast' | 'deep') => {
-    if (
-      edited &&
-      !window.confirm(
-        'You have unsaved edits to this capture. Re-capturing will discard them. Continue?',
-      )
-    ) {
+    if (edited) {
+      // Defer until the user confirms via the modal below — `pendingCaptureMode`
+      // captures the requested mode so the confirm handler can replay it.
+      setPendingCaptureMode(mode);
       return;
     }
+    setEditingArticle(false);
+    void captureActiveTab({ mode });
+  };
+
+  const confirmRecapture = () => {
+    const mode = pendingCaptureMode;
+    setPendingCaptureMode(null);
+    if (!mode) return;
     setEditingArticle(false);
     void captureActiveTab({ mode });
   };
@@ -519,6 +528,15 @@ export function ScrapeView() {
           </Button>
         )}
       </div>
+      <ConfirmDialog
+        open={pendingCaptureMode !== null}
+        title="Discard unsaved edits?"
+        description="You have unsaved edits to this capture. Re-capturing will discard them. Continue?"
+        confirmLabel="Re-capture"
+        destructive
+        onConfirm={confirmRecapture}
+        onClose={() => setPendingCaptureMode(null)}
+      />
     </div>
   );
 }

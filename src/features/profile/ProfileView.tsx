@@ -12,6 +12,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Collapsible } from '@/components/ui/collapsible';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -658,6 +659,14 @@ function SensitiveItemsEditor({
   onRemove: ReturnType<typeof useUserProfile>['removeSensitive'];
 }) {
   const [editingId, setEditingId] = useState<string | 'new' | null>(null);
+  const [pendingRemove, setPendingRemove] = useState<SensitiveItemListing | null>(null);
+
+  const confirmRemove = async () => {
+    if (!pendingRemove) return;
+    const id = pendingRemove.id;
+    setPendingRemove(null);
+    await onRemove(id);
+  };
 
   return (
     <div className="space-y-2">
@@ -673,15 +682,25 @@ function SensitiveItemsEditor({
               key={item.id}
               item={item}
               onEdit={() => setEditingId(item.id)}
-              onRemove={async () => {
-                if (window.confirm(`Delete ${item.label || item.kind}?`)) {
-                  await onRemove(item.id);
-                }
-              }}
+              onRemove={() => setPendingRemove(item)}
             />
           ))}
         </Card>
       )}
+
+      <ConfirmDialog
+        open={pendingRemove !== null}
+        title="Delete sensitive item?"
+        description={
+          pendingRemove
+            ? `Delete ${pendingRemove.label || pendingRemove.kind}?`
+            : ''
+        }
+        confirmLabel="Delete"
+        destructive
+        onConfirm={() => void confirmRemove()}
+        onClose={() => setPendingRemove(null)}
+      />
 
       {editingId !== 'new' && (
         <button

@@ -967,10 +967,6 @@ function Composer({
     el.style.height = `${Math.min(el.scrollHeight, 180)}px`;
   }, [value]);
 
-  const showComingSoon = (feature: string) => {
-    window.alert(`${feature} — coming soon`);
-  };
-
   // Voice input — Groq Whisper streaming via the matrx-frontend route.
   // While recording, every transcribed chunk overwrites the textarea with
   // the baseline text + the running transcript. On stop, whatever's in the
@@ -1037,17 +1033,50 @@ function Composer({
     void startRecording();
   };
 
-  // Click handler for the mic button. Always attempts the live
-  // `getUserMedia` request immediately. Chrome handles the prompt UI
-  // itself — native dialog on first ask, silent success when granted,
-  // silent rejection when denied. Our recovery modal opens ONLY from
-  // the `onError` PERMISSION_DENIED branch above (after a real Chrome
-  // rejection), never as pre-attempt UI.
-  const handleMicClick = () => {
+  // Click handler for the mic button.
+  //
+  // Canonical MV3 pattern for offscreen + mic: the actual recording lives
+  // in the offscreen document, but Chrome's native permission prompt UI
+  // is unreliable when triggered from an invisible offscreen page. So we
+  // ALSO call `getUserMedia` here in the sidepanel — a visible,
+  // user-gesture context where Chrome reliably surfaces the prompt.
+  //
+  // Both contexts share the `chrome-extension://<id>` origin, so once the
+  // user grants here, offscreen's subsequent `getUserMedia` succeeds
+  // silently against the same per-origin grant. The sidepanel-acquired
+  // stream is immediately stopped — we never record from this context.
+  //
+  // Defense-in-depth: if the sidepanel call somehow succeeds but
+  // offscreen's still rejects (rare OS / Chrome edge cases), the
+  // offscreen MIC_EVENT.error path still routes a PERMISSION_DENIED
+  // through `onError` into the recovery modal.
+  //
+  // Do NOT remove this dual-trigger. Without it, first-time users see
+  // the mic button do nothing visible, then a recovery modal — because
+  // Chrome failed to surface its own prompt from offscreen.
+  const handleMicClick = async () => {
     if (isRecording) {
       stopRecording();
       return;
     }
+    let stream: MediaStream | null = null;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (err) {
+      const e = err as DOMException;
+      if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
+        setMicRecoveryOpen(true);
+        return;
+      }
+      setVoiceError(formatMicErrorForUser(e.message ?? 'Microphone access failed', e.name));
+      return;
+    } finally {
+      // Drop the sidepanel-acquired stream — we only used it to surface the
+      // prompt. Recording itself runs in the offscreen document.
+      stream?.getTracks().forEach((t) => t.stop());
+    }
+    // Permission is now granted at the extension origin. Offscreen's
+    // getUserMedia call inside beginRecording will inherit the grant.
     beginRecording();
   };
 
@@ -1131,15 +1160,6 @@ function Composer({
           }}
         />
         <div className="flex items-center gap-1 px-2 pb-2 pt-1">
-          <button
-            type="button"
-            onClick={() => showComingSoon('Attachments')}
-            className="inline-flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-            title="Attach"
-          >
-            <Plus className="size-4" />
-          </button>
-
           <ComposerSettingsChip />
 
           <div className="ml-auto flex items-center gap-1">

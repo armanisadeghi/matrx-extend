@@ -19,6 +19,7 @@
  */
 
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { MAX_RECEIPTS, getReceiptCount, getRecentReceipts } from '@/lib/audit/log';
 import type { ReceiptOrigin, ToolReceipt } from '@/lib/audit/receipt';
 import {
@@ -45,6 +46,7 @@ export function AuditKeyCard() {
   const [copied, setCopied] = useState(false);
   const [recent, setRecent] = useState<ToolReceipt[] | null>(null);
   const [originFilter, setOriginFilter] = useState<ReceiptOrigin | 'all'>('all');
+  const [rotateOpen, setRotateOpen] = useState(false);
 
   const refresh = useCallback(async () => {
     const [pk, c, r] = await Promise.all([
@@ -68,16 +70,8 @@ export function AuditKeyCard() {
     return () => clearTimeout(t);
   }, [copied]);
 
-  const handleRotate = async () => {
-    if (
-      !window.confirm(
-        'Rotate the device audit key?\n\n' +
-          'A new keypair will be generated. Existing receipts continue to verify ' +
-          'against the retired key (kept in local history). This cannot be undone.',
-      )
-    ) {
-      return;
-    }
+  const handleRotateConfirmed = async () => {
+    setRotateOpen(false);
     setBusy('rotate');
     try {
       await rotateDeviceKey();
@@ -136,7 +130,7 @@ export function AuditKeyCard() {
           type="button"
           size="sm"
           variant="outline"
-          onClick={() => void handleRotate()}
+          onClick={() => setRotateOpen(true)}
           disabled={busy !== null}
           className="h-7 rounded-full px-3 text-xs"
         >
@@ -148,6 +142,19 @@ export function AuditKeyCard() {
         receipts={recent}
         originFilter={originFilter}
         onOriginFilterChange={setOriginFilter}
+      />
+
+      <ConfirmDialog
+        open={rotateOpen}
+        title="Rotate the device audit key?"
+        description={
+          'A new keypair will be generated.\n\nExisting receipts continue to verify against the retired key (kept in local history). This cannot be undone.'
+        }
+        confirmLabel="Rotate key"
+        destructive
+        busy={busy === 'rotate'}
+        onConfirm={() => void handleRotateConfirmed()}
+        onClose={() => setRotateOpen(false)}
       />
     </div>
   );
