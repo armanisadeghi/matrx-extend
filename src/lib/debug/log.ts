@@ -32,7 +32,8 @@ export type LogSource =
   | 'sys'
   | 'frontend-bridge'
   | 'pilot'
-  | 'pilot-stream';
+  | 'pilot-stream'
+  | 'audio';
 
 export interface DebugEvent {
   id: string;
@@ -142,10 +143,13 @@ function emit(level: LogLevel, args: PushArgs): void {
     consoleFn(`[matrx-extend][${event.ctx}/${event.source}] ${event.message}`);
   }
 
-  // Cross-context relay: every non-sidepanel context forwards immediately,
-  // BUT only when the signed-in user is an admin. Non-admins don't ship
-  // telemetry around the extension and don't see the Debug tab.
-  if (ctxAtLoad !== 'sidepanel' && isAdminCached === true) {
+  // Cross-context relay: every non-sidepanel context forwards immediately.
+  // Suppress only when we know the user is non-admin (privacy for their
+  // own logs). When the cached flag is still resolving (`null`), relay
+  // anyway — otherwise the very first logs after a context boot get
+  // dropped and observability for cold-start bugs is gone. The relay is
+  // a local in-process message; no network egress.
+  if (ctxAtLoad !== 'sidepanel' && isAdminCached !== false) {
     try {
       chrome.runtime
         .sendMessage({ __matrx: true, kind: DEBUG_RELAY_KIND, payload: event })
@@ -204,25 +208,56 @@ export function captureError(err: unknown): Record<string, unknown> {
 }
 
 /**
- * Sidepanel calls this once at mount. It listens for relayed events from
- * other contexts and merges them into the sidepanel's store.
+ * Sidepanel + SW both call this once at boot. Each listens for relayed
+ * events from other contexts.
  *
- * Other contexts call this too, but it's a no-op there — they push their
- * events at log time, not via subscription.
+ * - Sidepanel: merges remote events into `useDebugStore` so the Debug tab
+ *   shows a unified feed.
+ * - SW: mirrors remote events to the SW console with the original
+ *   `[matrx-extend][<ctx>/<source>]` prefix, so the SW devtools window
+ *   becomes a single pane of glass for everything happening across
+ *   contexts (offscreen + sidepanel + content). Without this mirror,
+ *   debugging a cross-context flow (e.g. mic: sidepanel → SW → offscreen)
+ *   requires opening three separate devtools windows.
+ *
+ * Offscreen / content / popup / options call this too — it's a no-op
+ * there. They push their own events at log time and forward via
+ * `chrome.runtime.sendMessage`.
  */
 export function startDebugRelay(): void {
-  if (ctxAtLoad !== 'sidepanel') return;
+  if (ctxAtLoad !== 'sidepanel' && ctxAtLoad !== 'sw') return;
   chrome.runtime.onMessage.addListener((msg) => {
     if (
-      msg &&
-      typeof msg === 'object' &&
-      (msg as Record<string, unknown>).__matrx === true &&
-      (msg as Record<string, unknown>).kind === DEBUG_RELAY_KIND
+      !msg ||
+      typeof msg !== 'object' ||
+      (msg as Record<string, unknown>).__matrx !== true ||
+      (msg as Record<string, unknown>).kind !== DEBUG_RELAY_KIND
     ) {
-      const remote = (msg as { payload: DebugEvent }).payload;
-      // Avoid double-counting our own events that come back via broadcast.
-      if (remote.ctx === 'sidepanel') return false;
+      return false;
+    }
+    const remote = (msg as { payload: DebugEvent }).payload;
+    // Avoid double-counting our own events that come back via broadcast.
+    if (remote.ctx === ctxAtLoad) return false;
+
+    if (ctxAtLoad === 'sidepanel') {
       useDebugStore.getState().push(remote);
+      return false;
+    }
+
+    // SW mirror: print the relayed event to the SW console with the
+    // original context/source prefix preserved. This is what makes the
+    // SW devtools window a single pane of glass.
+    const consoleFn =
+      remote.level === 'error'
+        ? console.error
+        : remote.level === 'warn'
+          ? console.warn
+          : console.log;
+    const prefix = `[matrx-extend][${remote.ctx}/${remote.source}]`;
+    if (remote.detail !== undefined) {
+      consoleFn(`${prefix} ${remote.message}`, remote.detail);
+    } else {
+      consoleFn(`${prefix} ${remote.message}`);
     }
     return false;
   });

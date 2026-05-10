@@ -205,12 +205,12 @@ function registerHandlers(): void {
   // are forbidden — the user's mic button would otherwise hang in the
   // pre-start state with no signal.
   on<MicRequestPayload, { ok: boolean }>(CHANNELS.MIC_REQUEST, async (payload) => {
-    console.log('[matrx-audio][sw] MIC_REQUEST received', payload);
+    log.info('audio', 'sw: MIC_REQUEST received', { action: payload.action, payload });
     try {
       await ensureOffscreen();
     } catch (err) {
       const message = (err as Error).message ?? 'Failed to open offscreen document';
-      log.error('sys', '[matrx-audio] ensureOffscreen failed', err);
+      log.error('audio', 'sw: ensureOffscreen failed', err);
       broadcast(CHANNELS.MIC_EVENT, {
         type: 'error',
         message: `Couldn't start the microphone backend: ${message}`,
@@ -221,16 +221,16 @@ function registerHandlers(): void {
     const runPayload: MicRunPayload = payload;
     let res: { __error?: string } | { ok?: true } | null = null;
     try {
-      console.log('[matrx-audio][sw] → MIC_RUN forward to offscreen', runPayload);
+      log.info('audio', 'sw: MIC_RUN forward to offscreen', { runPayload });
       res = (await chrome.runtime.sendMessage({
         __matrx: true,
         kind: CHANNELS.MIC_RUN,
         payload: runPayload,
       })) as { __error?: string } | { ok?: true } | null;
-      console.log('[matrx-audio][sw] ← MIC_RUN reply', res);
+      log.info('audio', 'sw: MIC_RUN reply', { res });
     } catch (err) {
       const message = (err as Error).message ?? 'Mic forwarding failed';
-      log.error('sys', '[matrx-audio] MIC_RUN forward failed', err);
+      log.error('audio', 'sw: MIC_RUN forward failed', err);
       broadcast(CHANNELS.MIC_EVENT, {
         type: 'error',
         message: `Couldn't reach the mic backend: ${message}`,
@@ -240,7 +240,7 @@ function registerHandlers(): void {
     }
     if (res && typeof res === 'object' && '__error' in res && res.__error) {
       const message = res.__error;
-      log.error('sys', '[matrx-audio] MIC_RUN handler returned error', message);
+      log.error('audio', 'sw: MIC_RUN handler returned error', { message });
       broadcast(CHANNELS.MIC_EVENT, {
         type: 'error',
         message: `Mic backend error: ${message}`,

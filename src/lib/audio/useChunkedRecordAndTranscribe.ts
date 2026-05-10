@@ -18,6 +18,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getAccessToken } from '@/lib/auth/flow';
+import { log } from '@/lib/debug/log';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { audioSafetyStore } from './audioSafetyStore';
 import { AUDIO_API_ROUTES, AUDIO_LIMITS } from './constants';
@@ -44,9 +45,9 @@ export interface UseChunkedRecordAndTranscribeProps {
 
 async function sendMicRequest(payload: MicRequestPayload): Promise<void> {
   const env = { __matrx: true, kind: CHANNELS.MIC_REQUEST, payload };
-  console.log('[matrx-audio][hook] → MIC_REQUEST', payload);
+  log.info('audio', 'hook: MIC_REQUEST → start sent', { action: payload.action, payload });
   const res = (await chrome.runtime.sendMessage(env)) as { __error?: string } | { ok: true } | undefined;
-  console.log('[matrx-audio][hook] ← MIC_REQUEST result', res);
+  log.info('audio', 'hook: MIC_REQUEST result', { res });
   if (res && typeof res === 'object' && '__error' in res) {
     throw new Error((res as { __error: string }).__error);
   }
@@ -202,7 +203,7 @@ export function useChunkedRecordAndTranscribe({
         const token = await getAccessToken();
         if (!token) throw new Error('Not signed in. Please sign in to use voice input.');
 
-        console.log('[matrx-audio][hook] transcribe POST start', {
+        log.info('audio', 'hook: transcribe POST start', {
           chunkIndex: idx,
           bytes: blobToSend.size,
           isCombo,
@@ -214,12 +215,20 @@ export function useChunkedRecordAndTranscribe({
           body: form,
         });
         const data = await res.json();
-        console.log('[matrx-audio][hook] transcribe POST done', {
-          chunkIndex: idx,
-          status: res.status,
-          ok: res.ok,
-          textLen: typeof data?.text === 'string' ? data.text.length : 0,
-        });
+        const textLen = typeof data?.text === 'string' ? data.text.length : 0;
+        if (res.ok) {
+          log.success('audio', 'hook: transcribe POST done', {
+            chunkIndex: idx,
+            status: res.status,
+            textLen,
+          });
+        } else {
+          log.error('audio', 'hook: transcribe POST failed', {
+            chunkIndex: idx,
+            status: res.status,
+            body: data,
+          });
+        }
         if (!res.ok) throw new Error(data.error || data.details || `HTTP ${res.status}`);
 
         if (data.success && data.text?.trim()) {
@@ -255,7 +264,7 @@ export function useChunkedRecordAndTranscribe({
         }
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Chunk transcription failed';
-        console.error('[matrx-audio] chunk transcription failed', {
+        log.error('audio', 'hook: chunk transcription failed', {
           chunkIndex: idx,
           message: msg,
           apiRoute: AUDIO_API_ROUTES.TRANSCRIBE,
@@ -299,7 +308,7 @@ export function useChunkedRecordAndTranscribe({
       const event = (msg as { payload: MicEvent }).payload;
       // Skip the noisy level events from the trace log.
       if (event.type !== 'level') {
-        console.log('[matrx-audio][hook] ← MIC_EVENT', event.type, event);
+        log.info('audio', 'hook: MIC_EVENT received', { type: event.type, event });
       }
       if (event.type === 'level') {
         setAudioLevel(event.level);
@@ -335,7 +344,7 @@ export function useChunkedRecordAndTranscribe({
         onErrorRef.current?.(event.message, event.code);
       } else if (event.type === 'chunk') {
         const blob = new Blob([event.data], { type: event.mimeType });
-        console.log('[matrx-audio][hook] received chunk', {
+        log.info('audio', 'hook: chunk received', {
           chunkIndex: event.chunkIndex,
           bytes: blob.size,
           mimeType: event.mimeType,
@@ -362,10 +371,7 @@ export function useChunkedRecordAndTranscribe({
     try {
       await audioSafetyStore.createEntry(safetyId, sessionId, 'audio/webm');
     } catch (err) {
-      console.warn(
-        '[matrx-audio] IndexedDB init failed, continuing without crash-safety persistence',
-        err,
-      );
+      log.warn('audio', 'IndexedDB init failed, continuing without crash-safety persistence', err);
       safetyIdRef.current = '';
     }
 
@@ -373,7 +379,7 @@ export function useChunkedRecordAndTranscribe({
       await sendMicRequest({ action: 'start', chunkDurationMs });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to start recording';
-      console.error('[matrx-audio] startRecording — MIC_REQUEST forward failed', err);
+      log.error('audio', 'startRecording — MIC_REQUEST forward failed', err);
       // Surface to UI. Code is undefined here — the SW-side forwarding
       // failure is distinct from the offscreen MicErrorEvent codes.
       onErrorRef.current?.(msg);
@@ -389,7 +395,7 @@ export function useChunkedRecordAndTranscribe({
       await sendMicRequest({ action: 'stop' });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to stop recording';
-      console.error('[matrx-audio] stopRecording forward failed', err);
+      log.error('audio', 'stopRecording forward failed', err);
       onErrorRef.current?.(msg);
     }
   }, []);
@@ -399,7 +405,7 @@ export function useChunkedRecordAndTranscribe({
       await sendMicRequest({ action: 'pause' });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to pause recording';
-      console.error('[matrx-audio] pauseRecording forward failed', err);
+      log.error('audio', 'pauseRecording forward failed', err);
       onErrorRef.current?.(msg);
     }
   }, []);
@@ -409,7 +415,7 @@ export function useChunkedRecordAndTranscribe({
       await sendMicRequest({ action: 'resume' });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to resume recording';
-      console.error('[matrx-audio] resumeRecording forward failed', err);
+      log.error('audio', 'resumeRecording forward failed', err);
       onErrorRef.current?.(msg);
     }
   }, []);

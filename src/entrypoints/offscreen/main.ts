@@ -131,7 +131,7 @@ on<{ runId: string }, { cancelled: boolean }>(CHANNELS.STREAM_KILL, (payload) =>
 // MIC_REQUEST → MIC_RUN; we do the actual MediaRecorder lifecycle and
 // broadcast MIC_EVENT messages back to all surfaces.
 on<MicRunPayload, { ok: boolean }>(CHANNELS.MIC_RUN, async (payload) => {
-  log.info('sys', `mic run: ${payload.action}`);
+  log.info('audio', 'offscreen: MIC_RUN handler entered', { action: payload.action });
   return handleMicRun(payload);
 });
 

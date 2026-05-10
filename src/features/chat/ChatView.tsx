@@ -34,6 +34,7 @@ import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
 import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
+import { log } from '@/lib/debug/log';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
 import { wrapForAgent } from '@/lib/clipboard/copy';
@@ -1001,13 +1002,13 @@ function Composer({
       onChange(`${baseline}${sep}${accumulated}`);
     },
     onChunkError: (idx, msg) => {
-      console.error('[matrx-audio] chunk transcription failed', { idx, msg });
+      log.error('audio', 'ui: chunk transcription failed', { idx, msg });
       // Don't replace a hard error — keep this as a soft warning unless
       // we're already showing something more important.
       setVoiceWarning(`Some audio failed to transcribe (chunk ${idx}): ${msg}`);
     },
     onError: (msg, code) => {
-      console.error('[matrx-audio] mic error', { msg, code });
+      log.error('audio', 'ui: mic error', { msg, code });
       // PERMISSION_DENIED means Chrome's native prompt returned 'denied'
       // (or permission has never been granted for this extension). MV3
       // sidepanel + offscreen contexts can't reliably surface Chrome's
@@ -1028,7 +1029,7 @@ function Composer({
           // chrome.windows.create should always succeed in extension
           // contexts; if it doesn't, surface the original mic error so
           // the user sees something rather than a silent no-op.
-          console.error('[matrx-audio] failed to open mic-grant popup', err);
+          log.error('audio', 'ui: failed to open mic-grant popup', err);
           setVoiceError(formatMicErrorForUser(msg, code));
         }
         return;
@@ -1085,7 +1086,7 @@ function Composer({
   // the dedicated mic-grant popup window — the only context where Chrome
   // reliably shows its prompt.
   const handleMicClick = () => {
-    console.log('[matrx-audio][ui] mic button clicked', { isRecording });
+    log.info('audio', 'mic button clicked', { isRecording });
     if (isRecording) {
       void stopRecording();
       return;
