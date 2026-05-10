@@ -1085,8 +1085,9 @@ function Composer({
   // the dedicated mic-grant popup window — the only context where Chrome
   // reliably shows its prompt.
   const handleMicClick = () => {
+    console.log('[matrx-audio][ui] mic button clicked', { isRecording });
     if (isRecording) {
-      stopRecording();
+      void stopRecording();
       return;
     }
     beginRecording();

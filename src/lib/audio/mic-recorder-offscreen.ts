@@ -10,6 +10,32 @@
  * sticky with no UI to recover). Offscreen with reason USER_MEDIA shows the
  * standard Chrome mic prompt against the extension origin and persists the
  * grant for subsequent calls.
+ *
+ * Recording-pipeline gotchas this file works around (all proven in 2026-05-09
+ * incident investigation):
+ *
+ *   1. After a fresh getUserMedia in offscreen — especially when the popup
+ *      grant flow JUST released the device — the audio track can come back
+ *      in a `muted: true` state for a brief window while the OS allocates
+ *      the device. MediaRecorder happily records silence in that window.
+ *      We wait (bounded) for the first 'unmute' before kicking off the
+ *      MediaRecorder.
+ *
+ *   2. AudioContext in offscreen documents starts in 'suspended' state
+ *      (no user-gesture context). We resume() it explicitly so the level
+ *      meter actually pulses; otherwise the user gets no visual confirmation
+ *      that the mic is alive.
+ *
+ *   3. We do NOT pass a timeslice to `recorder.start()`. Each MediaRecorder
+ *      lifecycle is one-blob: start → stop. Rotation happens by calling
+ *      `recorder.stop()` and creating a fresh recorder. WebM container
+ *      headers are emitted on the first dataavailable for each new recorder,
+ *      so concatenating timesliced fragments is unnecessary and was
+ *      occasionally causing weird playback issues across surfaces.
+ *
+ *   4. Watchdog: if the first `ondataavailable` doesn't arrive within 4s
+ *      of starting, we emit a NO_AUDIO_DATA error so the user sees something
+ *      instead of a silent recording.
  */
 
 import { broadcast } from '@/lib/messaging/native';
@@ -25,6 +51,13 @@ import type {
 
 const DEFAULT_CHUNK_MS = 2000;
 const LEVEL_BROADCAST_HZ = 10;
+const FIRST_CHUNK_MS = 1500;
+const SECOND_CHUNK_MS = 2000;
+const THIRD_CHUNK_MS = 3000;
+/** Max time to wait for an initially-muted track to unmute before giving up. */
+const UNMUTE_WAIT_MS = 1500;
+/** If no audio data arrives within this window of starting, raise the alarm. */
+const NO_DATA_WATCHDOG_MS = 4000;
 
 interface RecorderState {
   stream: MediaStream | null;
@@ -33,6 +66,9 @@ interface RecorderState {
   analyser: AnalyserNode | null;
   rotationTimer: ReturnType<typeof setTimeout> | null;
   levelTimer: ReturnType<typeof setInterval> | null;
+  watchdogTimer: ReturnType<typeof setTimeout> | null;
+  /** Becomes true the first time any chunk produces a non-zero blob. */
+  receivedAnyData: boolean;
   startTime: number;
   pausedAt: number;
   pausedDuration: number;
@@ -50,6 +86,8 @@ const state: RecorderState = {
   analyser: null,
   rotationTimer: null,
   levelTimer: null,
+  watchdogTimer: null,
+  receivedAnyData: false,
   startTime: 0,
   pausedAt: 0,
   pausedDuration: 0,
@@ -86,6 +124,10 @@ function clearTimers(): void {
     clearInterval(state.levelTimer);
     state.levelTimer = null;
   }
+  if (state.watchdogTimer) {
+    clearTimeout(state.watchdogTimer);
+    state.watchdogTimer = null;
+  }
 }
 
 function teardownStream(): void {
@@ -114,6 +156,25 @@ function startLevelMeter(): void {
   }, Math.round(1000 / LEVEL_BROADCAST_HZ));
 }
 
+function armWatchdog(): void {
+  if (state.watchdogTimer) clearTimeout(state.watchdogTimer);
+  state.watchdogTimer = setTimeout(() => {
+    if (!state.receivedAnyData) {
+      console.warn(
+        '[matrx-audio][offscreen][WATCHDOG] No audio data received within ' +
+          `${NO_DATA_WATCHDOG_MS}ms — stream may be silent or recorder broken`,
+      );
+      emit({
+        type: 'error',
+        message:
+          'No audio captured. The microphone may be muted at the OS level, in ' +
+          'use by another app, or your input device may need to be re-selected.',
+        code: 'NO_AUDIO_DATA',
+      } as MicErrorEvent);
+    }
+  }, NO_DATA_WATCHDOG_MS);
+}
+
 function createRecorder(): MediaRecorder {
   if (!state.stream) throw new Error('No stream');
   const idx = state.chunkIndex++;
@@ -122,13 +183,37 @@ function createRecorder(): MediaRecorder {
 
   state.chunkTimings.set(idx, { tStart: sessionRelativeSec(), tEnd: 0 });
 
+  console.log('[matrx-audio][offscreen] recorder created', {
+    chunkIndex: idx,
+    mimeType: state.mimeType,
+    state: mr.state,
+  });
+
   mr.ondataavailable = (e) => {
-    if (e.data.size > 0) chunks.push(e.data);
+    if (e.data.size > 0) {
+      chunks.push(e.data);
+      if (!state.receivedAnyData) {
+        state.receivedAnyData = true;
+        if (state.watchdogTimer) {
+          clearTimeout(state.watchdogTimer);
+          state.watchdogTimer = null;
+        }
+        console.log('[matrx-audio][offscreen] first audio data received', {
+          chunkIndex: idx,
+          size: e.data.size,
+        });
+      }
+    }
   };
   mr.onstop = async () => {
     const timing = state.chunkTimings.get(idx);
     if (timing) timing.tEnd = sessionRelativeSec();
     const blob = new Blob(chunks, { type: state.mimeType });
+    console.log('[matrx-audio][offscreen] recorder onstop', {
+      chunkIndex: idx,
+      blobSize: blob.size,
+      partCount: chunks.length,
+    });
     if (blob.size === 0) return;
     try {
       const buffer = await blob.arrayBuffer();
@@ -140,10 +225,19 @@ function createRecorder(): MediaRecorder {
         tStart: timing?.tStart ?? 0,
         tEnd: timing?.tEnd ?? 0,
       };
+      console.log('[matrx-audio][offscreen] broadcast chunk', {
+        chunkIndex: idx,
+        bytes: buffer.byteLength,
+        tStart: ev.tStart,
+        tEnd: ev.tEnd,
+      });
       emit(ev);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to package chunk';
-      console.error('[matrx-audio] chunk packaging failed', { chunkIndex: idx, msg });
+      console.error('[matrx-audio][offscreen] chunk packaging failed', {
+        chunkIndex: idx,
+        msg,
+      });
       emit({ type: 'error', message: msg, code: 'CHUNK_PACKAGE_FAILED' } as MicErrorEvent);
     }
   };
@@ -155,7 +249,11 @@ function createRecorder(): MediaRecorder {
     const ev = event as Event & { error?: { name?: string; message?: string } };
     const name = ev.error?.name ?? 'MediaRecorderError';
     const message = ev.error?.message ?? 'MediaRecorder failed';
-    console.error('[matrx-audio] MediaRecorder error', { chunkIndex: idx, name, message });
+    console.error('[matrx-audio][offscreen] MediaRecorder error', {
+      chunkIndex: idx,
+      name,
+      message,
+    });
     emit({
       type: 'error',
       message: `${name}: ${message}`,
@@ -163,24 +261,32 @@ function createRecorder(): MediaRecorder {
     } as MicErrorEvent);
   };
 
-  mr.start(100);
+  // No timeslice — see file header note (3). Each recorder lifecycle is one
+  // blob; rotation is driven by stop() + new MediaRecorder.
+  mr.start();
   return mr;
 }
 
 function rotateChunk(): void {
   if (!state.stream || !state.recorder) return;
   if (state.recorder.state !== 'recording') return;
+  console.log('[matrx-audio][offscreen] rotateChunk', {
+    chunkIndex: state.chunkIndex,
+    currentRecorderState: state.recorder.state,
+  });
   state.recorder.stop();
   state.recorder = createRecorder();
 }
 
 function scheduleNextRotation(): void {
   // Front-load the first few chunks so the first transcription comes back
-  // quickly rather than a full window later.
+  // quickly rather than a full window later. `state.chunkIndex` here reflects
+  // the index of the NEXT recorder to be created — so === 1 means "we just
+  // created chunk 0 and are waiting on its rotation".
   let delay = state.chunkDurationMs;
-  if (state.chunkIndex === 1) delay = Math.min(3000, state.chunkDurationMs * 1.5);
-  else if (state.chunkIndex === 2) delay = Math.min(3000, state.chunkDurationMs * 1.5);
-  else if (state.chunkIndex === 3) delay = Math.min(4000, state.chunkDurationMs * 2);
+  if (state.chunkIndex === 1) delay = FIRST_CHUNK_MS;
+  else if (state.chunkIndex === 2) delay = SECOND_CHUNK_MS;
+  else if (state.chunkIndex === 3) delay = THIRD_CHUNK_MS;
 
   state.rotationTimer = setTimeout(() => {
     rotateChunk();
@@ -188,7 +294,49 @@ function scheduleNextRotation(): void {
   }, delay);
 }
 
+/**
+ * Wait for the audio track to leave its initial 'muted' state, bounded so we
+ * don't hang forever on devices that report a permanently-muted track. The
+ * track will fire 'unmute' when audio frames start flowing.
+ */
+async function waitForTrackUnmute(track: MediaStreamTrack): Promise<void> {
+  if (!track.muted) return;
+  console.warn('[matrx-audio][offscreen] track initially muted — waiting for unmute', {
+    label: track.label,
+    enabled: track.enabled,
+    readyState: track.readyState,
+  });
+  await new Promise<void>((resolve) => {
+    let settled = false;
+    const cleanup = () => {
+      if (settled) return;
+      settled = true;
+      track.removeEventListener('unmute', onUnmute);
+      clearTimeout(timer);
+      resolve();
+    };
+    const onUnmute = () => {
+      console.log('[matrx-audio][offscreen] track unmute event received');
+      cleanup();
+    };
+    track.addEventListener('unmute', onUnmute, { once: true });
+    const timer = setTimeout(() => {
+      console.warn(
+        '[matrx-audio][offscreen] unmute wait timed out, proceeding anyway',
+        { muted: track.muted },
+      );
+      cleanup();
+    }, UNMUTE_WAIT_MS);
+  });
+}
+
 async function startRecording(chunkDurationMs?: number): Promise<void> {
+  console.log('[matrx-audio][offscreen] startRecording invoked', {
+    chunkDurationMs,
+    hadPriorStream: !!state.stream,
+    hadPriorRecorder: !!state.recorder,
+  });
+
   // If a previous session leaked, clean it up before starting fresh.
   if (state.stream || state.recorder) {
     await stopRecording();
@@ -198,6 +346,7 @@ async function startRecording(chunkDurationMs?: number): Promise<void> {
   state.chunkIndex = 0;
   state.pausedAt = 0;
   state.pausedDuration = 0;
+  state.receivedAnyData = false;
   state.chunkTimings.clear();
 
   let stream: MediaStream;
@@ -220,7 +369,11 @@ async function startRecording(chunkDurationMs?: number): Promise<void> {
           : e.name === 'NotReadableError' || e.name === 'TrackStartError'
             ? 'DEVICE_BUSY'
             : 'UNKNOWN_ERROR';
-    console.error('[matrx-audio] getUserMedia failed', { code, name: e.name, message: e.message });
+    console.error('[matrx-audio][offscreen] getUserMedia failed', {
+      code,
+      name: e.name,
+      message: e.message,
+    });
     emit({
       type: 'error',
       message: e.message || 'Microphone access failed',
@@ -229,10 +382,56 @@ async function startRecording(chunkDurationMs?: number): Promise<void> {
     return;
   }
 
+  const tracks = stream.getAudioTracks();
+  console.log('[matrx-audio][offscreen] getUserMedia success', {
+    trackCount: tracks.length,
+    tracks: tracks.map((t) => ({
+      kind: t.kind,
+      label: t.label,
+      muted: t.muted,
+      enabled: t.enabled,
+      readyState: t.readyState,
+    })),
+  });
+
+  const primaryTrack = tracks[0];
+  if (!primaryTrack) {
+    emit({
+      type: 'error',
+      message: 'No audio tracks in the stream',
+      code: 'NO_DEVICE',
+    } as MicErrorEvent);
+    stream.getTracks().forEach((t) => t.stop());
+    return;
+  }
+
+  // Wait (bounded) for any initially-muted track to start flowing audio.
+  // The popup grant flow releases the device 1.5s before the offscreen
+  // re-acquires it; on some macOS / Linux setups the track comes back muted
+  // for a brief window while the OS finishes allocating the device.
+  await waitForTrackUnmute(primaryTrack);
+
   state.stream = stream;
   state.mimeType = pickMimeType();
 
   state.audioCtx = new AudioContext();
+  console.log('[matrx-audio][offscreen] AudioContext created', {
+    state: state.audioCtx.state,
+    sampleRate: state.audioCtx.sampleRate,
+  });
+  // Offscreen documents have no user-gesture context, so AudioContext often
+  // starts suspended. Without resume() the analyser returns zeros and the
+  // level meter stays flat — the user has no way to tell the mic is alive.
+  if (state.audioCtx.state === 'suspended') {
+    try {
+      await state.audioCtx.resume();
+      console.log('[matrx-audio][offscreen] AudioContext resumed', {
+        state: state.audioCtx.state,
+      });
+    } catch (err) {
+      console.warn('[matrx-audio][offscreen] AudioContext resume failed', err);
+    }
+  }
   state.analyser = state.audioCtx.createAnalyser();
   state.analyser.fftSize = 256;
   state.analyser.smoothingTimeConstant = 0.8;
@@ -243,11 +442,18 @@ async function startRecording(chunkDurationMs?: number): Promise<void> {
   state.startTime = Date.now();
   state.recorder = createRecorder();
   scheduleNextRotation();
+  armWatchdog();
 
   emit({ type: 'started', mimeType: state.mimeType } as MicLifecycleEvent);
+  console.log('[matrx-audio][offscreen] started broadcast emitted');
 }
 
 async function stopRecording(): Promise<void> {
+  console.log('[matrx-audio][offscreen] stopRecording invoked', {
+    hadRecorder: !!state.recorder,
+    recorderState: state.recorder?.state,
+    hadStream: !!state.stream,
+  });
   clearTimers();
 
   const mr = state.recorder;
@@ -264,8 +470,10 @@ async function stopRecording(): Promise<void> {
   state.startTime = 0;
   state.pausedAt = 0;
   state.pausedDuration = 0;
+  state.receivedAnyData = false;
 
   emit({ type: 'stopped' } as MicLifecycleEvent);
+  console.log('[matrx-audio][offscreen] stopped broadcast emitted');
 }
 
 function pauseRecording(): void {
@@ -286,10 +494,12 @@ function resumeRecording(): void {
   state.recorder = createRecorder();
   startLevelMeter();
   scheduleNextRotation();
+  armWatchdog();
   emit({ type: 'resumed' } as MicLifecycleEvent);
 }
 
 export async function handleMicRun(payload: MicRunPayload): Promise<{ ok: boolean }> {
+  console.log('[matrx-audio][offscreen] handleMicRun', payload);
   switch (payload.action) {
     case 'start':
       await startRecording(payload.chunkDurationMs);

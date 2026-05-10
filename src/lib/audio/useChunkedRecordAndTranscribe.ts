@@ -44,7 +44,9 @@ export interface UseChunkedRecordAndTranscribeProps {
 
 async function sendMicRequest(payload: MicRequestPayload): Promise<void> {
   const env = { __matrx: true, kind: CHANNELS.MIC_REQUEST, payload };
+  console.log('[matrx-audio][hook] → MIC_REQUEST', payload);
   const res = (await chrome.runtime.sendMessage(env)) as { __error?: string } | { ok: true } | undefined;
+  console.log('[matrx-audio][hook] ← MIC_REQUEST result', res);
   if (res && typeof res === 'object' && '__error' in res) {
     throw new Error((res as { __error: string }).__error);
   }
@@ -200,12 +202,24 @@ export function useChunkedRecordAndTranscribe({
         const token = await getAccessToken();
         if (!token) throw new Error('Not signed in. Please sign in to use voice input.');
 
+        console.log('[matrx-audio][hook] transcribe POST start', {
+          chunkIndex: idx,
+          bytes: blobToSend.size,
+          isCombo,
+          url: AUDIO_API_ROUTES.TRANSCRIBE,
+        });
         const res = await fetch(AUDIO_API_ROUTES.TRANSCRIBE, {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
           body: form,
         });
         const data = await res.json();
+        console.log('[matrx-audio][hook] transcribe POST done', {
+          chunkIndex: idx,
+          status: res.status,
+          ok: res.ok,
+          textLen: typeof data?.text === 'string' ? data.text.length : 0,
+        });
         if (!res.ok) throw new Error(data.error || data.details || `HTTP ${res.status}`);
 
         if (data.success && data.text?.trim()) {
@@ -283,6 +297,10 @@ export function useChunkedRecordAndTranscribe({
         return false;
       }
       const event = (msg as { payload: MicEvent }).payload;
+      // Skip the noisy level events from the trace log.
+      if (event.type !== 'level') {
+        console.log('[matrx-audio][hook] ← MIC_EVENT', event.type, event);
+      }
       if (event.type === 'level') {
         setAudioLevel(event.level);
       } else if (event.type === 'started') {
@@ -317,6 +335,13 @@ export function useChunkedRecordAndTranscribe({
         onErrorRef.current?.(event.message, event.code);
       } else if (event.type === 'chunk') {
         const blob = new Blob([event.data], { type: event.mimeType });
+        console.log('[matrx-audio][hook] received chunk', {
+          chunkIndex: event.chunkIndex,
+          bytes: blob.size,
+          mimeType: event.mimeType,
+          tStart: event.tStart,
+          tEnd: event.tEnd,
+        });
         void transcribeBlob(blob, event.chunkIndex, event.tStart, event.tEnd);
       }
       return false;

@@ -205,6 +205,7 @@ function registerHandlers(): void {
   // are forbidden — the user's mic button would otherwise hang in the
   // pre-start state with no signal.
   on<MicRequestPayload, { ok: boolean }>(CHANNELS.MIC_REQUEST, async (payload) => {
+    console.log('[matrx-audio][sw] MIC_REQUEST received', payload);
     try {
       await ensureOffscreen();
     } catch (err) {
@@ -220,11 +221,13 @@ function registerHandlers(): void {
     const runPayload: MicRunPayload = payload;
     let res: { __error?: string } | { ok?: true } | null = null;
     try {
+      console.log('[matrx-audio][sw] → MIC_RUN forward to offscreen', runPayload);
       res = (await chrome.runtime.sendMessage({
         __matrx: true,
         kind: CHANNELS.MIC_RUN,
         payload: runPayload,
       })) as { __error?: string } | { ok?: true } | null;
+      console.log('[matrx-audio][sw] ← MIC_RUN reply', res);
     } catch (err) {
       const message = (err as Error).message ?? 'Mic forwarding failed';
       log.error('sys', '[matrx-audio] MIC_RUN forward failed', err);
