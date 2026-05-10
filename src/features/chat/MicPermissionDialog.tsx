@@ -1,19 +1,24 @@
 /**
  * In-app modal that guides the user through granting microphone access.
  *
+ * Hard rule (no claims about prior state): the dialog NEVER tells the
+ * user that mic access was previously blocked / denied / refused. Those
+ * claims may be wrong — `navigator.permissions.query` for extension
+ * mic state is unreliable across contexts and we don't trust it.
+ *
  * Two render modes:
  *
- *   - mode='prompt'  — first-time use. Explains what mic access does,
- *     primary button triggers `onConfirm()` (caller starts the actual
- *     `getUserMedia` flow in the offscreen doc). If Chrome's native
- *     prompt comes back denied, the caller calls back with mode='denied'.
+ *   - mode='prompt'  — the entry point for every first-time use. Body
+ *     is purely informational: "click Allow microphone, Chrome will
+ *     ask for permission". Primary button triggers `onConfirm()` — the
+ *     caller starts the live `getUserMedia` attempt. If Chrome rejects,
+ *     the caller flips the dialog to mode='denied'.
  *
- *   - mode='denied' — the user (or Chrome's site-permission UI) has
- *     previously blocked mic access. Chrome refuses to re-prompt
- *     programmatically from this state. We deep-link the user to the
- *     exact chrome://settings page where the fix lives, opened in a
- *     new tab via chrome.tabs.create — the user doesn't have to type
- *     anything or hunt through menus.
+ *   - mode='denied' — only ever reached by transitioning from 'prompt'
+ *     after a real `getUserMedia` failure. Body is neutral recovery
+ *     guidance ("we weren't able to start the microphone — to grant
+ *     access:" + a button that opens the settings page programmatically).
+ *     NEVER opened directly from a click handler based on stored state.
  *
  * Banned: `window.alert` / `window.confirm` / `window.prompt`. Banned:
  * "open chrome://extensions" instructions. The only chrome:// surface
@@ -39,7 +44,7 @@ export function MicPermissionDialog({ mode, onConfirm, onClose }: Props) {
       role="dialog"
       aria-modal="true"
       aria-label={
-        mode === 'prompt' ? 'Enable microphone access' : 'Microphone access blocked'
+        mode === 'prompt' ? 'Allow microphone access' : "Couldn't access microphone"
       }
       onClick={onClose}
     >
@@ -55,7 +60,7 @@ export function MicPermissionDialog({ mode, onConfirm, onClose }: Props) {
               <MicOff className="size-4 text-amber-600 dark:text-amber-400" />
             )}
             <div className="text-base font-semibold leading-tight">
-              {mode === 'prompt' ? 'Enable voice input?' : 'Microphone access blocked'}
+              {mode === 'prompt' ? 'Allow microphone access' : "Couldn't access microphone"}
             </div>
           </div>
           <button
@@ -76,14 +81,14 @@ export function MicPermissionDialog({ mode, onConfirm, onClose }: Props) {
             onClick={onClose}
             className="rounded-md border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted/60"
           >
-            {mode === 'prompt' ? 'Not now' : 'Close'}
+            {mode === 'prompt' ? 'Cancel' : 'Close'}
           </button>
           <button
             type="button"
             onClick={onConfirm}
             className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
           >
-            {mode === 'prompt' ? 'Enable microphone' : 'Open mic settings'}
+            {mode === 'prompt' ? 'Allow microphone' : 'Open mic settings'}
           </button>
         </div>
       </div>
@@ -95,13 +100,13 @@ function PromptBody() {
   return (
     <div className="space-y-2 px-4 py-3 text-sm leading-relaxed text-foreground/90">
       <p>
-        Matrx Extend needs microphone access to transcribe your speech into the
-        chat input.
+        Voice input transcribes your speech into the chat. Click{' '}
+        <span className="font-medium">Allow microphone</span> below — Chrome will
+        ask for permission.
       </p>
       <p className="text-xs text-muted-foreground">
-        Click <span className="font-medium">Enable microphone</span> below — Chrome will
-        ask you to confirm. Audio is sent to Groq Whisper for transcription and is
-        not stored after the chat turn finishes.
+        Audio is sent to Groq Whisper for transcription and is not stored after
+        the chat turn finishes.
       </p>
     </div>
   );
@@ -111,24 +116,16 @@ function DeniedBody() {
   return (
     <div className="space-y-3 px-4 py-3 text-sm leading-relaxed text-foreground/90">
       <p>
-        Voice input was previously blocked for this extension. To re-enable it:
+        We weren&apos;t able to start the microphone. To grant access:
       </p>
       <ol className="list-decimal space-y-1 pl-5 text-xs text-muted-foreground">
         <li>Click <span className="font-medium">Open mic settings</span> below.</li>
         <li>
-          Find this extension in the blocked list (or click{' '}
-          <span className="font-medium">Add</span> under Allowed).
-        </li>
-        <li>
-          Switch the choice from <span className="font-medium">Block</span> to{' '}
+          Find this extension and set its microphone permission to{' '}
           <span className="font-medium">Allow</span>.
         </li>
-        <li>Reopen this side panel and click the mic again.</li>
+        <li>Return here and click the mic icon again.</li>
       </ol>
-      <p className="text-xs text-muted-foreground">
-        Chrome doesn&apos;t let extensions un-block themselves automatically — this is
-        the shortest path.
-      </p>
     </div>
   );
 }

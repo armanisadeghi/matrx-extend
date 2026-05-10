@@ -3,21 +3,23 @@
  * access. Mirrors `MicPermissionDialog` — same two-mode UX so users see a
  * consistent permission flow across mic and tab capture.
  *
+ * Hard rule (no claims about prior state): the dialog NEVER tells the
+ * user that tab capture was previously blocked / denied / refused.
+ * Those are claims that may be wrong.
+ *
  * Two render modes:
  *
- *   - mode='prompt'  — never asked, or last `chrome.permissions.request`
- *     was implicitly dismissed. Explains what tab capture does, primary
- *     button triggers `onConfirm()` (caller calls
- *     `chrome.permissions.request({permissions:['tabCapture']})`). If
- *     Chrome returns `false`, the caller flips the dialog to
- *     mode='denied'.
+ *   - mode='prompt'  — entry point for every first-time use. Body is
+ *     purely informational. Primary button triggers `onConfirm()` —
+ *     the caller calls `chrome.permissions.request({permissions:
+ *     ['tabCapture']})` from the user-gesture click. If Chrome returns
+ *     `false`, the caller flips the dialog to mode='denied'.
  *
- *   - mode='denied'  — Chrome's permissions API returned false because
- *     the user dismissed the prompt. Chrome optional permissions don't
- *     expose a programmatic re-prompt path, so we open the extension's
- *     own permission page in a new tab via `chrome.tabs.create` —
- *     the user clicks one button, we navigate for them, no manual
- *     URL-bar work required.
+ *   - mode='denied'  — only ever reached by transitioning from 'prompt'
+ *     after a real `chrome.permissions.request` rejection. Body is
+ *     neutral recovery guidance + a button that opens the extension's
+ *     permission page programmatically. NEVER opened directly from a
+ *     click handler based on stored state.
  *
  * Banned: `window.alert` / `window.confirm` / `window.prompt`. Banned:
  * "open chrome://extensions" written-out instructions. The only
@@ -45,8 +47,8 @@ export function TabCaptureDialog({ mode, onConfirm, onClose }: Props) {
       aria-modal="true"
       aria-label={
         mode === 'prompt'
-          ? 'Enable tab video capture'
-          : 'Tab video capture blocked'
+          ? 'Allow tab video capture'
+          : "Couldn't access tab capture"
       }
       onClick={onClose}
     >
@@ -63,8 +65,8 @@ export function TabCaptureDialog({ mode, onConfirm, onClose }: Props) {
             )}
             <div className="text-base font-semibold leading-tight">
               {mode === 'prompt'
-                ? 'Enable tab video capture?'
-                : 'Tab video capture blocked'}
+                ? 'Allow tab video capture'
+                : "Couldn't access tab capture"}
             </div>
           </div>
           <button
@@ -92,7 +94,7 @@ export function TabCaptureDialog({ mode, onConfirm, onClose }: Props) {
             onClick={onConfirm}
             className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
           >
-            {mode === 'prompt' ? 'Enable' : 'Open extension permissions'}
+            {mode === 'prompt' ? 'Allow' : 'Open extension permissions'}
           </button>
         </div>
       </div>
@@ -104,13 +106,13 @@ function PromptBody() {
   return (
     <div className="space-y-2 px-4 py-3 text-sm leading-relaxed text-foreground/90">
       <p>
-        Matrx Extend needs permission to capture this tab&apos;s video so it
-        can record what&apos;s on screen.
+        Recording the active tab requires Chrome&apos;s tab capture permission.
+        Click <span className="font-medium">Allow</span> below — Chrome will
+        ask for permission.
       </p>
       <p className="text-xs text-muted-foreground">
-        Click <span className="font-medium">Enable</span> below — Chrome will
-        prompt you to grant access. Recordings are uploaded to your private
-        cloud storage when you stop the recording.
+        Recordings are uploaded to your private cloud storage when you stop
+        the recording.
       </p>
     </div>
   );
@@ -120,22 +122,18 @@ function DeniedBody() {
   return (
     <div className="space-y-3 px-4 py-3 text-sm leading-relaxed text-foreground/90">
       <p>
-        Tab video capture was blocked. To enable it:
+        We weren&apos;t able to start tab capture. To grant access:
       </p>
       <ol className="list-decimal space-y-1 pl-5 text-xs text-muted-foreground">
         <li>
           Click <span className="font-medium">Open extension permissions</span>{' '}
-          below — we&apos;ll open the right page in a new tab.
+          below.
         </li>
         <li>
           Toggle <span className="font-medium">Tab capture</span> on.
         </li>
         <li>Return here and click Record again.</li>
       </ol>
-      <p className="text-xs text-muted-foreground">
-        Chrome doesn&apos;t allow extensions to re-prompt for an optional
-        permission once it&apos;s been dismissed — this is the shortest path.
-      </p>
     </div>
   );
 }

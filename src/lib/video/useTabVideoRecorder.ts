@@ -286,20 +286,21 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
 
   const start = useCallback(
     async (opts: { tabId: number; durationMs: number; audio: boolean }) => {
-      // Rule (no terminal denied state): a click always either starts the
-      // operation or opens the explainer that triggers a live request.
-      // We NEVER refuse based on a stored "previously denied" flag.
+      // Rule (no claims about prior state): a click always either starts
+      // the operation or opens the neutral explainer whose primary CTA
+      // triggers a live `chrome.permissions.request`. The 'denied' mode
+      // is only reached by transitioning from 'prompt' after a real
+      // request rejection — never as a starting state.
       setErrorMessage(null);
       setStatus('permission');
+      // Optimization (acceptable): if Chrome already has the permission,
+      // skip the explainer and start recording. The fallback path for
+      // 'not granted' is "show the prompt explainer", not "show denied".
       const granted = await hasOptionalPermissions(['tabCapture']);
       if (granted) {
         await launchRecording(opts);
         return;
       }
-      // Always show the prompt explainer. The user's primary-CTA click
-      // runs a live `chrome.permissions.request` — Chrome decides what
-      // happens next. If that returns false we flip to recovery mode;
-      // we never refuse the start based on prior history.
       pendingStartRef.current = opts;
       setPermissionMode('prompt');
       setPermissionDialogOpen(true);

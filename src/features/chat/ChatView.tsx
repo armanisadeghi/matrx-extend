@@ -38,7 +38,6 @@ import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
 import {
-  getMicPermissionState,
   hasUserApprovedMic,
   rememberUserApprovedMic,
 } from '@/lib/audio/mic-permission';
@@ -1055,39 +1054,32 @@ function Composer({
     void startRecording();
   };
 
-  // Click handler for the mic button. Rule (no terminal denied state):
+  // Click handler for the mic button. Rule (no claims about prior state):
   // every click either (a) starts a live `getUserMedia` attempt, or
-  // (b) opens the in-app explainer whose primary action triggers a live
-  // attempt. We NEVER refuse the click based on a past denial — Chrome
-  // may have changed state since, and the only way to know is to ask
-  // it live.
+  // (b) opens the neutral explainer whose primary action triggers a
+  // live attempt. We NEVER consult `navigator.permissions.query` — its
+  // result for extensions is unreliable across contexts (SW vs sidepanel
+  // vs offscreen) and not actionable. The only authoritative answer
+  // is the live attempt itself.
   const handleMicClick = async () => {
     if (isRecording) {
       stopRecording();
       return;
     }
-    // Quick hint — when Chrome already reports `granted`, skip the
-    // explainer. Same when the user has previously approved through our
-    // flow. Either way, the next step is a live attempt; a real failure
-    // (revoked, hardware gone) flips the modal to 'denied' from the
-    // mic-error path above, NOT from this pre-flight.
-    const state = await getMicPermissionState();
-    if (state === 'granted') {
-      beginRecording();
-      return;
-    }
+    // If the user has previously approved through our flow, skip the
+    // explainer and just attempt `getUserMedia` directly. If the
+    // permission was revoked since approval, the live request fails and
+    // the `onError` path flips the modal to 'denied' for recovery —
+    // that's the only way the recovery UI is ever reached.
     const approved = await hasUserApprovedMic();
     if (approved) {
-      // User has approved at least once before. Skip the explainer and
-      // try directly. If the live attempt rejects with NotAllowedError,
-      // `onError` above will set micDialogMode='denied' so the user gets
-      // the recovery modal — without us ever refusing them up front.
       beginRecording();
       return;
     }
-    // First-time user (or storage unavailable). Show the explainer so
-    // they understand what about to happen before Chrome's native
-    // prompt fires from the offscreen doc.
+    // First-time user. Show the neutral explainer so they understand
+    // what's about to happen before Chrome's native prompt fires from
+    // the offscreen doc. The explainer makes NO claims about prior
+    // state — it just says "click Allow microphone, Chrome will ask".
     setMicDialogMode('prompt');
   };
 
