@@ -1,17 +1,21 @@
 /**
  * Agenda — multi-surface scheduled agent runs.
  *
- * Schema lives in `migrations/2026_05_03_agenda_v0.sql`.
+ * Schema lives in `migrations/2026_05_10_sch_v0.sql`. The `agenda_*` tables
+ * (2026-05-03) were replaced by the `sch_*` scheduling spine — kind-agnostic
+ * task definition + many-triggers-per-task + per-execution rows — so future
+ * kinds (workflows, scrapes, webhooks, …) can share the same plumbing.
  *
- * Two tables:
- *   agenda_task — task spec (what to run, when, where it can run)
- *   agenda_run  — individual executions, with lease-based claim pattern
+ * This module is the agent-kind façade over `sch_*`: it joins
+ *   sch_task ⋈ sch_agent_task ⋈ sch_trigger
+ * and reshapes into the flat `AgendaTask` type the UI / scanner / runner
+ * already consume. New kinds will get their own façades.
  *
- * Surface picks up tasks where:
- *   1. enabled = true
- *   2. next_due_at <= now()
- *   3. its surface_id is in surfaces[] (or surfaces contains 'any')
- *   4. no active run is currently claimed (claim_token IS NULL or expired)
+ * Pickup rule (sch_run side): a surface picks a task up when
+ *   1. sch_task.enabled = true
+ *   2. sch_task.next_due_at <= now()
+ *   3. surface_id is in sch_task.surfaces (or 'any')
+ *   4. no active sch_run is currently claimed (claim_token IS NULL or expired)
  */
 
 import { getSupabase } from '@/lib/supabase/client';
@@ -98,6 +102,125 @@ export const AgendaRunSchema = z.object({
 });
 export type AgendaRun = z.infer<typeof AgendaRunSchema>;
 
+// ─── Row reshape: sch_task ⋈ sch_agent_task ⋈ sch_trigger → AgendaTask ──────
+//
+// The UI / scanner / runner consume the flat AgendaTask shape. v0 only has
+// one trigger per task (legacy schema enforced 1:1; new tasks default to 1).
+// When multi-trigger tasks land we'll surface a `triggers: TriggerConfig[]`
+// alongside the primary one.
+
+interface SchTaskJoinedRow {
+  id: string;
+  user_id: string;
+  kind: string;
+  title: string;
+  description: string | null;
+  surfaces: string[];
+  enabled: boolean;
+  expires_at: string | null;
+  tags: string[];
+  next_due_at: string | null;
+  last_run_at: string | null;
+  created_at: string;
+  updated_at: string;
+  agent: {
+    agent_id: string | null;
+    prompt: string;
+    variables: Record<string, unknown>;
+    persistent_conversation_id: string | null;
+    auth_mode: 'ask' | 'auto';
+    max_runtime_seconds: number;
+    max_concurrent: number;
+  } | null;
+  triggers: Array<{
+    type: TriggerType;
+    config: Record<string, unknown>;
+    enabled: boolean;
+    next_due_at: string | null;
+  }>;
+}
+
+const SELECT_AGENDA_TASK =
+  '*, agent:sch_agent_task!inner(agent_id, prompt, variables, persistent_conversation_id, auth_mode, max_runtime_seconds, max_concurrent), triggers:sch_trigger(type, config, enabled, next_due_at)';
+
+function rowToAgendaTask(row: SchTaskJoinedRow): AgendaTask {
+  if (!row.agent) {
+    throw new Error(`sch_task ${row.id} (kind=${row.kind}) has no agent extension row`);
+  }
+  // v0: pick the primary trigger. Multi-trigger support comes later.
+  const primary = row.triggers[0];
+  if (!primary) {
+    throw new Error(`sch_task ${row.id} has no triggers`);
+  }
+  return AgendaTaskSchema.parse({
+    id: row.id,
+    user_id: row.user_id,
+    title: row.title,
+    description: row.description,
+    agent_id: row.agent.agent_id,
+    prompt: row.agent.prompt,
+    variables: row.agent.variables ?? {},
+    trigger_type: primary.type,
+    trigger_config: primary.config ?? {},
+    next_due_at: row.next_due_at,
+    last_run_at: row.last_run_at,
+    surfaces: row.surfaces,
+    auth_mode: row.agent.auth_mode,
+    max_runtime_seconds: row.agent.max_runtime_seconds,
+    max_concurrent: row.agent.max_concurrent,
+    persistent_conversation_id: row.agent.persistent_conversation_id,
+    enabled: row.enabled,
+    expires_at: row.expires_at,
+    tags: row.tags,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  });
+}
+
+interface SchRunRow {
+  id: string;
+  task_id: string;
+  user_id: string;
+  status: RunStatus;
+  surface: string | null;
+  output_ref: { kind?: string; id?: string } | null;
+  due_at: string;
+  claimed_at: string | null;
+  started_at: string | null;
+  finished_at: string | null;
+  claim_token: string | null;
+  claim_expires_at: string | null;
+  result_summary: string | null;
+  error_message: string | null;
+  result_metadata: Record<string, unknown> | null;
+  created_at: string;
+}
+
+function rowToAgendaRun(row: SchRunRow): AgendaRun {
+  const conversationId =
+    row.output_ref?.kind === 'conversation' && typeof row.output_ref.id === 'string'
+      ? row.output_ref.id
+      : null;
+  return AgendaRunSchema.parse({
+    id: row.id,
+    task_id: row.task_id,
+    user_id: row.user_id,
+    status: row.status,
+    surface: row.surface,
+    conversation_id: conversationId,
+    due_at: row.due_at,
+    claimed_at: row.claimed_at,
+    started_at: row.started_at,
+    finished_at: row.finished_at,
+    claim_token: row.claim_token,
+    claim_expires_at: row.claim_expires_at,
+    result_summary: row.result_summary,
+    error_message: row.error_message,
+    result_metadata: row.result_metadata,
+    created_at: row.created_at,
+  });
+}
+
 // ─── Reads ──────────────────────────────────────────────────────────────────
 
 export async function listMyTasks(opts?: {
@@ -105,7 +228,11 @@ export async function listMyTasks(opts?: {
   limit?: number;
 }): Promise<AgendaTask[]> {
   const c = getSupabase();
-  let q = c.from('agenda_task').select('*').order('updated_at', { ascending: false });
+  let q = c
+    .from('sch_task')
+    .select(SELECT_AGENDA_TASK)
+    .eq('kind', 'agent')
+    .order('updated_at', { ascending: false });
   if (opts?.enabled_only) q = q.eq('enabled', true);
   if (opts?.limit) q = q.limit(opts.limit);
   const { data, error } = await q;
@@ -113,7 +240,7 @@ export async function listMyTasks(opts?: {
     console.warn('[matrx-extend] listMyTasks error', error.message);
     return [];
   }
-  return (data ?? []).map((row) => AgendaTaskSchema.parse(row));
+  return (data ?? []).map((row) => rowToAgendaTask(row as unknown as SchTaskJoinedRow));
 }
 
 /**
@@ -127,8 +254,9 @@ export async function listDueForSurface(
 ): Promise<AgendaTask[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('agenda_task')
-    .select('*')
+    .from('sch_task')
+    .select(SELECT_AGENDA_TASK)
+    .eq('kind', 'agent')
     .eq('enabled', true)
     .lte('next_due_at', new Date().toISOString())
     .or(`surfaces.cs.{${surface}},surfaces.cs.{any}`)
@@ -138,14 +266,18 @@ export async function listDueForSurface(
     console.warn('[matrx-extend] listDueForSurface error', error.message);
     return [];
   }
-  return (data ?? []).map((row) => AgendaTaskSchema.parse(row));
+  return (data ?? []).map((row) => rowToAgendaTask(row as unknown as SchTaskJoinedRow));
 }
 
 export async function getTask(id: string): Promise<AgendaTask | null> {
   const c = getSupabase();
-  const { data, error } = await c.from('agenda_task').select('*').eq('id', id).maybeSingle();
+  const { data, error } = await c
+    .from('sch_task')
+    .select(SELECT_AGENDA_TASK)
+    .eq('id', id)
+    .maybeSingle();
   if (error || !data) return null;
-  return AgendaTaskSchema.parse(data);
+  return rowToAgendaTask(data as unknown as SchTaskJoinedRow);
 }
 
 export async function listRunsForTask(
@@ -154,13 +286,13 @@ export async function listRunsForTask(
 ): Promise<AgendaRun[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('agenda_run')
+    .from('sch_run')
     .select('*')
     .eq('task_id', taskId)
     .order('created_at', { ascending: false })
     .limit(opts?.limit ?? 20);
   if (error) return [];
-  return (data ?? []).map((row) => AgendaRunSchema.parse(row));
+  return (data ?? []).map((row) => rowToAgendaRun(row as unknown as SchRunRow));
 }
 
 // ─── Writes ─────────────────────────────────────────────────────────────────
@@ -183,48 +315,137 @@ export interface CreateTaskInput {
   tags?: string[];
 }
 
+/**
+ * Insert sch_task → sch_agent_task → sch_trigger as three sequential writes.
+ *
+ * Not transactional from the JS client. If a later step fails after sch_task
+ * succeeds we clean up the orphan with an explicit DELETE — FK cascades
+ * handle the rest. A future Postgres function (`create_agent_task` RPC)
+ * could collapse this into one atomic call when we add the rest of the
+ * scheduling kinds.
+ */
 export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
   const c = getSupabase();
-  const payload = {
-    title: input.title,
-    description: input.description ?? null,
+  const nextDueAt =
+    input.next_due_at ?? computeFirstDue(input.trigger_type, input.trigger_config);
+
+  // 1. sch_task
+  const { data: taskRow, error: taskErr } = await c
+    .from('sch_task')
+    .insert({
+      kind: 'agent',
+      title: input.title,
+      description: input.description ?? null,
+      queue: 'default',
+      surfaces: input.surfaces ?? ['any'],
+      enabled: true,
+      expires_at: input.expires_at ?? null,
+      tags: input.tags ?? [],
+      next_due_at: nextDueAt,
+    })
+    .select('id')
+    .single();
+  if (taskErr || !taskRow) throw new Error(`createTask (sch_task): ${taskErr?.message}`);
+  const taskId = taskRow.id as string;
+
+  // 2. sch_agent_task — cleanup parent if this fails.
+  const { error: agentErr } = await c.from('sch_agent_task').insert({
+    id: taskId,
     agent_id: input.agent_id ?? null,
     prompt: input.prompt,
     variables: input.variables ?? {},
-    trigger_type: input.trigger_type,
-    trigger_config: input.trigger_config,
-    next_due_at: input.next_due_at ?? computeFirstDue(input.trigger_type, input.trigger_config),
-    surfaces: input.surfaces ?? ['any'],
+    persistent_conversation_id: input.persistent_conversation_id ?? null,
     auth_mode: input.auth_mode ?? 'ask',
     max_runtime_seconds: input.max_runtime_seconds ?? 600,
     max_concurrent: input.max_concurrent ?? 1,
-    persistent_conversation_id: input.persistent_conversation_id ?? null,
-    expires_at: input.expires_at ?? null,
-    tags: input.tags ?? [],
-  };
-  const { data, error } = await c.from('agenda_task').insert(payload).select('*').single();
-  if (error) throw new Error(`createTask failed: ${error.message}`);
-  return AgendaTaskSchema.parse(data);
+  });
+  if (agentErr) {
+    await c.from('sch_task').delete().eq('id', taskId);
+    throw new Error(`createTask (sch_agent_task): ${agentErr.message}`);
+  }
+
+  // 3. sch_trigger — cleanup parent if this fails.
+  const { error: trigErr } = await c.from('sch_trigger').insert({
+    task_id: taskId,
+    type: input.trigger_type,
+    config: input.trigger_config,
+    enabled: true,
+    next_due_at: nextDueAt,
+  });
+  if (trigErr) {
+    await c.from('sch_task').delete().eq('id', taskId);
+    throw new Error(`createTask (sch_trigger): ${trigErr.message}`);
+  }
+
+  const fetched = await getTask(taskId);
+  if (!fetched) throw new Error(`createTask: row vanished after insert (${taskId})`);
+  return fetched;
 }
 
+/**
+ * Patch fields across sch_task, sch_agent_task, and sch_trigger based on
+ * which columns the caller passed.
+ *
+ * Trigger-shape changes (trigger_type / trigger_config) update the single
+ * trigger row associated with the task — v0 still assumes 1 trigger per
+ * task. When multi-trigger tasks ship, this function will need a trigger_id
+ * param to disambiguate.
+ */
 export async function updateTask(
   id: string,
   patch: Partial<CreateTaskInput> & { enabled?: boolean; last_run_at?: string },
 ): Promise<AgendaTask | null> {
   const c = getSupabase();
-  const { data, error } = await c
-    .from('agenda_task')
-    .update(patch)
-    .eq('id', id)
-    .select('*')
-    .single();
-  if (error) return null;
-  return AgendaTaskSchema.parse(data);
+
+  // Split the patch by destination table.
+  const taskPatch: Record<string, unknown> = {};
+  const agentPatch: Record<string, unknown> = {};
+  const triggerPatch: Record<string, unknown> = {};
+
+  if ('title' in patch) taskPatch.title = patch.title;
+  if ('description' in patch) taskPatch.description = patch.description ?? null;
+  if ('surfaces' in patch) taskPatch.surfaces = patch.surfaces;
+  if ('enabled' in patch) taskPatch.enabled = patch.enabled;
+  if ('expires_at' in patch) taskPatch.expires_at = patch.expires_at ?? null;
+  if ('tags' in patch) taskPatch.tags = patch.tags;
+  if ('next_due_at' in patch) taskPatch.next_due_at = patch.next_due_at ?? null;
+  if ('last_run_at' in patch) taskPatch.last_run_at = patch.last_run_at ?? null;
+
+  if ('agent_id' in patch) agentPatch.agent_id = patch.agent_id ?? null;
+  if ('prompt' in patch) agentPatch.prompt = patch.prompt;
+  if ('variables' in patch) agentPatch.variables = patch.variables ?? {};
+  if ('persistent_conversation_id' in patch)
+    agentPatch.persistent_conversation_id = patch.persistent_conversation_id ?? null;
+  if ('auth_mode' in patch) agentPatch.auth_mode = patch.auth_mode;
+  if ('max_runtime_seconds' in patch) agentPatch.max_runtime_seconds = patch.max_runtime_seconds;
+  if ('max_concurrent' in patch) agentPatch.max_concurrent = patch.max_concurrent;
+
+  if ('trigger_type' in patch) triggerPatch.type = patch.trigger_type;
+  if ('trigger_config' in patch) triggerPatch.config = patch.trigger_config;
+  // Mirror next_due_at + enabled onto the trigger row so the eventual
+  // multi-trigger scanner sees a consistent state.
+  if ('next_due_at' in patch) triggerPatch.next_due_at = patch.next_due_at ?? null;
+  if ('enabled' in patch) triggerPatch.enabled = patch.enabled;
+
+  if (Object.keys(taskPatch).length > 0) {
+    const { error } = await c.from('sch_task').update(taskPatch).eq('id', id);
+    if (error) return null;
+  }
+  if (Object.keys(agentPatch).length > 0) {
+    const { error } = await c.from('sch_agent_task').update(agentPatch).eq('id', id);
+    if (error) return null;
+  }
+  if (Object.keys(triggerPatch).length > 0) {
+    const { error } = await c.from('sch_trigger').update(triggerPatch).eq('task_id', id);
+    if (error) return null;
+  }
+  return getTask(id);
 }
 
 export async function deleteTask(id: string): Promise<boolean> {
+  // FK cascades drop sch_agent_task, sch_trigger, sch_run rows automatically.
   const c = getSupabase();
-  const { error } = await c.from('agenda_task').delete().eq('id', id);
+  const { error } = await c.from('sch_task').delete().eq('id', id);
   return !error;
 }
 
@@ -235,8 +456,8 @@ export async function deleteTask(id: string): Promise<boolean> {
 // after `max_runtime_seconds`, letting another surface pick up.
 
 /**
- * Atomically create a `queued` run and claim it. Returns null if the task
- * already has an unexpired claim (another surface beat us to it).
+ * Atomically create a `claimed` run and return it. Returns null if the
+ * insert fails (e.g., RLS denied).
  *
  * Caller follows up with `markRunStarted` once execution actually begins,
  * then `finishRun` on completion.
@@ -253,15 +474,13 @@ export async function claimRun(
   ).toISOString();
   const now = new Date().toISOString();
 
-  // Insert a fresh run row pre-claimed by us. If another surface inserts
-  // first we'll see two rows — the deduplication is handled by the scanner
-  // not picking up tasks where there's already an active run.
   const { data, error } = await c
-    .from('agenda_run')
+    .from('sch_run')
     .insert({
       task_id: taskId,
       status: 'claimed',
       surface,
+      queue: 'default',
       due_at: now,
       claimed_at: now,
       claim_token: claimToken,
@@ -273,17 +492,19 @@ export async function claimRun(
     console.warn('[matrx-extend] claimRun error', error.message);
     return null;
   }
-  return AgendaRunSchema.parse(data);
+  return rowToAgendaRun(data as unknown as SchRunRow);
 }
 
 export async function markRunStarted(runId: string, conversationId?: string): Promise<void> {
   const c = getSupabase();
   await c
-    .from('agenda_run')
+    .from('sch_run')
     .update({
       status: 'running',
       started_at: new Date().toISOString(),
-      conversation_id: conversationId ?? null,
+      output_ref: conversationId
+        ? { kind: 'conversation', id: conversationId }
+        : null,
     })
     .eq('id', runId);
 }
@@ -295,7 +516,7 @@ export async function finishRun(
 ): Promise<void> {
   const c = getSupabase();
   await c
-    .from('agenda_run')
+    .from('sch_run')
     .update({
       status: outcome,
       finished_at: new Date().toISOString(),

@@ -105,6 +105,24 @@ this channel is built, the shared Supabase project (`txzxabzwovsujtloxrus`)
 will be the natural substrate — Broadcast for control-plane chatter and
 Postgres Changes for state sync. No work in this repo depends on it.
 
+### Channel E — shared scheduling store (`sch_*` tables)
+
+| Field | Value |
+|---|---|
+| Status | v0 live in production (2026-05-10). Today only the Chrome extension creates AND executes. Other surfaces can create tasks, but no execution path yet outside the extension. |
+| Direction | All surfaces ↔ Supabase Postgres directly. RLS owner-only (`user_id = auth.uid()`); no server-side broker. |
+| Substrate | Supabase Postgres in project `txzxabzwovsujtloxrus`. Tables: `sch_task`, `sch_agent_task` (kind extension), `sch_trigger`, `sch_run`. |
+| Pickup model | Lease-based: any surface inserts a `sch_run` row with `claim_token` + `claim_expires_at`. Expired leases let another surface re-claim. Surfaces self-filter via `sch_task.surfaces text[]` (`'any'` opts in by default). |
+| FE-facing UI doc | [SCHEDULING.md](./SCHEDULING.md) — full screen-by-screen guide for the matrx-frontend team. |
+| Schema migration | [`migrations/2026_05_10_sch_v0.sql`](../migrations/2026_05_10_sch_v0.sql) — header comment is the canon for naming conventions on future `sch_*` tables. |
+| Extension-side reference files | [`src/lib/agenda/queries.ts`](../src/lib/agenda/queries.ts) (façade), [`src/lib/agenda/scanner.ts`](../src/lib/agenda/scanner.ts) (SW scan), [`src/lib/agenda/runner.ts`](../src/lib/agenda/runner.ts) (sidepanel executor) |
+
+This is the first of ~20 `sch_*` tables that will host the broader scheduling
+platform (scheduled agents today; workflows, scrapes, webhooks, user actions,
+etc. arriving as sibling kind-extension tables under the same spine). The
+spine never gets new columns — each new kind adds its own `sch_<kind>_task`
+table joined 1:1 with `sch_task` by id.
+
 ---
 
 ## 3. Ground-truth file index
@@ -121,6 +139,9 @@ first when investigating cross-repo behavior.
 - `src/lib/desktop/types.ts` — desktop RPC shapes
 - `src/lib/webmcp/register.ts` — WebMCP scaffolding (incomplete)
 - `src/lib/chat/context/v2-bundled.ts` — canonical context shape
+- `src/lib/agenda/queries.ts` — `sch_*` scheduling façade (Channel E)
+- `docs/SCHEDULING.md` — FE-facing scheduling UI guide (Channel E)
+- `migrations/2026_05_10_sch_v0.sql` — `sch_*` schema canon (Channel E)
 
 **aidream:**
 - `aidream/api/utils/tool_merge.py::apply_unified_tools` — capability-envelope unified tool merge

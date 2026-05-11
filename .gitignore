@@ -55,3 +55,6 @@ lib64/
 *.pem
 *.crx
 *.spki.der
+
+# Claude Code worktrees (ephemeral, created by /worktree)
+.claude/worktrees/

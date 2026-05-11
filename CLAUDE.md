@@ -214,7 +214,14 @@ are also always-on so the agent can ask for any category by name.
     run's STREAM_OPENED, then reused on every subsequent run so the
     agent keeps memory across pulses.
   See [src/lib/agenda/](./src/lib/agenda/) and the schema in
-  [migrations/2026_05_03_agenda_v0.sql](./migrations/2026_05_03_agenda_v0.sql).
+  [migrations/2026_05_10_sch_v0.sql](./migrations/2026_05_10_sch_v0.sql).
+  Storage layer (2026-05-10): the `agenda_task` / `agenda_run` tables
+  were replaced by the kind-agnostic `sch_*` scheduling spine —
+  `sch_task` ⋈ `sch_agent_task` (1:1) ⋈ `sch_trigger` (many) ⋈
+  `sch_run`. The TypeScript `AgendaTask` / `AgendaRun` types are now
+  façade shapes built from those joins; future scheduling kinds
+  (workflows, scrapes, webhooks, user-actions) will land as sibling
+  `sch_<kind>_task` tables without touching the agenda façade.
 - **Scrape** — manual page capture pipeline
 - **Data** — pattern picker + apply
 - **Guidance** — user-saved clues for the agent: domain-scoped notes,

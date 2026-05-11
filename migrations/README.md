@@ -1,6 +1,11 @@
 # Database migrations
 
-These SQL files create the new tables matrx-extend writes to. All extension-owned tables use the **`wbx_`** prefix (web/browser-captured data), parallel to `cx_` (chat) and `agx_` (agent).
+These SQL files create the new tables matrx-extend writes to. Two prefixes are in play:
+
+- **`wbx_`** — extension-owned, browser-captured artifacts (pages, patterns, SEO audits, screenshots). Written only by this client.
+- **`sch_`** — scheduling system. Platform-shared spine for scheduled work (today: agent tasks; future: workflows, scrapes, webhooks, user-actions). Designed to be written and claimed by any surface — extension, desktop, web, mobile, server. See `2026_05_10_sch_v0.sql` for the design notes locked in by the v0 schema.
+
+Parallel platform prefixes (NOT owned by this repo): `cx_` (chat), `agx_` (agent definitions), `rs_` (research).
 
 ## Files (apply in order)
 
@@ -10,6 +15,9 @@ These SQL files create the new tables matrx-extend writes to. All extension-owne
 | 2 | `2026_04_30_wbx_pattern.sql` | `public.wbx_pattern` + FK on `wbx_capture.pattern_id` |
 | 3 | `2026_04_30_wbx_seo_audit.sql` | `public.wbx_seo_audit` — SEO audits from the SEO tab |
 | 4 | `2026_04_30_wbx_pattern_modes.sql` | Adds `kind`, `config`, `target_user_table_id`, and rolling health columns to `wbx_pattern` for multi-mode extraction |
+| 5 | `2026_05_03_agenda_v0.sql` | `public.agenda_task` + `public.agenda_run` — scheduled agent runs (**superseded by `sch_*`; dropped in step 7**) |
+| 6 | `2026_05_08_wbx_screenshot.sql` | `public.wbx_screenshot` — captured screenshots from the agent / pilot surfaces |
+| 7 | `2026_05_10_sch_v0.sql` | `public.sch_task` + `public.sch_agent_task` + `public.sch_trigger` + `public.sch_run` — kind-agnostic scheduling spine. Migrates legacy `agenda_*` rows in and drops the old tables. |
 
 ## How to apply
 
