@@ -25,6 +25,7 @@
  */
 
 import { ENV } from '@/config/env';
+import { DesktopHealthSchema } from '@/lib/desktop/types';
 
 const STORAGE_KEY_CACHE = 'matrxLocalEnginePort';
 const STORAGE_KEY_OVERRIDE = 'matrxLocalEnginePortOverride';
@@ -136,20 +137,28 @@ function probeOne(port: number): Promise<number> {
   return new Promise<number>((resolve, reject) => {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), PROBE_TIMEOUT_MS);
-    fetch(`http://127.0.0.1:${port}/extension/rpc`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ command: 'health' }),
+    // GET /health is the engine's public discovery endpoint
+    // (app/api/routes.py + app/api/auth.py _PUBLIC_PATHS). No bearer
+    // required — keeping the probe auth-free avoids spurious "missing
+    // bearer token" warnings in the engine log on every alarm tick.
+    // Validating the response body against DesktopHealthSchema
+    // ensures we only cache a port whose listener actually identifies
+    // itself as matrx-local, not some unrelated local service.
+    fetch(`http://127.0.0.1:${port}/health`, {
+      method: 'GET',
       signal: ctrl.signal,
     })
-      .then((res) => {
-        // Any HTTP response (including 401/403 from auth gating) means
-        // SOMETHING is listening on this port. We accept 2xx as a real
-        // health hit; non-2xx is treated as "not our engine."
-        if (res.ok) {
+      .then(async (res) => {
+        if (!res.ok) {
+          reject(new Error(`status ${res.status}`));
+          return;
+        }
+        const json = await res.json().catch(() => null);
+        const parsed = DesktopHealthSchema.safeParse(json);
+        if (parsed.success) {
           resolve(port);
         } else {
-          reject(new Error(`status ${res.status}`));
+          reject(new Error('health response did not match schema'));
         }
       })
       .catch((err) => reject(err))

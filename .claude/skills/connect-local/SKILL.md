@@ -10,13 +10,16 @@ extension at `/extension/rpc`, plus a WebSocket for reverse-push events.
 This skill is the entry point when you're working in this repo and need
 to drive the desktop engine from extension code.
 
-**Status reality check:** Channel B is currently 0% verified.
+**Status reality check:** Channel B is partially verified.
 `desktop_run_command` exists in
 `src/lib/tools/handlers/privileged.ts:212-226` but has zero callsites.
-The HTTP client hardcodes port 22180 in `src/lib/desktop/http.ts` while
-the engine actually listens on the first free port in 22140–22159 and
-writes that port to `~/.matrx/local.json`. Until the port discovery
-fix lands, only `/extension/rpc {method: "health"}` round-trips.
+Port discovery is now wired: `src/lib/desktop/discovery.ts` probes
+22140–22159 in parallel via the engine's public `GET /health` and
+caches the winner in `chrome.storage.local` (30 min TTL); the build-time
+`ENV.DESKTOP_LOCAL_URL` is the last-resort fallback. `POST /extension/rpc`
+is reserved for authenticated calls — every probe must keep using the
+auth-free `/health` path, otherwise each cache-miss alarm tick fires a
+"missing bearer token" warning in the engine log.
 
 ## When to use
 
@@ -71,23 +74,32 @@ const result = await desktopRpc({
 });
 ```
 
-The target shape after the port discovery fix:
+Discovery in place today (see `src/lib/desktop/discovery.ts`):
 
-1. Read `~/.matrx/local.json` to get the active port. Cache the value
-   in `chrome.storage.session` for the lifetime of the SW.
-2. On HTTP failure, invalidate the cache and probe 22140–22159 for the
-   one that returns `health: ok`.
-3. Surface "desktop bridge offline" loudly — privileged tools that
+1. SW cannot read `~/.matrx/local.json` directly, so the chosen port is
+   discovered by parallel `GET /health` probes across 22140–22159
+   (`DesktopHealthSchema` validates that the listener actually
+   identifies itself as `service: "matrx-local"`).
+2. Winner is cached in `chrome.storage.local` for 30 min; cache is
+   invalidated on any subsequent `/health` or RPC failure so the next
+   call re-discovers.
+3. **Never use `POST /extension/rpc` for unauthenticated probing.**
+   That endpoint is auth-walled by `AuthMiddleware` and rejects with
+   401 — both a useless probe response *and* a warning per tick in the
+   engine log. Health checks stay on `GET /health` (public).
+4. Surface "desktop bridge offline" loudly — privileged tools that
    need it should fail with a clear message, not hang.
 
 ## File index (extension side)
 
 | File | Role |
 |---|---|
-| `src/lib/desktop/http.ts` | HTTP client; **currently hardcodes 22180 — bug** |
-| `src/lib/desktop/types.ts` | RPC envelope and method shapes |
+| `src/lib/desktop/discovery.ts` | Port discovery — `getEngineBaseUrl()`, parallel `GET /health` probe across 22140–22159, 30-min cache |
+| `src/lib/desktop/http.ts` | HTTP client; calls `getEngineBaseUrl()` for every `probeHttp` / `rpcHttp` |
+| `src/lib/desktop/ws-client.ts` | WS reverse-channel client; resolves base URL the same way |
+| `src/lib/desktop/types.ts` | RPC envelope and `DesktopHealthSchema` (the probe fingerprint) |
 | `src/lib/tools/handlers/privileged.ts` | `desktop_run_command` lives here (lines 212–226) |
-| `src/config/env.ts` | `ENV.DESKTOP_LOCAL_URL` (currently the source of the wrong port) |
+| `src/config/env.ts` | `ENV.DESKTOP_LOCAL_URL` — last-resort fallback when discovery fails |
 
 ## Engine-side reference (read-only from this repo)
 
@@ -101,10 +113,18 @@ The target shape after the port discovery fix:
 
 ## Failure modes
 
-- **Loud: HTTP 502 / connection refused.** The hardcoded port (22180)
-  is wrong. The engine is on a port in 22140–22159. Fix is the
-  probe-and-cache work; until that lands, the channel is non-functional
-  on any machine where the engine didn't grab 22180.
+- **Loud: HTTP 502 / connection refused.** Discovery couldn't find any
+  listener on 22140–22159 and the build-time fallback URL doesn't
+  match either. Engine is offline, or it bound a port outside the
+  scan range — check `~/.matrx/local.json`. The probe is cheap (one
+  parallel fan-out per 30-min TTL), so the next alarm tick auto-recovers
+  once the engine is back.
+- **Spurious warning: `[auth] rejected POST /extension/rpc — missing
+  bearer token`** in the engine log on every alarm tick. Means
+  something is probing `/extension/rpc` without a token — the probe in
+  `discovery.ts` should be on `GET /health`, not `POST /extension/rpc`.
+  Anything that wants to call `/extension/rpc` must go through
+  `rpcHttp` which attaches the bearer.
 - **Silent: method returns 400 with `unsupported method`.** The route
   in `app/api/extension_routes.py` only knows about `health`. Adding a
   new method requires a server-side change (sibling repo).

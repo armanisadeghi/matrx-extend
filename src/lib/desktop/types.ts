@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const DesktopHealthSchema = z.object({
   status: z.literal('ok'),
   version: z.string(),
+  service: z.literal('matrx-local').optional(),
   user_id: z.string().nullable().optional(),
 });
 export type DesktopHealth = z.infer<typeof DesktopHealthSchema>;
