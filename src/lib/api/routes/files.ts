@@ -28,9 +28,19 @@ export interface FileUploadResponse {
   cdn_url: string | null;
 }
 
+/**
+ * Anything the user did not explicitly choose a folder for lives under this
+ * prefix. Reserves `system/` as the namespace the host (any Matrx surface)
+ * owns; `system/matrx-extend/` is this extension's slice. Future user-picked
+ * folders should bypass this via `userSelected: true`.
+ */
+export const SYSTEM_AUTO_PATH_PREFIX = 'system/matrx-extend/';
+
 export interface UploadFileOptions {
-  /** Logical path under the user's tree, e.g. "browser-agent/screenshots/foo.png". Defaults to "browser-agent/uploads/<filename>". */
+  /** Logical path under the user's tree, e.g. "browser-agent/screenshots/foo.png". Defaults to "browser-agent/uploads/<filename>". Automatically prefixed with `system/matrx-extend/` unless `userSelected` is true. */
   path?: string;
+  /** Set to true when the path was explicitly chosen by the user via a folder picker — bypasses the `system/matrx-extend/` auto-prefix. */
+  userSelected?: boolean;
   visibility?: 'public' | 'private' | 'shared';
   metadata?: Record<string, unknown>;
 }
@@ -45,9 +55,16 @@ export async function uploadFile(
   const token = await getAccessToken();
   const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
+  const rawPath = opts.path ?? `browser-agent/uploads/${filename}`;
+  const filePath = opts.userSelected
+    ? rawPath
+    : rawPath.startsWith(SYSTEM_AUTO_PATH_PREFIX)
+      ? rawPath
+      : `${SYSTEM_AUTO_PATH_PREFIX}${rawPath.replace(/^\/+/, '')}`;
+
   const fd = new FormData();
   fd.append('file', blob, filename);
-  fd.append('file_path', opts.path ?? `browser-agent/uploads/${filename}`);
+  fd.append('file_path', filePath);
   fd.append('visibility', opts.visibility ?? 'private');
   if (opts.metadata) fd.append('metadata_json', JSON.stringify(opts.metadata));
 
