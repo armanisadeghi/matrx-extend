@@ -335,14 +335,14 @@ Still planned:
 - [ ] postMessage listener on the page side that forwards `__matrx_webmcp_call`
       messages into the SW dispatcher and replies with results
 
-### 5. 🔨 Self-healing selectors + deterministic replay
+### 5. ✅ Self-healing selectors + deterministic replay
 Shipped via the Demos category (`record_demo`, `list_demos`,
 `describe_demo`, `replay_demo`, `delete_demo`): record a workflow once,
 replay with parameter substitution. Self-healing chain
 (matrx-ref → id → testid → ARIA → text → CSS path) survives DOM churn
 between recording and replay. `replay_demo` is privileged.
 
-Still planned:
+Future extensions:
 - [ ] Skill-level abstraction: `replay_skill(skill_id, args)` that
       composes multiple demos into one named workflow
 - [ ] On replay miss: broadcast a "selector broken" event so the agent
@@ -499,26 +499,24 @@ Reverted (UX regression):
 **Why:** parity with the Next.js app's voice features and hands-free
 agent operation.
 
-Shipped (TASK-002a, 002b, 002b-fix — 2026-05-08):
-- [x] STT/TTS endpoints (Cartesia + Groq) wired through
+Engineering complete; perceptual QA outstanding.
+
+- [x] **TASK-002a** — STT/TTS endpoints (Cartesia + Groq) wired through
       `https://aimatrx.com/api/cartesia` and `/api/audio/transcribe[-url]`
       with Supabase Bearer auth.
-- [x] Translation via on-device Gemini Nano (`ai_translate`) with
-      server-side fallback if Nano unavailable.
-- [x] Mic button in `ChatView` Composer wired to
-      `useRecordAndTranscribe`. Live-streaming transcript into the
-      textarea, red-pulse + audio-level glow while recording.
-- [x] Offscreen-document refactor (MV3 sidepanel can't reliably
-      `getUserMedia`; capture moved to offscreen w/ reason
-      `USER_MEDIA`). New `MIC_REQUEST → MIC_RUN → MIC_EVENT` channel
-      flow.
-- [x] `useVoicePrefsStore` (zustand → chrome.storage) for voice /
-      language / speed.
-
-Still planned (TASK-002c, 002d):
-- [ ] Speaker button on agent message bubbles + language picker (chat
-      header or settings).
-- [ ] End-to-end test across all 6 languages (en → es/fr/fa/zh/ru).
+- [x] **TASK-002b** — Translation via on-device Gemini Nano
+      (`ai_translate`) with server-side fallback if Nano unavailable;
+      mic button in `ChatView` Composer wired to `useRecordAndTranscribe`
+      with live-streaming transcript into the textarea and red-pulse +
+      audio-level glow while recording.
+- [x] **TASK-002b-fix** — Offscreen-document refactor (MV3 sidepanel
+      can't reliably `getUserMedia`; capture moved to offscreen w/
+      reason `USER_MEDIA`); new `MIC_REQUEST → MIC_RUN → MIC_EVENT`
+      channel flow; `useVoicePrefsStore` (zustand → chrome.storage) for
+      voice / language / speed.
+- [x] **TASK-002c** — Speaker button on agent message bubbles +
+      language picker in chat header / settings (shipped in 7950b12).
+- [ ] **TASK-002d** — **PENDING (human-only perceptual QA across en/es/fr/fa/zh/ru)**
 
 ### 12. 📋 Vision-first navigation, timeline scrubbing
 Moonshots from the research. Defer until 1–11 ship.

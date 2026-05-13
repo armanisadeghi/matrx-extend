@@ -33,41 +33,13 @@ _(none)_
 
 ## Active
 
-### TASK-002: Voice input + multilingual TTS in chat
-- **Status:** in-progress
-- **Created:** 2026-05-06
-- **Source:** "Add audio recording capability to get the microphone in the input working. Groq for STT, Cartesia for TTS, translation including Spanish, French, Persian, English, Chinese, Russian"
-
-**Goal**
-Mic icon in the chat input becomes functional: user holds/clicks → speech captured → transcribed → text appears in the input. Agent responses can be spoken back via TTS. Optionally translates speech-out to a chosen language.
-
-**Why**
-Voice loop is one of the frontier capabilities listed in CLAUDE.md (deferred from initial roadmap). User wants parity with the Next.js app's audio settings.
-
-**Decisions (2026-05-06, user-confirmed)**
-- STT/TTS endpoints: hit existing matrx-frontend routes at `https://aimatrx.com/api/cartesia` and `/api/audio/transcribe[-url]`. Auth via Supabase Bearer token using `getAccessToken()` from `src/lib/auth/flow.ts`.
-- Translation: STT → on-device Gemini Nano `ai_translate` (free, local) → Cartesia TTS with target `language`. Server-translation fallback only if Nano unavailable.
-- Voice prefs: new zustand slice persisted via `chrome.storage.sync` so they follow the user across installs.
-- UI: mic in `ChatView` Composer (already has placeholder at line 967), speaker on agent message bubbles, language picker in chat header.
-
-**Subtasks**
-- [x] **002a**: Port audio + tts hook stack into `src/lib/audio/` and `src/lib/tts/`. Added `@cartesia/cartesia-js@^2.2.9` (matches matrx-frontend; the SDK had breaking changes in 3.x). Auth via `getAccessToken()`, endpoints absolute to `${ENV.FRONTEND_URL}` (default `https://aimatrx.com`). New `useVoicePrefsStore` (zustand → chrome.storage.local) for `voice/language/speed`. Frontend host added to `wxt.config.ts`. **2026-05-08**
-- [x] **002b**: Mic button in `ChatView` Composer wired to `useRecordAndTranscribe`. Streams transcript into the textarea live (preserving any baseline text), red pulse + audio-level glow while recording, spinner while finishing. **2026-05-08**
-- [x] **002b-fix**: Initial port hit `NotAllowedError` because Chrome MV3 side panels can't reliably get mic permission. Refactored capture into the existing offscreen document with reason `USER_MEDIA`. New `MIC_REQUEST → MIC_RUN → MIC_EVENT` messaging flow: sidepanel sends MIC_REQUEST to SW, SW ensures offscreen + forwards as MIC_RUN, offscreen runs MediaRecorder + analyser and broadcasts MIC_EVENT (chunks as ArrayBuffer, audio levels, lifecycle). Hook is now a thin client that subscribes and transcribes incoming chunks. **2026-05-08** — *Typecheck + catalog regen still clean. Needs browser test next.*
-- [x] **002c**: Speaker button on each agent message bubble (`SpeakerButton.tsx`) — `Volume2` idle / `Loader2` while connecting / `Pause` while playing / `VolumeX` on error or paused. Reads message text via `parseMarkdownToText`, plays through `useCartesiaSpeaker` with the active language from `useVoicePrefsStore`; errors surface via the hook's `onError` callback into a 4s aria/title flash (no toast wrapper yet per 002 notes). Click while playing stops playback. Sits next to the existing CopyMenu inside the message bubble's hover-reveal toolbar. Language picker (`LanguagePicker.tsx`) lives in the chat header next to the agent picker / refresh icon — six-language set (en/es/fr/fa/zh/ru), `Languages` icon trigger, native names plus English in the dropdown, no flag emojis. Bound to and persisted via the existing `useVoicePrefsStore` so the pick immediately steers TTS for every speaker bubble. **2026-05-08**
-- [ ] **002d**: Cross-check all 6 languages end-to-end (record en → translate → speak out es/fr/fa/zh/ru).
-
-**Notes**
-- The Next.js fallback path (`audioFallbackUpload`) uses Redux + `cld_files` upload. Extension can stub this — IndexedDB safety net still preserves audio for crash recovery. Add server fallback later if chunk failures show up in practice.
-- Strip the auto-persist-to-transcripts block (lines 192–235 of `useChunkedRecordAndTranscribe`) — that's matrx-frontend's transcripts feature, not relevant here.
-- `useCartesiaSpeaker` toasts via `sonner`; no toast wrapper in the extension yet, so route errors through `onError` callbacks instead.
-
----
+_(none)_
 
 ---
 
 ## Completed
 
+- [TASK-002] Voice input + multilingual TTS — engineering shipped 002a/b/b-fix/c; 002d (perceptual QA in en/es/fr/fa/zh/ru) outstanding human work. 2026-05-12 (7950b12)
 - [BUG] Voice tail-audio loss on stop: offscreen `stopRecording` was racing the final-chunk broadcast. Old path called `recorder.stop()` (fire-and-forget — `onstop` is async) and slept 50ms before broadcasting `MIC_EVENT.stopped`. The hook could see `stopped` BEFORE the final `chunk`, hit `pending===0`, and fire `onTranscriptionComplete` with the user's tail words missing. Fix in [mic-recorder-offscreen.ts](../src/lib/audio/mic-recorder-offscreen.ts): added `state.onStopComplete` resolver field; the recorder factory's `onstop` now wraps its body in `try/finally` and calls the resolver after the chunk has been base64-encoded + broadcast (the `finally` ensures even a packaging error releases the waiter). `stopRecording` installs a fresh resolver immediately before `recorder.stop()`, awaits a `Promise<void>` that resolves when `onstop` finishes, then emits `MIC_EVENT.stopped`. 5s safety timeout guards against a pathologically slow encoder. Rotation (`rotateChunk`) does NOT install the resolver, so its `onstop` finds `state.onStopComplete === null` and the rotation stays fire-and-forget for performance — only the explicit user-stop path waits. Bug 2 (visible transcript re-rewriting on chunks 0/1/combo) was verified already-correct: hook lines 314-336 of [useChunkedRecordAndTranscribe.ts](../src/lib/audio/useChunkedRecordAndTranscribe.ts) call `setLiveTranscript(full)` AND `onChunkTranscribedRef.current?.(snippet, full)` on every successful merge, identical to matrx-frontend's reference. ChatView's mic-button consumer feeds `onChunkTranscribed` straight into `onChange` so the textarea reflects each merge — perceived "no re-writing" is purely network timing on chunks 0/1, not a logic bug. Verified: `pnpm tsc --noEmit` clean, `pnpm build` clean (35.21 MB). 2026-05-09
 
 - [BUG] Voice transcription quality: ported matrx-frontend's proven chunking schedule to fix poor transcripts. Three changes: (1) [mic-recorder-offscreen.ts](../src/lib/audio/mic-recorder-offscreen.ts) `scheduleNextRotation` constants now match matrx-frontend exactly — `FIRST_CHUNK_MS=3000`, `SECOND_CHUNK_MS=3000`, `THIRD_CHUNK_MS=4000`, `DEFAULT_CHUNK_MS=10000`. The previous schedule (1.5s/2s/3s, **2s steady-state default**) over-rotated — 2-second windows from chunk 4 onward gave Whisper micro-snippets that often cut mid-word. matrx-frontend's longer 10-second steady-state window is the proven baseline. (2) [constants.ts](../src/lib/audio/constants.ts) `AUDIO_LIMITS.CHUNK_DURATION_MS` raised from `2_000` → `10_000` so the value the hook forwards as `chunkDurationMs` matches the offscreen's new default; otherwise the hook would override the rotation back to 2s. (3) [useChunkedRecordAndTranscribe.ts](../src/lib/audio/useChunkedRecordAndTranscribe.ts) `maybeFireFinal` now runs a fallback transcription via `runFallbackTranscription` when any chunks failed mid-recording — concatenates all captured chunk blobs and POSTs the full audio to `/api/audio/transcribe`. The matrx-frontend equivalent uses Supabase Storage upload + `/transcribe-url` to bypass Vercel's 4.5MB body limit; the extension has no equivalent upload helper, so we direct-POST and short-circuit when the concatenated blob exceeds `VERCEL_LIMITS.MAX_BODY_BYTES` (the IndexedDB safety net still preserves audio for manual recovery in that case). Combo logic for chunks 0+1+2 already in place (chunk index 2 concatenates blobs 0/1/2, transcribes once, sets `transcriptsMap[0]=''`, `[1]=''`, `[2]=combo`; late responses for 0/1 dropped silently); merge is `Array.from(map.entries()).sort((a,b)=>a[0]-b[0]).map(e=>e[1]).filter(Boolean).join(' ')`. Markdown TTS cleaner already mirrors the matrx-frontend pipeline verbatim — no port needed. Verified: `pnpm tsc --noEmit` clean, `pnpm build` clean (35.2 MB). 2026-05-09
