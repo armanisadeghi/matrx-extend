@@ -36,6 +36,11 @@ import {
   handleFrontendRpc,
 } from '@/lib/frontend-bridge/handler';
 import { connectBroadcast } from '@/lib/frontend-bridge/broadcast';
+import { startSchedulerHost, stopSchedulerHost } from '@/lib/scheduler-host';
+// Side-effect import: registers the example 'ping' task handler at SW boot.
+// Subsequent phases add more handlers via the same pattern.
+import '@/lib/scheduler-host/handlers/ping';
+import type { UserProfile } from '@/lib/auth/types';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
@@ -131,6 +136,16 @@ export function bootstrapBackground(): void {
   //       FRONTEND_RPC envelope shape (per-user channel). Best-effort:
   //       failures log warnings, don't throw.
   void connectBroadcast();
+
+  // ── 6b. Phase 3c.1 — scheduler host. Subscribes to sch_task changes for the
+  //        signed-in user and runs any task that targets this surface
+  //        ('chrome-extension-chat'). Idempotent at the host layer; safe to
+  //        re-invoke on every SW boot. The sidepanel-side auth flow already
+  //        writes USER_PROFILE before any UI work, so checking it here
+  //        captures both the cold-boot case (already signed in) and the
+  //        wake-after-idle case.
+  void startSchedulerHostIfSignedIn();
+  registerSchedulerHostUserWatcher();
 
   // ── 7. Phase 2 C2 — persistent WebSocket reverse channel with matrx-local.
   //       Wired via the offscreen document (long-lived) — opens lazily when
@@ -756,6 +771,56 @@ async function closeStaleOffscreenOnBoot(): Promise<void> {
     // decoder guard instead.
     log.warn('sw', 'closeStaleOffscreenOnBoot failed', (err as Error)?.message);
   }
+}
+
+/**
+ * Phase 3c.1 — bring up the scheduler host once auth is ready.
+ *
+ * We read the stored UserProfile directly rather than calling getCurrentUser()
+ * to avoid a circular module-load dependency (auth/flow imports many things
+ * that import bootstrap indirectly). The shape is intentionally narrow —
+ * just `id` — so any future profile changes don't drag this code along.
+ *
+ * No throw — scheduler-host failures must never block SW bootstrap.
+ */
+async function startSchedulerHostIfSignedIn(): Promise<void> {
+  try {
+    const r = await chrome.storage.local.get([STORAGE_KEYS.USER_PROFILE]);
+    const profile = r[STORAGE_KEYS.USER_PROFILE] as UserProfile | undefined;
+    if (profile?.id) {
+      await startSchedulerHost(profile.id);
+    } else {
+      log.info('sys', 'scheduler-host: no signed-in user — not starting');
+    }
+  } catch (err) {
+    log.warn(
+      'sys',
+      `scheduler-host: bootstrap probe failed: ${(err as Error).message}`,
+    );
+  }
+}
+
+/**
+ * Watch chrome.storage.local for USER_PROFILE changes within this SW lifetime.
+ *
+ * Sign-in happens in the sidepanel context (chrome.identity is sidepanel-only
+ * for us), so the SW won't see the sign-in directly — but it WILL see the
+ * resulting storage write. Use that as the signal to (re)start the host.
+ * Sign-out clears the key; we tear down on that same edge.
+ */
+function registerSchedulerHostUserWatcher(): void {
+  if (!chrome.storage?.onChanged) return;
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== 'local') return;
+    const change = changes[STORAGE_KEYS.USER_PROFILE];
+    if (!change) return;
+    const next = change.newValue as UserProfile | undefined;
+    if (next?.id) {
+      void startSchedulerHost(next.id);
+    } else {
+      void stopSchedulerHost();
+    }
+  });
 }
 
 async function rehydrateSupabaseSession(): Promise<void> {
