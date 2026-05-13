@@ -13,6 +13,7 @@
  *   - wbx_seo_audit      (SEO audits + AI recommendations)
  */
 
+import { DEFAULT_AGENDA_AGENT_ID } from '@/lib/agenda/constants';
 import { getSupabase } from '@/lib/supabase/client';
 import { z } from 'zod';
 
@@ -70,16 +71,48 @@ export const AgxAgentSchema = z.object({
 });
 export type AgxAgent = z.infer<typeof AgxAgentSchema>;
 
+/**
+ * Synthetic fallback agent. Injected only when `agx_get_list_full()`
+ * returns an empty list — the canonical situation is a freshly-signed-up
+ * user (or a Web Store reviewer) with no owned or shared agents yet.
+ * Without this, the empty-state suggestion chips (including the
+ * Chrome-flagged "Analyze the current page") were silent no-ops because
+ * their submit path needs an agent id. ID matches the platform's default
+ * routing agent and is also referenced from agenda/constants.ts.
+ */
+const FALLBACK_DEFAULT_AGENT: AgxAgent = {
+  id: DEFAULT_AGENDA_AGENT_ID,
+  name: 'Matrx Assistant',
+  description: 'Default Matrx agent. Try any of the suggestions below.',
+  agent_type: null,
+  category: null,
+  tags: null,
+  model_id: null,
+  is_active: true,
+  is_archived: false,
+  is_favorite: false,
+  is_owner: false,
+  access_level: 'public',
+  shared_by_email: null,
+  source_agent_id: null,
+  user_id: null,
+  organization_id: null,
+  project_id: null,
+  task_id: null,
+  created_at: null,
+  updated_at: null,
+};
+
 export async function fetchAgentList(): Promise<AgxAgent[]> {
   const c = getSupabase();
   const { data, error } = await c.rpc('agx_get_list_full');
   if (error) {
     console.warn('[matrx-extend] fetchAgentList error', error.message);
-    return [];
+    return [FALLBACK_DEFAULT_AGENT];
   }
   // RLS + RPC body filter actives/non-archived already, but be defensive.
   const all = z.array(AgxAgentSchema).parse(data ?? []);
-  return all
+  const visible = all
     .filter((a) => a.is_active !== false && a.is_archived !== true)
     .sort((a, b) => {
       // Favorites first, then alphabetical by name.
@@ -88,6 +121,7 @@ export async function fetchAgentList(): Promise<AgxAgent[]> {
       if (fa !== fb) return fb - fa;
       return a.name.localeCompare(b.name);
     });
+  return visible.length > 0 ? visible : [FALLBACK_DEFAULT_AGENT];
 }
 
 /** Backwards-compat shim — older callers reference `fetchUserAgents`. */
