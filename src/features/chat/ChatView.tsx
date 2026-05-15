@@ -46,6 +46,7 @@ import {
   dbMessagesToChatMessages,
   fetchConversationHistory,
   fetchConversationMessages,
+  fetchConversationToolCalls,
   fetchUserAgents,
 } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
@@ -226,10 +227,15 @@ export function ChatView() {
       return;
     }
     void (async () => {
-      const dbMessages = await fetchConversationMessages(selectedConversationId);
-      // Bail if the user switched threads while we were fetching.
+      // Tool outputs live in a separate table (cx_tl_call) joined by call_id —
+      // fetch both in parallel so tool rows render with their actual results
+      // instead of being stuck in 'started'.
+      const [dbMessages, toolCalls] = await Promise.all([
+        fetchConversationMessages(selectedConversationId),
+        fetchConversationToolCalls(selectedConversationId),
+      ]);
       if (useChatStore.getState().selectedConversationId !== selectedConversationId) return;
-      setMessages(dbMessagesToChatMessages(dbMessages));
+      setMessages(dbMessagesToChatMessages(dbMessages, toolCalls));
       loadedConversationIdRef.current = selectedConversationId;
     })();
   }, [selectedConversationId, setMessages]);

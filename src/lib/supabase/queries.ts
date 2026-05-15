@@ -15,6 +15,7 @@
 
 import { DEFAULT_AGENDA_AGENT_ID } from '@/lib/agenda/constants';
 import { getSupabase } from '@/lib/supabase/client';
+import type { ChatMessage, MessagePart } from '@/state/chat';
 import { z } from 'zod';
 
 // ─── Admin gate ─────────────────────────────────────────────────────────────
@@ -252,39 +253,184 @@ export async function fetchConversationMessages(conversationId: string): Promise
   return z.array(MessageSchema).parse(data ?? []);
 }
 
-export interface ChatMessageRendered {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: number;
+// ─── Tool calls (cx_tl_call) ────────────────────────────────────────────────
+/**
+ * One tool execution row. Lives on the `role: 'tool'` message and carries
+ * the actual output the matching `tool_call` block produced. The output
+ * column is a JSON-encoded STRING — needs `JSON.parse` before it's usable
+ * by the tool-display registry transforms.
+ */
+export const ToolCallRowSchema = z.object({
+  call_id: z.string(),
+  message_id: z.string().uuid(),
+  conversation_id: z.string().uuid().nullable(),
+  tool_name: z.string(),
+  tool_type: z.string().nullable(),
+  status: z.string().nullable(),
+  arguments: z.unknown().nullable(),
+  output: z.unknown().nullable(),
+  is_error: z.boolean().nullable(),
+  error_type: z.string().nullable(),
+  error_message: z.string().nullable(),
+  duration_ms: z.number().int().nullable(),
+  created_at: z.string(),
+});
+export type ToolCallRow = z.infer<typeof ToolCallRowSchema>;
+
+export async function fetchConversationToolCalls(
+  conversationId: string,
+): Promise<ToolCallRow[]> {
+  const c = getSupabase();
+  const { data, error } = await c
+    .from('cx_tl_call')
+    .select(
+      'call_id, message_id, conversation_id, tool_name, tool_type, status, arguments, output, is_error, error_type, error_message, duration_ms, created_at',
+    )
+    .eq('conversation_id', conversationId)
+    .order('created_at', { ascending: true });
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return [];
+    console.warn('[matrx-extend] fetchConversationToolCalls error', error.message);
+    return [];
+  }
+  return z.array(ToolCallRowSchema).parse(data ?? []);
 }
 
-export function dbMessagesToChatMessages(rows: Message[]): ChatMessageRendered[] {
-  return rows
-    .filter((m) => m.role === 'user' || m.role === 'assistant')
-    .map((m) => {
-      let text = '';
-      if (Array.isArray(m.content)) {
-        for (const item of m.content as unknown[]) {
-          if (typeof item === 'string') {
-            text += item;
-            continue;
-          }
-          const block = item as Record<string, unknown>;
-          if (block.type === 'input_text' || block.type === 'text') {
-            text += (block.text as string | undefined) ?? '';
-          }
+/**
+ * `cx_tl_call.output` is stored as a JSON-encoded string. Parse it for the
+ * tool-display registry which expects an object. Non-string outputs pass
+ * through. Malformed JSON falls back to the raw string so we don't lose
+ * data — the user can still copy it from the expanded row.
+ */
+function parseToolOutput(raw: unknown): unknown {
+  if (raw == null) return null;
+  if (typeof raw !== 'string') return raw;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return raw;
+  }
+}
+
+/**
+ * Hydrate persisted messages into the same `ChatMessage` + `MessagePart`
+ * shape the live SSE stream produces, so reload renders identically to the
+ * in-flight session — including the polished ConfigurableToolRow entries.
+ *
+ * DB layout (see `.research/db-conversation-shape.md` if it ever drifts):
+ *   - cx_message.content is a JSONB array of blocks: text | thinking |
+ *     tool_call (assistant) | tool_result (tool role).
+ *   - cx_tl_call holds the actual output for each tool_call, attached to
+ *     the `role: 'tool'` message by call_id.
+ *
+ * Reconstruction:
+ *   1. Index every cx_tl_call row by call_id for O(1) lookup.
+ *   2. Walk messages in position order:
+ *      - user/assistant → emit text + reasoning + tool (phase: started) parts.
+ *      - tool → don't push a new ChatMessage; instead find the preceding
+ *        assistant message and complete its matching tool parts using the
+ *        looked-up output / error / duration.
+ */
+export function dbMessagesToChatMessages(
+  rows: Message[],
+  toolCalls: ToolCallRow[] = [],
+): ChatMessage[] {
+  const byCallId = new Map<string, ToolCallRow>();
+  for (const tc of toolCalls) byCallId.set(tc.call_id, tc);
+
+  const out: ChatMessage[] = [];
+
+  for (const m of rows) {
+    if (m.role !== 'user' && m.role !== 'assistant' && m.role !== 'tool') continue;
+
+    const blocks: Record<string, unknown>[] = Array.isArray(m.content)
+      ? (m.content as Record<string, unknown>[])
+      : [];
+
+    if (m.role === 'tool') {
+      // Merge into the most recent assistant message — DB stores tool
+      // results as their own row, but in the rendered timeline they
+      // belong inline with the assistant turn that called them.
+      const last = out[out.length - 1];
+      if (last?.role !== 'assistant' || !last.parts) continue;
+      for (const block of blocks) {
+        if (block.type !== 'tool_result') continue;
+        const callId = String(block.call_id ?? block.tool_use_id ?? '');
+        if (!callId) continue;
+        const part = last.parts.find(
+          (p) => p.type === 'tool' && p.tool.callId === callId,
+        );
+        if (!part || part.type !== 'tool') continue;
+        const tc = byCallId.get(callId);
+        const isError = Boolean(tc?.is_error ?? block.is_error);
+        part.tool.phase = isError ? 'error' : 'completed';
+        part.tool.result = parseToolOutput(tc?.output);
+        const errMsg = tc?.error_message ?? (typeof block.error_message === 'string' ? block.error_message : null);
+        if (errMsg) part.tool.message = errMsg;
+        else if (!isError) part.tool.message = 'Done';
+        if (typeof tc?.duration_ms === 'number' && tc.duration_ms >= 0) {
+          part.tool.endedAt = part.tool.startedAt + tc.duration_ms;
+        } else {
+          // Fall back to the tool-row timestamp so the duration display
+          // doesn't show "0ms" — better an approximation than nothing.
+          part.tool.endedAt = new Date(m.created_at).getTime();
         }
-      } else if (typeof m.content === 'string') {
-        text = m.content;
       }
-      return {
-        id: m.id,
-        role: m.role as 'user' | 'assistant',
-        content: text,
-        timestamp: new Date(m.created_at).getTime(),
-      };
+      continue;
+    }
+
+    const parts: MessagePart[] = [];
+    let textBuf = '';
+    const createdAt = new Date(m.created_at).getTime();
+
+    for (const block of blocks) {
+      const type = block.type;
+      if (type === 'text' || type === 'input_text') {
+        const text = typeof block.text === 'string' ? block.text : '';
+        if (!text) continue;
+        textBuf += text;
+        parts.push({ type: 'text', content: text });
+      } else if (type === 'thinking') {
+        // Saved thinking blocks usually carry only an encrypted signature
+        // with empty visible text — skip those so we don't render a
+        // phantom reasoning row. Real plaintext reasoning (rare in DB) keeps rendering.
+        const text = typeof block.text === 'string' ? block.text : '';
+        if (!text) continue;
+        parts.push({ type: 'reasoning', content: text });
+      } else if (type === 'tool_call') {
+        const callId = String(block.call_id ?? '');
+        const toolName = String(block.name ?? '');
+        if (!callId || !toolName) continue;
+        // tool_type may be discovered later via the cx_tl_call lookup;
+        // assume 'client' by default (the registry doesn't care about
+        // kind for resolution — only the outer wrapper styling).
+        const lookup = byCallId.get(callId);
+        const kind: 'server' | 'client' = lookup?.tool_type === 'local' ? 'client' : 'server';
+        parts.push({
+          type: 'tool',
+          tool: {
+            kind,
+            callId,
+            toolName,
+            args: block.arguments,
+            phase: 'started',
+            startedAt: createdAt,
+          },
+        });
+      }
+    }
+
+    out.push({
+      id: m.id,
+      role: m.role as 'user' | 'assistant',
+      content: textBuf,
+      ...(parts.length > 0 ? { parts } : {}),
+      timestamp: createdAt,
+      conversationId: m.conversation_id,
     });
+  }
+
+  return out;
 }
 
 // ─── wbx_capture (page captures) ────────────────────────────────────────────
