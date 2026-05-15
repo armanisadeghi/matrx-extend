@@ -35,6 +35,8 @@ import {
 import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
+import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
+import { formatAssistantBody } from '@/features/chat/copy-conversation';
 import { LanguagePicker } from '@/features/chat/LanguagePicker';
 import { ServerToolRow } from '@/features/chat/ServerToolRow';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
@@ -366,6 +368,12 @@ export function PilotView() {
         onStartSession={() => void handleStartSession()}
         onEndSession={() => void handleEndSession()}
         sessionDisabled={isStreaming}
+        hasMessages={messages.length > 0}
+        getMessages={() => usePilotChatStore.getState().messages}
+        getAgent={() => {
+          const a = selectedAgent;
+          return a ? { id: a.id, name: a.name } : null;
+        }}
       />
 
       {selectedAgentId && variableDefs.length > 0 && (
@@ -609,6 +617,9 @@ function PilotHeader({
   onStartSession,
   onEndSession,
   sessionDisabled,
+  hasMessages,
+  getMessages,
+  getAgent,
 }: {
   agents: AgxAgent[];
   agentsLoading: boolean;
@@ -624,6 +635,9 @@ function PilotHeader({
   onStartSession: () => void;
   onEndSession: () => void;
   sessionDisabled: boolean;
+  hasMessages: boolean;
+  getMessages: () => ChatMessage[];
+  getAgent: () => { id: string; name: string } | null;
 }) {
   return (
     <div className="flex h-9 shrink-0 items-center px-2">
@@ -654,6 +668,11 @@ function PilotHeader({
           mode={permissionMode}
           disabled={!selectedAgentId}
           onChange={onPermissionModeChange}
+        />
+        <CopyConversationButton
+          getMessages={getMessages}
+          getAgent={getAgent}
+          disabled={!hasMessages}
         />
         {sessionActive ? (
           <Button
@@ -821,6 +840,28 @@ function MessageRow({ message }: { message: ChatMessage }) {
             align="start"
             options={[
               { label: 'Markdown', getContent: () => finalText },
+              {
+                label: 'With tool calls',
+                description: 'Text plus each tool name + status (no data).',
+                getContent: () =>
+                  formatAssistantBody(message, {
+                    includeToolCalls: true,
+                    includeFullToolResults: false,
+                    includeThinking: false,
+                  }),
+              },
+              {
+                label: 'With everything',
+                adminOnly: true,
+                description:
+                  'Text, thinking, tool calls with full args and results.',
+                getContent: () =>
+                  formatAssistantBody(message, {
+                    includeToolCalls: true,
+                    includeFullToolResults: true,
+                    includeThinking: true,
+                  }),
+              },
               {
                 label: 'For AI agent',
                 ai: true,

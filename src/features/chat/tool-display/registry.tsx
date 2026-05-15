@@ -28,6 +28,7 @@
  */
 
 import { InteractionAskCard } from './InteractionAskCard';
+import { SleepCountdown } from './SleepCountdown';
 import type { ToolDisplayEntry } from './types';
 
 export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
@@ -110,6 +111,102 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     },
     args: { hidden: true },
     // The result is huge (full a11y tree). Default JSON in the expanded view is fine.
+  },
+
+  get_active_tab: {
+    inline: {
+      // Use the page's favicon as the inline icon when we have one — the
+      // InlineIcon resolver auto-detects http(s)/data URLs and renders <img>.
+      // Falls back to the lucide Globe if the favicon URL is missing/404s.
+      icon: {
+        started: 'Loader2',
+        completed: { path: 'output.fav_icon_url', fallback: 'Globe' },
+        error: 'AlertTriangle',
+      },
+      prefix: {
+        started: 'Getting active tab',
+        completed: '',
+        error: 'Failed to get active tab',
+      },
+      // Title takes the name slot; URL trails as muted info.
+      name: { completed: { path: 'output.title', transform: 'truncate80' } },
+      info: { completed: { path: 'output.url', transform: 'truncate80' } },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { hidden: true },
+    // Default key-value rendering of the result on click — gives a clean
+    // table of tab_id / window_id / status / pinned / incognito.
+    results: { displayType: 'key-value' },
+  },
+
+  click_element: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'MousePointerClick', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Clicking',
+        completed: 'Clicked',
+        error: 'Click failed on',
+      },
+      // On started/error we only know the ref. On completed we have the
+      // resolved tag — much more readable ("Clicked button" beats "Clicked ref:85").
+      name: {
+        started: { path: 'args.ref', fallback: 'element' },
+        completed: { path: 'output.tag', fallback: 'element' },
+        error: { path: 'args.ref', fallback: 'element' },
+      },
+      // Show the element's visible text when present (resolveInfo returns
+      // fallback='' for empty strings, so empty text doesn't clutter).
+      info: { completed: { path: 'output.text', transform: 'truncate80' } },
+      color: { started: 'primary', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+    results: { displayType: 'key-value' },
+  },
+
+  extract_table: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Table', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Extracting table',
+        completed: 'Extracted table',
+        error: 'Table extraction failed',
+      },
+      name: '',
+      info: { completed: { path: 'output.row_count', fallback: '0' } },
+      suffix: { completed: 'rows' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { hidden: true },
+    results: {
+      displayType: 'custom',
+      // The table IS the result — render it inline without a click.
+      alwaysShow: true,
+      keysInfo: [{ key: '', component: 'Table' }],
+    },
+  },
+
+  take_screenshot: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Camera', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Taking screenshot',
+        completed: 'Screenshot',
+        error: 'Screenshot failed',
+      },
+      name: '',
+      info: { completed: { path: 'output', transform: 'formatImageDimensions' } },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { hidden: true },
+    results: {
+      displayType: 'custom',
+      // The image IS the point — render it inline, no click required.
+      alwaysShow: true,
+      // `key: ''` passes the whole output object to Base64Image, which
+      // prefers `file_url` when the server has uploaded the image and
+      // falls back to the `image_base64`/`media_type` shape otherwise.
+      keysInfo: [{ key: '', component: 'Base64Image' }],
+    },
   },
 
   find: {
@@ -287,16 +384,10 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
+  // Sleep needs a live countdown while running — the standard config row
+  // can't tick on its own, so we hand off to a custom component.
   sleep: {
-    inline: {
-      icon: { started: 'Loader2', completed: 'Moon', error: 'AlertTriangle' },
-      prefix: { started: 'Sleeping', completed: 'Slept', error: 'Sleep failed' },
-      name: '',
-      info: { path: 'args.ms' },
-      suffix: 'ms',
-      color: { started: 'primary', completed: 'slate', error: 'red' },
-    },
-    args: { displayType: 'key-value' },
+    CustomComponent: SleepCountdown,
   },
 
   // ─── AI / files / utilities ──────────────────────────────────────────

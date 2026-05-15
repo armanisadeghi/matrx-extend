@@ -607,6 +607,54 @@ Every entry follows this shape:
     open in the receipt modal with a green "Signature valid" banner;
     the Recent-receipts panel renders them as `agent`.
 
+### Copy message / Copy conversation
+- **What it does:** every assistant message bubble shows a hover-revealed
+  copy menu; the chat header shows a "Copy conversation" button that
+  exports the entire thread with per-section toggles.
+- **Where to test:** Assistant Chat tab and Pilot tab — both surfaces.
+- **Per-message copy steps:**
+  1. Send a message that triggers at least one tool call (e.g. "what's
+     on this page?" forces `read_page`). Wait for the assistant reply.
+  2. Hover the assistant bubble — copy icon appears bottom-left.
+  3. Click → popover with four options:
+     - **Markdown** — plain final text only.
+     - **With tool calls** — text plus self-closing
+       `<tool name="..." status="completed|error" />` lines, no data.
+     - **With everything** — admin-only chip; full args + result JSON
+       inside `<tool>` blocks plus `<thinking>` for reasoning parts.
+     - **For AI agent** — `wrapForAgent` preamble + fenced markdown.
+  4. Paste into a text editor to verify each flavor's shape.
+- **Conversation copy steps:**
+  1. Have at least one user/assistant exchange.
+  2. Click the clipboard-list icon in the chat header (disabled when
+     `messages.length === 0`).
+  3. Popover lists seven checkboxes (same for users and admins):
+     `Include all user messages`, `Include all assistant messages`,
+     `Include agent info`, `Include thinking`, `Include tool calls`,
+     `Include full tool results` (gated by tool calls), `Include
+     instructions for AI`.
+  4. Flip toggles — the char-count chip in the bottom-left updates.
+  5. Click **Copy** → check mark for ~900ms, popover closes, clipboard
+     holds the rendered transcript.
+- **Expected:**
+  - Output wraps in `<conversation>...</conversation>` with each turn
+    as `<message role="user|assistant">...</message>`.
+  - Agent info renders as `<agent name="..." id="..." />`.
+  - Tool calls render as `<tool name="..." status="..." />` (basic) or
+    full `<tool>...<args>...</args><result>...</result></tool>` block.
+  - Reasoning renders as `<thinking>...</thinking>` when enabled.
+- **Edge cases worth poking:**
+  - Toggle off "Include tool calls" — the "Include full tool results"
+    row greys out (cursor:not-allowed) and uncheck-locks itself.
+  - DB-hydrated history (open an old conversation) — messages lack
+    `parts`, so tool-call and thinking toggles produce no extra blocks
+    even when on. The `content` string still renders inside `<message>`.
+  - Non-admin user — "With everything" option is hidden in the
+    per-message menu; the conversation popover still shows every
+    checkbox unchanged.
+  - Pilot surface mirrors all behavior — same options, same output
+    shape, uses `usePilotChatStore` instead of `useChatStore`.
+
 ---
 
 ## Template (copy when adding a new entry)

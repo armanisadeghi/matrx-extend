@@ -142,7 +142,8 @@ export type FieldComponentName =
   | 'Base64Image'
   | 'Badge'
   | 'Chips'
-  | 'TabCard';
+  | 'TabCard'
+  | 'Table';
 
 export interface KeyDisplay {
   key: string;

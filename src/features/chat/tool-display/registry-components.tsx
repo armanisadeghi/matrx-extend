@@ -95,10 +95,17 @@ const Base64Image = ({ value, className }: FieldProps) => {
 
 function toDataUri(value: unknown): string {
   if (typeof value === 'string') {
+    if (value.startsWith('http://') || value.startsWith('https://')) return value;
     return value.startsWith('data:') ? value : `data:image/png;base64,${value}`;
   }
   if (value == null || typeof value !== 'object') return '';
   const obj = value as Record<string, unknown>;
+  // Prefer hosted URL when the server has uploaded the screenshot — avoids
+  // shipping the full base64 payload through the DOM a second time.
+  const hosted = pickString(obj, ['file_url', 'url', 'image_url']);
+  if (hosted && (hosted.startsWith('http://') || hosted.startsWith('https://'))) {
+    return hosted;
+  }
   const raw = pickString(obj, ['image_base64', 'base64', 'data', 'image']);
   if (!raw) return '';
   if (raw.startsWith('data:')) return raw;
@@ -229,6 +236,89 @@ const TabCard = ({ value, className }: FieldProps) => {
   );
 };
 
+/**
+ * Renders the `extract_table` result shape as an actual HTML table.
+ * Accepts the whole result (use `key: ''`). Reads `columns[].path` for
+ * headers and `rows[].cells[].value` for cells. Skips fully-empty columns
+ * (path empty AND no row has a value there) so checkbox/drag-handle
+ * columns don't waste space.
+ */
+const Table = ({ value, className }: FieldProps) => {
+  if (value == null || typeof value !== 'object') return null;
+  const obj = value as Record<string, unknown>;
+  const columns = Array.isArray(obj.columns)
+    ? (obj.columns as Array<{ index: number; path?: string[] }>)
+    : [];
+  const rows = Array.isArray(obj.rows)
+    ? (obj.rows as Array<{ cells: Array<{ value: unknown; is_header?: boolean }>; index: number }>)
+    : [];
+  if (columns.length === 0 || rows.length === 0) return null;
+
+  const visibleCols = columns.filter((c) => {
+    if (c.path && c.path.length > 0) return true;
+    return rows.some((r) => {
+      const cell = r.cells?.[c.index];
+      const v = cell?.value;
+      return typeof v === 'string' ? v.trim().length > 0 : v != null;
+    });
+  });
+  if (visibleCols.length === 0) return null;
+
+  return (
+    <div
+      className={cn(
+        'overflow-auto rounded-md border border-border/40 bg-background/40',
+        className,
+      )}
+    >
+      <table className="w-full border-collapse text-[11px]">
+        <thead className="bg-muted/40">
+          <tr>
+            {visibleCols.map((c) => (
+              <th
+                key={c.index}
+                className="border-b border-border/40 px-2 py-1 text-left font-medium text-muted-foreground"
+              >
+                {(c.path ?? []).join(' › ')}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r, ri) => (
+            <tr
+              key={r.index ?? ri}
+              className="border-t border-border/20 hover:bg-muted/30"
+            >
+              {visibleCols.map((c) => {
+                const cell = r.cells?.[c.index];
+                return (
+                  <td
+                    key={c.index}
+                    className="max-w-[20rem] truncate px-2 py-1 align-top text-foreground"
+                    title={typeof cell?.value === 'string' ? cell.value : undefined}
+                  >
+                    {typeof cell?.value === 'string'
+                      ? cell.value
+                      : cell?.value == null
+                        ? ''
+                        : String(cell.value)}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {obj.truncated === true && (
+        <div className="border-t border-border/30 bg-muted/30 px-2 py-1 text-[10px] text-muted-foreground">
+          Table was truncated
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const fieldComponents: Record<FieldComponentName, ComponentType<FieldProps>> = {
   BoldLabel,
   TextDisplay,
@@ -240,4 +330,5 @@ export const fieldComponents: Record<FieldComponentName, ComponentType<FieldProp
   Badge,
   Chips,
   TabCard,
+  Table,
 };
