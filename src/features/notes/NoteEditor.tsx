@@ -57,6 +57,23 @@ export function NoteEditor({ noteId }: { noteId: string }) {
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inflightRef = useRef(false);
 
+  // Reset draft when noteId changes (user opened a different note).
+  // Must be declared BEFORE the seed-from-note effect: on mount, both effects
+  // run in declaration order, and when detailQuery serves cached data
+  // synchronously (e.g. re-opening a note seen earlier in the session), the
+  // seed effect would otherwise populate draft and then this reset would
+  // immediately clobber it — leaving the editor stuck on the skeleton.
+  useEffect(() => {
+    draftRef.current = null;
+    setDraft(null);
+    setSavingState('idle');
+    setLastSavedAt(null);
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+  }, [noteId]);
+
   // Hydrate draft from server data the first time it lands. After that, the
   // user owns the draft until they switch notes — server pushes don't clobber
   // local edits (no realtime in v1, so this is a non-issue in practice).
@@ -73,18 +90,6 @@ export function NoteEditor({ noteId }: { noteId: string }) {
       setLastSavedAt(note.updated_at);
     }
   }, [note]);
-
-  // Reset draft when noteId changes (user opened a different note).
-  useEffect(() => {
-    draftRef.current = null;
-    setDraft(null);
-    setSavingState('idle');
-    setLastSavedAt(null);
-    if (saveTimerRef.current) {
-      clearTimeout(saveTimerRef.current);
-      saveTimerRef.current = null;
-    }
-  }, [noteId]);
 
   const allNotes = queryClient.getQueryData<NoteListItem[]>(['notes', 'list']) ?? [];
   const folderSuggestions = useMemo(() => uniqueFolderNames(allNotes), [allNotes]);
