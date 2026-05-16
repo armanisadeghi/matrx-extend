@@ -14,9 +14,43 @@
  */
 
 import { DEFAULT_AGENDA_AGENT_ID } from '@/lib/agenda/constants';
+import { log } from '@/lib/debug/log';
 import { getSupabase } from '@/lib/supabase/client';
 import type { ChatMessage, MessagePart } from '@/state/chat';
 import { z } from 'zod';
+
+/**
+ * Per-row safeParse that survives malformed rows. Bad rows are dropped from
+ * the returned array but logged in full detail to the admin event stream so
+ * the cause is recoverable from the Debug tab. Used by conversation history
+ * loads where ONE corrupt row used to abort the entire fetch (silent fail:
+ * the promise rejected, setMessages never ran, the conversation rendered
+ * empty). Now the conversation renders with whatever's valid and the caller
+ * gets a non-zero `badCount` to surface a UI banner.
+ */
+function parseRowsSafe<T>(
+  schema: z.ZodType<T>,
+  rows: unknown[],
+  context: string,
+): { rows: T[]; badCount: number } {
+  const good: T[] = [];
+  let bad = 0;
+  for (let i = 0; i < rows.length; i++) {
+    const parsed = schema.safeParse(rows[i]);
+    if (parsed.success) {
+      good.push(parsed.data);
+    } else {
+      bad += 1;
+      const raw = rows[i] as Record<string, unknown> | null;
+      log.error('supabase', `${context}: row ${i} failed validation`, {
+        issues: parsed.error.issues,
+        row_id: raw && typeof raw === 'object' ? raw.id ?? null : null,
+        raw,
+      });
+    }
+  }
+  return { rows: good, badCount: bad };
+}
 
 // ─── Admin gate ─────────────────────────────────────────────────────────────
 /**
@@ -238,7 +272,9 @@ export const MessageSchema = z.object({
 });
 export type Message = z.infer<typeof MessageSchema>;
 
-export async function fetchConversationMessages(conversationId: string): Promise<Message[]> {
+export async function fetchConversationMessages(
+  conversationId: string,
+): Promise<{ rows: Message[]; badCount: number }> {
   const c = getSupabase();
   const { data, error } = await c
     .from('cx_message')
@@ -247,10 +283,14 @@ export async function fetchConversationMessages(conversationId: string): Promise
     .is('deleted_at', null)
     .order('position', { ascending: true });
   if (error) {
-    console.warn('[matrx-extend] fetchConversationMessages error', error.message);
-    return [];
+    log.error('supabase', 'fetchConversationMessages: supabase error', {
+      conversation_id: conversationId,
+      message: error.message,
+      code: (error as { code?: string }).code,
+    });
+    return { rows: [], badCount: 0 };
   }
-  return z.array(MessageSchema).parse(data ?? []);
+  return parseRowsSafe(MessageSchema, (data ?? []) as unknown[], 'fetchConversationMessages');
 }
 
 // ─── Tool calls (cx_tl_call) ────────────────────────────────────────────────
@@ -279,7 +319,7 @@ export type ToolCallRow = z.infer<typeof ToolCallRowSchema>;
 
 export async function fetchConversationToolCalls(
   conversationId: string,
-): Promise<ToolCallRow[]> {
+): Promise<{ rows: ToolCallRow[]; badCount: number }> {
   const c = getSupabase();
   const { data, error } = await c
     .from('cx_tl_call')
@@ -289,11 +329,15 @@ export async function fetchConversationToolCalls(
     .eq('conversation_id', conversationId)
     .order('created_at', { ascending: true });
   if (error) {
-    if (/relation .* does not exist/i.test(error.message)) return [];
-    console.warn('[matrx-extend] fetchConversationToolCalls error', error.message);
-    return [];
+    if (/relation .* does not exist/i.test(error.message)) return { rows: [], badCount: 0 };
+    log.error('supabase', 'fetchConversationToolCalls: supabase error', {
+      conversation_id: conversationId,
+      message: error.message,
+      code: (error as { code?: string }).code,
+    });
+    return { rows: [], badCount: 0 };
   }
-  return z.array(ToolCallRowSchema).parse(data ?? []);
+  return parseRowsSafe(ToolCallRowSchema, (data ?? []) as unknown[], 'fetchConversationToolCalls');
 }
 
 /**
@@ -334,14 +378,29 @@ function parseToolOutput(raw: unknown): unknown {
 export function dbMessagesToChatMessages(
   rows: Message[],
   toolCalls: ToolCallRow[] = [],
-): ChatMessage[] {
+): { messages: ChatMessage[]; badCount: number } {
   const byCallId = new Map<string, ToolCallRow>();
   for (const tc of toolCalls) byCallId.set(tc.call_id, tc);
 
   const out: ChatMessage[] = [];
+  let bad = 0;
 
   for (const m of rows) {
-    if (m.role !== 'user' && m.role !== 'assistant' && m.role !== 'tool') continue;
+    try {
+      processOne(m);
+    } catch (err) {
+      bad += 1;
+      log.error('supabase', 'dbMessagesToChatMessages: row transform threw', {
+        message_id: m.id,
+        role: m.role,
+        error: err instanceof Error ? { name: err.name, message: err.message, stack: err.stack } : String(err),
+      });
+    }
+  }
+  return { messages: out, badCount: bad };
+
+  function processOne(m: Message): void {
+    if (m.role !== 'user' && m.role !== 'assistant' && m.role !== 'tool') return;
 
     const blocks: Record<string, unknown>[] = Array.isArray(m.content)
       ? (m.content as Record<string, unknown>[])
@@ -352,7 +411,7 @@ export function dbMessagesToChatMessages(
       // results as their own row, but in the rendered timeline they
       // belong inline with the assistant turn that called them.
       const last = out[out.length - 1];
-      if (last?.role !== 'assistant' || !last.parts) continue;
+      if (last?.role !== 'assistant' || !last.parts) return;
       for (const block of blocks) {
         if (block.type !== 'tool_result') continue;
         const callId = String(block.call_id ?? block.tool_use_id ?? '');
@@ -376,7 +435,7 @@ export function dbMessagesToChatMessages(
           part.tool.endedAt = new Date(m.created_at).getTime();
         }
       }
-      continue;
+      return;
     }
 
     const parts: MessagePart[] = [];
@@ -429,8 +488,6 @@ export function dbMessagesToChatMessages(
       conversationId: m.conversation_id,
     });
   }
-
-  return out;
 }
 
 // ─── wbx_capture (page captures) ────────────────────────────────────────────

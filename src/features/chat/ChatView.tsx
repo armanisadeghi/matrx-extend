@@ -208,6 +208,20 @@ export function ChatView() {
   };
 
   const loadedConversationIdRef = useRef<string | null>(null);
+  // Surfaces conversation-load problems in the UI. `fatal` = the load itself
+  // crashed (banner blocks the empty state). `partial` = some rows were
+  // dropped but the rest rendered (banner appears above the messages).
+  // Full details (Zod issues, raw row, error stack) go to the admin event
+  // stream via log.error so the Debug tab has them.
+  const [loadError, setLoadError] = useState<
+    { kind: 'fatal' | 'partial'; text: string } | null
+  >(null);
+
+  useEffect(() => {
+    // Clear any previous conversation's load error when switching threads.
+    setLoadError(null);
+  }, [selectedConversationId]);
+
   useEffect(() => {
     if (!selectedConversationId) {
       // User started a new chat. Forget what we loaded so a later return to
@@ -229,14 +243,48 @@ export function ChatView() {
     void (async () => {
       // Tool outputs live in a separate table (cx_tl_call) joined by call_id —
       // fetch both in parallel so tool rows render with their actual results
-      // instead of being stuck in 'started'.
-      const [dbMessages, toolCalls] = await Promise.all([
-        fetchConversationMessages(selectedConversationId),
-        fetchConversationToolCalls(selectedConversationId),
-      ]);
-      if (useChatStore.getState().selectedConversationId !== selectedConversationId) return;
-      setMessages(dbMessagesToChatMessages(dbMessages, toolCalls));
-      loadedConversationIdRef.current = selectedConversationId;
+      // instead of being stuck in 'started'. NEVER let a single malformed
+      // row blank the entire conversation (silent fail we hit on 0.1.23):
+      // per-row safeParse drops bad rows + logs them to the admin stream.
+      try {
+        const [msgResult, toolResult] = await Promise.all([
+          fetchConversationMessages(selectedConversationId),
+          fetchConversationToolCalls(selectedConversationId),
+        ]);
+        if (useChatStore.getState().selectedConversationId !== selectedConversationId) return;
+        const transformed = dbMessagesToChatMessages(msgResult.rows, toolResult.rows);
+        setMessages(transformed.messages);
+        loadedConversationIdRef.current = selectedConversationId;
+        const droppedRows = msgResult.badCount + toolResult.badCount + transformed.badCount;
+        if (droppedRows > 0) {
+          log.warn('supabase', 'conversation loaded with dropped rows', {
+            conversation_id: selectedConversationId,
+            bad_messages: msgResult.badCount,
+            bad_tool_calls: toolResult.badCount,
+            bad_transforms: transformed.badCount,
+            rendered_messages: transformed.messages.length,
+          });
+          setLoadError({
+            kind: 'partial',
+            text: `${droppedRows} item${droppedRows === 1 ? '' : 's'} could not be loaded. Check the Debug tab for details.`,
+          });
+        }
+      } catch (err) {
+        log.error('supabase', 'conversation load failed', {
+          conversation_id: selectedConversationId,
+          error:
+            err instanceof Error
+              ? { name: err.name, message: err.message, stack: err.stack }
+              : String(err),
+        });
+        if (useChatStore.getState().selectedConversationId === selectedConversationId) {
+          setLoadError({
+            kind: 'fatal',
+            text: 'This conversation failed to load. Check the Debug tab for details.',
+          });
+          loadedConversationIdRef.current = selectedConversationId;
+        }
+      }
     })();
   }, [selectedConversationId, setMessages]);
 
@@ -349,13 +397,32 @@ export function ChatView() {
       )}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
-        {messages.length === 0 ? (
+        {loadError && (
+          <div
+            role="alert"
+            className={cn(
+              'mx-4 mt-4 flex items-start gap-2 rounded-md border px-3 py-2 text-xs',
+              loadError.kind === 'fatal'
+                ? 'border-red-500/30 bg-red-500/5 text-red-700 dark:text-red-400'
+                : 'border-amber-500/30 bg-amber-500/5 text-amber-700 dark:text-amber-400',
+            )}
+          >
+            <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
+            <div className="flex-1 leading-snug">
+              <span className="font-medium">
+                {loadError.kind === 'fatal' ? 'Conversation failed to load' : 'Partial load'}
+              </span>
+              <span className="mt-0.5 block opacity-90">{loadError.text}</span>
+            </div>
+          </div>
+        )}
+        {messages.length === 0 && loadError?.kind !== 'fatal' ? (
           <EmptyState
             firstName={firstName}
             onSuggestion={(text) => submitMessage(text)}
             disabled={agents.length === 0}
           />
-        ) : (
+        ) : messages.length === 0 ? null : (
           <div className="space-y-4 px-4 py-4">
             {messages.map((m) => (
               <MessageRow key={m.id} message={m} />
