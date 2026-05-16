@@ -207,9 +207,18 @@ export const useChatStore = create<ChatState>()(
             }
             const existing = parts[idx];
             if (!existing || existing.type !== "tool") return m;
+            // Defensive ordering: never let a stale `started` event downgrade
+            // a part that's already reached `completed` or `error`. Two paths
+            // emit started events for client tools (SSE `tool_delegated` +
+            // SW `TOOL_TIMELINE_EVENT`); if the SW one races and arrives
+            // AFTER tool_completed, the row would flicker back to spinning.
+            const phaseLocked =
+              (existing.tool.phase === "completed" || existing.tool.phase === "error") &&
+              patch.phase === "started";
             const merged: ToolPartCall = {
               ...existing.tool,
               ...patch,
+              ...(phaseLocked ? { phase: existing.tool.phase } : {}),
               endedAt:
                 patch.phase === "completed" || patch.phase === "error"
                   ? Date.now()

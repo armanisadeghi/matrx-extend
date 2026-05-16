@@ -6,6 +6,7 @@ import { log } from "@/lib/debug/log";
 import { newId } from "@/lib/id";
 import { on, send } from "@/lib/messaging/native";
 import { CHANNELS } from "@/lib/messaging/schemas";
+import { resolveToolName } from "@/lib/tools/aliases";
 import { lookup as lookupTool } from "@/lib/tools/registry";
 import {
   projectAdminFlagsToRequest,
@@ -124,12 +125,26 @@ function handleToolEvent(
   if (!data) return;
   const subEvent = String(data.event ?? "");
   const callId = String(data.call_id ?? "");
-  const toolName = String(data.tool_name ?? "");
-  if (!callId || !toolName) return;
+  const wireName = String(data.tool_name ?? "");
+  if (!callId || !wireName) return;
 
-  // Determine kind from our client registry. A client-tool execution still
-  // emits tool_event in the SSE (server logs the delegation), so we want to
-  // see it here AND let TOOL_TIMELINE_EVENT update it later.
+  // Normalize the wire name (e.g. `matrx-extend__take_screenshot`) to the
+  // bare local name the registry + display-config use (`take_screenshot`).
+  // Without this, lookupTool fails, kind is mis-set to 'server', and the
+  // tool-display registry can't find a config — the polished phase-aware
+  // header (Loader2 → final icon, "Reading page" → "Read page", etc.)
+  // never renders. Prefer the server-supplied canonical_name when present.
+  const canonicalName =
+    (data.canonical_name as string | undefined) ??
+    (data.canonicalName as string | undefined) ??
+    null;
+  const resolved = canonicalName
+    ? { local: canonicalName.split(":").pop() ?? canonicalName, bundle: null }
+    : resolveToolName(wireName);
+  const toolName = resolved.local;
+
+  // Kind is derived from whether the RESOLVED name is in our client
+  // registry — must use the bare form, since the registry is keyed there.
   const kind: "server" | "client" = lookupTool(toolName) ? "client" : "server";
   const message = typeof data.message === "string" ? data.message : undefined;
   const inner = (data.data ?? {}) as Record<string, unknown>;
@@ -143,7 +158,13 @@ function handleToolEvent(
   };
   if (message !== undefined) base.message = message;
 
-  if (subEvent === "tool_started") {
+  // `tool_delegated` is the server's explicit "your turn" signal for client
+  // tools — and it arrives BEFORE the SW dispatcher's TOOL_TIMELINE_EVENT.
+  // Treating it as a started-phase event is what gets a phase-aware row
+  // (spinner + "Reading page" + shimmer) on screen the moment the model
+  // makes the call, instead of waiting for completion. The server does NOT
+  // emit `tool_started` for client-dispatched tools — only this one.
+  if (subEvent === "tool_started" || subEvent === "tool_delegated") {
     const args = inner.arguments;
     upsert(messageId, callId, {
       ...base,
