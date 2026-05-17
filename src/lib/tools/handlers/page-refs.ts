@@ -53,9 +53,12 @@ export function refToSelector(ref: string): string {
 
 interface ScrapeElement {
   ref: string;
-  name: string;
   role: string;
-  tag: string;
+  /** Omitted when role implies tag (a↔link, li↔listitem, p↔paragraph, etc). */
+  tag?: string;
+  /** Omitted when accessible name is empty. */
+  name?: string;
+  /** Omitted when equal to or strictly a prefix of `name`, or empty. */
   text?: string;
   [k: string]: unknown;
 }
@@ -333,15 +336,48 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
             if (!includeHidden && !isVisible(el)) continue;
             const refNum = counter++;
             el.setAttribute('data-matrx-ref', String(refNum));
+
+            const explicitRole = el.getAttribute('role');
+            const tag = el.tagName.toLowerCase();
+            const role = explicitRole ?? implicitRole(el);
+
             const entry: Record<string, unknown> = {
               ref: `ref:${refNum}`,
-              tag: el.tagName.toLowerCase(),
-              role: el.getAttribute('role') ?? implicitRole(el),
-              name: accessibleName(el),
+              role,
             };
+
+            // `tag` is redundant when role was implied from it (a↔link,
+            // li↔listitem, p↔paragraph, button↔button, label↔label,
+            // summary↔button, select↔combobox, textarea↔textbox). Keep it
+            // when it adds info: explicit custom role, or heading level.
+            if (explicitRole != null || /^h[1-6]$/.test(tag)) {
+              entry.tag = tag;
+            }
+
+            // De-duplicate name vs text — they overlap heavily (text ⊇ name
+            // when name falls back to innerText). Cut whichever is strictly
+            // less informative; omit both when empty.
+            const name = accessibleName(el);
+            let text = '';
             if (includeText) {
               const t = (el as HTMLElement).innerText ?? el.textContent ?? '';
-              entry.text = t.length > 200 ? `${t.slice(0, 200)}…` : t;
+              text = t.length > 200 ? `${t.slice(0, 200)}…` : t;
+            }
+            if (name && text) {
+              if (text === name) {
+                // identical — keep name only
+                entry.name = name;
+              } else if (text.startsWith(name) && text.length > name.length) {
+                // text is a superset of name — name is redundant
+                entry.text = text;
+              } else {
+                entry.name = name;
+                entry.text = text;
+              }
+            } else if (name) {
+              entry.name = name;
+            } else if (text) {
+              entry.text = text;
             }
             if (includeBounds) {
               const r = el.getBoundingClientRect();
@@ -359,20 +395,25 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
               // Never echo password/secret values back to the agent — the field
               // may be autofilled. Surface presence + length only.
               if (el.type === 'password') {
-                entry.value = el.value ? '***' : '';
-                if (el.value) entry.value_length = el.value.length;
+                if (el.value) {
+                  entry.value = '***';
+                  entry.value_length = el.value.length;
+                }
                 entry.masked = true;
               } else {
-                entry.value = el.value;
-                if (el.type === 'checkbox' || el.type === 'radio') entry.checked = el.checked;
+                if (el.value) entry.value = el.value;
+                if ((el.type === 'checkbox' || el.type === 'radio') && el.checked) {
+                  entry.checked = true;
+                }
               }
             }
             if (el instanceof HTMLSelectElement) {
-              entry.value = el.value;
+              if (el.value) entry.value = el.value;
               entry.option_count = el.options.length;
             }
-            const ariaExpanded = el.getAttribute('aria-expanded');
-            if (ariaExpanded != null) entry.expanded = ariaExpanded === 'true';
+            // Only emit aria-expanded when meaningful (true). 'false' on a
+            // collapsed-by-default menu is noise across hundreds of elements.
+            if (el.getAttribute('aria-expanded') === 'true') entry.expanded = true;
             const disabled = (el as HTMLInputElement).disabled;
             if (disabled) entry.disabled = true;
             out.push(entry);
@@ -434,10 +475,21 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
 const FindArgs = z.object({
   /** Natural-language description of the element you want. */
   query: z.string().min(1),
-  /** Maximum candidates to consider from read_page. Default 30. */
-  max_candidates: z.number().int().positive().max(500).optional().default(30),
+  /**
+   * How many DOM nodes to pull for matching. Default 200. The cheap
+   * text-prefilter ranks all of them; only the top 20 are sent to the AI
+   * matcher. Raising this is cheap when a fresh `read_page` is already
+   * cached — we reuse the cache.
+   */
+  max_candidates: z.number().int().positive().max(500).optional().default(200),
   /** Maximum matches to return. Default 5. */
   limit: z.number().int().positive().max(20).optional().default(5),
+  /**
+   * Include non-interactive elements (headings, paragraphs, list items) in
+   * the search pool. Useful when looking for content by topic ("retention
+   * policy section", "the paragraph about pricing"). Default true.
+   */
+  include_content: z.boolean().optional().default(true),
   /** Canonical: target tab. */
   tabId: z.string().optional(),
 });
@@ -450,7 +502,7 @@ export const find: ToolHandler<FindArgs, unknown> = {
   name: 'find',
   tier: 'read',
   description:
-    'Find elements on the active page by natural-language description ("the sign-in button", "the search input near the top", "the link to the pricing page"). Returns matching refs you can immediately pass to interaction tools. Uses on-device AI for matching when available; falls back to text similarity. Always run read_page first OR pass refs through this in the same conversation. Returns { matches: [{ ref, name, role, score, reason }] }.',
+    'Find elements on the active page by natural-language description ("the sign-in button", "the search input near the top", "the paragraph about pricing"). Returns matching refs you can immediately pass to interaction tools. Uses on-device AI for matching when available; falls back to text similarity. Reuses any fresh `read_page` scrape — call it once before a series of finds. By default also searches non-interactive content (headings/paragraphs) so you can locate sections by topic; set `include_content:false` to restrict to clickable elements only. Returns { matches: [{ ref, name, role, score, reason }] }.',
   argsSchema: FindArgs,
   run: async (args, ctx) => {
     const tabId =
@@ -459,21 +511,25 @@ export const find: ToolHandler<FindArgs, unknown> = {
 
     // Reuse a fresh cached scrape if the agent (or a prior tool call) just ran
     // read_page. Saves the executeScript round-trip + DOM walk on the common
-    // path where read_page → find happens within a few seconds.
+    // path where read_page → find happens within a few seconds. We accept
+    // whichever scrape is cached — a richer (interactive_only:false) scrape
+    // is a strict superset of an interactive-only one.
     let candidates: ScrapeElement[];
     let usedCache = false;
     const cached = getFreshScrape(tabId, {
-      interactive_only: true,
+      // Don't require interactive_only either way — accept whatever's there.
       include_text: true,
     });
     if (cached) {
-      candidates = cached.result.elements.slice(0, args.max_candidates);
+      candidates = cached.result.elements;
       usedCache = true;
     } else {
+      // Fresh scrape: pull non-interactive content too when the model asked
+      // for it, so topic-based queries can hit headings and paragraphs.
       const readResult = (await read_page.run(
         {
           tab_id: tabId,
-          interactive_only: true,
+          interactive_only: !args.include_content,
           max_nodes: args.max_candidates,
           include_hidden: false,
           include_text: true,
@@ -494,18 +550,38 @@ export const find: ToolHandler<FindArgs, unknown> = {
       candidates = readResult.elements ?? [];
     }
 
+    // If caller wants clickable-only, drop content elements from the cached pool.
+    if (!args.include_content) {
+      const CONTENT_ROLES = new Set(['paragraph', 'heading', 'listitem', 'label']);
+      candidates = candidates.filter((c) => !CONTENT_ROLES.has(c.role));
+    }
+
     if (candidates.length === 0) return { ok: true, matches: [], used_cache: usedCache };
 
     // Hybrid retrieval: cheap text-similarity prefilter, then send only the
     // top-N to the LLM. Smaller prompt = faster decoding, often better matches
-    // because obvious noise is gone before the model sees it.
+    // because obvious noise is gone before the model sees it. Per-field
+    // weighting: name > text > href > role/tag — a hit in the name should
+    // outrank an incidental hit in surrounding paragraph text.
     const q = args.query.toLowerCase();
     const tokens = q.split(/\s+/).filter((t) => t.length > 1);
+    const tokenCount = Math.max(1, tokens.length);
     const prefiltered = candidates
       .map((c) => {
-        const hay = `${c.name} ${c.role} ${c.tag} ${c.text ?? ''}`.toLowerCase();
+        const name = (c.name ?? '').toLowerCase();
+        const text = (c.text ?? '').toLowerCase();
+        const href = typeof c.href === 'string' ? c.href.toLowerCase() : '';
+        const role = (c.role ?? '').toLowerCase();
+        const tag = (c.tag ?? '').toLowerCase();
         let score = 0;
-        for (const t of tokens) if (hay.includes(t)) score += 1 / Math.max(1, tokens.length);
+        for (const t of tokens) {
+          if (name.includes(t)) score += 1.0 / tokenCount;
+          else if (text.includes(t)) score += 0.6 / tokenCount;
+          else if (href.includes(t)) score += 0.4 / tokenCount;
+          else if (role.includes(t) || tag.includes(t)) score += 0.2 / tokenCount;
+        }
+        // Whole-phrase bonus when the full query appears in name or text.
+        if (q.length > 3 && (name.includes(q) || text.includes(q))) score += 0.3;
         return { c, score };
       })
       .sort((a, b) => b.score - a.score);
@@ -521,10 +597,14 @@ export const find: ToolHandler<FindArgs, unknown> = {
     const sys =
       'You are a precise element-matching tool. Given a user query and a list of candidate elements (with refs, roles, names, and snippets), pick the best matches. Score 0..1. Return JSON only.';
     const promptText = `Query: ${args.query}\n\nCandidates:\n${aiCandidates
-      .map(
-        (c) =>
-          `${c.ref} role=${c.role} tag=${c.tag} name="${c.name}" text="${(c.text ?? '').slice(0, 100)}"`,
-      )
+      .map((c) => {
+        const parts = [c.ref, `role=${c.role}`];
+        if (c.tag) parts.push(`tag=${c.tag}`);
+        if (c.name) parts.push(`name="${c.name}"`);
+        if (c.text && c.text !== c.name) parts.push(`text="${c.text.slice(0, 100)}"`);
+        if (typeof c.href === 'string') parts.push(`href="${c.href}"`);
+        return parts.join(' ');
+      })
       .join('\n')}`;
     const schema = {
       type: 'object',

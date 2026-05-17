@@ -58,3 +58,7 @@ lib64/
 
 # Claude Code worktrees (ephemeral, created by /worktree)
 .claude/worktrees/
+
+
+# Arman Specific
+.arman-temp/

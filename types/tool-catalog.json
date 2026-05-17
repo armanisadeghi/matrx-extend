@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-17T17:40:19.256Z",
+  "generated_at": "2026-05-17T20:22:19.575Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -1309,7 +1309,7 @@
     },
     {
       "name": "find",
-      "description": "Find elements on the active page by natural-language description (\"the sign-in button\", \"the search input near the top\", \"the link to the pricing page\"). Returns matching refs you can immediately pass to interaction tools. Uses on-device AI for matching when available; falls back to text similarity. Always run read_page first OR pass refs through this in the same conversation. Returns { matches: [{ ref, name, role, score, reason }] }.",
+      "description": "Find elements on the active page by natural-language description (\"the sign-in button\", \"the search input near the top\", \"the paragraph about pricing\"). Returns matching refs you can immediately pass to interaction tools. Uses on-device AI for matching when available; falls back to text similarity. Reuses any fresh `read_page` scrape — call it once before a series of finds. By default also searches non-interactive content (headings/paragraphs) so you can locate sections by topic; set `include_content:false` to restrict to clickable elements only. Returns { matches: [{ ref, name, role, score, reason }] }.",
       "tier": "read",
       "category": "core",
       "input_schema": {
@@ -1323,13 +1323,17 @@
             "type": "integer",
             "exclusiveMinimum": 0,
             "maximum": 500,
-            "default": 30
+            "default": 200
           },
           "limit": {
             "type": "integer",
             "exclusiveMinimum": 0,
             "maximum": 20,
             "default": 5
+          },
+          "include_content": {
+            "type": "boolean",
+            "default": true
           },
           "tabId": {
             "type": "string"

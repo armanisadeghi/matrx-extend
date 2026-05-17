@@ -1,6 +1,6 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-17T17:40:19.256Z
+Generated: 2026-05-17T20:22:19.575Z
 
 - **Total tools:** 170
 - **Assistant bundle:** 76 tools (read-only)
@@ -405,7 +405,7 @@ Return an accessibility-style summary of the active page. Each interactive eleme
 
 ### `find`
 
-Find elements on the active page by natural-language description ("the sign-in button", "the search input near the top", "the link to the pricing page"). Returns matching refs you can immediately pass to interaction tools. Uses on-device AI for matching when available; falls back to text similarity. Always run read_page first OR pass refs through this in the same conversation. Returns { matches: [{ ref, name, role, score, reason }] }.
+Find elements on the active page by natural-language description ("the sign-in button", "the search input near the top", "the paragraph about pricing"). Returns matching refs you can immediately pass to interaction tools. Uses on-device AI for matching when available; falls back to text similarity. Reuses any fresh `read_page` scrape — call it once before a series of finds. By default also searches non-interactive content (headings/paragraphs) so you can locate sections by topic; set `include_content:false` to restrict to clickable elements only. Returns { matches: [{ ref, name, role, score, reason }] }.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -422,13 +422,17 @@ Find elements on the active page by natural-language description ("the sign-in b
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 500,
-      "default": 30
+      "default": 200
     },
     "limit": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 20,
       "default": 5
+    },
+    "include_content": {
+      "type": "boolean",
+      "default": true
     },
     "tabId": {
       "type": "string"
