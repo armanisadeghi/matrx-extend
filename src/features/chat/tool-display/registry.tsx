@@ -27,6 +27,7 @@
  * Transforms live in `./registry-transforms.ts`.
  */
 
+import { BatchToolDisplay } from './BatchToolDisplay';
 import { InteractionAskCard } from './InteractionAskCard';
 import { SleepCountdown } from './SleepCountdown';
 import type { ToolDisplayEntry } from './types';
@@ -230,20 +231,13 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
+  // browser_batch is a meta-tool — instead of rendering it as one opaque
+  // entry, fan out each sub-call as its own native tool row using the same
+  // registry styling. Lets the user see exactly which URLs / refs are being
+  // touched, with the same Base64Image / TabCard / Markdown / etc. that an
+  // individual call would have rendered with.
   browser_batch: {
-    inline: {
-      icon: { started: 'Loader2', completed: 'Layers', error: 'AlertTriangle' },
-      prefix: {
-        started: 'Running batch',
-        completed: 'Ran batch',
-        error: 'Batch failed',
-      },
-      name: '',
-      info: { path: 'args.calls.length', fallback: '0' },
-      suffix: 'calls',
-      color: { started: 'primary', completed: 'amber', error: 'red' },
-    },
-    args: { displayType: 'json' },
+    CustomComponent: BatchToolDisplay,
   },
 
   ask_user: {

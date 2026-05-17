@@ -1,4 +1,5 @@
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
+import { GuestBanner } from '@/components/GuestBanner';
 import { Markdown } from '@/components/markdown';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -363,6 +364,7 @@ export function ChatView() {
 
   return (
     <div className="flex h-full flex-col bg-background">
+      <GuestBanner />
       <ChatHeader
         agents={agents}
         agentsLoading={agentsLoading}
@@ -396,7 +398,7 @@ export function ChatView() {
         <AgentVariablesPanel agentId={selectedAgentId} defs={variableDefs} />
       )}
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden">
         {loadError && (
           <div
             role="alert"

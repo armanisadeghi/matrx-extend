@@ -626,6 +626,86 @@ extension changes needed when it lands.
   `types/tool-catalog.json` for the in-extension Tools tab and the
   matrx-extend-tool-display skill. Not authoritative for aidream.
 
+## 👤 Guest mode (2026-05-16)
+
+The extension lets unauthenticated users open the side panel and chat
+immediately — no sign-in required. The intent is keeping-honest-people-honest:
+clearing chrome.storage is a free reset, but the install-bound signature
+is stable enough to enforce reasonable rolling limits while the user is
+inside our funnel.
+
+**Surface:**
+- [`AuthGate`](./src/components/AuthGate.tsx) is now a pass-through
+  wrapper (legacy name kept for compatibility). It no longer blocks.
+- [`GuestBanner`](./src/components/GuestBanner.tsx) renders at the top
+  of [`ChatView`](./src/features/chat/ChatView.tsx) when no user is
+  signed in. Two CTAs: in-place Sign in (OAuth) + Sign up free (opens
+  aimatrx.com via `chrome.tabs.create`).
+- [`App.tsx`](./src/entrypoints/sidepanel/App.tsx) hides every tab
+  except `chat` + `settings` for guests via the `showFullTabs` gate.
+  Bounces the active selection back to `chat` if the user lands on a
+  hidden tab. Admin tabs (Pilot / Showcase / Debug) keep their existing
+  `isAdmin` gate — guests are not admins.
+
+**Identification:**
+- [`src/lib/auth/guest-signature.ts`](./src/lib/auth/guest-signature.ts)
+  produces a stable 64-char hex signature:
+  `sha256(chrome.runtime.id | nonce | createdAt)`. The nonce is a
+  32-byte random minted once on first read and persisted in
+  `chrome.storage.local`. Cached in-memory and via storage so the SW,
+  sidepanel, and offscreen all see the same value. Concurrent callers
+  share an in-flight promise so we never mint two nonces in a race.
+- Outbound paths inject `X-Fingerprint-ID: <signature>` whenever the
+  caller has no Bearer token:
+  - [`src/lib/api/client.ts`](./src/lib/api/client.ts) `buildHeaders()` —
+    REST.
+  - [`src/lib/stream/offscreen-proxy.ts`](./src/lib/stream/offscreen-proxy.ts) —
+    SSE streams.
+  - `parallel_for_each_tab` is admin-only so admins are always signed
+    in; that path keeps its strict token requirement.
+- The request body's `client.state["browser-dom"].is_guest` mirrors the
+  header by reading the same `getAccessToken()` result — they cannot
+  drift.
+
+**Server identification & gating:**
+- aidream's `matrx_connect` AuthMiddleware (already in place) reads
+  `X-Fingerprint-ID`, calls `resolve_guest_uuid()` which finds or mints
+  an anonymous `auth.users` row, and sets `ctx.auth_type='fingerprint'`.
+  No backend change required to make this path work.
+- Model tier swap: migration `0045_guest_mode_and_model_tiers.sql` adds
+  `ai_model.mid_fallback_id` + `ai_model.guest_fallback_id`. When a
+  guest hits an agent whose model has a `guest_fallback_id`, the helper
+  `aidream/api/utils/model_tier_swap.py` swaps `config.model` in place
+  and records the original on `ctx.metadata['original_model']`. Wired
+  into `agent_run.py` between `agx.load_for_execution` and the
+  conversation resolution.
+- Usage tracking: the same migration creates `cx_user_usage_summary`
+  plus an `AFTER INSERT/UPDATE` trigger on `cx_user_request.completed_at`.
+  The trigger maintains 6-hour and 24-hour rolling windows of (requests,
+  tokens, cost in millicents) per user plus a frozen `auth_type` (probed
+  against `guest_executions`). Request-time enforcement reads via
+  `fn_get_user_usage_snapshot(user_id)` — O(1).
+- Sign-up conversion: when a guest signs in, `link_guest_to_user()` in
+  the existing `guest_registry` stamps `converted_to_user_id`. The
+  user_id stays stable so usage history and conversations carry over.
+
+**Operator notes:**
+- After applying migration 0045, run `python db/generate.py` to
+  regenerate the ORM. `swap_model_for_auth_tier` uses defensive
+  `getattr(..., None)` so it no-ops cleanly during the gap.
+- The migration's tail UPDATEs use `provider ILIKE / name ILIKE` to
+  populate fallbacks for Opus / Sonnet / GPT-5+ / Gemini Pro. Tighten
+  the WHERE clauses or replace with literal IDs as the model registry
+  grows. The fallback target IDs are hardcoded (Sonnet 4.6 / Haiku 4.5
+  / GPT-5 mini / gpt-4.1-mini / Gemini 3 Flash Preview).
+- Enforcement is intentionally NOT yet wired — the trigger populates
+  the summary, the swap downgrades premium models, but no 429 is
+  returned today regardless of cost. Add a `Depends(enforce_usage_quota)`
+  on `/ai/agent/{id}` once the summary has produced enough real data to
+  pick limit values.
+
+---
+
 ## ⚠️ Web Store identity gotcha (v0.1.4 incident)
 
 **The Chrome Web Store replaces the manifest's `key` field on upload with

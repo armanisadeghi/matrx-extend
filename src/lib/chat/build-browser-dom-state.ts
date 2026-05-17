@@ -21,6 +21,7 @@
  * flow.
  */
 
+import { getAccessToken } from '@/lib/auth/flow';
 import { ALL_OPTIONAL, hasOptionalPermissions } from '@/lib/permissions/optional';
 import { useAuthStore } from '@/state/auth';
 import { useChatStore } from '@/state/chat';
@@ -35,6 +36,14 @@ export interface BrowserDomState {
   tab_status: 'loading' | 'complete' | null;
   surface: 'assistant' | 'pilot';
   is_admin: boolean;
+  /**
+   * True when the caller is unauthenticated and the request is going up
+   * with X-Fingerprint-ID. The server's auth middleware also derives this
+   * from ctx.auth_type='fingerprint', so this field is redundant for
+   * routing — it's here so the discovery handler can branch without
+   * re-reading the AppContext.
+   */
+  is_guest: boolean;
   permission_mode: 'ask' | 'act';
   desktop_bridge: 'native' | 'http' | 'none';
   onbox_ai_available: boolean;
@@ -125,11 +134,12 @@ export async function buildBrowserDomState(
   const auth = useAuthStore.getState();
   const desktop = useDesktopStore.getState();
   const tab = await queryActiveTab();
-  const [granted, lang, openTabCount, onboxAi] = await Promise.all([
+  const [granted, lang, openTabCount, onboxAi, accessToken] = await Promise.all([
     listGrantedOptional(),
     pageLangFor(tab.id),
     countOpenTabs(),
     detectOnboxAi(),
+    getAccessToken(),
   ]);
   const permissionMode = useChatStore.getState().getPermissionMode(opts.agentId ?? null);
   return {
@@ -141,6 +151,7 @@ export async function buildBrowserDomState(
     tab_status: tab.status,
     surface: opts.surface,
     is_admin: auth.isAdmin,
+    is_guest: !accessToken,
     permission_mode: permissionMode,
     desktop_bridge: desktop.transport,
     onbox_ai_available: onboxAi,

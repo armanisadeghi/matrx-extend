@@ -7,6 +7,7 @@
 
 import { getApiBaseUrl } from '@/lib/api/client';
 import { getAccessToken } from '@/lib/auth/flow';
+import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
 import { log } from '@/lib/debug/log';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -109,7 +110,11 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
     'Content-Type': 'application/json',
     Accept: 'text/event-stream',
   };
-  if (token) headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  } else {
+    headers['X-Fingerprint-ID'] = await getOrCreateGuestSignature();
+  }
 
   await ensureOffscreen();
 

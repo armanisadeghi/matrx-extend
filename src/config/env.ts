@@ -99,6 +99,12 @@ export const STORAGE_KEYS = {
   DESKTOP_PAIR_TOKEN: 'matrx.desktop.pairToken',
   PKCE_VERIFIER: 'matrx.pkce.verifier',
   PKCE_STATE: 'matrx.pkce.state',
+  // Guest mode — stable per-install identifier for unauthenticated users.
+  // Sent as X-Fingerprint-ID; the server's matrx_connect AuthMiddleware
+  // resolves it to an anonymous auth.users row via guest_registry.
+  GUEST_SIGNATURE: 'matrx.guest.signature',
+  GUEST_NONCE: 'matrx.guest.nonce',
+  GUEST_CREATED_AT: 'matrx.guest.createdAt',
 } as const;
 
 export const ALARMS = {

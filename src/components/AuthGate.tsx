@@ -1,42 +1,22 @@
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
-import { Loader2, LogIn } from 'lucide-react';
 
+/**
+ * Pass-through wrapper. Kept as a named component so existing call sites
+ * (sidepanel App.tsx) don't need to change. As of the guest-mode rollout
+ * (2026-05-16) the extension never blocks on sign-in — the SW resolves
+ * the caller via X-Fingerprint-ID when there's no Supabase session, so
+ * Chat and the always-allowed tabs render for guests too.
+ *
+ * The actual "you're using Matrx as a guest" UI lives in
+ * src/components/GuestBanner.tsx and is mounted by the views that want
+ * to surface the upgrade CTA (currently ChatView). Sign-in is still
+ * available from the user menu.
+ */
 export function AuthGate({ children }: { children: React.ReactNode }) {
-  const { user, status, error, signIn } = useAuth();
-
-  if (user) return <>{children}</>;
-
-  return (
-    <div className="flex h-full flex-col items-center justify-center gap-6 px-8 text-center">
-      <div className="space-y-2">
-        <div className="text-2xl font-semibold tracking-tight">Welcome to Matrx Extend</div>
-        <p className="max-w-sm text-sm text-muted-foreground">
-          Sign in with your Matrx account to start chatting with agents, capturing pages, and
-          syncing your work across devices.
-        </p>
-      </div>
-      <Button
-        onClick={signIn}
-        disabled={status === 'signing-in'}
-        size="lg"
-        className="rounded-full"
-      >
-        {status === 'signing-in' ? (
-          <>
-            <Loader2 className="animate-spin" /> Opening sign-in…
-          </>
-        ) : (
-          <>
-            <LogIn /> Sign in with Matrx
-          </>
-        )}
-      </Button>
-      {error && (
-        <div className="max-w-sm rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
-          {error}
-        </div>
-      )}
-    </div>
-  );
+  // Eager-boot the auth hook here so the one-time boot (restore Supabase
+  // session, refresh admin flag) still runs on cold sidepanel open even if
+  // no other early component subscribes. The hook is internally guarded
+  // against double boot.
+  useAuth();
+  return <>{children}</>;
 }

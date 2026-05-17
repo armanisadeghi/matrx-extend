@@ -88,10 +88,26 @@ const TabFallback = (
 
 export function App() {
   const theme = useSettingsStore((s) => s.theme);
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const errorCount = useDebugStore((s) => s.events.filter((e) => e.level === 'error').length);
   const tab = useSidepanelTabStore((s) => s.tab);
   const setTab = useSidepanelTabStore((s) => s.setTab);
+
+  // Guest tab visibility — for unauthenticated users, hide every tab whose
+  // value depends on persistence (Supabase-backed work) or whose typical
+  // use is expensive enough that we don't want to spend on guests during
+  // the Google approval / public beta window. Chat + Settings are the
+  // only always-on tabs. If the user is mid-resolution (status='unknown'),
+  // we treat them as guest until proven otherwise — this avoids an
+  // expensive-tab flash on first paint.
+  const isGuest = user === null;
+  const showFullTabs = !isGuest;
+  // Bounce off a hidden tab if the user lands on one as a guest (e.g. the
+  // sidepanel restored the last selection from before sign-out).
+  useEffect(() => {
+    const guestAllowed: SidepanelTab[] = ['chat', 'settings'];
+    if (isGuest && !guestAllowed.includes(tab)) setTab('chat');
+  }, [isGuest, tab, setTab]);
 
   // Mount ONCE: watches active-tab url and auto-runs every saved pattern that
   // matches. Results land in useAutoExtractStore; DataView reads from there.
@@ -176,37 +192,41 @@ export function App() {
                     <Crosshair className="size-3.5" />
                   </TabsTrigger>
                 )}
-                <TabsTrigger value="tasks" className="size-7 p-0" title="Tasks">
-                  <ListTodo className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger value="agenda" className="size-7 p-0" title="Agenda">
-                  <Calendar className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger value="scrape" className="size-7 p-0" title="Scrape">
-                  <ScanLine className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger value="data" className="size-7 p-0" title="Data">
-                  <Database className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger value="guidance" className="size-7 p-0" title="Guidance">
-                  <BookOpen className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger value="seo" className="size-7 p-0" title="SEO">
-                  <Search className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger value="notes" className="size-7 p-0" title="Notes">
-                  <NotebookPen className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger
-                  value="screenshots"
-                  className="size-7 p-0"
-                  title="Screenshots"
-                >
-                  <Camera className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger value="tools" className="size-7 p-0" title="Tools">
-                  <Wrench className="size-3.5" />
-                </TabsTrigger>
+                {showFullTabs && (
+                  <>
+                    <TabsTrigger value="tasks" className="size-7 p-0" title="Tasks">
+                      <ListTodo className="size-3.5" />
+                    </TabsTrigger>
+                    <TabsTrigger value="agenda" className="size-7 p-0" title="Agenda">
+                      <Calendar className="size-3.5" />
+                    </TabsTrigger>
+                    <TabsTrigger value="scrape" className="size-7 p-0" title="Scrape">
+                      <ScanLine className="size-3.5" />
+                    </TabsTrigger>
+                    <TabsTrigger value="data" className="size-7 p-0" title="Data">
+                      <Database className="size-3.5" />
+                    </TabsTrigger>
+                    <TabsTrigger value="guidance" className="size-7 p-0" title="Guidance">
+                      <BookOpen className="size-3.5" />
+                    </TabsTrigger>
+                    <TabsTrigger value="seo" className="size-7 p-0" title="SEO">
+                      <Search className="size-3.5" />
+                    </TabsTrigger>
+                    <TabsTrigger value="notes" className="size-7 p-0" title="Notes">
+                      <NotebookPen className="size-3.5" />
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="screenshots"
+                      className="size-7 p-0"
+                      title="Screenshots"
+                    >
+                      <Camera className="size-3.5" />
+                    </TabsTrigger>
+                    <TabsTrigger value="tools" className="size-7 p-0" title="Tools">
+                      <Wrench className="size-3.5" />
+                    </TabsTrigger>
+                  </>
+                )}
                 <TabsTrigger value="settings" className="size-7 p-0" title="Settings">
                   <SettingsIcon className="size-3.5" />
                 </TabsTrigger>
@@ -246,51 +266,55 @@ export function App() {
                 </Suspense>
               </TabsContent>
             )}
-            <TabsContent value="tasks" className="flex-1 min-h-0">
-              <Suspense fallback={TabFallback}>
-                <TasksView />
-              </Suspense>
-            </TabsContent>
-            <TabsContent value="agenda" className="flex-1 min-h-0">
-              <Suspense fallback={TabFallback}>
-                <AgendaView />
-              </Suspense>
-            </TabsContent>
-            <TabsContent value="scrape" className="flex-1 min-h-0">
-              <Suspense fallback={TabFallback}>
-                <ScrapeView />
-              </Suspense>
-            </TabsContent>
-            <TabsContent value="data" className="flex-1 min-h-0">
-              <Suspense fallback={TabFallback}>
-                <DataView />
-              </Suspense>
-            </TabsContent>
-            <TabsContent value="guidance" className="flex-1 min-h-0">
-              <Suspense fallback={TabFallback}>
-                <GuidanceView />
-              </Suspense>
-            </TabsContent>
-            <TabsContent value="seo" className="flex-1 min-h-0">
-              <Suspense fallback={TabFallback}>
-                <SeoView />
-              </Suspense>
-            </TabsContent>
-            <TabsContent value="notes" className="flex-1 min-h-0">
-              <Suspense fallback={TabFallback}>
-                <NotesView />
-              </Suspense>
-            </TabsContent>
-            <TabsContent value="screenshots" className="flex-1 min-h-0">
-              <Suspense fallback={TabFallback}>
-                <ScreenshotsView />
-              </Suspense>
-            </TabsContent>
-            <TabsContent value="tools" className="flex-1 min-h-0">
-              <Suspense fallback={TabFallback}>
-                <ToolsView />
-              </Suspense>
-            </TabsContent>
+            {showFullTabs && (
+              <>
+                <TabsContent value="tasks" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <TasksView />
+                  </Suspense>
+                </TabsContent>
+                <TabsContent value="agenda" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <AgendaView />
+                  </Suspense>
+                </TabsContent>
+                <TabsContent value="scrape" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <ScrapeView />
+                  </Suspense>
+                </TabsContent>
+                <TabsContent value="data" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <DataView />
+                  </Suspense>
+                </TabsContent>
+                <TabsContent value="guidance" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <GuidanceView />
+                  </Suspense>
+                </TabsContent>
+                <TabsContent value="seo" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <SeoView />
+                  </Suspense>
+                </TabsContent>
+                <TabsContent value="notes" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <NotesView />
+                  </Suspense>
+                </TabsContent>
+                <TabsContent value="screenshots" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <ScreenshotsView />
+                  </Suspense>
+                </TabsContent>
+                <TabsContent value="tools" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <ToolsView />
+                  </Suspense>
+                </TabsContent>
+              </>
+            )}
             <TabsContent value="settings" className="flex-1 min-h-0">
               <Suspense fallback={TabFallback}>
                 <SettingsView />

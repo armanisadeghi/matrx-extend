@@ -45,7 +45,7 @@ export function Markdown({ content, registry, className, density = 'comfortable'
   return (
     <div
       className={cn(
-        'text-foreground',
+        'min-w-0 text-foreground [overflow-wrap:anywhere]',
         density === 'compact' && '[&_p]:my-1 [&_ul]:my-1 [&_ol]:my-1 [&_h1]:mt-2 [&_h2]:mt-2',
         className,
       )}

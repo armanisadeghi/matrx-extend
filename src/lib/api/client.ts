@@ -8,6 +8,7 @@
 
 import { getBackendUrl } from '@/config/backend';
 import { getAccessToken, refreshAccessToken } from '@/lib/auth/flow';
+import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
 import { log } from '@/lib/debug/log';
 import type { z } from 'zod';
 
@@ -31,12 +32,19 @@ export function clearApiBaseCache(): void {
 
 async function buildHeaders(extra: Record<string, string> = {}): Promise<Record<string, string>> {
   const token = await getAccessToken();
-  return {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...extra,
   };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  } else {
+    // No signed-in session — fall back to guest fingerprint so the server's
+    // AuthMiddleware can resolve us to a stable anonymous auth.users row.
+    const sig = await getOrCreateGuestSignature();
+    headers['X-Fingerprint-ID'] = sig;
+  }
+  return { ...headers, ...extra };
 }
 
 interface RequestOptions {
