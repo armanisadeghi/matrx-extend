@@ -334,6 +334,71 @@ Every entry follows this shape:
 
 ---
 
+### Scrape — Diagnose with AI (element picker)
+- **What it does:** After a Scrape capture, lets you click an on-page
+  element that's missing from (or junk in) the scrape, then copies a
+  pre-formatted bundle of selector chain, byte-budgeted HTML, page
+  context, and a markdown excerpt — pasteable into an LLM chat to debug
+  why the scraper handled it that way.
+- **Where to test:** Side panel → **Scrape** tab.
+- **Steps:**
+  1. Open a page; click **Capture** (or **Scroll & capture**) so a
+     scrape result is showing.
+  2. In the header below the title, find the **Diagnose** row.
+  3. Choose **Missing** or **Unwanted** (color-coded), then click
+     **Pick on page**.
+  4. Hover the live page — a colored highlight follows the cursor.
+     Click the target element. (Press **Esc** to cancel.)
+  5. A DiagnoseCard appears in the side panel: selector chain,
+     `<tag>` + text preview, sibling count if it's a repeating item.
+  6. Type a one-line note describing the issue, then click
+     **Copy for AI** → **For AI agent**.
+- **Expected:** Clipboard contains a `wrapForAgent`-formatted bundle
+  with: mode, user note, URL/title, selector chain (up to 6 levels),
+  leaf HTML (≤ 3 KB), optional parent HTML, optional sibling HTML
+  (when repeating siblings detected), and — for *Missing* mode — a
+  markdown excerpt around the matched anchor OR an explicit "text
+  does not appear in scraped markdown" note when nothing matches.
+- **Edge cases worth poking:**
+  - Pick a huge `<div>` (or `<body>`): leaf HTML truncates with a
+    visible marker; parent/sibling sections are omitted.
+  - Pick on a page with no current capture: `Diagnose` row is hidden.
+    Capture first.
+  - Pick the same element twice: card overwrites without prompting.
+  - Repeating list page (PyPI projects): the bundle includes one
+    sibling example and reports `siblingCount`.
+  - **Restricted URLs** (chrome://, web store): the picker injection
+    will fail silently; recovery is to navigate to a real page.
+
+### Scrape — `protectMicroData` pre-pass (PyPI date recovery)
+- **What it does:** Before Readability runs, strips Readability's
+  negative-weight class tokens (`meta`, `comment`, `footer`, `byline`,
+  etc.) from ancestors of `<time>`, `<data>`, `<meter>`, `<address>`,
+  and appends each element's `aria-label`/`title`/`datetime` text to
+  its inner content so the parent crosses Readability's "suspiciously
+  short" threshold. Runs on a cloned doc only.
+- **Where to test:** Side panel → **Scrape** tab.
+- **Steps:**
+  1. Open a PyPI projects-management page (e.g.
+     <https://pypi.org/manage/projects/>) while signed in.
+  2. Click **Capture**.
+  3. Switch to the Article tab.
+- **Expected:** Each `<time>` value (e.g. `Mar 25, 2026`) survives
+  into the markdown, with the precise timestamp from `title="…"`
+  appended in parentheses. Same survives on dev.to article footers,
+  GitHub commit lists, and similar sites that wrap dates in
+  `<time>` inside negatively-classed parents.
+- **Edge cases worth poking:**
+  - Long-form article (Substack, NYT): article body should be
+    unchanged vs. previous behavior — pre-pass is a no-op when no
+    `<time>` is inside a penalized ancestor.
+  - Page with no `<time>` elements: pre-pass is a no-op (early
+    exit on empty `querySelectorAll`).
+  - Pages where `aria-label` is identical to inner text: no
+    parenthetical is appended (we skip if equal).
+
+---
+
 ### Voice input — Mic button in chat composer (TASK-002a/b)
 - **What it does:** Click the mic icon in the chat composer to dictate; Groq Whisper transcribes in ~2s chunks and the running transcript is written into the textarea live. Click again to stop.
 - **Where to test:** Side panel → Chat tab → composer (bottom).

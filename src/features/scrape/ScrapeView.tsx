@@ -1,6 +1,7 @@
 import { AddToProjectButton } from '@/components/AddToProjectButton';
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { DiagnoseCard, DiagnoseLauncher } from '@/features/scrape/DiagnoseCard';
 import { MarkdownView } from '@/components/MarkdownView';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -58,6 +59,7 @@ export function ScrapeView() {
     reloadActiveTab,
     clearError,
     save,
+    launchDiagnose,
   } = useScrape();
   const setCurrent = useScrapeStore((s) => s.setCurrent);
   const editArticleMarkdown = useScrapeStore((s) => s.editArticleMarkdown);
@@ -175,6 +177,15 @@ export function ScrapeView() {
             onDismiss={clearError}
           />
         )}
+        {current && (
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Diagnose
+            </span>
+            <DiagnoseLauncher onLaunch={() => void launchDiagnose()} />
+          </div>
+        )}
+        <DiagnoseCard />
       </div>
 
       <div className="flex flex-1 flex-col min-h-0">

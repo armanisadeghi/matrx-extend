@@ -1,13 +1,20 @@
+import { on } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import {
   buildCaptureError,
   buildCaptureErrorFromResult,
   classifyTabUrl,
 } from '@/lib/scrape/capture-error';
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
+import type {
+  DiagnoseMode,
+  DiagnosePickPayload,
+  DiagnoseResult,
+} from '@/lib/scrape/diagnose-bundle';
 import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
 import { saveCapture, saveSeoAudit } from '@/lib/supabase/queries';
 import { useScrapeStore } from '@/state/scrape';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export type ScrapeMode = 'fast' | 'deep';
 
@@ -41,10 +48,65 @@ export function useScrape() {
     setError,
     markSaved,
   } = useScrapeStore();
+  const setDiagnosePicking = useScrapeStore((s) => s.setDiagnosePicking);
+  const setDiagnoseResult = useScrapeStore((s) => s.setDiagnoseResult);
+  const diagnoseMode = useScrapeStore((s) => s.diagnose.mode);
   /** Which mode is currently running. Null when idle. */
   const [activeMode, setActiveMode] = useState<ScrapeMode | null>(null);
   /** Scroll progress, surfaced for the manual "Scroll & capture" button. */
   const [progress, setProgress] = useState<ScrapeProgress | null>(null);
+
+  // Subscribe to picker results once. The picker is short-lived per click but
+  // a stale listener doesn't hurt; the unsubscribe keeps things tidy on
+  // sidepanel unmount / re-mount.
+  useEffect(() => {
+    const offResult = on<DiagnosePickPayload & { mode?: DiagnoseMode }, { ack: true }>(
+      CHANNELS.DIAGNOSE_PICKER_RESULT,
+      (payload) => {
+        const mode: DiagnoseMode = payload.mode === 'unwanted' ? 'unwanted' : 'missing';
+        const result: DiagnoseResult = {
+          ...payload,
+          mode,
+          capturedAt: Date.now(),
+        };
+        setDiagnoseResult(result);
+        return { ack: true };
+      },
+    );
+    const offExit = on<unknown, { ack: true }>(CHANNELS.DIAGNOSE_PICKER_EXIT, () => {
+      setDiagnosePicking(false);
+      return { ack: true };
+    });
+    return () => {
+      offResult();
+      offExit();
+    };
+  }, [setDiagnoseResult, setDiagnosePicking]);
+
+  const launchDiagnose = useCallback(async () => {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id) return;
+    setDiagnosePicking(true);
+    try {
+      // Stamp the mode on documentElement so the content-script entrypoint
+      // can read it on startup. Same world as the content script (both ISOLATED
+      // and MAIN can read attributes set this way).
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: (mode: string) => {
+          document.documentElement.setAttribute('data-matrx-diagnose-mode', mode);
+        },
+        args: [diagnoseMode],
+      });
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['content-scripts/diagnose-picker.js'],
+      });
+    } catch (err) {
+      setDiagnosePicking(false);
+      console.warn('[matrx-extend] diagnose picker injection failed', err);
+    }
+  }, [diagnoseMode, setDiagnosePicking]);
 
   const captureActiveTab = useCallback(
     async ({ mode = 'fast' }: CaptureOptions = {}) => {
@@ -176,5 +238,6 @@ export function useScrape() {
     reloadActiveTab,
     clearError,
     save,
+    launchDiagnose,
   };
 }

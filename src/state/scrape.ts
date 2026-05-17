@@ -1,4 +1,5 @@
 import type { CaptureError } from '@/lib/scrape/capture-error';
+import type { DiagnoseMode, DiagnoseResult } from '@/lib/scrape/diagnose-bundle';
 import type { SoupResult } from '@/lib/scrape/pipeline';
 import { create } from 'zustand';
 
@@ -15,10 +16,28 @@ interface ScrapeState {
    *   - Warn the user if they hit Re-capture with unsaved edits.
    */
   edited: boolean;
+  /**
+   * Diagnose-picker state. `picking` flips while the in-page overlay is
+   * active; `lastResult` holds the most recent successful pick so the side
+   * panel can render the DiagnoseCard until the user dismisses it.
+   * `draftNote` persists the textarea content so re-opening the panel keeps
+   * the user's thought-in-progress.
+   */
+  diagnose: {
+    mode: DiagnoseMode;
+    picking: boolean;
+    lastResult: DiagnoseResult | null;
+    draftNote: string;
+  };
   setCurrent: (s: SoupResult | null) => void;
   setLoading: (b: boolean) => void;
   setError: (s: CaptureError | null) => void;
   setAlreadyCaptured: (s: string | null) => void;
+  setDiagnoseMode: (mode: DiagnoseMode) => void;
+  setDiagnosePicking: (picking: boolean) => void;
+  setDiagnoseResult: (result: DiagnoseResult | null) => void;
+  setDiagnoseDraftNote: (note: string) => void;
+  clearDiagnose: () => void;
 
   // Edits — every mutator flips `edited` to true. Applied to in-memory
   // `current` only; persistence happens through the existing `save()` flow.
@@ -41,11 +60,32 @@ export const useScrapeStore = create<ScrapeState>((set) => ({
   error: null,
   alreadyCapturedAt: null,
   edited: false,
+  diagnose: {
+    mode: 'missing',
+    picking: false,
+    lastResult: null,
+    draftNote: '',
+  },
   setCurrent: (current) => set({ current, error: null, edited: false }),
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error, loading: false }),
   setAlreadyCaptured: (alreadyCapturedAt) => set({ alreadyCapturedAt }),
   markSaved: () => set({ edited: false }),
+
+  setDiagnoseMode: (mode) =>
+    set((s) => ({ diagnose: { ...s.diagnose, mode } })),
+  setDiagnosePicking: (picking) =>
+    set((s) => ({ diagnose: { ...s.diagnose, picking } })),
+  setDiagnoseResult: (lastResult) =>
+    set((s) => ({
+      diagnose: { ...s.diagnose, lastResult, picking: false },
+    })),
+  setDiagnoseDraftNote: (draftNote) =>
+    set((s) => ({ diagnose: { ...s.diagnose, draftNote } })),
+  clearDiagnose: () =>
+    set((s) => ({
+      diagnose: { ...s.diagnose, lastResult: null, draftNote: '', picking: false },
+    })),
 
   editArticleMarkdown: (markdown) =>
     set((s) => {

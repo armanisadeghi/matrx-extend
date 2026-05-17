@@ -68,6 +68,13 @@ export const CHANNELS = {
   DATA_PICKER_RESULT: 'data:picker-result',
   DATA_PICKER_EXIT: 'data:picker-exit',
 
+  // Diagnose picker (content → SW → sidepanel). Single-pick overlay for
+  // "what's missing / what's junk in the scrape" debugging. Result payload
+  // carries selector chain, byte-budgeted HTML, and repeating-sibling info
+  // — see src/lib/scrape/diagnose-bundle.ts for the shape.
+  DIAGNOSE_PICKER_RESULT: 'diagnose:picker-result',
+  DIAGNOSE_PICKER_EXIT: 'diagnose:picker-exit',
+
   // List-pattern picker (content → SW → sidepanel)
   LIST_PICKER_RESULT: 'data:list-picker-result',
   LIST_PICKER_EXIT: 'data:list-picker-exit',

@@ -173,10 +173,74 @@ async function defuddleExtract(doc: Document): Promise<SoupResult['article'] | n
   };
 }
 
+/**
+ * Tokens that Readability's `_getClassWeight` penalizes (-25 per match).
+ * The full Readability regex is much broader; this list is the subset
+ * we've seen drop value-carrying micro-elements in practice. Removing
+ * just these tokens (leaving other classes intact) keeps Readability's
+ * other heuristics functioning while neutralizing the worst false
+ * positives.
+ */
+const READABILITY_NEGATIVE_TOKENS =
+  /\b(meta|comment|footnote|footer|byline|hidden|hid|sidebar)\b/i;
+
+/**
+ * Pre-pass mutating a CLONED Readability input so short value-bearing
+ * elements survive `_cleanConditionally`. Two passes:
+ *
+ *   1. Strip negative-weight tokens from the className of ancestors of
+ *      <time>, <data>, <meter>, <address>. Keeps other classes intact.
+ *
+ *   2. Lift the `aria-label` or `title` text of those micro-elements
+ *      into the inner text of their parent so it counts toward
+ *      Readability's content-length checks (PyPI's <time> carries the
+ *      precise timestamp in `title="…"`; the inner text is just a
+ *      short relative date).
+ *
+ * Always runs on the clone — never touches the live document.
+ */
+function protectMicroData(doc: Document): void {
+  const micro = doc.querySelectorAll('time, data, meter, address');
+  for (const el of Array.from(micro)) {
+    let ancestor: Element | null = el.parentElement;
+    while (ancestor && ancestor !== doc.body) {
+      const cls = ancestor.className;
+      if (typeof cls === 'string' && READABILITY_NEGATIVE_TOKENS.test(cls)) {
+        const stripped = cls
+          .split(/\s+/)
+          .filter((c) => !READABILITY_NEGATIVE_TOKENS.test(c))
+          .join(' ');
+        ancestor.className = stripped;
+      }
+      ancestor = ancestor.parentElement;
+    }
+    const inner = (el.textContent ?? '').trim();
+    const longer =
+      el.getAttribute('aria-label') ??
+      el.getAttribute('title') ??
+      el.getAttribute('datetime') ??
+      null;
+    if (longer && longer.trim() && longer.trim() !== inner) {
+      // Append, don't replace — keep the human-friendly label visible.
+      // Use the cloned doc's createTextNode so the node belongs to the
+      // right owner document.
+      const owner = el.ownerDocument ?? doc;
+      el.append(owner.createTextNode(` (${longer.trim()})`));
+    }
+  }
+}
+
 function readabilityExtract(doc: Document): SoupResult['article'] | null {
   // Clone — Readability mutates the document.
   const cloned = doc.cloneNode(true) as Document;
   if (!isProbablyReaderable(cloned)) return null;
+  // Protect value-carrying micro-elements (<time>, <data>, <meter>,
+  // <address>) from Readability's `_cleanConditionally` heuristic, which
+  // tends to drop short ancestors whose class names match its negative
+  // regex ("meta", "comment", "footer", "byline", etc.). PyPI's
+  // <p class="package-snippet__meta">Last released <time>…</time></p>
+  // is a textbook example. See `protectMicroData` below.
+  protectMicroData(cloned);
   const reader = new Readability(cloned);
   const parsed = reader.parse();
   if (!parsed) return null;
