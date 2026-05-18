@@ -50,23 +50,29 @@ export async function buildContextV1Flat(
   ctx.surface = 'chrome-extension-chat';
 
   // ── Active tab (cheap) ────────────────────────────────────────────────────
+  // Prefer the caller-resolved tab (so v1 stays consistent with v2 + the
+  // browser-dom state). Fall back to our own query when no tab was passed.
   let tabId: number | null = null;
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab) {
-      tabId = tab.id ?? null;
-      ctx.url = tab.url ?? null;
-      ctx.page_title = tab.title ?? null;
-      ctx.tab_id = tab.id ?? null;
-      ctx.window_id = tab.windowId ?? null;
-      ctx.tab_status = tab.status ?? null;
-      ctx.tab_index = tab.index;
-      ctx.tab_pinned = tab.pinned;
-      ctx.tab_incognito = tab.incognito;
-      ctx.favicon_url = tab.favIconUrl ?? null;
+  let tab: chrome.tabs.Tab | null = inputs.activeTab ?? null;
+  if (!tab) {
+    try {
+      const [queried] = await chrome.tabs.query({ active: true, currentWindow: true });
+      tab = queried ?? null;
+    } catch (err) {
+      log.warn('scrape', 'active tab query failed', err);
     }
-  } catch (err) {
-    log.warn('scrape', 'active tab query failed', err);
+  }
+  if (tab) {
+    tabId = tab.id ?? null;
+    ctx.url = tab.url ?? null;
+    ctx.page_title = tab.title ?? null;
+    ctx.tab_id = tab.id ?? null;
+    ctx.window_id = tab.windowId ?? null;
+    ctx.tab_status = tab.status ?? null;
+    ctx.tab_index = tab.index;
+    ctx.tab_pinned = tab.pinned;
+    ctx.tab_incognito = tab.incognito;
+    ctx.favicon_url = tab.favIconUrl ?? null;
   }
 
   // ── Active tab probe (one executeScript call) ─────────────────────────────

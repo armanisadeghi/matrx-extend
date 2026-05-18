@@ -1,156 +1,164 @@
 /**
- * Tier: ASK-USER — the agent asks the human a question.
+ * Tier: ASK-USER — the agent talks to the human.
  *
- * These don't run an action; instead, the SW broadcasts a
- * TOOL_ASK_USER_REQUEST that the sidepanel renders as an inline card. The
- * user's answer comes back via TOOL_ASK_USER_RESPONSE and the SW resolves
- * the tool result.
+ * Canonical wire contract:
+ * `packages/matrx-ai/matrx_ai/tools/USER_TOOL_WIRE_CONTRACT.md` in aidream.
+ *
+ * One `user` tool with a `type` discriminator covers:
+ *   - confirm        — yes/no
+ *   - choice         — pick one
+ *   - choice_many    — pick any
+ *   - text           — freeform answer
+ *   - secret         — masked freeform answer
+ *   - notify         — info/success/warning/error banner with action buttons
+ *
+ * The result envelope is the SAME shape regardless of type. Fields that
+ * don't apply to a type are null/false; that way the model parses one
+ * schema for every variant.
+ *
+ * The standalone `request_user_takeover` and `update_plan` tools are NOT
+ * folded into `user` — they have distinct semantics (page-takeover and
+ * plan approval) and live alongside it.
  */
 
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import type { AskUserResponse, PendingAskUserRequest, ToolHandler } from '@/lib/tools/types';
+import type {
+  AskUserResponse,
+  PendingAskUserRequest,
+  ToolHandler,
+  UserAskKind,
+} from '@/lib/tools/types';
 import { z } from 'zod';
 
-// Unified shape per canonical (browser_tools_canonical.json:ask_user).
-// `type` dispatches to the right card variant; old single-purpose
-// callers that only pass `{ question }` still work because type defaults
-// to 'text'. `context` is the canonical name for what we previously
-// called `why` — both accepted during migration.
-const AskArgs = z
+// ─── unified `user` tool ──────────────────────────────────────────────────
+
+const UserArgs = z
   .object({
-    question: z.string().min(1),
-    type: z.enum(['confirm', 'choice', 'text', 'secret']).optional().default('text'),
+    type: z.enum(['confirm', 'choice', 'choice_many', 'text', 'secret', 'notify']),
+    question: z.string().optional(),
     options: z.array(z.string().min(1)).optional(),
     context: z.string().optional(),
-    why: z.string().optional(),
-    timeout_ms: z
-      .number()
-      .int()
-      .positive()
-      .max(15 * 60_000)
-      .optional()
-      .default(5 * 60_000),
+    message: z.string().optional(),
+    actions: z.array(z.string().min(1)).optional(),
+    level: z.enum(['info', 'success', 'warning', 'error']).optional(),
+    timeout_seconds: z.number().int().min(1).max(900).optional(),
   })
-  .refine((v) => v.type !== 'choice' || (v.options && v.options.length >= 2), {
-    message: 'options (>=2) is required when type="choice"',
+  .superRefine((v, ctx) => {
+    const ASK_TYPES: UserAskKind[] = ['confirm', 'choice', 'choice_many', 'text', 'secret'];
+    if (ASK_TYPES.includes(v.type) && !v.question?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `question is required for type='${v.type}'`,
+        path: ['question'],
+      });
+    }
+    if ((v.type === 'choice' || v.type === 'choice_many') && (!v.options || v.options.length < 2)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `options (>=2) is required for type='${v.type}'`,
+        path: ['options'],
+      });
+    }
+    if (v.type === 'notify' && !v.message?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "message is required for type='notify'",
+        path: ['message'],
+      });
+    }
   });
-type AskArgs = z.infer<typeof AskArgs>;
+type UserArgs = z.infer<typeof UserArgs>;
 
-export const ask_user: ToolHandler<AskArgs, unknown> = {
-  name: 'ask_user',
+const EMPTY_ENVELOPE = {
+  answer: null as string | null,
+  selected: null as string[] | null,
+  confirmed: null as boolean | null,
+  action: null as string | null,
+  freeform: null as string | null,
+  cancelled: false,
+  timed_out: false,
+};
+type Envelope = typeof EMPTY_ENVELOPE;
+
+export const user: ToolHandler<UserArgs, Envelope> = {
+  name: 'user',
   tier: 'ask-user',
   description:
-    "Pause and ask the user a question when input is needed. type='confirm' for yes/no, 'choice' for a fixed set of options, 'text' for free-form input, 'secret' for sensitive input (passwords, API keys, MFA codes — masked in UI and storage). Prefer this over guessing on destructive or sensitive actions. For full control transfer, use request_user_takeover.",
-  argsSchema: AskArgs,
+    "Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no — pass question), 'choice' (single pick — pass question + options[]), 'choice_many' (multi pick — pass question + options[]), 'text' (freeform answer — pass question), 'secret' (masked input for passwords/MFA/API keys — pass question), 'notify' (display a message and optionally collect a single action — pass message; optional actions[] and level). Optional `context` shows a one-line 'why' on ask types. Optional `timeout_seconds` (1..900) auto-resolves the call with timed_out:true if the user doesn't respond. Returns the unified envelope { answer, selected, confirmed, action, freeform, cancelled, timed_out } — unused fields are null/false. For full keyboard/mouse handoff (CAPTCHA, login), use request_user_takeover. For plan approval, use update_plan.",
+  argsSchema: UserArgs,
   run: async (args, ctx) => {
-    const why = args.context ?? args.why;
-    if (args.type === 'confirm') {
-      return awaitUserAnswer(
-        {
-          callId: ctx.callId,
-          question: args.question,
-          choices: ['Yes', 'No'],
-          why,
-        },
-        args.timeout_ms,
-      );
+    const timeoutMs = args.timeout_seconds ? args.timeout_seconds * 1000 : null;
+    const request: PendingAskUserRequest = {
+      callId: ctx.callId,
+      kind: args.type,
+      question: args.question,
+      options: args.options,
+      message: args.message,
+      actions: args.actions,
+      level: args.level,
+      context: args.context,
+      expires_at_ms: timeoutMs ? Date.now() + timeoutMs : undefined,
+    };
+
+    // For notify, also fire a system notification so the user sees it
+    // when the side panel isn't open. The inline card still renders so
+    // they can respond with an action button.
+    if (args.type === 'notify') {
+      void fireSystemNotification(args, ctx.agentName).catch(() => {
+        /* permission denied / API absent — inline card is the fallback */
+      });
     }
-    if (args.type === 'choice') {
-      return awaitUserAnswer(
-        {
-          callId: ctx.callId,
-          question: args.question,
-          choices: args.options,
-          why,
-        },
-        args.timeout_ms,
-      );
-    }
-    if (args.type === 'secret') {
-      return awaitUserAnswer(
-        {
-          callId: ctx.callId,
-          question: args.question,
-          secret: true,
-          why,
-        },
-        args.timeout_ms,
-      );
-    }
-    return awaitUserAnswer(
-      { callId: ctx.callId, question: args.question, why },
-      args.timeout_ms,
-    );
+
+    const response = await awaitUserResponse(request, timeoutMs);
+    return responseToEnvelope(args.type, response);
   },
 };
 
-const ChoiceArgs = z.object({
-  question: z.string().min(1),
-  choices: z.array(z.string().min(1)).min(2).max(20),
-  why: z.string().optional(),
-  timeout_ms: z
-    .number()
-    .int()
-    .positive()
-    .max(15 * 60_000)
-    .optional()
-    .default(5 * 60_000),
-});
-type ChoiceArgs = z.infer<typeof ChoiceArgs>;
+function responseToEnvelope(kind: UserAskKind, r: AskUserResponse | 'timed_out'): Envelope {
+  if (r === 'timed_out') {
+    return { ...EMPTY_ENVELOPE, timed_out: true };
+  }
+  if (r.cancelled) {
+    return { ...EMPTY_ENVELOPE, cancelled: true };
+  }
+  switch (kind) {
+    case 'confirm':
+      return { ...EMPTY_ENVELOPE, confirmed: r.confirmed ?? null };
+    case 'choice':
+    case 'choice_many':
+      return { ...EMPTY_ENVELOPE, selected: r.selected ?? null };
+    case 'text':
+    case 'secret':
+      return { ...EMPTY_ENVELOPE, answer: r.answer ?? null };
+    case 'notify':
+      return {
+        ...EMPTY_ENVELOPE,
+        action: r.action ?? null,
+        freeform: r.freeform ?? null,
+      };
+  }
+}
 
-export const ask_user_choice: ToolHandler<ChoiceArgs, unknown> = {
-  name: 'ask_user_choice',
-  tier: 'ask-user',
-  description:
-    'Ask the human to pick one of N options. Cleaner than ask_user when the answer is bounded. Returns { answer } (the chosen string) or { cancelled: true }.',
-  argsSchema: ChoiceArgs,
-  run: async (args, ctx) =>
-    awaitUserAnswer(
+async function fireSystemNotification(args: UserArgs, agentName: string | null): Promise<void> {
+  if (!chrome.notifications) return;
+  const title = agentName ? `${agentName}` : 'Matrx';
+  await new Promise<string>((resolve) => {
+    chrome.notifications.create(
       {
-        callId: ctx.callId,
-        question: args.question,
-        choices: args.choices,
-        why: args.why,
+        type: 'basic',
+        iconUrl: chrome.runtime.getURL('icon/128.png'),
+        title,
+        message: args.message ?? '',
+        requireInteraction: (args.actions?.length ?? 0) > 0,
       },
-      args.timeout_ms,
-    ),
-};
+      (id) => resolve(id),
+    );
+  });
+}
 
-const SecretArgs = z.object({
-  prompt: z.string().min(1),
-  why: z.string().optional(),
-  timeout_ms: z
-    .number()
-    .int()
-    .positive()
-    .max(15 * 60_000)
-    .optional()
-    .default(5 * 60_000),
-});
-type SecretArgs = z.infer<typeof SecretArgs>;
+// ─── request_user_takeover (unchanged) ────────────────────────────────────
 
-export const ask_user_secret: ToolHandler<SecretArgs, unknown> = {
-  name: 'ask_user_secret',
-  tier: 'ask-user',
-  description:
-    'Ask the human for a secret value (e.g. a one-time code, last 4 of a card). Input is masked in the UI. The answer flows through the model exactly once and is NOT persisted in the conversation. Returns { answer } or { cancelled: true }.',
-  argsSchema: SecretArgs,
-  run: async (args, ctx) =>
-    awaitUserAnswer(
-      {
-        callId: ctx.callId,
-        question: args.prompt,
-        secret: true,
-        why: args.why,
-      },
-      args.timeout_ms,
-    ),
-};
-
-// Canonical: { tabId, reason, expected_action }. We previously required
-// `instructions`; canonical names that field `expected_action`. Accept both
-// during the migration; either or neither is fine.
 const TakeoverArgs = z.object({
   reason: z.string().min(1),
   expected_action: z.string().optional(),
@@ -163,28 +171,24 @@ export const request_user_takeover: ToolHandler<TakeoverArgs, unknown> = {
   name: 'request_user_takeover',
   tier: 'ask-user',
   description:
-    "Hand keyboard/mouse control to the user so they can perform an action the agent cannot or should not (logging in, MFA, CAPTCHA, sensitive form filling, decisions only the user can make). The user types/clicks directly into the page; when they're done they signal completion in the UI. The agent should re-read the page after takeover ends to see what changed. Distinct from ask_user, which is Q&A.",
+    "Hand keyboard/mouse control to the user so they can perform an action the agent cannot or should not (logging in, MFA, CAPTCHA, sensitive form filling, decisions only the user can make). The user types/clicks directly into the page; when they're done they signal completion in the UI. The agent should re-read the page after takeover ends to see what changed. Distinct from `user` (Q&A) — this is full page handoff.",
   argsSchema: TakeoverArgs,
   run: async (args, ctx) => {
     const detail = args.expected_action ?? args.instructions ?? '';
-    return awaitUserAnswer(
-      {
-        callId: ctx.callId,
-        question: detail ? `${args.reason}\n\n${detail}` : args.reason,
-        // We reuse ask_user's open-text card. Caller types "done" or any note.
-        why: 'Agent asked you to take over',
-      },
-      15 * 60_000,
-    );
+    const request: PendingAskUserRequest = {
+      callId: ctx.callId,
+      kind: 'text',
+      question: detail ? `${args.reason}\n\n${detail}` : args.reason,
+      context: 'Agent asked you to take over',
+    };
+    const r = await awaitUserResponse(request, 15 * 60_000);
+    if (r === 'timed_out') return { answer: null, cancelled: false, timed_out: true };
+    return { answer: r.answer ?? null, cancelled: r.cancelled ?? false };
   },
 };
 
 // ─── update_plan ──────────────────────────────────────────────────────────
 
-// Canonical: { approach: string[], domains: string[] }. We previously took
-// { title, steps, reasoning, estimated_minutes }. Accept both shapes; if
-// `approach` is present we use it as the steps; if `title` is missing we
-// derive one from the first step.
 const UpdatePlanArgs = z
   .object({
     title: z.string().optional(),
@@ -195,13 +199,12 @@ const UpdatePlanArgs = z
     domains: z.array(z.string()).optional(),
     reasoning: z.string().optional(),
     estimated_minutes: z.number().int().positive().max(240).optional(),
-    timeout_ms: z
+    timeout_seconds: z
       .number()
       .int()
       .positive()
-      .max(15 * 60_000)
-      .optional()
-      .default(5 * 60_000),
+      .max(15 * 60)
+      .optional(),
   })
   .refine((v) => v.steps != null || v.approach != null, {
     message: 'either `steps` or `approach` is required',
@@ -234,52 +237,55 @@ export const update_plan: ToolHandler<UpdatePlanArgs, unknown> = {
     ]
       .filter(Boolean)
       .join('\n');
-    const r = await awaitUserAnswer(
-      {
-        callId: ctx.callId,
-        question: body,
-        choices: ['Approve', 'Reject'],
-        why: 'Agent is proposing a plan',
-      },
-      args.timeout_ms,
-    );
+    const timeoutMs = (args.timeout_seconds ?? 5 * 60) * 1000;
+    const request: PendingAskUserRequest = {
+      callId: ctx.callId,
+      kind: 'choice',
+      question: body,
+      options: ['Approve', 'Reject'],
+      context: 'Agent is proposing a plan',
+      expires_at_ms: Date.now() + timeoutMs,
+    };
+    const r = await awaitUserResponse(request, timeoutMs);
+    if (r === 'timed_out') return { approved: false, note: null, timed_out: true };
     if (r.cancelled) return { approved: false, note: null };
+    const choice = r.selected?.[0] ?? r.answer ?? '';
     return {
-      approved: r.answer?.toLowerCase().startsWith('approve') ?? false,
-      note: r.answer,
+      approved: choice.toLowerCase().startsWith('approve'),
+      note: choice || null,
     };
   },
 };
 
-export const user_handlers = [
-  ask_user,
-  ask_user_choice,
-  ask_user_secret,
-  request_user_takeover,
-  update_plan,
-];
+export const user_handlers = [user, request_user_takeover, update_plan];
 
 // ─── shared awaiter ────────────────────────────────────────────────────────
 
-function awaitUserAnswer(
+/**
+ * Broadcast the request and wait for the matching response. Resolves to
+ * 'timed_out' when `timeoutMs` is set and no response arrives in time;
+ * resolves to the response otherwise. Cancellation comes through as a
+ * normal response with `cancelled: true`.
+ */
+function awaitUserResponse(
   request: PendingAskUserRequest,
-  timeoutMs: number,
-): Promise<{ answer: string | null; cancelled?: boolean }> {
+  timeoutMs: number | null,
+): Promise<AskUserResponse | 'timed_out'> {
   return new Promise((resolve) => {
     let resolved = false;
-    const finish = (out: { answer: string | null; cancelled?: boolean }) => {
+    const finish = (out: AskUserResponse | 'timed_out') => {
       if (resolved) return;
       resolved = true;
       off();
-      clearTimeout(timer);
+      if (timer != null) clearTimeout(timer);
       resolve(out);
     };
     const off = on<AskUserResponse, { ack: true }>(CHANNELS.TOOL_ASK_USER_RESPONSE, (payload) => {
       if (payload.callId !== request.callId) return { ack: true };
-      finish({ answer: payload.answer, cancelled: payload.cancelled });
+      finish(payload);
       return { ack: true };
     });
-    const timer = setTimeout(() => finish({ answer: null, cancelled: true }), timeoutMs);
+    const timer = timeoutMs != null ? setTimeout(() => finish('timed_out'), timeoutMs) : null;
     broadcast(CHANNELS.TOOL_ASK_USER_REQUEST, request);
   });
 }

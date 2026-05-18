@@ -106,8 +106,14 @@ export function respondToConfirm(
   broadcast(CHANNELS.TOOL_CONFIRM_RESPONSE, res);
 }
 
-export function respondToAsk(callId: string, answer: string | null, cancelled = false): void {
+/**
+ * Send the user's reply back to the SW dispatcher. Accepts a partial
+ * envelope — only the fields relevant to the request's `kind` need to
+ * be populated (e.g. `confirmed` for confirm, `selected` for choice).
+ * The handler in user.ts maps this onto the unified output shape.
+ */
+export function respondToAsk(callId: string, reply: Omit<AskUserResponse, 'callId'>): void {
   useToolInbox.getState().removeAsk(callId);
-  const res: AskUserResponse = { callId, answer, cancelled };
+  const res: AskUserResponse = { callId, ...reply };
   broadcast(CHANNELS.TOOL_ASK_USER_RESPONSE, res);
 }

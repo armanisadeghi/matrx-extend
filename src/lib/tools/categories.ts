@@ -206,7 +206,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   navigate_active_tab: 'core',
   click_element: 'core',
   type_into_element: 'core',
-  ask_user: 'core',
+  user: 'core',
 
   // ─── page understanding ─────────────────────────────────────────────────
   get_page_text: 'page',
@@ -290,7 +290,6 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   cancel_download: 'files',
   set_clipboard: 'files',
   get_clipboard: 'files',
-  notify_user: 'files',
   save_page_as_mhtml: 'files',
 
   // ─── memory ─────────────────────────────────────────────────────────────
@@ -300,8 +299,6 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   remember_for_domain: 'memory',
 
   // ─── ask ────────────────────────────────────────────────────────────────
-  ask_user_choice: 'ask',
-  ask_user_secret: 'ask',
   request_user_takeover: 'ask',
   update_plan: 'ask',
 
@@ -419,7 +416,7 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'browser_batch',
   'read_page',
   'find',
-  'ask_user',
+  'user',
   // ─── canonical mega-tool routers ────────────────────────────────────────
   'computer',
   'navigate',
@@ -467,10 +464,7 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   // ─── ask + plan ─────────────────────────────────────────────────────────
   'request_user_takeover',
   'update_plan',
-  'ask_user_choice',
-  'ask_user_secret',
   // ─── files / windows ────────────────────────────────────────────────────
-  'notify_user',
   'save_page_as_mhtml',
   'resize_window',
   // ─── recording / demos / guidance ───────────────────────────────────────

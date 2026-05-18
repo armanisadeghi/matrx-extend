@@ -1,11 +1,11 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-18T03:18:21.045Z
+Generated: 2026-05-18T22:47:20.634Z
 
-- **Total tools:** 170
+- **Total tools:** 167
 - **Assistant bundle:** 76 tools (read-only)
-- **Pilot bundle:** 140 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 170 tools
+- **Pilot bundle:** 137 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 167 tools
 
 
 ## Tier: read (76)
@@ -2192,7 +2192,7 @@ Read browsing history. Actions: 'search' (free-text against title/URL; pass `que
 }
 ```
 
-## Tier: action (59)
+## Tier: action (58)
 
 ### `navigate_active_tab`
 
@@ -3264,42 +3264,6 @@ Cancel an in-progress download by its download_id.
 }
 ```
 
-### `notify_user`
-
-Show a system notification to the user. Use after a long-running task finishes (especially useful when the side panel is hidden). The user can click to focus the extension.
-
-- **Required permissions:** `notifications`
-- **Surface bundles:** pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "title": {
-      "type": "string",
-      "minLength": 1
-    },
-    "message": {
-      "type": "string",
-      "minLength": 1
-    },
-    "icon": {
-      "type": "string"
-    },
-    "require_interaction": {
-      "type": "boolean",
-      "default": false
-    }
-  },
-  "required": [
-    "title",
-    "message"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
 ### `remember_for_domain`
 
 Remember something about a domain so it shows up in `domain_memo` context on every future visit. Use for site-specific lessons: "the PO submit button is the third primary", "DOB format is MM/DD/YYYY here", "this site requires SSO via Okta". Notes are free-form prose; hints are structured key/value pairs you can look up by name. Memos on a parent domain (e.g., atlassian.net) automatically apply to subdomains. Returns the updated memo so you can see what is remembered now.
@@ -4259,32 +4223,32 @@ Recently-closed tabs and windows. Actions: 'list' (returns sessions with id/url/
 }
 ```
 
-## Tier: ask-user (5)
+## Tier: ask-user (3)
 
-### `ask_user`
+### `user`
 
-Pause and ask the user a question when input is needed. type='confirm' for yes/no, 'choice' for a fixed set of options, 'text' for free-form input, 'secret' for sensitive input (passwords, API keys, MFA codes — masked in UI and storage). Prefer this over guessing on destructive or sensitive actions. For full control transfer, use request_user_takeover.
+Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no — pass question), 'choice' (single pick — pass question + options[]), 'choice_many' (multi pick — pass question + options[]), 'text' (freeform answer — pass question), 'secret' (masked input for passwords/MFA/API keys — pass question), 'notify' (display a message and optionally collect a single action — pass message; optional actions[] and level). Optional `context` shows a one-line 'why' on ask types. Optional `timeout_seconds` (1..900) auto-resolves the call with timed_out:true if the user doesn't respond. Returns the unified envelope { answer, selected, confirmed, action, freeform, cancelled, timed_out } — unused fields are null/false. For full keyboard/mouse handoff (CAPTCHA, login), use request_user_takeover. For plan approval, use update_plan.
 
-- **Required permissions:** (none)
+- **Required permissions:** `notifications`
 - **Surface bundles:** pilot, pilot+privileged
 
 ```json
 {
   "type": "object",
   "properties": {
-    "question": {
-      "type": "string",
-      "minLength": 1
-    },
     "type": {
       "type": "string",
       "enum": [
         "confirm",
         "choice",
+        "choice_many",
         "text",
-        "secret"
-      ],
-      "default": "text"
+        "secret",
+        "notify"
+      ]
+    },
+    "question": {
+      "type": "string"
     },
     "options": {
       "type": "array",
@@ -4296,94 +4260,33 @@ Pause and ask the user a question when input is needed. type='confirm' for yes/n
     "context": {
       "type": "string"
     },
-    "why": {
+    "message": {
       "type": "string"
     },
-    "timeout_ms": {
-      "type": "integer",
-      "exclusiveMinimum": 0,
-      "maximum": 900000,
-      "default": 300000
-    }
-  },
-  "required": [
-    "question"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `ask_user_choice`
-
-Ask the human to pick one of N options. Cleaner than ask_user when the answer is bounded. Returns { answer } (the chosen string) or { cancelled: true }.
-
-- **Required permissions:** (none)
-- **Surface bundles:** pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "question": {
-      "type": "string",
-      "minLength": 1
-    },
-    "choices": {
+    "actions": {
       "type": "array",
       "items": {
         "type": "string",
         "minLength": 1
-      },
-      "minItems": 2,
-      "maxItems": 20
+      }
     },
-    "why": {
-      "type": "string"
-    },
-    "timeout_ms": {
-      "type": "integer",
-      "exclusiveMinimum": 0,
-      "maximum": 900000,
-      "default": 300000
-    }
-  },
-  "required": [
-    "question",
-    "choices"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `ask_user_secret`
-
-Ask the human for a secret value (e.g. a one-time code, last 4 of a card). Input is masked in the UI. The answer flows through the model exactly once and is NOT persisted in the conversation. Returns { answer } or { cancelled: true }.
-
-- **Required permissions:** (none)
-- **Surface bundles:** pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "prompt": {
+    "level": {
       "type": "string",
-      "minLength": 1
+      "enum": [
+        "info",
+        "success",
+        "warning",
+        "error"
+      ]
     },
-    "why": {
-      "type": "string"
-    },
-    "timeout_ms": {
+    "timeout_seconds": {
       "type": "integer",
-      "exclusiveMinimum": 0,
-      "maximum": 900000,
-      "default": 300000
+      "minimum": 1,
+      "maximum": 900
     }
   },
   "required": [
-    "prompt"
+    "type"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -4392,7 +4295,7 @@ Ask the human for a secret value (e.g. a one-time code, last 4 of a card). Input
 
 ### `request_user_takeover`
 
-Hand keyboard/mouse control to the user so they can perform an action the agent cannot or should not (logging in, MFA, CAPTCHA, sensitive form filling, decisions only the user can make). The user types/clicks directly into the page; when they're done they signal completion in the UI. The agent should re-read the page after takeover ends to see what changed. Distinct from ask_user, which is Q&A.
+Hand keyboard/mouse control to the user so they can perform an action the agent cannot or should not (logging in, MFA, CAPTCHA, sensitive form filling, decisions only the user can make). The user types/clicks directly into the page; when they're done they signal completion in the UI. The agent should re-read the page after takeover ends to see what changed. Distinct from `user` (Q&A) — this is full page handoff.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
@@ -4469,11 +4372,10 @@ Propose a step-by-step plan and wait for the user to approve, modify, or reject 
       "exclusiveMinimum": 0,
       "maximum": 240
     },
-    "timeout_ms": {
+    "timeout_seconds": {
       "type": "integer",
       "exclusiveMinimum": 0,
-      "maximum": 900000,
-      "default": 300000
+      "maximum": 900
     }
   },
   "additionalProperties": false,
@@ -5250,7 +5152,7 @@ Invoke a command on the matrx-local desktop bridge. Available commands depend on
 
 ### `replay_demo`
 
-Replay a saved demo against a tab. Always requires confirmation — the demo can click, type, submit, and navigate. Pass `dry_run: true` to test selector resolution without taking action. Pass `params` to substitute placeholders (sensitive fields like passwords MUST be supplied this way; the agent should ask the user via `ask_user_secret` first). Returns per-step results with `resolved_via` showing which selector strategy hit.
+Replay a saved demo against a tab. Always requires confirmation — the demo can click, type, submit, and navigate. Pass `dry_run: true` to test selector resolution without taking action. Pass `params` to substitute placeholders (sensitive fields like passwords MUST be supplied this way; the agent should ask the user via `user(type='secret', ...)` first). Returns per-step results with `resolved_via` showing which selector strategy hit.
 
 - **Required permissions:** `tabs`, `activeTab`, `scripting`, `storage`
 - **Surface bundles:** pilot+privileged

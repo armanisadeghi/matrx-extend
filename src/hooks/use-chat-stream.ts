@@ -1,4 +1,5 @@
 import { type AgentStartRequest, agentExecutePath } from "@/lib/api/routes/ai";
+import { resolveActiveTab } from "@/lib/chat/active-tab";
 import { buildBrowserDomState } from "@/lib/chat/build-browser-dom-state";
 import { buildChatContext } from "@/lib/chat/build-context";
 import { refreshPageContextBeforeSend } from "@/lib/chat/refresh-page-context";
@@ -321,6 +322,11 @@ export function useChatStream() {
       // the page's current state).
       const manualScrape = useScrapeStore.getState().current;
       const autoScrape = useAutoScrapeStore.getState().current;
+      // Resolve the active tab ONCE — this Tab is the source of truth for
+      // every tab-id field on the wire (page_brief.tab_id, tab_state.*,
+      // client.state["browser-dom"].current_tab_id, STREAM_START.assignedTabId).
+      // See docs/REQUEST_PAYLOAD_CONTRACT.md §1.
+      const activeTab = await resolveActiveTab();
       let context: Record<string, unknown> = {};
       try {
         context = await buildChatContext({
@@ -334,6 +340,7 @@ export function useChatStream() {
           desktopTransport: desktop.transport,
           scrape: manualScrape,
           autoScrape,
+          activeTab,
         });
         log.info(
           "stream",
@@ -364,10 +371,18 @@ export function useChatStream() {
       const conversationId = opts.conversationId ?? null;
       const loadedCategories = useActiveToolsStore.getState().getLoaded(conversationId);
       const surface = opts.surface ?? "assistant";
+      // Reuse the active tab from above and lift `page_lang` out of the
+      // freshly-built context's page_brief so the browser-dom builder
+      // doesn't re-query Chrome OR re-fetch the page lang. Both payloads
+      // now reference the same Tab and same lang.
+      const briefLang =
+        (context.page_brief as { lang?: string | null } | undefined)?.lang ?? null;
       const browserDomState = await buildBrowserDomState({
         surface,
         agentId: opts.agentId,
         loadedCategories,
+        activeTab,
+        pageLang: briefLang,
       });
       // Pilot pins every run to a tab inside its session group so the
       // dispatcher's group-scoping gate accepts the call. The PilotView
@@ -437,11 +452,13 @@ export function useChatStream() {
       };
 
       // Latch the tab the agent will operate on for the entire run.
-      // `browserDomState.current_tab_id` was just captured a few lines up
-      // (queryActiveTab inside buildBrowserDomState). Passing it through
-      // STREAM_START is what the SW dispatcher uses to pin every tool call
-      // in this turn — so the user can switch tabs mid-execution without
-      // dragging the agent's `read_page`/`click`/`screenshot` along.
+      // `browserDomState.current_tab_id` mirrors the single `activeTab`
+      // we resolved at the top of this send — same Tab on the dispatcher
+      // gate, in `context.page_brief`, and in `client.state["browser-dom"]`.
+      // Passing it through STREAM_START is what the SW dispatcher uses
+      // to pin every tool call in this turn — so the user can switch
+      // tabs mid-execution without dragging `read_page`/`click`/`screenshot`
+      // along.
       await send(CHANNELS.STREAM_START, {
         runId,
         endpoint: agentExecutePath(opts.agentId),

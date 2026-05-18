@@ -196,7 +196,7 @@ export const replay_demo: ToolHandler<ReplayDemoArgs, unknown> = {
   name: 'replay_demo',
   tier: 'privileged',
   description:
-    "Replay a saved demo against a tab. Always requires confirmation — the demo can click, type, submit, and navigate. Pass `dry_run: true` to test selector resolution without taking action. Pass `params` to substitute placeholders (sensitive fields like passwords MUST be supplied this way; the agent should ask the user via `ask_user_secret` first). Returns per-step results with `resolved_via` showing which selector strategy hit.",
+    "Replay a saved demo against a tab. Always requires confirmation — the demo can click, type, submit, and navigate. Pass `dry_run: true` to test selector resolution without taking action. Pass `params` to substitute placeholders (sensitive fields like passwords MUST be supplied this way; the agent should ask the user via `user(type='secret', ...)` first). Returns per-step results with `resolved_via` showing which selector strategy hit.",
   argsSchema: ReplayDemoArgs,
   run: async (args) => {
     const demo = await getDemo(args.demo_id);

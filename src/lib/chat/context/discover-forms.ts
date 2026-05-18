@@ -14,7 +14,13 @@
 import { log } from '@/lib/debug/log';
 
 export interface DiscoveredField {
-  ref?: string | null;
+  /**
+   * Ref the agent can pass straight to `form_input` / `click_element` /
+   * `computer({action:'left_click', ref})` without a separate read_page
+   * call. Populated when the field carries a `data-matrx-ref="N"` attribute
+   * — see prewarmReadPageCache. Falls back to `selector` when missing.
+   */
+  ref?: string;
   selector: string;
   name: string | null;
   id: string | null;
@@ -25,14 +31,19 @@ export interface DiscoveredField {
   current_value: string | boolean | string[] | null;
   required: boolean;
   disabled: boolean;
-  validation: {
-    pattern: string | null;
-    min_length: number | null;
-    max_length: number | null;
-    min: string | null;
-    max: string | null;
-    autocomplete: string | null;
-  };
+  /**
+   * Only non-null sub-fields are present. When the input declares none,
+   * the entire `validation` key is omitted (pure null bag was noise on
+   * every common field — see browser-agent feedback 2026-05-18).
+   */
+  validation?: Partial<{
+    pattern: string;
+    min_length: number;
+    max_length: number;
+    min: string;
+    max: string;
+    autocomplete: string;
+  }>;
   /** From an adjacent error element (`[role="alert"]`, `.error`, etc). */
   error_message: string | null;
   /** Options for `<select>` and `<input type="radio">` groups. */
@@ -167,14 +178,17 @@ export async function discoverFormsForContext(
             }
 
             const inputEl = el as HTMLInputElement;
-            const validation = {
-              pattern: inputEl.pattern || null,
-              min_length: inputEl.minLength > 0 ? inputEl.minLength : null,
-              max_length: inputEl.maxLength > 0 ? inputEl.maxLength : null,
-              min: inputEl.min || null,
-              max: inputEl.max || null,
-              autocomplete: el.getAttribute('autocomplete') || null,
-            };
+            // Build the validation bag with only fields that are actually
+            // set. When the input declares nothing, the bag is omitted
+            // entirely so we don't carry six nulls per field on every form.
+            const validation: Partial<DiscoveredField['validation']> = {};
+            if (inputEl.pattern) validation.pattern = inputEl.pattern;
+            if (inputEl.minLength > 0) validation.min_length = inputEl.minLength;
+            if (inputEl.maxLength > 0) validation.max_length = inputEl.maxLength;
+            if (inputEl.min) validation.min = inputEl.min;
+            if (inputEl.max) validation.max = inputEl.max;
+            const autoc = el.getAttribute('autocomplete');
+            if (autoc) validation.autocomplete = autoc;
 
             const options =
               tag === 'select'
@@ -185,7 +199,10 @@ export async function discoverFormsForContext(
                   }))
                 : null;
 
-            return {
+            // Pick up the ref left by prewarmReadPageCache. Falls through to
+            // selector-based interaction when missing.
+            const refAttr = el.getAttribute('data-matrx-ref');
+            const result: DiscoveredField = {
               selector: uniqueSelector(el),
               name: el.getAttribute('name'),
               id: el.getAttribute('id'),
@@ -196,10 +213,14 @@ export async function discoverFormsForContext(
               current_value: value,
               required: inputEl.required ?? false,
               disabled: inputEl.disabled ?? false,
-              validation,
               error_message: errorFor(el),
               options,
             };
+            if (refAttr) result.ref = `ref:${refAttr}`;
+            if (Object.keys(validation).length > 0) {
+              result.validation = validation as DiscoveredField['validation'];
+            }
+            return result;
           });
 
           const submit = form.querySelector(

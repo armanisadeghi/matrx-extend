@@ -16,6 +16,7 @@
  */
 
 import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { buildChatContext } from '@/lib/chat/build-context';
 import { refreshPageContextBeforeSend } from '@/lib/chat/refresh-page-context';
@@ -252,6 +253,9 @@ export function usePilotChatStream() {
       const desktop = useDesktopStore.getState();
       const manualScrape = useScrapeStore.getState().current;
       const autoScrape = useAutoScrapeStore.getState().current;
+      // One tab query per send; both payloads reference the same Tab.
+      // See docs/REQUEST_PAYLOAD_CONTRACT.md §1.
+      const activeTab = await resolveActiveTab();
       let context: Record<string, unknown> = {};
       try {
         context = await buildChatContext({
@@ -265,6 +269,7 @@ export function usePilotChatStream() {
           desktopTransport: desktop.transport,
           scrape: manualScrape,
           autoScrape,
+          activeTab,
         });
       } catch (err) {
         log.warn('pilot-stream', 'buildChatContext failed', err);
@@ -274,10 +279,14 @@ export function usePilotChatStream() {
 
       const conversationId = opts.conversationId ?? null;
       const loadedCategories = useActiveToolsStore.getState().getLoaded(conversationId);
+      const briefLang =
+        (context.page_brief as { lang?: string | null } | undefined)?.lang ?? null;
       const browserDomState = await buildBrowserDomState({
         surface: 'pilot',
         agentId: opts.agentId,
         loadedCategories,
+        activeTab,
+        pageLang: briefLang,
       });
 
       const isAdmin = useAuthStore.getState().isAdmin;

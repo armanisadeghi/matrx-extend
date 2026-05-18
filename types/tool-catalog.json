@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-18T03:18:21.045Z",
+  "generated_at": "2026-05-18T22:47:20.634Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -12,7 +12,7 @@
     "navigate_active_tab",
     "click_element",
     "type_into_element",
-    "ask_user",
+    "user",
     "computer",
     "navigate",
     "list_page_tools",
@@ -197,7 +197,6 @@
     "update_tab_group",
     "download_url",
     "cancel_download",
-    "notify_user",
     "remember_for_domain",
     "list_recently_closed",
     "restore_recently_closed",
@@ -210,9 +209,7 @@
     "webmcp_check_availability",
     "webmcp_list_page_tools",
     "webmcp_call_page_tool",
-    "ask_user",
-    "ask_user_choice",
-    "ask_user_secret",
+    "user",
     "request_user_takeover",
     "update_plan",
     "parallel_for_each_tab",
@@ -339,7 +336,6 @@
     "update_tab_group",
     "download_url",
     "cancel_download",
-    "notify_user",
     "remember_for_domain",
     "list_recently_closed",
     "restore_recently_closed",
@@ -370,9 +366,7 @@
     "webmcp_check_availability",
     "webmcp_list_page_tools",
     "webmcp_call_page_tool",
-    "ask_user",
-    "ask_user_choice",
-    "ask_user_secret",
+    "user",
     "request_user_takeover",
     "update_plan",
     "execute_javascript",
@@ -441,7 +435,7 @@
         "navigate_active_tab",
         "click_element",
         "type_into_element",
-        "ask_user",
+        "user",
         "computer",
         "navigate"
       ]
@@ -583,7 +577,6 @@
         "set_clipboard",
         "download_url",
         "cancel_download",
-        "notify_user",
         "save_page_as_mhtml",
         "get_clipboard",
         "downloads",
@@ -615,8 +608,6 @@
       "list_tool": "list_ask_tools",
       "admin_only": false,
       "tool_names": [
-        "ask_user_choice",
-        "ask_user_secret",
         "request_user_takeover",
         "update_plan"
       ]
@@ -4107,52 +4098,6 @@
       ]
     },
     {
-      "name": "notify_user",
-      "description": "Show a system notification to the user. Use after a long-running task finishes (especially useful when the side panel is hidden). The user can click to focus the extension.",
-      "tier": "action",
-      "category": "files",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "minLength": 1
-          },
-          "message": {
-            "type": "string",
-            "minLength": 1
-          },
-          "icon": {
-            "type": "string"
-          },
-          "require_interaction": {
-            "type": "boolean",
-            "default": false
-          }
-        },
-        "required": [
-          "title",
-          "message"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [
-        "notifications"
-      ],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
-        "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
       "name": "remember_for_domain",
       "description": "Remember something about a domain so it shows up in `domain_memo` context on every future visit. Use for site-specific lessons: \"the PO submit button is the third primary\", \"DOB format is MM/DD/YYYY here\", \"this site requires SSO via Okta\". Notes are free-form prose; hints are structured key/value pairs you can look up by name. Memos on a parent domain (e.g., atlassian.net) automatically apply to subdomains. Returns the updated memo so you can see what is remembered now.",
       "tier": "action",
@@ -5301,26 +5246,26 @@
       ]
     },
     {
-      "name": "ask_user",
-      "description": "Pause and ask the user a question when input is needed. type='confirm' for yes/no, 'choice' for a fixed set of options, 'text' for free-form input, 'secret' for sensitive input (passwords, API keys, MFA codes — masked in UI and storage). Prefer this over guessing on destructive or sensitive actions. For full control transfer, use request_user_takeover.",
+      "name": "user",
+      "description": "Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no — pass question), 'choice' (single pick — pass question + options[]), 'choice_many' (multi pick — pass question + options[]), 'text' (freeform answer — pass question), 'secret' (masked input for passwords/MFA/API keys — pass question), 'notify' (display a message and optionally collect a single action — pass message; optional actions[] and level). Optional `context` shows a one-line 'why' on ask types. Optional `timeout_seconds` (1..900) auto-resolves the call with timed_out:true if the user doesn't respond. Returns the unified envelope { answer, selected, confirmed, action, freeform, cancelled, timed_out } — unused fields are null/false. For full keyboard/mouse handoff (CAPTCHA, login), use request_user_takeover. For plan approval, use update_plan.",
       "tier": "ask-user",
       "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {
-          "question": {
-            "type": "string",
-            "minLength": 1
-          },
           "type": {
             "type": "string",
             "enum": [
               "confirm",
               "choice",
+              "choice_many",
               "text",
-              "secret"
-            ],
-            "default": "text"
+              "secret",
+              "notify"
+            ]
+          },
+          "question": {
+            "type": "string"
           },
           "options": {
             "type": "array",
@@ -5332,115 +5277,40 @@
           "context": {
             "type": "string"
           },
-          "why": {
+          "message": {
             "type": "string"
           },
-          "timeout_ms": {
-            "type": "integer",
-            "exclusiveMinimum": 0,
-            "maximum": 900000,
-            "default": 300000
-          }
-        },
-        "required": [
-          "question"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
-        "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
-      "name": "ask_user_choice",
-      "description": "Ask the human to pick one of N options. Cleaner than ask_user when the answer is bounded. Returns { answer } (the chosen string) or { cancelled: true }.",
-      "tier": "ask-user",
-      "category": "ask",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "question": {
-            "type": "string",
-            "minLength": 1
-          },
-          "choices": {
+          "actions": {
             "type": "array",
             "items": {
               "type": "string",
               "minLength": 1
-            },
-            "minItems": 2,
-            "maxItems": 20
+            }
           },
-          "why": {
-            "type": "string"
-          },
-          "timeout_ms": {
-            "type": "integer",
-            "exclusiveMinimum": 0,
-            "maximum": 900000,
-            "default": 300000
-          }
-        },
-        "required": [
-          "question",
-          "choices"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
-        "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
-      "name": "ask_user_secret",
-      "description": "Ask the human for a secret value (e.g. a one-time code, last 4 of a card). Input is masked in the UI. The answer flows through the model exactly once and is NOT persisted in the conversation. Returns { answer } or { cancelled: true }.",
-      "tier": "ask-user",
-      "category": "ask",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "prompt": {
+          "level": {
             "type": "string",
-            "minLength": 1
+            "enum": [
+              "info",
+              "success",
+              "warning",
+              "error"
+            ]
           },
-          "why": {
-            "type": "string"
-          },
-          "timeout_ms": {
+          "timeout_seconds": {
             "type": "integer",
-            "exclusiveMinimum": 0,
-            "maximum": 900000,
-            "default": 300000
+            "minimum": 1,
+            "maximum": 900
           }
         },
         "required": [
-          "prompt"
+          "type"
         ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": [],
+      "required_permissions": [
+        "notifications"
+      ],
       "required_optional_permissions": [],
       "admin_only": false,
       "surface_bundles": [
@@ -5455,7 +5325,7 @@
     },
     {
       "name": "request_user_takeover",
-      "description": "Hand keyboard/mouse control to the user so they can perform an action the agent cannot or should not (logging in, MFA, CAPTCHA, sensitive form filling, decisions only the user can make). The user types/clicks directly into the page; when they're done they signal completion in the UI. The agent should re-read the page after takeover ends to see what changed. Distinct from ask_user, which is Q&A.",
+      "description": "Hand keyboard/mouse control to the user so they can perform an action the agent cannot or should not (logging in, MFA, CAPTCHA, sensitive form filling, decisions only the user can make). The user types/clicks directly into the page; when they're done they signal completion in the UI. The agent should re-read the page after takeover ends to see what changed. Distinct from `user` (Q&A) — this is full page handoff.",
       "tier": "ask-user",
       "category": "ask",
       "input_schema": {
@@ -5537,11 +5407,10 @@
             "exclusiveMinimum": 0,
             "maximum": 240
           },
-          "timeout_ms": {
+          "timeout_seconds": {
             "type": "integer",
             "exclusiveMinimum": 0,
-            "maximum": 900000,
-            "default": 300000
+            "maximum": 900
           }
         },
         "additionalProperties": false,
@@ -6134,7 +6003,7 @@
     },
     {
       "name": "replay_demo",
-      "description": "Replay a saved demo against a tab. Always requires confirmation — the demo can click, type, submit, and navigate. Pass `dry_run: true` to test selector resolution without taking action. Pass `params` to substitute placeholders (sensitive fields like passwords MUST be supplied this way; the agent should ask the user via `ask_user_secret` first). Returns per-step results with `resolved_via` showing which selector strategy hit.",
+      "description": "Replay a saved demo against a tab. Always requires confirmation — the demo can click, type, submit, and navigate. Pass `dry_run: true` to test selector resolution without taking action. Pass `params` to substitute placeholders (sensitive fields like passwords MUST be supplied this way; the agent should ask the user via `user(type='secret', ...)` first). Returns per-step results with `resolved_via` showing which selector strategy hit.",
       "tier": "privileged",
       "category": "demos",
       "input_schema": {

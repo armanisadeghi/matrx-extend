@@ -17,4 +17,17 @@ export interface ContextBuildInputs {
    * having to click "Scrape".
    */
   autoScrape?: AutoScrapeRecord | null;
+  /**
+   * Active tab as captured by the caller (see use-chat-stream's
+   * `resolveActiveTab`). When provided, the context builder uses this
+   * instead of running `chrome.tabs.query` itself — this is what keeps
+   * `context.tab_state.*`, `context.page_brief.tab_id`, and
+   * `client.state["browser-dom"].current_tab_id` referencing the SAME
+   * Tab even when the user switches mid-send. See
+   * docs/REQUEST_PAYLOAD_CONTRACT.md §1.
+   *
+   * When omitted, the builder falls back to its own query — kept for
+   * tests and one-off invocations that don't have a tab handy.
+   */
+  activeTab?: chrome.tabs.Tab | null;
 }

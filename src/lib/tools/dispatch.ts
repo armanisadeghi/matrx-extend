@@ -269,7 +269,7 @@ async function enforcePilotGroupScope(
   // so the gate is conservative).
   if (handler.tier === 'read' || handler.tier === 'ask-user') return null;
   // No tab assigned → tools that don't touch tabs (e.g. desktop_run_command,
-  // ask_user) shouldn't be blocked by the group constraint. Action tools that
+  // `user`) shouldn't be blocked by the group constraint. Action tools that
   // genuinely target a tab will have one set by recordAssignedTab.
   const tabId = ctx.assignedTabId;
   if (tabId == null) return null;
@@ -372,7 +372,7 @@ async function handleCall(
   // them — `chrome.permissions.request` requires a user gesture which
   // the SW context lacks — so when the perm isn't granted yet we return
   // a structured error that GUIDES the agent to ask the user, with
-  // enough detail that the next agent turn can call `ask_user` with the
+  // enough detail that the next agent turn can call `user` with the
   // exact remediation. The user-facing prompt happens through that path
   // (or via the in-app toggle in Settings → Advanced), never by us
   // refusing them outright.
@@ -383,7 +383,7 @@ async function handleCall(
     if (!granted) {
       const perms = handler.required_optional_permissions.join(', ');
       return fail(
-        `permission_not_yet_granted: this tool needs the optional Chrome permission(s) [${perms}]. Use ask_user to request the user enable it via the Advanced agent capabilities toggle, then retry. Do not give up — the user can grant the permission and the next call will succeed.`,
+        `permission_not_yet_granted: this tool needs the optional Chrome permission(s) [${perms}]. Use user(type='confirm', ...) or user(type='notify', ...) to request the user enable it via the Advanced agent capabilities toggle, then retry. Do not give up — the user can grant the permission and the next call will succeed.`,
       );
     }
   }

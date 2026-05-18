@@ -566,6 +566,14 @@ sidepanel (React) ──STREAM_START──▶ SW ──STREAM_RUN──▶ offsc
 We migrated to the new capability-based shape. The extension is the first
 client built directly against it; no legacy compatibility.
 
+**Authoritative wire contract:** [docs/REQUEST_PAYLOAD_CONTRACT.md](./docs/REQUEST_PAYLOAD_CONTRACT.md)
+documents every field in `context` and `client.state["browser-dom"]`,
+how tab id flows through both payloads, and what's conditional vs.
+always-attached. **Update that doc in the same commit any time you add,
+rename, or drop a key — engineers template `{{page_brief.title}}` into
+prompts and the discovery handler reads `client.state["browser-dom"]`
+field-by-field.**
+
 **Request shape** (every chat send):
 
 ```ts
@@ -756,6 +764,15 @@ Full incident write-up: [`.research/v0.1.4-auth-incident.md`](./.research/v0.1.4
   pinned to its tab even when the user switches focus mid-execution.
   If you need to *list* tabs (not "the current one") that's fine —
   e.g., `list_open_tabs` legitimately calls `chrome.tabs.query({})`.
+- **Active tab for request assembly: resolve ONCE per send.** The chat
+  hooks call `resolveActiveTab()` from
+  [`src/lib/chat/active-tab.ts`](./src/lib/chat/active-tab.ts) at the
+  top of the send and thread the `chrome.tabs.Tab` through
+  `buildChatContext`, `buildBrowserDomState`, and `STREAM_START.assignedTabId`.
+  Never re-query inside a context builder — a second query reintroduces
+  the cross-tab race where `page_brief.tab_id` and
+  `client.state["browser-dom"].current_tab_id` end up referencing
+  different tabs. See [docs/REQUEST_PAYLOAD_CONTRACT.md §1](./docs/REQUEST_PAYLOAD_CONTRACT.md).
 - **Catalog stays in sync**: after any handler change, run
   `pnpm catalog:tools:md` and commit the regenerated JSON + MD.
 - **Document tests for everything user-visible**: when you add or

@@ -90,6 +90,34 @@ export function parseBlocks(content: string): Block[] {
       continue;
     }
 
+    // Skip past inline code spans so backtick-quoted content (e.g.
+    // `<lazy-placeholder>`) is never mistaken for an XML tag. CommonMark
+    // inline code: a run of N backticks opens, the next run of exactly N
+    // closes. If no close is found, the opening run is literal backticks
+    // and parsing continues normally past them.
+    if (content[i] === '`') {
+      let n = 0;
+      while (content[i + n] === '`') n++;
+      const afterOpen = i + n;
+      let j = afterOpen;
+      let closeEnd = -1;
+      while (j < content.length) {
+        if (content[j] === '`') {
+          let m = 0;
+          while (content[j + m] === '`') m++;
+          if (m === n) {
+            closeEnd = j + m;
+            break;
+          }
+          j += m;
+        } else {
+          j++;
+        }
+      }
+      i = closeEnd !== -1 ? closeEnd : afterOpen;
+      continue;
+    }
+
     if (content[i] === '<' && /[a-zA-Z]/.test(content[i + 1] ?? '')) {
       const xml = matchXml(content, i);
       if (xml) {

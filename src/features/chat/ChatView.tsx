@@ -201,6 +201,30 @@ export function ChatView() {
     };
   }, [user]);
 
+  // Pick up brand-new conversations mid-session. The server assigns an id
+  // on the first message of a fresh chat (returned via X-Conversation-ID,
+  // broadcast as STREAM_OPENED, adopted into `selectedConversationId`).
+  // Without this hook the HistoryMenu kept showing the on-mount snapshot
+  // until the user toggled the extension off and on. We only refetch when
+  // the new id isn't already in the list, so switching back to an existing
+  // thread doesn't trigger network. Short delay lets the server finish
+  // writing the title before we read it.
+  useEffect(() => {
+    if (!user) return;
+    if (!selectedConversationId) return;
+    if (conversations.some((c) => c.id === selectedConversationId)) return;
+    let cancelled = false;
+    const t = setTimeout(async () => {
+      const c = await fetchConversationHistory(50);
+      if (cancelled) return;
+      setConversations(c);
+    }, 400);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [selectedConversationId, conversations, user]);
+
   // Manual refresh — engineers iterating on an agent in the dashboard want
   // a way to pull the latest version (system prompt, tools, model, vars)
   // without reloading the whole side panel. Keeps the current selection if

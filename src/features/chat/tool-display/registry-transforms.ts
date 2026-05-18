@@ -188,6 +188,12 @@ export const transforms: Record<TransformName, (v: unknown) => unknown> = {
     typeof v === 'string' ? WAIT_FOR_VERBS_PAST[v] ?? 'Waited' : v,
   waitForConditionPresent: (v) =>
     typeof v === 'string' ? WAIT_FOR_VERBS_PRESENT[v] ?? 'Waiting for' : v,
+  userToolVerbPast: (v) =>
+    typeof v === 'string' ? USER_TOOL_VERBS_PAST[v] ?? 'Asked' : v,
+  userToolVerbPresent: (v) =>
+    typeof v === 'string' ? USER_TOOL_VERBS_PRESENT[v] ?? 'Asking' : v,
+  userToolIcon: (v) =>
+    typeof v === 'string' ? USER_TOOL_ICONS[v] ?? 'MessageCircleQuestion' : v,
 };
 
 const BROWSER_CATEGORY_ICONS: Record<string, string> = {
@@ -429,4 +435,29 @@ const WAIT_FOR_VERBS_PRESENT: Record<string, string> = {
   text: 'Waiting for text',
   url: 'Waiting for URL',
   network_idle: 'Waiting for network idle',
+};
+
+const USER_TOOL_VERBS_PAST: Record<string, string> = {
+  confirm: 'Asked to confirm',
+  choice: 'Asked to choose',
+  choice_many: 'Asked to choose',
+  text: 'Asked',
+  secret: 'Asked for secret',
+  notify: 'Notified',
+};
+const USER_TOOL_VERBS_PRESENT: Record<string, string> = {
+  confirm: 'Asking to confirm',
+  choice: 'Asking to choose',
+  choice_many: 'Asking to choose',
+  text: 'Asking',
+  secret: 'Asking for secret',
+  notify: 'Notifying',
+};
+const USER_TOOL_ICONS: Record<string, string> = {
+  confirm: 'CheckCircle2',
+  choice: 'List',
+  choice_many: 'ListChecks',
+  text: 'MessageCircleQuestion',
+  secret: 'KeyRound',
+  notify: 'Bell',
 };

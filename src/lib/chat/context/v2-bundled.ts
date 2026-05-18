@@ -68,33 +68,50 @@ export async function buildContextV2Bundled(
   };
 
   // ── active tab + probe ──────────────────────────────────────────────────
+  // Caller (use-chat-stream / use-pilot-chat-stream) resolves the active
+  // tab ONCE per send and threads it in. Falling back to our own query is
+  // only for legacy / one-off callers; the chat path always passes one.
+  // See docs/REQUEST_PAYLOAD_CONTRACT.md §1 for why this matters.
   let tabId: number | null = null;
-  let tabMeta: chrome.tabs.Tab | null = null;
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    tabId = tab?.id ?? null;
-    tabMeta = tab ?? null;
-  } catch (err) {
-    log.warn('scrape', 'active tab query failed', err);
+  let tabMeta: chrome.tabs.Tab | null = inputs.activeTab ?? null;
+  if (tabMeta) {
+    tabId = tabMeta.id ?? null;
+  } else {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      tabId = tab?.id ?? null;
+      tabMeta = tab ?? null;
+    } catch (err) {
+      log.warn('scrape', 'active tab query failed', err);
+    }
   }
 
-  // Everything cheap and deterministic, in parallel — fired the moment the
-  // user submits, before the cloud round-trip even starts. By the time the
-  // cloud response wants any of this, it's already in memory.
+  // Everything cheap and deterministic, fired the moment the user submits.
   //
+  //   prewarm       — populate read_page cache + tag data-matrx-ref="N" on
+  //                   every interactive element. SEQUENCED FIRST so the
+  //                   discover-forms walk that follows can read back the
+  //                   refs and surface them in form_elements (saves the
+  //                   agent a read_page call on every form interaction).
   //   probe         — meta + brief (kind, dismissibles, result_list, ...)
-  //   forms         — full form schema for main-area forms
+  //   forms         — full form schema for main-area forms (reads refs
+  //                   tagged by prewarm above)
   //   page_ready    — safe-to-screenshot signal (300ms observer)
-  //   prewarm       — populate find tool's read_page cache
   //   pull_request  — only when URL is a GitHub/GitLab PR
   //   email         — only when URL is Gmail/Outlook/Hey/Superhuman
   const url = tabMeta?.url ?? '';
+  if (tabId !== null) {
+    // Wait for ref tagging before kicking off the rest. Adds ~30-80ms
+    // serially but every form field now ships with a `ref` the agent
+    // can pass straight to form_input / click_element without a
+    // separate read_page round trip.
+    await prewarmReadPageCache(tabId);
+  }
   const tasks = tabId !== null
     ? Promise.all([
         probeActivePage(tabId),
         discoverFormsForContext(tabId),
         checkPageReady(tabId),
-        prewarmReadPageCache(tabId),
         isPullRequestUrl(url) ? detectPullRequest(tabId, url) : Promise.resolve(null),
         isEmailUrl(url) ? detectEmail(tabId, url) : Promise.resolve(null),
         isTicketUrl(url) ? detectTicket(tabId, url) : Promise.resolve(null),
@@ -102,8 +119,8 @@ export async function buildContextV2Bundled(
         url ? getDomainMemoForUrl(url) : Promise.resolve(null),
         url ? getGuidanceForUrl(url) : Promise.resolve(null),
       ])
-    : Promise.resolve([null, null, null, undefined, null, null, null, null, null, null] as const);
-  const [probe, forms, pageReady, , pullRequest, email, ticket, authState, domainMemo, guidance] =
+    : Promise.resolve([null, null, null, null, null, null, null, null, null] as const);
+  const [probe, forms, pageReady, pullRequest, email, ticket, authState, domainMemo, guidance] =
     await tasks;
 
   // Scrape lookup. Prefer manual capture, then auto-background.
@@ -138,22 +155,31 @@ export async function buildContextV2Bundled(
     // mislead the model about a CAPTCHA-blocked or unhydrated page.
     const trustworthy = probe.brief.confidence !== 'low';
 
+    // Trim snapshot.ready to the two fields the agent actually reasons
+    // about. document/load_event_ms/mutation_count/pending_images are
+    // debugging detail — kept in checkPageReady's return type so the
+    // Debug tab can inspect, but not surfaced in the per-turn context.
+    const readyTrimmed = pageReady
+      ? {
+          observed_idle: pageReady.observed_idle,
+          loading_indicators: pageReady.loading_indicators,
+        }
+      : null;
+
     ctx.page_brief = {
       url: probe.url,
       title: probe.title,
       description: probe.description,
       lang: probe.lang,
       kind: probe.brief.kind,
-      tab_id: tabMeta?.id ?? null,
-      window_id: tabMeta?.windowId ?? null,
+      // tab_id / window_id removed — they live in tab_state. Same Tab object
+      // resolved once in use-chat-stream.ts; duplicating here was pure bloat.
       ready: probe.ready_state,
       snapshot: {
         captured_at: new Date().toISOString(),
         confidence: probe.brief.confidence,
         flags: probe.brief.flags,
-        // Page-ready signal — answers "safe to screenshot/read right now?"
-        // null when the check failed (e.g., tab navigated away mid-build).
-        ready: pageReady,
+        ready: readyTrimmed,
       },
       structure: trustworthy
         ? {
@@ -190,6 +216,20 @@ export async function buildContextV2Bundled(
     };
   }
 
+  // ── chrome_elements — header / nav / footer / sidebar interactive bits ─
+  // Surfaces sign-in, primary nav, sidebar links, footer items so the
+  // agent doesn't have to walk the full read_page result just to find a
+  // login button. Capped at 20 entries in the probe; the full count
+  // lives in `page_brief.more_available.chrome_elements` for the agent
+  // to know whether more exist.
+  if (probe && probe.brief.chrome_interactive.length > 0) {
+    ctx.chrome_elements = {
+      count: probe.brief.chrome_interactive.length,
+      total: probe.brief.more_available.chrome_elements,
+      items: probe.brief.chrome_interactive,
+    };
+  }
+
   // ── form_elements — full form schema for the page's main form(s) ───────
   // Highest-ROI workflow category in the field (insurance, procurement,
   // healthcare, cross-portal data entry). Saves a full tool call on the
@@ -203,22 +243,29 @@ export async function buildContextV2Bundled(
 
   // ── result_list — repeating-card list (search results, product grids) ──
   // URL-derived item URLs survive virtualized scroll where refs recycle.
+  // Browser-agent feedback (2026-05-18): the raw list has null
+  // price/rating/image_alt on most items, and ad-network entries (jd8trk,
+  // taboola, etc.) interleave with content — flag them so the model can
+  // skip when summarizing.
   if (probe?.brief.result_list) {
-    ctx.result_list = probe.brief.result_list;
+    ctx.result_list = formatResultListForContext(probe.brief.result_list);
   }
 
   // ── page_meta — OG / Twitter / canonical / robots / charset / etc. ─────
+  // Empty objects ({}) for og/twitter are pure noise — omit them so the
+  // bundle reflects only what's actually set on the page.
   if (probe) {
-    ctx.page_meta = {
+    const meta: Record<string, unknown> = {
       canonical: probe.canonical,
       robots: probe.robots,
       referrer: probe.referrer,
       charset: probe.charset,
       content_type: probe.content_type,
       viewport_meta: probe.viewport_meta,
-      og: probe.og,
-      twitter: probe.twitter,
     };
+    if (Object.keys(probe.og).length > 0) meta.og = probe.og;
+    if (Object.keys(probe.twitter).length > 0) meta.twitter = probe.twitter;
+    ctx.page_meta = meta;
   }
 
   // ── page_full_content — full clean body ────────────────────────────────
@@ -237,21 +284,72 @@ export async function buildContextV2Bundled(
   }
 
   // ── page_seo_audit — full SEO bundle ───────────────────────────────────
+  // Intentionally NOT trimmed. SEO consumers (audit prompts, SERP
+  // assistants) genuinely use every field — title length, description
+  // length, full og/twitter, heading hierarchy, alt-text coverage,
+  // perf metrics, etc. Only obvious always-noise field is an empty
+  // hreflang array (most pages); drop it when empty so the bundle
+  // doesn't carry `hreflang: []` on every send.
   if (scrape) {
-    ctx.page_seo_audit = scrape.seo;
+    const seo = scrape.seo as unknown as Record<string, unknown>;
+    const hreflang = seo.hreflang;
+    if (Array.isArray(hreflang) && hreflang.length === 0) {
+      const { hreflang: _drop, ...rest } = seo;
+      void _drop;
+      ctx.page_seo_audit = rest;
+    } else {
+      ctx.page_seo_audit = seo;
+    }
   }
 
   // ── page_links — internal/external split for nav reasoning ─────────────
+  // Browser-agent feedback (2026-05-18): the raw scrape ships every <a>
+  // twice (once with empty text for an image-wrapped link, once with the
+  // actual text), every entry has rel:null, and there's no signal of WHERE
+  // on the page a link lives. Trim + dedupe + categorize at the boundary;
+  // the scrape's raw list is preserved for the SEO audit path.
   if (scrape) {
-    ctx.page_links = scrape.links;
+    ctx.page_links = formatLinksForContext(scrape.links, probe?.url ?? activeUrl ?? null);
   }
 
   // ── page_media — images + videos + audio in one bundle ─────────────────
+  // Default filter: drop tracking pixels (< 50x50, or width*height < 2500),
+  // drop data: placeholders (lazy-load empty SVGs, 1x1 GIFs), unwrap CDN
+  // proxy URLs (yimg/nitrocdn/cloudflare-wrapper patterns) into the logical
+  // source URL. The agent can still fetch the unfiltered list via the
+  // separate `page_media_raw` key (ctx-on-demand) when it needs full
+  // opaque URLs for SEO analysis / downloads / re-routing.
   if (scrape) {
+    const filteredImages = filterImagesForContext(scrape.images);
     const hasMedia =
-      scrape.images.length > 0 || scrape.videos.length > 0 || scrape.audio.length > 0;
+      filteredImages.length > 0 || scrape.videos.length > 0 || scrape.audio.length > 0;
     if (hasMedia) {
-      ctx.page_media = {
+      const bundle: Record<string, unknown> = {};
+      if (filteredImages.length > 0) bundle.images = filteredImages;
+      if (scrape.videos.length > 0) bundle.videos = scrape.videos;
+      if (scrape.audio.length > 0) bundle.audio = scrape.audio;
+      // Stamp the filter origin so the model can decide whether the raw list
+      // is worth fetching for whatever it's about to do.
+      const dropped = scrape.images.length - filteredImages.length;
+      if (dropped > 0) {
+        bundle.images_filtered = {
+          shown: filteredImages.length,
+          dropped,
+          dropped_reason: 'tracking pixels, placeholders, and CDN wrappers — fetch `page_media_raw` for the full list',
+        };
+      }
+      ctx.page_media = bundle;
+    }
+    // Always make the raw bundle available — agents doing SEO audits or
+    // downloading specific images can read it on demand. Cheap to ship
+    // because the wire path is ctx-pagination; large payloads don't
+    // auto-inline (see ctx_get(mode='page') in matrx-ai).
+    if (
+      scrape.images.length > 0 ||
+      scrape.videos.length > 0 ||
+      scrape.audio.length > 0
+    ) {
+      ctx.page_media_raw = {
         images: scrape.images,
         videos: scrape.videos,
         audio: scrape.audio,
@@ -383,4 +481,223 @@ function isProductBlock(block: unknown): boolean {
   if (typeof type === 'string') return /Product|Offer/i.test(type);
   if (Array.isArray(type)) return type.some((t) => typeof t === 'string' && /Product|Offer/i.test(t));
   return false;
+}
+
+// ─── page_media helpers ────────────────────────────────────────────────────
+// Browser-agent feedback (2026-05-18): a Yahoo homepage shipped 39 KB of
+// page_media — 50+ tracking pixels, 20×20 logos, and CDN-wrapped URLs of
+// 400+ chars each. None of it useful for text-mode reasoning. These
+// helpers do the obvious filters at the context boundary (the raw list
+// is still available via `page_media_raw`).
+
+interface ContextImage {
+  src: string;
+  alt: string | null;
+  width: number | null;
+  height: number | null;
+}
+
+function filterImagesForContext(images: ContextImage[]): ContextImage[] {
+  const out: ContextImage[] = [];
+  for (const img of images) {
+    if (!img.src) continue;
+    // 1) Lazy-load placeholders. base64 SVG/GIF shims have no info.
+    if (img.src.startsWith('data:image/svg+xml')) continue;
+    if (img.src.startsWith('data:image/gif')) continue;
+    // 2) Tracking pixels. < 2500 px² is the threshold the agent suggested;
+    // 50×50 lands right at that boundary which is large enough for a logo
+    // but excludes 1×1 / 20×20 trackers and tiny brand sprites.
+    if (img.width != null && img.height != null && img.width * img.height < 2500) {
+      continue;
+    }
+    // 3) Unwrap common CDN proxy patterns into the logical inner URL.
+    // The full opaque path lives in `page_media_raw` for any agent that
+    // genuinely needs it (downloads, SEO analysis).
+    out.push({ ...img, src: unwrapCdnUrl(img.src) });
+  }
+  return out;
+}
+
+// ─── result_list helpers ───────────────────────────────────────────────────
+
+interface RawResultListItem {
+  title: string;
+  url: string;
+  price: string | null;
+  rating: string | null;
+  image_alt: string | null;
+}
+
+interface FormattedResultListItem {
+  title: string;
+  url: string;
+  price?: string;
+  rating?: string;
+  image_alt?: string;
+  /** Only set when the heuristics flag this entry as ad/sponsored. */
+  kind?: 'ad';
+}
+
+// Common ad-network hostnames. Conservative — extend as we see more in
+// the wild. False negative is fine (item just shows up as content);
+// false positive is worse (model skips legit content).
+const AD_NETWORK_HOSTS = /\b(jd8trk|doubleclick|googleadservices|googlesyndication|taboola|outbrain|adsystem|adservice|criteo|adnxs)\.com\b/i;
+
+function formatResultListForContext(
+  list: { count: number; items: RawResultListItem[] },
+): { count: number; items: FormattedResultListItem[] } {
+  const items = list.items.map((item) => {
+    const out: FormattedResultListItem = { title: item.title, url: item.url };
+    if (item.price) out.price = item.price;
+    if (item.rating) out.rating = item.rating;
+    if (item.image_alt) out.image_alt = item.image_alt;
+    if (isAdResultItem(item)) out.kind = 'ad';
+    return out;
+  });
+  return { count: list.count, items };
+}
+
+function isAdResultItem(item: RawResultListItem): boolean {
+  if (!item.url) return false;
+  if (AD_NETWORK_HOSTS.test(item.url)) return true;
+  // Tracker-style URLs with gclid/utm_source=ad/adset_ are also reliable
+  // ad signals. The empty-title + opaque domain pattern from the Yahoo
+  // case (`wallstwatchdogs.com`, `jd8trk.com`) is captured by the first
+  // check when the host is in the list; opaque non-listed hosts with no
+  // title fall through as 'content' which is the safe default.
+  if (/[?&](gclid|utm_source=ad|adset_id=|fbclid)=/.test(item.url)) return true;
+  return false;
+}
+
+// ─── page_links helpers ────────────────────────────────────────────────────
+
+interface ContextLink {
+  href: string;
+  text: string;
+  rel: string | null;
+}
+
+interface FormattedLink {
+  href: string;
+  text: string;
+  kind: 'nav' | 'footer' | 'social' | 'contact' | 'external' | 'content';
+  /** True when the link lives outside header/nav/footer/aside. */
+  in_main: boolean;
+  /** Only present when the page actually sets rel (rare). */
+  rel?: string;
+}
+
+const SOCIAL_HOSTS = /\b(facebook|twitter|x|instagram|linkedin|youtube|tiktok|reddit|pinterest|threads\.net|mastodon|bsky\.app|github)\b/i;
+
+function formatLinksForContext(
+  links: ContextLink[],
+  pageUrl: string | null,
+): FormattedLink[] {
+  // Dedupe by href, preferring the entry with non-empty text.
+  const byHref = new Map<string, ContextLink>();
+  for (const link of links) {
+    if (!link.href) continue;
+    const existing = byHref.get(link.href);
+    if (!existing) {
+      byHref.set(link.href, link);
+      continue;
+    }
+    // Keep whichever has actual text content.
+    if (!existing.text.trim() && link.text.trim()) {
+      byHref.set(link.href, link);
+    }
+  }
+
+  let pageHost: string | null = null;
+  if (pageUrl) {
+    try {
+      pageHost = new URL(pageUrl).host;
+    } catch {
+      /* ignore */
+    }
+  }
+
+  const out: FormattedLink[] = [];
+  for (const link of byHref.values()) {
+    // Categorize. Scrape doesn't tell us the DOM ancestor, so kind is
+    // derived from href + simple heuristics. Future enhancement: have
+    // the scrape collector tag each link's nearest landmark.
+    const lower = link.href.toLowerCase();
+    let kind: FormattedLink['kind'];
+    if (lower.startsWith('tel:') || lower.startsWith('mailto:')) {
+      kind = 'contact';
+    } else if (SOCIAL_HOSTS.test(link.href)) {
+      kind = 'social';
+    } else if (pageHost) {
+      try {
+        const linkHost = new URL(link.href, pageUrl ?? undefined).host;
+        kind = linkHost === pageHost ? 'content' : 'external';
+      } catch {
+        kind = 'content';
+      }
+    } else {
+      kind = 'content';
+    }
+
+    // The raw scrape's links array is already filtered to "links that
+    // appeared in the main article area" by the scrape pipeline when it
+    // can detect one. Default in_main:true is safe when we can't tell;
+    // chrome links get explicit false via the kind taxonomy.
+    const inMain = kind !== 'social' && kind !== 'contact';
+
+    const formatted: FormattedLink = {
+      href: link.href,
+      text: link.text,
+      kind,
+      in_main: inMain,
+    };
+    if (link.rel) formatted.rel = link.rel;
+    out.push(formatted);
+  }
+  return out;
+}
+
+/**
+ * Heuristic CDN-wrapper unwrap. Returns the inner logical URL when the
+ * source matches one of the known proxy patterns; returns the input
+ * unchanged otherwise. Never throws — graceful passthrough on any
+ * decoding failure.
+ *
+ * Patterns handled:
+ *   1. URLs containing `https%3A%2F%2F` or `http%3A%2F%2F` (any encoded
+ *      inner URL) — pull the last decoded http(s) URL out of the path.
+ *   2. NitroCDN: `cdn-<hash>.nitrocdn.com/<token>/assets/images/optimized/<rev>/<inner-host>/<inner-path>`
+ *      — reconstruct as `https://<inner-host>/<inner-path>`.
+ *   3. Generic encoded query param: `?url=...` or `?u=...`.
+ */
+function unwrapCdnUrl(src: string): string {
+  try {
+    // Pattern 1: encoded inner URL anywhere in the path (Yahoo's
+    // s.yimg.com/lo/mysterio/api/<hash>/.../https%3A%2F%2F<real>).
+    const encodedHttpsIdx = src.lastIndexOf('https%3A%2F%2F');
+    const encodedHttpIdx = src.lastIndexOf('http%3A%2F%2F');
+    const idx = Math.max(encodedHttpsIdx, encodedHttpIdx);
+    if (idx > -1) {
+      const decoded = decodeURIComponent(src.slice(idx));
+      // Sanity: must be a valid URL on its own.
+      try {
+        const u = new URL(decoded);
+        if (u.protocol === 'http:' || u.protocol === 'https:') return decoded;
+      } catch {
+        /* fall through */
+      }
+    }
+    // Pattern 2: NitroCDN proxy.
+    const nitroMatch = src.match(
+      /^https?:\/\/cdn-[^.]+\.nitrocdn\.com\/[^/]+\/assets\/images\/optimized\/[^/]+\/(.+)$/,
+    );
+    if (nitroMatch?.[1]) return `https://${nitroMatch[1]}`;
+    // Pattern 3: ?url=... / ?u=... query param wrapper.
+    const u = new URL(src);
+    const inner = u.searchParams.get('url') ?? u.searchParams.get('u');
+    if (inner && /^https?:\/\//i.test(inner)) return inner;
+  } catch {
+    /* malformed input — return as-is */
+  }
+  return src;
 }

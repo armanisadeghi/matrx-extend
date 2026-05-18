@@ -139,17 +139,63 @@ export interface ConfirmResponse {
   rememberFor?: 'session' | 'conversation';
 }
 
+/**
+ * Unified `user` tool envelopes (canonical wire contract — see
+ * `packages/matrx-ai/matrx_ai/tools/USER_TOOL_WIRE_CONTRACT.md` in aidream).
+ *
+ * One pending-request shape covers every variant. The card branches on
+ * `kind`. Fields that don't apply to a kind are simply omitted.
+ */
+export type UserAskKind =
+  | 'confirm'
+  | 'choice'
+  | 'choice_many'
+  | 'text'
+  | 'secret'
+  | 'notify';
+
 export interface PendingAskUserRequest {
   callId: string;
-  question: string;
-  choices?: string[];
-  secret?: boolean;
-  /** Hint to the user why the agent paused. */
-  why?: string;
+  kind: UserAskKind;
+  /** Required for confirm / choice / choice_many / text / secret. */
+  question?: string;
+  /** Required for choice / choice_many. */
+  options?: string[];
+  /** Required for notify — the body of the notification. */
+  message?: string;
+  /** Optional notify action button labels (UI always appends 'Other'). */
+  actions?: string[];
+  /** Notify visual treatment. Default 'info'. */
+  level?: 'info' | 'success' | 'warning' | 'error';
+  /** Optional one-line "why is the agent asking?" context. */
+  context?: string;
+  /**
+   * Absolute wall-clock deadline (ms epoch) when the request auto-resolves
+   * with `timed_out: true`. Omitted when the call has no timeout. The
+   * dispatcher computes this from `timeout_seconds` so the UI can render
+   * a countdown without separately tracking the start time.
+   */
+  expires_at_ms?: number;
 }
 
+/**
+ * Unified response from the sidepanel card. The handler builds the
+ * outgoing envelope (the `{ answer, selected, confirmed, action, freeform,
+ * cancelled, timed_out }` shape the wire contract spells out) from this.
+ * Fields that don't apply to a kind are left undefined / null.
+ */
 export interface AskUserResponse {
   callId: string;
-  answer: string | null;
+  /** text / secret types — user's freeform text. */
+  answer?: string | null;
+  /** choice / choice_many — selected option labels. */
+  selected?: string[];
+  /** confirm — yes (true) / no (false). */
+  confirmed?: boolean;
+  /** notify — which action button was clicked (or 'Other'). */
+  action?: string | null;
+  /** notify — freeform text submitted under the 'Other' button. */
+  freeform?: string | null;
+  /** User explicitly dismissed the card. */
   cancelled?: boolean;
 }

@@ -123,15 +123,15 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   remove_tabs_from_group: ['tabs', 'tabGroups'],
   update_tab_group: ['tabGroups'],
 
-  // downloads + notifications
+  // downloads
   download_url: ['downloads'],
   cancel_download: ['downloads'],
-  notify_user: ['notifications'],
 
-  // ask-user (no chrome perms — uses messaging)
-  ask_user: [],
-  ask_user_choice: [],
-  ask_user_secret: [],
+  // ask-user. The unified `user` tool declares the `notifications` perm
+  // because `type='notify'` fires a system notification as a side effect;
+  // the rest of the variants (confirm/choice/text/secret) only use the
+  // messaging channel and don't need a chrome perm.
+  user: ['notifications'],
   request_user_takeover: [],
 
   // privileged

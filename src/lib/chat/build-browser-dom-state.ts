@@ -61,6 +61,22 @@ export interface BuildBrowserDomStateOpts {
   agentId?: string;
   /** Categories the agent has discovered earlier in this conversation. */
   loadedCategories?: string[];
+  /**
+   * Caller-resolved active tab. When provided, the builder skips its own
+   * `chrome.tabs.query` so this state and the `context` body reference
+   * the SAME Tab. The chat path always passes this — only legacy
+   * callers should rely on the internal fallback query. See
+   * docs/REQUEST_PAYLOAD_CONTRACT.md §1.
+   */
+  activeTab?: chrome.tabs.Tab | null;
+  /**
+   * Caller-resolved page language (`document.documentElement.lang`).
+   * When provided, the builder skips its own `executeScript` round
+   * trip — the chat path pulls this from `context.page_brief.lang`
+   * after building the context, so the two payloads agree without
+   * double-fetching.
+   */
+  pageLang?: string | null;
 }
 
 async function detectOnboxAi(): Promise<boolean> {
@@ -133,10 +149,24 @@ export async function buildBrowserDomState(
 ): Promise<BrowserDomState> {
   const auth = useAuthStore.getState();
   const desktop = useDesktopStore.getState();
-  const tab = await queryActiveTab();
+  // Use the caller-resolved tab when present; only fall back to our own
+  // query for legacy / one-off callers. The chat hooks always pass a tab.
+  const tab = opts.activeTab
+    ? {
+        id: opts.activeTab.id ?? null,
+        windowId: opts.activeTab.windowId ?? null,
+        url: opts.activeTab.url ?? null,
+        title: opts.activeTab.title ?? null,
+        status: (opts.activeTab.status as 'loading' | 'complete' | undefined) ?? null,
+      }
+    : await queryActiveTab();
+  // Same story for page_lang — when context was already built, the chat
+  // hook hands us `page_brief.lang` and we skip the extra executeScript.
+  const langPromise =
+    opts.pageLang !== undefined ? Promise.resolve(opts.pageLang) : pageLangFor(tab.id);
   const [granted, lang, openTabCount, onboxAi, accessToken] = await Promise.all([
     listGrantedOptional(),
-    pageLangFor(tab.id),
+    langPromise,
     countOpenTabs(),
     detectOnboxAi(),
     getAccessToken(),

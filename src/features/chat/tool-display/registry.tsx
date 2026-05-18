@@ -240,15 +240,28 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     CustomComponent: BatchToolDisplay,
   },
 
-  ask_user: {
+  // Unified `user` tool — six modes via args.type (confirm, choice,
+  // choice_many, text, secret, notify). The header surfaces the active
+  // mode via the userToolVerb / userToolIcon transforms so all six
+  // variants render coherently under one entry. The body text comes from
+  // args.question for ask types and args.message for notify.
+  user: {
     inline: {
-      icon: 'MessageCircleQuestion',
-      prefix: {
-        started: 'Asking you',
-        completed: 'Asked',
-        error: 'Question failed',
+      icon: {
+        started: 'Loader2',
+        completed: { path: 'args.type', transform: 'userToolIcon' },
+        error: 'AlertTriangle',
       },
-      name: { path: 'args.question', transform: 'truncate80' },
+      prefix: '',
+      name: {
+        started: { path: 'args.type', transform: 'userToolVerbPresent', fallback: 'Asking' },
+        completed: { path: 'args.type', transform: 'userToolVerbPast', fallback: 'Asked' },
+        error: 'User prompt failed',
+      },
+      // For ask types args.question is set; for notify args.message is.
+      // The header info chip shows whichever exists; the other is undefined
+      // and contributes nothing.
+      info: { path: 'args.question', transform: 'truncate80' },
       color: { started: 'primary', completed: 'sky', error: 'red' },
     },
     args: { displayType: 'key-value' },
@@ -873,21 +886,6 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
       },
       name: '',
       info: { path: 'args.reason', transform: 'truncate80' },
-      color: { started: 'primary', completed: 'sky', error: 'red' },
-    },
-    args: { displayType: 'key-value' },
-  },
-
-  notify_user: {
-    inline: {
-      icon: { started: 'Loader2', completed: 'Bell', error: 'AlertTriangle' },
-      prefix: {
-        started: 'Sending notification',
-        completed: 'Notified',
-        error: 'Notify failed',
-      },
-      name: '',
-      info: { path: 'args.title', transform: 'truncate80' },
       color: { started: 'primary', completed: 'sky', error: 'red' },
     },
     args: { displayType: 'key-value' },

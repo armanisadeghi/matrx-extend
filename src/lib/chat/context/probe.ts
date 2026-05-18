@@ -14,7 +14,24 @@ import { log } from '@/lib/debug/log';
 export interface BriefBlock {
   /** "high" | "partial" | "low" — see flags for cause when not "high". */
   confidence: 'high' | 'partial' | 'low';
-  /** Reasons confidence dropped. Empty when confidence === "high". */
+  /**
+   * Reasons confidence dropped. Empty array when confidence === "high".
+   *
+   * Enumerated flag values (keep in sync with docs/REQUEST_PAYLOAD_CONTRACT.md):
+   *   - `captcha_present`       — a VISIBLE recaptcha/hcaptcha/turnstile/arkose
+   *                                iframe (non-zero rect, display:block) is
+   *                                on-screen. Lazy-loaded invisible shims do
+   *                                NOT trigger this — see probe.ts.
+   *   - `bot_challenge_or_block` — page title matches "just a moment", "checking
+   *                                your browser", "access denied", etc.
+   *   - `spa_unhydrated`        — visible text < 200 chars AND scripts are
+   *                                loading; page hasn't rendered yet.
+   *   - `login_wall`            — password input present AND main text < 400 chars.
+   *
+   * Any of the above pushes confidence to "low". Partial-confidence flags
+   * (currently unused / future): consent_overlay, paywall_or_signup_wall,
+   * age_gate, not_ready.
+   */
   flags: string[];
   /** Inferred page kind. Best-effort heuristic, no model call. */
   kind:
@@ -39,6 +56,19 @@ export interface BriefBlock {
    * for orientation; refs come from a fresh read_page on demand.
    */
   main_interactive: Array<{ role: string; name: string; tag: string }>;
+  /**
+   * Interactive elements that DO live in chrome (header, nav, footer,
+   * aside). Capped at 20. Surfaced as the `chrome_elements` ctx key so
+   * agents can quickly reach sign-in / nav-search / cart icons without
+   * walking the full read_page result. Each entry includes `landmark`
+   * (header|nav|footer|aside) so the agent knows where it is on the page.
+   */
+  chrome_interactive: Array<{
+    role: string;
+    name: string;
+    tag: string;
+    landmark: 'header' | 'nav' | 'footer' | 'aside' | 'unknown';
+  }>;
   /**
    * Dismissible overlays — cookie/consent banners, paywalls, signup walls,
    * newsletter popups. Each entry includes a stable selector for the close
@@ -211,12 +241,37 @@ export async function probeActivePage(tabId: number): Promise<PageProbe | null> 
           document.querySelectorAll(INTERACTIVE_SELECTOR),
         ).filter(isVisible);
         const mainInteractive = allInteractive.filter((el) => !inChrome(el));
-        const chromeInteractiveCount = allInteractive.length - mainInteractive.length;
+        const chromeInteractive = allInteractive.filter((el) => inChrome(el));
+        const chromeInteractiveCount = chromeInteractive.length;
 
         const mainSample = mainInteractive.slice(0, 15).map((el) => ({
           role: el.getAttribute('role') ?? implicitRole(el),
           name: accessibleName(el),
           tag: el.tagName.toLowerCase(),
+        }));
+
+        // Chrome-element sample. Capped at 20 so we don't ship 100 nav
+        // links on dense sites — `more_available.chrome_elements` always
+        // carries the full count so the agent knows whether to fetch
+        // more via read_page. Each entry's landmark tells the agent
+        // WHERE in the chrome it lives.
+        function landmarkOf(el: Element): 'header' | 'nav' | 'footer' | 'aside' | 'unknown' {
+          let cur: Element | null = el;
+          while (cur && cur !== document.body) {
+            const tag = cur.tagName.toLowerCase();
+            if (tag === 'header' || cur.getAttribute('role') === 'banner') return 'header';
+            if (tag === 'nav' || cur.getAttribute('role') === 'navigation') return 'nav';
+            if (tag === 'footer' || cur.getAttribute('role') === 'contentinfo') return 'footer';
+            if (tag === 'aside' || cur.getAttribute('role') === 'complementary') return 'aside';
+            cur = cur.parentElement;
+          }
+          return 'unknown';
+        }
+        const chromeSample = chromeInteractive.slice(0, 20).map((el) => ({
+          role: el.getAttribute('role') ?? implicitRole(el),
+          name: accessibleName(el),
+          tag: el.tagName.toLowerCase(),
+          landmark: landmarkOf(el),
         }));
 
         // ── brief: headings ─────────────────────────────────────────────────
@@ -254,10 +309,26 @@ export async function probeActivePage(tabId: number): Promise<PageProbe | null> 
         const visibleTextLen = (document.body?.innerText ?? '').length;
         const titleLc = document.title.toLowerCase();
 
-        const captchaIframe = document.querySelector(
-          'iframe[src*="recaptcha"], iframe[src*="hcaptcha"], iframe[src*="turnstile"], iframe[src*="arkose"]',
+        // Only flag captcha_present when an actual challenge is on-screen.
+        // Many sites embed invisible recaptcha iframes (form-protection
+        // shim, lazy-loaded for a future submit) that never block the
+        // user. Matching the selector alone was a 2/2 false-positive in
+        // testing (Yahoo, datadestruction.com). Require a visible iframe
+        // with non-zero size before promoting the page to kind:'captcha'.
+        const captchaIframes = Array.from(
+          document.querySelectorAll<HTMLIFrameElement>(
+            'iframe[src*="recaptcha"], iframe[src*="hcaptcha"], iframe[src*="turnstile"], iframe[src*="arkose"]',
+          ),
         );
-        if (captchaIframe) flags.push('captcha_present');
+        const visibleCaptchaIframe = captchaIframes.find((iframe) => {
+          const rect = iframe.getBoundingClientRect();
+          if (rect.width < 40 || rect.height < 40) return false;
+          const style = window.getComputedStyle(iframe);
+          if (style.display === 'none' || style.visibility === 'hidden') return false;
+          if (parseFloat(style.opacity || '1') === 0) return false;
+          return true;
+        });
+        if (visibleCaptchaIframe) flags.push('captcha_present');
 
         if (
           /just a moment|checking your browser|attention required|access denied|forbidden/.test(
@@ -522,6 +593,7 @@ export async function probeActivePage(tabId: number): Promise<PageProbe | null> 
             headings,
             primary_action: primaryAction,
             main_interactive: mainSample,
+            chrome_interactive: chromeSample,
             dismissibles,
             result_list: resultList,
             more_available: {

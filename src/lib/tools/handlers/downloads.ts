@@ -3,9 +3,12 @@
  *
  *   download_url      (action) — download a file from a URL.
  *   cancel_download   (action) — cancel an in-progress download.
- *   notify_user       (action) — show a Chrome desktop notification (used as
- *                                a "task done" signal when the agent finishes
- *                                long work and the side panel may be hidden).
+ *
+ * Note: the old `notify_user` handler that lived here was consolidated
+ * into the unified `user` tool (see handlers/user.ts and
+ * USER_TOOL_WIRE_CONTRACT.md in aidream). System notifications now fire
+ * automatically as a side effect of `user(type='notify', ...)` so the
+ * user sees it when the side panel is hidden.
  */
 
 import type { ToolHandler } from '@/lib/tools/types';
@@ -71,42 +74,4 @@ export const cancel_download: ToolHandler<CancelDownloadArgs, unknown> = {
   },
 };
 
-const NotifyArgs = z.object({
-  title: z.string().min(1),
-  message: z.string().min(1),
-  /**
-   * Notification icon. Default = extension icon. May be a chrome-extension URL,
-   * a data URL, or one of: "info" | "success" | "warning" | "error" — those
-   * resolve to the matching extension icon. Optional.
-   */
-  icon: z.string().optional(),
-  /** Stick the notification until dismissed. Default false. */
-  require_interaction: z.boolean().optional().default(false),
-});
-type NotifyArgs = z.infer<typeof NotifyArgs>;
-
-export const notify_user: ToolHandler<NotifyArgs, unknown> = {
-  name: 'notify_user',
-  tier: 'action',
-  description:
-    'Show a system notification to the user. Use after a long-running task finishes (especially useful when the side panel is hidden). The user can click to focus the extension.',
-  argsSchema: NotifyArgs,
-  run: async (args) => {
-    if (!chrome.notifications) return { ok: false, reason: 'notifications API unavailable' };
-    const id = await new Promise<string>((resolve) => {
-      chrome.notifications.create(
-        {
-          type: 'basic',
-          iconUrl: args.icon ?? chrome.runtime.getURL('icon/128.png'),
-          title: args.title,
-          message: args.message,
-          requireInteraction: args.require_interaction,
-        },
-        (notificationId) => resolve(notificationId),
-      );
-    });
-    return { ok: true, notification_id: id };
-  },
-};
-
-export const download_handlers = [download_url, cancel_download, notify_user];
+export const download_handlers = [download_url, cancel_download];

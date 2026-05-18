@@ -120,7 +120,6 @@ export const TOOL_NAME_ALIASES: Readonly<Record<string, string>> = {
   browser_select_option: 'select_dropdown_option',
   browser_wait_for: 'wait_for',
   browser_type_text: 'type_into_element',
-  interaction_ask: 'ask_user',
 
   // --- Canonical-shape renames (browser_tools_canonical.json) ----------
   // Tools that share the call shape with an existing handler — pure name

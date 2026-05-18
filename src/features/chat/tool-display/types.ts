@@ -76,7 +76,11 @@ export type TransformName =
   | 'downloadsActionVerb'
   | 'downloadsActionPresent'
   | 'waitForConditionVerb'
-  | 'waitForConditionPresent';
+  | 'waitForConditionPresent'
+  // Unified `user` tool — args.type → verb/icon
+  | 'userToolVerbPast'
+  | 'userToolVerbPresent'
+  | 'userToolIcon';
 
 export interface InfoSpec {
   path: string;
