@@ -93,20 +93,19 @@ export function App() {
   const tab = useSidepanelTabStore((s) => s.tab);
   const setTab = useSidepanelTabStore((s) => s.setTab);
 
-  // Guest tab visibility — for unauthenticated users, hide every tab whose
-  // value depends on persistence (Supabase-backed work) or whose typical
-  // use is expensive enough that we don't want to spend on guests during
-  // the Google approval / public beta window. Chat + Settings are the
-  // only always-on tabs. If the user is mid-resolution (status='unknown'),
-  // we treat them as guest until proven otherwise — this avoids an
-  // expensive-tab flash on first paint.
+  // Guest tab visibility — for unauthenticated users we show the features
+  // advertised in the Web Store listing: Chat, Capture (scrape), Patterns
+  // (data), SEO, Settings. Tabs that need persistence or run expensive
+  // server agents (Tasks, Agenda, Guidance, Notes, Screenshots, Tools,
+  // Profile) stay signed-in-only. Pilot/Showcase/Debug are admin-only and
+  // unaffected. If the user lands on a hidden tab as a guest (restored
+  // from a prior signed-in session), bounce them to Chat.
   const isGuest = user === null;
+  const GUEST_TABS: SidepanelTab[] = ['chat', 'scrape', 'data', 'seo', 'settings'];
   const showFullTabs = !isGuest;
-  // Bounce off a hidden tab if the user lands on one as a guest (e.g. the
-  // sidepanel restored the last selection from before sign-out).
   useEffect(() => {
-    const guestAllowed: SidepanelTab[] = ['chat', 'settings'];
-    if (isGuest && !guestAllowed.includes(tab)) setTab('chat');
+    if (isGuest && !GUEST_TABS.includes(tab)) setTab('chat');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGuest, tab, setTab]);
 
   // Mount ONCE: watches active-tab url and auto-runs every saved pattern that
@@ -200,17 +199,24 @@ export function App() {
                     <TabsTrigger value="agenda" className="size-7 p-0" title="Agenda">
                       <Calendar className="size-3.5" />
                     </TabsTrigger>
-                    <TabsTrigger value="scrape" className="size-7 p-0" title="Scrape">
-                      <ScanLine className="size-3.5" />
-                    </TabsTrigger>
-                    <TabsTrigger value="data" className="size-7 p-0" title="Data">
-                      <Database className="size-3.5" />
-                    </TabsTrigger>
+                  </>
+                )}
+                {/* Capture (Scrape), Patterns (Data), SEO — advertised in the
+                    Web Store listing and free to run for guests (no
+                    server-agent cost). */}
+                <TabsTrigger value="scrape" className="size-7 p-0" title="Scrape">
+                  <ScanLine className="size-3.5" />
+                </TabsTrigger>
+                <TabsTrigger value="data" className="size-7 p-0" title="Data">
+                  <Database className="size-3.5" />
+                </TabsTrigger>
+                <TabsTrigger value="seo" className="size-7 p-0" title="SEO">
+                  <Search className="size-3.5" />
+                </TabsTrigger>
+                {showFullTabs && (
+                  <>
                     <TabsTrigger value="guidance" className="size-7 p-0" title="Guidance">
                       <BookOpen className="size-3.5" />
-                    </TabsTrigger>
-                    <TabsTrigger value="seo" className="size-7 p-0" title="SEO">
-                      <Search className="size-3.5" />
                     </TabsTrigger>
                     <TabsTrigger value="notes" className="size-7 p-0" title="Notes">
                       <NotebookPen className="size-3.5" />
@@ -278,24 +284,28 @@ export function App() {
                     <AgendaView />
                   </Suspense>
                 </TabsContent>
-                <TabsContent value="scrape" className="flex-1 min-h-0">
-                  <Suspense fallback={TabFallback}>
-                    <ScrapeView />
-                  </Suspense>
-                </TabsContent>
-                <TabsContent value="data" className="flex-1 min-h-0">
-                  <Suspense fallback={TabFallback}>
-                    <DataView />
-                  </Suspense>
-                </TabsContent>
+              </>
+            )}
+            <TabsContent value="scrape" className="flex-1 min-h-0">
+              <Suspense fallback={TabFallback}>
+                <ScrapeView />
+              </Suspense>
+            </TabsContent>
+            <TabsContent value="data" className="flex-1 min-h-0">
+              <Suspense fallback={TabFallback}>
+                <DataView />
+              </Suspense>
+            </TabsContent>
+            <TabsContent value="seo" className="flex-1 min-h-0">
+              <Suspense fallback={TabFallback}>
+                <SeoView />
+              </Suspense>
+            </TabsContent>
+            {showFullTabs && (
+              <>
                 <TabsContent value="guidance" className="flex-1 min-h-0">
                   <Suspense fallback={TabFallback}>
                     <GuidanceView />
-                  </Suspense>
-                </TabsContent>
-                <TabsContent value="seo" className="flex-1 min-h-0">
-                  <Suspense fallback={TabFallback}>
-                    <SeoView />
                   </Suspense>
                 </TabsContent>
                 <TabsContent value="notes" className="flex-1 min-h-0">

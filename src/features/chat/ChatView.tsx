@@ -172,10 +172,18 @@ export function ChatView() {
   const [agentsRefreshing, setAgentsRefreshing] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
+    // Guests get the builtin-agents list (anon role can read agx_agent rows
+    // where agent_type='builtin' AND is_active=true via the
+    // agx_agent_builtin_read RLS policy). Conversation history is skipped
+    // for guests — they have no JWT, so anon can't see any cx_conversation
+    // rows for their server-side guest user id. Each guest session starts
+    // fresh; persistence kicks in when they sign up.
     let cancelled = false;
     void (async () => {
-      const [a, c] = await Promise.all([fetchUserAgents(user.id), fetchConversationHistory(50)]);
+      const [a, c] = await Promise.all([
+        fetchUserAgents(user?.id),
+        user ? fetchConversationHistory(50) : Promise.resolve([] as Conversation[]),
+      ]);
       if (cancelled) return;
       setAgents(a);
       setConversations(c);
@@ -198,10 +206,10 @@ export function ChatView() {
   // without reloading the whole side panel. Keeps the current selection if
   // the agent still exists in the refreshed list.
   const refreshAgents = async () => {
-    if (!user || agentsRefreshing) return;
+    if (agentsRefreshing) return;
     setAgentsRefreshing(true);
     try {
-      const a = await fetchUserAgents(user.id);
+      const a = await fetchUserAgents(user?.id);
       setAgents(a);
     } finally {
       setAgentsRefreshing(false);

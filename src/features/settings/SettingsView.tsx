@@ -49,10 +49,11 @@ export function SettingsView() {
   const [clearLocalDataOpen, setClearLocalDataOpen] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
+    // Both signed-in users and guests get the agent list: builtin agents
+    // are readable by anon, owned + shared agents need a JWT.
     let cancelled = false;
     void (async () => {
-      const a = await fetchUserAgents(user.id);
+      const a = await fetchUserAgents(user?.id);
       if (!cancelled) setAgents(a);
     })();
     return () => {
