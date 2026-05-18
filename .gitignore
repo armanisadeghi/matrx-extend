@@ -62,3 +62,7 @@ lib64/
 
 # Arman Specific
 .arman-temp/
+
+# macOS Finder metadata
+.DS_Store
+**/.DS_Store
