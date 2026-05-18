@@ -108,6 +108,149 @@ the cache and re-scrapes interactive-only, losing the heading text.
 
 ---
 
+---
+
+## 7. Initial-tool surface is server-side, not extension-side (confirmed)
+
+The extension sends `capabilities: ["browser-dom"]` only
+([src/hooks/use-chat-stream.ts:431](../src/hooks/use-chat-stream.ts#L431)).
+The actual "what tools does the model see on turn 1" decision lives in
+**aidream**:
+- the `browser-dom` capability handler
+- `public.tools` DB rows + `category_routing` config
+
+Local artifacts in this repo are documentation only:
+- `CATEGORY_BY_TOOL` in [categories.ts:198](../src/lib/tools/categories.ts#L198)
+  declares which tools we *think* belong to `core`.
+- `coreToolNames()` in [registry.ts:160](../src/lib/tools/registry.ts#L160)
+  exists but is **never called** — dead code; only the catalog dump reads it.
+- `CANONICAL_SURFACE` in [categories.ts:416](../src/lib/tools/categories.ts#L416)
+  is an aspirational, larger list for the in-extension Tools tab.
+
+**Action:** changes to the initial surface (e.g. promote `get_page_text` to
+always-on) must be made in aidream. Once done, mirror the change in this
+repo's `CATEGORY_BY_TOOL` so the two stay aligned, and consider removing
+dead `coreToolNames()`. (parked — needs aidream PR)
+
+## 8. Page-reading tool family has too many sound-alikes (confirmed)
+
+Seven read-tier tools all do some flavor of "read the page" without clear
+wedges between them. Cerebras's reach for `read_page(false)` is partly
+because it's the only "read" tool in core and the description is broad
+enough to seem like the right answer to "give me the content".
+
+| tool | category | what it returns |
+|---|---|---|
+| `read_page` | core | element list with refs |
+| `read_active_page` | page | full scrape (md + media + JSON-LD + SEO) |
+| `get_page_text` | page | clean article text |
+| `fetch_url_as_markdown` | page | same pipeline, any URL, no tab needed |
+| `extract_microdata` | page | structured-data only |
+| `get_page_links` | page | anchors only |
+| `find_text_on_page` | page | text substring/regex hits |
+
+Confusing name pairs:
+- `read_page` (refs) vs `read_active_page` (content) — names suggest
+  opposite weights.
+- `find` (NL element) vs `find_text_on_page` (substring text) — both
+  start with "find".
+- `get_page_text` vs `read_active_page` — both extract article text; one
+  is just lighter.
+
+**Action ideas (deferred — naming changes are breaking):**
+- Cross-link descriptions: each tool's description points to its
+  sound-alikes with one-liners about the wedge.
+- Consider renaming the next time we bump a major version:
+  `read_page` → `list_page_elements`, `read_active_page` → `read_page_full`,
+  etc.
+
+Element-inspection family (`query_elements`, `inspect_element`,
+`get_element_details`, `get_element_at_point`, `get_form_fields`,
+`get_computed_style`) is also crowded; lower urgency.
+
+## 9. ✅ Per-element bloat fix shipped — measured
+
+Replayed the `cerebras-context-1` trace through the new serializer:
+
+| | before | after | saved |
+|---|---:|---:|---:|
+| sum of all 8 `read_page` payloads | 227 KB | 153 KB | **32.7%** |
+| total conversation context | 314 KB | 240 KB | **23.6%** |
+
+Zero loss of model-usable signal — only duplicate `text`/`name`,
+tag-implied-by-role, empty fields, `expanded:false` were removed.
+
+## 10. ✅ `find` broadened
+
+[page-refs.ts:434-619](../src/lib/tools/handlers/page-refs.ts#L434-L619):
+- Searches name + text + href + role + tag (was just name+role+tag+text)
+- Per-field weighting (name 1.0 / text 0.6 / href 0.4 / role-or-tag 0.2)
+- Whole-phrase bonus when the full query appears in name or text
+- Non-interactive content (headings, paragraphs) included by default
+  (`include_content:true`); set false to restrict to clickables
+- Cache reuse fixed — accepts whichever scrape is cached, no longer
+  invalidated by a prior `read_page(interactive_only:false)`
+
+---
+
+## 11. Canonical tool set IS documented (confirmed)
+
+[docs/proposed_browser_tools.json](./proposed_browser_tools.json) is the
+declared single source of truth — `_meta.status: "canonical"`,
+`_meta.version: "1.0.0"`, dated 2026-05-04. 27 tools in 5 groups.
+
+The `core` group (12 tools, `recommendation: "browser_default"`):
+```
+read_page · find · get_page_text · find_text_on_page · computer ·
+form_input · navigate · tabs · wait_for · ask_user · notify_user · update_plan
+```
+
+Its description: *"The agent-builder UI pre-checks these when creating a
+browser agent; clients (matrx-extend, etc.) typically pre-include them
+in the request's tools list. The server does NOT auto-inject — inclusion
+is always the agent definition's or the client's choice."*
+
+**Implication**: `get_page_text` was already supposed to be in the initial
+surface. The Cerebras trace not seeing it = drift between the canonical
+doc and what aidream actually advertises for that agent. Either the
+agent's definition in aidream wasn't updated to opt into core, or the
+server-side discovery handler isn't reading the canonical groups.
+
+The companion audit document
+[.research/2026-05-04-canonical-migration-losses.md](../.research/2026-05-04-canonical-migration-losses.md)
+explicitly marks `read_active_page` as DROP (replaced by
+`read_page(trigger_lazy_load:true)` + `get_page_text`) — confirming
+`get_page_text` is the intended primary content reader.
+
+## 12. Local `CATEGORY_BY_TOOL` is out of sync with the canonical (confirmed)
+
+[src/lib/tools/categories.ts:197-209](../src/lib/tools/categories.ts#L197-L209)
+places `get_page_text`, `find_text_on_page`, `form_input`, `navigate`,
+`tabs`, `wait_for`, `notify_user`, `update_plan` in non-`core` categories
+even though the canonical doc puts them all in `core`. Cosmetic today
+because the local map isn't sent over the wire — the catalog dump emits
+a `core_bundle` that doesn't match canonical intent.
+
+**Action:** reconcile when convenient. Low risk; documentation-only.
+
+## 13. `get_page_text` vs `fetch_url_as_markdown` — not duplicates (confirmed)
+
+Both legitimate. Different jobs:
+- `get_page_text` — active tab, in-page Readability extract, plain text,
+  ~50-line handler. Fast, lightweight.
+  [page-refs.ts:684](../src/lib/tools/handlers/page-refs.ts#L684)
+- `fetch_url_as_markdown` — any URL via offscreen fetch + full scrape
+  pipeline (defuddle + readability + turndown + SEO collectors), returns
+  markdown with rich metadata.
+  [fetch.ts:50](../src/lib/tools/handlers/fetch.ts#L50)
+
+Shipped 2026-05-05 per [tools-roadmap.md:132](../.research/tools-roadmap.md#L132).
+`fetch_url_as_markdown` is **not** in the canonical 27-tool set — it
+landed *after* the 2026-05-04 audit and was never classified. Should be
+added to the canonical doc with "extension-only" disposition, or pitched.
+
+---
+
 ## Open questions for next traces
 
 - Does any other small model (e.g. Cerebras Qwen, Mistral, Gemini Flash)
