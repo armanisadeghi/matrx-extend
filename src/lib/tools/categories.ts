@@ -46,8 +46,10 @@ export type ToolCategory =
   | 'files'
   /** Persistent agent-side memory across runs. */
   | 'memory'
-  /** Asking the human — questions, choices, secrets, takeover, plan-approval. */
+  /** Asking the human — questions, choices, secrets, takeover. */
   | 'ask'
+  /** Plan + tasks (agent's own list) + user_todos (agent assigns to user). */
+  | 'plan'
   /** Privileged page modifications + desktop bridge. Always confirm. */
   | 'advanced'
   /** Record / replay user demonstrations. */
@@ -141,8 +143,15 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'ask',
     label: 'Ask the user',
     description:
-      'Pause and ask the human: open question, multiple-choice, secret (masked) input, full takeover (CAPTCHA / login), and plan-approval (propose a plan; the human confirms before you execute).',
+      'Pause and ask the human: open question, multiple-choice, secret (masked) input, full takeover (CAPTCHA / login).',
     list_tool_name: 'list_ask_tools',
+  },
+  plan: {
+    category: 'plan',
+    label: 'Plan & tasks',
+    description:
+      "Propose a plan and wait for user approval (`update_plan`). Manage your own live tasklist (`tasks`) — add work items, set statuses (pending / in_progress / done / blocked / skipped) as you go; the list is surfaced to you in context on every turn so user edits flow back. Assign work back to the user (`user_todos`) — items the user sees in the panel and checks off; their status flows back to you too. Per-conversation. Approved plan steps auto-populate the tasklist.",
+    list_tool_name: 'list_plan_tools',
   },
   advanced: {
     category: 'advanced',
@@ -247,7 +256,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   list_open_tabs: 'tabs',
   get_tab_groups: 'tabs',
   get_tab_info: 'tabs',
-  tab_audio_inspect: 'tabs',
+  chrome_tab_audio_inspect: 'tabs',
   open_new_tab: 'tabs',
   close_tab: 'tabs',
   switch_to_tab: 'tabs',
@@ -290,7 +299,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   cancel_download: 'files',
   set_clipboard: 'files',
   get_clipboard: 'files',
-  save_page_as_mhtml: 'files',
+  chrome_save_page_as_mhtml: 'files',
 
   // ─── memory ─────────────────────────────────────────────────────────────
   set_extension_storage: 'memory',
@@ -300,7 +309,9 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
 
   // ─── ask ────────────────────────────────────────────────────────────────
   request_user_takeover: 'ask',
-  update_plan: 'ask',
+  update_plan: 'plan',
+  tasks: 'plan',
+  user_todos: 'plan',
 
   // ─── canonical mega-tools (browser_tools_canonical.json) ───────────────
   // Each occupies the category that best matches its dominant sub-action;
@@ -311,7 +322,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   navigate: 'core',
   tabs: 'tabs',
   downloads: 'files',
-  memory: 'memory',
+  scratchpad: 'memory',
   clipboard: 'files',
   upload_file: 'files',
   drop_file: 'files',
@@ -322,8 +333,8 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   inject_stylesheet: 'advanced',
   remove_stylesheet: 'advanced',
   desktop_run_command: 'advanced',
-  record_gif: 'advanced',
-  record_tab_video: 'advanced',
+  chrome_record_gif: 'advanced',
+  chrome_record_tab_video: 'advanced',
   parallel_for_each_tab: 'advanced',
 
   // ─── demos (record & replay) ────────────────────────────────────────────
@@ -376,13 +387,13 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
 
   // ─── canonical merger routers (2nd wave 2026-05-05) ────────────────────
   ai: 'ai',
-  cookies: 'cookies',
-  webmcp: 'webmcp',
+  chrome_cookies: 'cookies',
+  chrome_webmcp: 'webmcp',
   storage: 'memory',
   tab_groups: 'tabs',
-  bookmarks: 'history',
-  history: 'history',
-  recently_closed: 'history',
+  chrome_bookmarks: 'history',
+  chrome_history: 'history',
+  chrome_recently_closed: 'history',
   stylesheet: 'advanced',
   cdp_session: 'debug',
   cdp_emulate: 'debug',
@@ -428,19 +439,19 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'sleep',
   'clipboard',
   'downloads',
-  'memory',
+  'scratchpad',
   'storage',
   'upload_file',
   'drop_file',
   'read_pdf',
   'ai',
-  'bookmarks',
-  'history',
-  'recently_closed',
+  'chrome_bookmarks',
+  'chrome_history',
+  'chrome_recently_closed',
   'stylesheet',
   'evaluate_javascript',
-  'cookies',
-  'webmcp',
+  'chrome_cookies',
+  'chrome_webmcp',
   'cdp_session',
   'cdp_emulate',
   // ─── page understanding (kept granular) ─────────────────────────────────
@@ -460,16 +471,19 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'fetch_url_as_markdown',
   'mutation_watch',
   'screenshot_region',
-  'tab_audio_inspect',
-  // ─── ask + plan ─────────────────────────────────────────────────────────
+  'chrome_tab_audio_inspect',
+  // ─── ask ────────────────────────────────────────────────────────────────
   'request_user_takeover',
+  // ─── plan & tasks ───────────────────────────────────────────────────────
   'update_plan',
+  'tasks',
+  'user_todos',
   // ─── files / windows ────────────────────────────────────────────────────
-  'save_page_as_mhtml',
+  'chrome_save_page_as_mhtml',
   'resize_window',
   // ─── recording / demos / guidance ───────────────────────────────────────
-  'record_gif',
-  'record_tab_video',
+  'chrome_record_gif',
+  'chrome_record_tab_video',
   'record_demo',
   'list_demos',
   'describe_demo',

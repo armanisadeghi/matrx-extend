@@ -10,6 +10,7 @@ export type SidepanelTab =
   | 'pilot'
   | 'tasks'
   | 'agenda'
+  | 'lists'
   | 'scrape'
   | 'data'
   | 'guidance'

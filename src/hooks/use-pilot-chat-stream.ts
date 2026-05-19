@@ -270,6 +270,7 @@ export function usePilotChatStream() {
           scrape: manualScrape,
           autoScrape,
           activeTab,
+          conversationId: usePilotChatStore.getState().selectedConversationId,
         });
       } catch (err) {
         log.warn('pilot-stream', 'buildChatContext failed', err);

@@ -125,6 +125,8 @@ export interface ToolResultEnvelope {
 
 export interface PendingConfirmRequest {
   callId: string;
+  /** Conversation that owns this request. See PendingAskUserRequest.conversationId. */
+  conversationId?: string | null;
   toolName: string;
   description: string;
   /** Args the agent supplied — surfaced verbatim so the user sees what's about to happen. */
@@ -156,6 +158,16 @@ export type UserAskKind =
 
 export interface PendingAskUserRequest {
   callId: string;
+  /**
+   * Conversation that owns this request. The SW dispatcher injects
+   * `ctx.conversationId` here so the sidepanel subscriber can route the
+   * card to the surface that actually fired the tool call — Pilot has its
+   * own conversation store, distinct from the Assistant Chat's. Without
+   * this, ask-user cards spawned from Pilot were tagged with the chat
+   * store's selectedConversationId and got filtered out by PilotView,
+   * hanging the call until timeout.
+   */
+  conversationId?: string | null;
   kind: UserAskKind;
   /** Required for confirm / choice / choice_many / text / secret. */
   question?: string;

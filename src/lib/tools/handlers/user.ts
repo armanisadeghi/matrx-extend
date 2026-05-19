@@ -29,6 +29,7 @@ import type {
   ToolHandler,
   UserAskKind,
 } from '@/lib/tools/types';
+import { addTasks, savePlan, setPlanStatus } from '@/lib/lists/storage';
 import { z } from 'zod';
 
 // ─── unified `user` tool ──────────────────────────────────────────────────
@@ -91,6 +92,7 @@ export const user: ToolHandler<UserArgs, Envelope> = {
     const timeoutMs = args.timeout_seconds ? args.timeout_seconds * 1000 : null;
     const request: PendingAskUserRequest = {
       callId: ctx.callId,
+      conversationId: ctx.conversationId,
       kind: args.type,
       question: args.question,
       options: args.options,
@@ -177,6 +179,7 @@ export const request_user_takeover: ToolHandler<TakeoverArgs, unknown> = {
     const detail = args.expected_action ?? args.instructions ?? '';
     const request: PendingAskUserRequest = {
       callId: ctx.callId,
+      conversationId: ctx.conversationId,
       kind: 'text',
       question: detail ? `${args.reason}\n\n${detail}` : args.reason,
       context: 'Agent asked you to take over',
@@ -240,18 +243,55 @@ export const update_plan: ToolHandler<UpdatePlanArgs, unknown> = {
     const timeoutMs = (args.timeout_seconds ?? 5 * 60) * 1000;
     const request: PendingAskUserRequest = {
       callId: ctx.callId,
+      conversationId: ctx.conversationId,
       kind: 'choice',
       question: body,
       options: ['Approve', 'Reject'],
       context: 'Agent is proposing a plan',
       expires_at_ms: Date.now() + timeoutMs,
     };
+    // Persist the proposed plan immediately so the UI panel can render
+    // it while the approval card is up. Status flips to 'approved' /
+    // 'rejected' after the user clicks.
+    if (ctx.conversationId) {
+      const now = Date.now();
+      void savePlan({
+        conversation_id: ctx.conversationId,
+        title,
+        steps,
+        reasoning: args.reasoning,
+        domains: args.domains,
+        estimated_minutes: args.estimated_minutes,
+        status: 'proposed',
+        created_at: now,
+        updated_at: now,
+      });
+    }
     const r = await awaitUserResponse(request, timeoutMs);
-    if (r === 'timed_out') return { approved: false, note: null, timed_out: true };
-    if (r.cancelled) return { approved: false, note: null };
+    if (r === 'timed_out') {
+      if (ctx.conversationId) void setPlanStatus(ctx.conversationId, 'rejected');
+      return { approved: false, note: null, timed_out: true };
+    }
+    if (r.cancelled) {
+      if (ctx.conversationId) void setPlanStatus(ctx.conversationId, 'rejected');
+      return { approved: false, note: null };
+    }
     const choice = r.selected?.[0] ?? r.answer ?? '';
+    const approved = choice.toLowerCase().startsWith('approve');
+    if (ctx.conversationId) {
+      void setPlanStatus(ctx.conversationId, approved ? 'approved' : 'rejected');
+      // Auto-populate tasks from approved plan steps so the live tasklist
+      // has something to show without the model needing a separate call.
+      if (approved && steps.length) {
+        void addTasks(
+          ctx.conversationId,
+          steps.map((s) => ({ title: s })),
+          'agent',
+        );
+      }
+    }
     return {
-      approved: choice.toLowerCase().startsWith('approve'),
+      approved,
       note: choice || null,
     };
   },

@@ -124,7 +124,7 @@ const SaveAsMhtmlArgs = z
 type SaveAsMhtmlArgs = z.infer<typeof SaveAsMhtmlArgs>;
 
 export const save_page_as_mhtml: ToolHandler<SaveAsMhtmlArgs, unknown> = {
-  name: 'save_page_as_mhtml',
+  name: 'chrome_save_page_as_mhtml',
   tier: 'action',
   admin_only: true,
   required_optional_permissions: ['pageCapture'],

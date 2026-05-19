@@ -1,14 +1,14 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-19T04:26:08.909Z
+Generated: 2026-05-19T14:10:59.471Z
 
-- **Total tools:** 167
-- **Assistant bundle:** 76 tools (read-only)
-- **Pilot bundle:** 137 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 167 tools
+- **Total tools:** 170
+- **Assistant bundle:** 77 tools (read-only)
+- **Pilot bundle:** 140 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 170 tools
 
 
-## Tier: read (76)
+## Tier: read (77)
 
 ### `list_browser_tools`
 
@@ -182,7 +182,24 @@ Full schemas for tools in the "Agent memory" category (memory). Persistent agent
 
 ### `list_ask_tools`
 
-Full schemas for tools in the "Ask the user" category (ask). Pause and ask the human: open question, multiple-choice, secret (masked) input, full takeover (CAPTCHA / login), and plan-approval (propose a plan; the human confirms before you execute). Returns { count, tools: [{ name, description, tier, input_schema }] }.
+Full schemas for tools in the "Ask the user" category (ask). Pause and ask the human: open question, multiple-choice, secret (masked) input, full takeover (CAPTCHA / login). Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_plan_tools`
+
+Full schemas for tools in the "Plan & tasks" category (plan). Propose a plan and wait for user approval (`update_plan`). Manage your own live tasklist (`tasks`) — add work items, set statuses (pending / in_progress / done / blocked / skipped) as you go; the list is surfaced to you in context on every turn so user edits flow back. Assign work back to the user (`user_todos`) — items the user sees in the panel and checks off; their status flows back to you too. Per-conversation. Approved plan steps auto-populate the tasklist. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1779,11 +1796,11 @@ Capture a bounded region of the active tab's viewport. Provide `ref` (preferred)
 }
 ```
 
-### `tab_audio_inspect`
+### `chrome_tab_audio_inspect`
 
 Report which open tabs are currently making noise, were recently audible (within the last 60s), or are muted. Each entry: { id, title, url, audible, muted, active, window_id, last_audible_at }. Useful for finding 'the noisy tab' and for media-aware automation.
 
-- **Required permissions:** `tabs`
+- **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
 ```json
@@ -1923,9 +1940,9 @@ Fetch an HTTP(S) URL and return its readable content as Markdown — the same de
 }
 ```
 
-### `memory`
+### `scratchpad`
 
-Session-scoped scratchpad for stashing structured notes across turns without burning context tokens. Actions: 'set' (write a value to a key), 'get' (read by key), 'list' (all keys), 'delete' (remove a key). Values are stringified — stringify objects before passing. Caps: 8 KB per value, 100 keys per session. Cleared at session end (SW restart).
+Session-scoped, in-process scratchpad for stashing structured notes across turns without burning context tokens. Distinct from the canonical `memory` tool which is the persistent long-term memory system. Use scratchpad for ephemeral state inside a single run; use `memory` for things the agent should remember about the user across sessions. Actions: 'set' (write a value to a key), 'get' (read by key), 'list' (all keys), 'delete' (remove a key). Values are stringified — stringify objects before passing. Caps: 8 KB per value, 100 keys per session. Cleared at session end.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -2101,11 +2118,11 @@ On-device AI (Gemini Nano + siblings). Free, offline, multimodal, no network. Ac
 }
 ```
 
-### `bookmarks`
+### `chrome_bookmarks`
 
 Read the user's bookmarks. Actions: 'search' (free-text against title and URL; pass `query`), 'tree' (folder tree starting at `folder_id` or root, `max_depth` deep). Each bookmark has id/title/url/parent_id/date_added.
 
-- **Required permissions:** `bookmarks`
+- **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
 ```json
@@ -2142,11 +2159,11 @@ Read the user's bookmarks. Actions: 'search' (free-text against title and URL; p
 }
 ```
 
-### `history`
+### `chrome_history`
 
 Read browsing history. Actions: 'search' (free-text against title/URL; pass `query`, optional `start_time_ms`/`end_time_ms`/`limit`), 'recent' (last N `minutes`, default 60).
 
-- **Required permissions:** `history`
+- **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
 ```json
@@ -2186,7 +2203,7 @@ Read browsing history. Actions: 'search' (free-text against title/URL; pass `que
 }
 ```
 
-## Tier: action (58)
+## Tier: action (60)
 
 ### `navigate_active_tab`
 
@@ -3316,11 +3333,11 @@ Restore a recently-closed tab or window. Pass `session_id` from list_recently_cl
 }
 ```
 
-### `save_page_as_mhtml`
+### `chrome_save_page_as_mhtml`
 
 Snapshot a tab as a self-contained MHTML archive (HTML + every resource inlined). Returns base64 MHTML data. Use for: archival, sharing a frozen page, feeding the agent a stable snapshot it can reanalyze later.
 
-- **Required permissions:** `activeTab`
+- **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
 ```json
@@ -3356,6 +3373,173 @@ Invoke a tool registered by the active page via `navigator.modelContext`. Pass t
   },
   "required": [
     "name"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `tasks`
+
+Manage the agent's own tasklist for the current conversation. Actions: 'add' (one via `title` or many via `items`), 'list' (read current tasks), 'set_status' (`id` + `status`), 'update' (`id` + `title` and/or `note`; pass note=null to clear), 'remove' (`id`), 'reorder' (`ids` in desired order), 'clear_completed' (drop done + skipped), 'clear_all'. Statuses: pending, in_progress, done, blocked, skipped. The list and any user edits to it are surfaced to you in `task_list` context on every turn — set statuses as you work so the user can see live progress.
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "add",
+        "list",
+        "set_status",
+        "update",
+        "remove",
+        "reorder",
+        "clear_completed",
+        "clear_all"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "in_progress",
+              "done",
+              "blocked",
+              "skipped"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 40
+    },
+    "id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "done",
+        "blocked",
+        "skipped"
+      ]
+    },
+    "note": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 500
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "action"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `user_todos`
+
+Assign tasks TO THE USER for the current conversation. The user sees them in a dedicated panel and checks them off; you'll see their state in `user_todos` context on every turn. Actions: 'add' (`title` + optional `context` for why + optional `due` hint; fires a Chrome notification unless `silent:true`), 'list', 'update' (`id` + `title`/`context`/`due`; pass null to clear), 'remove' (`id`), 'mark_done' (`id`; `done:false` un-checks), 'clear_done' (purge completed). Use this to delegate work back to the user — e.g. 'forward the email I just drafted', 'pick a date for the meeting'.
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "add",
+        "list",
+        "update",
+        "remove",
+        "mark_done",
+        "clear_done"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "context": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 300
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "due": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 80
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "silent": {
+      "type": "boolean"
+    },
+    "done": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "action"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -3414,11 +3598,11 @@ Fan the same prompt out across N existing tabs (max 8) and collect the results. 
 }
 ```
 
-### `record_gif`
+### `chrome_record_gif`
 
 Record browser actions and export as an animated GIF. Actions: 'start_recording', 'stop_recording', 'export' (generates and either downloads or drops onto a page element), 'clear' (discard frames). Take a screenshot right after start and right before stop to capture clean first/last frames. 'export' returns {file_id, file_url} when not dropping. Drop target accepts ref (preferred) or coordinate.
 
-- **Required permissions:** `activeTab`, `tabs`, `scripting`, `downloads`
+- **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
 ```json
@@ -3490,7 +3674,7 @@ Record browser actions and export as an animated GIF. Actions: 'start_recording'
 }
 ```
 
-### `record_tab_video`
+### `chrome_record_tab_video`
 
 Record video of a tab via chrome.tabCapture + MediaRecorder and upload to cld_files. Args: duration_ms (default 5000, max 60000), audio (default false), tab_id? (defaults to assigned tab), filename?. Returns { ok, file_id, file_url, mime_type, duration_ms, size_bytes }. Requires `tabCapture` optional permission — when missing returns ok:false with a remediation hint pointing the user to Settings → Advanced → Tab video capture.
 
@@ -4096,11 +4280,11 @@ Synthesize a drag-and-drop of a single file onto a target element or coordinate.
 }
 ```
 
-### `webmcp`
+### `chrome_webmcp`
 
 Discover and invoke tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). Actions: 'check' (probe API + count tools), 'list' (enumerate page-registered tools), 'call' (invoke; pass `tool_name` and `arguments`). Admin-only experimental capability.
 
-- **Required permissions:** `activeTab`, `scripting`
+- **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
 ```json
@@ -4187,7 +4371,7 @@ Manage tab groups. Actions: 'list' (returns all groups across windows), 'create'
 }
 ```
 
-### `recently_closed`
+### `chrome_recently_closed`
 
 Recently-closed tabs and windows. Actions: 'list' (returns sessions with id/url/title/lastModified), 'restore' (reopens; `session_id` optional — defaults to the most recently closed).
 
@@ -5168,7 +5352,7 @@ Replay a saved demo against a tab. Always requires confirmation — the demo can
 }
 ```
 
-### `cookies`
+### `chrome_cookies`
 
 Manage cookies for any domain. Actions: 'get' (read; pass `name` for a specific cookie or omit for all matching), 'set' (write; requires `name` + `value`; optional `domain`/`path`/`expires_in_seconds`/`same_site`/`http_only`/`secure`), 'delete' (requires `name`). Always pass `url` (or `domain` for 'get'). Admin-only.
 

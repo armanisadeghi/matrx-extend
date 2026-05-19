@@ -1,7 +1,7 @@
 /**
  * Canonical tool routers — implements the unified tool shape from
  * `browser_tools_canonical.json` (computer / form_input / navigate / tabs /
- * downloads / memory / clipboard) on top of the extension's existing
+ * downloads / scratchpad / clipboard) on top of the extension's existing
  * specific handlers.
  *
  * Strategy: each router is a thin dispatcher. When the canonical caller
@@ -601,51 +601,51 @@ export const downloads: ToolHandler<DownloadsArgs, unknown> = {
 };
 
 // ────────────────────────────────────────────────────────────────────────────
-// memory — session-scoped scratchpad (separate from chrome.storage)
+// scratchpad — session-scoped, in-process kv (distinct from canonical `memory`)
 // ────────────────────────────────────────────────────────────────────────────
 
-const MemoryArgs = z.object({
+const ScratchpadArgs = z.object({
   action: z.enum(['set', 'get', 'list', 'delete']),
   key: z.string().optional(),
   value: z.string().optional(),
 });
-type MemoryArgs = z.infer<typeof MemoryArgs>;
+type ScratchpadArgs = z.infer<typeof ScratchpadArgs>;
 
-const SESSION_MEMORY = new Map<string, string>();
-const MEMORY_VALUE_CAP = 8 * 1024;
-const MEMORY_KEY_CAP = 100;
+const SESSION_SCRATCHPAD = new Map<string, string>();
+const SCRATCHPAD_VALUE_CAP = 8 * 1024;
+const SCRATCHPAD_KEY_CAP = 100;
 
-export const memory: ToolHandler<MemoryArgs, unknown> = {
-  name: 'memory',
+export const scratchpad: ToolHandler<ScratchpadArgs, unknown> = {
+  name: 'scratchpad',
   tier: 'read',
   description:
-    "Session-scoped scratchpad for stashing structured notes across turns without burning context tokens. Actions: 'set' (write a value to a key), 'get' (read by key), 'list' (all keys), 'delete' (remove a key). Values are stringified — stringify objects before passing. Caps: 8 KB per value, 100 keys per session. Cleared at session end (SW restart).",
-  argsSchema: MemoryArgs,
+    "Session-scoped, in-process scratchpad for stashing structured notes across turns without burning context tokens. Distinct from the canonical `memory` tool which is the persistent long-term memory system. Use scratchpad for ephemeral state inside a single run; use `memory` for things the agent should remember about the user across sessions. Actions: 'set' (write a value to a key), 'get' (read by key), 'list' (all keys), 'delete' (remove a key). Values are stringified — stringify objects before passing. Caps: 8 KB per value, 100 keys per session. Cleared at session end.",
+  argsSchema: ScratchpadArgs,
   run: async (args) => {
     if (args.action === 'list') {
-      return { ok: true, keys: Array.from(SESSION_MEMORY.keys()), count: SESSION_MEMORY.size };
+      return { ok: true, keys: Array.from(SESSION_SCRATCHPAD.keys()), count: SESSION_SCRATCHPAD.size };
     }
     if (!args.key) return { ok: false, reason: "key required for action='" + args.action + "'" };
     if (args.action === 'get') {
-      const v = SESSION_MEMORY.get(args.key);
+      const v = SESSION_SCRATCHPAD.get(args.key);
       return { ok: true, key: args.key, value: v ?? null, found: v !== undefined };
     }
     if (args.action === 'delete') {
-      const had = SESSION_MEMORY.delete(args.key);
+      const had = SESSION_SCRATCHPAD.delete(args.key);
       return { ok: true, key: args.key, deleted: had };
     }
     if (args.action === 'set') {
       if (args.value == null) return { ok: false, reason: "value required for action='set'" };
-      if (args.value.length > MEMORY_VALUE_CAP) {
-        return { ok: false, reason: `value exceeds ${MEMORY_VALUE_CAP} bytes; trim before storing` };
+      if (args.value.length > SCRATCHPAD_VALUE_CAP) {
+        return { ok: false, reason: `value exceeds ${SCRATCHPAD_VALUE_CAP} bytes; trim before storing` };
       }
-      if (!SESSION_MEMORY.has(args.key) && SESSION_MEMORY.size >= MEMORY_KEY_CAP) {
-        return { ok: false, reason: `memory at ${MEMORY_KEY_CAP}-key cap; delete a key first` };
+      if (!SESSION_SCRATCHPAD.has(args.key) && SESSION_SCRATCHPAD.size >= SCRATCHPAD_KEY_CAP) {
+        return { ok: false, reason: `scratchpad at ${SCRATCHPAD_KEY_CAP}-key cap; delete a key first` };
       }
-      SESSION_MEMORY.set(args.key, args.value);
+      SESSION_SCRATCHPAD.set(args.key, args.value);
       return { ok: true, key: args.key, size: args.value.length };
     }
-    return { ok: false, reason: `Unknown memory action: ${args.action as string}` };
+    return { ok: false, reason: `Unknown scratchpad action: ${args.action as string}` };
   },
 };
 
@@ -1038,7 +1038,7 @@ export const canonical_handlers = [
   navigate,
   tabs,
   downloads,
-  memory,
+  scratchpad,
   clipboard,
   wait_for,
   upload_file,

@@ -33,6 +33,7 @@ import { LanguagePicker } from '@/features/chat/LanguagePicker';
 import { ServerToolRow } from '@/features/chat/ServerToolRow';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
+import { TaskPanel, TaskPanelChip } from '@/features/lists/TaskPanel';
 import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
@@ -40,6 +41,7 @@ import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
 import { log } from '@/lib/debug/log';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
+import { DEFAULT_AGENDA_AGENT_ID } from '@/lib/agenda/constants';
 import { wrapForAgent } from '@/lib/clipboard/copy';
 import {
   type AgxAgent,
@@ -170,6 +172,7 @@ export function ChatView() {
   );
 
   const [agentsRefreshing, setAgentsRefreshing] = useState(false);
+  const [taskPanelOpen, setTaskPanelOpen] = useState(false);
 
   useEffect(() => {
     // Guests get the builtin-agents list (anon role can read agx_agent rows
@@ -189,11 +192,21 @@ export function ChatView() {
       setConversations(c);
       setAgentsLoading(false);
 
-      // Auto-select user's default agent if nothing is currently selected.
+      // Auto-select on fresh load:
+      //   1. The user's explicitly-saved default agent (when set + still in
+      //      the fetched list).
+      //   2. Otherwise, the Matrx Browser Agent — same UUID for guests
+      //      AND signed-in users so the side panel always opens on a
+      //      working agent. Signed-in users with their own preference set
+      //      it via Settings → Default agent and take branch (1).
       const chat = useChatStore.getState();
-      const defaultId = useSettingsStore.getState().defaultAgentId;
-      if (!chat.selectedAgentId && defaultId && a.some((x) => x.id === defaultId)) {
-        chat.setAgent(defaultId);
+      const savedDefaultId = useSettingsStore.getState().defaultAgentId;
+      if (!chat.selectedAgentId) {
+        if (savedDefaultId && a.some((x) => x.id === savedDefaultId)) {
+          chat.setAgent(savedDefaultId);
+        } else if (a.some((x) => x.id === DEFAULT_AGENDA_AGENT_ID)) {
+          chat.setAgent(DEFAULT_AGENDA_AGENT_ID);
+        }
       }
     })();
     return () => {
@@ -395,8 +408,19 @@ export function ChatView() {
   };
 
   return (
-    <div className="flex h-full flex-col bg-background">
+    <div className="relative flex h-full flex-col bg-background">
       <GuestBanner />
+      <div className="absolute right-2 top-1 z-30">
+        <TaskPanelChip
+          conversationId={selectedConversationId}
+          onClick={() => setTaskPanelOpen((v) => !v)}
+        />
+      </div>
+      <TaskPanel
+        conversationId={selectedConversationId}
+        open={taskPanelOpen}
+        onClose={() => setTaskPanelOpen(false)}
+      />
       <ChatHeader
         agents={agents}
         agentsLoading={agentsLoading}

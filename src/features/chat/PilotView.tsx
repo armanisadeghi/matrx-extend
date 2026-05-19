@@ -41,6 +41,7 @@ import { LanguagePicker } from '@/features/chat/LanguagePicker';
 import { ServerToolRow } from '@/features/chat/ServerToolRow';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
+import { TaskPanel, TaskPanelChip } from '@/features/lists/TaskPanel';
 import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { usePilotChatStream } from '@/hooks/use-pilot-chat-stream';
@@ -112,6 +113,7 @@ export function PilotView() {
   const [agents, setAgents] = useState<AgxAgent[]>([]);
   const [agentsLoading, setAgentsLoading] = useState(true);
   const [agentsRefreshing, setAgentsRefreshing] = useState(false);
+  const [taskPanelOpen, setTaskPanelOpen] = useState(false);
   const [groupTabCount, setGroupTabCount] = useState<number | null>(null);
   const [sessionError, setSessionError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -344,7 +346,18 @@ export function PilotView() {
   }
 
   return (
-    <div className="flex h-full flex-col bg-background">
+    <div className="relative flex h-full flex-col bg-background">
+      <div className="absolute right-2 top-1 z-30">
+        <TaskPanelChip
+          conversationId={pilotConversationId}
+          onClick={() => setTaskPanelOpen((v) => !v)}
+        />
+      </div>
+      <TaskPanel
+        conversationId={pilotConversationId}
+        open={taskPanelOpen}
+        onClose={() => setTaskPanelOpen(false)}
+      />
       <PilotHeader
         agents={agents}
         agentsLoading={agentsLoading}

@@ -38,6 +38,11 @@ export const CHANNELS = {
   // step counts). SW broadcasts; sidepanel updates the header chip.
   GUIDANCE_RECORDING_STATE: 'guidance:recording-state',
 
+  // Plan / tasks / user_todos — any write to chrome.storage.local under
+  // matrx.lists.* fires this so the sidepanel zustand mirror refreshes
+  // without polling. Payload: { kind: 'plan'|'tasks'|'user_todos', conversation_id }.
+  LISTS_CHANGED: 'lists:changed',
+
   // Tool dispatch (agent-driven actions in the browser)
   TOOL_CONFIRM_REQUEST: 'tool:confirm-request', // SW → sidepanel: please render approval card
   TOOL_CONFIRM_RESPONSE: 'tool:confirm-response', // sidepanel → SW: user clicked allow / deny

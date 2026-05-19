@@ -50,7 +50,13 @@ export function useToolInbox$Subscribe(): void {
     const offConfirm = on<PendingConfirmRequest, { ack: true }>(
       CHANNELS.TOOL_CONFIRM_REQUEST,
       (payload) => {
-        const conversationId = useChatStore.getState().selectedConversationId;
+        // The SW dispatcher injects ctx.conversationId into the payload.
+        // Prefer that — it correctly routes Pilot-spawned cards to the
+        // Pilot surface and Assistant-spawned cards to the Chat surface.
+        // Falling back to the chat store is only for legacy / unknown
+        // dispatch paths that didn't set the field.
+        const conversationId =
+          payload.conversationId ?? useChatStore.getState().selectedConversationId;
         useToolInbox.getState().addConfirm(payload, conversationId);
         return { ack: true };
       },
@@ -58,7 +64,8 @@ export function useToolInbox$Subscribe(): void {
     const offAsk = on<PendingAskUserRequest, { ack: true }>(
       CHANNELS.TOOL_ASK_USER_REQUEST,
       (payload) => {
-        const conversationId = useChatStore.getState().selectedConversationId;
+        const conversationId =
+          payload.conversationId ?? useChatStore.getState().selectedConversationId;
         useToolInbox.getState().addAsk(payload, conversationId);
         return { ack: true };
       },

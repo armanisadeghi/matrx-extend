@@ -211,7 +211,7 @@ const CookiesArgs = z.object({
 type CookiesArgs = z.infer<typeof CookiesArgs>;
 
 export const cookies: ToolHandler<CookiesArgs, unknown> = {
-  name: 'cookies',
+  name: 'chrome_cookies',
   tier: 'privileged',
   tierFor: (args): ToolTier => (args.action === 'get' ? 'read' : 'privileged'),
   admin_only: true,
@@ -266,7 +266,7 @@ const WebmcpArgs = z.object({
 type WebmcpArgs = z.infer<typeof WebmcpArgs>;
 
 export const webmcp: ToolHandler<WebmcpArgs, unknown> = {
-  name: 'webmcp',
+  name: 'chrome_webmcp',
   tier: 'action',
   tierFor: (args): ToolTier =>
     args.action === 'check' || args.action === 'list' ? 'read' : 'action',
@@ -409,7 +409,7 @@ const BookmarksArgs = z.object({
 type BookmarksArgs = z.infer<typeof BookmarksArgs>;
 
 export const bookmarks: ToolHandler<BookmarksArgs, unknown> = {
-  name: 'bookmarks',
+  name: 'chrome_bookmarks',
   tier: 'read',
   description:
     "Read the user's bookmarks. Actions: 'search' (free-text against title and URL; pass `query`), 'tree' (folder tree starting at `folder_id` or root, `max_depth` deep). Each bookmark has id/title/url/parent_id/date_added.",
@@ -446,7 +446,7 @@ const HistoryArgs = z.object({
 type HistoryArgs = z.infer<typeof HistoryArgs>;
 
 export const history: ToolHandler<HistoryArgs, unknown> = {
-  name: 'history',
+  name: 'chrome_history',
   tier: 'read',
   description:
     "Read browsing history. Actions: 'search' (free-text against title/URL; pass `query`, optional `start_time_ms`/`end_time_ms`/`limit`), 'recent' (last N `minutes`, default 60).",
@@ -485,7 +485,7 @@ const RecentlyClosedArgs = z.object({
 type RecentlyClosedArgs = z.infer<typeof RecentlyClosedArgs>;
 
 export const recently_closed: ToolHandler<RecentlyClosedArgs, unknown> = {
-  name: 'recently_closed',
+  name: 'chrome_recently_closed',
   tier: 'action',
   tierFor: (args): ToolTier => (args.action === 'list' ? 'read' : 'action'),
   required_optional_permissions: ['sessions'],

@@ -28,6 +28,51 @@
   for the post-redesign source-of-truth flow. The previously-emitted
   `types/server-handoff/browser-dom-capability.json` was retired in
   May 2026.
+- **Global tool namespace (2026-05-19, complete)** — the
+  `matrx-extend:` colon-prefix is GONE from every row in `tl_def`.
+  Three tiers replace it:
+  1. **Bare global names** (~58 tools) — UI-first + everything
+     Playwright can also do. Examples: `update_plan`, `tasks`,
+     `user_todos`, `user`, `request_user_takeover`, `scratchpad`,
+     `read_page`, `find`, `computer`, `tabs`, `navigate`,
+     `form_input`, `evaluate_javascript`, `clipboard`, `ai`,
+     `record_demo`, `replay_demo`, `desktop_run_command`, ...
+     A Next.js surface that registers a handler for the same name
+     shares the same `tl_def` row — one tool, multiple impls.
+  2. **`chrome_*` bare prefix** (9 tools) — genuinely
+     Chrome-extension-exclusive. Examples: `chrome_cookies`,
+     `chrome_bookmarks`, `chrome_history`, `chrome_recently_closed`,
+     `chrome_save_page_as_mhtml`, `chrome_tab_audio_inspect`,
+     `chrome_record_gif`, `chrome_record_tab_video`, `chrome_webmcp`.
+     Matches matrx_local's `local_*` convention.
+  3. **`cdp_*` bare prefix** (12 tools) — Chrome DevTools
+     Protocol-backed. Self-prefixed already; just dropped the colon
+     namespace.
+  Rule: **if Playwright can do it, we don't own the name.** The
+  `tools_name_key` UNIQUE constraint is on `name` alone — that's
+  load-bearing for "same name = same tool" cross-surface.
+  Retired: `matrx-extend:memory` (mega-tool). Use the matrx_ai
+  canonical `memory` for persistent memory; the new bare-name
+  `scratchpad` for ephemeral in-session kv.
+- **Plan / Tasks / User-Todos (2026-05-19)** — three linked surfaces
+  that pair with the existing `update_plan` flow.
+  - **Plan** — what the user approved; persisted per-conversation,
+    auto-populated into the tasklist on approval.
+  - **Tasks** — agent's own live work items, per-conversation, with
+    statuses (`pending|in_progress|done|blocked|skipped`). `tasks`
+    mega-tool actions: `add`, `list`, `set_status`, `update`, `remove`,
+    `reorder`, `clear_completed`, `clear_all`.
+  - **User todos** — work the agent assigns BACK to the user.
+    `user_todos` actions: `add` (fires Chrome notification unless
+    `silent:true`), `list`, `update`, `remove`, `mark_done`,
+    `clear_done`. Per-conversation.
+  All three slices are injected into context as `current_plan`,
+  `task_list`, `user_todos` keys when non-empty — user edits flow back
+  to the model on the next turn. Per-chat surface lives in the
+  TaskPanel drawer (chip in chat header opens it); cross-conversation
+  triage lives in the new `lists` sidepanel tab. Storage at
+  [src/lib/lists/storage.ts](./src/lib/lists/storage.ts); every
+  mutation broadcasts `LISTS_CHANGED` so SW + sidepanel stay in sync.
 - **Reference-ID system** — `read_page` tags every interactive element with
   `data-matrx-ref="N"` and returns refs (`ref:N`) the agent passes to
   interaction tools instead of brittle CSS selectors. Refs survive DOM

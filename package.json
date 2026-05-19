@@ -24,6 +24,7 @@
     "catalog:tools": "tsx scripts/dump-tool-catalog.ts",
     "catalog:tools:md": "tsx scripts/dump-tool-catalog.ts --markdown",
     "catalog:tools:drift": "tsx scripts/check-tool-db-drift.ts",
+    "catalog:tools:db-dump": "node scripts/dump-tool-db-to-md.mjs",
     "ui:add": "pnpm dlx shadcn@latest add",
     "prepare": "wxt prepare && husky || true"
   },

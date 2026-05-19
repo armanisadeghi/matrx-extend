@@ -128,7 +128,7 @@ async function dropFileOnTarget(
 const READ_ACTIONS = new Set(['clear']);
 
 export const record_gif: ToolHandler<RecordGifArgs, unknown> = {
-  name: 'record_gif',
+  name: 'chrome_record_gif',
   tier: 'action',
   admin_only: true,
   required_optional_permissions: ['debugger'],

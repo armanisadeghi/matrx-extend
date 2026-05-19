@@ -19,6 +19,7 @@ import {
   Camera,
   Crosshair,
   Database,
+  ListChecks,
   ListTodo,
   Loader2,
   MessageSquare,
@@ -41,6 +42,8 @@ const VIEW_LOADERS = {
   pilot: () =>
     import('@/features/chat/PilotView').then((m) => ({ default: m.PilotView })),
   tasks: () => import('@/features/tasks/TasksView').then((m) => ({ default: m.TasksView })),
+  lists: () =>
+    import('@/features/lists/ListsHubView').then((m) => ({ default: m.ListsHubView })),
   agenda: () =>
     import('@/features/agenda/AgendaView').then((m) => ({ default: m.AgendaView })),
   scrape: () =>
@@ -67,6 +70,7 @@ const VIEW_LOADERS = {
 const ChatView = lazy(VIEW_LOADERS.chat);
 const PilotView = lazy(VIEW_LOADERS.pilot);
 const TasksView = lazy(VIEW_LOADERS.tasks);
+const ListsHubView = lazy(VIEW_LOADERS.lists);
 const AgendaView = lazy(VIEW_LOADERS.agenda);
 const ScrapeView = lazy(VIEW_LOADERS.scrape);
 const DataView = lazy(VIEW_LOADERS.data);
@@ -193,6 +197,9 @@ export function App() {
                 )}
                 {showFullTabs && (
                   <>
+                    <TabsTrigger value="lists" className="size-7 p-0" title="Plan & tasks">
+                      <ListChecks className="size-3.5" />
+                    </TabsTrigger>
                     <TabsTrigger value="tasks" className="size-7 p-0" title="Tasks">
                       <ListTodo className="size-3.5" />
                     </TabsTrigger>
@@ -274,6 +281,11 @@ export function App() {
             )}
             {showFullTabs && (
               <>
+                <TabsContent value="lists" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <ListsHubView />
+                  </Suspense>
+                </TabsContent>
                 <TabsContent value="tasks" className="flex-1 min-h-0">
                   <Suspense fallback={TabFallback}>
                     <TasksView />

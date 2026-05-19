@@ -540,6 +540,7 @@ function requestConfirmation(
 
     const req: PendingConfirmRequest = {
       callId: ctx.callId,
+      conversationId: ctx.conversationId,
       toolName: handler.name,
       description: handler.description,
       args,

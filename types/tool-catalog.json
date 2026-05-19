@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-19T04:26:08.909Z",
+  "generated_at": "2026-05-19T14:10:59.471Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -24,6 +24,7 @@
     "list_files_tools",
     "list_memory_tools",
     "list_ask_tools",
+    "list_plan_tools",
     "list_advanced_tools",
     "list_demos_tools",
     "list_guidance_tools",
@@ -43,6 +44,7 @@
     "list_files_tools",
     "list_memory_tools",
     "list_ask_tools",
+    "list_plan_tools",
     "list_advanced_tools",
     "list_demos_tools",
     "list_guidance_tools",
@@ -98,16 +100,16 @@
     "get_guidance_item",
     "extract_table",
     "screenshot_region",
-    "tab_audio_inspect",
+    "chrome_tab_audio_inspect",
     "mutation_watch",
     "extract_microdata",
     "fetch_url_as_markdown",
-    "memory",
+    "scratchpad",
     "wait_for",
     "read_pdf",
     "ai",
-    "bookmarks",
-    "history"
+    "chrome_bookmarks",
+    "chrome_history"
   ],
   "pilot_bundle": [
     "list_browser_tools",
@@ -121,6 +123,7 @@
     "list_files_tools",
     "list_memory_tools",
     "list_ask_tools",
+    "list_plan_tools",
     "list_advanced_tools",
     "list_demos_tools",
     "list_guidance_tools",
@@ -200,7 +203,7 @@
     "remember_for_domain",
     "list_recently_closed",
     "restore_recently_closed",
-    "save_page_as_mhtml",
+    "chrome_save_page_as_mhtml",
     "get_cookies",
     "cdp_attached_tabs",
     "cdp_perf_metrics",
@@ -212,9 +215,11 @@
     "user",
     "request_user_takeover",
     "update_plan",
+    "tasks",
+    "user_todos",
     "parallel_for_each_tab",
-    "record_gif",
-    "record_tab_video",
+    "chrome_record_gif",
+    "chrome_record_tab_video",
     "record_demo",
     "list_demos",
     "describe_demo",
@@ -226,7 +231,7 @@
     "extract_table",
     "screenshot_region",
     "get_clipboard",
-    "tab_audio_inspect",
+    "chrome_tab_audio_inspect",
     "mutation_watch",
     "extract_microdata",
     "fetch_url_as_markdown",
@@ -235,18 +240,18 @@
     "navigate",
     "tabs",
     "downloads",
-    "memory",
+    "scratchpad",
     "clipboard",
     "wait_for",
     "upload_file",
     "drop_file",
     "read_pdf",
     "ai",
-    "webmcp",
+    "chrome_webmcp",
     "tab_groups",
-    "bookmarks",
-    "history",
-    "recently_closed"
+    "chrome_bookmarks",
+    "chrome_history",
+    "chrome_recently_closed"
   ],
   "pilot_with_privileged_bundle": [
     "list_browser_tools",
@@ -260,6 +265,7 @@
     "list_files_tools",
     "list_memory_tools",
     "list_ask_tools",
+    "list_plan_tools",
     "list_advanced_tools",
     "list_demos_tools",
     "list_guidance_tools",
@@ -339,7 +345,7 @@
     "remember_for_domain",
     "list_recently_closed",
     "restore_recently_closed",
-    "save_page_as_mhtml",
+    "chrome_save_page_as_mhtml",
     "get_cookies",
     "set_cookie",
     "delete_cookie",
@@ -369,14 +375,16 @@
     "user",
     "request_user_takeover",
     "update_plan",
+    "tasks",
+    "user_todos",
     "execute_javascript",
     "inject_stylesheet",
     "remove_stylesheet",
     "set_extension_storage",
     "desktop_run_command",
     "parallel_for_each_tab",
-    "record_gif",
-    "record_tab_video",
+    "chrome_record_gif",
+    "chrome_record_tab_video",
     "record_demo",
     "list_demos",
     "describe_demo",
@@ -389,7 +397,7 @@
     "extract_table",
     "screenshot_region",
     "get_clipboard",
-    "tab_audio_inspect",
+    "chrome_tab_audio_inspect",
     "mutation_watch",
     "extract_microdata",
     "fetch_url_as_markdown",
@@ -398,20 +406,20 @@
     "navigate",
     "tabs",
     "downloads",
-    "memory",
+    "scratchpad",
     "clipboard",
     "wait_for",
     "upload_file",
     "drop_file",
     "read_pdf",
     "ai",
-    "cookies",
-    "webmcp",
+    "chrome_cookies",
+    "chrome_webmcp",
     "storage",
     "tab_groups",
-    "bookmarks",
-    "history",
-    "recently_closed",
+    "chrome_bookmarks",
+    "chrome_history",
+    "chrome_recently_closed",
     "stylesheet",
     "cdp_session",
     "cdp_emulate",
@@ -524,7 +532,7 @@
         "add_tabs_to_group",
         "remove_tabs_from_group",
         "update_tab_group",
-        "tab_audio_inspect",
+        "chrome_tab_audio_inspect",
         "tabs",
         "tab_groups"
       ]
@@ -543,9 +551,9 @@
         "list_downloads",
         "list_recently_closed",
         "restore_recently_closed",
-        "bookmarks",
-        "history",
-        "recently_closed"
+        "chrome_bookmarks",
+        "chrome_history",
+        "chrome_recently_closed"
       ]
     },
     {
@@ -577,7 +585,7 @@
         "set_clipboard",
         "download_url",
         "cancel_download",
-        "save_page_as_mhtml",
+        "chrome_save_page_as_mhtml",
         "get_clipboard",
         "downloads",
         "clipboard",
@@ -597,19 +605,30 @@
         "list_extension_storage",
         "remember_for_domain",
         "set_extension_storage",
-        "memory",
+        "scratchpad",
         "storage"
       ]
     },
     {
       "category": "ask",
       "label": "Ask the user",
-      "description": "Pause and ask the human: open question, multiple-choice, secret (masked) input, full takeover (CAPTCHA / login), and plan-approval (propose a plan; the human confirms before you execute).",
+      "description": "Pause and ask the human: open question, multiple-choice, secret (masked) input, full takeover (CAPTCHA / login).",
       "list_tool": "list_ask_tools",
       "admin_only": false,
       "tool_names": [
-        "request_user_takeover",
-        "update_plan"
+        "request_user_takeover"
+      ]
+    },
+    {
+      "category": "plan",
+      "label": "Plan & tasks",
+      "description": "Propose a plan and wait for user approval (`update_plan`). Manage your own live tasklist (`tasks`) — add work items, set statuses (pending / in_progress / done / blocked / skipped) as you go; the list is surfaced to you in context on every turn so user edits flow back. Assign work back to the user (`user_todos`) — items the user sees in the panel and checks off; their status flows back to you too. Per-conversation. Approved plan steps auto-populate the tasklist.",
+      "list_tool": "list_plan_tools",
+      "admin_only": false,
+      "tool_names": [
+        "update_plan",
+        "tasks",
+        "user_todos"
       ]
     },
     {
@@ -628,6 +647,7 @@
         "list_files_tools",
         "list_memory_tools",
         "list_ask_tools",
+        "list_plan_tools",
         "list_advanced_tools",
         "list_demos_tools",
         "list_guidance_tools",
@@ -639,8 +659,8 @@
         "remove_stylesheet",
         "desktop_run_command",
         "parallel_for_each_tab",
-        "record_gif",
-        "record_tab_video",
+        "chrome_record_gif",
+        "chrome_record_tab_video",
         "stylesheet",
         "evaluate_javascript"
       ]
@@ -713,7 +733,7 @@
         "get_cookies",
         "set_cookie",
         "delete_cookie",
-        "cookies"
+        "chrome_cookies"
       ]
     },
     {
@@ -726,7 +746,7 @@
         "webmcp_check_availability",
         "webmcp_list_page_tools",
         "webmcp_call_page_tool",
-        "webmcp"
+        "chrome_webmcp"
       ]
     }
   ],
@@ -993,7 +1013,33 @@
     },
     {
       "name": "list_ask_tools",
-      "description": "Full schemas for tools in the \"Ask the user\" category (ask). Pause and ask the human: open question, multiple-choice, secret (masked) input, full takeover (CAPTCHA / login), and plan-approval (propose a plan; the human confirms before you execute). Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "description": "Full schemas for tools in the \"Ask the user\" category (ask). Pause and ask the human: open question, multiple-choice, secret (masked) input, full takeover (CAPTCHA / login). Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "tier": "read",
+      "category": "advanced",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
+      ]
+    },
+    {
+      "name": "list_plan_tools",
+      "description": "Full schemas for tools in the \"Plan & tasks\" category (plan). Propose a plan and wait for user approval (`update_plan`). Manage your own live tasklist (`tasks`) — add work items, set statuses (pending / in_progress / done / blocked / skipped) as you go; the list is surfaced to you in context on every turn so user edits flow back. Assign work back to the user (`user_todos`) — items the user sees in the panel and checks off; their status flows back to you too. Per-conversation. Approved plan steps auto-populate the tasklist. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
       "category": "advanced",
       "input_schema": {
@@ -4203,7 +4249,7 @@
       ]
     },
     {
-      "name": "save_page_as_mhtml",
+      "name": "chrome_save_page_as_mhtml",
       "description": "Snapshot a tab as a self-contained MHTML archive (HTML + every resource inlined). Returns base64 MHTML data. Use for: archival, sharing a frozen page, feeding the agent a stable snapshot it can reanalyze later.",
       "tier": "action",
       "category": "files",
@@ -4218,9 +4264,7 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": [
-        "activeTab"
-      ],
+      "required_permissions": [],
       "required_optional_permissions": [
         "pageCapture"
       ],
@@ -5350,7 +5394,7 @@
       "name": "update_plan",
       "description": "Propose a step-by-step plan and wait for the user to approve, modify, or reject it. Use this BEFORE a multi-step action sequence so you align on intent up front. Returns { approved: true, note?: string } or { approved: false, note?: string } so you can adjust.",
       "tier": "ask-user",
-      "category": "ask",
+      "category": "plan",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5395,6 +5439,189 @@
             "maximum": 900
           }
         },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
+      ]
+    },
+    {
+      "name": "tasks",
+      "description": "Manage the agent's own tasklist for the current conversation. Actions: 'add' (one via `title` or many via `items`), 'list' (read current tasks), 'set_status' (`id` + `status`), 'update' (`id` + `title` and/or `note`; pass note=null to clear), 'remove' (`id`), 'reorder' (`ids` in desired order), 'clear_completed' (drop done + skipped), 'clear_all'. Statuses: pending, in_progress, done, blocked, skipped. The list and any user edits to it are surfaced to you in `task_list` context on every turn — set statuses as you work so the user can see live progress.",
+      "tier": "action",
+      "category": "plan",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "add",
+              "list",
+              "set_status",
+              "update",
+              "remove",
+              "reorder",
+              "clear_completed",
+              "clear_all"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "in_progress",
+                    "done",
+                    "blocked",
+                    "skipped"
+                  ]
+                },
+                "note": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              },
+              "required": [
+                "title"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 40
+          },
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "in_progress",
+              "done",
+              "blocked",
+              "skipped"
+            ]
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
+      ]
+    },
+    {
+      "name": "user_todos",
+      "description": "Assign tasks TO THE USER for the current conversation. The user sees them in a dedicated panel and checks them off; you'll see their state in `user_todos` context on every turn. Actions: 'add' (`title` + optional `context` for why + optional `due` hint; fires a Chrome notification unless `silent:true`), 'list', 'update' (`id` + `title`/`context`/`due`; pass null to clear), 'remove' (`id`), 'mark_done' (`id`; `done:false` un-checks), 'clear_done' (purge completed). Use this to delegate work back to the user — e.g. 'forward the email I just drafted', 'pick a date for the meeting'.",
+      "tier": "action",
+      "category": "plan",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "add",
+              "list",
+              "update",
+              "remove",
+              "mark_done",
+              "clear_done"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "context": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "due": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "silent": {
+            "type": "boolean"
+          },
+          "done": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "action"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
@@ -5670,7 +5897,7 @@
       ]
     },
     {
-      "name": "record_gif",
+      "name": "chrome_record_gif",
       "description": "Record browser actions and export as an animated GIF. Actions: 'start_recording', 'stop_recording', 'export' (generates and either downloads or drops onto a page element), 'clear' (discard frames). Take a screenshot right after start and right before stop to capture clean first/last frames. 'export' returns {file_id, file_url} when not dropping. Drop target accepts ref (preferred) or coordinate.",
       "tier": "action",
       "category": "advanced",
@@ -5740,12 +5967,7 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": [
-        "activeTab",
-        "tabs",
-        "scripting",
-        "downloads"
-      ],
+      "required_permissions": [],
       "required_optional_permissions": [
         "debugger"
       ],
@@ -5759,7 +5981,7 @@
       ]
     },
     {
-      "name": "record_tab_video",
+      "name": "chrome_record_tab_video",
       "description": "Record video of a tab via chrome.tabCapture + MediaRecorder and upload to cld_files. Args: duration_ms (default 5000, max 60000), audio (default false), tab_id? (defaults to assigned tab), filename?. Returns { ok, file_id, file_url, mime_type, duration_ms, size_bytes }. Requires `tabCapture` optional permission — when missing returns ok:false with a remediation hint pointing the user to Settings → Advanced → Tab video capture.",
       "tier": "action",
       "category": "advanced",
@@ -6400,7 +6622,7 @@
       ]
     },
     {
-      "name": "tab_audio_inspect",
+      "name": "chrome_tab_audio_inspect",
       "description": "Report which open tabs are currently making noise, were recently audible (within the last 60s), or are muted. Each entry: { id, title, url, audible, muted, active, window_id, last_audible_at }. Useful for finding 'the noisy tab' and for media-aware automation.",
       "tier": "read",
       "category": "tabs",
@@ -6411,9 +6633,7 @@
         "default": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": [
-        "tabs"
-      ],
+      "required_permissions": [],
       "required_optional_permissions": [],
       "admin_only": false,
       "surface_bundles": [
@@ -6876,8 +7096,8 @@
       ]
     },
     {
-      "name": "memory",
-      "description": "Session-scoped scratchpad for stashing structured notes across turns without burning context tokens. Actions: 'set' (write a value to a key), 'get' (read by key), 'list' (all keys), 'delete' (remove a key). Values are stringified — stringify objects before passing. Caps: 8 KB per value, 100 keys per session. Cleared at session end (SW restart).",
+      "name": "scratchpad",
+      "description": "Session-scoped, in-process scratchpad for stashing structured notes across turns without burning context tokens. Distinct from the canonical `memory` tool which is the persistent long-term memory system. Use scratchpad for ephemeral state inside a single run; use `memory` for things the agent should remember about the user across sessions. Actions: 'set' (write a value to a key), 'get' (read by key), 'list' (all keys), 'delete' (remove a key). Values are stringified — stringify objects before passing. Caps: 8 KB per value, 100 keys per session. Cleared at session end.",
       "tier": "read",
       "category": "memory",
       "input_schema": {
@@ -7224,7 +7444,7 @@
       ]
     },
     {
-      "name": "cookies",
+      "name": "chrome_cookies",
       "description": "Manage cookies for any domain. Actions: 'get' (read; pass `name` for a specific cookie or omit for all matching), 'set' (write; requires `name` + `value`; optional `domain`/`path`/`expires_in_seconds`/`same_site`/`http_only`/`secure`), 'delete' (requires `name`). Always pass `url` (or `domain` for 'get'). Admin-only.",
       "tier": "privileged",
       "category": "cookies",
@@ -7294,7 +7514,7 @@
       ]
     },
     {
-      "name": "webmcp",
+      "name": "chrome_webmcp",
       "description": "Discover and invoke tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). Actions: 'check' (probe API + count tools), 'list' (enumerate page-registered tools), 'call' (invoke; pass `tool_name` and `arguments`). Admin-only experimental capability.",
       "tier": "action",
       "category": "webmcp",
@@ -7320,10 +7540,7 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": [
-        "activeTab",
-        "scripting"
-      ],
+      "required_permissions": [],
       "required_optional_permissions": [],
       "admin_only": true,
       "surface_bundles": [
@@ -7446,7 +7663,7 @@
       ]
     },
     {
-      "name": "bookmarks",
+      "name": "chrome_bookmarks",
       "description": "Read the user's bookmarks. Actions: 'search' (free-text against title and URL; pass `query`), 'tree' (folder tree starting at `folder_id` or root, `max_depth` deep). Each bookmark has id/title/url/parent_id/date_added.",
       "tier": "read",
       "category": "history",
@@ -7481,9 +7698,7 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": [
-        "bookmarks"
-      ],
+      "required_permissions": [],
       "required_optional_permissions": [],
       "admin_only": false,
       "surface_bundles": [
@@ -7498,7 +7713,7 @@
       ]
     },
     {
-      "name": "history",
+      "name": "chrome_history",
       "description": "Read browsing history. Actions: 'search' (free-text against title/URL; pass `query`, optional `start_time_ms`/`end_time_ms`/`limit`), 'recent' (last N `minutes`, default 60).",
       "tier": "read",
       "category": "history",
@@ -7536,9 +7751,7 @@
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
-      "required_permissions": [
-        "history"
-      ],
+      "required_permissions": [],
       "required_optional_permissions": [],
       "admin_only": false,
       "surface_bundles": [
@@ -7553,7 +7766,7 @@
       ]
     },
     {
-      "name": "recently_closed",
+      "name": "chrome_recently_closed",
       "description": "Recently-closed tabs and windows. Actions: 'list' (returns sessions with id/url/title/lastModified), 'restore' (reopens; `session_id` optional — defaults to the most recently closed).",
       "tier": "action",
       "category": "history",

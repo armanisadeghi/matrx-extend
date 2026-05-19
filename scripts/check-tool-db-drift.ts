@@ -51,6 +51,15 @@ interface Drift {
   issues: string[];
 }
 
+/**
+ * Legacy surface prefix. Some matrx-extend tools (Chrome-extension-exclusive
+ * ones: CDP, cookies, bookmarks, history, demos, guidance) still carry the
+ * `matrx-extend:` prefix in tl_def.name. UI-first / Playwright-capable tools
+ * (update_plan, tasks, user_todos, user, request_user_takeover, scratchpad,
+ * and the rest in tiers 1+2) live at bare names in the global namespace.
+ * `normalizeName` strips the prefix when present so the comparator works for
+ * both cases without forking the loop.
+ */
 const DB_PREFIX = 'matrx-extend:';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 

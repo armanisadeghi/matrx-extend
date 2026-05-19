@@ -32,6 +32,7 @@ import { checkPageReady } from './check-page-ready';
 import { detectEmail, isEmailUrl } from './detect-email';
 import { detectPullRequest, isPullRequestUrl } from './detect-pull-request';
 import { detectTicket, isTicketUrl } from './detect-ticket';
+import { getPlan, listTasks, listUserTodos } from '@/lib/lists/storage';
 import { discoverFormsForContext } from './discover-forms';
 import { getDomainMemoForUrl } from './domain-memo';
 import { getGuidanceForUrl } from './guidance';
@@ -66,6 +67,59 @@ export async function buildContextV2Bundled(
     timezone,
     locale: (typeof navigator !== 'undefined' && navigator.language) || null,
   };
+
+  // ── plan / tasks / user_todos ────────────────────────────────────────────
+  // Per-conversation slices. Attached only when non-empty so the menu
+  // stays clean during fresh conversations. Surfaces user edits since
+  // the last turn — the model literally sees what the user changed.
+  if (inputs.conversationId) {
+    const [plan, taskList, userTodos] = await Promise.all([
+      getPlan(inputs.conversationId),
+      listTasks(inputs.conversationId),
+      listUserTodos(inputs.conversationId),
+    ]);
+    if (plan) {
+      ctx.current_plan = {
+        title: plan.title,
+        steps: plan.steps,
+        status: plan.status,
+        reasoning: plan.reasoning,
+        domains: plan.domains,
+        estimated_minutes: plan.estimated_minutes,
+        updated_at: plan.updated_at,
+      };
+    }
+    if (taskList.length) {
+      ctx.task_list = taskList.map((t) => ({
+        id: t.id,
+        title: t.title,
+        status: t.status,
+        note: t.note,
+      }));
+    }
+    // Surface OPEN todos always; include up to 5 most-recent done so the
+    // model sees what the user has cleared since last turn.
+    const openTodos = userTodos.filter((t) => !t.done);
+    const recentDone = userTodos
+      .filter((t) => t.done)
+      .sort((a, b) => (b.done_at ?? 0) - (a.done_at ?? 0))
+      .slice(0, 5);
+    if (openTodos.length || recentDone.length) {
+      ctx.user_todos = {
+        open: openTodos.map((t) => ({
+          id: t.id,
+          title: t.title,
+          context: t.context,
+          due: t.due,
+        })),
+        recent_done: recentDone.map((t) => ({
+          id: t.id,
+          title: t.title,
+          done_at: t.done_at,
+        })),
+      };
+    }
+  }
 
   // ── active tab + probe ──────────────────────────────────────────────────
   // Caller (use-chat-stream / use-pilot-chat-stream) resolves the active

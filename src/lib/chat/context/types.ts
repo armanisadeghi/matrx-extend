@@ -30,4 +30,12 @@ export interface ContextBuildInputs {
    * tests and one-off invocations that don't have a tab handy.
    */
   activeTab?: chrome.tabs.Tab | null;
+  /**
+   * Active conversation id at send time. Used to attach the per-chat
+   * plan / tasks / user_todos slices into context so the model sees
+   * its own list (and any user edits) on every turn. Null on the very
+   * first user message — the conversation_id is server-assigned and
+   * arrives via STREAM_OPENED.
+   */
+  conversationId?: string | null;
 }

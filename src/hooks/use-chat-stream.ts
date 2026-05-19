@@ -341,6 +341,7 @@ export function useChatStream() {
           scrape: manualScrape,
           autoScrape,
           activeTab,
+          conversationId: useChatStore.getState().selectedConversationId,
         });
         log.info(
           "stream",

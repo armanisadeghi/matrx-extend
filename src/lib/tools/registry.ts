@@ -52,6 +52,7 @@ import { extras_handlers } from '@/lib/tools/handlers/extras';
 import { microdata_handlers } from '@/lib/tools/handlers/microdata';
 import { fetch_handlers } from '@/lib/tools/handlers/fetch';
 import { tab_action_handlers, tab_read_handlers } from '@/lib/tools/handlers/tabs';
+import { lists_handlers } from '@/lib/tools/handlers/lists';
 import { user_handlers } from '@/lib/tools/handlers/user';
 import { webmcp_handlers } from '@/lib/tools/handlers/webmcp';
 import { isBrowserSupported } from '@/lib/browser/detect';
@@ -102,6 +103,8 @@ const ALL: AnyToolHandler[] = [
   ...webmcp_handlers,
   // ─── ask-user ──────────────────────────────────────────────────────────
   ...user_handlers,
+  // ─── plan / tasks / user_todos ────────────────────────────────────────
+  ...lists_handlers,
   // ─── privileged ────────────────────────────────────────────────────────
   ...privileged_handlers,
   // ─── parallel orchestration (CLAUDE.md item #6) ────────────────────────

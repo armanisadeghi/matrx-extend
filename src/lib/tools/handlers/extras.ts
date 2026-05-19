@@ -110,7 +110,7 @@ interface TabAudioInspectResult {
 const RECENT_AUDIBLE_WINDOW_MS = 60_000;
 
 export const tab_audio_inspect: ToolHandler<TabAudioInspectArgs, TabAudioInspectResult> = {
-  name: 'tab_audio_inspect',
+  name: 'chrome_tab_audio_inspect',
   tier: 'read',
   description:
     "Report which open tabs are currently making noise, were recently audible (within the last 60s), or are muted. Each entry: { id, title, url, audible, muted, active, window_id, last_audible_at }. Useful for finding 'the noisy tab' and for media-aware automation.",
