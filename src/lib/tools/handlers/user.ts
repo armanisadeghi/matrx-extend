@@ -28,48 +28,141 @@ import type {
   PendingAskUserRequest,
   ToolHandler,
   UserAskKind,
+  UserAskOption,
 } from '@/lib/tools/types';
 import { addTasks, savePlan, setPlanStatus } from '@/lib/lists/storage';
 import { z } from 'zod';
 
 // ─── unified `user` tool ──────────────────────────────────────────────────
 
+/**
+ * Rich option shape — string for legacy callers, object for new callers.
+ * The handler normalizes to {label, description?, preview?} before the
+ * card sees it.
+ */
+const OptionInput = z.union([
+  z.string().min(1),
+  z.object({
+    label: z.string().min(1),
+    description: z.string().optional(),
+    preview: z.string().optional(),
+  }),
+]);
+
+/**
+ * Inner shape used when batching — same fields as the top-level args
+ * minus the `questions` discriminator.
+ */
+const SingleQuestionSchema = z.object({
+  type: z.enum(['confirm', 'choice', 'choice_many', 'text', 'secret', 'notify']),
+  question: z.string().optional(),
+  header: z.string().max(12).optional(),
+  options: z.array(OptionInput).optional(),
+  context: z.string().optional(),
+  message: z.string().optional(),
+  actions: z.array(z.string().min(1)).optional(),
+  level: z.enum(['info', 'success', 'warning', 'error']).optional(),
+  allow_other: z.boolean().optional(),
+  timeout_seconds: z.number().int().min(1).max(900).optional(),
+});
+type SingleQuestion = z.infer<typeof SingleQuestionSchema>;
+
+/**
+ * UserArgs is one big object with everything optional, validated by
+ * superRefine. Single-question form fills the top-level fields; batched
+ * form fills `questions[]`. The schema is intentionally flat (vs a
+ * z.union) so the DB tl_def.parameters shape mirrors it 1:1 and the
+ * drift comparator works without special-casing unions.
+ */
 const UserArgs = z
   .object({
-    type: z.enum(['confirm', 'choice', 'choice_many', 'text', 'secret', 'notify']),
+    // Single-question fields (omit when using batched form)
+    type: z.enum(['confirm', 'choice', 'choice_many', 'text', 'secret', 'notify']).optional(),
     question: z.string().optional(),
-    options: z.array(z.string().min(1)).optional(),
+    header: z.string().max(12).optional(),
+    options: z.array(OptionInput).optional(),
     context: z.string().optional(),
     message: z.string().optional(),
     actions: z.array(z.string().min(1)).optional(),
     level: z.enum(['info', 'success', 'warning', 'error']).optional(),
+    allow_other: z.boolean().optional(),
     timeout_seconds: z.number().int().min(1).max(900).optional(),
+    // Batched form (mutually exclusive with everything above)
+    questions: z.array(SingleQuestionSchema).min(1).max(4).optional(),
   })
   .superRefine((v, ctx) => {
-    const ASK_TYPES: UserAskKind[] = ['confirm', 'choice', 'choice_many', 'text', 'secret'];
-    if (ASK_TYPES.includes(v.type) && !v.question?.trim()) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `question is required for type='${v.type}'`,
-        path: ['question'],
-      });
-    }
-    if ((v.type === 'choice' || v.type === 'choice_many') && (!v.options || v.options.length < 2)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `options (>=2) is required for type='${v.type}'`,
-        path: ['options'],
-      });
-    }
-    if (v.type === 'notify' && !v.message?.trim()) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "message is required for type='notify'",
-        path: ['message'],
-      });
+    const isBatch = !!v.questions && v.questions.length > 0;
+    if (isBatch) {
+      // Batched form: everything ELSE must be absent.
+      const stray = Object.entries(v).find(
+        ([k, val]) => k !== 'questions' && val !== undefined,
+      );
+      if (stray) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `When using the batched form, only \`questions\` may be set. Saw \`${stray[0]}\`.`,
+          path: [stray[0]],
+        });
+      }
+      // Validate every batched question
+      v.questions!.forEach((q, i) => validateSingle(q, ctx, ['questions', i]));
+    } else {
+      // Single form: `type` is required
+      if (!v.type) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Either `type` (single question) or `questions[]` (batched) is required',
+          path: ['type'],
+        });
+        return;
+      }
+      validateSingle(v as SingleQuestion, ctx, []);
     }
   });
 type UserArgs = z.infer<typeof UserArgs>;
+
+function validateSingle(
+  v: SingleQuestion,
+  ctx: z.RefinementCtx,
+  pathPrefix: (string | number)[],
+): void {
+  const ASK_TYPES: UserAskKind[] = ['confirm', 'choice', 'choice_many', 'text', 'secret'];
+  if (ASK_TYPES.includes(v.type) && !v.question?.trim()) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `question is required for type='${v.type}'`,
+      path: [...pathPrefix, 'question'],
+    });
+  }
+  if ((v.type === 'choice' || v.type === 'choice_many') && (!v.options || v.options.length < 2)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `options (>=2) is required for type='${v.type}'`,
+      path: [...pathPrefix, 'options'],
+    });
+  }
+  if (v.type === 'notify' && !v.message?.trim()) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "message is required for type='notify'",
+      path: [...pathPrefix, 'message'],
+    });
+  }
+}
+
+function isBatched(args: UserArgs): args is UserArgs & { questions: SingleQuestion[] } {
+  return !!args.questions && args.questions.length > 0;
+}
+
+/** Normalize bare-string options to the rich shape. */
+function normalizeOptions(
+  raw: SingleQuestion['options'],
+): UserAskOption[] | undefined {
+  if (!raw) return undefined;
+  return raw.map((o) =>
+    typeof o === 'string' ? { label: o } : { label: o.label, description: o.description, preview: o.preview },
+  );
+}
 
 const EMPTY_ENVELOPE = {
   answer: null as string | null,
@@ -82,40 +175,93 @@ const EMPTY_ENVELOPE = {
 };
 type Envelope = typeof EMPTY_ENVELOPE;
 
-export const user: ToolHandler<UserArgs, Envelope> = {
+type BatchedResult = { answers: Envelope[]; cancelled: boolean; timed_out: boolean };
+
+export const user: ToolHandler<UserArgs, Envelope | BatchedResult> = {
   name: 'user',
   tier: 'ask-user',
   description:
-    "Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no — pass question), 'choice' (single pick — pass question + options[]), 'choice_many' (multi pick — pass question + options[]), 'text' (freeform answer — pass question), 'secret' (masked input for passwords/MFA/API keys — pass question), 'notify' (display a message and optionally collect a single action — pass message; optional actions[] and level). Optional `context` shows a one-line 'why' on ask types. Optional `timeout_seconds` (1..900) auto-resolves the call with timed_out:true if the user doesn't respond. Returns the unified envelope { answer, selected, confirmed, action, freeform, cancelled, timed_out } — unused fields are null/false. For full keyboard/mouse handoff (CAPTCHA, login), use request_user_takeover. For plan approval, use update_plan.",
+    "Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no — pass question), 'choice' (single pick — pass question + options[]), 'choice_many' (multi pick — pass question + options[]), 'text' (freeform answer — pass question), 'secret' (masked input for passwords/MFA/API keys — pass question), 'notify' (display a message and optionally collect a single action — pass message; optional actions[] and level). Options accept BOTH bare strings ('Yes', 'No') AND rich objects `{label, description?, preview?}` — preview renders as a code/markdown block beside the focused option for single-select. Optional `header` (≤12 chars) shows as a chip. Optional `context` shows a one-line 'why' on ask types. Optional `allow_other: true` on choice/choice_many appends a freeform 'Other' option. Optional `timeout_seconds` (1..900) auto-resolves with timed_out:true. Optional `timeout_seconds` (1..900) auto-resolves the call with timed_out:true if the user doesn't respond. **Batched questions**: pass `{questions: [SingleQuestion, …]}` (1–4) to ask multiple in one call — renders as a sequence of cards, returns `{answers: Envelope[], cancelled, timed_out}`. Single-question return: `{answer, selected, confirmed, action, freeform, cancelled, timed_out}` — unused fields are null/false. For full keyboard/mouse handoff (CAPTCHA, login), use request_user_takeover. For plan approval, use update_plan.",
   argsSchema: UserArgs,
   run: async (args, ctx) => {
-    const timeoutMs = args.timeout_seconds ? args.timeout_seconds * 1000 : null;
-    const request: PendingAskUserRequest = {
-      callId: ctx.callId,
-      conversationId: ctx.conversationId,
-      kind: args.type,
-      question: args.question,
-      options: args.options,
-      message: args.message,
-      actions: args.actions,
-      level: args.level,
-      context: args.context,
-      expires_at_ms: timeoutMs ? Date.now() + timeoutMs : undefined,
-    };
-
-    // For notify, also fire a system notification so the user sees it
-    // when the side panel isn't open. The inline card still renders so
-    // they can respond with an action button.
-    if (args.type === 'notify') {
-      void fireSystemNotification(args, ctx.agentName).catch(() => {
-        /* permission denied / API absent — inline card is the fallback */
-      });
+    if (isBatched(args)) {
+      return runBatchedQuestions(args.questions, ctx);
     }
-
-    const response = await awaitUserResponse(request, timeoutMs);
-    return responseToEnvelope(args.type, response);
+    // superRefine guarantees `type` is set when not batched.
+    return runSingleQuestion(args as SingleQuestion, ctx);
   },
 };
+
+async function runSingleQuestion(
+  q: SingleQuestion,
+  ctx: { callId: string; conversationId: string | null; agentName: string | null },
+  batch?: { index: number; total: number; callIdSuffix?: string },
+): Promise<Envelope> {
+  const timeoutMs = q.timeout_seconds ? q.timeout_seconds * 1000 : null;
+  // Batched questions need distinct callIds so the inbox treats them as
+  // separate cards (otherwise the second one collides with the first
+  // when we await the response).
+  const callId = batch ? `${ctx.callId}.${batch.index}` : ctx.callId;
+  const request: PendingAskUserRequest = {
+    callId,
+    conversationId: ctx.conversationId,
+    kind: q.type,
+    question: q.question,
+    header: q.header,
+    options: normalizeOptions(q.options),
+    message: q.message,
+    actions: q.actions,
+    level: q.level,
+    context: q.context,
+    allow_other: q.allow_other,
+    batch_index: batch?.index,
+    batch_total: batch?.total,
+    expires_at_ms: timeoutMs ? Date.now() + timeoutMs : undefined,
+  };
+
+  // For notify, also fire a system notification so the user sees it
+  // when the side panel isn't open. The inline card still renders so
+  // they can respond with an action button.
+  if (q.type === 'notify') {
+    void fireSystemNotification(q, ctx.agentName).catch(() => {
+      /* permission denied / API absent — inline card is the fallback */
+    });
+  }
+
+  const response = await awaitUserResponse(request, timeoutMs);
+  return responseToEnvelope(q.type, response);
+}
+
+async function runBatchedQuestions(
+  questions: SingleQuestion[],
+  ctx: { callId: string; conversationId: string | null; agentName: string | null },
+): Promise<BatchedResult> {
+  const answers: Envelope[] = [];
+  let cancelled = false;
+  let timed_out = false;
+  for (let i = 0; i < questions.length; i++) {
+    const env = await runSingleQuestion(questions[i]!, ctx, { index: i, total: questions.length });
+    answers.push(env);
+    // First cancel or timeout short-circuits the rest — the remaining
+    // questions are returned as empty envelopes with cancelled / timed_out
+    // set so the model sees which one ended the batch.
+    if (env.cancelled) {
+      cancelled = true;
+      for (let j = i + 1; j < questions.length; j++) {
+        answers.push({ ...EMPTY_ENVELOPE, cancelled: true });
+      }
+      break;
+    }
+    if (env.timed_out) {
+      timed_out = true;
+      for (let j = i + 1; j < questions.length; j++) {
+        answers.push({ ...EMPTY_ENVELOPE, timed_out: true });
+      }
+      break;
+    }
+  }
+  return { answers, cancelled, timed_out };
+}
 
 function responseToEnvelope(kind: UserAskKind, r: AskUserResponse | 'timed_out'): Envelope {
   if (r === 'timed_out') {
@@ -142,7 +288,7 @@ function responseToEnvelope(kind: UserAskKind, r: AskUserResponse | 'timed_out')
   }
 }
 
-async function fireSystemNotification(args: UserArgs, agentName: string | null): Promise<void> {
+async function fireSystemNotification(q: SingleQuestion, agentName: string | null): Promise<void> {
   if (!chrome.notifications) return;
   const title = agentName ? `${agentName}` : 'Matrx';
   await new Promise<string>((resolve) => {
@@ -151,8 +297,8 @@ async function fireSystemNotification(args: UserArgs, agentName: string | null):
         type: 'basic',
         iconUrl: chrome.runtime.getURL('icon/128.png'),
         title,
-        message: args.message ?? '',
-        requireInteraction: (args.actions?.length ?? 0) > 0,
+        message: q.message ?? '',
+        requireInteraction: (q.actions?.length ?? 0) > 0,
       },
       (id) => resolve(id),
     );
@@ -246,7 +392,7 @@ export const update_plan: ToolHandler<UpdatePlanArgs, unknown> = {
       conversationId: ctx.conversationId,
       kind: 'choice',
       question: body,
-      options: ['Approve', 'Reject'],
+      options: [{ label: 'Approve' }, { label: 'Reject' }],
       context: 'Agent is proposing a plan',
       expires_at_ms: Date.now() + timeoutMs,
     };

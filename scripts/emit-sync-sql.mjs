@@ -55,7 +55,7 @@ for (const name of wanted) {
   }
   const params = toDbParams(t.input_schema);
   const json = JSON.stringify(params);
-  lines.push(`UPDATE public.tl_def SET parameters = '${sqlEscape(json)}'::jsonb, version = version + 1, updated_at = now() WHERE name = 'matrx-extend:${name}';`);
+  lines.push(`UPDATE public.tl_def SET parameters = '${sqlEscape(json)}'::jsonb, version = version + 1, updated_at = now() WHERE name = '${name}';`);
 }
 
 console.log(lines.join('\n'));

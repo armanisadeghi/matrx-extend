@@ -347,38 +347,120 @@ pieces.
 
 ### `user` — the ask-user mega-tool
 
-**One tool, six modes**: `confirm`, `choice`, `choice_many`, `text`,
-`secret`, `notify`. The LLM picks the mode via the `type` field. The
-UI renders the matching card variant.
+**One tool, six modes** plus **batched questions**. The LLM picks the
+mode via the `type` field; for asking multiple questions in one call
+(1–4), pass `{questions: [SingleQuestion, …]}` instead of the top-level
+fields. The card UI renders the matching variant.
 
-**Schema:** [`src/lib/tools/handlers/user.ts:37`](../src/lib/tools/handlers/user.ts#L37)
+**Schema:** [`src/lib/tools/handlers/user.ts`](../src/lib/tools/handlers/user.ts)
+— flat top-level object with all fields optional + a `superRefine`
+that enforces either single-question OR batched form (not both).
 
 ```ts
-const UserArgs = z.object({
-  type: z.enum(['confirm', 'choice', 'choice_many', 'text', 'secret', 'notify']),
+// Single-question form
+const SingleQuestion = z.object({
+  type: z.enum(['confirm','choice','choice_many','text','secret','notify']),
   question: z.string().optional(),
-  options: z.array(z.string()).optional(),
-  message: z.string().optional(),
-  actions: z.array(z.string()).optional(),
-  level: z.enum(['info', 'success', 'warning', 'error']).optional(),
+  header: z.string().max(12).optional(),         // chip label
+  options: z.array(z.union([                      // bare strings OR rich objects
+    z.string(),
+    z.object({
+      label: z.string(),
+      description: z.string().optional(),
+      preview: z.string().optional(),             // code/markdown rendered side-by-side
+    }),
+  ])).optional(),
+  context: z.string().optional(),                 // one-line "why"
+  message: z.string().optional(),                 // notify body
+  actions: z.array(z.string()).optional(),        // notify action buttons
+  level: z.enum(['info','success','warning','error']).optional(),
+  allow_other: z.boolean().optional(),            // choice/choice_many: append "Other" freeform
   timeout_seconds: z.number().int().min(1).max(900).optional(),
 });
+
+// Top-level: either single OR batched
+const UserArgs = z.object({
+  ...SingleQuestion.shape,                        // single-question fields
+  questions: z.array(SingleQuestion).min(1).max(4).optional(),  // batched form
+});
+// superRefine: when `questions` is set, every other field must be undefined.
 ```
 
-**Handler:** [`src/lib/tools/handlers/user.ts:85`](../src/lib/tools/handlers/user.ts#L85) — builds a `PendingAskUserRequest`, broadcasts it, awaits the response.
+**Handler:** same file — branches on `isBatched(args)`. Batched form
+fires sequential cards (one card at a time); cancel/timeout
+short-circuits the rest, remaining slots returned as empty envelopes
+with `cancelled`/`timed_out` set so the model sees which question
+ended the batch.
+
+**Single-question return** — `AskUserResponse` envelope:
+```ts
+{ answer, selected, confirmed, action, freeform, cancelled, timed_out }
+```
+Unused fields are null/false.
+
+**Batched return** — array of envelopes indexed by question position:
+```ts
+{ answers: Envelope[], cancelled: boolean, timed_out: boolean }
+```
 
 **Inbox store:** [`src/state/tool-inbox.ts`](../src/state/tool-inbox.ts) — pendingAsks[] + addAsk() / resolveAsk(). Filtered by `conversationId`.
 
 **Subscriber that ties handler → store:** [`src/hooks/use-tool-inbox.ts`](../src/hooks/use-tool-inbox.ts).
 
 **Card components:**
-  - Generic ask card: [`src/features/chat/AgentAskUserCard.tsx`](../src/features/chat/AgentAskUserCard.tsx)
+  - Generic ask card with rich options + side-by-side preview + header chip + "Other" freeform: [`src/features/chat/AgentAskUserCard.tsx`](../src/features/chat/AgentAskUserCard.tsx)
   - Confirm-only card: [`src/features/chat/AgentApprovalCard.tsx`](../src/features/chat/AgentApprovalCard.tsx)
 
-**Response wire shape:** [`src/lib/tools/types.ts`](../src/lib/tools/types.ts) — `AskUserResponse` envelope `{answer, selected, confirmed, action, freeform, cancelled, timed_out}`.
+**Response wire shape:** [`src/lib/tools/types.ts`](../src/lib/tools/types.ts) — `AskUserResponse` envelope.
 
 **Next.js port:** straight copy. Substitute the cross-component message
-bus (currently `chrome.runtime.onMessage` via [`src/lib/messaging/native.ts`](../src/lib/messaging/native.ts)) with React state or an in-process pub/sub. Everything else — Zod schema, store, card, lifecycle — is framework-agnostic.
+bus (currently `chrome.runtime.onMessage` via [`src/lib/messaging/native.ts`](../src/lib/messaging/native.ts)) with React state or an in-process pub/sub. Everything else — Zod schema, store, card, lifecycle — is framework-agnostic. The card component is ~350 LOC of pure React + shadcn primitives.
+
+**Card layout rules to replicate:**
+- `header` (if present) renders as a small uppercase chip above the question.
+- `context` renders as a one-line muted line above the question.
+- `batch_index` / `batch_total` (set by the handler for batched questions) render as "N of M" badge.
+- `choice` with ANY option having a `preview` → side-by-side grid: vertical option list on the left, monospace preview block on the right (renders the `preview` of the focused/hovered option).
+- `choice` or `choice_many` with `allow_other: true` → append a dashed-border "Other" option whose `description` says "Type a different answer"; when selected/checked, expand to a `Textarea` underneath; the response's `freeform` field carries the typed text.
+- `notify` always appends an `"Other"` button next to the action buttons; clicking opens a freeform textarea.
+
+**LLM example calls:**
+
+```jsonc
+// 1. Bare strings (legacy, still works)
+{ "type": "choice", "question": "Pick one", "options": ["A", "B"] }
+
+// 2. Rich options with preview
+{
+  "type": "choice",
+  "header": "Palette",
+  "question": "Pick a color palette",
+  "options": [
+    {
+      "label": "Slate + emerald (Recommended)",
+      "description": "Cool neutrals with a green accent.",
+      "preview": "--bg: #0f172a;\n--accent: #10b981;"
+    },
+    { "label": "Warm beige + amber", "description": "Softer." }
+  ]
+}
+
+// 3. Multi-select with allow_other
+{
+  "type": "choice_many",
+  "question": "Which integrations?",
+  "options": ["Slack", "GitHub", "Linear"],
+  "allow_other": true
+}
+
+// 4. Batched (1–4 questions in one call)
+{
+  "questions": [
+    { "type": "choice", "header": "Palette", "question": "...", "options": [...] },
+    { "type": "confirm", "header": "Deploy",  "question": "Deploy now?" }
+  ]
+}
+```
 
 ---
 

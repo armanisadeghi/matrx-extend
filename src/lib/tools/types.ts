@@ -156,6 +156,25 @@ export type UserAskKind =
   | 'secret'
   | 'notify';
 
+/**
+ * Rich option shape (2026-05-19). The card always receives this normalized
+ * form — bare-string options from legacy callers get hoisted to
+ * `{label: 'X'}` in the handler before broadcast.
+ */
+export interface UserAskOption {
+  label: string;
+  /** Per-option explanation rendered beside / under the label. */
+  description?: string;
+  /**
+   * Optional preview content (code, markdown, ASCII mockup). When ANY
+   * option in a single-select question has a preview, the card switches
+   * to a side-by-side layout — vertical option list on the left, preview
+   * of the focused option on the right. Multi-select questions ignore
+   * previews even if supplied.
+   */
+  preview?: string;
+}
+
 export interface PendingAskUserRequest {
   callId: string;
   /**
@@ -171,8 +190,17 @@ export interface PendingAskUserRequest {
   kind: UserAskKind;
   /** Required for confirm / choice / choice_many / text / secret. */
   question?: string;
-  /** Required for choice / choice_many. */
-  options?: string[];
+  /**
+   * Optional short chip label (≤12 chars). Renders as a small tag at the
+   * top of the card, useful when batching multiple questions so the user
+   * can scan which question they're answering. New 2026-05-19.
+   */
+  header?: string;
+  /**
+   * Required for choice / choice_many. Normalized to UserAskOption[] in
+   * the handler — string callers get hoisted automatically.
+   */
+  options?: UserAskOption[];
   /** Required for notify — the body of the notification. */
   message?: string;
   /** Optional notify action button labels (UI always appends 'Other'). */
@@ -181,6 +209,21 @@ export interface PendingAskUserRequest {
   level?: 'info' | 'success' | 'warning' | 'error';
   /** Optional one-line "why is the agent asking?" context. */
   context?: string;
+  /**
+   * choice / choice_many only. When true, the card appends a freeform
+   * "Other" option (radio or checkbox respectively) with a text input
+   * underneath. The response sets `freeform` to whatever the user typed.
+   * New 2026-05-19.
+   */
+  allow_other?: boolean;
+  /**
+   * Question position when this card is one of a batched question set.
+   * The handler fires sequential cards (Q1 → wait → Q2 → wait → …); these
+   * fields let the card show "Question N of M" if desired. Single-question
+   * requests omit both fields. New 2026-05-19.
+   */
+  batch_index?: number;
+  batch_total?: number;
   /**
    * Absolute wall-clock deadline (ms epoch) when the request auto-resolves
    * with `timed_out: true`. Omitted when the call has no timeout. The
@@ -206,7 +249,12 @@ export interface AskUserResponse {
   confirmed?: boolean;
   /** notify — which action button was clicked (or 'Other'). */
   action?: string | null;
-  /** notify — freeform text submitted under the 'Other' button. */
+  /**
+   * Freeform text submitted under an 'Other' option:
+   * - notify: the text typed under the 'Other' button
+   * - choice / choice_many with allow_other:true: the text typed under
+   *   the 'Other' option (when the user picked it)
+   */
   freeform?: string | null;
   /** User explicitly dismissed the card. */
   cancelled?: boolean;

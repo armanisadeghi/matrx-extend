@@ -22,7 +22,7 @@ for (const name of wanted) {
     continue;
   }
   lines.push(
-    `UPDATE public.tl_def SET description = '${sqlEscape(t.description)}', version = version + 1, updated_at = now() WHERE name = 'matrx-extend:${name}';`,
+    `UPDATE public.tl_def SET description = '${sqlEscape(t.description)}', version = version + 1, updated_at = now() WHERE name = '${name}';`,
   );
 }
 console.log(lines.join('\n'));

@@ -13,11 +13,12 @@
  * just need to stop rendering.
  */
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { respondToAsk } from '@/hooks/use-tool-inbox';
-import type { PendingAskUserRequest } from '@/lib/tools/types';
+import type { PendingAskUserRequest, UserAskOption } from '@/lib/tools/types';
 import {
   AlertTriangle,
   Bell,
@@ -28,13 +29,25 @@ import {
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
+const OTHER_SENTINEL = '__matrx_other__';
+
 export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
   const [text, setText] = useState('');
   const [choice, setChoice] = useState<string | null>(null);
   const [multi, setMulti] = useState<Set<string>>(() => new Set());
   const [showOtherInput, setShowOtherInput] = useState(false);
   const [otherText, setOtherText] = useState('');
+  const [focusedIdx, setFocusedIdx] = useState(0);
   const remaining = useCountdown(req.expires_at_ms);
+
+  // Normalize options for legacy + new shapes
+  const options: UserAskOption[] = useMemo(
+    () => (req.options ?? []).map((o) => (typeof o === 'string' ? { label: o } : o)),
+    [req.options],
+  );
+  // Side-by-side preview layout when ANY single-select option has a preview.
+  const sideBySide = req.kind === 'choice' && options.some((o) => o.preview);
+  const focusedOption = options[focusedIdx];
 
   const cancel = () => respondToAsk(req.callId, { cancelled: true });
 
@@ -44,11 +57,25 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
   };
   const submitChoice = () => {
     if (!choice) return;
+    if (choice === OTHER_SENTINEL) {
+      if (!otherText.trim()) return;
+      respondToAsk(req.callId, { selected: ['Other'], freeform: otherText });
+      return;
+    }
     respondToAsk(req.callId, { selected: [choice] });
   };
   const submitMulti = () => {
     if (multi.size === 0) return;
-    respondToAsk(req.callId, { selected: Array.from(multi) });
+    const selected = Array.from(multi);
+    const hasOther = selected.includes(OTHER_SENTINEL);
+    const labels = selected.filter((s) => s !== OTHER_SENTINEL);
+    if (hasOther) {
+      if (!otherText.trim()) return;
+      labels.push('Other');
+      respondToAsk(req.callId, { selected: labels, freeform: otherText });
+    } else {
+      respondToAsk(req.callId, { selected: labels });
+    }
   };
   const submitConfirm = (yes: boolean) => respondToAsk(req.callId, { confirmed: yes });
   const submitAction = (label: string) =>
@@ -63,11 +90,23 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
       <div className="flex items-start gap-2">
         <Icon kind={req.kind} level={req.level} />
         <div className="flex-1 min-w-0">
-          {req.context && (
-            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
-              {req.context}
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            {req.header ? (
+              <Badge variant="outline" className="h-4 px-1.5 text-[10px] uppercase tracking-wide">
+                {req.header}
+              </Badge>
+            ) : null}
+            {req.context && (
+              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                {req.context}
+              </div>
+            )}
+            {req.batch_total && req.batch_total > 1 && req.batch_index !== undefined ? (
+              <span className="text-[10px] text-muted-foreground">
+                {req.batch_index + 1} of {req.batch_total}
+              </span>
+            ) : null}
+          </div>
           <div className="whitespace-pre-wrap font-medium">
             {req.kind === 'notify' ? req.message : req.question}
           </div>
@@ -92,50 +131,130 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
           </div>
         )}
 
-        {req.kind === 'choice' && req.options && (
-          <div className="space-y-1.5">
-            {req.options.map((opt) => (
-              <label
-                key={opt}
-                className="flex cursor-pointer items-center gap-2 rounded-md border bg-background/60 px-2 py-1.5 text-sm hover:bg-accent"
-              >
-                <input
-                  type="radio"
-                  name={`ask-${req.callId}`}
-                  value={opt}
-                  checked={choice === opt}
-                  onChange={() => setChoice(opt)}
-                  className="size-3.5"
-                />
-                <span className="flex-1">{opt}</span>
-              </label>
-            ))}
+        {req.kind === 'choice' && options.length > 0 && (
+          <div className={sideBySide ? 'grid grid-cols-[1fr_1.2fr] gap-3' : ''}>
+            <div className="space-y-1.5">
+              {options.map((opt, i) => (
+                <label
+                  key={opt.label}
+                  className="flex cursor-pointer items-start gap-2 rounded-md border bg-background/60 px-2 py-1.5 text-sm hover:bg-accent"
+                  onMouseEnter={() => setFocusedIdx(i)}
+                >
+                  <input
+                    type="radio"
+                    name={`ask-${req.callId}`}
+                    value={opt.label}
+                    checked={choice === opt.label}
+                    onChange={() => {
+                      setChoice(opt.label);
+                      setFocusedIdx(i);
+                    }}
+                    className="mt-0.5 size-3.5"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div>{opt.label}</div>
+                    {opt.description ? (
+                      <div className="mt-0.5 text-xs text-muted-foreground">{opt.description}</div>
+                    ) : null}
+                  </div>
+                </label>
+              ))}
+              {req.allow_other ? (
+                <label className="flex cursor-pointer items-start gap-2 rounded-md border border-dashed bg-background/40 px-2 py-1.5 text-sm hover:bg-accent">
+                  <input
+                    type="radio"
+                    name={`ask-${req.callId}`}
+                    value={OTHER_SENTINEL}
+                    checked={choice === OTHER_SENTINEL}
+                    onChange={() => setChoice(OTHER_SENTINEL)}
+                    className="mt-0.5 size-3.5"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div>Other</div>
+                    {choice === OTHER_SENTINEL ? (
+                      <Textarea
+                        value={otherText}
+                        onChange={(e) => setOtherText(e.target.value)}
+                        placeholder="Type your answer…"
+                        rows={2}
+                        className="mt-1"
+                        autoFocus
+                      />
+                    ) : (
+                      <div className="mt-0.5 text-xs text-muted-foreground">Type a different answer</div>
+                    )}
+                  </div>
+                </label>
+              ) : null}
+            </div>
+            {sideBySide && focusedOption?.preview ? (
+              <pre className="overflow-auto rounded-md border bg-muted/40 p-2 font-mono text-[11px] leading-relaxed whitespace-pre-wrap">
+                {focusedOption.preview}
+              </pre>
+            ) : null}
           </div>
         )}
 
-        {req.kind === 'choice_many' && req.options && (
+        {req.kind === 'choice_many' && options.length > 0 && (
           <div className="space-y-1.5">
-            {req.options.map((opt) => (
+            {options.map((opt) => (
               <label
-                key={opt}
-                className="flex cursor-pointer items-center gap-2 rounded-md border bg-background/60 px-2 py-1.5 text-sm hover:bg-accent"
+                key={opt.label}
+                className="flex cursor-pointer items-start gap-2 rounded-md border bg-background/60 px-2 py-1.5 text-sm hover:bg-accent"
               >
                 <input
                   type="checkbox"
-                  checked={multi.has(opt)}
+                  checked={multi.has(opt.label)}
                   onChange={(e) => {
                     setMulti((prev) => {
                       const next = new Set(prev);
-                      if (e.target.checked) next.add(opt);
-                      else next.delete(opt);
+                      if (e.target.checked) next.add(opt.label);
+                      else next.delete(opt.label);
                       return next;
                     });
                   }}
-                  className="size-3.5"
+                  className="mt-0.5 size-3.5"
                 />
-                <span className="flex-1">{opt}</span>
+                <div className="flex-1 min-w-0">
+                  <div>{opt.label}</div>
+                  {opt.description ? (
+                    <div className="mt-0.5 text-xs text-muted-foreground">{opt.description}</div>
+                  ) : null}
+                </div>
               </label>
             ))}
+            {req.allow_other ? (
+              <label className="flex cursor-pointer items-start gap-2 rounded-md border border-dashed bg-background/40 px-2 py-1.5 text-sm hover:bg-accent">
+                <input
+                  type="checkbox"
+                  checked={multi.has(OTHER_SENTINEL)}
+                  onChange={(e) => {
+                    setMulti((prev) => {
+                      const next = new Set(prev);
+                      if (e.target.checked) next.add(OTHER_SENTINEL);
+                      else next.delete(OTHER_SENTINEL);
+                      return next;
+                    });
+                  }}
+                  className="mt-0.5 size-3.5"
+                />
+                <div className="flex-1 min-w-0">
+                  <div>Other</div>
+                  {multi.has(OTHER_SENTINEL) ? (
+                    <Textarea
+                      value={otherText}
+                      onChange={(e) => setOtherText(e.target.value)}
+                      placeholder="Type your answer…"
+                      rows={2}
+                      className="mt-1"
+                      autoFocus
+                    />
+                  ) : (
+                    <div className="mt-0.5 text-xs text-muted-foreground">Type a different answer</div>
+                  )}
+                </div>
+              </label>
+            ) : null}
           </div>
         )}
 

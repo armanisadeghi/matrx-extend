@@ -148,7 +148,41 @@ On every release, fail loudly if:
 
 Wire it into your release pipeline. Treat warnings as bugs.
 
-### 1.7 — Verification
+### 1.7 — The `user` tool card — exact layout to implement
+
+The `user` mega-tool is the most feature-rich UI-first tool. Mirror
+matrx-extend's [`AgentAskUserCard.tsx`](../src/features/chat/AgentAskUserCard.tsx)
+exactly so the user experience is consistent across surfaces:
+
+| Field | Renders as |
+|---|---|
+| `header` | Small uppercase chip in the top-left corner of the card |
+| `context` | Muted one-line caption above the question |
+| `question` | Main question text |
+| `batch_index` / `batch_total` (handler-injected) | "N of M" badge when batched |
+| Countdown (if `expires_at_ms` set) | Top-right tabular-num pill, MM:SS format |
+| `type: 'confirm'` | Yes / No buttons |
+| `type: 'choice'` with bare-string options | Radio list |
+| `type: 'choice'` with rich `options[].description` | Radio + muted description below each label |
+| `type: 'choice'` with rich `options[].preview` (any option) | **Side-by-side grid:** vertical radio list on the left, monospace preview block on the right showing the focused option's preview (focus follows mouseover + selection) |
+| `type: 'choice_many'` | Checkbox list (same option rules as `choice`) |
+| `type: 'choice' \| 'choice_many'` with `allow_other: true` | Append a dashed-border "Other" option; when selected, expand to a `<Textarea>` and submit packs the response with `freeform: <typed text>` |
+| `type: 'text'` | `<Textarea>` + Send button (Cmd/Ctrl+Enter submits) |
+| `type: 'secret'` | `<Input type="password">` + Send button (Enter submits) |
+| `type: 'notify'` | Banner styled by `level`, action buttons inline, always-appended "Other" freeform fallback |
+
+**Response shape:**
+- Single question → `respondToAsk(callId, AskUserResponse)`:
+  - `confirm` → `{ confirmed: true|false }`
+  - `choice` → `{ selected: [label] }` (or `{ selected: ['Other'], freeform: text }` for Other)
+  - `choice_many` → `{ selected: [...labels] }` (Other adds 'Other' to selected + `freeform`)
+  - `text` / `secret` → `{ answer: text }`
+  - `notify` → `{ action: label, freeform: null }` or `{ action: 'Other', freeform: text }`
+  - Cancel → `{ cancelled: true }`
+
+The handler then maps that to the wire envelope `{answer, selected, confirmed, action, freeform, cancelled, timed_out}`.
+
+### 1.8 — Verification
 
 End-to-end test: send a chat message that triggers `update_plan`. Expect:
 1. Server delegates the call (visible in SSE `tool_event: tool_delegated`).

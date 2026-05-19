@@ -1,6 +1,6 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-19T22:11:00.558Z
+Generated: 2026-05-19T22:21:26.076Z
 
 - **Total tools:** 167
 - **Assistant bundle:** 74 tools (read-only)
@@ -4354,7 +4354,7 @@ Recently-closed tabs and windows. Actions: 'list' (returns sessions with id/url/
 
 ### `user`
 
-Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no — pass question), 'choice' (single pick — pass question + options[]), 'choice_many' (multi pick — pass question + options[]), 'text' (freeform answer — pass question), 'secret' (masked input for passwords/MFA/API keys — pass question), 'notify' (display a message and optionally collect a single action — pass message; optional actions[] and level). Optional `context` shows a one-line 'why' on ask types. Optional `timeout_seconds` (1..900) auto-resolves the call with timed_out:true if the user doesn't respond. Returns the unified envelope { answer, selected, confirmed, action, freeform, cancelled, timed_out } — unused fields are null/false. For full keyboard/mouse handoff (CAPTCHA, login), use request_user_takeover. For plan approval, use update_plan.
+Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no — pass question), 'choice' (single pick — pass question + options[]), 'choice_many' (multi pick — pass question + options[]), 'text' (freeform answer — pass question), 'secret' (masked input for passwords/MFA/API keys — pass question), 'notify' (display a message and optionally collect a single action — pass message; optional actions[] and level). Options accept BOTH bare strings ('Yes', 'No') AND rich objects `{label, description?, preview?}` — preview renders as a code/markdown block beside the focused option for single-select. Optional `header` (≤12 chars) shows as a chip. Optional `context` shows a one-line 'why' on ask types. Optional `allow_other: true` on choice/choice_many appends a freeform 'Other' option. Optional `timeout_seconds` (1..900) auto-resolves with timed_out:true. Optional `timeout_seconds` (1..900) auto-resolves the call with timed_out:true if the user doesn't respond. **Batched questions**: pass `{questions: [SingleQuestion, …]}` (1–4) to ask multiple in one call — renders as a sequence of cards, returns `{answers: Envelope[], cancelled, timed_out}`. Single-question return: `{answer, selected, confirmed, action, freeform, cancelled, timed_out}` — unused fields are null/false. For full keyboard/mouse handoff (CAPTCHA, login), use request_user_takeover. For plan approval, use update_plan.
 
 - **Required permissions:** `notifications`
 - **Surface bundles:** pilot, pilot+privileged
@@ -4377,11 +4377,38 @@ Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no
     "question": {
       "type": "string"
     },
+    "header": {
+      "type": "string",
+      "maxLength": 12
+    },
     "options": {
       "type": "array",
       "items": {
-        "type": "string",
-        "minLength": 1
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "description": {
+                "type": "string"
+              },
+              "preview": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "label"
+            ],
+            "additionalProperties": false
+          }
+        ]
       }
     },
     "context": {
@@ -4406,15 +4433,107 @@ Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no
         "error"
       ]
     },
+    "allow_other": {
+      "type": "boolean"
+    },
     "timeout_seconds": {
       "type": "integer",
       "minimum": 1,
       "maximum": 900
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "confirm",
+              "choice",
+              "choice_many",
+              "text",
+              "secret",
+              "notify"
+            ]
+          },
+          "question": {
+            "type": "string"
+          },
+          "header": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "preview": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "label"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "context": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "info",
+              "success",
+              "warning",
+              "error"
+            ]
+          },
+          "allow_other": {
+            "type": "boolean"
+          },
+          "timeout_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 900
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 4
     }
   },
-  "required": [
-    "type"
-  ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
