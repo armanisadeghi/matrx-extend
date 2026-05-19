@@ -164,7 +164,7 @@ export async function startGifRecordingAsGuidance(): Promise<GifRecordingHandle>
   const tabIdStr = String(tab.id);
 
   const startResult = (await record_gif.run(
-    { action: 'start_recording', tabId: tabIdStr } as never,
+    { action: 'start_recording', tab_id: tabIdStr } as never,
     UI_CTX as never,
   )) as { ok: boolean; reason?: string };
   if (!startResult.ok) {
@@ -183,7 +183,7 @@ export async function stopGifRecordingAsGuidance(args: {
   const tabIdStr = String(args.tabId);
   // 1. Stop frames.
   const stop = (await record_gif.run(
-    { action: 'stop_recording', tabId: tabIdStr } as never,
+    { action: 'stop_recording', tab_id: tabIdStr } as never,
     UI_CTX as never,
   )) as { ok: boolean; reason?: string; frame_count?: number; duration_ms?: number };
   if (!stop.ok) {
@@ -192,7 +192,7 @@ export async function stopGifRecordingAsGuidance(args: {
   }
   // 2. Export → uploads to cld_files. download:true would also dump to disk.
   const exp = (await record_gif.run(
-    { action: 'export', tabId: tabIdStr, download: false } as never,
+    { action: 'export', tab_id: tabIdStr, download: false } as never,
     UI_CTX as never,
   )) as {
     ok: boolean;
@@ -230,7 +230,7 @@ export async function stopGifRecordingAsGuidance(args: {
 
 export async function discardGifRecording(tabId: number): Promise<void> {
   await record_gif.run(
-    { action: 'clear', tabId: String(tabId) } as never,
+    { action: 'clear', tab_id: String(tabId) } as never,
     UI_CTX as never,
   );
   await hideRecordingBanner(tabId);

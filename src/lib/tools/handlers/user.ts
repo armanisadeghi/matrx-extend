@@ -163,7 +163,7 @@ const TakeoverArgs = z.object({
   reason: z.string().min(1),
   expected_action: z.string().optional(),
   instructions: z.string().optional(),
-  tabId: z.string().optional(),
+  tab_id: z.string().optional(),
 });
 type TakeoverArgs = z.infer<typeof TakeoverArgs>;
 

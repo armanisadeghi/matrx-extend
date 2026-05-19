@@ -100,7 +100,7 @@ export async function prewarmReadPageCache(tabId: number): Promise<void> {
   try {
     await read_page.run(
       {
-        tab_id: tabId,
+        tab_id: String(tabId),
         interactive_only: true,
         max_nodes: 200,
         include_hidden: false,
@@ -160,9 +160,7 @@ if (typeof chrome !== 'undefined' && chrome.tabs?.onUpdated) {
 
 const ReadPageArgs = z
   .object({
-    tab_id: z.number().int().optional(),
-    /** Canonical alias for tab_id. */
-    tabId: z.string().optional(),
+    tab_id: z.string().optional(),
     /** Only return interactive elements (links, buttons, inputs, etc.). Default true. */
     interactive_only: z.boolean().optional().default(true),
     /** Canonical alias: 'interactive' = interactive_only:true; 'all' = false. */
@@ -191,8 +189,7 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
   argsSchema: ReadPageArgs,
   run: async (args, ctx) => {
     const tabId =
-      args.tab_id ??
-      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ??
+      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ??
       (await getAssignedTabId(ctx));
     if (tabId == null || !Number.isFinite(tabId))
       return { ok: false, reason: 'No active tab' };
@@ -491,7 +488,7 @@ const FindArgs = z.object({
    */
   include_content: z.boolean().optional().default(true),
   /** Canonical: target tab. */
-  tabId: z.string().optional(),
+  tab_id: z.string().optional(),
 });
 type FindArgs = z.infer<typeof FindArgs>;
 
@@ -506,7 +503,7 @@ export const find: ToolHandler<FindArgs, unknown> = {
   argsSchema: FindArgs,
   run: async (args, ctx) => {
     const tabId =
-      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ?? (await getAssignedTabId(ctx));
+      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ?? (await getAssignedTabId(ctx));
     if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
 
     // Reuse a fresh cached scrape if the agent (or a prior tool call) just ran
@@ -528,7 +525,7 @@ export const find: ToolHandler<FindArgs, unknown> = {
       // for it, so topic-based queries can hit headings and paragraphs.
       const readResult = (await read_page.run(
         {
-          tab_id: tabId,
+          tab_id: String(tabId),
           interactive_only: !args.include_content,
           max_nodes: args.max_candidates,
           include_hidden: false,
@@ -672,9 +669,7 @@ export const find: ToolHandler<FindArgs, unknown> = {
 
 const PageTextArgs = z
   .object({
-    tab_id: z.number().int().optional(),
-    /** Canonical alias for tab_id. */
-    tabId: z.string().optional(),
+    tab_id: z.string().optional(),
     /** Cap on returned text length (chars). Default 8000. */
     max_chars: z.number().int().positive().max(50_000).optional().default(8000),
   })
@@ -689,8 +684,7 @@ export const get_page_text: ToolHandler<PageTextArgs, unknown> = {
   argsSchema: PageTextArgs,
   run: async (args, ctx) => {
     const tabId =
-      args.tab_id ??
-      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ??
+      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ??
       (await getAssignedTabId(ctx));
     if (tabId == null || !Number.isFinite(tabId))
       return { ok: false, reason: 'No active tab' };

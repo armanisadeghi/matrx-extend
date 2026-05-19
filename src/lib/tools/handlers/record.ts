@@ -51,7 +51,7 @@ const OptionsSchema = z
 
 const RecordGifArgs = z.object({
   action: z.enum(['start_recording', 'stop_recording', 'export', 'clear']),
-  tabId: z.string(),
+  tab_id: z.string(),
   download: z.boolean().optional(),
   ref: z.string().optional(),
   coordinate: z.array(z.number()).length(2).optional(),
@@ -138,8 +138,8 @@ export const record_gif: ToolHandler<RecordGifArgs, unknown> = {
     "Record browser actions and export as an animated GIF. Actions: 'start_recording', 'stop_recording', 'export' (generates and either downloads or drops onto a page element), 'clear' (discard frames). Take a screenshot right after start and right before stop to capture clean first/last frames. 'export' returns {file_id, file_url} when not dropping. Drop target accepts ref (preferred) or coordinate.",
   argsSchema: RecordGifArgs,
   run: async (args) => {
-    const tabId = parseTabId(args.tabId);
-    if (tabId == null) return { ok: false, reason: `Invalid tabId: ${args.tabId}` };
+    const tabId = parseTabId(args.tab_id);
+    if (tabId == null) return { ok: false, reason: `Invalid tab_id: ${args.tab_id}` };
 
     if (args.action === 'start_recording') {
       if (isRecording(tabId)) {

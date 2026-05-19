@@ -624,8 +624,7 @@ export const cdp_emulate: ToolHandler<CdpEmulateArgs, unknown> = {
 
 const EvaluateJsArgs = z.object({
   text: z.string().min(1),
-  tabId: z.string().optional(),
-  tab_id: z.number().int().optional(),
+  tab_id: z.string().optional(),
   arg: z.unknown().optional(),
 });
 type EvaluateJsArgs = z.infer<typeof EvaluateJsArgs>;
@@ -638,9 +637,7 @@ export const evaluate_javascript: ToolHandler<EvaluateJsArgs, unknown> = {
     "Evaluate JavaScript in the page context. Returns the value of the last expression — do NOT use 'return' at top level. Admin-gated. Prefer DOM tools (read_page, find, computer, form_input) when possible — JS exec is XSS-equivalent and bypasses our safety nets.",
   argsSchema: EvaluateJsArgs,
   run: async (args, ctx) => {
-    const tabId =
-      args.tab_id ??
-      (args.tabId ? Number.parseInt(args.tabId, 10) : undefined);
+    const tabId = args.tab_id ? Number.parseInt(args.tab_id, 10) : undefined;
     return execute_javascript.run(
       { code: args.text, tab_id: tabId, arg: args.arg } as never,
       ctx,

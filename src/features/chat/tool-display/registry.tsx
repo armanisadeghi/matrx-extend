@@ -45,7 +45,7 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
 
   ctx_get: {
     inline: {
-      icon: { started: 'Loader2', completed: 'HandGrab', error: 'AlertTriangle' },
+      icon: { started: 'Loader2', completed: 'Layers', error: 'AlertTriangle' },
       prefix: { started: 'Getting', completed: 'Got', error: 'Failed to get' },
       name: '',
       info: {

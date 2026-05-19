@@ -1,6 +1,6 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-18T23:17:04.970Z
+Generated: 2026-05-19T02:29:54.571Z
 
 - **Total tools:** 167
 - **Assistant bundle:** 76 tools (read-only)
@@ -354,9 +354,6 @@ Return an accessibility-style summary of the active page. Each interactive eleme
   "type": "object",
   "properties": {
     "tab_id": {
-      "type": "integer"
-    },
-    "tabId": {
       "type": "string"
     },
     "interactive_only": {
@@ -434,7 +431,7 @@ Find elements on the active page by natural-language description ("the sign-in b
       "type": "boolean",
       "default": true
     },
-    "tabId": {
+    "tab_id": {
       "type": "string"
     }
   },
@@ -458,9 +455,6 @@ Extract clean readable text from the active page — strips chrome / nav / ads /
   "type": "object",
   "properties": {
     "tab_id": {
-      "type": "integer"
-    },
-    "tabId": {
       "type": "string"
     },
     "max_chars": {
@@ -644,7 +638,7 @@ Run document.querySelectorAll on the active tab and return up to `limit` matches
 
 ### `find_text_on_page`
 
-Search visible text on the active tab and return matches with their nearest enclosing element selector + context. Pass regex=true to use a regular expression. Use this when read_active_page would be overkill — e.g. "where on this page does it say 'click here to download'?".
+Ctrl+F-style literal text search within a tab. Returns matches with surrounding context + the nearest enclosing element selector. Pass regex=true to use a regular expression. Use when read_active_page would be overkill — e.g. "where on this page does it say 'click here to download'?". For natural-language search, use find instead.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -657,7 +651,7 @@ Search visible text on the active tab and return matches with their nearest encl
       "type": "string",
       "minLength": 1
     },
-    "tabId": {
+    "tab_id": {
       "type": "string"
     },
     "case_sensitive": {
@@ -815,7 +809,7 @@ Deep inspection of a single element by ref: full attribute set, bounding box, vi
 {
   "type": "object",
   "properties": {
-    "tabId": {
+    "tab_id": {
       "type": "string"
     },
     "ref": {
@@ -1975,7 +1969,7 @@ Poll until a condition is met or timeout. Use after navigation or actions that t
 {
   "type": "object",
   "properties": {
-    "tabId": {
+    "tab_id": {
       "type": "string"
     },
     "condition": {
@@ -2001,7 +1995,7 @@ Poll until a condition is met or timeout. Use after navigation or actions that t
     }
   },
   "required": [
-    "tabId",
+    "tab_id",
     "condition"
   ],
   "additionalProperties": false,
@@ -2011,7 +2005,7 @@ Poll until a condition is met or timeout. Use after navigation or actions that t
 
 ### `read_pdf`
 
-Extract text and structure from a PDF — either one loaded in a browser tab, or one already in cld_files (pass file_id). Returns text by page with optional page range. Use file_id when you have a MediaRef in hand (e.g. from a prior download); use tabId when the PDF is open in the browser.
+Extract text and structure from a PDF — either one loaded in a browser tab, or one already in cld_files (pass file_id). Returns text by page with optional page range. Use file_id when you have a MediaRef in hand (e.g. from a prior download); use tab_id when the PDF is open in the browser.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -2020,7 +2014,7 @@ Extract text and structure from a PDF — either one loaded in a browser tab, or
 {
   "type": "object",
   "properties": {
-    "tabId": {
+    "tab_id": {
       "type": "string"
     },
     "file_id": {
@@ -3440,7 +3434,7 @@ Record browser actions and export as an animated GIF. Actions: 'start_recording'
         "clear"
       ]
     },
-    "tabId": {
+    "tab_id": {
       "type": "string"
     },
     "download": {
@@ -3489,7 +3483,7 @@ Record browser actions and export as an animated GIF. Actions: 'start_recording'
   },
   "required": [
     "action",
-    "tabId"
+    "tab_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -3498,7 +3492,7 @@ Record browser actions and export as an animated GIF. Actions: 'start_recording'
 
 ### `record_tab_video`
 
-Record video of a browser tab and upload it to cld_files. Args: { durationMs (default 5000, max 60000), audio (default false), tabId? (defaults to assigned tab), filename? }. The recording happens via chrome.tabCapture + MediaRecorder in the offscreen document. Returns { ok, file_id, file_url, mime_type, duration_ms, size_bytes }. Requires the `tabCapture` optional permission — when missing, the call returns ok:false with a remediation hint pointing the user at Settings → Advanced → Tab video capture.
+Record video of a tab via chrome.tabCapture + MediaRecorder and upload to cld_files. Args: duration_ms (default 5000, max 60000), audio (default false), tab_id? (defaults to assigned tab), filename?. Returns { ok, file_id, file_url, mime_type, duration_ms, size_bytes }. Requires `tabCapture` optional permission — when missing returns ok:false with a remediation hint pointing the user to Settings → Advanced → Tab video capture.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
@@ -3507,7 +3501,7 @@ Record video of a browser tab and upload it to cld_files. Args: { durationMs (de
 {
   "type": "object",
   "properties": {
-    "durationMs": {
+    "duration_ms": {
       "type": "integer",
       "exclusiveMinimum": 0,
       "maximum": 60000,
@@ -3517,7 +3511,7 @@ Record video of a browser tab and upload it to cld_files. Args: { durationMs (de
       "type": "boolean",
       "default": false
     },
-    "tabId": {
+    "tab_id": {
       "type": "integer"
     },
     "filename": {
@@ -3758,7 +3752,7 @@ Mouse, keyboard, and screenshot interactions. Prefer 'ref' over 'coordinate' whe
 {
   "type": "object",
   "properties": {
-    "tabId": {
+    "tab_id": {
       "type": "string"
     },
     "action": {
@@ -3827,7 +3821,7 @@ Mouse, keyboard, and screenshot interactions. Prefer 'ref' over 'coordinate' whe
     }
   },
   "required": [
-    "tabId",
+    "tab_id",
     "action"
   ],
   "additionalProperties": false,
@@ -3846,7 +3840,7 @@ Set the value of a form element by reference. Use string for text inputs, boolea
 {
   "type": "object",
   "properties": {
-    "tabId": {
+    "tab_id": {
       "type": "string"
     },
     "ref": {
@@ -3861,7 +3855,7 @@ Set the value of a form element by reference. Use string for text inputs, boolea
     }
   },
   "required": [
-    "tabId",
+    "tab_id",
     "ref",
     "value"
   ],
@@ -3881,7 +3875,7 @@ Navigate a tab to a URL, or move through history with 'back'/'forward'. Protocol
 {
   "type": "object",
   "properties": {
-    "tabId": {
+    "tab_id": {
       "type": "string"
     },
     "url": {
@@ -3893,7 +3887,7 @@ Navigate a tab to a URL, or move through history with 'back'/'forward'. Protocol
     }
   },
   "required": [
-    "tabId",
+    "tab_id",
     "url"
   ],
   "additionalProperties": false,
@@ -3903,7 +3897,7 @@ Navigate a tab to a URL, or move through history with 'back'/'forward'. Protocol
 
 ### `tabs`
 
-Manage browser tabs. Actions: 'list' (all tabs in current window), 'create' (opens new tab; pass url to open at a URL), 'close', 'switch' (brings tab to foreground), 'reload', 'active' (returns the currently active tab — call when you don't know your tabId), 'info' (full info for a specific tabId), 'pin' (toggle pin via `on`), 'mute' (toggle mute via `on`), 'duplicate', 'move' (to `index` and optionally `window_id`), 'zoom' (set `zoom_factor`, e.g. 1.5 for 150%). tabId required for close/switch/reload/info/pin/mute/duplicate/move/zoom.
+Manage browser tabs. Actions: 'list' (all tabs in current window), 'create' (opens new tab; pass url to open at a URL), 'close', 'switch' (brings tab to foreground), 'reload', 'active' (returns the currently active tab — call when you don't know your tab_id), 'info' (full info for a specific tab_id), 'pin' (toggle pin via `on`), 'mute' (toggle mute via `on`), 'duplicate', 'move' (to `index` and optionally `window_id`), 'zoom' (set `zoom_factor`, e.g. 1.5 for 150%). tab_id required for close/switch/reload/info/pin/mute/duplicate/move/zoom.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
@@ -3929,7 +3923,7 @@ Manage browser tabs. Actions: 'list' (all tabs in current window), 'create' (ope
         "zoom"
       ]
     },
-    "tabId": {
+    "tab_id": {
       "type": "string"
     },
     "url": {
@@ -3959,7 +3953,7 @@ Manage browser tabs. Actions: 'list' (all tabs in current window), 'create' (ope
 
 ### `downloads`
 
-Manage file downloads. Actions: 'list' (returns recent downloads with id/filename/url/state/bytes), 'cancel' (aborts a pending download), 'confirm' (no-op acknowledgment for canonical compatibility — Chrome auto-completes downloads), 'download_url' (extension-only extension: trigger a download from a URL; canonical doesn't yet have this but it's the most common workflow primitive). downloadId is required for confirm/cancel; url is required for download_url.
+Manage file downloads. Actions: 'list' (recent downloads with id/filename/url/state/bytes), 'cancel' (abort a pending download), 'confirm' (no-op; Chrome auto-completes downloads), 'download_url' (trigger a download from a URL). download_id required for cancel/confirm; url required for download_url.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
@@ -3977,7 +3971,7 @@ Manage file downloads. Actions: 'list' (returns recent downloads with id/filenam
         "download_url"
       ]
     },
-    "downloadId": {
+    "download_id": {
       "type": "string"
     },
     "url": {
@@ -4036,7 +4030,7 @@ Upload one or more files to a <input type='file'> element by reference. Pass fil
 {
   "type": "object",
   "properties": {
-    "tabId": {
+    "tab_id": {
       "type": "string"
     },
     "ref": {
@@ -4052,7 +4046,7 @@ Upload one or more files to a <input type='file'> element by reference. Pass fil
     }
   },
   "required": [
-    "tabId",
+    "tab_id",
     "ref",
     "file_ids"
   ],
@@ -4072,7 +4066,7 @@ Synthesize a drag-and-drop of a single file onto a target element or coordinate.
 {
   "type": "object",
   "properties": {
-    "tabId": {
+    "tab_id": {
       "type": "string"
     },
     "file_id": {
@@ -4094,7 +4088,7 @@ Synthesize a drag-and-drop of a single file onto a target element or coordinate.
     }
   },
   "required": [
-    "tabId",
+    "tab_id",
     "file_id"
   ],
   "additionalProperties": false,
@@ -4314,7 +4308,7 @@ Hand keyboard/mouse control to the user so they can perform an action the agent 
     "instructions": {
       "type": "string"
     },
-    "tabId": {
+    "tab_id": {
       "type": "string"
     }
   },
@@ -4878,9 +4872,6 @@ Read console messages from a tab. Auto-starts CDP console capture if not already
   "type": "object",
   "properties": {
     "tab_id": {
-      "type": "integer"
-    },
-    "tabId": {
       "type": "string"
     },
     "auto_start": {
@@ -4906,9 +4897,6 @@ Read console messages from a tab. Auto-starts CDP console capture if not already
     "pattern": {
       "type": "string"
     },
-    "onlyErrors": {
-      "type": "boolean"
-    },
     "errors_only": {
       "type": "boolean",
       "default": false
@@ -4926,7 +4914,7 @@ Read console messages from a tab. Auto-starts CDP console capture if not already
 
 ### `read_network_requests`
 
-Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cross-domain navigation. Filter with urlPattern to keep output manageable. Response bodies are NOT included by default — use get_request_body to fetch a specific body. The buffer is per-tab and bounded; old entries fall off the back.
+Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cross-domain navigation. Filter with url_pattern to keep output manageable. Response bodies are NOT included by default — use get_request_body to fetch a specific body. The buffer is per-tab and bounded; old entries fall off the back.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot+privileged
@@ -4936,12 +4924,9 @@ Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cro
   "type": "object",
   "properties": {
     "tab_id": {
-      "type": "integer"
-    },
-    "tabId": {
       "type": "string"
     },
-    "urlPattern": {
+    "url_pattern": {
       "type": "string"
     },
     "auto_start": {
@@ -4971,7 +4956,7 @@ Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cro
 
 ### `get_request_body`
 
-Fetch the response body for a specific request seen by read_network_requests. Returns inline text when small; for large bodies the canonical contract calls for cld_files persistence — current implementation always returns inline.
+Fetch the response body for a specific request seen by read_network_requests. Returns inline text. Pass request_id from a prior drain.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot+privileged
@@ -4980,19 +4965,16 @@ Fetch the response body for a specific request seen by read_network_requests. Re
 {
   "type": "object",
   "properties": {
-    "tabId": {
+    "tab_id": {
       "type": "string"
     },
-    "tab_id": {
-      "type": "integer"
-    },
-    "requestId": {
+    "request_id": {
       "type": "string",
       "minLength": 1
     }
   },
   "required": [
-    "requestId"
+    "request_id"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -5411,11 +5393,8 @@ Evaluate JavaScript in the page context. Returns the value of the last expressio
       "type": "string",
       "minLength": 1
     },
-    "tabId": {
-      "type": "string"
-    },
     "tab_id": {
-      "type": "integer"
+      "type": "string"
     },
     "arg": {}
   },

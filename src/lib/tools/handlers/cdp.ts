@@ -572,9 +572,7 @@ export const cdp_clear_emulation: ToolHandler<ClearEmulationArgs, unknown> = {
 
 const ReadConsoleArgs = z
   .object({
-    tab_id: z.number().int().optional(),
-    /** Canonical alias for tab_id. */
-    tabId: z.string().optional(),
+    tab_id: z.string().optional(),
     /** Auto-start console capture if it's not already running. Default true. */
     auto_start: z.boolean().optional().default(true),
     /** Canonical: limit returned messages. */
@@ -585,9 +583,7 @@ const ReadConsoleArgs = z
     level_filter: z.array(z.string()).optional(),
     /** Canonical: regex filter on message text. Same as `pattern`. */
     pattern: z.string().optional(),
-    /** Canonical: convenience flag for errors + exceptions only. */
-    onlyErrors: z.boolean().optional(),
-    /** Legacy alias for `onlyErrors`. */
+    /** Convenience flag for errors + exceptions only. */
     errors_only: z.boolean().optional().default(false),
     /** Canonical: clear the buffer after reading. */
     clear: z.boolean().optional().default(false),
@@ -606,8 +602,7 @@ export const read_console_messages: ToolHandler<ReadConsoleArgs, unknown> = {
   argsSchema: ReadConsoleArgs,
   run: async (args, ctx) => {
     const tabId =
-      args.tab_id ??
-      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ??
+      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ??
       (await getAssignedTabId(ctx));
     if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
     if (args.auto_start) {
@@ -617,7 +612,7 @@ export const read_console_messages: ToolHandler<ReadConsoleArgs, unknown> = {
         return { ok: false, reason: (err as Error).message };
       }
     }
-    const errorsOnly = args.onlyErrors ?? args.errors_only;
+    const errorsOnly = args.errors_only;
     const filter = errorsOnly
       ? ['error', 'warn']
       : args.level_filter && args.level_filter.length > 0
@@ -645,9 +640,8 @@ export const read_console_messages: ToolHandler<ReadConsoleArgs, unknown> = {
 
 const ReadNetworkArgs = z
   .object({
-    tab_id: z.number().int().optional(),
-    tabId: z.string().optional(),
-    urlPattern: z.string().optional(),
+    tab_id: z.string().optional(),
+    url_pattern: z.string().optional(),
     /** Auto-start capture if it isn't running. Default true. */
     auto_start: z.boolean().optional().default(true),
     include_body: z.boolean().optional().default(false),
@@ -664,12 +658,11 @@ export const read_network_requests: ToolHandler<ReadNetworkArgs, unknown> = {
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
-    "Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cross-domain navigation. Filter with urlPattern to keep output manageable. Response bodies are NOT included by default — use get_request_body to fetch a specific body. The buffer is per-tab and bounded; old entries fall off the back.",
+    "Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cross-domain navigation. Filter with url_pattern to keep output manageable. Response bodies are NOT included by default — use get_request_body to fetch a specific body. The buffer is per-tab and bounded; old entries fall off the back.",
   argsSchema: ReadNetworkArgs,
   run: async (args, ctx) => {
     const tabId =
-      args.tab_id ??
-      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ??
+      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ??
       (await getAssignedTabId(ctx));
     if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
     if (args.auto_start) {
@@ -680,8 +673,8 @@ export const read_network_requests: ToolHandler<ReadNetworkArgs, unknown> = {
       }
     }
     let records = cdp.drainNetworkCapture(tabId, args.limit);
-    if (args.urlPattern) {
-      const sub = args.urlPattern.toLowerCase();
+    if (args.url_pattern) {
+      const sub = args.url_pattern.toLowerCase();
       records = records.filter((r) => r.url.toLowerCase().includes(sub));
     }
     return { ok: true, count: records.length, records };
@@ -689,9 +682,8 @@ export const read_network_requests: ToolHandler<ReadNetworkArgs, unknown> = {
 };
 
 const GetRequestBodyArgs = z.object({
-  tabId: z.string().optional(),
-  tab_id: z.number().int().optional(),
-  requestId: z.string().min(1),
+  tab_id: z.string().optional(),
+  request_id: z.string().min(1),
 });
 type GetRequestBodyArgs = z.infer<typeof GetRequestBodyArgs>;
 
@@ -702,16 +694,16 @@ export const get_request_body: ToolHandler<GetRequestBodyArgs, unknown> = {
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
-    "Fetch the response body for a specific request seen by read_network_requests. Returns inline text when small; for large bodies the canonical contract calls for cld_files persistence — current implementation always returns inline.",
+    "Fetch the response body for a specific request seen by read_network_requests. Returns inline text. Pass request_id from a prior drain.",
   argsSchema: GetRequestBodyArgs,
   run: async (args, ctx) => {
     const tabId =
       args.tab_id ??
-      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ??
+      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ??
       (await getAssignedTabId(ctx));
     if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
     return cdp_network_get_body.run(
-      { request_id: args.requestId, tab_id: tabId } as never,
+      { request_id: args.request_id, tab_id: tabId } as never,
       // Pass the parent ctx through so the inner handler keeps the same
       // assignedTabId / conversationId — we already resolved tabId above
       // anyway, but keeping ctx consistent matters for tools that read it.

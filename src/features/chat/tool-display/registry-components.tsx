@@ -36,11 +36,28 @@ const TextDisplay = ({ value, className }: FieldProps) => (
   <div className={cn('text-[12px]', className)}>{String(value ?? '')}</div>
 );
 
-const Markdown = ({ value, className }: FieldProps) => (
-  <div className={className}>
-    <MarkdownView content={String(value ?? '')} density="compact" />
-  </div>
-);
+const Markdown = ({ value, className }: FieldProps) => {
+  // Objects/arrays aren't markdown — render a JSON dump so the user sees
+  // the actual payload instead of "[object Object]". Strings (including
+  // numbers coerced via String) flow through MarkdownView as before.
+  if (value != null && typeof value === 'object') {
+    return (
+      <pre
+        className={cn(
+          'max-h-96 overflow-auto rounded-md bg-background/60 p-1.5 text-[11px] leading-snug whitespace-pre-wrap',
+          className,
+        )}
+      >
+        {safeJson(value)}
+      </pre>
+    );
+  }
+  return (
+    <div className={className}>
+      <MarkdownView content={String(value ?? '')} density="compact" />
+    </div>
+  );
+};
 
 const Code = ({ value, className }: FieldProps) => (
   <pre

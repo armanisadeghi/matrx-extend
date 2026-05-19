@@ -19,7 +19,7 @@ import { z } from 'zod';
 const FindTextArgs = z.object({
   query: z.string().min(1),
   /** Canonical: target tab. */
-  tabId: z.string().optional(),
+  tab_id: z.string().optional(),
   /** Case-sensitive match. Default false. */
   case_sensitive: z.boolean().optional().default(false),
   /** Treat `query` as a regex. Default false. */
@@ -35,11 +35,11 @@ export const find_text_on_page: ToolHandler<FindTextArgs, unknown> = {
   name: 'find_text_on_page',
   tier: 'read',
   description:
-    'Search visible text on the active tab and return matches with their nearest enclosing element selector + context. Pass regex=true to use a regular expression. Use this when read_active_page would be overkill — e.g. "where on this page does it say \'click here to download\'?".',
+    'Ctrl+F-style literal text search within a tab. Returns matches with surrounding context + the nearest enclosing element selector. Pass regex=true to use a regular expression. Use when read_active_page would be overkill — e.g. "where on this page does it say \'click here to download\'?". For natural-language search, use find instead.',
   argsSchema: FindTextArgs,
   run: async (args, ctx) => {
     const tabId =
-      (args.tabId ? Number.parseInt(args.tabId, 10) : null) ?? (await getAssignedTabId(ctx));
+      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ?? (await getAssignedTabId(ctx));
     if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -389,7 +389,7 @@ export const inspect_element: ToolHandler<InspectArgs, unknown> = {
 // shares its core probe logic with inspect_element but is registered
 // separately so the canonical tool catalog has the exact name.
 const ElementDetailsArgs = z.object({
-  tabId: z.string().optional(),
+  tab_id: z.string().optional(),
   ref: z.string(),
   include_html: z.boolean().default(false),
   include_styles: z.boolean().default(false),
@@ -404,8 +404,8 @@ export const get_element_details: ToolHandler<ElementDetailsArgs, unknown> = {
   argsSchema: ElementDetailsArgs,
   run: async (args, ctx) => {
     let tabId: number | null;
-    if (args.tabId) {
-      tabId = Number.parseInt(args.tabId, 10);
+    if (args.tab_id) {
+      tabId = Number.parseInt(args.tab_id, 10);
       if (!Number.isFinite(tabId)) return { ok: false, reason: 'Invalid tabId' };
     } else {
       tabId = await getAssignedTabId(ctx);

@@ -162,6 +162,7 @@ NEW_VERSION=""
 CURRENT_STEP=""
 CATALOG_OK=true
 WARNINGS=()
+DRIFT_DETECTED=false
 
 _key_comment_out() {
     # Idempotent — bails if already commented.
@@ -368,6 +369,26 @@ else
         warn "module load. Inspect with:  pnpm catalog:tools:md  outside this script."
         WARNINGS+=("Tool catalog regen FAILED (non-blocking). types/tool-catalog.* will be stale until you fix the import-time env issue and run 'pnpm catalog:tools:md' manually.")
     fi
+
+    # ── 4b. Diff local catalog against public.tl_def (NON-FATAL) ─────────────
+    #
+    # The LLM sees tool schemas from public.tl_def (in Supabase). The
+    # extension's dispatcher validates calls against the local Zod schemas
+    # captured in types/tool-catalog.json. When they drift, the model
+    # crafts a call the dispatcher rejects (or vice versa) — see the
+    # 'tabs.action=get_info' incident on 2026-05-19. Warn-only: bringing
+    # tl_def in line with code happens manually via Supabase MCP / admin
+    # API; we don't want a drift to gate a release that's otherwise ready.
+    if $CATALOG_OK; then
+        if pnpm catalog:tools:drift; then
+            ok "tool-catalog ↔ tl_def in sync"
+        else
+            DRIFT_DETECTED=true
+            WARNINGS+=("Tool catalog DRIFTED from public.tl_def (non-blocking). Run 'pnpm catalog:tools:drift' for the diff; reconcile via Supabase MCP / admin API.")
+        fi
+    else
+        warn "Skipping tl_def drift check — catalog regen failed."
+    fi
 fi
 
 # ── 5. Commit version bump ──────────────────────────────────────────────────
@@ -528,4 +549,27 @@ echo ""
 # scrolling past nine prior-version zips.
 if [[ "$(uname -s)" == "Darwin" ]] && command -v open >/dev/null 2>&1; then
     open -R "$STORE_ABS" 2>/dev/null || true
+fi
+
+# ── FINAL DRIFT SCREAM ──────────────────────────────────────────────────────
+# If the tl_def drift check found anything earlier, repeat the alert as the
+# LAST thing on screen so it can't be missed.
+if $DRIFT_DETECTED; then
+    RED_BG='\033[1;97;41m'
+    RED_FG='\033[1;91m'
+    BLINK='\033[5m'
+    NCC='\033[0m'
+    BAR='████████████████████████████████████████████████████████████████████████████'
+    echo ""
+    echo ""
+    echo -e "${RED_BG}${BAR}${NCC}"
+    echo -e "${RED_BG}██${NCC}                                                                        ${RED_BG}██${NCC}"
+    echo -e "${RED_BG}██${NCC}     ${BLINK}${RED_FG}⚠  TOOL-CATALOG / DB SCHEMA DRIFT DETECTED  ⚠${NCC}                  ${RED_BG}██${NCC}"
+    echo -e "${RED_BG}██${NCC}                                                                        ${RED_BG}██${NCC}"
+    echo -e "${RED_BG}██${NCC}     ${RED_FG}The LLM sees one schema; the dispatcher accepts another.${NCC}           ${RED_BG}██${NCC}"
+    echo -e "${RED_BG}██${NCC}     ${RED_FG}Run:  pnpm catalog:tools:drift  for the full diff.${NCC}                 ${RED_BG}██${NCC}"
+    echo -e "${RED_BG}██${NCC}     ${RED_FG}Reconcile tl_def via Supabase MCP / admin API.${NCC}                     ${RED_BG}██${NCC}"
+    echo -e "${RED_BG}██${NCC}                                                                        ${RED_BG}██${NCC}"
+    echo -e "${RED_BG}${BAR}${NCC}"
+    echo ""
 fi

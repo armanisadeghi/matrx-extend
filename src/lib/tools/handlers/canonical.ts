@@ -86,7 +86,7 @@ async function activateTab(tabId: string): Promise<{ ok: true; id: number } | { 
 // ────────────────────────────────────────────────────────────────────────────
 
 const ComputerArgs = z.object({
-  tabId: z.string(),
+  tab_id: z.string(),
   action: z.enum([
     'left_click',
     'right_click',
@@ -123,7 +123,7 @@ export const computer: ToolHandler<ComputerArgs, unknown> = {
     "Mouse, keyboard, and screenshot interactions. Prefer 'ref' over 'coordinate' when targeting elements; coordinates survive poorly across scrolls and layout changes. The 'screenshot' action persists the image to cloud and returns {file_id, file_url, width, height, mime_type} — use that file_id with upload_file or drop_file later. Use wait_for for synchronization, NOT a fixed sleep.",
   argsSchema: ComputerArgs,
   run: async (args, ctx) => {
-    const act = await activateTab(args.tabId);
+    const act = await activateTab(args.tab_id);
     if (!act.ok) return { ok: false, reason: act.reason };
     switch (args.action) {
       case 'left_click': {
@@ -182,7 +182,7 @@ export const computer: ToolHandler<ComputerArgs, unknown> = {
       case 'blur':
         return blur_element.run({ ref: args.ref, selector: undefined } as never, ctx);
       case 'screenshot':
-        return doScreenshot(args.tabId, ctx);
+        return doScreenshot(args.tab_id, ctx);
       case 'left_click_drag':
         if (!args.start_coordinate || !args.coordinate) {
           return { ok: false, reason: "'start_coordinate' and 'coordinate' are required for left_click_drag" };
@@ -333,7 +333,7 @@ async function doScreenshot(tabIdStr: string, ctx: Parameters<typeof take_screen
       width: r.width,
       height: r.height,
       mime_type: mime,
-      tabId: tabIdStr,
+      tab_id: tabIdStr,
     };
   }
   // Fallback — persistence was skipped or failed but we still have the
@@ -355,7 +355,7 @@ async function doScreenshot(tabIdStr: string, ctx: Parameters<typeof take_screen
       width: r.width,
       height: r.height,
       mime_type: mime,
-      tabId: tabIdStr,
+      tab_id: tabIdStr,
     };
   } catch (err) {
     log.error('sw', 'screenshot upload failed; returning inline image', err);
@@ -368,7 +368,7 @@ async function doScreenshot(tabIdStr: string, ctx: Parameters<typeof take_screen
 // ────────────────────────────────────────────────────────────────────────────
 
 const FormInputArgs = z.object({
-  tabId: z.string(),
+  tab_id: z.string(),
   ref: z.string(),
   value: z.union([z.string(), z.number(), z.boolean()]),
 });
@@ -381,7 +381,7 @@ export const form_input: ToolHandler<FormInputArgs, unknown> = {
     "Set the value of a form element by reference. Use string for text inputs, boolean for checkboxes/radios, value or visible label for selects. The handler dispatches on element type — you don't need to specify it.",
   argsSchema: FormInputArgs,
   run: async (args, ctx) => {
-    const act = await activateTab(args.tabId);
+    const act = await activateTab(args.tab_id);
     if (!act.ok) return { ok: false, reason: act.reason };
     // Resolve the element type so we can route to the right specialist.
     const refSelector = `[data-matrx-ref="${args.ref.replace(/^ref:/, '')}"]`;
@@ -438,7 +438,7 @@ export const form_input: ToolHandler<FormInputArgs, unknown> = {
 // ────────────────────────────────────────────────────────────────────────────
 
 const NavigateArgs = z.object({
-  tabId: z.string(),
+  tab_id: z.string(),
   url: z.string(),
   force: z.boolean().default(false),
 });
@@ -451,7 +451,7 @@ export const navigate: ToolHandler<NavigateArgs, unknown> = {
     "Navigate a tab to a URL, or move through history with 'back'/'forward'. Protocol defaults to https:// if omitted. After navigating, refs from prior read_page calls are invalidated — call read_page again before referencing elements.",
   argsSchema: NavigateArgs,
   run: async (args, ctx) => {
-    const act = await activateTab(args.tabId);
+    const act = await activateTab(args.tab_id);
     if (!act.ok) return { ok: false, reason: act.reason };
     if (args.url === 'back') return go_back.run({} as never, ctx);
     if (args.url === 'forward') return go_forward.run({} as never, ctx);
@@ -480,7 +480,7 @@ const TabsArgs = z.object({
     'move',
     'zoom',
   ]),
-  tabId: z.string().optional(),
+  tab_id: z.string().optional(),
   url: z.string().optional(),
   /** For 'pin'/'mute' — set or unset (default true). */
   on: z.boolean().optional(),
@@ -500,7 +500,7 @@ export const tabs: ToolHandler<TabsArgs, unknown> = {
   tier: 'action',
   tierFor: (args): ToolTier => (TABS_READ_ACTIONS.has(args.action) ? 'read' : 'action'),
   description:
-    "Manage browser tabs. Actions: 'list' (all tabs in current window), 'create' (opens new tab; pass url to open at a URL), 'close', 'switch' (brings tab to foreground), 'reload', 'active' (returns the currently active tab — call when you don't know your tabId), 'info' (full info for a specific tabId), 'pin' (toggle pin via `on`), 'mute' (toggle mute via `on`), 'duplicate', 'move' (to `index` and optionally `window_id`), 'zoom' (set `zoom_factor`, e.g. 1.5 for 150%). tabId required for close/switch/reload/info/pin/mute/duplicate/move/zoom.",
+    "Manage browser tabs. Actions: 'list' (all tabs in current window), 'create' (opens new tab; pass url to open at a URL), 'close', 'switch' (brings tab to foreground), 'reload', 'active' (returns the currently active tab — call when you don't know your tab_id), 'info' (full info for a specific tab_id), 'pin' (toggle pin via `on`), 'mute' (toggle mute via `on`), 'duplicate', 'move' (to `index` and optionally `window_id`), 'zoom' (set `zoom_factor`, e.g. 1.5 for 150%). tab_id required for close/switch/reload/info/pin/mute/duplicate/move/zoom.",
   argsSchema: TabsArgs,
   run: async (args, ctx) => {
     if (args.action === 'list') return list_open_tabs.run({} as never, ctx);
@@ -523,9 +523,9 @@ export const tabs: ToolHandler<TabsArgs, unknown> = {
         status: tab.status,
       };
     }
-    const id = args.tabId ? Number.parseInt(args.tabId, 10) : NaN;
+    const id = args.tab_id ? Number.parseInt(args.tab_id, 10) : NaN;
     if (!Number.isFinite(id))
-      return { ok: false, reason: `tabId required for action='${args.action}'` };
+      return { ok: false, reason: `tab_id required for action='${args.action}'` };
     if (args.action === 'close') return close_tab.run({ tab_id: id } as never, ctx);
     if (args.action === 'switch') return switch_to_tab.run({ tab_id: id } as never, ctx);
     if (args.action === 'reload') return reload_tab.run({ tab_id: id } as never, ctx);
@@ -557,7 +557,7 @@ export const tabs: ToolHandler<TabsArgs, unknown> = {
 
 const DownloadsArgs = z.object({
   action: z.enum(['list', 'confirm', 'cancel', 'download_url']),
-  downloadId: z.string().optional(),
+  download_id: z.string().optional(),
   url: z.string().optional(),
   filename: z.string().optional(),
 });
@@ -568,23 +568,23 @@ export const downloads: ToolHandler<DownloadsArgs, unknown> = {
   tier: 'action',
   tierFor: (args): ToolTier => (args.action === 'list' ? 'read' : 'action'),
   description:
-    "Manage file downloads. Actions: 'list' (returns recent downloads with id/filename/url/state/bytes), 'cancel' (aborts a pending download), 'confirm' (no-op acknowledgment for canonical compatibility — Chrome auto-completes downloads), 'download_url' (extension-only extension: trigger a download from a URL; canonical doesn't yet have this but it's the most common workflow primitive). downloadId is required for confirm/cancel; url is required for download_url.",
+    "Manage file downloads. Actions: 'list' (recent downloads with id/filename/url/state/bytes), 'cancel' (abort a pending download), 'confirm' (no-op; Chrome auto-completes downloads), 'download_url' (trigger a download from a URL). download_id required for cancel/confirm; url required for download_url.",
   argsSchema: DownloadsArgs,
   run: async (args, ctx) => {
     if (args.action === 'list') return list_downloads.run({} as never, ctx);
     if (args.action === 'cancel') {
-      const id = args.downloadId ? Number.parseInt(args.downloadId, 10) : NaN;
+      const id = args.download_id ? Number.parseInt(args.download_id, 10) : NaN;
       if (!Number.isFinite(id))
-        return { ok: false, reason: "downloadId required for action='cancel'" };
+        return { ok: false, reason: "download_id required for action='cancel'" };
       return cancel_download.run({ download_id: id } as never, ctx);
     }
     if (args.action === 'confirm') {
       // Canonical surfaces this as a user-permission step. In our extension,
       // downloads complete on their own; we no-op and surface what the agent
       // already saw via 'list'.
-      const id = args.downloadId ? Number.parseInt(args.downloadId, 10) : NaN;
+      const id = args.download_id ? Number.parseInt(args.download_id, 10) : NaN;
       if (!Number.isFinite(id))
-        return { ok: false, reason: "downloadId required for action='confirm'" };
+        return { ok: false, reason: "download_id required for action='confirm'" };
       try {
         const [item] = await chrome.downloads.search({ id });
         return { ok: true, download: item ?? null };
@@ -697,7 +697,7 @@ export const clipboard: ToolHandler<ClipboardArgs, unknown> = {
 
 const WaitForArgs = z
   .object({
-    tabId: z.string(),
+    tab_id: z.string(),
     condition: z.enum(['element', 'text', 'url', 'network_idle']),
     target: z.string().optional(),
     scroll: z.boolean().default(false),
@@ -716,7 +716,7 @@ export const wait_for: ToolHandler<WaitForArgs, unknown> = {
     "Poll until a condition is met or timeout. Use after navigation or actions that trigger async loads — far more reliable than fixed sleeps. Conditions: 'element' (ref or selector exists and is visible; pass scroll=true to scroll the page while polling — handles infinite scroll), 'text' (text appears anywhere on page), 'url' (tab URL matches substring or regex), 'network_idle' (no in-flight requests for ~500ms).",
   argsSchema: WaitForArgs,
   run: async (args, ctx) => {
-    const act = await activateTab(args.tabId);
+    const act = await activateTab(args.tab_id);
     if (!act.ok) return { ok: false, reason: act.reason };
     if (args.condition === 'element') {
       const isRef = args.target!.startsWith('ref:');
@@ -815,7 +815,7 @@ async function waitForUrl(tabId: number, pattern: string, timeoutMs: number) {
 // ────────────────────────────────────────────────────────────────────────────
 
 const UploadFileArgs = z.object({
-  tabId: z.string(),
+  tab_id: z.string(),
   ref: z.string(),
   file_ids: z.array(z.string().min(1)).min(1),
 });
@@ -828,7 +828,7 @@ export const upload_file: ToolHandler<UploadFileArgs, unknown> = {
     "Upload one or more files to a <input type='file'> element by reference. Pass file_ids — these are MediaRef IDs (e.g. from a previous /files/upload, or from computer.action=screenshot). The handler resolves each file_id to bytes and sets the input. Do NOT click file inputs — that opens a native picker the agent cannot see. For drag-and-drop targets, use drop_file instead.",
   argsSchema: UploadFileArgs,
   run: async (args) => {
-    const act = await activateTab(args.tabId);
+    const act = await activateTab(args.tab_id);
     if (!act.ok) return { ok: false, reason: act.reason };
     // Fetch bytes for each file_id from cld_files; we materialize them in
     // the SW, base64-encode, and pass into the page where DataTransfer
@@ -880,7 +880,7 @@ export const upload_file: ToolHandler<UploadFileArgs, unknown> = {
 
 const DropFileArgs = z
   .object({
-    tabId: z.string(),
+    tab_id: z.string(),
     file_id: z.string(),
     ref: z.string().optional(),
     coordinate: z.array(z.number()).length(2).optional(),
@@ -896,7 +896,7 @@ export const drop_file: ToolHandler<DropFileArgs, unknown> = {
     "Synthesize a drag-and-drop of a single file onto a target element or coordinate. Use for drop zones that aren't backed by <input type='file'>. Provide ref OR coordinate. file_id is a MediaRef (e.g. from a prior screenshot or upload).",
   argsSchema: DropFileArgs,
   run: async (args) => {
-    const act = await activateTab(args.tabId);
+    const act = await activateTab(args.tab_id);
     if (!act.ok) return { ok: false, reason: act.reason };
     let blob: Blob;
     let resolvedFilename: string;
@@ -963,29 +963,29 @@ export const drop_file: ToolHandler<DropFileArgs, unknown> = {
 
 const ReadPdfArgs = z
   .object({
-    tabId: z.string().optional(),
+    tab_id: z.string().optional(),
     file_id: z.string().optional(),
     page_start: z.number().int().positive().optional(),
     page_end: z.number().int().positive().optional(),
     max_chars: z.number().int().positive().default(50_000),
   })
-  .refine((a) => a.tabId || a.file_id, { message: 'tabId or file_id is required' });
+  .refine((a) => a.tab_id || a.file_id, { message: 'tab_id or file_id is required' });
 type ReadPdfArgs = z.infer<typeof ReadPdfArgs>;
 
 export const read_pdf: ToolHandler<ReadPdfArgs, unknown> = {
   name: 'read_pdf',
   tier: 'read',
   description:
-    "Extract text and structure from a PDF — either one loaded in a browser tab, or one already in cld_files (pass file_id). Returns text by page with optional page range. Use file_id when you have a MediaRef in hand (e.g. from a prior download); use tabId when the PDF is open in the browser.",
+    "Extract text and structure from a PDF — either one loaded in a browser tab, or one already in cld_files (pass file_id). Returns text by page with optional page range. Use file_id when you have a MediaRef in hand (e.g. from a prior download); use tab_id when the PDF is open in the browser.",
   argsSchema: ReadPdfArgs,
   run: async (args) => {
     let fileId = args.file_id;
-    // If only tabId was given, capture the PDF bytes from the tab's URL and
+    // If only tab_id was given, capture the PDF bytes from the tab's URL and
     // upload to cld_files first so the server's /pdf/extract-text endpoint
     // can take its preferred MediaRef shape.
-    if (!fileId && args.tabId) {
-      const id = Number.parseInt(args.tabId, 10);
-      if (!Number.isFinite(id)) return { ok: false, reason: 'Invalid tabId' };
+    if (!fileId && args.tab_id) {
+      const id = Number.parseInt(args.tab_id, 10);
+      if (!Number.isFinite(id)) return { ok: false, reason: 'Invalid tab_id' };
       try {
         const tab = await chrome.tabs.get(id);
         const pdfUrl = tab.url ?? '';
