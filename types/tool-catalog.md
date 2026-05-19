@@ -1,14 +1,14 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-19T19:33:24.866Z
+Generated: 2026-05-19T20:50:25.180Z
 
-- **Total tools:** 170
-- **Assistant bundle:** 77 tools (read-only)
-- **Pilot bundle:** 140 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 170 tools
+- **Total tools:** 167
+- **Assistant bundle:** 74 tools (read-only)
+- **Pilot bundle:** 137 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 167 tools
 
 
-## Tier: read (77)
+## Tier: read (74)
 
 ### `list_browser_tools`
 
@@ -29,7 +29,7 @@ Index of every browser-tool category the extension exposes. Returns one entry pe
 
 ### `list_core_tools`
 
-Full schemas for tools in the "Core" category (core). Always-available essentials: read the active page, take a screenshot, find elements by description, click, type, navigate, ask the user, batch multiple calls. The agent has these without calling any list tool. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+Full schemas for tools in the "Core" category (core). Always-on discovery + batching utilities. Includes `list_browser_tools` (the category index) and `browser_batch` (run multiple read-tier calls in one round trip). Use the category index to load tools on demand. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -44,26 +44,9 @@ Full schemas for tools in the "Core" category (core). Always-available essential
 }
 ```
 
-### `list_page_tools`
+### `list_reading_tools`
 
-Full schemas for tools in the "Page understanding" category (page). Deep page inspection: accessibility tree with reference IDs, natural-language element search, article-style text extraction, link discovery, computed styles, element-at-point, form-field discovery. Returns { count, tools: [{ name, description, tier, input_schema }] }.
-
-- **Required permissions:** (none)
-- **Surface bundles:** assistant, pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {},
-  "additionalProperties": false,
-  "default": {},
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `list_interact_tools`
-
-Full schemas for tools in the "Page interaction" category (interact). Beyond core click/type: scrolling, keyboard sequences (chords + named keys), hover, focus, blur, right-click, wait-for conditions. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+Full schemas for tools in the "Read the page" category (reading). Understand what's on the active page. Accessibility-tree summary with reference IDs (`read_page`), natural-language element search (`find`), Ctrl+F text search, link discovery, full readable text, structured-data extraction (tables, microdata, JSON-LD), PDF reading, mutation observers, single-element deep inspection. Use these BEFORE any interaction so you know what's on the page. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -78,9 +61,9 @@ Full schemas for tools in the "Page interaction" category (interact). Beyond cor
 }
 ```
 
-### `list_forms_tools`
+### `list_interaction_tools`
 
-Full schemas for tools in the "Forms" category (forms). Form-specific actions: select dropdown options, set checkboxes, pick radio buttons, submit forms, upload files into <input type="file">. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+Full schemas for tools in the "Use the page" category (interaction). Do something on the page. Mouse + keyboard (`computer`), form input + submission (`form_input`, `submit_form`), navigation, waiting for conditions, sleeping, scrolling, clipboard, file upload + drag-drop, CSS injection, JavaScript evaluation. Prefer `wait_for` over `sleep` when you have a concrete condition. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -97,7 +80,7 @@ Full schemas for tools in the "Forms" category (forms). Form-specific actions: s
 
 ### `list_tabs_tools`
 
-Full schemas for tools in the "Tabs & windows" category (tabs). List, switch, open, close, duplicate, pin, mute, reload tabs. Back/forward navigation, zoom, move tabs between windows. Create and manage tab groups. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+Full schemas for tools in the "Tabs & windows" category (tabs). Manage browser tabs and groups. The `tabs` mega-tool covers list/create/close/switch/reload/pin/mute/duplicate/move/zoom and reading active-tab info. `tab_groups` manages named tab groups. `resize_window` for responsive testing. `chrome_tab_audio_inspect` finds the noisy tab. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -112,26 +95,9 @@ Full schemas for tools in the "Tabs & windows" category (tabs). List, switch, op
 }
 ```
 
-### `list_history_tools`
+### `list_capture_tools`
 
-Full schemas for tools in the "Browser history & bookmarks" category (history). Search bookmarks, search browsing history, list recent visits, list downloads, list and restore recently-closed tabs. Returns { count, tools: [{ name, description, tier, input_schema }] }.
-
-- **Required permissions:** (none)
-- **Surface bundles:** assistant, pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {},
-  "additionalProperties": false,
-  "default": {},
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `list_ai_tools`
-
-Full schemas for tools in the "On-device AI (Gemini Nano)" category (ai). Free, offline, on-GPU AI tasks: summarize, classify, extract structured JSON, translate, detect language, proofread, describe images, check for prompt injection. Use these BEFORE expensive cloud calls when quality permits. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+Full schemas for tools in the "Save & capture" category (capture). Capture artifacts from the browser: file downloads, MHTML snapshots of a page, region screenshots, animated GIFs of user actions, video recordings of a tab. Pairs with the cloud-file system — most produce a `file_id` you can pass to later tools. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -146,9 +112,26 @@ Full schemas for tools in the "On-device AI (Gemini Nano)" category (ai). Free, 
 }
 ```
 
-### `list_files_tools`
+### `list_chrome_tools`
 
-Full schemas for tools in the "Files & system" category (files). Download files, archive page as MHTML, read/write clipboard, show system notifications. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+Full schemas for tools in the "Chrome user data" category (chrome). Access the user's personal Chrome data — cookies for any domain, bookmarks, browsing history, recently-closed sessions. Only the Chrome extension can read these (server-side Playwright runs a fresh browser context with none of the user's real data). All tools here are admin-restricted by default. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_human_tools`
+
+Full schemas for tools in the "Talk to the user" category (human). Loop the human in. `user` (six modes: confirm/choice/choice_many/text/secret/notify), `update_plan` (propose a plan and wait for approval), `request_user_takeover` (hand control back so the user can do something the agent cannot), `tasks` (agent's live tasklist), `user_todos` (assign work to the user). Per-conversation state. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -165,7 +148,7 @@ Full schemas for tools in the "Files & system" category (files). Download files,
 
 ### `list_memory_tools`
 
-Full schemas for tools in the "Agent memory" category (memory). Persistent agent-namespaced storage that survives across runs. Use to remember user preferences, scratchpads, progress markers between conversations. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+Full schemas for tools in the "Agent memory" category (memory). Agent state that persists across turns. `scratchpad` is session-scoped (cleared on SW restart). `storage` is persistent agent-namespaced KV. `remember_for_domain` writes a domain memo that auto-surfaces in context when the user opens a tab on that domain. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -180,43 +163,9 @@ Full schemas for tools in the "Agent memory" category (memory). Persistent agent
 }
 ```
 
-### `list_ask_tools`
+### `list_ai_tools`
 
-Full schemas for tools in the "Ask the user" category (ask). Pause and ask the human: open question, multiple-choice, secret (masked) input, full takeover (CAPTCHA / login). Returns { count, tools: [{ name, description, tier, input_schema }] }.
-
-- **Required permissions:** (none)
-- **Surface bundles:** assistant, pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {},
-  "additionalProperties": false,
-  "default": {},
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `list_plan_tools`
-
-Full schemas for tools in the "Plan & tasks" category (plan). Propose a plan and wait for user approval (`update_plan`). Manage your own live tasklist (`tasks`) — add work items, set statuses (pending / in_progress / done / blocked / skipped) as you go; the list is surfaced to you in context on every turn so user edits flow back. Assign work back to the user (`user_todos`) — items the user sees in the panel and checks off; their status flows back to you too. Per-conversation. Approved plan steps auto-populate the tasklist. Returns { count, tools: [{ name, description, tier, input_schema }] }.
-
-- **Required permissions:** (none)
-- **Surface bundles:** assistant, pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {},
-  "additionalProperties": false,
-  "default": {},
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `list_advanced_tools`
-
-Full schemas for tools in the "Advanced (privileged)" category (advanced). Privileged tools that always require user approval: arbitrary JavaScript execution, CSS injection, desktop-bridge commands. Use only when no purpose-built tool fits. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+Full schemas for tools in the "On-device AI" category (ai). Chrome's built-in Gemini Nano and siblings. Free, offline, on-GPU. The `ai` mega-tool exposes summarize, classify, extract-JSON-by-schema, translate, detect-language, proofread, describe-image, and prompt-injection-check actions. Use these BEFORE expensive cloud calls when on-device quality permits. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -233,7 +182,7 @@ Full schemas for tools in the "Advanced (privileged)" category (advanced). Privi
 
 ### `list_demos_tools`
 
-Full schemas for tools in the "Demos (record & replay)" category (demos). Record a user demonstration of a workflow once, then replay it on demand with parameter substitution. Self-healing selector chain (matrx-ref → id → testid → ARIA → text → CSS path) survives DOM churn between recording and replay. Use to automate repetitive multi-step workflows: form filling, expense reports, recurring searches, login flows. Replay is privileged — it can click, type, submit, and navigate, so it always asks the user to confirm. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+Full schemas for tools in the "Record & replay" category (demos). Record a user demonstration of a workflow once, then replay it on demand with parameter substitution. Self-healing selector chain (matrx-ref → id → testid → ARIA → text → CSS path) survives DOM churn between recording and replay. Replay is privileged — always asks the user to confirm before clicking / typing / submitting. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -250,7 +199,7 @@ Full schemas for tools in the "Demos (record & replay)" category (demos). Record
 
 ### `list_guidance_tools`
 
-Full schemas for tools in the "Guidance (user-saved clues)" category (guidance). User-saved clues for the agent — domain-scoped notes, screenshots, GIFs, and demo references. Whenever the user opens a tab on a matching domain, the agent's context auto-includes any guidance the user has saved there. Tools here let the agent add more notes (`save_guidance_note`), browse what exists (`list_guidance` / `get_guidance_item`), and remove stale items (`delete_guidance_item`). Captured artifacts (screenshots, GIFs) are created via the Guidance sidepanel tab. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+Full schemas for tools in the "User-saved hints" category (guidance). Domain-scoped notes, screenshots, GIFs, and demo references the user has saved for the agent. Whenever the user opens a tab on a matching domain, the agent's context auto-includes the saved hints. Tools here let the agent add notes, browse what exists, and remove stale items. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -265,26 +214,9 @@ Full schemas for tools in the "Guidance (user-saved clues)" category (guidance).
 }
 ```
 
-### `list_debug_tools`
+### `list_devtools_tools`
 
-Full schemas for tools in the "Debugger / DevTools (admin)" category (debug). Chrome DevTools Protocol: full-page screenshots, accessibility tree dumps, network request capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print, console message reads. Plus host diagnostics: CPU / memory / display info and active declarativeNetRequest blocking rules. Returns { count, tools: [{ name, description, tier, input_schema }] }.
-
-- **Required permissions:** (none)
-- **Surface bundles:** assistant, pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {},
-  "additionalProperties": false,
-  "default": {},
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `list_cookies_tools`
-
-Full schemas for tools in the "Cookies (admin)" category (cookies). Read, set, and delete cookies for any domain. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+Full schemas for tools in the "DevTools (admin)" category (devtools). Chrome DevTools Protocol + host diagnostics. CDP-backed full-page screenshots, accessibility-tree dumps, network/console capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print. Plus host info (CPU/memory/display, declarativeNetRequest rules). All admin-gated. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -301,7 +233,24 @@ Full schemas for tools in the "Cookies (admin)" category (cookies). Read, set, a
 
 ### `list_webmcp_tools`
 
-Full schemas for tools in the "WebMCP (admin)" category (webmcp). Discover and call tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). Returns { count, tools: [{ name, description, tier, input_schema }] }.
+Full schemas for tools in the "Page-registered tools" category (webmcp). Discover and call tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). The `chrome_webmcp` mega-tool lets the agent enumerate the page's tool catalog and invoke specific tools. Admin-only experimental capability. Returns { count, tools: [{ name, description, tier, input_schema }] }.
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_desktop_tools`
+
+Full schemas for tools in the "Desktop bridge" category (desktop). Bridge to matrx-local — the desktop engine. `desktop_run_command` invokes commands matrx-local exposes (file ops, system info, window control, etc.). Fails fast when the bridge isn't connected. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged

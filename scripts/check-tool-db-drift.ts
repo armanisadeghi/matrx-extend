@@ -37,6 +37,7 @@ interface LocalTool {
 }
 
 interface DbToolRow {
+  id: string;
   name: string;
   description: string;
   parameters: Record<string, { type?: string | string[]; enum?: unknown[]; required?: boolean; [k: string]: unknown }> | null;
@@ -44,6 +45,18 @@ interface DbToolRow {
   admin_only: boolean | null;
   privileged: boolean | null;
   is_active: boolean | null;
+  category: string | null;
+}
+
+interface DbExecutorRow {
+  tool_id: string;
+  surface: string;
+  is_active: boolean;
+}
+
+interface DbSurfaceGateRow {
+  tool_id: string;
+  surface_name: string;
 }
 
 interface Drift {
@@ -96,23 +109,47 @@ function loadEnv(): { url: string; key: string } {
   return { url, key };
 }
 
-async function fetchDbRows(url: string, key: string): Promise<DbToolRow[]> {
-  const endpoint = `${url.replace(/\/$/, '')}/rest/v1/tl_def?source_app=eq.matrx-extend&select=name,description,parameters,tier,admin_only,privileged,is_active&order=name.asc`;
+async function fetchJson<T>(url: string, key: string, path: string): Promise<T> {
+  const endpoint = `${url.replace(/\/$/, '')}/rest/v1/${path}`;
   const res = await fetch(endpoint, {
     headers: {
       apikey: key,
       Authorization: `Bearer ${key}`,
       Accept: 'application/json',
       // Custom Supabase proxy at db.matrxserver.com defaults to schema 'api';
-      // tl_def lives in 'public', so request it explicitly.
+      // these tables live in 'public', so request it explicitly.
       'Accept-Profile': 'public',
     },
   });
   if (!res.ok) {
-    console.error(`drift-check: Supabase fetch failed (${res.status}): ${await res.text()}`);
+    console.error(`drift-check: Supabase fetch failed (${res.status}) on ${path}: ${await res.text()}`);
     process.exit(2);
   }
-  return (await res.json()) as DbToolRow[];
+  return (await res.json()) as T;
+}
+
+async function fetchDbRows(url: string, key: string): Promise<DbToolRow[]> {
+  return fetchJson<DbToolRow[]>(
+    url,
+    key,
+    'tl_def?source_app=eq.matrx-extend&select=id,name,description,parameters,tier,admin_only,privileged,is_active,category&order=name.asc',
+  );
+}
+
+async function fetchExecutors(url: string, key: string): Promise<DbExecutorRow[]> {
+  return fetchJson<DbExecutorRow[]>(
+    url,
+    key,
+    'tl_executor?surface=eq.matrx-extend.browser&select=tool_id,surface,is_active',
+  );
+}
+
+async function fetchSurfaceGates(url: string, key: string): Promise<DbSurfaceGateRow[]> {
+  return fetchJson<DbSurfaceGateRow[]>(
+    url,
+    key,
+    'tl_def_surface?or=(surface_name.eq.chrome-extension/assistant,surface_name.eq.chrome-extension/pilot)&select=tool_id,surface_name',
+  );
 }
 
 function loadLocalCatalog(): LocalTool[] {
@@ -170,6 +207,15 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
     issues.push(`admin_only differs (local=${!!local.admin_only}, db=${!!db.admin_only})`);
   }
 
+  // Category is UX-only per TOOL_ROUTING_RULES.md (doesn't affect routing)
+  // but keeping it in sync prevents Tools-tab confusion + supports the
+  // discovery-helper category model.
+  if (local.category && db.category && local.category !== db.category) {
+    issues.push(`category differs (local=${local.category}, db=${db.category})`);
+  } else if (local.category && !db.category) {
+    issues.push(`category missing in DB (local=${local.category})`);
+  }
+
   // Parameter shape comparison
   const localProps = local.input_schema?.properties ?? {};
   const dbProps = db.parameters ?? {};
@@ -212,7 +258,11 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
 async function main(): Promise<void> {
   const { url, key } = loadEnv();
   const localAll = loadLocalCatalog();
-  const dbRows = await fetchDbRows(url, key);
+  const [dbRows, executors, gates] = await Promise.all([
+    fetchDbRows(url, key),
+    fetchExecutors(url, key),
+    fetchSurfaceGates(url, key),
+  ]);
 
   // Only compare tools the LLM is meant to see. CANONICAL_SURFACE
   // (src/lib/tools/categories.ts) is the authoritative list of advertised
@@ -222,11 +272,25 @@ async function main(): Promise<void> {
   const local = localAll.filter((t) => CANONICAL_SURFACE.has(t.name));
   const localByName = new Map(local.map((t) => [t.name, t]));
   const dbByName = new Map(dbRows.map((r) => [normalizeName(r.name), r]));
+  const dbById = new Map(dbRows.map((r) => [r.id, r]));
+
+  // Executor bindings → tool ids that DO have a matrx-extend.browser binding
+  const boundIds = new Set(executors.filter((e) => e.is_active).map((e) => e.tool_id));
+
+  // Surface gates → which tools are gated on which client-extension surface
+  const gatesByTool = new Map<string, Set<string>>();
+  for (const g of gates) {
+    if (!gatesByTool.has(g.tool_id)) gatesByTool.set(g.tool_id, new Set());
+    gatesByTool.get(g.tool_id)!.add(g.surface_name);
+  }
 
   const drifts: Drift[] = [];
   const localOnly: string[] = [];
   const dbOnly: string[] = [];
   const dbInactive: string[] = [];
+  const missingExecutor: string[] = [];
+  const missingGate: string[] = [];
+  const orphanGate: string[] = [];
 
   for (const [name, l] of localByName) {
     const d = dbByName.get(name);
@@ -237,15 +301,39 @@ async function main(): Promise<void> {
     if (d.is_active === false) dbInactive.push(name);
     const issues = compareTool(l, d);
     if (issues.length) drifts.push({ name, issues });
+
+    // Executor binding check — every advertised tool MUST have a row in
+    // tl_executor for the matrx-extend.browser surface, else the server
+    // doesn't know who runs it.
+    if (!boundIds.has(d.id)) missingExecutor.push(name);
+
+    // Surface gate check — every advertised tool MUST be gated for at
+    // least one chrome-extension/* surface (assistant or pilot), else
+    // the discovery handler can't surface it to either chat path.
+    const surfaces = gatesByTool.get(d.id);
+    if (!surfaces || surfaces.size === 0) missingGate.push(name);
   }
 
   for (const [name] of dbByName) {
     if (!localByName.has(name)) dbOnly.push(name);
   }
 
+  // Orphan gates — gating rows pointing at DB ids that don't exist in
+  // matrx-extend tl_def. Indicates a tool was renamed/deleted without
+  // cleaning up its gates.
+  for (const g of gates) {
+    if (!dbById.has(g.tool_id)) orphanGate.push(`${g.surface_name}/${g.tool_id.slice(0, 8)}`);
+  }
+
   const totalLocal = localByName.size;
   const totalDb = dbByName.size;
-  const totalProblems = localOnly.length + dbOnly.length + drifts.length;
+  const totalProblems =
+    localOnly.length +
+    dbOnly.length +
+    drifts.length +
+    missingExecutor.length +
+    missingGate.length +
+    orphanGate.length;
 
   // ── ANSI styling — bright red + bold + reverse for max screaming ─────────
   const isTTY = process.stdout.isTTY && process.env.NO_COLOR !== '1';
@@ -255,9 +343,11 @@ async function main(): Promise<void> {
   const DIM = isTTY ? '\x1b[2m' : '';
   const RESET = isTTY ? '\x1b[0m' : '';
 
-  console.log(`Tool-DB drift check (local catalog ↔ public.tl_def @ source_app='matrx-extend')`);
+  console.log(`Tool-DB drift check v2 — local catalog ↔ public.{tl_def, tl_executor, tl_def_surface}`);
   console.log(`  local catalog tools (advertised): ${totalLocal}  ${DIM}(${localAll.length} total; absorbed handlers excluded via CANONICAL_SURFACE)${RESET}`);
   console.log(`  DB tl_def rows:                   ${totalDb}`);
+  console.log(`  DB tl_executor rows (active):     ${executors.filter((e) => e.is_active).length}`);
+  console.log(`  DB tl_def_surface gates:          ${gates.length}`);
   console.log('');
 
   if (totalProblems === 0) {
@@ -301,6 +391,27 @@ async function main(): Promise<void> {
       console.log(`  ${RED}•${RESET} ${d.name}`);
       for (const issue of d.issues) console.log(`      ${DIM}-${RESET} ${issue}`);
     }
+    console.log('');
+  }
+
+  if (missingExecutor.length) {
+    console.log(`${RED}✗ Missing executor binding (${missingExecutor.length}) — advertised but no tl_executor row for surface='matrx-extend.browser':${RESET}`);
+    for (const n of missingExecutor) console.log(`    ${DIM}-${RESET} ${n}`);
+    console.log('  Server cannot route these calls — they will fail with "no executor".');
+    console.log('');
+  }
+
+  if (missingGate.length) {
+    console.log(`${RED}✗ Missing surface gate (${missingGate.length}) — no tl_def_surface row for chrome-extension/{assistant,pilot}:${RESET}`);
+    for (const n of missingGate) console.log(`    ${DIM}-${RESET} ${n}`);
+    console.log('  Discovery handler will not surface these to the LLM on either chat path.');
+    console.log('');
+  }
+
+  if (orphanGate.length) {
+    console.log(`${YELLOW}⚠ Orphan surface gates (${orphanGate.length}) — gates pointing at deleted/renamed tools:${RESET}`);
+    for (const n of orphanGate) console.log(`    ${DIM}-${RESET} ${n}`);
+    console.log('  Clean these from tl_def_surface (DELETE WHERE tool_id NOT IN tl_def).');
     console.log('');
   }
 

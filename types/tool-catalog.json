@@ -1,56 +1,41 @@
 {
-  "generated_at": "2026-05-19T19:33:24.866Z",
+  "generated_at": "2026-05-19T20:50:25.180Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
     "list_core_tools",
-    "browser_batch",
-    "read_page",
-    "find",
-    "get_active_tab",
-    "take_screenshot",
-    "navigate_active_tab",
-    "click_element",
-    "type_into_element",
-    "user",
-    "computer",
-    "navigate",
-    "list_page_tools",
-    "list_interact_tools",
-    "list_forms_tools",
+    "list_reading_tools",
+    "list_interaction_tools",
     "list_tabs_tools",
-    "list_history_tools",
-    "list_ai_tools",
-    "list_files_tools",
+    "list_capture_tools",
+    "list_chrome_tools",
+    "list_human_tools",
     "list_memory_tools",
-    "list_ask_tools",
-    "list_plan_tools",
-    "list_advanced_tools",
+    "list_ai_tools",
     "list_demos_tools",
     "list_guidance_tools",
-    "list_debug_tools",
-    "list_cookies_tools",
-    "list_webmcp_tools"
+    "list_devtools_tools",
+    "list_webmcp_tools",
+    "list_desktop_tools",
+    "browser_batch",
+    "parallel_for_each_tab"
   ],
   "assistant_bundle": [
     "list_browser_tools",
     "list_core_tools",
-    "list_page_tools",
-    "list_interact_tools",
-    "list_forms_tools",
+    "list_reading_tools",
+    "list_interaction_tools",
     "list_tabs_tools",
-    "list_history_tools",
-    "list_ai_tools",
-    "list_files_tools",
+    "list_capture_tools",
+    "list_chrome_tools",
+    "list_human_tools",
     "list_memory_tools",
-    "list_ask_tools",
-    "list_plan_tools",
-    "list_advanced_tools",
+    "list_ai_tools",
     "list_demos_tools",
     "list_guidance_tools",
-    "list_debug_tools",
-    "list_cookies_tools",
+    "list_devtools_tools",
     "list_webmcp_tools",
+    "list_desktop_tools",
     "browser_batch",
     "read_page",
     "find",
@@ -114,22 +99,19 @@
   "pilot_bundle": [
     "list_browser_tools",
     "list_core_tools",
-    "list_page_tools",
-    "list_interact_tools",
-    "list_forms_tools",
+    "list_reading_tools",
+    "list_interaction_tools",
     "list_tabs_tools",
-    "list_history_tools",
-    "list_ai_tools",
-    "list_files_tools",
+    "list_capture_tools",
+    "list_chrome_tools",
+    "list_human_tools",
     "list_memory_tools",
-    "list_ask_tools",
-    "list_plan_tools",
-    "list_advanced_tools",
+    "list_ai_tools",
     "list_demos_tools",
     "list_guidance_tools",
-    "list_debug_tools",
-    "list_cookies_tools",
+    "list_devtools_tools",
     "list_webmcp_tools",
+    "list_desktop_tools",
     "browser_batch",
     "read_page",
     "find",
@@ -256,22 +238,19 @@
   "pilot_with_privileged_bundle": [
     "list_browser_tools",
     "list_core_tools",
-    "list_page_tools",
-    "list_interact_tools",
-    "list_forms_tools",
+    "list_reading_tools",
+    "list_interaction_tools",
     "list_tabs_tools",
-    "list_history_tools",
-    "list_ai_tools",
-    "list_files_tools",
+    "list_capture_tools",
+    "list_chrome_tools",
+    "list_human_tools",
     "list_memory_tools",
-    "list_ask_tools",
-    "list_plan_tools",
-    "list_advanced_tools",
+    "list_ai_tools",
     "list_demos_tools",
     "list_guidance_tools",
-    "list_debug_tools",
-    "list_cookies_tools",
+    "list_devtools_tools",
     "list_webmcp_tools",
+    "list_desktop_tools",
     "browser_batch",
     "read_page",
     "find",
@@ -429,32 +408,38 @@
     {
       "category": "core",
       "label": "Core",
-      "description": "Always-available essentials: read the active page, take a screenshot, find elements by description, click, type, navigate, ask the user, batch multiple calls. The agent has these without calling any list tool.",
+      "description": "Always-on discovery + batching utilities. Includes `list_browser_tools` (the category index) and `browser_batch` (run multiple read-tier calls in one round trip). Use the category index to load tools on demand.",
       "list_tool": "list_core_tools",
       "admin_only": false,
       "tool_names": [
         "list_browser_tools",
         "list_core_tools",
+        "list_reading_tools",
+        "list_interaction_tools",
+        "list_tabs_tools",
+        "list_capture_tools",
+        "list_chrome_tools",
+        "list_human_tools",
+        "list_memory_tools",
+        "list_ai_tools",
+        "list_demos_tools",
+        "list_guidance_tools",
+        "list_devtools_tools",
+        "list_webmcp_tools",
+        "list_desktop_tools",
         "browser_batch",
-        "read_page",
-        "find",
-        "get_active_tab",
-        "take_screenshot",
-        "navigate_active_tab",
-        "click_element",
-        "type_into_element",
-        "user",
-        "computer",
-        "navigate"
+        "parallel_for_each_tab"
       ]
     },
     {
-      "category": "page",
-      "label": "Page understanding",
-      "description": "Deep page inspection: accessibility tree with reference IDs, natural-language element search, article-style text extraction, link discovery, computed styles, element-at-point, form-field discovery.",
-      "list_tool": "list_page_tools",
+      "category": "reading",
+      "label": "Read the page",
+      "description": "Understand what's on the active page. Accessibility-tree summary with reference IDs (`read_page`), natural-language element search (`find`), Ctrl+F text search, link discovery, full readable text, structured-data extraction (tables, microdata, JSON-LD), PDF reading, mutation observers, single-element deep inspection. Use these BEFORE any interaction so you know what's on the page.",
+      "list_tool": "list_reading_tools",
       "admin_only": false,
       "tool_names": [
+        "read_page",
+        "find",
         "get_page_text",
         "get_page_selection",
         "read_active_page",
@@ -467,52 +452,59 @@
         "get_element_details",
         "get_form_fields",
         "extract_table",
-        "screenshot_region",
         "mutation_watch",
         "extract_microdata",
-        "fetch_url_as_markdown"
+        "fetch_url_as_markdown",
+        "read_pdf"
       ]
     },
     {
-      "category": "interact",
-      "label": "Page interaction",
-      "description": "Beyond core click/type: scrolling, keyboard sequences (chords + named keys), hover, focus, blur, right-click, wait-for conditions.",
-      "list_tool": "list_interact_tools",
+      "category": "interaction",
+      "label": "Use the page",
+      "description": "Do something on the page. Mouse + keyboard (`computer`), form input + submission (`form_input`, `submit_form`), navigation, waiting for conditions, sleeping, scrolling, clipboard, file upload + drag-drop, CSS injection, JavaScript evaluation. Prefer `wait_for` over `sleep` when you have a concrete condition.",
+      "list_tool": "list_interaction_tools",
       "admin_only": false,
       "tool_names": [
+        "navigate_active_tab",
+        "click_element",
+        "type_into_element",
         "scroll_page",
         "wait_for",
+        "set_clipboard",
         "sleep",
         "press_keys",
         "hover_element",
         "focus_element",
         "blur_element",
         "right_click_element",
-        "wait_for"
-      ]
-    },
-    {
-      "category": "forms",
-      "label": "Forms",
-      "description": "Form-specific actions: select dropdown options, set checkboxes, pick radio buttons, submit forms, upload files into <input type=\"file\">.",
-      "list_tool": "list_forms_tools",
-      "admin_only": false,
-      "tool_names": [
         "select_dropdown_option",
         "set_checkbox",
         "set_radio",
         "submit_form",
         "file_upload",
-        "form_input"
+        "execute_javascript",
+        "inject_stylesheet",
+        "remove_stylesheet",
+        "get_clipboard",
+        "computer",
+        "form_input",
+        "navigate",
+        "clipboard",
+        "wait_for",
+        "upload_file",
+        "drop_file",
+        "stylesheet",
+        "evaluate_javascript"
       ]
     },
     {
       "category": "tabs",
       "label": "Tabs & windows",
-      "description": "List, switch, open, close, duplicate, pin, mute, reload tabs. Back/forward navigation, zoom, move tabs between windows. Create and manage tab groups.",
+      "description": "Manage browser tabs and groups. The `tabs` mega-tool covers list/create/close/switch/reload/pin/mute/duplicate/move/zoom and reading active-tab info. `tab_groups` manages named tab groups. `resize_window` for responsive testing. `chrome_tab_audio_inspect` finds the noisy tab.",
       "list_tool": "list_tabs_tools",
       "admin_only": false,
       "tool_names": [
+        "get_active_tab",
         "list_open_tabs",
         "get_tab_groups",
         "get_tab_info",
@@ -538,28 +530,78 @@
       ]
     },
     {
-      "category": "history",
-      "label": "Browser history & bookmarks",
-      "description": "Search bookmarks, search browsing history, list recent visits, list downloads, list and restore recently-closed tabs.",
-      "list_tool": "list_history_tools",
+      "category": "capture",
+      "label": "Save & capture",
+      "description": "Capture artifacts from the browser: file downloads, MHTML snapshots of a page, region screenshots, animated GIFs of user actions, video recordings of a tab. Pairs with the cloud-file system — most produce a `file_id` you can pass to later tools.",
+      "list_tool": "list_capture_tools",
       "admin_only": false,
+      "tool_names": [
+        "take_screenshot",
+        "list_downloads",
+        "download_url",
+        "cancel_download",
+        "chrome_save_page_as_mhtml",
+        "chrome_record_gif",
+        "chrome_record_tab_video",
+        "screenshot_region",
+        "downloads"
+      ]
+    },
+    {
+      "category": "chrome",
+      "label": "Chrome user data",
+      "description": "Access the user's personal Chrome data — cookies for any domain, bookmarks, browsing history, recently-closed sessions. Only the Chrome extension can read these (server-side Playwright runs a fresh browser context with none of the user's real data). All tools here are admin-restricted by default.",
+      "list_tool": "list_chrome_tools",
+      "admin_only": true,
       "tool_names": [
         "search_bookmarks",
         "list_bookmark_tree",
         "search_history",
         "list_recent_history",
-        "list_downloads",
         "list_recently_closed",
         "restore_recently_closed",
+        "get_cookies",
+        "set_cookie",
+        "delete_cookie",
+        "chrome_cookies",
         "chrome_bookmarks",
         "chrome_history",
         "chrome_recently_closed"
       ]
     },
     {
+      "category": "human",
+      "label": "Talk to the user",
+      "description": "Loop the human in. `user` (six modes: confirm/choice/choice_many/text/secret/notify), `update_plan` (propose a plan and wait for approval), `request_user_takeover` (hand control back so the user can do something the agent cannot), `tasks` (agent's live tasklist), `user_todos` (assign work to the user). Per-conversation state.",
+      "list_tool": "list_human_tools",
+      "admin_only": false,
+      "tool_names": [
+        "user",
+        "request_user_takeover",
+        "update_plan",
+        "tasks",
+        "user_todos"
+      ]
+    },
+    {
+      "category": "memory",
+      "label": "Agent memory",
+      "description": "Agent state that persists across turns. `scratchpad` is session-scoped (cleared on SW restart). `storage` is persistent agent-namespaced KV. `remember_for_domain` writes a domain memo that auto-surfaces in context when the user opens a tab on that domain.",
+      "list_tool": "list_memory_tools",
+      "admin_only": false,
+      "tool_names": [
+        "get_extension_storage",
+        "list_extension_storage",
+        "remember_for_domain",
+        "set_extension_storage",
+        "scratchpad",
+        "storage"
+      ]
+    },
+    {
       "category": "ai",
-      "label": "On-device AI (Gemini Nano)",
-      "description": "Free, offline, on-GPU AI tasks: summarize, classify, extract structured JSON, translate, detect language, proofread, describe images, check for prompt injection. Use these BEFORE expensive cloud calls when quality permits.",
+      "label": "On-device AI",
+      "description": "Chrome's built-in Gemini Nano and siblings. Free, offline, on-GPU. The `ai` mega-tool exposes summarize, classify, extract-JSON-by-schema, translate, detect-language, proofread, describe-image, and prompt-injection-check actions. Use these BEFORE expensive cloud calls when on-device quality permits.",
       "list_tool": "list_ai_tools",
       "admin_only": false,
       "tool_names": [
@@ -576,99 +618,9 @@
       ]
     },
     {
-      "category": "files",
-      "label": "Files & system",
-      "description": "Download files, archive page as MHTML, read/write clipboard, show system notifications.",
-      "list_tool": "list_files_tools",
-      "admin_only": false,
-      "tool_names": [
-        "set_clipboard",
-        "download_url",
-        "cancel_download",
-        "chrome_save_page_as_mhtml",
-        "get_clipboard",
-        "downloads",
-        "clipboard",
-        "upload_file",
-        "drop_file",
-        "read_pdf"
-      ]
-    },
-    {
-      "category": "memory",
-      "label": "Agent memory",
-      "description": "Persistent agent-namespaced storage that survives across runs. Use to remember user preferences, scratchpads, progress markers between conversations.",
-      "list_tool": "list_memory_tools",
-      "admin_only": false,
-      "tool_names": [
-        "get_extension_storage",
-        "list_extension_storage",
-        "remember_for_domain",
-        "set_extension_storage",
-        "scratchpad",
-        "storage"
-      ]
-    },
-    {
-      "category": "ask",
-      "label": "Ask the user",
-      "description": "Pause and ask the human: open question, multiple-choice, secret (masked) input, full takeover (CAPTCHA / login).",
-      "list_tool": "list_ask_tools",
-      "admin_only": false,
-      "tool_names": [
-        "request_user_takeover"
-      ]
-    },
-    {
-      "category": "plan",
-      "label": "Plan & tasks",
-      "description": "Propose a plan and wait for user approval (`update_plan`). Manage your own live tasklist (`tasks`) — add work items, set statuses (pending / in_progress / done / blocked / skipped) as you go; the list is surfaced to you in context on every turn so user edits flow back. Assign work back to the user (`user_todos`) — items the user sees in the panel and checks off; their status flows back to you too. Per-conversation. Approved plan steps auto-populate the tasklist.",
-      "list_tool": "list_plan_tools",
-      "admin_only": false,
-      "tool_names": [
-        "update_plan",
-        "tasks",
-        "user_todos"
-      ]
-    },
-    {
-      "category": "advanced",
-      "label": "Advanced (privileged)",
-      "description": "Privileged tools that always require user approval: arbitrary JavaScript execution, CSS injection, desktop-bridge commands. Use only when no purpose-built tool fits.",
-      "list_tool": "list_advanced_tools",
-      "admin_only": false,
-      "tool_names": [
-        "list_page_tools",
-        "list_interact_tools",
-        "list_forms_tools",
-        "list_tabs_tools",
-        "list_history_tools",
-        "list_ai_tools",
-        "list_files_tools",
-        "list_memory_tools",
-        "list_ask_tools",
-        "list_plan_tools",
-        "list_advanced_tools",
-        "list_demos_tools",
-        "list_guidance_tools",
-        "list_debug_tools",
-        "list_cookies_tools",
-        "list_webmcp_tools",
-        "execute_javascript",
-        "inject_stylesheet",
-        "remove_stylesheet",
-        "desktop_run_command",
-        "parallel_for_each_tab",
-        "chrome_record_gif",
-        "chrome_record_tab_video",
-        "stylesheet",
-        "evaluate_javascript"
-      ]
-    },
-    {
       "category": "demos",
-      "label": "Demos (record & replay)",
-      "description": "Record a user demonstration of a workflow once, then replay it on demand with parameter substitution. Self-healing selector chain (matrx-ref → id → testid → ARIA → text → CSS path) survives DOM churn between recording and replay. Use to automate repetitive multi-step workflows: form filling, expense reports, recurring searches, login flows. Replay is privileged — it can click, type, submit, and navigate, so it always asks the user to confirm.",
+      "label": "Record & replay",
+      "description": "Record a user demonstration of a workflow once, then replay it on demand with parameter substitution. Self-healing selector chain (matrx-ref → id → testid → ARIA → text → CSS path) survives DOM churn between recording and replay. Replay is privileged — always asks the user to confirm before clicking / typing / submitting.",
       "list_tool": "list_demos_tools",
       "admin_only": false,
       "tool_names": [
@@ -681,8 +633,8 @@
     },
     {
       "category": "guidance",
-      "label": "Guidance (user-saved clues)",
-      "description": "User-saved clues for the agent — domain-scoped notes, screenshots, GIFs, and demo references. Whenever the user opens a tab on a matching domain, the agent's context auto-includes any guidance the user has saved there. Tools here let the agent add more notes (`save_guidance_note`), browse what exists (`list_guidance` / `get_guidance_item`), and remove stale items (`delete_guidance_item`). Captured artifacts (screenshots, GIFs) are created via the Guidance sidepanel tab.",
+      "label": "User-saved hints",
+      "description": "Domain-scoped notes, screenshots, GIFs, and demo references the user has saved for the agent. Whenever the user opens a tab on a matching domain, the agent's context auto-includes the saved hints. Tools here let the agent add notes, browse what exists, and remove stale items.",
       "list_tool": "list_guidance_tools",
       "admin_only": false,
       "tool_names": [
@@ -693,10 +645,10 @@
       ]
     },
     {
-      "category": "debug",
-      "label": "Debugger / DevTools (admin)",
-      "description": "Chrome DevTools Protocol: full-page screenshots, accessibility tree dumps, network request capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print, console message reads. Plus host diagnostics: CPU / memory / display info and active declarativeNetRequest blocking rules.",
-      "list_tool": "list_debug_tools",
+      "category": "devtools",
+      "label": "DevTools (admin)",
+      "description": "Chrome DevTools Protocol + host diagnostics. CDP-backed full-page screenshots, accessibility-tree dumps, network/console capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print. Plus host info (CPU/memory/display, declarativeNetRequest rules). All admin-gated.",
+      "list_tool": "list_devtools_tools",
       "admin_only": true,
       "tool_names": [
         "cdp_attach",
@@ -724,22 +676,9 @@
       ]
     },
     {
-      "category": "cookies",
-      "label": "Cookies (admin)",
-      "description": "Read, set, and delete cookies for any domain.",
-      "list_tool": "list_cookies_tools",
-      "admin_only": true,
-      "tool_names": [
-        "get_cookies",
-        "set_cookie",
-        "delete_cookie",
-        "chrome_cookies"
-      ]
-    },
-    {
       "category": "webmcp",
-      "label": "WebMCP (admin)",
-      "description": "Discover and call tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+).",
+      "label": "Page-registered tools",
+      "description": "Discover and call tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). The `chrome_webmcp` mega-tool lets the agent enumerate the page's tool catalog and invoke specific tools. Admin-only experimental capability.",
       "list_tool": "list_webmcp_tools",
       "admin_only": true,
       "tool_names": [
@@ -747,6 +686,16 @@
         "webmcp_list_page_tools",
         "webmcp_call_page_tool",
         "chrome_webmcp"
+      ]
+    },
+    {
+      "category": "desktop",
+      "label": "Desktop bridge",
+      "description": "Bridge to matrx-local — the desktop engine. `desktop_run_command` invokes commands matrx-local exposes (file ops, system info, window control, etc.). Fails fast when the bridge isn't connected.",
+      "list_tool": "list_desktop_tools",
+      "admin_only": false,
+      "tool_names": [
+        "desktop_run_command"
       ]
     }
   ],
@@ -779,7 +728,7 @@
     },
     {
       "name": "list_core_tools",
-      "description": "Full schemas for tools in the \"Core\" category (core). Always-available essentials: read the active page, take a screenshot, find elements by description, click, type, navigate, ask the user, batch multiple calls. The agent has these without calling any list tool. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "description": "Full schemas for tools in the \"Core\" category (core). Always-on discovery + batching utilities. Includes `list_browser_tools` (the category index) and `browser_batch` (run multiple read-tier calls in one round trip). Use the category index to load tools on demand. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
       "category": "core",
       "input_schema": {
@@ -804,10 +753,10 @@
       ]
     },
     {
-      "name": "list_page_tools",
-      "description": "Full schemas for tools in the \"Page understanding\" category (page). Deep page inspection: accessibility tree with reference IDs, natural-language element search, article-style text extraction, link discovery, computed styles, element-at-point, form-field discovery. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "name": "list_reading_tools",
+      "description": "Full schemas for tools in the \"Read the page\" category (reading). Understand what's on the active page. Accessibility-tree summary with reference IDs (`read_page`), natural-language element search (`find`), Ctrl+F text search, link discovery, full readable text, structured-data extraction (tables, microdata, JSON-LD), PDF reading, mutation observers, single-element deep inspection. Use these BEFORE any interaction so you know what's on the page. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
-      "category": "advanced",
+      "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -830,36 +779,10 @@
       ]
     },
     {
-      "name": "list_interact_tools",
-      "description": "Full schemas for tools in the \"Page interaction\" category (interact). Beyond core click/type: scrolling, keyboard sequences (chords + named keys), hover, focus, blur, right-click, wait-for conditions. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "name": "list_interaction_tools",
+      "description": "Full schemas for tools in the \"Use the page\" category (interaction). Do something on the page. Mouse + keyboard (`computer`), form input + submission (`form_input`, `submit_form`), navigation, waiting for conditions, sleeping, scrolling, clipboard, file upload + drag-drop, CSS injection, JavaScript evaluation. Prefer `wait_for` over `sleep` when you have a concrete condition. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
-      "category": "advanced",
-      "input_schema": {
-        "type": "object",
-        "properties": {},
-        "additionalProperties": false,
-        "default": {},
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
-        "assistant",
-        "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
-      "name": "list_forms_tools",
-      "description": "Full schemas for tools in the \"Forms\" category (forms). Form-specific actions: select dropdown options, set checkboxes, pick radio buttons, submit forms, upload files into <input type=\"file\">. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
-      "tier": "read",
-      "category": "advanced",
+      "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -883,9 +806,9 @@
     },
     {
       "name": "list_tabs_tools",
-      "description": "Full schemas for tools in the \"Tabs & windows\" category (tabs). List, switch, open, close, duplicate, pin, mute, reload tabs. Back/forward navigation, zoom, move tabs between windows. Create and manage tab groups. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "description": "Full schemas for tools in the \"Tabs & windows\" category (tabs). Manage browser tabs and groups. The `tabs` mega-tool covers list/create/close/switch/reload/pin/mute/duplicate/move/zoom and reading active-tab info. `tab_groups` manages named tab groups. `resize_window` for responsive testing. `chrome_tab_audio_inspect` finds the noisy tab. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
-      "category": "advanced",
+      "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -908,10 +831,10 @@
       ]
     },
     {
-      "name": "list_history_tools",
-      "description": "Full schemas for tools in the \"Browser history & bookmarks\" category (history). Search bookmarks, search browsing history, list recent visits, list downloads, list and restore recently-closed tabs. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "name": "list_capture_tools",
+      "description": "Full schemas for tools in the \"Save & capture\" category (capture). Capture artifacts from the browser: file downloads, MHTML snapshots of a page, region screenshots, animated GIFs of user actions, video recordings of a tab. Pairs with the cloud-file system — most produce a `file_id` you can pass to later tools. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
-      "category": "advanced",
+      "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -934,10 +857,10 @@
       ]
     },
     {
-      "name": "list_ai_tools",
-      "description": "Full schemas for tools in the \"On-device AI (Gemini Nano)\" category (ai). Free, offline, on-GPU AI tasks: summarize, classify, extract structured JSON, translate, detect language, proofread, describe images, check for prompt injection. Use these BEFORE expensive cloud calls when quality permits. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "name": "list_chrome_tools",
+      "description": "Full schemas for tools in the \"Chrome user data\" category (chrome). Access the user's personal Chrome data — cookies for any domain, bookmarks, browsing history, recently-closed sessions. Only the Chrome extension can read these (server-side Playwright runs a fresh browser context with none of the user's real data). All tools here are admin-restricted by default. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
-      "category": "advanced",
+      "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -947,7 +870,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
-      "admin_only": false,
+      "admin_only": true,
       "surface_bundles": [
         "assistant",
         "pilot",
@@ -960,10 +883,10 @@
       ]
     },
     {
-      "name": "list_files_tools",
-      "description": "Full schemas for tools in the \"Files & system\" category (files). Download files, archive page as MHTML, read/write clipboard, show system notifications. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "name": "list_human_tools",
+      "description": "Full schemas for tools in the \"Talk to the user\" category (human). Loop the human in. `user` (six modes: confirm/choice/choice_many/text/secret/notify), `update_plan` (propose a plan and wait for approval), `request_user_takeover` (hand control back so the user can do something the agent cannot), `tasks` (agent's live tasklist), `user_todos` (assign work to the user). Per-conversation state. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
-      "category": "advanced",
+      "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -987,9 +910,9 @@
     },
     {
       "name": "list_memory_tools",
-      "description": "Full schemas for tools in the \"Agent memory\" category (memory). Persistent agent-namespaced storage that survives across runs. Use to remember user preferences, scratchpads, progress markers between conversations. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "description": "Full schemas for tools in the \"Agent memory\" category (memory). Agent state that persists across turns. `scratchpad` is session-scoped (cleared on SW restart). `storage` is persistent agent-namespaced KV. `remember_for_domain` writes a domain memo that auto-surfaces in context when the user opens a tab on that domain. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
-      "category": "advanced",
+      "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -1012,62 +935,10 @@
       ]
     },
     {
-      "name": "list_ask_tools",
-      "description": "Full schemas for tools in the \"Ask the user\" category (ask). Pause and ask the human: open question, multiple-choice, secret (masked) input, full takeover (CAPTCHA / login). Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "name": "list_ai_tools",
+      "description": "Full schemas for tools in the \"On-device AI\" category (ai). Chrome's built-in Gemini Nano and siblings. Free, offline, on-GPU. The `ai` mega-tool exposes summarize, classify, extract-JSON-by-schema, translate, detect-language, proofread, describe-image, and prompt-injection-check actions. Use these BEFORE expensive cloud calls when on-device quality permits. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
-      "category": "advanced",
-      "input_schema": {
-        "type": "object",
-        "properties": {},
-        "additionalProperties": false,
-        "default": {},
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
-        "assistant",
-        "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
-      "name": "list_plan_tools",
-      "description": "Full schemas for tools in the \"Plan & tasks\" category (plan). Propose a plan and wait for user approval (`update_plan`). Manage your own live tasklist (`tasks`) — add work items, set statuses (pending / in_progress / done / blocked / skipped) as you go; the list is surfaced to you in context on every turn so user edits flow back. Assign work back to the user (`user_todos`) — items the user sees in the panel and checks off; their status flows back to you too. Per-conversation. Approved plan steps auto-populate the tasklist. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
-      "tier": "read",
-      "category": "advanced",
-      "input_schema": {
-        "type": "object",
-        "properties": {},
-        "additionalProperties": false,
-        "default": {},
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
-        "assistant",
-        "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
-      "name": "list_advanced_tools",
-      "description": "Full schemas for tools in the \"Advanced (privileged)\" category (advanced). Privileged tools that always require user approval: arbitrary JavaScript execution, CSS injection, desktop-bridge commands. Use only when no purpose-built tool fits. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
-      "tier": "read",
-      "category": "advanced",
+      "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -1091,9 +962,9 @@
     },
     {
       "name": "list_demos_tools",
-      "description": "Full schemas for tools in the \"Demos (record & replay)\" category (demos). Record a user demonstration of a workflow once, then replay it on demand with parameter substitution. Self-healing selector chain (matrx-ref → id → testid → ARIA → text → CSS path) survives DOM churn between recording and replay. Use to automate repetitive multi-step workflows: form filling, expense reports, recurring searches, login flows. Replay is privileged — it can click, type, submit, and navigate, so it always asks the user to confirm. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "description": "Full schemas for tools in the \"Record & replay\" category (demos). Record a user demonstration of a workflow once, then replay it on demand with parameter substitution. Self-healing selector chain (matrx-ref → id → testid → ARIA → text → CSS path) survives DOM churn between recording and replay. Replay is privileged — always asks the user to confirm before clicking / typing / submitting. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
-      "category": "advanced",
+      "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -1117,9 +988,9 @@
     },
     {
       "name": "list_guidance_tools",
-      "description": "Full schemas for tools in the \"Guidance (user-saved clues)\" category (guidance). User-saved clues for the agent — domain-scoped notes, screenshots, GIFs, and demo references. Whenever the user opens a tab on a matching domain, the agent's context auto-includes any guidance the user has saved there. Tools here let the agent add more notes (`save_guidance_note`), browse what exists (`list_guidance` / `get_guidance_item`), and remove stale items (`delete_guidance_item`). Captured artifacts (screenshots, GIFs) are created via the Guidance sidepanel tab. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "description": "Full schemas for tools in the \"User-saved hints\" category (guidance). Domain-scoped notes, screenshots, GIFs, and demo references the user has saved for the agent. Whenever the user opens a tab on a matching domain, the agent's context auto-includes the saved hints. Tools here let the agent add notes, browse what exists, and remove stale items. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
-      "category": "advanced",
+      "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -1142,36 +1013,10 @@
       ]
     },
     {
-      "name": "list_debug_tools",
-      "description": "Full schemas for tools in the \"Debugger / DevTools (admin)\" category (debug). Chrome DevTools Protocol: full-page screenshots, accessibility tree dumps, network request capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print, console message reads. Plus host diagnostics: CPU / memory / display info and active declarativeNetRequest blocking rules. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "name": "list_devtools_tools",
+      "description": "Full schemas for tools in the \"DevTools (admin)\" category (devtools). Chrome DevTools Protocol + host diagnostics. CDP-backed full-page screenshots, accessibility-tree dumps, network/console capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print. Plus host info (CPU/memory/display, declarativeNetRequest rules). All admin-gated. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
-      "category": "advanced",
-      "input_schema": {
-        "type": "object",
-        "properties": {},
-        "additionalProperties": false,
-        "default": {},
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [],
-      "required_optional_permissions": [],
-      "admin_only": true,
-      "surface_bundles": [
-        "assistant",
-        "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
-      "name": "list_cookies_tools",
-      "description": "Full schemas for tools in the \"Cookies (admin)\" category (cookies). Read, set, and delete cookies for any domain. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
-      "tier": "read",
-      "category": "advanced",
+      "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -1195,9 +1040,9 @@
     },
     {
       "name": "list_webmcp_tools",
-      "description": "Full schemas for tools in the \"WebMCP (admin)\" category (webmcp). Discover and call tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "description": "Full schemas for tools in the \"Page-registered tools\" category (webmcp). Discover and call tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). The `chrome_webmcp` mega-tool lets the agent enumerate the page's tool catalog and invoke specific tools. Admin-only experimental capability. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
       "tier": "read",
-      "category": "advanced",
+      "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -1208,6 +1053,32 @@
       "required_permissions": [],
       "required_optional_permissions": [],
       "admin_only": true,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
+      ]
+    },
+    {
+      "name": "list_desktop_tools",
+      "description": "Full schemas for tools in the \"Desktop bridge\" category (desktop). Bridge to matrx-local — the desktop engine. `desktop_run_command` invokes commands matrx-local exposes (file ops, system info, window control, etc.). Fails fast when the bridge isn't connected. Returns { count, tools: [{ name, description, tier, input_schema }] }.",
+      "tier": "read",
+      "category": "core",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
       "surface_bundles": [
         "assistant",
         "pilot",
@@ -1275,7 +1146,7 @@
       "name": "read_page",
       "description": "Return an accessibility-style summary of the active page. Each interactive element gets a reference id (`ref:N`) you can pass to click_element / type_into_element / scroll_into_view / etc. instead of a CSS selector — refs are stable across DOM mutations within the same page lifetime. Pass interactive_only=false to include headings, paragraphs, and labels too. Refs invalidate on navigation; call this again after navigating. Returns { url, title, count, elements: [{ ref, role, name, tag, text, visible, bounds? }] }.",
       "tier": "read",
-      "category": "core",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -1345,7 +1216,7 @@
       "name": "find",
       "description": "Find elements on the active page by natural-language description (\"the sign-in button\", \"the search input near the top\", \"the paragraph about pricing\"). Returns matching refs you can immediately pass to interaction tools. Uses on-device AI for matching when available; falls back to text similarity. Reuses any fresh `read_page` scrape — call it once before a series of finds. By default also searches non-interactive content (headings/paragraphs) so you can locate sections by topic; set `include_content:false` to restrict to clickable elements only. Returns { matches: [{ ref, name, role, score, reason }] }.",
       "tier": "read",
-      "category": "core",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -1400,7 +1271,7 @@
       "name": "get_page_text",
       "description": "Extract clean readable text from the active page — strips chrome / nav / ads / scripts / hidden DOM. Lighter than read_active_page (which returns full markdown + media + structured data). Best for \"read me this article\" style asks. Returns { url, title, byline, text, char_count }.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -1439,7 +1310,7 @@
       "name": "get_active_tab",
       "description": "Return information about the user’s currently focused browser tab: url, title, tab id, window id, status, favicon.",
       "tier": "read",
-      "category": "core",
+      "category": "tabs",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -1467,7 +1338,7 @@
       "name": "get_page_selection",
       "description": "Return the user’s currently selected text on the active tab. Empty string if nothing is selected.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -1496,7 +1367,7 @@
       "name": "read_active_page",
       "description": "Read the active tab and return a structured snapshot: cleaned article (markdown + html), title, byline, full image/video/link/audio lists, JSON-LD, schema types, SEO signals (headings, meta, alt-text coverage). Pass deep=true to scroll the page top→bottom first to trigger lazy-loaded images and infinite-scroll content before reading. Use this whenever you need to understand or quote the page.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -1530,7 +1401,7 @@
       "name": "take_screenshot",
       "description": "Capture the active tab as an image, optimized for vision-API consumption. `mode: 'visible'` (default) captures the current viewport via captureVisibleTab. `mode: 'full_page'` scroll-and-stitches the full scrollable height via captureVisibleTab + OffscreenCanvas (no extra permissions; ~5s for a 10-screen page; position:fixed elements appear on every tile). Default profile 'auto' returns a 'max useful' master image (JPEG q=88 @ 2576px — Opus 4.7's ceiling, the highest any current model uses) at ~600–900 KB; the server is expected to do per-provider final sizing from that master. Use 'auto-final' if the server is a passthrough (1568px JPEG q=85 — fits every provider). Provider-specific profiles when the server already knows the model: 'anthropic-default'/'anthropic-hires', 'openai-original'/'openai-high'/'openai-low', 'gemini-screenshot'/'gemini-overview'/'gemini-2.5-default'. Special-purpose: 'ocr-heavy' (high-q for fine text), 'lossless' (PNG, archival only). Returns { ok, mode, media_type, format, width, height, source_width, source_height, image_base64, byte_length, resized, profile, est_tokens, tile_count?, truncated? }. The `media_type` field is ready for direct use in an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
       "tier": "read",
-      "category": "core",
+      "category": "capture",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -1615,7 +1486,7 @@
       "name": "query_elements",
       "description": "Run document.querySelectorAll on the active tab and return up to `limit` matches as { tag, text, attrs }. `attrs` is a list of attribute names to extract. Use this to find CSS selectors that subsequent action tools can target.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -1663,7 +1534,7 @@
       "name": "find_text_on_page",
       "description": "Ctrl+F-style literal text search within a tab. Returns matches with surrounding context + the nearest enclosing element selector. Pass regex=true to use a regular expression. Use when read_active_page would be overkill — e.g. \"where on this page does it say 'click here to download'?\". For natural-language search, use find instead.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -1722,7 +1593,7 @@
       "name": "get_page_links",
       "description": "Return anchor links from the active tab. Each entry is { href, text, title, rel, target }. Filter by href substring, link text substring, or same-origin only. Lighter than read_active_page when you only need link discovery.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -1768,7 +1639,7 @@
       "name": "get_computed_style",
       "description": "Read computed CSS for an element. Pass `properties` to limit (e.g. [\"color\",\"font-size\"]) — without it returns a useful default subset (color, background, font, padding, margin, border, display, position, dimensions). Useful for debugging visual issues or matching styles.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -1810,7 +1681,7 @@
       "name": "get_element_at_point",
       "description": "Identify the DOM element at viewport coordinates (x, y). Returns tag, text, attrs, and a stable selector. Useful when correlating something seen in a screenshot to a clickable element.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -1849,7 +1720,7 @@
       "name": "inspect_element",
       "description": "Deep snapshot of a single element: tag, text, full attributes, bounding rect, key computed styles, ancestor chain (tag + class), and child counts. Useful when a click or type call is failing and you need to understand why.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -1885,7 +1756,7 @@
       "name": "get_element_details",
       "description": "Deep inspection of a single element by ref: full attribute set, bounding box, visibility, optional computed styles and innerHTML. Use when read_page's summary isn't enough — e.g. reading data-* attributes or checking if something is hidden by CSS. Avoids needing evaluate_javascript for routine introspection. innerHTML is capped at 50 KB; response includes truncated:true when exceeded.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -2031,7 +1902,7 @@
       "name": "search_bookmarks",
       "description": "Search the user's bookmarks by free-text query (matches title and URL). Returns id, title, url, parentId, dateAdded. Use this to find references the user has saved before recommending a fresh web search.",
       "tier": "read",
-      "category": "history",
+      "category": "chrome",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -2072,7 +1943,7 @@
       "name": "list_bookmark_tree",
       "description": "Return the bookmarks folder hierarchy starting at root (or a specific folder_id). Walks up to max_depth levels deep. Each node has { id, title, url|null, children?: [...] }.",
       "tier": "read",
-      "category": "history",
+      "category": "chrome",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -2110,7 +1981,7 @@
       "name": "search_history",
       "description": "Search the user's browsing history. Returns visit metadata for matching pages: { url, title, lastVisitTime, visitCount, typedCount }. Use to recall \"what was that thing I was reading yesterday about X?\" without forcing a new web search.",
       "tier": "read",
-      "category": "history",
+      "category": "chrome",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -2156,7 +2027,7 @@
       "name": "list_recent_history",
       "description": "Return the most recent N pages the user visited within the last `minutes`. Sorted newest-first. Useful as low-cost context for \"what is the user doing right now?\".",
       "tier": "read",
-      "category": "history",
+      "category": "chrome",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -2197,7 +2068,7 @@
       "name": "list_downloads",
       "description": "List recent file downloads. Each entry is { id, filename, url, mime, totalBytes, state, startTime }. Useful to verify a download_url tool call landed.",
       "tier": "read",
-      "category": "history",
+      "category": "capture",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -2243,7 +2114,7 @@
       "name": "get_form_fields",
       "description": "Discover forms on the active tab. For each form, returns id, action, method, and a list of fields: { name, type, value, label, required, placeholder, selector }. Use this BEFORE typing to find the right selector and label so you fill the right field.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -2711,7 +2582,7 @@
       "name": "navigate_active_tab",
       "description": "Navigate the active tab to a URL. Waits for status=complete before resolving (timeout 30s). Returns { url, title, status }.",
       "tier": "action",
-      "category": "core",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -2746,7 +2617,7 @@
       "name": "click_element",
       "description": "Click an element on the active tab. Pass `ref` from read_page (preferred — stable across DOM mutations) OR a CSS `selector`. When multiple match a selector, use `nth`. Returns { ok, tag, text } or { ok:false, reason }.",
       "tier": "action",
-      "category": "core",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -2787,7 +2658,7 @@
       "name": "type_into_element",
       "description": "Set the value of an input / textarea / contenteditable. Pass `ref` from read_page (preferred) OR a CSS `selector`. By default clears the field first and dispatches input + change events so React/Vue see the update.",
       "tier": "action",
-      "category": "core",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -2837,7 +2708,7 @@
       "name": "scroll_page",
       "description": "Scroll the active tab. direction=\"top\"/\"bottom\" go to extremes; \"into-view\" scrolls a selector or `ref` (from read_page) into view; \"by\" scrolls by delta_y pixels.",
       "tier": "action",
-      "category": "interact",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -2886,7 +2757,7 @@
       "name": "wait_for",
       "description": "Wait for a condition on the active tab — either the page to fully load (ready_state=true) and/or a selector to appear. Returns { ok, waited_ms }.",
       "tier": "action",
-      "category": "interact",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -2926,7 +2797,7 @@
       "name": "set_clipboard",
       "description": "Write text to the system clipboard.",
       "tier": "action",
-      "category": "files",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -2961,7 +2832,7 @@
       "name": "sleep",
       "description": "Pause the agent for `ms` milliseconds (50ms–5min). Use when waiting for time-based things the page does on its own — a video to play before capturing transcript, an animation to finish, a debounced search to settle, a rate-limit window to clear. The server is non-blocking during the pause; only the agent waits. Prefer `wait_for` when you have a concrete condition (selector or readyState) — `sleep` is for unconditional waits. Returns { ok, slept_ms }.",
       "tier": "action",
-      "category": "interact",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -2998,7 +2869,7 @@
       "name": "press_keys",
       "description": "Send keyboard input to a page. Pass either a literal string (\"hello world\") or named keys/chords (\"Enter\", \"Control+A\", \"Tab\", \"ArrowDown ArrowDown Enter\"). When `selector` or `ref` is provided the tool focuses that element first. Useful for triggering submit-on-Enter, navigating menus, dismissing dialogs, and using app keyboard shortcuts.",
       "tier": "action",
-      "category": "interact",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -3045,7 +2916,7 @@
       "name": "hover_element",
       "description": "Trigger hover on an element by dispatching mouseenter/mouseover/mousemove events. Pass `ref` from read_page or a CSS `selector`. Reveals hover-only tooltips, dropdown menus, or sub-navigation.",
       "tier": "action",
-      "category": "interact",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -3081,7 +2952,7 @@
       "name": "focus_element",
       "description": "Move keyboard focus to an element. Pass `ref` from read_page or a `selector`. Use before press_keys when no selector is supplied to that tool.",
       "tier": "action",
-      "category": "interact",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -3117,7 +2988,7 @@
       "name": "blur_element",
       "description": "Remove focus from an element. With no selector, blurs whatever currently has focus. Useful before press_keys when shortcuts must hit document instead of an input.",
       "tier": "action",
-      "category": "interact",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -3149,7 +3020,7 @@
       "name": "right_click_element",
       "description": "Dispatch a contextmenu event on an element (synthetic right-click). Note: most apps respond by showing their own custom menu in the page DOM. Chrome's native context menu cannot be opened by extension scripts.",
       "tier": "action",
-      "category": "interact",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -3185,7 +3056,7 @@
       "name": "select_dropdown_option",
       "description": "Choose an option in a <select> element. Pass exactly ONE of: value (the option's value attr), label (the visible text), or index (0-based). Dispatches change + input events for framework apps.",
       "tier": "action",
-      "category": "forms",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -3231,7 +3102,7 @@
       "name": "set_checkbox",
       "description": "Set a checkbox to checked or unchecked, dispatching click + change events so frameworks see the toggle. Use for both <input type=\"checkbox\"> and ARIA-styled toggles where role=\"checkbox\".",
       "tier": "action",
-      "category": "forms",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -3273,7 +3144,7 @@
       "name": "set_radio",
       "description": "Pick a radio button from a group. Pass selector pointing at the group container OR any radio input in it, then exactly ONE of value/label/index.",
       "tier": "action",
-      "category": "forms",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -3319,7 +3190,7 @@
       "name": "submit_form",
       "description": "Submit a form. By default the tool clicks the form's primary submit button (so HTML5 validation + framework handlers run). Set via_button=false to fall back to HTMLFormElement.submit() — skips validation but works for form elements that lack a button.",
       "tier": "action",
-      "category": "forms",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -3355,7 +3226,7 @@
       "name": "file_upload",
       "description": "Attach files to an `<input type=\"file\">` element by selector or ref. IMPORTANT: clicking a file input opens a native dialog the agent cannot see — use this tool instead. Each file in `files` is { name, mime, base64 }. Dispatches `change` so frameworks see the upload. Returns { ok, file_count, names }.",
       "tier": "action",
-      "category": "forms",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4058,7 +3929,7 @@
       "name": "download_url",
       "description": "Download a file from a URL into the user's default downloads folder. Returns { ok, download_id, final_filename }. Use save_as=true to surface the Save dialog (good for ambiguous filenames).",
       "tier": "action",
-      "category": "files",
+      "category": "capture",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4108,7 +3979,7 @@
       "name": "cancel_download",
       "description": "Cancel an in-progress download by its download_id.",
       "tier": "action",
-      "category": "files",
+      "category": "capture",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4186,7 +4057,7 @@
       "name": "list_recently_closed",
       "description": "List recently-closed tabs and windows the user can restore. Each entry has { id, last_modified, tab? | window? }. Useful when the user says \"what was that page I just closed?\".",
       "tier": "read",
-      "category": "history",
+      "category": "chrome",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4221,7 +4092,7 @@
       "name": "restore_recently_closed",
       "description": "Restore a recently-closed tab or window. Pass `session_id` from list_recently_closed, or omit to restore the most recent.",
       "tier": "action",
-      "category": "history",
+      "category": "chrome",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4252,7 +4123,7 @@
       "name": "chrome_save_page_as_mhtml",
       "description": "Snapshot a tab as a self-contained MHTML archive (HTML + every resource inlined). Returns base64 MHTML data. Use for: archival, sharing a frozen page, feeding the agent a stable snapshot it can reanalyze later.",
       "tier": "action",
-      "category": "files",
+      "category": "capture",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4281,7 +4152,7 @@
       "name": "get_cookies",
       "description": "Read cookies for a URL or domain. Pass `url` (preferred — narrower) OR `domain`, optionally also `name` to filter to one cookie. Returns a list of { name, value, domain, path, secure, httpOnly, sameSite, expirationDate }. Personal data — admin only by default.",
       "tier": "read",
-      "category": "cookies",
+      "category": "chrome",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4319,7 +4190,7 @@
       "name": "set_cookie",
       "description": "Write a cookie. Privileged because it can hijack a user session (CSRF / token-overwrite). Always prompts. Returns the set cookie or { ok:false, reason }.",
       "tier": "privileged",
-      "category": "cookies",
+      "category": "chrome",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4386,7 +4257,7 @@
       "name": "delete_cookie",
       "description": "Delete a cookie by url + name.",
       "tier": "privileged",
-      "category": "cookies",
+      "category": "chrome",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4424,7 +4295,7 @@
       "name": "cdp_attach",
       "description": "Attach a Chrome DevTools Protocol session to a tab (defaults to active tab). Required before any other cdp_* tool can run on that tab. Chrome will show a \"is being debugged\" banner while attached. The session auto-cleans up when the agent run ends; you can also call cdp_detach explicitly.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4454,7 +4325,7 @@
       "name": "cdp_detach",
       "description": "Close the CDP session on a tab (defaults to active tab). Removes the debug banner.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4482,7 +4353,7 @@
       "name": "cdp_attached_tabs",
       "description": "Return the list of tab ids currently attached via CDP.",
       "tier": "read",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -4508,7 +4379,7 @@
       "name": "cdp_full_page_screenshot",
       "description": "Capture the FULL page (not just viewport) as base64. Use instead of take_screenshot for whole-article / long-form pages. Pass a `profile` to optimize for a specific vision model (same profile names as take_screenshot). The tool auto-computes capture_scale so the long edge lands at the profile's target. Returns { ok, media_type, format, image_base64, byte_length, capture_scale, profile, est_tokens }. The `media_type` field is ready to drop into an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4578,7 +4449,7 @@
       "name": "cdp_a11y_tree",
       "description": "Dump the accessibility tree of the active tab via Accessibility.getFullAXTree. Each node has { role, name, value, description, properties, children }. Use INSTEAD of read_active_page when you want a clean semantic view of the page — it omits decorative DOM and surfaces aria-roles, button labels, form-field associations directly. Best for vision-free reasoning.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4614,7 +4485,7 @@
       "name": "cdp_input_click_xy",
       "description": "Synthesize a real mouse click at viewport coordinates (x, y) via Input.dispatchMouseEvent. Bypasses event-handler shadowing, works through shadow DOM and cross-origin iframes (OOPIFs) — the most reliable click in existence. Use when click_element fails because the page intercepts synthetic clicks.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4668,7 +4539,7 @@
       "name": "cdp_input_type",
       "description": "Type literal text into whatever element currently has focus, via Input.insertText. Fires beforeinput / input / compositionend events correctly so React-controlled inputs accept it. Use after focus_element + when type_into_element fails.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4703,7 +4574,7 @@
       "name": "cdp_network_capture_start",
       "description": "Begin capturing every Network event on a tab (default: active). After this, navigate or interact with the page; calls accumulate in a buffer. Use cdp_network_capture_drain to read them. Use cdp_network_capture_stop when finished.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4733,7 +4604,7 @@
       "name": "cdp_network_capture_drain",
       "description": "Drain captured Network events from a tab's buffer. Each entry has { request_id, url, method, status, mime_type, request_headers, response_headers, finished, failed, ts_ms }. Use cdp_network_get_body with a request_id to fetch a response body lazily.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4770,7 +4641,7 @@
       "name": "cdp_network_capture_stop",
       "description": "Stop capturing Network events on a tab and clear its buffer.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4798,7 +4669,7 @@
       "name": "cdp_network_get_body",
       "description": "Fetch the response body for a captured request, by request_id (from cdp_network_capture_drain). Returns { body, base64_encoded }. Bodies are large so we don't buffer them eagerly.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4832,7 +4703,7 @@
       "name": "cdp_print_pdf",
       "description": "Print a tab to PDF via Page.printToPDF. Returns base64 PDF data. Useful for archival, sharing, or feeding the PDF to a downstream model.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4870,7 +4741,7 @@
       "name": "cdp_perf_metrics",
       "description": "Read Performance.getMetrics for a tab. Returns { Documents, Frames, JSHeapUsedSize, LayoutCount, RecalcStyleCount, ScriptDuration, TaskDuration, … }. Useful when an action triggered chaos and you need to measure it.",
       "tier": "read",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4902,7 +4773,7 @@
       "name": "cdp_emulate_device",
       "description": "Override viewport metrics + user agent on a tab. Use to view a page as iPhone Safari, Pixel Chrome, etc., without leaving the user's window. Reset by calling cdp_clear_emulation.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4955,7 +4826,7 @@
       "name": "cdp_clear_emulation",
       "description": "Clear device + UA overrides on a tab.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -4983,7 +4854,7 @@
       "name": "read_console_messages",
       "description": "Read console messages from a tab. Auto-starts CDP console capture if not already running. Filter by level, text regex, or use errors_only=true. Returns { count, messages: [{ level, text, url, line, ts_ms }] }. Console capture stays on until cdp_detach or tab close.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5044,7 +4915,7 @@
       "name": "read_network_requests",
       "description": "Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cross-domain navigation. Filter with url_pattern to keep output manageable. Response bodies are NOT included by default — use get_request_body to fetch a specific body. The buffer is per-tab and bounded; old entries fall off the back.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5093,7 +4964,7 @@
       "name": "get_request_body",
       "description": "Fetch the response body for a specific request seen by read_network_requests. Returns inline text. Pass request_id from a prior drain.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5127,7 +4998,7 @@
       "name": "get_system_info",
       "description": "Snapshot of the host device: CPU (architecture, model, core count, per-core load), memory (total / available bytes), and connected displays (id, name, bounds, DPR, primary flag). Useful for fan-out sizing, screenshot scaling, and memory-pressure-aware pagination. Read-only and admin-gated.",
       "tier": "read",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -5155,7 +5026,7 @@
       "name": "list_network_blocking_rules",
       "description": "List the active declarativeNetRequest rules for this extension: dynamic (persisted across reloads) and session (in-memory only). Diagnostic for \"why is request X being blocked / redirected?\" when our own privacy-respecting blocking rules are in effect. Read-only, admin-gated, returns rule definitions only — does not surface any traffic.",
       "tier": "read",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -5275,7 +5146,7 @@
       "name": "user",
       "description": "Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no — pass question), 'choice' (single pick — pass question + options[]), 'choice_many' (multi pick — pass question + options[]), 'text' (freeform answer — pass question), 'secret' (masked input for passwords/MFA/API keys — pass question), 'notify' (display a message and optionally collect a single action — pass message; optional actions[] and level). Optional `context` shows a one-line 'why' on ask types. Optional `timeout_seconds` (1..900) auto-resolves the call with timed_out:true if the user doesn't respond. Returns the unified envelope { answer, selected, confirmed, action, freeform, cancelled, timed_out } — unused fields are null/false. For full keyboard/mouse handoff (CAPTCHA, login), use request_user_takeover. For plan approval, use update_plan.",
       "tier": "ask-user",
-      "category": "core",
+      "category": "human",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5353,7 +5224,7 @@
       "name": "request_user_takeover",
       "description": "Hand keyboard/mouse control to the user so they can perform an action the agent cannot or should not (logging in, MFA, CAPTCHA, sensitive form filling, decisions only the user can make). The user types/clicks directly into the page; when they're done they signal completion in the UI. The agent should re-read the page after takeover ends to see what changed. Distinct from `user` (Q&A) — this is full page handoff.",
       "tier": "ask-user",
-      "category": "ask",
+      "category": "human",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5394,7 +5265,7 @@
       "name": "update_plan",
       "description": "Propose a step-by-step plan and wait for the user to approve, modify, or reject it. Use this BEFORE a multi-step action sequence so you align on intent up front. Returns { approved: true, note?: string } or { approved: false, note?: string } so you can adjust.",
       "tier": "ask-user",
-      "category": "plan",
+      "category": "human",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5459,7 +5330,7 @@
       "name": "tasks",
       "description": "Manage the agent's own tasklist for the current conversation. Actions: 'add' (one via `title` or many via `items`), 'list' (read current tasks), 'set_status' (`id` + `status`), 'update' (`id` + `title` and/or `note`; pass note=null to clear), 'remove' (`id`), 'reorder' (`ids` in desired order), 'clear_completed' (drop done + skipped), 'clear_all'. Statuses: pending, in_progress, done, blocked, skipped. The list and any user edits to it are surfaced to you in `task_list` context on every turn — set statuses as you work so the user can see live progress.",
       "tier": "action",
-      "category": "plan",
+      "category": "human",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5567,7 +5438,7 @@
       "name": "user_todos",
       "description": "Assign tasks TO THE USER for the current conversation. The user sees them in a dedicated panel and checks them off; you'll see their state in `user_todos` context on every turn. Actions: 'add' (`title` + optional `context` for why + optional `due` hint; fires a Chrome notification unless `silent:true`), 'list', 'update' (`id` + `title`/`context`/`due`; pass null to clear), 'remove' (`id`), 'mark_done' (`id`; `done:false` un-checks), 'clear_done' (purge completed). Use this to delegate work back to the user — e.g. 'forward the email I just drafted', 'pick a date for the meeting'.",
       "tier": "action",
-      "category": "plan",
+      "category": "human",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5642,7 +5513,7 @@
       "name": "execute_javascript",
       "description": "Run arbitrary JavaScript on a tab. The `code` is wrapped in `async (arg) => { ... }` and executed; whatever it returns is serialized back. Use sparingly — prefer purpose-built tools (click_element, type_into_element, query_elements). This is the unbounded escape hatch when no other tool fits. ALWAYS prompts for approval, even in act-without-asking mode.",
       "tier": "privileged",
-      "category": "advanced",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5684,7 +5555,7 @@
       "name": "inject_stylesheet",
       "description": "Inject a CSS stylesheet into the active tab. Use to highlight elements visually for the user, hide noisy chrome, or apply temporary fixes. Privileged because it can mask UI elements. Returns { ok, id? }.",
       "tier": "privileged",
-      "category": "advanced",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5725,7 +5596,7 @@
       "name": "remove_stylesheet",
       "description": "Remove a previously-injected stylesheet from a tab. Pass the same CSS string used in inject_stylesheet.",
       "tier": "privileged",
-      "category": "advanced",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5804,7 +5675,7 @@
       "name": "desktop_run_command",
       "description": "Invoke a command on the matrx-local desktop bridge. Available commands depend on what matrx-local exposes (file ops, system info, window control, etc.). Returns { ok, data?, error? }. Fails fast with reason=\"desktop unavailable\" if the bridge isn't connected — check via the desktop:availability channel before calling.",
       "tier": "privileged",
-      "category": "advanced",
+      "category": "desktop",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5840,7 +5711,7 @@
       "name": "parallel_for_each_tab",
       "description": "Fan the same prompt out across N existing tabs (max 8) and collect the results. Each sub-run gets its own conversation pinned to a specific tab; results come back per-tab once all sub-runs finish (or time out — Promise.allSettled, one tab failing doesn't kill the others). Args: { tab_ids: number[], sub_prompt: string, agent_id?: string, timeout_ms?: number, merge_strategy?: 'per_tab' | 'concat' | 'json_array' }. Returns merged results in the chosen shape. Use the `list_open_tabs` tool first to discover tab ids. The sub-runs inherit the parent run's permission mode — keep them in 'act' mode for unattended fan-out, but be cautious: each sub-run is a real LLM call and bills accordingly.",
       "tier": "action",
-      "category": "advanced",
+      "category": "core",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5900,7 +5771,7 @@
       "name": "chrome_record_gif",
       "description": "Record browser actions and export as an animated GIF. Actions: 'start_recording', 'stop_recording', 'export' (generates and either downloads or drops onto a page element), 'clear' (discard frames). Take a screenshot right after start and right before stop to capture clean first/last frames. 'export' returns {file_id, file_url} when not dropping. Drop target accepts ref (preferred) or coordinate.",
       "tier": "action",
-      "category": "advanced",
+      "category": "capture",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -5984,7 +5855,7 @@
       "name": "chrome_record_tab_video",
       "description": "Record video of a tab via chrome.tabCapture + MediaRecorder and upload to cld_files. Args: duration_ms (default 5000, max 60000), audio (default false), tab_id? (defaults to assigned tab), filename?. Returns { ok, file_id, file_url, mime_type, duration_ms, size_bytes }. Requires `tabCapture` optional permission — when missing returns ok:false with a remediation hint pointing the user to Settings → Advanced → Tab video capture.",
       "tier": "action",
-      "category": "advanced",
+      "category": "capture",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -6437,7 +6308,7 @@
       "name": "extract_table",
       "description": "Extract a table on the active page as structured JSON. Handles native <table> with thead/tbody, rowspan/colspan, multi-row headers, and ARIA role=\"table\" / role=\"grid\" patterns. Provide `ref` (preferred) from a prior read_page, or `selector` (any CSS), or omit both to pick the largest visible table. Returns { columns: [{ index, path: [headerLevels...] }], rows: [{ cells: [{ value, is_header, colspan?, rowspan? }] }], merged_cells, row_count, column_count }. Use this instead of cell-by-cell scraping — one call versus dozens.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -6487,7 +6358,7 @@
       "name": "screenshot_region",
       "description": "Capture a bounded region of the active tab's viewport. Provide `ref` (preferred) from a prior read_page, OR `selector`, OR an explicit viewport `rect: {x,y,w,h}`. The handler scrolls the target into view if needed, captures the visible viewport, then crops to the resolved rect (with optional `padding` in CSS px). Returns the same shape as take_screenshot: { media_type, format, width, height, image_base64, byte_length, source_rect }. Use this for focused vision-API calls on a specific component — 5-20× cheaper than a full-page screenshot.",
       "tier": "read",
-      "category": "page",
+      "category": "capture",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -6584,7 +6455,7 @@
       "name": "get_clipboard",
       "description": "Read the current contents of the system clipboard. Inverse of set_clipboard. Use to consume whatever the user just copied (URL, snippet of text, etc.). Requires the 'clipboardRead' optional permission. The user may need to click on the active page first if the browser refuses for lack-of-focus — when that happens, the result includes a clear `reason` and the agent can ask the user to click the page and try again.",
       "tier": "action",
-      "category": "files",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -6651,7 +6522,7 @@
       "name": "mutation_watch",
       "description": "Observe an element for `duration_ms` (default 3000, max 30000) and report what changed. Set `kinds` to a subset of ['text','attributes','children','visibility'] to filter; default watches all four. Events: { ts_ms, kind, before?, after?, attribute?, added_count?, removed_count?, visible? }. Use this instead of polling read_page when waiting for async UI to settle.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -6710,7 +6581,7 @@
       "name": "extract_microdata",
       "description": "Extract every structured-data signal on the active page in one call: { snapshot, json_ld, microdata, schema_org_types, counts }. `snapshot` is the OG/Twitter/canonical/JSON-LD snapshot used by the Showcase tab. `json_ld` returns each JSON-LD block (flattens @graph; honors `ld_type` filter). `microdata` walks every [itemscope][itemtype] tree (honors `itemtype` filter). `schema_org_types` unions all detected types so you can answer 'is this a Product page?' in one read. Same code paths as the user-facing Showcase → JSON-LD / Microdata / Snapshot sub-tabs, so improvements to either surface flow both ways.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -6757,7 +6628,7 @@
       "name": "fetch_url_as_markdown",
       "description": "Fetch an HTTP(S) URL and return its readable content as Markdown — the same defuddle + readability + turndown pipeline the Scrape tab uses against the active page, but pointed at any URL without opening a tab. Returns { title, markdown, byline, excerpt, extractor, word_count, reading_time_minutes, metadata, ld_json, http_status, final_url, content_type, truncated }. Pass `use_session: true` to attach the user's cookies (paywalled / logged-in pages). Pass `include_extras: true` to also get links / images / videos / SEO audit. Non-HTML URLs (PDFs, JSON, etc.) are rejected with a clear error — use `read_pdf` for PDFs.",
       "tier": "read",
-      "category": "page",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -6811,7 +6682,7 @@
       "name": "computer",
       "description": "Mouse, keyboard, and screenshot interactions. Prefer 'ref' over 'coordinate' when targeting elements; coordinates survive poorly across scrolls and layout changes. The 'screenshot' action persists the image to cloud and returns {file_id, file_url, width, height, mime_type} — use that file_id with upload_file or drop_file later. Use wait_for for synchronization, NOT a fixed sleep.",
       "tier": "action",
-      "category": "core",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -6907,7 +6778,7 @@
       "name": "form_input",
       "description": "Set the value of a form element by reference. Use string for text inputs, boolean for checkboxes/radios, value or visible label for selects. The handler dispatches on element type — you don't need to specify it.",
       "tier": "action",
-      "category": "forms",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -6950,7 +6821,7 @@
       "name": "navigate",
       "description": "Navigate a tab to a URL, or move through history with 'back'/'forward'. Protocol defaults to https:// if omitted. After navigating, refs from prior read_page calls are invalidated — call read_page again before referencing elements.",
       "tier": "action",
-      "category": "core",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -7053,7 +6924,7 @@
       "name": "downloads",
       "description": "Manage file downloads. Actions: 'list' (recent downloads with id/filename/url/state/bytes), 'cancel' (abort a pending download), 'confirm' (no-op; Chrome auto-completes downloads), 'download_url' (trigger a download from a URL). download_id required for cancel/confirm; url required for download_url.",
       "tier": "action",
-      "category": "files",
+      "category": "capture",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -7143,7 +7014,7 @@
       "name": "clipboard",
       "description": "Read from or write to the system clipboard. Actions: 'read' (returns current clipboard text), 'write' (sets clipboard text — pass `text`). Useful for 'copy this for the user' and 'paste what I just copied' workflows.",
       "tier": "action",
-      "category": "files",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -7181,7 +7052,7 @@
       "name": "wait_for",
       "description": "Poll until a condition is met or timeout. Use after navigation or actions that trigger async loads — far more reliable than fixed sleeps. Conditions: 'element' (ref or selector exists and is visible; pass scroll=true to scroll the page while polling — handles infinite scroll), 'text' (text appears anywhere on page), 'url' (tab URL matches substring or regex), 'network_idle' (no in-flight requests for ~500ms).",
       "tier": "read",
-      "category": "interact",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -7238,7 +7109,7 @@
       "name": "upload_file",
       "description": "Upload one or more files to a <input type='file'> element by reference. Pass file_ids — these are MediaRef IDs (e.g. from a previous /files/upload, or from computer.action=screenshot). The handler resolves each file_id to bytes and sets the input. Do NOT click file inputs — that opens a native picker the agent cannot see. For drag-and-drop targets, use drop_file instead.",
       "tier": "action",
-      "category": "files",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -7282,7 +7153,7 @@
       "name": "drop_file",
       "description": "Synthesize a drag-and-drop of a single file onto a target element or coordinate. Use for drop zones that aren't backed by <input type='file'>. Provide ref OR coordinate. file_id is a MediaRef (e.g. from a prior screenshot or upload).",
       "tier": "action",
-      "category": "files",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -7331,7 +7202,7 @@
       "name": "read_pdf",
       "description": "Extract text and structure from a PDF — either one loaded in a browser tab, or one already in cld_files (pass file_id). Returns text by page with optional page range. Use file_id when you have a MediaRef in hand (e.g. from a prior download); use tab_id when the PDF is open in the browser.",
       "tier": "read",
-      "category": "files",
+      "category": "reading",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -7447,7 +7318,7 @@
       "name": "chrome_cookies",
       "description": "Manage cookies for any domain. Actions: 'get' (read; pass `name` for a specific cookie or omit for all matching), 'set' (write; requires `name` + `value`; optional `domain`/`path`/`expires_in_seconds`/`same_site`/`http_only`/`secure`), 'delete' (requires `name`). Always pass `url` (or `domain` for 'get'). Admin-only.",
       "tier": "privileged",
-      "category": "cookies",
+      "category": "chrome",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -7666,7 +7537,7 @@
       "name": "chrome_bookmarks",
       "description": "Read the user's bookmarks. Actions: 'search' (free-text against title and URL; pass `query`), 'tree' (folder tree starting at `folder_id` or root, `max_depth` deep). Each bookmark has id/title/url/parent_id/date_added.",
       "tier": "read",
-      "category": "history",
+      "category": "chrome",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -7716,7 +7587,7 @@
       "name": "chrome_history",
       "description": "Read browsing history. Actions: 'search' (free-text against title/URL; pass `query`, optional `start_time_ms`/`end_time_ms`/`limit`), 'recent' (last N `minutes`, default 60).",
       "tier": "read",
-      "category": "history",
+      "category": "chrome",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -7769,7 +7640,7 @@
       "name": "chrome_recently_closed",
       "description": "Recently-closed tabs and windows. Actions: 'list' (returns sessions with id/url/title/lastModified), 'restore' (reopens; `session_id` optional — defaults to the most recently closed).",
       "tier": "action",
-      "category": "history",
+      "category": "chrome",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -7809,7 +7680,7 @@
       "name": "stylesheet",
       "description": "Inject or remove a CSS stylesheet on the active (or specified) tab. Actions: 'inject' (apply `css`; pass `persistent: true` to survive navigations), 'remove' (drop a previously-injected `css` block — must match exactly).",
       "tier": "privileged",
-      "category": "advanced",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -7857,7 +7728,7 @@
       "name": "cdp_session",
       "description": "Manage Chrome DevTools Protocol attachments. Actions: 'attach' (begin debugger session on `tab_id` — required before any other cdp_* tool), 'detach' (end session), 'list' (which tabs are currently attached). Admin + `debugger` permission.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -7897,7 +7768,7 @@
       "name": "cdp_emulate",
       "description": "Override viewport / device metrics on an attached CDP tab for responsive testing. Actions: 'set' (apply `width`+`height`+optional `device_scale_factor`/`mobile`/`user_agent`), 'clear' (revert overrides). Tab must be attached via cdp_session first.",
       "tier": "privileged",
-      "category": "debug",
+      "category": "devtools",
       "input_schema": {
         "type": "object",
         "properties": {
@@ -7954,7 +7825,7 @@
       "name": "evaluate_javascript",
       "description": "Evaluate JavaScript in the page context. Returns the value of the last expression — do NOT use 'return' at top level. Admin-gated. Prefer DOM tools (read_page, find, computer, form_input) when possible — JS exec is XSS-equivalent and bypasses our safety nets.",
       "tier": "privileged",
-      "category": "advanced",
+      "category": "interaction",
       "input_schema": {
         "type": "object",
         "properties": {

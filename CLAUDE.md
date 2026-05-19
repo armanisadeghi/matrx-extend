@@ -28,6 +28,44 @@
   for the post-redesign source-of-truth flow. The previously-emitted
   `types/server-handoff/browser-dom-capability.json` was retired in
   May 2026.
+- **Category taxonomy redesign (2026-05-19)** — categories rebuilt
+  around user mental model, not implementation surface. 14 categories
+  replace the previous 17:
+  - `core` — always-on discovery + batching utilities
+  - `reading` — "what's on the page" (read_page, find, extract_*, …)
+  - `interaction` — "do something on the page" (computer, navigate,
+    form_input, clipboard, evaluate_javascript, …)
+  - `tabs` — manage browser tabs / windows
+  - `capture` — save artifacts (downloads, MHTML, screenshots, GIFs, video)
+  - `chrome` — user's personal Chrome data (cookies/bookmarks/history),
+    admin-restricted
+  - `human` — talk to user (user, update_plan, request_user_takeover,
+    tasks, user_todos)
+  - `memory` — agent state (scratchpad, storage, remember_for_domain)
+  - `ai` — on-device Gemini Nano
+  - `demos` — record + replay user workflows
+  - `guidance` — user-saved hints for the agent
+  - `devtools` — CDP + host diagnostics (admin)
+  - `webmcp` — page-registered tools (admin)
+  - `desktop` — matrx-local bridge
+  The "advanced" junk drawer and the 1-tool categories (cookies, webmcp,
+  ai-as-1-tool, interact-as-sleep-only) are gone. Per
+  TOOL_ROUTING_RULES.md §16, categories are pure UX — they affect
+  Tools-tab grouping and discovery helpers, NEVER routing. The LLM only
+  sees (name, description, schema).
+- **Drift script v2 (2026-05-19)** —
+  [`scripts/check-tool-db-drift.ts`](./scripts/check-tool-db-drift.ts)
+  now checks four DB tables, not one:
+  1. `tl_def` — name + description + tier + admin_only + parameters +
+     **category** (newly added)
+  2. `tl_executor` — every advertised tool MUST have an active row for
+     `surface='matrx-extend.browser'`. Missing = server can't route.
+  3. `tl_def_surface` — every advertised tool MUST be gated for at
+     least one chrome-extension/{assistant,pilot} surface. Missing =
+     discovery handler never shows it.
+  4. Orphan gates — `tl_def_surface` rows pointing at deleted tools.
+  Wired into `release.sh` as before; new failure modes are surfaced
+  inline + repeated in the end-of-release loud banner.
 - **Global tool namespace (2026-05-19, complete)** — the
   `matrx-extend:` colon-prefix is GONE from every row in `tl_def`.
   Three tiers replace it:
