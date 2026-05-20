@@ -33,6 +33,29 @@ export type ToolTier =
    */
   | 'ask-user';
 
+/**
+ * One incremental progress update emitted by a long-running tool while it
+ * executes (between `started` and `completed`). Entirely optional — a tool
+ * that never reports progress renders exactly as before. The display layer
+ * only shows progress when at least one update has arrived.
+ *
+ * `label` is the human-readable line ("Fetching page 3 of 12"). `step` +
+ * `status` enable checklist-style rendering. `data` carries arbitrary
+ * structured payload for a custom renderer. All fields optional.
+ */
+export interface ToolProgressUpdate {
+  /** Short status line shown to the user. */
+  label?: string;
+  /** Named step id — groups updates for checklist display. */
+  step?: string;
+  /** Step / overall status, used by checklist + 'latest' modes. */
+  status?: 'pending' | 'active' | 'done' | 'error';
+  /** 0–1 (fraction) or 0–100 (percent) — renderer normalizes either. */
+  percent?: number;
+  /** Arbitrary structured payload for a registry CustomComponent. */
+  data?: unknown;
+}
+
 export interface ToolContext {
   /** Pilot session conversation_id — needed to POST results back. */
   conversationId: string | null;
@@ -44,6 +67,16 @@ export interface ToolContext {
   agentName: string | null;
   /** Permission mode for this run. */
   permissionMode: 'ask' | 'act';
+  /**
+   * Emit an incremental progress update for this tool call. Optional — only
+   * set by the SW dispatcher for the streaming path; undefined for the
+   * manual Tools-tab runner and WebMCP. Long-running handlers call this to
+   * surface live status ("Fetching page 3 of 12") instead of a bare spinner.
+   * A string shorthand sets just the `label`. Best-effort + non-blocking;
+   * the display layer ignores it when no registry config opts in beyond the
+   * generic default. Handlers should call sparingly (it broadcasts each time).
+   */
+  reportProgress?: (update: string | ToolProgressUpdate) => void;
   /**
    * The tab the agent is assigned to operate on for this run. Latched at
    * STREAM_START time from whichever tab was active when the user sent the

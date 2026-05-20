@@ -157,9 +157,37 @@ export interface KeyDisplay {
   fallback?: string;
 }
 
+/**
+ * How to render a tool's incremental progress updates (the `progress[]` log
+ * a long-running tool emits via server `tool_progress` events or client
+ * `ctx.reportProgress`). Entirely optional: a tool with no progress entries
+ * renders nothing extra. When entries DO exist, the generic default ('log',
+ * auto-collapse) applies even without a config block — registering one only
+ * customizes the presentation.
+ */
+export type ProgressDisplayMode =
+  /** Chronological list of recent updates; collapses to a summary on completion. */
+  | 'log'
+  /** Single status line that the latest update replaces. */
+  | 'latest'
+  /** Named steps (grouped by `step`) ticking pending → active → done/error. */
+  | 'steps';
+
+export interface ProgressConfig {
+  hidden?: PhaseAware<boolean>;
+  /** Default 'log'. */
+  mode?: ProgressDisplayMode;
+  /** 'log' mode: how many recent lines to keep visible while running. Default 4. */
+  visibleWhileRunning?: number;
+  /** Keep progress expanded after completion instead of collapsing. Default false. */
+  showWhenComplete?: boolean;
+}
+
 export interface ToolDisplayEntry {
   inline?: InlineConfig;
   args?: ArgsConfig;
   results?: ResultsConfig;
+  /** Opt-in incremental-progress display for long-running tools. */
+  progress?: ProgressConfig;
   CustomComponent?: ComponentType<{ entry: ToolTimelineEntry; kind: 'server' | 'client' }>;
 }

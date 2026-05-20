@@ -129,7 +129,8 @@ export function ChatView() {
     setDraft,
     setMessages,
   } = useChatStore();
-  const { send, cancel } = useChatStream();
+  const { send, cancel, retry } = useChatStream();
+  const streamInterruption = useChatStore((s) => s.streamInterruption);
   const { variableDefs } = useAgentExecution(selectedAgentId);
   const getAgentVariables = useChatStore((s) => s.getAgentVariables);
   const defaultPermissionMode = useSettingsStore((s) => s.defaultPermissionMode);
@@ -502,6 +503,15 @@ export function ChatView() {
         )}
       </div>
 
+      {streamInterruption && !isStreaming && (
+        <StreamInterruptionBanner
+          reason={streamInterruption.reason}
+          silentMs={streamInterruption.silentMs}
+          onRetry={() => void retry()}
+          onDismiss={() => useChatStore.getState().setStreamInterruption(null)}
+        />
+      )}
+
       <Composer
         value={draft}
         onChange={setDraft}
@@ -517,6 +527,53 @@ export function ChatView() {
               : 'How can I help you today?'
         }
       />
+    </div>
+  );
+}
+
+/**
+ * Shown when a run ended abnormally (stall watchdog fired, or stream errored
+ * without a clean close). Clears the stuck-spinner ambiguity and gives the
+ * user a one-click recovery. The retry replays the last turn until backend
+ * stream-resume ships (see lib/stream/resume.ts).
+ */
+function StreamInterruptionBanner({
+  reason,
+  silentMs,
+  onRetry,
+  onDismiss,
+}: {
+  reason: 'stalled' | 'error';
+  silentMs?: number;
+  onRetry: () => void;
+  onDismiss: () => void;
+}) {
+  const detail =
+    reason === 'stalled'
+      ? `The response stalled${silentMs ? ` (no activity for ${Math.round(silentMs / 1000)}s)` : ''}.`
+      : 'The response was interrupted by an error.';
+  return (
+    <div className="mx-3 mb-2 flex items-center gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-[11px] text-amber-700 dark:text-amber-400">
+      <AlertTriangle className="size-3.5 shrink-0" />
+      <span className="min-w-0 flex-1 truncate">{detail}</span>
+      <Button
+        type="button"
+        size="sm"
+        variant="ghost"
+        className="h-6 gap-1 px-2 text-[11px] text-amber-700 hover:bg-amber-500/20 dark:text-amber-300"
+        onClick={onRetry}
+      >
+        <RefreshCw className="size-3" />
+        Retry
+      </Button>
+      <button
+        type="button"
+        onClick={onDismiss}
+        className="shrink-0 rounded px-1 text-amber-700/70 hover:text-amber-900 dark:text-amber-400/70 dark:hover:text-amber-200"
+        aria-label="Dismiss"
+      >
+        ✕
+      </button>
     </div>
   );
 }
@@ -1072,6 +1129,7 @@ function MessagePartView({ part }: { part: MessagePart }) {
         args: t.args,
         output: t.result,
         message: t.message,
+        progress: t.progress,
       }}
     />
   );

@@ -3,6 +3,9 @@ import { resolveActiveTab } from "@/lib/chat/active-tab";
 import { buildBrowserDomState } from "@/lib/chat/build-browser-dom-state";
 import { buildChatContext } from "@/lib/chat/build-context";
 import { refreshPageContextBeforeSend } from "@/lib/chat/refresh-page-context";
+import { progressFromWire } from "@/lib/chat/tool-progress";
+import { attemptResume } from "@/lib/stream/resume";
+import { createStreamWatchdog } from "@/lib/stream/watchdog";
 import { log } from "@/lib/debug/log";
 import { newId } from "@/lib/id";
 import { on, send } from "@/lib/messaging/native";
@@ -186,12 +189,83 @@ function handleToolEvent(
       phase: "error",
       ...(errResult !== undefined ? { result: errResult } : {}),
     });
+  } else if (subEvent === "tool_progress") {
+    // Incremental update for a long-running tool — does NOT change phase.
+    // Only renders when a tool actually emits these (opt-in); every other
+    // tool is unaffected.
+    useChatStore
+      .getState()
+      .appendToolProgress(messageId, callId, progressFromWire(message, inner), {
+        toolName,
+        kind,
+      });
   }
 }
+
+/**
+ * Total silence (no chunks, no heartbeat) after which the run is presumed
+ * dead and the watchdog clears the spinner. Generous enough to ride out a
+ * legitimately slow tool call between server events, short enough that a
+ * hung offscreen/network doesn't strand the UI for minutes.
+ */
+const STALL_MS = 75_000;
 
 export function useChatStream() {
   const runIdRef = useRef<string | null>(null);
   const targetIdRef = useRef<string | null>(null);
+  // For stall recovery: the request id (resume key), how many events we've
+  // seen (resume cursor), and the last send (to power Retry).
+  const requestIdRef = useRef<string | null>(null);
+  const eventCountRef = useRef(0);
+  const lastSendRef = useRef<{ input: string; opts: SendOptions } | null>(null);
+
+  // The watchdog is created once; it calls the latest `onStall` via a ref so
+  // the closure always sees current refs without re-creating timers.
+  const onStallRef = useRef<() => void>(() => {});
+  const watchdogRef = useRef<ReturnType<typeof createStreamWatchdog> | null>(null);
+  if (!watchdogRef.current) {
+    watchdogRef.current = createStreamWatchdog({
+      stallMs: STALL_MS,
+      onStall: () => onStallRef.current(),
+    });
+  }
+
+  onStallRef.current = () => {
+    const runId = runIdRef.current;
+    const target = targetIdRef.current;
+    if (!runId || !target) return; // run already ended cleanly
+    log.warn("stream", `stream stalled — no activity for ${STALL_MS}ms`, { runId });
+    void (async () => {
+      // Try to resume the live run before giving up (no-op until the backend
+      // resume endpoint ships — see lib/stream/resume.ts).
+      const resume = await attemptResume({
+        runId,
+        conversationId: useChatStore.getState().selectedConversationId,
+        requestId: requestIdRef.current,
+        cursor: eventCountRef.current,
+      });
+      if (runIdRef.current !== runId) return; // a new run started meanwhile
+      if (resume.resumed) {
+        log.info("stream", "stream resumed after stall", { runId });
+        watchdogRef.current?.start();
+        return;
+      }
+      // Give up: clear the stuck spinner and surface a Retry.
+      log.warn("stream", `stream giving up (${resume.reason})`, { runId });
+      useChatStore.getState().finalizeAssistant(target);
+      useChatStore.getState().setStreaming(false);
+      useChatStore.getState().setStreamInterruption({
+        runId,
+        reason: "stalled",
+        silentMs: STALL_MS,
+        lastInput: lastSendRef.current?.input ?? "",
+        at: Date.now(),
+      });
+      watchdogRef.current?.stop();
+      runIdRef.current = null;
+      targetIdRef.current = null;
+    })();
+  };
 
   // Adopt the server-assigned conversation_id as soon as the response opens.
   // Without this, every turn would POST `conversation_id: null` and the
@@ -202,6 +276,8 @@ export function useChatStream() {
       CHANNELS.STREAM_OPENED,
       (payload) => {
         if (payload.runId !== runIdRef.current) return { ack: true };
+        if (payload.requestId) requestIdRef.current = payload.requestId;
+        watchdogRef.current?.touch();
         if (payload.conversationId) {
           useChatStore.getState().adoptConversationId(payload.conversationId);
         }
@@ -215,6 +291,12 @@ export function useChatStream() {
       if (chunk.runId !== runIdRef.current) return { ack: true };
       const target = targetIdRef.current;
       if (!target) return { ack: true };
+
+      // Any chunk — text, reasoning, event (incl. the server's `heartbeat`),
+      // tool, error — is a sign of life. Reset the stall watchdog and bump the
+      // resume cursor.
+      eventCountRef.current += 1;
+      watchdogRef.current?.touch();
 
       if (chunk.type === "text") {
         if (chunk.payload.content)
@@ -251,6 +333,7 @@ export function useChatStream() {
             "stream",
             `event: ${chunk.payload.eventName}`,
             chunk.payload.data,
+            chunk.payload.eventName,
           );
         }
       } else if (chunk.type === "error") {
@@ -259,6 +342,7 @@ export function useChatStream() {
           .getState()
           .appendAssistantText(target, `\n\n_Error:_ ${message}`);
       } else if (chunk.type === "done") {
+        watchdogRef.current?.stop();
         useChatStore.getState().finalizeAssistant(target);
         useChatStore.getState().setStreaming(false);
         runIdRef.current = null;
@@ -290,10 +374,16 @@ export function useChatStream() {
       useChatStore.getState().pushMessage(userMsg);
       useChatStore.getState().pushMessage(assistantMsg);
       useChatStore.getState().setStreaming(true);
+      // Fresh run — clear any prior interruption banner and reset recovery state.
+      useChatStore.getState().setStreamInterruption(null);
 
       const runId = newId("run");
       runIdRef.current = runId;
       targetIdRef.current = assistantMsg.id;
+      requestIdRef.current = null;
+      eventCountRef.current = 0;
+      lastSendRef.current = { input: text, opts };
+      watchdogRef.current?.start();
 
       // Pre-send page-context refresh. This is what makes the difference
       // between "agent is staring at last load's content" and "agent has
@@ -476,13 +566,24 @@ export function useChatStream() {
 
   const cancel = useCallback(async () => {
     if (!runIdRef.current) return;
+    watchdogRef.current?.stop();
     await send(CHANNELS.STREAM_CANCEL, { runId: runIdRef.current });
     if (targetIdRef.current)
       useChatStore.getState().finalizeAssistant(targetIdRef.current);
     useChatStore.getState().setStreaming(false);
+    useChatStore.getState().setStreamInterruption(null);
     runIdRef.current = null;
     targetIdRef.current = null;
   }, []);
 
-  return { send: sendMessage, cancel };
+  // Re-send the interrupted turn. Until backend resume ships, recovery is a
+  // replay of the last user input (a fresh turn), which clears the banner.
+  const retry = useCallback(async (): Promise<string | null> => {
+    const last = lastSendRef.current;
+    useChatStore.getState().setStreamInterruption(null);
+    if (!last) return null;
+    return sendMessage(last.input, last.opts);
+  }, [sendMessage]);
+
+  return { send: sendMessage, cancel, retry };
 }

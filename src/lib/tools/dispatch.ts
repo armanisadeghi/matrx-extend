@@ -415,6 +415,21 @@ async function handleCall(
     }
   }
 
+  // Wire incremental progress emission for long-running handlers. Optional —
+  // a handler that never calls `ctx.reportProgress` behaves exactly as before.
+  // Each call broadcasts a TOOL_TIMELINE_EVENT carrying `progress` (phase stays
+  // 'started'); the sidepanel routes it to `appendToolProgress`. Bounded by the
+  // store's FIFO cap, so a chatty handler can't grow memory unboundedly.
+  ctx.reportProgress = (update) => {
+    const u = typeof update === 'string' ? { label: update } : update;
+    broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+      callId: ctx.callId,
+      toolName: handler.name,
+      phase: 'started',
+      progress: u,
+    });
+  };
+
   // Run.
   let result: unknown;
   try {

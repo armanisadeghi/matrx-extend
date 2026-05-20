@@ -1,7 +1,16 @@
 import { chromeLocalStorage } from "@/lib/storage/zustand-adapter";
+import type { ToolProgressUpdate } from "@/lib/tools/types";
 import { useToolInbox } from "@/state/tool-inbox";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+
+/** Max progress entries retained per tool call — bounds memory if a handler spams. */
+const MAX_PROGRESS_ENTRIES = 200;
+
+/** A stored progress update — a {@link ToolProgressUpdate} stamped with arrival time. */
+export interface ToolProgressEntry extends ToolProgressUpdate {
+  at: number;
+}
 
 /**
  * One tool invocation captured inside an assistant turn — server-side OR
@@ -23,6 +32,14 @@ export interface ToolPartCall {
   phase: "started" | "completed" | "error";
   startedAt: number;
   endedAt?: number;
+  /**
+   * Incremental progress updates emitted while the tool ran. Optional and
+   * usually absent — only long-running tools that opt in (server `tool_progress`
+   * sub-events, or client handlers calling `ctx.reportProgress`) populate it.
+   * The display layer renders it only when non-empty, so every other tool is
+   * unaffected.
+   */
+  progress?: ToolProgressEntry[];
 }
 
 /**
@@ -64,6 +81,21 @@ export interface ChatMessage {
 /** Backwards-compat alias — older callers reference `ServerToolCall`. */
 export type ServerToolCall = ToolPartCall;
 
+/**
+ * Set when a run ends abnormally (the stall watchdog fired, or a stream error
+ * arrived) so the UI can clear the stuck spinner and offer a Retry. Cleared on
+ * the next send, on conversation switch, and on reset.
+ */
+export interface StreamInterruption {
+  runId: string;
+  reason: "stalled" | "error";
+  /** For 'stalled': how long the stream was silent before we gave up. */
+  silentMs?: number;
+  /** The user input of the interrupted turn, so Retry can re-send it. */
+  lastInput: string;
+  at: number;
+}
+
 export type PermissionMode = "ask" | "act";
 
 interface ChatState {
@@ -72,6 +104,8 @@ interface ChatState {
   draft: string;
   messages: ChatMessage[];
   isStreaming: boolean;
+  /** Set when a run stalled or errored abnormally; gates the Retry banner. */
+  streamInterruption: StreamInterruption | null;
   /**
    * Per-agent variable values, keyed by `<agentId>.<varName>`. Persisted
    * across reloads so users don't have to re-fill every time. Cleared per
@@ -132,7 +166,21 @@ interface ChatState {
     callId: string,
     patch: Partial<ToolPartCall>,
   ) => void;
+  /**
+   * Append an incremental progress update to a tool part (by callId). Creates
+   * a `started` part if none exists yet. Never changes the part's phase — a
+   * progress update is orthogonal to started/completed/error. Bounded to the
+   * last {@link MAX_PROGRESS_ENTRIES}.
+   */
+  appendToolProgress: (
+    messageId: string,
+    callId: string,
+    entry: ToolProgressEntry,
+    meta?: { toolName?: string; kind?: "server" | "client" },
+  ) => void;
   setStreaming: (b: boolean) => void;
+  /** Set or clear the abnormal-end marker that drives the Retry banner. */
+  setStreamInterruption: (i: StreamInterruption | null) => void;
   setMessages: (ms: ChatMessage[]) => void;
   setVariable: (agentId: string, name: string, value: string) => void;
   getAgentVariables: (agentId: string) => Record<string, string>;
@@ -152,11 +200,12 @@ export const useChatStore = create<ChatState>()(
       draft: "",
       messages: [],
       isStreaming: false,
+      streamInterruption: null,
       variableValues: {},
       permissionMode: {},
       setAgent: (selectedAgentId) => set({ selectedAgentId }),
       setConversation: (selectedConversationId) => {
-        set({ selectedConversationId, messages: [] });
+        set({ selectedConversationId, messages: [], streamInterruption: null });
         // Wipe any pending approval / ask cards from the previous
         // conversation. They were tied to a different runId; the SW will
         // time them out on its end. Keeping them visible here would just
@@ -232,6 +281,42 @@ export const useChatStore = create<ChatState>()(
       // Backwards-compat shim — older code paths called this for server tools.
       upsertServerTool: (messageId, callId, patch) =>
         get().upsertToolPart(messageId, callId, { kind: "server", ...patch }),
+      appendToolProgress: (messageId, callId, entry, meta) =>
+        set((s) => ({
+          messages: s.messages.map((m) => {
+            if (m.id !== messageId) return m;
+            const parts = m.parts ?? [];
+            const idx = parts.findIndex(
+              (p) => p.type === "tool" && p.tool.callId === callId,
+            );
+            // No part yet (progress raced ahead of tool_started) — seed one.
+            if (idx === -1) {
+              const fresh: ToolPartCall = {
+                kind: meta?.kind ?? "server",
+                callId,
+                toolName: meta?.toolName ?? "(unknown)",
+                phase: "started",
+                startedAt: Date.now(),
+                progress: [entry],
+              };
+              return { ...m, parts: [...parts, { type: "tool", tool: fresh }] };
+            }
+            const existing = parts[idx];
+            if (!existing || existing.type !== "tool") return m;
+            const prior = existing.tool.progress ?? [];
+            const nextProgress = [...prior, entry];
+            // FIFO cap — keep the most recent updates if a handler over-reports.
+            if (nextProgress.length > MAX_PROGRESS_ENTRIES) {
+              nextProgress.splice(0, nextProgress.length - MAX_PROGRESS_ENTRIES);
+            }
+            const next = parts.slice();
+            next[idx] = {
+              type: "tool",
+              tool: { ...existing.tool, progress: nextProgress },
+            };
+            return { ...m, parts: next };
+          }),
+        })),
       appendAssistantText: (id, chunk) =>
         set((s) => ({
           messages: s.messages.map((m) => {
@@ -279,6 +364,7 @@ export const useChatStore = create<ChatState>()(
           ),
         })),
       setStreaming: (isStreaming) => set({ isStreaming }),
+      setStreamInterruption: (streamInterruption) => set({ streamInterruption }),
       setMessages: (messages) => set({ messages }),
       setVariable: (agentId, name, value) =>
         set((s) => ({
@@ -312,7 +398,8 @@ export const useChatStore = create<ChatState>()(
         if (!agentId) return "ask";
         return get().permissionMode[agentId] ?? "ask";
       },
-      reset: () => set({ messages: [], draft: "", isStreaming: false }),
+      reset: () =>
+        set({ messages: [], draft: "", isStreaming: false, streamInterruption: null }),
     }),
     {
       name: "matrx.chat.v1",

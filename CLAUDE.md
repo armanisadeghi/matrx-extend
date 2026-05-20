@@ -604,6 +604,46 @@ Engineering complete; perceptual QA outstanding.
 ### 12. 📋 Vision-first navigation, timeline scrubbing
 Moonshots from the research. Defer until 1–11 ship.
 
+### 13. ✅ Incremental tool progress (2026-05-20)
+**Why:** long-running tools (research, multi-page scrapes) showed only a
+spinner. Now they can stream live status.
+
+- Opt-in + additive: a tool that emits no progress renders exactly as before.
+- Wire: server tools emit a `tool_progress` tool_event sub-event
+  (`{event:'tool_progress', call_id, tool_name, data:{label?, step?, status?,
+  percent?}}`); client (SW) handlers call `ctx.reportProgress('…')` (optional
+  field on `ToolContext`, broadcast as a `TOOL_TIMELINE_EVENT` with a
+  `progress` field). Both paths funnel into `appendToolProgress` on the chat
+  store (FIFO-capped at 200; `ToolPartCall.progress[]`).
+- Display: [`ToolProgressView`](./src/features/chat/tool-display/ToolProgressView.tsx)
+  renders ONLY when entries exist. Generic default = a running log that
+  collapses to "N updates" on completion (used by the default rows too, so an
+  unregistered tool still gets it). Registry `progress` config customizes:
+  `mode: 'log' | 'latest' | 'steps'`, `visibleWhileRunning`, `showWhenComplete`.
+- Normalizer: [`progressFromWire`](./src/lib/chat/tool-progress.ts).
+
+### 14. 🔨 Stream resilience — stall watchdog + resume (2026-05-20)
+**Why:** if the offscreen doc died / network hung / server went silent with no
+terminal `done`, `isStreaming` stayed true and the spinner spun forever.
+
+Shipped (client):
+- [`createStreamWatchdog`](./src/lib/stream/watchdog.ts) — dead-man's switch.
+  Any chunk (incl. the server `heartbeat` event, now consumed as liveness)
+  resets it; 75s of total silence fires `onStall`. Wired into both
+  `use-chat-stream` and `use-pilot-chat-stream` (`start` on send, `touch` per
+  chunk + on `STREAM_OPENED`, `stop` on done/cancel).
+- Assistant surface: on stall, clears the spinner + shows a Retry banner
+  (`StreamInterruptionBanner` in ChatView, gated on
+  `useChatStore.streamInterruption`). Retry replays the last turn. Pilot clears
+  the spinner (no banner yet).
+
+Pending (backend — filed via matrx-feedback, contract in
+[docs/STREAM_RESUME_PROTOCOL.md](./docs/STREAM_RESUME_PROTOCOL.md)):
+- [ ] `/ai/agent/runs/{request_id}/resume` so `attemptResume`
+  ([src/lib/stream/resume.ts](./src/lib/stream/resume.ts), flag-gated no-op
+  today) can re-attach + replay the unsent tail instead of replaying the turn.
+- [ ] Reliable `heartbeat` cadence (≤~20s) DURING long tool execution.
+
 ---
 
 ## 📐 Architecture cheat sheet

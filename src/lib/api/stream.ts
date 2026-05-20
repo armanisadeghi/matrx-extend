@@ -116,7 +116,14 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
     }
 
     // Log the raw event before any normalization so the user sees the wire.
-    log.info('stream', `raw event #${lineCount}`, parsed);
+    // Tag with the wire event type so the Debug tab can filter by it — this
+    // is the one log site that sees EVERY event (incl. tool_event /
+    // resource_changed, which the chat hooks consume without logging).
+    const rawTag =
+      parsed && typeof parsed === 'object' && 'event' in parsed
+        ? String((parsed as Record<string, unknown>).event)
+        : undefined;
+    log.info('stream', `raw event #${lineCount}`, parsed, rawTag);
 
     let event: TypedStreamEvent;
     try {

@@ -25,6 +25,7 @@ import {
   resolvePhase,
 } from './helpers';
 import { fieldComponents } from './registry-components';
+import { ToolProgressView } from './ToolProgressView';
 import type {
   ArgsConfig,
   IconName,
@@ -125,6 +126,9 @@ export function ConfigurableToolRow({ entry, kind, cfg }: Props) {
           }}
         />
       </div>
+      {!resolvePhase(cfg.progress?.hidden, phase) && (
+        <ToolProgressView progress={entry.progress} phase={phase} cfg={cfg.progress} />
+      )}
       {alwaysShowResults && (
         <div className="mt-1 ml-5">
           <ResultsSection result={entry.output} cfg={results} />

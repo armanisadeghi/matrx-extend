@@ -10,7 +10,9 @@ import { useState } from 'react';
 import { ToolReceiptDialog } from './ToolReceiptDialog';
 import { ConfigurableToolRow, ToolDisplayBoundary } from './tool-display/ConfigurableToolRow';
 import { CopyToolButton } from './tool-display/CopyToolButton';
+import { ToolProgressView } from './tool-display/ToolProgressView';
 import { toolDisplayRegistry } from './tool-display/registry';
+import type { ToolProgressEntry } from '@/state/chat';
 
 /**
  * Display shape for a tool entry rendered inline. The chat-store's
@@ -27,6 +29,8 @@ export interface ToolTimelineEntry {
   args?: unknown;
   output?: unknown;
   message?: string;
+  /** Incremental progress log (long-running tools only; usually absent). */
+  progress?: ToolProgressEntry[];
 }
 
 export function ToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {
@@ -97,6 +101,8 @@ function DefaultToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {
           }}
         />
       </div>
+      {/* Generic progress display — only renders when the tool emitted any. */}
+      <ToolProgressView progress={entry.progress} phase={entry.phase} />
       {open && (
         <div className="mt-1 ml-5 space-y-1.5">
           <DetailBlock label="args" value={entry.args} />

@@ -27,6 +27,7 @@ import {
   type MessagePart,
   type PermissionMode,
   type ToolPartCall,
+  type ToolProgressEntry,
 } from '@/state/chat';
 import { useToolInbox } from '@/state/tool-inbox';
 import { create } from 'zustand';
@@ -57,6 +58,12 @@ interface PilotChatState {
     messageId: string,
     callId: string,
     patch: Partial<ToolPartCall> & { kind?: 'server' | 'client' },
+  ) => void;
+  appendToolProgress: (
+    messageId: string,
+    callId: string,
+    entry: ToolProgressEntry,
+    meta?: { toolName?: string; kind?: 'server' | 'client' },
   ) => void;
   setStreaming: (b: boolean) => void;
   setMessages: (ms: ChatMessage[]) => void;
@@ -130,6 +137,39 @@ export const usePilotChatStore = create<PilotChatState>()(
             };
             const next = parts.slice();
             next[idx] = { type: 'tool', tool: merged };
+            return { ...m, parts: next };
+          }),
+        })),
+      appendToolProgress: (messageId, callId, entry, meta) =>
+        set((s) => ({
+          messages: s.messages.map((m) => {
+            if (m.id !== messageId) return m;
+            const parts = m.parts ?? [];
+            const idx = parts.findIndex(
+              (p) => p.type === 'tool' && p.tool.callId === callId,
+            );
+            if (idx === -1) {
+              const fresh: ToolPartCall = {
+                kind: meta?.kind ?? 'server',
+                callId,
+                toolName: meta?.toolName ?? '(unknown)',
+                phase: 'started',
+                startedAt: Date.now(),
+                progress: [entry],
+              };
+              return { ...m, parts: [...parts, { type: 'tool', tool: fresh }] };
+            }
+            const existing = parts[idx];
+            if (!existing || existing.type !== 'tool') return m;
+            const nextProgress = [...(existing.tool.progress ?? []), entry];
+            if (nextProgress.length > 200) {
+              nextProgress.splice(0, nextProgress.length - 200);
+            }
+            const next = parts.slice();
+            next[idx] = {
+              type: 'tool',
+              tool: { ...existing.tool, progress: nextProgress },
+            };
             return { ...m, parts: next };
           }),
         })),

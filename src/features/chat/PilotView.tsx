@@ -923,6 +923,7 @@ function MessagePartView({ part }: { part: MessagePart }) {
         args: t.args,
         output: t.result,
         message: t.message,
+        progress: t.progress,
       }}
     />
   );

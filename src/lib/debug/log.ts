@@ -44,6 +44,13 @@ export interface DebugEvent {
   source: LogSource;
   message: string;
   detail?: unknown;
+  /**
+   * Optional sub-type within a source — primarily the stream event type
+   * (`phase`, `data`, `record_reserved`, `tool_event`, `warning`, …) so the
+   * Debug tab can filter the stream firehose by individual event type, not
+   * just the whole `stream` source. Undefined for most logs.
+   */
+  tag?: string;
   ctx: 'sidepanel' | 'sw' | 'offscreen' | 'content' | 'popup' | 'options' | 'unknown';
 }
 
@@ -113,6 +120,7 @@ interface PushArgs {
   source: LogSource;
   message: string;
   detail?: unknown;
+  tag?: string;
 }
 
 function emit(level: LogLevel, args: PushArgs): void {
@@ -125,6 +133,7 @@ function emit(level: LogLevel, args: PushArgs): void {
     source: args.source,
     message: args.message,
     detail: args.detail,
+    tag: args.tag,
     ctx: ctxAtLoad,
   };
   useDebugStore.getState().push(event);
@@ -161,14 +170,14 @@ function emit(level: LogLevel, args: PushArgs): void {
 }
 
 export const log = {
-  info: (source: LogSource, message: string, detail?: unknown) =>
-    emit('info', { source, message, detail }),
-  success: (source: LogSource, message: string, detail?: unknown) =>
-    emit('success', { source, message, detail }),
-  warn: (source: LogSource, message: string, detail?: unknown) =>
-    emit('warn', { source, message, detail }),
-  error: (source: LogSource, message: string, detail?: unknown) =>
-    emit('error', { source, message, detail }),
+  info: (source: LogSource, message: string, detail?: unknown, tag?: string) =>
+    emit('info', { source, message, detail, tag }),
+  success: (source: LogSource, message: string, detail?: unknown, tag?: string) =>
+    emit('success', { source, message, detail, tag }),
+  warn: (source: LogSource, message: string, detail?: unknown, tag?: string) =>
+    emit('warn', { source, message, detail, tag }),
+  error: (source: LogSource, message: string, detail?: unknown, tag?: string) =>
+    emit('error', { source, message, detail, tag }),
 };
 
 /**

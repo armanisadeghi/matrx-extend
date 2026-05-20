@@ -332,6 +332,31 @@ Every entry follows this shape:
 - **Expected:** Toggle state matches what `chrome.permissions.contains`
   reports.
 
+### Side panel — Debug tab → event-type (stream) filtering
+- **What it does:** The Debug tab tails every cross-context log event live.
+  Stream events are now tagged with their wire event type (`phase`, `data`,
+  `record_reserved`, `tool_event`, `warning`, `completion`, …) so the third
+  filter row ("events") lets you toggle individual stream event types in/out
+  with colored pills — instead of only toggling the whole `stream` source.
+  Each matching row also shows a colored tag badge. Admin-only.
+- **Where to test:** Side panel → **Debug** tab (Log subview).
+- **Steps:**
+  1. Send a chat message and let the stream run so events flow in.
+  2. Confirm the third filter row ("events") populates with colored pills,
+     one per distinct event type seen.
+  3. Click a pill (e.g. `record_reserved`) to hide that type → those rows
+     disappear; click again to show. Use **all** / **none** to bulk toggle.
+  4. Confirm `pilot-stream` (and `audio`, `pilot`, `frontend-bridge`,
+     `desktop-ws-offscreen`) rows now appear in the source filter and feed —
+     previously they were silently dropped.
+  5. Copy/Download the log → each tagged line includes `<event_type>`.
+- **Expected:** Hidden event types are excluded from the feed; untagged
+  events (auth/api/sys/etc.) are unaffected by the events row. Newly-seen
+  event types appear automatically as visible pills (opt-out semantics).
+- **Edge cases:** Pause freezes the feed but the pill set keeps reflecting
+  the frozen list; clearing the log empties the events row until new events
+  arrive.
+
 ---
 
 ### Scrape — Diagnose with AI (element picker)
@@ -719,6 +744,53 @@ Every entry follows this shape:
     checkbox unchanged.
   - Pilot surface mirrors all behavior — same options, same output
     shape, uses `usePilotChatStore` instead of `useChatStore`.
+
+### Incremental tool progress (long-running tools)
+- **What it does:** A tool can emit live progress updates between `started`
+  and `completed` instead of just spinning. Server tools emit a
+  `tool_progress` tool_event sub-event; client (SW) handlers call
+  `ctx.reportProgress('…')`. The chat row renders a progress log (default)
+  that collapses to "N updates" on completion. Opt-in — tools that emit no
+  progress are unchanged. Registry can customize via `progress` config
+  (`mode: 'log' | 'latest' | 'steps'`, `visibleWhileRunning`, `showWhenComplete`).
+- **Where to test:** chat surface (assistant or pilot) with a tool that emits
+  progress. Quick manual smoke: in any client handler add
+  `ctx.reportProgress?.('step 1')` / `('step 2')` and run it via the Tools tab
+  (note: Tools-tab runner has no `reportProgress`, so use a real agent run).
+- **Steps:**
+  1. Trigger a tool that reports progress.
+  2. While running: progress lines appear under the tool row, newest with a
+     spinner; `percent` (if sent) shows a thin bar.
+  3. On completion: lines collapse to a "N updates" toggle (unless
+     `showWhenComplete`); click to expand.
+- **Expected:** A normal tool (no progress) looks exactly as before. Progress
+  never flips a completed row back to "started". Bounded to 200 entries.
+- **Edge cases:** progress arriving before `tool_started` (seeds a started
+  part); `steps` mode dedupes by `step` keeping latest status; pilot surface
+  mirrors via `usePilotChatStore`.
+
+### Stream stall watchdog + Retry banner (stuck-UI fix)
+- **What it does:** Detects a stalled run (no chunk/heartbeat for 75s),
+  clears the stuck spinner, and shows an amber Retry banner above the
+  composer. Consumes the server `heartbeat` event as a liveness signal.
+  Attempts resume first (no-op until backend ships — see
+  docs/STREAM_RESUME_PROTOCOL.md), then falls back to Retry (replays the
+  last turn).
+- **Where to test:** chat surface. Hard to trigger naturally; force it.
+- **Steps:**
+  1. Send a message, then kill the stream silently — e.g. in DevTools
+     terminate the offscreen document, or block the network mid-stream so no
+     `done` ever arrives.
+  2. Wait ~75s. Spinner stops; the amber "The response stalled (no activity
+     for 75s)." banner appears with **Retry** + dismiss (✕).
+  3. Click Retry → the last turn re-sends and the banner clears. Dismiss (✕)
+     hides it without re-sending.
+- **Expected:** A normal completed run never shows the banner (watchdog
+  stopped on `done`). Cancelling clears it. Switching conversations clears it.
+  Pilot surface clears its spinner on stall too (no banner — by design).
+- **Edge cases:** a late chunk after stall doesn't re-arm the watchdog; a new
+  send while a stall handler is mid-flight is detected (runId mismatch) and the
+  stale handler no-ops.
 
 ---
 

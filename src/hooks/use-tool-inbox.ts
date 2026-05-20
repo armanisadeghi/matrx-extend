@@ -21,6 +21,7 @@ import type {
 } from '@/lib/tools/types';
 import { type ToolPartCall, useChatStore } from '@/state/chat';
 import { useToolInbox } from '@/state/tool-inbox';
+import type { ToolProgressUpdate } from '@/lib/tools/types';
 import { useEffect } from 'react';
 
 interface TimelinePayload {
@@ -30,6 +31,12 @@ interface TimelinePayload {
   args?: unknown;
   output?: unknown;
   message?: string;
+  /**
+   * Set when this event is an incremental progress update from a long-running
+   * client tool (via `ctx.reportProgress`). When present, it's appended to the
+   * tool part's progress log and `phase` is left unchanged.
+   */
+  progress?: ToolProgressUpdate;
 }
 
 /**
@@ -80,6 +87,19 @@ export function useToolInbox$Subscribe(): void {
       (payload) => {
         const messageId = activeAssistantMessageId();
         if (!messageId) return { ack: true };
+        // Incremental progress update — append to the part's progress log
+        // without touching its phase. Routed here (not upsertToolPart) so a
+        // progress event never accidentally flips a completed row back to
+        // 'started'.
+        if (payload.progress) {
+          useChatStore.getState().appendToolProgress(
+            messageId,
+            payload.callId,
+            { at: Date.now(), ...payload.progress },
+            { toolName: payload.toolName, kind: 'client' },
+          );
+          return { ack: true };
+        }
         // Only set fields that are actually defined on this event. The SW
         // sends `args` only on `started` and `output` only on `completed`,
         // so spreading undefined would wipe the args we captured at start.

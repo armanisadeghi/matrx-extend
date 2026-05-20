@@ -20,6 +20,8 @@ import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { buildChatContext } from '@/lib/chat/build-context';
 import { refreshPageContextBeforeSend } from '@/lib/chat/refresh-page-context';
+import { progressFromWire } from '@/lib/chat/tool-progress';
+import { createStreamWatchdog } from '@/lib/stream/watchdog';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
@@ -146,16 +148,44 @@ function handleToolEvent(
       phase: 'error',
       ...(errResult !== undefined ? { result: errResult } : {}),
     });
+  } else if (subEvent === 'tool_progress') {
+    usePilotChatStore
+      .getState()
+      .appendToolProgress(messageId, callId, progressFromWire(message, inner), {
+        toolName,
+        kind,
+      });
   }
 }
+
+/** See STALL_MS in use-chat-stream — same dead-man's switch for the Pilot surface. */
+const PILOT_STALL_MS = 75_000;
 
 export function usePilotChatStream() {
   const runIdRef = useRef<string | null>(null);
   const targetIdRef = useRef<string | null>(null);
 
+  const watchdogRef = useRef<ReturnType<typeof createStreamWatchdog> | null>(null);
+  if (!watchdogRef.current) {
+    watchdogRef.current = createStreamWatchdog({
+      stallMs: PILOT_STALL_MS,
+      onStall: () => {
+        const target = targetIdRef.current;
+        if (!runIdRef.current || !target) return;
+        log.warn('pilot-stream', `stream stalled — no activity for ${PILOT_STALL_MS}ms`);
+        usePilotChatStore.getState().finalizeAssistant(target);
+        usePilotChatStore.getState().setStreaming(false);
+        watchdogRef.current?.stop();
+        runIdRef.current = null;
+        targetIdRef.current = null;
+      },
+    });
+  }
+
   useEffect(() => {
     return on<StreamOpened, { ack: true }>(CHANNELS.STREAM_OPENED, (payload) => {
       if (payload.runId !== runIdRef.current) return { ack: true };
+      watchdogRef.current?.touch();
       if (payload.conversationId) {
         usePilotChatStore.getState().adoptConversationId(payload.conversationId);
         usePilotStore.getState().setConversationId(payload.conversationId);
@@ -169,6 +199,8 @@ export function usePilotChatStream() {
       if (chunk.runId !== runIdRef.current) return { ack: true };
       const target = targetIdRef.current;
       if (!target) return { ack: true };
+
+      watchdogRef.current?.touch();
 
       if (chunk.type === 'text') {
         if (chunk.payload.content)
@@ -189,7 +221,12 @@ export function usePilotChatStream() {
         ) {
           handleResourceChangedEvent(chunk.payload.data);
         } else {
-          log.info('pilot-stream', `event: ${chunk.payload.eventName}`, chunk.payload.data);
+          log.info(
+            'pilot-stream',
+            `event: ${chunk.payload.eventName}`,
+            chunk.payload.data,
+            chunk.payload.eventName,
+          );
         }
       } else if (chunk.type === 'error') {
         const message = chunk.payload.message ?? 'stream error';
@@ -197,6 +234,7 @@ export function usePilotChatStream() {
           .getState()
           .appendAssistantText(target, `\n\n_Error:_ ${message}`);
       } else if (chunk.type === 'done') {
+        watchdogRef.current?.stop();
         usePilotChatStore.getState().finalizeAssistant(target);
         usePilotChatStore.getState().setStreaming(false);
         runIdRef.current = null;
@@ -232,6 +270,7 @@ export function usePilotChatStream() {
       const runId = newId('run');
       runIdRef.current = runId;
       targetIdRef.current = assistantMsg.id;
+      watchdogRef.current?.start();
 
       // Pre-send page-context refresh — same path as the assistant. Pilot
       // also benefits from "agent has exactly what's on screen RIGHT NOW",
@@ -350,6 +389,7 @@ export function usePilotChatStream() {
 
   const cancel = useCallback(async () => {
     if (!runIdRef.current) return;
+    watchdogRef.current?.stop();
     await send(CHANNELS.STREAM_CANCEL, { runId: runIdRef.current });
     if (targetIdRef.current)
       usePilotChatStore.getState().finalizeAssistant(targetIdRef.current);

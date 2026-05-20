@@ -14,6 +14,7 @@ import { AlertTriangle, CheckCircle2, ChevronRight, Loader2 } from 'lucide-react
 import { useState } from 'react';
 import { ConfigurableToolRow, ToolDisplayBoundary } from './tool-display/ConfigurableToolRow';
 import { CopyToolButton } from './tool-display/CopyToolButton';
+import { ToolProgressView } from './tool-display/ToolProgressView';
 import { toolDisplayRegistry } from './tool-display/registry';
 import type { ToolTimelineEntry } from './ToolTimelineRow';
 
@@ -29,6 +30,7 @@ export function ServerToolRow({ tool }: { tool: ServerToolCall }) {
       args: tool.args,
       output: tool.result,
       message: tool.message,
+      progress: tool.progress,
     };
     const fallback = <DefaultServerToolRow tool={tool} />;
     if (cfg.CustomComponent) {
@@ -97,6 +99,8 @@ function DefaultServerToolRow({ tool }: { tool: ServerToolCall }) {
           }}
         />
       </div>
+      {/* Generic progress display — only renders when the tool emitted any. */}
+      <ToolProgressView progress={tool.progress} phase={tool.phase} />
       {open && (
         <div className="mt-1 ml-5 space-y-1.5">
           <DetailBlock label="tool" value={tool.toolName} />

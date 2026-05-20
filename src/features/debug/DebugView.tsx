@@ -49,9 +49,14 @@ const SOURCES: LogSource[] = [
   'auth',
   'api',
   'stream',
+  'pilot-stream',
+  'pilot',
   'scrape',
   'desktop',
+  'desktop-ws-offscreen',
   'supabase',
+  'frontend-bridge',
+  'audio',
   'sw',
   'msg',
   'ui',
@@ -59,17 +64,59 @@ const SOURCES: LogSource[] = [
 ];
 const LEVELS: LogLevel[] = ['info', 'success', 'warn', 'error'];
 
+/**
+ * Per-stream-event-type accent classes for the tag filter pills + row badges,
+ * mirroring the frontend StreamDebugPanel palette. Unknown tags fall back to a
+ * neutral slate via {@link tagClass}.
+ */
+const TAG_COLORS: Record<string, string> = {
+  chunk: 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30',
+  reasoning_chunk: 'bg-violet-500/20 text-violet-600 dark:text-violet-400 border-violet-500/30',
+  phase: 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border-yellow-500/30',
+  init: 'bg-sky-500/20 text-sky-600 dark:text-sky-400 border-sky-500/30',
+  warning: 'bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/30',
+  info: 'bg-sky-500/20 text-sky-600 dark:text-sky-400 border-sky-500/30',
+  data: 'bg-purple-500/20 text-purple-600 dark:text-purple-400 border-purple-500/30',
+  completion: 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30',
+  error: 'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/30',
+  tool_event: 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-500/30',
+  broker: 'bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 border-cyan-500/30',
+  heartbeat: 'bg-gray-500/20 text-gray-600 dark:text-gray-400 border-gray-500/30',
+  end: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+  render_block: 'bg-pink-500/20 text-pink-600 dark:text-pink-400 border-pink-500/30',
+  record_reserved: 'bg-teal-500/20 text-teal-600 dark:text-teal-400 border-teal-500/30',
+  record_update: 'bg-teal-500/20 text-teal-600 dark:text-teal-400 border-teal-500/30',
+  resource_changed: 'bg-fuchsia-500/20 text-fuchsia-600 dark:text-fuchsia-400 border-fuchsia-500/30',
+  structured_output: 'bg-lime-500/20 text-lime-600 dark:text-lime-400 border-lime-500/30',
+  context_analysis: 'bg-slate-500/20 text-slate-600 dark:text-slate-400 border-slate-500/30',
+};
+
+function tagClass(tag: string): string {
+  return TAG_COLORS[tag] ?? 'bg-secondary text-muted-foreground border-border/60';
+}
+
 export function DebugView() {
   const events = useDebugStore((s) => s.events);
   const clear = useDebugStore((s) => s.clear);
   const [subview, setSubview] = useState<'log' | 'bridges'>('log');
   const [sources, setSources] = useState<Set<LogSource>>(new Set(SOURCES));
   const [levels, setLevels] = useState<Set<LogLevel>>(new Set(LEVELS));
+  // Event-type filter is opt-OUT (tracks hidden tags) so newly-seen stream
+  // event types appear automatically without us pre-enumerating every kind.
+  const [hiddenTags, setHiddenTags] = useState<Set<string>>(new Set());
   const [paused, setPaused] = useState(false);
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [copied, setCopied] = useState(false);
   const frozenRef = useRef<DebugEvent[]>([]);
+
+  // Distinct event-type tags present in the current feed, sorted for a stable
+  // pill order. Drives the third (event-type) filter row.
+  const tags = useMemo(() => {
+    const set = new Set<string>();
+    for (const e of events) if (e.tag) set.add(e.tag);
+    return [...set].sort();
+  }, [events]);
 
   const filtered = useMemo(() => {
     const list = paused ? frozenRef.current : events;
@@ -77,11 +124,12 @@ export function DebugView() {
     const q = search.trim().toLowerCase();
     return list.filter((e) => {
       if (!sources.has(e.source) || !levels.has(e.level)) return false;
+      if (e.tag && hiddenTags.has(e.tag)) return false;
       if (!q) return true;
       const detail = e.detail !== undefined ? safeStringify(e.detail).toLowerCase() : '';
       return e.message.toLowerCase().includes(q) || detail.includes(q);
     });
-  }, [events, sources, levels, paused, search]);
+  }, [events, sources, levels, hiddenTags, paused, search]);
 
   const errorCount = useMemo(() => events.filter((e) => e.level === 'error').length, [events]);
 
@@ -99,6 +147,16 @@ export function DebugView() {
       else next.add(l);
       return next;
     });
+  // hiddenTags is opt-out: a tag is visible unless present in the set.
+  const toggleTag = (t: string) =>
+    setHiddenTags((curr) => {
+      const next = new Set(curr);
+      if (next.has(t)) next.delete(t);
+      else next.add(t);
+      return next;
+    });
+  const showAllTags = () => setHiddenTags(new Set());
+  const hideAllTags = () => setHiddenTags(new Set(tags));
   const toggleExpand = (id: string) =>
     setExpanded((curr) => {
       const next = new Set(curr);
@@ -207,6 +265,15 @@ export function DebugView() {
               active={levels as Set<string>}
               onToggle={(v) => toggleLevel(v as LogLevel)}
             />
+            {tags.length > 0 && (
+              <TagFilters
+                tags={tags}
+                hidden={hiddenTags}
+                onToggle={toggleTag}
+                onAll={showAllTags}
+                onNone={hideAllTags}
+              />
+            )}
           </>
         )}
       </div>
@@ -252,6 +319,16 @@ export function DebugView() {
                   {e.ctx}
                 </span>
                 <span className="shrink-0 font-semibold">{e.source}</span>
+                {e.tag && (
+                  <span
+                    className={cn(
+                      'shrink-0 rounded border px-1 text-[9px] leading-tight',
+                      tagClass(e.tag),
+                    )}
+                  >
+                    {e.tag}
+                  </span>
+                )}
                 <span className="truncate">{e.message}</span>
               </button>
               {isOpen && hasDetail && (
@@ -441,6 +518,63 @@ function Filters({
   );
 }
 
+/**
+ * Event-type filter row. Opt-out semantics: a tag is shown unless it's in
+ * `hidden`. Colored pills mirror the row badges so the eye can lock onto a
+ * single stream event type (phase / data / record_reserved / …) instantly.
+ */
+function TagFilters({
+  tags,
+  hidden,
+  onToggle,
+  onAll,
+  onNone,
+}: {
+  tags: string[];
+  hidden: Set<string>;
+  onToggle: (t: string) => void;
+  onAll: () => void;
+  onNone: () => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-1 text-[10px]">
+      <span className="mr-0.5 font-mono text-muted-foreground/60">events</span>
+      <button
+        type="button"
+        onClick={onAll}
+        className="rounded-full px-2 py-0.5 text-muted-foreground hover:bg-accent"
+      >
+        all
+      </button>
+      <button
+        type="button"
+        onClick={onNone}
+        className="rounded-full px-2 py-0.5 text-muted-foreground hover:bg-accent"
+      >
+        none
+      </button>
+      {tags.map((t) => {
+        const active = !hidden.has(t);
+        return (
+          <button
+            key={t}
+            type="button"
+            onClick={() => onToggle(t)}
+            className={cn(
+              'rounded-full border px-2 py-0.5 font-mono transition-colors',
+              active
+                ? tagClass(t)
+                : 'border-transparent text-muted-foreground/40 hover:bg-accent hover:text-muted-foreground',
+            )}
+          >
+            {t}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function levelClass(level: LogLevel): string {
   switch (level) {
     case 'success':
@@ -462,7 +596,8 @@ function fmtTime(ts: number): string {
 function formatEventLine(e: DebugEvent): string {
   const detail =
     e.detail !== undefined ? `\n    ${safeStringify(e.detail).split('\n').join('\n    ')}` : '';
-  return `${fmtTime(e.ts)} [${e.ctx}/${e.source}/${e.level}] ${e.message}${detail}`;
+  const tag = e.tag ? ` <${e.tag}>` : '';
+  return `${fmtTime(e.ts)} [${e.ctx}/${e.source}/${e.level}]${tag} ${e.message}${detail}`;
 }
 
 function safeStringify(v: unknown): string {
