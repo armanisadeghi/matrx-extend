@@ -22,6 +22,7 @@ import { log } from '@/lib/debug/log';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { useChatStore } from '@/state/chat';
+import { useSettingsStore } from '@/state/settings';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { AGENDA_SURFACE_ID, DEFAULT_AGENDA_AGENT_ID } from './constants';
 import {
@@ -77,7 +78,13 @@ export async function runTask(task: AgendaTask, send: SendFn): Promise<AgendaRun
   // Tab-switch + chat-store priming so the user sees the run in the chat tab.
   useSidepanelTabStore.getState().setTab('chat');
   const chat = useChatStore.getState();
-  const agentId = task.agent_id ?? DEFAULT_AGENDA_AGENT_ID;
+  // Honor the task's explicit pick, then fall back to the user's Default
+  // Agent preference, then the hardcoded constant as last resort. Same
+  // resolution order as the chat surface.
+  const agentId =
+    task.agent_id ??
+    useSettingsStore.getState().defaultAgentId ??
+    DEFAULT_AGENDA_AGENT_ID;
   chat.setAgent(agentId);
   if (task.persistent_conversation_id) {
     chat.setConversation(task.persistent_conversation_id);

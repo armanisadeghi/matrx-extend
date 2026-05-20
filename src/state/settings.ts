@@ -1,3 +1,4 @@
+import { DEFAULT_AGENDA_AGENT_ID } from '@/lib/agenda/constants';
 import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -21,7 +22,16 @@ interface SettingsState {
   scrapeDeepClean: boolean;
 
   // ─── Chat defaults ──────────────────────────────────────────────────────
-  /** Auto-selected when the chat tab loads with no agent chosen yet. */
+  /**
+   * Auto-selected when the chat tab loads with no agent chosen yet. The
+   * single source of truth for "which agent should open by default" across
+   * Chat, Pilot, Agenda fallbacks, and parallel_for_each_tab fan-out.
+   * Initial value is the Matrx Browser Agent so fresh installs and guests
+   * land on a working agent immediately; users override it via
+   * Settings → Default agent. NEVER hardcode the UUID in callers — read
+   * this and fall back to DEFAULT_AGENDA_AGENT_ID only when the setting
+   * itself is somehow cleared.
+   */
   defaultAgentId: string | null;
   /** Fallback for the per-agent ask/act mode when an agent has no override. */
   defaultPermissionMode: PermissionMode;
@@ -76,7 +86,7 @@ export const useSettingsStore = create<SettingsState>()(
     (set) => ({
       theme: 'system',
       scrapeDeepClean: false,
-      defaultAgentId: null,
+      defaultAgentId: DEFAULT_AGENDA_AGENT_ID,
       defaultPermissionMode: 'ask',
       defaultChatSpeed: 'fast',
       agentScopes: ['mine'],
@@ -110,6 +120,21 @@ export const useSettingsStore = create<SettingsState>()(
     {
       name: 'matrx.settings.v1',
       storage: createJSONStorage(() => chromeLocalStorage),
+      // Bump when the schema changes in a way that needs rewriting old
+      // persisted state.
+      //   v1 → v2 (2026-05-19): defaultAgentId default flipped from null
+      //     to DEFAULT_AGENDA_AGENT_ID so chat / agenda / parallel all
+      //     have a working agent without each caller re-implementing a
+      //     fallback. Users who installed before v2 have null persisted;
+      //     migrate replaces it.
+      version: 2,
+      migrate: (persisted, fromVersion) => {
+        const state = (persisted ?? {}) as Partial<SettingsState>;
+        if (fromVersion < 2 && (state.defaultAgentId === null || state.defaultAgentId === undefined)) {
+          state.defaultAgentId = DEFAULT_AGENDA_AGENT_ID;
+        }
+        return state as SettingsState;
+      },
     },
   ),
 );

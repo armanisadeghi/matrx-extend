@@ -41,7 +41,6 @@ import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
 import { log } from '@/lib/debug/log';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
-import { DEFAULT_AGENDA_AGENT_ID } from '@/lib/agenda/constants';
 import { wrapForAgent } from '@/lib/clipboard/copy';
 import {
   type AgxAgent,
@@ -192,21 +191,21 @@ export function ChatView() {
       setConversations(c);
       setAgentsLoading(false);
 
-      // Auto-select on fresh load:
-      //   1. The user's explicitly-saved default agent (when set + still in
-      //      the fetched list).
-      //   2. Otherwise, the Matrx Browser Agent — same UUID for guests
-      //      AND signed-in users so the side panel always opens on a
-      //      working agent. Signed-in users with their own preference set
-      //      it via Settings → Default agent and take branch (1).
+      // Auto-select the user's saved default agent — that's the single
+      // source of truth. Fresh installs start with `defaultAgentId` set
+      // to the Matrx Browser Agent (see useSettingsStore initial state),
+      // so guests and never-configured signed-in users still land on a
+      // working agent. If the saved id isn't in the fetched list (e.g.
+      // an agent was deleted / unshared), leave the picker empty so the
+      // user can pick something that exists.
       const chat = useChatStore.getState();
       const savedDefaultId = useSettingsStore.getState().defaultAgentId;
-      if (!chat.selectedAgentId) {
-        if (savedDefaultId && a.some((x) => x.id === savedDefaultId)) {
-          chat.setAgent(savedDefaultId);
-        } else if (a.some((x) => x.id === DEFAULT_AGENDA_AGENT_ID)) {
-          chat.setAgent(DEFAULT_AGENDA_AGENT_ID);
-        }
+      if (
+        !chat.selectedAgentId &&
+        savedDefaultId &&
+        a.some((x) => x.id === savedDefaultId)
+      ) {
+        chat.setAgent(savedDefaultId);
       }
     })();
     return () => {

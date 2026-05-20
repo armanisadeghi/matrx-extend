@@ -46,6 +46,7 @@ import {
   type ParallelSubRunStatus,
 } from '@/state/parallel-runs';
 import { getPilotSessionSnapshot } from '@/state/pilot';
+import { useSettingsStore } from '@/state/settings';
 import { z } from 'zod';
 
 const MAX_TABS = 8;
@@ -484,8 +485,13 @@ export const parallel_for_each_tab: ToolHandler<ParallelArgs, unknown> = {
       }
     }
 
-    // 2. Resolve agent id + auth.
-    const agentId = args.agent_id ?? DEFAULT_AGENDA_AGENT_ID;
+    // 2. Resolve agent id + auth. When the caller doesn't pin a child
+    //    agent, honor the user's Default Agent preference from settings;
+    //    fall back to the system constant only if that's been cleared.
+    const agentId =
+      args.agent_id ??
+      useSettingsStore.getState().defaultAgentId ??
+      DEFAULT_AGENDA_AGENT_ID;
     const baseUrl = await getApiBaseUrl();
     const token = await getAccessToken();
     const authHeader = token ? `Bearer ${token}` : null;
