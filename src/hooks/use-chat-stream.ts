@@ -21,6 +21,7 @@ import { useAuthStore } from "@/state/auth";
 import { useAutoScrapeStore } from "@/state/auto-scrape";
 import { type ChatMessage, type ToolPartCall, useChatStore } from "@/state/chat";
 import { useDesktopStore } from "@/state/desktop";
+import { useTurnInboxStore } from "@/state/turn-inbox";
 import { useScrapeStore } from "@/state/scrape";
 import { useSettingsStore } from "@/state/settings";
 import { useCallback, useEffect, useRef } from "react";
@@ -203,6 +204,51 @@ function handleToolEvent(
 }
 
 /**
+ * The running agent drained one or more queued inbox items at a turn boundary
+ * (turn-boundary inbox — docs/TURN_BOUNDARY_INBOX.md). For each item: flip its
+ * floating "waiting" card to delivered, and slot the message into the
+ * transcript as a real user bubble immediately above the still-streaming
+ * assistant message so ordering reads naturally (… → user steer → assistant
+ * continues). Items the server marks `is_visible_to_user: false` (silent
+ * steering) are not rendered.
+ *
+ * The event is typed (`InjectionConsumedEvent`), but the deployed schema's
+ * `ConsumedInjection` doesn't yet carry `text` / `is_visible_to_user` even
+ * though the contract says they're echoed — so we read those two defensively
+ * and fall back to our local record of what we sent. See
+ * docs/SERVER_NEEDS_turn_boundary_inbox.md.
+ */
+function handleInjectionConsumed(
+  targetAssistantId: string | null,
+  data: Record<string, unknown> | undefined,
+): void {
+  const items = Array.isArray(data?.items) ? data.items : [];
+  for (const raw of items) {
+    if (typeof raw !== "object" || raw === null) continue;
+    const it = raw as Record<string, unknown>;
+    const injectionId = String(it.injection_id ?? "");
+    if (!injectionId) continue;
+    const matched =
+      useTurnInboxStore.getState().markDeliveredByInjectionId(injectionId);
+    // Prefer the server-echoed text (self-contained even for an item we never
+    // queued ourselves); fall back to our local record of what we sent.
+    const text =
+      typeof it.text === "string" && it.text ? it.text : (matched?.text ?? "");
+    // Default visible unless the server explicitly says otherwise.
+    const visibleToUser = it.is_visible_to_user !== false;
+    if (visibleToUser && text) {
+      const msg: ChatMessage = {
+        id: newId("user"),
+        role: "user",
+        content: text,
+        timestamp: Date.now(),
+      };
+      useChatStore.getState().insertMessageBefore(targetAssistantId, msg);
+    }
+  }
+}
+
+/**
  * Total silence (no chunks, no heartbeat) after which the run is presumed
  * dead and the watchdog clears the spinner. Generous enough to ride out a
  * legitimately slow tool call between server events, short enough that a
@@ -327,6 +373,23 @@ export function useChatStream() {
           // Live tool-set updates. Used by the Tools tab UI to show what the
           // agent currently has available after each load_browser_tools call.
           handleResourceChangedEvent(chunk.payload.data);
+        } else if (chunk.payload.eventName === "injection_consumed") {
+          // Turn-boundary inbox: queued message(s) drained by the running
+          // agent. Render them as user bubbles + flip their floating cards.
+          handleInjectionConsumed(target, chunk.payload.data);
+        } else if (
+          chunk.payload.eventName === "info" &&
+          (chunk.payload.data as { code?: unknown } | undefined)?.code ===
+            "inbox_continue"
+        ) {
+          // The agent had produced what looked like its final answer, but a
+          // queued message arrived in the same turn — the run continues rather
+          // than going idle. Nothing to render; the answer follows as chunks.
+          log.info(
+            "stream",
+            "inbox_continue — agent will address a queued message",
+            chunk.payload.data,
+          );
         } else {
           // Other events: phase, completion, render_block, etc. — log only.
           log.info(

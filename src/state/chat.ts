@@ -134,6 +134,15 @@ interface ChatState {
   setDraft: (s: string) => void;
   pushMessage: (m: ChatMessage) => void;
   /**
+   * Insert a message immediately BEFORE the message with id `beforeId`.
+   * Falls back to appending if `beforeId` is null or not found. Used by the
+   * turn-boundary inbox: when a queued user message is consumed mid-stream we
+   * slot it in just above the still-streaming assistant bubble so the order
+   * reads naturally (… → user steer → assistant continues) without rotating
+   * the active stream target.
+   */
+  insertMessageBefore: (beforeId: string | null, m: ChatMessage) => void;
+  /**
    * Append a text chunk to the assistant message identified by `id`. If the
    * last part is already a text part, the chunk is concatenated. Otherwise a
    * new text part is pushed — preserving stream order so a tool call
@@ -231,6 +240,20 @@ export const useChatStore = create<ChatState>()(
             },
           ],
         })),
+      insertMessageBefore: (beforeId, m) =>
+        set((s) => {
+          const tagged: ChatMessage = {
+            ...m,
+            conversationId: m.conversationId ?? s.selectedConversationId,
+          };
+          const idx = beforeId
+            ? s.messages.findIndex((x) => x.id === beforeId)
+            : -1;
+          if (idx === -1) return { messages: [...s.messages, tagged] };
+          const next = s.messages.slice();
+          next.splice(idx, 0, tagged);
+          return { messages: next };
+        }),
       upsertToolPart: (messageId, callId, patch) =>
         set((s) => ({
           messages: s.messages.map((m) => {

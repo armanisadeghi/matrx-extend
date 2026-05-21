@@ -30,13 +30,16 @@ import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
 import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
 import { formatAssistantBody } from '@/features/chat/copy-conversation';
 import { LanguagePicker } from '@/features/chat/LanguagePicker';
+import { QueuedMessageStack } from '@/features/chat/QueuedMessageCard';
 import { ServerToolRow } from '@/features/chat/ServerToolRow';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
 import { TaskPanel, TaskPanelChip } from '@/features/lists/TaskPanel';
+import { enqueueInboxMessage } from '@/lib/api/routes/ai';
 import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
+import { newId } from '@/lib/id';
 import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
 import { log } from '@/lib/debug/log';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -55,11 +58,13 @@ import { cn } from '@/lib/utils';
 import { type ChatMessage, type MessagePart, useChatStore } from '@/state/chat';
 import { useSettingsStore } from '@/state/settings';
 import { useToolInbox } from '@/state/tool-inbox';
+import { useTurnInboxStore } from '@/state/turn-inbox';
 import {
   AlertTriangle,
   ArrowUp,
   Check,
   ChevronDown,
+  Clock,
   Hand,
   History,
   Lightbulb,
@@ -376,9 +381,40 @@ export function ChatView() {
     return user?.email?.split('@')[0] ?? '';
   }, [user]);
 
+  // Turn-boundary inbox: queue a message INTO the running agent instead of
+  // starting a second run. The agent drains it at its next pause and answers
+  // on the same stream. Optimistically shows a "waiting" card immediately;
+  // the POST result flips it to pending or failed.
+  const queueMessage = async (text: string) => {
+    const conversationId = selectedConversationId;
+    if (!conversationId) return;
+    const localId = newId('inj');
+    useTurnInboxStore.getState().enqueue({ localId, conversationId, text });
+    const res = await enqueueInboxMessage(conversationId, {
+      kind: 'user_message',
+      text,
+    });
+    if (res.ok) {
+      useTurnInboxStore.getState().markPending(localId, res.data.injection_id);
+    } else {
+      useTurnInboxStore.getState().markFailed(localId, res.error);
+    }
+  };
+
   const submitMessage = (text: string) => {
     const trimmed = text.trim();
     if (!trimmed) return;
+    // A run is already streaming for this conversation — never start a second
+    // run. Queue into the running agent (requires the server-assigned
+    // conversation id, adopted on STREAM_OPENED). If we don't have it yet
+    // (the very first ~second of a brand-new chat), ignore the submit and
+    // keep the draft so the user can resend a moment later.
+    if (isStreaming) {
+      if (!selectedConversationId) return;
+      void queueMessage(trimmed);
+      setDraft('');
+      return;
+    }
     const agentId = selectedAgentId ?? agents[0]?.id;
     if (!agentId) return;
     if (!selectedAgentId && agentId) setAgent(agentId);
@@ -512,6 +548,8 @@ export function ChatView() {
         />
       )}
 
+      <QueuedMessageStack conversationId={selectedConversationId} />
+
       <Composer
         value={draft}
         onChange={setDraft}
@@ -519,6 +557,7 @@ export function ChatView() {
         onCancel={() => void cancel()}
         isStreaming={isStreaming}
         canSend={Boolean(selectedAgentId || agents[0]?.id)}
+        canQueue={Boolean(selectedConversationId)}
         placeholder={
           selectedAgent
             ? `Message ${selectedAgent.name}…`
@@ -1175,6 +1214,7 @@ function Composer({
   onCancel,
   isStreaming,
   canSend,
+  canQueue,
   placeholder,
 }: {
   value: string;
@@ -1183,6 +1223,11 @@ function Composer({
   onCancel: () => void;
   isStreaming: boolean;
   canSend: boolean;
+  /**
+   * Whether queuing into the running agent is possible right now (we have a
+   * server-assigned conversation id). Only consulted while `isStreaming`.
+   */
+  canQueue: boolean;
   placeholder: string;
 }) {
   const taRef = useRef<HTMLTextAreaElement>(null);
@@ -1377,7 +1422,10 @@ function Composer({
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
-              if (!isStreaming) onSubmit();
+              // During a stream, Enter queues into the running agent (the
+              // parent's submit handler routes to the turn-boundary inbox).
+              // Guarded so Enter is a no-op when queuing isn't possible yet.
+              if (!isStreaming || canQueue) onSubmit();
             }
           }}
         />
@@ -1421,14 +1469,50 @@ function Composer({
             </button>
 
             {isStreaming ? (
-              <button
-                type="button"
-                onClick={onCancel}
-                className="inline-flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-90"
-                title="Stop"
-              >
-                <Square className="size-3.5" fill="currentColor" />
-              </button>
+              <>
+                {/*
+                  Queue-into-running-agent send. Deliberately NOT the normal
+                  solid-primary send button — an indigo→violet gradient + a
+                  small clock badge signal "this won't interrupt; it waits its
+                  turn." Routes to the turn-boundary inbox via onSubmit.
+                */}
+                <button
+                  type="button"
+                  onClick={onSubmit}
+                  disabled={!hasText || !canQueue}
+                  className={cn(
+                    'relative inline-flex size-8 items-center justify-center rounded-full transition-all',
+                    hasText && canQueue
+                      ? 'bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-sm hover:opacity-90'
+                      : 'bg-muted text-muted-foreground',
+                  )}
+                  title={
+                    canQueue
+                      ? "Queue for the agent's next turn"
+                      : 'Waiting for the conversation to start…'
+                  }
+                >
+                  <ArrowUp className="size-4" />
+                  <span
+                    className={cn(
+                      'absolute -bottom-0.5 -right-0.5 inline-flex items-center justify-center rounded-full p-px',
+                      hasText && canQueue
+                        ? 'bg-violet-600 text-white'
+                        : 'bg-muted-foreground/40 text-background',
+                    )}
+                  >
+                    <Clock className="size-2.5" />
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="inline-flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-90"
+                  title="Stop"
+                >
+                  <Square className="size-3.5" fill="currentColor" />
+                </button>
+              </>
             ) : (
               <button
                 type="button"

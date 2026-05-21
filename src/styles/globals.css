@@ -29,6 +29,7 @@
 
   --animate-spin-slow: spin 3s linear infinite;
   --animate-text-shimmer: text-shimmer 2.4s ease-in-out infinite;
+  --animate-dreamy-drift: dreamy-drift 7s ease-in-out infinite;
 }
 
 @keyframes text-shimmer {
@@ -37,6 +38,17 @@
   }
   100% {
     background-position: -200% 0;
+  }
+}
+
+/* Slow, soft gradient drift for the "waiting its turn" queued-message card. */
+@keyframes dreamy-drift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
   }
 }
 

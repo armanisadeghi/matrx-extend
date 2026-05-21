@@ -794,6 +794,46 @@ Every entry follows this shape:
 
 ---
 
+### Turn-boundary inbox (queue a message into a running agent)
+- **What it does:** While a run is streaming, lets the user keep typing and
+  "send" — instead of starting a second run or cancelling, the message is
+  POSTed to `/ai/conversations/{id}/inbox` and the running agent answers it on
+  the same stream at its next pause. A "waiting its turn" card floats above the
+  composer with a live timer; on delivery the message drops into the transcript.
+- **Where to test:** Assistant Chat surface (not Pilot yet).
+- **Steps:**
+  1. Send a message that triggers a longish response (e.g. "analyze the current
+     page" or anything with tool calls) so the stream stays open a few seconds.
+  2. While it's still streaming, type a follow-up. The send button is now an
+     indigo→violet gradient with a small clock badge (NOT the solid send arrow,
+     NOT the Stop square — both the gradient queue button and the Stop button
+     are shown). Press Enter or click it.
+  3. A dreamy card appears above the input: "Queued — waiting its turn" with a
+     drifting sheen, pulsing dot, and a counting timer (0s, 1s, …).
+  4. When the agent reaches a turn boundary, the card flips to "Delivered to
+     the agent" (green check), then fades out, and the queued text appears as a
+     user bubble in the transcript just above the agent's continuing response.
+- **Retract / edit:** while a card is "pending" (POST resolved), it shows a
+  pencil and × at the right of the status row. × retracts (DELETE) and removes
+  the card; pencil opens an inline editor (Enter saves via PATCH, Esc cancels).
+  If the agent drains the item between your click and the request (409), the
+  card is left to follow the normal delivered flow.
+- **Expected:** No second run starts; the original stream keeps going. FIFO if
+  you queue several. The agent's reply addresses the queued message.
+- **Edge cases worth poking:**
+  - Queue in the first ~second of a brand-new chat (before the server assigns a
+    conversation id): the gradient button is disabled and Enter is a no-op
+    (tooltip "Waiting for the conversation to start…"); the draft is kept.
+  - Network/auth failure on the POST → card turns red "Couldn't queue" with the
+    error and a dismiss ✕; no transcript bubble.
+  - Retract/edit are hidden while a card is still "sending" (no injection_id
+    yet) and reappear once it's "pending".
+  - Stop (square) still cancels the whole run while a card is pending.
+  - Force-in / immediate interrupt is intentionally NOT available (server
+    deferred it) — see docs/SERVER_NEEDS_turn_boundary_inbox.md.
+
+---
+
 ## Template (copy when adding a new entry)
 
 ```markdown

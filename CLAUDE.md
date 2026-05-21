@@ -644,6 +644,41 @@ Pending (backend — filed via matrx-feedback, contract in
   today) can re-attach + replay the unsent tail instead of replaying the turn.
 - [ ] Reliable `heartbeat` cadence (≤~20s) DURING long tool execution.
 
+### 15. ✅ Turn-boundary inbox — queue/steer a running agent (2026-05-20)
+**Why:** stop forcing "wait for the agent to finish before I can type" and
+"cancel the whole run just to add a note." Server contract:
+[docs/TURN_BOUNDARY_INBOX.md](./docs/TURN_BOUNDARY_INBOX.md).
+
+Shipped (client, Assistant Chat only):
+- [x] While streaming, the composer's send button becomes a distinct
+      indigo→violet gradient + clock-badge button (the Stop square stays
+      alongside). Enter/click POSTs to `/ai/conversations/{id}/inbox`
+      (`enqueueInboxMessage` in [routes/ai.ts](./src/lib/api/routes/ai.ts))
+      instead of starting a second run. `submitMessage` branches on
+      `isStreaming`; guarded until a conversation id is adopted.
+- [x] A "waiting its turn" card floats above the input — drifting gradient
+      (`animate-dreamy-drift`), pulsing dot, live timer. State in
+      [src/state/turn-inbox.ts](./src/state/turn-inbox.ts) (ephemeral); UI in
+      [src/features/chat/QueuedMessageCard.tsx](./src/features/chat/QueuedMessageCard.tsx).
+- [x] Retract (×) and edit (pencil) on a pending card — `cancelInboxMessage` /
+      `editInboxMessage` (DELETE / PATCH), 409-on-drained handled gracefully.
+- [x] On the stream's `injection_consumed` (now typed —
+      `InjectionConsumedEvent`), the message drops into the transcript as a
+      user bubble inserted just ABOVE the still-streaming assistant message
+      (`insertMessageBefore` on the chat store) and the card flips to
+      "Delivered" then fades. Reads server-echoed `text` + honors
+      `is_visible_to_user` (defensive — deployed schema lags the contract).
+      `info code=inbox_continue` is logged.
+
+Deferred / not wired:
+- [ ] **Force-in / interrupt mid-tool** — deferred by the server team
+      (overlaps cancellation semantics; needs its own design). The one open
+      item. See [docs/SERVER_NEEDS_turn_boundary_inbox.md](./docs/SERVER_NEEDS_turn_boundary_inbox.md).
+- [ ] `listPendingInboxMessages` (GET) exists but isn't auto-called — reopening
+      the side panel starts a fresh chat here, so there's no live run to
+      rebuild cards for. Kept for future surfaces.
+- [ ] Wire Pilot surface (own composer + `use-pilot-chat-stream`).
+
 ---
 
 ## 📐 Architecture cheat sheet

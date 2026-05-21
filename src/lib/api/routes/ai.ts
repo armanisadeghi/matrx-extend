@@ -3,7 +3,7 @@
  * `types/python-generated/openapi.json` (run `pnpm update-api-types` to refresh).
  */
 
-import { apiPost } from '@/lib/api/client';
+import { apiDelete, apiGet, apiPatch, apiPost } from '@/lib/api/client';
 
 /** POST /ai/agent/{agent_id} — start agent stream. agent_id is in the URL. */
 export const agentExecutePath = (agentId: string): string =>
@@ -101,4 +101,93 @@ export function warmAgent(agentId: string) {
 
 export function cancelRequest(requestId: string) {
   return apiPost<{ status: string }>(cancelPath(requestId), {});
+}
+
+/**
+ * POST /ai/conversations/{conversation_id}/inbox — turn-boundary inbox.
+ * Queue a message INTO a run that is already streaming, without cancelling it.
+ * The running agent drains the item at its next natural pause and answers it
+ * on the same stream. Plain JSON response (not a stream).
+ * See docs/TURN_BOUNDARY_INBOX.md.
+ */
+export const conversationInboxPath = (conversationId: string): string =>
+  `/ai/conversations/${encodeURIComponent(conversationId)}/inbox`;
+
+export interface InboxEnqueueRequest {
+  /** 'user_message' (default) shows in the transcript; 'system_message' steers. */
+  kind?: "user_message" | "system_message";
+  text: string;
+  is_visible_to_user?: boolean;
+  is_visible_to_model?: boolean;
+}
+
+export interface InboxEnqueueResponse {
+  injection_id: string;
+  conversation_id: string;
+  /** Server confirms acceptance; today always 'pending'. */
+  status: string;
+  /** true: a run is in flight and will drain it at its next boundary. */
+  run_active: boolean;
+}
+
+export function enqueueInboxMessage(
+  conversationId: string,
+  body: InboxEnqueueRequest,
+) {
+  return apiPost<InboxEnqueueResponse>(conversationInboxPath(conversationId), {
+    kind: "user_message",
+    is_visible_to_user: true,
+    is_visible_to_model: true,
+    ...body,
+  });
+}
+
+/** A single still-pending inbox item, as returned by the list/mutate endpoints. */
+export interface InboxItem {
+  injection_id: string;
+  kind: "user_message" | "system_message";
+  text: string;
+  status: string;
+  queued_at?: string;
+  is_visible_to_user?: boolean;
+  is_visible_to_model?: boolean;
+}
+
+const inboxItemPath = (conversationId: string, injectionId: string): string =>
+  `${conversationInboxPath(conversationId)}/${encodeURIComponent(injectionId)}`;
+
+/**
+ * GET /ai/conversations/{id}/inbox?status=pending — list still-pending items.
+ * Used to rebuild "waiting its turn" cards when client state was lost.
+ */
+export function listPendingInboxMessages(conversationId: string) {
+  return apiGet<InboxItem[]>(
+    `${conversationInboxPath(conversationId)}?status=pending`,
+  );
+}
+
+/**
+ * DELETE /ai/conversations/{id}/inbox/{injection_id} — retract a pending item.
+ * `200 {status:'cancelled'}` on success; **409** if it already drained (caller
+ * should fall back to the delivered flow); 404 if absent.
+ */
+export function cancelInboxMessage(conversationId: string, injectionId: string) {
+  return apiDelete<{ injection_id: string; status: string }>(
+    inboxItemPath(conversationId, injectionId),
+  );
+}
+
+/**
+ * PATCH /ai/conversations/{id}/inbox/{injection_id} — edit a pending item's
+ * text. `200 {status:'pending'}` on success; 409 if drained; 404 if absent.
+ */
+export function editInboxMessage(
+  conversationId: string,
+  injectionId: string,
+  text: string,
+) {
+  return apiPatch<{ injection_id: string; status: string }>(
+    inboxItemPath(conversationId, injectionId),
+    { text },
+  );
 }
