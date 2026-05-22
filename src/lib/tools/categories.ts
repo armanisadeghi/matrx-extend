@@ -213,6 +213,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   extract_microdata: 'reading',
   fetch_url_as_markdown: 'reading',
   mutation_watch: 'reading',
+  list_highlights: 'reading',
 
   // ─── interaction (canonical) ──────────────────────────────────────────
   computer: 'interaction',
@@ -450,6 +451,7 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'extract_table',
   'fetch_url_as_markdown',
   'mutation_watch',
+  'list_highlights',
   'screenshot_region',
   'chrome_tab_audio_inspect',
   // ─── ask ────────────────────────────────────────────────────────────────

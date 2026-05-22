@@ -24,6 +24,7 @@ import { articleToMarkdown } from '@/lib/scrape/to-markdown';
 import type { SeoAudit } from '@/lib/seo/audit';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/state/auth';
+import { useHighlightStore } from '@/state/highlights';
 import { scrapeLinkKey, useScrapeStore } from '@/state/scrape';
 import {
   AlertTriangle,
@@ -162,6 +163,7 @@ export function ScrapeView() {
           <AddToProjectButton url={tab.url} title={tab.title} variant="icon" />
           {current && <CopyMenu title="Copy capture" options={fullCaptureCopyOptions(current)} />}
         </div>
+        <HighlightRegionsBanner />
         {recognition.capturedAt && !saved && (
           <div className="mt-2 flex items-center gap-2 rounded-xl bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-700 dark:text-emerald-300">
             <CheckCircle2 className="size-3.5 shrink-0" />
@@ -1046,6 +1048,50 @@ function SeoStat({
       <div className={cn('text-base font-semibold tabular-nums', toneClass)}>{value}</div>
       <div className="text-[10px] text-muted-foreground">{label}</div>
       {hint && <div className="text-[9px] text-muted-foreground/70">{hint}</div>}
+    </div>
+  );
+}
+
+/**
+ * Banner shown when the Highlight tab hands off highlighted regions to Scrape.
+ * Surfaces the combined text with a copy-for-agent affordance. Consumed +
+ * cleared on mount so revisits don't re-show stale handoffs.
+ */
+function HighlightRegionsBanner() {
+  const regions = useHighlightStore((s) => s.scrapeHandoff);
+  const setScrapeHandoff = useHighlightStore((s) => s.setScrapeHandoff);
+  const [items, setItems] = useState<{ title: string; text: string }[] | null>(null);
+
+  useEffect(() => {
+    if (regions && regions.length > 0) {
+      setItems(regions);
+      setScrapeHandoff(null);
+    }
+  }, [regions, setScrapeHandoff]);
+
+  if (!items || items.length === 0) return null;
+  const combined = items.map((r) => r.text).join('\n\n');
+
+  return (
+    <div className="mt-2 rounded-xl border border-amber-400/40 bg-amber-400/10 px-3 py-2 text-xs">
+      <div className="mb-1 flex items-center justify-between">
+        <span className="font-medium text-amber-700 dark:text-amber-300">
+          {items.length} highlighted region{items.length === 1 ? '' : 's'}
+        </span>
+        <div className="flex items-center gap-1">
+          <CopyButton text={combined} title="Copy regions" />
+          <button
+            onClick={() => setItems(null)}
+            className="rounded-md p-0.5 text-amber-600/70 hover:bg-amber-400/20 hover:text-amber-700 dark:text-amber-400/70"
+            title="Dismiss"
+          >
+            <X className="size-3.5" />
+          </button>
+        </div>
+      </div>
+      <pre className="max-h-40 overflow-auto whitespace-pre-wrap text-amber-800/80 dark:text-amber-200/80">
+        {combined}
+      </pre>
     </div>
   );
 }

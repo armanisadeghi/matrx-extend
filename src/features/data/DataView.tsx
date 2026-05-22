@@ -14,6 +14,7 @@ import {
   savePattern,
 } from '@/lib/supabase/queries';
 import { useAutoExtractStore } from '@/state/auto-extract';
+import { useHighlightStore } from '@/state/highlights';
 import { Crosshair, Loader2, Play, Save, XCircle, Zap } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -65,6 +66,18 @@ export function DataView() {
       offExit();
     };
   }, []);
+
+  // Handoff from the Highlight tab: element highlights → picker fields. The
+  // Highlight tab stashes them in the shared store and switches to this tab;
+  // we consume + clear so re-visits don't re-load stale fields.
+  const dataHandoff = useHighlightStore((s) => s.dataHandoff);
+  const setDataHandoff = useHighlightStore((s) => s.setDataHandoff);
+  useEffect(() => {
+    if (dataHandoff && dataHandoff.length > 0) {
+      setPickedFields(dataHandoff);
+      setDataHandoff(null);
+    }
+  }, [dataHandoff, setDataHandoff]);
 
   const enterPicker = async () => {
     if (!tab.id) return;

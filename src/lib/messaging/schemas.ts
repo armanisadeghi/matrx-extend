@@ -80,6 +80,20 @@ export const CHANNELS = {
   DIAGNOSE_PICKER_RESULT: 'diagnose:picker-result',
   DIAGNOSE_PICKER_EXIT: 'diagnose:picker-exit',
 
+  // Highlighter — on-page text/element capture overlay.
+  //   sidepanel → content (chrome.tabs.sendMessage): mount + paint existing,
+  //               or stop. Injected via chrome.scripting.executeScript first.
+  HIGHLIGHT_PAINT: 'highlight:paint', // sidepanel → content: paint these existing highlights
+  HIGHLIGHT_STOP: 'highlight:stop', // sidepanel → content: unmount the overlay
+  HIGHLIGHT_SET_MODE: 'highlight:set-mode', // sidepanel → content: switch text/element mode
+  //   content → runtime (sidepanel capture bridge handles + writes to DB):
+  HIGHLIGHT_CAPTURED: 'highlight:captured', // content → sidepanel: a new highlight draft (awaits {id})
+  HIGHLIGHT_CLEAR_REQUEST: 'highlight:clear-request', // content → sidepanel: trash button — clear this page
+  HIGHLIGHT_OVERLAY_STATE: 'highlight:overlay-state', // content → sidepanel: mounted/unmounted + count + mode
+  // Any highlight write (create / update / delete / clear) broadcasts this so
+  // the Highlight tab + capture bridge refresh without polling.
+  HIGHLIGHTS_CHANGED: 'highlights:changed',
+
   // List-pattern picker (content → SW → sidepanel)
   LIST_PICKER_RESULT: 'data:list-picker-result',
   LIST_PICKER_EXIT: 'data:list-picker-exit',

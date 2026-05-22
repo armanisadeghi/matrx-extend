@@ -13,6 +13,7 @@ export type SidepanelTab =
   | 'lists'
   | 'scrape'
   | 'data'
+  | 'highlight'
   | 'guidance'
   | 'seo'
   | 'notes'

@@ -47,6 +47,7 @@ import { system_info_handlers } from '@/lib/tools/handlers/system-info';
 import { video_handlers } from '@/lib/tools/handlers/video';
 import { demo_handlers } from '@/lib/tools/handlers/demos';
 import { guidance_handlers } from '@/lib/tools/handlers/guidance';
+import { highlight_handlers } from '@/lib/tools/handlers/highlights';
 import { extract_handlers } from '@/lib/tools/handlers/extract';
 import { extras_handlers } from '@/lib/tools/handlers/extras';
 import { microdata_handlers } from '@/lib/tools/handlers/microdata';
@@ -117,6 +118,8 @@ const ALL: AnyToolHandler[] = [
   ...demo_handlers,
   // ─── guidance (user-saved clues for the agent) ─────────────────────────
   ...guidance_handlers,
+  // ─── highlights (user-captured page text + elements) ───────────────────
+  ...highlight_handlers,
   // ─── focused extractors (table, region screenshot) ─────────────────────
   ...extract_handlers,
   // ─── small utilities (clipboard, audio inspect, mutation watch) ────────

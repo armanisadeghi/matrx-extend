@@ -258,6 +258,18 @@ export async function buildContextV2Bundled(
     ctx.selection = probe.selection;
   }
 
+  // ── highlights — user-attached page captures (text + elements) ─────────
+  // Sticky attachments from the Highlight tab. Each carries the captured
+  // text plus its reference so the agent can act on the exact element /
+  // passage. Only attached when the user has highlights queued. One bundled
+  // key (rich payload is free; menu cost is one line).
+  if (inputs.highlights && inputs.highlights.length > 0) {
+    ctx.highlights = {
+      count: inputs.highlights.length,
+      items: inputs.highlights,
+    };
+  }
+
   // ── page_dismissibles — modal / banner inventory with close-button refs ─
   // BrowserArena's #2 universal failure mode is agents not dismissing
   // popups. Surface the inventory + close selectors so the agent can

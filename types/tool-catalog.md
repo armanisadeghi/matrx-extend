@@ -1,14 +1,14 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-21T00:17:18.091Z
+Generated: 2026-05-21T00:32:03.675Z
 
-- **Total tools:** 167
-- **Assistant bundle:** 74 tools (read-only)
-- **Pilot bundle:** 137 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 167 tools
+- **Total tools:** 168
+- **Assistant bundle:** 75 tools (read-only)
+- **Pilot bundle:** 138 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 168 tools
 
 
-## Tier: read (74)
+## Tier: read (75)
 
 ### `list_browser_tools`
 
@@ -1618,6 +1618,45 @@ Return the full record for one guidance item by id. Notes include their text; sc
     "id"
   ],
   "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_highlights`
+
+List highlights the user captured on web pages (text passages and elements) via the Highlight tab. Each entry includes the captured text plus a reference (CSS selector, data-matrx-ref when still valid, role/tag, and a text-quote anchor) so you can act on the exact element or passage with click/type/extract tools. scope: "page" (current URL, default), "site" (current domain), or "all".
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "scope": {
+      "type": "string",
+      "enum": [
+        "page",
+        "site",
+        "all"
+      ],
+      "default": "page"
+    },
+    "url": {
+      "type": "string"
+    },
+    "limit": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 1000,
+      "default": 100
+    }
+  },
+  "additionalProperties": false,
+  "default": {
+    "scope": "page",
+    "limit": 100
+  },
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
 ```

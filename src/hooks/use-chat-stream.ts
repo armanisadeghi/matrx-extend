@@ -2,6 +2,8 @@ import { type AgentStartRequest, agentExecutePath } from "@/lib/api/routes/ai";
 import { resolveActiveTab } from "@/lib/chat/active-tab";
 import { buildBrowserDomState } from "@/lib/chat/build-browser-dom-state";
 import { buildChatContext } from "@/lib/chat/build-context";
+import type { AttachedHighlight } from "@/lib/chat/context/types";
+import { getHighlightsByIds } from "@/lib/highlights/queries";
 import { refreshPageContextBeforeSend } from "@/lib/chat/refresh-page-context";
 import { progressFromWire } from "@/lib/chat/tool-progress";
 import { attemptResume } from "@/lib/stream/resume";
@@ -22,9 +24,35 @@ import { useAutoScrapeStore } from "@/state/auto-scrape";
 import { type ChatMessage, type ToolPartCall, useChatStore } from "@/state/chat";
 import { useDesktopStore } from "@/state/desktop";
 import { useTurnInboxStore } from "@/state/turn-inbox";
+import { useHighlightStore } from "@/state/highlights";
 import { useScrapeStore } from "@/state/scrape";
 import { useSettingsStore } from "@/state/settings";
 import { useCallback, useEffect, useRef } from "react";
+
+/**
+ * Materialize the highlights the user attached via the Highlight tab into the
+ * compact shape the `highlights` context key expects. Returns null when the
+ * tray is empty so the context builder omits the key entirely.
+ */
+async function resolveAttachedHighlights(): Promise<AttachedHighlight[] | null> {
+  const ids = useHighlightStore.getState().attachedIds;
+  if (ids.length === 0) return null;
+  const rows = await getHighlightsByIds(ids);
+  if (rows.length === 0) return null;
+  return rows.map((h) => ({
+    id: h.id,
+    mode: h.mode,
+    text: h.text,
+    url: h.url,
+    ref: {
+      selector: h.anchor.selector,
+      ref: h.anchor.ref,
+      text_quote: h.anchor.text_quote,
+      role: h.anchor.role,
+      tag: h.anchor.tag,
+    },
+  }));
+}
 
 interface SendOptions {
   agentId?: string;
@@ -480,6 +508,10 @@ export function useChatStream() {
       // client.state["browser-dom"].current_tab_id, STREAM_START.assignedTabId).
       // See docs/REQUEST_PAYLOAD_CONTRACT.md §1.
       const activeTab = await resolveActiveTab();
+      // Highlights the user attached via the Highlight tab (sticky until they
+      // clear the tray). Fetched once per send so the agent sees the exact
+      // captured text + references. Skipped entirely when none are attached.
+      const attachedHighlights = await resolveAttachedHighlights();
       let context: Record<string, unknown> = {};
       try {
         context = await buildChatContext({
@@ -495,6 +527,7 @@ export function useChatStream() {
           autoScrape,
           activeTab,
           conversationId: useChatStore.getState().selectedConversationId,
+          highlights: attachedHighlights,
         });
         log.info(
           "stream",

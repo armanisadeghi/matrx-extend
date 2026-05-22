@@ -30,6 +30,7 @@ import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
 import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
 import { formatAssistantBody } from '@/features/chat/copy-conversation';
 import { LanguagePicker } from '@/features/chat/LanguagePicker';
+import { HighlightAttachmentChip } from '@/features/chat/HighlightAttachmentChip';
 import { QueuedMessageStack } from '@/features/chat/QueuedMessageCard';
 import { ServerToolRow } from '@/features/chat/ServerToolRow';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
@@ -547,6 +548,8 @@ export function ChatView() {
           onDismiss={() => useChatStore.getState().setStreamInterruption(null)}
         />
       )}
+
+      <HighlightAttachmentChip />
 
       <QueuedMessageStack conversationId={selectedConversationId} />
 

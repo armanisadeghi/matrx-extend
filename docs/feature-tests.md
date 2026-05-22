@@ -834,6 +834,46 @@ Every entry follows this shape:
 
 ---
 
+### Highlights (Highlight tab + on-page highlighter + attach-to-chat)
+- **What it does:** Lets the user mark text passages and whole elements on any
+  page; captures are persisted to Supabase (`wbx_highlight`) with a re-locatable
+  reference, can be attached to the chat (ride along as the `highlights` context
+  key), and can be handed to the Data and Scrape tabs. The agent can read them
+  via `list_highlights`.
+- **Where to test:** Side panel → Highlights tab (highlighter icon, signed-in
+  only); also Chat, Data, Scrape, and the Tools tab.
+- **Steps:**
+  1. Open a content-rich page. Side panel → **Highlights** tab → **Highlight
+     this page**. A pill toolbar appears top-center on the page.
+  2. **Text mode** (default): drag-select a passage. It paints yellow; a row
+     appears in the Highlights list with the captured text.
+  3. **Element mode**: click the toolbar's *Element* toggle, hover (blue
+     outline), click an element. It paints an outline; a row appears.
+  4. Reload the page, **Highlight this page** again → existing highlights
+     re-paint (text via text-quote, elements via selector).
+  5. Click the link icon on a row (or **Attach all to chat**), open **Chat** —
+     an amber "N highlights attached" chip shows above the composer. Send a
+     message; the agent receives a `highlights` context key.
+  6. **Data ( N )** button → switches to Data tab with element highlights
+     pre-loaded as picker fields → Save pattern works.
+  7. **Scrape ( N )** button → switches to Scrape tab, shows a highlighted-
+     regions banner with combined text + copy.
+  8. Tools tab → run `list_highlights` with `{"scope":"page"}` → returns the
+     captured highlights with their references.
+- **Expected:** Captures persist across reloads and survive sign-out/in (RLS
+  scoped to the user). The pill's count tracks captures; trash clears the
+  page's highlights; ✕ stops the overlay.
+- **Edge cases worth poking:**
+  - chrome:// / Web Store pages: overlay injection fails gracefully (button
+    no-ops, no crash).
+  - Side panel closed while capturing: the paint stays but the row isn't saved
+    (no auth context to write) — re-toggle to recapture.
+  - Text spanning multiple elements: anchor still re-locates via the exact
+    quote within the container.
+  - Guests: the tab is hidden (signed-in only, like Notes).
+
+---
+
 ## Template (copy when adding a new entry)
 
 ```markdown

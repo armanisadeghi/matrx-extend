@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useAutoExtract } from '@/hooks/use-auto-extract';
 import { useAutoScrape } from '@/hooks/use-auto-scrape';
 import { useContextMenuListener } from '@/hooks/use-context-menu-listener';
+import { useHighlightBridge } from '@/hooks/use-highlight-bridge';
 import { useParallelEventBridge } from '@/hooks/use-parallel-event-bridge';
 import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
@@ -19,6 +20,7 @@ import {
   Camera,
   Crosshair,
   Database,
+  Highlighter,
   ListChecks,
   ListTodo,
   Loader2,
@@ -49,6 +51,8 @@ const VIEW_LOADERS = {
   scrape: () =>
     import('@/features/scrape/ScrapeView').then((m) => ({ default: m.ScrapeView })),
   data: () => import('@/features/data/DataView').then((m) => ({ default: m.DataView })),
+  highlight: () =>
+    import('@/features/highlights/HighlightView').then((m) => ({ default: m.HighlightView })),
   guidance: () =>
     import('@/features/guidance/GuidanceView').then((m) => ({ default: m.GuidanceView })),
   seo: () => import('@/features/seo/SeoView').then((m) => ({ default: m.SeoView })),
@@ -74,6 +78,7 @@ const ListsHubView = lazy(VIEW_LOADERS.lists);
 const AgendaView = lazy(VIEW_LOADERS.agenda);
 const ScrapeView = lazy(VIEW_LOADERS.scrape);
 const DataView = lazy(VIEW_LOADERS.data);
+const HighlightView = lazy(VIEW_LOADERS.highlight);
 const GuidanceView = lazy(VIEW_LOADERS.guidance);
 const SeoView = lazy(VIEW_LOADERS.seo);
 const NotesView = lazy(VIEW_LOADERS.notes);
@@ -135,6 +140,11 @@ export function App() {
   // context menu (SW-side) and drains any cold-open pending draft from
   // chrome.storage.session.
   useContextMenuListener();
+
+  // Mount ONCE: owns the Supabase write for highlights captured by the
+  // on-page overlay (the page can't reach Supabase) and keeps the highlight
+  // store in sync regardless of which tab is active.
+  useHighlightBridge();
 
   // Pre-warm the active tab's chunk. Fires on mount (so the default Chat
   // view is already fetched by the time Suspense reaches it — no flash on
@@ -222,6 +232,9 @@ export function App() {
                 </TabsTrigger>
                 {showFullTabs && (
                   <>
+                    <TabsTrigger value="highlight" className="size-7 p-0" title="Highlights">
+                      <Highlighter className="size-3.5" />
+                    </TabsTrigger>
                     <TabsTrigger value="guidance" className="size-7 p-0" title="Guidance">
                       <BookOpen className="size-3.5" />
                     </TabsTrigger>
@@ -315,6 +328,11 @@ export function App() {
             </TabsContent>
             {showFullTabs && (
               <>
+                <TabsContent value="highlight" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <HighlightView />
+                  </Suspense>
+                </TabsContent>
                 <TabsContent value="guidance" className="flex-1 min-h-0">
                   <Suspense fallback={TabFallback}>
                     <GuidanceView />

@@ -38,4 +38,27 @@ export interface ContextBuildInputs {
    * arrives via STREAM_OPENED.
    */
   conversationId?: string | null;
+  /**
+   * Highlights the user attached to the chat (via the Highlight tab). Each
+   * carries the captured text plus its reference (selector / ref / text
+   * anchor) so the agent can act on the exact element/passage with the
+   * existing interaction + extraction tools. Attached as the `highlights`
+   * context key only when non-empty. See src/lib/highlights/.
+   */
+  highlights?: AttachedHighlight[] | null;
+}
+
+export interface AttachedHighlight {
+  id: string;
+  mode: 'text' | 'element';
+  text: string | null;
+  url: string;
+  /** Re-locatable reference: selector / ref / text-quote / role / tag. */
+  ref: {
+    selector?: string;
+    ref?: string;
+    text_quote?: { exact: string; prefix?: string; suffix?: string };
+    role?: string;
+    tag?: string;
+  };
 }

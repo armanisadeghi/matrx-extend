@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-21T00:17:18.091Z",
+  "generated_at": "2026-05-21T00:32:03.675Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -83,6 +83,7 @@
     "describe_demo",
     "list_guidance",
     "get_guidance_item",
+    "list_highlights",
     "extract_table",
     "screenshot_region",
     "chrome_tab_audio_inspect",
@@ -210,6 +211,7 @@
     "list_guidance",
     "get_guidance_item",
     "delete_guidance_item",
+    "list_highlights",
     "extract_table",
     "screenshot_region",
     "get_clipboard",
@@ -373,6 +375,7 @@
     "list_guidance",
     "get_guidance_item",
     "delete_guidance_item",
+    "list_highlights",
     "extract_table",
     "screenshot_region",
     "get_clipboard",
@@ -451,6 +454,7 @@
         "inspect_element",
         "get_element_details",
         "get_form_fields",
+        "list_highlights",
         "extract_table",
         "mutation_watch",
         "extract_microdata",
@@ -6414,6 +6418,54 @@
       "required_optional_permissions": [],
       "admin_only": false,
       "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
+      ]
+    },
+    {
+      "name": "list_highlights",
+      "description": "List highlights the user captured on web pages (text passages and elements) via the Highlight tab. Each entry includes the captured text plus a reference (CSS selector, data-matrx-ref when still valid, role/tag, and a text-quote anchor) so you can act on the exact element or passage with click/type/extract tools. scope: \"page\" (current URL, default), \"site\" (current domain), or \"all\".",
+      "tier": "read",
+      "category": "reading",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "string",
+            "enum": [
+              "page",
+              "site",
+              "all"
+            ],
+            "default": "page"
+          },
+          "url": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 1000,
+            "default": 100
+          }
+        },
+        "additionalProperties": false,
+        "default": {
+          "scope": "page",
+          "limit": 100
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
         "pilot",
         "pilot+privileged"
       ],
