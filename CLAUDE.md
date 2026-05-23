@@ -670,10 +670,22 @@ Shipped (client, Assistant Chat only):
       `is_visible_to_user` (defensive — deployed schema lags the contract).
       `info code=inbox_continue` is logged.
 
+Shipped (2026-05-22):
+- [x] **Interrupt / "stop & send"** — the server delivered this NOT as
+      abort-mid-syscall (correctly rejected as fragile) but as a clean cut that
+      keeps the partial: aborting the stream makes the server persist the
+      partial assistant turn + an auto `[⚠️ Response interrupted…]` marker, and
+      the fresh run loads that history and answers the redirect. Client wiring:
+      `interruptAndSend()` in [use-chat-stream.ts](./src/hooks/use-chat-stream.ts)
+      (abort → 350ms grace so the partial flushes → normal send) behind a third
+      composer affordance — the amber→rose stop-badge button, distinct from the
+      indigo (waiting) queue send and the plain Stop. No special endpoint; no
+      client-supplied partial. Also dropped the #2 defensive casts in
+      `handleInjectionConsumed` now that the deployed `ConsumedInjection` schema
+      carries `text` + `is_visible_to_user`. See
+      [docs/SERVER_NEEDS_turn_boundary_inbox.md](./docs/SERVER_NEEDS_turn_boundary_inbox.md).
+
 Deferred / not wired:
-- [ ] **Force-in / interrupt mid-tool** — deferred by the server team
-      (overlaps cancellation semantics; needs its own design). The one open
-      item. See [docs/SERVER_NEEDS_turn_boundary_inbox.md](./docs/SERVER_NEEDS_turn_boundary_inbox.md).
 - [ ] `listPendingInboxMessages` (GET) exists but isn't auto-called — reopening
       the side panel starts a fresh chat here, so there's no live run to
       rebuild cards for. Kept for future surfaces.

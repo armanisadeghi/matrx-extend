@@ -3,6 +3,7 @@ import { resolveActiveTab } from "@/lib/chat/active-tab";
 import { buildBrowserDomState } from "@/lib/chat/build-browser-dom-state";
 import { buildChatContext } from "@/lib/chat/build-context";
 import type { AttachedHighlight } from "@/lib/chat/context/types";
+import type { ConsumedInjection } from "@gen/stream-events";
 import { getHighlightsByIds } from "@/lib/highlights/queries";
 import { refreshPageContextBeforeSend } from "@/lib/chat/refresh-page-context";
 import { progressFromWire } from "@/lib/chat/tool-progress";
@@ -240,28 +241,28 @@ function handleToolEvent(
  * continues). Items the server marks `is_visible_to_user: false` (silent
  * steering) are not rendered.
  *
- * The event is typed (`InjectionConsumedEvent`), but the deployed schema's
- * `ConsumedInjection` doesn't yet carry `text` / `is_visible_to_user` even
- * though the contract says they're echoed — so we read those two defensively
- * and fall back to our local record of what we sent. See
- * docs/SERVER_NEEDS_turn_boundary_inbox.md.
+ * The deployed `ConsumedInjection` schema now carries `text` +
+ * `is_visible_to_user` (the drain echoes them at runtime), so we read the
+ * generated typed fields directly. We still fall back to our local record of
+ * what we sent when `text` is empty — covers a consumed item we never queued
+ * locally with no echoed text. See docs/SERVER_NEEDS_turn_boundary_inbox.md.
  */
 function handleInjectionConsumed(
   targetAssistantId: string | null,
   data: Record<string, unknown> | undefined,
 ): void {
-  const items = Array.isArray(data?.items) ? data.items : [];
-  for (const raw of items) {
-    if (typeof raw !== "object" || raw === null) continue;
-    const it = raw as Record<string, unknown>;
-    const injectionId = String(it.injection_id ?? "");
+  const items: ConsumedInjection[] = Array.isArray(data?.items)
+    ? (data.items as ConsumedInjection[])
+    : [];
+  for (const it of items) {
+    if (!it || typeof it !== "object") continue;
+    const injectionId = it.injection_id ?? "";
     if (!injectionId) continue;
     const matched =
       useTurnInboxStore.getState().markDeliveredByInjectionId(injectionId);
     // Prefer the server-echoed text (self-contained even for an item we never
     // queued ourselves); fall back to our local record of what we sent.
-    const text =
-      typeof it.text === "string" && it.text ? it.text : (matched?.text ?? "");
+    const text = it.text ? it.text : (matched?.text ?? "");
     // Default visible unless the server explicitly says otherwise.
     const visibleToUser = it.is_visible_to_user !== false;
     if (visibleToUser && text) {
@@ -681,5 +682,29 @@ export function useChatStream() {
     return sendMessage(last.input, last.opts);
   }, [sendMessage]);
 
-  return { send: sendMessage, cancel, retry };
+  // Interrupt the running turn and immediately redirect with a new message —
+  // the "stop & send" affordance. Server-managed (docs/TURN_BOUNDARY_INBOX.md,
+  // SERVER_NEEDS_turn_boundary_inbox.md #6): aborting the stream makes the
+  // server persist the partial assistant turn + an auto "[interrupted]" marker;
+  // the fresh run then loads that history and answers the redirect. Distinct
+  // from the inbox, which waits for the turn boundary on the SAME run.
+  const interruptAndSend = useCallback(
+    async (input: string, opts: SendOptions = {}): Promise<string | null> => {
+      // 1. Abort the current stream. `cancel()` awaits the SW's STREAM_CANCEL
+      //    ack (→ STREAM_KILL → fetch abort), so the server sees the disconnect
+      //    and captures the partial assistant turn.
+      await cancel();
+      // 2. Brief grace period so the server flushes that partial turn (with its
+      //    interrupted-marker) BEFORE the new run loads history. There's no
+      //    synchronous /interrupt endpoint yet, so the ordering is handled with
+      //    a short wait (SERVER_NEEDS_turn_boundary_inbox.md #6 — "send the
+      //    redirect after the aborted stream has fully closed").
+      await new Promise((r) => setTimeout(r, 350));
+      // 3. Send the redirect as a normal fresh run on the same conversation.
+      return sendMessage(input, opts);
+    },
+    [cancel, sendMessage],
+  );
+
+  return { send: sendMessage, cancel, retry, interruptAndSend };
 }

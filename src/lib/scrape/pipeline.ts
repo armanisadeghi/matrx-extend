@@ -106,20 +106,128 @@ export async function runScrape(
   };
 }
 
+/**
+ * Block-level tags that MDX/Mintlify-style renderers emit as
+ * `<span data-as="p">` / `<div data-as="h2">` etc. We only rename to a tag
+ * on this allow-list — never to an arbitrary attacker-controlled value.
+ */
+const DATA_AS_BLOCK_TAGS = new Set([
+  'p',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'ul',
+  'ol',
+  'li',
+  'blockquote',
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'td',
+  'th',
+  'pre',
+  'code',
+  'em',
+  'strong',
+  'figure',
+  'figcaption',
+  'section',
+  'article',
+]);
+
+/**
+ * Best-effort language detection for a syntax-highlighted code block.
+ * Mintlify puts it on `<pre language="json">` / `<code language="json">`;
+ * Prism / highlight.js / Shiki use a `language-xxx` (or `lang-xxx`) class.
+ */
+function detectCodeLang(pre: Element): string | null {
+  const code = pre.querySelector('code');
+  const fromAttr = pre.getAttribute('language') ?? code?.getAttribute('language');
+  if (fromAttr?.trim()) return fromAttr.trim().toLowerCase();
+  const cls = `${pre.className} ${code?.className ?? ''}`;
+  const m = cls.match(/(?:language|lang)-([\w+#-]+)/i);
+  return m?.[1] ? m[1].toLowerCase() : null;
+}
+
+/**
+ * Normalize non-standard semantic markup that defeats Readability / Defuddle
+ * / Turndown. Two patterns, both seen on Mintlify/MDX docs (e.g. Cartesia's):
+ *
+ *   1. Paragraphs and headings rendered as `<span data-as="p">` instead of
+ *      real `<p>`. Turndown treats `<span>` as INLINE, so adjacent paragraphs
+ *      get concatenated with a single space — every paragraph on the page
+ *      collapses into one blob. We rename each `[data-as]` node to the real
+ *      block tag it stands for. This also lets Readability/Defuddle score the
+ *      content region correctly (no `<p>` tags → bad content detection →
+ *      whole sections, including code, get pruned).
+ *
+ *   2. Syntax-highlighted code (Shiki/Prism/highlight.js) where the source is
+ *      split across dozens of colored `<span>`s nested inside copy/feedback
+ *      button chrome (`.code-block > … > pre.shiki > code > span.line > span`).
+ *      Extractors routinely prune the whole wrapper, dropping the code. We
+ *      rebuild each `<pre><code>` as a clean text-only node (preserving
+ *      newlines via `textContent`) with a `language-*` class so it survives
+ *      extraction and Turndown fences it with the right language tag.
+ *
+ * Always runs on a CLONE — never the live document.
+ */
+export function normalizeSemanticMarkup(doc: Document): void {
+  // 1. Rename `[data-as]` block elements to their real tag.
+  for (const el of Array.from(doc.querySelectorAll('[data-as]'))) {
+    const tag = (el.getAttribute('data-as') ?? '').toLowerCase().trim();
+    if (!DATA_AS_BLOCK_TAGS.has(tag)) continue;
+    if (el.tagName.toLowerCase() === tag) {
+      el.removeAttribute('data-as');
+      continue;
+    }
+    const replacement = doc.createElement(tag);
+    for (const attr of Array.from(el.attributes)) {
+      if (attr.name === 'data-as') continue;
+      replacement.setAttribute(attr.name, attr.value);
+    }
+    while (el.firstChild) replacement.appendChild(el.firstChild);
+    el.replaceWith(replacement);
+  }
+
+  // 2. Flatten highlighted code blocks to clean <pre><code>text</code></pre>.
+  for (const pre of Array.from(doc.querySelectorAll('pre'))) {
+    const codeEl = pre.querySelector('code') ?? pre;
+    const text = (codeEl.textContent ?? '').replace(/\n+$/, '');
+    if (!text.trim()) continue;
+    const lang = detectCodeLang(pre);
+    const newPre = doc.createElement('pre');
+    const newCode = doc.createElement('code');
+    if (lang) newCode.className = `language-${lang}`;
+    newCode.textContent = text;
+    newPre.appendChild(newCode);
+    pre.replaceWith(newPre);
+  }
+}
+
 async function extractArticle(
   doc: Document,
   preferDefuddle: boolean,
 ): Promise<SoupResult['article']> {
+  // Normalize once on a clone so MDX/Mintlify markup (span-paragraphs,
+  // span-wrapped code) is converted to standard HTML before extraction.
+  // Never mutate the caller's document — on the Scrape tab `doc` is live.
+  const normalized = doc.cloneNode(true) as Document;
+  normalizeSemanticMarkup(normalized);
+
   if (preferDefuddle) {
     try {
-      const result = await defuddleExtract(doc);
+      const result = await defuddleExtract(normalized);
       if (result) return result;
     } catch (err) {
       console.warn('[matrx-extend] defuddle failed, falling back to readability', err);
     }
   }
 
-  const result = readabilityExtract(doc);
+  const result = readabilityExtract(normalized);
   if (result) return result;
 
   return {

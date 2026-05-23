@@ -135,7 +135,7 @@ export function ChatView() {
     setDraft,
     setMessages,
   } = useChatStore();
-  const { send, cancel, retry } = useChatStream();
+  const { send, cancel, retry, interruptAndSend } = useChatStream();
   const streamInterruption = useChatStore((s) => s.streamInterruption);
   const { variableDefs } = useAgentExecution(selectedAgentId);
   const getAgentVariables = useChatStore((s) => s.getAgentVariables);
@@ -402,6 +402,32 @@ export function ChatView() {
     }
   };
 
+  // Build the args for a fresh run (resolving the agent + per-agent variables).
+  // Shared by the normal send and the "stop & send" interrupt. Returns null
+  // when no agent is available. Has the side effect of latching the agent +
+  // re-engaging auto-scroll, matching the prior inline behavior.
+  const buildFreshRunArgs = (): { agentId: string; opts: Parameters<typeof send>[1] } | null => {
+    const agentId = selectedAgentId ?? agents[0]?.id;
+    if (!agentId) return null;
+    if (!selectedAgentId && agentId) setAgent(agentId);
+    pinnedToBottomRef.current = true;
+    const rawVars = getAgentVariables(agentId);
+    const variables: Record<string, string> = {};
+    for (const [k, v] of Object.entries(rawVars)) {
+      if (v && v.trim().length > 0) variables[k] = v;
+    }
+    const agentName = agents.find((a) => a.id === agentId)?.name;
+    return {
+      agentId,
+      opts: {
+        agentId,
+        agentName,
+        conversationId: selectedConversationId ?? undefined,
+        variables: Object.keys(variables).length > 0 ? variables : undefined,
+      },
+    };
+  };
+
   const submitMessage = (text: string) => {
     const trimmed = text.trim();
     if (!trimmed) return;
@@ -416,27 +442,24 @@ export function ChatView() {
       setDraft('');
       return;
     }
-    const agentId = selectedAgentId ?? agents[0]?.id;
-    if (!agentId) return;
-    if (!selectedAgentId && agentId) setAgent(agentId);
-    // Fresh turn → re-engage auto-scroll, even if the user had scrolled away
-    // during the previous response.
-    pinnedToBottomRef.current = true;
+    const args = buildFreshRunArgs();
+    if (!args) return;
     setDraft('');
-    // Pass per-agent variable values along with the message. Empty / missing
-    // values are dropped so the server falls back to the agent's defaults.
-    const rawVars = getAgentVariables(agentId);
-    const variables: Record<string, string> = {};
-    for (const [k, v] of Object.entries(rawVars)) {
-      if (v && v.trim().length > 0) variables[k] = v;
-    }
-    const agentName = agents.find((a) => a.id === agentId)?.name;
-    void send(trimmed, {
-      agentId,
-      agentName,
-      conversationId: selectedConversationId ?? undefined,
-      variables: Object.keys(variables).length > 0 ? variables : undefined,
-    });
+    void send(trimmed, args.opts);
+  };
+
+  // "Stop & send" — interrupt the running turn and redirect. The server keeps
+  // the partial assistant turn + an interrupted-marker; the fresh run loads
+  // that history and answers the new message. Distinct from queueMessage
+  // (which waits for the turn boundary on the same run). Requires a
+  // server-assigned conversation id so the partial turn is loaded as history.
+  const interruptAndSendMessage = (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || !isStreaming || !selectedConversationId) return;
+    const args = buildFreshRunArgs();
+    if (!args) return;
+    setDraft('');
+    void interruptAndSend(trimmed, args.opts);
   };
 
   const handleNewChat = () => {
@@ -558,6 +581,7 @@ export function ChatView() {
         onChange={setDraft}
         onSubmit={() => submitMessage(draft)}
         onCancel={() => void cancel()}
+        onInterruptSend={() => interruptAndSendMessage(draft)}
         isStreaming={isStreaming}
         canSend={Boolean(selectedAgentId || agents[0]?.id)}
         canQueue={Boolean(selectedConversationId)}
@@ -1215,6 +1239,7 @@ function Composer({
   onChange,
   onSubmit,
   onCancel,
+  onInterruptSend,
   isStreaming,
   canSend,
   canQueue,
@@ -1224,6 +1249,13 @@ function Composer({
   onChange: (v: string) => void;
   onSubmit: () => void;
   onCancel: () => void;
+  /**
+   * "Stop & send" — interrupt the running turn (server keeps the partial) and
+   * redirect with the current draft. Only consulted while `isStreaming` and
+   * gated on `canQueue` (needs a conversation id). Distinct from onSubmit,
+   * which queues into the running turn.
+   */
+  onInterruptSend: () => void;
   isStreaming: boolean;
   canSend: boolean;
   /**
@@ -1507,6 +1539,42 @@ function Composer({
                     <Clock className="size-2.5" />
                   </span>
                 </button>
+                {/*
+                  "Stop & send" — interrupt the running turn and redirect. The
+                  server keeps the partial assistant turn (+ an interrupted
+                  marker); the fresh run answers the new message. Only shown
+                  when there's text to redirect with; an amber→rose gradient +
+                  a small stop badge distinguishes it from the (waiting) queue
+                  send and the plain Stop. Requires a conversation id (canQueue).
+                */}
+                {hasText && (
+                  <button
+                    type="button"
+                    onClick={onInterruptSend}
+                    disabled={!canQueue}
+                    className={cn(
+                      'relative inline-flex size-8 items-center justify-center rounded-full transition-all',
+                      canQueue
+                        ? 'bg-gradient-to-br from-amber-500 to-rose-500 text-white shadow-sm hover:opacity-90'
+                        : 'bg-muted text-muted-foreground',
+                    )}
+                    title={
+                      canQueue
+                        ? 'Stop the current response and send this now'
+                        : 'Waiting for the conversation to start…'
+                    }
+                  >
+                    <ArrowUp className="size-4" />
+                    <span
+                      className={cn(
+                        'absolute -bottom-0.5 -right-0.5 inline-flex items-center justify-center rounded-full p-0.5',
+                        canQueue ? 'bg-rose-600 text-white' : 'bg-muted-foreground/40 text-background',
+                      )}
+                    >
+                      <Square className="size-2" fill="currentColor" />
+                    </span>
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={onCancel}

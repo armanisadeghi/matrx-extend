@@ -269,6 +269,19 @@ Every entry follows this shape:
   from the Scrape tab's output for the same URL, the bug is in the
   shared `src/lib/scrape/pipeline.ts` — fix once, both surfaces
   recover.
+- **MDX/Mintlify docs (regression):** docs sites that render
+  paragraphs as `<span data-as="p">` (not real `<p>`) and code as
+  Shiki-highlighted line spans used to (a) collapse every paragraph
+  into one space-joined blob and (b) drop code blocks entirely.
+  `normalizeSemanticMarkup` (in `pipeline.ts`, runs on a clone before
+  extraction) renames `[data-as]` block tags to real tags and rebuilds
+  highlighted `<pre><code>` as clean text.
+  - **Test:** `fetch_url_as_markdown` on a Cartesia docs page, e.g.
+    `https://docs.cartesia.ai/use-the-api/tts-websocket/buffering`.
+  - **Expected:** paragraphs are blank-line separated (not run
+    together); fenced code blocks (```` ```json ````) appear with
+    their source intact. Unit coverage:
+    `tests/unit/normalize-markup.test.ts`.
 
 ### record_gif
 - **What it does:** Record browser actions on a tab via CDP screencast
@@ -829,8 +842,33 @@ Every entry follows this shape:
   - Retract/edit are hidden while a card is still "sending" (no injection_id
     yet) and reappear once it's "pending".
   - Stop (square) still cancels the whole run while a card is pending.
-  - Force-in / immediate interrupt is intentionally NOT available (server
-    deferred it) — see docs/SERVER_NEEDS_turn_boundary_inbox.md.
+
+### Stop & send (interrupt the running turn and redirect)
+- **What it does:** While a run is streaming, lets the user cut the current
+  response and immediately send a new message. The server keeps the partial
+  assistant turn (with an auto `[⚠️ Response interrupted by the user before
+  completion.]` marker) and the fresh run loads that history and answers the
+  redirect. Distinct from the inbox: inbox waits for the boundary on the SAME
+  run; stop & send cuts now and starts a fresh run.
+- **Where to test:** Assistant Chat surface (not Pilot yet).
+- **Steps:**
+  1. Send a message that triggers a longish response. While it streams, type a
+     redirect (e.g. "actually, just summarize in one line").
+  2. Click the **amber→rose** button with the small stop badge (it sits between
+     the indigo queue button and the plain Stop square). Note: Enter still
+     QUEUES (the safe default) — interrupt is click-only.
+  3. The current response stops; after a brief pause a fresh run starts and the
+     transcript shows the truncated previous answer with the interrupted marker,
+     followed by the answer to your redirect.
+- **Expected:** Exactly one new run starts (no double-send). The previous turn
+  is preserved truncated + marked, so the model has context for the redirect.
+- **Edge cases worth poking:**
+  - In the first ~second of a brand-new chat (no conversation id yet): the
+    amber→rose button is disabled (tooltip "Waiting for the conversation to
+    start…") — interrupt needs the conversation id to load the partial as
+    history.
+  - Fire it back-to-back: each cut persists its own partial; the grace delay
+    (350ms) keeps ordering correct so each fresh run sees the prior truncation.
 
 ---
 
