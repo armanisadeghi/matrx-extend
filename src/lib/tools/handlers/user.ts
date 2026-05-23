@@ -170,18 +170,26 @@ const EMPTY_ENVELOPE = {
   confirmed: null as boolean | null,
   action: null as string | null,
   freeform: null as string | null,
+  additional_instructions: null as string | null,
+  wrote_instead: false,
   cancelled: false,
   timed_out: false,
 };
 type Envelope = typeof EMPTY_ENVELOPE;
 
-type BatchedResult = { answers: Envelope[]; cancelled: boolean; timed_out: boolean };
+type BatchedResult = {
+  answers: Envelope[];
+  cancelled: boolean;
+  timed_out: boolean;
+  additional_instructions: string | null;
+  wrote_instead: boolean;
+};
 
 export const user: ToolHandler<UserArgs, Envelope | BatchedResult> = {
   name: 'user',
   tier: 'ask-user',
   description:
-    "Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no — pass question), 'choice' (single pick — pass question + options[]), 'choice_many' (multi pick — pass question + options[]), 'text' (freeform answer — pass question), 'secret' (masked input for passwords/MFA/API keys — pass question), 'notify' (display a message and optionally collect a single action — pass message; optional actions[] and level). Options accept BOTH bare strings ('Yes', 'No') AND rich objects `{label, description?, preview?}` — preview renders as a code/markdown block beside the focused option for single-select. Optional `header` (≤12 chars) shows as a chip. Optional `context` shows a one-line 'why' on ask types. Optional `allow_other: true` on choice/choice_many appends a freeform 'Other' option. Optional `timeout_seconds` (1..900) auto-resolves with timed_out:true. Optional `timeout_seconds` (1..900) auto-resolves the call with timed_out:true if the user doesn't respond. **Batched questions**: pass `{questions: [SingleQuestion, …]}` (1–4) to ask multiple in one call — renders as a sequence of cards, returns `{answers: Envelope[], cancelled, timed_out}`. Single-question return: `{answer, selected, confirmed, action, freeform, cancelled, timed_out}` — unused fields are null/false. For full keyboard/mouse handoff (CAPTCHA, login), use request_user_takeover. For plan approval, use update_plan.",
+    "Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no — pass question), 'choice' (single pick — pass question + options[]), 'choice_many' (multi pick — pass question + options[]), 'text' (freeform answer — pass question), 'secret' (masked input for passwords/MFA/API keys — pass question), 'notify' (display a message and optionally collect a single action — pass message; optional actions[] and level). Options accept BOTH bare strings ('Yes', 'No') AND rich objects `{label, description?, preview?}` — preview renders as a code/markdown block beside the focused option for single-select. Optional `header` (≤12 chars) shows as a chip. Optional `context` shows a one-line 'why' on ask types. The UI ALWAYS appends a freeform 'Other' escape to every choice/choice_many/confirm — NEVER add your own 'Other'/'None'/'Something else' option; list only the substantive choices. Optional `timeout_seconds` (1..900) auto-resolves with timed_out:true. Optional `timeout_seconds` (1..900) auto-resolves the call with timed_out:true if the user doesn't respond. **Batched questions**: pass `{questions: [SingleQuestion, …]}` (1–4) to ask multiple in one call — renders as a sequence of cards, returns `{answers: Envelope[], cancelled, timed_out}`. Single-question return: `{answer, selected, confirmed, action, freeform, additional_instructions, wrote_instead, cancelled, timed_out}` — unused fields are null/false. `additional_instructions` is an optional note the user attached alongside their answer (always honor it); `wrote_instead:true` means the user declined the structured question(s) and replied freeform in `freeform` — treat that as their answer and re-ask later only if you still need it. For full keyboard/mouse handoff (CAPTCHA, login), use request_user_takeover. For plan approval, use update_plan.",
   argsSchema: UserArgs,
   run: async (args, ctx) => {
     if (isBatched(args)) {
@@ -213,7 +221,12 @@ async function runSingleQuestion(
     actions: q.actions,
     level: q.level,
     context: q.context,
-    allow_other: q.allow_other,
+    // Always offer a freeform "Other" escape on choice/choice_many — independent of
+    // what the model sent (allow_other isn't even in the canonical model schema).
+    allow_other:
+      q.type === 'choice' || q.type === 'choice_many' ? true : q.allow_other,
+    // Came from the `user` tool → enable the note + write-instead escapes in the card.
+    allow_extras: true,
     batch_index: batch?.index,
     batch_total: batch?.total,
     expires_at_ms: timeoutMs ? Date.now() + timeoutMs : undefined,
@@ -239,12 +252,26 @@ async function runBatchedQuestions(
   const answers: Envelope[] = [];
   let cancelled = false;
   let timed_out = false;
+  let wrote_instead = false;
+  let additional_instructions: string | null = null;
   for (let i = 0; i < questions.length; i++) {
     const env = await runSingleQuestion(questions[i]!, ctx, { index: i, total: questions.length });
     answers.push(env);
-    // First cancel or timeout short-circuits the rest — the remaining
-    // questions are returned as empty envelopes with cancelled / timed_out
-    // set so the model sees which one ended the batch.
+    // Bubble the user's freeform note up to the batch result (it only renders on
+    // the final card, so this captures the last non-empty one).
+    if (env.additional_instructions) {
+      additional_instructions = env.additional_instructions;
+    }
+    // "Write message instead", cancel, or timeout each short-circuit the rest — the
+    // remaining questions come back as empty envelopes with the matching flag set so
+    // the model sees which one ended the batch.
+    if (env.wrote_instead) {
+      wrote_instead = true;
+      for (let j = i + 1; j < questions.length; j++) {
+        answers.push({ ...EMPTY_ENVELOPE, wrote_instead: true });
+      }
+      break;
+    }
     if (env.cancelled) {
       cancelled = true;
       for (let j = i + 1; j < questions.length; j++) {
@@ -260,7 +287,7 @@ async function runBatchedQuestions(
       break;
     }
   }
-  return { answers, cancelled, timed_out };
+  return { answers, cancelled, timed_out, wrote_instead, additional_instructions };
 }
 
 function responseToEnvelope(kind: UserAskKind, r: AskUserResponse | 'timed_out'): Envelope {
@@ -270,18 +297,41 @@ function responseToEnvelope(kind: UserAskKind, r: AskUserResponse | 'timed_out')
   if (r.cancelled) {
     return { ...EMPTY_ENVELOPE, cancelled: true };
   }
+  // Ride-along fields present on ANY answer, regardless of kind. (Rebuilding from
+  // EMPTY_ENVELOPE per-kind would otherwise silently drop them.)
+  const extras = {
+    additional_instructions: r.additional_instructions ?? null,
+    wrote_instead: r.wrote_instead ?? false,
+  };
+  // "Write message instead" bypasses the structured shape — the reply is in freeform.
+  if (r.wrote_instead) {
+    return { ...EMPTY_ENVELOPE, ...extras, freeform: r.freeform ?? null };
+  }
   switch (kind) {
     case 'confirm':
-      return { ...EMPTY_ENVELOPE, confirmed: r.confirmed ?? null };
+      // confirmed is null when the user took the inline 'Other' escape (text in freeform).
+      return {
+        ...EMPTY_ENVELOPE,
+        ...extras,
+        confirmed: r.confirmed ?? null,
+        freeform: r.freeform ?? null,
+      };
     case 'choice':
     case 'choice_many':
-      return { ...EMPTY_ENVELOPE, selected: r.selected ?? null };
+      // Carry freeform too — it holds the 'Other' text when the user took that option.
+      return {
+        ...EMPTY_ENVELOPE,
+        ...extras,
+        selected: r.selected ?? null,
+        freeform: r.freeform ?? null,
+      };
     case 'text':
     case 'secret':
-      return { ...EMPTY_ENVELOPE, answer: r.answer ?? null };
+      return { ...EMPTY_ENVELOPE, ...extras, answer: r.answer ?? null };
     case 'notify':
       return {
         ...EMPTY_ENVELOPE,
+        ...extras,
         action: r.action ?? null,
         freeform: r.freeform ?? null,
       };

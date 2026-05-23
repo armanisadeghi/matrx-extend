@@ -129,11 +129,10 @@ type FullPageScreenshotArgs = z.infer<typeof FullPageScreenshotArgs>;
 export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unknown> = {
   name: 'cdp_full_page_screenshot',
   tier: 'privileged',
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
-    "Capture the FULL page (not just viewport) as base64. Use instead of take_screenshot for whole-article / long-form pages. Pass a `profile` to optimize for a specific vision model (same profile names as take_screenshot). The tool auto-computes capture_scale so the long edge lands at the profile's target. Returns { ok, media_type, format, width, height, image_base64, byte_length, capture_scale, profile, est_tokens, file_id, file_url }. The capture is uploaded to cloud storage so file_url is a durable link the UI renders; image_base64 is also returned for the vision model. The `media_type` field is ready to drop into an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
+    "Capture the FULL scrollable page (beyond the viewport) — use instead of computer/take_screenshot for long-form pages. Auto-scales so the long edge fits the `profile`'s vision-model target (same profiles as take_screenshot). Uploads to cloud; returns { ok, media_type, format, width, height, image_base64, byte_length, capture_scale, profile, est_tokens, file_id, file_url }. Render/share file_url (durable); image_base64 feeds the vision model — pass media_type through verbatim, never stringify the object.",
   argsSchema: FullPageScreenshotArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -256,7 +255,6 @@ type A11yTreeArgs = z.infer<typeof A11yTreeArgs>;
 export const cdp_a11y_tree: ToolHandler<A11yTreeArgs, unknown> = {
   name: 'cdp_a11y_tree',
   tier: 'privileged',
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
@@ -303,7 +301,6 @@ type InputClickArgs = z.infer<typeof InputClickArgs>;
 export const cdp_input_click_xy: ToolHandler<InputClickArgs, unknown> = {
   name: 'cdp_input_click_xy',
   tier: 'privileged',
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
@@ -345,7 +342,6 @@ type InputTypeArgs = z.infer<typeof InputTypeArgs>;
 export const cdp_input_type: ToolHandler<InputTypeArgs, unknown> = {
   name: 'cdp_input_type',
   tier: 'privileged',
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
@@ -373,7 +369,6 @@ type NetCaptureStartArgs = z.infer<typeof NetCaptureStartArgs>;
 export const cdp_network_capture_start: ToolHandler<NetCaptureStartArgs, unknown> = {
   name: 'cdp_network_capture_start',
   tier: 'privileged',
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
@@ -405,7 +400,6 @@ type NetCaptureDrainArgs = z.infer<typeof NetCaptureDrainArgs>;
 export const cdp_network_capture_drain: ToolHandler<NetCaptureDrainArgs, unknown> = {
   name: 'cdp_network_capture_drain',
   tier: 'privileged',
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
@@ -431,7 +425,6 @@ type NetCaptureStopArgs = z.infer<typeof NetCaptureStopArgs>;
 export const cdp_network_capture_stop: ToolHandler<NetCaptureStopArgs, unknown> = {
   name: 'cdp_network_capture_stop',
   tier: 'privileged',
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description: 'Stop capturing Network events on a tab and clear its buffer.',
@@ -453,7 +446,6 @@ type NetGetBodyArgs = z.infer<typeof NetGetBodyArgs>;
 export const cdp_network_get_body: ToolHandler<NetGetBodyArgs, unknown> = {
   name: 'cdp_network_get_body',
   tier: 'privileged',
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
@@ -485,7 +477,6 @@ type PrintPdfArgs = z.infer<typeof PrintPdfArgs>;
 export const cdp_print_pdf: ToolHandler<PrintPdfArgs, unknown> = {
   name: 'cdp_print_pdf',
   tier: 'privileged',
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
@@ -516,7 +507,6 @@ type PerfMetricsArgs = z.infer<typeof PerfMetricsArgs>;
 export const cdp_perf_metrics: ToolHandler<PerfMetricsArgs, unknown> = {
   name: 'cdp_perf_metrics',
   tier: 'read',
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
@@ -638,7 +628,6 @@ type ReadConsoleArgs = z.infer<typeof ReadConsoleArgs>;
 export const read_console_messages: ToolHandler<ReadConsoleArgs, unknown> = {
   name: 'read_console_messages',
   tier: 'privileged',
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
@@ -698,7 +687,6 @@ type ReadNetworkArgs = z.infer<typeof ReadNetworkArgs>;
 export const read_network_requests: ToolHandler<ReadNetworkArgs, unknown> = {
   name: 'read_network_requests',
   tier: 'privileged',
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
@@ -734,7 +722,6 @@ type GetRequestBodyArgs = z.infer<typeof GetRequestBodyArgs>;
 export const get_request_body: ToolHandler<GetRequestBodyArgs, unknown> = {
   name: 'get_request_body',
   tier: 'privileged',
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:

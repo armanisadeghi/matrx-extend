@@ -250,6 +250,14 @@ export interface PendingAskUserRequest {
    */
   allow_other?: boolean;
   /**
+   * True when this card came from the `user` ask tool, which supports the extra
+   * escape hatches: a final "Additional instructions" note and a "Write message
+   * instead" bypass. update_plan / request_user_takeover reuse this card shape but
+   * have bespoke response semantics, so they leave this unset and the card hides
+   * the extras. New 2026-05-23.
+   */
+  allow_extras?: boolean;
+  /**
    * Question position when this card is one of a batched question set.
    * The handler fires sequential cards (Q1 → wait → Q2 → wait → …); these
    * fields let the card show "Question N of M" if desired. Single-question
@@ -289,6 +297,17 @@ export interface AskUserResponse {
    *   the 'Other' option (when the user picked it)
    */
   freeform?: string | null;
+  /**
+   * Optional freeform note the user attached ALONGSIDE their structured answer
+   * (the "Anything else?" field on the final card). New 2026-05-23.
+   */
+  additional_instructions?: string | null;
+  /**
+   * True when the user clicked "Write message instead" — they declined the
+   * structured question(s) and typed a freeform reply (in `freeform`). In a
+   * batch this short-circuits the remaining questions. New 2026-05-23.
+   */
+  wrote_instead?: boolean;
   /** User explicitly dismissed the card. */
   cancelled?: boolean;
 }

@@ -214,7 +214,6 @@ export const cookies: ToolHandler<CookiesArgs, unknown> = {
   name: 'chrome_cookies',
   tier: 'privileged',
   tierFor: (args): ToolTier => (args.action === 'get' ? 'read' : 'privileged'),
-  admin_only: true,
   required_optional_permissions: ['cookies'],
   description:
     "Manage cookies for any domain. Actions: 'get' (read; pass `name` for a specific cookie or omit for all matching), 'set' (write; requires `name` + `value`; optional `domain`/`path`/`expires_in_seconds`/`same_site`/`http_only`/`secure`), 'delete' (requires `name`). Always pass `url` (or `domain` for 'get'). Admin-only.",
@@ -270,7 +269,6 @@ export const webmcp: ToolHandler<WebmcpArgs, unknown> = {
   tier: 'action',
   tierFor: (args): ToolTier =>
     args.action === 'check' || args.action === 'list' ? 'read' : 'action',
-  admin_only: true,
   description:
     "Discover and invoke tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). Actions: 'check' (probe API + count tools), 'list' (enumerate page-registered tools), 'call' (invoke; pass `tool_name` and `arguments`). Admin-only experimental capability.",
   argsSchema: WebmcpArgs,
@@ -550,7 +548,6 @@ export const cdp_session: ToolHandler<CdpSessionArgs, unknown> = {
   name: 'cdp_session',
   tier: 'privileged',
   tierFor: (args): ToolTier => (args.action === 'list' ? 'read' : 'privileged'),
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
@@ -589,7 +586,6 @@ type CdpEmulateArgs = z.infer<typeof CdpEmulateArgs>;
 export const cdp_emulate: ToolHandler<CdpEmulateArgs, unknown> = {
   name: 'cdp_emulate',
   tier: 'privileged',
-  admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
@@ -632,9 +628,8 @@ type EvaluateJsArgs = z.infer<typeof EvaluateJsArgs>;
 export const evaluate_javascript: ToolHandler<EvaluateJsArgs, unknown> = {
   name: 'evaluate_javascript',
   tier: 'privileged',
-  admin_only: true,
   description:
-    "Evaluate JavaScript in the page context. Returns the value of the last expression — do NOT use 'return' at top level. Admin-gated. Prefer DOM tools (read_page, find, computer, form_input) when possible — JS exec is XSS-equivalent and bypasses our safety nets.",
+    "Evaluate JavaScript in the page context. Returns the value of the last expression — do NOT use 'return' at top level. Prefer DOM tools (read_page, find, computer, form_input) when possible — JS exec is XSS-equivalent and bypasses our safety nets.",
   argsSchema: EvaluateJsArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ? Number.parseInt(args.tab_id, 10) : undefined;

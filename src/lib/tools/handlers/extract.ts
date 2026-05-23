@@ -488,7 +488,7 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
   name: 'screenshot_region',
   tier: 'read',
   description:
-    "Capture a bounded region of the active tab's viewport. Provide `ref` (preferred) from a prior read_page, OR `selector`, OR an explicit viewport `rect: {x,y,w,h}`. The handler scrolls the target into view if needed, captures the visible viewport, then crops to the resolved rect (with optional `padding` in CSS px). Returns the same shape as take_screenshot: { media_type, format, width, height, image_base64, byte_length, source_rect, file_id, file_url }. The crop is uploaded to cloud storage so file_url is a durable link; image_base64 is also returned for direct vision-model consumption. Use this for focused vision-API calls on a specific component — 5-20× cheaper than a full-page screenshot.",
+    "Capture a bounded region of the active tab's viewport — 5-20× cheaper than a full screenshot for focused vision calls. Target with `ref` (preferred, from read_page), `selector`, or explicit viewport `rect:{x,y,w,h}`; off-screen targets are scrolled into view, optional `padding` in CSS px. Uploads to cloud; returns { ok, media_type, format, width, height, source_rect, image_base64, byte_length, file_id, file_url }. Render/share file_url (durable); image_base64 feeds the vision model.",
   argsSchema: ScreenshotRegionArgs,
   run: async (args, ctx) => {
     const tab = await getAssignedTab(ctx);

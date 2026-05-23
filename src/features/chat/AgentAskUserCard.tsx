@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { respondToAsk } from '@/hooks/use-tool-inbox';
-import type { PendingAskUserRequest, UserAskOption } from '@/lib/tools/types';
+import type { AskUserResponse, PendingAskUserRequest, UserAskOption } from '@/lib/tools/types';
 import {
   AlertTriangle,
   Bell,
@@ -38,6 +38,9 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
   const [showOtherInput, setShowOtherInput] = useState(false);
   const [otherText, setOtherText] = useState('');
   const [focusedIdx, setFocusedIdx] = useState(0);
+  const [additionalInstructions, setAdditionalInstructions] = useState('');
+  const [writeMode, setWriteMode] = useState(false);
+  const [writeText, setWriteText] = useState('');
   const remaining = useCountdown(req.expires_at_ms);
 
   // Normalize options for legacy + new shapes
@@ -51,18 +54,42 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
 
   const cancel = () => respondToAsk(req.callId, { cancelled: true });
 
+  // Batched questions render one card at a time; "Next" advances, "Send" finishes.
+  const isLast =
+    req.batch_total == null ||
+    req.batch_total <= 1 ||
+    (req.batch_index !== undefined && req.batch_index === req.batch_total - 1);
+  // Extra escapes (note + write-instead) apply to the `user` ask tool only, and not
+  // to notify (which carries its own freeform Other).
+  const showExtras = !!req.allow_extras && req.kind !== 'notify';
+  // The additional-instructions note rides on the FINAL card (single or last batched).
+  const showNote = showExtras && isLast;
+
+  // Merge the optional additional-instructions note into every structured answer.
+  const respond = (reply: Omit<AskUserResponse, 'callId'>) => {
+    const note = additionalInstructions.trim();
+    respondToAsk(req.callId, note ? { ...reply, additional_instructions: note } : reply);
+  };
+
+  const sendWriteInstead = () => {
+    const msg = writeText.trim();
+    if (!msg) return;
+    // Bypass the structured Q&A entirely; signal the model to re-ask if needed.
+    respondToAsk(req.callId, { wrote_instead: true, freeform: msg });
+  };
+
   const submitText = () => {
     if (!text.trim()) return;
-    respondToAsk(req.callId, { answer: text });
+    respond({ answer: text });
   };
   const submitChoice = () => {
     if (!choice) return;
     if (choice === OTHER_SENTINEL) {
       if (!otherText.trim()) return;
-      respondToAsk(req.callId, { selected: ['Other'], freeform: otherText });
+      respond({ selected: ['Other'], freeform: otherText });
       return;
     }
-    respondToAsk(req.callId, { selected: [choice] });
+    respond({ selected: [choice] });
   };
   const submitMulti = () => {
     if (multi.size === 0) return;
@@ -72,17 +99,21 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
     if (hasOther) {
       if (!otherText.trim()) return;
       labels.push('Other');
-      respondToAsk(req.callId, { selected: labels, freeform: otherText });
+      respond({ selected: labels, freeform: otherText });
     } else {
-      respondToAsk(req.callId, { selected: labels });
+      respond({ selected: labels });
     }
   };
-  const submitConfirm = (yes: boolean) => respondToAsk(req.callId, { confirmed: yes });
-  const submitAction = (label: string) =>
-    respondToAsk(req.callId, { action: label, freeform: null });
+  const submitConfirm = (yes: boolean) => respond({ confirmed: yes });
+  const submitConfirmOther = () => {
+    if (!otherText.trim()) return;
+    // confirmed omitted → handler maps it to null; freeform carries the typed answer.
+    respond({ freeform: otherText });
+  };
+  const submitAction = (label: string) => respond({ action: label, freeform: null });
   const submitOther = () => {
     if (!otherText.trim()) return;
-    respondToAsk(req.callId, { action: 'Other', freeform: otherText });
+    respond({ action: 'Other', freeform: otherText });
   };
 
   return (
@@ -118,9 +149,46 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
         )}
       </div>
 
+      {writeMode ? (
+        <div className="mt-2 flex flex-col gap-2">
+          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+            Write a message instead
+          </div>
+          <Textarea
+            value={writeText}
+            onChange={(e) => setWriteText(e.target.value)}
+            placeholder="Type your reply to the agent…"
+            rows={3}
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                sendWriteInstead();
+              }
+            }}
+          />
+          <div className="flex items-center gap-2">
+            <Button size="sm" className="h-7" disabled={!writeText.trim()} onClick={sendWriteInstead}>
+              Send
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7"
+              onClick={() => {
+                setWriteMode(false);
+                setWriteText('');
+              }}
+            >
+              Back to questions
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <>
       {/* Body */}
       <div className="mt-2">
-        {req.kind === 'confirm' && (
+        {req.kind === 'confirm' && !showOtherInput && (
           <div className="flex items-center gap-2">
             <Button size="sm" className="h-7" onClick={() => submitConfirm(true)}>
               Yes
@@ -128,6 +196,43 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
             <Button size="sm" variant="outline" className="h-7" onClick={() => submitConfirm(false)}>
               No
             </Button>
+            <Button size="sm" variant="ghost" className="h-7" onClick={() => setShowOtherInput(true)}>
+              Other…
+            </Button>
+          </div>
+        )}
+
+        {req.kind === 'confirm' && showOtherInput && (
+          <div className="space-y-2">
+            <Textarea
+              value={otherText}
+              onChange={(e) => setOtherText(e.target.value)}
+              placeholder="Type your answer…"
+              rows={2}
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                  e.preventDefault();
+                  submitConfirmOther();
+                }
+              }}
+            />
+            <div className="flex items-center gap-2">
+              <Button size="sm" className="h-7" disabled={!otherText.trim()} onClick={submitConfirmOther}>
+                {isLast ? 'Send' : 'Next'}
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7"
+                onClick={() => {
+                  setShowOtherInput(false);
+                  setOtherText('');
+                }}
+              >
+                Back
+              </Button>
+            </div>
           </div>
         )}
 
@@ -348,22 +453,36 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
         )}
       </div>
 
+      {showNote && (
+        <div className="mt-2 flex flex-col gap-1.5 border-t border-border/60 pt-2">
+          <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+            Anything else? (optional)
+          </div>
+          <Textarea
+            value={additionalInstructions}
+            onChange={(e) => setAdditionalInstructions(e.target.value)}
+            placeholder="Add a note for the agent…"
+            rows={2}
+          />
+        </div>
+      )}
+
       {/* Footer */}
       {req.kind !== 'confirm' && req.kind !== 'notify' && (
         <div className="mt-2 flex items-center gap-2">
           {req.kind === 'choice' && (
             <Button size="sm" className="h-7" disabled={!choice} onClick={submitChoice}>
-              Send
+              {isLast ? 'Send' : 'Next'}
             </Button>
           )}
           {req.kind === 'choice_many' && (
             <Button size="sm" className="h-7" disabled={multi.size === 0} onClick={submitMulti}>
-              Send
+              {isLast ? 'Send' : 'Next'}
             </Button>
           )}
           {(req.kind === 'text' || req.kind === 'secret') && (
             <Button size="sm" className="h-7" disabled={!text.trim()} onClick={submitText}>
-              Send
+              {isLast ? 'Send' : 'Next'}
             </Button>
           )}
           <Button size="sm" variant="ghost" className="h-7" onClick={cancel}>
@@ -381,6 +500,20 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
             Skip
           </Button>
         </div>
+      )}
+
+      {showExtras && (
+        <div className="mt-1.5">
+          <button
+            type="button"
+            onClick={() => setWriteMode(true)}
+            className="text-[11px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
+          >
+            Write message instead
+          </button>
+        </div>
+      )}
+        </>
       )}
     </div>
   );
