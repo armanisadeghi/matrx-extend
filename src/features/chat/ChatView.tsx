@@ -470,12 +470,6 @@ export function ChatView() {
   return (
     <div className="relative flex h-full flex-col bg-background">
       <GuestBanner />
-      <div className="absolute right-2 top-1 z-30">
-        <TaskPanelChip
-          conversationId={selectedConversationId}
-          onClick={() => setTaskPanelOpen((v) => !v)}
-        />
-      </div>
       <TaskPanel
         conversationId={selectedConversationId}
         open={taskPanelOpen}
@@ -502,6 +496,7 @@ export function ChatView() {
         }}
         onNewChat={handleNewChat}
         onPickConversation={(id) => setConversation(id)}
+        onToggleTaskPanel={() => setTaskPanelOpen((v) => !v)}
         hasMessages={messages.length > 0}
         getMessages={() => useChatStore.getState().messages}
         getAgent={() => {
@@ -828,6 +823,7 @@ function ChatHeader({
   onAgentChange,
   onNewChat,
   onPickConversation,
+  onToggleTaskPanel,
   hasMessages,
   getMessages,
   getAgent,
@@ -844,6 +840,7 @@ function ChatHeader({
   onAgentChange: (id: string) => void;
   onNewChat: () => void;
   onPickConversation: (id: string) => void;
+  onToggleTaskPanel: () => void;
   hasMessages: boolean;
   getMessages: () => ChatMessage[];
   getAgent: () => { id: string; name: string } | null;
@@ -872,6 +869,7 @@ function ChatHeader({
         </>
       )}
       <div className="ml-auto flex items-center gap-1">
+        <TaskPanelChip conversationId={selectedConversationId} onClick={onToggleTaskPanel} />
         <LanguagePicker />
         <PermissionModeChip
           mode={permissionMode}

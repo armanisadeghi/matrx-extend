@@ -210,6 +210,51 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     },
   },
 
+  // Cropped-region capture. Returns the same envelope as take_screenshot
+  // ({ image_base64, file_url, width, height, ... }) but bounded to a ref /
+  // selector / rect — render the image inline just like a full screenshot.
+  screenshot_region: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Crop', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Capturing region',
+        completed: 'Region',
+        error: 'Region capture failed',
+      },
+      name: '',
+      info: { completed: { path: 'output', transform: 'formatImageDimensions' } },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+    results: {
+      displayType: 'custom',
+      alwaysShow: true,
+      keysInfo: [{ key: '', component: 'Base64Image' }],
+    },
+  },
+
+  // Full-page (beyond-viewport) CDP capture. Returns { image_base64,
+  // media_type, ... } — render the image inline.
+  cdp_full_page_screenshot: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Camera', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Capturing full page',
+        completed: 'Full-page screenshot',
+        error: 'Full-page capture failed',
+      },
+      name: '',
+      info: { completed: { path: 'output', transform: 'formatImageDimensions' } },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+    results: {
+      displayType: 'custom',
+      alwaysShow: true,
+      keysInfo: [{ key: '', component: 'Base64Image' }],
+    },
+  },
+
   find: {
     inline: {
       // Search icon is the obvious metaphor; on started the label shimmers and
@@ -292,10 +337,17 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     },
     args: { displayType: 'key-value' },
     results: {
-      // The screenshot sub-action returns a file_id but no inline base64 (the
-      // canonical contract uploads to cld_files first). Default key-value is
-      // fine — the user sees file_id + dimensions inline.
-      displayType: 'key-value',
+      // The screenshot sub-action persists to cld_files and returns
+      // { file_id, file_url, width, height, mime_type }. Render that image
+      // inline — `computer` is the canonical surface the agent actually
+      // calls now, so the image MUST render here (the old `take_screenshot`
+      // entry below is no longer in CANONICAL_SURFACE). Base64Image prefers
+      // file_url, and returns null when the output carries no image — so for
+      // non-screenshot actions (click / type / key / scroll) this renders
+      // nothing extra and the click-to-expand JSON still shows {ok:true}.
+      displayType: 'custom',
+      alwaysShow: true,
+      keysInfo: [{ key: '', component: 'Base64Image' }],
     },
   },
 
@@ -1038,4 +1090,355 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     },
     args: { hidden: true },
   },
+
+  // ─── Remaining canonical tools (1:1 display coverage) ─────────────────
+  // Every tool in CANONICAL_SURFACE has an entry so none falls back to the
+  // bare default row. Most are header-only (icon + phase verb + a relevant
+  // arg/output chip); action-routed tools surface `args.action` as the chip.
+
+  list_browser_tools: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Wrench', error: 'AlertTriangle' },
+      prefix: { started: 'Loading tools', completed: 'Loaded tools', error: 'Tool load failed' },
+      name: { path: 'args.category', fallback: '' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  extract_microdata: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Boxes', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Extracting microdata',
+        completed: 'Extracted microdata',
+        error: 'Microdata extraction failed',
+      },
+      name: '',
+      color: { started: 'primary', completed: 'violet', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  fetch_url_as_markdown: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Globe', error: 'AlertTriangle' },
+      prefix: { started: 'Fetching', completed: 'Fetched', error: 'Fetch failed' },
+      name: { path: 'args.url', transform: 'truncate80' },
+      info: { completed: { path: 'output.word_count', fallback: '' } },
+      suffix: { completed: 'words' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  get_computed_style: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Palette', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Reading computed style',
+        completed: 'Read computed style',
+        error: 'Computed-style read failed',
+      },
+      name: { path: 'args.selector', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'violet', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  inspect_element: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Crosshair', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Inspecting element',
+        completed: 'Inspected element',
+        error: 'Inspect failed',
+      },
+      name: { path: 'args.selector', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'violet', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  list_highlights: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Highlighter', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Listing highlights',
+        completed: 'Highlights',
+        error: 'Failed to list highlights',
+      },
+      name: '',
+      info: { completed: { path: 'output.highlights.length', fallback: '0' } },
+      suffix: { completed: 'highlights' },
+      color: { started: 'primary', completed: 'amber', error: 'red' },
+    },
+    args: { hidden: true },
+  },
+
+  mutation_watch: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Activity', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Watching for changes',
+        completed: 'Observed changes',
+        error: 'Mutation watch failed',
+      },
+      name: { path: 'args.selector', transform: 'truncate80', fallback: '' },
+      info: { completed: { path: 'output.events.length', fallback: '0' } },
+      suffix: { completed: 'events' },
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  tasks: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'ListChecks', error: 'AlertTriangle' },
+      prefix: { started: 'Updating task list', completed: 'Task list', error: 'Tasks failed' },
+      name: '',
+      info: { path: 'args.action', fallback: '' },
+      color: { started: 'primary', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  user_todos: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'ClipboardList', error: 'AlertTriangle' },
+      prefix: { started: 'Updating your to-dos', completed: 'Your to-dos', error: 'To-dos failed' },
+      name: '',
+      info: { path: 'args.action', fallback: '' },
+      color: { started: 'primary', completed: 'amber', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  scratchpad: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'NotebookPen', error: 'AlertTriangle' },
+      prefix: { started: 'Scratchpad', completed: 'Scratchpad', error: 'Scratchpad failed' },
+      name: '',
+      info: { path: 'args.action', fallback: '' },
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  desktop_run_command: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Terminal', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Running command',
+        completed: 'Ran command',
+        error: 'Command failed',
+      },
+      name: { path: 'args.command', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  chrome_save_page_as_mhtml: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Archive', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Saving page',
+        completed: 'Saved page (MHTML)',
+        error: 'Save failed',
+      },
+      name: '',
+      color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  chrome_tab_audio_inspect: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'AudioLines', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Inspecting tab audio',
+        completed: 'Tab audio',
+        error: 'Audio inspect failed',
+      },
+      name: '',
+      color: { started: 'primary', completed: 'violet', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  chrome_record_tab_video: {
+    inline: {
+      icon: { started: 'Circle', completed: 'Video', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Recording video',
+        completed: 'Video recorded',
+        error: 'Video recording failed',
+      },
+      name: '',
+      color: { started: 'red', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  // ─── CDP (admin) ──────────────────────────────────────────────────────
+
+  cdp_a11y_tree: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Accessibility', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Reading a11y tree',
+        completed: 'Accessibility tree',
+        error: 'A11y read failed',
+      },
+      name: '',
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  cdp_input_click_xy: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'MousePointerClick', error: 'AlertTriangle' },
+      prefix: { started: 'Clicking (CDP)', completed: 'Clicked (CDP)', error: 'Click failed' },
+      name: '',
+      color: { started: 'primary', completed: 'red', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  cdp_input_type: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Keyboard', error: 'AlertTriangle' },
+      prefix: { started: 'Typing (CDP)', completed: 'Typed (CDP)', error: 'Type failed' },
+      name: { path: 'args.text', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'red', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  cdp_perf_metrics: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Gauge', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Reading perf metrics',
+        completed: 'Perf metrics',
+        error: 'Perf read failed',
+      },
+      name: '',
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  cdp_print_pdf: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Printer', error: 'AlertTriangle' },
+      prefix: { started: 'Printing PDF', completed: 'Printed PDF', error: 'PDF print failed' },
+      name: '',
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  cdp_network_capture_start: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Network', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Starting network capture',
+        completed: 'Network capture started',
+        error: 'Capture start failed',
+      },
+      name: '',
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  cdp_network_capture_drain: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Network', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Draining network capture',
+        completed: 'Network events',
+        error: 'Capture drain failed',
+      },
+      name: '',
+      info: { completed: { path: 'output.events.length', fallback: '0' } },
+      suffix: { completed: 'events' },
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  cdp_network_capture_stop: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Network', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Stopping network capture',
+        completed: 'Network capture stopped',
+        error: 'Capture stop failed',
+      },
+      name: '',
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  cdp_network_get_body: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'FileJson', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Fetching response body',
+        completed: 'Response body',
+        error: 'Body fetch failed',
+      },
+      name: { path: 'args.request_id', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  get_request_body: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'FileJson', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Fetching request body',
+        completed: 'Request body',
+        error: 'Body fetch failed',
+      },
+      name: { path: 'args.request_id', transform: 'truncate80' },
+      color: { started: 'primary', completed: 'slate', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
 };
+
+/**
+ * Legacy-name aliases.
+ *
+ * The 2026-05-19 global-namespace redesign renamed several mega-tools (the
+ * Chrome-personal-data tools gained a `chrome_` prefix; the colon namespace
+ * was dropped). The agent now calls the new canonical names, so the display
+ * config has to live under the new key. We keep BOTH keys pointing at the
+ * same config object: the canonical name renders new calls, and the old bare
+ * name keeps rendering historical timeline entries from conversations
+ * recorded before the rename. The shapes (args.action, etc.) are identical —
+ * these are pure renames — so one config serves both.
+ *
+ * If you rename a tool, add its alias here (and the drift test in
+ * tests/unit/tool-display-registry.test.ts will hold you to it).
+ */
+const LEGACY_DISPLAY_ALIASES: Record<string, string> = {
+  chrome_bookmarks: 'bookmarks',
+  chrome_history: 'history',
+  chrome_recently_closed: 'recently_closed',
+  chrome_cookies: 'cookies',
+  chrome_webmcp: 'webmcp',
+  chrome_record_gif: 'record_gif',
+};
+
+for (const [canonical, legacy] of Object.entries(LEGACY_DISPLAY_ALIASES)) {
+  const cfg = toolDisplayRegistry[legacy];
+  if (cfg) toolDisplayRegistry[canonical] = cfg;
+}

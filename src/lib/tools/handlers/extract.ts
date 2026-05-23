@@ -15,6 +15,7 @@
  *    .research/proposed-tools-and-features.md (items #2 and #4)
  */
 import { z } from 'zod';
+import { log } from '@/lib/debug/log';
 import { resolveProfile, type ScreenshotProfile } from '@/lib/screenshot/profiles';
 import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
@@ -475,13 +476,19 @@ interface ScreenshotRegionResult {
   image_base64?: string;
   byte_length?: number;
   profile?: string;
+  /** cld_files id once the crop is persisted to the cloud. */
+  file_id?: string | null;
+  /** Hosted URL for the persisted crop — what the UI renders. */
+  file_url?: string | null;
+  /** wbx_screenshot index row id. */
+  screenshot_id?: string | null;
 }
 
 export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegionResult> = {
   name: 'screenshot_region',
   tier: 'read',
   description:
-    "Capture a bounded region of the active tab's viewport. Provide `ref` (preferred) from a prior read_page, OR `selector`, OR an explicit viewport `rect: {x,y,w,h}`. The handler scrolls the target into view if needed, captures the visible viewport, then crops to the resolved rect (with optional `padding` in CSS px). Returns the same shape as take_screenshot: { media_type, format, width, height, image_base64, byte_length, source_rect }. Use this for focused vision-API calls on a specific component — 5-20× cheaper than a full-page screenshot.",
+    "Capture a bounded region of the active tab's viewport. Provide `ref` (preferred) from a prior read_page, OR `selector`, OR an explicit viewport `rect: {x,y,w,h}`. The handler scrolls the target into view if needed, captures the visible viewport, then crops to the resolved rect (with optional `padding` in CSS px). Returns the same shape as take_screenshot: { media_type, format, width, height, image_base64, byte_length, source_rect, file_id, file_url }. The crop is uploaded to cloud storage so file_url is a durable link; image_base64 is also returned for direct vision-model consumption. Use this for focused vision-API calls on a specific component — 5-20× cheaper than a full-page screenshot.",
   argsSchema: ScreenshotRegionArgs,
   run: async (args, ctx) => {
     const tab = await getAssignedTab(ctx);
@@ -574,9 +581,36 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
         bin += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + 0x8000)));
       }
       const base64 = btoa(bin);
+      const mediaType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+
+      // Persist to cld_files + wbx_screenshot via the shared helper so the
+      // crop has a durable URL the UI renders (and survives reload) and lands
+      // in the Screenshots gallery alongside full captures. `image_base64`
+      // stays in the result regardless — the agent's vision model consumes it.
+      let fileId: string | null = null;
+      let fileUrl: string | null = null;
+      let screenshotId: string | null = null;
+      try {
+        const { persistScreenshot } = await import('@/lib/screenshot/persist');
+        const persisted = await persistScreenshot({
+          tab,
+          base64,
+          mimeType: mediaType,
+          format,
+          width: cropW,
+          height: cropH,
+          source: 'agent',
+        });
+        fileId = persisted.fileId;
+        fileUrl = persisted.fileUrl;
+        screenshotId = persisted.screenshotId;
+      } catch (err) {
+        log.warn('sw', 'screenshot_region persistence failed; returning inline only', err);
+      }
+
       return {
         ok: true,
-        media_type: format === 'jpeg' ? 'image/jpeg' : 'image/png',
+        media_type: mediaType,
         format,
         width: cropW,
         height: cropH,
@@ -584,6 +618,9 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
         image_base64: base64,
         byte_length: base64.length,
         profile: profileName,
+        file_id: fileId,
+        file_url: fileUrl,
+        screenshot_id: screenshotId,
       };
     } catch (err) {
       return { ok: false, reason: (err as Error).message };

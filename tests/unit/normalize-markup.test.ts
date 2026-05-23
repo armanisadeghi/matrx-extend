@@ -86,4 +86,23 @@ describe('normalizeSemanticMarkup — highlighted code blocks', () => {
     expect(md).not.toContain('Ask Assistant');
     expect(md).not.toContain('Copy');
   });
+
+  it('replaces the whole .code-block wrapper, not just the inner <pre>', () => {
+    // Regression guard: leaving the button-laden wrapper in place causes
+    // Defuddle to prune the entire subtree (code included). We must hoist the
+    // clean <pre> up to where the wrapper sat. See codeBlockWrapper().
+    const doc = new DOMParser().parseFromString(
+      `<body><div id="content"><p>Intro.</p>${shiki}<p>Outro.</p></div></body>`,
+      'text/html',
+    );
+    normalizeSemanticMarkup(doc);
+    expect(doc.querySelector('.code-block')).toBeNull();
+    expect(doc.querySelector('[aria-label="Ask Assistant"]')).toBeNull();
+    const pre = doc.querySelector('pre');
+    expect(pre).not.toBeNull();
+    // The clean <pre> sits directly under #content (sibling of the paragraphs),
+    // not buried in wrapper divs.
+    expect(pre?.parentElement?.id).toBe('content');
+    expect(pre?.querySelector('code')?.className).toBe('language-json');
+  });
 });

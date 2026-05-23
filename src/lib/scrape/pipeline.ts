@@ -194,6 +194,13 @@ export function normalizeSemanticMarkup(doc: Document): void {
   }
 
   // 2. Flatten highlighted code blocks to clean <pre><code>text</code></pre>.
+  //    Critically, replace the *whole wrapper* (e.g. Mintlify's
+  //    `.code-block.not-prose` with copy/feedback button chrome), not just
+  //    the inner <pre> — defuddle/readability score those button-laden
+  //    wrappers as non-content and prune the entire subtree, taking the code
+  //    with it. Hoisting the clean <pre> up to where the wrapper sat keeps
+  //    the code inside the extracted content. (Verified against Cartesia's
+  //    Shiki docs: in-place replace → code dropped; hoisted → code kept.)
   for (const pre of Array.from(doc.querySelectorAll('pre'))) {
     const codeEl = pre.querySelector('code') ?? pre;
     const text = (codeEl.textContent ?? '').replace(/\n+$/, '');
@@ -204,8 +211,37 @@ export function normalizeSemanticMarkup(doc: Document): void {
     if (lang) newCode.className = `language-${lang}`;
     newCode.textContent = text;
     newPre.appendChild(newCode);
-    pre.replaceWith(newPre);
+    codeBlockWrapper(pre, text).replaceWith(newPre);
   }
+}
+
+/** Class hints that mark a code-block chrome wrapper across common renderers. */
+const CODE_WRAPPER_CLASS = /code-?block|codeblock|highlight|code-snippet|shiki/i;
+
+/**
+ * Find the outermost ancestor that wraps ONLY this code block (button chrome
+ * like copy / feedback buttons carries no text, so it doesn't count). That
+ * wrapper is what we replace, so the surrounding non-content chrome that
+ * confuses extractors goes with it. Stops at any element with an `id`, at
+ * structural landmarks, or as soon as an ancestor holds more than this one
+ * code block — so we never swallow real sibling content.
+ */
+function codeBlockWrapper(pre: Element, codeText: string): Element {
+  const want = codeText.trim();
+  let target: Element = pre;
+  let parent = pre.parentElement;
+  while (parent) {
+    if (parent.id) break;
+    if (['BODY', 'MAIN', 'ARTICLE', 'SECTION'].includes(parent.tagName)) break;
+    if (parent.querySelectorAll('pre').length !== 1) break;
+    const cls = typeof parent.className === 'string' ? parent.className : '';
+    const isChrome = CODE_WRAPPER_CLASS.test(cls);
+    const onlyThisCode = (parent.textContent ?? '').trim() === want;
+    if (!isChrome && !onlyThisCode) break;
+    target = parent;
+    parent = parent.parentElement;
+  }
+  return target;
 }
 
 async function extractArticle(

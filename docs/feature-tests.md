@@ -142,14 +142,52 @@ Every entry follows this shape:
   4. Inspect the returned `image_base64` (paste into a data-URL viewer
      to see the crop).
 - **Expected:** `{ ok: true, media_type: "image/jpeg" | "image/png",
-  width, height, source_rect, image_base64, byte_length, profile }`.
-  `width` and `height` are in image-pixels (× DPR). `source_rect` is
-  the CSS-pixel rect that was captured (with padding applied).
+  width, height, source_rect, image_base64, byte_length, profile,
+  file_id, file_url }`. The crop is uploaded to cloud storage (so
+  `file_url` is a durable link and it appears in the Screenshots gallery);
+  `image_base64` is still returned for the vision model. `width` and
+  `height` are in image-pixels (× DPR). `source_rect` is the CSS-pixel
+  rect that was captured (with padding applied).
 - **Edge cases worth poking:**
   - Off-viewport element → handler auto-scrolls it into view first,
     then captures.
   - `padding: 0` → tight crop with no margin.
   - Element with zero size or display:none → `{ ok: false, reason: "Element has zero size" }`.
+
+### Screenshot results render inline in the chat timeline (via durable URL)
+- **What it does:** When the agent captures the screen, the image renders
+  inline in the chat tool-timeline row (no click-to-expand needed), and it
+  renders from the **hosted `file_url`** — so it survives a reload, not just
+  the live view. EVERY screenshot path now uploads to cloud storage and
+  returns `file_url`: `computer({action:"screenshot"})`, `take_screenshot`,
+  `screenshot_region`, and `cdp_full_page_screenshot`. (`image_base64` is also
+  returned for the vision model, but the UI renders the URL, never the base64.)
+  Regression context: the 2026-05-19 namespace redesign moved the agent off
+  `take_screenshot` onto `computer`, but the image renderer was still keyed on
+  `take_screenshot`, so screenshots stopped showing — only a `file_id` blob.
+- **Where to test:** Chat tab (ask the agent to "take a screenshot of this
+  page"); also Tools tab → `computer` with `{ "action": "screenshot" }`,
+  `screenshot_region`, `cdp_full_page_screenshot`.
+- **Steps:**
+  1. Open any page, ask the agent in Chat to take a screenshot.
+  2. Watch the tool-timeline row when the call completes — image renders.
+  3. Reload the side panel / reopen the conversation from history — the image
+     is still there (rehydrated from the stored `file_url`).
+- **Expected:** The captured image renders inline under the row from
+  `file_url`, with a `W×H · size` caption. The capture also lands in the
+  Screenshots tab gallery. Non-screenshot `computer` actions (click/type/
+  scroll) render NO image block — just the normal header.
+- **Edge cases worth poking:**
+  - Region/full-page captures (`screenshot_region`, `cdp_full_page_screenshot`)
+    now also appear in the Screenshots gallery.
+  - If the cloud upload fails, `file_url` is null; the row shows the header but
+    no image (a local-only image is intentionally NOT rendered).
+  - `chrome_bookmarks` / `chrome_history` / `chrome_cookies` / `chrome_webmcp`
+    rows show their custom icon+verb header (not the bare default row) — the
+    renames are aliased.
+  - Guard test: `pnpm vitest run tests/unit/tool-display-registry.test.ts`
+    enforces 1:1 coverage (every canonical tool has a display config) and
+    fails if a renamed tool's config isn't re-keyed or aliased.
 
 ### record_demo / replay_demo / list_demos / describe_demo / delete_demo
 - **What they do:** Record a user demonstration of a workflow once,
@@ -275,7 +313,10 @@ Every entry follows this shape:
   into one space-joined blob and (b) drop code blocks entirely.
   `normalizeSemanticMarkup` (in `pipeline.ts`, runs on a clone before
   extraction) renames `[data-as]` block tags to real tags and rebuilds
-  highlighted `<pre><code>` as clean text.
+  each highlighted code block as a clean `<pre><code>`, **replacing the
+  whole `.code-block` chrome wrapper** (copy/feedback buttons) rather
+  than just the inner `<pre>` — otherwise Defuddle scores the
+  button-laden wrapper as non-content and prunes the code with it.
   - **Test:** `fetch_url_as_markdown` on a Cartesia docs page, e.g.
     `https://docs.cartesia.ai/use-the-api/tts-websocket/buffering`.
   - **Expected:** paragraphs are blank-line separated (not run
@@ -482,7 +523,7 @@ Every entry follows this shape:
 ---
 
 ### record_tab_video / Tools - Recorder pane (TASK-003)
-- **What it does:** Records video (and optionally audio) of the active tab via `chrome.tabCapture` + MediaRecorder, uploads to `cld_files`, and shows the result in a recording list. Same offscreen-document pipeline as mic capture (TASK-002). Available as both a user UI (Tools tab - Recorder sub-tab) and an admin-only agent tool (`record_tab_video`).
+- **What it does:** Records video (and optionally audio) of the active tab via `chrome.tabCapture` + MediaRecorder, uploads to `cld_files`, and shows the result in a recording list. Same offscreen-document pipeline as mic capture (TASK-002). Available as both a user UI (Tools tab - Recorder sub-tab) and an admin-only agent tool (`chrome_record_tab_video`).
 - **Where to test:** Side panel - **Tools** tab - **Recorder** sub-tab. Also Tools - Catalog - search `record_tab_video` for the agent path.
 - **Prereq:** Settings - **Advanced agent capabilities** - toggle on **Tab video capture**. Chrome will prompt; accept. (The Recorder pane will request it for you on first use; toggling in Settings ahead of time avoids the prompt.)
 - **Steps (UI surface):**
@@ -494,13 +535,13 @@ Every entry follows this shape:
   6. Status flips to Uploading - then a row appears in the Recordings list with: tab title, capture timestamp, duration, size, mime type.
   7. Click **Open** on the row to view the video in a new tab via the cld_files URL. Click **file_id** to copy the canonical id for use in agent prompts.
 - **Steps (agent surface):**
-  1. Tools tab - Catalog - filter to admin / advanced - find `record_tab_video`.
-  2. Hit Run with `{ "durationMs": 5000, "audio": false }`.
+  1. Tools tab - Catalog - filter to admin / advanced - find `chrome_record_tab_video`.
+  2. Hit Run with `{ "duration_ms": 5000, "audio": false }` (optional: `"source": "tab" | "display"`, `"tab_id"`). It's a single blocking call — it returns once the recording finishes (~5s here).
   3. Approve the action prompt (Action tier in Ask mode).
-  4. Result includes `{ ok: true, file_id, file_url, mime_type, duration_ms, size_bytes }`.
+  4. Result includes `{ ok: true, file_id, file_url, mime_type, duration_ms, size_bytes }`. The capture also appears in the Tools-tab Recorder list (after a hydrate / reload).
 - **Expected:**
   - Recordings appear most-recent first; the list survives sidepanel reload via `chrome.storage.local`.
-  - Without the `tabCapture` permission granted, both surfaces fail cleanly: agent tool returns `{ ok:false, reason: "required optional permission(s) not granted: tabCapture..." }`; UI surface shows an error banner with a "Dismiss" button.
+  - Without the `tabCapture` permission granted, both surfaces fail cleanly: the agent tool is gated by the dispatcher and returns `{ ok:false, error: "permission_not_yet_granted: this tool needs the optional Chrome permission(s) [tabCapture]..." }` (guiding the agent to ask the user to enable it via Settings → Advanced agent capabilities); UI surface shows an error banner with a "Dismiss" button.
 - **Edge cases worth poking:**
   - Restricted URLs (`chrome://`, PDF viewer): `getMediaStreamId` rejects - the recorder shows the error banner.
   - Trigger Stop early - the upload still produces a valid (shorter) WebM.
@@ -546,6 +587,26 @@ Every entry follows this shape:
 - **Edge cases worth poking:**
   - Switch to another tab in the side panel (Tools, Settings, etc.) and back to Chat → the in-memory chat session for THIS open session persists. Only a fresh sidepanel open resets it.
   - Send-and-close mid-stream → on next open, the in-flight reply doesn't reappear; you get an empty chat.
+
+### Plan & tasks chip placement in the chat header
+- **What it does:** When a conversation has a plan, agent tasks, or open
+  user-todos, a small chip (📋 done/total, 📌 open-todos) appears in the
+  chat header's right-hand control cluster — laid out in flow next to the
+  Language / Permission / Copy / New-chat / History controls. Clicking it
+  opens the Plan & tasks drawer.
+- **Where to test:** Chat tab.
+- **Steps:**
+  1. Start a conversation where the agent proposes a plan or adds tasks
+     (or add a task manually via the drawer).
+  2. Look at the top-right of the chat header.
+- **Expected:** The chip sits to the LEFT of the other header controls with
+  normal spacing — it does NOT overlap or sit on top of the History icon.
+  When there's no plan/tasks/todos, the chip is absent and takes no space.
+- **Edge cases worth poking:**
+  - Plan exists but zero tasks/todos → chip still shows (opens the drawer to
+    the plan); it must not cover the History/New-chat icons.
+  - Regression being guarded: the chip used to be `absolute right-2 top-1`,
+    floating over the header and overlapping the History icon.
 
 ### Showcase — Tables tab (auto_table mode)
 - **What it does:** Detects every `<table>` on the page (≥2 rows) and

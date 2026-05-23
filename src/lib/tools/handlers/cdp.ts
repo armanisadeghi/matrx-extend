@@ -22,6 +22,7 @@
  */
 
 import * as cdp from '@/lib/cdp/client';
+import { log } from '@/lib/debug/log';
 import { resolveProfile, type ScreenshotProfile } from '@/lib/screenshot/profiles';
 import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
@@ -132,7 +133,7 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
   description:
-    "Capture the FULL page (not just viewport) as base64. Use instead of take_screenshot for whole-article / long-form pages. Pass a `profile` to optimize for a specific vision model (same profile names as take_screenshot). The tool auto-computes capture_scale so the long edge lands at the profile's target. Returns { ok, media_type, format, image_base64, byte_length, capture_scale, profile, est_tokens }. The `media_type` field is ready to drop into an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
+    "Capture the FULL page (not just viewport) as base64. Use instead of take_screenshot for whole-article / long-form pages. Pass a `profile` to optimize for a specific vision model (same profile names as take_screenshot). The tool auto-computes capture_scale so the long edge lands at the profile's target. Returns { ok, media_type, format, width, height, image_base64, byte_length, capture_scale, profile, est_tokens, file_id, file_url }. The capture is uploaded to cloud storage so file_url is a durable link the UI renders; image_base64 is also returned for the vision model. The `media_type` field is ready to drop into an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
   argsSchema: FullPageScreenshotArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -183,16 +184,59 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
         captureBeyondViewport: args.full_page,
         clip,
       });
+      const mediaType =
+        format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png';
+      // Captured image dimensions (best-effort, in image-pixels). Full-page
+      // applies captureScale via the clip; viewport capture does not.
+      const scale = args.full_page ? captureScale : 1;
+      const baseW = args.full_page ? layout.contentSize.width : layout.cssLayoutViewport.clientWidth;
+      const baseH = args.full_page
+        ? layout.contentSize.height
+        : layout.cssLayoutViewport.clientHeight;
+      const width = Math.round(baseW * scale);
+      const height = Math.round(baseH * scale);
+
+      // Persist to cld_files + wbx_screenshot so the capture has a durable
+      // URL the UI renders (and survives reload) and lands in the Screenshots
+      // gallery. image_base64 stays in the result for the vision model.
+      let fileId: string | null = null;
+      let fileUrl: string | null = null;
+      let screenshotId: string | null = null;
+      try {
+        const tab = await chrome.tabs.get(tabId);
+        const { persistScreenshot } = await import('@/lib/screenshot/persist');
+        const persisted = await persistScreenshot({
+          tab,
+          base64: result.data,
+          mimeType: mediaType,
+          // persistScreenshot only uses `format` for the filename extension;
+          // mimeType carries the real type (incl. webp).
+          format: format === 'jpeg' ? 'jpeg' : 'png',
+          width,
+          height,
+          source: 'agent',
+        });
+        fileId = persisted.fileId;
+        fileUrl = persisted.fileUrl;
+        screenshotId = persisted.screenshotId;
+      } catch (err) {
+        log.warn('sw', 'cdp_full_page_screenshot persistence failed; returning inline only', err);
+      }
+
       return {
         ok: true,
-        media_type:
-          format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png',
+        media_type: mediaType,
         format,
+        width,
+        height,
         capture_scale: captureScale,
         profile: profileName,
         est_tokens: profile.est_tokens,
         image_base64: result.data,
         byte_length: result.data.length,
+        file_id: fileId,
+        file_url: fileUrl,
+        screenshot_id: screenshotId,
       };
     } catch (err) {
       return { ok: false, reason: (err as Error).message };

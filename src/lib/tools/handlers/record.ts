@@ -24,6 +24,7 @@
  */
 import { z } from 'zod';
 import { uploadFile } from '@/lib/api/routes/files';
+import { log } from '@/lib/debug/log';
 import {
   clearRecording,
   getRecording,
@@ -36,7 +37,9 @@ import {
   renderRecordingToGif,
   type RenderOptions,
 } from '@/lib/recording/render';
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler, ToolTier } from '@/lib/tools/types';
+import { runVideoCapture } from '@/lib/video/video-sw';
 
 const OptionsSchema = z
   .object({
@@ -263,4 +266,136 @@ export const record_gif: ToolHandler<RecordGifArgs, unknown> = {
   },
 };
 
-export const record_handlers = [record_gif];
+// ────────────────────────────────────────────────────────────────────────────
+// chrome_record_tab_video — record the active tab as a WebM video.
+//
+// Unlike record_gif (CDP screencast → GIF, multi-step start/stop/export), this
+// is a single blocking call: it captures `duration_ms` of tab video via the
+// shared offscreen tabCapture + MediaRecorder pipeline (the same one the
+// Tools-tab Recorder pane uses), uploads to cld_files, and returns the file
+// reference. The SW-side `runVideoCapture` resolver was built for exactly this
+// path — see src/lib/video/video-sw.ts.
+// ────────────────────────────────────────────────────────────────────────────
+const RecordTabVideoArgs = z.object({
+  /** Recording length in ms (1000–60000). Default 5000. */
+  duration_ms: z.number().int().min(1_000).max(60_000).optional().default(5_000),
+  /** Capture tab audio in addition to video. Default false. */
+  audio: z.boolean().optional().default(false),
+  /**
+   * 'tab' (default) uses chrome.tabCapture on the assigned tab; 'display'
+   * uses getDisplayMedia (user picks a surface — only useful interactively).
+   */
+  source: z.enum(['tab', 'display']).optional().default('tab'),
+  /** Optional explicit tab id (string). Defaults to the agent's assigned tab. */
+  tab_id: z.string().optional(),
+});
+type RecordTabVideoArgs = z.infer<typeof RecordTabVideoArgs>;
+
+export const record_tab_video: ToolHandler<RecordTabVideoArgs, unknown> = {
+  name: 'chrome_record_tab_video',
+  tier: 'action',
+  admin_only: true,
+  required_optional_permissions: ['tabCapture'],
+  supportedBrowsers: ['chrome'],
+  description:
+    "Record the active tab as a video (WebM) for `duration_ms` and upload it to cloud storage. This is a single blocking call — it returns once the recording finishes. Pass `audio:true` to also capture tab audio. Returns { ok, file_id, file_url, mime_type, duration_ms, size_bytes }. Use the returned file_id with upload_file / drop_file, or share the file_url. For a lightweight annotated GIF of agent actions instead, use chrome_record_gif. The recording also appears in the Tools-tab Recorder list.",
+  argsSchema: RecordTabVideoArgs,
+  run: async (args, ctx) => {
+    let tabId: number | null;
+    if (args.tab_id) {
+      tabId = parseTabId(args.tab_id);
+      if (tabId == null) return { ok: false, reason: `Invalid tab_id: ${args.tab_id}` };
+    } else {
+      tabId = await getAssignedTabId(ctx);
+    }
+    if (tabId == null) return { ok: false, reason: 'No active tab to record.' };
+
+    // Snapshot tab metadata up front for the recordings list (the tab may
+    // navigate during capture).
+    let tabTitle: string | null = null;
+    let tabUrl: string | null = null;
+    try {
+      const t = await chrome.tabs.get(tabId);
+      tabTitle = t.title ?? null;
+      tabUrl = t.url ?? null;
+    } catch {
+      // non-fatal — metadata only
+    }
+
+    const result = await runVideoCapture({
+      targetTabId: tabId,
+      audio: args.audio,
+      durationMs: args.duration_ms,
+      source: args.source,
+    });
+    if (!result.ok || !result.data) {
+      return { ok: false, reason: result.reason ?? 'Recording produced no data.' };
+    }
+    if (result.data.byteLength === 0) {
+      return { ok: false, reason: 'Recording produced an empty file.' };
+    }
+
+    const mimeType = result.mimeType ?? 'video/webm';
+    const ext = mimeType.startsWith('video/mp4') ? 'mp4' : 'webm';
+    const filename = `recording-${Date.now()}.${ext}`;
+    // Copy through a fresh ArrayBuffer to satisfy the strict BlobPart type
+    // (same reason as record_gif's GIF buffer).
+    const buf = new ArrayBuffer(result.data.byteLength);
+    new Uint8Array(buf).set(new Uint8Array(result.data));
+    const blob = new Blob([buf], { type: mimeType });
+
+    let upload: { file_id: string; url: string | null; cdn_url: string | null };
+    try {
+      upload = await uploadFile(blob, filename, {
+        path: `browser-agent/recordings/${filename}`,
+        metadata: {
+          kind: 'tab-video',
+          duration_ms: result.durationMs ?? args.duration_ms,
+          audio: result.audio ?? args.audio,
+          source: result.source ?? args.source,
+          page_url: tabUrl ?? undefined,
+        },
+      });
+    } catch (err) {
+      return { ok: false, reason: `Upload failed: ${(err as Error).message}` };
+    }
+
+    const fileUrl = upload.url ?? upload.cdn_url ?? null;
+    const durationMs = result.durationMs ?? args.duration_ms;
+    const sizeBytes = result.sizeBytes ?? blob.size;
+
+    // Mirror into the recordings list so agent captures show up in the
+    // Tools-tab Recorder pane alongside the user's own. Hydrate first so we
+    // merge with (never clobber) existing entries persisted by the sidepanel.
+    try {
+      const { useRecordingsStore } = await import('@/lib/video/recordings-store');
+      await useRecordingsStore.getState().hydrate();
+      await useRecordingsStore.getState().add({
+        id: `agent-${Date.now()}`,
+        capturedAt: new Date().toISOString(),
+        tabTitle,
+        tabUrl,
+        fileId: upload.file_id,
+        fileUrl,
+        durationMs,
+        sizeBytes,
+        mimeType,
+        audio: result.audio ?? args.audio,
+        source: result.source ?? args.source,
+      });
+    } catch (err) {
+      log.warn('sys', 'record_tab_video: failed to add to recordings list', err);
+    }
+
+    return {
+      ok: true,
+      file_id: upload.file_id,
+      file_url: fileUrl,
+      mime_type: mimeType,
+      duration_ms: durationMs,
+      size_bytes: sizeBytes,
+    };
+  },
+};
+
+export const record_handlers = [record_gif, record_tab_video];

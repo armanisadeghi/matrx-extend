@@ -1,11 +1,11 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-23T01:15:09.612Z
+Generated: 2026-05-23T15:13:13.656Z
 
-- **Total tools:** 168
+- **Total tools:** 169
 - **Assistant bundle:** 75 tools (read-only)
-- **Pilot bundle:** 138 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 168 tools
+- **Pilot bundle:** 139 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 169 tools
 
 
 ## Tier: read (75)
@@ -1701,7 +1701,7 @@ Extract a table on the active page as structured JSON. Handles native <table> wi
 
 ### `screenshot_region`
 
-Capture a bounded region of the active tab's viewport. Provide `ref` (preferred) from a prior read_page, OR `selector`, OR an explicit viewport `rect: {x,y,w,h}`. The handler scrolls the target into view if needed, captures the visible viewport, then crops to the resolved rect (with optional `padding` in CSS px). Returns the same shape as take_screenshot: { media_type, format, width, height, image_base64, byte_length, source_rect }. Use this for focused vision-API calls on a specific component — 5-20× cheaper than a full-page screenshot.
+Capture a bounded region of the active tab's viewport. Provide `ref` (preferred) from a prior read_page, OR `selector`, OR an explicit viewport `rect: {x,y,w,h}`. The handler scrolls the target into view if needed, captures the visible viewport, then crops to the resolved rect (with optional `padding` in CSS px). Returns the same shape as take_screenshot: { media_type, format, width, height, image_base64, byte_length, source_rect, file_id, file_url }. The crop is uploaded to cloud storage so file_url is a durable link; image_base64 is also returned for direct vision-model consumption. Use this for focused vision-API calls on a specific component — 5-20× cheaper than a full-page screenshot.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -2191,7 +2191,7 @@ Read browsing history. Actions: 'search' (free-text against title/URL; pass `que
 }
 ```
 
-## Tier: action (60)
+## Tier: action (61)
 
 ### `navigate_active_tab`
 
@@ -3664,6 +3664,44 @@ Record browser actions and export as an animated GIF. Actions: 'start_recording'
 
 ### `chrome_record_tab_video`
 
+Record the active tab as a video (WebM) for `duration_ms` and upload it to cloud storage. This is a single blocking call — it returns once the recording finishes. Pass `audio:true` to also capture tab audio. Returns { ok, file_id, file_url, mime_type, duration_ms, size_bytes }. Use the returned file_id with upload_file / drop_file, or share the file_url. For a lightweight annotated GIF of agent actions instead, use chrome_record_gif. The recording also appears in the Tools-tab Recorder list.
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "duration_ms": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 60000,
+      "default": 5000
+    },
+    "audio": {
+      "type": "boolean",
+      "default": false
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "tab",
+        "display"
+      ],
+      "default": "tab"
+    },
+    "tab_id": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `chrome_record_tab_video`
+
 Record video of a tab via chrome.tabCapture + MediaRecorder and upload to cld_files. Args: duration_ms (default 5000, max 60000), audio (default false), tab_id? (defaults to assigned tab), filename?. Returns { ok, file_id, file_url, mime_type, duration_ms, size_bytes }. Requires `tabCapture` optional permission — when missing returns ok:false with a remediation hint pointing the user to Settings → Advanced → Tab video capture.
 
 - **Required permissions:** (none)
@@ -4801,7 +4839,7 @@ Close the CDP session on a tab (defaults to active tab). Removes the debug banne
 
 ### `cdp_full_page_screenshot`
 
-Capture the FULL page (not just viewport) as base64. Use instead of take_screenshot for whole-article / long-form pages. Pass a `profile` to optimize for a specific vision model (same profile names as take_screenshot). The tool auto-computes capture_scale so the long edge lands at the profile's target. Returns { ok, media_type, format, image_base64, byte_length, capture_scale, profile, est_tokens }. The `media_type` field is ready to drop into an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.
+Capture the FULL page (not just viewport) as base64. Use instead of take_screenshot for whole-article / long-form pages. Pass a `profile` to optimize for a specific vision model (same profile names as take_screenshot). The tool auto-computes capture_scale so the long edge lands at the profile's target. Returns { ok, media_type, format, width, height, image_base64, byte_length, capture_scale, profile, est_tokens, file_id, file_url }. The capture is uploaded to cloud storage so file_url is a durable link the UI renders; image_base64 is also returned for the vision model. The `media_type` field is ready to drop into an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.
 
 - **Required permissions:** `activeTab`
 - **Surface bundles:** pilot+privileged
