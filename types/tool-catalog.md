@@ -1,6 +1,6 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-22T19:41:21.335Z
+Generated: 2026-05-23T01:15:09.612Z
 
 - **Total tools:** 168
 - **Assistant bundle:** 75 tools (read-only)
