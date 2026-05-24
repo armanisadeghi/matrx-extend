@@ -7,7 +7,8 @@
 #   3.  Sync server API types  (pnpm update-api-types)
 #   4.  TypeScript typecheck   (pnpm compile)
 #   5.  Bump version           (default --patch; --minor / --major supported)
-#   6.  Regen tool catalog     (pnpm catalog:tools:md)
+#   6.  Regen tool catalog     (pnpm catalog:tools:md), DB drift check,
+#         and docs/TOOLS.generated.md from the DB (pnpm docs:tools)
 #   7.  Commit version bump + regenerated catalog
 #   8.  Comment out the `key` field in wxt.config.ts
 #   9.  Build STORE zip without the dev key
@@ -389,6 +390,18 @@ else
     else
         warn "Skipping tl_def drift check — catalog regen failed."
     fi
+
+    # ── 4c. Regenerate docs/TOOLS.generated.md from the DB (NON-FATAL) ────────
+    #
+    # Rule 4 (docs/TOOL_SOURCE_OF_TRUTH.md): tool descriptions live ONLY in the
+    # database; the single repo copy allowed is this auto-generated doc. It
+    # reads tl_def directly (not the local catalog), so it runs regardless of
+    # CATALOG_OK. Never blocks — warns on failure and ships either way.
+    if pnpm docs:tools; then
+        ok "docs/TOOLS.generated.md regenerated from tl_def"
+    else
+        WARNINGS+=("docs:tools regen FAILED (non-blocking). docs/TOOLS.generated.md may be stale.")
+    fi
 fi
 
 # ── 5. Commit version bump ──────────────────────────────────────────────────
@@ -400,6 +413,8 @@ git add package.json 2>/dev/null || true
 if $CATALOG_OK; then
     git add types/tool-catalog.json types/tool-catalog.md 2>/dev/null || true
 fi
+# The DB-sourced tools doc (Rule 4) — stage whenever it was regenerated.
+git add docs/TOOLS.generated.md 2>/dev/null || true
 if ! git diff --cached --quiet; then
     git commit -m "$COMMIT_MSG"
     VERSION_COMMITTED=true

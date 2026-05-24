@@ -26,6 +26,7 @@ import {
   type ToolCategory,
   toolsInCategory,
 } from '@/lib/tools/categories';
+import { ensureToolDescriptions } from '@/lib/tools/descriptions';
 import { listAllHandlers } from '@/lib/tools/registry';
 import type { AnyToolHandler, ToolContext, ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
@@ -55,8 +56,6 @@ function ctxIsAdmin(ctx: ToolContext): boolean {
 export const list_browser_tools: ToolHandler<NoArgs, unknown> = {
   name: 'list_browser_tools',
   tier: 'read',
-  description:
-    'Index of every browser-tool category the extension exposes. Returns one entry per category: name, label, description, count of tools, name of the category-specific list tool. To get the full schemas for a category, call its `list_tool` (e.g. `list_page_tools`). Use this whenever the model needs more capabilities than its current toolset offers.',
   argsSchema: NoArgs,
   run: async (_args, ctx) => {
     const handlers = listAllHandlers();
@@ -91,18 +90,20 @@ function buildCategoryListTool(category: ToolCategory): ToolHandler<NoArgs, unkn
     name: meta.list_tool_name,
     tier: 'read',
     admin_only: meta.admin_only,
-    description: `Full schemas for tools in the "${meta.label}" category (${category}). ${meta.description} Returns { count, tools: [{ name, description, tier, input_schema }] }.`,
     argsSchema: NoArgs,
     run: async (_args, ctx) => {
       const isAdmin = ctxIsAdmin(ctx) || !!meta.admin_only === false;
       const handlers = listAllHandlers();
       const tools = toolsInCategory(handlers, category, { isAdmin: isAdmin });
+      // Descriptions live ONLY in the DB (Rule 4) — read them live so the
+      // agent-facing schemas still carry a description without hardcoding it.
+      const descs = await ensureToolDescriptions();
       return {
         category,
         count: tools.length,
         tools: tools.map((h) => ({
           name: h.name,
-          description: h.description,
+          description: descs.get(h.name) ?? null,
           tier: h.tier,
           admin_only: !!h.admin_only,
           required_optional_permissions: h.required_optional_permissions ?? [],

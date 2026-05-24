@@ -6,7 +6,10 @@
  *   - tier      — risk level, drives the permission gate
  *   - run       — the actual handler executed in the SW (full `chrome.*` access)
  *   - args      — Zod schema for inbound arguments
- *   - description — sent to the agent so it knows what the tool does
+ *
+ * Descriptions are NOT declared here — they live ONLY in the database
+ * (`public.tl_def.description`) and are read live for UI via
+ * `src/lib/tools/descriptions.ts`. See docs/TOOL_SOURCE_OF_TRUTH.md (Rule 4).
  */
 
 import type { BrowserSet } from '@/lib/browser/types';
@@ -95,7 +98,6 @@ export interface ToolContext {
 export interface ToolHandler<TArgs, TResult> {
   name: string;
   tier: ToolTier;
-  description: string;
   /**
    * Accept any input shape — schemas with `.default(...)` infer an input type
    * that includes `undefined` for the defaulted keys, but the parsed output is
@@ -161,7 +163,12 @@ export interface PendingConfirmRequest {
   /** Conversation that owns this request. See PendingAskUserRequest.conversationId. */
   conversationId?: string | null;
   toolName: string;
-  description: string;
+  /**
+   * Human-readable description, resolved LIVE from the DB (tl_def) at confirm
+   * time via src/lib/tools/descriptions.ts — never hardcoded (Rule 4). Omitted
+   * when the live lookup hasn't loaded yet; the card falls back to name + args.
+   */
+  description?: string;
   /** Args the agent supplied — surfaced verbatim so the user sees what's about to happen. */
   args: unknown;
   tier: ToolTier;

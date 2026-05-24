@@ -46,8 +46,6 @@ type PressKeysArgs = z.infer<typeof PressKeysArgs>;
 export const press_keys: ToolHandler<PressKeysArgs, unknown> = {
   name: 'press_keys',
   tier: 'action',
-  description:
-    'Send keyboard input to a page. Pass either a literal string ("hello world") or named keys/chords ("Enter", "Control+A", "Tab", "ArrowDown ArrowDown Enter"). When `selector` or `ref` is provided the tool focuses that element first. Useful for triggering submit-on-Enter, navigating menus, dismissing dialogs, and using app keyboard shortcuts.',
   argsSchema: PressKeysArgs,
   run: async (args, ctx) => {
     const sel = resolveRef(args);
@@ -207,8 +205,6 @@ type HoverArgs = z.infer<typeof HoverArgs>;
 export const hover_element: ToolHandler<HoverArgs, unknown> = {
   name: 'hover_element',
   tier: 'action',
-  description:
-    'Trigger hover on an element by dispatching mouseenter/mouseover/mousemove events. Pass `ref` from read_page or a CSS `selector`. Reveals hover-only tooltips, dropdown menus, or sub-navigation.',
   argsSchema: HoverArgs,
   run: async (args, ctx) => {
     const sel = resolveRef(args);
@@ -251,8 +247,6 @@ type FocusArgs = z.infer<typeof FocusArgs>;
 export const focus_element: ToolHandler<FocusArgs, unknown> = {
   name: 'focus_element',
   tier: 'action',
-  description:
-    'Move keyboard focus to an element. Pass `ref` from read_page or a `selector`. Use before press_keys when no selector is supplied to that tool.',
   argsSchema: FocusArgs,
   run: async (args, ctx) => {
     const sel = resolveRef(args);
@@ -280,8 +274,6 @@ type BlurArgs = z.infer<typeof BlurArgs>;
 export const blur_element: ToolHandler<BlurArgs, unknown> = {
   name: 'blur_element',
   tier: 'action',
-  description:
-    'Remove focus from an element. With no selector, blurs whatever currently has focus. Useful before press_keys when shortcuts must hit document instead of an input.',
   argsSchema: BlurArgs,
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
@@ -314,8 +306,6 @@ type RightClickArgs = z.infer<typeof RightClickArgs>;
 export const right_click_element: ToolHandler<RightClickArgs, unknown> = {
   name: 'right_click_element',
   tier: 'action',
-  description:
-    "Dispatch a contextmenu event on an element (synthetic right-click). Note: most apps respond by showing their own custom menu in the page DOM. Chrome's native context menu cannot be opened by extension scripts.",
   argsSchema: RightClickArgs,
   run: async (args, ctx) => {
     const sel = resolveRef(args);

@@ -40,8 +40,6 @@ type SaveGuidanceNoteArgs = z.infer<typeof SaveGuidanceNoteArgs>;
 export const save_guidance_note: ToolHandler<SaveGuidanceNoteArgs, unknown> = {
   name: 'save_guidance_note',
   tier: 'action',
-  description:
-    "Save a domain-scoped note for the user (or for yourself on the next visit). The note auto-surfaces in chat context whenever the user opens a tab on this domain. Use for site-specific lessons that don't fit in `remember_for_domain`'s structured hints — full prose explanations, workflow hints, gotchas.",
   argsSchema: SaveGuidanceNoteArgs,
   run: async (args) => {
     const now = Date.now();
@@ -73,8 +71,6 @@ type ListGuidanceArgs = z.infer<typeof ListGuidanceArgs>;
 export const list_guidance: ToolHandler<ListGuidanceArgs, unknown> = {
   name: 'list_guidance',
   tier: 'read',
-  description:
-    'List saved guidance items (notes, screenshots, GIFs, demo references). Pass `domain` to filter; omit to return everything. Returns lightweight summaries — call `get_guidance_item` for full details.',
   argsSchema: ListGuidanceArgs,
   run: async (args) => {
     const items = args.domain
@@ -91,8 +87,6 @@ type GetGuidanceItemArgs = z.infer<typeof GetGuidanceItemArgs>;
 export const get_guidance_item: ToolHandler<GetGuidanceItemArgs, unknown> = {
   name: 'get_guidance_item',
   tier: 'read',
-  description:
-    'Return the full record for one guidance item by id. Notes include their text; screenshots/GIFs include their cld_files URL; demo references include the linked demo_id (use `replay_demo` to run).',
   argsSchema: GetGuidanceItemArgs,
   run: async (args) => {
     const item = await getGuidanceItem(args.id);
@@ -108,8 +102,6 @@ type DeleteGuidanceItemArgs = z.infer<typeof DeleteGuidanceItemArgs>;
 export const delete_guidance_item: ToolHandler<DeleteGuidanceItemArgs, unknown> = {
   name: 'delete_guidance_item',
   tier: 'action',
-  description:
-    'Delete a saved guidance item by id. Cannot be undone. For demo references, this only removes the guidance index entry — the underlying demo lives in its own storage and must be deleted via `delete_demo`.',
   argsSchema: DeleteGuidanceItemArgs,
   run: async (args) => {
     const ok = await storageDelete(args.id);

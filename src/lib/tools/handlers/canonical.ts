@@ -119,8 +119,6 @@ export const computer: ToolHandler<ComputerArgs, unknown> = {
   name: 'computer',
   tier: 'action',
   tierFor: (args): ToolTier => (COMPUTER_READ_ACTIONS.has(args.action) ? 'read' : 'action'),
-  description:
-    "Mouse, keyboard, and screenshot interactions. Prefer 'ref' over 'coordinate' when targeting elements; coordinates survive poorly across scrolls and layout changes. The 'screenshot' action persists the image to cloud and returns {file_id, file_url, width, height, mime_type} — use that file_id with upload_file or drop_file later. Use wait_for for synchronization, NOT a fixed sleep.",
   argsSchema: ComputerArgs,
   run: async (args, ctx) => {
     const act = await activateTab(args.tab_id);
@@ -377,8 +375,6 @@ type FormInputArgs = z.infer<typeof FormInputArgs>;
 export const form_input: ToolHandler<FormInputArgs, unknown> = {
   name: 'form_input',
   tier: 'action',
-  description:
-    "Set the value of a form element by reference. Use string for text inputs, boolean for checkboxes/radios, value or visible label for selects. The handler dispatches on element type — you don't need to specify it.",
   argsSchema: FormInputArgs,
   run: async (args, ctx) => {
     const act = await activateTab(args.tab_id);
@@ -447,8 +443,6 @@ type NavigateArgs = z.infer<typeof NavigateArgs>;
 export const navigate: ToolHandler<NavigateArgs, unknown> = {
   name: 'navigate',
   tier: 'action',
-  description:
-    "Navigate a tab to a URL, or move through history with 'back'/'forward'. Protocol defaults to https:// if omitted. After navigating, refs from prior read_page calls are invalidated — call read_page again before referencing elements.",
   argsSchema: NavigateArgs,
   run: async (args, ctx) => {
     const act = await activateTab(args.tab_id);
@@ -499,8 +493,6 @@ export const tabs: ToolHandler<TabsArgs, unknown> = {
   name: 'tabs',
   tier: 'action',
   tierFor: (args): ToolTier => (TABS_READ_ACTIONS.has(args.action) ? 'read' : 'action'),
-  description:
-    "Manage browser tabs. Actions: 'list' (all tabs in current window), 'create' (opens new tab; pass url to open at a URL), 'close', 'switch' (brings tab to foreground), 'reload', 'active' (returns the currently active tab — call when you don't know your tab_id), 'info' (full info for a specific tab_id), 'pin' (toggle pin via `on`), 'mute' (toggle mute via `on`), 'duplicate', 'move' (to `index` and optionally `window_id`), 'zoom' (set `zoom_factor`, e.g. 1.5 for 150%). tab_id required for close/switch/reload/info/pin/mute/duplicate/move/zoom.",
   argsSchema: TabsArgs,
   run: async (args, ctx) => {
     if (args.action === 'list') return list_open_tabs.run({} as never, ctx);
@@ -567,8 +559,6 @@ export const downloads: ToolHandler<DownloadsArgs, unknown> = {
   name: 'downloads',
   tier: 'action',
   tierFor: (args): ToolTier => (args.action === 'list' ? 'read' : 'action'),
-  description:
-    "Manage file downloads. Actions: 'list' (recent downloads with id/filename/url/state/bytes), 'cancel' (abort a pending download), 'confirm' (no-op; Chrome auto-completes downloads), 'download_url' (trigger a download from a URL). download_id required for cancel/confirm; url required for download_url.",
   argsSchema: DownloadsArgs,
   run: async (args, ctx) => {
     if (args.action === 'list') return list_downloads.run({} as never, ctx);
@@ -618,8 +608,6 @@ const SCRATCHPAD_KEY_CAP = 100;
 export const scratchpad: ToolHandler<ScratchpadArgs, unknown> = {
   name: 'scratchpad',
   tier: 'read',
-  description:
-    "Session-scoped, in-process scratchpad for stashing structured notes across turns without burning context tokens. Distinct from the canonical `memory` tool which is the persistent long-term memory system. Use scratchpad for ephemeral state inside a single run; use `memory` for things the agent should remember about the user across sessions. Actions: 'set' (write a value to a key), 'get' (read by key), 'list' (all keys), 'delete' (remove a key). Values are stringified — stringify objects before passing. Caps: 8 KB per value, 100 keys per session. Cleared at session end.",
   argsSchema: ScratchpadArgs,
   run: async (args) => {
     if (args.action === 'list') {
@@ -663,8 +651,6 @@ export const clipboard: ToolHandler<ClipboardArgs, unknown> = {
   name: 'clipboard',
   tier: 'action',
   tierFor: (args): ToolTier => (args.action === 'read' ? 'read' : 'action'),
-  description:
-    "Read from or write to the system clipboard. Actions: 'read' (returns current clipboard text), 'write' (sets clipboard text — pass `text`). Useful for 'copy this for the user' and 'paste what I just copied' workflows.",
   argsSchema: ClipboardArgs,
   run: async (args, ctx) => {
     if (args.action === 'write') {
@@ -712,8 +698,6 @@ type WaitForArgs = z.infer<typeof WaitForArgs>;
 export const wait_for: ToolHandler<WaitForArgs, unknown> = {
   name: 'wait_for',
   tier: 'read',
-  description:
-    "Poll until a condition is met or timeout. Use after navigation or actions that trigger async loads — far more reliable than fixed sleeps. Conditions: 'element' (ref or selector exists and is visible; pass scroll=true to scroll the page while polling — handles infinite scroll), 'text' (text appears anywhere on page), 'url' (tab URL matches substring or regex), 'network_idle' (no in-flight requests for ~500ms).",
   argsSchema: WaitForArgs,
   run: async (args, ctx) => {
     const act = await activateTab(args.tab_id);
@@ -824,8 +808,6 @@ type UploadFileArgs = z.infer<typeof UploadFileArgs>;
 export const upload_file: ToolHandler<UploadFileArgs, unknown> = {
   name: 'upload_file',
   tier: 'action',
-  description:
-    "Upload one or more files to a <input type='file'> element by reference. Pass file_ids — these are MediaRef IDs (e.g. from a previous /files/upload, or from computer.action=screenshot). The handler resolves each file_id to bytes and sets the input. Do NOT click file inputs — that opens a native picker the agent cannot see. For drag-and-drop targets, use drop_file instead.",
   argsSchema: UploadFileArgs,
   run: async (args) => {
     const act = await activateTab(args.tab_id);
@@ -892,8 +874,6 @@ type DropFileArgs = z.infer<typeof DropFileArgs>;
 export const drop_file: ToolHandler<DropFileArgs, unknown> = {
   name: 'drop_file',
   tier: 'action',
-  description:
-    "Synthesize a drag-and-drop of a single file onto a target element or coordinate. Use for drop zones that aren't backed by <input type='file'>. Provide ref OR coordinate. file_id is a MediaRef (e.g. from a prior screenshot or upload).",
   argsSchema: DropFileArgs,
   run: async (args) => {
     const act = await activateTab(args.tab_id);
@@ -975,8 +955,6 @@ type ReadPdfArgs = z.infer<typeof ReadPdfArgs>;
 export const read_pdf: ToolHandler<ReadPdfArgs, unknown> = {
   name: 'read_pdf',
   tier: 'read',
-  description:
-    "Extract text and structure from a PDF — either one loaded in a browser tab, or one already in cld_files (pass file_id). Returns text by page with optional page range. Use file_id when you have a MediaRef in hand (e.g. from a prior download); use tab_id when the PDF is open in the browser.",
   argsSchema: ReadPdfArgs,
   run: async (args) => {
     let fileId = args.file_id;

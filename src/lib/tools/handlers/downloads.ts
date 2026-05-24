@@ -33,8 +33,6 @@ type DownloadUrlArgs = z.infer<typeof DownloadUrlArgs>;
 export const download_url: ToolHandler<DownloadUrlArgs, unknown> = {
   name: 'download_url',
   tier: 'action',
-  description:
-    "Download a file from a URL into the user's default downloads folder. Returns { ok, download_id, final_filename }. Use save_as=true to surface the Save dialog (good for ambiguous filenames).",
   argsSchema: DownloadUrlArgs,
   run: async (args) => {
     if (!chrome.downloads) return { ok: false, reason: 'downloads API unavailable' };
@@ -65,7 +63,6 @@ type CancelDownloadArgs = z.infer<typeof CancelDownloadArgs>;
 export const cancel_download: ToolHandler<CancelDownloadArgs, unknown> = {
   name: 'cancel_download',
   tier: 'action',
-  description: 'Cancel an in-progress download by its download_id.',
   argsSchema: CancelDownloadArgs,
   run: async (args) => {
     if (!chrome.downloads) return { ok: false, reason: 'downloads API unavailable' };

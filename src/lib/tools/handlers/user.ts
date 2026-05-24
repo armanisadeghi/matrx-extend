@@ -188,8 +188,6 @@ type BatchedResult = {
 export const user: ToolHandler<UserArgs, Envelope | BatchedResult> = {
   name: 'user',
   tier: 'ask-user',
-  description:
-    "Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no — pass question), 'choice' (single pick — pass question + options[]), 'choice_many' (multi pick — pass question + options[]), 'text' (freeform answer — pass question), 'secret' (masked input for passwords/MFA/API keys — pass question), 'notify' (display a message and optionally collect a single action — pass message; optional actions[] and level). Options accept BOTH bare strings ('Yes', 'No') AND rich objects `{label, description?, preview?}` — preview renders as a code/markdown block beside the focused option for single-select. Optional `header` (≤12 chars) shows as a chip. Optional `context` shows a one-line 'why' on ask types. The UI ALWAYS appends a freeform 'Other' escape to every choice/choice_many/confirm — NEVER add your own 'Other'/'None'/'Something else' option; list only the substantive choices. Optional `timeout_seconds` (1..900) auto-resolves with timed_out:true. Optional `timeout_seconds` (1..900) auto-resolves the call with timed_out:true if the user doesn't respond. **Batched questions**: pass `{questions: [SingleQuestion, …]}` (1–4) to ask multiple in one call — renders as a sequence of cards, returns `{answers: Envelope[], cancelled, timed_out}`. Single-question return: `{answer, selected, confirmed, action, freeform, additional_instructions, wrote_instead, cancelled, timed_out}` — unused fields are null/false. `additional_instructions` is an optional note the user attached alongside their answer (always honor it); `wrote_instead:true` means the user declined the structured question(s) and replied freeform in `freeform` — treat that as their answer and re-ask later only if you still need it. For full keyboard/mouse handoff (CAPTCHA, login), use request_user_takeover. For plan approval, use update_plan.",
   argsSchema: UserArgs,
   run: async (args, ctx) => {
     if (isBatched(args)) {
@@ -355,21 +353,23 @@ async function fireSystemNotification(q: SingleQuestion, agentName: string | nul
   });
 }
 
-// ─── request_user_takeover (unchanged) ────────────────────────────────────
+// ─── request_user_takeover ─────────────────────────────────────────────────
 
+// Unified arg set (matches tl_def + the other surfaces): reason (required),
+// instructions?, expected_action?, tab_id?, timeout_seconds?. This surface uses
+// tab_id implicitly (via the assigned tab) and honors timeout_seconds when set.
 const TakeoverArgs = z.object({
   reason: z.string().min(1),
   expected_action: z.string().optional(),
   instructions: z.string().optional(),
   tab_id: z.string().optional(),
+  timeout_seconds: z.number().int().min(1).max(900).optional(),
 });
 type TakeoverArgs = z.infer<typeof TakeoverArgs>;
 
 export const request_user_takeover: ToolHandler<TakeoverArgs, unknown> = {
   name: 'request_user_takeover',
   tier: 'ask-user',
-  description:
-    "Hand keyboard/mouse control to the user so they can perform an action the agent cannot or should not (logging in, MFA, CAPTCHA, sensitive form filling, decisions only the user can make). The user types/clicks directly into the page; when they're done they signal completion in the UI. The agent should re-read the page after takeover ends to see what changed. Distinct from `user` (Q&A) — this is full page handoff.",
   argsSchema: TakeoverArgs,
   run: async (args, ctx) => {
     const detail = args.expected_action ?? args.instructions ?? '';
@@ -380,7 +380,8 @@ export const request_user_takeover: ToolHandler<TakeoverArgs, unknown> = {
       question: detail ? `${args.reason}\n\n${detail}` : args.reason,
       context: 'Agent asked you to take over',
     };
-    const r = await awaitUserResponse(request, 15 * 60_000);
+    const timeoutMs = args.timeout_seconds != null ? args.timeout_seconds * 1000 : 15 * 60_000;
+    const r = await awaitUserResponse(request, timeoutMs);
     if (r === 'timed_out') return { answer: null, cancelled: false, timed_out: true };
     return { answer: r.answer ?? null, cancelled: r.cancelled ?? false };
   },
@@ -413,8 +414,6 @@ type UpdatePlanArgs = z.infer<typeof UpdatePlanArgs>;
 export const update_plan: ToolHandler<UpdatePlanArgs, unknown> = {
   name: 'update_plan',
   tier: 'ask-user',
-  description:
-    'Propose a step-by-step plan and wait for the user to approve, modify, or reject it. Use this BEFORE a multi-step action sequence so you align on intent up front. Returns { approved: true, note?: string } or { approved: false, note?: string } so you can adjust.',
   argsSchema: UpdatePlanArgs,
   run: async (args, ctx) => {
     const steps = args.steps ?? args.approach ?? [];

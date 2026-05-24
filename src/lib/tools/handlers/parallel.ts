@@ -446,8 +446,6 @@ export const parallel_for_each_tab: ToolHandler<ParallelArgs, unknown> = {
   name: 'parallel_for_each_tab',
   tier: 'action',
   admin_only: true,
-  description:
-    "Fan the same prompt out across N existing tabs (max 8) and collect the results. Each sub-run gets its own conversation pinned to a specific tab; results come back per-tab once all sub-runs finish (or time out — Promise.allSettled, one tab failing doesn't kill the others). Args: { tab_ids: number[], sub_prompt: string, agent_id?: string, timeout_ms?: number, merge_strategy?: 'per_tab' | 'concat' | 'json_array' }. Returns merged results in the chosen shape. Use the `list_open_tabs` tool first to discover tab ids. The sub-runs inherit the parent run's permission mode — keep them in 'act' mode for unattended fan-out, but be cautious: each sub-run is a real LLM call and bills accordingly.",
   argsSchema: ParallelArgs,
   run: async (args, ctx) => {
     log.info('sw', `parallel_for_each_tab → ${args.tab_ids.length} tabs`);

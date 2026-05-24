@@ -59,8 +59,6 @@ export const record_demo: ToolHandler<RecordDemoArgs, unknown> = {
   name: 'record_demo',
   tier: 'action',
   tierFor: (args): ToolTier => (RECORD_DEMO_READ_ACTIONS.has(args.action) ? 'read' : 'action'),
-  description:
-    "Record a user demonstration that can later be replayed by the agent. Actions: 'start' (begin recording on a tab; clicks, typed text, submits, navigations, and scrolls are captured automatically as the user demonstrates), 'stop' (save the recording with a name + parameter declarations; sensitive fields like passwords are auto-parameterised), 'discard' (throw away the in-flight recording without saving), 'status' (read; report whether a recording is active and how many steps have been captured). Coach the user: ask them to walk through the workflow, then call stop when they say they're done. Saved demos are replayed via `replay_demo`.",
   argsSchema: RecordDemoArgs,
   run: async (args, ctx) => {
     if (args.action === 'status') {
@@ -148,8 +146,6 @@ type ListDemosArgs = z.infer<typeof ListDemosArgs>;
 export const list_demos: ToolHandler<ListDemosArgs, unknown> = {
   name: 'list_demos',
   tier: 'read',
-  description:
-    'List every saved demo as { id, name, description, start_url, step_count, parameter_names, created_at, updated_at }. Use to find a demo to replay or describe.',
   argsSchema: ListDemosArgs,
   run: async () => {
     const demos = await listDemos();
@@ -164,8 +160,6 @@ type DescribeDemoArgs = z.infer<typeof DescribeDemoArgs>;
 export const describe_demo: ToolHandler<DescribeDemoArgs, unknown> = {
   name: 'describe_demo',
   tier: 'read',
-  description:
-    'Return the full step list for a saved demo. Each step has { kind, url, selector_chain, element_snapshot, input_text, param_placeholder, is_sensitive }. Use before replay to verify what the demo will do.',
   argsSchema: DescribeDemoArgs,
   run: async (args) => {
     const demo = await getDemo(args.demo_id);
@@ -195,8 +189,6 @@ type ReplayDemoArgs = z.infer<typeof ReplayDemoArgs>;
 export const replay_demo: ToolHandler<ReplayDemoArgs, unknown> = {
   name: 'replay_demo',
   tier: 'privileged',
-  description:
-    "Replay a saved demo against a tab. Always requires confirmation — the demo can click, type, submit, and navigate. Pass `dry_run: true` to test selector resolution without taking action. Pass `params` to substitute placeholders (sensitive fields like passwords MUST be supplied this way; the agent should ask the user via `user(type='secret', ...)` first). Returns per-step results with `resolved_via` showing which selector strategy hit.",
   argsSchema: ReplayDemoArgs,
   run: async (args) => {
     const demo = await getDemo(args.demo_id);
@@ -218,7 +210,6 @@ type DeleteDemoArgs = z.infer<typeof DeleteDemoArgs>;
 export const delete_demo: ToolHandler<DeleteDemoArgs, unknown> = {
   name: 'delete_demo',
   tier: 'action',
-  description: 'Delete a saved demo by id. Cannot be undone.',
   argsSchema: DeleteDemoArgs,
   run: async (args) => {
     const ok = await storageDeleteDemo(args.demo_id);

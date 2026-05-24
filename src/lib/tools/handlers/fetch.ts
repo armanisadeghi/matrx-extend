@@ -50,8 +50,6 @@ type FetchUrlAsMarkdownArgs = z.infer<typeof FetchUrlAsMarkdownArgs>;
 export const fetch_url_as_markdown: ToolHandler<FetchUrlAsMarkdownArgs, FetchAndParseResult> = {
   name: 'fetch_url_as_markdown',
   tier: 'read',
-  description:
-    "Fetch an HTTP(S) URL and return its readable content as Markdown — the same defuddle + readability + turndown pipeline the Scrape tab uses against the active page, but pointed at any URL without opening a tab. Returns { title, markdown, byline, excerpt, extractor, word_count, reading_time_minutes, metadata, ld_json, http_status, final_url, content_type, truncated }. Pass `use_session: true` to attach the user's cookies (paywalled / logged-in pages). Pass `include_extras: true` to also get links / images / videos / SEO audit. Non-HTML URLs (PDFs, JSON, etc.) are rejected with a clear error — use `read_pdf` for PDFs.",
   argsSchema: FetchUrlAsMarkdownArgs,
   run: async (args) => {
     log.info('sw', `fetch_url_as_markdown: ${args.url} (session=${args.use_session})`);

@@ -32,8 +32,6 @@ export const get_cookies: ToolHandler<GetCookiesArgs, unknown> = {
   tier: 'read',
   admin_only: true,
   required_optional_permissions: ['cookies'],
-  description:
-    'Read cookies for a URL or domain. Pass `url` (preferred — narrower) OR `domain`, optionally also `name` to filter to one cookie. Returns a list of { name, value, domain, path, secure, httpOnly, sameSite, expirationDate }. Personal data — admin only by default.',
   argsSchema: GetCookiesArgs,
   run: async (args) => {
     if (!chrome.cookies) return { ok: false, reason: 'cookies API unavailable' };
@@ -72,8 +70,6 @@ export const set_cookie: ToolHandler<SetCookieArgs, unknown> = {
   tier: 'privileged',
   admin_only: true,
   required_optional_permissions: ['cookies'],
-  description:
-    'Write a cookie. Privileged because it can hijack a user session (CSRF / token-overwrite). Always prompts. Returns the set cookie or { ok:false, reason }.',
   argsSchema: SetCookieArgs,
   run: async (args) => {
     if (!chrome.cookies) return { ok: false, reason: 'cookies API unavailable' };
@@ -107,7 +103,6 @@ export const delete_cookie: ToolHandler<DeleteCookieArgs, unknown> = {
   tier: 'privileged',
   admin_only: true,
   required_optional_permissions: ['cookies'],
-  description: 'Delete a cookie by url + name.',
   argsSchema: DeleteCookieArgs,
   run: async (args) => {
     if (!chrome.cookies) return { ok: false, reason: 'cookies API unavailable' };
@@ -128,8 +123,6 @@ export const save_page_as_mhtml: ToolHandler<SaveAsMhtmlArgs, unknown> = {
   tier: 'action',
   required_optional_permissions: ['pageCapture'],
   supportedBrowsers: ['chrome'],
-  description:
-    'Snapshot a tab as a self-contained MHTML archive (HTML + every resource inlined). Returns base64 MHTML data. Use for: archival, sharing a frozen page, feeding the agent a stable snapshot it can reanalyze later.',
   argsSchema: SaveAsMhtmlArgs,
   run: async (args, ctx) => {
     let tabId: number | null | undefined = args.tab_id;
@@ -175,8 +168,6 @@ export const list_recently_closed: ToolHandler<ListClosedArgs, unknown> = {
   name: 'list_recently_closed',
   tier: 'read',
   required_optional_permissions: ['sessions'],
-  description:
-    'List recently-closed tabs and windows the user can restore. Each entry has { id, last_modified, tab? | window? }. Useful when the user says "what was that page I just closed?".',
   argsSchema: ListClosedArgs,
   run: async (args) => {
     if (!chrome.sessions) return { ok: false, reason: 'sessions API unavailable' };
@@ -215,8 +206,6 @@ export const restore_recently_closed: ToolHandler<RestoreClosedArgs, unknown> = 
   name: 'restore_recently_closed',
   tier: 'action',
   required_optional_permissions: ['sessions'],
-  description:
-    'Restore a recently-closed tab or window. Pass `session_id` from list_recently_closed, or omit to restore the most recent.',
   argsSchema: RestoreClosedArgs,
   run: async (args) => {
     if (!chrome.sessions) return { ok: false, reason: 'sessions API unavailable' };

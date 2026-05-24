@@ -1,31 +1,43 @@
 #!/usr/bin/env tsx
 /**
- * Diff the local tool catalog (types/tool-catalog.json) against the
- * `public.tl_def` rows in Supabase that have `source_app = 'matrx-extend'`.
+ * Tool-drift reporter — the matrx-extend half of the unified code↔DB system
+ * (one shared spec across aidream, matrx-extend, matrx-frontend; see
+ * docs/TOOL_SOURCE_OF_TRUTH.md, "what match means").
  *
- * The local catalog is the source of truth — it's what actually executes
- * inside the extension (Zod schemas in src/lib/tools/handlers/*.ts gated
- * by the dispatcher at src/lib/tools/dispatch.ts). When the DB drifts,
- * the LLM sees one shape and the dispatcher accepts another — the model
- * gets blocked by a validation layer it can't see in its own tool
- * definition. This is exactly how `tabs.action='get_info'` happened.
+ * The DATABASE (`public.tl_def`, `source_app='matrx-extend'`) is the single
+ * source of truth. This reporter proves the ACTUAL CODE matches it: it
+ * serializes the REAL Zod `argsSchema` of every live handler — the exact object
+ * the dispatcher validates against at src/lib/tools/dispatch.ts — and diffs it
+ * against tl_def. There is NO intermediate file: the schema we check is the
+ * schema that runs.
  *
- *   pnpm catalog:tools          # regenerate the local catalog first
- *   tsx scripts/check-tool-db-drift.ts
+ * What it checks per tool (the shared spec): identity (name), tier, admin_only,
+ * category, and the argument set — for every field: presence, type,
+ * required-ness, enum members (incl. one-sided), and default. Plus the
+ * matrx-extend surface wiring: an active tl_executor row for
+ * surface='matrx-extend.browser' (this binding IS the location/ownership proof
+ * — function_path is N/A for a browser executor) and a tl_def_surface gate for
+ * at least one chrome-extension/{assistant,pilot}. Descriptions are NOT checked
+ * — they are not code; they live only in the DB (Rule 4).
  *
- * Exits 0 when everything matches, 1 when drift is found.
- * Run from release.sh as a warning (don't block the ship — manual fixes
- * via Supabase MCP / admin API will catch up over time).
+ *   tsx scripts/check-tool-db-drift.ts   (pnpm catalog:tools:drift)
+ *
+ * LOUD + NON-BLOCKING (Rule 6): it screams a big red banner on drift but never
+ * stops the world. It is wired into release.sh as a non-fatal step and into
+ * prebuild/prezip with `|| true`; no env var gates it. It exits non-zero on
+ * drift purely as a SIGNAL for those callers — none hard-gate on it. "Couldn't
+ * run" (missing creds / DB unreachable) is NOT drift: it warns and exits 0.
+ * When drift fires: the DB is the source of truth, so bring the handler's Zod
+ * to match tl_def, or change the DB first (admin API / migration) then match
+ * code. Never push code→DB silently (Rule 7).
  */
-import { readFileSync, existsSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
 import process from 'node:process';
-import { fileURLToPath } from 'node:url';
 import { CANONICAL_SURFACE } from '../src/lib/tools/categories';
+import { buildToolCatalogManifest } from '../src/lib/tools/catalog';
+import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
 
 interface LocalTool {
   name: string;
-  description: string;
   tier: string;
   category?: string;
   admin_only?: boolean;
@@ -74,62 +86,9 @@ interface Drift {
  * both cases without forking the loop.
  */
 const DB_PREFIX = 'matrx-extend:';
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-
-function loadEnv(): { url: string; key: string } {
-  // Prefer process.env; otherwise grep .env.production / .env.development
-  let url = process.env.SUPABASE_URL ?? process.env.WXT_SUPABASE_URL ?? '';
-  let key =
-    process.env.SUPABASE_PUBLISHABLE_KEY ??
-    process.env.WXT_SUPABASE_PUBLISHABLE_KEY ??
-    process.env.SUPABASE_ANON_KEY ??
-    '';
-
-  if (!url || !key) {
-    for (const f of ['.env.production.local', '.env.production', '.env.development.local', '.env.development', '.env']) {
-      const p = resolve(ROOT, f);
-      if (!existsSync(p)) continue;
-      const text = readFileSync(p, 'utf8');
-      for (const line of text.split('\n')) {
-        const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.+?)\s*$/);
-        if (!m) continue;
-        const [, k, raw] = m;
-        const v = (raw ?? '').replace(/^['"]|['"]$/g, '');
-        if (!url && (k === 'WXT_SUPABASE_URL' || k === 'SUPABASE_URL')) url = v;
-        if (!key && (k === 'WXT_SUPABASE_PUBLISHABLE_KEY' || k === 'SUPABASE_PUBLISHABLE_KEY' || k === 'SUPABASE_ANON_KEY')) key = v;
-      }
-      if (url && key) break;
-    }
-  }
-
-  if (!url || !key) {
-    console.error('drift-check: SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY not found in env or .env.* files');
-    process.exit(2);
-  }
-  return { url, key };
-}
-
-async function fetchJson<T>(url: string, key: string, path: string): Promise<T> {
-  const endpoint = `${url.replace(/\/$/, '')}/rest/v1/${path}`;
-  const res = await fetch(endpoint, {
-    headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`,
-      Accept: 'application/json',
-      // Custom Supabase proxy at db.matrxserver.com defaults to schema 'api';
-      // these tables live in 'public', so request it explicitly.
-      'Accept-Profile': 'public',
-    },
-  });
-  if (!res.ok) {
-    console.error(`drift-check: Supabase fetch failed (${res.status}) on ${path}: ${await res.text()}`);
-    process.exit(2);
-  }
-  return (await res.json()) as T;
-}
 
 async function fetchDbRows(url: string, key: string): Promise<DbToolRow[]> {
-  return fetchJson<DbToolRow[]>(
+  return fetchPublicJson<DbToolRow[]>(
     url,
     key,
     'tl_def?source_app=eq.matrx-extend&select=id,name,description,parameters,tier,admin_only,privileged,is_active,category&order=name.asc',
@@ -137,7 +96,7 @@ async function fetchDbRows(url: string, key: string): Promise<DbToolRow[]> {
 }
 
 async function fetchExecutors(url: string, key: string): Promise<DbExecutorRow[]> {
-  return fetchJson<DbExecutorRow[]>(
+  return fetchPublicJson<DbExecutorRow[]>(
     url,
     key,
     'tl_executor?surface=eq.matrx-extend.browser&select=tool_id,surface,is_active',
@@ -145,21 +104,24 @@ async function fetchExecutors(url: string, key: string): Promise<DbExecutorRow[]
 }
 
 async function fetchSurfaceGates(url: string, key: string): Promise<DbSurfaceGateRow[]> {
-  return fetchJson<DbSurfaceGateRow[]>(
+  return fetchPublicJson<DbSurfaceGateRow[]>(
     url,
     key,
     'tl_def_surface?or=(surface_name.eq.chrome-extension/assistant,surface_name.eq.chrome-extension/pilot)&select=tool_id,surface_name',
   );
 }
 
-function loadLocalCatalog(): LocalTool[] {
-  const path = resolve(ROOT, 'types/tool-catalog.json');
-  if (!existsSync(path)) {
-    console.error(`drift-check: ${path} not found — run 'pnpm catalog:tools' first.`);
-    process.exit(2);
-  }
-  const manifest = JSON.parse(readFileSync(path, 'utf8')) as { tools: LocalTool[] };
-  return manifest.tools;
+function loadLiveSchemas(): LocalTool[] {
+  // Serialize the REAL Zod argsSchema of every live handler — the exact object
+  // the dispatcher validates against — into the comparable shape. No file in
+  // between: the schema we check is the schema that actually runs.
+  return buildToolCatalogManifest().tools.map((t) => ({
+    name: t.name,
+    tier: t.tier,
+    category: t.category,
+    admin_only: t.admin_only,
+    input_schema: t.input_schema as unknown as LocalTool['input_schema'],
+  }));
 }
 
 function normalizeName(dbName: string): string {
@@ -195,9 +157,9 @@ function compareEnums(localEnum: unknown[] | undefined, dbEnum: unknown[] | unde
 function compareTool(local: LocalTool, db: DbToolRow): string[] {
   const issues: string[] = [];
 
-  if ((local.description ?? '').trim() !== (db.description ?? '').trim()) {
-    issues.push('description differs');
-  }
+  // Descriptions are intentionally NOT compared — they are not code; they live
+  // only in the DB (tl_def.description). The gate checks the structural contract
+  // the runtime enforces: fields, types, required, enums, tier, admin_only.
 
   if (local.tier !== db.tier) {
     issues.push(`tier differs (local=${local.tier}, db=${db.tier})`);
@@ -218,7 +180,10 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
 
   // Parameter shape comparison
   const localProps = local.input_schema?.properties ?? {};
-  const dbProps = db.parameters ?? {};
+  // `$`-prefixed keys ($variants, …) are contract metadata, NOT tool parameters.
+  const dbProps = Object.fromEntries(
+    Object.entries(db.parameters ?? {}).filter(([k]) => !k.startsWith('$')),
+  );
   const localRequired = new Set(local.input_schema?.required ?? []);
   const dbRequired = new Set(
     Object.entries(dbProps)
@@ -237,7 +202,7 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
   if (reqDiff.onlyA.length) issues.push(`required only in local: ${reqDiff.onlyA.join(', ')}`);
   if (reqDiff.onlyB.length) issues.push(`required only in DB: ${reqDiff.onlyB.join(', ')}`);
 
-  // Per-field enum + type comparison (for fields present in both)
+  // Per-field enum + type + default comparison (for fields present in both)
   for (const field of localFields) {
     if (!dbFields.has(field)) continue;
     const l = localProps[field] ?? {};
@@ -250,19 +215,57 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
     if (lType && dType && lType !== dType) {
       issues.push(`${field}: type differs (local=${lType}, db=${dType})`);
     }
+
+    // Default value — part of the shared "what match means" spec. A default in
+    // one side but not the other, or differing defaults, is real drift: the
+    // model and the dispatcher disagree on what an omitted field becomes.
+    const lDef = (l as { default?: unknown }).default;
+    const dDef = (d as { default?: unknown }).default;
+    const lHasDef = lDef !== undefined;
+    const dHasDef = dDef !== undefined;
+    if (lHasDef !== dHasDef) {
+      issues.push(
+        `${field}: default ${lHasDef ? `only in local (${JSON.stringify(lDef)})` : `only in DB (${JSON.stringify(dDef)})`}`,
+      );
+    } else if (lHasDef && dHasDef && JSON.stringify(lDef) !== JSON.stringify(dDef)) {
+      issues.push(
+        `${field}: default differs (local=${JSON.stringify(lDef)}, db=${JSON.stringify(dDef)})`,
+      );
+    }
   }
 
   return issues;
 }
 
 async function main(): Promise<void> {
-  const { url, key } = loadEnv();
-  const localAll = loadLocalCatalog();
-  const [dbRows, executors, gates] = await Promise.all([
-    fetchDbRows(url, key),
-    fetchExecutors(url, key),
-    fetchSurfaceGates(url, key),
-  ]);
+  // No env var gates this (Rule 6). Missing creds is "cannot verify", NOT drift:
+  // warn loudly and exit 0 so it never blocks a build or boot.
+  const env = loadSupabaseEnv();
+  if (!env) {
+    console.warn(
+      'drift-check: Supabase creds not found — SKIPPING (cannot verify without DB ' +
+        'access). This is NOT drift; a build/CI with creds present runs the full check.',
+    );
+    process.exit(0);
+  }
+  const { url, key } = env;
+  const localAll = loadLiveSchemas();
+  let dbRows: DbToolRow[];
+  let executors: DbExecutorRow[];
+  let gates: DbSurfaceGateRow[];
+  try {
+    [dbRows, executors, gates] = await Promise.all([
+      fetchDbRows(url, key),
+      fetchExecutors(url, key),
+      fetchSurfaceGates(url, key),
+    ]);
+  } catch (err) {
+    // "Couldn't run" (DB unreachable / RLS / network) is NOT drift — never block.
+    console.warn(
+      `drift-check: could not read the DB — SKIPPING (this is NOT drift). ${(err as Error).message}`,
+    );
+    process.exit(0);
+  }
 
   // Only compare tools the LLM is meant to see. CANONICAL_SURFACE
   // (src/lib/tools/categories.ts) is the authoritative list of advertised
@@ -420,10 +423,10 @@ async function main(): Promise<void> {
   console.log(`${RED_BG}██${RESET}   ${RED}DRIFT: ${totalProblems} problem(s). Fix tl_def or local handlers.${RESET}${' '.repeat(Math.max(0, 22 - String(totalProblems).length))}${RED_BG}██${RESET}`);
   console.log(`${RED_BG}${bar}${RESET}`);
   console.log('');
-  console.log(`${DIM}Fix path:${RESET}`);
-  console.log(`${DIM}  - tl_def (Supabase public.tl_def) is what the LLM sees.${RESET}`);
-  console.log(`${DIM}  - src/lib/tools/handlers/*.ts (Zod) is what the dispatcher accepts.${RESET}`);
-  console.log(`${DIM}  - Use the Supabase MCP / admin API to reconcile tl_def with code.${RESET}`);
+  console.log(`${DIM}Fix path — the DATABASE (public.tl_def) is the source of truth:${RESET}`);
+  console.log(`${DIM}  - tl_def is the truth (what the LLM sees).${RESET}`);
+  console.log(`${DIM}  - Bring the handler's real Zod (src/lib/tools/handlers/*.ts) to match tl_def.${RESET}`);
+  console.log(`${DIM}  - If the DB itself is wrong, change it (admin API / migration), then match code.${RESET}`);
   process.exit(1);
 }
 

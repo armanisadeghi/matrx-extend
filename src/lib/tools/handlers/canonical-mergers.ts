@@ -69,6 +69,7 @@ import {
   update_tab_group,
 } from '@/lib/tools/handlers/tabs';
 import {
+  delete_extension_storage,
   execute_javascript,
   get_extension_storage,
   inject_stylesheet,
@@ -130,8 +131,6 @@ type AiArgs = z.infer<typeof AiArgs>;
 export const ai: ToolHandler<AiArgs, unknown> = {
   name: 'ai',
   tier: 'read',
-  description:
-    "On-device AI (Gemini Nano + siblings). Free, offline, multimodal, no network. Actions: 'check_availability' (probe per-API readiness), 'summarize' (text→summary), 'classify' (text+categories→label), 'extract_json' (text+schema→object), 'translate' (text+target_lang), 'detect_language' (text→BCP-47), 'proofread' (text→corrections), 'describe_image' (image_url OR image_base64+mime_type → caption), 'check_prompt_injection' (text→risk assessment). Use BEFORE expensive cloud calls when on-device quality permits.",
   argsSchema: AiArgs,
   run: async (args, ctx) => {
     switch (args.action) {
@@ -215,8 +214,6 @@ export const cookies: ToolHandler<CookiesArgs, unknown> = {
   tier: 'privileged',
   tierFor: (args): ToolTier => (args.action === 'get' ? 'read' : 'privileged'),
   required_optional_permissions: ['cookies'],
-  description:
-    "Manage cookies for any domain. Actions: 'get' (read; pass `name` for a specific cookie or omit for all matching), 'set' (write; requires `name` + `value`; optional `domain`/`path`/`expires_in_seconds`/`same_site`/`http_only`/`secure`), 'delete' (requires `name`). Always pass `url` (or `domain` for 'get'). Admin-only.",
   argsSchema: CookiesArgs,
   run: async (args, ctx) => {
     if (args.action === 'get') {
@@ -269,8 +266,6 @@ export const webmcp: ToolHandler<WebmcpArgs, unknown> = {
   tier: 'action',
   tierFor: (args): ToolTier =>
     args.action === 'check' || args.action === 'list' ? 'read' : 'action',
-  description:
-    "Discover and invoke tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). Actions: 'check' (probe API + count tools), 'list' (enumerate page-registered tools), 'call' (invoke; pass `tool_name` and `arguments`). Admin-only experimental capability.",
   argsSchema: WebmcpArgs,
   run: async (args, ctx) => {
     if (args.action === 'check') return webmcp_check_availability.run({} as never, ctx);
@@ -292,7 +287,7 @@ export const webmcp: ToolHandler<WebmcpArgs, unknown> = {
 // ────────────────────────────────────────────────────────────────────────────
 
 const StorageArgs = z.object({
-  action: z.enum(['get', 'set', 'list']),
+  action: z.enum(['get', 'set', 'list', 'delete']),
   key: z.string().optional(),
   value: z.unknown().optional(),
 });
@@ -303,8 +298,6 @@ export const storage: ToolHandler<StorageArgs, unknown> = {
   tier: 'privileged',
   tierFor: (args): ToolTier =>
     args.action === 'get' || args.action === 'list' ? 'read' : 'privileged',
-  description:
-    "Persistent agent-namespaced storage that survives across runs. Distinct from canonical `memory` which is session-scoped (cleared on SW restart). Actions: 'get' (returns value at key), 'set' (writes any JSON-serializable value), 'list' (returns all keys). Use for user preferences, scratchpads, progress markers between conversations.",
   argsSchema: StorageArgs,
   run: async (args, ctx) => {
     if (args.action === 'get') {
@@ -317,6 +310,10 @@ export const storage: ToolHandler<StorageArgs, unknown> = {
     if (args.action === 'set') {
       if (!args.key) return { ok: false, reason: "'key' required for set" };
       return set_extension_storage.run({ key: args.key, value: args.value } as never, ctx);
+    }
+    if (args.action === 'delete') {
+      if (!args.key) return { ok: false, reason: "'key' required for delete" };
+      return delete_extension_storage.run({ key: args.key } as never, ctx);
     }
     return { ok: false, reason: `Unknown storage action: ${args.action as string}` };
   },
@@ -347,8 +344,6 @@ export const tab_groups: ToolHandler<TabGroupsArgs, unknown> = {
   tier: 'action',
   tierFor: (args): ToolTier => (args.action === 'list' ? 'read' : 'action'),
   supportedBrowsers: ['chrome'],
-  description:
-    "Manage tab groups. Actions: 'list' (returns all groups across windows), 'create' (groups `tab_ids` together; optional `title`/`color`), 'add' (puts more `tab_ids` into existing `group_id`), 'remove' (ungroups `tab_ids`), 'update' (rename/recolor/collapse `group_id`).",
   argsSchema: TabGroupsArgs,
   run: async (args, ctx) => {
     if (args.action === 'list') return get_tab_groups.run({} as never, ctx);
@@ -409,8 +404,6 @@ type BookmarksArgs = z.infer<typeof BookmarksArgs>;
 export const bookmarks: ToolHandler<BookmarksArgs, unknown> = {
   name: 'chrome_bookmarks',
   tier: 'read',
-  description:
-    "Read the user's bookmarks. Actions: 'search' (free-text against title and URL; pass `query`), 'tree' (folder tree starting at `folder_id` or root, `max_depth` deep). Each bookmark has id/title/url/parent_id/date_added.",
   argsSchema: BookmarksArgs,
   run: async (args, ctx) => {
     if (args.action === 'search') {
@@ -446,8 +439,6 @@ type HistoryArgs = z.infer<typeof HistoryArgs>;
 export const history: ToolHandler<HistoryArgs, unknown> = {
   name: 'chrome_history',
   tier: 'read',
-  description:
-    "Read browsing history. Actions: 'search' (free-text against title/URL; pass `query`, optional `start_time_ms`/`end_time_ms`/`limit`), 'recent' (last N `minutes`, default 60).",
   argsSchema: HistoryArgs,
   run: async (args, ctx) => {
     if (args.action === 'search') {
@@ -487,8 +478,6 @@ export const recently_closed: ToolHandler<RecentlyClosedArgs, unknown> = {
   tier: 'action',
   tierFor: (args): ToolTier => (args.action === 'list' ? 'read' : 'action'),
   required_optional_permissions: ['sessions'],
-  description:
-    "Recently-closed tabs and windows. Actions: 'list' (returns sessions with id/url/title/lastModified), 'restore' (reopens; `session_id` optional — defaults to the most recently closed).",
   argsSchema: RecentlyClosedArgs,
   run: async (args, ctx) => {
     if (args.action === 'list') return list_recently_closed.run({} as never, ctx);
@@ -514,8 +503,6 @@ type StylesheetArgs = z.infer<typeof StylesheetArgs>;
 export const stylesheet: ToolHandler<StylesheetArgs, unknown> = {
   name: 'stylesheet',
   tier: 'privileged',
-  description:
-    "Inject or remove a CSS stylesheet on the active (or specified) tab. Actions: 'inject' (apply `css`; pass `persistent: true` to survive navigations), 'remove' (drop a previously-injected `css` block — must match exactly).",
   argsSchema: StylesheetArgs,
   run: async (args, ctx) => {
     if (args.action === 'inject') {
@@ -550,8 +537,6 @@ export const cdp_session: ToolHandler<CdpSessionArgs, unknown> = {
   tierFor: (args): ToolTier => (args.action === 'list' ? 'read' : 'privileged'),
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    "Manage Chrome DevTools Protocol attachments. Actions: 'attach' (begin debugger session on `tab_id` — required before any other cdp_* tool), 'detach' (end session), 'list' (which tabs are currently attached). Admin + `debugger` permission.",
   argsSchema: CdpSessionArgs,
   run: async (args, ctx) => {
     if (args.action === 'attach') {
@@ -588,8 +573,6 @@ export const cdp_emulate: ToolHandler<CdpEmulateArgs, unknown> = {
   tier: 'privileged',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    "Override viewport / device metrics on an attached CDP tab for responsive testing. Actions: 'set' (apply `width`+`height`+optional `device_scale_factor`/`mobile`/`user_agent`), 'clear' (revert overrides). Tab must be attached via cdp_session first.",
   argsSchema: CdpEmulateArgs,
   run: async (args, ctx) => {
     if (args.action === 'set') {
@@ -628,8 +611,6 @@ type EvaluateJsArgs = z.infer<typeof EvaluateJsArgs>;
 export const evaluate_javascript: ToolHandler<EvaluateJsArgs, unknown> = {
   name: 'evaluate_javascript',
   tier: 'privileged',
-  description:
-    "Evaluate JavaScript in the page context. Returns the value of the last expression — do NOT use 'return' at top level. Prefer DOM tools (read_page, find, computer, form_input) when possible — JS exec is XSS-equivalent and bypasses our safety nets.",
   argsSchema: EvaluateJsArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ? Number.parseInt(args.tab_id, 10) : undefined;

@@ -42,8 +42,6 @@ export const cdp_attach: ToolHandler<CdpAttachArgs, unknown> = {
   admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    'Attach a Chrome DevTools Protocol session to a tab (defaults to active tab). Required before any other cdp_* tool can run on that tab. Chrome will show a "is being debugged" banner while attached. The session auto-cleans up when the agent run ends; you can also call cdp_detach explicitly.',
   argsSchema: CdpAttachArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -63,7 +61,6 @@ export const cdp_detach: ToolHandler<CdpDetachArgs, unknown> = {
   admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description: 'Close the CDP session on a tab (defaults to active tab). Removes the debug banner.',
   argsSchema: CdpDetachArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -78,7 +75,6 @@ export const cdp_attached_tabs: ToolHandler<NoArgs, unknown> = {
   admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description: 'Return the list of tab ids currently attached via CDP.',
   argsSchema: NoArgs,
   run: async () => ({ tab_ids: cdp.attachedTabsList() }),
 };
@@ -131,8 +127,6 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
   tier: 'privileged',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    "Capture the FULL scrollable page (beyond the viewport) — use instead of computer/take_screenshot for long-form pages. Auto-scales so the long edge fits the `profile`'s vision-model target (same profiles as take_screenshot). Uploads to cloud; returns { ok, media_type, format, width, height, image_base64, byte_length, capture_scale, profile, est_tokens, file_id, file_url }. Render/share file_url (durable); image_base64 feeds the vision model — pass media_type through verbatim, never stringify the object.",
   argsSchema: FullPageScreenshotArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -257,8 +251,6 @@ export const cdp_a11y_tree: ToolHandler<A11yTreeArgs, unknown> = {
   tier: 'privileged',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    'Dump the accessibility tree of the active tab via Accessibility.getFullAXTree. Each node has { role, name, value, description, properties, children }. Use INSTEAD of read_active_page when you want a clean semantic view of the page — it omits decorative DOM and surfaces aria-roles, button labels, form-field associations directly. Best for vision-free reasoning.',
   argsSchema: A11yTreeArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -303,8 +295,6 @@ export const cdp_input_click_xy: ToolHandler<InputClickArgs, unknown> = {
   tier: 'privileged',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    'Synthesize a real mouse click at viewport coordinates (x, y) via Input.dispatchMouseEvent. Bypasses event-handler shadowing, works through shadow DOM and cross-origin iframes (OOPIFs) — the most reliable click in existence. Use when click_element fails because the page intercepts synthetic clicks.',
   argsSchema: InputClickArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -344,8 +334,6 @@ export const cdp_input_type: ToolHandler<InputTypeArgs, unknown> = {
   tier: 'privileged',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    'Type literal text into whatever element currently has focus, via Input.insertText. Fires beforeinput / input / compositionend events correctly so React-controlled inputs accept it. Use after focus_element + when type_into_element fails.',
   argsSchema: InputTypeArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -371,8 +359,6 @@ export const cdp_network_capture_start: ToolHandler<NetCaptureStartArgs, unknown
   tier: 'privileged',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    'Begin capturing every Network event on a tab (default: active). After this, navigate or interact with the page; calls accumulate in a buffer. Use cdp_network_capture_drain to read them. Use cdp_network_capture_stop when finished.',
   argsSchema: NetCaptureStartArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -402,8 +388,6 @@ export const cdp_network_capture_drain: ToolHandler<NetCaptureDrainArgs, unknown
   tier: 'privileged',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    'Drain captured Network events from a tab\'s buffer. Each entry has { request_id, url, method, status, mime_type, request_headers, response_headers, finished, failed, ts_ms }. Use cdp_network_get_body with a request_id to fetch a response body lazily.',
   argsSchema: NetCaptureDrainArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -427,7 +411,6 @@ export const cdp_network_capture_stop: ToolHandler<NetCaptureStopArgs, unknown> 
   tier: 'privileged',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description: 'Stop capturing Network events on a tab and clear its buffer.',
   argsSchema: NetCaptureStopArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -448,8 +431,6 @@ export const cdp_network_get_body: ToolHandler<NetGetBodyArgs, unknown> = {
   tier: 'privileged',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    'Fetch the response body for a captured request, by request_id (from cdp_network_capture_drain). Returns { body, base64_encoded }. Bodies are large so we don\'t buffer them eagerly.',
   argsSchema: NetGetBodyArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -479,8 +460,6 @@ export const cdp_print_pdf: ToolHandler<PrintPdfArgs, unknown> = {
   tier: 'privileged',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    'Print a tab to PDF via Page.printToPDF. Returns base64 PDF data. Useful for archival, sharing, or feeding the PDF to a downstream model.',
   argsSchema: PrintPdfArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -509,8 +488,6 @@ export const cdp_perf_metrics: ToolHandler<PerfMetricsArgs, unknown> = {
   tier: 'read',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    'Read Performance.getMetrics for a tab. Returns { Documents, Frames, JSHeapUsedSize, LayoutCount, RecalcStyleCount, ScriptDuration, TaskDuration, … }. Useful when an action triggered chaos and you need to measure it.',
   argsSchema: PerfMetricsArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -548,8 +525,6 @@ export const cdp_emulate_device: ToolHandler<EmulateDeviceArgs, unknown> = {
   admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    'Override viewport metrics + user agent on a tab. Use to view a page as iPhone Safari, Pixel Chrome, etc., without leaving the user\'s window. Reset by calling cdp_clear_emulation.',
   argsSchema: EmulateDeviceArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -586,7 +561,6 @@ export const cdp_clear_emulation: ToolHandler<ClearEmulationArgs, unknown> = {
   admin_only: true,
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description: 'Clear device + UA overrides on a tab.',
   argsSchema: ClearEmulationArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
@@ -630,8 +604,6 @@ export const read_console_messages: ToolHandler<ReadConsoleArgs, unknown> = {
   tier: 'privileged',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    'Read console messages from a tab. Auto-starts CDP console capture if not already running. Filter by level, text regex, or use errors_only=true. Returns { count, messages: [{ level, text, url, line, ts_ms }] }. Console capture stays on until cdp_detach or tab close.',
   argsSchema: ReadConsoleArgs,
   run: async (args, ctx) => {
     const tabId =
@@ -689,8 +661,6 @@ export const read_network_requests: ToolHandler<ReadNetworkArgs, unknown> = {
   tier: 'privileged',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    "Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cross-domain navigation. Filter with url_pattern to keep output manageable. Response bodies are NOT included by default — use get_request_body to fetch a specific body. The buffer is per-tab and bounded; old entries fall off the back.",
   argsSchema: ReadNetworkArgs,
   run: async (args, ctx) => {
     const tabId =
@@ -724,8 +694,6 @@ export const get_request_body: ToolHandler<GetRequestBodyArgs, unknown> = {
   tier: 'privileged',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
-  description:
-    "Fetch the response body for a specific request seen by read_network_requests. Returns inline text. Pass request_id from a prior drain.",
   argsSchema: GetRequestBodyArgs,
   run: async (args, ctx) => {
     const tabId =

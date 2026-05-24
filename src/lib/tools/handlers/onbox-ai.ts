@@ -39,8 +39,6 @@ type NoArgs = z.infer<typeof NoArgs>;
 export const ai_check_availability: ToolHandler<NoArgs, unknown> = {
   name: 'ai_check_availability',
   tier: 'read',
-  description:
-    'Probe whether on-device AI (Gemini Nano + Summarizer/Translator/Proofreader/etc.) is available in the user\'s Chrome and ready to use. Returns per-API availability: unavailable | downloadable | downloading | available. Call this once at the start of a session to decide whether to use on-device tools or fall back to cloud.',
   argsSchema: NoArgs,
   run: async () => {
     const report = await fullCapabilityReport();
@@ -65,8 +63,6 @@ type SummarizeArgs = z.infer<typeof SummarizeArgs>;
 export const ai_summarize: ToolHandler<SummarizeArgs, unknown> = {
   name: 'ai_summarize',
   tier: 'read',
-  description:
-    'Summarize a piece of text using on-device Gemini Nano. Free, no network, no token billing. Use BEFORE passing huge page content to the cloud model — pre-summarize it and pass the summary instead. Types: tldr (one paragraph), key-points (bullet list), teaser (sales-y one-liner), headline (single sentence). Lengths: short / medium / long.',
   argsSchema: SummarizeArgs,
   run: async (args) => {
     const r = await summarizeApi(args.text, { type: args.type, length: args.length });
@@ -103,8 +99,6 @@ export function buildClassifySchema(labels: string[]): unknown {
 export const ai_classify: ToolHandler<ClassifyArgs, unknown> = {
   name: 'ai_classify',
   tier: 'read',
-  description:
-    'Classify text into ONE of the provided labels using on-device Gemini Nano. Returns { label, confidence }. Constrains the output via JSON Schema so the result is always one of the labels you provided. Useful for: routing a message ("question", "command", "greeting"), labeling a page ("article", "spa", "checkout"), gating expensive cloud calls on intent.',
   argsSchema: ClassifyArgs,
   run: async (args) => {
     const sys = buildClassifySystemPrompt(args.labels, args.context);
@@ -140,8 +134,6 @@ export function buildExtractSystemPrompt(hint?: string): string {
 export const ai_extract_json: ToolHandler<ExtractJsonArgs, unknown> = {
   name: 'ai_extract_json',
   tier: 'read',
-  description:
-    'Extract structured data from unstructured text using on-device Gemini Nano. Pass a JSON Schema and the model returns matching JSON. Free, fast, no network. Use for: extracting names/addresses/prices from page text, normalizing form data, parsing semi-structured logs.',
   argsSchema: ExtractJsonArgs,
   run: async (args) => {
     const sys = buildExtractSystemPrompt(args.hint);
@@ -170,8 +162,6 @@ type TranslateArgs = z.infer<typeof TranslateArgs>;
 export const ai_translate: ToolHandler<TranslateArgs, unknown> = {
   name: 'ai_translate',
   tier: 'read',
-  description:
-    'Translate text between languages using on-device models. Pass `auto` as source_language to auto-detect. Returns the translated string. Free, no network. Best for short-to-medium text; long documents may chunk the result.',
   argsSchema: TranslateArgs,
   run: async (args) => {
     let src = args.source_language;
@@ -200,8 +190,6 @@ type DetectLanguageArgs = z.infer<typeof DetectLanguageArgs>;
 export const ai_detect_language: ToolHandler<DetectLanguageArgs, unknown> = {
   name: 'ai_detect_language',
   tier: 'read',
-  description:
-    'Detect the language of a piece of text. Returns one or more candidates with confidence. On-device, free.',
   argsSchema: DetectLanguageArgs,
   run: async (args) => {
     const r = await detectLangApi(args.text);
@@ -216,8 +204,6 @@ type ProofreadArgs = z.infer<typeof ProofreadArgs>;
 export const ai_proofread: ToolHandler<ProofreadArgs, unknown> = {
   name: 'ai_proofread',
   tier: 'read',
-  description:
-    'Proofread text for grammar, spelling, and typos using on-device AI. Returns the corrected version. Useful before sending the user-typed content somewhere it will be visible to others.',
   argsSchema: ProofreadArgs,
   run: async (args) => {
     const r = await proofreadApi(args.text);
@@ -239,8 +225,6 @@ type DescribeImageArgs = z.infer<typeof DescribeImageArgs>;
 export const ai_describe_image: ToolHandler<DescribeImageArgs, unknown> = {
   name: 'ai_describe_image',
   tier: 'read',
-  description:
-    'Multimodal description of a base64-encoded image using on-device Gemini Nano. Pair with `take_screenshot` for cheap visual analysis: "what does this page look like?", "find the submit button in this screenshot", "is there an error message visible?". Free, no network round-trip.',
   argsSchema: DescribeImageArgs,
   run: async (args) => {
     let blob: Blob;
@@ -296,8 +280,6 @@ export const INJECTION_RESPONSE_SCHEMA = {
 export const ai_check_prompt_injection: ToolHandler<InjectionCheckArgs, unknown> = {
   name: 'ai_check_prompt_injection',
   tier: 'read',
-  description:
-    'Run untrusted text (page content, scraped data, user-supplied input) through an on-device safety check BEFORE passing to a cloud model. Returns { suspicious, reason, severity }. Use as a guardrail when you\'re about to feed third-party page text into the agent loop. Cheap and offline.',
   argsSchema: InjectionCheckArgs,
   run: async (args) => {
     const sys = buildInjectionSystemPrompt(args.source_hint);

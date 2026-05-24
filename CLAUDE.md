@@ -327,11 +327,19 @@ are also always-on so the agent can ask for any category by name.
 
 ### Catalog generators
 
-- `pnpm catalog:tools` — writes `types/tool-catalog.json`
+- `pnpm catalog:tools` — writes `types/tool-catalog.json` (code-sourced:
+  structural contract only)
 - `pnpm catalog:tools:md` — adds `types/tool-catalog.md`
+- `pnpm docs:tools` — writes `docs/TOOLS.generated.md` **from the DB**
+  (`tl_def`, source_app=matrx-extend). This is the ONLY repo copy of tool
+  descriptions (Rule 4, [docs/TOOL_SOURCE_OF_TRUTH.md](./docs/TOOL_SOURCE_OF_TRUTH.md)).
 
-Each entry: `{ name, description, tier, input_schema (JSON Schema 7),
+Code-sourced entry: `{ name, tier, input_schema (JSON Schema 7),
 required_permissions, surface_bundles }`. Diffable against the DB.
+**Descriptions are NOT in code** — they live only in `tl_def` and are read
+live for UI via [src/lib/tools/descriptions.ts](./src/lib/tools/descriptions.ts)
+(approval card, Tools tab) and the client discovery / WebMCP / frontend-bridge
+tools. Never reintroduce a hardcoded `description` on a `ToolHandler`.
 
 ### Reference docs
 
@@ -801,8 +809,13 @@ extension changes needed when it lands.
 - **Retired:** `types/server-handoff/browser-dom-capability.json` and
   `buildServerCapabilityHandoff()` — aidream no longer reads them.
 - **Still emitted (dev/debug only):** `pnpm catalog:tools` writes
-  `types/tool-catalog.json` for the in-extension Tools tab and the
-  matrx-extend-tool-display skill. Not authoritative for aidream.
+  `types/tool-catalog.json` (structural contract — no descriptions) for the
+  matrx-extend-tool-display skill. The in-extension Tools tab reads tool
+  descriptions LIVE from the DB (`src/lib/tools/descriptions.ts`). Not
+  authoritative for aidream.
+- **Tool descriptions (Rule 4):** live ONLY in `tl_def`. The repo's single copy
+  is the auto-generated `docs/TOOLS.generated.md` (`pnpm docs:tools`). No
+  hardcoded descriptions in handlers; UI/discovery read them live.
 
 ## 👤 Guest mode (2026-05-16)
 
@@ -944,7 +957,16 @@ Full incident write-up: [`.research/v0.1.4-auth-incident.md`](./.research/v0.1.4
   `client.state["browser-dom"].current_tab_id` end up referencing
   different tabs. See [docs/REQUEST_PAYLOAD_CONTRACT.md §1](./docs/REQUEST_PAYLOAD_CONTRACT.md).
 - **Catalog stays in sync**: after any handler change, run
-  `pnpm catalog:tools:md` and commit the regenerated JSON + MD.
+  `pnpm catalog:tools:md` and commit the regenerated JSON + MD, and
+  `pnpm docs:tools` to refresh the DB-sourced `docs/TOOLS.generated.md`.
+- **Tool descriptions live ONLY in the DB** (Rule 4,
+  [docs/TOOL_SOURCE_OF_TRUTH.md](./docs/TOOL_SOURCE_OF_TRUTH.md)): never add a
+  `description` to a `ToolHandler` or a `.describe()` to its Zod args. UI and
+  discovery read descriptions live via
+  [src/lib/tools/descriptions.ts](./src/lib/tools/descriptions.ts)
+  (`GET /ai-tools/app/matrx-extend`). To change a tool, change `tl_def` first
+  (admin API / migration), then bring the Zod into line until
+  `pnpm catalog:tools:drift` is quiet. There is no code→DB sync.
 - **Document tests for everything user-visible**: when you add or
   meaningfully change any tool, UI surface, or feature, add or update
   its entry in [`docs/feature-tests.md`](./docs/feature-tests.md)

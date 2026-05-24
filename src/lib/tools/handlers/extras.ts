@@ -37,8 +37,6 @@ export const get_clipboard: ToolHandler<GetClipboardArgs, GetClipboardResult> = 
   name: 'get_clipboard',
   tier: 'action',
   required_optional_permissions: ['clipboardRead'],
-  description:
-    "Read the current contents of the system clipboard. Inverse of set_clipboard. Use to consume whatever the user just copied (URL, snippet of text, etc.). Requires the 'clipboardRead' optional permission. The user may need to click on the active page first if the browser refuses for lack-of-focus — when that happens, the result includes a clear `reason` and the agent can ask the user to click the page and try again.",
   argsSchema: GetClipboardArgs,
   run: async (args, ctx) => {
     const tab = await getAssignedTab(ctx);
@@ -112,8 +110,6 @@ const RECENT_AUDIBLE_WINDOW_MS = 60_000;
 export const tab_audio_inspect: ToolHandler<TabAudioInspectArgs, TabAudioInspectResult> = {
   name: 'chrome_tab_audio_inspect',
   tier: 'read',
-  description:
-    "Report which open tabs are currently making noise, were recently audible (within the last 60s), or are muted. Each entry: { id, title, url, audible, muted, active, window_id, last_audible_at }. Useful for finding 'the noisy tab' and for media-aware automation.",
   argsSchema: TabAudioInspectArgs,
   run: async () => {
     const allTabs = await chrome.tabs.query({});
@@ -190,8 +186,6 @@ interface MutationWatchResult {
 export const mutation_watch: ToolHandler<MutationWatchArgs, MutationWatchResult> = {
   name: 'mutation_watch',
   tier: 'read',
-  description:
-    "Observe an element for `duration_ms` (default 3000, max 30000) and report what changed. Set `kinds` to a subset of ['text','attributes','children','visibility'] to filter; default watches all four. Events: { ts_ms, kind, before?, after?, attribute?, added_count?, removed_count?, visible? }. Use this instead of polling read_page when waiting for async UI to settle.",
   argsSchema: MutationWatchArgs,
   run: async (args, ctx) => {
     const tab = await getAssignedTab(ctx);

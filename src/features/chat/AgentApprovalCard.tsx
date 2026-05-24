@@ -42,7 +42,9 @@ export function AgentApprovalCard({ req }: { req: PendingConfirmRequest }) {
               </span>
             )}
           </div>
-          <div className="mt-0.5 text-xs text-muted-foreground">{req.description}</div>
+          {req.description && (
+            <div className="mt-0.5 text-xs text-muted-foreground">{req.description}</div>
+          )}
         </div>
       </div>
 

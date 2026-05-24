@@ -352,6 +352,23 @@ Every entry follows this shape:
     `computer.left_click` calls carried explicit `coordinate` args.
     Ref-only clicks render as labels, not pulses.
 
+### storage `delete` + request_user_takeover `timeout_seconds` (GAP 4)
+- **What it does:** `storage` supports a `delete` action (remove an
+  agent-namespaced KV key); `request_user_takeover` accepts an optional
+  `timeout_seconds` (1–900) bounding how long the agent waits for the user.
+  Both fields are part of the unified `tl_def` contract shared with matrx-frontend.
+- **Where to test:** Tools tab → Run `storage` / `request_user_takeover`, or via chat.
+- **Steps:**
+  1. Run `storage` `{"action":"set","key":"t","value":1}` → `{ok:true}`.
+  2. Run `storage` `{"action":"delete","key":"t"}` → `{ok:true,deleted:true}`.
+  3. Run `storage` `{"action":"get","key":"t"}` → `{exists:false}`.
+  4. Run `request_user_takeover` `{"reason":"x","timeout_seconds":5}` → the takeover
+     card auto-resolves `timed_out:true` after ~5s if unanswered.
+- **Expected:** delete removes only the namespaced key; `timeout_seconds` shortens
+  the default 15-min wait. `pnpm catalog:tools:drift` stays green.
+- **Edge cases:** `delete` without `key` → `{ok:false}`; omitting `timeout_seconds`
+  keeps the 15-min default.
+
 ---
 
 ## UI surfaces
@@ -369,6 +386,31 @@ Every entry follows this shape:
   4. Inspect the returned envelope inline.
 - **Expected:** Same result the agent would receive when calling the
   tool through chat.
+- **Edge cases:** Each tool's **description** is read LIVE from the DB
+  (`GET /ai-tools/app/matrx-extend`), not hardcoded. With the network
+  available, every canonical tool shows its `tl_def` description; offline (or
+  before the fetch resolves) it shows `—`, never a stale string.
+
+### Tool descriptions read live from the DB (Rule 4)
+- **What it does:** No tool descriptions live in the extension's code — they
+  live only in `public.tl_def` and are read live via
+  `src/lib/tools/descriptions.ts` (`GET /ai-tools/app/matrx-extend`). Consumers:
+  Tools-tab catalog, the permission-approval card, the client discovery tools
+  (`list_<category>_tools`), WebMCP registration, and the frontend bridge.
+- **Where to test:** Side panel → Tools tab; and any action-tier tool in chat
+  while in "Ask" mode (to see the approval card).
+- **Steps:**
+  1. Tools tab: confirm each canonical tool shows a description (from the DB).
+  2. In chat (Ask mode), trigger an action tool (e.g. `navigate`) → the
+     approval card shows the tool name, the DB description, and the args.
+  3. Code audit: `grep -rn "description:" src/lib/tools/handlers/` returns only
+     non-tool keys (Zod fields, ask-user option labels) — zero `ToolHandler`
+     descriptions.
+- **Expected:** Descriptions match `tl_def` exactly (regenerate
+  `docs/TOOLS.generated.md` with `pnpm docs:tools` to compare). `pnpm
+  catalog:tools:drift` is green.
+- **Edge cases:** Offline → approval card omits the description (shows name +
+  args only); Tools tab shows `—`. Never a hardcoded fallback string.
 
 ### Side panel — Settings → Advanced agent capabilities
 - **What it does:** Toggle runtime grants for optional Chrome

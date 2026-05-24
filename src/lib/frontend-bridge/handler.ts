@@ -24,6 +24,7 @@
 
 import { log } from '@/lib/debug/log';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
+import { ensureToolDescriptions } from '@/lib/tools/descriptions';
 import { handleWebmcpCall } from '@/lib/tools/dispatch';
 import { listAllHandlers } from '@/lib/tools/registry';
 import { z } from 'zod';
@@ -147,10 +148,12 @@ async function actionCapabilities(
   const handlers = listAllHandlers().filter(
     (h) => h.tier === 'read' || h.tier === 'action',
   );
+  // Descriptions live ONLY in the DB (Rule 4) — read them live, never hardcoded.
+  const descs = await ensureToolDescriptions();
   const tools = handlers.map((h) => ({
     name: h.name,
     tier: h.tier,
-    description: h.description,
+    description: descs.get(h.name) ?? null,
     admin_only: h.admin_only ?? false,
   }));
   return {

@@ -38,8 +38,6 @@ export const get_system_info: ToolHandler<NoArgs, SystemInfoResult> = {
   tier: 'read',
   admin_only: true,
   supportedBrowsers: ['chrome'],
-  description:
-    'Snapshot of the host device: CPU (architecture, model, core count, per-core load), memory (total / available bytes), and connected displays (id, name, bounds, DPR, primary flag). Useful for fan-out sizing, screenshot scaling, and memory-pressure-aware pagination. Read-only and admin-gated.',
   argsSchema: NoArgs,
   run: async () => {
     const unavailable: string[] = [];
@@ -71,8 +69,6 @@ export const list_network_blocking_rules: ToolHandler<NoArgs, DnrRulesResult | {
   tier: 'read',
   admin_only: true,
   supportedBrowsers: ['chrome'],
-  description:
-    'List the active declarativeNetRequest rules for this extension: dynamic (persisted across reloads) and session (in-memory only). Diagnostic for "why is request X being blocked / redirected?" when our own privacy-respecting blocking rules are in effect. Read-only, admin-gated, returns rule definitions only — does not surface any traffic.',
   argsSchema: NoArgs,
   run: async () => {
     if (!chrome.declarativeNetRequest) {

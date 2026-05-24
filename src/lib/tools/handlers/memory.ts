@@ -46,8 +46,6 @@ type RememberArgs = z.infer<typeof RememberArgs>;
 export const remember_for_domain: ToolHandler<RememberArgs, unknown> = {
   name: 'remember_for_domain',
   tier: 'action',
-  description:
-    'Remember something about a domain so it shows up in `domain_memo` context on every future visit. Use for site-specific lessons: "the PO submit button is the third primary", "DOB format is MM/DD/YYYY here", "this site requires SSO via Okta". Notes are free-form prose; hints are structured key/value pairs you can look up by name. Memos on a parent domain (e.g., atlassian.net) automatically apply to subdomains. Returns the updated memo so you can see what is remembered now.',
   argsSchema: RememberArgs,
   run: async (args) => {
     const memo = await rememberForDomain({

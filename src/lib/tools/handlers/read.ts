@@ -14,8 +14,6 @@ type NoArgs = z.infer<typeof NoArgs>;
 export const get_active_tab: ToolHandler<NoArgs, unknown> = {
   name: 'get_active_tab',
   tier: 'read',
-  description:
-    'Return information about the user’s currently focused browser tab: url, title, tab id, window id, status, favicon.',
   argsSchema: NoArgs,
   run: async (_args, ctx) => {
     const tab = await getAssignedTab(ctx);
@@ -37,8 +35,6 @@ const SelectionArgs = z.object({}).default({});
 export const get_page_selection: ToolHandler<NoArgs, unknown> = {
   name: 'get_page_selection',
   tier: 'read',
-  description:
-    'Return the user’s currently selected text on the active tab. Empty string if nothing is selected.',
   argsSchema: SelectionArgs,
   run: async (_args, ctx) => {
     const tab = await getAssignedTab(ctx);
@@ -74,8 +70,6 @@ type ReadPageArgs = z.infer<typeof ReadPageArgs>;
 export const read_active_page: ToolHandler<ReadPageArgs, unknown> = {
   name: 'read_active_page',
   tier: 'read',
-  description:
-    'Read the active tab and return a structured snapshot: cleaned article (markdown + html), title, byline, full image/video/link/audio lists, JSON-LD, schema types, SEO signals (headings, meta, alt-text coverage). Pass deep=true to scroll the page top→bottom first to trigger lazy-loaded images and infinite-scroll content before reading. Use this whenever you need to understand or quote the page.',
   argsSchema: ReadPageArgs,
   run: async (args, ctx) => {
     const tab = await getAssignedTab(ctx);
@@ -309,8 +303,6 @@ async function processScreenshot(
 export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
   name: 'take_screenshot',
   tier: 'read',
-  description:
-    "Capture the active tab as an image, optimized for vision-API consumption. `mode: 'visible'` (default) captures the current viewport via captureVisibleTab. `mode: 'full_page'` scroll-and-stitches the full scrollable height via captureVisibleTab + OffscreenCanvas (no extra permissions; ~5s for a 10-screen page; position:fixed elements appear on every tile). Default profile 'auto' returns a 'max useful' master image (JPEG q=88 @ 2576px — Opus 4.7's ceiling, the highest any current model uses) at ~600–900 KB; the server is expected to do per-provider final sizing from that master. Use 'auto-final' if the server is a passthrough (1568px JPEG q=85 — fits every provider). Provider-specific profiles when the server already knows the model: 'anthropic-default'/'anthropic-hires', 'openai-original'/'openai-high'/'openai-low', 'gemini-screenshot'/'gemini-overview'/'gemini-2.5-default'. Special-purpose: 'ocr-heavy' (high-q for fine text), 'lossless' (PNG, archival only). Returns { ok, mode, media_type, format, width, height, source_width, source_height, image_base64, byte_length, resized, profile, est_tokens, tile_count?, truncated? }. The `media_type` field is ready for direct use in an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.",
   argsSchema: ScreenshotArgs,
   run: async (args, ctx) => {
     const tab = await getAssignedTab(ctx);
@@ -410,8 +402,6 @@ type QueryElementsArgs = z.infer<typeof QueryElementsArgs>;
 export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
   name: 'query_elements',
   tier: 'read',
-  description:
-    'Run document.querySelectorAll on the active tab and return up to `limit` matches as { tag, text, attrs }. `attrs` is a list of attribute names to extract. Use this to find CSS selectors that subsequent action tools can target.',
   argsSchema: QueryElementsArgs,
   run: async (args, ctx) => {
     const tab = await getAssignedTab(ctx);

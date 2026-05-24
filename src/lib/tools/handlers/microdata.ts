@@ -75,8 +75,6 @@ interface ExtractMicrodataResult {
 export const extract_microdata: ToolHandler<ExtractMicrodataArgs, ExtractMicrodataResult> = {
   name: 'extract_microdata',
   tier: 'read',
-  description:
-    "Extract every structured-data signal on the active page in one call: { snapshot, json_ld, microdata, schema_org_types, counts }. `snapshot` is the OG/Twitter/canonical/JSON-LD snapshot used by the Showcase tab. `json_ld` returns each JSON-LD block (flattens @graph; honors `ld_type` filter). `microdata` walks every [itemscope][itemtype] tree (honors `itemtype` filter). `schema_org_types` unions all detected types so you can answer 'is this a Product page?' in one read. Same code paths as the user-facing Showcase → JSON-LD / Microdata / Snapshot sub-tabs, so improvements to either surface flow both ways.",
   argsSchema: ExtractMicrodataArgs,
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);

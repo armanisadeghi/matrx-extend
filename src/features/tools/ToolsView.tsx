@@ -30,6 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { RecorderPane } from '@/features/tools/RecorderPane';
 import { SmartTestsView } from '@/features/tools/SmartTestsView';
+import { useToolDescriptions } from '@/hooks/use-tool-descriptions';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { broadcast } from '@/lib/messaging/native';
@@ -113,6 +114,8 @@ function CatalogPane({ handlers }: { handlers: AnyToolHandler[] }) {
   const [tier, setTier] = useState<TierFilter>('all');
   const [category, setCategory] = useState<CategoryFilter>('all');
   const [surface, setSurface] = useState<SurfaceFilter>('canonical');
+  // Descriptions are read LIVE from the DB (Rule 4) — never hardcoded.
+  const descriptions = useToolDescriptions();
 
   const surfaceCounts = useMemo(() => {
     let canonical = 0;
@@ -132,9 +135,12 @@ function CatalogPane({ handlers }: { handlers: AnyToolHandler[] }) {
       if (tier !== 'all' && h.tier !== tier) return false;
       if (category !== 'all' && categoryOf(h.name) !== category) return false;
       if (!q) return true;
-      return h.name.toLowerCase().includes(q) || h.description.toLowerCase().includes(q);
+      return (
+        h.name.toLowerCase().includes(q) ||
+        (descriptions.get(h.name) ?? '').toLowerCase().includes(q)
+      );
     });
-  }, [handlers, query, tier, category, surface]);
+  }, [handlers, query, tier, category, surface, descriptions]);
 
   const counts = useMemo(() => {
     const c: Record<ToolTier, number> = {
@@ -215,7 +221,7 @@ function CatalogPane({ handlers }: { handlers: AnyToolHandler[] }) {
         ) : (
           <div className="space-y-1.5">
             {filtered.map((h) => (
-              <ToolRow key={h.name} handler={h} />
+              <ToolRow key={h.name} handler={h} description={descriptions.get(h.name)} />
             ))}
           </div>
         )}
@@ -224,7 +230,13 @@ function CatalogPane({ handlers }: { handlers: AnyToolHandler[] }) {
   );
 }
 
-function ToolRow({ handler }: { handler: AnyToolHandler }) {
+function ToolRow({
+  handler,
+  description,
+}: {
+  handler: AnyToolHandler;
+  description?: string;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -268,12 +280,12 @@ function ToolRow({ handler }: { handler: AnyToolHandler }) {
             ) : null}
           </div>
           <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
-            {handler.description}
+            {description ?? '—'}
           </div>
         </div>
       </button>
 
-      {open && <ToolDetail handler={handler} />}
+      {open && <ToolDetail handler={handler} description={description} />}
     </div>
   );
 }
@@ -320,7 +332,13 @@ function TierBadge({ tier }: { tier: ToolTier }) {
   );
 }
 
-function ToolDetail({ handler }: { handler: AnyToolHandler }) {
+function ToolDetail({
+  handler,
+  description,
+}: {
+  handler: AnyToolHandler;
+  description?: string;
+}) {
   const schema = useMemo(
     () => zodToJsonSchema(handler.argsSchema, { $refStrategy: 'none', target: 'jsonSchema7' }),
     [handler],
@@ -400,7 +418,7 @@ function ToolDetail({ handler }: { handler: AnyToolHandler }) {
         label="description"
         trailing={<CopyButton text={handler.name} title="Copy tool name" size="xs" />}
       >
-        <div className="text-foreground/80">{handler.description}</div>
+        <div className="text-foreground/80">{description ?? '—'}</div>
       </Section>
 
       <Section

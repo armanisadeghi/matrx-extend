@@ -38,8 +38,6 @@ type BatchArgs = z.infer<typeof BatchArgs>;
 export const browser_batch: ToolHandler<BatchArgs, unknown> = {
   name: 'browser_batch',
   tier: 'read',
-  description:
-    'Execute up to 20 read-tier tool calls in one round trip. Pass `calls: [{ name, arguments }]`. Returns `results: [{ name, ok, output | error }]` in order. Action / ask-user / privileged tools are NOT permitted inside a batch — call them individually so the user can approve. Use this for predictable multi-step reads (read_page + take_screenshot + list_open_tabs) where each call is independent.',
   argsSchema: BatchArgs,
   run: async (args, ctx: ToolContext) => {
     const results: Array<Record<string, unknown>> = [];

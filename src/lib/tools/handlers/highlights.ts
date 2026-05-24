@@ -39,8 +39,6 @@ type ListHighlightsArgs = z.infer<typeof ListHighlightsArgs>;
 export const list_highlights: ToolHandler<ListHighlightsArgs, unknown> = {
   name: 'list_highlights',
   tier: 'read',
-  description:
-    'List highlights the user captured on web pages (text passages and elements) via the Highlight tab. Each entry includes the captured text plus a reference (CSS selector, data-matrx-ref when still valid, role/tag, and a text-quote anchor) so you can act on the exact element or passage with click/type/extract tools. scope: "page" (current URL, default), "site" (current domain), or "all".',
   argsSchema: ListHighlightsArgs,
   run: async (args, ctx) => {
     const { scope, limit } = args;

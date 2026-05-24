@@ -26,8 +26,6 @@ type SearchBookmarksArgs = z.infer<typeof SearchBookmarksArgs>;
 export const search_bookmarks: ToolHandler<SearchBookmarksArgs, unknown> = {
   name: 'search_bookmarks',
   tier: 'read',
-  description:
-    "Search the user's bookmarks by free-text query (matches title and URL). Returns id, title, url, parentId, dateAdded. Use this to find references the user has saved before recommending a fresh web search.",
   argsSchema: SearchBookmarksArgs,
   run: async (args) => {
     if (!chrome.bookmarks) return { ok: false, reason: 'bookmarks API unavailable' };
@@ -60,8 +58,6 @@ type ListBookmarkTreeArgs = z.infer<typeof ListBookmarkTreeArgs>;
 export const list_bookmark_tree: ToolHandler<ListBookmarkTreeArgs, unknown> = {
   name: 'list_bookmark_tree',
   tier: 'read',
-  description:
-    'Return the bookmarks folder hierarchy starting at root (or a specific folder_id). Walks up to max_depth levels deep. Each node has { id, title, url|null, children?: [...] }.',
   argsSchema: ListBookmarkTreeArgs,
   run: async (args) => {
     if (!chrome.bookmarks) return { ok: false, reason: 'bookmarks API unavailable' };
@@ -100,8 +96,6 @@ type SearchHistoryArgs = z.infer<typeof SearchHistoryArgs>;
 export const search_history: ToolHandler<SearchHistoryArgs, unknown> = {
   name: 'search_history',
   tier: 'read',
-  description:
-    'Search the user\'s browsing history. Returns visit metadata for matching pages: { url, title, lastVisitTime, visitCount, typedCount }. Use to recall "what was that thing I was reading yesterday about X?" without forcing a new web search.',
   argsSchema: SearchHistoryArgs,
   run: async (args) => {
     if (!chrome.history) return { ok: false, reason: 'history API unavailable' };
@@ -144,8 +138,6 @@ type ListRecentHistoryArgs = z.infer<typeof ListRecentHistoryArgs>;
 export const list_recent_history: ToolHandler<ListRecentHistoryArgs, unknown> = {
   name: 'list_recent_history',
   tier: 'read',
-  description:
-    'Return the most recent N pages the user visited within the last `minutes`. Sorted newest-first. Useful as low-cost context for "what is the user doing right now?".',
   argsSchema: ListRecentHistoryArgs,
   run: async (args) => {
     if (!chrome.history) return { ok: false, reason: 'history API unavailable' };
@@ -181,8 +173,6 @@ type ListDownloadsArgs = z.infer<typeof ListDownloadsArgs>;
 export const list_downloads: ToolHandler<ListDownloadsArgs, unknown> = {
   name: 'list_downloads',
   tier: 'read',
-  description:
-    'List recent file downloads. Each entry is { id, filename, url, mime, totalBytes, state, startTime }. Useful to verify a download_url tool call landed.',
   argsSchema: ListDownloadsArgs,
   run: async (args) => {
     if (!chrome.downloads) return { ok: false, reason: 'downloads API unavailable' };

@@ -25,8 +25,6 @@ export const webmcp_check_availability: ToolHandler<NoArgs, unknown> = {
   name: 'webmcp_check_availability',
   tier: 'read',
   admin_only: true,
-  description:
-    'Check whether WebMCP (`navigator.modelContext.registerTool`) is available in the user\'s Chrome and whether the active tab has registered any tools. Use this once before calling webmcp_list_page_tools / webmcp_call_page_tool.',
   argsSchema: NoArgs,
   run: async (_args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
@@ -55,8 +53,6 @@ export const webmcp_list_page_tools: ToolHandler<NoArgs, unknown> = {
   name: 'webmcp_list_page_tools',
   tier: 'read',
   admin_only: true,
-  description:
-    'List tools the active tab has registered via `navigator.modelContext.registerTool`. Each entry includes { name, description, inputSchema }. Use these to discover what the page offers before calling webmcp_call_page_tool.',
   argsSchema: NoArgs,
   run: async (_args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
@@ -110,8 +106,6 @@ export const webmcp_call_page_tool: ToolHandler<CallPageToolArgs, unknown> = {
   name: 'webmcp_call_page_tool',
   tier: 'action',
   admin_only: true,
-  description:
-    'Invoke a tool registered by the active page via `navigator.modelContext`. Pass the tool name and an arguments object (must match the page\'s declared input schema). Returns the page tool\'s result.',
   argsSchema: CallPageToolArgs,
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);

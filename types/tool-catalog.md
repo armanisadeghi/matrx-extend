@@ -1,18 +1,16 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-23T18:03:53.070Z
+Generated: 2026-05-24T07:57:32.103Z
 
-- **Total tools:** 168
+- **Total tools:** 169
 - **Assistant bundle:** 75 tools (read-only)
 - **Pilot bundle:** 138 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 168 tools
+- **Pilot+privileged bundle:** 169 tools
 
 
 ## Tier: read (75)
 
 ### `list_browser_tools`
-
-Index of every browser-tool category the extension exposes. Returns one entry per category: name, label, description, count of tools, name of the category-specific list tool. To get the full schemas for a category, call its `list_tool` (e.g. `list_page_tools`). Use this whenever the model needs more capabilities than its current toolset offers.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -29,8 +27,6 @@ Index of every browser-tool category the extension exposes. Returns one entry pe
 
 ### `list_core_tools`
 
-Full schemas for tools in the "Core" category (core). Always-on discovery + batching utilities. Includes `list_browser_tools` (the category index) and `browser_batch` (run multiple read-tier calls in one round trip). Use the category index to load tools on demand. Returns { count, tools: [{ name, description, tier, input_schema }] }.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -45,8 +41,6 @@ Full schemas for tools in the "Core" category (core). Always-on discovery + batc
 ```
 
 ### `list_reading_tools`
-
-Full schemas for tools in the "Read the page" category (reading). Understand what's on the active page. Accessibility-tree summary with reference IDs (`read_page`), natural-language element search (`find`), Ctrl+F text search, link discovery, full readable text, structured-data extraction (tables, microdata, JSON-LD), PDF reading, mutation observers, single-element deep inspection. Use these BEFORE any interaction so you know what's on the page. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -63,8 +57,6 @@ Full schemas for tools in the "Read the page" category (reading). Understand wha
 
 ### `list_interaction_tools`
 
-Full schemas for tools in the "Use the page" category (interaction). Do something on the page. Mouse + keyboard (`computer`), form input + submission (`form_input`, `submit_form`), navigation, waiting for conditions, sleeping, scrolling, clipboard, file upload + drag-drop, CSS injection, JavaScript evaluation. Prefer `wait_for` over `sleep` when you have a concrete condition. Returns { count, tools: [{ name, description, tier, input_schema }] }.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -79,8 +71,6 @@ Full schemas for tools in the "Use the page" category (interaction). Do somethin
 ```
 
 ### `list_tabs_tools`
-
-Full schemas for tools in the "Tabs & windows" category (tabs). Manage browser tabs and groups. The `tabs` mega-tool covers list/create/close/switch/reload/pin/mute/duplicate/move/zoom and reading active-tab info. `tab_groups` manages named tab groups. `resize_window` for responsive testing. `chrome_tab_audio_inspect` finds the noisy tab. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -97,8 +87,6 @@ Full schemas for tools in the "Tabs & windows" category (tabs). Manage browser t
 
 ### `list_capture_tools`
 
-Full schemas for tools in the "Save & capture" category (capture). Capture artifacts from the browser: file downloads, MHTML snapshots of a page, region screenshots, animated GIFs of user actions, video recordings of a tab. Pairs with the cloud-file system — most produce a `file_id` you can pass to later tools. Returns { count, tools: [{ name, description, tier, input_schema }] }.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -113,8 +101,6 @@ Full schemas for tools in the "Save & capture" category (capture). Capture artif
 ```
 
 ### `list_chrome_tools`
-
-Full schemas for tools in the "Chrome user data" category (chrome). Access the user's personal Chrome data — cookies for any domain, bookmarks, browsing history, recently-closed sessions. Only the Chrome extension can read these (server-side Playwright runs a fresh browser context with none of the user's real data). All tools here are admin-restricted by default. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -131,8 +117,6 @@ Full schemas for tools in the "Chrome user data" category (chrome). Access the u
 
 ### `list_human_tools`
 
-Full schemas for tools in the "Talk to the user" category (human). Loop the human in. `user` (six modes: confirm/choice/choice_many/text/secret/notify), `update_plan` (propose a plan and wait for approval), `request_user_takeover` (hand control back so the user can do something the agent cannot), `tasks` (agent's live tasklist), `user_todos` (assign work to the user). Per-conversation state. Returns { count, tools: [{ name, description, tier, input_schema }] }.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -147,8 +131,6 @@ Full schemas for tools in the "Talk to the user" category (human). Loop the huma
 ```
 
 ### `list_memory_tools`
-
-Full schemas for tools in the "Agent memory" category (memory). Agent state that persists across turns. `scratchpad` is session-scoped (cleared on SW restart). `storage` is persistent agent-namespaced KV. `remember_for_domain` writes a domain memo that auto-surfaces in context when the user opens a tab on that domain. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -165,8 +147,6 @@ Full schemas for tools in the "Agent memory" category (memory). Agent state that
 
 ### `list_ai_tools`
 
-Full schemas for tools in the "On-device AI" category (ai). Chrome's built-in Gemini Nano and siblings. Free, offline, on-GPU. The `ai` mega-tool exposes summarize, classify, extract-JSON-by-schema, translate, detect-language, proofread, describe-image, and prompt-injection-check actions. Use these BEFORE expensive cloud calls when on-device quality permits. Returns { count, tools: [{ name, description, tier, input_schema }] }.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -181,8 +161,6 @@ Full schemas for tools in the "On-device AI" category (ai). Chrome's built-in Ge
 ```
 
 ### `list_demos_tools`
-
-Full schemas for tools in the "Record & replay" category (demos). Record a user demonstration of a workflow once, then replay it on demand with parameter substitution. Self-healing selector chain (matrx-ref → id → testid → ARIA → text → CSS path) survives DOM churn between recording and replay. Replay is privileged — always asks the user to confirm before clicking / typing / submitting. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -199,8 +177,6 @@ Full schemas for tools in the "Record & replay" category (demos). Record a user 
 
 ### `list_guidance_tools`
 
-Full schemas for tools in the "User-saved hints" category (guidance). Domain-scoped notes, screenshots, GIFs, and demo references the user has saved for the agent. Whenever the user opens a tab on a matching domain, the agent's context auto-includes the saved hints. Tools here let the agent add notes, browse what exists, and remove stale items. Returns { count, tools: [{ name, description, tier, input_schema }] }.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -215,8 +191,6 @@ Full schemas for tools in the "User-saved hints" category (guidance). Domain-sco
 ```
 
 ### `list_devtools_tools`
-
-Full schemas for tools in the "DevTools (admin)" category (devtools). Chrome DevTools Protocol + host diagnostics. CDP-backed full-page screenshots, accessibility-tree dumps, network/console capture, coordinate-based clicks that bypass shadow DOM, performance metrics, device emulation, PDF print. Plus host info (CPU/memory/display, declarativeNetRequest rules). All admin-gated. Returns { count, tools: [{ name, description, tier, input_schema }] }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -233,8 +207,6 @@ Full schemas for tools in the "DevTools (admin)" category (devtools). Chrome Dev
 
 ### `list_webmcp_tools`
 
-Full schemas for tools in the "Page-registered tools" category (webmcp). Discover and call tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). The `chrome_webmcp` mega-tool lets the agent enumerate the page's tool catalog and invoke specific tools. Admin-only experimental capability. Returns { count, tools: [{ name, description, tier, input_schema }] }.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -250,8 +222,6 @@ Full schemas for tools in the "Page-registered tools" category (webmcp). Discove
 
 ### `list_desktop_tools`
 
-Full schemas for tools in the "Desktop bridge" category (desktop). Bridge to matrx-local — the desktop engine. `desktop_run_command` invokes commands matrx-local exposes (file ops, system info, window control, etc.). Fails fast when the bridge isn't connected. Returns { count, tools: [{ name, description, tier, input_schema }] }.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -266,8 +236,6 @@ Full schemas for tools in the "Desktop bridge" category (desktop). Bridge to mat
 ```
 
 ### `browser_batch`
-
-Execute up to 20 read-tier tool calls in one round trip. Pass `calls: [{ name, arguments }]`. Returns `results: [{ name, ok, output | error }]` in order. Action / ask-user / privileged tools are NOT permitted inside a batch — call them individually so the user can approve. Use this for predictable multi-step reads (read_page + take_screenshot + list_open_tabs) where each call is independent.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -309,8 +277,6 @@ Execute up to 20 read-tier tool calls in one round trip. Pass `calls: [{ name, a
 ```
 
 ### `read_page`
-
-Return an accessibility-style summary of the active page. Each interactive element gets a reference id (`ref:N`) you can pass to click_element / type_into_element / scroll_into_view / etc. instead of a CSS selector — refs are stable across DOM mutations within the same page lifetime. Pass interactive_only=false to include headings, paragraphs, and labels too. Refs invalidate on navigation; call this again after navigating. Returns { url, title, count, elements: [{ ref, role, name, tag, text, visible, bounds? }] }.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -368,8 +334,6 @@ Return an accessibility-style summary of the active page. Each interactive eleme
 
 ### `find`
 
-Find elements on the active page by natural-language description ("the sign-in button", "the search input near the top", "the paragraph about pricing"). Returns matching refs you can immediately pass to interaction tools. Uses on-device AI for matching when available; falls back to text similarity. Reuses any fresh `read_page` scrape — call it once before a series of finds. By default also searches non-interactive content (headings/paragraphs) so you can locate sections by topic; set `include_content:false` to restrict to clickable elements only. Returns { matches: [{ ref, name, role, score, reason }] }.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -411,8 +375,6 @@ Find elements on the active page by natural-language description ("the sign-in b
 
 ### `get_page_text`
 
-Extract clean readable text from the active page — strips chrome / nav / ads / scripts / hidden DOM. Lighter than read_active_page (which returns full markdown + media + structured data). Best for "read me this article" style asks. Returns { url, title, byline, text, char_count }.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -438,8 +400,6 @@ Extract clean readable text from the active page — strips chrome / nav / ads /
 
 ### `get_active_tab`
 
-Return information about the user’s currently focused browser tab: url, title, tab id, window id, status, favicon.
-
 - **Required permissions:** `activeTab`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -455,8 +415,6 @@ Return information about the user’s currently focused browser tab: url, title,
 
 ### `get_page_selection`
 
-Return the user’s currently selected text on the active tab. Empty string if nothing is selected.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -471,8 +429,6 @@ Return the user’s currently selected text on the active tab. Empty string if n
 ```
 
 ### `read_active_page`
-
-Read the active tab and return a structured snapshot: cleaned article (markdown + html), title, byline, full image/video/link/audio lists, JSON-LD, schema types, SEO signals (headings, meta, alt-text coverage). Pass deep=true to scroll the page top→bottom first to trigger lazy-loaded images and infinite-scroll content before reading. Use this whenever you need to understand or quote the page.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -493,8 +449,6 @@ Read the active tab and return a structured snapshot: cleaned article (markdown 
 ```
 
 ### `take_screenshot`
-
-Capture the active tab as an image, optimized for vision-API consumption. `mode: 'visible'` (default) captures the current viewport via captureVisibleTab. `mode: 'full_page'` scroll-and-stitches the full scrollable height via captureVisibleTab + OffscreenCanvas (no extra permissions; ~5s for a 10-screen page; position:fixed elements appear on every tile). Default profile 'auto' returns a 'max useful' master image (JPEG q=88 @ 2576px — Opus 4.7's ceiling, the highest any current model uses) at ~600–900 KB; the server is expected to do per-provider final sizing from that master. Use 'auto-final' if the server is a passthrough (1568px JPEG q=85 — fits every provider). Provider-specific profiles when the server already knows the model: 'anthropic-default'/'anthropic-hires', 'openai-original'/'openai-high'/'openai-low', 'gemini-screenshot'/'gemini-overview'/'gemini-2.5-default'. Special-purpose: 'ocr-heavy' (high-q for fine text), 'lossless' (PNG, archival only). Returns { ok, mode, media_type, format, width, height, source_width, source_height, image_base64, byte_length, resized, profile, est_tokens, tile_count?, truncated? }. The `media_type` field is ready for direct use in an image content block — the agent server should pass it through verbatim, NOT stringify the whole object.
 
 - **Required permissions:** `activeTab`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -568,8 +522,6 @@ Capture the active tab as an image, optimized for vision-API consumption. `mode:
 
 ### `query_elements`
 
-Run document.querySelectorAll on the active tab and return up to `limit` matches as { tag, text, attrs }. `attrs` is a list of attribute names to extract. Use this to find CSS selectors that subsequent action tools can target.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -603,8 +555,6 @@ Run document.querySelectorAll on the active tab and return up to `limit` matches
 ```
 
 ### `find_text_on_page`
-
-Ctrl+F-style literal text search within a tab. Returns matches with surrounding context + the nearest enclosing element selector. Pass regex=true to use a regular expression. Use when read_active_page would be overkill — e.g. "where on this page does it say 'click here to download'?". For natural-language search, use find instead.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -651,8 +601,6 @@ Ctrl+F-style literal text search within a tab. Returns matches with surrounding 
 
 ### `get_page_links`
 
-Return anchor links from the active tab. Each entry is { href, text, title, rel, target }. Filter by href substring, link text substring, or same-origin only. Lighter than read_active_page when you only need link discovery.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -685,8 +633,6 @@ Return anchor links from the active tab. Each entry is { href, text, title, rel,
 
 ### `get_computed_style`
 
-Read computed CSS for an element. Pass `properties` to limit (e.g. ["color","font-size"]) — without it returns a useful default subset (color, background, font, padding, margin, border, display, position, dimensions). Useful for debugging visual issues or matching styles.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -715,8 +661,6 @@ Read computed CSS for an element. Pass `properties` to limit (e.g. ["color","fon
 
 ### `get_element_at_point`
 
-Identify the DOM element at viewport coordinates (x, y). Returns tag, text, attrs, and a stable selector. Useful when correlating something seen in a screenshot to a clickable element.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -742,8 +686,6 @@ Identify the DOM element at viewport coordinates (x, y). Returns tag, text, attr
 
 ### `inspect_element`
 
-Deep snapshot of a single element: tag, text, full attributes, bounding rect, key computed styles, ancestor chain (tag + class), and child counts. Useful when a click or type call is failing and you need to understand why.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -765,8 +707,6 @@ Deep snapshot of a single element: tag, text, full attributes, bounding rect, ke
 ```
 
 ### `get_element_details`
-
-Deep inspection of a single element by ref: full attribute set, bounding box, visibility, optional computed styles and innerHTML. Use when read_page's summary isn't enough — e.g. reading data-* attributes or checking if something is hidden by CSS. Avoids needing evaluate_javascript for routine introspection. innerHTML is capped at 50 KB; response includes truncated:true when exceeded.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -800,8 +740,6 @@ Deep inspection of a single element by ref: full attribute set, bounding box, vi
 
 ### `list_open_tabs`
 
-List all open browser tabs. Returns id, url, title, windowId, groupId, active flag, status. Use this to discover what the user is working with before deciding which tab to act on.
-
 - **Required permissions:** `tabs`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -831,8 +769,6 @@ List all open browser tabs. Returns id, url, title, windowId, groupId, active fl
 
 ### `get_tab_groups`
 
-List every tab group across windows: id, title, color, collapsed flag, and the tab ids inside. Use after list_open_tabs to understand how the user has organized their work.
-
 - **Required permissions:** `tabs`, `tabGroups`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -847,8 +783,6 @@ List every tab group across windows: id, title, color, collapsed flag, and the t
 ```
 
 ### `get_tab_info`
-
-Get full information about a specific tab by id. Same fields as list_open_tabs but for a single tab. Returns { ok:false, reason } if the tab is gone.
 
 - **Required permissions:** `tabs`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -870,8 +804,6 @@ Get full information about a specific tab by id. Same fields as list_open_tabs b
 ```
 
 ### `search_bookmarks`
-
-Search the user's bookmarks by free-text query (matches title and URL). Returns id, title, url, parentId, dateAdded. Use this to find references the user has saved before recommending a fresh web search.
 
 - **Required permissions:** `bookmarks`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -901,8 +833,6 @@ Search the user's bookmarks by free-text query (matches title and URL). Returns 
 
 ### `list_bookmark_tree`
 
-Return the bookmarks folder hierarchy starting at root (or a specific folder_id). Walks up to max_depth levels deep. Each node has { id, title, url|null, children?: [...] }.
-
 - **Required permissions:** `bookmarks`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -927,8 +857,6 @@ Return the bookmarks folder hierarchy starting at root (or a specific folder_id)
 ```
 
 ### `search_history`
-
-Search the user's browsing history. Returns visit metadata for matching pages: { url, title, lastVisitTime, visitCount, typedCount }. Use to recall "what was that thing I was reading yesterday about X?" without forcing a new web search.
 
 - **Required permissions:** `history`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -963,8 +891,6 @@ Search the user's browsing history. Returns visit metadata for matching pages: {
 
 ### `list_recent_history`
 
-Return the most recent N pages the user visited within the last `minutes`. Sorted newest-first. Useful as low-cost context for "what is the user doing right now?".
-
 - **Required permissions:** `history`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -992,8 +918,6 @@ Return the most recent N pages the user visited within the last `minutes`. Sorte
 ```
 
 ### `list_downloads`
-
-List recent file downloads. Each entry is { id, filename, url, mime, totalBytes, state, startTime }. Useful to verify a download_url tool call landed.
 
 - **Required permissions:** `downloads`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1028,8 +952,6 @@ List recent file downloads. Each entry is { id, filename, url, mime, totalBytes,
 
 ### `get_form_fields`
 
-Discover forms on the active tab. For each form, returns id, action, method, and a list of fields: { name, type, value, label, required, placeholder, selector }. Use this BEFORE typing to find the right selector and label so you fill the right field.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1048,8 +970,6 @@ Discover forms on the active tab. For each form, returns id, action, method, and
 ```
 
 ### `get_extension_storage`
-
-Read a value the agent previously stored via set_extension_storage. Returns { ok, value, exists }. Read-only, so always runs without prompting.
 
 - **Required permissions:** `storage`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1081,8 +1001,6 @@ Read a value the agent previously stored via set_extension_storage. Returns { ok
 
 ### `list_extension_storage`
 
-List keys + values the agent has stored. Filter by `prefix`. Useful to inspect prior agent state.
-
 - **Required permissions:** `storage`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1110,8 +1028,6 @@ List keys + values the agent has stored. Filter by `prefix`. Useful to inspect p
 
 ### `ai_check_availability`
 
-Probe whether on-device AI (Gemini Nano + Summarizer/Translator/Proofreader/etc.) is available in the user's Chrome and ready to use. Returns per-API availability: unavailable | downloadable | downloading | available. Call this once at the start of a session to decide whether to use on-device tools or fall back to cloud.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1126,8 +1042,6 @@ Probe whether on-device AI (Gemini Nano + Summarizer/Translator/Proofreader/etc.
 ```
 
 ### `ai_summarize`
-
-Summarize a piece of text using on-device Gemini Nano. Free, no network, no token billing. Use BEFORE passing huge page content to the cloud model — pre-summarize it and pass the summary instead. Types: tldr (one paragraph), key-points (bullet list), teaser (sales-y one-liner), headline (single sentence). Lengths: short / medium / long.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1170,8 +1084,6 @@ Summarize a piece of text using on-device Gemini Nano. Free, no network, no toke
 
 ### `ai_classify`
 
-Classify text into ONE of the provided labels using on-device Gemini Nano. Returns { label, confidence }. Constrains the output via JSON Schema so the result is always one of the labels you provided. Useful for: routing a message ("question", "command", "greeting"), labeling a page ("article", "spa", "checkout"), gating expensive cloud calls on intent.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1207,8 +1119,6 @@ Classify text into ONE of the provided labels using on-device Gemini Nano. Retur
 
 ### `ai_extract_json`
 
-Extract structured data from unstructured text using on-device Gemini Nano. Pass a JSON Schema and the model returns matching JSON. Free, fast, no network. Use for: extracting names/addresses/prices from page text, normalizing form data, parsing semi-structured logs.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1234,8 +1144,6 @@ Extract structured data from unstructured text using on-device Gemini Nano. Pass
 ```
 
 ### `ai_translate`
-
-Translate text between languages using on-device models. Pass `auto` as source_language to auto-detect. Returns the translated string. Free, no network. Best for short-to-medium text; long documents may chunk the result.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1269,8 +1177,6 @@ Translate text between languages using on-device models. Pass `auto` as source_l
 
 ### `ai_detect_language`
 
-Detect the language of a piece of text. Returns one or more candidates with confidence. On-device, free.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1293,8 +1199,6 @@ Detect the language of a piece of text. Returns one or more candidates with conf
 
 ### `ai_proofread`
 
-Proofread text for grammar, spelling, and typos using on-device AI. Returns the corrected version. Useful before sending the user-typed content somewhere it will be visible to others.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1316,8 +1220,6 @@ Proofread text for grammar, spelling, and typos using on-device AI. Returns the 
 ```
 
 ### `ai_describe_image`
-
-Multimodal description of a base64-encoded image using on-device Gemini Nano. Pair with `take_screenshot` for cheap visual analysis: "what does this page look like?", "find the submit button in this screenshot", "is there an error message visible?". Free, no network round-trip.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1354,8 +1256,6 @@ Multimodal description of a base64-encoded image using on-device Gemini Nano. Pa
 
 ### `ai_check_prompt_injection`
 
-Run untrusted text (page content, scraped data, user-supplied input) through an on-device safety check BEFORE passing to a cloud model. Returns { suspicious, reason, severity }. Use as a guardrail when you're about to feed third-party page text into the agent loop. Cheap and offline.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1381,8 +1281,6 @@ Run untrusted text (page content, scraped data, user-supplied input) through an 
 
 ### `list_recently_closed`
 
-List recently-closed tabs and windows the user can restore. Each entry has { id, last_modified, tab? | window? }. Useful when the user says "what was that page I just closed?".
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1404,8 +1302,6 @@ List recently-closed tabs and windows the user can restore. Each entry has { id,
 ```
 
 ### `get_cookies`
-
-Read cookies for a URL or domain. Pass `url` (preferred — narrower) OR `domain`, optionally also `name` to filter to one cookie. Returns a list of { name, value, domain, path, secure, httpOnly, sameSite, expirationDate }. Personal data — admin only by default.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1432,8 +1328,6 @@ Read cookies for a URL or domain. Pass `url` (preferred — narrower) OR `domain
 
 ### `cdp_attached_tabs`
 
-Return the list of tab ids currently attached via CDP.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1448,8 +1342,6 @@ Return the list of tab ids currently attached via CDP.
 ```
 
 ### `cdp_perf_metrics`
-
-Read Performance.getMetrics for a tab. Returns { Documents, Frames, JSHeapUsedSize, LayoutCount, RecalcStyleCount, ScriptDuration, TaskDuration, … }. Useful when an action triggered chaos and you need to measure it.
 
 - **Required permissions:** `activeTab`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1470,8 +1362,6 @@ Read Performance.getMetrics for a tab. Returns { Documents, Frames, JSHeapUsedSi
 
 ### `get_system_info`
 
-Snapshot of the host device: CPU (architecture, model, core count, per-core load), memory (total / available bytes), and connected displays (id, name, bounds, DPR, primary flag). Useful for fan-out sizing, screenshot scaling, and memory-pressure-aware pagination. Read-only and admin-gated.
-
 - **Required permissions:** `system.cpu`, `system.memory`, `system.display`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1486,8 +1376,6 @@ Snapshot of the host device: CPU (architecture, model, core count, per-core load
 ```
 
 ### `list_network_blocking_rules`
-
-List the active declarativeNetRequest rules for this extension: dynamic (persisted across reloads) and session (in-memory only). Diagnostic for "why is request X being blocked / redirected?" when our own privacy-respecting blocking rules are in effect. Read-only, admin-gated, returns rule definitions only — does not surface any traffic.
 
 - **Required permissions:** `declarativeNetRequestWithHostAccess`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1504,8 +1392,6 @@ List the active declarativeNetRequest rules for this extension: dynamic (persist
 
 ### `webmcp_check_availability`
 
-Check whether WebMCP (`navigator.modelContext.registerTool`) is available in the user's Chrome and whether the active tab has registered any tools. Use this once before calling webmcp_list_page_tools / webmcp_call_page_tool.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1520,8 +1406,6 @@ Check whether WebMCP (`navigator.modelContext.registerTool`) is available in the
 ```
 
 ### `webmcp_list_page_tools`
-
-List tools the active tab has registered via `navigator.modelContext.registerTool`. Each entry includes { name, description, inputSchema }. Use these to discover what the page offers before calling webmcp_call_page_tool.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1538,8 +1422,6 @@ List tools the active tab has registered via `navigator.modelContext.registerToo
 
 ### `list_demos`
 
-List every saved demo as { id, name, description, start_url, step_count, parameter_names, created_at, updated_at }. Use to find a demo to replay or describe.
-
 - **Required permissions:** `storage`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1554,8 +1436,6 @@ List every saved demo as { id, name, description, start_url, step_count, paramet
 ```
 
 ### `describe_demo`
-
-Return the full step list for a saved demo. Each step has { kind, url, selector_chain, element_snapshot, input_text, param_placeholder, is_sensitive }. Use before replay to verify what the demo will do.
 
 - **Required permissions:** `storage`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1579,8 +1459,6 @@ Return the full step list for a saved demo. Each step has { kind, url, selector_
 
 ### `list_guidance`
 
-List saved guidance items (notes, screenshots, GIFs, demo references). Pass `domain` to filter; omit to return everything. Returns lightweight summaries — call `get_guidance_item` for full details.
-
 - **Required permissions:** `storage`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1599,8 +1477,6 @@ List saved guidance items (notes, screenshots, GIFs, demo references). Pass `dom
 ```
 
 ### `get_guidance_item`
-
-Return the full record for one guidance item by id. Notes include their text; screenshots/GIFs include their cld_files URL; demo references include the linked demo_id (use `replay_demo` to run).
 
 - **Required permissions:** `storage`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1623,8 +1499,6 @@ Return the full record for one guidance item by id. Notes include their text; sc
 ```
 
 ### `list_highlights`
-
-List highlights the user captured on web pages (text passages and elements) via the Highlight tab. Each entry includes the captured text plus a reference (CSS selector, data-matrx-ref when still valid, role/tag, and a text-quote anchor) so you can act on the exact element or passage with click/type/extract tools. scope: "page" (current URL, default), "site" (current domain), or "all".
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1663,8 +1537,6 @@ List highlights the user captured on web pages (text passages and elements) via 
 
 ### `extract_table`
 
-Extract a table on the active page as structured JSON. Handles native <table> with thead/tbody, rowspan/colspan, multi-row headers, and ARIA role="table" / role="grid" patterns. Provide `ref` (preferred) from a prior read_page, or `selector` (any CSS), or omit both to pick the largest visible table. Returns { columns: [{ index, path: [headerLevels...] }], rows: [{ cells: [{ value, is_header, colspan?, rowspan? }] }], merged_cells, row_count, column_count }. Use this instead of cell-by-cell scraping — one call versus dozens.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1700,8 +1572,6 @@ Extract a table on the active page as structured JSON. Handles native <table> wi
 ```
 
 ### `screenshot_region`
-
-Capture a bounded region of the active tab's viewport — 5-20× cheaper than a full screenshot for focused vision calls. Target with `ref` (preferred, from read_page), `selector`, or explicit viewport `rect:{x,y,w,h}`; off-screen targets are scrolled into view, optional `padding` in CSS px. Uploads to cloud; returns { ok, media_type, format, width, height, source_rect, image_base64, byte_length, file_id, file_url }. Render/share file_url (durable); image_base64 feeds the vision model.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1786,8 +1656,6 @@ Capture a bounded region of the active tab's viewport — 5-20× cheaper than a 
 
 ### `chrome_tab_audio_inspect`
 
-Report which open tabs are currently making noise, were recently audible (within the last 60s), or are muted. Each entry: { id, title, url, audible, muted, active, window_id, last_audible_at }. Useful for finding 'the noisy tab' and for media-aware automation.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1802,8 +1670,6 @@ Report which open tabs are currently making noise, were recently audible (within
 ```
 
 ### `mutation_watch`
-
-Observe an element for `duration_ms` (default 3000, max 30000) and report what changed. Set `kinds` to a subset of ['text','attributes','children','visibility'] to filter; default watches all four. Events: { ts_ms, kind, before?, after?, attribute?, added_count?, removed_count?, visible? }. Use this instead of polling read_page when waiting for async UI to settle.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1850,8 +1716,6 @@ Observe an element for `duration_ms` (default 3000, max 30000) and report what c
 
 ### `extract_microdata`
 
-Extract every structured-data signal on the active page in one call: { snapshot, json_ld, microdata, schema_org_types, counts }. `snapshot` is the OG/Twitter/canonical/JSON-LD snapshot used by the Showcase tab. `json_ld` returns each JSON-LD block (flattens @graph; honors `ld_type` filter). `microdata` walks every [itemscope][itemtype] tree (honors `itemtype` filter). `schema_org_types` unions all detected types so you can answer 'is this a Product page?' in one read. Same code paths as the user-facing Showcase → JSON-LD / Microdata / Snapshot sub-tabs, so improvements to either surface flow both ways.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1884,8 +1748,6 @@ Extract every structured-data signal on the active page in one call: { snapshot,
 ```
 
 ### `fetch_url_as_markdown`
-
-Fetch an HTTP(S) URL and return its readable content as Markdown — the same defuddle + readability + turndown pipeline the Scrape tab uses against the active page, but pointed at any URL without opening a tab. Returns { title, markdown, byline, excerpt, extractor, word_count, reading_time_minutes, metadata, ld_json, http_status, final_url, content_type, truncated }. Pass `use_session: true` to attach the user's cookies (paywalled / logged-in pages). Pass `include_extras: true` to also get links / images / videos / SEO audit. Non-HTML URLs (PDFs, JSON, etc.) are rejected with a clear error — use `read_pdf` for PDFs.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1930,8 +1792,6 @@ Fetch an HTTP(S) URL and return its readable content as Markdown — the same de
 
 ### `scratchpad`
 
-Session-scoped, in-process scratchpad for stashing structured notes across turns without burning context tokens. Distinct from the canonical `memory` tool which is the persistent long-term memory system. Use scratchpad for ephemeral state inside a single run; use `memory` for things the agent should remember about the user across sessions. Actions: 'set' (write a value to a key), 'get' (read by key), 'list' (all keys), 'delete' (remove a key). Values are stringified — stringify objects before passing. Caps: 8 KB per value, 100 keys per session. Cleared at session end.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -1964,8 +1824,6 @@ Session-scoped, in-process scratchpad for stashing structured notes across turns
 ```
 
 ### `wait_for`
-
-Poll until a condition is met or timeout. Use after navigation or actions that trigger async loads — far more reliable than fixed sleeps. Conditions: 'element' (ref or selector exists and is visible; pass scroll=true to scroll the page while polling — handles infinite scroll), 'text' (text appears anywhere on page), 'url' (tab URL matches substring or regex), 'network_idle' (no in-flight requests for ~500ms).
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -2010,8 +1868,6 @@ Poll until a condition is met or timeout. Use after navigation or actions that t
 
 ### `read_pdf`
 
-Extract text and structure from a PDF — either one loaded in a browser tab, or one already in cld_files (pass file_id). Returns text by page with optional page range. Use file_id when you have a MediaRef in hand (e.g. from a prior download); use tab_id when the PDF is open in the browser.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -2045,8 +1901,6 @@ Extract text and structure from a PDF — either one loaded in a browser tab, or
 ```
 
 ### `ai`
-
-On-device AI (Gemini Nano + siblings). Free, offline, multimodal, no network. Actions: 'check_availability' (probe per-API readiness), 'summarize' (text→summary), 'classify' (text+categories→label), 'extract_json' (text+schema→object), 'translate' (text+target_lang), 'detect_language' (text→BCP-47), 'proofread' (text→corrections), 'describe_image' (image_url OR image_base64+mime_type → caption), 'check_prompt_injection' (text→risk assessment). Use BEFORE expensive cloud calls when on-device quality permits.
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -2108,8 +1962,6 @@ On-device AI (Gemini Nano + siblings). Free, offline, multimodal, no network. Ac
 
 ### `chrome_bookmarks`
 
-Read the user's bookmarks. Actions: 'search' (free-text against title and URL; pass `query`), 'tree' (folder tree starting at `folder_id` or root, `max_depth` deep). Each bookmark has id/title/url/parent_id/date_added.
-
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
 
@@ -2148,8 +2000,6 @@ Read the user's bookmarks. Actions: 'search' (free-text against title and URL; p
 ```
 
 ### `chrome_history`
-
-Read browsing history. Actions: 'search' (free-text against title/URL; pass `query`, optional `start_time_ms`/`end_time_ms`/`limit`), 'recent' (last N `minutes`, default 60).
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -2195,8 +2045,6 @@ Read browsing history. Actions: 'search' (free-text against title/URL; pass `que
 
 ### `navigate_active_tab`
 
-Navigate the active tab to a URL. Waits for status=complete before resolving (timeout 30s). Returns { url, title, status }.
-
 - **Required permissions:** `tabs`, `activeTab`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2218,8 +2066,6 @@ Navigate the active tab to a URL. Waits for status=complete before resolving (ti
 ```
 
 ### `click_element`
-
-Click an element on the active tab. Pass `ref` from read_page (preferred — stable across DOM mutations) OR a CSS `selector`. When multiple match a selector, use `nth`. Returns { ok, tag, text } or { ok:false, reason }.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -2248,8 +2094,6 @@ Click an element on the active tab. Pass `ref` from read_page (preferred — sta
 ```
 
 ### `type_into_element`
-
-Set the value of an input / textarea / contenteditable. Pass `ref` from read_page (preferred) OR a CSS `selector`. By default clears the field first and dispatches input + change events so React/Vue see the update.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -2288,8 +2132,6 @@ Set the value of an input / textarea / contenteditable. Pass `ref` from read_pag
 
 ### `scroll_page`
 
-Scroll the active tab. direction="top"/"bottom" go to extremes; "into-view" scrolls a selector or `ref` (from read_page) into view; "by" scrolls by delta_y pixels.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2326,8 +2168,6 @@ Scroll the active tab. direction="top"/"bottom" go to extremes; "into-view" scro
 
 ### `wait_for`
 
-Wait for a condition on the active tab — either the page to fully load (ready_state=true) and/or a selector to appear. Returns { ok, waited_ms }.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2355,8 +2195,6 @@ Wait for a condition on the active tab — either the page to fully load (ready_
 
 ### `set_clipboard`
 
-Write text to the system clipboard.
-
 - **Required permissions:** `activeTab`, `scripting`, `clipboardWrite`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2377,8 +2215,6 @@ Write text to the system clipboard.
 ```
 
 ### `sleep`
-
-Pause the agent for `ms` milliseconds (50ms–5min). Use when waiting for time-based things the page does on its own — a video to play before capturing transcript, an animation to finish, a debounced search to settle, a rate-limit window to clear. The server is non-blocking during the pause; only the agent waits. Prefer `wait_for` when you have a concrete condition (selector or readyState) — `sleep` is for unconditional waits. Returns { ok, slept_ms }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
@@ -2406,8 +2242,6 @@ Pause the agent for `ms` milliseconds (50ms–5min). Use when waiting for time-b
 ```
 
 ### `press_keys`
-
-Send keyboard input to a page. Pass either a literal string ("hello world") or named keys/chords ("Enter", "Control+A", "Tab", "ArrowDown ArrowDown Enter"). When `selector` or `ref` is provided the tool focuses that element first. Useful for triggering submit-on-Enter, navigating menus, dismissing dialogs, and using app keyboard shortcuts.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -2443,8 +2277,6 @@ Send keyboard input to a page. Pass either a literal string ("hello world") or n
 
 ### `hover_element`
 
-Trigger hover on an element by dispatching mouseenter/mouseover/mousemove events. Pass `ref` from read_page or a CSS `selector`. Reveals hover-only tooltips, dropdown menus, or sub-navigation.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2467,8 +2299,6 @@ Trigger hover on an element by dispatching mouseenter/mouseover/mousemove events
 ```
 
 ### `focus_element`
-
-Move keyboard focus to an element. Pass `ref` from read_page or a `selector`. Use before press_keys when no selector is supplied to that tool.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -2493,8 +2323,6 @@ Move keyboard focus to an element. Pass `ref` from read_page or a `selector`. Us
 
 ### `blur_element`
 
-Remove focus from an element. With no selector, blurs whatever currently has focus. Useful before press_keys when shortcuts must hit document instead of an input.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2513,8 +2341,6 @@ Remove focus from an element. With no selector, blurs whatever currently has foc
 ```
 
 ### `right_click_element`
-
-Dispatch a contextmenu event on an element (synthetic right-click). Note: most apps respond by showing their own custom menu in the page DOM. Chrome's native context menu cannot be opened by extension scripts.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -2538,8 +2364,6 @@ Dispatch a contextmenu event on an element (synthetic right-click). Note: most a
 ```
 
 ### `select_dropdown_option`
-
-Choose an option in a <select> element. Pass exactly ONE of: value (the option's value attr), label (the visible text), or index (0-based). Dispatches change + input events for framework apps.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -2574,8 +2398,6 @@ Choose an option in a <select> element. Pass exactly ONE of: value (the option's
 
 ### `set_checkbox`
 
-Set a checkbox to checked or unchecked, dispatching click + change events so frameworks see the toggle. Use for both <input type="checkbox"> and ARIA-styled toggles where role="checkbox".
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2604,8 +2426,6 @@ Set a checkbox to checked or unchecked, dispatching click + change events so fra
 ```
 
 ### `set_radio`
-
-Pick a radio button from a group. Pass selector pointing at the group container OR any radio input in it, then exactly ONE of value/label/index.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -2640,8 +2460,6 @@ Pick a radio button from a group. Pass selector pointing at the group container 
 
 ### `submit_form`
 
-Submit a form. By default the tool clicks the form's primary submit button (so HTML5 validation + framework handlers run). Set via_button=false to fall back to HTMLFormElement.submit() — skips validation but works for form elements that lack a button.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2664,8 +2482,6 @@ Submit a form. By default the tool clicks the form's primary submit button (so H
 ```
 
 ### `file_upload`
-
-Attach files to an `<input type="file">` element by selector or ref. IMPORTANT: clicking a file input opens a native dialog the agent cannot see — use this tool instead. Each file in `files` is { name, mime, base64 }. Dispatches `change` so frameworks see the upload. Returns { ok, file_count, names }.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -2720,8 +2536,6 @@ Attach files to an `<input type="file">` element by selector or ref. IMPORTANT: 
 
 ### `open_new_tab`
 
-Open a new tab pointing at a URL. Returns the new tab id, window id, and final URL once load begins. Use active=false to background-load reference pages.
-
 - **Required permissions:** `tabs`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2759,8 +2573,6 @@ Open a new tab pointing at a URL. Returns the new tab id, window id, and final U
 
 ### `close_tab`
 
-Close one or more tabs by id. Pass a single id or an array. Cleaning up reference tabs at the end of a research run is a common use.
-
 - **Required permissions:** `tabs`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2793,8 +2605,6 @@ Close one or more tabs by id. Pass a single id or an array. Cleaning up referenc
 
 ### `switch_to_tab`
 
-Activate (focus) a specific tab and bring its window forward. Use this before per-tab actions that operate on the active tab (click, type, etc).
-
 - **Required permissions:** `tabs`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2816,8 +2626,6 @@ Activate (focus) a specific tab and bring its window forward. Use this before pe
 
 ### `duplicate_tab`
 
-Duplicate an existing tab. Returns the new tab id. Useful for branching experiments without losing the original page.
-
 - **Required permissions:** `tabs`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2838,8 +2646,6 @@ Duplicate an existing tab. Returns the new tab id. Useful for branching experime
 ```
 
 ### `pin_tab`
-
-Pin or unpin a tab. Pinned tabs are smaller and live at the front of the strip.
 
 - **Required permissions:** `tabs`
 - **Surface bundles:** pilot, pilot+privileged
@@ -2866,8 +2672,6 @@ Pin or unpin a tab. Pinned tabs are smaller and live at the front of the strip.
 
 ### `mute_tab`
 
-Mute or unmute a tab.
-
 - **Required permissions:** `tabs`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2893,8 +2697,6 @@ Mute or unmute a tab.
 
 ### `reload_tab`
 
-Reload a tab (default: the active tab). Pass bypass_cache=true for a hard refresh.
-
 - **Required permissions:** `tabs`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2918,8 +2720,6 @@ Reload a tab (default: the active tab). Pass bypass_cache=true for a hard refres
 
 ### `go_back`
 
-Navigate the active tab (or specified tab) one entry back in its session history.
-
 - **Required permissions:** `tabs`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2939,8 +2739,6 @@ Navigate the active tab (or specified tab) one entry back in its session history
 
 ### `go_forward`
 
-Navigate the active tab (or specified tab) one entry forward in its session history.
-
 - **Required permissions:** `tabs`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -2959,8 +2757,6 @@ Navigate the active tab (or specified tab) one entry forward in its session hist
 ```
 
 ### `set_tab_zoom`
-
-Set the zoom level on a tab. 1.0 = 100%, 1.5 = 150%, 0.75 = 75%.
 
 - **Required permissions:** `tabs`
 - **Surface bundles:** pilot, pilot+privileged
@@ -2987,8 +2783,6 @@ Set the zoom level on a tab. 1.0 = 100%, 1.5 = 150%, 0.75 = 75%.
 ```
 
 ### `move_tab`
-
-Reorder a tab (and optionally move it to another window).
 
 - **Required permissions:** `tabs`
 - **Surface bundles:** pilot, pilot+privileged
@@ -3019,8 +2813,6 @@ Reorder a tab (and optionally move it to another window).
 
 ### `resize_window`
 
-Resize the browser window containing a tab. Useful for responsive testing. If tab_id is omitted, resizes the active tab's window. Note: this changes the OS window size, which in turn changes the viewport.
-
 - **Required permissions:** `tabs`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -3050,8 +2842,6 @@ Resize the browser window containing a tab. Useful for responsive testing. If ta
 ```
 
 ### `create_tab_group`
-
-Group a set of tabs together. Returns the new group id. Use this to keep an agent run's sandboxed tabs visually separate from the user's other work.
 
 - **Required permissions:** `tabs`, `tabGroups`
 - **Surface bundles:** pilot, pilot+privileged
@@ -3101,8 +2891,6 @@ Group a set of tabs together. Returns the new group id. Use this to keep an agen
 
 ### `add_tabs_to_group`
 
-Add tabs to an existing tab group.
-
 - **Required permissions:** `tabs`, `tabGroups`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -3132,8 +2920,6 @@ Add tabs to an existing tab group.
 
 ### `remove_tabs_from_group`
 
-Detach tabs from whatever group they currently belong to.
-
 - **Required permissions:** `tabs`, `tabGroups`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -3158,8 +2944,6 @@ Detach tabs from whatever group they currently belong to.
 ```
 
 ### `update_tab_group`
-
-Rename, recolor, or collapse/expand a tab group.
 
 - **Required permissions:** `tabGroups`
 - **Surface bundles:** pilot, pilot+privileged
@@ -3202,8 +2986,6 @@ Rename, recolor, or collapse/expand a tab group.
 
 ### `download_url`
 
-Download a file from a URL into the user's default downloads folder. Returns { ok, download_id, final_filename }. Use save_as=true to surface the Save dialog (good for ambiguous filenames).
-
 - **Required permissions:** `downloads`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -3242,8 +3024,6 @@ Download a file from a URL into the user's default downloads folder. Returns { o
 
 ### `cancel_download`
 
-Cancel an in-progress download by its download_id.
-
 - **Required permissions:** `downloads`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -3264,8 +3044,6 @@ Cancel an in-progress download by its download_id.
 ```
 
 ### `remember_for_domain`
-
-Remember something about a domain so it shows up in `domain_memo` context on every future visit. Use for site-specific lessons: "the PO submit button is the third primary", "DOB format is MM/DD/YYYY here", "this site requires SSO via Okta". Notes are free-form prose; hints are structured key/value pairs you can look up by name. Memos on a parent domain (e.g., atlassian.net) automatically apply to subdomains. Returns the updated memo so you can see what is remembered now.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
@@ -3302,8 +3080,6 @@ Remember something about a domain so it shows up in `domain_memo` context on eve
 
 ### `restore_recently_closed`
 
-Restore a recently-closed tab or window. Pass `session_id` from list_recently_closed, or omit to restore the most recent.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -3323,8 +3099,6 @@ Restore a recently-closed tab or window. Pass `session_id` from list_recently_cl
 
 ### `chrome_save_page_as_mhtml`
 
-Snapshot a tab as a self-contained MHTML archive (HTML + every resource inlined). Returns base64 MHTML data. Use for: archival, sharing a frozen page, feeding the agent a stable snapshot it can reanalyze later.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -3343,8 +3117,6 @@ Snapshot a tab as a self-contained MHTML archive (HTML + every resource inlined)
 ```
 
 ### `webmcp_call_page_tool`
-
-Invoke a tool registered by the active page via `navigator.modelContext`. Pass the tool name and an arguments object (must match the page's declared input schema). Returns the page tool's result.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -3368,8 +3140,6 @@ Invoke a tool registered by the active page via `navigator.modelContext`. Pass t
 ```
 
 ### `tasks`
-
-Manage the agent's own tasklist for the current conversation. Actions: 'add' (one via `title` or many via `items`), 'list' (read current tasks), 'set_status' (`id` + `status`), 'update' (`id` + `title` and/or `note`; pass note=null to clear), 'remove' (`id`), 'reorder' (`ids` in desired order), 'clear_completed' (drop done + skipped), 'clear_all'. Statuses: pending, in_progress, done, blocked, skipped. The list and any user edits to it are surfaced to you in `task_list` context on every turn — set statuses as you work so the user can see live progress.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
@@ -3469,8 +3239,6 @@ Manage the agent's own tasklist for the current conversation. Actions: 'add' (on
 
 ### `user_todos`
 
-Assign tasks TO THE USER for the current conversation. The user sees them in a dedicated panel and checks them off; you'll see their state in `user_todos` context on every turn. Actions: 'add' (`title` + optional `context` for why + optional `due` hint; fires a Chrome notification unless `silent:true`), 'list', 'update' (`id` + `title`/`context`/`due`; pass null to clear), 'remove' (`id`), 'mark_done' (`id`; `done:false` un-checks), 'clear_done' (purge completed). Use this to delegate work back to the user — e.g. 'forward the email I just drafted', 'pick a date for the meeting'.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -3536,8 +3304,6 @@ Assign tasks TO THE USER for the current conversation. The user sees them in a d
 
 ### `parallel_for_each_tab`
 
-Fan the same prompt out across N existing tabs (max 8) and collect the results. Each sub-run gets its own conversation pinned to a specific tab; results come back per-tab once all sub-runs finish (or time out — Promise.allSettled, one tab failing doesn't kill the others). Args: { tab_ids: number[], sub_prompt: string, agent_id?: string, timeout_ms?: number, merge_strategy?: 'per_tab' | 'concat' | 'json_array' }. Returns merged results in the chosen shape. Use the `list_open_tabs` tool first to discover tab ids. The sub-runs inherit the parent run's permission mode — keep them in 'act' mode for unattended fan-out, but be cautious: each sub-run is a real LLM call and bills accordingly.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -3587,8 +3353,6 @@ Fan the same prompt out across N existing tabs (max 8) and collect the results. 
 ```
 
 ### `chrome_record_gif`
-
-Record browser actions and export as an animated GIF. Actions: 'start_recording', 'stop_recording', 'export' (generates and either downloads or drops onto a page element), 'clear' (discard frames). Take a screenshot right after start and right before stop to capture clean first/last frames. 'export' returns {file_id, file_url} when not dropping. Drop target accepts ref (preferred) or coordinate.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
@@ -3664,8 +3428,6 @@ Record browser actions and export as an animated GIF. Actions: 'start_recording'
 
 ### `chrome_record_tab_video`
 
-Record video of a tab via chrome.tabCapture + MediaRecorder and upload to cld_files. Args: duration_ms (default 5000, max 60000), audio (default false), tab_id? (defaults to assigned tab), filename?. Returns { ok, file_id, file_url, mime_type, duration_ms, size_bytes }. Requires `tabCapture` optional permission — when missing returns ok:false with a remediation hint pointing the user to Settings → Advanced → Tab video capture.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -3696,8 +3458,6 @@ Record video of a tab via chrome.tabCapture + MediaRecorder and upload to cld_fi
 ```
 
 ### `record_demo`
-
-Record a user demonstration that can later be replayed by the agent. Actions: 'start' (begin recording on a tab; clicks, typed text, submits, navigations, and scrolls are captured automatically as the user demonstrates), 'stop' (save the recording with a name + parameter declarations; sensitive fields like passwords are auto-parameterised), 'discard' (throw away the in-flight recording without saving), 'status' (read; report whether a recording is active and how many steps have been captured). Coach the user: ask them to walk through the workflow, then call stop when they say they're done. Saved demos are replayed via `replay_demo`.
 
 - **Required permissions:** `tabs`, `activeTab`, `scripting`, `storage`, `webNavigation`
 - **Surface bundles:** pilot, pilot+privileged
@@ -3804,8 +3564,6 @@ Record a user demonstration that can later be replayed by the agent. Actions: 's
 
 ### `delete_demo`
 
-Delete a saved demo by id. Cannot be undone.
-
 - **Required permissions:** `storage`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -3827,8 +3585,6 @@ Delete a saved demo by id. Cannot be undone.
 ```
 
 ### `save_guidance_note`
-
-Save a domain-scoped note for the user (or for yourself on the next visit). The note auto-surfaces in chat context whenever the user opens a tab on this domain. Use for site-specific lessons that don't fit in `remember_for_domain`'s structured hints — full prose explanations, workflow hints, gotchas.
 
 - **Required permissions:** `storage`
 - **Surface bundles:** pilot, pilot+privileged
@@ -3863,8 +3619,6 @@ Save a domain-scoped note for the user (or for yourself on the next visit). The 
 
 ### `delete_guidance_item`
 
-Delete a saved guidance item by id. Cannot be undone. For demo references, this only removes the guidance index entry — the underlying demo lives in its own storage and must be deleted via `delete_demo`.
-
 - **Required permissions:** `storage`
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -3886,8 +3640,6 @@ Delete a saved guidance item by id. Cannot be undone. For demo references, this 
 ```
 
 ### `get_clipboard`
-
-Read the current contents of the system clipboard. Inverse of set_clipboard. Use to consume whatever the user just copied (URL, snippet of text, etc.). Requires the 'clipboardRead' optional permission. The user may need to click on the active page first if the browser refuses for lack-of-focus — when that happens, the result includes a clear `reason` and the agent can ask the user to click the page and try again.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot, pilot+privileged
@@ -3914,8 +3666,6 @@ Read the current contents of the system clipboard. Inverse of set_clipboard. Use
 ```
 
 ### `computer`
-
-Mouse, keyboard, and screenshot interactions. Prefer 'ref' over 'coordinate' when targeting elements; coordinates survive poorly across scrolls and layout changes. The 'screenshot' action persists the image to cloud and returns {file_id, file_url, width, height, mime_type} — use that file_id with upload_file or drop_file later. Use wait_for for synchronization, NOT a fixed sleep.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
@@ -4003,8 +3753,6 @@ Mouse, keyboard, and screenshot interactions. Prefer 'ref' over 'coordinate' whe
 
 ### `form_input`
 
-Set the value of a form element by reference. Use string for text inputs, boolean for checkboxes/radios, value or visible label for selects. The handler dispatches on element type — you don't need to specify it.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -4038,8 +3786,6 @@ Set the value of a form element by reference. Use string for text inputs, boolea
 
 ### `navigate`
 
-Navigate a tab to a URL, or move through history with 'back'/'forward'. Protocol defaults to https:// if omitted. After navigating, refs from prior read_page calls are invalidated — call read_page again before referencing elements.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -4068,8 +3814,6 @@ Navigate a tab to a URL, or move through history with 'back'/'forward'. Protocol
 ```
 
 ### `tabs`
-
-Manage browser tabs. Actions: 'list' (all tabs in current window), 'create' (opens new tab; pass url to open at a URL), 'close', 'switch' (brings tab to foreground), 'reload', 'active' (returns the currently active tab — call when you don't know your tab_id), 'info' (full info for a specific tab_id), 'pin' (toggle pin via `on`), 'mute' (toggle mute via `on`), 'duplicate', 'move' (to `index` and optionally `window_id`), 'zoom' (set `zoom_factor`, e.g. 1.5 for 150%). tab_id required for close/switch/reload/info/pin/mute/duplicate/move/zoom.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
@@ -4125,8 +3869,6 @@ Manage browser tabs. Actions: 'list' (all tabs in current window), 'create' (ope
 
 ### `downloads`
 
-Manage file downloads. Actions: 'list' (recent downloads with id/filename/url/state/bytes), 'cancel' (abort a pending download), 'confirm' (no-op; Chrome auto-completes downloads), 'download_url' (trigger a download from a URL). download_id required for cancel/confirm; url required for download_url.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -4163,8 +3905,6 @@ Manage file downloads. Actions: 'list' (recent downloads with id/filename/url/st
 
 ### `clipboard`
 
-Read from or write to the system clipboard. Actions: 'read' (returns current clipboard text), 'write' (sets clipboard text — pass `text`). Useful for 'copy this for the user' and 'paste what I just copied' workflows.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -4192,8 +3932,6 @@ Read from or write to the system clipboard. Actions: 'read' (returns current cli
 ```
 
 ### `upload_file`
-
-Upload one or more files to a <input type='file'> element by reference. Pass file_ids — these are MediaRef IDs (e.g. from a previous /files/upload, or from computer.action=screenshot). The handler resolves each file_id to bytes and sets the input. Do NOT click file inputs — that opens a native picker the agent cannot see. For drag-and-drop targets, use drop_file instead.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
@@ -4228,8 +3966,6 @@ Upload one or more files to a <input type='file'> element by reference. Pass fil
 ```
 
 ### `drop_file`
-
-Synthesize a drag-and-drop of a single file onto a target element or coordinate. Use for drop zones that aren't backed by <input type='file'>. Provide ref OR coordinate. file_id is a MediaRef (e.g. from a prior screenshot or upload).
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
@@ -4270,8 +4006,6 @@ Synthesize a drag-and-drop of a single file onto a target element or coordinate.
 
 ### `chrome_webmcp`
 
-Discover and invoke tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). Actions: 'check' (probe API + count tools), 'list' (enumerate page-registered tools), 'call' (invoke; pass `tool_name` and `arguments`). Admin-only experimental capability.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -4301,8 +4035,6 @@ Discover and invoke tools that pages have registered via `navigator.modelContext
 ```
 
 ### `tab_groups`
-
-Manage tab groups. Actions: 'list' (returns all groups across windows), 'create' (groups `tab_ids` together; optional `title`/`color`), 'add' (puts more `tab_ids` into existing `group_id`), 'remove' (ungroups `tab_ids`), 'update' (rename/recolor/collapse `group_id`).
 
 - **Required permissions:** `tabs`, `tabGroups`
 - **Surface bundles:** pilot, pilot+privileged
@@ -4361,8 +4093,6 @@ Manage tab groups. Actions: 'list' (returns all groups across windows), 'create'
 
 ### `chrome_recently_closed`
 
-Recently-closed tabs and windows. Actions: 'list' (returns sessions with id/url/title/lastModified), 'restore' (reopens; `session_id` optional — defaults to the most recently closed).
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -4392,8 +4122,6 @@ Recently-closed tabs and windows. Actions: 'list' (returns sessions with id/url/
 ## Tier: ask-user (3)
 
 ### `user`
-
-Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no — pass question), 'choice' (single pick — pass question + options[]), 'choice_many' (multi pick — pass question + options[]), 'text' (freeform answer — pass question), 'secret' (masked input for passwords/MFA/API keys — pass question), 'notify' (display a message and optionally collect a single action — pass message; optional actions[] and level). Options accept BOTH bare strings ('Yes', 'No') AND rich objects `{label, description?, preview?}` — preview renders as a code/markdown block beside the focused option for single-select. Optional `header` (≤12 chars) shows as a chip. Optional `context` shows a one-line 'why' on ask types. The UI ALWAYS appends a freeform 'Other' escape to every choice/choice_many/confirm — NEVER add your own 'Other'/'None'/'Something else' option; list only the substantive choices. Optional `timeout_seconds` (1..900) auto-resolves with timed_out:true. Optional `timeout_seconds` (1..900) auto-resolves the call with timed_out:true if the user doesn't respond. **Batched questions**: pass `{questions: [SingleQuestion, …]}` (1–4) to ask multiple in one call — renders as a sequence of cards, returns `{answers: Envelope[], cancelled, timed_out}`. Single-question return: `{answer, selected, confirmed, action, freeform, additional_instructions, wrote_instead, cancelled, timed_out}` — unused fields are null/false. `additional_instructions` is an optional note the user attached alongside their answer (always honor it); `wrote_instead:true` means the user declined the structured question(s) and replied freeform in `freeform` — treat that as their answer and re-ask later only if you still need it. For full keyboard/mouse handoff (CAPTCHA, login), use request_user_takeover. For plan approval, use update_plan.
 
 - **Required permissions:** `notifications`
 - **Surface bundles:** pilot, pilot+privileged
@@ -4580,8 +4308,6 @@ Pause and talk to the user. Single tool, six modes via `type`: 'confirm' (yes/no
 
 ### `request_user_takeover`
 
-Hand keyboard/mouse control to the user so they can perform an action the agent cannot or should not (logging in, MFA, CAPTCHA, sensitive form filling, decisions only the user can make). The user types/clicks directly into the page; when they're done they signal completion in the UI. The agent should re-read the page after takeover ends to see what changed. Distinct from `user` (Q&A) — this is full page handoff.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
 
@@ -4601,6 +4327,11 @@ Hand keyboard/mouse control to the user so they can perform an action the agent 
     },
     "tab_id": {
       "type": "string"
+    },
+    "timeout_seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 900
     }
   },
   "required": [
@@ -4612,8 +4343,6 @@ Hand keyboard/mouse control to the user so they can perform an action the agent 
 ```
 
 ### `update_plan`
-
-Propose a step-by-step plan and wait for the user to approve, modify, or reject it. Use this BEFORE a multi-step action sequence so you align on intent up front. Returns { approved: true, note?: string } or { approved: false, note?: string } so you can adjust.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot, pilot+privileged
@@ -4668,11 +4397,9 @@ Propose a step-by-step plan and wait for the user to approve, modify, or reject 
 }
 ```
 
-## Tier: privileged (30)
+## Tier: privileged (31)
 
 ### `set_cookie`
-
-Write a cookie. Privileged because it can hijack a user session (CSRF / token-overwrite). Always prompts. Returns the set cookie or { ok:false, reason }.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot+privileged
@@ -4730,8 +4457,6 @@ Write a cookie. Privileged because it can hijack a user session (CSRF / token-ov
 
 ### `delete_cookie`
 
-Delete a cookie by url + name.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot+privileged
 
@@ -4759,8 +4484,6 @@ Delete a cookie by url + name.
 
 ### `cdp_attach`
 
-Attach a Chrome DevTools Protocol session to a tab (defaults to active tab). Required before any other cdp_* tool can run on that tab. Chrome will show a "is being debugged" banner while attached. The session auto-cleans up when the agent run ends; you can also call cdp_detach explicitly.
-
 - **Required permissions:** `activeTab`
 - **Surface bundles:** pilot+privileged
 
@@ -4780,8 +4503,6 @@ Attach a Chrome DevTools Protocol session to a tab (defaults to active tab). Req
 
 ### `cdp_detach`
 
-Close the CDP session on a tab (defaults to active tab). Removes the debug banner.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot+privileged
 
@@ -4800,8 +4521,6 @@ Close the CDP session on a tab (defaults to active tab). Removes the debug banne
 ```
 
 ### `cdp_full_page_screenshot`
-
-Capture the FULL scrollable page (beyond the viewport) — use instead of computer/take_screenshot for long-form pages. Auto-scales so the long edge fits the `profile`'s vision-model target (same profiles as take_screenshot). Uploads to cloud; returns { ok, media_type, format, width, height, image_base64, byte_length, capture_scale, profile, est_tokens, file_id, file_url }. Render/share file_url (durable); image_base64 feeds the vision model — pass media_type through verbatim, never stringify the object.
 
 - **Required permissions:** `activeTab`
 - **Surface bundles:** pilot+privileged
@@ -4862,8 +4581,6 @@ Capture the FULL scrollable page (beyond the viewport) — use instead of comput
 
 ### `cdp_a11y_tree`
 
-Dump the accessibility tree of the active tab via Accessibility.getFullAXTree. Each node has { role, name, value, description, properties, children }. Use INSTEAD of read_active_page when you want a clean semantic view of the page — it omits decorative DOM and surfaces aria-roles, button labels, form-field associations directly. Best for vision-free reasoning.
-
 - **Required permissions:** `activeTab`
 - **Surface bundles:** pilot+privileged
 
@@ -4888,8 +4605,6 @@ Dump the accessibility tree of the active tab via Accessibility.getFullAXTree. E
 ```
 
 ### `cdp_input_click_xy`
-
-Synthesize a real mouse click at viewport coordinates (x, y) via Input.dispatchMouseEvent. Bypasses event-handler shadowing, works through shadow DOM and cross-origin iframes (OOPIFs) — the most reliable click in existence. Use when click_element fails because the page intercepts synthetic clicks.
 
 - **Required permissions:** `activeTab`
 - **Surface bundles:** pilot+privileged
@@ -4934,8 +4649,6 @@ Synthesize a real mouse click at viewport coordinates (x, y) via Input.dispatchM
 
 ### `cdp_input_type`
 
-Type literal text into whatever element currently has focus, via Input.insertText. Fires beforeinput / input / compositionend events correctly so React-controlled inputs accept it. Use after focus_element + when type_into_element fails.
-
 - **Required permissions:** `activeTab`
 - **Surface bundles:** pilot+privileged
 
@@ -4960,8 +4673,6 @@ Type literal text into whatever element currently has focus, via Input.insertTex
 
 ### `cdp_network_capture_start`
 
-Begin capturing every Network event on a tab (default: active). After this, navigate or interact with the page; calls accumulate in a buffer. Use cdp_network_capture_drain to read them. Use cdp_network_capture_stop when finished.
-
 - **Required permissions:** `activeTab`
 - **Surface bundles:** pilot+privileged
 
@@ -4980,8 +4691,6 @@ Begin capturing every Network event on a tab (default: active). After this, navi
 ```
 
 ### `cdp_network_capture_drain`
-
-Drain captured Network events from a tab's buffer. Each entry has { request_id, url, method, status, mime_type, request_headers, response_headers, finished, failed, ts_ms }. Use cdp_network_get_body with a request_id to fetch a response body lazily.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot+privileged
@@ -5011,8 +4720,6 @@ Drain captured Network events from a tab's buffer. Each entry has { request_id, 
 
 ### `cdp_network_capture_stop`
 
-Stop capturing Network events on a tab and clear its buffer.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot+privileged
 
@@ -5031,8 +4738,6 @@ Stop capturing Network events on a tab and clear its buffer.
 ```
 
 ### `cdp_network_get_body`
-
-Fetch the response body for a captured request, by request_id (from cdp_network_capture_drain). Returns { body, base64_encoded }. Bodies are large so we don't buffer them eagerly.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot+privileged
@@ -5058,8 +4763,6 @@ Fetch the response body for a captured request, by request_id (from cdp_network_
 ```
 
 ### `cdp_print_pdf`
-
-Print a tab to PDF via Page.printToPDF. Returns base64 PDF data. Useful for archival, sharing, or feeding the PDF to a downstream model.
 
 - **Required permissions:** `activeTab`
 - **Surface bundles:** pilot+privileged
@@ -5087,8 +4790,6 @@ Print a tab to PDF via Page.printToPDF. Returns base64 PDF data. Useful for arch
 ```
 
 ### `cdp_emulate_device`
-
-Override viewport metrics + user agent on a tab. Use to view a page as iPhone Safari, Pixel Chrome, etc., without leaving the user's window. Reset by calling cdp_clear_emulation.
 
 - **Required permissions:** `activeTab`
 - **Surface bundles:** pilot+privileged
@@ -5132,8 +4833,6 @@ Override viewport metrics + user agent on a tab. Use to view a page as iPhone Sa
 
 ### `cdp_clear_emulation`
 
-Clear device + UA overrides on a tab.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot+privileged
 
@@ -5152,8 +4851,6 @@ Clear device + UA overrides on a tab.
 ```
 
 ### `read_console_messages`
-
-Read console messages from a tab. Auto-starts CDP console capture if not already running. Filter by level, text regex, or use errors_only=true. Returns { count, messages: [{ level, text, url, line, ts_ms }] }. Console capture stays on until cdp_detach or tab close.
 
 - **Required permissions:** `activeTab`
 - **Surface bundles:** pilot+privileged
@@ -5205,8 +4902,6 @@ Read console messages from a tab. Auto-starts CDP console capture if not already
 
 ### `read_network_requests`
 
-Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cross-domain navigation. Filter with url_pattern to keep output manageable. Response bodies are NOT included by default — use get_request_body to fetch a specific body. The buffer is per-tab and bounded; old entries fall off the back.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot+privileged
 
@@ -5247,8 +4942,6 @@ Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cro
 
 ### `get_request_body`
 
-Fetch the response body for a specific request seen by read_network_requests. Returns inline text. Pass request_id from a prior drain.
-
 - **Required permissions:** (none)
 - **Surface bundles:** pilot+privileged
 
@@ -5273,8 +4966,6 @@ Fetch the response body for a specific request seen by read_network_requests. Re
 ```
 
 ### `execute_javascript`
-
-Run arbitrary JavaScript on a tab. The `code` is wrapped in `async (arg) => { ... }` and executed; whatever it returns is serialized back. Use sparingly — prefer purpose-built tools (click_element, type_into_element, query_elements). This is the unbounded escape hatch when no other tool fits. ALWAYS prompts for approval, even in act-without-asking mode.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot+privileged
@@ -5306,8 +4997,6 @@ Run arbitrary JavaScript on a tab. The `code` is wrapped in `async (arg) => { ..
 
 ### `inject_stylesheet`
 
-Inject a CSS stylesheet into the active tab. Use to highlight elements visually for the user, hide noisy chrome, or apply temporary fixes. Privileged because it can mask UI elements. Returns { ok, id? }.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot+privileged
 
@@ -5337,8 +5026,6 @@ Inject a CSS stylesheet into the active tab. Use to highlight elements visually 
 
 ### `remove_stylesheet`
 
-Remove a previously-injected stylesheet from a tab. Pass the same CSS string used in inject_stylesheet.
-
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot+privileged
 
@@ -5363,8 +5050,6 @@ Remove a previously-injected stylesheet from a tab. Pass the same CSS string use
 ```
 
 ### `set_extension_storage`
-
-Persist a value under the agent's namespaced storage so it survives across runs. Use for "remember that I prefer X", scratchpads, or progress markers between conversations. Privileged because agents shouldn't silently write user data without acknowledgement.
 
 - **Required permissions:** `storage`
 - **Surface bundles:** pilot+privileged
@@ -5395,9 +5080,37 @@ Persist a value under the agent's namespaced storage so it survives across runs.
 }
 ```
 
-### `desktop_run_command`
+### `delete_extension_storage`
 
-Invoke a command on the matrx-local desktop bridge. Available commands depend on what matrx-local exposes (file ops, system info, window control, etc.). Returns { ok, data?, error? }. Fails fast with reason="desktop unavailable" if the bridge isn't connected — check via the desktop:availability channel before calling.
+- **Required permissions:** (none)
+- **Surface bundles:** pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "area": {
+      "type": "string",
+      "enum": [
+        "local",
+        "session"
+      ],
+      "default": "local"
+    }
+  },
+  "required": [
+    "key"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `desktop_run_command`
 
 - **Required permissions:** `nativeMessaging`
 - **Surface bundles:** pilot+privileged
@@ -5424,8 +5137,6 @@ Invoke a command on the matrx-local desktop bridge. Available commands depend on
 ```
 
 ### `replay_demo`
-
-Replay a saved demo against a tab. Always requires confirmation — the demo can click, type, submit, and navigate. Pass `dry_run: true` to test selector resolution without taking action. Pass `params` to substitute placeholders (sensitive fields like passwords MUST be supplied this way; the agent should ask the user via `user(type='secret', ...)` first). Returns per-step results with `resolved_via` showing which selector strategy hit.
 
 - **Required permissions:** `tabs`, `activeTab`, `scripting`, `storage`
 - **Surface bundles:** pilot+privileged
@@ -5460,8 +5171,6 @@ Replay a saved demo against a tab. Always requires confirmation — the demo can
 ```
 
 ### `chrome_cookies`
-
-Manage cookies for any domain. Actions: 'get' (read; pass `name` for a specific cookie or omit for all matching), 'set' (write; requires `name` + `value`; optional `domain`/`path`/`expires_in_seconds`/`same_site`/`http_only`/`secure`), 'delete' (requires `name`). Always pass `url` (or `domain` for 'get'). Admin-only.
 
 - **Required permissions:** (none)
 - **Surface bundles:** pilot+privileged
@@ -5522,8 +5231,6 @@ Manage cookies for any domain. Actions: 'get' (read; pass `name` for a specific 
 
 ### `storage`
 
-Persistent agent-namespaced storage that survives across runs. Distinct from canonical `memory` which is session-scoped (cleared on SW restart). Actions: 'get' (returns value at key), 'set' (writes any JSON-serializable value), 'list' (returns all keys). Use for user preferences, scratchpads, progress markers between conversations.
-
 - **Required permissions:** `storage`
 - **Surface bundles:** pilot+privileged
 
@@ -5536,7 +5243,8 @@ Persistent agent-namespaced storage that survives across runs. Distinct from can
       "enum": [
         "get",
         "set",
-        "list"
+        "list",
+        "delete"
       ]
     },
     "key": {
@@ -5553,8 +5261,6 @@ Persistent agent-namespaced storage that survives across runs. Distinct from can
 ```
 
 ### `stylesheet`
-
-Inject or remove a CSS stylesheet on the active (or specified) tab. Actions: 'inject' (apply `css`; pass `persistent: true` to survive navigations), 'remove' (drop a previously-injected `css` block — must match exactly).
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot+privileged
@@ -5592,8 +5298,6 @@ Inject or remove a CSS stylesheet on the active (or specified) tab. Actions: 'in
 
 ### `cdp_session`
 
-Manage Chrome DevTools Protocol attachments. Actions: 'attach' (begin debugger session on `tab_id` — required before any other cdp_* tool), 'detach' (end session), 'list' (which tabs are currently attached). Admin + `debugger` permission.
-
 - **Required permissions:** `activeTab`
 - **Surface bundles:** pilot+privileged
 
@@ -5622,8 +5326,6 @@ Manage Chrome DevTools Protocol attachments. Actions: 'attach' (begin debugger s
 ```
 
 ### `cdp_emulate`
-
-Override viewport / device metrics on an attached CDP tab for responsive testing. Actions: 'set' (apply `width`+`height`+optional `device_scale_factor`/`mobile`/`user_agent`), 'clear' (revert overrides). Tab must be attached via cdp_session first.
 
 - **Required permissions:** `activeTab`
 - **Surface bundles:** pilot+privileged
@@ -5670,8 +5372,6 @@ Override viewport / device metrics on an attached CDP tab for responsive testing
 ```
 
 ### `evaluate_javascript`
-
-Evaluate JavaScript in the page context. Returns the value of the last expression — do NOT use 'return' at top level. Prefer DOM tools (read_page, find, computer, form_input) when possible — JS exec is XSS-equivalent and bypasses our safety nets.
 
 - **Required permissions:** `activeTab`, `scripting`
 - **Surface bundles:** pilot+privileged

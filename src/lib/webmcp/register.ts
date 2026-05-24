@@ -24,6 +24,7 @@
  * therefore can't crosstalk.
  */
 
+import { ensureToolDescriptions } from '@/lib/tools/descriptions';
 import { listAllHandlers } from '@/lib/tools/registry';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 
@@ -33,13 +34,19 @@ interface ToolSpec {
   inputSchema: unknown;
 }
 
-export function buildRegistrablePilotTools(opts: { isAdmin?: boolean } = {}): ToolSpec[] {
+export async function buildRegistrablePilotTools(
+  opts: { isAdmin?: boolean } = {},
+): Promise<ToolSpec[]> {
+  // Descriptions live ONLY in the DB (Rule 4) — read them live. WebMCP's
+  // registerTool requires a description string, so fall back to the tool name
+  // when the live lookup is unavailable.
+  const descs = await ensureToolDescriptions();
   return listAllHandlers()
     .filter((h) => h.tier === 'read' || h.tier === 'action')
     .filter((h) => (opts.isAdmin ? true : !h.admin_only))
     .map((h) => ({
       name: h.name,
-      description: h.description,
+      description: descs.get(h.name) ?? h.name,
       inputSchema: zodToJsonSchema(h.argsSchema, {
         $refStrategy: 'none',
         target: 'jsonSchema7',
@@ -72,7 +79,7 @@ export async function registerToolsOnActiveTab(opts: {
     tabId = tab.id;
   }
 
-  const tools = buildRegistrablePilotTools({ isAdmin: opts.isAdmin });
+  const tools = await buildRegistrablePilotTools({ isAdmin: opts.isAdmin });
 
   try {
     const [first] = await chrome.scripting.executeScript({

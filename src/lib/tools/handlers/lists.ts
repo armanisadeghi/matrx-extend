@@ -90,8 +90,6 @@ export const tasks: ToolHandler<TasksArgs, unknown> = {
   name: 'tasks',
   tier: 'action',
   tierFor: (args): ToolTier => (TASKS_READ_ACTIONS.has(args.action) ? 'read' : 'action'),
-  description:
-    "Manage the agent's own tasklist for the current conversation. Actions: 'add' (one via `title` or many via `items`), 'list' (read current tasks), 'set_status' (`id` + `status`), 'update' (`id` + `title` and/or `note`; pass note=null to clear), 'remove' (`id`), 'reorder' (`ids` in desired order), 'clear_completed' (drop done + skipped), 'clear_all'. Statuses: pending, in_progress, done, blocked, skipped. The list and any user edits to it are surfaced to you in `task_list` context on every turn — set statuses as you work so the user can see live progress.",
   argsSchema: TasksArgs,
   run: async (args, ctx) => {
     const conv = ctx.conversationId;
@@ -189,8 +187,6 @@ export const user_todos: ToolHandler<UserTodosArgs, unknown> = {
   name: 'user_todos',
   tier: 'action',
   tierFor: (args): ToolTier => (USER_TODOS_READ_ACTIONS.has(args.action) ? 'read' : 'action'),
-  description:
-    "Assign tasks TO THE USER for the current conversation. The user sees them in a dedicated panel and checks them off; you'll see their state in `user_todos` context on every turn. Actions: 'add' (`title` + optional `context` for why + optional `due` hint; fires a Chrome notification unless `silent:true`), 'list', 'update' (`id` + `title`/`context`/`due`; pass null to clear), 'remove' (`id`), 'mark_done' (`id`; `done:false` un-checks), 'clear_done' (purge completed). Use this to delegate work back to the user — e.g. 'forward the email I just drafted', 'pick a date for the meeting'.",
   argsSchema: UserTodosArgs,
   run: async (args, ctx) => {
     const conv = ctx.conversationId;

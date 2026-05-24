@@ -1,9 +1,13 @@
 /**
- * Tool catalog → structured spec the agent server (or our DB) can read
- * verbatim. Each entry mirrors what's needed to register a tool with the
- * Matrx tools backend:
+ * Tool catalog → structured spec describing the argument contract of every
+ * client tool. Each entry mirrors the structural shape the drift check diffs
+ * against the DB:
  *
- *   { name, description, tier, input_schema, required_permissions, surface_bundles }
+ *   { name, tier, input_schema, required_permissions, surface_bundles }
+ *
+ * Descriptions are intentionally absent — they are not code; they live ONLY in
+ * `public.tl_def.description` and are read live for UI via
+ * `src/lib/tools/descriptions.ts` (Rule 4, docs/TOOL_SOURCE_OF_TRUTH.md).
  *
  * `input_schema` is a strict JSON Schema produced from the Zod definition.
  *
@@ -22,7 +26,6 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
 
 export interface ToolCatalogEntry {
   name: string;
-  description: string;
   tier: ToolTier;
   /** Discovery category this tool belongs to. */
   category: ToolCategory;
@@ -283,7 +286,6 @@ function bundlesForTier(tier: ToolTier): ToolCatalogEntry['surface_bundles'] {
 export function buildToolCatalog(): ToolCatalogEntry[] {
   return listAllHandlers().map((h) => ({
     name: h.name,
-    description: h.description,
     tier: h.tier,
     category: categoryOf(h.name),
     input_schema: zodToJsonSchema(h.argsSchema, {

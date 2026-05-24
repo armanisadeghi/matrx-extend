@@ -38,6 +38,7 @@ import {
 } from '@/lib/permissions/optional';
 import { recordToolEvent } from '@/lib/recording/state';
 import { localFromCanonical, resolveToolName, suggestSimilar } from '@/lib/tools/aliases';
+import { getToolDescription, primeToolDescriptions } from '@/lib/tools/descriptions';
 import { allToolNames, lookup as lookupTool } from '@/lib/tools/registry';
 import { getPilotSessionSnapshot } from '@/state/pilot';
 import type {
@@ -100,6 +101,11 @@ export function startToolDispatcher(opts: DispatchOptions): void {
   if (started) return;
   started = true;
   log.info('sw', 'tool dispatcher started');
+
+  // Warm the live tool-description cache (read from the DB; see
+  // src/lib/tools/descriptions.ts) so the approval card has a description ready
+  // by the first confirm. Best-effort — never blocks dispatch.
+  primeToolDescriptions();
 
   // Cache run metadata when the stream opens.
   on<
@@ -557,7 +563,9 @@ function requestConfirmation(
       callId: ctx.callId,
       conversationId: ctx.conversationId,
       toolName: handler.name,
-      description: handler.description,
+      // Live from the DB (tl_def), never hardcoded — undefined until the cache
+      // warms, in which case the card falls back to name + args. (Rule 4.)
+      description: getToolDescription(handler.name),
       args,
       tier: handler.tier,
     };

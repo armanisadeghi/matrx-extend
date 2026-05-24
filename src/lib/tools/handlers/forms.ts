@@ -35,8 +35,6 @@ type FormFieldsArgs = z.infer<typeof FormFieldsArgs>;
 export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
   name: 'get_form_fields',
   tier: 'read',
-  description:
-    'Discover forms on the active tab. For each form, returns id, action, method, and a list of fields: { name, type, value, label, required, placeholder, selector }. Use this BEFORE typing to find the right selector and label so you fill the right field.',
   argsSchema: FormFieldsArgs,
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
@@ -181,8 +179,6 @@ type SelectDropdownArgs = z.infer<typeof SelectDropdownArgs>;
 export const select_dropdown_option: ToolHandler<SelectDropdownArgs, unknown> = {
   name: 'select_dropdown_option',
   tier: 'action',
-  description:
-    "Choose an option in a <select> element. Pass exactly ONE of: value (the option's value attr), label (the visible text), or index (0-based). Dispatches change + input events for framework apps.",
   argsSchema: SelectDropdownArgs,
   run: async (args, ctx) => {
     const sel = resolveRef(args);
@@ -245,8 +241,6 @@ type SetCheckboxArgs = z.infer<typeof SetCheckboxArgs>;
 export const set_checkbox: ToolHandler<SetCheckboxArgs, unknown> = {
   name: 'set_checkbox',
   tier: 'action',
-  description:
-    'Set a checkbox to checked or unchecked, dispatching click + change events so frameworks see the toggle. Use for both <input type="checkbox"> and ARIA-styled toggles where role="checkbox".',
   argsSchema: SetCheckboxArgs,
   run: async (args, ctx) => {
     const sel = resolveRef(args);
@@ -291,8 +285,6 @@ type SetRadioArgs = z.infer<typeof SetRadioArgs>;
 export const set_radio: ToolHandler<SetRadioArgs, unknown> = {
   name: 'set_radio',
   tier: 'action',
-  description:
-    'Pick a radio button from a group. Pass selector pointing at the group container OR any radio input in it, then exactly ONE of value/label/index.',
   argsSchema: SetRadioArgs,
   run: async (args, ctx) => {
     const sel = resolveRef(args);
@@ -360,8 +352,6 @@ type SubmitFormArgs = z.infer<typeof SubmitFormArgs>;
 export const submit_form: ToolHandler<SubmitFormArgs, unknown> = {
   name: 'submit_form',
   tier: 'action',
-  description:
-    "Submit a form. By default the tool clicks the form's primary submit button (so HTML5 validation + framework handlers run). Set via_button=false to fall back to HTMLFormElement.submit() — skips validation but works for form elements that lack a button.",
   argsSchema: SubmitFormArgs,
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
@@ -426,8 +416,6 @@ type FileUploadArgs = z.infer<typeof FileUploadArgs>;
 export const file_upload: ToolHandler<FileUploadArgs, unknown> = {
   name: 'file_upload',
   tier: 'action',
-  description:
-    'Attach files to an `<input type="file">` element by selector or ref. IMPORTANT: clicking a file input opens a native dialog the agent cannot see — use this tool instead. Each file in `files` is { name, mime, base64 }. Dispatches `change` so frameworks see the upload. Returns { ok, file_count, names }.',
   argsSchema: FileUploadArgs,
   run: async (args, ctx) => {
     const sel = resolveRef(args);

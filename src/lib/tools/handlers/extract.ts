@@ -66,8 +66,6 @@ interface ExtractTableResult {
 export const extract_table: ToolHandler<ExtractTableArgs, ExtractTableResult> = {
   name: 'extract_table',
   tier: 'read',
-  description:
-    "Extract a table on the active page as structured JSON. Handles native <table> with thead/tbody, rowspan/colspan, multi-row headers, and ARIA role=\"table\" / role=\"grid\" patterns. Provide `ref` (preferred) from a prior read_page, or `selector` (any CSS), or omit both to pick the largest visible table. Returns { columns: [{ index, path: [headerLevels...] }], rows: [{ cells: [{ value, is_header, colspan?, rowspan? }] }], merged_cells, row_count, column_count }. Use this instead of cell-by-cell scraping — one call versus dozens.",
   argsSchema: ExtractTableArgs,
   run: async (args, ctx) => {
     const tab = await getAssignedTab(ctx);
@@ -487,8 +485,6 @@ interface ScreenshotRegionResult {
 export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegionResult> = {
   name: 'screenshot_region',
   tier: 'read',
-  description:
-    "Capture a bounded region of the active tab's viewport — 5-20× cheaper than a full screenshot for focused vision calls. Target with `ref` (preferred, from read_page), `selector`, or explicit viewport `rect:{x,y,w,h}`; off-screen targets are scrolled into view, optional `padding` in CSS px. Uploads to cloud; returns { ok, media_type, format, width, height, source_rect, image_base64, byte_length, file_id, file_url }. Render/share file_url (durable); image_base64 feeds the vision model.",
   argsSchema: ScreenshotRegionArgs,
   run: async (args, ctx) => {
     const tab = await getAssignedTab(ctx);

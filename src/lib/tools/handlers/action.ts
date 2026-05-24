@@ -18,8 +18,6 @@ type NavigateArgs = z.infer<typeof NavigateArgs>;
 export const navigate_active_tab: ToolHandler<NavigateArgs, unknown> = {
   name: 'navigate_active_tab',
   tier: 'action',
-  description:
-    'Navigate the active tab to a URL. Waits for status=complete before resolving (timeout 30s). Returns { url, title, status }.',
   argsSchema: NavigateArgs,
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
@@ -60,8 +58,6 @@ type ClickArgs = z.infer<typeof ClickArgs>;
 export const click_element: ToolHandler<ClickArgs, unknown> = {
   name: 'click_element',
   tier: 'action',
-  description:
-    'Click an element on the active tab. Pass `ref` from read_page (preferred — stable across DOM mutations) OR a CSS `selector`. When multiple match a selector, use `nth`. Returns { ok, tag, text } or { ok:false, reason }.',
   argsSchema: ClickArgs,
   run: async (args, ctx) => {
     const selector = resolveRef(args);
@@ -107,8 +103,6 @@ type TypeArgs = z.infer<typeof TypeArgs>;
 export const type_into_element: ToolHandler<TypeArgs, unknown> = {
   name: 'type_into_element',
   tier: 'action',
-  description:
-    'Set the value of an input / textarea / contenteditable. Pass `ref` from read_page (preferred) OR a CSS `selector`. By default clears the field first and dispatches input + change events so React/Vue see the update.',
   argsSchema: TypeArgs,
   run: async (args, ctx) => {
     const selector = resolveRef(args);
@@ -167,8 +161,6 @@ type ScrollArgs = z.infer<typeof ScrollArgs>;
 export const scroll_page: ToolHandler<ScrollArgs, unknown> = {
   name: 'scroll_page',
   tier: 'action',
-  description:
-    'Scroll the active tab. direction="top"/"bottom" go to extremes; "into-view" scrolls a selector or `ref` (from read_page) into view; "by" scrolls by delta_y pixels.',
   argsSchema: ScrollArgs,
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
@@ -211,8 +203,6 @@ type WaitArgs = z.infer<typeof WaitArgs>;
 export const wait_for: ToolHandler<WaitArgs, unknown> = {
   name: 'wait_for',
   tier: 'action',
-  description:
-    'Wait for a condition on the active tab — either the page to fully load (ready_state=true) and/or a selector to appear. Returns { ok, waited_ms }.',
   argsSchema: WaitArgs,
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
@@ -265,7 +255,6 @@ type ClipboardArgs = z.infer<typeof ClipboardArgs>;
 export const set_clipboard: ToolHandler<ClipboardArgs, unknown> = {
   name: 'set_clipboard',
   tier: 'action',
-  description: 'Write text to the system clipboard.',
   argsSchema: ClipboardArgs,
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
@@ -301,8 +290,6 @@ type SleepArgs = z.infer<typeof SleepArgs>;
 export const sleep: ToolHandler<SleepArgs, unknown> = {
   name: 'sleep',
   tier: 'action',
-  description:
-    'Pause the agent for `ms` milliseconds (50ms–5min). Use when waiting for time-based things the page does on its own — a video to play before capturing transcript, an animation to finish, a debounced search to settle, a rate-limit window to clear. The server is non-blocking during the pause; only the agent waits. Prefer `wait_for` when you have a concrete condition (selector or readyState) — `sleep` is for unconditional waits. Returns { ok, slept_ms }.',
   argsSchema: SleepArgs,
   run: async (args) => {
     const start = Date.now();
