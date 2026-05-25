@@ -1,9 +1,10 @@
 /**
  * Tools that depend on optional manifest permissions.
  *
- * These are admin-only by default. The `debugger` family lives in
- * `cdp.ts`; this file holds:
- *   - cookies (read + write) — `cookies` permission
+ * Each is gated by its optional manifest permission (below). Cookies
+ * (get/set/delete) remain admin-only; MHTML capture and recently-closed
+ * are not. The `debugger` family lives in `cdp.ts`; this file holds:
+ *   - cookies (read + write) — `cookies` permission (admin-only)
  *   - page MHTML capture       — `pageCapture` permission
  *   - recently-closed tabs     — `sessions` permission
  *

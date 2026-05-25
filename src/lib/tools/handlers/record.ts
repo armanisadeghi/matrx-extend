@@ -1,5 +1,5 @@
 /**
- * Tier: ACTION (admin-only, requires `debugger` optional permission).
+ * Tier: ACTION (requires the `debugger` optional permission).
  *
  * `record_gif` records browser actions on a tab via CDP screencast and
  * exports an animated GIF, optionally dropping it onto a page element.

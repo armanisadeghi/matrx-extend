@@ -1,8 +1,12 @@
 /**
  * Tier: PRIVILEGED — Chrome DevTools Protocol tools.
  *
- * Admin-only by default. Require the `debugger` optional permission, which is
- * granted at runtime via the Settings → "Advanced agent capabilities" toggle.
+ * Require the `debugger` optional permission, granted at runtime via the
+ * Settings → "Advanced agent capabilities" toggle. The low-level attach /
+ * detach / emulate primitives stay admin-only; the advertised CDP tools
+ * (screenshot, a11y, network reads, input, perf, print) are gated only by
+ * the `debugger` permission — admin_only was removed to match tl_def (see
+ * the 2026-05 drift reconciliation).
  *
  * What CDP unlocks (the master key):
  *   - Full network body capture (every fetch URL + status + body).
@@ -635,7 +639,7 @@ export const read_console_messages: ToolHandler<ReadConsoleArgs, unknown> = {
   },
 };
 
-// ─── canonical wrappers for network reads (admin-gated for now) ──────────
+// ─── canonical wrappers for network reads (debugger permission required) ──
 //
 // These match the canonical schema names (`read_network_requests`,
 // `get_request_body`) but inherit our CDP-backed implementation. When a

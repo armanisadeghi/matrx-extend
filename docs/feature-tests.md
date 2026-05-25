@@ -330,7 +330,7 @@ Every entry follows this shape:
   element.
 - **Where to test:** Tools tab → `record_gif`.
 - **Prereq:** Settings → **Advanced agent capabilities** → toggle on
-  **DevTools Protocol** (the `debugger` permission). Admin-only.
+  **DevTools Protocol** (the `debugger` permission).
 - **Steps:**
   1. Open a page; run `record_gif` with `{ "action": "start_recording", "tabId": "<active tab id>" }`.
      Chrome shows the "is being debugged" banner.
@@ -565,7 +565,7 @@ Every entry follows this shape:
 ---
 
 ### record_tab_video / Tools - Recorder pane (TASK-003)
-- **What it does:** Records video (and optionally audio) of the active tab via `chrome.tabCapture` + MediaRecorder, uploads to `cld_files`, and shows the result in a recording list. Same offscreen-document pipeline as mic capture (TASK-002). Available as both a user UI (Tools tab - Recorder sub-tab) and an admin-only agent tool (`chrome_record_tab_video`).
+- **What it does:** Records video (and optionally audio) of the active tab via `chrome.tabCapture` + MediaRecorder, uploads to `cld_files`, and shows the result in a recording list. Same offscreen-document pipeline as mic capture (TASK-002). Available as both a user UI (Tools tab - Recorder sub-tab) and an agent tool (`chrome_record_tab_video`), gated by the `tabCapture` optional permission.
 - **Where to test:** Side panel - **Tools** tab - **Recorder** sub-tab. Also Tools - Catalog - search `record_tab_video` for the agent path.
 - **Prereq:** Settings - **Advanced agent capabilities** - toggle on **Tab video capture**. Chrome will prompt; accept. (The Recorder pane will request it for you on first use; toggling in Settings ahead of time avoids the prompt.)
 - **Steps (UI surface):**
@@ -577,7 +577,7 @@ Every entry follows this shape:
   6. Status flips to Uploading - then a row appears in the Recordings list with: tab title, capture timestamp, duration, size, mime type.
   7. Click **Open** on the row to view the video in a new tab via the cld_files URL. Click **file_id** to copy the canonical id for use in agent prompts.
 - **Steps (agent surface):**
-  1. Tools tab - Catalog - filter to admin / advanced - find `chrome_record_tab_video`.
+  1. Tools tab - Catalog - find `chrome_record_tab_video`.
   2. Hit Run with `{ "duration_ms": 5000, "audio": false }` (optional: `"source": "tab" | "display"`, `"tab_id"`). It's a single blocking call — it returns once the recording finishes (~5s here).
   3. Approve the action prompt (Action tier in Ask mode).
   4. Result includes `{ ok: true, file_id, file_url, mime_type, duration_ms, size_bytes }`. The capture also appears in the Tools-tab Recorder list (after a hydrate / reload).
@@ -589,7 +589,7 @@ Every entry follows this shape:
   - Trigger Stop early - the upload still produces a valid (shorter) WebM.
   - Recordings persist a maximum of 50 entries; older ones drop off.
   - Audio toggle on - the encoded WebM contains both tracks (mime type: `video/webm;codecs=vp9,opus` or fallback).
-  - The tool is `admin_only` - non-admin users don't see it advertised in chat (still visible in Tools tab when admin).
+  - The tool is gated by the `tabCapture` optional permission (not admin-only) - any user who grants the permission can use it.
 
 ### Screenshots tab (TASK-005)
 - **What it does:** Per-page screenshot history. Lists every screenshot ever taken of the active page (canonical URL match), regardless of whether the agent or the user triggered it. The two buttons at the bottom — **Visible** and **Full page** — both call the same `take_screenshot` handler the agent uses (with `mode: 'visible' | 'full_page'`), so user and agent captures share one persistence path (cld_files + `wbx_screenshot` index row).
@@ -610,7 +610,7 @@ Every entry follows this shape:
   - Restricted URLs (`chrome://`, PDF viewer): both buttons should error inline.
   - Same page hit via slightly different URL (http vs https, trailing slash, `www.`) - `normalizeUrl()` collapses them, so screenshots from any variant show on the canonical view.
   - Pages taller than 30 viewports: full-page capture stops at the cap and shows "Page exceeded the 30-screen tile cap; the bottom is cropped."
-  - position:fixed / position:sticky elements (toolbars, cookie banners) repeat on every tile in full-page mode - known limitation; use `cdp_full_page_screenshot` (admin + debugger perm) for a clean single-shot.
+  - position:fixed / position:sticky elements (toolbars, cookie banners) repeat on every tile in full-page mode - known limitation; use `cdp_full_page_screenshot` (debugger perm) for a clean single-shot.
   - Mid-capture navigation: if the user navigates while full-page is running, captures may end up on the new page. The handler restores the original scroll position even on error.
   - Network down: handler returns inline image with `file_id: null`; no row added - the gallery still shows previously-saved entries unchanged, and the warning surfaces.
 
