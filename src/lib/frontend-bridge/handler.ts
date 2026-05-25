@@ -24,6 +24,7 @@
 
 import { log } from '@/lib/debug/log';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
+import { readDefaultPermissionMode } from '@/lib/settings/persisted';
 import { ensureToolDescriptions } from '@/lib/tools/descriptions';
 import { handleWebmcpCall } from '@/lib/tools/dispatch';
 import { listAllHandlers } from '@/lib/tools/registry';
@@ -257,17 +258,3 @@ async function actionCallTool(
   };
 }
 
-// ─── Settings helper (mirrors bootstrap.ts) ──────────────────────────────────
-
-async function readDefaultPermissionMode(): Promise<'ask' | 'act'> {
-  try {
-    const r = await chrome.storage.local.get(['matrx.settings']);
-    const settings = r['matrx.settings'] as
-      | { defaultPermissionMode?: 'ask' | 'act' }
-      | undefined;
-    if (settings?.defaultPermissionMode === 'act') return 'act';
-  } catch {
-    /* fall through */
-  }
-  return 'ask';
-}

@@ -32,7 +32,17 @@ export type Block =
 const XML_OPEN_RE =
   /^<([a-zA-Z][a-zA-Z0-9_-]*)((?:\s+[a-zA-Z_][a-zA-Z0-9_:-]*\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))*)\s*(\/)?>/;
 
-export function parseBlocks(content: string): Block[] {
+/**
+ * @param knownXmlTags Lowercased set of tag names that should be treated as
+ *   custom `xml` blocks (e.g. `thinking`, `reasoning`). Any other angle-bracket
+ *   token — `<ctx>`, `<provider_specific_param>`, a literal `<T>` in prose — is
+ *   left in the markdown stream and rendered as plain text by react-markdown.
+ *   When omitted or empty, NO tag is intercepted. This is deliberate: an
+ *   un-allowlisted tag with no closer used to be swallowed to end-of-content
+ *   and shown as a collapsible "streaming…" box, which made no sense for what
+ *   was just literal text.
+ */
+export function parseBlocks(content: string, knownXmlTags?: ReadonlySet<string>): Block[] {
   const blocks: Block[] = [];
   let i = 0;
   let mdStart = 0;
@@ -119,7 +129,7 @@ export function parseBlocks(content: string): Block[] {
     }
 
     if (content[i] === '<' && /[a-zA-Z]/.test(content[i + 1] ?? '')) {
-      const xml = matchXml(content, i);
+      const xml = matchXml(content, i, knownXmlTags);
       if (xml) {
         flushMd(i);
         blocks.push(xml.block);
@@ -149,10 +159,17 @@ function findFenceClose(content: string, from: number): number {
   return -1;
 }
 
-function matchXml(content: string, start: number): { block: Block; end: number } | null {
+function matchXml(
+  content: string,
+  start: number,
+  knownXmlTags?: ReadonlySet<string>,
+): { block: Block; end: number } | null {
   const openMatch = XML_OPEN_RE.exec(content.slice(start));
   if (!openMatch || !openMatch[1]) return null;
   const tag = openMatch[1];
+  // Only intercept tags the renderer actually has a custom block for. Anything
+  // else stays literal text — see parseBlocks' knownXmlTags doc.
+  if (!knownXmlTags || !knownXmlTags.has(tag.toLowerCase())) return null;
   const attrsStr = openMatch[2] ?? '';
   const selfClosing = !!openMatch[4];
   const openLen = openMatch[0].length;

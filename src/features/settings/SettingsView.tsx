@@ -192,6 +192,7 @@ export function SettingsView() {
             <Card>
               <ControlRow
                 label="Deep clean"
+                hint="coming soon"
                 control={
                   <Switch
                     checked={settings.scrapeDeepClean}
@@ -201,7 +202,7 @@ export function SettingsView() {
               />
               <ControlRow
                 label="Auto-scrape on load"
-                hint="coming soon"
+                hint="capture page content in the background after each load"
                 control={
                   <Switch
                     checked={settings.scrapeAutoOnLoad}
@@ -211,7 +212,7 @@ export function SettingsView() {
               />
               <ControlRow
                 label="Auto-scrape mode"
-                hint="coming soon"
+                hint="Scroll & capture loads lazy content first (slower)"
                 control={
                   <PillSelect
                     value={settings.scrapeAutoMode}

@@ -371,6 +371,36 @@ Every entry follows this shape:
 
 ---
 
+### user / ask-user card — universal "Other" escape + freeform note
+- **What it does:** Every question the agent asks renders two guaranteed
+  affordances in `AgentAskUserCard`: (1) a freeform **"Other"** escape on every
+  non-text question (`confirm`→Yes/No/Other, `choice`/`choice_many`→extra "Other"
+  radio/checkbox, `notify`→Other button), and (2) an **"Anything else? (optional)"**
+  note on the final card that flows back to the model as `additional_instructions`.
+  `text`/`secret` are exempt from "Other" (they're already freeform). This holds
+  regardless of which ask tool produced the card — `user`, `update_plan`, and
+  `request_user_takeover` all get both.
+- **Where to test:** Chat — have the agent call `user`, `update_plan`, or run them
+  from the Tools tab.
+- **Steps:**
+  1. Run `user` `{"type":"confirm","question":"Proceed?"}` → card shows Yes / No /
+     Other…; clicking Other… reveals a textarea; type + send.
+  2. Run `user` `{"type":"choice","question":"Pick","options":["A","B"]}` → an
+     "Other" radio appears below A/B even though `allow_other` wasn't passed.
+  3. Run `update_plan` `{"steps":["x","y"]}` → Approve / Reject **and** an Other
+     radio; selecting Other + typing returns the typed text as `note`.
+  4. On any single (or last batched) card, type into "Anything else?" then submit →
+     the structured answer comes back with `additional_instructions` populated.
+- **Expected:** No question is a dead end — the user can always type a custom answer
+  and always attach a freeform note. `update_plan` returns
+  `{approved, note, additional_instructions}`; `request_user_takeover` returns
+  `{answer, cancelled, additional_instructions}`.
+- **Edge cases:** `text`/`secret` show no extra "Other" (already freeform). The note
+  rides only on the FINAL card of a batch, never intermediate ones. Empty note →
+  `additional_instructions: null`, not `""`.
+
+---
+
 ## UI surfaces
 
 ### Side panel — Tools tab
@@ -1014,6 +1044,130 @@ Every entry follows this shape:
   - Guests: the tab is hidden (signed-in only, like Notes).
 
 ---
+
+### Chat markdown — angle-bracket tags render as literal text
+- **What it does:** In the chat/reasoning markdown renderer, only registered
+  tags (`<thinking>`, `<reasoning>`, `<reflection>`) become collapsible blocks.
+  Any other angle-bracket token (`<ctx>`, `<provider_specific_param>`, a
+  literal `<T>`) renders as plain text instead of being swallowed into a
+  collapsible "streaming…" box.
+- **Where to test:** Chat tab — send a message that makes the agent emit prose
+  or inline JSON containing a bare tag, e.g. ask it to describe a schema with
+  `"max": <ctx>` or to mention `<provider_specific_param>`. Reasoning blocks
+  also exercise this.
+- **Steps:**
+  1. Chat tab → send: *"Show a JSON config where max_tokens is `<ctx>` and
+     mention a `<provider_specific_param>` placeholder."*
+  2. Watch the assistant message (and its Reasoning panel) render.
+- **Expected:** `<ctx>` and `<provider_specific_param>` appear as literal text.
+  No dashed-border box, no chevron, no uppercase "streaming…" label folding the
+  rest of the content into it.
+- **Edge cases worth poking:**
+  - `<thinking>`/`<reasoning>` still render as their custom shimmer blocks.
+  - A streaming `<reasoning>` with no closer yet still shows its in-flight
+    block (legit streaming case, unchanged).
+  - Backtick-quoted `` `<ctx>` `` still renders as inline code.
+
+---
+
+### Deep capture on first submit — fires even with a background capture running
+- **What it does:** The composer "Deep capture on first submit" toggle scrolls
+  the page top→bottom (loading lazy content) before the first message about a
+  page goes out. It used to be silently skipped when the background auto-capture
+  was still running (shared in-flight flag); now a user-requested deep capture
+  waits for that to clear and always runs.
+- **Where to test:** Chat composer → Customize chip (Sliders icon) → "Deep
+  capture on first submit" ON.
+- **Steps:**
+  1. Open a long, lazy-loading page (e.g. an infinite-scroll feed). Open the
+     side panel and *immediately* type a message and send (within ~1s of the
+     panel opening, so the background capture is still in flight).
+  2. Watch the page: it should scroll to the bottom and back before the message
+     sends. Debug tab → `scrape` logs show `pre-send deep capture`.
+- **Expected:** The scroll happens on the first submit regardless of background
+  capture timing. Subsequent submits on the same URL reuse the deep capture (no
+  re-scroll). Toggle OFF → no scroll.
+- **Edge cases worth poking:** Toggle off mid-session then send → no scroll.
+  Navigate to a new URL → next first-submit deep-captures again.
+
+### Default mode (ask/act) honored on WebMCP + frontend-bridge tool calls
+- **What it does:** Settings → Default mode = "Act without asking" now applies
+  to tool calls initiated via WebMCP and the frontend bridge (previously those
+  paths read the wrong storage key and always fell back to "ask").
+- **Where to test:** Settings → Default mode; then trigger a WebMCP or
+  frontend-bridge tool call.
+- **Steps:**
+  1. Settings → set Default mode to **Act without asking**.
+  2. Trigger an action-tier tool via a WebMCP page tool or the frontend bridge.
+- **Expected:** The action runs without an approval card (act mode). Set back to
+  "Ask before acting" → the approval card appears.
+- **Edge cases worth poking:** Privileged-tier tools still confirm even in act
+  mode (unchanged). First-run with no setting persisted → defaults to ask.
+
+### Auto-scrape mode — Scroll & capture
+- **What it does:** Settings → Scrape → "Auto-scrape mode" = *Scroll & capture*
+  makes the background on-load capture scroll top→bottom first (loading lazy
+  content) before capturing, instead of a fast visible-DOM grab.
+- **Where to test:** Settings → Scrape section ("Auto-scrape on load" ON +
+  "Auto-scrape mode" = Scroll & capture).
+- **Steps:**
+  1. Enable both. Load a lazy-loading page and wait ~1s after it finishes.
+  2. The page briefly scrolls to load content, then restores. Open Chat and ask
+     about content far down the page — it's present in context.
+- **Expected:** With "Capture" mode, only above-the-fold content is captured;
+  with "Scroll & capture", lazy content below the fold is included.
+- **Edge cases worth poking:** Switching mode mid-session takes effect on the
+  next capture (read fresh, no listener re-register). chrome:// pages skip.
+
+### Agenda — Cron trigger
+- **What it does:** Creating an agenda task with a Cron trigger now actually
+  fires. A 5-field cron expression (min hour dom month dow, evaluated in your
+  local timezone) computes `next_due_at`; the SW scanner picks it up and
+  advances to the next occurrence after each fire.
+- **Where to test:** Side panel → Agenda → new task → Trigger = Cron.
+- **Steps:**
+  1. New task, set Trigger = **Cron**. Enter an expression (default `0 9 * * *`).
+     The helper text shows the parsed "Next:" time; an invalid expression shows
+     red + disables Create.
+  2. Set the expression to fire in the next minute or two (e.g. current
+     minute+1, current hour) and create it.
+  3. Wait for the scanner (runs every minute) → the task fires (notification or
+     auto-run per Auth mode) and its "next" advances.
+- **Expected:** Valid cron computes a real next-fire; invalid blocks creation.
+  Recurring cron re-arms after firing.
+- **Edge cases worth poking:** `0 9 * * 1-5` (weekdays only) skips weekends;
+  `*/15 * * * *` every 15 min; impossible dates never fire (no crash). The
+  optional `tz` is not yet honored — evaluation is local time.
+
+### Agenda — On-match (context-match) trigger
+- **What it does:** A context-match task fires when your active tab matches a
+  hostname substring and/or a URL regex (not on a clock). Rate-limited to once
+  per 10 min per task while the match holds.
+- **Where to test:** Side panel → Agenda → new task → Trigger = On-match.
+- **Steps:**
+  1. New task, Trigger = **On-match**. Set "Hostname contains" (e.g.
+     `github.com`) and/or "URL matches (regex)" (e.g. `/pull/\\d+`). At least one
+     is required or Create is disabled.
+  2. Create it, then switch your active tab to a matching page.
+  3. Within ~1 min the scanner fires the task (notification or auto-run).
+- **Expected:** Fires on a matching active tab; does not re-fire within 10 min;
+  no condition set → cannot create.
+- **Edge cases worth poking:** Invalid regex never matches (no crash). Non-
+  matching tab → no fire. Multiple conditions AND together.
+
+### Voice language drives transcription (STT), not just speech (TTS)
+- **What it does:** The chat-header language picker now also passes its language
+  to speech-to-text, so dictating in a non-English language transcribes in that
+  language instead of defaulting to English.
+- **Where to test:** Chat composer mic button + the language picker in the chat
+  header.
+- **Steps:**
+  1. Set the language picker to a non-English language (e.g. Español / فارسی).
+  2. Click the mic and dictate a sentence in that language.
+- **Expected:** The transcript comes back in the selected language. Switch back
+  to English → English transcription.
+- **Edge cases worth poking:** Default language is `en`. The pre-TTS on-device
+  translation step (TASK-002d) is still pending — this entry covers STT only.
 
 ## Template (copy when adding a new entry)
 

@@ -42,6 +42,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
 import { newId } from '@/lib/id';
 import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
+import { useVoicePrefsStore } from '@/state/voice-prefs';
 import { log } from '@/lib/debug/log';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
@@ -1293,6 +1294,10 @@ function Composer({
   //     hint).
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [voiceWarning, setVoiceWarning] = useState<string | null>(null);
+  // The user's selected voice language also drives transcription — pass it as
+  // the STT language hint so picking e.g. فارسی transcribes Persian, not just
+  // speaks it. ISO-639-1, matching TranscriptionOptions.language.
+  const voiceLanguage = useVoicePrefsStore((s) => s.language);
 
   const {
     isRecording,
@@ -1303,6 +1308,7 @@ function Composer({
     stopRecording,
   } = useRecordAndTranscribe({
     streaming: true,
+    transcriptionOptions: voiceLanguage ? { language: voiceLanguage } : undefined,
     onChunkTranscribed: (_snippet, accumulated) => {
       const baseline = recordBaselineRef.current;
       const sep = baseline && !baseline.endsWith(' ') ? ' ' : '';

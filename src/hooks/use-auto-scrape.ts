@@ -18,6 +18,7 @@
  */
 
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
+import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
 import { useAutoScrapeStore } from '@/state/auto-scrape';
 import { useSettingsStore } from '@/state/settings';
 import { useEffect, useRef } from 'react';
@@ -67,9 +68,24 @@ export function useAutoScrape(): void {
         if (age < FRESH_THRESHOLD_MS) return;
       }
       if (store.inFlight) return;
+      // "Scroll & capture" mode: scroll top→bottom first so lazy-loaded /
+      // infinite-scroll content is in the DOM before we capture, then restore
+      // the user's position. Read fresh (not via closure) so a mid-session
+      // mode change takes effect on the next capture without re-registering
+      // the tab listeners.
+      const deep = useSettingsStore.getState().scrapeAutoMode === 'scroll-capture';
       setInFlight(true);
       setError(null);
       try {
+        if (deep) {
+          try {
+            await scrollToLoadLazy(tabId, { delayMs: 100, maxMs: 4000 });
+          } catch (err) {
+            // Scroll is best-effort; fall through to capture whatever loaded.
+            setError(null);
+            void err;
+          }
+        }
         const r = await captureWithFallback(tabId, url);
         if (!r.ok || !r.soup) {
           // For unreachable URLs (chrome://, file://, view-source:, etc.)
@@ -89,7 +105,7 @@ export function useAutoScrape(): void {
         setRecord({
           url: r.soup.url,
           capturedAt: Date.now(),
-          usedFullScroll: false,
+          usedFullScroll: deep,
           soup: r.soup,
         });
         lastFiredRef.current = { tabId, url };

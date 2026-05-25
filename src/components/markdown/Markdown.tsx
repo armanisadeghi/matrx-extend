@@ -40,7 +40,12 @@ export interface MarkdownProps {
 }
 
 export function Markdown({ content, registry, className, density = 'comfortable' }: MarkdownProps) {
-  const blocks = parseBlocks(content);
+  // Only tags with a registered renderer are pulled out as xml blocks. Bare
+  // angle-bracket tokens in prose/JSON (`<ctx>`, `<T>`, …) stay literal text.
+  const knownXmlTags = registry?.xml
+    ? new Set(Object.keys(registry.xml).map((k) => k.toLowerCase()))
+    : undefined;
+  const blocks = parseBlocks(content, knownXmlTags);
 
   return (
     <div

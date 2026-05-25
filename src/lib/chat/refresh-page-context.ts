@@ -43,6 +43,23 @@ interface RefreshOptions {
   autoFullScrollOnFirstSubmit: boolean;
 }
 
+/**
+ * Wait (bounded) for a background auto-capture to release the shared
+ * `inFlight` flag before we start a user-requested deep capture. Returns true
+ * if it cleared on its own, false if we gave up (the caller proceeds anyway —
+ * a deep scroll the user asked for must never be silently dropped). The cap is
+ * generous because a fast background capture is normally <1s; if it's stuck we
+ * stop waiting rather than block the send indefinitely.
+ */
+async function waitForInFlightToClear(maxWaitMs = 3000): Promise<boolean> {
+  const start = Date.now();
+  while (useAutoScrapeStore.getState().inFlight) {
+    if (Date.now() - start > maxWaitMs) return false;
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  return true;
+}
+
 async function getScrollY(tabId: number): Promise<number | null> {
   try {
     const [first] = await chrome.scripting.executeScript({
@@ -93,9 +110,6 @@ export async function refreshPageContextBeforeSend(
   opts: RefreshOptions,
 ): Promise<RefreshDecision> {
   const store = useAutoScrapeStore.getState();
-  if (store.inFlight) {
-    return { action: 'noop', record: store.current, reason: 'capture in flight' };
-  }
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id || !tab.url) {
@@ -116,6 +130,31 @@ export async function refreshPageContextBeforeSend(
     cur && cur.url === url && Date.now() - cur.capturedAt < FAST_FRESH_MS;
   const haveDeep = cur && cur.url === url && cur.usedFullScroll;
   const wantsDeep = opts.autoFullScrollOnFirstSubmit && !haveDeep;
+
+  // In-flight handling. `inFlight` is shared with the BACKGROUND auto-capture
+  // hook (useAutoScrape), which fires a fast no-scroll capture ~600ms after
+  // every page load. A naive `if (inFlight) return noop` therefore silently
+  // dropped a user-requested deep scroll whenever that background capture
+  // happened to still be running at submit time — the page never scrolled
+  // even though "Deep capture on first submit" was on. We must NOT discard an
+  // explicitly-requested deep capture:
+  //   - wantsDeep → wait (bounded) for the background capture to settle, then
+  //     proceed and do the scroll. The user asked for it; honor it.
+  //   - !wantsDeep → keep the cheap short-circuit (the in-flight fast capture
+  //     will land in the store on its own; no reason to double up).
+  if (store.inFlight) {
+    if (!wantsDeep) {
+      return { action: 'noop', record: store.current, reason: 'capture in flight' };
+    }
+    const settled = await waitForInFlightToClear();
+    if (!settled) {
+      log.warn('scrape', 'deep capture proceeding despite stuck in-flight flag');
+    }
+    // Re-read: the background capture may have just populated a fresh record,
+    // but it's a FAST capture (usedFullScroll:false) so a deep scroll is still
+    // wanted. haveDeep/wantsDeep above stay valid (fast capture can't set
+    // usedFullScroll), so fall through to the deep branch below.
+  }
 
   if (haveFresh && !wantsDeep) {
     return {

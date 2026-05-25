@@ -32,7 +32,9 @@ import {
   listMyTasks,
   updateTask,
 } from '@/lib/agenda/queries';
+import { isValidCron, nextCronTime } from '@/lib/agenda/cron';
 import { isTaskRunning, runTask } from '@/lib/agenda/runner';
+import { cn } from '@/lib/utils';
 import { log } from '@/lib/debug/log';
 import { useChatStream } from '@/hooks/use-chat-stream';
 import {
@@ -285,12 +287,26 @@ function NewTaskForm({ onCancel, onCreated }: { onCancel: () => void; onCreated:
     return new Date(d.getTime() - d.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
   });
   const [intervalSec, setIntervalSec] = useState(3600);
+  const [cronExpr, setCronExpr] = useState('0 9 * * *');
+  // context-match config — at least one of these must be set for the trigger
+  // to ever fire.
+  const [matchHostname, setMatchHostname] = useState('');
+  const [matchUrlPattern, setMatchUrlPattern] = useState('');
   const [authMode, setAuthMode] = useState<AuthMode>('ask');
   const [surface, setSurface] = useState<SurfaceTarget>('any');
   const [submitting, setSubmitting] = useState(false);
 
+  // A cron task needs a parseable expression; a context-match task needs at
+  // least one condition — otherwise it would be created but could never fire.
+  const triggerValid =
+    triggerType !== 'cron'
+      ? triggerType !== 'context-match' ||
+        matchHostname.trim().length > 0 ||
+        matchUrlPattern.trim().length > 0
+      : isValidCron(cronExpr);
+
   const submit = async () => {
-    if (!title.trim() || !prompt.trim()) return;
+    if (!title.trim() || !prompt.trim() || !triggerValid) return;
     setSubmitting(true);
     try {
       const triggerConfig =
@@ -301,8 +317,12 @@ function NewTaskForm({ onCancel, onCreated }: { onCancel: () => void; onCreated:
             : triggerType === 'heartbeat'
               ? { type: 'heartbeat' as const, every_seconds: intervalSec }
               : triggerType === 'context-match'
-                ? { type: 'context-match' as const }
-                : { type: 'cron' as const, expression: '0 9 * * *' };
+                ? {
+                    type: 'context-match' as const,
+                    ...(matchHostname.trim() ? { hostname: matchHostname.trim() } : {}),
+                    ...(matchUrlPattern.trim() ? { url_pattern: matchUrlPattern.trim() } : {}),
+                  }
+                : { type: 'cron' as const, expression: cronExpr.trim() };
       await createTask({
         title: title.trim(),
         prompt: prompt.trim(),
@@ -404,6 +424,60 @@ function NewTaskForm({ onCancel, onCreated }: { onCancel: () => void; onCreated:
           />
         </div>
       )}
+      {triggerType === 'cron' && (
+        <div className="space-y-1">
+          <Label htmlFor="agenda-cron" className="text-xs">
+            Cron expression
+          </Label>
+          <Input
+            id="agenda-cron"
+            value={cronExpr}
+            onChange={(e) => setCronExpr(e.target.value)}
+            placeholder="0 9 * * *"
+            className={cn(
+              'h-8 font-mono text-xs',
+              !isValidCron(cronExpr) && 'border-destructive focus-visible:ring-destructive',
+            )}
+          />
+          <p className="text-[10px] text-muted-foreground">
+            {isValidCron(cronExpr)
+              ? `Next: ${nextCronTime(cronExpr)?.toLocaleString() ?? '—'} (your timezone)`
+              : 'min hour day-of-month month day-of-week — e.g. "0 9 * * 1-5"'}
+          </p>
+        </div>
+      )}
+      {triggerType === 'context-match' && (
+        <div className="space-y-2">
+          <div className="space-y-1">
+            <Label htmlFor="agenda-match-host" className="text-xs">
+              Hostname contains
+            </Label>
+            <Input
+              id="agenda-match-host"
+              value={matchHostname}
+              onChange={(e) => setMatchHostname(e.target.value)}
+              placeholder="mail.google.com"
+              className="h-8 text-xs"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="agenda-match-url" className="text-xs">
+              URL matches (regex)
+            </Label>
+            <Input
+              id="agenda-match-url"
+              value={matchUrlPattern}
+              onChange={(e) => setMatchUrlPattern(e.target.value)}
+              placeholder="^https://github\\.com/.+/pull/\\d+"
+              className="h-8 font-mono text-xs"
+            />
+          </div>
+          <p className="text-[10px] text-muted-foreground">
+            Fires when your active tab matches. Set at least one condition. Re-fires at
+            most once every 10 min per task while the match holds.
+          </p>
+        </div>
+      )}
       <div className="space-y-1">
         <Label className="text-xs">Surface</Label>
         <Select value={surface} onValueChange={(v) => setSurface(v as SurfaceTarget)}>
@@ -427,7 +501,7 @@ function NewTaskForm({ onCancel, onCreated }: { onCancel: () => void; onCreated:
         <Button
           size="sm"
           className="h-7 text-xs"
-          disabled={submitting || !title.trim() || !prompt.trim()}
+          disabled={submitting || !title.trim() || !prompt.trim() || !triggerValid}
           onClick={submit}
         >
           {submitting ? 'Creating…' : 'Create task'}

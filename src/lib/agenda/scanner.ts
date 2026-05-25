@@ -2,13 +2,15 @@
  * Agenda scanner — runs in the SW on a `chrome.alarms` cadence (every minute).
  *
  * Responsibilities:
- *   1. Find tasks whose `next_due_at <= now` and whose `surfaces` includes
- *      'chrome-extension-chat' or 'any'.
- *   2. For each due task, fire a Chrome notification ('ask' mode) — the
- *      user clicks the notification to run via the sidepanel.
- *      'auto' mode is reserved; v0 doesn't auto-execute.
- *   3. Advance the task's `next_due_at` for recurring triggers, so we don't
- *      re-fire on the next scan.
+ *   1. Find clock tasks whose `next_due_at <= now` and whose `surfaces`
+ *      includes 'chrome-extension-chat' or 'any'. Covers one-shot, interval,
+ *      heartbeat, and cron (next_due_at computed from the cron expression).
+ *   2. Find context-match tasks and evaluate each against the active tab;
+ *      fire the matches past their per-task cooldown (see context-match.ts).
+ *   3. For each fired task, route to the sidepanel ('auto') or a Chrome
+ *      notification ('ask').
+ *   4. Advance the task's `next_due_at` for recurring clock triggers + stamp
+ *      `last_run_at`, so we don't re-fire on the next scan.
  *
  * Why notification-driven for v0: programmatic agent invocation from the SW
  * touches the chat-stream pipeline and per-conversation state in non-trivial
@@ -24,9 +26,11 @@ import {
   type AgendaTask,
   type TriggerConfig,
   computeNextDueAfterRun,
+  listContextMatchTasks,
   listDueForSurface,
   updateTask,
 } from './queries';
+import { cooldownElapsed, tabMatchesTask } from './context-match';
 
 const NOTIFICATION_PREFIX = 'matrx-agenda:';
 const SCAN_PERIOD_MIN = 1;
@@ -46,10 +50,51 @@ export async function scanAndNotify(): Promise<void> {
     log.warn('sw', 'agenda scan query failed', err);
     return;
   }
-  if (due.length === 0) return;
-  log.info('sw', `agenda: ${due.length} task(s) due`);
+  if (due.length > 0) {
+    log.info('sw', `agenda: ${due.length} task(s) due`);
+    for (const task of due) {
+      await fireDueTask(task);
+    }
+  }
 
-  for (const task of due) {
+  await scanContextMatch();
+}
+
+/**
+ * Context-match triggers fire on the active tab, not the clock — so they
+ * never appear in `listDueForSurface` (no next_due_at). Fetch them, evaluate
+ * each against the current active tab, and fire the matches that are past
+ * their per-task cooldown.
+ */
+async function scanContextMatch(): Promise<void> {
+  let tab: chrome.tabs.Tab | undefined;
+  try {
+    [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+  } catch {
+    return;
+  }
+  if (!tab?.url || !/^https?:\/\//i.test(tab.url)) return;
+
+  let hostname: string;
+  try {
+    hostname = new URL(tab.url).hostname;
+  } catch {
+    return;
+  }
+  const tabInfo = { url: tab.url, hostname };
+
+  let tasks: AgendaTask[] = [];
+  try {
+    tasks = await listContextMatchTasks('chrome-extension-chat', { limit: 50 });
+  } catch (err) {
+    log.warn('sw', 'agenda context-match query failed', err);
+    return;
+  }
+
+  for (const task of tasks) {
+    if (!cooldownElapsed(task)) continue;
+    if (!tabMatchesTask(task, tabInfo)) continue;
+    log.info('sw', `agenda: context-match fired for "${task.title}" on ${hostname}`);
     await fireDueTask(task);
   }
 }

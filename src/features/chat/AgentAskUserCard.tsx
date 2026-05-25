@@ -59,11 +59,18 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
     req.batch_total == null ||
     req.batch_total <= 1 ||
     (req.batch_index !== undefined && req.batch_index === req.batch_total - 1);
-  // Extra escapes (note + write-instead) apply to the `user` ask tool only, and not
+  // "Write message instead" escape applies to the `user` ask tool only, and not
   // to notify (which carries its own freeform Other).
   const showExtras = !!req.allow_extras && req.kind !== 'notify';
-  // The additional-instructions note rides on the FINAL card (single or last batched).
-  const showNote = showExtras && isLast;
+  // The freeform "Anything else?" note ALWAYS rides on the FINAL card (single or
+  // last batched), regardless of kind or which ask tool produced it. Every
+  // question the agent asks must give the user a freeform channel back to the
+  // model — see the two invariants enforced in this card.
+  const showNote = isLast;
+  // Invariant 1: every non-freeform question offers an "Other" escape. confirm and
+  // notify render it inline below; choice/choice_many render an extra option. text
+  // and secret are already freeform, so they're exempt.
+  const showOther = req.kind === 'choice' || req.kind === 'choice_many';
 
   // Merge the optional additional-instructions note into every structured answer.
   const respond = (reply: Omit<AskUserResponse, 'callId'>) => {
@@ -264,7 +271,7 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
                   </div>
                 </label>
               ))}
-              {req.allow_other ? (
+              {showOther ? (
                 <label className="flex cursor-pointer items-start gap-2 rounded-md border border-dashed bg-background/40 px-2 py-1.5 text-sm hover:bg-accent">
                   <input
                     type="radio"
@@ -328,7 +335,7 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
                 </div>
               </label>
             ))}
-            {req.allow_other ? (
+            {showOther ? (
               <label className="flex cursor-pointer items-start gap-2 rounded-md border border-dashed bg-background/40 px-2 py-1.5 text-sm hover:bg-accent">
                 <input
                   type="checkbox"

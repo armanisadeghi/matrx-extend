@@ -18,7 +18,11 @@ export type AgentScope = 'mine' | 'shared' | 'system';
 interface SettingsState {
   theme: 'light' | 'dark' | 'system';
 
-  /** Send captured HTML through the server-side AI cleanup pass before saving. */
+  /**
+   * Send captured HTML through the server-side AI cleanup pass before saving.
+   * NOT WIRED YET — captures use local DOM scraping; the `/scraper/quick-scrape`
+   * `ai_clean` endpoint has no client caller. UI labeled "coming soon".
+   */
   scrapeDeepClean: boolean;
 
   // ─── Chat defaults ──────────────────────────────────────────────────────
@@ -63,9 +67,13 @@ interface SettingsState {
   modelOverrideId: string | null;
 
   // ─── Scrape auto-capture ───────────────────────────────────────────────
-  /** Auto-run a fast scrape on every page load (background). */
+  /** Auto-run a scrape on every page load (background). Gates useAutoScrape. */
   scrapeAutoOnLoad: boolean;
-  /** When auto-scraping: plain capture, or scroll-and-capture. Coming soon. */
+  /**
+   * Background auto-capture style: `capture` = fast visible-DOM grab,
+   * `scroll-capture` = scroll top→bottom first to load lazy content, then
+   * capture (slower). Consumed in use-auto-scrape.ts `runCapture`.
+   */
   scrapeAutoMode: ScrapeAutoMode;
 
   setTheme: (t: SettingsState['theme']) => void;

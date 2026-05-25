@@ -3,6 +3,19 @@
  * optional Chrome permission. See `state/permission-prompts.ts` for the
  * design philosophy.
  *
+ * ⚠️ DORMANT (2026-05-25): `ensurePermission` / `showPrompt` currently have
+ * NO callers. The SW tool dispatcher gates optional permissions via
+ * `hasOptionalPermissions` directly and returns a structured error rather than
+ * prompting — because `chrome.permissions.request` may only be called from a
+ * foreground user gesture (the sidepanel), NOT from the service worker where
+ * the dispatcher runs. Wiring this requires a SW→sidepanel round-trip: the SW
+ * signals "permission needed", the sidepanel runs `ensurePermission` inside a
+ * gesture, then reports the result back so the dispatcher can resume. Until
+ * that flow exists, this module + PermissionPromptModal + the prompt store are
+ * intentionally inert (no user-visible control depends on them — the modal
+ * renders null with no active prompt). Tracked in matrx-feedback; do not
+ * delete without porting the frictionless-grant UX.
+ *
  * Resolution order, in priority:
  *   1. If Chrome already reports the permission as granted → return true.
  *      The gate is invisible. (This covers the case where the user

@@ -59,6 +59,7 @@ import type {
 import { setSupabaseSession } from '@/lib/supabase/client';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
 import { setupContextMenus } from '@/lib/context-menus/setup';
+import { readDefaultPermissionMode } from '@/lib/settings/persisted';
 import { handleWebmcpCall, recordAssignedTab, startToolDispatcher } from '@/lib/tools/dispatch';
 import { registerToolsOnActiveTab } from '@/lib/webmcp/register';
 import { usePilotStore } from '@/state/pilot';
@@ -431,17 +432,6 @@ function registerHandlers(): void {
     const mode = await readDefaultPermissionMode();
     return handleWebmcpCall(payload, { permissionMode: mode });
   });
-}
-
-async function readDefaultPermissionMode(): Promise<'ask' | 'act'> {
-  try {
-    const r = await chrome.storage.local.get(['matrx.settings']);
-    const settings = r['matrx.settings'] as { defaultPermissionMode?: 'ask' | 'act' } | undefined;
-    if (settings?.defaultPermissionMode === 'act') return 'act';
-  } catch {
-    // fall through to default
-  }
-  return 'ask';
 }
 
 function registerWebmcpTabUpdateGate(): void {

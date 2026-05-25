@@ -383,7 +383,12 @@ export const request_user_takeover: ToolHandler<TakeoverArgs, unknown> = {
     const timeoutMs = args.timeout_seconds != null ? args.timeout_seconds * 1000 : 15 * 60_000;
     const r = await awaitUserResponse(request, timeoutMs);
     if (r === 'timed_out') return { answer: null, cancelled: false, timed_out: true };
-    return { answer: r.answer ?? null, cancelled: r.cancelled ?? false };
+    // The card always appends an "Anything else?" note; carry it back so it isn't dropped.
+    return {
+      answer: r.answer ?? null,
+      cancelled: r.cancelled ?? false,
+      additional_instructions: r.additional_instructions ?? null,
+    };
   },
 };
 
@@ -485,9 +490,13 @@ export const update_plan: ToolHandler<UpdatePlanArgs, unknown> = {
         );
       }
     }
+    // The card now always offers an "Other" radio + an "Anything else?" note.
+    // Prefer the typed-out freeform (the user amending the plan) over the bare
+    // option label, and surface the optional note so neither is silently dropped.
     return {
       approved,
-      note: choice || null,
+      note: r.freeform?.trim() || choice || null,
+      additional_instructions: r.additional_instructions ?? null,
     };
   },
 };

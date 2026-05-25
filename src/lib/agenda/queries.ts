@@ -19,6 +19,7 @@
  */
 
 import { getSupabase } from '@/lib/supabase/client';
+import { nextCronTime } from './cron';
 import { z } from 'zod';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -264,6 +265,32 @@ export async function listDueForSurface(
     .limit(opts?.limit ?? 20);
   if (error) {
     console.warn('[matrx-extend] listDueForSurface error', error.message);
+    return [];
+  }
+  return (data ?? []).map((row) => rowToAgendaTask(row as unknown as SchTaskJoinedRow));
+}
+
+/**
+ * Enabled context-match tasks for THIS surface. These never have a
+ * `next_due_at` (they fire on a page-context match, not a clock), so the
+ * scanner can't find them via `listDueForSurface`. It fetches them here and
+ * evaluates each task's `trigger_config` against the active tab itself.
+ */
+export async function listContextMatchTasks(
+  surface: SurfaceTarget,
+  opts?: { limit?: number },
+): Promise<AgendaTask[]> {
+  const c = getSupabase();
+  const { data, error } = await c
+    .from('sch_task')
+    .select(SELECT_AGENDA_TASK)
+    .eq('kind', 'agent')
+    .eq('enabled', true)
+    .eq('trigger_type', 'context-match')
+    .or(`surfaces.cs.{${surface}},surfaces.cs.{any}`)
+    .limit(opts?.limit ?? 50);
+  if (error) {
+    console.warn('[matrx-extend] listContextMatchTasks error', error.message);
     return [];
   }
   return (data ?? []).map((row) => rowToAgendaTask(row as unknown as SchTaskJoinedRow));
@@ -535,8 +562,8 @@ export async function finishRun(
  * First-fire timestamp for a freshly-created task. The SW scanner advances
  * `next_due_at` after each fire — this only handles the very first run.
  *
- * Cron is intentionally not handled here (would need a cron parser); pass
- * `next_due_at` explicitly for cron tasks until we add a parser.
+ * Cron is computed via the local cron parser (src/lib/agenda/cron.ts),
+ * evaluated in the host's local timezone.
  */
 export function computeFirstDue(type: TriggerType, config: TriggerConfig): string | null {
   switch (config.type) {
@@ -546,9 +573,11 @@ export function computeFirstDue(type: TriggerType, config: TriggerConfig): strin
     case 'heartbeat':
       return new Date(Date.now() + config.every_seconds * 1000).toISOString();
     case 'context-match':
-      return null; // fires on context-match, not on schedule
-    case 'cron':
-      return null; // caller must compute and pass next_due_at
+      return null; // fires on a page-context match, not on a schedule
+    case 'cron': {
+      const next = nextCronTime(config.expression);
+      return next ? next.toISOString() : null;
+    }
   }
   // Fallback for unrecognized types.
   return null;
@@ -569,9 +598,11 @@ export function computeNextDueAfterRun(
     case 'one-shot':
       return null; // disable after fire
     case 'context-match':
-      return null; // re-fires on next match, not on schedule
-    case 'cron':
-      return null; // needs a cron parser; stub for v0
+      return null; // re-fires on next page-context match, not on a schedule
+    case 'cron': {
+      const next = nextCronTime(trigger_config.expression);
+      return next ? next.toISOString() : null;
+    }
   }
   return null;
 }
