@@ -1,6 +1,7 @@
 import { chromeLocalStorage } from "@/lib/storage/zustand-adapter";
 import type { ToolProgressUpdate } from "@/lib/tools/types";
 import { useToolInbox } from "@/state/tool-inbox";
+import type { ComputeTargetRef } from "@/types/compute-target";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -119,6 +120,18 @@ interface ChatState {
    * Privileged tools always confirm regardless. Set/changeable in chat header.
    */
   permissionMode: Record<string, PermissionMode>;
+  /**
+   * The user's selected compute target (sandbox or their own PC) for the
+   * agent to dispatch shell/fs tools against. `null` = the agent runs
+   * unbound and falls back to aidream's multi-tenant filesystem.
+   *
+   * Persisted across reloads but distinct from `selectedConversationId` —
+   * the binding is a per-user preference within this surface (Chat),
+   * carried forward into every new conversation until the user changes
+   * it. Same mental model as the matrx-frontend `activeAgentSandboxBySurface`
+   * preference key, scoped to this single surface (the extension).
+   */
+  boundComputeTarget: ComputeTargetRef | null;
   setAgent: (id: string | null) => void;
   setConversation: (id: string | null) => void;
   /**
@@ -196,6 +209,8 @@ interface ChatState {
   resetAgentVariables: (agentId: string) => void;
   setPermissionMode: (agentId: string, mode: PermissionMode) => void;
   getPermissionMode: (agentId: string | null) => PermissionMode;
+  /** Set or clear the user's compute-target selection. */
+  setBoundComputeTarget: (ref: ComputeTargetRef | null) => void;
   reset: () => void;
 }
 
@@ -212,6 +227,7 @@ export const useChatStore = create<ChatState>()(
       streamInterruption: null,
       variableValues: {},
       permissionMode: {},
+      boundComputeTarget: null,
       setAgent: (selectedAgentId) => set({ selectedAgentId }),
       setConversation: (selectedConversationId) => {
         set({ selectedConversationId, messages: [], streamInterruption: null });
@@ -421,6 +437,7 @@ export const useChatStore = create<ChatState>()(
         if (!agentId) return "ask";
         return get().permissionMode[agentId] ?? "ask";
       },
+      setBoundComputeTarget: (boundComputeTarget) => set({ boundComputeTarget }),
       reset: () =>
         set({ messages: [], draft: "", isStreaming: false, streamInterruption: null }),
     }),
@@ -439,6 +456,7 @@ export const useChatStore = create<ChatState>()(
         draft: s.draft,
         variableValues: s.variableValues,
         permissionMode: s.permissionMode,
+        boundComputeTarget: s.boundComputeTarget,
       }),
       // Force selectedConversationId to null on every rehydration. The
       // storage key is shared with previous installs that DID persist the

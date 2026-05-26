@@ -52,6 +52,15 @@ export interface BrowserDomState {
   extension_version: string;
   extension_id: string;
   loaded_categories: string[];
+  /**
+   * The compute-target kind currently bound to this chat session, if any.
+   * Lets the server-side discovery handler / analytics see which surface's
+   * picker drove the binding. Mirrors the `sandbox` top-level request
+   * field but in a discoverable, kind-only shape (no token / URL).
+   */
+  bound_compute_target_kind: 'ec2' | 'hosted' | 'local-pc' | null;
+  /** Row id of the bound target — `sandbox_instances.id` or `app_instances.id`. */
+  bound_compute_target_id: string | null;
 }
 
 export interface BuildBrowserDomStateOpts {
@@ -172,6 +181,7 @@ export async function buildBrowserDomState(
     getAccessToken(),
   ]);
   const permissionMode = useChatStore.getState().getPermissionMode(opts.agentId ?? null);
+  const boundTarget = useChatStore.getState().boundComputeTarget;
   return {
     current_url: tab.url,
     current_tab_id: tab.id,
@@ -190,5 +200,7 @@ export async function buildBrowserDomState(
     extension_version: chrome.runtime.getManifest().version,
     extension_id: chrome.runtime.id,
     loaded_categories: opts.loadedCategories ?? [],
+    bound_compute_target_kind: boundTarget?.kind ?? null,
+    bound_compute_target_id: boundTarget?.id ?? null,
   };
 }

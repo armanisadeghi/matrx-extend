@@ -32,6 +32,7 @@ import { formatAssistantBody } from '@/features/chat/copy-conversation';
 import { LanguagePicker } from '@/features/chat/LanguagePicker';
 import { HighlightAttachmentChip } from '@/features/chat/HighlightAttachmentChip';
 import { QueuedMessageStack } from '@/features/chat/QueuedMessageCard';
+import { SandboxPickerChip } from '@/features/chat/SandboxPickerChip';
 import { ServerToolRow } from '@/features/chat/ServerToolRow';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
@@ -872,6 +873,7 @@ function ChatHeader({
       <div className="ml-auto flex items-center gap-1">
         <TaskPanelChip conversationId={selectedConversationId} onClick={onToggleTaskPanel} />
         <LanguagePicker />
+        <SandboxPickerChip />
         <PermissionModeChip
           mode={permissionMode}
           disabled={!selectedAgentId}

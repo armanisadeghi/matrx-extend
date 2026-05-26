@@ -525,6 +525,27 @@ export function useChatStream() {
       // user toggles the chip mid-stream.
       const permissionMode = useChatStore.getState().getPermissionMode(opts.agentId);
 
+      // Resolve the user's bound compute target (sandbox or local PC) into
+      // the full sandbox-binding payload aidream's agent loop already
+      // consumes. Best-effort: a stale ref / expired token / offline tunnel
+      // returns null and the chat send proceeds without a binding (the agent
+      // falls back to aidream's multi-tenant filesystem). See
+      // src/lib/compute/use-compute-targets.ts::resolveComputeTarget.
+      const boundTarget = useChatStore.getState().boundComputeTarget;
+      let sandboxBinding: Awaited<
+        ReturnType<typeof import('@/lib/compute/use-compute-targets').resolveComputeTarget>
+      > | null = null;
+      if (boundTarget) {
+        const { resolveComputeTarget } = await import('@/lib/compute/use-compute-targets');
+        sandboxBinding = await resolveComputeTarget(boundTarget);
+        if (!sandboxBinding) {
+          log.warn(
+            'stream',
+            `bound compute target unavailable (kind=${boundTarget.kind}, id=${boundTarget.id}) — agent will run unbound`,
+          );
+        }
+      }
+
       // Build the browser-dom capability state. The server-side discovery
       // handler reads this to decide which tool category to load.
       // `loaded_categories` is the per-conversation hint — once cross-request
@@ -608,6 +629,12 @@ export function useChatStream() {
             'browser-dom': browserDomState as unknown as Record<string, unknown>,
           },
         },
+        // Compute-target binding for this turn. The server reads this into
+        // ctx.metadata['active_sandbox'] before resolve_and_arm_run runs,
+        // which arms the sandbox-fs capability and routes fs/shell/git tool
+        // calls into the target (EC2 container OR the user's PC via
+        // aidream's reverse-proxy + matrx-local's /sandbox/* routes).
+        ...(sandboxBinding ? { sandbox: sandboxBinding } : {}),
       };
 
       // Latch the tab the agent will operate on for the entire run.

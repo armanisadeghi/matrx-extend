@@ -52,6 +52,20 @@ export interface AgentStartRequest {
   custom_tools?: Record<string, unknown>[];
   /** Model-facing context (page markdown, SEO, links, etc.). Distinct from `client.state`. */
   context?: Record<string, unknown>;
+  /**
+   * Top-level sandbox binding. The server hydrates
+   * `ctx.metadata["active_sandbox"]` from this — matrx-ai's fs/shell/git
+   * tools read it to route into the bound compute target (EC2 sandbox
+   * container OR the user's PC via aidream's reverse-proxy). Resolved by
+   * the extension at chat-send time from the picker's
+   * `boundComputeTarget` (see SandboxPickerChip + use-compute-targets).
+   */
+  sandbox?: {
+    sandbox_id: string;
+    base_url: string;
+    access_token: string;
+    root_path: string;
+  };
   source_app?: string;
   source_feature?: string;
 
