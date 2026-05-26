@@ -1,34 +1,32 @@
-import { type AgentStartRequest, agentExecutePath } from "@/lib/api/routes/ai";
-import { resolveActiveTab } from "@/lib/chat/active-tab";
-import { buildBrowserDomState } from "@/lib/chat/build-browser-dom-state";
-import { buildChatContext } from "@/lib/chat/build-context";
-import type { AttachedHighlight } from "@/lib/chat/context/types";
-import type { ConsumedInjection } from "@gen/stream-events";
-import { getHighlightsByIds } from "@/lib/highlights/queries";
-import { refreshPageContextBeforeSend } from "@/lib/chat/refresh-page-context";
-import { progressFromWire } from "@/lib/chat/tool-progress";
-import { attemptResume } from "@/lib/stream/resume";
-import { createStreamWatchdog } from "@/lib/stream/watchdog";
-import { log } from "@/lib/debug/log";
-import { newId } from "@/lib/id";
-import { on, send } from "@/lib/messaging/native";
-import { CHANNELS } from "@/lib/messaging/schemas";
-import { resolveToolName } from "@/lib/tools/aliases";
-import { lookup as lookupTool } from "@/lib/tools/registry";
-import {
-  projectAdminFlagsToRequest,
-  useAdminFlagsStore,
-} from "@/state/admin-flags";
-import { useActiveToolsStore } from "@/state/active-tools";
-import { useAuthStore } from "@/state/auth";
-import { useAutoScrapeStore } from "@/state/auto-scrape";
-import { type ChatMessage, type ToolPartCall, useChatStore } from "@/state/chat";
-import { useDesktopStore } from "@/state/desktop";
-import { useTurnInboxStore } from "@/state/turn-inbox";
-import { useHighlightStore } from "@/state/highlights";
-import { useScrapeStore } from "@/state/scrape";
-import { useSettingsStore } from "@/state/settings";
-import { useCallback, useEffect, useRef } from "react";
+import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { conversationResumePath } from '@/lib/api/routes/tool-results';
+import { resolveActiveTab } from '@/lib/chat/active-tab';
+import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
+import { buildChatContext } from '@/lib/chat/build-context';
+import type { AttachedHighlight } from '@/lib/chat/context/types';
+import { refreshPageContextBeforeSend } from '@/lib/chat/refresh-page-context';
+import { progressFromWire } from '@/lib/chat/tool-progress';
+import { log } from '@/lib/debug/log';
+import { getHighlightsByIds } from '@/lib/highlights/queries';
+import { newId } from '@/lib/id';
+import { on, send } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
+import { attemptResume } from '@/lib/stream/resume';
+import { createStreamWatchdog } from '@/lib/stream/watchdog';
+import { resolveToolName } from '@/lib/tools/aliases';
+import { lookup as lookupTool } from '@/lib/tools/registry';
+import { useActiveToolsStore } from '@/state/active-tools';
+import { projectAdminFlagsToRequest, useAdminFlagsStore } from '@/state/admin-flags';
+import { useAuthStore } from '@/state/auth';
+import { useAutoScrapeStore } from '@/state/auto-scrape';
+import { type ChatMessage, type ToolPartCall, useChatStore } from '@/state/chat';
+import { useDesktopStore } from '@/state/desktop';
+import { useHighlightStore } from '@/state/highlights';
+import { useScrapeStore } from '@/state/scrape';
+import { useSettingsStore } from '@/state/settings';
+import { useTurnInboxStore } from '@/state/turn-inbox';
+import type { ConsumedInjection } from '@gen/stream-events';
+import { useCallback, useEffect, useRef } from 'react';
 
 /**
  * Materialize the highlights the user attached via the Highlight tab into the
@@ -81,7 +79,7 @@ interface SendOptions {
 
 interface StreamChunk {
   runId: string;
-  type: "text" | "reasoning" | "event" | "error" | "done";
+  type: 'text' | 'reasoning' | 'event' | 'error' | 'done';
   payload: {
     content?: string;
     eventName?: string;
@@ -95,7 +93,7 @@ interface StreamOpened {
   conversationId: string | null;
   requestId: string | null;
   agentName?: string | null;
-  permissionMode?: "ask" | "act";
+  permissionMode?: 'ask' | 'act';
 }
 
 /**
@@ -108,20 +106,20 @@ function handleDiscoveryToolEvent(
   data: Record<string, unknown> | undefined,
 ): void {
   if (!data) return;
-  const subEvent = String(data.event ?? "");
-  if (subEvent !== "tool_completed") return;
-  if (String(data.tool_name ?? "") !== "load_browser_tools") return;
+  const subEvent = String(data.event ?? '');
+  if (subEvent !== 'tool_completed') return;
+  if (String(data.tool_name ?? '') !== 'load_browser_tools') return;
   // Try common shapes — the server may surface the category in args, output, or data.
   const inner = (data.data ?? {}) as Record<string, unknown>;
   const argsCategory =
-    typeof inner.arguments === "object" && inner.arguments !== null
+    typeof inner.arguments === 'object' && inner.arguments !== null
       ? (inner.arguments as Record<string, unknown>).category
       : null;
   const resultCategory =
-    typeof inner.result === "object" && inner.result !== null
+    typeof inner.result === 'object' && inner.result !== null
       ? (inner.result as Record<string, unknown>).category
       : null;
-  const cat = String(argsCategory ?? resultCategory ?? "");
+  const cat = String(argsCategory ?? resultCategory ?? '');
   if (cat) useActiveToolsStore.getState().recordCategoryLoaded(conversationId, cat);
 }
 
@@ -132,12 +130,12 @@ function handleDiscoveryToolEvent(
  */
 function handleResourceChangedEvent(data: Record<string, unknown> | undefined): void {
   if (!data) return;
-  if (String(data.kind ?? "") !== "active_tools") return;
+  if (String(data.kind ?? '') !== 'active_tools') return;
   const tools = data.tools ?? data.value ?? [];
   if (!Array.isArray(tools)) return;
   const names = tools
-    .map((t) => (typeof t === "string" ? t : (t as { name?: unknown })?.name))
-    .filter((n): n is string => typeof n === "string");
+    .map((t) => (typeof t === 'string' ? t : (t as { name?: unknown })?.name))
+    .filter((n): n is string => typeof n === 'string');
   useActiveToolsStore.getState().setLiveTools(names);
 }
 
@@ -152,14 +150,11 @@ function handleResourceChangedEvent(data: Record<string, unknown> | undefined): 
  * merges into the same part by callId — this stream-side handler just
  * marks the part as started and seeds the args.
  */
-function handleToolEvent(
-  messageId: string,
-  data: Record<string, unknown> | undefined,
-): void {
+function handleToolEvent(messageId: string, data: Record<string, unknown> | undefined): void {
   if (!data) return;
-  const subEvent = String(data.event ?? "");
-  const callId = String(data.call_id ?? "");
-  const wireName = String(data.tool_name ?? "");
+  const subEvent = String(data.event ?? '');
+  const callId = String(data.call_id ?? '');
+  const wireName = String(data.tool_name ?? '');
   if (!callId || !wireName) return;
 
   // Normalize the wire name (e.g. `matrx-extend__take_screenshot`) to the
@@ -173,20 +168,20 @@ function handleToolEvent(
     (data.canonicalName as string | undefined) ??
     null;
   const resolved = canonicalName
-    ? { local: canonicalName.split(":").pop() ?? canonicalName, bundle: null }
+    ? { local: canonicalName.split(':').pop() ?? canonicalName, bundle: null }
     : resolveToolName(wireName);
   const toolName = resolved.local;
 
   // Kind is derived from whether the RESOLVED name is in our client
   // registry — must use the bare form, since the registry is keyed there.
-  const kind: "server" | "client" = lookupTool(toolName) ? "client" : "server";
-  const message = typeof data.message === "string" ? data.message : undefined;
+  const kind: 'server' | 'client' = lookupTool(toolName) ? 'client' : 'server';
+  const message = typeof data.message === 'string' ? data.message : undefined;
   const inner = (data.data ?? {}) as Record<string, unknown>;
   const upsert = useChatStore.getState().upsertToolPart;
 
   // Only include fields that are actually present so we never overwrite a
   // real value (e.g. args set by the SW broadcast) with undefined.
-  const base: Partial<ToolPartCall> & { kind: "server" | "client" } = {
+  const base: Partial<ToolPartCall> & { kind: 'server' | 'client' } = {
     kind,
     toolName,
   };
@@ -198,28 +193,28 @@ function handleToolEvent(
   // (spinner + "Reading page" + shimmer) on screen the moment the model
   // makes the call, instead of waiting for completion. The server does NOT
   // emit `tool_started` for client-dispatched tools — only this one.
-  if (subEvent === "tool_started" || subEvent === "tool_delegated") {
+  if (subEvent === 'tool_started' || subEvent === 'tool_delegated') {
     const args = inner.arguments;
     upsert(messageId, callId, {
       ...base,
-      phase: "started",
+      phase: 'started',
       ...(args !== undefined ? { args } : {}),
     });
-  } else if (subEvent === "tool_completed") {
+  } else if (subEvent === 'tool_completed') {
     const result = inner.result;
     upsert(messageId, callId, {
       ...base,
-      phase: "completed",
+      phase: 'completed',
       ...(result !== undefined ? { result } : {}),
     });
-  } else if (subEvent === "tool_error" || subEvent === "tool_failed") {
+  } else if (subEvent === 'tool_error' || subEvent === 'tool_failed') {
     const errResult = inner.error ?? inner.result;
     upsert(messageId, callId, {
       ...base,
-      phase: "error",
+      phase: 'error',
       ...(errResult !== undefined ? { result: errResult } : {}),
     });
-  } else if (subEvent === "tool_progress") {
+  } else if (subEvent === 'tool_progress') {
     // Incremental update for a long-running tool — does NOT change phase.
     // Only renders when a tool actually emits these (opt-in); every other
     // tool is unaffected.
@@ -255,20 +250,19 @@ function handleInjectionConsumed(
     ? (data.items as ConsumedInjection[])
     : [];
   for (const it of items) {
-    if (!it || typeof it !== "object") continue;
-    const injectionId = it.injection_id ?? "";
+    if (!it || typeof it !== 'object') continue;
+    const injectionId = it.injection_id ?? '';
     if (!injectionId) continue;
-    const matched =
-      useTurnInboxStore.getState().markDeliveredByInjectionId(injectionId);
+    const matched = useTurnInboxStore.getState().markDeliveredByInjectionId(injectionId);
     // Prefer the server-echoed text (self-contained even for an item we never
     // queued ourselves); fall back to our local record of what we sent.
-    const text = it.text ? it.text : (matched?.text ?? "");
+    const text = it.text ? it.text : (matched?.text ?? '');
     // Default visible unless the server explicitly says otherwise.
     const visibleToUser = it.is_visible_to_user !== false;
     if (visibleToUser && text) {
       const msg: ChatMessage = {
-        id: newId("user"),
-        role: "user",
+        id: newId('user'),
+        role: 'user',
         content: text,
         timestamp: Date.now(),
       };
@@ -309,7 +303,7 @@ export function useChatStream() {
     const runId = runIdRef.current;
     const target = targetIdRef.current;
     if (!runId || !target) return; // run already ended cleanly
-    log.warn("stream", `stream stalled — no activity for ${STALL_MS}ms`, { runId });
+    log.warn('stream', `stream stalled — no activity for ${STALL_MS}ms`, { runId });
     void (async () => {
       // Try to resume the live run before giving up (no-op until the backend
       // resume endpoint ships — see lib/stream/resume.ts).
@@ -321,19 +315,19 @@ export function useChatStream() {
       });
       if (runIdRef.current !== runId) return; // a new run started meanwhile
       if (resume.resumed) {
-        log.info("stream", "stream resumed after stall", { runId });
+        log.info('stream', 'stream resumed after stall', { runId });
         watchdogRef.current?.start();
         return;
       }
       // Give up: clear the stuck spinner and surface a Retry.
-      log.warn("stream", `stream giving up (${resume.reason})`, { runId });
+      log.warn('stream', `stream giving up (${resume.reason})`, { runId });
       useChatStore.getState().finalizeAssistant(target);
       useChatStore.getState().setStreaming(false);
       useChatStore.getState().setStreamInterruption({
         runId,
-        reason: "stalled",
+        reason: 'stalled',
         silentMs: STALL_MS,
-        lastInput: lastSendRef.current?.input ?? "",
+        lastInput: lastSendRef.current?.input ?? '',
         at: Date.now(),
       });
       watchdogRef.current?.stop();
@@ -347,18 +341,15 @@ export function useChatStream() {
   // backend would open a new conversation for every message — even though
   // the server-side route handles continue-mode correctly when given an id.
   useEffect(() => {
-    return on<StreamOpened, { ack: true }>(
-      CHANNELS.STREAM_OPENED,
-      (payload) => {
-        if (payload.runId !== runIdRef.current) return { ack: true };
-        if (payload.requestId) requestIdRef.current = payload.requestId;
-        watchdogRef.current?.touch();
-        if (payload.conversationId) {
-          useChatStore.getState().adoptConversationId(payload.conversationId);
-        }
-        return { ack: true };
-      },
-    );
+    return on<StreamOpened, { ack: true }>(CHANNELS.STREAM_OPENED, (payload) => {
+      if (payload.runId !== runIdRef.current) return { ack: true };
+      if (payload.requestId) requestIdRef.current = payload.requestId;
+      watchdogRef.current?.touch();
+      if (payload.conversationId) {
+        useChatStore.getState().adoptConversationId(payload.conversationId);
+      }
+      return { ack: true };
+    });
   }, []);
 
   useEffect(() => {
@@ -373,21 +364,17 @@ export function useChatStream() {
       eventCountRef.current += 1;
       watchdogRef.current?.touch();
 
-      if (chunk.type === "text") {
+      if (chunk.type === 'text') {
         if (chunk.payload.content)
-          useChatStore
-            .getState()
-            .appendAssistantText(target, chunk.payload.content);
-      } else if (chunk.type === "reasoning") {
+          useChatStore.getState().appendAssistantText(target, chunk.payload.content);
+      } else if (chunk.type === 'reasoning') {
         // Reasoning chunks are model "thinking" tokens. Append to the
         // active assistant message's parts in arrival order so they show
         // between text + tool entries exactly where the model produced them.
         if (chunk.payload.content)
-          useChatStore
-            .getState()
-            .appendAssistantReasoning(target, chunk.payload.content);
-      } else if (chunk.type === "event") {
-        if (chunk.payload.eventName === "tool_event") {
+          useChatStore.getState().appendAssistantReasoning(target, chunk.payload.content);
+      } else if (chunk.type === 'event') {
+        if (chunk.payload.eventName === 'tool_event') {
           // Two side-effects on top of the regular per-message routing:
           // (a) record category-discovery completions so future requests can
           //     hint `loaded_categories`; (b) push the tool entry as a part
@@ -396,44 +383,41 @@ export function useChatStream() {
           handleDiscoveryToolEvent(convId, chunk.payload.data);
           handleToolEvent(target, chunk.payload.data);
         } else if (
-          chunk.payload.eventName === "resource_changed" ||
-          chunk.payload.eventName === "RESOURCE_CHANGED"
+          chunk.payload.eventName === 'resource_changed' ||
+          chunk.payload.eventName === 'RESOURCE_CHANGED'
         ) {
           // Live tool-set updates. Used by the Tools tab UI to show what the
           // agent currently has available after each load_browser_tools call.
           handleResourceChangedEvent(chunk.payload.data);
-        } else if (chunk.payload.eventName === "injection_consumed") {
+        } else if (chunk.payload.eventName === 'injection_consumed') {
           // Turn-boundary inbox: queued message(s) drained by the running
           // agent. Render them as user bubbles + flip their floating cards.
           handleInjectionConsumed(target, chunk.payload.data);
         } else if (
-          chunk.payload.eventName === "info" &&
-          (chunk.payload.data as { code?: unknown } | undefined)?.code ===
-            "inbox_continue"
+          chunk.payload.eventName === 'info' &&
+          (chunk.payload.data as { code?: unknown } | undefined)?.code === 'inbox_continue'
         ) {
           // The agent had produced what looked like its final answer, but a
           // queued message arrived in the same turn — the run continues rather
           // than going idle. Nothing to render; the answer follows as chunks.
           log.info(
-            "stream",
-            "inbox_continue — agent will address a queued message",
+            'stream',
+            'inbox_continue — agent will address a queued message',
             chunk.payload.data,
           );
         } else {
           // Other events: phase, completion, render_block, etc. — log only.
           log.info(
-            "stream",
+            'stream',
             `event: ${chunk.payload.eventName}`,
             chunk.payload.data,
             chunk.payload.eventName,
           );
         }
-      } else if (chunk.type === "error") {
-        const message = chunk.payload.message ?? "stream error";
-        useChatStore
-          .getState()
-          .appendAssistantText(target, `\n\n_Error:_ ${message}`);
-      } else if (chunk.type === "done") {
+      } else if (chunk.type === 'error') {
+        const message = chunk.payload.message ?? 'stream error';
+        useChatStore.getState().appendAssistantText(target, `\n\n_Error:_ ${message}`);
+      } else if (chunk.type === 'done') {
         watchdogRef.current?.stop();
         useChatStore.getState().finalizeAssistant(target);
         useChatStore.getState().setStreaming(false);
@@ -447,19 +431,19 @@ export function useChatStream() {
   const sendMessage = useCallback(
     async (text: string, opts: SendOptions = {}): Promise<string | null> => {
       if (!opts.agentId) {
-        log.error("stream", "sendMessage called without agentId");
+        log.error('stream', 'sendMessage called without agentId');
         return null;
       }
       const userMsg: ChatMessage = {
-        id: newId("user"),
-        role: "user",
+        id: newId('user'),
+        role: 'user',
         content: text,
         timestamp: Date.now(),
       };
       const assistantMsg: ChatMessage = {
-        id: newId("asst"),
-        role: "assistant",
-        content: "",
+        id: newId('asst'),
+        role: 'assistant',
+        content: '',
         timestamp: Date.now(),
         pending: true,
       };
@@ -469,7 +453,7 @@ export function useChatStream() {
       // Fresh run — clear any prior interruption banner and reset recovery state.
       useChatStore.getState().setStreamInterruption(null);
 
-      const runId = newId("run");
+      const runId = newId('run');
       runIdRef.current = runId;
       targetIdRef.current = assistantMsg.id;
       requestIdRef.current = null;
@@ -488,9 +472,9 @@ export function useChatStream() {
         const decision = await refreshPageContextBeforeSend({
           autoFullScrollOnFirstSubmit: settings.autoFullScrollOnFirstSubmit,
         });
-        log.info("stream", `pre-send page refresh: ${decision.action} (${decision.reason})`);
+        log.info('stream', `pre-send page refresh: ${decision.action} (${decision.reason})`);
       } catch (err) {
-        log.warn("stream", "pre-send page refresh failed", err);
+        log.warn('stream', 'pre-send page refresh failed', err);
       }
 
       // Assemble the per-message context. We ship EVERYTHING we know about the
@@ -530,26 +514,16 @@ export function useChatStream() {
           conversationId: useChatStore.getState().selectedConversationId,
           highlights: attachedHighlights,
         });
-        log.info(
-          "stream",
-          `built context (${Object.keys(context).length} keys)`,
-          {
-            keys: Object.keys(context).sort(),
-          },
-        );
+        log.info('stream', `built context (${Object.keys(context).length} keys)`, {
+          keys: Object.keys(context).sort(),
+        });
       } catch (err) {
-        log.warn(
-          "stream",
-          "buildChatContext failed; sending without context",
-          err,
-        );
+        log.warn('stream', 'buildChatContext failed; sending without context', err);
       }
 
       // Read once at send time so the latched mode follows the run, even if the
       // user toggles the chip mid-stream.
-      const permissionMode = useChatStore
-        .getState()
-        .getPermissionMode(opts.agentId);
+      const permissionMode = useChatStore.getState().getPermissionMode(opts.agentId);
 
       // Build the browser-dom capability state. The server-side discovery
       // handler reads this to decide which tool category to load.
@@ -558,13 +532,12 @@ export function useChatStream() {
       // short-circuit re-discovery.
       const conversationId = opts.conversationId ?? null;
       const loadedCategories = useActiveToolsStore.getState().getLoaded(conversationId);
-      const surface = opts.surface ?? "assistant";
+      const surface = opts.surface ?? 'assistant';
       // Reuse the active tab from above and lift `page_lang` out of the
       // freshly-built context's page_brief so the browser-dom builder
       // doesn't re-query Chrome OR re-fetch the page lang. Both payloads
       // now reference the same Tab and same lang.
-      const briefLang =
-        (context.page_brief as { lang?: string | null } | undefined)?.lang ?? null;
+      const briefLang = (context.page_brief as { lang?: string | null } | undefined)?.lang ?? null;
       const browserDomState = await buildBrowserDomState({
         surface,
         agentId: opts.agentId,
@@ -578,9 +551,7 @@ export function useChatStream() {
       // the active-tab id (the default) would let any focused tab leak
       // into the run, defeating the sandbox.
       const effectiveAssignedTabId =
-        opts.assignedTabId !== undefined
-          ? opts.assignedTabId
-          : browserDomState.current_tab_id;
+        opts.assignedTabId !== undefined ? opts.assignedTabId : browserDomState.current_tab_id;
 
       // Admin-only request overrides (debug, snapshot, block_mode, memory_*,
       // max_iterations, etc). Stripped if the user isn't an admin — defense
@@ -622,8 +593,8 @@ export function useChatStream() {
         context,
         stream: true,
         store: true,
-        source_app: "matrx-extend",
-        source_feature: opts.sourceFeature ?? "chat",
+        source_app: 'matrx-extend',
+        source_feature: opts.sourceFeature ?? 'chat',
         ...adminOverrides,
         ...(configOverrides ? { config_overrides: configOverrides } : {}),
         // New capability envelope. Replaces the old `client_tools` field.
@@ -632,9 +603,9 @@ export function useChatStream() {
         // tool schemas in via `ctx.queue_tool_changes(...)`. Smaller surface
         // every turn, full coverage on demand.
         client: {
-          capabilities: ["browser-dom"],
+          capabilities: ['browser-dom'],
           state: {
-            "browser-dom": browserDomState as unknown as Record<string, unknown>,
+            'browser-dom': browserDomState as unknown as Record<string, unknown>,
           },
         },
       };
@@ -651,7 +622,7 @@ export function useChatStream() {
         runId,
         endpoint: agentExecutePath(opts.agentId),
         body,
-        parser: "rich-events" as const,
+        parser: 'rich-events' as const,
         agentName: opts.agentName ?? null,
         permissionMode,
         assignedTabId: effectiveAssignedTabId,
@@ -665,13 +636,130 @@ export function useChatStream() {
     if (!runIdRef.current) return;
     watchdogRef.current?.stop();
     await send(CHANNELS.STREAM_CANCEL, { runId: runIdRef.current });
-    if (targetIdRef.current)
-      useChatStore.getState().finalizeAssistant(targetIdRef.current);
+    if (targetIdRef.current) useChatStore.getState().finalizeAssistant(targetIdRef.current);
     useChatStore.getState().setStreaming(false);
     useChatStore.getState().setStreamInterruption(null);
     runIdRef.current = null;
     targetIdRef.current = null;
   }, []);
+
+  /**
+   * Open a fresh stream against `/ai/conversations/{id}/resume` to continue
+   * an agent loop that hard-suspended after delegating a client tool. Fired
+   * by the STREAM_CONTINUE subscription below when the SW relays the
+   * `continuation_needed=true` flag from a POST /tool_results response.
+   *
+   * Mirrors `sendMessage()` minus the user-input pieces (no new user bubble,
+   * no `text` to ship, no context refresh — the server reconstructs the
+   * conversation from the DB). A fresh assistant bubble + runId is allocated
+   * so the existing STREAM_CHUNK consumer routes the continuation into a new
+   * message; the previous bubble was already finalized when the suspended
+   * stream ended. See features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md
+   * (matrx-frontend repo) for the full protocol.
+   */
+  const resumeRun = useCallback(
+    async (conversationId: string, userRequestId: string): Promise<string | null> => {
+      // Ignore continuations for conversations the user isn't looking at —
+      // runIdRef holds at most one run, and re-pointing it to a different
+      // conversation would race the active run and steer its chunks into the
+      // wrong bubble. The conversation stays answerable on the server; if the
+      // user navigates back later, manual retry / a new send re-opens it. A
+      // per-conversation run map would lift this constraint — out of scope for v1.
+      const selectedId = useChatStore.getState().selectedConversationId;
+      if (selectedId !== conversationId) {
+        log.info(
+          'stream',
+          `STREAM_CONTINUE ignored — conversation ${conversationId} not selected (selected=${selectedId})`,
+        );
+        return null;
+      }
+      // Defensive: only resume from a fully idle hook state. A live run for
+      // some other reason (the inline-waiter path still streamed under us, or
+      // a previous resume hasn't ended) means continuation_needed shouldn't
+      // have been true server-side, but skip rather than race.
+      if (runIdRef.current) {
+        log.warn('stream', 'STREAM_CONTINUE skipped — a run is already active', {
+          activeRunId: runIdRef.current,
+          conversationId,
+        });
+        return null;
+      }
+
+      const assistantMsg: ChatMessage = {
+        id: newId('asst'),
+        role: 'assistant',
+        content: '',
+        timestamp: Date.now(),
+        pending: true,
+      };
+      useChatStore.getState().pushMessage(assistantMsg);
+      useChatStore.getState().setStreaming(true);
+      useChatStore.getState().setStreamInterruption(null);
+
+      const runId = newId('run');
+      runIdRef.current = runId;
+      targetIdRef.current = assistantMsg.id;
+      requestIdRef.current = null;
+      eventCountRef.current = 0;
+      // lastSendRef intentionally NOT overwritten — Retry should still
+      // replay the user's actual last input, not a synthetic resume body.
+      watchdogRef.current?.start();
+
+      // Mirror sendMessage's capability envelope so the resumed loop's tools
+      // resolve identically. The server's discovery handler reads
+      // client.state["browser-dom"] to load tool categories; reconstructing
+      // it from a fresh activeTab keeps the resumed loop pointed at the
+      // user's CURRENT page state (and not a stale snapshot from the
+      // pre-suspend turn).
+      const activeTab = await resolveActiveTab();
+      const loadedCategories = useActiveToolsStore.getState().getLoaded(conversationId);
+      const browserDomState = await buildBrowserDomState({
+        surface: 'assistant',
+        loadedCategories,
+        activeTab,
+        pageLang: null,
+      });
+
+      const body: Record<string, unknown> = {
+        user_request_id: userRequestId,
+        client: {
+          capabilities: ['browser-dom'],
+          state: {
+            'browser-dom': browserDomState as unknown as Record<string, unknown>,
+          },
+        },
+      };
+
+      await send(CHANNELS.STREAM_START, {
+        runId,
+        endpoint: conversationResumePath(conversationId),
+        body,
+        parser: 'rich-events' as const,
+        agentName: null,
+        permissionMode: useChatStore.getState().getPermissionMode(null),
+        assignedTabId: browserDomState.current_tab_id,
+      });
+      log.info('stream', `resume started for ${conversationId}`, { runId, userRequestId });
+      return runId;
+    },
+    [],
+  );
+
+  // SW → sidepanel: a POST /tool_results came back with
+  // continuation_needed=true. The SW broadcasts {conversationId, userRequestId};
+  // we open a fresh /resume stream. The aidream backend's hard-suspend
+  // (_suspend_for_delegation) means the original stream is GONE the moment a
+  // client tool gets delegated — without this, the user submits an answer and
+  // nothing happens. See matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md.
+  useEffect(() => {
+    return on<{ conversationId: string; userRequestId: string }, { ack: true }>(
+      CHANNELS.STREAM_CONTINUE,
+      (payload) => {
+        void resumeRun(payload.conversationId, payload.userRequestId);
+        return { ack: true };
+      },
+    );
+  }, [resumeRun]);
 
   // Re-send the interrupted turn. Until backend resume ships, recovery is a
   // replay of the last user input (a fresh turn), which clears the banner.

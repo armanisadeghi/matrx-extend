@@ -22,6 +22,15 @@ export const CHANNELS = {
   STREAM_KILL: 'stream:kill', // SW → offscreen: abort the fetch
   STREAM_CHUNK: 'stream:chunk', // offscreen → all surfaces
   STREAM_OPENED: 'stream:opened', // offscreen → all: { runId, conversationId, requestId } once the SSE response opens
+  // SW → sidepanel: a posted /tool_results came back with
+  // continuation_needed=true. The aidream backend hard-suspends and ENDS the
+  // stream the moment a client-delegated tool is pending; once the user
+  // answers, the server flags continuation_needed=true and returns the owning
+  // user_request_id. The sidepanel opens a fresh stream against
+  // /ai/conversations/{id}/resume to continue the loop. Payload:
+  // { conversationId, userRequestId }. See the canonical protocol at
+  // matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md.
+  STREAM_CONTINUE: 'stream:continue',
 
   // Demo recording — content script (in active recording tab) sends a
   // captured user event to the SW recorder.

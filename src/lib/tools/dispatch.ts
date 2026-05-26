@@ -32,21 +32,18 @@ import { BROWSER, isBrowserSupported } from '@/lib/browser/detect';
 import { log } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import {
-  type OptionalPermission,
-  hasOptionalPermissions,
-} from '@/lib/permissions/optional';
+import { type OptionalPermission, hasOptionalPermissions } from '@/lib/permissions/optional';
 import { recordToolEvent } from '@/lib/recording/state';
 import { localFromCanonical, resolveToolName, suggestSimilar } from '@/lib/tools/aliases';
 import { getToolDescription, primeToolDescriptions } from '@/lib/tools/descriptions';
 import { allToolNames, lookup as lookupTool } from '@/lib/tools/registry';
-import { getPilotSessionSnapshot } from '@/state/pilot';
 import type {
   AnyToolHandler,
   ConfirmResponse,
   PendingConfirmRequest,
   ToolContext,
 } from '@/lib/tools/types';
+import { getPilotSessionSnapshot } from '@/state/pilot';
 
 interface RunMeta {
   conversationId: string | null;
@@ -491,7 +488,7 @@ async function postResult(
     log.warn('sw', `cannot POST tool_results for ${handler.name} — no conversation_id yet`);
     return;
   }
-  await postToolResults(ctx.conversationId, [
+  const r = await postToolResults(ctx.conversationId, [
     {
       call_id: ctx.callId,
       tool_name: handler.name,
@@ -500,6 +497,30 @@ async function postResult(
       error_message: errorMessage,
     },
   ]);
+
+  // Continuation handshake. aidream's _suspend_for_delegation HARD-SUSPENDS
+  // when any client-delegated tool is pending — it persists the turn, emits a
+  // `complete` phase, and ends the stream. The originating SSE is therefore
+  // gone by the time we POST the result here. When the live in-memory waiter
+  // is GONE (the recovery path) AND no delegated calls remain outstanding,
+  // the server flags `continuation_needed=true` and we MUST open a fresh
+  // stream against /ai/conversations/{id}/resume — otherwise the user
+  // submits an answer and nothing happens.
+  //
+  // The sidepanel owns the assistant-bubble lifecycle (runIdRef / targetIdRef
+  // live there), so we broadcast a signal; use-chat-stream picks it up,
+  // mirrors `send()` to allocate a fresh assistant bubble + runId, then
+  // STREAM_STARTs against the resume path. See the canonical protocol at
+  // matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md.
+  if (r.ok && r.data.continuation_needed && r.data.user_request_id) {
+    log.info('sw', `continuation_needed → broadcast STREAM_CONTINUE for ${ctx.conversationId}`, {
+      userRequestId: r.data.user_request_id,
+    });
+    broadcast(CHANNELS.STREAM_CONTINUE, {
+      conversationId: ctx.conversationId,
+      userRequestId: r.data.user_request_id,
+    });
+  }
 }
 
 interface ConfirmResult {

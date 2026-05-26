@@ -1,9 +1,32 @@
-# Stream resume protocol (proposed) — backend coordination
+# Stall-recovery cursor-replay (proposed) — backend coordination
 
 > Status: **client scaffold shipped, backend not yet implemented.**
 > Owner of the client side: matrx-extend (`src/lib/stream/resume.ts` +
 > `src/lib/stream/watchdog.ts`). Owner of the server side: aidream
 > (`/ai/agent` streaming route). Coordinate via the `connect-aidream` skill.
+>
+> ---
+>
+> **⚠ NOT the durable client-tool resume (which ships TODAY).**
+>
+> This document specifies a separate, future feature: recovering an interrupted
+> live stream (network drop, tab sleep, watchdog stall) by REPLAYING the
+> unsent tail of a still-live run. It is keyed by `request_id` + `cursor`,
+> the watchdog is the trigger, and it must NOT trigger any tool side effects.
+>
+> The DIFFERENT mechanism that handles "the user just answered a client-tool;
+> the loop hard-suspended and we need to continue it" is the
+> `POST /ai/conversations/{id}/resume` endpoint and the `STREAM_CONTINUE`
+> broadcast, both LIVE and operational. That round-trip is documented in
+> the canonical protocol doc:
+>     matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md
+>
+> Wiring on this side: `src/lib/tools/dispatch.ts::postResult` →
+> `CHANNELS.STREAM_CONTINUE` → `useChatStream::resumeRun`.
+>
+> Do not conflate the two. This file is the FUTURE stall-recovery feature.
+>
+> ---
 
 ## Why
 
