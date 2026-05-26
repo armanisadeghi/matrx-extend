@@ -74,6 +74,67 @@ The server-to-extension event you watch for is
 to this and updates `useActiveToolsStore` so the next request hints the
 loaded categories back. No new event plumbing needed.
 
+## Client-tool resume contract (load-bearing — read before touching tool results)
+
+The aidream backend HARD-SUSPENDS the loop when a client-delegated tool is
+pending: it persists the turn, emits a `complete` phase, and **ends the
+SSE stream**. The originating stream is GONE the moment the model
+delegates a client tool. To continue, the extension must:
+
+1. POST the tool result through `postToolResults`
+   (`src/lib/api/routes/tool-results.ts`) — the ONE funnel.
+2. Read the response. When `data.continuation_needed === true`, broadcast
+   `CHANNELS.STREAM_CONTINUE` with `{conversationId, userRequestId}`. The
+   SW dispatcher already does this in `dispatch.ts::postResult` — do NOT
+   add a second tool-result POST path that bypasses it.
+3. The sidepanel's `useChatStream` subscribes to `STREAM_CONTINUE` and
+   runs `resumeRun(conversationId, userRequestId)`: pushes a fresh
+   assistant bubble, allocates a new `runId`, rebuilds the
+   `client.state["browser-dom"]` envelope against the current active tab,
+   and `STREAM_START`s against `conversationResumePath(conversationId)`.
+   The existing `STREAM_CHUNK` consumer routes the continuation chunks
+   into the new bubble.
+
+**Invariant.** Never wait on the original stream after a `tool_delegated`
+event. It has ended. Adding a "listen for more events on the closed
+stream" pattern reintroduces the entire bug class this protocol exists
+to kill.
+
+**Disambiguation — `src/lib/stream/resume.ts::attemptResume` is NOT this.**
+That file is the SEPARATE, still-unbuilt **stall-recovery cursor-replay**
+feature (keyed by `request_id` + a cursor of events seen; triggered by
+the watchdog on a stall). It points at `GET /ai/agent/runs/{request_id}/resume?cursor=`
+which the backend has not built. Do not conflate. The canonical doc that
+covers both, with the differences laid out, is
+[`matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md`](../../../../../matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md).
+
+### Wire shape
+
+```
+SW → server:  POST /ai/conversations/{id}/tool_results
+              body: { results: [{call_id, tool_name, output, is_error, error_message}] }
+
+server → SW:  200 { resolved, already_resolved, not_found,
+                     continuation_needed: bool,
+                     user_request_id: string|null,
+                     conversation_id: string }
+
+(if continuation_needed === true)
+
+SW → sidepanel (broadcast):  CHANNELS.STREAM_CONTINUE
+                              { conversationId, userRequestId }
+
+sidepanel → server:  POST /ai/conversations/{id}/resume
+                     body: { user_request_id, client: { capabilities: [...], state: {...} } }
+                     → 200 NDJSON stream of the continuation
+                     → 409 outstanding_delegated_calls (more answers still pending)
+                     → 404 conversation not found
+```
+
+The server reconstructs the conversation from the DB on every `/resume`
+call; the answer the SW just POSTed is already embedded — do NOT include
+the tool result in the resume body.
+
 ## File index (extension side)
 
 | File | Role |
