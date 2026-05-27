@@ -4,7 +4,8 @@
 > destination under the new "user mental model" taxonomy. Annotate the
 > `notes` column with: `OK`, a different category, "rename to X", or
 > "delete (replaced by Y)" and hand it back — I'll execute the moves
-> against `tl_def.category` in one batch.
+> against `tool_def.category` in one batch. (Table renamed from `tl_def`
+> in the 2026-05-27 tool refactor.)
 >
 > Reminder: categories are pure UX (Tools tab grouping, discovery-helper
 > grouping). They do not affect routing or the LLM's behavior.

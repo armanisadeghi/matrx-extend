@@ -13,7 +13,6 @@ import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { attemptResume } from '@/lib/stream/resume';
 import { createStreamWatchdog } from '@/lib/stream/watchdog';
-import { resolveToolName } from '@/lib/tools/aliases';
 import { lookup as lookupTool } from '@/lib/tools/registry';
 import { useActiveToolsStore } from '@/state/active-tools';
 import { projectAdminFlagsToRequest, useAdminFlagsStore } from '@/state/admin-flags';
@@ -157,23 +156,13 @@ function handleToolEvent(messageId: string, data: Record<string, unknown> | unde
   const wireName = String(data.tool_name ?? '');
   if (!callId || !wireName) return;
 
-  // Normalize the wire name (e.g. `matrx-extend__take_screenshot`) to the
-  // bare local name the registry + display-config use (`take_screenshot`).
-  // Without this, lookupTool fails, kind is mis-set to 'server', and the
-  // tool-display registry can't find a config — the polished phase-aware
-  // header (Loader2 → final icon, "Reading page" → "Read page", etc.)
-  // never renders. Prefer the server-supplied canonical_name when present.
-  const canonicalName =
-    (data.canonical_name as string | undefined) ??
-    (data.canonicalName as string | undefined) ??
-    null;
-  const resolved = canonicalName
-    ? { local: canonicalName.split(':').pop() ?? canonicalName, bundle: null }
-    : resolveToolName(wireName);
-  const toolName = resolved.local;
+  // Post-2026-05-27 tool refactor every `tool_def.name` is a bare
+  // identifier (per docs/official/tool_system_rules.md R11). The wire
+  // `tool_name` is the registry key directly — no prefix stripping, no
+  // canonical_name fallback, no alias map.
+  const toolName = wireName;
 
-  // Kind is derived from whether the RESOLVED name is in our client
-  // registry — must use the bare form, since the registry is keyed there.
+  // Kind is derived from whether the wire name is in our client registry.
   const kind: 'server' | 'client' = lookupTool(toolName) ? 'client' : 'server';
   const message = typeof data.message === 'string' ? data.message : undefined;
   const inner = (data.data ?? {}) as Record<string, unknown>;

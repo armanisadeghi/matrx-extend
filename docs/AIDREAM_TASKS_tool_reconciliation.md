@@ -1,5 +1,19 @@
 # aidream server — tool-reconciliation tasks (2026-05-24) — ✅ COMPLETE
 
+> **Schema rename note (2026-05-27).** The body below references the
+> pre-refactor table names (`tl_def`, `tl_executor`, `tl_def_surface`,
+> `cx_tl_call`, `source_app`, `function_path`). aidream's clean-break
+> tool refactor renamed all of them — see
+> [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md).
+> Map: `tl_def` → `tool_def`; `tl_executor` (M2M) → `tool_binding`
+> (`executor_name` not `surface`); `tl_def_surface` → DROPPED →
+> `tool_surface_defaults.always_include_tools` arrays;
+> `cx_tl_call` → `cx_tool_call`; `source_app='matrx-extend'` →
+> `tool_binding.executor_name='chrome-extension'`; `function_path` is
+> gone entirely (Python dispatch path lives in the owning runtime's
+> registry, not the DB). The historical conclusions in this doc are
+> still accurate; only the table identifiers moved.
+
 All items below were verified/closed on the aidream side. Details live in
 aidream's `TOOL_SOURCE_OF_TRUTH.md`.
 

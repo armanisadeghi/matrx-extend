@@ -295,7 +295,7 @@ export function ChatView() {
       return;
     }
     void (async () => {
-      // Tool outputs live in a separate table (cx_tl_call) joined by call_id —
+      // Tool outputs live in a separate table (cx_tool_call) joined by call_id —
       // fetch both in parallel so tool rows render with their actual results
       // instead of being stuck in 'started'. NEVER let a single malformed
       // row blank the entire conversation (silent fail we hit on 0.1.23):

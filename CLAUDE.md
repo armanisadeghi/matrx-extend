@@ -23,7 +23,8 @@
   The model calls `load_browser_tools({category})` to pull in the matching
   category's tools mid-turn. Server-side discovery handler reads
   `client.state["browser-dom"]` (admin? perms? desktop bridge?) and routes
-  via DB rows in `public.tools` — see
+  via DB rows in `public.tool_def` (joined with `public.tool_binding`
+  where `executor_name='chrome-extension'`) — see
   [docs/MATRX_EXTEND_MIGRATION_GUIDE.md](./docs/MATRX_EXTEND_MIGRATION_GUIDE.md)
   for the post-redesign source-of-truth flow. The previously-emitted
   `types/server-handoff/browser-dom-capability.json` was retired in
@@ -53,21 +54,29 @@
   TOOL_ROUTING_RULES.md §16, categories are pure UX — they affect
   Tools-tab grouping and discovery helpers, NEVER routing. The LLM only
   sees (name, description, schema).
-- **Drift script v2 (2026-05-19)** —
+- **Drift script v3 (2026-05-27)** —
   [`scripts/check-tool-db-drift.ts`](./scripts/check-tool-db-drift.ts)
-  now checks four DB tables, not one:
-  1. `tl_def` — name + description + tier + admin_only + parameters +
-     **category** (newly added)
-  2. `tl_executor` — every advertised tool MUST have an active row for
-     `surface='matrx-extend.browser'`. Missing = server can't route.
-  3. `tl_def_surface` — every advertised tool MUST be gated for at
-     least one chrome-extension/{assistant,pilot} surface. Missing =
-     discovery handler never shows it.
-  4. Orphan gates — `tl_def_surface` rows pointing at deleted tools.
+  was rewritten against the post-tool-refactor schema (see the master
+  reference at
+  [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md)).
+  It now checks three DB tables:
+  1. `tool_def` — name + description + tier + admin_only + parameters +
+     category. Replaces `tl_def`; `source_app` and `function_path`
+     columns are gone.
+  2. `tool_binding` — pure (tool_id, executor_name, is_active) M2M.
+     Every advertised tool MUST have an active row for
+     `executor_name='chrome-extension'` (or a `chrome-extension.*`
+     sub-executor). Missing = resolver can't route. Replaces
+     `tl_executor`; `surface='matrx-extend.browser'` is no longer the
+     ownership concept — the executor name is.
+  3. `tool_surface_defaults` — every advertised tool MUST appear in
+     `always_include_tools` for at least one of
+     `chrome-extension/{assistant,pilot}`. Missing = discovery handler
+     never shows it. Replaces `tl_def_surface`.
   Wired into `release.sh` as before; new failure modes are surfaced
   inline + repeated in the end-of-release loud banner.
-- **Global tool namespace (2026-05-19, complete)** — the
-  `matrx-extend:` colon-prefix is GONE from every row in `tl_def`.
+- **Global tool namespace (2026-05-19, complete; verified after the 2026-05-27 refactor)** — the
+  `matrx-extend:` colon-prefix is GONE from every row in `tool_def`.
   Three tiers replace it:
   1. **Bare global names** (~58 tools) — UI-first + everything
      Playwright can also do. Examples: `update_plan`, `tasks`,
@@ -76,7 +85,8 @@
      `form_input`, `evaluate_javascript`, `clipboard`, `ai`,
      `record_demo`, `replay_demo`, `desktop_run_command`, ...
      A Next.js surface that registers a handler for the same name
-     shares the same `tl_def` row — one tool, multiple impls.
+     shares the same `tool_def` row — one tool, multiple impls (each
+     surface's claim is its own row in `tool_binding`).
   2. **`chrome_*` bare prefix** (9 tools) — genuinely
      Chrome-extension-exclusive. Examples: `chrome_cookies`,
      `chrome_bookmarks`, `chrome_history`, `chrome_recently_closed`,
@@ -92,6 +102,36 @@
   Retired: `matrx-extend:memory` (mega-tool). Use the matrx_ai
   canonical `memory` for persistent memory; the new bare-name
   `scratchpad` for ephemeral in-session kv.
+- **Tool registry refactor (2026-05-27, server-side)** — aidream rolled
+  out a clean break of the registry schema. Old → new table renames:
+  `tl_def` → `tool_def` (dropped `source_app`, `function_path`,
+  `privileged`, `deactivated_at`; added `source_kind`,
+  `managed_by_server_id`); `tl_executor_kind` → `tool_executor` (added
+  `parent_executor_name` for inheritance, `mcp_server_id`);
+  `tl_executor` (M2M) → `tool_binding` (pure join; `tool_id`,
+  `executor_name`, `is_active`; dropped `delegated`, `priority`,
+  `auto_load`, `function_path`, `source_app`); `tl_def_surface` →
+  DROPPED (replaced by `tool_surface_defaults.always_include_tools` and
+  `.never_include_tools` arrays per surface); `tl_gate` → DROPPED
+  (gates live in matrx_ai code, referenced by name in
+  `tool_def.gating` jsonb); `tl_bundle{,_member}` →
+  `tool_bundle{,_member}` (schema unchanged); `cx_tl_call` →
+  `cx_tool_call` (columns unchanged); `tl_mcp_*` → `tool_mcp_*`. The
+  policy: **no legacy support, no shim** — old table names hit HTTP 404
+  the instant the migration applied. **For the extension this is mostly
+  invisible**: the capability envelope, the chat stream, and the tool
+  dispatch flow are all unchanged. What did change in this repo:
+  (1) [src/lib/supabase/queries.ts](./src/lib/supabase/queries.ts)
+  reads `cx_tool_call` instead of `cx_tl_call` when hydrating
+  conversation history with tool results;
+  (2) [src/lib/tools/descriptions.ts](./src/lib/tools/descriptions.ts)
+  queries `public.tool_def` via Supabase REST instead of the retired
+  `GET /ai-tools/app/matrx-extend` aidream endpoint;
+  (3) the drift + dump scripts under `scripts/` were rewritten against
+  the new tables. The 48 active `tool_binding` rows for
+  `executor_name='chrome-extension'` are this extension's claim on
+  tools — that's the single ownership fact. Master reference:
+  [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md).
 - **Plan / Tasks / User-Todos (2026-05-19)** — three linked surfaces
   that pair with the existing `update_plan` flow.
   - **Plan** — what the user approved; persisted per-conversation,
@@ -331,12 +371,13 @@ are also always-on so the agent can ask for any category by name.
   structural contract only)
 - `pnpm catalog:tools:md` — adds `types/tool-catalog.md`
 - `pnpm docs:tools` — writes `docs/TOOLS.generated.md` **from the DB**
-  (`tl_def`, source_app=matrx-extend). This is the ONLY repo copy of tool
-  descriptions (Rule 4, [docs/TOOL_SOURCE_OF_TRUTH.md](./docs/TOOL_SOURCE_OF_TRUTH.md)).
+  (`tool_def` joined with `tool_binding` where `executor_name='chrome-extension'`).
+  This is the ONLY repo copy of tool descriptions (Rule 4,
+  [docs/TOOL_SOURCE_OF_TRUTH.md](./docs/TOOL_SOURCE_OF_TRUTH.md)).
 
 Code-sourced entry: `{ name, tier, input_schema (JSON Schema 7),
 required_permissions, surface_bundles }`. Diffable against the DB.
-**Descriptions are NOT in code** — they live only in `tl_def` and are read
+**Descriptions are NOT in code** — they live only in `tool_def` and are read
 live for UI via [src/lib/tools/descriptions.ts](./src/lib/tools/descriptions.ts)
 (approval card, Tools tab) and the client discovery / WebMCP / frontend-bridge
 tools. Never reintroduce a hardcoded `description` on a `ToolHandler`.
@@ -797,9 +838,12 @@ extension changes needed when it lands.
 
 **Where tool definitions live (May 2026 redesign):**
 
-- **Canonical source of truth:** `public.tools` rows in the aidream DB.
-  The 0022 seed migration ingested the original 118 tools; ongoing
-  changes go through admin API or SQL seed PRs against aidream.
+- **Canonical source of truth:** `public.tool_def` rows in the aidream
+  DB (renamed from `public.tools` / `public.tl_def` in the 2026-05-27
+  refactor), with ownership on `public.tool_binding`
+  (`executor_name='chrome-extension'`) — not on a column. The original
+  118 tools landed via the 0022 seed migration; ongoing changes go
+  through admin API or SQL seed PRs against aidream.
 - **Local handlers:** `src/lib/tools/handlers/*.ts` (unchanged).
 - **Wire-format aliasing:** [`src/lib/tools/aliases.ts`](./src/lib/tools/aliases.ts)
   strips `matrx-extend__` and bundle prefixes, plus a small map for
@@ -813,8 +857,8 @@ extension changes needed when it lands.
   matrx-extend-tool-display skill. The in-extension Tools tab reads tool
   descriptions LIVE from the DB (`src/lib/tools/descriptions.ts`). Not
   authoritative for aidream.
-- **Tool descriptions (Rule 4):** live ONLY in `tl_def`. The repo's single copy
-  is the auto-generated `docs/TOOLS.generated.md` (`pnpm docs:tools`). No
+- **Tool descriptions (Rule 4):** live ONLY in `tool_def`. The repo's single
+  copy is the auto-generated `docs/TOOLS.generated.md` (`pnpm docs:tools`). No
   hardcoded descriptions in handlers; UI/discovery read them live.
 
 ## 👤 Guest mode (2026-05-16)
@@ -963,10 +1007,12 @@ Full incident write-up: [`.research/v0.1.4-auth-incident.md`](./.research/v0.1.4
   [docs/TOOL_SOURCE_OF_TRUTH.md](./docs/TOOL_SOURCE_OF_TRUTH.md)): never add a
   `description` to a `ToolHandler` or a `.describe()` to its Zod args. UI and
   discovery read descriptions live via
-  [src/lib/tools/descriptions.ts](./src/lib/tools/descriptions.ts)
-  (`GET /ai-tools/app/matrx-extend`). To change a tool, change `tl_def` first
-  (admin API / migration), then bring the Zod into line until
-  `pnpm catalog:tools:drift` is quiet. There is no code→DB sync.
+  [src/lib/tools/descriptions.ts](./src/lib/tools/descriptions.ts) — which
+  queries `public.tool_def` directly via Supabase REST (the older aidream
+  `GET /ai-tools/app/matrx-extend` endpoint was retired in the 2026-05-27
+  refactor since `source_app` is no longer a column). To change a tool,
+  change `tool_def` first (admin API / migration), then bring the Zod into
+  line until `pnpm catalog:tools:drift` is quiet. There is no code→DB sync.
 - **Document tests for everything user-visible**: when you add or
   meaningfully change any tool, UI surface, or feature, add or update
   its entry in [`docs/feature-tests.md`](./docs/feature-tests.md)

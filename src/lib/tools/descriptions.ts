@@ -2,69 +2,60 @@
  * Live tool descriptions — read from the database (the source of truth), never
  * hardcoded in this repo (Rule 4, docs/TOOL_SOURCE_OF_TRUTH.md).
  *
- * The model never needs descriptions from us: aidream injects `tl_def`
+ * The model never needs descriptions from us: aidream injects `tool_def`
  * descriptions server-side. But human-facing UI (the approval card, the Tools
  * tab) and the client discovery tools display them, so we fetch them LIVE from
- * aidream's public tools endpoint and hold the result in memory for the
- * session. No persisted snapshot — refreshed each SW / sidepanel lifecycle, so
- * the truth is never served stale.
+ * Supabase and hold the result in memory for the session. No persisted
+ * snapshot — refreshed each SW / sidepanel lifecycle, so the truth is never
+ * served stale.
  *
- * Channel: `GET /ai-tools/app/matrx-extend` (public; returns
- * `{id,name,description,source_app}` per tool) via the shared `apiGet` client.
+ * Channel: direct Supabase REST `GET public.tool_def?select=name,description`,
+ * gated by RLS on the publishable key. Replaces the retired
+ * `GET /ai-tools/app/matrx-extend` endpoint (deleted in the 2026-05-27 tool
+ * refactor — the new aidream router no longer filters by `source_app`).
+ *
+ * Tool names are globally unique (`tool_def.name` UNIQUE constraint — see
+ * docs/official/tool_system_rules.md "Tool" definition), so caching every
+ * active row's description is safe: there's no risk of name collision
+ * between our handlers and another executor's tools sharing a name.
  */
-import { apiGet } from '@/lib/api/client';
 import { log } from '@/lib/debug/log';
-
-/**
- * Chrome-extension-exclusive tools carry the legacy `matrx-extend:` prefix in
- * `tl_def.name`; UI-first tools live at bare names. Strip the prefix so lookups
- * key by the same bare name the local handlers use. Mirrors `normalizeName` in
- * scripts/check-tool-db-drift.ts.
- */
-const DB_PREFIX = 'matrx-extend:';
-function normalizeName(name: string): string {
-  return name.startsWith(DB_PREFIX) ? name.slice(DB_PREFIX.length) : name;
-}
-
-interface ToolRecord {
-  name?: string | null;
-  description?: string | null;
-}
-interface ListToolsByAppResponse {
-  tools?: ToolRecord[] | null;
-}
+import { getSupabase } from '@/lib/supabase/client';
 
 let cache: Map<string, string> | null = null;
 let inflight: Promise<Map<string, string>> | null = null;
 
 /**
- * Fetch (once per session) the bare-name → description map for matrx-extend
- * tools. Cached in memory; concurrent callers share the in-flight promise.
- * Failures are NOT cached (so a later call retries) and resolve to an empty map
- * so callers degrade gracefully — UI shows name + args, never a stale string.
+ * Fetch (once per session) the name → description map for every active tool
+ * in `public.tool_def`. Cached in memory; concurrent callers share the
+ * in-flight promise. Failures are NOT cached (so a later call retries) and
+ * resolve to an empty map so callers degrade gracefully — UI shows name +
+ * args, never a stale string.
  */
 export async function ensureToolDescriptions(): Promise<Map<string, string>> {
   if (cache) return cache;
   if (inflight) return inflight;
   inflight = (async () => {
     try {
-      const res = await apiGet<ListToolsByAppResponse>('/ai-tools/app/matrx-extend', undefined, {
-        silent: true,
-      });
-      if (res.ok && res.data?.tools) {
-        const map = new Map<string, string>();
-        for (const t of res.data.tools) {
-          if (t?.name && typeof t.description === 'string' && t.description) {
-            map.set(normalizeName(t.name), t.description);
-          }
-        }
-        cache = map;
-        return map;
+      const c = getSupabase();
+      const { data, error } = await c
+        .from('tool_def')
+        .select('name, description')
+        .eq('is_active', true);
+      if (error) {
+        log.warn('api', 'tool-description fetch failed; UI shows names only', error.message);
+        return new Map<string, string>();
       }
-      log.warn('api', 'tool-description fetch returned no tools; UI shows names only');
-      return new Map<string, string>();
+      const map = new Map<string, string>();
+      for (const row of (data ?? []) as Array<{ name: string | null; description: string | null }>) {
+        if (row?.name && typeof row.description === 'string' && row.description) {
+          map.set(row.name, row.description);
+        }
+      }
+      cache = map;
+      return map;
     } catch (err) {
-      log.warn('api', 'tool-description fetch failed; UI shows names only', err);
+      log.warn('api', 'tool-description fetch threw; UI shows names only', err);
       return new Map<string, string>();
     } finally {
       inflight = null;
@@ -75,7 +66,7 @@ export async function ensureToolDescriptions(): Promise<Map<string, string>> {
 
 /** Synchronous lookup from the in-memory cache. Undefined until loaded. */
 export function getToolDescription(name: string): string | undefined {
-  return cache?.get(normalizeName(name));
+  return cache?.get(name);
 }
 
 /** Snapshot of the current cache (empty until loaded) — for React seeding. */

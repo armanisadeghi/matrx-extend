@@ -8,25 +8,31 @@
 > platform. It leaves nothing to interpretation. If code disagrees with this
 > document, the code is wrong.
 
-_Last updated: 2026-05-23._
+_Last updated: 2026-05-27 — the table names were renamed by aidream's
+clean-break tool-system refactor; see
+[/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md)
+for the authoritative shape. This document was updated in place — the
+rules are unchanged; only the table names moved._
 
 ---
 
 ## The Rules (non-negotiable)
 
-1. **The database is the source of truth. The `public.tl_def` table.** Every tool's
-   name, description, parameters (arguments), tier, category, and per-surface
-   availability live in the database. Nothing in the codebase is authoritative.
+1. **The database is the source of truth. The `public.tool_def` table.** Every
+   tool's name, description, parameters (arguments), tier, category, and
+   per-surface availability live in the database. Nothing in the codebase is
+   authoritative.
 
 2. **A tool's name and its availability in any UI/surface come from the database.**
-   `tl_def` (the definition) + `tl_executor` (which surface runs it) +
-   `tl_def_surface` (which surface is allowed to see it). A surface MUST NOT invent,
-   rename, re-scope, or hide a tool in code. If it isn't in the database for that
-   surface, it does not exist for that surface.
+   `tool_def` (the definition) + `tool_binding` (which executor runs it —
+   ownership) + `tool_surface_defaults.always_include_tools` (which surface
+   is allowed to see it). A surface MUST NOT invent, rename, re-scope, or
+   hide a tool in code. If it isn't in the database for that surface, it
+   does not exist for that surface.
 
 3. **A tool's arguments in code must be exactly verifiable against the database.**
-   Code may declare ONLY arguments that match `tl_def.parameters` — same names,
-   types, required-ness, defaults, and enum values.
+   Code may declare ONLY arguments that match `tool_def.parameters` — same
+   names, types, required-ness, defaults, and enum values.
    - **Python** → a **Pydantic model** (a `ToolArgs` subclass) registered with
      `@tool(args=...)` in `matrx_ai.tools.declared`, **and the executor validates
      every incoming tool call against that exact model** before dispatch
@@ -62,10 +68,16 @@ _Last updated: 2026-05-23._
 
 ### What "match" means (exactly what the engine checks)
 
-For every tool the code claims to run: **identity** (name), **location**
-(`function_path`), **ownership** (`source_app` / executor surface), and the **argument
-set** — for every field: name, type, required-ness, default, and enum values.
-Descriptions are NOT checked (they are not code).
+For every tool the code claims to run: **identity** (name), **ownership**
+(an active row in `tool_binding` for `executor_name='chrome-extension'`),
+**surface inclusion** (the tool name listed in
+`tool_surface_defaults.always_include_tools` for at least one of
+`chrome-extension/{assistant,pilot}`), and the **argument set** — for every
+field: name, type, required-ness, default, and enum values. Descriptions
+are NOT checked (they are not code). Note: `function_path` and `source_app`
+are no longer DB columns post-2026-05-27 — Python dispatch paths live in
+the owning runtime's local registry, and ownership lives on the binding
+row, not on a column.
 
 ---
 
@@ -91,7 +103,7 @@ entirely (violates Rule 3).
 - **Fix (APPROVED):** register the **per-action** arg models (`WebSearchArgs`,
   `DbQueryArgs`, …) so the executor validates against the model the code truly runs
   AND the engine diffs that model against the DB. Requires a DB modeling decision:
-  one `tl_def` row per action, or per-action sub-schemas under one row.
+  one `tool_def` row per action, or per-action sub-schemas under one row.
 
 ### GAP 2 — Descriptions are still hardcoded in code  🔴 MUST REMOVE (Rule 4)
 - **matrx-extend:** ✅ FIXED. The 166 hardcoded `description` strings were removed
@@ -99,12 +111,14 @@ entirely (violates Rule 3).
   `ToolHandler` / `ToolCatalogEntry` / `PendingConfirmRequest`. (The earlier
   framing — "the permission-confirm card must read the description from the DB at
   runtime" — was imprecise: the extension never feeds descriptions to a model;
-  aidream injects `tl_def` descriptions server-side. The only consumers were
+  aidream injects `tool_def` descriptions server-side. The only consumers were
   human-facing UI (approval card, Tools tab) and the client discovery / WebMCP /
   frontend-bridge tools.) Those now read descriptions **LIVE from the DB** via
-  aidream's public `GET /ai-tools/app/matrx-extend`
+  a direct Supabase REST query on `public.tool_def`
   ([src/lib/tools/descriptions.ts](../src/lib/tools/descriptions.ts)) — no stale
-  local copy. The single repo copy of descriptions is the auto-generated
+  local copy. The older aidream `GET /ai-tools/app/matrx-extend` endpoint was
+  retired in the 2026-05-27 refactor since `source_app` is no longer a column.
+  The single repo copy of descriptions is the auto-generated
   `docs/TOOLS.generated.md` (`pnpm docs:tools`, regenerated on every `release.sh`).
 - **aidream:** ~128 `Field(description=...)` across
   `packages/matrx-ai/matrx_ai/tools/arg_models/*.py` (9 files). Dead today (the DB
@@ -131,13 +145,13 @@ matrx-user.ui-first, server:matrx_ai).
 - **`memory` (name collision).** 🟡 IN PROGRESS. The web app registered a client-side,
   single-session **scratchpad** (`get/set/list/delete` on `cx_agent_memory`) under the
   name `memory`, colliding with the server's persistent **semantic memory** tool
-  (`source_app=matrx_ai`: `recall/search/store/update/forget`).
+  (`tool_binding.executor_name='matrx-ai-core'`: `recall/search/store/update/forget`).
   **DECISION:** rename the ephemeral client tool to **`scratchpad`** (short-lived,
   one session) everywhere; **`memory`** is reserved exclusively for the persistent
   semantic tool. matrx-frontend now defines `scratchpadArgsSchema`; final DB +
   matrx-extend alignment (matrx-extend already ships `scratchpad`) tracked separately.
 - **`storage`. ✅ FIXED.** `storage` now exposes **`get/set/list/delete`** on every
-  surface. `delete` was added to `tl_def.parameters.action.enum` (aidream migration
+  surface. `delete` was added to `tool_def.parameters.action.enum` (aidream migration
   `0062_gap4_storage_delete_takeover_timeout.sql`, applied), to matrx-extend
   (`StorageArgs` + a new `delete_extension_storage` handler), and to matrx-frontend's
   `storageArgsSchema`. All three drift checks green.
@@ -158,7 +172,7 @@ and **never blocks** a build or boot.
 ## Definition of done
 
 - Every tool-with-arguments, on every surface, validates incoming calls against a
-  hand-owned model/schema that the engine proves equals `tl_def` (GAP 1 closed).
+  hand-owned model/schema that the engine proves equals `tool_def` (GAP 1 closed).
 - Zero hand-written descriptions in code; `docs/TOOLS.generated.md` is the only copy
   (GAP 2 closed).
 - One shared comparison spec + loud reporter used by all three surfaces (GAP 3 closed).

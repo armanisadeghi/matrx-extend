@@ -1,7 +1,14 @@
 # matrx-frontend — tool reconciliation tasks (2026-05-24) — ✅ COMPLETE
 
+> **Schema rename note (2026-05-27).** Every `tl_*` table name below was
+> renamed in aidream's clean-break refactor. See
+> [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md).
+> Quick map: `tl_def` → `tool_def`; the frontend's UI-first Zod drift
+> check now diffs against `tool_def` filtered by
+> `tool_binding.executor_name='matrx-user'` (no more `source_app` column).
+
 All items from the matrx-extend tool reconciliation are done; the frontend's
-UI-first Zod ↔ `public.tl_def` drift check is green (`pnpm gate:tools`).
+UI-first Zod ↔ `public.tool_def` drift check is green (`pnpm gate:tools`).
 
 - ✅ **F1 — `user` matches the shared description.** Verified the UI always appends a
   freeform "Other" escape on confirm/choice/choice_many/notify (forced in

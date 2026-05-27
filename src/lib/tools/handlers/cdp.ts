@@ -5,7 +5,7 @@
  * Settings → "Advanced agent capabilities" toggle. The low-level attach /
  * detach / emulate primitives stay admin-only; the advertised CDP tools
  * (screenshot, a11y, network reads, input, perf, print) are gated only by
- * the `debugger` permission — admin_only was removed to match tl_def (see
+ * the `debugger` permission — admin_only was removed to match tool_def (see
  * the 2026-05 drift reconciliation).
  *
  * What CDP unlocks (the master key):

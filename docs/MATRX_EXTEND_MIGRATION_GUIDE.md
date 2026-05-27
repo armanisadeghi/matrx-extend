@@ -2,7 +2,83 @@
 
 > Audience: matrx-extend (Chrome extension) developers.
 >
-> Companion docs: [TOOL_REGISTRY_REDESIGN.md](TOOL_REGISTRY_REDESIGN.md), [CLIENT_REGISTRATION_GUIDE.md](CLIENT_REGISTRATION_GUIDE.md), [FRONTEND_TOOL_INJECTION_NOTES.md](FRONTEND_TOOL_INJECTION_NOTES.md).
+> Authoritative reference for the current schema:
+> [docs/official/tool_system_rules.md](./official/tool_system_rules.md) and
+> [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md).
+> The "Companion docs" line that used to live here pointed at files
+> (`TOOL_REGISTRY_REDESIGN.md`, `CLIENT_REGISTRATION_GUIDE.md`,
+> `FRONTEND_TOOL_INJECTION_NOTES.md`) that never landed in this repo —
+> removed to avoid dead links.
+
+---
+
+## ⚠️ Superseded by the 2026-05-27 schema refactor
+
+The document below describes the *original* mid-2026 redesign that moved
+the tool catalog from JSON files into `public.tools` / `tl_def`. On
+**2026-05-27** aidream rolled out a clean break of the same schema —
+**no legacy support, no shim** — that renamed every table and dropped
+the `source_app` / `function_path` columns entirely. The authoritative
+write-up is:
+
+  • [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md)
+
+Quick translation table for anything you read in the body below:
+
+| Old name (in the body of this doc) | Current name (2026-05-27+) |
+|---|---|
+| `public.tools` / `public.tl_def` | `public.tool_def` |
+| `public.tl_executor` (M2M) | `public.tool_binding` |
+| `public.tl_def_surface` | DROPPED → `public.tool_surface_defaults.always_include_tools` arrays |
+| `public.tl_gate` | DROPPED → gate names referenced in `tool_def.gating` jsonb |
+| `public.tl_bundle{,_member}` | `public.tool_bundle{,_member}` (no shape change) |
+| `public.tl_mcp_*` | `public.tool_mcp_*` (no shape change) |
+| `public.cx_tl_call` | `public.cx_tool_call` (no shape change) |
+| `tl_def.source_app = 'matrx-extend'` | `tool_binding.executor_name = 'chrome-extension'` |
+| `tl_executor.surface = 'matrx-extend.browser'` | same as above — ownership lives on the executor binding |
+
+**What changed for the extension at the wire level: almost nothing.**
+The capability envelope, the chat stream, and the tool dispatch flow
+were left intact on purpose. What changed in this repo on 2026-05-27:
+
+1. [src/lib/supabase/queries.ts](../src/lib/supabase/queries.ts) reads
+   `cx_tool_call` instead of `cx_tl_call` when hydrating conversation
+   history with persisted tool results.
+2. [src/lib/tools/descriptions.ts](../src/lib/tools/descriptions.ts)
+   queries `public.tool_def` directly via Supabase REST. The retired
+   `GET /ai-tools/app/matrx-extend` aidream endpoint depended on
+   `source_app`, which no longer exists; the replacement aidream
+   endpoints (`/ai-tools/native/all`, `/ai-tools/source-kind/native`,
+   `/ai-tools/{tool_id}`) don't filter by executor, so direct Supabase
+   is the cleanest path now.
+3. [scripts/check-tool-db-drift.ts](../scripts/check-tool-db-drift.ts),
+   [scripts/dump-tools-from-db.ts](../scripts/dump-tools-from-db.ts),
+   and [scripts/dump-tool-db-to-md.mjs](../scripts/dump-tool-db-to-md.mjs)
+   were rewritten against the new tables.
+
+**How to add a new tool now** (replaces step 4 in the old "Adding a new
+browser tool" section below):
+
+```sql
+-- 1. Define the tool.
+WITH new_tool AS (
+  INSERT INTO public.tool_def (name, description, parameters, category, tier, admin_only, source_kind)
+  VALUES ('<your-tool>', '<desc>', '<parameters-jsonb>'::jsonb, '<category>', '<tier>', false, 'native')
+  RETURNING id
+)
+-- 2. Bind it to the chrome-extension executor (ownership).
+INSERT INTO public.tool_binding (tool_id, executor_name, is_active)
+SELECT id, 'chrome-extension', true FROM new_tool;
+
+-- 3. Add it to the always-include set on each surface that should see it.
+UPDATE public.tool_surface_defaults
+   SET always_include_tools = array_append(always_include_tools, '<your-tool>')
+ WHERE surface_name IN ('chrome-extension/assistant', 'chrome-extension/pilot');
+```
+
+The historical text below remains as background on how the pre-refactor
+system worked. Ignore its concrete SQL — every `tl_*` table it
+references is HTTP 404 today.
 
 ---
 

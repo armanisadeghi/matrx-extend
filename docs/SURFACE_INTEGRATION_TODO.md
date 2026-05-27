@@ -1,5 +1,27 @@
 # Surface integration — to-do list for matrx-frontend and matrx-local
 
+> **Schema rename note (2026-05-27).** This doc was written against the
+> pre-refactor schema. aidream's clean-break refactor renamed every
+> `tl_*` table — the *concepts* below (executor binding, surface gates,
+> drift check) are unchanged but the **names and shapes moved**. See
+> [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md)
+> for the authoritative current schema. Key translations:
+> - `public.tl_executor` → `public.tool_binding` (pure
+>   `(tool_id, executor_name, is_active)` — no more `function_path`,
+>   `source_app`, `delegated`, `priority`, `auto_load`).
+> - `public.tl_def_surface` → DROPPED, replaced by per-surface
+>   `tool_surface_defaults.always_include_tools` / `never_include_tools`
+>   string arrays on a `ui_surface`-keyed row.
+> - `surface='server:matrx_ai'` / `surface='matrx-extend.browser'` →
+>   `executor_name='matrx-ai-core'` / `executor_name='chrome-extension'`.
+> - `source_app` column is gone — claim a tool by inserting a
+>   `tool_binding` row, not by setting a column on `tool_def`.
+> - The "concretizer" / "executor binding" language matches the new
+>   shape exactly: `tool_binding` IS the binding.
+>
+> The SQL templates in the body need to be rewritten to the new tables
+> before re-use; the conceptual checklist is still valid.
+
 > Per [TOOL_ROUTING_RULES.md](https://github.com/) the DB is canonical. Each
 > surface declares its tool set + executor bindings in the DB, then
 > validates its local code against that declaration on every release.

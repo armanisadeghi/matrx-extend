@@ -76,7 +76,7 @@ function toMarkdown(manifest: ReturnType<typeof buildToolCatalogManifest>): stri
       lines.push(`### \`${t.name}\``);
       lines.push('');
       // Descriptions are NOT emitted here — they live ONLY in the DB and are
-      // generated into docs/TOOLS.generated.md from tl_def (Rule 4). This
+      // generated into docs/TOOLS.generated.md from tool_def (Rule 4). This
       // code-sourced catalog covers the structural contract (schema, perms).
       lines.push(
         `- **Required permissions:** ${t.required_permissions.length ? t.required_permissions.map((p) => `\`${p}\``).join(', ') : '(none)'}`,

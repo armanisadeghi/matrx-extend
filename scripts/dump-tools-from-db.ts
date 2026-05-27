@@ -1,21 +1,37 @@
 #!/usr/bin/env tsx
 /**
- * Generate docs/TOOLS.generated.md FROM THE DATABASE (public.tl_def,
- * source_app=matrx-extend).
+ * Generate docs/TOOLS.generated.md FROM THE DATABASE.
  *
- * This file is the ONLY copy of tool descriptions allowed in the repo (Rule 4,
- * docs/TOOL_SOURCE_OF_TRUTH.md): descriptions live in the DB, and this doc is
- * always freshly regenerated from it — never hand-edited, never drifting.
+ * Source query (post 2026-05-27 refactor):
+ *   `public.tool_def` rows ⋈ `public.tool_binding` where
+ *   `executor_name = 'chrome-extension'` (or any `chrome-extension.*`
+ *   sub-executor). Replaces the previous `source_app='matrx-extend'`
+ *   filter — that column no longer exists on `tool_def`. Ownership lives
+ *   on the binding row.
+ *
+ * This file is the ONLY copy of tool descriptions allowed in the repo
+ * (Rule 4, docs/TOOL_SOURCE_OF_TRUTH.md): descriptions live in the DB,
+ * and this doc is always freshly regenerated from it — never hand-edited,
+ * never drifting.
  *
  *   pnpm docs:tools
  *
- * Wired into release.sh. NEVER blocks (Rule 6): if DB credentials are absent or
- * the fetch fails, it warns loudly and leaves the existing file untouched.
+ * Wired into release.sh. NEVER blocks (Rule 6): if DB credentials are
+ * absent or the fetch fails, it warns loudly and leaves the existing file
+ * untouched.
  */
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import process from 'node:process';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
+
+const EXECUTOR_NAME = 'chrome-extension';
+
+interface DbBindingRow {
+  tool_id: string;
+  executor_name: string;
+  is_active: boolean;
+}
 
 interface DbToolRow {
   name: string;
@@ -54,10 +70,26 @@ async function main(): Promise<void> {
 
   let rows: DbToolRow[];
   try {
+    // Two-step: bindings → ids → defs. The PostgREST embedded-filter
+    // pattern `tool_binding.executor_name=eq.chrome-extension` only filters
+    // joined rows, not the parent — explicit two-step gives precise results.
+    const bindings = await fetchPublicJson<DbBindingRow[]>(
+      env.url,
+      env.key,
+      `tool_binding?or=(executor_name.eq.${EXECUTOR_NAME},executor_name.like.${EXECUTOR_NAME}.*)&select=tool_id,executor_name,is_active`,
+    );
+    const ids = [...new Set(bindings.filter((b) => b.is_active).map((b) => b.tool_id))];
+    if (ids.length === 0) {
+      console.warn(
+        'docs:tools — no chrome-extension bindings found in DB; leaving docs/TOOLS.generated.md untouched.',
+      );
+      return;
+    }
+    const inList = `(${ids.map((i) => `"${i}"`).join(',')})`;
     rows = await fetchPublicJson<DbToolRow[]>(
       env.url,
       env.key,
-      'tl_def?source_app=eq.matrx-extend&select=name,description,tier,category,admin_only,parameters,is_active&order=category.asc,name.asc',
+      `tool_def?id=in.${inList}&select=name,description,tier,category,admin_only,parameters,is_active&order=category.asc,name.asc`,
     );
   } catch (err) {
     console.warn(
@@ -78,10 +110,11 @@ async function main(): Promise<void> {
   const lines: string[] = [];
   lines.push('# matrx-extend tools');
   lines.push('');
-  lines.push('> **AUTO-GENERATED — do not edit.** Produced from `public.tl_def`');
-  lines.push('> (`source_app=matrx-extend`), the source of truth. Tool names,');
-  lines.push('> descriptions, and argument contracts live ONLY in the database');
-  lines.push('> (Rule 4, [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).');
+  lines.push('> **AUTO-GENERATED — do not edit.** Produced from `public.tool_def`');
+  lines.push("> rows bound to `executor_name='chrome-extension'` via `public.tool_binding`,");
+  lines.push('> the source of truth. Tool names, descriptions, and argument');
+  lines.push('> contracts live ONLY in the database (Rule 4,');
+  lines.push('> [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).');
   lines.push('> Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).');
   lines.push('');
   lines.push(`Generated: ${new Date().toISOString()}`);

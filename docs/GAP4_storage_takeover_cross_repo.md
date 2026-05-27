@@ -1,9 +1,15 @@
 # GAP 4 cross-repo change — `storage.delete` + `request_user_takeover.timeout_seconds`
 
+> **Schema rename note (2026-05-27).** Read `tool_def` everywhere this
+> says `tl_def`; read `tool_binding` (with `executor_name` instead of
+> `surface`) everywhere it says `tl_executor`. The status was already
+> ✅ APPLIED at the time of the refactor — this doc is historical.
+> See [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md).
+
 > Coordination doc for [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)
 > GAP 4. The DB is the source of truth; a change to a tool's `parameters` must
-> land in `tl_def` **first**, then every executor's code is brought into line.
-> _Last updated: 2026-05-24._
+> land in `tool_def` **first**, then every executor's code is brought into line.
+> _Last updated: 2026-05-24 (table names current as of 2026-05-27 refactor; rest historical)._
 >
 > **✅ STATUS: APPLIED.** DB migration `0062_gap4_storage_delete_takeover_timeout.sql`
 > applied to prod (via `--only 0062`); matrx-extend + matrx-frontend code updated;

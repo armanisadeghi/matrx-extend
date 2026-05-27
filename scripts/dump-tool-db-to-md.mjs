@@ -1,15 +1,31 @@
 #!/usr/bin/env node
 /**
- * Dump current `public.tl_def` + `public.tl_bundle` state to a single
+ * Dump current `public.tool_def` + `public.tool_bundle` state to a single
  * readable markdown file so the team can review what the LLM actually
  * sees and flag changes.
  *
  *   pnpm catalog:tools:db-dump            → writes types/tool-db-dump.md
  *
+ * Source-of-truth schema (post 2026-05-27 tool refactor — see
+ * /Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md):
+ *
+ *   - `public.tool_def`              — name, description, parameters,
+ *                                       tier, admin_only, category,
+ *                                       is_active, source_kind. No more
+ *                                       `source_app` column.
+ *   - `public.tool_binding`          — (tool_id, executor_name, is_active).
+ *                                       Tools are owned by an executor via
+ *                                       a binding row; our claim is
+ *                                       `executor_name='chrome-extension'`.
+ *   - `public.tool_bundle`,
+ *     `public.tool_bundle_member`    — bundle inventory (unchanged from the
+ *                                       old `tl_bundle*` apart from the
+ *                                       rename).
+ *
  * Three sections:
- *   1. Tool inventory by source_app (every row, with description, tier,
- *      admin_only, params summary).
- *   2. Bundles inventory (every tl_bundle row + its tl_bundle_member
+ *   1. Tool inventory by executor (every row bound to chrome-extension,
+ *      with description, tier, admin_only, params summary).
+ *   2. Bundles inventory (every tool_bundle row + its tool_bundle_member
  *      tools, plus the empty bundles we keep around).
  *   3. Sources-of-truth audit — cross-references DB bundles with the
  *      local `CANONICAL_SURFACE` + `CATEGORY_BY_TOOL` + per-handler
@@ -25,6 +41,8 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
+
+const EXECUTOR_NAME = 'chrome-extension';
 
 // ─── env loader (mirrors check-tool-db-drift.ts) ────────────────────────────
 
@@ -70,10 +88,9 @@ function loadEnv() {
   return { url, key };
 }
 
-async function fetchAll(url, key, table, select) {
-  const endpoint = `${url.replace(/\/$/, '')}/rest/v1/${table}?select=${encodeURIComponent(
-    select,
-  )}`;
+async function fetchAll(url, key, table, select, extraQuery = '') {
+  const qs = `select=${encodeURIComponent(select)}${extraQuery ? `&${extraQuery}` : ''}`;
+  const endpoint = `${url.replace(/\/$/, '')}/rest/v1/${table}?${qs}`;
   const res = await fetch(endpoint, {
     headers: {
       apikey: key,
@@ -83,7 +100,7 @@ async function fetchAll(url, key, table, select) {
     },
   });
   if (!res.ok) {
-    console.error(`Supabase fetch failed (${res.status}): ${await res.text()}`);
+    console.error(`Supabase fetch failed (${res.status}) on ${table}: ${await res.text()}`);
     process.exit(2);
   }
   return res.json();
@@ -147,20 +164,46 @@ function summarizeParams(params) {
 async function main() {
   const { url, key } = loadEnv();
 
-  const [tools, bundles, members] = await Promise.all([
+  // Pull EVERY active tool_def along with its executor bindings so we can
+  // group by owner (chrome-extension vs everyone else) without paging.
+  // `tool_binding` has ~200 rows total across the platform — small enough
+  // to fetch in one shot.
+  const [allTools, allBindings, bundles, members, executors] = await Promise.all([
     fetchAll(
       url,
       key,
-      'tl_def',
-      'name,description,parameters,tier,admin_only,privileged,is_active,category,tool_group,source_app,version,updated_at',
+      'tool_def',
+      'id,name,description,parameters,tier,admin_only,is_active,category,tool_group,source_kind,version,updated_at',
     ),
-    fetchAll(url, key, 'tl_bundle', 'id,name,description,metadata,is_active,is_system'),
-    fetchAll(url, key, 'tl_bundle_member', 'bundle_id,tool_id,local_alias,sort_order'),
+    fetchAll(url, key, 'tool_binding', 'tool_id,executor_name,is_active'),
+    fetchAll(url, key, 'tool_bundle', 'id,name,description,metadata,is_active,is_system'),
+    fetchAll(url, key, 'tool_bundle_member', 'bundle_id,tool_id,local_alias,sort_order'),
+    fetchAll(url, key, 'tool_executor', 'name,description,parent_executor_name,is_active'),
   ]);
 
-  // Build a tool_id → tool_name map
-  const tools2 = await fetchAll(url, key, 'tl_def', 'id,name');
-  const toolIdToName = new Map(tools2.map((t) => [t.id, t.name]));
+  // Group binding executors per tool_id.
+  const executorsByTool = new Map();
+  for (const b of allBindings) {
+    if (!b.is_active) continue;
+    if (!executorsByTool.has(b.tool_id)) executorsByTool.set(b.tool_id, []);
+    executorsByTool.get(b.tool_id).push(b.executor_name);
+  }
+
+  // Index for tool_id → tool_name lookup (used by bundle membership table).
+  const toolIdToName = new Map(allTools.map((t) => [t.id, t.name]));
+
+  // Bucket tools by which executors own them. A tool can have multiple
+  // bindings — count it once per executor for the inventory but list it
+  // under its primary owner for the per-executor sections.
+  const byExecutor = new Map();
+  for (const t of allTools) {
+    const owners = executorsByTool.get(t.id) ?? ['(unbound)'];
+    for (const owner of owners) {
+      if (!byExecutor.has(owner)) byExecutor.set(owner, []);
+      byExecutor.get(owner).push(t);
+    }
+  }
+  for (const list of byExecutor.values()) list.sort((a, b) => a.name.localeCompare(b.name));
 
   const { canonicalSurface, categoryByTool, catalog } = loadLocalRefs();
   const localByName = new Map(catalog.tools.map((t) => [t.name, t]));
@@ -172,62 +215,70 @@ async function main() {
   lines.push('');
   lines.push(`Generated: ${now} UTC`);
   lines.push('');
-  lines.push(`- **Total tools (\`tl_def\`):** ${tools.length}`);
-  lines.push(`- **Total bundles (\`tl_bundle\`):** ${bundles.length}`);
-  lines.push(`- **Total bundle members (\`tl_bundle_member\`):** ${members.length}`);
+  lines.push(`- **Total tools (\`tool_def\`):** ${allTools.length}`);
+  lines.push(`- **Total bindings (\`tool_binding\`, active):** ${allBindings.filter((b) => b.is_active).length}`);
+  lines.push(`- **Total bundles (\`tool_bundle\`):** ${bundles.length}`);
+  lines.push(`- **Total bundle members (\`tool_bundle_member\`):** ${members.length}`);
+  lines.push(`- **Total executors (\`tool_executor\`):** ${executors.length}`);
   lines.push('');
   lines.push('Read order:');
-  lines.push('1. **Tool inventory** — what every LLM call could see if discovery loads it.');
-  lines.push('2. **Bundles** — server-side groupings + their members.');
-  lines.push('3. **Sources-of-truth audit** — divergences between DB and local code.');
+  lines.push('1. **Tool inventory** — every executor and its bound tools.');
+  lines.push('2. **chrome-extension detail** — full per-tool description + params.');
+  lines.push('3. **Bundles** — server-side groupings + their members.');
+  lines.push('4. **Sources-of-truth audit** — divergences between DB and local code.');
   lines.push('');
 
-  // ── 1. Tool inventory grouped by source_app ─────────────────────────────
+  // ── 1. Tool inventory grouped by executor ───────────────────────────────
   lines.push('---');
   lines.push('');
-  lines.push('## 1. Tool inventory by `source_app`');
+  lines.push('## 1. Tool inventory by `tool_binding.executor_name`');
+  lines.push('');
+  lines.push(
+    'A tool can appear under multiple executors if it has multiple active bindings.',
+  );
   lines.push('');
 
-  const bySource = new Map();
-  for (const t of tools) {
-    if (!bySource.has(t.source_app)) bySource.set(t.source_app, []);
-    bySource.get(t.source_app).push(t);
-  }
-  for (const list of bySource.values()) list.sort((a, b) => a.name.localeCompare(b.name));
-
-  for (const [source, list] of [...bySource.entries()].sort()) {
-    lines.push(`### \`${source}\` — ${list.length} tools`);
+  for (const [executor, list] of [...byExecutor.entries()].sort()) {
+    lines.push(`### \`${executor}\` — ${list.length} tools`);
     lines.push('');
-    lines.push('| name | tier | admin | cat | description |');
-    lines.push('|---|---|---|---|---|');
+    lines.push('| name | tier | admin | cat | source_kind | description |');
+    lines.push('|---|---|---|---|---|---|');
     for (const t of list) {
       const tier = t.tier ?? '_(null)_';
       const adm = t.admin_only ? '🔒' : '';
       const cat = t.category ?? '';
+      const sk = t.source_kind ?? '';
       const desc = escapeMd((t.description ?? '').slice(0, 220));
-      lines.push(`| \`${t.name}\` | ${tier} | ${adm} | ${cat} | ${desc} |`);
+      lines.push(`| \`${t.name}\` | ${tier} | ${adm} | ${cat} | ${sk} | ${desc} |`);
     }
     lines.push('');
   }
 
-  // ── 2. Per-tool detail (matrx-extend only — that's what we own) ─────────
+  // ── 2. Per-tool detail (chrome-extension only — that's what we own) ─────
   lines.push('---');
   lines.push('');
-  lines.push('## 2. matrx-extend tool details');
+  lines.push('## 2. chrome-extension tool details');
   lines.push('');
   lines.push('Each entry includes the full description + parameter summary so');
   lines.push('the reviewer can spot redundant fields, stale text, or schema gaps.');
   lines.push('Required params are **bold**.');
   lines.push('');
 
-  const ours = (bySource.get('matrx-extend') ?? []).slice().sort((a, b) => a.name.localeCompare(b.name));
+  const ours = (byExecutor.get(EXECUTOR_NAME) ?? [])
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
   for (const t of ours) {
     lines.push(`### \`${t.name}\``);
     lines.push('');
+    const otherExecutors = (executorsByTool.get(t.id) ?? []).filter(
+      (e) => e !== EXECUTOR_NAME,
+    );
+    const sharedNote =
+      otherExecutors.length > 0
+        ? ` · **also bound to:** ${otherExecutors.map((e) => `\`${e}\``).join(', ')}`
+        : '';
     lines.push(
-      `- **tier:** ${t.tier ?? '_(null)_'}${t.admin_only ? ' · 🔒 admin' : ''}${
-        t.privileged ? ' · ⚡ privileged' : ''
-      } · **category:** ${t.category ?? '?'} · **active:** ${t.is_active ? '✅' : '❌'} · **version:** ${t.version}`,
+      `- **tier:** ${t.tier ?? '_(null)_'}${t.admin_only ? ' · 🔒 admin' : ''} · **category:** ${t.category ?? '?'} · **active:** ${t.is_active ? '✅' : '❌'} · **version:** ${t.version}${sharedNote}`,
     );
     lines.push('');
     lines.push(`> ${escapeMd(t.description ?? '_(no description)_')}`);
@@ -239,10 +290,10 @@ async function main() {
   // ── 3. Bundles inventory ────────────────────────────────────────────────
   lines.push('---');
   lines.push('');
-  lines.push('## 3. Bundles (`tl_bundle`)');
+  lines.push('## 3. Bundles (`tool_bundle`)');
   lines.push('');
   lines.push(
-    'Every row in `tl_bundle` + its members. Empty bundles are explicitly',
+    'Every row in `tool_bundle` + its members. Empty bundles are explicitly',
   );
   lines.push('flagged — they advertise themselves to the LLM but resolve to nothing.');
   lines.push('');
@@ -262,12 +313,22 @@ async function main() {
   }
 
   bundles.sort((a, b) => a.name.localeCompare(b.name));
-  const matrxBundles = bundles.filter((b) =>
-    /matrx-extend Chrome-extension/.test(b.description ?? ''),
-  );
-  const mcpBundles = bundles.filter((b) => !/matrx-extend Chrome-extension/.test(b.description ?? ''));
+  // Heuristic: a "matrx-extend bundle" is one whose members are MOSTLY tools
+  // also bound to chrome-extension. Pure-MCP bundles list zero such tools.
+  const ourToolIds = new Set(ours.map((t) => t.id));
+  const matrxBundles = [];
+  const mcpBundles = [];
+  for (const b of bundles) {
+    const ms = membersByBundle.get(b.id) ?? [];
+    const ownByUs = ms.filter((m) => {
+      const tid = members.find((x) => x.bundle_id === b.id && (toolIdToName.get(x.tool_id) ?? '') === m.name)?.tool_id;
+      return tid ? ourToolIds.has(tid) : false;
+    }).length;
+    if (ms.length > 0 && ownByUs >= ms.length / 2) matrxBundles.push(b);
+    else mcpBundles.push(b);
+  }
 
-  lines.push(`### matrx-extend category bundles (${matrxBundles.length})`);
+  lines.push(`### matrx-extend / chrome-extension category bundles (${matrxBundles.length})`);
   lines.push('');
   lines.push('| bundle | active | members | tool names |');
   lines.push('|---|---|---|---|');
@@ -282,9 +343,9 @@ async function main() {
   }
   lines.push('');
 
-  lines.push(`### MCP-server bundles (${mcpBundles.length})`);
+  lines.push(`### Other bundles (${mcpBundles.length})`);
   lines.push('');
-  lines.push('These are advertised through the marketplace flow; members live elsewhere.');
+  lines.push('MCP marketplace + any non-chrome-extension surface bundles.');
   lines.push('');
   lines.push('| bundle | members | description |');
   lines.push('|---|---|---|');
@@ -302,14 +363,14 @@ async function main() {
   lines.push('Where two systems claim authority over the same fact, list the divergence.');
   lines.push('');
 
-  // 4a. CANONICAL_SURFACE vs tl_def
+  // 4a. CANONICAL_SURFACE vs tool_def (chrome-extension subset)
   const ourNames = new Set(ours.map((t) => t.name));
   const csOnly = [...canonicalSurface].filter((n) => !ourNames.has(n));
   const dbOnly = [...ourNames].filter((n) => !canonicalSurface.has(n));
-  lines.push('### 4a. `CANONICAL_SURFACE` (local) ↔ `tl_def` (DB, source_app=matrx-extend)');
+  lines.push("### 4a. `CANONICAL_SURFACE` (local) ↔ `tool_def` (DB, bound to `chrome-extension`)");
   lines.push('');
   lines.push(`- Local CANONICAL_SURFACE entries: **${canonicalSurface.size}**`);
-  lines.push(`- DB matrx-extend rows: **${ours.length}**`);
+  lines.push(`- DB tools bound to chrome-extension: **${ours.length}**`);
   if (csOnly.length === 0 && dbOnly.length === 0) {
     lines.push('- ✅ Sets match exactly. Drift-check enforces this on every release.');
   } else {
@@ -318,8 +379,8 @@ async function main() {
   }
   lines.push('');
 
-  // 4b. CATEGORY_BY_TOOL (local) vs tl_def.category (DB)
-  lines.push('### 4b. `CATEGORY_BY_TOOL` (local) ↔ `tl_def.category` (DB)');
+  // 4b. CATEGORY_BY_TOOL (local) vs tool_def.category (DB)
+  lines.push('### 4b. `CATEGORY_BY_TOOL` (local) ↔ `tool_def.category` (DB)');
   lines.push('');
   const catMismatches = [];
   for (const t of ours) {
@@ -370,14 +431,14 @@ async function main() {
   }
   lines.push('');
 
-  // 4d. DB tl_bundle vs local categories
-  lines.push('### 4d. DB `tl_bundle` (matrx-extend) ↔ local categories');
+  // 4d. DB tool_bundle vs local categories
+  lines.push('### 4d. DB `tool_bundle` (chrome-extension) ↔ local categories');
   lines.push('');
   const localCatSet = new Set(Object.values(categoryByTool));
   const dbBundleNames = new Set(matrxBundles.map((b) => b.name));
   const bundleOnly = [...dbBundleNames].filter((n) => !localCatSet.has(n));
   const localOnly = [...localCatSet].filter((n) => !dbBundleNames.has(n));
-  lines.push(`- DB matrx-extend bundles: **${dbBundleNames.size}**`);
+  lines.push(`- DB chrome-extension bundles: **${dbBundleNames.size}**`);
   lines.push(`- Local categories: **${localCatSet.size}**`);
   if (bundleOnly.length === 0 && localOnly.length === 0) {
     lines.push('- ✅ Bundle/category names align.');
@@ -387,20 +448,20 @@ async function main() {
   }
   lines.push('');
 
-  // 4e. Empty matrx-extend bundles in DB
+  // 4e. Empty chrome-extension bundles in DB
   const emptyBundles = matrxBundles.filter((b) => (membersByBundle.get(b.id) ?? []).length === 0);
-  lines.push('### 4e. Empty `tl_bundle` rows (DB advertises but resolves to nothing)');
+  lines.push('### 4e. Empty `tool_bundle` rows (DB advertises but resolves to nothing)');
   lines.push('');
   if (emptyBundles.length === 0) {
-    lines.push('- ✅ No empty matrx-extend bundles.');
+    lines.push('- ✅ No empty chrome-extension bundles.');
   } else {
-    lines.push(`- ⚠️ **${emptyBundles.length} matrx-extend bundles have ZERO members in \`tl_bundle_member\`:**`);
+    lines.push(`- ⚠️ **${emptyBundles.length} chrome-extension bundles have ZERO members in \`tool_bundle_member\`:**`);
     lines.push('');
     lines.push(emptyBundles.map((b) => `  - \`${b.name}\``).join('\n'));
     lines.push('');
     lines.push('  These rows make `load_browser_tools({category: X})` look like a');
     lines.push('  legitimate option to the LLM but return an empty list at runtime.');
-    lines.push('  Either populate `tl_bundle_member` OR set `is_active = false` so');
+    lines.push('  Either populate `tool_bundle_member` OR set `is_active = false` so');
     lines.push('  the discovery handler stops advertising them.');
   }
   lines.push('');
@@ -417,7 +478,7 @@ async function main() {
     '- **Confirm tier + admin_only** — Tier drives the approval UX; admin_only gates visibility. Eyeball any tool where the surface looks risky for the tier shown.',
   );
   lines.push(
-    '- **Decide bundle strategy** — Section 4d/4e show DB bundles drifting from local categories. Three options: deprecate `tl_bundle` for matrx-extend (use local categories only), populate the DB bundles to match local, or split-domain (DB bundles for MCP marketplace, local categories for browser tools).',
+    '- **Decide bundle strategy** — Section 4d/4e show DB bundles drifting from local categories. Three options: deprecate `tool_bundle` for chrome-extension (use local categories only), populate the DB bundles to match local, or split-domain (DB bundles for MCP marketplace, local categories for browser tools).',
   );
   lines.push(
     '- **Hunt missing parameters** — Section 2 shows the param summary. Look for tools where the LLM has no signal about what to pass (no required fields, generic types).',
@@ -428,7 +489,7 @@ async function main() {
   const outPath = resolve(ROOT, 'types/tool-db-dump.md');
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, lines.join('\n'));
-  console.log(`✓ wrote ${tools.length} tools + ${bundles.length} bundles to ${outPath}`);
+  console.log(`✓ wrote ${allTools.length} tools + ${bundles.length} bundles to ${outPath}`);
   console.log(`  open: ${outPath}`);
 }
 

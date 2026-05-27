@@ -1,5 +1,17 @@
 # Open issues on the aidream side
 
+> **Schema rename note (2026-05-27).** This doc references the
+> pre-refactor table names (`tl_def`, `tl_executor`, `tl_def_surface`,
+> `tl_bundle*`, `source_app`). aidream's clean-break refactor renamed all
+> of them — see
+> [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md).
+> Map: `tl_def` → `tool_def`; `tl_executor` → `tool_binding`
+> (`executor_name`, not `surface`); `tl_def_surface` → DROPPED →
+> `tool_surface_defaults.always_include_tools`; `tl_bundle*` →
+> `tool_bundle*`; `source_app='matrx-extend'` →
+> `tool_binding.executor_name='chrome-extension'`. Bug 1 was already
+> fixed at the time; the doc remains as historical context.
+
 > Two bugs surfaced from a live agent test on 2026-05-19. One was on
 > our DB (fixed). The other(s) sit in aidream and need their team.
 

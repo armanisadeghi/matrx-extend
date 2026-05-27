@@ -293,12 +293,16 @@ export async function fetchConversationMessages(
   return parseRowsSafe(MessageSchema, (data ?? []) as unknown[], 'fetchConversationMessages');
 }
 
-// ─── Tool calls (cx_tl_call) ────────────────────────────────────────────────
+// ─── Tool calls (cx_tool_call) ──────────────────────────────────────────────
 /**
  * One tool execution row. Lives on the `role: 'tool'` message and carries
  * the actual output the matching `tool_call` block produced. The output
  * column is a JSON-encoded STRING — needs `JSON.parse` before it's usable
  * by the tool-display registry transforms.
+ *
+ * Table renamed from `cx_tl_call` → `cx_tool_call` in the 2026-05-27 tool
+ * refactor (migration 0090). Columns are unchanged; the rename is purely
+ * naming housekeeping in step with `tl_def → tool_def` and friends.
  */
 export const ToolCallRowSchema = z.object({
   call_id: z.string(),
@@ -322,7 +326,7 @@ export async function fetchConversationToolCalls(
 ): Promise<{ rows: ToolCallRow[]; badCount: number }> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('cx_tl_call')
+    .from('cx_tool_call')
     .select(
       'call_id, message_id, conversation_id, tool_name, tool_type, status, arguments, output, is_error, error_type, error_message, duration_ms, created_at',
     )
@@ -341,7 +345,7 @@ export async function fetchConversationToolCalls(
 }
 
 /**
- * `cx_tl_call.output` is stored as a JSON-encoded string. Parse it for the
+ * `cx_tool_call.output` is stored as a JSON-encoded string. Parse it for the
  * tool-display registry which expects an object. Non-string outputs pass
  * through. Malformed JSON falls back to the raw string so we don't lose
  * data — the user can still copy it from the expanded row.
@@ -364,11 +368,11 @@ function parseToolOutput(raw: unknown): unknown {
  * DB layout (see `.research/db-conversation-shape.md` if it ever drifts):
  *   - cx_message.content is a JSONB array of blocks: text | thinking |
  *     tool_call (assistant) | tool_result (tool role).
- *   - cx_tl_call holds the actual output for each tool_call, attached to
+ *   - cx_tool_call holds the actual output for each tool_call, attached to
  *     the `role: 'tool'` message by call_id.
  *
  * Reconstruction:
- *   1. Index every cx_tl_call row by call_id for O(1) lookup.
+ *   1. Index every cx_tool_call row by call_id for O(1) lookup.
  *   2. Walk messages in position order:
  *      - user/assistant → emit text + reasoning + tool (phase: started) parts.
  *      - tool → don't push a new ChatMessage; instead find the preceding
@@ -460,7 +464,7 @@ export function dbMessagesToChatMessages(
         const callId = String(block.call_id ?? '');
         const toolName = String(block.name ?? '');
         if (!callId || !toolName) continue;
-        // tool_type may be discovered later via the cx_tl_call lookup;
+        // tool_type may be discovered later via the cx_tool_call lookup;
         // assume 'client' by default (the registry doesn't care about
         // kind for resolution — only the outer wrapper styling).
         const lookup = byCallId.get(callId);

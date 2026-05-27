@@ -71,7 +71,7 @@ type SingleQuestion = z.infer<typeof SingleQuestionSchema>;
  * UserArgs is one big object with everything optional, validated by
  * superRefine. Single-question form fills the top-level fields; batched
  * form fills `questions[]`. The schema is intentionally flat (vs a
- * z.union) so the DB tl_def.parameters shape mirrors it 1:1 and the
+ * z.union) so the DB tool_def.parameters shape mirrors it 1:1 and the
  * drift comparator works without special-casing unions.
  */
 const UserArgs = z
@@ -355,7 +355,7 @@ async function fireSystemNotification(q: SingleQuestion, agentName: string | nul
 
 // ─── request_user_takeover ─────────────────────────────────────────────────
 
-// Unified arg set (matches tl_def + the other surfaces): reason (required),
+// Unified arg set (matches tool_def + the other surfaces): reason (required),
 // instructions?, expected_action?, tab_id?, timeout_seconds?. This surface uses
 // tab_id implicitly (via the assigned tab) and honors timeout_seconds when set.
 const TakeoverArgs = z.object({

@@ -4,21 +4,40 @@
  * (one shared spec across aidream, matrx-extend, matrx-frontend; see
  * docs/TOOL_SOURCE_OF_TRUTH.md, "what match means").
  *
- * The DATABASE (`public.tl_def`, `source_app='matrx-extend'`) is the single
- * source of truth. This reporter proves the ACTUAL CODE matches it: it
- * serializes the REAL Zod `argsSchema` of every live handler — the exact object
- * the dispatcher validates against at src/lib/tools/dispatch.ts — and diffs it
- * against tl_def. There is NO intermediate file: the schema we check is the
- * schema that runs.
+ * The DATABASE is the single source of truth. This reporter proves the ACTUAL
+ * CODE matches it: it serializes the REAL Zod `argsSchema` of every live
+ * handler — the exact object the dispatcher validates against at
+ * src/lib/tools/dispatch.ts — and diffs it against `public.tool_def`. There
+ * is NO intermediate file: the schema we check is the schema that runs.
+ *
+ * Schema (post 2026-05-27 tool refactor — see
+ * /Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md):
+ *
+ *   - `public.tool_def`              — name, description, parameters, tier,
+ *                                       admin_only, category, is_active,
+ *                                       source_kind. No more `source_app` or
+ *                                       `function_path` columns; ownership
+ *                                       lives on the binding row.
+ *   - `public.tool_binding`          — pure (tool_id, executor_name, is_active)
+ *                                       M2M. Replaces `tl_executor`. We claim
+ *                                       a tool by binding it to the
+ *                                       `chrome-extension` executor.
+ *   - `public.tool_surface_defaults` — per-surface include/exclude arrays.
+ *                                       Replaces `tl_def_surface`. We confirm
+ *                                       every advertised tool appears in
+ *                                       `always_include_tools` for at least
+ *                                       one of `chrome-extension/{assistant,
+ *                                       pilot}` so the resolver actually
+ *                                       hands it to the model.
  *
  * What it checks per tool (the shared spec): identity (name), tier, admin_only,
  * category, and the argument set — for every field: presence, type,
  * required-ness, enum members (incl. one-sided), and default. Plus the
- * matrx-extend surface wiring: an active tl_executor row for
- * surface='matrx-extend.browser' (this binding IS the location/ownership proof
- * — function_path is N/A for a browser executor) and a tl_def_surface gate for
- * at least one chrome-extension/{assistant,pilot}. Descriptions are NOT checked
- * — they are not code; they live only in the DB (Rule 4).
+ * matrx-extend wiring: an active `tool_binding` row for
+ * `executor_name='chrome-extension'` (this is the location/ownership proof in
+ * the new model) and inclusion in `tool_surface_defaults.always_include_tools`
+ * for at least one chrome-extension surface. Descriptions are NOT checked —
+ * they are not code; they live only in the DB (Rule 4).
  *
  *   tsx scripts/check-tool-db-drift.ts   (pnpm catalog:tools:drift)
  *
@@ -28,8 +47,8 @@
  * drift purely as a SIGNAL for those callers — none hard-gate on it. "Couldn't
  * run" (missing creds / DB unreachable) is NOT drift: it warns and exits 0.
  * When drift fires: the DB is the source of truth, so bring the handler's Zod
- * to match tl_def, or change the DB first (admin API / migration) then match
- * code. Never push code→DB silently (Rule 7).
+ * to match `tool_def`, or change the DB first (admin API / migration) then
+ * match code. Never push code→DB silently (Rule 7).
  */
 import process from 'node:process';
 import { CANONICAL_SURFACE } from '../src/lib/tools/categories';
@@ -55,20 +74,21 @@ interface DbToolRow {
   parameters: Record<string, { type?: string | string[]; enum?: unknown[]; required?: boolean; [k: string]: unknown }> | null;
   tier: string | null;
   admin_only: boolean | null;
-  privileged: boolean | null;
   is_active: boolean | null;
   category: string | null;
+  source_kind: string | null;
 }
 
-interface DbExecutorRow {
+interface DbBindingRow {
   tool_id: string;
-  surface: string;
+  executor_name: string;
   is_active: boolean;
 }
 
-interface DbSurfaceGateRow {
-  tool_id: string;
+interface DbSurfaceDefaultsRow {
   surface_name: string;
+  always_include_tools: string[] | null;
+  never_include_tools: string[] | null;
 }
 
 interface Drift {
@@ -76,38 +96,47 @@ interface Drift {
   issues: string[];
 }
 
+const EXECUTOR_NAME = 'chrome-extension';
+const ASSISTANT_SURFACE = 'chrome-extension/assistant';
+const PILOT_SURFACE = 'chrome-extension/pilot';
+
 /**
- * Legacy surface prefix. Some matrx-extend tools (Chrome-extension-exclusive
- * ones: CDP, cookies, bookmarks, history, demos, guidance) still carry the
- * `matrx-extend:` prefix in tl_def.name. UI-first / Playwright-capable tools
- * (update_plan, tasks, user_todos, user, request_user_takeover, scratchpad,
- * and the rest in tiers 1+2) live at bare names in the global namespace.
- * `normalizeName` strips the prefix when present so the comparator works for
- * both cases without forking the loop.
+ * Fetch every `tool_def` row that is bound to the `chrome-extension`
+ * executor (or any sub-executor like `chrome-extension.pilot`). This is
+ * the new ownership query — replaces the old `source_app='matrx-extend'`
+ * filter. Two HTTP calls because PostgREST's embedded filter
+ * `tool_binding.executor_name=eq.chrome-extension` only filters the JOINED
+ * rows, not the parent `tool_def` rows, so we'd still pull every tool. A
+ * two-step (bindings → ids → defs) is precise and small (~50 ids).
  */
-const DB_PREFIX = 'matrx-extend:';
-
-async function fetchDbRows(url: string, key: string): Promise<DbToolRow[]> {
-  return fetchPublicJson<DbToolRow[]>(
+async function fetchOwnedTools(url: string, key: string): Promise<{ defs: DbToolRow[]; bindings: DbBindingRow[] }> {
+  const bindings = await fetchPublicJson<DbBindingRow[]>(
     url,
     key,
-    'tl_def?source_app=eq.matrx-extend&select=id,name,description,parameters,tier,admin_only,privileged,is_active,category&order=name.asc',
+    `tool_binding?or=(executor_name.eq.${EXECUTOR_NAME},executor_name.like.${EXECUTOR_NAME}.*)&select=tool_id,executor_name,is_active`,
   );
+  const ids = [...new Set(bindings.filter((b) => b.is_active).map((b) => b.tool_id))];
+  if (ids.length === 0) return { defs: [], bindings };
+  const inList = `(${ids.map((i) => `"${i}"`).join(',')})`;
+  const defs = await fetchPublicJson<DbToolRow[]>(
+    url,
+    key,
+    `tool_def?id=in.${inList}&select=id,name,description,parameters,tier,admin_only,is_active,category,source_kind&order=name.asc`,
+  );
+  return { defs, bindings };
 }
 
-async function fetchExecutors(url: string, key: string): Promise<DbExecutorRow[]> {
-  return fetchPublicJson<DbExecutorRow[]>(
+/**
+ * Fetch `tool_surface_defaults` rows for the chrome-extension assistant +
+ * pilot surfaces. The discovery handler reads `always_include_tools` to
+ * decide what to advertise — missing here means the resolver never
+ * surfaces the tool, even if there IS a binding.
+ */
+async function fetchSurfaceDefaults(url: string, key: string): Promise<DbSurfaceDefaultsRow[]> {
+  return fetchPublicJson<DbSurfaceDefaultsRow[]>(
     url,
     key,
-    'tl_executor?surface=eq.matrx-extend.browser&select=tool_id,surface,is_active',
-  );
-}
-
-async function fetchSurfaceGates(url: string, key: string): Promise<DbSurfaceGateRow[]> {
-  return fetchPublicJson<DbSurfaceGateRow[]>(
-    url,
-    key,
-    'tl_def_surface?or=(surface_name.eq.chrome-extension/assistant,surface_name.eq.chrome-extension/pilot)&select=tool_id,surface_name',
+    `tool_surface_defaults?or=(surface_name.eq.${encodeURIComponent(ASSISTANT_SURFACE)},surface_name.eq.${encodeURIComponent(PILOT_SURFACE)})&select=surface_name,always_include_tools,never_include_tools`,
   );
 }
 
@@ -122,10 +151,6 @@ function loadLiveSchemas(): LocalTool[] {
     admin_only: t.admin_only,
     input_schema: t.input_schema as unknown as LocalTool['input_schema'],
   }));
-}
-
-function normalizeName(dbName: string): string {
-  return dbName.startsWith(DB_PREFIX) ? dbName.slice(DB_PREFIX.length) : dbName;
 }
 
 function asSet<T>(xs: T[] | undefined | null): Set<T> {
@@ -158,8 +183,9 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
   const issues: string[] = [];
 
   // Descriptions are intentionally NOT compared — they are not code; they live
-  // only in the DB (tl_def.description). The gate checks the structural contract
-  // the runtime enforces: fields, types, required, enums, tier, admin_only.
+  // only in the DB (tool_def.description). The gate checks the structural
+  // contract the runtime enforces: fields, types, required, enums, tier,
+  // admin_only.
 
   if (local.tier !== db.tier) {
     issues.push(`tier differs (local=${local.tier}, db=${db.tier})`);
@@ -250,15 +276,17 @@ async function main(): Promise<void> {
   }
   const { url, key } = env;
   const localAll = loadLiveSchemas();
-  let dbRows: DbToolRow[];
-  let executors: DbExecutorRow[];
-  let gates: DbSurfaceGateRow[];
+  let dbDefs: DbToolRow[];
+  let dbBindings: DbBindingRow[];
+  let dbSurfaces: DbSurfaceDefaultsRow[];
   try {
-    [dbRows, executors, gates] = await Promise.all([
-      fetchDbRows(url, key),
-      fetchExecutors(url, key),
-      fetchSurfaceGates(url, key),
+    const [owned, surfaces] = await Promise.all([
+      fetchOwnedTools(url, key),
+      fetchSurfaceDefaults(url, key),
     ]);
+    dbDefs = owned.defs;
+    dbBindings = owned.bindings;
+    dbSurfaces = surfaces;
   } catch (err) {
     // "Couldn't run" (DB unreachable / RLS / network) is NOT drift — never block.
     console.warn(
@@ -271,29 +299,35 @@ async function main(): Promise<void> {
   // (src/lib/tools/categories.ts) is the authoritative list of advertised
   // names. Everything else is an "absorbed" handler that lives behind a
   // mega-tool router (e.g. take_screenshot behind `computer`) and has no
-  // business being in tl_def.
+  // business being in tool_def.
   const local = localAll.filter((t) => CANONICAL_SURFACE.has(t.name));
   const localByName = new Map(local.map((t) => [t.name, t]));
-  const dbByName = new Map(dbRows.map((r) => [normalizeName(r.name), r]));
-  const dbById = new Map(dbRows.map((r) => [r.id, r]));
+  const dbByName = new Map(dbDefs.map((r) => [r.name, r]));
+  const dbById = new Map(dbDefs.map((r) => [r.id, r]));
 
-  // Executor bindings → tool ids that DO have a matrx-extend.browser binding
-  const boundIds = new Set(executors.filter((e) => e.is_active).map((e) => e.tool_id));
+  // Binding lookup → tool ids that DO have an active chrome-extension binding.
+  // (Already filtered to active in the fetch helper; double-check defensively.)
+  const boundIds = new Set(dbBindings.filter((b) => b.is_active).map((b) => b.tool_id));
 
-  // Surface gates → which tools are gated on which client-extension surface
-  const gatesByTool = new Map<string, Set<string>>();
-  for (const g of gates) {
-    if (!gatesByTool.has(g.tool_id)) gatesByTool.set(g.tool_id, new Set());
-    gatesByTool.get(g.tool_id)!.add(g.surface_name);
+  // Surface inclusion → union of both chrome-extension surfaces'
+  // `always_include_tools` arrays. A tool must appear in at least one to be
+  // surfaced to the model.
+  const surfaceIncluded = new Set<string>();
+  const surfaceExcluded = new Map<string, Set<string>>();
+  for (const s of dbSurfaces) {
+    for (const n of s.always_include_tools ?? []) surfaceIncluded.add(n);
+    if (s.never_include_tools?.length) {
+      surfaceExcluded.set(s.surface_name, new Set(s.never_include_tools));
+    }
   }
 
   const drifts: Drift[] = [];
   const localOnly: string[] = [];
   const dbOnly: string[] = [];
   const dbInactive: string[] = [];
-  const missingExecutor: string[] = [];
-  const missingGate: string[] = [];
-  const orphanGate: string[] = [];
+  const missingBinding: string[] = [];
+  const missingSurface: string[] = [];
+  const excludedSurface: Array<{ name: string; surfaces: string[] }> = [];
 
   for (const [name, l] of localByName) {
     const d = dbByName.get(name);
@@ -305,27 +339,37 @@ async function main(): Promise<void> {
     const issues = compareTool(l, d);
     if (issues.length) drifts.push({ name, issues });
 
-    // Executor binding check — every advertised tool MUST have a row in
-    // tl_executor for the matrx-extend.browser surface, else the server
-    // doesn't know who runs it.
-    if (!boundIds.has(d.id)) missingExecutor.push(name);
+    // Binding check — every advertised tool MUST have an active
+    // tool_binding row for executor_name='chrome-extension' (or a sub-
+    // executor). Without it, the resolver doesn't know who runs it.
+    if (!boundIds.has(d.id)) missingBinding.push(name);
 
-    // Surface gate check — every advertised tool MUST be gated for at
-    // least one chrome-extension/* surface (assistant or pilot), else
-    // the discovery handler can't surface it to either chat path.
-    const surfaces = gatesByTool.get(d.id);
-    if (!surfaces || surfaces.size === 0) missingGate.push(name);
+    // Surface inclusion check — every advertised tool MUST be listed in
+    // `tool_surface_defaults.always_include_tools` for at least one
+    // chrome-extension/* surface, else the discovery handler never
+    // shows it to the LLM.
+    if (!surfaceIncluded.has(name)) missingSurface.push(name);
+
+    // Defensive: if a surface explicitly EXCLUDES the tool, that's a
+    // misconfig the resolver will respect — flag it loudly.
+    const inExclude: string[] = [];
+    for (const [surfaceName, excluded] of surfaceExcluded) {
+      if (excluded.has(name)) inExclude.push(surfaceName);
+    }
+    if (inExclude.length) excludedSurface.push({ name, surfaces: inExclude });
   }
 
   for (const [name] of dbByName) {
     if (!localByName.has(name)) dbOnly.push(name);
   }
 
-  // Orphan gates — gating rows pointing at DB ids that don't exist in
-  // matrx-extend tl_def. Indicates a tool was renamed/deleted without
-  // cleaning up its gates.
-  for (const g of gates) {
-    if (!dbById.has(g.tool_id)) orphanGate.push(`${g.surface_name}/${g.tool_id.slice(0, 8)}`);
+  // Orphan bindings — bindings pointing at DB ids that don't exist in the
+  // chrome-extension owned set. With the FK constraint in 0070 this should
+  // be unreachable, but keep the check as a deployment-state canary.
+  const orphanBinding: string[] = [];
+  for (const b of dbBindings) {
+    if (!b.is_active) continue;
+    if (!dbById.has(b.tool_id)) orphanBinding.push(`${b.executor_name}/${b.tool_id.slice(0, 8)}`);
   }
 
   const totalLocal = localByName.size;
@@ -334,9 +378,10 @@ async function main(): Promise<void> {
     localOnly.length +
     dbOnly.length +
     drifts.length +
-    missingExecutor.length +
-    missingGate.length +
-    orphanGate.length;
+    missingBinding.length +
+    missingSurface.length +
+    excludedSurface.length +
+    orphanBinding.length;
 
   // ── ANSI styling — bright red + bold + reverse for max screaming ─────────
   const isTTY = process.stdout.isTTY && process.env.NO_COLOR !== '1';
@@ -346,11 +391,15 @@ async function main(): Promise<void> {
   const DIM = isTTY ? '\x1b[2m' : '';
   const RESET = isTTY ? '\x1b[0m' : '';
 
-  console.log(`Tool-DB drift check v2 — local catalog ↔ public.{tl_def, tl_executor, tl_def_surface}`);
-  console.log(`  local catalog tools (advertised): ${totalLocal}  ${DIM}(${localAll.length} total; absorbed handlers excluded via CANONICAL_SURFACE)${RESET}`);
-  console.log(`  DB tl_def rows:                   ${totalDb}`);
-  console.log(`  DB tl_executor rows (active):     ${executors.filter((e) => e.is_active).length}`);
-  console.log(`  DB tl_def_surface gates:          ${gates.length}`);
+  console.log(
+    `Tool-DB drift check v3 — local catalog ↔ public.{tool_def, tool_binding, tool_surface_defaults}`,
+  );
+  console.log(
+    `  local catalog tools (advertised): ${totalLocal}  ${DIM}(${localAll.length} total; absorbed handlers excluded via CANONICAL_SURFACE)${RESET}`,
+  );
+  console.log(`  DB tool_def rows owned by chrome-extension: ${totalDb}`);
+  console.log(`  DB tool_binding rows (active):              ${dbBindings.filter((b) => b.is_active).length}`);
+  console.log(`  DB tool_surface_defaults rows:              ${dbSurfaces.length}`);
   console.log('');
 
   if (totalProblems === 0) {
@@ -371,19 +420,19 @@ async function main(): Promise<void> {
   console.log('');
 
   if (localOnly.length) {
-    console.log(`${RED}✗ Local-only (${localOnly.length}) — exist in code but MISSING in tl_def:${RESET}`);
+    console.log(`${RED}✗ Local-only (${localOnly.length}) — exist in code but MISSING from tool_def (or not bound to chrome-extension):${RESET}`);
     for (const n of localOnly) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('');
   }
 
   if (dbOnly.length) {
-    console.log(`${RED}✗ DB-only (${dbOnly.length}) — exist in tl_def but MISSING in code:${RESET}`);
+    console.log(`${RED}✗ DB-only (${dbOnly.length}) — bound to chrome-extension but no local handler exposes them:${RESET}`);
     for (const n of dbOnly) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('');
   }
 
   if (dbInactive.length) {
-    console.log(`${YELLOW}⚠ DB-inactive (${dbInactive.length}) — in tl_def but is_active=false:${RESET}`);
+    console.log(`${YELLOW}⚠ DB-inactive (${dbInactive.length}) — in tool_def but is_active=false:${RESET}`);
     for (const n of dbInactive) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('');
   }
@@ -397,35 +446,41 @@ async function main(): Promise<void> {
     console.log('');
   }
 
-  if (missingExecutor.length) {
-    console.log(`${RED}✗ Missing executor binding (${missingExecutor.length}) — advertised but no tl_executor row for surface='matrx-extend.browser':${RESET}`);
-    for (const n of missingExecutor) console.log(`    ${DIM}-${RESET} ${n}`);
+  if (missingBinding.length) {
+    console.log(`${RED}✗ Missing executor binding (${missingBinding.length}) — advertised but no active tool_binding row for executor_name='chrome-extension':${RESET}`);
+    for (const n of missingBinding) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('  Server cannot route these calls — they will fail with "no executor".');
     console.log('');
   }
 
-  if (missingGate.length) {
-    console.log(`${RED}✗ Missing surface gate (${missingGate.length}) — no tl_def_surface row for chrome-extension/{assistant,pilot}:${RESET}`);
-    for (const n of missingGate) console.log(`    ${DIM}-${RESET} ${n}`);
+  if (missingSurface.length) {
+    console.log(`${RED}✗ Missing surface inclusion (${missingSurface.length}) — not in always_include_tools for either chrome-extension/{assistant,pilot}:${RESET}`);
+    for (const n of missingSurface) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('  Discovery handler will not surface these to the LLM on either chat path.');
     console.log('');
   }
 
-  if (orphanGate.length) {
-    console.log(`${YELLOW}⚠ Orphan surface gates (${orphanGate.length}) — gates pointing at deleted/renamed tools:${RESET}`);
-    for (const n of orphanGate) console.log(`    ${DIM}-${RESET} ${n}`);
-    console.log('  Clean these from tl_def_surface (DELETE WHERE tool_id NOT IN tl_def).');
+  if (excludedSurface.length) {
+    console.log(`${YELLOW}⚠ Explicitly excluded on a surface (${excludedSurface.length}) — listed in never_include_tools:${RESET}`);
+    for (const e of excludedSurface) console.log(`    ${DIM}-${RESET} ${e.name} (on ${e.surfaces.join(', ')})`);
+    console.log('  The resolver will respect this; remove the entry if it was a mistake.');
+    console.log('');
+  }
+
+  if (orphanBinding.length) {
+    console.log(`${YELLOW}⚠ Orphan bindings (${orphanBinding.length}) — bindings pointing at deleted/renamed tools (should be impossible w/ FK; deployment-state canary):${RESET}`);
+    for (const n of orphanBinding) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('');
   }
 
   // ── REPEAT THE BANNER SO IT'S THE LAST THING ─────────────────────────────
   console.log(`${RED_BG}${bar}${RESET}`);
-  console.log(`${RED_BG}██${RESET}   ${RED}DRIFT: ${totalProblems} problem(s). Fix tl_def or local handlers.${RESET}${' '.repeat(Math.max(0, 22 - String(totalProblems).length))}${RED_BG}██${RESET}`);
+  console.log(`${RED_BG}██${RESET}   ${RED}DRIFT: ${totalProblems} problem(s). Fix tool_def or local handlers.${RESET}${' '.repeat(Math.max(0, 22 - String(totalProblems).length))}${RED_BG}██${RESET}`);
   console.log(`${RED_BG}${bar}${RESET}`);
   console.log('');
-  console.log(`${DIM}Fix path — the DATABASE (public.tl_def) is the source of truth:${RESET}`);
-  console.log(`${DIM}  - tl_def is the truth (what the LLM sees).${RESET}`);
-  console.log(`${DIM}  - Bring the handler's real Zod (src/lib/tools/handlers/*.ts) to match tl_def.${RESET}`);
+  console.log(`${DIM}Fix path — the DATABASE is the source of truth:${RESET}`);
+  console.log(`${DIM}  - tool_def is the truth (what the LLM sees).${RESET}`);
+  console.log(`${DIM}  - Bring the handler's real Zod (src/lib/tools/handlers/*.ts) to match tool_def.${RESET}`);
   console.log(`${DIM}  - If the DB itself is wrong, change it (admin API / migration), then match code.${RESET}`);
   process.exit(1);
 }

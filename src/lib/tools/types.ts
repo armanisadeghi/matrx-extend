@@ -8,7 +8,7 @@
  *   - args      — Zod schema for inbound arguments
  *
  * Descriptions are NOT declared here — they live ONLY in the database
- * (`public.tl_def.description`) and are read live for UI via
+ * (`public.tool_def.description`) and are read live for UI via
  * `src/lib/tools/descriptions.ts`. See docs/TOOL_SOURCE_OF_TRUTH.md (Rule 4).
  */
 
@@ -164,9 +164,10 @@ export interface PendingConfirmRequest {
   conversationId?: string | null;
   toolName: string;
   /**
-   * Human-readable description, resolved LIVE from the DB (tl_def) at confirm
-   * time via src/lib/tools/descriptions.ts — never hardcoded (Rule 4). Omitted
-   * when the live lookup hasn't loaded yet; the card falls back to name + args.
+   * Human-readable description, resolved LIVE from the DB (tool_def) at
+   * confirm time via src/lib/tools/descriptions.ts — never hardcoded (Rule 4).
+   * Omitted when the live lookup hasn't loaded yet; the card falls back to
+   * name + args.
    */
   description?: string;
   /** Args the agent supplied — surfaced verbatim so the user sees what's about to happen. */

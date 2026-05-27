@@ -1,5 +1,14 @@
 # UI-First Tools — porting guide for the Next.js frontend
 
+> **Schema rename note (2026-05-27).** Wherever this doc says `tl_def`,
+> read `tool_def`. Wherever it implies ownership via `source_app`, the
+> current ownership is `tool_binding.executor_name` (e.g.
+> `executor_name='matrx-user'` for the Next.js frontend,
+> `executor_name='chrome-extension'` for this extension). Same tools,
+> shared `tool_def` rows — multiple `tool_binding` rows is how
+> cross-surface sharing works. See
+> [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md).
+
 > **Who this is for:** React/Next.js developers building the aimatrx.com
 > chat surface (and any future Matrx Surface — SMS, mobile, sandbox).
 > Many of the tools below have **zero browser dependency** — they are
