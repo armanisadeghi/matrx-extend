@@ -7,7 +7,7 @@
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-05-27T21:30:47.579Z
+Generated: 2026-05-27T23:10:04.147Z
 Total tools: 80
 
 ## ai
