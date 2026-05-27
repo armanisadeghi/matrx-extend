@@ -43,7 +43,7 @@ export function useComputeTargets(
     setLoading(true);
     setError(null);
     const result = await apiGet<ComputeTargetListResponse>(
-      '/api/compute-targets',
+      '/api/compute-targets/',
     );
     if (myId !== fetchIdRef.current) return;
     if (result.ok) {
