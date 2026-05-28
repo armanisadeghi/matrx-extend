@@ -64,6 +64,12 @@ interface StreamChunk {
     eventName?: string;
     data?: Record<string, unknown>;
     message?: string;
+    /**
+     * HTTP status for error-type chunks. See useChatStream's StreamChunk
+     * for the rationale — 409 on /resume is a benign "still waiting on
+     * outstanding tool answers" signal, not a real error.
+     */
+    status?: number;
   };
 }
 
@@ -250,9 +256,20 @@ export function usePilotChatStream() {
         }
       } else if (chunk.type === 'error') {
         const message = chunk.payload.message ?? 'stream error';
-        usePilotChatStore
-          .getState()
-          .appendAssistantText(target, `\n\n_Error:_ ${message}`);
+        const status = chunk.payload.status;
+        // 409 on /resume = "outstanding_delegated_calls" — benign. See the
+        // assistant hook's 409 branch for the protocol rationale.
+        if (status === 409) {
+          log.info(
+            'pilot-stream',
+            '409 on resume — outstanding delegated calls, leaving inbox cards for the user',
+            { runId: chunk.runId, message },
+          );
+        } else {
+          usePilotChatStore
+            .getState()
+            .appendAssistantText(target, `\n\n_Error:_ ${message}`);
+        }
       } else if (chunk.type === 'done') {
         watchdogRef.current?.stop();
         usePilotChatStore.getState().finalizeAssistant(target);

@@ -72,7 +72,8 @@ on<RunArgs, { ok: true }>(CHANNELS.STREAM_RUN, async (args) => {
         if (e.type === 'text') payload = { content: e.content };
         else if (e.type === 'reasoning') payload = { content: e.content };
         else if (e.type === 'event') payload = { eventName: e.eventName, data: e.data };
-        else if (e.type === 'error') payload = { message: e.message };
+        else if (e.type === 'error')
+          payload = e.status !== undefined ? { message: e.message, status: e.status } : { message: e.message };
         else payload = {};
         if (e.type === 'error') {
           // streamFetch already logged the upstream cause with full detail

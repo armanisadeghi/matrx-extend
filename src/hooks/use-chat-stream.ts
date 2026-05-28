@@ -84,6 +84,13 @@ interface StreamChunk {
     eventName?: string;
     data?: Record<string, unknown>;
     message?: string;
+    /**
+     * HTTP status for error-type chunks. 0 = network error, undefined =
+     * mid-stream error (parse failure, server-emitted error). Specifically
+     * used to suppress the resume protocol's 409 "outstanding_delegated_calls"
+     * as a benign signal rather than rendering it as an error message.
+     */
+    status?: number;
   };
 }
 
@@ -419,7 +426,27 @@ export function useChatStream() {
         }
       } else if (chunk.type === 'error') {
         const message = chunk.payload.message ?? 'stream error';
-        useChatStore.getState().appendAssistantText(target, `\n\n_Error:_ ${message}`);
+        const status = chunk.payload.status;
+        // 409 on /resume = "outstanding_delegated_calls" — benign. The user
+        // still has pending ask cards in the inbox; the server is telling us
+        // it can't continue the loop yet because answers are missing. Don't
+        // render it as a stream error; just clean up the empty assistant
+        // bubble and let the inbox cards drive the next step. The full
+        // protocol contract is at
+        // matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md §2.5.
+        if (status === 409) {
+          log.info(
+            'stream',
+            '409 on resume — outstanding delegated calls, leaving inbox cards for the user',
+            { runId: chunk.runId, message },
+          );
+          // Drop the placeholder assistant bubble we allocated for the resume —
+          // there's no continuation to render. The `done` chunk that follows
+          // this error handler in streamFetch's error path will finalize it,
+          // and the ask cards remain interactive.
+        } else {
+          useChatStore.getState().appendAssistantText(target, `\n\n_Error:_ ${message}`);
+        }
       } else if (chunk.type === 'done') {
         watchdogRef.current?.stop();
         useChatStore.getState().finalizeAssistant(target);
