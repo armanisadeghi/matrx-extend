@@ -245,14 +245,60 @@ async function enforcePilotGroupScope(
   return null;
 }
 
+/**
+ * Resolve a conversation_id for a fire-and-forget POST, waiting briefly for
+ * STREAM_OPENED if the run hasn't been registered yet.
+ *
+ * The race this guards against: aidream's `tool_delegated` event can arrive
+ * before STREAM_OPENED settles into the SW's `runs` map (Chrome's message
+ * delivery to the SW's two `on(...)` handlers is technically interleaved per
+ * sender, but the SW handler for STREAM_OPENED is sync while STREAM_CHUNK's
+ * handler is async — so a tool_event with `event=tool_delegated` can hit the
+ * dispatcher with `meta` still undefined). Dropping the result here is the
+ * worst failure mode — the agent waits forever and the user sees nothing.
+ *
+ * Returns the conversation_id once known, or null if it never arrives.
+ */
+async function waitForConversationId(runId: string, timeoutMs = 3000): Promise<string | null> {
+  const existing = runs.get(runId);
+  if (existing?.conversationId) return existing.conversationId;
+  const start = Date.now();
+  // Light poll — STREAM_OPENED is almost always already in flight when we
+  // arrive here, so the first re-check usually returns. Capped so we never
+  // block tool dispatch indefinitely.
+  while (Date.now() - start < timeoutMs) {
+    await new Promise((r) => setTimeout(r, 50));
+    const m = runs.get(runId);
+    if (m?.conversationId) return m.conversationId;
+  }
+  return null;
+}
+
 async function postUnknownToolError(
   ctx: ToolContext,
   toolName: string,
   hint: string,
 ): Promise<void> {
-  if (!ctx.conversationId) return;
+  let conversationId = ctx.conversationId;
+  if (!conversationId) {
+    conversationId = await waitForConversationId(ctx.runId);
+  }
+  if (!conversationId) {
+    log.error(
+      'sw',
+      `unknown-tool error for '${toolName}' could not be posted — no conversation_id resolved for runId=${ctx.runId}`,
+    );
+    // Still surface the failure to the UI so the user knows the agent is stuck.
+    broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+      callId: ctx.callId,
+      toolName,
+      phase: 'error',
+      message: `Tool '${toolName}' is not registered and the conversation could not be reached. The agent loop may be stuck — try sending another message.`,
+    });
+    return;
+  }
   const message = `Tool '${toolName}' is not registered in this extension.${hint}`;
-  await postToolResults(ctx.conversationId, [
+  await postToolResults(conversationId, [
     {
       call_id: ctx.callId,
       tool_name: toolName,
@@ -441,11 +487,28 @@ async function postResult(
   isError = false,
   errorMessage: string | null = null,
 ): Promise<void> {
-  if (!ctx.conversationId) {
-    log.warn('sw', `cannot POST tool_results for ${handler.name} — no conversation_id yet`);
+  // The agent has been working hard — the absolute worst outcome here is
+  // dropping the result. If STREAM_OPENED hasn't registered the run yet
+  // (it raced with the tool_delegated event), give it a beat before we
+  // give up. See `waitForConversationId` for the failure-mode rationale.
+  let conversationId = ctx.conversationId;
+  if (!conversationId) {
+    conversationId = await waitForConversationId(ctx.runId);
+  }
+  if (!conversationId) {
+    log.error(
+      'sw',
+      `cannot POST tool_results for ${handler.name} — no conversation_id resolved for runId=${ctx.runId}`,
+    );
+    broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+      callId: ctx.callId,
+      toolName: handler.name,
+      phase: 'error',
+      message: `The agent's loop could not be reached. Your tool result wasn't delivered. Try sending another message to recover.`,
+    });
     return;
   }
-  const r = await postToolResults(ctx.conversationId, [
+  const r = await postToolResults(conversationId, [
     {
       call_id: ctx.callId,
       tool_name: handler.name,
@@ -454,6 +517,53 @@ async function postResult(
       error_message: errorMessage,
     },
   ]);
+
+  // Failure path — make the user aware. After exhausting retries (5xx /
+  // network), or on a hard 4xx, the agent loop is stuck and the user needs to
+  // see SOMETHING. Surface a timeline error rather than letting the spinner
+  // run forever.
+  if (!r.ok) {
+    log.error(
+      'sw',
+      `tool_results POST failed permanently for ${handler.name}`,
+      { status: r.status, error: r.error },
+    );
+    // 404 specifically means the server doesn't know this call_id — the
+    // server-side race (since fixed) used to cause this. Provide a hint
+    // the user can act on instead of a generic spinner.
+    const hint =
+      r.status === 404
+        ? 'The conversation looks out of sync with the server. Try sending another message to recover.'
+        : r.status === 0
+          ? 'Network error reaching the AI server. Check your connection and try again.'
+          : `The AI server returned an error (${r.status}). The agent loop may be stuck.`;
+    broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+      callId: ctx.callId,
+      toolName: handler.name,
+      phase: 'error',
+      message: hint,
+    });
+    return;
+  }
+
+  // Track the not_found responses too — partial success returns 200 but the
+  // call_id we just posted didn't land. Surface it.
+  if (Array.isArray(r.data.not_found) && r.data.not_found.includes(ctx.callId)) {
+    log.warn(
+      'sw',
+      `tool_results 200 but call_id ${ctx.callId} was not_found — server doesn't know this call`,
+      r.data,
+    );
+    broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+      callId: ctx.callId,
+      toolName: handler.name,
+      phase: 'error',
+      message:
+        'The server did not recognize this tool call. The conversation may be out of sync — try sending another message.',
+    });
+    // Don't return — we still need to evaluate continuation_needed; the
+    // server may have other resolved calls that warrant a resume.
+  }
 
   // Continuation handshake. aidream's _suspend_for_delegation HARD-SUSPENDS
   // when any client-delegated tool is pending — it persists the turn, emits a
@@ -469,12 +579,12 @@ async function postResult(
   // mirrors `send()` to allocate a fresh assistant bubble + runId, then
   // STREAM_STARTs against the resume path. See the canonical protocol at
   // matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md.
-  if (r.ok && r.data.continuation_needed && r.data.user_request_id) {
-    log.info('sw', `continuation_needed → broadcast STREAM_CONTINUE for ${ctx.conversationId}`, {
+  if (r.data.continuation_needed && r.data.user_request_id) {
+    log.info('sw', `continuation_needed → broadcast STREAM_CONTINUE for ${conversationId}`, {
       userRequestId: r.data.user_request_id,
     });
     broadcast(CHANNELS.STREAM_CONTINUE, {
-      conversationId: ctx.conversationId,
+      conversationId,
       userRequestId: r.data.user_request_id,
     });
   }
