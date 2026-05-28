@@ -206,10 +206,33 @@ export function startToolDispatcher(opts: DispatchOptions): void {
         return { ack: true };
       }
 
-      // Fire-and-forget — do not block the chunk listener on this.
-      void handleCall(handler, toolArgs, ctx, meta).catch((err) =>
-        log.error('sw', `tool dispatch crashed for ${resolvedName}`, err),
-      );
+      // Fire-and-forget — do not block the chunk listener on this. The
+      // .catch() below is the LAST line of defense against a silent stuck
+      // conversation. handleCall has its own try/catch around handler.run
+      // and a structured `fail` path for every validation gate, but an
+      // exception leaking out of the gates themselves (e.g. an async
+      // permission probe throwing) would otherwise vanish into a console
+      // log with no result POSTed back. Send an error to the model so it
+      // knows the tool failed and can move on.
+      void handleCall(handler, toolArgs, ctx, meta).catch(async (err) => {
+        const message = (err as Error)?.message ?? String(err);
+        log.error('sw', `tool dispatch crashed for ${resolvedName}`, err);
+        try {
+          await postResult(handler, ctx, null, true, `Tool dispatch crashed: ${message}`);
+        } catch (postErr) {
+          log.error(
+            'sw',
+            `failed to surface dispatch crash for ${resolvedName} — tool call may be stuck`,
+            postErr,
+          );
+        }
+        broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+          callId: ctx.callId,
+          toolName: handler.name,
+          phase: 'error',
+          message: `Tool dispatch crashed: ${message}`,
+        });
+      });
       return { ack: true };
     },
   );
