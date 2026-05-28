@@ -16,6 +16,7 @@
  */
 
 import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { conversationResumePath } from '@/lib/api/routes/tool-results';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { buildChatContext } from '@/lib/chat/build-context';
@@ -127,7 +128,12 @@ function handleToolEvent(
   };
   if (message !== undefined) base.message = message;
 
-  if (subEvent === 'tool_started') {
+  // The server emits `tool_delegated` (not `tool_started`) for client-side
+  // tools. Without this branch, the inline tool row stayed phaseless until
+  // the SW dispatcher's TOOL_TIMELINE_EVENT landed — usually well after
+  // the user could already see a spinner without a label. Mirrors the
+  // Assistant surface's handleToolEvent.
+  if (subEvent === 'tool_started' || subEvent === 'tool_delegated') {
     const args = inner.arguments;
     upsert(messageId, callId, {
       ...base,
@@ -164,6 +170,20 @@ const PILOT_STALL_MS = 75_000;
 export function usePilotChatStream() {
   const runIdRef = useRef<string | null>(null);
   const targetIdRef = useRef<string | null>(null);
+  // STREAM_CONTINUE arrived while the previous run hadn't fully finalized.
+  // See useChatStream for the rationale; Pilot inherits the same race because
+  // both stores are driven by the same SW dispatcher broadcasting one
+  // `stream:continue` channel.
+  const pendingContinueRef = useRef<{
+    conversationId: string;
+    userRequestId: string;
+    assignedTabId: number;
+  } | null>(null);
+  // Late-binding ref so the STREAM_CHUNK `done` handler can drain a queued
+  // continue without dependency-array gymnastics.
+  const resumeRunRef = useRef<
+    (conversationId: string, userRequestId: string) => Promise<string | null>
+  >(async () => null);
 
   const watchdogRef = useRef<ReturnType<typeof createStreamWatchdog> | null>(null);
   if (!watchdogRef.current) {
@@ -239,6 +259,19 @@ export function usePilotChatStream() {
         usePilotChatStore.getState().setStreaming(false);
         runIdRef.current = null;
         targetIdRef.current = null;
+        // Drain any STREAM_CONTINUE that raced the stream end. Same race as
+        // the assistant surface — a fast client tool may resolve before the
+        // `done` chunk reaches this hook. See useChatStream for the rationale.
+        const pending = pendingContinueRef.current;
+        if (pending) {
+          pendingContinueRef.current = null;
+          log.info(
+            'pilot-stream',
+            'draining queued STREAM_CONTINUE after stream done',
+            pending,
+          );
+          void resumeRunRef.current(pending.conversationId, pending.userRequestId);
+        }
       }
       return { ack: true };
     });
@@ -390,6 +423,7 @@ export function usePilotChatStream() {
   const cancel = useCallback(async () => {
     if (!runIdRef.current) return;
     watchdogRef.current?.stop();
+    pendingContinueRef.current = null;
     await send(CHANNELS.STREAM_CANCEL, { runId: runIdRef.current });
     if (targetIdRef.current)
       usePilotChatStore.getState().finalizeAssistant(targetIdRef.current);
@@ -397,6 +431,133 @@ export function usePilotChatStream() {
     runIdRef.current = null;
     targetIdRef.current = null;
   }, []);
+
+  /**
+   * Resolve a tab id inside the active pilot session's group to pin a
+   * resumed run to. Pilot runs MUST stay inside the group; if it's been
+   * dismantled, we fall back to the active tab and let the dispatcher's
+   * pilot-group gate reject the call with a structured error the model
+   * can act on (the model can then notify the user to start a new session).
+   */
+  const resolvePilotAssignedTabId = useCallback(async (): Promise<number | null> => {
+    const session = usePilotStore.getState().session;
+    if (session.active && session.groupId != null) {
+      try {
+        const tabsInGroup = await chrome.tabs.query({ groupId: session.groupId });
+        // Prefer the currently active tab in the group; fall back to first.
+        const active = tabsInGroup.find((t) => t.active);
+        const fallback = active ?? tabsInGroup[0];
+        if (fallback?.id != null) return fallback.id;
+      } catch (err) {
+        log.warn('pilot-stream', 'tab group query failed during resume', err);
+      }
+    }
+    const activeTab = await resolveActiveTab();
+    return activeTab?.id ?? null;
+  }, []);
+
+  /**
+   * Open a /resume stream to continue a Pilot agent loop that hard-suspended
+   * after delegating a client tool. Pilot's STREAM_CONTINUE handling parallels
+   * the Assistant surface but routes events into `usePilotChatStore` and
+   * pins to the pilot session's tab group.
+   *
+   * Without this, the Pilot agent would silently hang the moment it called
+   * any client-delegated tool — the server hard-suspends, the original
+   * stream ENDS, and without a resume the user just sees a spinner forever.
+   * See the canonical protocol:
+   * matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md.
+   */
+  const resumeRun = useCallback(
+    async (conversationId: string, userRequestId: string): Promise<string | null> => {
+      const selectedId = usePilotChatStore.getState().selectedConversationId;
+      if (selectedId !== conversationId) {
+        log.info(
+          'pilot-stream',
+          `STREAM_CONTINUE ignored — pilot conversation ${conversationId} not selected (selected=${selectedId})`,
+        );
+        return null;
+      }
+      if (runIdRef.current) {
+        log.info('pilot-stream', 'STREAM_CONTINUE queued — previous run still finalizing', {
+          activeRunId: runIdRef.current,
+          conversationId,
+        });
+        const assignedTabId = (await resolvePilotAssignedTabId()) ?? -1;
+        pendingContinueRef.current = { conversationId, userRequestId, assignedTabId };
+        return null;
+      }
+      // Resolve the pinned tab. Pilot runs MUST stay inside the session's
+      // tab group — if the session was ended externally (group closed),
+      // fall back to the active tab as a courtesy and let the dispatcher's
+      // pilot gate reject the call with a structured error the model can act on.
+      const activeTab = await resolveActiveTab();
+      const assignedTabId = await resolvePilotAssignedTabId();
+
+      const assistantMsg: ChatMessage = {
+        id: newId('asst'),
+        role: 'assistant',
+        content: '',
+        timestamp: Date.now(),
+        pending: true,
+      };
+      usePilotChatStore.getState().pushMessage(assistantMsg);
+      usePilotChatStore.getState().setStreaming(true);
+
+      const runId = newId('run');
+      runIdRef.current = runId;
+      targetIdRef.current = assistantMsg.id;
+      watchdogRef.current?.start();
+
+      const loadedCategories = useActiveToolsStore.getState().getLoaded(conversationId);
+      const browserDomState = await buildBrowserDomState({
+        surface: 'pilot',
+        loadedCategories,
+        activeTab,
+        pageLang: null,
+      });
+
+      const body: Record<string, unknown> = {
+        user_request_id: userRequestId,
+        client: {
+          capabilities: ['browser-dom'],
+          state: {
+            'browser-dom': browserDomState as unknown as Record<string, unknown>,
+          },
+        },
+      };
+
+      await send(CHANNELS.STREAM_START, {
+        runId,
+        endpoint: conversationResumePath(conversationId),
+        body,
+        parser: 'rich-events' as const,
+        agentName: null,
+        permissionMode: usePilotChatStore.getState().getPermissionMode(null),
+        assignedTabId,
+      });
+      log.info('pilot-stream', `resume started for ${conversationId}`, {
+        runId,
+        userRequestId,
+      });
+      return runId;
+    },
+    [],
+  );
+  resumeRunRef.current = resumeRun;
+
+  // Subscribe to the SW's STREAM_CONTINUE broadcasts. The handler runs in
+  // EVERY surface (assistant + pilot) — only the surface whose conversation
+  // matches actually fires its resume, so two subscribers don't double-run.
+  useEffect(() => {
+    return on<{ conversationId: string; userRequestId: string }, { ack: true }>(
+      CHANNELS.STREAM_CONTINUE,
+      (payload) => {
+        void resumeRun(payload.conversationId, payload.userRequestId);
+        return { ack: true };
+      },
+    );
+  }, [resumeRun]);
 
   return { send: sendMessage, cancel };
 }

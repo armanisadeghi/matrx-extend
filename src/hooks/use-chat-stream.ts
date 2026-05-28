@@ -276,6 +276,20 @@ export function useChatStream() {
   const requestIdRef = useRef<string | null>(null);
   const eventCountRef = useRef(0);
   const lastSendRef = useRef<{ input: string; opts: SendOptions } | null>(null);
+  // Pending STREAM_CONTINUE that arrived while the original stream was still
+  // wrapping up. Drained on the next `done` chunk so the resume actually
+  // fires instead of being dropped on the floor. See the resumeRun /
+  // CHANNELS.STREAM_CONTINUE useEffect for the round-trip rationale.
+  const pendingContinueRef = useRef<{
+    conversationId: string;
+    userRequestId: string;
+  } | null>(null);
+  // Late-binding ref for `resumeRun` so the STREAM_CHUNK `done` handler can
+  // call it even though useCallback declarations come after the useEffect.
+  // The function moves; the ref doesn't.
+  const resumeRunRef = useRef<
+    (conversationId: string, userRequestId: string) => Promise<string | null>
+  >(async () => null);
 
   // The watchdog is created once; it calls the latest `onStall` via a ref so
   // the closure always sees current refs without re-creating timers.
@@ -412,6 +426,19 @@ export function useChatStream() {
         useChatStore.getState().setStreaming(false);
         runIdRef.current = null;
         targetIdRef.current = null;
+        // Drain any STREAM_CONTINUE that raced the stream end. A fast
+        // client tool (e.g. one that doesn't need user input) can finish
+        // and POST its result before the offscreen→sidepanel `done` chunk
+        // reaches us. The SW broadcasts STREAM_CONTINUE the moment the
+        // server says `continuation_needed=true` — if that broadcast won
+        // the race against `done`, we queued it; now is the moment to
+        // fire it.
+        const pending = pendingContinueRef.current;
+        if (pending) {
+          pendingContinueRef.current = null;
+          log.info('stream', 'draining queued STREAM_CONTINUE after stream done', pending);
+          void resumeRunRef.current(pending.conversationId, pending.userRequestId);
+        }
       }
       return { ack: true };
     });
@@ -448,6 +475,11 @@ export function useChatStream() {
       requestIdRef.current = null;
       eventCountRef.current = 0;
       lastSendRef.current = { input: text, opts };
+      // Drop any queued resume — a fresh send supersedes it. (If a resume
+      // was queued from a previous turn and the user typed a new message
+      // before the previous stream's `done` fired, the new send is the
+      // user's intent; honoring the queued resume would race two runs.)
+      pendingContinueRef.current = null;
       watchdogRef.current?.start();
 
       // Pre-send page-context refresh. This is what makes the difference
@@ -651,6 +683,11 @@ export function useChatStream() {
   const cancel = useCallback(async () => {
     if (!runIdRef.current) return;
     watchdogRef.current?.stop();
+    // Cancelling the user's run means the user wants OUT — discard any
+    // queued resume so we don't snap back into the conversation a moment
+    // later. The server will see the cancel + the outstanding tool call;
+    // a re-send by the user re-arms a new run cleanly.
+    pendingContinueRef.current = null;
     await send(CHANNELS.STREAM_CANCEL, { runId: runIdRef.current });
     if (targetIdRef.current) useChatStore.getState().finalizeAssistant(targetIdRef.current);
     useChatStore.getState().setStreaming(false);
@@ -693,11 +730,21 @@ export function useChatStream() {
       // some other reason (the inline-waiter path still streamed under us, or
       // a previous resume hasn't ended) means continuation_needed shouldn't
       // have been true server-side, but skip rather than race.
+      //
+      // Important nuance — the original stream's `done` chunk may not have
+      // landed yet, even though the server hard-suspended already. When a
+      // fast client tool (one that didn't need user input) completes in the
+      // same animation frame as the suspend, the SW broadcasts
+      // STREAM_CONTINUE before the offscreen→sidepanel `done` chunk arrives.
+      // We can't just bail — that drops the resume on the floor and the
+      // conversation stalls. Instead, queue the continue; the STREAM_CHUNK
+      // `done` handler will drain it as soon as the previous run finalizes.
       if (runIdRef.current) {
-        log.warn('stream', 'STREAM_CONTINUE skipped — a run is already active', {
+        log.info('stream', 'STREAM_CONTINUE queued — previous run still finalizing', {
           activeRunId: runIdRef.current,
           conversationId,
         });
+        pendingContinueRef.current = { conversationId, userRequestId };
         return null;
       }
 
@@ -760,6 +807,9 @@ export function useChatStream() {
     },
     [],
   );
+  // Keep the late-binding ref in sync so the STREAM_CHUNK `done` handler can
+  // drain a queued STREAM_CONTINUE without dependency-array gymnastics.
+  resumeRunRef.current = resumeRun;
 
   // SW → sidepanel: a POST /tool_results came back with
   // continuation_needed=true. The SW broadcasts {conversationId, userRequestId};
