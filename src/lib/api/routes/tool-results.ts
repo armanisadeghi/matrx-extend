@@ -53,11 +53,9 @@ export async function postToolResults(
   conversationId: string,
   results: ClientToolResultBody[],
 ): Promise<ApiResult<ToolResultsResponse>> {
-  log.info(
-    'msg',
-    `→ POST /ai/conversations/${conversationId}/tool_results (${results.length})`,
-    { results },
-  );
+  log.info('msg', `→ POST /ai/conversations/${conversationId}/tool_results (${results.length})`, {
+    results,
+  });
   const path = `/ai/conversations/${encodeURIComponent(conversationId)}/tool_results`;
   const maxAttempts = 3;
   const baseDelayMs = 500;
@@ -96,9 +94,7 @@ export async function postToolResults(
   }
   // Defensive — loop guarantees at least one assignment, but TypeScript
   // can't see that without an explicit fallback.
-  return (
-    last ?? { ok: false, status: 0, error: 'tool_results: unreachable retry exit' }
-  );
+  return last ?? { ok: false, status: 0, error: 'tool_results: unreachable retry exit' };
 }
 
 /**

@@ -6,20 +6,20 @@
  * touch chrome.storage or the auth flow here.
  */
 
+import { streamFetch } from '@/lib/api/stream';
 import { handleMicRun } from '@/lib/audio/mic-recorder-offscreen';
 import type { MicRunPayload } from '@/lib/audio/mic-types';
-import { handleVideoRun } from '@/lib/video/video-recorder-offscreen';
-import type { VideoRunPayload } from '@/lib/video/video-types';
-import { streamFetch } from '@/lib/api/stream';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import { startWsOffscreenRuntime } from '@/lib/desktop/ws-offscreen';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
-  fetchUrlAndParse,
   type FetchAndParseRequest,
   type FetchAndParseResult,
+  fetchUrlAndParse,
 } from '@/lib/scrape/fetch-and-parse';
+import { handleVideoRun } from '@/lib/video/video-recorder-offscreen';
+import type { VideoRunPayload } from '@/lib/video/video-types';
 
 startDebugRelay();
 log.info('sys', 'offscreen ready');
@@ -73,7 +73,10 @@ on<RunArgs, { ok: true }>(CHANNELS.STREAM_RUN, async (args) => {
         else if (e.type === 'reasoning') payload = { content: e.content };
         else if (e.type === 'event') payload = { eventName: e.eventName, data: e.data };
         else if (e.type === 'error')
-          payload = e.status !== undefined ? { message: e.message, status: e.status } : { message: e.message };
+          payload =
+            e.status !== undefined
+              ? { message: e.message, status: e.status }
+              : { message: e.message };
         else payload = {};
         if (e.type === 'error') {
           // streamFetch already logged the upstream cause with full detail

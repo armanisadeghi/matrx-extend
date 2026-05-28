@@ -15,52 +15,52 @@
  */
 
 import { ALARMS, STORAGE_KEYS } from '@/config/env';
-import { startAudibleLog } from '@/lib/audio/audible-log';
 import {
   registerAgendaNotificationClicks,
   scanAndNotify,
   startAgendaScanner,
 } from '@/lib/agenda/scanner';
+import { startAudibleLog } from '@/lib/audio/audible-log';
 import { refreshAccessToken } from '@/lib/auth/flow';
 import { logExtensionIdentityOnce } from '@/lib/auth/identity';
 import { hydrateBridgeTrafficEnabled, recordBridgeTraffic } from '@/lib/debug/bridge-traffic';
 import { log, startDebugRelay } from '@/lib/debug/log';
-import { desktopRpc, probeDesktop, startDesktopProbeAlarm } from '@/lib/desktop/bridge';
-import { connectWs, onWsMessage, sendWs } from '@/lib/desktop/ws-client';
 import type { CapturedEvent } from '@/lib/demos/event-capture';
 import { onCapturedEvent } from '@/lib/demos/recorder';
+import { desktopRpc, probeDesktop, startDesktopProbeAlarm } from '@/lib/desktop/bridge';
+import { connectWs, onWsMessage, sendWs } from '@/lib/desktop/ws-client';
+import { connectBroadcast } from '@/lib/frontend-bridge/broadcast';
 import {
   FRONTEND_RPC_CHANNEL,
   FrontendRpcEnvelopeSchema,
   type FrontendRpcResponse,
   handleFrontendRpc,
 } from '@/lib/frontend-bridge/handler';
-import { connectBroadcast } from '@/lib/frontend-bridge/broadcast';
 import { startSchedulerHost, stopSchedulerHost } from '@/lib/scheduler-host';
 // Side-effect import: registers the example 'ping' task handler at SW boot.
 // Subsequent phases add more handlers via the same pattern.
 import '@/lib/scheduler-host/handlers/ping';
+import type { MicRequestPayload, MicRunPayload } from '@/lib/audio/mic-types';
 import type { UserProfile } from '@/lib/auth/types';
+import { setupContextMenus } from '@/lib/context-menus/setup';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
-import type { MicRequestPayload, MicRunPayload } from '@/lib/audio/mic-types';
+import { readDefaultPermissionMode } from '@/lib/settings/persisted';
 import {
-  ensureOffscreen,
   type StartStreamArgs,
   cancelStream,
+  ensureOffscreen,
   startStream,
 } from '@/lib/stream/offscreen-proxy';
+import { setSupabaseSession } from '@/lib/supabase/client';
+import { lookupCapturedByUrl } from '@/lib/supabase/queries';
+import { handleWebmcpCall, recordAssignedTab, startToolDispatcher } from '@/lib/tools/dispatch';
 import type {
   VideoErrorEvent,
   VideoRequestPayload,
   VideoRunPayload,
 } from '@/lib/video/video-types';
-import { setSupabaseSession } from '@/lib/supabase/client';
-import { lookupCapturedByUrl } from '@/lib/supabase/queries';
-import { setupContextMenus } from '@/lib/context-menus/setup';
-import { readDefaultPermissionMode } from '@/lib/settings/persisted';
-import { handleWebmcpCall, recordAssignedTab, startToolDispatcher } from '@/lib/tools/dispatch';
 import { registerToolsOnActiveTab } from '@/lib/webmcp/register';
 import { usePilotStore } from '@/state/pilot';
 
@@ -310,15 +310,12 @@ function registerHandlers(): void {
       let streamId: string;
       try {
         streamId = await new Promise<string>((resolve, reject) => {
-          chrome.tabCapture.getMediaStreamId(
-            { targetTabId: payload.targetTabId! },
-            (id) => {
-              const err = chrome.runtime.lastError;
-              if (err) reject(new Error(err.message ?? 'getMediaStreamId failed'));
-              else if (!id) reject(new Error('empty streamId'));
-              else resolve(id);
-            },
-          );
+          chrome.tabCapture.getMediaStreamId({ targetTabId: payload.targetTabId! }, (id) => {
+            const err = chrome.runtime.lastError;
+            if (err) reject(new Error(err.message ?? 'getMediaStreamId failed'));
+            else if (!id) reject(new Error('empty streamId'));
+            else resolve(id);
+          });
         });
       } catch (err) {
         broadcast(CHANNELS.VIDEO_EVENT, {
@@ -447,11 +444,11 @@ function registerWebmcpTabUpdateGate(): void {
       const isAdmin = await readIsAdmin();
       const result = await registerToolsOnActiveTab({ isAdmin, tabId });
       if (result.ok) {
-        log.info('sw',`registered ${result.count ?? 0} tools on ${url}`);
+        log.info('sw', `registered ${result.count ?? 0} tools on ${url}`);
       } else if (result.reason && result.reason !== 'WebMCP unavailable') {
         // Don't log "WebMCP unavailable" — it's the expected state on
         // any Chrome older than 146.
-        log.info('sw',`register skipped: ${result.reason}`, { url });
+        log.info('sw', `register skipped: ${result.reason}`, { url });
       }
     } catch (err) {
       log.warn('sw', `webmcp register failed`, err);
@@ -618,10 +615,7 @@ async function handleExtensionInvoke(p: Record<string, unknown>): Promise<void> 
     return;
   }
   const permissionMode = await readDefaultPermissionMode();
-  const result = await handleWebmcpCall(
-    { callId, toolName, args },
-    { permissionMode },
-  );
+  const result = await handleWebmcpCall({ callId, toolName, args }, { permissionMode });
   // Wire result back to the engine.
   const wireFrame = result.ok
     ? { type: 'extension.result', callId, ok: true, result: result.result }
@@ -693,7 +687,10 @@ function registerPilotLifecycleListeners(): void {
       }
     });
   } else {
-    log.warn('pilot', 'chrome.tabGroups.onRemoved unavailable — cannot watch for external group dissolution');
+    log.warn(
+      'pilot',
+      'chrome.tabGroups.onRemoved unavailable — cannot watch for external group dissolution',
+    );
   }
   if (chrome.tabs?.onRemoved) {
     chrome.tabs.onRemoved.addListener(async () => {
@@ -746,9 +743,7 @@ async function closeStaleOffscreenOnBoot(): Promise<void> {
     }
     if (!exists && 'hasDocument' in chrome.offscreen) {
       try {
-        exists = await (
-          chrome.offscreen as { hasDocument: () => Promise<boolean> }
-        ).hasDocument();
+        exists = await (chrome.offscreen as { hasDocument: () => Promise<boolean> }).hasDocument();
       } catch {
         /* fall through */
       }
@@ -787,10 +782,7 @@ async function startSchedulerHostIfSignedIn(): Promise<void> {
       log.info('sys', 'scheduler-host: no signed-in user — not starting');
     }
   } catch (err) {
-    log.warn(
-      'sys',
-      `scheduler-host: bootstrap probe failed: ${(err as Error).message}`,
-    );
+    log.warn('sys', `scheduler-host: bootstrap probe failed: ${(err as Error).message}`);
   }
 }
 

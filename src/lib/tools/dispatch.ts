@@ -34,9 +34,9 @@ import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { type OptionalPermission, hasOptionalPermissions } from '@/lib/permissions/optional';
 import { recordToolEvent } from '@/lib/recording/state';
-import { suggestSimilar } from '@/lib/tools/suggest';
 import { getToolDescription, primeToolDescriptions } from '@/lib/tools/descriptions';
 import { allToolNames, lookup as lookupTool } from '@/lib/tools/registry';
+import { suggestSimilar } from '@/lib/tools/suggest';
 import type {
   AnyToolHandler,
   ConfirmResponse,
@@ -565,11 +565,10 @@ async function postResult(
   // see SOMETHING. Surface a timeline error rather than letting the spinner
   // run forever.
   if (!r.ok) {
-    log.error(
-      'sw',
-      `tool_results POST failed permanently for ${handler.name}`,
-      { status: r.status, error: r.error },
-    );
+    log.error('sw', `tool_results POST failed permanently for ${handler.name}`, {
+      status: r.status,
+      error: r.error,
+    });
     // 404 specifically means the server doesn't know this call_id — the
     // server-side race (since fixed) used to cause this. Provide a hint
     // the user can act on instead of a generic spinner.

@@ -22,23 +22,20 @@ import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { buildChatContext } from '@/lib/chat/build-context';
 import { refreshPageContextBeforeSend } from '@/lib/chat/refresh-page-context';
 import { progressFromWire } from '@/lib/chat/tool-progress';
-import { createStreamWatchdog } from '@/lib/stream/watchdog';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { createStreamWatchdog } from '@/lib/stream/watchdog';
 import { lookup as lookupTool } from '@/lib/tools/registry';
-import {
-  projectAdminFlagsToRequest,
-  useAdminFlagsStore,
-} from '@/state/admin-flags';
 import { useActiveToolsStore } from '@/state/active-tools';
+import { projectAdminFlagsToRequest, useAdminFlagsStore } from '@/state/admin-flags';
 import { useAuthStore } from '@/state/auth';
 import { useAutoScrapeStore } from '@/state/auto-scrape';
-import { type ChatMessage, type ToolPartCall } from '@/state/chat';
+import type { ChatMessage, ToolPartCall } from '@/state/chat';
 import { useDesktopStore } from '@/state/desktop';
-import { usePilotChatStore } from '@/state/pilot-chat';
 import { usePilotStore } from '@/state/pilot';
+import { usePilotChatStore } from '@/state/pilot-chat';
 import { useScrapeStore } from '@/state/scrape';
 import { useSettingsStore } from '@/state/settings';
 import { useCallback, useEffect, useRef } from 'react';
@@ -113,10 +110,7 @@ function handleResourceChangedEvent(data: Record<string, unknown> | undefined): 
   useActiveToolsStore.getState().setLiveTools(names);
 }
 
-function handleToolEvent(
-  messageId: string,
-  data: Record<string, unknown> | undefined,
-): void {
+function handleToolEvent(messageId: string, data: Record<string, unknown> | undefined): void {
   if (!data) return;
   const subEvent = String(data.event ?? '');
   const callId = String(data.call_id ?? '');
@@ -233,9 +227,7 @@ export function usePilotChatStream() {
           usePilotChatStore.getState().appendAssistantText(target, chunk.payload.content);
       } else if (chunk.type === 'reasoning') {
         if (chunk.payload.content)
-          usePilotChatStore
-            .getState()
-            .appendAssistantReasoning(target, chunk.payload.content);
+          usePilotChatStore.getState().appendAssistantReasoning(target, chunk.payload.content);
       } else if (chunk.type === 'event') {
         if (chunk.payload.eventName === 'tool_event') {
           const convId = usePilotChatStore.getState().selectedConversationId;
@@ -266,9 +258,7 @@ export function usePilotChatStream() {
             { runId: chunk.runId, message },
           );
         } else {
-          usePilotChatStore
-            .getState()
-            .appendAssistantText(target, `\n\n_Error:_ ${message}`);
+          usePilotChatStore.getState().appendAssistantText(target, `\n\n_Error:_ ${message}`);
         }
       } else if (chunk.type === 'done') {
         watchdogRef.current?.stop();
@@ -282,11 +272,7 @@ export function usePilotChatStream() {
         const pending = pendingContinueRef.current;
         if (pending) {
           pendingContinueRef.current = null;
-          log.info(
-            'pilot-stream',
-            'draining queued STREAM_CONTINUE after stream done',
-            pending,
-          );
+          log.info('pilot-stream', 'draining queued STREAM_CONTINUE after stream done', pending);
           void resumeRunRef.current(pending.conversationId, pending.userRequestId);
         }
       }
@@ -330,10 +316,7 @@ export function usePilotChatStream() {
         const decision = await refreshPageContextBeforeSend({
           autoFullScrollOnFirstSubmit: settings.autoFullScrollOnFirstSubmit,
         });
-        log.info(
-          'pilot-stream',
-          `pre-send page refresh: ${decision.action} (${decision.reason})`,
-        );
+        log.info('pilot-stream', `pre-send page refresh: ${decision.action} (${decision.reason})`);
       } catch (err) {
         log.warn('pilot-stream', 'pre-send page refresh failed', err);
       }
@@ -369,8 +352,7 @@ export function usePilotChatStream() {
 
       const conversationId = opts.conversationId ?? null;
       const loadedCategories = useActiveToolsStore.getState().getLoaded(conversationId);
-      const briefLang =
-        (context.page_brief as { lang?: string | null } | undefined)?.lang ?? null;
+      const briefLang = (context.page_brief as { lang?: string | null } | undefined)?.lang ?? null;
       const browserDomState = await buildBrowserDomState({
         surface: 'pilot',
         agentId: opts.agentId,
@@ -389,10 +371,7 @@ export function usePilotChatStream() {
       if (modelOverrideId) {
         configOverrides = { model: modelOverrideId };
       }
-      if (
-        adminOverrides.config_overrides &&
-        typeof adminOverrides.config_overrides === 'object'
-      ) {
+      if (adminOverrides.config_overrides && typeof adminOverrides.config_overrides === 'object') {
         configOverrides = {
           ...(configOverrides ?? {}),
           ...(adminOverrides.config_overrides as Record<string, unknown>),
@@ -442,8 +421,7 @@ export function usePilotChatStream() {
     watchdogRef.current?.stop();
     pendingContinueRef.current = null;
     await send(CHANNELS.STREAM_CANCEL, { runId: runIdRef.current });
-    if (targetIdRef.current)
-      usePilotChatStore.getState().finalizeAssistant(targetIdRef.current);
+    if (targetIdRef.current) usePilotChatStore.getState().finalizeAssistant(targetIdRef.current);
     usePilotChatStore.getState().setStreaming(false);
     runIdRef.current = null;
     targetIdRef.current = null;
