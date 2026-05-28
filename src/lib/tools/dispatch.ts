@@ -66,23 +66,42 @@ interface RunMeta {
 const runs = new Map<string, RunMeta>();
 
 /**
- * Latch the assigned tab BEFORE the SSE opens. Called from the SW's
- * STREAM_START handler so the dispatcher has the tab id ready by the time
- * the first `tool_delegated` arrives. Idempotent — the runs map is keyed
- * by runId; STREAM_OPENED merges into the same row a moment later.
+ * Latch run metadata BEFORE the SSE opens. Called from the SW's STREAM_START
+ * handler so the dispatcher has the assigned tab, permission mode, and
+ * agent name ready by the time the first `tool_delegated` event arrives.
+ * Idempotent — the runs map is keyed by runId; STREAM_OPENED merges
+ * `conversation_id` and `request_id` into the same row a moment later.
+ *
+ * Why this exists: the permission mode (ask/act) was previously seeded
+ * only from STREAM_OPENED. If the offscreen broadcast that as the very
+ * first chunk arrived BEFORE the SW's STREAM_OPENED handler ran (Chrome's
+ * `chrome.runtime.sendMessage` delivery to one extension context is FIFO
+ * per-sender but the SW receives both broadcasts as separate handler
+ * invocations — `tool_delegated` on STREAM_CHUNK could be processed first
+ * since its handler is async while STREAM_OPENED's is sync), the run
+ * would default to 'ask' even when the user had explicitly enabled 'act',
+ * silently downgrading the experience. Both signals come from the same
+ * STREAM_START payload, so seeding them together at STREAM_START is the
+ * race-proof fix.
  */
-export function recordAssignedTab(runId: string, assignedTabId: number | null): void {
+export function recordAssignedTab(
+  runId: string,
+  assignedTabId: number | null,
+  opts: { permissionMode?: 'ask' | 'act'; agentName?: string | null } = {},
+): void {
   const existing = runs.get(runId);
   if (existing) {
     existing.assignedTabId = assignedTabId;
+    if (opts.permissionMode) existing.permissionMode = opts.permissionMode;
+    if (opts.agentName !== undefined) existing.agentName = opts.agentName;
     return;
   }
   // STREAM_OPENED hasn't landed yet — seed the row so it isn't lost.
   runs.set(runId, {
     conversationId: null,
     requestId: null,
-    permissionMode: 'ask',
-    agentName: null,
+    permissionMode: opts.permissionMode ?? 'ask',
+    agentName: opts.agentName ?? null,
     trustedThisConversation: new Set<string>(),
     assignedTabId,
   });

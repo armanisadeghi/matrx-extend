@@ -203,12 +203,16 @@ function setupAlarms(): void {
 
 function registerHandlers(): void {
   on<StartStreamArgs, { ok: boolean }>(CHANNELS.STREAM_START, async (payload) => {
-    // Latch the assigned tab BEFORE forwarding to offscreen so the
-    // dispatcher has it ready by the time the first tool_event lands. This
-    // is what keeps the agent pinned to the user's tab even if the user
-    // switches focus while the stream is running.
+    // Latch run metadata BEFORE forwarding to offscreen so the dispatcher
+    // has everything ready by the time the first tool_event lands.
+    // Seeding `permissionMode` here (not only from STREAM_OPENED) is
+    // race-proof against a fast tool_delegated arriving before
+    // STREAM_OPENED is processed — see recordAssignedTab's docstring.
     if (payload.runId) {
-      recordAssignedTab(payload.runId, payload.assignedTabId ?? null);
+      recordAssignedTab(payload.runId, payload.assignedTabId ?? null, {
+        permissionMode: payload.permissionMode,
+        agentName: payload.agentName ?? null,
+      });
     }
     await startStream(payload);
     return { ok: true };
