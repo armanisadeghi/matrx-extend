@@ -257,6 +257,56 @@ else
     ok "Working tree clean — proceeding with current HEAD"
 fi
 
+# ── Sync with remote (BEFORE the long build, so a diverged branch never ──────
+# leaves an orphaned tag pointing at a commit that cannot be pushed). Runs ────
+# before any version bump/tag, so any abort here changes nothing. ────────────
+step "Sync with $REMOTE/$BRANCH"
+CURRENT_STEP="remote-sync"
+
+if ! git fetch --quiet "$REMOTE" "$BRANCH"; then
+    fail "Could not reach $REMOTE. Check your connection, then re-run. Nothing has been bumped or tagged."
+fi
+
+LOCAL_SHA=$(git rev-parse "$BRANCH")
+REMOTE_SHA=$(git rev-parse "$REMOTE/$BRANCH")
+BASE_SHA=$(git merge-base "$BRANCH" "$REMOTE/$BRANCH")
+
+if [[ "$LOCAL_SHA" == "$REMOTE_SHA" ]]; then
+    ok "Already in sync with $REMOTE/$BRANCH."
+elif [[ "$LOCAL_SHA" == "$BASE_SHA" ]]; then
+    # Local strictly behind — fast-forward is safe and lossless.
+    if $DRY_RUN; then
+        preview "$REMOTE/$BRANCH is ahead — would fast-forward."
+    else
+        info "$REMOTE/$BRANCH is ahead — fast-forwarding..."
+        git merge --ff-only --quiet "$REMOTE/$BRANCH" \
+            || fail "Fast-forward failed. Resolve manually. Nothing has been bumped or tagged."
+        ok "Fast-forwarded to $(git rev-parse --short HEAD)."
+    fi
+elif [[ "$REMOTE_SHA" == "$BASE_SHA" ]]; then
+    # Local strictly ahead — a normal push will work.
+    ok "Local is ahead of $REMOTE/$BRANCH by $(git rev-list --count "$REMOTE/$BRANCH..$BRANCH") commit(s) — ready to release."
+else
+    # Diverged — try a clean rebase, abort with guidance if it would conflict.
+    if $DRY_RUN; then
+        warn "Diverged from $REMOTE/$BRANCH — would attempt a clean rebase (abort if it conflicts)."
+    else
+        warn "Diverged from $REMOTE/$BRANCH — attempting a clean rebase..."
+        if git rebase "$REMOTE/$BRANCH" >/dev/null 2>&1; then
+            ok "Clean rebase succeeded — linear history restored."
+        else
+            git rebase --abort >/dev/null 2>&1 || true
+            echo "" >&2
+            echo -e "${RED}  Your commits not on $REMOTE/$BRANCH:${NC}" >&2
+            git log --oneline "$REMOTE/$BRANCH..$BRANCH" | sed 's/^/    /' >&2
+            echo -e "${RED}  $REMOTE/$BRANCH commits not in your branch:${NC}" >&2
+            git log --oneline "$BRANCH..$REMOTE/$BRANCH" | sed 's/^/    /' >&2
+            echo "" >&2
+            fail "Diverged and an automatic rebase would conflict. Resolve with 'git rebase $REMOTE/$BRANCH', then re-run. Nothing has been bumped or tagged."
+        fi
+    fi
+fi
+
 # ── Read + compute version ──────────────────────────────────────────────────
 step "Compute next version"
 
@@ -507,10 +557,25 @@ ok "Tag $NEW_TAG created"
 
 if $NO_PUSH; then
     warn "--no-push set — skipping git push"
-else
-    git push "$REMOTE" "$BRANCH"
-    git push "$REMOTE" "$NEW_TAG"
+elif git push --atomic "$REMOTE" "$BRANCH" "$NEW_TAG" 2>/dev/null; then
+    # --atomic: branch + tag push together or not at all (never a half-push).
     ok "Pushed $BRANCH and $NEW_TAG to $REMOTE"
+else
+    warn "Push rejected — $REMOTE/$BRANCH moved during the build. Reconciling once..."
+    git fetch --quiet "$REMOTE" "$BRANCH" \
+        || fail "Push rejected and re-fetch failed. Tag $NEW_TAG exists locally; run: git pull --rebase $REMOTE $BRANCH && git tag -f $NEW_TAG HEAD && git push --atomic $REMOTE $BRANCH $NEW_TAG"
+    if git rebase "$REMOTE/$BRANCH" >/dev/null 2>&1; then
+        git tag -f "$NEW_TAG" HEAD >/dev/null  # rebase rewrote the commit; move the tag onto it
+        info "Rebased onto updated $REMOTE/$BRANCH and re-pointed $NEW_TAG. Retrying push..."
+        if git push --atomic "$REMOTE" "$BRANCH" "$NEW_TAG" 2>/dev/null; then
+            ok "Pushed $BRANCH and $NEW_TAG to $REMOTE"
+        else
+            fail "Rejected again after a clean rebase — $REMOTE/$BRANCH is moving rapidly. History is clean locally; push by hand: git push --atomic $REMOTE $BRANCH $NEW_TAG"
+        fi
+    else
+        git rebase --abort >/dev/null 2>&1 || true
+        fail "Push rejected and an automatic rebase conflicts. Tag $NEW_TAG exists locally; resolve: git rebase $REMOTE/$BRANCH && git tag -f $NEW_TAG HEAD && git push --atomic $REMOTE $BRANCH $NEW_TAG"
+    fi
 fi
 CURRENT_STEP="done"
 
