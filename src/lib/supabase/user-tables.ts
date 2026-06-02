@@ -16,6 +16,16 @@
  * `append_rows_to_user_table`) kept their pre-rename names by design — the
  * server-side migration only renamed tables, not RPC signatures. So the
  * function calls below still work post-rename.
+ *
+ * udt_v2_backbone (live on Matrx Main 2026-05-29): the server gained workbook
+ * grouping (`udt_workbooks`) and an append-only row-version audit log
+ * (`udt_dataset_row_versions`). Both are transparent to this file — our two
+ * RPCs are unchanged, and the new BEFORE-validate trigger defaults to
+ * 'permissive' (a passthrough). Every append we send now also logs a version
+ * row, attributed to the user's `auth.uid()` since we write with the user JWT.
+ * The four RPCs we do NOT use (batch_update_rows_in_user_table,
+ * remove_column_from_user_table, create_new_user_table, create_new_user_table_wrapper)
+ * are slated for removal — do not start calling them.
  */
 
 import { getSupabase } from '@/lib/supabase/client';
