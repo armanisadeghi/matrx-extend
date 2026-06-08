@@ -28,6 +28,8 @@
     "catalog:tools:drift": "tsx scripts/check-tool-db-drift.ts",
     "catalog:tools:db-dump": "node scripts/dump-tool-db-to-md.mjs",
     "docs:tools": "tsx scripts/dump-tools-from-db.ts",
+    "check:migrations": "tsx scripts/check-migrations.ts",
+    "check:migrations:strict": "tsx scripts/check-migrations.ts --strict",
     "ui:add": "pnpm dlx shadcn@latest add",
     "prepare": "wxt prepare && husky || true"
   },

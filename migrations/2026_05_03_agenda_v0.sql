@@ -1,3 +1,4 @@
+-- migrate: skip: superseded by sch_* (2026_05_10_sch_v0.sql); the agenda_* tables were migrated in and DROPPED in that step. Do not re-apply.
 -- Agenda v0 — multi-surface scheduled agent runs.
 --
 -- Two tables, lease-based execution. Designed for: chrome extension (today),

@@ -452,6 +452,20 @@ else
     else
         WARNINGS+=("docs:tools regen FAILED (non-blocking). docs/TOOLS.generated.md may be stale.")
     fi
+
+    # ── 4d. Migration ledger check (migrations/*.sql ↔ live DB): LOUD, NON-FATAL ─
+    #
+    # Supabase is the source of truth, NOT the .sql files in migrations/. A file on
+    # disk changed NOTHING until it's applied. This diffs migrations/ against the
+    # shared ledger public._schema_migrations (source='matrx-extend', same DB) and
+    # screams in a red box if any local migration was never recorded. Read-only —
+    # this repo can't apply DDL; apply from aidream:
+    #   python db/apply_migrations.py --source matrx-extend
+    if pnpm check:migrations; then
+        ok "migration ledger in sync"
+    else
+        WARNINGS+=("UNAPPLIED MIGRATIONS detected (non-blocking). Run 'pnpm check:migrations' for the list; apply from aidream with 'python db/apply_migrations.py --source matrx-extend'.")
+    fi
 fi
 
 # ── 5. Commit version bump ──────────────────────────────────────────────────

@@ -382,6 +382,24 @@ live for UI via [src/lib/tools/descriptions.ts](./src/lib/tools/descriptions.ts)
 (approval card, Tools tab) and the client discovery / WebMCP / frontend-bridge
 tools. Never reintroduce a hardcoded `description` on a `ToolHandler`.
 
+### Database migrations — the DB is the source of truth, NOT the files
+
+A `.sql` file in [migrations/](./migrations/) has changed **nothing** until it is
+applied to Supabase (`txzxabzwovsujtloxrus`). This repo ships only the
+publishable/anon key and **cannot apply DDL**. All three repos (aidream,
+matrx-frontend, matrx-extend) share one DB and one ledger, `public._schema_migrations`.
+
+- **Verify (loud):** `pnpm check:migrations` diffs `migrations/*.sql` against the
+  ledger (rows where `source='matrx-extend'`) and screams in a red box about anything
+  never applied. Runs as a non-blocking step in `release.sh`; `pnpm check:migrations:strict`
+  exits non-zero for CI.
+- **Apply + record:** from the **aidream** repo (the one box with DB write creds),
+  run `python db/apply_migrations.py --source matrx-extend`. For a one-off, apply via
+  the Supabase MCP, then re-run aidream's applier so the ledger records it.
+- A migration that must never apply (superseded / destructive / already live) gets
+  `-- migrate: skip: <reason>` in its first 25 lines — e.g. `2026_05_03_agenda_v0.sql`
+  is skip-marked (superseded by `sch_*`).
+
 ### Reference docs
 
 - [`.research/2026-04-30-browser-agent-frontier.md`](./.research/2026-04-30-browser-agent-frontier.md) —
