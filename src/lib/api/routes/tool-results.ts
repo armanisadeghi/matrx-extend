@@ -23,6 +23,9 @@ export interface ClientToolResultBody {
   output?: unknown;
   is_error?: boolean;
   error_message?: string | null;
+  /** Client-measured execution time. Persisted to cx_tool_call.duration_ms —
+   * without it every client-delegated call lands as duration_ms=0. */
+  duration_ms?: number;
 }
 
 export interface ToolResultsResponse {

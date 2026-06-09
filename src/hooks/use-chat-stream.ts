@@ -297,6 +297,18 @@ export function useChatStream() {
   const resumeRunRef = useRef<
     (conversationId: string, userRequestId: string) => Promise<string | null>
   >(async () => null);
+  // Retryable-409 recovery for /resume. The server's atomic run claim
+  // returns 409 code=resume_conflict when the SUSPENDING run hasn't
+  // finished persisting status='paused' yet (a fast client tool's result
+  // POST can beat that write) — retry shortly instead of stalling the
+  // conversation. Bounded per user_request so a genuinely-stuck request
+  // can't loop forever.
+  const resumeRetryRef = useRef<{
+    conversationId: string;
+    userRequestId: string;
+    runId: string;
+    attempts: number;
+  } | null>(null);
 
   // The watchdog is created once; it calls the latest `onStall` via a ref so
   // the closure always sees current refs without re-creating timers.
@@ -435,11 +447,38 @@ export function useChatStream() {
         // protocol contract is at
         // matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md §2.5.
         if (status === 409) {
-          log.info(
-            'stream',
-            '409 on resume — outstanding delegated calls, leaving inbox cards for the user',
-            { runId: chunk.runId, message },
-          );
+          // Three 409 shapes from /resume:
+          //   * outstanding_delegated_calls — benign; the user still has
+          //     pending ask cards. No retry.
+          //   * resume_conflict (retryable) — the suspending run hasn't
+          //     persisted status='paused' yet, or a duplicate continuation
+          //     lost the atomic claim. Retry with backoff (bounded).
+          //   * not_resumable — terminal request status. No retry.
+          const retryState = resumeRetryRef.current;
+          const RESUME_CONFLICT_MAX_RETRIES = 4;
+          if (
+            message.includes('resume_conflict') &&
+            retryState &&
+            retryState.runId === chunk.runId &&
+            retryState.attempts < RESUME_CONFLICT_MAX_RETRIES
+          ) {
+            retryState.attempts += 1;
+            const delay = 700 * retryState.attempts;
+            log.info(
+              'stream',
+              `409 resume_conflict — retrying resume in ${delay}ms (attempt ${retryState.attempts}/${RESUME_CONFLICT_MAX_RETRIES})`,
+              { runId: chunk.runId },
+            );
+            setTimeout(() => {
+              void resumeRunRef.current(retryState.conversationId, retryState.userRequestId);
+            }, delay);
+          } else {
+            log.info(
+              'stream',
+              '409 on resume — not retrying (outstanding answers, terminal status, or retries exhausted)',
+              { runId: chunk.runId, message },
+            );
+          }
           // Drop the placeholder assistant bubble we allocated for the resume —
           // there's no continuation to render. The `done` chunk that follows
           // this error handler in streamFetch's error path will finalize it,
@@ -794,6 +833,18 @@ export function useChatStream() {
       // lastSendRef intentionally NOT overwritten — Retry should still
       // replay the user's actual last input, not a synthetic resume body.
       watchdogRef.current?.start();
+      // Arm the retryable-409 recovery state for THIS attempt. attempts
+      // carries over across retries of the same user_request so the loop
+      // is bounded; a different request starts fresh.
+      resumeRetryRef.current = {
+        conversationId,
+        userRequestId,
+        runId,
+        attempts:
+          resumeRetryRef.current?.userRequestId === userRequestId
+            ? resumeRetryRef.current.attempts
+            : 0,
+      };
 
       // Mirror sendMessage's capability envelope so the resumed loop's tools
       // resolve identically. The server's discovery handler reads
@@ -810,8 +861,37 @@ export function useChatStream() {
         pageLang: null,
       });
 
+      // Rebuild the deferred-context bundle for the resumed loop. A
+      // suspended run's context objects lived only in the original
+      // request's scope — without re-sending them, ctx_get answered
+      // "No context objects are available" on every resumed turn and the
+      // agent lost page_brief etc. mid-conversation. Same builder as
+      // sendMessage (minus the pre-send page refresh — the resume should
+      // open fast; the cached capture is current enough).
+      let context: Record<string, unknown> = {};
+      try {
+        const user = useAuthStore.getState().user;
+        const desktop = useDesktopStore.getState();
+        const manualScrape = useScrapeStore.getState().current;
+        const autoScrape = useAutoScrapeStore.getState().current;
+        context = await buildChatContext({
+          user: user
+            ? { id: user.id, email: user.email, full_name: user.full_name ?? null }
+            : null,
+          desktopTransport: desktop.transport,
+          scrape: manualScrape,
+          autoScrape,
+          activeTab,
+          conversationId,
+          highlights: null,
+        });
+      } catch (err) {
+        log.warn('stream', 'buildChatContext failed for resume; resuming without context', err);
+      }
+
       const body: Record<string, unknown> = {
         user_request_id: userRequestId,
+        context,
         client: {
           capabilities: ['browser-dom'],
           state: {

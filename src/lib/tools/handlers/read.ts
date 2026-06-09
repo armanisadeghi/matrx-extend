@@ -3,6 +3,18 @@
  */
 
 import { log } from '@/lib/debug/log';
+// Static imports — these three were dynamic (`await import(...)`) inside
+// read_active_page. In an MV3 SW a dynamic import loads a SHARED Vite chunk,
+// and executing that chunk runs the top-level code of every co-bundled
+// module — if any of them touches `document`/`window` at module scope the
+// import itself throws ("document is not defined" — observed live on
+// 2026-06-09, conversation 417e64ce call 2f3cd152a). These modules are
+// SW-safe (all DOM access is inside executeScript funcs / handlers), so
+// importing them statically into the SW entry is deterministic and removes
+// the chunk-sharing hazard entirely.
+import { classifyTabUrl } from '@/lib/scrape/capture-error';
+import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
+import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
 import { resolveProfile, type ScreenshotProfile } from '@/lib/screenshot/profiles';
 import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
@@ -77,7 +89,6 @@ export const read_active_page: ToolHandler<ReadPageArgs, unknown> = {
     // Pre-flight URL check — same shared classifier the Scrape tab uses.
     // Saves a confusing Chrome error and an immediate retry loop when we
     // already know the page is on Chrome's hard-blocklist.
-    const { classifyTabUrl } = await import('@/lib/scrape/capture-error');
     const urlClass = classifyTabUrl(tab.url);
     if (urlClass.blocked) {
       return {
@@ -87,7 +98,6 @@ export const read_active_page: ToolHandler<ReadPageArgs, unknown> = {
       };
     }
     if (args.deep) {
-      const { scrollToLoadLazy } = await import('@/lib/scrape/page-ready');
       await scrollToLoadLazy(tab.id, { delayMs: 100, maxMs: 5000 });
     }
     // Reuse the in-tab scrape pipeline through the shared captureWithFallback
@@ -95,7 +105,6 @@ export const read_active_page: ToolHandler<ReadPageArgs, unknown> = {
     // hook's pre-send refresh use — it auto-injects the content script on a
     // "no receiver" failure (covers stale tabs after extension upgrade) and
     // returns structured reasons rather than letting raw chrome errors leak.
-    const { captureWithFallback } = await import('@/lib/scrape/capture-with-fallback');
     const cap = await captureWithFallback(tab.id, tab.url);
     if (cap.ok) return cap.soup;
 
