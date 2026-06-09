@@ -1171,6 +1171,44 @@ Every entry follows this shape:
 - **Edge cases worth poking:** Default language is `en`. The pre-TTS on-device
   translation step (TASK-002d) is still pending — this entry covers STT only.
 
+### Client-tool suspend/resume — exactly one resume, context survives
+- **What it does:** When the agent calls a browser tool, the server hard-
+  suspends; the extension POSTs the result and opens exactly ONE `/resume`
+  stream (server enforces an atomic run claim; duplicates get a benign 409).
+  The resume re-sends a fresh context bundle so `page_brief` / `ctx_get` keep
+  working mid-conversation.
+- **Where to test:** Chat tab, on any normal page (e.g. a docs site).
+- **Steps:**
+  1. Ask the agent something that forces browser tools, e.g. "List my open
+     tabs, then read this page and summarize it" (Act mode for zero prompts).
+  2. Watch the timeline: each tool call completes once; the agent continues
+     after each result without re-calling the same tool with identical args.
+  3. Mid-conversation, ask "what page am I on?" — the agent should answer from
+     context (page_brief), not via web search, and `ctx_get` must not report
+     "No context objects are available".
+- **Expected:** No repeated identical tool calls, no "Triplicate call" errors,
+  one assistant bubble per continuation, tool rows in the DB carry real
+  `duration_ms`.
+- **Edge cases worth poking:**
+  - Multiple parallel tool calls in one turn (e.g. "screenshot AND list tabs")
+    → still exactly one resume; the SW log shows
+    "continuation_needed duplicate suppressed" for the extras.
+  - Very fast tools (tabs list) → if the resume races the suspend, the log
+    shows "409 resume_conflict — retrying" and recovers within ~1-3s.
+
+### read_active_page on a normal page
+- **What it does:** Full readable capture of the assigned tab via the content
+  script pipeline (now statically imported in the SW — no more chunk-loading
+  "document is not defined" failures).
+- **Where to test:** Tools tab → `read_active_page` → Run (or via chat).
+- **Steps:**
+  1. Open a regular article page, run `read_active_page` with `{}`.
+  2. Run again with `{"deep": true}` on a lazy-loading page.
+- **Expected:** Structured soup result (title, content). On a chrome:// page a
+  structured "Chrome blocks extensions…" reason — never a raw JS error.
+- **Edge cases worth poking:** A tab opened before the extension installed
+  (auto-inject + retry), an SPA mid-hydration.
+
 ## Template (copy when adding a new entry)
 
 ```markdown

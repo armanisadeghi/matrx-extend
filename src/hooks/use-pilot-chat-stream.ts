@@ -482,13 +482,13 @@ export function usePilotChatStream() {
         pendingContinueRef.current = { conversationId, userRequestId, assignedTabId };
         return null;
       }
-      // Resolve the pinned tab. Pilot runs MUST stay inside the session's
-      // tab group — if the session was ended externally (group closed),
-      // fall back to the active tab as a courtesy and let the dispatcher's
-      // pilot gate reject the call with a structured error the model can act on.
-      const activeTab = await resolveActiveTab();
-      const assignedTabId = await resolvePilotAssignedTabId();
-
+      // Claim the run SYNCHRONOUSLY — before any await — so a second
+      // STREAM_CONTINUE broadcast arriving in the same tick can't also pass
+      // the idle check above and race a duplicate /resume. (The assistant
+      // hook already sets runIdRef before its first await; Pilot used to
+      // resolve tabs first, leaving a window where two broadcasts both
+      // started resumes — one source of the 2026-06-09 concurrent-run
+      // corruption.)
       const assistantMsg: ChatMessage = {
         id: newId('asst'),
         role: 'assistant',
@@ -504,6 +504,13 @@ export function usePilotChatStream() {
       targetIdRef.current = assistantMsg.id;
       watchdogRef.current?.start();
 
+      // Resolve the pinned tab. Pilot runs MUST stay inside the session's
+      // tab group — if the session was ended externally (group closed),
+      // fall back to the active tab as a courtesy and let the dispatcher's
+      // pilot gate reject the call with a structured error the model can act on.
+      const activeTab = await resolveActiveTab();
+      const assignedTabId = await resolvePilotAssignedTabId();
+
       const loadedCategories = useActiveToolsStore.getState().getLoaded(conversationId);
       const browserDomState = await buildBrowserDomState({
         surface: 'pilot',
@@ -512,8 +519,30 @@ export function usePilotChatStream() {
         pageLang: null,
       });
 
+      // Re-send the deferred-context bundle — a resumed loop has no context
+      // objects otherwise (ctx_get → "No context objects are available").
+      // Same rationale as useChatStream.resumeRun.
+      let context: Record<string, unknown> = {};
+      try {
+        const user = useAuthStore.getState().user;
+        context = await buildChatContext({
+          user: user
+            ? { id: user.id, email: user.email, full_name: user.full_name ?? null }
+            : null,
+          desktopTransport: useDesktopStore.getState().transport,
+          scrape: useScrapeStore.getState().current,
+          autoScrape: useAutoScrapeStore.getState().current,
+          activeTab,
+          conversationId,
+          highlights: null,
+        });
+      } catch (err) {
+        log.warn('pilot-stream', 'buildChatContext failed for resume; resuming without context', err);
+      }
+
       const body: Record<string, unknown> = {
         user_request_id: userRequestId,
+        context,
         client: {
           capabilities: ['browser-dom'],
           state: {

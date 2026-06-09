@@ -111,6 +111,25 @@ interface DispatchOptions {
   defaultPermissionMode: () => 'ask' | 'act';
 }
 
+/**
+ * Single-flight guard for STREAM_CONTINUE broadcasts, keyed by
+ * user_request_id. The server's continuation_needed flag is best-effort:
+ * when the model issued PARALLEL delegated calls, the concurrent
+ * POST /tool_results responses can BOTH carry continuation_needed=true,
+ * and two broadcasts used to race two /resume streams onto the same
+ * conversation (duplicate positions, repeated identical tool calls —
+ * the 2026-06-09 incident). The server now 409s the loser, but there's
+ * no reason to even attempt the duplicate.
+ *
+ * Entries clear on the next STREAM_OPENED for that user_request_id (the
+ * resume actually started — the NEXT legitimate continuation for this
+ * request must broadcast again) and age out after a TTL so a resume
+ * that never opened (sidepanel closed, conversation not selected)
+ * can't suppress recovery forever.
+ */
+const CONTINUE_SUPPRESS_TTL_MS = 10_000;
+const recentContinueBroadcasts = new Map<string, number>();
+
 let started = false;
 
 export function startToolDispatcher(opts: DispatchOptions): void {
@@ -146,6 +165,9 @@ export function startToolDispatcher(opts: DispatchOptions): void {
       trustedThisConversation: prior?.trustedThisConversation ?? new Set<string>(),
       assignedTabId: prior?.assignedTabId ?? null,
     });
+    // A run actually opened for this user_request — re-arm the
+    // continuation single-flight guard so its NEXT suspend can broadcast.
+    if (payload.requestId) recentContinueBroadcasts.delete(payload.requestId);
     log.info('sw', `tool dispatcher tracking run=${payload.runId}`, payload);
     return { ack: true };
   });
@@ -486,7 +508,7 @@ async function handleCall(
     return fail((err as Error)?.message ?? String(err));
   }
 
-  await postResult(handler, ctx, result);
+  await postResult(handler, ctx, result, false, null, Date.now() - startedAt);
   broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
     callId: ctx.callId,
     toolName: handler.name,
@@ -507,7 +529,14 @@ async function finishWithError(
   origin?: ReceiptOrigin,
 ): Promise<void> {
   log.error('sw', `tool ${handler.name} error`, message);
-  await postResult(handler, ctx, null, true, message);
+  await postResult(
+    handler,
+    ctx,
+    null,
+    true,
+    message,
+    startedAt !== undefined ? Date.now() - startedAt : null,
+  );
   // Roadmap item #8 — receipt for the failed call. Only emitted when we
   // have the original args + startedAt (i.e. the in-handleCall path).
   // The unknown-tool error path doesn't reach this function.
@@ -528,6 +557,7 @@ async function postResult(
   output: unknown,
   isError = false,
   errorMessage: string | null = null,
+  durationMs: number | null = null,
 ): Promise<void> {
   // The agent has been working hard — the absolute worst outcome here is
   // dropping the result. If STREAM_OPENED hasn't registered the run yet
@@ -557,6 +587,7 @@ async function postResult(
       output,
       is_error: isError,
       error_message: errorMessage,
+      duration_ms: durationMs ?? undefined,
     },
   ]);
 
@@ -621,12 +652,22 @@ async function postResult(
   // STREAM_STARTs against the resume path. See the canonical protocol at
   // matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md.
   if (r.data.continuation_needed && r.data.user_request_id) {
+    const userRequestId = r.data.user_request_id;
+    const prev = recentContinueBroadcasts.get(userRequestId);
+    if (prev && Date.now() - prev < CONTINUE_SUPPRESS_TTL_MS) {
+      log.info(
+        'sw',
+        `continuation_needed duplicate suppressed for ${conversationId} (request ${userRequestId} already broadcast ${Date.now() - prev}ms ago)`,
+      );
+      return;
+    }
+    recentContinueBroadcasts.set(userRequestId, Date.now());
     log.info('sw', `continuation_needed → broadcast STREAM_CONTINUE for ${conversationId}`, {
-      userRequestId: r.data.user_request_id,
+      userRequestId,
     });
     broadcast(CHANNELS.STREAM_CONTINUE, {
       conversationId,
-      userRequestId: r.data.user_request_id,
+      userRequestId,
     });
   }
 }
