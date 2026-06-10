@@ -2,10 +2,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useActiveTab } from '@/hooks/use-active-tab';
+import type { ExtractionSource } from '@/hooks/use-extraction';
 import { useUserTables } from '@/hooks/use-user-tables';
 import { type ExtractionPatternField, type PatternKind, savePattern } from '@/lib/supabase/queries';
 import { inferSchemaFromRow } from '@/lib/supabase/user-tables';
-import { CheckCircle2, Loader2, Save } from 'lucide-react';
+import { CheckCircle2, Loader2, Save, TriangleAlert } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const NEW_TABLE = '__new__';
@@ -21,6 +22,13 @@ interface SaveAsPatternProps {
   list_root_selector?: string | null;
   /** Preview rows that get appended to the target user_table on save. */
   rows: Record<string, unknown>[];
+  /**
+   * Where the rows were actually extracted (captured at extraction time).
+   * The pattern is stored under THIS host/route — not whatever tab the user
+   * happens to be on at save time (audit P0-2). When omitted, falls back to
+   * the live tab.
+   */
+  source?: ExtractionSource | null;
   disabled?: boolean;
   onSaved?: () => void;
 }
@@ -32,6 +40,7 @@ export function SaveAsPattern({
   fields,
   list_root_selector,
   rows,
+  source,
   disabled,
   onSaved,
 }: SaveAsPatternProps) {
@@ -52,13 +61,20 @@ export function SaveAsPattern({
     return inferSchemaFromRow(first);
   }, [rows]);
 
-  const host = useMemo(() => {
+  const liveHost = useMemo(() => {
     try {
       return tab.url ? new URL(tab.url).host : '';
     } catch {
       return '';
     }
   }, [tab.url]);
+
+  // Pattern identity comes from where the rows were EXTRACTED, not where the
+  // user is now. The mismatch warning covers flows whose rows can outlive a
+  // navigation (network capture, AI extract).
+  const host = source?.host ?? liveHost;
+  const routePattern = source?.pathname ?? (tab.url ? safePathname(tab.url) : null);
+  const hostMismatch = Boolean(source?.host && liveHost && source.host !== liveHost);
 
   const handleSave = async () => {
     if (!host) return;
@@ -88,7 +104,7 @@ export function SaveAsPattern({
       const saved = await savePattern({
         name: name || `${host} ${kind}`,
         domain: host,
-        route_pattern: tab.url ? new URL(tab.url).pathname : null,
+        route_pattern: routePattern,
         list_root_selector: list_root_selector ?? null,
         fields: fields ?? [],
         kind,
@@ -154,6 +170,17 @@ export function SaveAsPattern({
             Stored under {host}. Backend can re-run on schedule.
           </div>
         </div>
+
+        {hostMismatch && (
+          <div className="flex items-start gap-1.5 rounded-lg bg-amber-500/10 px-2 py-1.5 text-[11px] text-amber-700 dark:text-amber-300">
+            <TriangleAlert className="mt-px size-3 shrink-0" />
+            <span>
+              These rows were extracted on <span className="font-medium">{source?.host}</span>,
+              but you're now on <span className="font-medium">{liveHost}</span>. The pattern
+              saves under {source?.host}.
+            </span>
+          </div>
+        )}
 
         <Input
           value={name}
@@ -244,4 +271,12 @@ export function SaveAsPattern({
       </PopoverContent>
     </Popover>
   );
+}
+
+function safePathname(url: string): string | null {
+  try {
+    return new URL(url).pathname;
+  } catch {
+    return null;
+  }
 }

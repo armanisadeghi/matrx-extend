@@ -2,6 +2,7 @@ import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
 import { type CandidateField, inspectCardInPage } from '@/lib/data-pattern/card-inspector';
 import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
@@ -50,6 +51,7 @@ export function ListPatternTab() {
   const [expandedFieldIdx, setExpandedFieldIdx] = useState<number | null>(null);
   /** Live per-field sample values, probed using the SAME logic as the runner. */
   const [sampleValues, setSampleValues] = useState<Record<string, string | null>>({});
+  const [source, setSource] = useState<ExtractionSource | null>(null);
 
   useEffect(() => {
     const offResult = on<ListPickerResult, { ack: true }>(
@@ -209,9 +211,11 @@ export function ListPatternTab() {
     if (!tab.id || !config) return;
     setRunning(true);
     setError(null);
+    const sourceAtRun = sourceFromUrl(tab.url);
     try {
       const data = await runMode('list_pattern', tab.id, config);
       setRows(data);
+      setSource(sourceAtRun);
       // Snapshot 1-2 cards' HTML for later AI-paste.
       const samples = await captureSampleHtml();
       setSampleHtml(samples);
@@ -556,6 +560,7 @@ export function ListPatternTab() {
               kind="list_pattern"
               config={config}
               rows={rows}
+              source={source}
               defaultName={`List on ${(() => {
                 try {
                   return tab.url ? new URL(tab.url).host : 'page';

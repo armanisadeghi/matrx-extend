@@ -11,13 +11,23 @@ type ParsedSource = { source: string; data: unknown };
 
 export function FrameworkTab({ active = true }: { active?: boolean }) {
   const tab = useActiveTab();
-  const { detection, rows, running, error, run } = useExtraction('next_data', {
+  const { detection, rows, running, error, source, run } = useExtraction('next_data', {
     autoDetect: active,
   });
   const [sources, setSources] = useState<ParsedSource[]>([]);
   const [activeSource, setActiveSource] = useState<string | null>(null);
   const [keyPath, setKeyPath] = useState('');
   const [loadingTree, setLoadingTree] = useState(false);
+
+  // The dumped framework state belongs to one page. If the new page has no
+  // framework data, the dump effect below won't fire — clear explicitly so
+  // page A's tree never renders under page B.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: tab.id/tab.url are the invalidation keys.
+  useEffect(() => {
+    setSources([]);
+    setActiveSource(null);
+    setKeyPath('');
+  }, [tab.id, tab.url]);
 
   const dump = useCallback(async () => {
     if (!tab.id) return;
@@ -259,6 +269,7 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
               kind="next_data"
               config={{ key_path: keyPath, source: activeSource ?? undefined }}
               rows={rows}
+              source={source}
               defaultName={`Framework: ${keyPath || '(root)'}`}
             />
           </div>

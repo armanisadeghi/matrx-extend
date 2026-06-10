@@ -7,7 +7,7 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 
 export function TablesTab({ active = true }: { active?: boolean }) {
   const [tableIndex, setTableIndex] = useState(0);
-  const { detection, rows, running, error, run } = useExtraction('auto_table', {
+  const { detection, rows, running, error, source, run } = useExtraction('auto_table', {
     autoDetect: active,
   });
 
@@ -73,6 +73,7 @@ export function TablesTab({ active = true }: { active?: boolean }) {
               kind="auto_table"
               config={{ table_index: tableIndex }}
               rows={rows}
+              source={source}
               defaultName={`Table ${tableIndex}`}
             />
           </div>

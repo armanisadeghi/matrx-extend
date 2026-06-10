@@ -1,10 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { RECIPES, type Recipe, recipesForUrl } from '@/lib/data-pattern/recipes';
 import { runMode } from '@/lib/data-pattern/run-pattern';
 import { cn } from '@/lib/utils';
 import { Loader2, PlayCircle, Sparkles } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
 
@@ -15,9 +16,18 @@ export function RecipesTab() {
   const [activeRecipe, setActiveRecipe] = useState<Recipe | null>(null);
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [source, setSource] = useState<ExtractionSource | null>(null);
 
   const matching = useMemo(() => recipesForUrl(tab.url ?? ''), [tab.url]);
   const visible = showAll ? RECIPES : matching;
+
+  // Rows from the previous page must not display (or save) under the new one.
+  useEffect(() => {
+    setRows(null);
+    setActiveRecipe(null);
+    setError(null);
+    setSource(null);
+  }, [tab.url]);
 
   const handleRun = async (recipe: Recipe) => {
     if (!tab.id) return;
@@ -25,9 +35,11 @@ export function RecipesTab() {
     setActiveRecipe(recipe);
     setError(null);
     setRows(null);
+    const sourceAtRun = sourceFromUrl(tab.url);
     try {
       const data = await runMode(recipe.kind, tab.id, recipe.config);
       setRows(data);
+      setSource(sourceAtRun);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -134,6 +146,7 @@ export function RecipesTab() {
                   kind={activeRecipe.kind}
                   config={activeRecipe.config}
                   rows={rows}
+                  source={source}
                   defaultName={activeRecipe.label}
                 />
               </div>

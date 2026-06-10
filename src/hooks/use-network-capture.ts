@@ -1,4 +1,5 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import {
   type CapturedNetEvent,
   networkRelayIsolated,
@@ -23,6 +24,8 @@ export function useNetworkCapture() {
   const [events, setEvents] = useState<CapturedNetEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [installed, setInstalled] = useState(false);
+  /** Page the capture session started on — pattern identity for saves. */
+  const [source, setSource] = useState<ExtractionSource | null>(null);
   const capturingRef = useRef(false);
   const tabIdRef = useRef<number | null>(null);
 
@@ -42,6 +45,7 @@ export function useNetworkCapture() {
     if (!tab.id) return;
     setError(null);
     setEvents([]);
+    setSource(sourceFromUrl(tab.url));
     tabIdRef.current = tab.id;
     try {
       // 1. Install MAIN-world tap (idempotent).
@@ -84,6 +88,7 @@ export function useNetworkCapture() {
     events,
     error,
     installed,
+    source,
     start,
     stop,
     reload,

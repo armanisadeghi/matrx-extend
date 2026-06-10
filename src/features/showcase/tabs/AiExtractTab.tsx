@@ -1,7 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAiExtraction } from '@/hooks/use-ai-extraction';
+import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { usePatternFromData } from '@/hooks/use-pattern-from-data';
 import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
 import { useAuthStore } from '@/state/auth';
@@ -45,11 +47,13 @@ const buildJsonSchema = (fields: SchemaField[]): object => {
 };
 
 export function AiExtractTab() {
+  const tab = useActiveTab();
   const userId = useAuthStore((s) => s.user?.id ?? null);
   const [agents, setAgents] = useState<AgxAgent[]>([]);
   const [agentId, setAgentId] = useState<string>('');
   const [description, setDescription] = useState('');
   const [fields, setFields] = useState<SchemaField[]>([]);
+  const [source, setSource] = useState<ExtractionSource | null>(null);
   const { rows, running, error, notes, confidence, extract, cancel } = useAiExtraction();
   const {
     result: patternResult,
@@ -87,6 +91,7 @@ export function AiExtractTab() {
 
   const handleRun = () => {
     if (!agentId || !description.trim()) return;
+    setSource(sourceFromUrl(tab.url));
     void extract({ agentId, description, outputSchema });
   };
 
@@ -279,6 +284,7 @@ export function AiExtractTab() {
                       kind="list_pattern"
                       config={patternResult.config}
                       rows={rows}
+                      source={source}
                       defaultName={
                         description.slice(0, 40) || `Auto-pattern · ${rows.length} items`
                       }
@@ -314,6 +320,7 @@ export function AiExtractTab() {
                 kind="ai_extract"
                 config={{ description, output_schema: outputSchema, agent_id: agentId }}
                 rows={rows}
+                source={source}
                 defaultName={description.slice(0, 40) || 'AI extraction'}
               />
             </div>

@@ -11,7 +11,7 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 const isJsonContentType = (ct: string | undefined): boolean => !!ct && /json/.test(ct);
 
 export function NetworkTab() {
-  const { capturing, events, error, installed, start, stop, reload, clear } = useNetworkCapture();
+  const { capturing, events, error, installed, start, stop, reload, clear, source } = useNetworkCapture();
   const [filter, setFilter] = useState('');
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [extractKeyPath, setExtractKeyPath] = useState('');
@@ -213,6 +213,7 @@ export function NetworkTab() {
                     key_path: extractKeyPath,
                   }}
                   rows={extractedRows}
+                  source={source}
                   defaultName={`Network: ${shortenUrl(selected.url, 40)}`}
                 />
               </div>

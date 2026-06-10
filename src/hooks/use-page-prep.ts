@@ -5,13 +5,21 @@ import {
   defaultPagePrepConfig,
   preparePage,
 } from '@/lib/data-pattern/page-prep';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export function usePagePrep() {
   const tab = useActiveTab();
   const [report, setReport] = useState<PagePrepReport | null>(null);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // A prep report describes one page — navigating invalidates it. Without
+  // this, "Banners dismissed: 2" from page A reads as if it applied to page B.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: tab.id/tab.url are the invalidation keys.
+  useEffect(() => {
+    setReport(null);
+    setError(null);
+  }, [tab.id, tab.url]);
 
   const run = useCallback(
     async (config: Partial<PagePrepConfig> = {}): Promise<PagePrepReport | null> => {

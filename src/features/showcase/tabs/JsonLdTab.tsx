@@ -8,7 +8,7 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 
 export function JsonLdTab({ active = true }: { active?: boolean }) {
   const [filter, setFilter] = useState('');
-  const { detection, rows, running, error, run } = useExtraction('json_ld', {
+  const { detection, rows, running, error, source, run } = useExtraction('json_ld', {
     autoDetect: active,
   });
 
@@ -81,6 +81,7 @@ export function JsonLdTab({ active = true }: { active?: boolean }) {
               kind="json_ld"
               config={filter ? { ld_type: filter } : {}}
               rows={rows}
+              source={source}
               defaultName={filter ? `${filter} from JSON-LD` : 'JSON-LD blocks'}
             />
           </div>
