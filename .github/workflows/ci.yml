@@ -1,0 +1,60 @@
+# CI for matrx-extend (docs/AUDIT_2026_06_10.md P0-8).
+#
+# Before this workflow existed NOTHING was enforced on PRs: `wxt build`
+# transpiles per-file via esbuild with no whole-program type analysis, the
+# `compile` script was never invoked by anything, lint was opt-in manual, and
+# husky was never installed. A type error could (and did) ship to the Web
+# Store. These four jobs are the floor:
+#
+#   typecheck — tsc --noEmit (strict + noUncheckedIndexedAccess)
+#   lint      — biome check (error-level rules block; warn promotion tracked
+#               as audit item P2-3)
+#   test      — vitest unit suite
+#   build     — production wxt build from a clean checkout (also proves the
+#               vendored types/python-generated fallback keeps the repo
+#               self-sufficient without the aidream sibling)
+#
+# The DB drift check is NOT here — CI has no Supabase creds, and the
+# non-strict script would just skip. Releases run the strict variant via
+# release.sh where creds exist.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        # Version comes from package.json's "packageManager" field.
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm compile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Production build
+        run: pnpm wxt build

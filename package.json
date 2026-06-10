@@ -8,10 +8,10 @@
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
-    "prebuild": "tsx scripts/check-tool-db-drift.ts || true",
+    "prebuild": "tsc --noEmit && (tsx scripts/check-tool-db-drift.ts || true)",
     "build": "wxt build",
     "build:firefox": "wxt build -b firefox",
-    "prezip": "tsx scripts/check-tool-db-drift.ts || true",
+    "prezip": "tsc --noEmit && (tsx scripts/check-tool-db-drift.ts || true)",
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "compile": "tsc --noEmit",
@@ -26,6 +26,7 @@
     "catalog:tools": "tsx scripts/dump-tool-catalog.ts",
     "catalog:tools:md": "tsx scripts/dump-tool-catalog.ts --markdown",
     "catalog:tools:drift": "tsx scripts/check-tool-db-drift.ts",
+    "catalog:tools:drift:strict": "tsx scripts/check-tool-db-drift.ts --strict",
     "catalog:tools:db-dump": "node scripts/dump-tool-db-to-md.mjs",
     "docs:tools": "tsx scripts/dump-tools-from-db.ts",
     "check:migrations": "tsx scripts/check-migrations.ts",
@@ -102,10 +103,6 @@
     "*.{ts,tsx,js,jsx,json,css}": "biome check --write --no-errors-on-unmatched"
   },
   "pnpm": {
-    "onlyBuiltDependencies": [
-      "@biomejs/biome",
-      "esbuild",
-      "spawn-sync"
-    ]
+    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "spawn-sync"]
   }
 }

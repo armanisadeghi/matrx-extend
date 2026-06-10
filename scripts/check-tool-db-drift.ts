@@ -51,8 +51,8 @@
  * match code. Never push code→DB silently (Rule 7).
  */
 import process from 'node:process';
-import { CANONICAL_SURFACE } from '../src/lib/tools/categories';
 import { buildToolCatalogManifest } from '../src/lib/tools/catalog';
+import { CANONICAL_SURFACE } from '../src/lib/tools/categories';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
 
 interface LocalTool {
@@ -62,7 +62,10 @@ interface LocalTool {
   admin_only?: boolean;
   input_schema: {
     type: 'object';
-    properties: Record<string, { type?: string | string[]; enum?: unknown[]; [k: string]: unknown }>;
+    properties: Record<
+      string,
+      { type?: string | string[]; enum?: unknown[]; [k: string]: unknown }
+    >;
     required?: string[];
   };
 }
@@ -71,7 +74,10 @@ interface DbToolRow {
   id: string;
   name: string;
   description: string;
-  parameters: Record<string, { type?: string | string[]; enum?: unknown[]; required?: boolean; [k: string]: unknown }> | null;
+  parameters: Record<
+    string,
+    { type?: string | string[]; enum?: unknown[]; required?: boolean; [k: string]: unknown }
+  > | null;
   tier: string | null;
   admin_only: boolean | null;
   is_active: boolean | null;
@@ -109,7 +115,10 @@ const PILOT_SURFACE = 'chrome-extension/pilot';
  * rows, not the parent `tool_def` rows, so we'd still pull every tool. A
  * two-step (bindings → ids → defs) is precise and small (~50 ids).
  */
-async function fetchOwnedTools(url: string, key: string): Promise<{ defs: DbToolRow[]; bindings: DbBindingRow[] }> {
+async function fetchOwnedTools(
+  url: string,
+  key: string,
+): Promise<{ defs: DbToolRow[]; bindings: DbBindingRow[] }> {
   const bindings = await fetchPublicJson<DbBindingRow[]>(
     url,
     key,
@@ -165,7 +174,10 @@ function setDiff<T>(a: Set<T>, b: Set<T>): { onlyA: T[]; onlyB: T[] } {
   return { onlyA, onlyB };
 }
 
-function compareEnums(localEnum: unknown[] | undefined, dbEnum: unknown[] | undefined): string | null {
+function compareEnums(
+  localEnum: unknown[] | undefined,
+  dbEnum: unknown[] | undefined,
+): string | null {
   if (!localEnum && !dbEnum) return null;
   if (!localEnum) return 'local has no enum, DB has one';
   if (!dbEnum) return 'DB has no enum, local has one';
@@ -263,11 +275,30 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
   return issues;
 }
 
+/**
+ * --strict: "cannot verify" becomes a FAILURE instead of a skip. The default
+ * mode deliberately exits 0 when creds are missing or the DB is unreachable
+ * ("couldn't run is not drift"), which is right for dev builds — but it also
+ * means a release pipeline without creds silently passes a drifted catalog.
+ * Release gates run `pnpm catalog:tools:drift:strict` so absence of
+ * verification is loud. Exit codes: 0 clean, 1 drift, 3 could-not-verify
+ * (strict only). See docs/AUDIT_2026_06_10.md P1-25.
+ */
+const STRICT = process.argv.includes('--strict');
+
 async function main(): Promise<void> {
   // No env var gates this (Rule 6). Missing creds is "cannot verify", NOT drift:
-  // warn loudly and exit 0 so it never blocks a build or boot.
+  // warn loudly and exit 0 so it never blocks a build or boot. (--strict
+  // flips that to a hard failure — releases must actually verify.)
   const env = loadSupabaseEnv();
   if (!env) {
+    if (STRICT) {
+      console.error(
+        'drift-check (--strict): Supabase creds not found — FAILING. A release ' +
+          'gate must actually verify against the DB; run with creds present.',
+      );
+      process.exit(3);
+    }
     console.warn(
       'drift-check: Supabase creds not found — SKIPPING (cannot verify without DB ' +
         'access). This is NOT drift; a build/CI with creds present runs the full check.',
@@ -288,7 +319,15 @@ async function main(): Promise<void> {
     dbBindings = owned.bindings;
     dbSurfaces = surfaces;
   } catch (err) {
-    // "Couldn't run" (DB unreachable / RLS / network) is NOT drift — never block.
+    // "Couldn't run" (DB unreachable / RLS / network) is NOT drift — never
+    // block a dev build. Strict (release) mode fails: an unverified release
+    // is exactly what the gate exists to prevent.
+    if (STRICT) {
+      console.error(
+        `drift-check (--strict): could not read the DB — FAILING. ${(err as Error).message}`,
+      );
+      process.exit(3);
+    }
     console.warn(
       `drift-check: could not read the DB — SKIPPING (this is NOT drift). ${(err as Error).message}`,
     );
@@ -398,7 +437,9 @@ async function main(): Promise<void> {
     `  local catalog tools (advertised): ${totalLocal}  ${DIM}(${localAll.length} total; absorbed handlers excluded via CANONICAL_SURFACE)${RESET}`,
   );
   console.log(`  DB tool_def rows owned by chrome-extension: ${totalDb}`);
-  console.log(`  DB tool_binding rows (active):              ${dbBindings.filter((b) => b.is_active).length}`);
+  console.log(
+    `  DB tool_binding rows (active):              ${dbBindings.filter((b) => b.is_active).length}`,
+  );
   console.log(`  DB tool_surface_defaults rows:              ${dbSurfaces.length}`);
   console.log('');
 
@@ -410,29 +451,47 @@ async function main(): Promise<void> {
   // ── BIG RED BANNER ───────────────────────────────────────────────────────
   const bar = '████████████████████████████████████████████████████████████████████';
   console.log(`${RED_BG}${bar}${RESET}`);
-  console.log(`${RED_BG}██${RESET}                                                                ${RED_BG}██${RESET}`);
-  console.log(`${RED_BG}██${RESET}   ${RED}⚠  TOOL-CATALOG / DB SCHEMA DRIFT DETECTED  ⚠${RESET}              ${RED_BG}██${RESET}`);
-  console.log(`${RED_BG}██${RESET}                                                                ${RED_BG}██${RESET}`);
-  console.log(`${RED_BG}██${RESET}   ${RED}${totalProblems} problem(s) found across ${drifts.length + localOnly.length} tool(s).${RESET}${' '.repeat(Math.max(0, 28 - String(totalProblems).length - String(drifts.length + localOnly.length).length))}${RED_BG}██${RESET}`);
-  console.log(`${RED_BG}██${RESET}   ${RED}The LLM sees one schema; the dispatcher accepts another.${RESET}      ${RED_BG}██${RESET}`);
-  console.log(`${RED_BG}██${RESET}                                                                ${RED_BG}██${RESET}`);
+  console.log(
+    `${RED_BG}██${RESET}                                                                ${RED_BG}██${RESET}`,
+  );
+  console.log(
+    `${RED_BG}██${RESET}   ${RED}⚠  TOOL-CATALOG / DB SCHEMA DRIFT DETECTED  ⚠${RESET}              ${RED_BG}██${RESET}`,
+  );
+  console.log(
+    `${RED_BG}██${RESET}                                                                ${RED_BG}██${RESET}`,
+  );
+  console.log(
+    `${RED_BG}██${RESET}   ${RED}${totalProblems} problem(s) found across ${drifts.length + localOnly.length} tool(s).${RESET}${' '.repeat(Math.max(0, 28 - String(totalProblems).length - String(drifts.length + localOnly.length).length))}${RED_BG}██${RESET}`,
+  );
+  console.log(
+    `${RED_BG}██${RESET}   ${RED}The LLM sees one schema; the dispatcher accepts another.${RESET}      ${RED_BG}██${RESET}`,
+  );
+  console.log(
+    `${RED_BG}██${RESET}                                                                ${RED_BG}██${RESET}`,
+  );
   console.log(`${RED_BG}${bar}${RESET}`);
   console.log('');
 
   if (localOnly.length) {
-    console.log(`${RED}✗ Local-only (${localOnly.length}) — exist in code but MISSING from tool_def (or not bound to chrome-extension):${RESET}`);
+    console.log(
+      `${RED}✗ Local-only (${localOnly.length}) — exist in code but MISSING from tool_def (or not bound to chrome-extension):${RESET}`,
+    );
     for (const n of localOnly) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('');
   }
 
   if (dbOnly.length) {
-    console.log(`${RED}✗ DB-only (${dbOnly.length}) — bound to chrome-extension but no local handler exposes them:${RESET}`);
+    console.log(
+      `${RED}✗ DB-only (${dbOnly.length}) — bound to chrome-extension but no local handler exposes them:${RESET}`,
+    );
     for (const n of dbOnly) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('');
   }
 
   if (dbInactive.length) {
-    console.log(`${YELLOW}⚠ DB-inactive (${dbInactive.length}) — in tool_def but is_active=false:${RESET}`);
+    console.log(
+      `${YELLOW}⚠ DB-inactive (${dbInactive.length}) — in tool_def but is_active=false:${RESET}`,
+    );
     for (const n of dbInactive) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('');
   }
@@ -447,41 +506,56 @@ async function main(): Promise<void> {
   }
 
   if (missingBinding.length) {
-    console.log(`${RED}✗ Missing executor binding (${missingBinding.length}) — advertised but no active tool_binding row for executor_name='chrome-extension':${RESET}`);
+    console.log(
+      `${RED}✗ Missing executor binding (${missingBinding.length}) — advertised but no active tool_binding row for executor_name='chrome-extension':${RESET}`,
+    );
     for (const n of missingBinding) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('  Server cannot route these calls — they will fail with "no executor".');
     console.log('');
   }
 
   if (missingSurface.length) {
-    console.log(`${RED}✗ Missing surface inclusion (${missingSurface.length}) — not in always_include_tools for either chrome-extension/{assistant,pilot}:${RESET}`);
+    console.log(
+      `${RED}✗ Missing surface inclusion (${missingSurface.length}) — not in always_include_tools for either chrome-extension/{assistant,pilot}:${RESET}`,
+    );
     for (const n of missingSurface) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('  Discovery handler will not surface these to the LLM on either chat path.');
     console.log('');
   }
 
   if (excludedSurface.length) {
-    console.log(`${YELLOW}⚠ Explicitly excluded on a surface (${excludedSurface.length}) — listed in never_include_tools:${RESET}`);
-    for (const e of excludedSurface) console.log(`    ${DIM}-${RESET} ${e.name} (on ${e.surfaces.join(', ')})`);
+    console.log(
+      `${YELLOW}⚠ Explicitly excluded on a surface (${excludedSurface.length}) — listed in never_include_tools:${RESET}`,
+    );
+    for (const e of excludedSurface)
+      console.log(`    ${DIM}-${RESET} ${e.name} (on ${e.surfaces.join(', ')})`);
     console.log('  The resolver will respect this; remove the entry if it was a mistake.');
     console.log('');
   }
 
   if (orphanBinding.length) {
-    console.log(`${YELLOW}⚠ Orphan bindings (${orphanBinding.length}) — bindings pointing at deleted/renamed tools (should be impossible w/ FK; deployment-state canary):${RESET}`);
+    console.log(
+      `${YELLOW}⚠ Orphan bindings (${orphanBinding.length}) — bindings pointing at deleted/renamed tools (should be impossible w/ FK; deployment-state canary):${RESET}`,
+    );
     for (const n of orphanBinding) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('');
   }
 
   // ── REPEAT THE BANNER SO IT'S THE LAST THING ─────────────────────────────
   console.log(`${RED_BG}${bar}${RESET}`);
-  console.log(`${RED_BG}██${RESET}   ${RED}DRIFT: ${totalProblems} problem(s). Fix tool_def or local handlers.${RESET}${' '.repeat(Math.max(0, 22 - String(totalProblems).length))}${RED_BG}██${RESET}`);
+  console.log(
+    `${RED_BG}██${RESET}   ${RED}DRIFT: ${totalProblems} problem(s). Fix tool_def or local handlers.${RESET}${' '.repeat(Math.max(0, 22 - String(totalProblems).length))}${RED_BG}██${RESET}`,
+  );
   console.log(`${RED_BG}${bar}${RESET}`);
   console.log('');
   console.log(`${DIM}Fix path — the DATABASE is the source of truth:${RESET}`);
   console.log(`${DIM}  - tool_def is the truth (what the LLM sees).${RESET}`);
-  console.log(`${DIM}  - Bring the handler's real Zod (src/lib/tools/handlers/*.ts) to match tool_def.${RESET}`);
-  console.log(`${DIM}  - If the DB itself is wrong, change it (admin API / migration), then match code.${RESET}`);
+  console.log(
+    `${DIM}  - Bring the handler's real Zod (src/lib/tools/handlers/*.ts) to match tool_def.${RESET}`,
+  );
+  console.log(
+    `${DIM}  - If the DB itself is wrong, change it (admin API / migration), then match code.${RESET}`,
+  );
   process.exit(1);
 }
 

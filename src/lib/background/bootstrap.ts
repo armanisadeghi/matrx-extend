@@ -47,6 +47,7 @@ import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
 import { readDefaultPermissionMode } from '@/lib/settings/persisted';
+import { hasRecentActiveStream } from '@/lib/stream/active-runs';
 import {
   type StartStreamArgs,
   cancelStream,
@@ -733,6 +734,17 @@ function registerPilotLifecycleListeners(): void {
  */
 async function closeStaleOffscreenOnBoot(): Promise<void> {
   try {
+    // P1-15 guard: this runs on EVERY SW boot — including the routine ~30s
+    // idle reap/rewake — and the offscreen doc is where the live SSE (and
+    // mic capture) lives. Closing it during an in-flight run was killing
+    // streams mid-execution; the 75s watchdog then mopped up a stall WE
+    // caused. Skip the close while any recently-started run is live; a
+    // 30-minute age-out keeps crash debris from pinning a genuinely stale
+    // document forever.
+    if (await hasRecentActiveStream(30 * 60_000)) {
+      log.info('sw', 'offscreen has a live stream — skipping stale-close on boot');
+      return;
+    }
     let exists = false;
     if (chrome.runtime.getContexts) {
       try {

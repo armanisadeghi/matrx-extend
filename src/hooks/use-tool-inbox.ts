@@ -19,9 +19,9 @@ import type {
   PendingAskUserRequest,
   PendingConfirmRequest,
 } from '@/lib/tools/types';
+import type { ToolProgressUpdate } from '@/lib/tools/types';
 import { type ToolPartCall, useChatStore } from '@/state/chat';
 import { useToolInbox } from '@/state/tool-inbox';
-import type { ToolProgressUpdate } from '@/lib/tools/types';
 import { useEffect } from 'react';
 
 interface TimelinePayload {
@@ -68,6 +68,15 @@ export function useToolInbox$Subscribe(): void {
         return { ack: true };
       },
     );
+    // The SW failed the call closed (timeout, or it expired across an SW
+    // restart) — drop the card so the user isn't left clicking into the void.
+    const offExpired = on<{ callId: string; reason?: string }, { ack: true }>(
+      CHANNELS.TOOL_CONFIRM_EXPIRED,
+      (payload) => {
+        useToolInbox.getState().removeConfirm(payload.callId);
+        return { ack: true };
+      },
+    );
     const offAsk = on<PendingAskUserRequest, { ack: true }>(
       CHANNELS.TOOL_ASK_USER_REQUEST,
       (payload) => {
@@ -92,12 +101,14 @@ export function useToolInbox$Subscribe(): void {
         // progress event never accidentally flips a completed row back to
         // 'started'.
         if (payload.progress) {
-          useChatStore.getState().appendToolProgress(
-            messageId,
-            payload.callId,
-            { at: Date.now(), ...payload.progress },
-            { toolName: payload.toolName, kind: 'client' },
-          );
+          useChatStore
+            .getState()
+            .appendToolProgress(
+              messageId,
+              payload.callId,
+              { at: Date.now(), ...payload.progress },
+              { toolName: payload.toolName, kind: 'client' },
+            );
           return { ack: true };
         }
         // Only set fields that are actually defined on this event. The SW
@@ -117,6 +128,7 @@ export function useToolInbox$Subscribe(): void {
     );
     return () => {
       offConfirm();
+      offExpired();
       offAsk();
       offTimeline();
     };

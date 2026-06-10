@@ -55,6 +55,11 @@ export const CHANNELS = {
   // Tool dispatch (agent-driven actions in the browser)
   TOOL_CONFIRM_REQUEST: 'tool:confirm-request', // SW → sidepanel: please render approval card
   TOOL_CONFIRM_RESPONSE: 'tool:confirm-response', // sidepanel → SW: user clicked allow / deny
+  // SW → sidepanel: a pending confirm is no longer answerable (5-min timeout
+  // fired, or it expired across an SW restart) — remove the card. Payload:
+  // { callId, reason }. Without this the card lingered after the dispatcher
+  // had already failed the call closed, and a late click went nowhere.
+  TOOL_CONFIRM_EXPIRED: 'tool:confirm-expired',
   TOOL_ASK_USER_REQUEST: 'tool:ask-user-request', // SW → sidepanel: agent asked the user a question
   TOOL_ASK_USER_RESPONSE: 'tool:ask-user-response', // sidepanel → SW: user's answer
   TOOL_TIMELINE_EVENT: 'tool:timeline-event', // SW → sidepanel: render in the chat (started / completed / error)

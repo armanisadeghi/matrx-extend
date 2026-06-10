@@ -35,7 +35,16 @@ import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { type OptionalPermission, hasOptionalPermissions } from '@/lib/permissions/optional';
 import { recordToolEvent } from '@/lib/recording/state';
+import { markStreamInactive } from '@/lib/stream/active-runs';
 import { getToolDescription, primeToolDescriptions } from '@/lib/tools/descriptions';
+import {
+  listPendingConfirms,
+  loadRunMeta,
+  persistPendingConfirm,
+  persistRunMeta,
+  removePendingConfirm,
+  takePendingConfirm,
+} from '@/lib/tools/dispatch-persist';
 import { allToolNames, lookup as lookupTool } from '@/lib/tools/registry';
 import { suggestSimilar } from '@/lib/tools/suggest';
 import type {
@@ -69,6 +78,51 @@ interface RunMeta {
 const runs = new Map<string, RunMeta>();
 
 /**
+ * Write-through mirror of a run's metadata into chrome.storage.session so an
+ * MV3 SW restart mid-stream doesn't orphan in-flight tool calls (P0-4).
+ * Fire-and-forget — persistence problems degrade to the old in-memory-only
+ * behaviour.
+ */
+function mirrorRunMeta(runId: string, meta: RunMeta): void {
+  void persistRunMeta(runId, {
+    conversationId: meta.conversationId,
+    requestId: meta.requestId,
+    permissionMode: meta.permissionMode,
+    agentName: meta.agentName,
+    trustedHosts: [...meta.trustedThisConversation],
+    assignedTabId: meta.assignedTabId,
+    updatedAt: Date.now(),
+  });
+}
+
+/**
+ * Read-through lookup: in-memory map first, then the storage.session mirror.
+ * A hit from storage re-hydrates the map so subsequent (sync) consumers see
+ * it. Returns undefined only when the run genuinely isn't known — e.g. a
+ * tool_delegated for a run that started before the browser session.
+ */
+async function getRunMeta(runId: string): Promise<RunMeta | undefined> {
+  const inMemory = runs.get(runId);
+  if (inMemory) return inMemory;
+  const stored = await loadRunMeta(runId);
+  if (!stored) return undefined;
+  const revived: RunMeta = {
+    conversationId: stored.conversationId,
+    requestId: stored.requestId,
+    permissionMode: stored.permissionMode,
+    agentName: stored.agentName,
+    trustedThisConversation: new Set(stored.trustedHosts),
+    assignedTabId: stored.assignedTabId,
+  };
+  // Another async path may have hydrated while we awaited — keep theirs.
+  const raced = runs.get(runId);
+  if (raced) return raced;
+  runs.set(runId, revived);
+  log.info('sw', `run meta for ${runId} rehydrated from storage.session after SW restart`);
+  return revived;
+}
+
+/**
  * Latch run metadata BEFORE the SSE opens. Called from the SW's STREAM_START
  * handler so the dispatcher has the assigned tab, permission mode, and
  * agent name ready by the time the first `tool_delegated` event arrives.
@@ -97,17 +151,20 @@ export function recordAssignedTab(
     existing.assignedTabId = assignedTabId;
     if (opts.permissionMode) existing.permissionMode = opts.permissionMode;
     if (opts.agentName !== undefined) existing.agentName = opts.agentName;
+    mirrorRunMeta(runId, existing);
     return;
   }
   // STREAM_OPENED hasn't landed yet — seed the row so it isn't lost.
-  runs.set(runId, {
+  const seeded: RunMeta = {
     conversationId: null,
     requestId: null,
     permissionMode: opts.permissionMode ?? 'ask',
     agentName: opts.agentName ?? null,
     trustedThisConversation: new Set<string>(),
     assignedTabId,
-  });
+  };
+  runs.set(runId, seeded);
+  mirrorRunMeta(runId, seeded);
 }
 
 interface DispatchOptions {
@@ -184,20 +241,42 @@ export function startToolDispatcher(opts: DispatchOptions): void {
     // before STREAM_OPENED arrived — its trustedThisConversation set is
     // brand-new for every run so we always start it fresh here.
     const prior = runs.get(payload.runId);
-    runs.set(payload.runId, {
+    const merged: RunMeta = {
       conversationId: payload.conversationId,
       requestId: payload.requestId,
       permissionMode: payload.permissionMode ?? opts.defaultPermissionMode(),
       agentName: payload.agentName ?? null,
       trustedThisConversation: prior?.trustedThisConversation ?? new Set<string>(),
       assignedTabId: prior?.assignedTabId ?? null,
-    });
+    };
+    runs.set(payload.runId, merged);
+    mirrorRunMeta(payload.runId, merged);
     // A run actually opened for this user_request — re-arm the
     // continuation single-flight guard so its NEXT suspend can broadcast.
     if (payload.requestId) recentContinueBroadcasts.delete(payload.requestId);
     log.info('sw', `tool dispatcher tracking run=${payload.runId}`, payload);
     return { ack: true };
   });
+
+  // Confirm recovery across SW restarts (P0-5). The per-call listener inside
+  // `requestConfirmation` is an in-memory Promise — when Chrome reaps the SW
+  // during the approval window, the sidepanel card survives but the listener
+  // is gone, and the user's Allow click used to vanish (run stuck forever).
+  // This global listener catches responses for persisted-but-not-live calls:
+  // the click itself wakes the SW, bootstrap registers us synchronously, and
+  // we re-execute (or fail-close) from the storage.session record.
+  on<ConfirmResponse, { ack: true }>(CHANNELS.TOOL_CONFIRM_RESPONSE, (payload) => {
+    if (liveConfirmWaiters.has(payload.callId)) return { ack: true };
+    void recoverPersistedConfirm(payload).catch((err) =>
+      log.error('sw', `confirm recovery failed for ${payload.callId}`, err),
+    );
+    return { ack: true };
+  });
+  // Fail-close any confirms whose approval window closed while no SW was
+  // alive to fire the timeout. Best-effort; runs on every boot.
+  void sweepExpiredConfirms().catch((err) =>
+    log.warn('sw', 'sweepExpiredConfirms failed', (err as Error)?.message),
+  );
 
   // Watch every stream chunk for tool_delegated events. We deliberately
   // ignore `tool_started` — the server emits that for tools it executes
@@ -207,6 +286,12 @@ export function startToolDispatcher(opts: DispatchOptions): void {
   on<{ runId: string; type: string; payload: unknown }, { ack: true }>(
     CHANNELS.STREAM_CHUNK,
     async (chunk) => {
+      // Terminal chunk → the offscreen fetch for this run is finished; clear
+      // its live-stream marker so closeStaleOffscreenOnBoot is free to act.
+      if (chunk.type === 'done') {
+        void markStreamInactive(chunk.runId);
+        return { ack: true };
+      }
       if (chunk.type !== 'event') return { ack: true };
       const evt = (chunk.payload as { eventName?: string; data?: Record<string, unknown> }) ?? {};
       if (evt.eventName !== 'tool_event') return { ack: true };
@@ -241,7 +326,11 @@ export function startToolDispatcher(opts: DispatchOptions): void {
       const handler = lookupTool(wireName);
       const resolvedName = wireName;
 
-      const meta = runs.get(chunk.runId);
+      // Read-through: survives SW restarts mid-stream (P0-4). Without the
+      // storage fallback, a reaped-and-rewoken SW saw an empty map here —
+      // null conversationId (result never POSTed, agent hung), permission
+      // mode silently downgraded to 'ask', assigned tab lost.
+      const meta = await getRunMeta(chunk.runId);
       const ctx: ToolContext = {
         conversationId: meta?.conversationId ?? null,
         runId: chunk.runId,
@@ -393,7 +482,10 @@ function extractTabIdArgs(args: unknown): number[] {
  * Returns the conversation_id once known, or null if it never arrives.
  */
 async function waitForConversationId(runId: string, timeoutMs = 3000): Promise<string | null> {
-  const existing = runs.get(runId);
+  // getRunMeta also consults the storage.session mirror, so a result POSTed
+  // by a freshly-rewoken SW can still find the conversation a previous SW
+  // lifetime registered.
+  const existing = await getRunMeta(runId);
   if (existing?.conversationId) return existing.conversationId;
   const start = Date.now();
   // Light poll — STREAM_OPENED is almost always already in flight when we
@@ -453,6 +545,15 @@ async function handleCall(
   rawArgs: unknown,
   ctx: ToolContext,
   meta: RunMeta | undefined,
+  gateOpts: {
+    /**
+     * The user already clicked Allow for this exact call (post-SW-restart
+     * confirm recovery). Every validation gate still runs — only the
+     * confirmation prompt is skipped, since re-prompting for an approval the
+     * user just gave would be hostile.
+     */
+    preApproved?: boolean;
+  } = {},
 ): Promise<void> {
   const startedAt = Date.now();
   log.info('sw', `tool ${handler.name} call_id=${ctx.callId}`, rawArgs);
@@ -568,7 +669,7 @@ async function handleCall(
   // Permission gate.
   const needsConfirm =
     effectiveTier === 'privileged' || (effectiveTier === 'action' && ctx.permissionMode === 'ask');
-  if (needsConfirm) {
+  if (needsConfirm && !gateOpts.preApproved) {
     const allowed = await requestConfirmation(handler, parsed.data, ctx, meta, {
       effectiveTier,
       initiator: 'agent',
@@ -770,6 +871,13 @@ interface ConfirmResult {
   reason?: string;
 }
 
+/**
+ * callIds whose confirm Promise is alive in THIS SW lifetime. The global
+ * recovery listener (post-restart path) ignores these — the per-call
+ * listener inside `requestConfirmation` owns them.
+ */
+const liveConfirmWaiters = new Set<string>();
+
 function requestConfirmation(
   handler: AnyToolHandler,
   args: unknown,
@@ -803,6 +911,26 @@ function requestConfirmation(
     }
   }
 
+  // Durability (P0-5): persist the request so a user click can still be
+  // honored after the SW that broadcast the card has been reaped. The 5-min
+  // in-memory timer dies with the SW; `expiresAt` lets the recovery path
+  // fail-close stale requests instead of leaving them answerable forever.
+  const expiresAt = Date.now() + 5 * 60_000;
+  liveConfirmWaiters.add(ctx.callId);
+  void persistPendingConfirm({
+    callId: ctx.callId,
+    toolName: handler.name,
+    args,
+    conversationId: ctx.conversationId,
+    runId: ctx.runId,
+    agentName: ctx.agentName,
+    permissionMode: ctx.permissionMode,
+    assignedTabId: ctx.assignedTabId,
+    effectiveTier: opts.effectiveTier,
+    initiator: opts.initiator,
+    expiresAt,
+  });
+
   return new Promise<ConfirmResult>((resolve) => {
     let resolved = false;
     const finish = (out: ConfirmResult) => {
@@ -810,6 +938,8 @@ function requestConfirmation(
       resolved = true;
       off();
       clearTimeout(timer);
+      liveConfirmWaiters.delete(ctx.callId);
+      void removePendingConfirm(ctx.callId);
       resolve(out);
     };
     const off = on<ConfirmResponse, { ack: true }>(CHANNELS.TOOL_CONFIRM_RESPONSE, (payload) => {
@@ -817,6 +947,7 @@ function requestConfirmation(
       if (payload.decision === 'allow' && payload.rememberFor === 'conversation' && url && meta) {
         try {
           meta.trustedThisConversation.add(new URL(url).host);
+          mirrorRunMeta(ctx.runId, meta);
         } catch {
           /* */
         }
@@ -827,10 +958,15 @@ function requestConfirmation(
       });
       return { ack: true };
     });
-    const timer = setTimeout(
-      () => finish({ allow: false, reason: 'Approval timed out' }),
-      5 * 60_000,
-    );
+    const timer = setTimeout(() => {
+      // Tell the sidepanel to drop the card — before this, the card lingered
+      // after the timeout and a late click broadcast into the void (P2-4).
+      broadcast(CHANNELS.TOOL_CONFIRM_EXPIRED, {
+        callId: ctx.callId,
+        reason: 'Approval timed out',
+      });
+      finish({ allow: false, reason: 'Approval timed out' });
+    }, 5 * 60_000);
 
     const req: PendingConfirmRequest = {
       callId: ctx.callId,
@@ -847,6 +983,89 @@ function requestConfirmation(
     };
     broadcast(CHANNELS.TOOL_CONFIRM_REQUEST, req);
   });
+}
+
+/**
+ * Post-restart path for a confirm response whose original waiter died with a
+ * previous SW lifetime. Claims the persisted record atomically (so a double
+ * click can't double-execute), reconstructs the call context, and either
+ * re-enters `handleCall` with the prompt skipped or fails the call closed.
+ */
+async function recoverPersistedConfirm(payload: ConfirmResponse): Promise<void> {
+  const rec = await takePendingConfirm(payload.callId);
+  if (!rec) return; // never persisted, or already claimed — nothing to do
+  const handler = lookupTool(rec.toolName);
+  const ctx: ToolContext = {
+    conversationId: rec.conversationId,
+    runId: rec.runId,
+    callId: rec.callId,
+    agentName: rec.agentName,
+    permissionMode: rec.permissionMode,
+    assignedTabId: rec.assignedTabId,
+  };
+  if (!handler) {
+    log.error('sw', `confirm recovery: tool '${rec.toolName}' no longer registered`);
+    return;
+  }
+  if (Date.now() > rec.expiresAt) {
+    broadcast(CHANNELS.TOOL_CONFIRM_EXPIRED, {
+      callId: rec.callId,
+      reason: 'Approval timed out',
+    });
+    await finishWithError(handler, ctx, 'Approval timed out');
+    return;
+  }
+  if (payload.decision !== 'allow') {
+    await finishWithError(handler, ctx, 'User denied this action');
+    return;
+  }
+  log.info(
+    'sw',
+    `confirm recovery: executing ${rec.toolName} (call ${rec.callId}) approved across an SW restart`,
+  );
+  const meta = await getRunMeta(rec.runId);
+  if (payload.rememberFor === 'conversation' && meta) {
+    const url = (rec.args as { url?: unknown })?.url;
+    if (typeof url === 'string') {
+      try {
+        meta.trustedThisConversation.add(new URL(url).host);
+        mirrorRunMeta(rec.runId, meta);
+      } catch {
+        /* not a parseable URL */
+      }
+    }
+  }
+  await handleCall(handler, rec.args, ctx, meta, { preApproved: true });
+}
+
+/**
+ * Fail-close persisted confirms whose 5-minute window elapsed with no SW
+ * alive to fire the in-memory timeout. Clears the sidepanel card and posts
+ * the timeout error so the agent loop unsticks.
+ */
+async function sweepExpiredConfirms(): Promise<void> {
+  const all = await listPendingConfirms();
+  const now = Date.now();
+  for (const rec of all) {
+    if (now <= rec.expiresAt) continue; // still answerable — recovery listener owns it
+    const claimed = await takePendingConfirm(rec.callId);
+    if (!claimed) continue; // raced with a response — fine
+    broadcast(CHANNELS.TOOL_CONFIRM_EXPIRED, {
+      callId: rec.callId,
+      reason: 'Approval timed out',
+    });
+    const handler = lookupTool(rec.toolName);
+    if (!handler) continue;
+    const ctx: ToolContext = {
+      conversationId: rec.conversationId,
+      runId: rec.runId,
+      callId: rec.callId,
+      agentName: rec.agentName,
+      permissionMode: rec.permissionMode,
+      assignedTabId: rec.assignedTabId,
+    };
+    await finishWithError(handler, ctx, 'Approval timed out');
+  }
 }
 
 interface WebmcpCallPayload {

@@ -68,10 +68,12 @@ export async function buildRegistrablePilotTools(
  * `__matrx_webmcp_call` events posted by the run-stub installed below
  * and dispatches them through `WEBMCP_CALL` to the SW handler.
  */
-export async function registerToolsOnActiveTab(opts: {
-  isAdmin?: boolean;
-  tabId?: number;
-} = {}): Promise<{ ok: boolean; count?: number; reason?: string }> {
+export async function registerToolsOnActiveTab(
+  opts: {
+    isAdmin?: boolean;
+    tabId?: number;
+  } = {},
+): Promise<{ ok: boolean; count?: number; reason?: string }> {
   let tabId = opts.tabId;
   if (typeof tabId !== 'number') {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -86,16 +88,18 @@ export async function registerToolsOnActiveTab(opts: {
       target: { tabId },
       world: 'MAIN',
       func: (specs: ToolSpec[]) => {
-        const mc = (navigator as unknown as {
-          modelContext?: {
-            registerTool?: (def: {
-              name: string;
-              description: string;
-              inputSchema: unknown;
-              run: (args: unknown) => Promise<unknown>;
-            }) => void;
-          };
-        }).modelContext;
+        const mc = (
+          navigator as unknown as {
+            modelContext?: {
+              registerTool?: (def: {
+                name: string;
+                description: string;
+                inputSchema: unknown;
+                run: (args: unknown) => Promise<unknown>;
+              }) => void;
+            };
+          }
+        ).modelContext;
         if (!mc?.registerTool) return { ok: false, reason: 'WebMCP unavailable' };
         let registered = 0;
         for (const t of specs) {
@@ -110,11 +114,11 @@ export async function registerToolsOnActiveTab(opts: {
                   // same tool. The bridge content script echoes it back
                   // verbatim in the response.
                   const callId =
-                    typeof crypto !== 'undefined' &&
-                    typeof crypto.randomUUID === 'function'
+                    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
                       ? crypto.randomUUID()
                       : `webmcp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
+                  // biome-ignore lint/style/useConst: assigned after the handler closure that reads it
                   let timer: number | undefined;
                   const handler = (event: MessageEvent) => {
                     if (event.source !== window) return;
@@ -127,11 +131,7 @@ export async function registerToolsOnActiveTab(opts: {
                           error?: string;
                         }
                       | undefined;
-                    if (
-                      !data ||
-                      data.__matrx_webmcp_result !== true ||
-                      data.callId !== callId
-                    ) {
+                    if (!data || data.__matrx_webmcp_result !== true || data.callId !== callId) {
                       return;
                     }
                     window.removeEventListener('message', handler);

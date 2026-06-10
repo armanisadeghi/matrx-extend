@@ -165,11 +165,21 @@ CATALOG_OK=true
 WARNINGS=()
 DRIFT_DETECTED=false
 
+# Portable in-place sed. BSD (macOS) sed wants `-i ''`; GNU (Linux) sed
+# treats that '' as the script argument and silently misbehaves — the
+# original macOS-only form left the key-toggle broken on Linux boxes
+# (docs/AUDIT_2026_06_10.md P0-9). A backup suffix works on both; we
+# delete the backup immediately.
+_sed_inplace() {
+    local script="$1" file="$2"
+    sed -i.matrxbak -E "$script" "$file"
+    rm -f "${file}.matrxbak"
+}
+
 _key_comment_out() {
     # Idempotent — bails if already commented.
     if grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG"; then
-        # macOS sed: -i '' for in-place no-backup
-        sed -i '' -E "s|^([[:space:]]*)(key: ')|\1// \2|" "$WXT_CONFIG"
+        _sed_inplace "s|^([[:space:]]*)(key: ')|\1// \2|" "$WXT_CONFIG"
         # Verify the swap actually happened.
         grep -qE "^[[:space:]]*// key: '" "$WXT_CONFIG" \
             || fail "Could not comment out key field in $WXT_CONFIG"
@@ -186,7 +196,7 @@ _key_restore() {
     # Idempotent — only acts if we did the commenting in this run.
     if $KEY_WAS_COMMENTED; then
         if grep -qE "^[[:space:]]*// key: '" "$WXT_CONFIG"; then
-            sed -i '' -E "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
+            _sed_inplace "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
             grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG" \
                 || fail "Could not restore key field in $WXT_CONFIG — RESTORE MANUALLY before next dev install."
             ok "Restored key field in $WXT_CONFIG"
@@ -223,7 +233,7 @@ if grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG"; then
 elif grep -qE "^[[:space:]]*// key: '" "$WXT_CONFIG"; then
     warn "wxt.config.ts has key field commented out — restoring before release."
     if ! $DRY_RUN; then
-        sed -i '' -E "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
+        _sed_inplace "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
         grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG" \
             || fail "Could not auto-restore key field — fix manually."
         KEY_HEALED=true
@@ -421,24 +431,31 @@ else
         WARNINGS+=("Tool catalog regen FAILED (non-blocking). types/tool-catalog.* will be stale until you fix the import-time env issue and run 'pnpm catalog:tools:md' manually.")
     fi
 
-    # ── 4b. Diff local catalog against public.tl_def (NON-FATAL) ─────────────
+    # ── 4b. Diff local catalog against public.tool_def (BLOCKING) ────────────
     #
-    # The LLM sees tool schemas from public.tl_def (in Supabase). The
+    # The LLM sees tool schemas from public.tool_def (in Supabase). The
     # extension's dispatcher validates calls against the local Zod schemas
     # captured in types/tool-catalog.json. When they drift, the model
     # crafts a call the dispatcher rejects (or vice versa) — see the
-    # 'tabs.action=get_info' incident on 2026-05-19. Warn-only: bringing
-    # tl_def in line with code happens manually via Supabase MCP / admin
-    # API; we don't want a drift to gate a release that's otherwise ready.
+    # 'tabs.action=get_info' incident on 2026-05-19.
+    # Strict mode: drift AND inability-to-verify both block the release.
+    # Override only with an explicit MATRX_ALLOW_DRIFT=1 (leaves an obvious
+    # trail in the shell history) — the audit found releases shipping with
+    # the LLM-visible tool_def schema drifted from the Zod the dispatcher
+    # validates (docs/AUDIT_2026_06_10.md P1-25).
     if $CATALOG_OK; then
-        if pnpm catalog:tools:drift; then
-            ok "tool-catalog ↔ tl_def in sync"
+        if pnpm catalog:tools:drift:strict; then
+            ok "tool-catalog ↔ tool_def in sync (verified)"
         else
             DRIFT_DETECTED=true
-            WARNINGS+=("Tool catalog DRIFTED from public.tl_def (non-blocking). Run 'pnpm catalog:tools:drift' for the diff; reconcile via Supabase MCP / admin API.")
+            if [[ "${MATRX_ALLOW_DRIFT:-0}" == "1" ]]; then
+                WARNINGS+=("Tool catalog DRIFTED from public.tool_def — RELEASE FORCED via MATRX_ALLOW_DRIFT=1. Reconcile via Supabase MCP / admin API ASAP.")
+            else
+                fail "Tool catalog drifted from public.tool_def (or could not verify). Run 'pnpm catalog:tools:drift' for the diff. Reconcile, or force with MATRX_ALLOW_DRIFT=1."
+            fi
         fi
     else
-        warn "Skipping tl_def drift check — catalog regen failed."
+        fail "Catalog regen failed — cannot verify drift. Fix the regen error (see above) before releasing."
     fi
 
     # ── 4c. Regenerate docs/TOOLS.generated.md from the DB (NON-FATAL) ────────
@@ -461,10 +478,17 @@ else
     # screams in a red box if any local migration was never recorded. Read-only —
     # this repo can't apply DDL; apply from aidream:
     #   python db/apply_migrations.py --source matrx-extend
-    if pnpm check:migrations; then
-        ok "migration ledger in sync"
+    # Strict: unapplied migrations block. The DB is the source of truth and a
+    # release whose code assumes un-applied DDL is broken on arrival. Same
+    # explicit escape hatch as drift.
+    if pnpm check:migrations:strict; then
+        ok "migration ledger in sync (verified)"
     else
-        WARNINGS+=("UNAPPLIED MIGRATIONS detected (non-blocking). Run 'pnpm check:migrations' for the list; apply from aidream with 'python db/apply_migrations.py --source matrx-extend'.")
+        if [[ "${MATRX_ALLOW_DRIFT:-0}" == "1" ]]; then
+            WARNINGS+=("UNAPPLIED MIGRATIONS detected — RELEASE FORCED via MATRX_ALLOW_DRIFT=1. Apply from aidream with 'python db/apply_migrations.py --source matrx-extend'.")
+        else
+            fail "Unapplied migrations detected (or ledger unreachable). Run 'pnpm check:migrations' for the list; apply from aidream, or force with MATRX_ALLOW_DRIFT=1."
+        fi
     fi
 fi
 
