@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-10T17:52:53.386Z",
+  "generated_at": "2026-06-10T18:30:23.880Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -219,6 +219,7 @@
     "chrome_tab_audio_inspect",
     "mutation_watch",
     "extract_microdata",
+    "data_patterns",
     "fetch_url_as_markdown",
     "computer",
     "form_input",
@@ -384,6 +385,7 @@
     "chrome_tab_audio_inspect",
     "mutation_watch",
     "extract_microdata",
+    "data_patterns",
     "fetch_url_as_markdown",
     "computer",
     "form_input",
@@ -461,6 +463,7 @@
         "extract_table",
         "mutation_watch",
         "extract_microdata",
+        "data_patterns",
         "fetch_url_as_markdown",
         "read_pdf"
       ]
@@ -6688,6 +6691,107 @@
       "admin_only": false,
       "surface_bundles": [
         "assistant",
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
+      ]
+    },
+    {
+      "name": "data_patterns",
+      "tier": "action",
+      "category": "reading",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "list",
+              "describe",
+              "recipes",
+              "run",
+              "save",
+              "delete"
+            ]
+          },
+          "pattern_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "manual_css",
+              "json_ld",
+              "og_meta",
+              "auto_table",
+              "next_data",
+              "ai_extract",
+              "list_pattern",
+              "microdata",
+              "network_capture"
+            ]
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "selector": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "attr": {
+                  "type": "string"
+                },
+                "is_list": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "name",
+                "selector"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 40
+          },
+          "rows_limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
         "pilot",
         "pilot+privileged"
       ],

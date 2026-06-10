@@ -7,8 +7,8 @@
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-06-10T17:37:25.256Z
-Total tools: 80
+Generated: 2026-06-10T18:30:24.587Z
+Total tools: 81
 
 ## ai
 
@@ -481,6 +481,14 @@ Persistent agent-namespaced storage that survives across runs. Distinct from can
 **Parameters:** `key` (string); `value` (any); `action` (string, required) = ["get","set","list","delete"]
 
 ## reading
+
+### `data_patterns`
+
+_action_
+
+Manage and run the user's saved data-extraction patterns (the same system behind the extension's Showcase and Data tabs). Actions: 'list' — saved patterns for a domain (defaults to the current tab's host) with health badges; 'describe' — one pattern's full config and fields; 'recipes' — curated extraction recipes matching the current page (known-good configs for popular sites); 'run' — execute a saved pattern on the current tab and get rows back (DOM kinds run instantly; ai_extract re-runs the extraction agent against the page; network_capture reloads the tab and listens ~20s for the matching API request — tell the user before running it since the page will reload); 'save' — persist a new pattern (requires name + kind, mode-specific config, and fields for manual_css); 'delete' — remove a pattern. Run results are capped at rows_limit (default 100) with the true row_count reported. Prefer 'list' then 'run' over re-scraping a page the user has already built a pattern for.
+
+**Parameters:** `kind` (string) = ["manual_css","json_ld","og_meta","auto_table","next_data","ai_extract","list_pattern","microdata","network_capture"]; `name` (string); `action` (string, required) = ["list","describe","recipes","run","save","delete"]; `config` (object); `domain` (string); `fields` (array); `pattern_id` (string); `rows_limit` (integer)
 
 ### `extract_microdata`
 

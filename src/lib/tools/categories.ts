@@ -196,6 +196,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
 
   // ─── reading (canonical) ──────────────────────────────────────────────
   read_page: 'reading',
+  data_patterns: 'reading',
   find: 'reading',
   read_active_page: 'reading',
   read_pdf: 'reading',
@@ -406,6 +407,7 @@ export function categoryOf(toolName: string): ToolCategory {
 export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   // ─── core (advertised on every chat) ────────────────────────────────────
   'list_browser_tools',
+  'data_patterns',
   'browser_batch',
   'read_page',
   'find',

@@ -2,8 +2,13 @@ import { CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
 import { rowsToTsv, stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { cn } from '@/lib/utils';
-import { Braces, Table2 } from 'lucide-react';
+import { useChatStore } from '@/state/chat';
+import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { Bot, Braces, Table2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+
+/** Rows included inline when handing results to the agent (context cost). */
+const AGENT_HANDOFF_ROW_CAP = 50;
 
 type View = 'table' | 'json';
 
@@ -30,6 +35,29 @@ export function ResultPreview({
   description = 'extracted rows from a webpage',
 }: ResultPreviewProps) {
   const [view, setView] = useState<View>('table');
+  const setDraft = useChatStore((s) => s.setDraft);
+  const draft = useChatStore((s) => s.draft);
+  const setSidepanelTab = useSidepanelTabStore((s) => s.setTab);
+
+  // User-action → agent handoff (audit X3): stage the extracted rows into
+  // the chat composer and jump to Chat, so user-only steps (interactive
+  // picking, network capture) produce context the agent can act on.
+  const sendToAgent = () => {
+    const included = rows.slice(0, AGENT_HANDOFF_ROW_CAP);
+    const payload = wrapJsonForAgent(included, {
+      description,
+      source: source ?? {},
+      meta: {
+        row_count: rows.length,
+        included_rows: included.length,
+        ...(rows.length > included.length
+          ? { note: 'truncated — run the saved pattern via data_patterns for the full set' }
+          : {}),
+      },
+    });
+    setDraft(draft ? `${draft}\n\n${payload}` : payload);
+    setSidepanelTab('chat');
+  };
 
   const copyOptions = useMemo(
     () => [
@@ -73,6 +101,15 @@ export function ResultPreview({
           {rows.length} row{rows.length === 1 ? '' : 's'}
         </div>
         <div className="flex items-center gap-1">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={sendToAgent}
+            title="Stage these rows in the chat composer for the agent"
+            className="h-6 gap-1 rounded-md px-2 text-[10px] uppercase tracking-wider"
+          >
+            <Bot className="size-3" /> Send to agent
+          </Button>
           <CopyMenu options={copyOptions} title="Copy" size="sm" />
           <ViewToggle active={view === 'table'} onClick={() => setView('table')}>
             <Table2 className="size-3" /> Table

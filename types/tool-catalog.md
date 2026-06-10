@@ -1,11 +1,11 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-06-10T17:52:53.386Z
+Generated: 2026-06-10T18:30:23.880Z
 
-- **Total tools:** 169
+- **Total tools:** 170
 - **Assistant bundle:** 75 tools (read-only)
-- **Pilot bundle:** 138 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 169 tools
+- **Pilot bundle:** 139 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 170 tools
 
 
 ## Tier: read (75)
@@ -2041,7 +2041,7 @@ Generated: 2026-06-10T17:52:53.386Z
 }
 ```
 
-## Tier: action (60)
+## Tier: action (61)
 
 ### `navigate_active_tab`
 
@@ -3661,6 +3661,98 @@ Generated: 2026-06-10T17:52:53.386Z
   },
   "additionalProperties": false,
   "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `data_patterns`
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "list",
+        "describe",
+        "recipes",
+        "run",
+        "save",
+        "delete"
+      ]
+    },
+    "pattern_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "manual_css",
+        "json_ld",
+        "og_meta",
+        "auto_table",
+        "next_data",
+        "ai_extract",
+        "list_pattern",
+        "microdata",
+        "network_capture"
+      ]
+    },
+    "config": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "fields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          },
+          "attr": {
+            "type": "string"
+          },
+          "is_list": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "selector"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 40
+    },
+    "rows_limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 500
+    }
+  },
+  "required": [
+    "action"
+  ],
+  "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
 ```

@@ -25,7 +25,8 @@
 
 import { log } from '@/lib/debug/log';
 import { getPlan, listTasks, listUserTodos } from '@/lib/lists/storage';
-import { lookupCapturedByUrl } from '@/lib/supabase/queries';
+import {
+  fetchPatternsForDomain, lookupCapturedByUrl } from '@/lib/supabase/queries';
 import { prewarmReadPageCache } from '@/lib/tools/handlers/page-refs';
 import { useSettingsStore } from '@/state/settings';
 import { checkAuthState } from './check-auth-state';
@@ -185,10 +186,32 @@ export async function buildContextV2Bundled(
           sharePageIdentity && url ? checkAuthState(tabId, url) : Promise.resolve(null),
           url ? getDomainMemoForUrl(url) : Promise.resolve(null),
           url ? getGuidanceForUrl(url) : Promise.resolve(null),
+          url ? getSavedPatternsForUrl(url) : Promise.resolve(null),
         ])
-      : Promise.resolve([null, null, null, null, null, null, null, null, null] as const);
-  const [probe, forms, pageReady, pullRequest, email, ticket, authState, domainMemo, guidance] =
-    await tasks;
+      : Promise.resolve([
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+        ] as const);
+  const [
+    probe,
+    forms,
+    pageReady,
+    pullRequest,
+    email,
+    ticket,
+    authState,
+    domainMemo,
+    guidance,
+    savedPatterns,
+  ] = await tasks;
 
   // Scrape lookup. Prefer manual capture, then auto-background.
   const activeUrl = probe?.url ?? tabMeta?.url ?? null;
@@ -588,6 +611,14 @@ export async function buildContextV2Bundled(
     ctx.guidance = guidance;
   }
 
+  // saved_patterns_for_domain: the user's saved extraction patterns for
+  // this host — the agent should `data_patterns({action:'run'})` one of
+  // these instead of re-scraping a page the user already built a pattern
+  // for. Attached only when non-empty (Rule 4: no shallow empties).
+  if (savedPatterns && savedPatterns.length > 0) {
+    ctx.saved_patterns_for_domain = savedPatterns;
+  }
+
   // ── Capture history (recognition row from Supabase) ──────────────────
   if (activeUrl) {
     try {
@@ -839,4 +870,38 @@ function unwrapCdnUrl(src: string): string {
     /* malformed input — return as-is */
   }
   return src;
+}
+
+/**
+ * Compact summary of saved extraction patterns for the URL's host, for the
+ * `saved_patterns_for_domain` context key. Best-effort: context assembly
+ * must never fail on a Supabase hiccup.
+ */
+async function getSavedPatternsForUrl(url: string): Promise<
+  | {
+      id: string;
+      name: string;
+      kind: string;
+      route_pattern: string | null;
+      last_status: string | null;
+      last_run_count: number | null;
+    }[]
+  | null
+> {
+  try {
+    const host = new URL(url).host;
+    if (!host) return null;
+    const patterns = await fetchPatternsForDomain(host);
+    if (patterns.length === 0) return null;
+    return patterns.slice(0, 20).map((p) => ({
+      id: p.id,
+      name: p.name,
+      kind: p.kind,
+      route_pattern: p.route_pattern,
+      last_status: p.last_status,
+      last_run_count: p.last_run_count,
+    }));
+  } catch {
+    return null;
+  }
 }

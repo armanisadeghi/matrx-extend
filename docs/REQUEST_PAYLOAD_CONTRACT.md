@@ -217,6 +217,7 @@ exposes them by name automatically when present.
 | `domain_memo`             | Per-domain memo exists (via `remember_for_domain`).             |
 | `guidance`                | User-saved clues for the current domain.                        |
 | `prior_capture`           | URL has been captured before (Supabase row exists).             |
+| `saved_patterns_for_domain` | The user has saved extraction patterns (`wbx_pattern`) for this host. Compact list (≤20): `{id, name, kind, route_pattern, last_status, last_run_count}`. The agent runs one via `data_patterns({action:'run', pattern_id})` instead of re-scraping. |
 
 ### Rules (locked in CLAUDE.md)
 

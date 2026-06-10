@@ -28,6 +28,7 @@ import { browser_data_handlers } from '@/lib/tools/handlers/browser-data';
 import { canonical_handlers } from '@/lib/tools/handlers/canonical';
 import { canonical_merger_handlers } from '@/lib/tools/handlers/canonical-mergers';
 import { cdp_handlers } from '@/lib/tools/handlers/cdp';
+import { data_pattern_handlers } from '@/lib/tools/handlers/data-patterns';
 import { demo_handlers } from '@/lib/tools/handlers/demos';
 import { discover_handlers } from '@/lib/tools/handlers/discover';
 import { download_handlers } from '@/lib/tools/handlers/downloads';
@@ -121,6 +122,8 @@ const ALL: AnyToolHandler[] = [
   ...extras_handlers,
   // ─── structured-data extractor (shares modes with Showcase tab) ────────
   ...microdata_handlers,
+  // Saved extraction patterns (Showcase/Data cross-working)
+  ...data_pattern_handlers,
   // ─── URL fetch + parse → markdown (shares scrape pipeline) ─────────────
   ...fetch_handlers,
   // ─── canonical routers ─────────────────────────────────────────────────
