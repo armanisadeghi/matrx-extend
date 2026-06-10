@@ -216,9 +216,7 @@ doc and what aidream actually advertises for that agent. Either the
 agent's definition in aidream wasn't updated to opt into core, or the
 server-side discovery handler isn't reading the canonical groups.
 
-The companion audit document
-[.research/2026-05-04-canonical-migration-losses.md](../.research/2026-05-04-canonical-migration-losses.md)
-explicitly marks `read_active_page` as DROP (replaced by
+The canonical-migration audit (May 2026) explicitly marks `read_active_page` as DROP (replaced by
 `read_page(trigger_lazy_load:true)` + `get_page_text`) — confirming
 `get_page_text` is the intended primary content reader.
 
