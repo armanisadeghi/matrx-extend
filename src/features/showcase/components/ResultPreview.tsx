@@ -158,7 +158,9 @@ function JsonView({ rows, maxHeight }: { rows: Record<string, unknown>[]; maxHei
   const text = useMemo(() => {
     const capped = rows.length > JSON_VIEW_ROW_CAP;
     const body = JSON.stringify(capped ? rows.slice(0, JSON_VIEW_ROW_CAP) : rows, null, 2);
-    return capped ? `${body}\n\n…(+${rows.length - JSON_VIEW_ROW_CAP} more rows — use Copy for all)` : body;
+    return capped
+      ? `${body}\n\n…(+${rows.length - JSON_VIEW_ROW_CAP} more rows — use Copy for all)`
+      : body;
   }, [rows]);
   return (
     <pre

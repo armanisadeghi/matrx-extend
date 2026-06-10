@@ -61,7 +61,9 @@ export const frameworkDumpInPage = (): FrameworkDumpSource[] => {
     '__APOLLO_STATE__',
     '__SERVER_STATE__',
   ];
-  const inlineScripts = Array.from(document.querySelectorAll<HTMLScriptElement>('script:not([src])'));
+  const inlineScripts = Array.from(
+    document.querySelectorAll<HTMLScriptElement>('script:not([src])'),
+  );
   const extractWindow = (name: string): unknown | undefined => {
     const escName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const lhsRe = new RegExp(

@@ -1,6 +1,6 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
-import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -172,7 +172,9 @@ export function usePatternFromData() {
       setResult(parsed);
     } catch (e) {
       // Probe failure (restricted page, navigation) — surface, don't bless.
-      setError(`Could not verify the pattern on the page: ${e instanceof Error ? e.message : String(e)}`);
+      setError(
+        `Could not verify the pattern on the page: ${e instanceof Error ? e.message : String(e)}`,
+      );
     } finally {
       setRunning(false);
     }

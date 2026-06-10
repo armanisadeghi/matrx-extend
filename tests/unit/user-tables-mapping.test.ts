@@ -4,7 +4,6 @@
  * suffixes — otherwise rows silently lose columns or overwrite each other.
  */
 
-import { describe, expect, it } from 'vitest';
 import {
   buildFieldNameMap,
   inferDataType,
@@ -12,6 +11,7 @@ import {
   toSnakeCaseFieldName,
   unionRowKeys,
 } from '@/lib/supabase/user-tables';
+import { describe, expect, it } from 'vitest';
 
 describe('unionRowKeys', () => {
   it('collects keys across all rows in first-seen order', () => {

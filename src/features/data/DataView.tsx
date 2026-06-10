@@ -155,9 +155,7 @@ export function DataView() {
       if (err instanceof NetworkNoMatchError) {
         setError(err.message);
       } else {
-        setError(
-          `"${pattern.name}" failed: ${err instanceof Error ? err.message : String(err)}`,
-        );
+        setError(`"${pattern.name}" failed: ${err instanceof Error ? err.message : String(err)}`);
         void bumpPatternRun(pattern.id, 'broken', 0);
       }
     } finally {

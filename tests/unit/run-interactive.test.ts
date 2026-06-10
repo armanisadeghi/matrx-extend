@@ -2,12 +2,12 @@
  * Pure-helper tests for the interactive saved-pattern runners (audit X1/X2).
  */
 
-import { describe, expect, it } from 'vitest';
 import {
   matchesUrlFilter,
   parseAgentResponse,
   rowsFromBody,
 } from '@/lib/data-pattern/run-interactive';
+import { describe, expect, it } from 'vitest';
 
 describe('matchesUrlFilter', () => {
   it('substring-matches plain filters', () => {

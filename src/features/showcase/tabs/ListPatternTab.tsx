@@ -729,7 +729,9 @@ function CandidatesPanel({
  */
 function friendlyPickError(err: unknown): string {
   const msg = err instanceof Error ? err.message : String(err);
-  if (/cannot access|cannot be scripted|chrome:\/\/|extensions gallery|chrome web store/i.test(msg)) {
+  if (
+    /cannot access|cannot be scripted|chrome:\/\/|extensions gallery|chrome web store/i.test(msg)
+  ) {
     return "This page type doesn't allow picking (browser-internal pages, the Web Store, and PDFs are off-limits). Open a regular website and try again.";
   }
   return msg;

@@ -4,8 +4,8 @@
  * function against happy-dom documents.
  */
 
-import { beforeEach, describe, expect, it } from 'vitest';
 import { frameworkDumpInPage } from '@/lib/data-pattern/framework-dump';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 function addScript(content: string, attrs: Record<string, string> = {}): void {
   const s = document.createElement('script');

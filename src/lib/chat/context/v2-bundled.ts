@@ -25,8 +25,7 @@
 
 import { log } from '@/lib/debug/log';
 import { getPlan, listTasks, listUserTodos } from '@/lib/lists/storage';
-import {
-  fetchPatternsForDomain, lookupCapturedByUrl } from '@/lib/supabase/queries';
+import { fetchPatternsForDomain, lookupCapturedByUrl } from '@/lib/supabase/queries';
 import { prewarmReadPageCache } from '@/lib/tools/handlers/page-refs';
 import { useSettingsStore } from '@/state/settings';
 import { checkAuthState } from './check-auth-state';
@@ -188,18 +187,7 @@ export async function buildContextV2Bundled(
           url ? getGuidanceForUrl(url) : Promise.resolve(null),
           url ? getSavedPatternsForUrl(url) : Promise.resolve(null),
         ])
-      : Promise.resolve([
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-        ] as const);
+      : Promise.resolve([null, null, null, null, null, null, null, null, null, null] as const);
   const [
     probe,
     forms,

@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
-import { Input } from '@/components/ui/input';
 import {
   type ExtractionPattern,
   bumpPatternRun,
@@ -274,11 +274,7 @@ function PatternRow({
                 className="size-6 shrink-0"
                 title="Save name"
               >
-                {busy ? (
-                  <Loader2 className="size-3 animate-spin" />
-                ) : (
-                  <Check className="size-3" />
-                )}
+                {busy ? <Loader2 className="size-3 animate-spin" /> : <Check className="size-3" />}
               </Button>
               <Button
                 size="icon"

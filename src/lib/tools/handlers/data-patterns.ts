@@ -206,9 +206,7 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
 
     if (args.action === 'delete') {
       const ok = await deletePattern(args.pattern_id as string);
-      return ok
-        ? { ok: true, deleted: args.pattern_id }
-        : { ok: false, reason: 'Delete failed.' };
+      return ok ? { ok: true, deleted: args.pattern_id } : { ok: false, reason: 'Delete failed.' };
     }
 
     return { ok: false, reason: `Unknown action: ${args.action as string}` };

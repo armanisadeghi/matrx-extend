@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { type PageDiagnostic, pageDiagnosticInPage } from '@/lib/data-pattern/page-diagnostic';
-import { type ShowcaseSubTab, useShowcaseTabStore } from '@/state/showcase-tab';
 import { cn } from '@/lib/utils';
+import { type ShowcaseSubTab, useShowcaseTabStore } from '@/state/showcase-tab';
 import { CheckCircle2, Loader2, Stethoscope, XCircle } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

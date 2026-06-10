@@ -6,8 +6,8 @@
  * The user can then save it as a wbx_pattern (or tweak first).
  */
 
-import { PATTERN_KINDS, type PatternKind } from '@/lib/supabase/queries';
 import { getSupabase } from '@/lib/supabase/client';
+import { PATTERN_KINDS, type PatternKind } from '@/lib/supabase/queries';
 import { z } from 'zod';
 
 export interface Recipe {

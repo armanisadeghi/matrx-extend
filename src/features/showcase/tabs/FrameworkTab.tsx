@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { JsonTree } from '@/components/ui/json-tree';
 import { useActiveTab } from '@/hooks/use-active-tab';
-import { frameworkDumpInPage } from '@/lib/data-pattern/framework-dump';
 import { useExtraction } from '@/hooks/use-extraction';
+import { frameworkDumpInPage } from '@/lib/data-pattern/framework-dump';
 import { Loader2, PlayCircle, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
