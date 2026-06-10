@@ -12,9 +12,14 @@ build/
 /build
 *.tsbuildinfo
 
-# Generated
-types/python-generated/
+# Generated — but stream-events.ts is checked in as a vendored fallback so a
+# clean checkout (and CI) can typecheck + build without the aidream sibling.
+# `pnpm update-api-types` regenerates it; commit the diff when it changes.
+# NOTE: use `dir/*` (not `dir/`) so the un-ignore exceptions below can work —
+# git cannot re-include files inside a fully-ignored directory.
+types/python-generated/*
 !types/python-generated/.gitkeep
+!types/python-generated/stream-events.ts
 
 # IDE
 .vscode/

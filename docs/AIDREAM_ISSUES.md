@@ -191,3 +191,41 @@ When they fix Bug 2, re-test from a real chat session:
 4. Agent continues with the answer.
 
 If the agent calls `ask_user` instead of `user`, Bug 2 is still live.
+
+---
+
+## From the 2026-06-10 full-repo audit (see docs/AUDIT_2026_06_10.md)
+
+### 1. RLS disabled on shared platform tables the extension touches with the anon key — P1
+Runtime-verified via Supabase security advisors on `txzxabzwovsujtloxrus`:
+
+- `tool_def`, `tool_binding`, `tool_executor`, `tool_surface_defaults`,
+  `tool_bundle`, `tool_bundle_member` — **RLS disabled**. The extension reads
+  `tool_def` live with the publishable key (committed in its `.env` files),
+  so the tool registry is anon-readable — and unless write GRANTs are revoked
+  for `anon`, anon-WRITABLE. Tool descriptions/tiers shown to users on
+  approval cards come from here.
+- `cx_user_usage_summary` — **RLS disabled**, and `guest_executions` /
+  `guest_execution_log` have **always-true policies**. A guest holding the
+  public anon key can read (and possibly tamper with) the rolling-usage
+  summary that guest rate limits are designed to read. Latent today (no 429
+  enforcement is wired yet) but the data surface is open now.
+- `cx_pending_injection`, `cx_request_snapshot` — RLS disabled; these carry
+  user message content.
+
+Ask: enable owner/role RLS (or at minimum revoke anon write) on these tables.
+
+### 2. `create_agent_task` RPC for atomic agenda task creation — P2
+`createTask` in matrx-extend (`src/lib/agenda/queries.ts`) is three sequential
+inserts (`sch_task` → `sch_agent_task` → `sch_trigger`) with best-effort,
+unchecked cleanup. A failure between inserts leaves an orphaned trigger-less
+`sch_task`, which then poisons the per-minute scanner. The code already
+documents the right fix: a single Postgres RPC doing all three in one
+transaction. Extension-side guards have been added, but the RPC is the real
+fix.
+
+### 3. `sch_run_unique_active_per_task` index missing from the shared migration record — P3
+The index EXISTS in the live DB (verified) but is absent from
+matrx-extend's `migrations/2026_05_10_sch_v0.sql`. Wherever it was applied
+from, please make sure it's in a tracked migration so a DB rebuild doesn't
+silently lose double-run protection.
