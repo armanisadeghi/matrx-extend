@@ -58,3 +58,11 @@ All three tables enable RLS with a single owner-only policy: `user_id = auth.uid
 - `agx_agent` — agent definitions for the Chat tab's agent picker
 - `cx_conversation`, `cx_message` — conversation history for the Chat tab
 - `rs_*` — research data, accessed via FastAPI endpoints (`/research/*`), not direct Supabase queries
+
+> **2026-06-10 audit notes:** `2026_05_20_wbx_highlight.sql` (order 8) is
+> missing from the table above — nine tables now enable RLS, not three.
+> Also: the live DB carries a partial unique index
+> `sch_run_unique_active_per_task` (one active run per task) that was
+> applied out-of-band and is NOT in `2026_05_10_sch_v0.sql` — tracked with
+> the aidream team in docs/AIDREAM_ISSUES.md so a DB rebuild doesn't lose
+> double-run protection.

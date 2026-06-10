@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-10T00:19:12.116Z",
+  "generated_at": "2026-06-10T14:02:03.545Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -7433,7 +7433,7 @@
       "required_optional_permissions": [
         "cookies"
       ],
-      "admin_only": false,
+      "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
       ],
@@ -7471,7 +7471,7 @@
       },
       "required_permissions": [],
       "required_optional_permissions": [],
-      "admin_only": false,
+      "admin_only": true,
       "surface_bundles": [
         "pilot",
         "pilot+privileged"
@@ -7808,7 +7808,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
-      "admin_only": false,
+      "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
       ],
@@ -7864,7 +7864,7 @@
       "required_optional_permissions": [
         "debugger"
       ],
-      "admin_only": false,
+      "admin_only": true,
       "surface_bundles": [
         "pilot+privileged"
       ],

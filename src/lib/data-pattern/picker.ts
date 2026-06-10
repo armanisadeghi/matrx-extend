@@ -27,7 +27,7 @@ export function mountPicker(): void {
   host.id = HOST_ID;
   host.style.cssText =
     'all: initial; position: fixed; z-index: 2147483647; inset: 0; pointer-events: none;';
-  shadow = host.attachShadow({ mode: 'open' });
+  shadow = host.attachShadow({ mode: 'closed' }) /* closed: page can't reach in (audit P3-15) */;
   document.documentElement.appendChild(host);
 
   shadow.innerHTML = `

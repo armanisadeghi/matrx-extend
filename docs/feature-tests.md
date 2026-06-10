@@ -1271,6 +1271,32 @@ Every entry follows this shape:
     (no duplicate ghost bubbles; SW log shows others "another hook instance
     owns the resume").
 
+### Privacy toggle — page identity & email context
+- **What it does:** Settings → Privacy → "Share page identity & email
+  content" (default ON) gates the `auth_state` and Gmail
+  `email_inbox`/`email_thread` context keys.
+- **Where to test:** Settings tab + Debug tab (context inspector) or server
+  request logs.
+- **Steps:**
+  1. On GitHub while signed in, send a chat message — context includes
+     `auth_state` with your visible username.
+  2. Turn the toggle OFF, send again.
+- **Expected:** `auth_state`/email keys absent from the request; the
+  detectors don't run (no executeScript for them). Password inputs NEVER
+  appear in `form_elements.current_value` regardless of the toggle.
+
+### Mic auto-stop when the panel closes
+- **What it does:** the offscreen recorder stops ~5s after the last
+  recording surface disappears; pause now disables the audio track.
+- **Where to test:** Chat composer mic button.
+- **Steps:**
+  1. Start recording, then close the side panel entirely.
+  2. Watch the OS/browser mic indicator.
+- **Expected:** indicator goes off within ~5 seconds. Reopening within the
+  grace window (quick toggle) keeps the recording alive. While PAUSED, no
+  audio is captured. Guests see "Sign in to use voice input" instead of a
+  recording that fails at transcription.
+
 ## Template (copy when adding a new entry)
 
 ```markdown

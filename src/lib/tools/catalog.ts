@@ -229,19 +229,10 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   // discovery tools
   list_browser_tools: [],
   list_core_tools: [],
-  list_page_tools: [],
-  list_interact_tools: [],
-  list_forms_tools: [],
   list_tabs_tools: [],
-  list_history_tools: [],
   list_ai_tools: [],
-  list_files_tools: [],
   list_memory_tools: [],
-  list_ask_tools: [],
-  list_advanced_tools: [],
   list_demos_tools: [],
-  list_debug_tools: [],
-  list_cookies_tools: [],
   list_webmcp_tools: [],
 
   // batching

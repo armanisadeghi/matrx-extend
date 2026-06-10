@@ -195,31 +195,22 @@
 
 ### Tool categories (the discovery system)
 
-166 tools are registered across **16 categories**. The agent only sees
-core upfront; everything else is on demand. Counts are live as of
-2026-05-06 (regenerate with `pnpm catalog:tools:md`):
+> **2026-06-10 audit correction:** the table that used to live here listed
+> the RETIRED 16-category taxonomy (`page`, `interact`, `forms`, `history`,
+> `files`, `ask`, `advanced`, `debug`, `cookies`, …) and tool counts that no
+> longer matched code — it predated the 2026-05-19 redesign described at the
+> top of this file. The authoritative taxonomy is the **14 categories** in
+> [src/lib/tools/categories.ts](./src/lib/tools/categories.ts) (`core`,
+> `reading`, `interaction`, `tabs`, `capture`, `chrome`, `human`, `memory`,
+> `ai`, `demos`, `guidance`, `devtools`, `webmcp`, `desktop`); the live tool
+> roster is `pnpm catalog:tools:md` →
+> [types/tool-catalog.md](./types/tool-catalog.md). The registry currently
+> holds ~169 handlers; the advertised surface is `CANONICAL_SURFACE`
+> (~95 names). Don't re-add a hand-maintained table here — it drifts.
 
-| category | tools | list-tool | always-on? |
-|---|---:|---|---|
-| `core` | 13 | `list_core_tools` | ✅ |
-| `page` | 16 | `list_page_tools` | – |
-| `interact` | 9 | `list_interact_tools` | – |
-| `forms` | 6 | `list_forms_tools` | – |
-| `tabs` | 22 | `list_tabs_tools` | – |
-| `history` | 10 | `list_history_tools` | – |
-| `ai` | 10 | `list_ai_tools` | – |
-| `files` | 11 | `list_files_tools` | – |
-| `memory` | 6 | `list_memory_tools` | – |
-| `ask` | 4 | `list_ask_tools` | – |
-| `advanced` | 22 | `list_advanced_tools` | – (privileged) |
-| `demos` | 5 | `list_demos_tools` | – |
-| `guidance` | 4 | `list_guidance_tools` | – |
-| `debug` | 22 | `list_debug_tools` | – (admin + CDP / system) |
-| `cookies` | 4 | `list_cookies_tools` | – (admin) |
-| `webmcp` | 4 | `list_webmcp_tools` | – (admin) |
-
-The discovery tools themselves (`list_browser_tools`, `list_<cat>_tools`)
-are also always-on so the agent can ask for any category by name.
+The agent only sees the always-on discovery surface upfront; everything
+else loads on demand via `load_browser_tools({category})` (server-side
+discovery handler).
 
 ### Tool list
 

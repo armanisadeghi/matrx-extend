@@ -133,8 +133,25 @@ const ALL: AnyToolHandler[] = [
   ...canonical_merger_handlers,
 ] as AnyToolHandler[];
 
+/**
+ * Names where last-write-wins shadowing is INTENTIONAL — a canonical router
+ * deliberately replaces a legacy handler of the same name. Anything else
+ * colliding is a bug (two handlers accidentally sharing a name silently
+ * dropped one with zero signal — audit P3-10).
+ */
+const INTENTIONAL_SHADOWS = new Set(['wait_for']);
+
 const BY_NAME = new Map<string, AnyToolHandler>();
-for (const t of ALL) BY_NAME.set(t.name, t);
+for (const t of ALL) {
+  if (BY_NAME.has(t.name) && !INTENTIONAL_SHADOWS.has(t.name)) {
+    // Warn loudly — don't throw; a broken registry at SW boot is worse
+    // than a shadowed tool.
+    console.warn(
+      `[matrx-extend] duplicate tool name '${t.name}' in registry — later registration wins`,
+    );
+  }
+  BY_NAME.set(t.name, t);
+}
 
 export function lookup(name: string): AnyToolHandler | undefined {
   return BY_NAME.get(name);
