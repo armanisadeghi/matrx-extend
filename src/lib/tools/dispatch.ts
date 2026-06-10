@@ -28,6 +28,7 @@
 import { postToolResults } from '@/lib/api/routes/tool-results';
 import { appendReceipt } from '@/lib/audit/log';
 import { PENDING_OUTPUT, type ReceiptOrigin, buildReceipt } from '@/lib/audit/receipt';
+import { readIsAdminFromStorage } from '@/lib/auth/is-admin';
 import { BROWSER, isBrowserSupported } from '@/lib/browser/detect';
 import { log } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
@@ -39,9 +40,11 @@ import { allToolNames, lookup as lookupTool } from '@/lib/tools/registry';
 import { suggestSimilar } from '@/lib/tools/suggest';
 import type {
   AnyToolHandler,
+  ConfirmInitiator,
   ConfirmResponse,
   PendingConfirmRequest,
   ToolContext,
+  ToolTier,
 } from '@/lib/tools/types';
 import { getPilotSessionSnapshot } from '@/state/pilot';
 
@@ -130,6 +133,30 @@ interface DispatchOptions {
 const CONTINUE_SUPPRESS_TTL_MS = 10_000;
 const recentContinueBroadcasts = new Map<string, number>();
 
+/**
+ * Duplicate-delivery guard for `tool_delegated` events. The server can
+ * retransmit a delegation (stream retry, the parallel-continuation race
+ * documented above), and before this guard each duplicate spawned an
+ * independent `handleCall` — a DOUBLE EXECUTION for mutating tools, and a
+ * single user "Allow" click resolved every pending confirm sharing the
+ * callId. Keyed by `${runId}:${callId}`; bounded FIFO so a long-lived SW
+ * can't grow it forever (Set iteration order = insertion order).
+ */
+const DISPATCHED_CALLS_MAX = 500;
+const dispatchedCalls = new Set<string>();
+
+/** Returns true exactly once per (runId, callId); false for replays. */
+function markDispatched(runId: string, callId: string): boolean {
+  const key = `${runId}:${callId}`;
+  if (dispatchedCalls.has(key)) return false;
+  dispatchedCalls.add(key);
+  if (dispatchedCalls.size > DISPATCHED_CALLS_MAX) {
+    const oldest = dispatchedCalls.values().next().value;
+    if (oldest !== undefined) dispatchedCalls.delete(oldest);
+  }
+  return true;
+}
+
 let started = false;
 
 export function startToolDispatcher(opts: DispatchOptions): void {
@@ -199,6 +226,17 @@ export function startToolDispatcher(opts: DispatchOptions): void {
       const wireName = String(data.tool_name ?? '');
       const toolArgs = ((data.data as { arguments?: unknown })?.arguments ?? {}) as unknown;
       if (!callId || !wireName) return { ack: true };
+
+      // Duplicate-delivery guard — a retransmitted tool_delegated for a
+      // call we already dispatched must not run the handler a second time.
+      if (!markDispatched(chunk.runId, callId)) {
+        log.warn('sw', `duplicate tool_delegated suppressed`, {
+          runId: chunk.runId,
+          callId,
+          tool: wireName,
+        });
+        return { ack: true };
+      }
 
       const handler = lookupTool(wireName);
       const resolvedName = wireName;
@@ -285,28 +323,59 @@ export function startToolDispatcher(opts: DispatchOptions): void {
 async function enforcePilotGroupScope(
   handler: AnyToolHandler,
   ctx: ToolContext,
+  parsedArgs: unknown,
+  effectiveTier: ToolTier,
 ): Promise<string | null> {
   const session = getPilotSessionSnapshot();
   if (!session.active || session.groupId == null) return null;
-  // Resolve the effective tier (mega-tool routers use tierFor on the parsed
-  // args, but we don't have those here yet — fall back to the catalog tier
-  // so the gate is conservative).
-  if (handler.tier === 'read' || handler.tier === 'ask-user') return null;
-  // No tab assigned → tools that don't touch tabs (e.g. desktop_run_command,
-  // `user`) shouldn't be blocked by the group constraint. Action tools that
-  // genuinely target a tab will have one set by recordAssignedTab.
-  const tabId = ctx.assignedTabId;
-  if (tabId == null) return null;
-  let tab: chrome.tabs.Tab;
-  try {
-    tab = await chrome.tabs.get(tabId);
-  } catch {
-    return `pilot_group_violation: tab ${tabId} no longer exists; the Pilot session may have closed it. Start a new session or pick another tab inside the group.`;
-  }
-  if (tab.groupId !== session.groupId) {
-    return `pilot_group_violation: tab ${tabId} is not part of the active Pilot session group (${session.groupId}). Pilot tools may only act on tabs inside the session's tab group.`;
+  // The dispatcher resolves `tierFor(parsedArgs)` before calling us, so a
+  // mega-tool router's read-only sub-action passes while its mutating
+  // sub-actions are checked — and a hypothetical read-catalog router with a
+  // mutating sub-action is still caught.
+  if (effectiveTier === 'read' || effectiveTier === 'ask-user') return null;
+  // Tabs can be targeted two ways: the run's pinned `assignedTabId`, and an
+  // explicit `tab_id` / `tab_ids` argument (CDP tools, the `tabs` router,
+  // execute_javascript, …). Before 2026-06-10 only the former was checked,
+  // so an explicit out-of-group tab_id sailed through the sandbox — see
+  // docs/AUDIT_2026_06_10.md P1-7. Validate every candidate.
+  const candidates = new Set<number>();
+  if (ctx.assignedTabId != null) candidates.add(ctx.assignedTabId);
+  for (const id of extractTabIdArgs(parsedArgs)) candidates.add(id);
+  // No tab targeted → tools that don't touch tabs (e.g. desktop_run_command,
+  // `user`) shouldn't be blocked by the group constraint.
+  if (candidates.size === 0) return null;
+  for (const tabId of candidates) {
+    let tab: chrome.tabs.Tab;
+    try {
+      tab = await chrome.tabs.get(tabId);
+    } catch {
+      return `pilot_group_violation: tab ${tabId} no longer exists; the Pilot session may have closed it. Start a new session or pick another tab inside the group.`;
+    }
+    if (tab.groupId !== session.groupId) {
+      return `pilot_group_violation: tab ${tabId} is not part of the active Pilot session group (${session.groupId}). Pilot tools may only act on tabs inside the session's tab group.`;
+    }
   }
   return null;
+}
+
+/**
+ * Pull explicit tab targets out of a tool's parsed args. Recognizes the two
+ * arg conventions used across the registry: a scalar `tab_id` and an array
+ * `tab_ids`. (parallel_for_each_tab also validates its own `tab_ids`
+ * up-front to avoid spawning N children just to fail — this is the
+ * defense-in-depth backstop.)
+ */
+function extractTabIdArgs(args: unknown): number[] {
+  if (!args || typeof args !== 'object') return [];
+  const a = args as Record<string, unknown>;
+  const out: number[] = [];
+  if (typeof a.tab_id === 'number' && Number.isFinite(a.tab_id)) out.push(a.tab_id);
+  if (Array.isArray(a.tab_ids)) {
+    for (const t of a.tab_ids) {
+      if (typeof t === 'number' && Number.isFinite(t)) out.push(t);
+    }
+  }
+  return out;
 }
 
 /**
@@ -426,6 +495,23 @@ async function handleCall(
     return fail(`args failed schema: ${JSON.stringify(parsed.error.format())}`);
   }
 
+  // Admin gate — enforced at EXECUTION time, not just advertisement time.
+  // Advertisement filtering (`visible()` in registry.ts + the server-side
+  // discovery handler reading the self-reported `is_admin`) decides what the
+  // model SEES; this gate decides what actually RUNS. Without it, a server
+  // bug / stale toolset / confused agent delegating an admin tool to a
+  // non-admin would execute it — the client both computed and self-reported
+  // its own admin status with no local backstop. Fail-closed: storage errors
+  // read as not-admin. See docs/AUDIT_2026_06_10.md P0-2.
+  if (handler.admin_only) {
+    const isAdmin = await readIsAdminFromStorage();
+    if (!isAdmin) {
+      return fail(
+        `admin_only: tool '${handler.name}' is restricted to admin accounts and cannot run for this user.`,
+      );
+    }
+  }
+
   // Browser-support gate. Defense-in-depth — registry filters already drop
   // unsupported tools from advertised bundles, but if a stale catalog ever
   // re-advertises (e.g. after a server-side cache lag), reject cleanly here
@@ -458,6 +544,13 @@ async function handleCall(
     }
   }
 
+  // Effective tier — mega-tool routers (computer, tabs, …) declare a
+  // `tierFor(args)` so a `screenshot` sub-action can be 'read' while
+  // `left_click` stays 'action' under the same tool name. Resolved BEFORE
+  // the pilot gate so both the sandbox and the confirm card see the tier
+  // of THIS call, not the catalog default.
+  const effectiveTier = handler.tierFor ? handler.tierFor(parsed.data as never) : handler.tier;
+
   // Pilot group sandbox (roadmap item #9). When a Pilot session is active
   // every action-tier (or privileged) tool MUST target a tab that lives
   // inside the session's tab group. The Pilot surface advertises the full
@@ -467,19 +560,19 @@ async function handleCall(
   // Read-tier tools are allowed everywhere — they don't mutate state, and
   // restricting them would block introspection (e.g. the agent reading a
   // reference page outside the group to inform an action inside it).
-  const pilotErr = await enforcePilotGroupScope(handler, ctx);
+  const pilotErr = await enforcePilotGroupScope(handler, ctx, parsed.data, effectiveTier);
   if (pilotErr) {
     return fail(pilotErr);
   }
 
-  // Permission gate. Mega-tool routers (computer, tabs, …) declare a
-  // `tierFor(args)` so a `screenshot` sub-action can be 'read' while
-  // `left_click` stays 'action' under the same tool name.
-  const effectiveTier = handler.tierFor ? handler.tierFor(parsed.data as never) : handler.tier;
+  // Permission gate.
   const needsConfirm =
     effectiveTier === 'privileged' || (effectiveTier === 'action' && ctx.permissionMode === 'ask');
   if (needsConfirm) {
-    const allowed = await requestConfirmation(handler, parsed.data, ctx, meta);
+    const allowed = await requestConfirmation(handler, parsed.data, ctx, meta, {
+      effectiveTier,
+      initiator: 'agent',
+    });
     if (!allowed.allow) {
       return fail(allowed.reason ?? 'User denied this action');
     }
@@ -682,14 +775,24 @@ function requestConfirmation(
   args: unknown,
   ctx: ToolContext,
   meta: RunMeta | undefined,
+  opts: { effectiveTier: ToolTier; initiator: ConfirmInitiator },
 ): Promise<ConfirmResult> {
   // Auto-allow if user has trusted this domain for the conversation.
   // (Domain trust is opportunistic — only meaningful if args has a `url`.)
+  //
+  // NEVER for privileged calls: "privileged always confirms, even in Act
+  // mode" is the contract (types.ts ToolTier docs), and the approval card
+  // deliberately hides the remember-checkbox for privileged tools — but the
+  // trust set is shared per-conversation across tiers, so an action-tier
+  // approval on host X used to silently auto-allow a LATER privileged call
+  // carrying the same host (e.g. chrome_cookies set). The trust shortcut is
+  // also agent-path only: external initiators (page / frontend / desktop)
+  // must always face the card. See docs/AUDIT_2026_06_10.md P1-24.
   const url =
     typeof (args as { url?: unknown })?.url === 'string'
       ? ((args as { url?: string }).url as string)
       : null;
-  if (url && meta) {
+  if (url && meta && opts.effectiveTier !== 'privileged' && opts.initiator === 'agent') {
     try {
       const host = new URL(url).host;
       if (meta.trustedThisConversation.has(host)) {
@@ -737,7 +840,10 @@ function requestConfirmation(
       // cache warms, in which case the card falls back to name + args. (Rule 4.)
       description: getToolDescription(handler.name),
       args,
-      tier: handler.tier,
+      // The tier of THIS call (tierFor-resolved) so a privileged sub-action
+      // of an action-catalog router renders its privileged badge.
+      tier: opts.effectiveTier,
+      initiator: opts.initiator,
     };
     broadcast(CHANNELS.TOOL_CONFIRM_REQUEST, req);
   });
@@ -756,24 +862,32 @@ interface WebmcpCallResponse {
 }
 
 /**
- * Handle a WebMCP page → SW tool call. Looks up the registered handler,
- * validates args, runs it through the same permission gate the
- * server-driven path uses, and returns a structured response.
+ * Handle an EXTERNAL tool call — a WebMCP page bridge, the aimatrx.com
+ * frontend RPC, or the matrx-local desktop engine's reverse invoke. Looks up
+ * the registered handler, validates args, runs it through the permission
+ * gates, and returns a structured response.
  *
- * Restrictions vs. the streaming dispatcher:
- *   - Only `read` and `action` tier tools are callable from a page. Other
- *     tiers (`ask-user`, `privileged`) are refused with a structured error,
- *     since the page has no UX surface for the inline approval cards.
- *   - Confirmation prompts in `ask` mode still use the same TOOL_CONFIRM
- *     channel — the chat sidepanel renders them. If no sidepanel is open,
- *     the confirmation times out after 5 minutes (matches the existing
- *     dispatcher behaviour).
+ * Restrictions vs. the streaming dispatcher (this path is STRICTER — the
+ * caller is not the user's own agent):
+ *   - Only `read` and `action` tier tools are callable. `ask-user` /
+ *     `privileged` are refused with a structured error, since the external
+ *     caller has no UX surface for the inline approval cards.
+ *   - `admin_only` tools require the cached admin flag — the page can't
+ *     bypass advertisement filtering by posting the tool name directly.
+ *   - Action-tier calls ALWAYS require user confirmation, regardless of the
+ *     user's ask/act permission mode. Act-mode is the user's grant to their
+ *     OWN agent, not to arbitrary external callers — without this, any
+ *     allow-listed page could silently drive navigate/click/type/download
+ *     the moment the user prefers Act mode. The card labels the initiator.
+ *     If no sidepanel is open, the confirmation times out (fail-closed)
+ *     after 5 minutes, matching the dispatcher behaviour.
  */
 export async function handleWebmcpCall(
   payload: WebmcpCallPayload,
-  opts: { permissionMode: 'ask' | 'act' },
+  opts: { permissionMode: 'ask' | 'act'; initiator?: ConfirmInitiator },
 ): Promise<WebmcpCallResponse> {
   const { callId, toolName, args } = payload;
+  const initiator: ConfirmInitiator = opts.initiator ?? 'page';
   if (!callId || !toolName) {
     return { ok: false, error: 'webmcp: missing callId or toolName' };
   }
@@ -788,6 +902,20 @@ export async function handleWebmcpCall(
       ok: false,
       error: `webmcp: tool '${toolName}' is ${handler.tier}-tier and not callable from a page`,
     };
+  }
+
+  // Execution-time admin gate. Advertisement filtering on
+  // `navigator.modelContext` only controls what the page is TOLD about; a
+  // hostile page can post any registered tool name directly. Same
+  // fail-closed source of truth as the streaming dispatcher's gate.
+  if (handler.admin_only) {
+    const isAdmin = await readIsAdminFromStorage();
+    if (!isAdmin) {
+      return {
+        ok: false,
+        error: `webmcp: tool '${toolName}' is admin-only and cannot be invoked externally for this user`,
+      };
+    }
   }
 
   const parsed = handler.argsSchema.safeParse(args);
@@ -819,9 +947,14 @@ export async function handleWebmcpCall(
     assignedTabId: null,
   };
 
+  // External action calls ALWAYS confirm — the user's act-mode preference
+  // applies to their own agent, never to a page/frontend/desktop caller.
   const effectiveTier = handler.tierFor ? handler.tierFor(parsed.data as never) : handler.tier;
-  if (effectiveTier === 'action' && opts.permissionMode === 'ask') {
-    const allowed = await requestConfirmation(handler, parsed.data, ctx, undefined);
+  if (effectiveTier === 'action') {
+    const allowed = await requestConfirmation(handler, parsed.data, ctx, undefined, {
+      effectiveTier,
+      initiator,
+    });
     if (!allowed.allow) {
       return { ok: false, error: allowed.reason ?? 'User denied this action' };
     }

@@ -431,7 +431,7 @@ function registerHandlers(): void {
       return { ok: false, error: 'webmcp: origin not allowed' };
     }
     const mode = await readDefaultPermissionMode();
-    return handleWebmcpCall(payload, { permissionMode: mode });
+    return handleWebmcpCall(payload, { permissionMode: mode, initiator: 'page' });
   });
 }
 
@@ -615,7 +615,10 @@ async function handleExtensionInvoke(p: Record<string, unknown>): Promise<void> 
     return;
   }
   const permissionMode = await readDefaultPermissionMode();
-  const result = await handleWebmcpCall({ callId, toolName, args }, { permissionMode });
+  const result = await handleWebmcpCall(
+    { callId, toolName, args },
+    { permissionMode, initiator: 'desktop' },
+  );
   // Wire result back to the engine.
   const wireFrame = result.ok
     ? { type: 'extension.result', callId, ok: true, result: result.result }

@@ -1209,6 +1209,47 @@ Every entry follows this shape:
 - **Edge cases worth poking:** A tab opened before the extension installed
   (auto-inject + retry), an SPA mid-hydration.
 
+### Execution-time admin_only gate (dispatcher + WebMCP)
+- **What it does:** Admin-only tools are now refused at EXECUTION time for
+  non-admins, on both the streaming dispatcher and every external path
+  (WebMCP page bridge, frontend RPC, desktop reverse-invoke) — previously
+  only advertisement was filtered.
+- **Where to test:** Tools tab as a NON-admin account (or sign out → guest).
+- **Steps:**
+  1. As a non-admin, force-run an admin tool (e.g. `get_system_info` or
+     `chrome_cookies` with `{"action":"get"}`) via the Tools tab Run button
+     or by having a test page post a `__matrx_webmcp_call` for it.
+  2. As an admin, run the same tool.
+- **Expected:** Non-admin gets a structured `admin_only:` /
+  `webmcp: ... admin-only` error, never an execution. Admin path unchanged.
+- **Edge cases worth poking:**
+  - Fresh install before any sign-in (no cached flag) → treated as non-admin.
+  - The four mega-routers (`chrome_cookies`, `chrome_webmcp`, `cdp_session`,
+    `cdp_emulate`) now carry admin_only and disappear from non-admin surfaces.
+
+### External-caller confirmation (page / frontend / desktop)
+- **What it does:** Action-tier tool calls that originate OUTSIDE the agent
+  (WebMCP page bridge, aimatrx.com RPC, matrx-local) now ALWAYS show the
+  approval card — even in "Act without asking" mode — with a red banner
+  naming the initiator.
+- **Where to test:** A WebMCP-enabled allow-listed page + the chat sidepanel.
+- **Steps:**
+  1. Set permission mode to "Act without asking".
+  2. From the allow-listed page, invoke an action tool (e.g. `navigate`)
+     through `navigator.modelContext` / the bridge.
+  3. Observe the sidepanel.
+- **Expected:** An approval card appears with the rose "Requested by the web
+  page you have open — NOT by your agent" banner; the remember-for-this-chat
+  checkbox is absent (domain trust never applies to external callers). Deny
+  returns a structured error to the page.
+- **Edge cases worth poking:**
+  - Privileged tool from the page → refused outright (no card).
+  - Duplicate `tool_delegated` replays of the same call_id → second is
+    suppressed (SW log: "duplicate tool_delegated suppressed").
+  - A privileged call whose args carry a URL the user trust-remembered
+    earlier in the chat → still shows the card (trust shortcut no longer
+    applies to privileged).
+
 ## Template (copy when adding a new entry)
 
 ```markdown

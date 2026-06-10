@@ -23,6 +23,7 @@
  */
 
 import { log } from '@/lib/debug/log';
+import { readIsAdminFromStorage } from '@/lib/auth/is-admin';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
 import { readDefaultPermissionMode } from '@/lib/settings/persisted';
 import { ensureToolDescriptions } from '@/lib/tools/descriptions';
@@ -146,8 +147,12 @@ async function actionCapabilities(
   // Public capability surface: read + action only. Privileged + ask-user
   // are intentionally excluded — privileged shouldn't be advertised to
   // any external surface, and ask-user requires the side panel UI.
+  // Admin-only tools are filtered for non-admins (the execution gate in
+  // handleWebmcpCall enforces this regardless; the filter just keeps the
+  // advertisement honest).
+  const isAdmin = await readIsAdminFromStorage();
   const handlers = listAllHandlers().filter(
-    (h) => h.tier === 'read' || h.tier === 'action',
+    (h) => (h.tier === 'read' || h.tier === 'action') && (isAdmin || !h.admin_only),
   );
   // Descriptions live ONLY in the DB (Rule 4) — read them live, never hardcoded.
   const descs = await ensureToolDescriptions();
@@ -245,7 +250,7 @@ async function actionCallTool(
   const callId = `frontend-${requestId}`;
   const wrapped = await handleWebmcpCall(
     { callId, toolName, args },
-    { permissionMode },
+    { permissionMode, initiator: 'frontend' },
   );
 
   if (wrapped.ok) {

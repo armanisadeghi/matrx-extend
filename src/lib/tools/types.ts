@@ -172,8 +172,23 @@ export interface PendingConfirmRequest {
   description?: string;
   /** Args the agent supplied — surfaced verbatim so the user sees what's about to happen. */
   args: unknown;
+  /**
+   * Effective tier for THIS call (mega-tool routers resolve `tierFor(args)`,
+   * so a privileged sub-action renders as privileged even when the catalog
+   * tier is 'action').
+   */
   tier: ToolTier;
+  /**
+   * Who initiated this call. 'agent' (default, the streaming dispatcher) is
+   * the user's own AI agent mid-conversation. Anything else is an EXTERNAL
+   * caller — a web page (WebMCP bridge), the aimatrx.com frontend RPC, or
+   * the matrx-local desktop engine — and the approval card must say so
+   * prominently: the user otherwise assumes their agent asked.
+   */
+  initiator?: ConfirmInitiator;
 }
+
+export type ConfirmInitiator = 'agent' | 'page' | 'frontend' | 'desktop';
 
 export interface ConfirmResponse {
   callId: string;

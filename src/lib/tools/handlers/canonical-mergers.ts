@@ -211,6 +211,10 @@ type CookiesArgs = z.infer<typeof CookiesArgs>;
 
 export const cookies: ToolHandler<CookiesArgs, unknown> = {
   name: 'chrome_cookies',
+  // Matches the wrapped granular handlers + the admin-only category — the
+  // router itself must carry the flag or it's advertised to (and pre-P0-2,
+  // executable by) non-admins. docs/AUDIT_2026_06_10.md P0-3.
+  admin_only: true,
   tier: 'privileged',
   tierFor: (args): ToolTier => (args.action === 'get' ? 'read' : 'privileged'),
   required_optional_permissions: ['cookies'],
@@ -263,6 +267,10 @@ type WebmcpArgs = z.infer<typeof WebmcpArgs>;
 
 export const webmcp: ToolHandler<WebmcpArgs, unknown> = {
   name: 'chrome_webmcp',
+  // Matches the wrapped granular handlers + the admin-only category — the
+  // router itself must carry the flag or it's advertised to (and pre-P0-2,
+  // executable by) non-admins. docs/AUDIT_2026_06_10.md P0-3.
+  admin_only: true,
   tier: 'action',
   tierFor: (args): ToolTier =>
     args.action === 'check' || args.action === 'list' ? 'read' : 'action',
@@ -533,6 +541,10 @@ type CdpSessionArgs = z.infer<typeof CdpSessionArgs>;
 
 export const cdp_session: ToolHandler<CdpSessionArgs, unknown> = {
   name: 'cdp_session',
+  // Matches the wrapped granular handlers + the admin-only category — the
+  // router itself must carry the flag or it's advertised to (and pre-P0-2,
+  // executable by) non-admins. docs/AUDIT_2026_06_10.md P0-3.
+  admin_only: true,
   tier: 'privileged',
   tierFor: (args): ToolTier => (args.action === 'list' ? 'read' : 'privileged'),
   required_optional_permissions: ['debugger'],
@@ -570,6 +582,10 @@ type CdpEmulateArgs = z.infer<typeof CdpEmulateArgs>;
 
 export const cdp_emulate: ToolHandler<CdpEmulateArgs, unknown> = {
   name: 'cdp_emulate',
+  // Matches the wrapped granular handlers + the admin-only category — the
+  // router itself must carry the flag or it's advertised to (and pre-P0-2,
+  // executable by) non-admins. docs/AUDIT_2026_06_10.md P0-3.
+  admin_only: true,
   tier: 'privileged',
   required_optional_permissions: ['debugger'],
   supportedBrowsers: ['chrome'],
