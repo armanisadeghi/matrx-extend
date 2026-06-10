@@ -50,6 +50,7 @@ export function AiExtractTab() {
   const tab = useActiveTab();
   const userId = useAuthStore((s) => s.user?.id ?? null);
   const [agents, setAgents] = useState<AgxAgent[]>([]);
+  const [agentsLoading, setAgentsLoading] = useState(false);
   const [agentId, setAgentId] = useState<string>('');
   const [description, setDescription] = useState('');
   const [fields, setFields] = useState<SchemaField[]>([]);
@@ -57,6 +58,7 @@ export function AiExtractTab() {
   const { rows, running, error, notes, confidence, extract, cancel } = useAiExtraction();
   const {
     result: patternResult,
+    liveProbe: patternProbe,
     running: patternRunning,
     error: patternError,
     convert: convertToPattern,
@@ -66,9 +68,11 @@ export function AiExtractTab() {
   useEffect(() => {
     if (!userId) return;
     let cancelled = false;
+    setAgentsLoading(true);
     void (async () => {
       const list = await fetchUserAgents(userId);
       if (cancelled) return;
+      setAgentsLoading(false);
       setAgents(list);
       const preferred =
         list.find((a) => a.id === STRUCTURED_EXTRACTOR_AGENT_ID) ??
@@ -84,6 +88,23 @@ export function AiExtractTab() {
 
   const outputSchema = useMemo(() => buildJsonSchema(fields), [fields]);
 
+  // Silently-dropped empty names and last-wins duplicate collisions both
+  // send the agent a schema that doesn't match what the user built (audit
+  // K4) — warn and block instead.
+  const schemaProblem = useMemo(() => {
+    const named = fields.filter((f) => f.name.trim());
+    if (fields.length > 0 && named.length < fields.length) {
+      return 'One or more fields have no name — name or remove them.';
+    }
+    const seen = new Set<string>();
+    for (const f of named) {
+      const key = f.name.trim();
+      if (seen.has(key)) return `Duplicate field name "${key}" — names must be unique.`;
+      seen.add(key);
+    }
+    return null;
+  }, [fields]);
+
   const addField = () => setFields((f) => [...f, { name: '', type: 'string' }]);
   const removeField = (i: number) => setFields((f) => f.filter((_, idx) => idx !== i));
   const updateField = (i: number, patch: Partial<SchemaField>) =>
@@ -95,7 +116,7 @@ export function AiExtractTab() {
     void extract({ agentId, description, outputSchema });
   };
 
-  const canRun = agentId && description.trim().length > 0 && !running;
+  const canRun = agentId && description.trim().length > 0 && !running && !schemaProblem;
 
   return (
     <div className="h-full overflow-y-auto">
@@ -117,7 +138,9 @@ export function AiExtractTab() {
             onChange={(e) => setAgentId(e.target.value)}
             className="h-8 w-full rounded-full bg-secondary/40 px-3 text-xs outline-none focus-visible:ring-1"
           >
-            {agents.length === 0 && <option value="">No agents available</option>}
+            {agents.length === 0 && (
+              <option value="">{agentsLoading ? 'Loading agents…' : 'No agents available'}</option>
+            )}
             {agents.map((a) => (
               <option key={a.id} value={a.id}>
                 {a.name}
@@ -191,6 +214,12 @@ export function AiExtractTab() {
           )}
         </div>
 
+        {schemaProblem && (
+          <div className="rounded-xl bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+            {schemaProblem}
+          </div>
+        )}
+
         <div className="flex gap-2">
           <Button onClick={handleRun} disabled={!canRun} className="flex-1 rounded-full">
             {running ? <Loader2 className="animate-spin" /> : <Sparkles />}
@@ -237,7 +266,7 @@ export function AiExtractTab() {
                 <div className="mt-2 space-y-2">
                   <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
                     <CheckCircle2 className="size-3.5" />
-                    Pattern generated
+                    Pattern generated · verified on this page
                     {patternResult.confidence && (
                       <span className="rounded-full bg-emerald-500/15 px-1.5 py-px text-[9px] font-medium uppercase tracking-wider">
                         {patternResult.confidence}
@@ -257,6 +286,16 @@ export function AiExtractTab() {
                       {patternResult.config.field_paths.length} field(s):{' '}
                       {patternResult.config.field_paths.map((f) => f.name).join(', ')}
                     </div>
+                    {patternProbe && (
+                      <div className="border-t border-border/40 pt-1 text-muted-foreground">
+                        live row:{' '}
+                        {Object.entries(patternProbe)
+                          .map(
+                            ([k, v]) => `${k}=${v == null ? '∅' : JSON.stringify(v.slice(0, 30))}`,
+                          )
+                          .join(' · ')}
+                      </div>
+                    )}
                   </div>
                   {patternResult.notes && (
                     <div className="rounded-lg bg-secondary/40 p-2 text-[11px] text-muted-foreground">

@@ -129,7 +129,9 @@ export const frameworkDumpInPage = (): FrameworkDumpSource[] => {
     return undefined;
   };
   for (const name of WINDOW_NAMES) {
-    if (name === '__APOLLO_STATE__' && out.some((o) => o.source === 'apollo')) continue;
+    // NOTE: __APOLLO_STATE__ may exist BOTH as a script tag and as a window
+    // assignment, and they can differ. Surface both — the UI's source picker
+    // disambiguates (previously the window form was silently dropped).
     const data = extractWindow(name);
     if (data !== undefined) out.push({ source: `window.${name}`, data });
   }

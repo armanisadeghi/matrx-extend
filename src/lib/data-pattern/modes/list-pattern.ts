@@ -76,7 +76,10 @@ export const listPatternMode: ExtractionMode<ListPatternConfig> = {
         try {
           const re = new RegExp(transform.expr);
           const m = re.exec(v);
-          v = m ? m[0] : '';
+          // Capture-group-first: '(\\d+)' means "extract the digits", not
+          // "give me the whole match". Falls back to the full match when no
+          // group is present.
+          v = m ? (m[1] ?? m[0]) : '';
         } catch {
           // bad regex — fall through to original
         }
@@ -145,7 +148,7 @@ export function probeFirstRowInPage(
       try {
         const re = new RegExp(transform.expr);
         const m = re.exec(v);
-        v = m ? m[0] : '';
+        v = m ? (m[1] ?? m[0]) : '';
       } catch {
         // bad regex
       }

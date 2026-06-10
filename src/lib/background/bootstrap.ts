@@ -422,16 +422,17 @@ function registerHandlers(): void {
     return { ack: true };
   });
 
+  // tab_id stamped for the same two-window scoping as the list picker.
   on<{ fields: { name: string; selector: string }[] }, { ack: true }>(
     CHANNELS.DATA_PICKER_RESULT,
-    (payload) => {
-      broadcast(CHANNELS.DATA_PICKER_RESULT, payload);
+    (payload, sender) => {
+      broadcast(CHANNELS.DATA_PICKER_RESULT, { ...payload, tab_id: sender.tab?.id ?? null });
       return { ack: true };
     },
   );
 
-  on<unknown, { ack: true }>(CHANNELS.DATA_PICKER_EXIT, () => {
-    broadcast(CHANNELS.DATA_PICKER_EXIT, {});
+  on<unknown, { ack: true }>(CHANNELS.DATA_PICKER_EXIT, (_payload, sender) => {
+    broadcast(CHANNELS.DATA_PICKER_EXIT, { tab_id: sender.tab?.id ?? null });
     return { ack: true };
   });
 

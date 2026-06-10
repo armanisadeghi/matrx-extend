@@ -87,13 +87,14 @@ describe('frameworkDumpInPage', () => {
     expect((out[0]?.data as { included: unknown[] }).included).toHaveLength(3);
   });
 
-  it('prefers the apollo script tag over a window.__APOLLO_STATE__ assignment', () => {
+  it('surfaces BOTH the apollo script tag and a window.__APOLLO_STATE__ assignment', () => {
     addScript(JSON.stringify({ fromTag: true }), { id: '__APOLLO_STATE__' });
     addScript('window.__APOLLO_STATE__ = {"fromWindow": true};');
     const out = frameworkDumpInPage();
     const sources = out.map((o) => o.source);
+    // They can genuinely differ — the source picker disambiguates (audit G2).
     expect(sources).toContain('apollo');
-    expect(sources).not.toContain('window.__APOLLO_STATE__');
+    expect(sources).toContain('window.__APOLLO_STATE__');
   });
 
   it('returns [] on a page with nothing', () => {

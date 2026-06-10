@@ -16,12 +16,13 @@ import {
 import { useAutoExtractStore } from '@/state/auto-extract';
 import { useHighlightStore } from '@/state/highlights';
 import { Crosshair, Loader2, Play, Save, XCircle, Zap } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export function DataView() {
   const tab = useActiveTab();
   const [patterns, setPatterns] = useState<ExtractionPattern[] | null>(null);
   const [picking, setPicking] = useState(false);
+  const pickTabRef = useRef<number | null>(null);
   const [pickedFields, setPickedFields] = useState<{ name: string; selector: string }[]>([]);
   const [patternName, setPatternName] = useState('');
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
@@ -55,18 +56,27 @@ export function DataView() {
   }, [host]);
 
   useEffect(() => {
-    const offResult = on<{ fields?: { name: string; selector: string }[] }, { ack: true }>(
-      CHANNELS.DATA_PICKER_RESULT,
+    // Only consume picks from the tab THIS view started picking on — with
+    // two windows open, window A's pick must not land here (audit M1).
+    const fromOurPick = (tabId: unknown) =>
+      tabId == null || pickTabRef.current == null || tabId === pickTabRef.current;
+    const offResult = on<
+      { fields?: { name: string; selector: string }[]; tab_id?: number | null },
+      { ack: true }
+    >(CHANNELS.DATA_PICKER_RESULT, (payload) => {
+      if (!fromOurPick(payload?.tab_id)) return { ack: true };
+      setPicking(false);
+      setPickedFields(payload.fields ?? []);
+      return { ack: true };
+    });
+    const offExit = on<{ tab_id?: number | null }, { ack: true }>(
+      CHANNELS.DATA_PICKER_EXIT,
       (payload) => {
+        if (!fromOurPick(payload?.tab_id)) return { ack: true };
         setPicking(false);
-        setPickedFields(payload.fields ?? []);
         return { ack: true };
       },
     );
-    const offExit = on<unknown, { ack: true }>(CHANNELS.DATA_PICKER_EXIT, () => {
-      setPicking(false);
-      return { ack: true };
-    });
     return () => {
       offResult();
       offExit();
@@ -86,9 +96,10 @@ export function DataView() {
   }, [dataHandoff, setDataHandoff]);
 
   const enterPicker = async () => {
-    if (!tab.id) return;
+    if (!tab.id || picking) return;
     setPicking(true);
     setPickedFields([]);
+    pickTabRef.current = tab.id;
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },

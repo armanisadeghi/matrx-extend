@@ -122,12 +122,7 @@ export function ResultPreview({
       {view === 'table' ? (
         <TableView rows={rows} maxHeight={maxHeight} />
       ) : (
-        <pre
-          className="overflow-auto whitespace-pre rounded-xl bg-secondary/40 p-3 text-[11px]"
-          style={{ maxHeight }}
-        >
-          {JSON.stringify(rows, null, 2)}
-        </pre>
+        <JsonView rows={rows} maxHeight={maxHeight} />
       )}
     </div>
   );
@@ -157,12 +152,36 @@ function ViewToggle({
   );
 }
 
+/** JSON view stringifies up to 500 rows ONCE per rows change, not per render. */
+function JsonView({ rows, maxHeight }: { rows: Record<string, unknown>[]; maxHeight: number }) {
+  const JSON_VIEW_ROW_CAP = 500;
+  const text = useMemo(() => {
+    const capped = rows.length > JSON_VIEW_ROW_CAP;
+    const body = JSON.stringify(capped ? rows.slice(0, JSON_VIEW_ROW_CAP) : rows, null, 2);
+    return capped ? `${body}\n\n…(+${rows.length - JSON_VIEW_ROW_CAP} more rows — use Copy for all)` : body;
+  }, [rows]);
+  return (
+    <pre
+      className="overflow-auto whitespace-pre rounded-xl bg-secondary/40 p-3 text-[11px]"
+      style={{ maxHeight }}
+    >
+      {text}
+    </pre>
+  );
+}
+
 function TableView({ rows, maxHeight }: { rows: Record<string, unknown>[]; maxHeight: number }) {
-  const cols = Array.from(
-    rows.reduce((acc, r) => {
-      for (const k of Object.keys(r)) acc.add(k);
-      return acc;
-    }, new Set<string>()),
+  // Column union scans every row — memoize so it runs per rows change, not
+  // per render (1000 rows × 50 keys was 50k property reads a render).
+  const cols = useMemo(
+    () =>
+      Array.from(
+        rows.reduce((acc, r) => {
+          for (const k of Object.keys(r)) acc.add(k);
+          return acc;
+        }, new Set<string>()),
+      ),
+    [rows],
   );
 
   const renderCell = (v: unknown): string => {

@@ -266,7 +266,14 @@ export function pageDiagnosticInPage(): PageDiagnostic {
   const groups: RepeatingGroup[] = [];
   const seenSelectors = new Set<string>();
   const allEls = document.querySelectorAll<HTMLElement>('*');
-  for (const parent of Array.from(allEls)) {
+  // Budget guard: this scan is near-quadratic in element count and runs
+  // automatically on every Doctor mount + URL change. On giant pages
+  // (50k+ elements) cap the candidates scanned — repeating lists worth
+  // finding overwhelmingly appear in the first part of the DOM.
+  const SCAN_CAP = 20_000;
+  const candidates =
+    allEls.length > SCAN_CAP ? Array.from(allEls).slice(0, SCAN_CAP) : Array.from(allEls);
+  for (const parent of candidates) {
     if (parent.children.length < 5) continue;
     if (SKIP_TAGS.has(parent.tagName.toLowerCase())) continue;
     const buckets = new Map<string, Element[]>();

@@ -3,9 +3,22 @@ import { Button } from '@/components/ui/button';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { type PageDiagnostic, pageDiagnosticInPage } from '@/lib/data-pattern/page-diagnostic';
+import { type ShowcaseSubTab, useShowcaseTabStore } from '@/state/showcase-tab';
 import { cn } from '@/lib/utils';
 import { CheckCircle2, Loader2, Stethoscope, XCircle } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
+/** mode id → the Showcase sub-tab that drives it (for click-to-jump). */
+const MODE_TABS: Record<string, ShowcaseSubTab> = {
+  json_ld: 'json_ld',
+  microdata: 'microdata',
+  next_data: 'framework',
+  auto_table: 'tables',
+  list_pattern: 'list_pattern',
+  ai_extract: 'ai_extract',
+  network_capture: 'network',
+  og_meta: 'snapshot',
+};
 
 const MODE_LABELS: Record<string, string> = {
   json_ld: 'JSON-LD tab',
@@ -20,6 +33,7 @@ const MODE_LABELS: Record<string, string> = {
 
 export function DoctorTab({ active = true }: { active?: boolean }) {
   const tab = useActiveTab();
+  const setSubTab = useShowcaseTabStore((s) => s.setSubTab);
   const [diag, setDiag] = useState<PageDiagnostic | null>(null);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -126,18 +140,25 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
                 <div className="text-muted-foreground">No recommendations.</div>
               ) : (
                 <div className="space-y-1">
-                  {diag.recommendations.map((r, i) => (
-                    <div
-                      // biome-ignore lint/suspicious/noArrayIndexKey: render-only.
-                      key={i}
-                      className="flex items-start gap-2 rounded-lg bg-background/60 px-2 py-1.5"
-                    >
-                      <span className="mt-0.5 shrink-0 whitespace-nowrap rounded-md bg-primary/15 px-1.5 py-px text-[9px] font-medium uppercase tracking-wider text-primary">
-                        {MODE_LABELS[r.mode] ?? r.mode}
-                      </span>
-                      <span className="text-[11px]">{r.reason}</span>
-                    </div>
-                  ))}
+                  {diag.recommendations.map((r, i) => {
+                    const target = MODE_TABS[r.mode];
+                    return (
+                      <button
+                        // biome-ignore lint/suspicious/noArrayIndexKey: render-only.
+                        key={i}
+                        type="button"
+                        onClick={() => target && setSubTab(target)}
+                        disabled={!target}
+                        title={target ? `Open the ${MODE_LABELS[r.mode] ?? r.mode}` : undefined}
+                        className="flex w-full items-start gap-2 rounded-lg bg-background/60 px-2 py-1.5 text-left transition-colors enabled:hover:bg-background enabled:hover:ring-1 enabled:hover:ring-primary/30"
+                      >
+                        <span className="mt-0.5 shrink-0 whitespace-nowrap rounded-md bg-primary/15 px-1.5 py-px text-[9px] font-medium uppercase tracking-wider text-primary">
+                          {MODE_LABELS[r.mode] ?? r.mode}
+                        </span>
+                        <span className="text-[11px]">{r.reason}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>

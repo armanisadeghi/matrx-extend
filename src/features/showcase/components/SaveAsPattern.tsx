@@ -86,6 +86,15 @@ export function SaveAsPattern({
     setErr(null);
     setSavedSummary(null);
 
+    // Validate regex transforms NOW — a bad pattern saved today is a silent
+    // null column on every future run (audit G3).
+    const badRegex = invalidRegexInConfig(kind, config);
+    if (badRegex) {
+      setErr(`Field "${badRegex.field}" has an invalid regex: ${badRegex.error}`);
+      setSaving(false);
+      return;
+    }
+
     try {
       let targetTableId: string | null = null;
 
@@ -291,6 +300,30 @@ export function SaveAsPattern({
       </PopoverContent>
     </Popover>
   );
+}
+
+/** list_pattern configs carry per-field regex transforms — compile-check them. */
+function invalidRegexInConfig(
+  kind: PatternKind,
+  config: unknown,
+): { field: string; error: string } | null {
+  if (kind !== 'list_pattern' || !config || typeof config !== 'object') return null;
+  const fieldPaths = (config as { field_paths?: unknown }).field_paths;
+  if (!Array.isArray(fieldPaths)) return null;
+  for (const f of fieldPaths) {
+    const field = f as { name?: string; transform?: { kind?: string; expr?: string } };
+    if (field.transform?.kind === 'regex' && field.transform.expr) {
+      try {
+        new RegExp(field.transform.expr);
+      } catch (e) {
+        return {
+          field: field.name ?? '(unnamed)',
+          error: e instanceof Error ? e.message : String(e),
+        };
+      }
+    }
+  }
+  return null;
 }
 
 function safePathname(url: string): string | null {
