@@ -360,9 +360,38 @@ discovery handler).
   dispatcher path the agent uses. Use this to test capabilities directly.
 - **Settings** — user prefs (no operational controls)
 - **Profile** — user account + voice/language preferences (TASK-002).
-- **Showcase** (admin) — internal showcase of context shapes /
-  extraction modes; cross-references the same primitives the chat
-  context bundle uses.
+- **Showcase** (admin today; user-facing once stable) — the driver surface
+  for the data-extraction system: 12 sub-tabs (Doctor, Recipes, Prepare,
+  Snapshot, JSON-LD, Microdata, Tables, Framework, AI Extract, List
+  Pattern, Network, Patterns) over the shared `src/lib/data-pattern/`
+  primitives. **2026-06-10 overhaul** (full audit + 11 remediation
+  batches; plan at `~/.claude/plans/we-are-having-some-vast-starfish.md`):
+  - Shell: horizontal-scroll tab strip (fade edges); ALL sub-tabs
+    forceMounted with visibility-gated probes; active sub-tab persisted
+    (`useShowcaseTabStore` → chrome.storage).
+  - Correctness: rows/detection/source reset on navigation with
+    out-of-order guards (`useExtraction`); patterns save under the page
+    rows were EXTRACTED on (ExtractionSource threading); append schema
+    inferred from the union of all rows with ONE shared key mapper
+    (`buildFieldNameMap`) so create/append collision suffixes match.
+  - Lifecycle: UNIQUE(user_id,domain,name) on wbx_pattern (migration
+    2026_06_10, auto-suffix on conflict), delete/rename inline in
+    PatternsTab, recipes live in `public.wbx_recipe` (bundled list =
+    seed + offline fallback via `loadRecipes()`).
+  - Real re-run for interactive kinds (`runSavedPattern` in
+    [src/lib/data-pattern/run-interactive.ts](./src/lib/data-pattern/run-interactive.ts)):
+    ai_extract re-runs the agent against the current page; network_capture
+    does guided auto re-capture (inject-on-reload taps, 20s window,
+    key-path rows). NetworkNoMatchError = guidance, not 'broken'.
+  - Agent integration: `data_patterns` mega-tool
+    (list/describe/recipes/run/save/delete — registered in tool_def +
+    tool_binding + surface defaults, 81 advertised tools), dynamic
+    `saved_patterns_for_domain` context key, and "Send to agent" staging
+    on every ResultPreview.
+  - Hardening: stream watchdog on AI extraction, picker cancel/nav-watch/
+    fresh-mount, network capture tab-scoped + 500-event cap, framework
+    dump extracted to a tested module (`framework-dump.ts`).
+  Verify paths: docs/feature-tests.md → "Showcase — *" entries.
 - **Debug** (admin) — verbose logging, telemetry, optional perms toggles
 
 ### Catalog generators
