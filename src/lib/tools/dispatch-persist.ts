@@ -179,6 +179,79 @@ export async function listPendingConfirms(): Promise<PersistedPendingConfirm[]> 
   }
 }
 
+/* ── Undelivered tool results (audit P1-4) ───────────────────────── */
+
+const RESULTS_KEY = 'matrx.dispatch.undeliveredResults';
+const RESULT_TTL_MS = 60 * 60 * 1000;
+const RESULTS_MAX = 20;
+const RESULT_MAX_ATTEMPTS = 5;
+
+/**
+ * A tool result whose POST exhausted its retries. The server hard-suspends
+ * the turn waiting for this call_id, so dropping it stranded the
+ * conversation until the user manually sent another message. Persisted so
+ * the next SW boot can re-deliver — the server's `already_resolved` dedupe
+ * makes a replay of a secretly-successful POST harmless.
+ */
+export interface UndeliveredResult {
+  conversationId: string;
+  result: {
+    call_id: string;
+    tool_name: string;
+    output: unknown;
+    is_error?: boolean;
+    error_message?: string | null;
+    duration_ms?: number;
+  };
+  at: number;
+  attempts: number;
+}
+
+export async function enqueueUndeliveredResult(
+  entry: Omit<UndeliveredResult, 'at' | 'attempts'>,
+): Promise<void> {
+  const store = sessionStore();
+  if (!store) return;
+  try {
+    const all = await readResults(store);
+    // De-dupe by call_id — a second permanent failure for the same call
+    // replaces (bumps) rather than duplicates.
+    const existing = all.findIndex((e) => e.result.call_id === entry.result.call_id);
+    const row: UndeliveredResult = {
+      ...entry,
+      at: Date.now(),
+      attempts: existing >= 0 ? (all[existing]?.attempts ?? 0) + 1 : 1,
+    };
+    if (existing >= 0) all[existing] = row;
+    else all.push(row);
+    while (all.length > RESULTS_MAX) all.shift();
+    await store.set({ [RESULTS_KEY]: all });
+  } catch (err) {
+    log.warn('sw', 'enqueueUndeliveredResult failed', (err as Error)?.message);
+  }
+}
+
+/** Claim the full replayable queue (fresh, under attempt cap); stale rows drop. */
+export async function takeUndeliveredResults(): Promise<UndeliveredResult[]> {
+  const store = sessionStore();
+  if (!store) return [];
+  try {
+    const all = await readResults(store);
+    if (all.length === 0) return [];
+    await store.set({ [RESULTS_KEY]: [] });
+    const now = Date.now();
+    return all.filter((e) => now - e.at <= RESULT_TTL_MS && e.attempts <= RESULT_MAX_ATTEMPTS);
+  } catch {
+    return [];
+  }
+}
+
+async function readResults(store: chrome.storage.StorageArea): Promise<UndeliveredResult[]> {
+  const r = await store.get([RESULTS_KEY]);
+  const raw = r[RESULTS_KEY];
+  return Array.isArray(raw) ? (raw as UndeliveredResult[]) : [];
+}
+
 async function readConfirms(
   store: chrome.storage.StorageArea,
 ): Promise<Record<string, PersistedPendingConfirm>> {

@@ -22,7 +22,6 @@ pnpm install           # installs deps; postinstall runs `wxt prepare` + husky
 | `pnpm format` | `biome format --write .` |
 | `pnpm test` | `vitest run` (unit tests) |
 | `pnpm test:watch` | vitest in watch mode |
-| `pnpm test:e2e` | Playwright (extension launcher) |
 | `pnpm update-api-types` | regenerate `types/python-generated/*` from the live FastAPI |
 | `pnpm update-api-types:local` | …against `http://localhost:8000` |
 | `pnpm ui:add <component>` | shadcn/ui CLI passthrough (e.g. `pnpm ui:add dialog`) |
@@ -157,7 +156,7 @@ matrx-extend/
 ├── tests/{unit,e2e}/
 ├── types/python-generated/          # output of update-api-types (do not edit)
 ├── wxt.config.ts
-├── biome.json, vitest.config.ts, playwright.config.ts, tsconfig.json
+├── biome.json, vitest.config.ts, tsconfig.json
 └── components.json                  # shadcn/ui config
 ```
 

@@ -432,7 +432,6 @@ pnpm compile          # tsc --noEmit
 pnpm lint             # biome check
 pnpm lint:fix         # biome check --write
 pnpm test             # vitest run
-pnpm test:e2e         # playwright
 pnpm update-api-types # regenerate types/python-generated/* from FastAPI /schema/all
 pnpm update-api-types:local  # same, but against http://localhost:8000
 ```

@@ -195,6 +195,11 @@ export function usePilotChatStream() {
         log.warn('pilot-stream', `stream stalled — no activity for ${PILOT_STALL_MS}ms`);
         usePilotChatStore.getState().finalizeAssistant(target);
         usePilotChatStore.getState().setStreaming(false);
+        // Surface the stall (audit P3-13) — the spinner used to just vanish
+        // with no explanation on the Pilot surface.
+        usePilotChatStore
+          .getState()
+          .setStreamInterruption({ runId: runIdRef.current ?? '', at: Date.now() });
         watchdogRef.current?.stop();
         runIdRef.current = null;
         targetIdRef.current = null;
@@ -306,6 +311,7 @@ export function usePilotChatStream() {
       usePilotChatStore.getState().pushMessage(userMsg);
       usePilotChatStore.getState().pushMessage(assistantMsg);
       usePilotChatStore.getState().setStreaming(true);
+      usePilotChatStore.getState().setStreamInterruption(null);
 
       const runId = newId('run');
       runIdRef.current = runId;
@@ -502,6 +508,7 @@ export function usePilotChatStream() {
       };
       usePilotChatStore.getState().pushMessage(assistantMsg);
       usePilotChatStore.getState().setStreaming(true);
+      usePilotChatStore.getState().setStreamInterruption(null);
 
       const runId = newId('run');
       runIdRef.current = runId;

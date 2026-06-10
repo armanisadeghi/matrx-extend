@@ -150,6 +150,30 @@ export interface ToolHandler<TArgs, TResult> {
 
 export type AnyToolHandler = ToolHandler<unknown, unknown>;
 
+/**
+ * Route a mega-tool router's delegation through the LEAF handler's Zod
+ * schema (audit P2-24). Routers used to call `leaf.run(built as never, ctx)`
+ * with hand-assembled literals — bypassing `.default()` application, so
+ * every leaf default had to be hand-mirrored at every call site (the
+ * blur_element unserializable-undefined crash was this pattern biting).
+ * Parsing here applies defaults/coercion uniformly and turns a malformed
+ * delegation into a structured error instead of an exception.
+ */
+export async function delegate<TArgs, TResult>(
+  leaf: ToolHandler<TArgs, TResult>,
+  args: unknown,
+  ctx: ToolContext,
+): Promise<TResult | { ok: false; reason: string }> {
+  const parsed = leaf.argsSchema.safeParse(args);
+  if (!parsed.success) {
+    return {
+      ok: false,
+      reason: `delegated args failed ${leaf.name} schema: ${JSON.stringify(parsed.error.format())}`,
+    };
+  }
+  return leaf.run(parsed.data, ctx);
+}
+
 export interface ToolResultEnvelope {
   call_id: string;
   tool_name: string;

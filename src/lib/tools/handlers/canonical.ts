@@ -56,6 +56,7 @@ import {
   switch_to_tab,
 } from '@/lib/tools/handlers/tabs';
 import type { ToolHandler, ToolTier } from '@/lib/tools/types';
+import { delegate } from '@/lib/tools/types';
 import { z } from 'zod';
 
 /**
@@ -126,10 +127,10 @@ export const computer: ToolHandler<ComputerArgs, unknown> = {
         if (args.coordinate && !args.ref) {
           return clickAtCoord(act.id, args.coordinate[0]!, args.coordinate[1]!);
         }
-        return click_element.run({ ref: args.ref, selector: undefined, nth: 0 } as never, ctx);
+        return delegate(click_element, { ref: args.ref, selector: undefined, nth: 0 }, ctx);
       }
       case 'right_click':
-        return right_click_element.run({ ref: args.ref, selector: undefined } as never, ctx);
+        return delegate(right_click_element, { ref: args.ref, selector: undefined }, ctx);
       case 'double_click':
         return clickWithDetail(act.id, args, 2);
       case 'triple_click':
@@ -137,8 +138,9 @@ export const computer: ToolHandler<ComputerArgs, unknown> = {
       case 'type': {
         if (args.text == null) return { ok: false, reason: "'text' is required for action='type'" };
         if (args.ref) {
-          return type_into_element.run(
-            { ref: args.ref, text: args.text, clear: true, dispatch_events: true } as never,
+          return delegate(
+            type_into_element,
+            { ref: args.ref, text: args.text, clear: true, dispatch_events: true },
             ctx,
           );
         }
@@ -147,35 +149,30 @@ export const computer: ToolHandler<ComputerArgs, unknown> = {
       }
       case 'key': {
         if (args.text == null) return { ok: false, reason: "'text' is required for action='key'" };
-        // Construct a shape that matches PressKeysArgs exactly. We're calling
-        // press_keys.run() directly (bypassing the Zod parse that would have
-        // applied .default()), so we have to supply real values — never
-        // `undefined` — for fields that ship as args to executeScript.
-        return press_keys.run(
-          { keys: args.text, selector: undefined, ref: undefined, delay_ms: 30 } as never,
-          ctx,
-        );
+        // delegate() parses through PressKeysArgs, so .default() values
+        // (delay_ms, etc.) apply — no more hand-mirroring leaf defaults.
+        return delegate(press_keys, { keys: args.text }, ctx);
       }
       case 'scroll': {
         if (!args.scroll_direction)
           return { ok: false, reason: "'scroll_direction' is required for action='scroll'" };
         const delta = args.scroll_amount * 100; // ~1 wheel tick = 100px
         if (args.scroll_direction === 'up')
-          return scroll_page.run({ direction: 'by', delta_y: -delta } as never, ctx);
+          return delegate(scroll_page, { direction: 'by', delta_y: -delta }, ctx);
         if (args.scroll_direction === 'down')
-          return scroll_page.run({ direction: 'by', delta_y: delta } as never, ctx);
+          return delegate(scroll_page, { direction: 'by', delta_y: delta }, ctx);
         // left/right: fall through to scripted axis scroll
         return scrollAxis(act.id, args.scroll_direction, delta);
       }
       case 'scroll_to':
         if (!args.ref) return { ok: false, reason: "'ref' is required for action='scroll_to'" };
-        return scroll_page.run({ direction: 'into-view', ref: args.ref } as never, ctx);
+        return delegate(scroll_page, { direction: 'into-view', ref: args.ref }, ctx);
       case 'hover':
-        return hover_element.run({ ref: args.ref, selector: undefined } as never, ctx);
+        return delegate(hover_element, { ref: args.ref, selector: undefined }, ctx);
       case 'focus':
-        return focus_element.run({ ref: args.ref, selector: undefined } as never, ctx);
+        return delegate(focus_element, { ref: args.ref, selector: undefined }, ctx);
       case 'blur':
-        return blur_element.run({ ref: args.ref, selector: undefined } as never, ctx);
+        return delegate(blur_element, { ref: args.ref, selector: undefined }, ctx);
       case 'screenshot':
         return doScreenshot(args.tab_id, ctx);
       case 'left_click_drag':
@@ -312,7 +309,8 @@ async function doScreenshot(tabIdStr: string, ctx: Parameters<typeof take_screen
   // uploads to cld_files + indexes in wbx_screenshot via the shared
   // persistScreenshot helper, so the canonical wrapper just unwraps
   // the file_id/file_url it returns. No extra upload round-trip.
-  const result = await take_screenshot.run(
+  const result = await delegate(
+    take_screenshot,
     {
       profile: 'auto',
       format: undefined,
@@ -320,7 +318,7 @@ async function doScreenshot(tabIdStr: string, ctx: Parameters<typeof take_screen
       max_dimension: undefined,
       persist: true,
       capture_source: 'agent',
-    } as never,
+    },
     ctx,
   );
   const r = result as unknown as Record<string, unknown>;
@@ -407,28 +405,30 @@ export const form_input: ToolHandler<FormInputArgs, unknown> = {
     const kind = (probe?.result as { kind: string } | undefined)?.kind ?? 'missing';
     if (kind === 'missing') return { ok: false, reason: `No element for ${args.ref}` };
     if (kind === 'select') {
-      return select_dropdown_option.run(
+      return delegate(
+        select_dropdown_option,
         {
           ref: args.ref,
           value: typeof args.value === 'string' ? args.value : String(args.value),
-        } as never,
+        },
         ctx,
       );
     }
     if (kind === 'checkbox') {
-      return set_checkbox.run({ ref: args.ref, checked: Boolean(args.value) } as never, ctx);
+      return delegate(set_checkbox, { ref: args.ref, checked: Boolean(args.value) }, ctx);
     }
     if (kind === 'radio') {
-      return set_radio.run({ ref: args.ref, value: String(args.value) } as never, ctx);
+      return delegate(set_radio, { ref: args.ref, value: String(args.value) }, ctx);
     }
     if (kind === 'text') {
-      return type_into_element.run(
+      return delegate(
+        type_into_element,
         {
           ref: args.ref,
           text: typeof args.value === 'string' ? args.value : String(args.value),
           clear: true,
           dispatch_events: true,
-        } as never,
+        },
         ctx,
       );
     }
@@ -454,11 +454,11 @@ export const navigate: ToolHandler<NavigateArgs, unknown> = {
   run: async (args, ctx) => {
     const act = await activateTab(args.tab_id);
     if (!act.ok) return { ok: false, reason: act.reason };
-    if (args.url === 'back') return go_back.run({} as never, ctx);
-    if (args.url === 'forward') return go_forward.run({} as never, ctx);
+    if (args.url === 'back') return delegate(go_back, {}, ctx);
+    if (args.url === 'forward') return delegate(go_forward, {}, ctx);
     let url = args.url;
     if (!/^[a-z]+:\/\//i.test(url) && !url.startsWith('//')) url = `https://${url}`;
-    return navigate_active_tab.run({ url } as never, ctx);
+    return delegate(navigate_active_tab, { url }, ctx);
   },
 };
 
@@ -502,9 +502,9 @@ export const tabs: ToolHandler<TabsArgs, unknown> = {
   tierFor: (args): ToolTier => (TABS_READ_ACTIONS.has(args.action) ? 'read' : 'action'),
   argsSchema: TabsArgs,
   run: async (args, ctx) => {
-    if (args.action === 'list') return list_open_tabs.run({} as never, ctx);
+    if (args.action === 'list') return delegate(list_open_tabs, {}, ctx);
     if (args.action === 'create') {
-      return open_new_tab.run({ url: args.url, active: true } as never, ctx);
+      return delegate(open_new_tab, { url: args.url, active: true }, ctx);
     }
     if (args.action === 'active') {
       const tab = await getAssignedTab(ctx);
@@ -525,26 +525,23 @@ export const tabs: ToolHandler<TabsArgs, unknown> = {
     const id = args.tab_id ? Number.parseInt(args.tab_id, 10) : Number.NaN;
     if (!Number.isFinite(id))
       return { ok: false, reason: `tab_id required for action='${args.action}'` };
-    if (args.action === 'close') return close_tab.run({ tab_id: id } as never, ctx);
-    if (args.action === 'switch') return switch_to_tab.run({ tab_id: id } as never, ctx);
-    if (args.action === 'reload') return reload_tab.run({ tab_id: id } as never, ctx);
-    if (args.action === 'info') return get_tab_info.run({ tab_id: id } as never, ctx);
+    if (args.action === 'close') return delegate(close_tab, { tab_id: id }, ctx);
+    if (args.action === 'switch') return delegate(switch_to_tab, { tab_id: id }, ctx);
+    if (args.action === 'reload') return delegate(reload_tab, { tab_id: id }, ctx);
+    if (args.action === 'info') return delegate(get_tab_info, { tab_id: id }, ctx);
     if (args.action === 'pin')
-      return pin_tab.run({ tab_id: id, pinned: args.on ?? true } as never, ctx);
+      return delegate(pin_tab, { tab_id: id, pinned: args.on ?? true }, ctx);
     if (args.action === 'mute')
-      return mute_tab.run({ tab_id: id, muted: args.on ?? true } as never, ctx);
-    if (args.action === 'duplicate') return duplicate_tab.run({ tab_id: id } as never, ctx);
+      return delegate(mute_tab, { tab_id: id, muted: args.on ?? true }, ctx);
+    if (args.action === 'duplicate') return delegate(duplicate_tab, { tab_id: id }, ctx);
     if (args.action === 'move') {
       if (args.index == null) return { ok: false, reason: "'index' required for action='move'" };
-      return move_tab.run(
-        { tab_id: id, index: args.index, window_id: args.window_id } as never,
-        ctx,
-      );
+      return delegate(move_tab, { tab_id: id, index: args.index, window_id: args.window_id }, ctx);
     }
     if (args.action === 'zoom') {
       if (args.zoom_factor == null)
         return { ok: false, reason: "'zoom_factor' required for action='zoom'" };
-      return set_tab_zoom.run({ tab_id: id, zoom_factor: args.zoom_factor } as never, ctx);
+      return delegate(set_tab_zoom, { tab_id: id, zoom_factor: args.zoom_factor }, ctx);
     }
     return { ok: false, reason: `Unknown tabs action: ${args.action as string}` };
   },
@@ -568,12 +565,12 @@ export const downloads: ToolHandler<DownloadsArgs, unknown> = {
   tierFor: (args): ToolTier => (args.action === 'list' ? 'read' : 'action'),
   argsSchema: DownloadsArgs,
   run: async (args, ctx) => {
-    if (args.action === 'list') return list_downloads.run({} as never, ctx);
+    if (args.action === 'list') return delegate(list_downloads, {}, ctx);
     if (args.action === 'cancel') {
       const id = args.download_id ? Number.parseInt(args.download_id, 10) : Number.NaN;
       if (!Number.isFinite(id))
         return { ok: false, reason: "download_id required for action='cancel'" };
-      return cancel_download.run({ download_id: id } as never, ctx);
+      return delegate(cancel_download, { download_id: id }, ctx);
     }
     if (args.action === 'confirm') {
       // Canonical surfaces this as a user-permission step. In our extension,
@@ -591,7 +588,7 @@ export const downloads: ToolHandler<DownloadsArgs, unknown> = {
     }
     if (args.action === 'download_url') {
       if (!args.url) return { ok: false, reason: "url required for action='download_url'" };
-      return download_url.run({ url: args.url, filename: args.filename } as never, ctx);
+      return delegate(download_url, { url: args.url, filename: args.filename }, ctx);
     }
     return { ok: false, reason: `Unknown downloads action: ${args.action as string}` };
   },
@@ -672,7 +669,7 @@ export const clipboard: ToolHandler<ClipboardArgs, unknown> = {
   run: async (args, ctx) => {
     if (args.action === 'write') {
       if (args.text == null) return { ok: false, reason: "text required for action='write'" };
-      return set_clipboard.run({ text: args.text } as never, ctx);
+      return delegate(set_clipboard, { text: args.text }, ctx);
     }
     // Read: try navigator.clipboard inside the agent's assigned tab. The
     // clipboard API requires a Document context, so we run it via
@@ -730,8 +727,9 @@ export const wait_for: ToolHandler<WaitForArgs, unknown> = {
       return waitForUrl(act.id, args.target!, args.timeout_ms);
     }
     if (args.condition === 'network_idle') {
-      return legacy_wait_for.run(
-        { ready_state: 'complete', timeout_ms: args.timeout_ms } as never,
+      return delegate(
+        legacy_wait_for,
+        { ready_state: 'complete', timeout_ms: args.timeout_ms },
         ctx,
       );
     }

@@ -84,6 +84,8 @@ export function PilotView() {
   const { user, isAdmin } = useAuth();
   const { selectedAgentId, draft, messages, isStreaming, setAgent, setDraft, setMessages } =
     usePilotChatStore();
+  const streamInterruption = usePilotChatStore((s) => s.streamInterruption);
+  const setStreamInterruption = usePilotChatStore((s) => s.setStreamInterruption);
   const { send, cancel } = usePilotChatStream();
   const { variableDefs } = useAgentExecution(selectedAgentId);
   const getAgentVariables = usePilotChatStore((s) => s.getAgentVariables);
@@ -336,6 +338,20 @@ export function PilotView() {
 
   return (
     <div className="relative flex h-full flex-col bg-background">
+      {streamInterruption && !isStreaming && (
+        // Stall notice (audit P3-13) — the Pilot spinner used to vanish with
+        // zero explanation when the watchdog gave up on a silent stream.
+        <div className="mx-3 mt-2 flex items-center justify-between gap-2 rounded-md border border-amber-300/60 bg-amber-50/70 px-3 py-2 text-xs text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-200">
+          <span>The run went silent and was stopped. Send your message again to retry.</span>
+          <button
+            type="button"
+            className="shrink-0 rounded px-1.5 py-0.5 font-medium hover:bg-amber-200/50 dark:hover:bg-amber-800/40"
+            onClick={() => setStreamInterruption(null)}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
       <div className="absolute right-2 top-1 z-30">
         <TaskPanelChip
           conversationId={pilotConversationId}

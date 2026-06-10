@@ -15,14 +15,19 @@
  * rule: when BOTH are restricted (neither is `*`), a timestamp matches if it
  * satisfies EITHER field; when only one is restricted, only that one applies.
  *
- * Evaluation is in the host's LOCAL timezone (what a user means by
- * "0 9 * * *" → 9am their time). The optional `tz` field on a cron trigger is
- * not yet honored — see computeFirstDue's caller; treat tz as a future
- * enhancement, not a silent no-op of the whole trigger.
+ * Since 2026-06-10 (audit P2-14), NEXT-FIRE COMPUTATION delegates to
+ * `cron-parser` (already a dependency, previously only used by the dormant
+ * scheduler-client): correct DST handling (a job in the spring-forward gap
+ * fires right after the jump instead of silently skipping the day; the
+ * fall-back repeated hour fires once) and a real IANA `tz` option — the
+ * trigger config's `tz` field was previously a silent no-op. Default stays
+ * the device's local timezone (what a user means by "0 9 * * *").
  *
- * No external dependency (a full library would be overkill and the catalog
- * script must stay tsx-loadable — no top-level chrome.* / import.meta.env).
+ * The hand-rolled field parser below is retained for VALIDATION + the
+ * matches() unit surface (cron-parser accepts some 6-field/extension forms
+ * we deliberately don't, so validation stays strict 5-field).
  */
+import { CronExpressionParser } from 'cron-parser';
 
 interface CronFields {
   minute: Set<number>;
@@ -105,29 +110,31 @@ function matches(fields: CronFields, d: Date): boolean {
 
 /**
  * The next time (strictly after `after`) that `expression` fires, or null if
- * the expression is invalid or no match is found within a one-year horizon
- * (e.g. an impossible date like Feb 31). Returns a Date with seconds zeroed.
+ * the expression is invalid or no match exists (e.g. an impossible date like
+ * Feb 31 — cron-parser throws when iteration exhausts). `tz` is an IANA zone
+ * name; omitted = the device's local timezone.
  */
-export function nextCronTime(expression: string, after: Date = new Date()): Date | null {
-  let fields: CronFields;
+export function nextCronTime(
+  expression: string,
+  after: Date = new Date(),
+  tz?: string,
+): Date | null {
+  // Keep our strict 5-field validation in front — cron-parser accepts
+  // second-field and other extensions we deliberately reject in the UI.
   try {
-    fields = parseCron(expression);
+    parseCron(expression);
   } catch {
     return null;
   }
-  // Start at the next whole minute after `after`.
-  const cursor = new Date(after.getTime());
-  cursor.setSeconds(0, 0);
-  cursor.setMinutes(cursor.getMinutes() + 1);
-
-  // Cap the search at ~366 days of minutes so a never-matching expression
-  // can't spin forever.
-  const maxIterations = 366 * 24 * 60;
-  for (let i = 0; i < maxIterations; i++) {
-    if (matches(fields, cursor)) return new Date(cursor.getTime());
-    cursor.setMinutes(cursor.getMinutes() + 1);
+  try {
+    const iter = CronExpressionParser.parse(expression, {
+      currentDate: after,
+      ...(tz ? { tz } : {}),
+    });
+    return iter.next().toDate();
+  } catch {
+    return null;
   }
-  return null;
 }
 
 /** True if `expression` parses as a valid 5-field cron string. */

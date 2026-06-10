@@ -38,12 +38,14 @@ import { recordToolEvent } from '@/lib/recording/state';
 import { markStreamInactive } from '@/lib/stream/active-runs';
 import { getToolDescription, primeToolDescriptions } from '@/lib/tools/descriptions';
 import {
+  enqueueUndeliveredResult,
   listPendingConfirms,
   loadRunMeta,
   persistPendingConfirm,
   persistRunMeta,
   removePendingConfirm,
   takePendingConfirm,
+  takeUndeliveredResults,
 } from '@/lib/tools/dispatch-persist';
 import { allToolNames, lookup as lookupTool } from '@/lib/tools/registry';
 import { suggestSimilar } from '@/lib/tools/suggest';
@@ -276,6 +278,11 @@ export function startToolDispatcher(opts: DispatchOptions): void {
   // alive to fire the timeout. Best-effort; runs on every boot.
   void sweepExpiredConfirms().catch((err) =>
     log.warn('sw', 'sweepExpiredConfirms failed', (err as Error)?.message),
+  );
+  // Re-deliver tool results whose POST exhausted its retries in a previous
+  // SW lifetime (audit P1-4). Idempotent server-side via already_resolved.
+  void drainUndeliveredResults().catch((err) =>
+    log.warn('sw', 'drainUndeliveredResults failed', (err as Error)?.message),
   );
 
   // Watch every stream chunk for tool_delegated events. We deliberately
@@ -801,6 +808,24 @@ async function postResult(
       status: r.status,
       error: r.error,
     });
+    // Replay-class failures (network down, 5xx, timeout) get persisted for
+    // the boot drain (audit P1-4) — the server hard-suspended the turn
+    // waiting for this call_id, so dropping it stranded the conversation
+    // until the user manually sent another message. Hard 4xx (the server
+    // doesn't know the call) is NOT replayable.
+    if (r.status === 0 || r.status === 408 || r.status === 429 || r.status >= 500) {
+      void enqueueUndeliveredResult({
+        conversationId,
+        result: {
+          call_id: ctx.callId,
+          tool_name: handler.name,
+          output,
+          is_error: isError,
+          error_message: errorMessage,
+          duration_ms: durationMs ?? undefined,
+        },
+      });
+    }
     // 404 specifically means the server doesn't know this call_id — the
     // server-side race (since fixed) used to cause this. Provide a hint
     // the user can act on instead of a generic spinner.
@@ -1074,6 +1099,44 @@ async function sweepExpiredConfirms(): Promise<void> {
       assignedTabId: rec.assignedTabId,
     };
     await finishWithError(handler, ctx, 'Approval timed out');
+  }
+}
+
+/**
+ * Boot-time replay of persisted undelivered tool results (audit P1-4).
+ * Successes (and hard 4xx — the server doesn't know the call) drop the
+ * entry; replay-class failures re-enqueue with a bumped attempt count
+ * (capped + TTL'd inside dispatch-persist). A successful replay that the
+ * server flags continuation_needed re-broadcasts STREAM_CONTINUE through
+ * the same single-flight suppression the live path uses.
+ */
+async function drainUndeliveredResults(): Promise<void> {
+  const pending = await takeUndeliveredResults();
+  for (const entry of pending) {
+    const r = await postToolResults(entry.conversationId, [entry.result]);
+    if (!r.ok) {
+      if (r.status === 0 || r.status === 408 || r.status === 429 || r.status >= 500) {
+        void enqueueUndeliveredResult({
+          conversationId: entry.conversationId,
+          result: entry.result,
+        });
+      }
+      continue;
+    }
+    log.info(
+      'sw',
+      `replayed undelivered tool result ${entry.result.call_id} for ${entry.conversationId}`,
+    );
+    if (r.data.continuation_needed && r.data.user_request_id) {
+      const userRequestId = r.data.user_request_id;
+      const prev = recentContinueBroadcasts.get(userRequestId);
+      if (prev && Date.now() - prev < CONTINUE_SUPPRESS_TTL_MS) continue;
+      recentContinueBroadcasts.set(userRequestId, Date.now());
+      broadcast(CHANNELS.STREAM_CONTINUE, {
+        conversationId: entry.conversationId,
+        userRequestId,
+      });
+    }
   }
 }
 

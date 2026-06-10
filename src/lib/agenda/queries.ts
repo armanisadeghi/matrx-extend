@@ -382,17 +382,45 @@ export interface CreateTaskInput {
 }
 
 /**
- * Insert sch_task → sch_agent_task → sch_trigger as three sequential writes.
- *
- * Not transactional from the JS client. If a later step fails after sch_task
- * succeeds we clean up the orphan with an explicit DELETE — FK cascades
- * handle the rest. A future Postgres function (`create_agent_task` RPC)
- * could collapse this into one atomic call when we add the rest of the
- * scheduling kinds.
+ * Atomic path: the `create_agent_task` Postgres RPC (one transaction —
+ * migrations/2026_06_10_sch_create_agent_task_rpc.sql, audit P2-16) does
+ * all three inserts; a mid-sequence failure can no longer orphan a
+ * trigger-less sch_task. The legacy three-insert path below remains as a
+ * fallback for DBs where the function hasn't been applied yet (42883).
  */
 export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
   const c = getSupabase();
   const nextDueAt = input.next_due_at ?? computeFirstDue(input.trigger_type, input.trigger_config);
+
+  const { data: rpcId, error: rpcErr } = await c.rpc('create_agent_task', {
+    p_title: input.title,
+    p_prompt: input.prompt,
+    p_trigger_type: input.trigger_type,
+    p_trigger_config: input.trigger_config,
+    p_description: input.description ?? null,
+    p_agent_id: input.agent_id ?? null,
+    p_variables: input.variables ?? {},
+    p_persistent_conversation_id: input.persistent_conversation_id ?? null,
+    p_auth_mode: input.auth_mode ?? 'ask',
+    p_max_runtime_seconds: input.max_runtime_seconds ?? 600,
+    p_max_concurrent: input.max_concurrent ?? 1,
+    p_surfaces: input.surfaces ?? ['any'],
+    p_tags: input.tags ?? [],
+    p_expires_at: input.expires_at ?? null,
+    p_next_due_at: nextDueAt,
+  });
+  if (!rpcErr && typeof rpcId === 'string') {
+    const created = await getTask(rpcId);
+    if (!created) throw new Error(`createTask: row vanished after RPC insert (${rpcId})`);
+    return created;
+  }
+  // 42883 = undefined_function — the RPC isn't applied on this DB (staging /
+  // fresh env). Anything else from the RPC is a real failure: surface it
+  // rather than retrying down the non-atomic path.
+  if (rpcErr && rpcErr.code !== '42883' && !/create_agent_task/.test(rpcErr.message ?? '')) {
+    throw new Error(`createTask (rpc): ${rpcErr.message}`);
+  }
+  console.warn('[matrx-extend] create_agent_task RPC unavailable — using legacy 3-insert path');
 
   // 1. sch_task
   const { data: taskRow, error: taskErr } = await c
@@ -706,7 +734,7 @@ export function computeFirstDue(type: TriggerType, config: TriggerConfig): strin
     case 'context-match':
       return null; // fires on a page-context match, not on a schedule
     case 'cron': {
-      const next = nextCronTime(config.expression);
+      const next = nextCronTime(config.expression, new Date(), config.tz);
       return next ? next.toISOString() : null;
     }
   }
@@ -731,7 +759,7 @@ export function computeNextDueAfterRun(
     case 'context-match':
       return null; // re-fires on next page-context match, not on a schedule
     case 'cron': {
-      const next = nextCronTime(trigger_config.expression);
+      const next = nextCronTime(trigger_config.expression, new Date(), trigger_config.tz);
       return next ? next.toISOString() : null;
     }
   }

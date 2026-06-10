@@ -39,6 +39,12 @@ interface PilotChatState {
   draft: string;
   messages: ChatMessage[];
   isStreaming: boolean;
+  /**
+   * Set when a Pilot run stalled (watchdog) so the view can show a notice
+   * instead of the spinner just vanishing (audit P3-13). Cleared on the
+   * next send / reset.
+   */
+  streamInterruption: { runId: string; at: number } | null;
   /** Per-agent variable values (mirrors useChatStore semantics). */
   variableValues: Record<string, string>;
   /**
@@ -66,6 +72,7 @@ interface PilotChatState {
     meta?: { toolName?: string; kind?: 'server' | 'client' },
   ) => void;
   setStreaming: (b: boolean) => void;
+  setStreamInterruption: (v: { runId: string; at: number } | null) => void;
   setMessages: (ms: ChatMessage[]) => void;
   setVariable: (agentId: string, name: string, value: string) => void;
   getAgentVariables: (agentId: string) => Record<string, string>;
@@ -84,6 +91,7 @@ export const usePilotChatStore = create<PilotChatState>()(
       draft: '',
       messages: [],
       isStreaming: false,
+      streamInterruption: null,
       variableValues: {},
       permissionMode: {},
       setAgent: (selectedAgentId) => set({ selectedAgentId }),
@@ -208,6 +216,7 @@ export const usePilotChatStore = create<PilotChatState>()(
           messages: s.messages.map((m) => (m.id === id ? { ...m, pending: false } : m)),
         })),
       setStreaming: (isStreaming) => set({ isStreaming }),
+      setStreamInterruption: (streamInterruption) => set({ streamInterruption }),
       setMessages: (messages) => set({ messages }),
       setVariable: (agentId, name, value) =>
         set((s) => ({
@@ -232,7 +241,7 @@ export const usePilotChatStore = create<PilotChatState>()(
         if (!agentId) return 'act';
         return get().permissionMode[agentId] ?? 'act';
       },
-      reset: () => set({ messages: [], draft: '', isStreaming: false }),
+      reset: () => set({ messages: [], draft: '', isStreaming: false, streamInterruption: null }),
     }),
     {
       name: 'matrx.pilot-chat.v1',
