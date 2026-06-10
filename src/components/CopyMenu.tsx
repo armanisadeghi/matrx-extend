@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useAuth } from '@/hooks/use-auth';
 import { copyToClipboard } from '@/lib/clipboard/copy';
 import { cn } from '@/lib/utils';
-import { Check, Copy, Sparkles } from 'lucide-react';
+import { Check, Copy, Sparkles, X } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 
 export interface CopyOption {
@@ -40,16 +40,17 @@ export interface CopyButtonProps {
 }
 
 export function CopyButton({ text, title = 'Copy', className, size = 'sm' }: CopyButtonProps) {
-  const [copied, setCopied] = useState(false);
+  const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
+  const copied = state === 'copied';
 
   const onClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const value = typeof text === 'function' ? await text() : text;
     const ok = await copyToClipboard(value);
-    if (ok) {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1200);
-    }
+    // Failure was previously SILENT — the user pasted nothing and blamed
+    // themselves. Flash a red X so they know to refocus the panel and retry.
+    setState(ok ? 'copied' : 'failed');
+    setTimeout(() => setState('idle'), 1200);
   };
 
   return (
@@ -67,6 +68,8 @@ export function CopyButton({ text, title = 'Copy', className, size = 'sm' }: Cop
     >
       {copied ? (
         <Check className={cn(ICON_SIZE, 'text-emerald-500')} />
+      ) : state === 'failed' ? (
+        <X className={cn(ICON_SIZE, 'text-red-500')} />
       ) : (
         <Copy className={ICON_SIZE} />
       )}
@@ -107,6 +110,9 @@ export function CopyMenu({
       setCopiedLabel(o.label);
       setTimeout(() => setCopiedLabel(null), 1200);
       setOpen(false);
+    } else {
+      setCopiedLabel(`✕ Copy failed — click the panel first, then retry`);
+      setTimeout(() => setCopiedLabel(null), 2000);
     }
   };
 

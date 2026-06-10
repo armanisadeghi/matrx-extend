@@ -702,6 +702,53 @@ Every entry follows this shape:
   - Regression being guarded: the chip used to be `absolute right-2 top-1`,
     floating over the header and overlapping the History icon.
 
+### Showcase — shell (tab strip, persistence, forceMount)
+- **What it does:** Hosts the 12 extraction sub-tabs. The strip is its own
+  horizontal scroller; every sub-tab stays mounted so work survives switches.
+- **Where to test:** Side panel → Showcase (admin).
+- **Steps:**
+  1. Open Showcase. The tab strip scrolls horizontally (fade edges, no
+     wrap); the rest of the panel never scrolls sideways.
+  2. Click "Network", start a capture, switch to "Doctor", come back.
+  3. Close the side panel entirely; reopen → Showcase.
+- **Expected:** (2) capture events and recording state are still there.
+  (3) the previously-active sub-tab is restored (not reset to Doctor).
+- **Edge cases:** active trigger auto-scrolls into view when selected via a
+  Doctor recommendation; only the VISIBLE sub-tab auto-probes on navigation.
+
+### Showcase — Doctor tab
+- **What it does:** Probes the page for every structured-data signal and
+  recommends an extraction mode; recommendations are click-to-jump.
+- **Steps:** Open a recipe site (e.g. an Allrecipes page). Doctor auto-probes.
+  Click the "JSON-LD tab" recommendation.
+- **Expected:** Showcase switches to the JSON-LD sub-tab. Re-probe works.
+  On chrome:// pages a readable error shows (no spinner hang).
+- **Edge cases:** giant pages (50k+ elements) still probe quickly — the
+  repeating-group scan is capped at 20k elements.
+
+### Showcase — Recipes tab (DB-backed)
+- **What it does:** One-click curated extraction configs, loaded from
+  public.wbx_recipe (bundled list is the offline fallback).
+- **Steps:** Open news.ycombinator.com → Recipes shows "Hacker News" match →
+  Run. Navigate to another site mid-result.
+- **Expected:** Rows render with Save pattern; after navigation the stale
+  rows CLEAR (no cross-site leakage). "Show all" lists the full catalog.
+
+### Showcase — Prepare tab
+- **What it does:** Heuristic page cleanup (banners, load-more, scroll).
+- **Steps:** Run on a cookie-bannered site; then navigate to another page.
+- **Expected:** Report shows counts; report clears on navigation (a page-A
+  report never displays on page B).
+
+### Showcase — Snapshot / JSON-LD / Microdata tabs
+- **What it does:** One-shot metadata grab / typed JSON-LD blocks / Schema.org
+  microdata items, each with type-filter chips where applicable.
+- **Steps:** Wikipedia article → each tab auto-detects when visible →
+  Extract → Save pattern (create new table from fields).
+- **Expected:** Detection summary matches the page; rows render; saving with
+  a duplicate name auto-suffixes "(2)". The created table has EVERY column
+  the preview showed (union of all rows, not just row 1).
+
 ### Showcase — Tables tab (auto_table mode)
 - **What it does:** Detects every `<table>` on the page (≥2 rows) and
   extracts the chosen one as JSON rows. Auto-handles multi-tier headers
@@ -738,6 +785,75 @@ Every entry follows this shape:
   - Tables where data rows have `colspan` / `rowspan` are NOT yet
     expanded — values still zip positionally. Open a follow-up if a
     real page hits this.
+
+### Showcase — Framework tab (next_data)
+- **What it does:** Dumps __NEXT_DATA__/__NUXT_DATA__/Apollo/bpr-guid/window.*
+  state into a navigable tree; click a node to set the key path, Extract.
+- **Steps:** Open a Next.js site (e.g. vercel.com) → tree renders → click a
+  nested node → Extract from key path → Save pattern.
+- **Expected:** Huge dumps render incrementally ("+N more…" expanders, 100
+  children per node). Restricted pages show "Could not read framework data".
+  When BOTH an apollo script tag and window.__APOLLO_STATE__ exist, both
+  appear in the source picker.
+
+### Showcase — AI Extract tab
+- **What it does:** Describe what you want; the extractor agent reads the
+  page and returns schema-shaped rows. Convert-to-pattern generates CSS
+  selectors and VERIFIES them against the live page before showing success.
+- **Steps:** On a list page, describe "product name and price", add fields
+  name/price, Extract. Then "Convert to reusable pattern".
+- **Expected:** Streaming progress; Cancel works mid-run and clears results;
+  a stalled stream errors out by ~75s (no immortal spinner). The generated
+  pattern shows "verified on this page" + a live first-row preview; selector
+  sets that match nothing surface an error instead of a fake success.
+- **Edge cases:** empty/duplicate schema field names block Extract with an
+  inline warning; agent dropdown shows "Loading agents…".
+
+### Showcase — List Pattern tab
+- **What it does:** Two-phase visual picker (click one example item → click
+  fields inside) producing a reusable CSS config.
+- **Steps:** On Hacker News, "Pick an example item" → click one story row →
+  add suggested fields → Done → Extract → Save pattern.
+- **Expected:** While picking, the sidepanel shows a Cancel button that
+  works; navigating mid-pick clears the stuck state with a message; double
+  clicking Pick doesn't double-inject; re-entering picking replaces any
+  orphaned page overlay; chrome:// pages get a friendly "this page type
+  doesn't allow picking" error.
+
+### Showcase — Network tab
+- **What it does:** Captures top-frame fetch/XHR while you interact; pick a
+  response, drill into the JSON, save url_filter+key_path as a pattern.
+- **Steps:** Start capture on an SPA, scroll/click so API calls fire, select
+  a JSON response, click into the array node, Save pattern.
+- **Expected:** Only the captured tab's requests appear (another tab's
+  traffic never pollutes the list); Reload stops the recording state;
+  buffer caps at 500 events with a "dropped" notice; events survive
+  switching to another sub-tab and back.
+
+### Showcase — Patterns tab (lifecycle + re-run)
+- **What it does:** Lists every saved pattern for the host with health
+  badges; run / rename / delete inline.
+- **Steps:**
+  1. Run a DOM pattern (e.g. the JSON-LD one) → rows render, badge "ok".
+  2. Run a network_capture pattern → page reloads, progress notes show
+     ("Reloading page…", "Listening…"), rows arrive when the API fires.
+  3. Run an ai_extract pattern → agent re-extracts the current page.
+  4. Rename to a name that already exists → inline collision error.
+  5. Delete: first click arms (red), second click deletes; arms off in 3s.
+- **Expected:** Supabase outages show an error banner with Retry — NEVER the
+  "no saved patterns" empty state; a no-match network re-run shows guidance
+  and does NOT mark the pattern broken.
+
+### Showcase — Send to agent / data_patterns tool
+- **What it does:** "Send to agent" on any result stages rows (≤50) into the
+  chat composer; the `data_patterns` tool lets the agent list/describe/
+  run/save/delete patterns and read matching recipes.
+- **Steps:** Extract rows → Send to agent → composer pre-filled, Chat tab
+  active. In chat, ask the agent to "list my saved patterns for this site
+  and run the best one".
+- **Expected:** Agent calls data_patterns(list) then (run) with live
+  progress; rows return capped at 100 with true row_count; the
+  saved_patterns_for_domain context key is attached when patterns exist.
 
 ### parallel_for_each_tab
 - **What it does:** Fan out the same prompt across N existing tabs (max 8) and collect the results. Each sub-run is its own agent conversation pinned to one tab. Admin-only.

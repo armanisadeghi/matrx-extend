@@ -127,7 +127,10 @@ export function NetworkTab() {
           ) : events.length > 0 ? (
             <>{events.length} responses captured · stopped</>
           ) : (
-            <>Start capture, then interact with the page</>
+            <>
+              Start capture, then interact with the page. Captures fetch/XHR from the top frame —
+              WebSockets, beacons, workers, and iframes are not intercepted.
+            </>
           )}
           {dropped > 0 && (
             <span className="ml-1 text-amber-700 dark:text-amber-400">

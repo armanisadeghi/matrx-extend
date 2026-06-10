@@ -221,7 +221,7 @@ function TableView({ rows, maxHeight }: { rows: Record<string, unknown>[]; maxHe
       </table>
       {rows.length > 200 && (
         <div className="px-2 py-1.5 text-center text-muted-foreground">
-          Showing first 200 of {rows.length} rows
+          Showing first 200 of {rows.length} rows — Copy and Save include all of them
         </div>
       )}
     </div>
