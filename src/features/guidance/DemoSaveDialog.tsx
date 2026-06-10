@@ -57,7 +57,9 @@ export function DemoSaveDialog({
             variant="default"
             className="h-7 gap-1 px-2 text-xs"
             disabled={busy || !name.trim()}
-            onClick={() => onSave({ name: name.trim(), description: description.trim() || undefined })}
+            onClick={() =>
+              onSave({ name: name.trim(), description: description.trim() || undefined })
+            }
           >
             {busy ? <Loader2 className="size-3 animate-spin" /> : <Save className="size-3" />}
             Save demo

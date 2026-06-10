@@ -56,16 +56,14 @@ export const transforms: Record<TransformName, (v: unknown) => unknown> = {
   // Each mega-tool dispatches by `args.action`; these transforms resolve a
   // human verb + lucide icon from that action so a single registry entry
   // can render every sub-action correctly.
-  computerActionVerb: (v) =>
-    typeof v === 'string' ? COMPUTER_VERBS_PAST[v] ?? 'Did' : v,
+  computerActionVerb: (v) => (typeof v === 'string' ? (COMPUTER_VERBS_PAST[v] ?? 'Did') : v),
   computerActionPresent: (v) =>
-    typeof v === 'string' ? COMPUTER_VERBS_PRESENT[v] ?? 'Doing' : v,
+    typeof v === 'string' ? (COMPUTER_VERBS_PRESENT[v] ?? 'Doing') : v,
   computerActionIcon: (v) =>
-    typeof v === 'string' ? COMPUTER_ICONS[v] ?? 'MousePointerClick' : v,
-  tabsActionVerb: (v) => typeof v === 'string' ? TABS_VERBS_PAST[v] ?? 'Did' : v,
-  tabsActionPresent: (v) =>
-    typeof v === 'string' ? TABS_VERBS_PRESENT[v] ?? 'Doing' : v,
-  tabsActionIcon: (v) => typeof v === 'string' ? TABS_ICONS[v] ?? 'AppWindow' : v,
+    typeof v === 'string' ? (COMPUTER_ICONS[v] ?? 'MousePointerClick') : v,
+  tabsActionVerb: (v) => (typeof v === 'string' ? (TABS_VERBS_PAST[v] ?? 'Did') : v),
+  tabsActionPresent: (v) => (typeof v === 'string' ? (TABS_VERBS_PRESENT[v] ?? 'Doing') : v),
+  tabsActionIcon: (v) => (typeof v === 'string' ? (TABS_ICONS[v] ?? 'AppWindow') : v),
   navigateActionVerb: (v) => {
     if (typeof v !== 'string') return v;
     if (v === 'back') return 'Went back';
@@ -78,24 +76,17 @@ export const transforms: Record<TransformName, (v: unknown) => unknown> = {
     if (v === 'forward') return 'Going forward';
     return 'Navigating to';
   },
-  aiActionVerb: (v) =>
-    typeof v === 'string' ? AI_VERBS_PAST[v] ?? 'Ran AI' : v,
-  aiActionPresent: (v) =>
-    typeof v === 'string' ? AI_VERBS_PRESENT[v] ?? 'Running AI' : v,
-  aiActionIcon: (v) =>
-    typeof v === 'string' ? AI_ICONS[v] ?? 'Sparkles' : v,
-  storageActionVerb: (v) =>
-    typeof v === 'string' ? STORAGE_VERBS_PAST[v] ?? 'Storage' : v,
+  aiActionVerb: (v) => (typeof v === 'string' ? (AI_VERBS_PAST[v] ?? 'Ran AI') : v),
+  aiActionPresent: (v) => (typeof v === 'string' ? (AI_VERBS_PRESENT[v] ?? 'Running AI') : v),
+  aiActionIcon: (v) => (typeof v === 'string' ? (AI_ICONS[v] ?? 'Sparkles') : v),
+  storageActionVerb: (v) => (typeof v === 'string' ? (STORAGE_VERBS_PAST[v] ?? 'Storage') : v),
   storageActionPresent: (v) =>
-    typeof v === 'string' ? STORAGE_VERBS_PRESENT[v] ?? 'Storage' : v,
-  memoryActionVerb: (v) =>
-    typeof v === 'string' ? MEMORY_VERBS_PAST[v] ?? 'Memory' : v,
-  memoryActionPresent: (v) =>
-    typeof v === 'string' ? MEMORY_VERBS_PRESENT[v] ?? 'Memory' : v,
-  cookiesActionVerb: (v) =>
-    typeof v === 'string' ? COOKIES_VERBS_PAST[v] ?? 'Cookies' : v,
+    typeof v === 'string' ? (STORAGE_VERBS_PRESENT[v] ?? 'Storage') : v,
+  memoryActionVerb: (v) => (typeof v === 'string' ? (MEMORY_VERBS_PAST[v] ?? 'Memory') : v),
+  memoryActionPresent: (v) => (typeof v === 'string' ? (MEMORY_VERBS_PRESENT[v] ?? 'Memory') : v),
+  cookiesActionVerb: (v) => (typeof v === 'string' ? (COOKIES_VERBS_PAST[v] ?? 'Cookies') : v),
   cookiesActionPresent: (v) =>
-    typeof v === 'string' ? COOKIES_VERBS_PRESENT[v] ?? 'Cookies' : v,
+    typeof v === 'string' ? (COOKIES_VERBS_PRESENT[v] ?? 'Cookies') : v,
   historyActionVerb: (v) => {
     if (typeof v !== 'string') return v;
     if (v === 'search') return 'Searched history';
@@ -121,9 +112,9 @@ export const transforms: Record<TransformName, (v: unknown) => unknown> = {
     return v;
   },
   tabGroupsActionVerb: (v) =>
-    typeof v === 'string' ? TAB_GROUPS_VERBS_PAST[v] ?? 'Tab groups' : v,
+    typeof v === 'string' ? (TAB_GROUPS_VERBS_PAST[v] ?? 'Tab groups') : v,
   tabGroupsActionPresent: (v) =>
-    typeof v === 'string' ? TAB_GROUPS_VERBS_PRESENT[v] ?? 'Tab groups' : v,
+    typeof v === 'string' ? (TAB_GROUPS_VERBS_PRESENT[v] ?? 'Tab groups') : v,
   recentlyClosedActionVerb: (v) => {
     if (typeof v !== 'string') return v;
     if (v === 'list') return 'Listed recently closed';
@@ -149,9 +140,9 @@ export const transforms: Record<TransformName, (v: unknown) => unknown> = {
     return v;
   },
   cdpSessionActionVerb: (v) =>
-    typeof v === 'string' ? CDP_SESSION_VERBS_PAST[v] ?? 'CDP session' : v,
+    typeof v === 'string' ? (CDP_SESSION_VERBS_PAST[v] ?? 'CDP session') : v,
   cdpSessionActionPresent: (v) =>
-    typeof v === 'string' ? CDP_SESSION_VERBS_PRESENT[v] ?? 'CDP session' : v,
+    typeof v === 'string' ? (CDP_SESSION_VERBS_PRESENT[v] ?? 'CDP session') : v,
   cdpEmulateActionVerb: (v) => {
     if (typeof v !== 'string') return v;
     if (v === 'set') return 'Emulated device';
@@ -164,10 +155,8 @@ export const transforms: Record<TransformName, (v: unknown) => unknown> = {
     if (v === 'clear') return 'Clearing emulation';
     return v;
   },
-  webmcpActionVerb: (v) =>
-    typeof v === 'string' ? WEBMCP_VERBS_PAST[v] ?? 'WebMCP' : v,
-  webmcpActionPresent: (v) =>
-    typeof v === 'string' ? WEBMCP_VERBS_PRESENT[v] ?? 'WebMCP' : v,
+  webmcpActionVerb: (v) => (typeof v === 'string' ? (WEBMCP_VERBS_PAST[v] ?? 'WebMCP') : v),
+  webmcpActionPresent: (v) => (typeof v === 'string' ? (WEBMCP_VERBS_PRESENT[v] ?? 'WebMCP') : v),
   clipboardActionVerb: (v) => {
     if (typeof v !== 'string') return v;
     if (v === 'read') return 'Read clipboard';
@@ -181,19 +170,17 @@ export const transforms: Record<TransformName, (v: unknown) => unknown> = {
     return v;
   },
   downloadsActionVerb: (v) =>
-    typeof v === 'string' ? DOWNLOADS_VERBS_PAST[v] ?? 'Downloads' : v,
+    typeof v === 'string' ? (DOWNLOADS_VERBS_PAST[v] ?? 'Downloads') : v,
   downloadsActionPresent: (v) =>
-    typeof v === 'string' ? DOWNLOADS_VERBS_PRESENT[v] ?? 'Downloads' : v,
-  waitForConditionVerb: (v) =>
-    typeof v === 'string' ? WAIT_FOR_VERBS_PAST[v] ?? 'Waited' : v,
+    typeof v === 'string' ? (DOWNLOADS_VERBS_PRESENT[v] ?? 'Downloads') : v,
+  waitForConditionVerb: (v) => (typeof v === 'string' ? (WAIT_FOR_VERBS_PAST[v] ?? 'Waited') : v),
   waitForConditionPresent: (v) =>
-    typeof v === 'string' ? WAIT_FOR_VERBS_PRESENT[v] ?? 'Waiting for' : v,
-  userToolVerbPast: (v) =>
-    typeof v === 'string' ? USER_TOOL_VERBS_PAST[v] ?? 'Asked' : v,
+    typeof v === 'string' ? (WAIT_FOR_VERBS_PRESENT[v] ?? 'Waiting for') : v,
+  userToolVerbPast: (v) => (typeof v === 'string' ? (USER_TOOL_VERBS_PAST[v] ?? 'Asked') : v),
   userToolVerbPresent: (v) =>
-    typeof v === 'string' ? USER_TOOL_VERBS_PRESENT[v] ?? 'Asking' : v,
+    typeof v === 'string' ? (USER_TOOL_VERBS_PRESENT[v] ?? 'Asking') : v,
   userToolIcon: (v) =>
-    typeof v === 'string' ? USER_TOOL_ICONS[v] ?? 'MessageCircleQuestion' : v,
+    typeof v === 'string' ? (USER_TOOL_ICONS[v] ?? 'MessageCircleQuestion') : v,
 };
 
 const BROWSER_CATEGORY_ICONS: Record<string, string> = {

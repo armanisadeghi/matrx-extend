@@ -20,9 +20,9 @@
  * not exist yet (see docs/SERVER_NEEDS_turn_boundary_inbox.md).
  */
 
-import { create } from "zustand";
+import { create } from 'zustand';
 
-export type QueuedStatus = "sending" | "pending" | "delivered" | "failed";
+export type QueuedStatus = 'sending' | 'pending' | 'delivered' | 'failed';
 
 export interface QueuedInjection {
   /** Our own id, assigned at enqueue time before the server's injection_id is known. */
@@ -69,7 +69,7 @@ export const useTurnInboxStore = create<TurnInboxState>()((set, get) => ({
           injectionId: null,
           conversationId,
           text,
-          status: "sending",
+          status: 'sending',
           queuedAt: Date.now(),
         },
       ],
@@ -77,14 +77,12 @@ export const useTurnInboxStore = create<TurnInboxState>()((set, get) => ({
   markPending: (localId, injectionId) =>
     set((s) => ({
       items: s.items.map((i) =>
-        i.localId === localId ? { ...i, injectionId, status: "pending" } : i,
+        i.localId === localId ? { ...i, injectionId, status: 'pending' } : i,
       ),
     })),
   markFailed: (localId, error) =>
     set((s) => ({
-      items: s.items.map((i) =>
-        i.localId === localId ? { ...i, status: "failed", error } : i,
-      ),
+      items: s.items.map((i) => (i.localId === localId ? { ...i, status: 'failed', error } : i)),
     })),
   updateText: (localId, text) =>
     set((s) => ({
@@ -95,15 +93,12 @@ export const useTurnInboxStore = create<TurnInboxState>()((set, get) => ({
     if (!match) return null;
     set((s) => ({
       items: s.items.map((i) =>
-        i.injectionId === injectionId
-          ? { ...i, status: "delivered", deliveredAt: Date.now() }
-          : i,
+        i.injectionId === injectionId ? { ...i, status: 'delivered', deliveredAt: Date.now() } : i,
       ),
     }));
-    return { ...match, status: "delivered", deliveredAt: Date.now() };
+    return { ...match, status: 'delivered', deliveredAt: Date.now() };
   },
-  remove: (localId) =>
-    set((s) => ({ items: s.items.filter((i) => i.localId !== localId) })),
+  remove: (localId) => set((s) => ({ items: s.items.filter((i) => i.localId !== localId) })),
   clearForConversation: (conversationId) =>
     set((s) => ({
       items: s.items.filter((i) => i.conversationId !== conversationId),

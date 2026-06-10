@@ -187,10 +187,8 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
   argsSchema: ReadPageArgs,
   run: async (args, ctx) => {
     const tabId =
-      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ??
-      (await getAssignedTabId(ctx));
-    if (tabId == null || !Number.isFinite(tabId))
-      return { ok: false, reason: 'No active tab' };
+      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ?? (await getAssignedTabId(ctx));
+    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
     // Canonical 'filter' overrides interactive_only when present.
     const interactiveOnly =
       args.filter !== undefined ? args.filter === 'interactive' : args.interactive_only;
@@ -208,10 +206,7 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
               window.scrollBy({ top: step, behavior: 'instant' });
               await new Promise((r) => setTimeout(r, 250));
               const after = document.documentElement.scrollHeight;
-              if (
-                window.innerHeight + window.scrollY >= after - 4 &&
-                after === before
-              ) {
+              if (window.innerHeight + window.scrollY >= after - 4 && after === before) {
                 break;
               }
             }
@@ -271,7 +266,7 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
             if (rect.width === 0 && rect.height === 0) return false;
             const style = window.getComputedStyle(el);
             if (style.visibility === 'hidden' || style.display === 'none') return false;
-            if (parseFloat(style.opacity || '1') === 0) return false;
+            if (Number.parseFloat(style.opacity || '1') === 0) return false;
             return true;
           }
           function implicitRole(el: Element): string {
@@ -317,7 +312,8 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
             const title = el.getAttribute('title');
             if (title) return title.trim();
             const placeholder = el.getAttribute('placeholder');
-            if (placeholder && (el as HTMLInputElement).tagName === 'INPUT') return placeholder.trim();
+            if (placeholder && (el as HTMLInputElement).tagName === 'INPUT')
+              return placeholder.trim();
             const alt = el.getAttribute('alt');
             if (alt) return alt.trim();
             const text = (el as HTMLElement).innerText?.trim();
@@ -431,7 +427,10 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
           args.include_bounds,
         ],
       });
-      const result = first?.result as CachedScrape['result'] | { ok: false; reason: string } | undefined;
+      const result = first?.result as
+        | CachedScrape['result']
+        | { ok: false; reason: string }
+        | undefined;
       if (result && 'ok' in result && result.ok) {
         rememberScrape({
           tabId,
@@ -678,10 +677,8 @@ export const get_page_text: ToolHandler<PageTextArgs, unknown> = {
   argsSchema: PageTextArgs,
   run: async (args, ctx) => {
     const tabId =
-      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ??
-      (await getAssignedTabId(ctx));
-    if (tabId == null || !Number.isFinite(tabId))
-      return { ok: false, reason: 'No active tab' };
+      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ?? (await getAssignedTabId(ctx));
+    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
     try {
       const [first] = await chrome.scripting.executeScript({
         target: { tabId },
@@ -713,9 +710,9 @@ export const get_page_text: ToolHandler<PageTextArgs, unknown> = {
           let text = gather(target);
           if (text.length > maxChars) text = `${text.slice(0, maxChars)}…`;
           const meta = (s: string) =>
-            document.querySelector(`meta[name="${s}"], meta[property="${s}"]`)?.getAttribute(
-              'content',
-            ) ?? null;
+            document
+              .querySelector(`meta[name="${s}"], meta[property="${s}"]`)
+              ?.getAttribute('content') ?? null;
           return {
             ok: true,
             url: location.href,

@@ -75,7 +75,11 @@ export async function probeHttp(): Promise<DesktopHealth | null> {
 export async function rpcHttp(req: DesktopRpcRequest): Promise<DesktopRpcResponse> {
   const baseUrl = await getEngineBaseUrl();
   if (!baseUrl) {
-    return { ok: false, error: 'desktop engine not reachable — start matrx-local or set the port override in Settings' };
+    return {
+      ok: false,
+      error:
+        'desktop engine not reachable — start matrx-local or set the port override in Settings',
+    };
   }
   const token = await getPairToken();
   if (!token) {

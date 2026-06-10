@@ -38,79 +38,74 @@ interface ParallelEventPayload {
 
 export function useParallelEventBridge(): void {
   useEffect(() => {
-    return on<ParallelEventPayload, { ack: true }>(
-      CHANNELS.PARALLEL_RUN_EVENT,
-      (event) => {
-        const store = useParallelRunsStore.getState();
-        const { parentCallId, kind, payload } = event;
-        const session = store.sessions[parentCallId];
-        if (kind === 'session_started') {
-          if (!session) {
-            store.upsertSession({
-              parentRunId: String(payload.parentRunId ?? ''),
-              parentCallId,
-              subPrompt: String(payload.subPrompt ?? ''),
-              timeoutMs: Number(payload.timeoutMs ?? 60000),
-              mergeStrategy:
-                (payload.mergeStrategy as ParallelSession['mergeStrategy']) ??
-                'per_tab',
-              startedAt: Date.now(),
-              endedAt: null,
-              subRuns: {},
-            });
-          }
-        } else if (kind === 'subrun_started') {
-          // Re-read session after possible session_started branch above.
-          const cur = useParallelRunsStore.getState().sessions[parentCallId];
-          if (!cur) return { ack: true };
-          const sub = payload as unknown as ParallelSubRun;
-          if (!sub.runId) return { ack: true };
-          useParallelRunsStore.getState().upsertSession({
-            ...cur,
-            subRuns: { ...cur.subRuns, [sub.runId]: sub },
+    return on<ParallelEventPayload, { ack: true }>(CHANNELS.PARALLEL_RUN_EVENT, (event) => {
+      const store = useParallelRunsStore.getState();
+      const { parentCallId, kind, payload } = event;
+      const session = store.sessions[parentCallId];
+      if (kind === 'session_started') {
+        if (!session) {
+          store.upsertSession({
+            parentRunId: String(payload.parentRunId ?? ''),
+            parentCallId,
+            subPrompt: String(payload.subPrompt ?? ''),
+            timeoutMs: Number(payload.timeoutMs ?? 60000),
+            mergeStrategy: (payload.mergeStrategy as ParallelSession['mergeStrategy']) ?? 'per_tab',
+            startedAt: Date.now(),
+            endedAt: null,
+            subRuns: {},
           });
-        } else if (kind === 'subrun_opened') {
-          const runId = String(payload.runId ?? '');
-          store.patchSubRun(parentCallId, runId, {
-            conversationId: (payload.conversationId as string | null) ?? null,
-            status: 'running',
-          });
-        } else if (kind === 'subrun_text') {
-          const runId = String(payload.runId ?? '');
-          const content = String(payload.content ?? '');
-          if (content) store.appendSubRunText(parentCallId, runId, content);
-        } else if (kind === 'subrun_data') {
-          const runId = String(payload.runId ?? '');
-          const data = (payload.data ?? {}) as Record<string, unknown>;
-          store.pushSubRunData(parentCallId, runId, data);
-        } else if (kind === 'subrun_completed') {
-          const runId = String(payload.runId ?? '');
-          store.patchSubRun(parentCallId, runId, {
-            status: 'completed',
-            text: String(payload.text ?? ''),
-            error: null,
-            endedAt: Number(payload.endedAt ?? Date.now()),
-            conversationId: (payload.conversationId as string | null) ?? null,
-          });
-        } else if (kind === 'subrun_error') {
-          const runId = String(payload.runId ?? '');
-          store.patchSubRun(parentCallId, runId, {
-            status: 'error',
-            error: String(payload.error ?? 'unknown error'),
-            endedAt: Number(payload.endedAt ?? Date.now()),
-          });
-        } else if (kind === 'subrun_timeout') {
-          const runId = String(payload.runId ?? '');
-          store.patchSubRun(parentCallId, runId, {
-            status: 'timeout',
-            error: String(payload.error ?? 'timed out'),
-            endedAt: Number(payload.endedAt ?? Date.now()),
-          });
-        } else if (kind === 'session_finished') {
-          store.finishSession(parentCallId);
         }
-        return { ack: true };
-      },
-    );
+      } else if (kind === 'subrun_started') {
+        // Re-read session after possible session_started branch above.
+        const cur = useParallelRunsStore.getState().sessions[parentCallId];
+        if (!cur) return { ack: true };
+        const sub = payload as unknown as ParallelSubRun;
+        if (!sub.runId) return { ack: true };
+        useParallelRunsStore.getState().upsertSession({
+          ...cur,
+          subRuns: { ...cur.subRuns, [sub.runId]: sub },
+        });
+      } else if (kind === 'subrun_opened') {
+        const runId = String(payload.runId ?? '');
+        store.patchSubRun(parentCallId, runId, {
+          conversationId: (payload.conversationId as string | null) ?? null,
+          status: 'running',
+        });
+      } else if (kind === 'subrun_text') {
+        const runId = String(payload.runId ?? '');
+        const content = String(payload.content ?? '');
+        if (content) store.appendSubRunText(parentCallId, runId, content);
+      } else if (kind === 'subrun_data') {
+        const runId = String(payload.runId ?? '');
+        const data = (payload.data ?? {}) as Record<string, unknown>;
+        store.pushSubRunData(parentCallId, runId, data);
+      } else if (kind === 'subrun_completed') {
+        const runId = String(payload.runId ?? '');
+        store.patchSubRun(parentCallId, runId, {
+          status: 'completed',
+          text: String(payload.text ?? ''),
+          error: null,
+          endedAt: Number(payload.endedAt ?? Date.now()),
+          conversationId: (payload.conversationId as string | null) ?? null,
+        });
+      } else if (kind === 'subrun_error') {
+        const runId = String(payload.runId ?? '');
+        store.patchSubRun(parentCallId, runId, {
+          status: 'error',
+          error: String(payload.error ?? 'unknown error'),
+          endedAt: Number(payload.endedAt ?? Date.now()),
+        });
+      } else if (kind === 'subrun_timeout') {
+        const runId = String(payload.runId ?? '');
+        store.patchSubRun(parentCallId, runId, {
+          status: 'timeout',
+          error: String(payload.error ?? 'timed out'),
+          endedAt: Number(payload.endedAt ?? Date.now()),
+        });
+      } else if (kind === 'session_finished') {
+        store.finishSession(parentCallId);
+      }
+      return { ack: true };
+    });
   }, []);
 }

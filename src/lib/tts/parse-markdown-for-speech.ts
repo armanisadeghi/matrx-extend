@@ -31,8 +31,19 @@ export function parseMarkdownToText(markdown: string): string {
       'eighteen',
       'nineteen',
     ];
-    const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
-    const numInt = parseInt(num, 10);
+    const tens = [
+      '',
+      '',
+      'twenty',
+      'thirty',
+      'forty',
+      'fifty',
+      'sixty',
+      'seventy',
+      'eighty',
+      'ninety',
+    ];
+    const numInt = Number.parseInt(num, 10);
     if (numInt < 20) return ones[numInt] ?? String(numInt);
     if (numInt < 100) {
       const t = Math.floor(numInt / 10);
@@ -190,7 +201,10 @@ export function parseMarkdownToText(markdown: string): string {
 
   const stripLeadingMarkdown = (input: string): string => {
     let text = input.replace(/^﻿/, '').replace(/^[ \t]*\r?\n/, '');
-    text = text.replace(/^[ \t]*(?:#{1,6}[ \t]+|>[ \t]*|[-*+][ \t]+|\d+\.[ \t]+|-[ \t]*\[[ xX]\][ \t]+)/, '');
+    text = text.replace(
+      /^[ \t]*(?:#{1,6}[ \t]+|>[ \t]*|[-*+][ \t]+|\d+\.[ \t]+|-[ \t]*\[[ xX]\][ \t]+)/,
+      '',
+    );
     return text;
   };
 
@@ -223,7 +237,10 @@ export function parseMarkdownToText(markdown: string): string {
     )
     .replace(/^\|.*\|[ \t]*$/gm, '')
     .replace(/`([^`]+)`/g, '$1')
-    .replace(/\b(\d+)\s*[-–—]\s*(\d+)\b/g, (_match, a, b) => `${numberToWords(a)} to ${numberToWords(b)}`)
+    .replace(
+      /\b(\d+)\s*[-–—]\s*(\d+)\b/g,
+      (_match, a, b) => `${numberToWords(a)} to ${numberToWords(b)}`,
+    )
     .replace(/^#{1,6}\s+(.+)$/gm, 'Section: $1')
     .replace(/\/\/\s*/g, '')
     .replace(/--\s*/g, '')
@@ -250,15 +267,21 @@ export function parseMarkdownToText(markdown: string): string {
         '.csv',
         '.zip',
       ];
-      if (fileExtensions.some((ext) => url.toLowerCase().includes(ext))) return `${text}. Document link provided.`;
+      if (fileExtensions.some((ext) => url.toLowerCase().includes(ext)))
+        return `${text}. Document link provided.`;
       return `${text}. Link provided.`;
     })
-    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_$0, alt) => (alt ? `${alt}. Image provided.` : 'Image provided.'))
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_$0, alt) =>
+      alt ? `${alt}. Image provided.` : 'Image provided.',
+    )
     .replace(/^>\s*(.+)$/gm, 'Quote: $1')
     .replace(/^-\s*\[x\]\s+(.+)$/gm, 'Completed task: $1')
     .replace(/^-\s*\[\s*\]\s+(.+)$/gm, 'Pending task: $1')
     .replace(/^([-*+])\s+(.+)$/gm, '$2')
-    .replace(/^(\d+)\.\s+(.+)$/gm, (_match, num, content) => `Number ${numberToWords(num)}: ${content}`)
+    .replace(
+      /^(\d+)\.\s+(.+)$/gm,
+      (_match, num, content) => `Number ${numberToWords(num)}: ${content}`,
+    )
     .replace(/\[\^(\d+)\]/g, 'Reference $1')
     .replace(/^\[\d+\]:\s*(.+)$/gm, 'Reference: $1')
     .replace(/^(\*{3,}|-{3,}|_{3,})$/gm, '')
@@ -285,11 +308,11 @@ export function parseMarkdownToText(markdown: string): string {
         'November',
         'December',
       ];
-      const monthName = monthNames[parseInt(month) - 1] || month;
+      const monthName = monthNames[Number.parseInt(month) - 1] || month;
       return `${monthName} ${day}, ${year}`;
     })
     .replace(/(\d{1,2}):(\d{2})\s*(AM|PM|am|pm)?/g, (_match, hour, minute, period) => {
-      const hourNum = parseInt(hour);
+      const hourNum = Number.parseInt(hour);
       const periodText = period ? (period.toUpperCase() === 'AM' ? 'A.M.' : 'P.M.') : '';
       return `${hourNum} ${minute} ${periodText}`.trim();
     })

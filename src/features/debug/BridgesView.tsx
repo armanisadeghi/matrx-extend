@@ -41,12 +41,12 @@ import {
 } from '@/lib/desktop/discovery';
 import { rpcHttp } from '@/lib/desktop/http';
 import {
+  type WsControlResult,
   connectWs,
   disconnectWs,
   getWsState,
   getWsStateChangedAt,
   onWsMessage,
-  type WsControlResult,
 } from '@/lib/desktop/ws-client';
 import {
   connectBroadcast,
@@ -59,9 +59,9 @@ import {
   webmcp_check_availability,
   webmcp_list_page_tools,
 } from '@/lib/tools/handlers/webmcp';
+import { cn } from '@/lib/utils';
 import { registerToolsOnActiveTab } from '@/lib/webmcp/register';
 import { useActiveToolsStore } from '@/state/active-tools';
-import { cn } from '@/lib/utils';
 import {
   ChevronDown,
   ChevronRight,
@@ -138,9 +138,7 @@ function Panel({
         <span className="text-[11px] font-semibold uppercase tracking-wider text-foreground">
           {title}
         </span>
-        {subtitle && (
-          <span className="text-[10px] text-muted-foreground">{subtitle}</span>
-        )}
+        {subtitle && <span className="text-[10px] text-muted-foreground">{subtitle}</span>}
         {rightSlot && <div className="ml-auto">{rightSlot}</div>}
       </button>
       {open && <div className="space-y-2 px-3 pb-3">{children}</div>}
@@ -196,10 +194,7 @@ function ChannelAPanel() {
   }, []);
 
   return (
-    <Panel
-      title="Channel A — AI Dream backend"
-      subtitle="agent stream + capability discovery"
-    >
+    <Panel title="Channel A — AI Dream backend" subtitle="agent stream + capability discovery">
       <Section label="Health">
         <div className="flex items-center gap-2">
           <Button size="sm" variant="outline" onClick={onPing} disabled={pinging}>
@@ -357,18 +352,15 @@ function HttpRpcSection() {
   const [argsText, setArgsText] = useState('{}');
   const [callResult, setCallResult] = useState<unknown>(undefined);
 
-  const run = useCallback(
-    async (label: string, command: string, setter: (v: unknown) => void) => {
-      setBusy(label);
-      setter(undefined);
-      const r = await rpcHttp({ command });
-      setter(r);
-      log.info('desktop', `bridges: rpc ${command}`, r);
-      setBusy(null);
-      return r;
-    },
-    [],
-  );
+  const run = useCallback(async (label: string, command: string, setter: (v: unknown) => void) => {
+    setBusy(label);
+    setter(undefined);
+    const r = await rpcHttp({ command });
+    setter(r);
+    log.info('desktop', `bridges: rpc ${command}`, r);
+    setBusy(null);
+    return r;
+  }, []);
 
   const onCapabilities = useCallback(async () => {
     const r = await run('capabilities', 'capabilities', setCapsResult);
@@ -448,9 +440,7 @@ function HttpRpcSection() {
         </div>
       )}
       <div className="space-y-1 pt-1">
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-          Call tool
-        </div>
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Call tool</div>
         {capsTools.length > 0 ? (
           <Select value={toolName} onValueChange={setToolName}>
             <SelectTrigger className="h-7 text-xs">
@@ -479,7 +469,12 @@ function HttpRpcSection() {
           rows={3}
           className="font-mono text-[11px]"
         />
-        <Button size="sm" variant="outline" onClick={() => void onCallTool()} disabled={busy !== null}>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => void onCallTool()}
+          disabled={busy !== null}
+        >
           <Send className="mr-1 size-3.5" /> Send
         </Button>
         <ResultBox label="result" value={callResult} />
@@ -495,10 +490,11 @@ function WsSection() {
   const [lastPing, setLastPing] = useState<number | null>(null);
   const [lastPong, setLastPong] = useState<number | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  const [lastResult, setLastResult] = useState<
-    | { kind: 'connect' | 'disconnect' | 'reconnect'; ts: number; result: WsControlResult }
-    | null
-  >(null);
+  const [lastResult, setLastResult] = useState<{
+    kind: 'connect' | 'disconnect' | 'reconnect';
+    ts: number;
+    result: WsControlResult;
+  } | null>(null);
 
   useEffect(() => {
     const off = onWsMessage((payload) => {
@@ -583,10 +579,7 @@ function WsSection() {
       <KV k="last_tool_catalog_hash" v={lastHash ?? '—'} />
       <div className="flex flex-wrap items-center gap-1.5 pt-1">
         <Button size="sm" variant="outline" onClick={() => void onConnect()} disabled={isBusy}>
-          <Plug
-            className={cn('mr-1 size-3.5', busy === 'connect' && 'animate-pulse')}
-          />{' '}
-          Connect
+          <Plug className={cn('mr-1 size-3.5', busy === 'connect' && 'animate-pulse')} /> Connect
         </Button>
         <Button size="sm" variant="outline" onClick={() => void onDisconnect()} disabled={isBusy}>
           <Power className="mr-1 size-3.5" /> Disconnect
@@ -597,16 +590,10 @@ function WsSection() {
           onClick={() => void onForceReconnect()}
           disabled={isBusy}
         >
-          <RefreshCw
-            className={cn('mr-1 size-3.5', busy === 'reconnect' && 'animate-spin')}
-          />{' '}
+          <RefreshCw className={cn('mr-1 size-3.5', busy === 'reconnect' && 'animate-spin')} />{' '}
           Force reconnect
         </Button>
-        {busy && (
-          <span className="font-mono text-[11px] text-muted-foreground">
-            {busy}…
-          </span>
-        )}
+        {busy && <span className="font-mono text-[11px] text-muted-foreground">{busy}…</span>}
       </div>
       {lastResult && (
         <div
@@ -618,7 +605,9 @@ function WsSection() {
           <span className="text-muted-foreground">
             {new Date(lastResult.ts).toLocaleTimeString()} · {lastResult.kind}
           </span>{' '}
-          {lastResult.result.ok ? 'OK' : `FAIL${lastResult.result.stage ? ` @ ${lastResult.result.stage}` : ''}: ${lastResult.result.error ?? '(no error message)'}`}
+          {lastResult.result.ok
+            ? 'OK'
+            : `FAIL${lastResult.result.stage ? ` @ ${lastResult.result.stage}` : ''}: ${lastResult.result.error ?? '(no error message)'}`}
         </div>
       )}
       <div className="space-y-1 pt-1">
@@ -718,12 +707,7 @@ function ChannelCPanel() {
           <span className="text-[11px]">
             {enabled ? 'recording (last 50, FIFO)' : 'OFF (no production cost)'}
           </span>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="ml-auto"
-            onClick={clearEntries}
-          >
+          <Button size="sm" variant="ghost" className="ml-auto" onClick={clearEntries}>
             <Eraser className="mr-1 size-3.5" /> Clear
           </Button>
         </div>
@@ -807,12 +791,7 @@ function BridgeTrafficList({
             <span className="text-muted-foreground">{new Date(e.ts).toLocaleTimeString()}</span>
             <span className="font-semibold">{e.action}</span>
             <span className="text-muted-foreground">{e.requestId?.slice(0, 8) ?? ''}</span>
-            <span
-              className={cn(
-                'ml-auto',
-                e.ok === false ? 'text-red-500' : 'text-emerald-500',
-              )}
-            >
+            <span className={cn('ml-auto', e.ok === false ? 'text-red-500' : 'text-emerald-500')}>
               {e.ok === false ? 'fail' : 'ok'}
             </span>
           </div>

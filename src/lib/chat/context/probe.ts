@@ -194,7 +194,7 @@ export async function probeActivePage(tabId: number): Promise<PageProbe | null> 
           if (rect.width === 0 && rect.height === 0) return false;
           const style = window.getComputedStyle(el);
           if (style.visibility === 'hidden' || style.display === 'none') return false;
-          if (parseFloat(style.opacity || '1') === 0) return false;
+          if (Number.parseFloat(style.opacity || '1') === 0) return false;
           return true;
         }
         function inChrome(el: Element): boolean {
@@ -237,9 +237,9 @@ export async function probeActivePage(tabId: number): Promise<PageProbe | null> 
           return '';
         }
 
-        const allInteractive = Array.from(
-          document.querySelectorAll(INTERACTIVE_SELECTOR),
-        ).filter(isVisible);
+        const allInteractive = Array.from(document.querySelectorAll(INTERACTIVE_SELECTOR)).filter(
+          isVisible,
+        );
         const mainInteractive = allInteractive.filter((el) => !inChrome(el));
         const chromeInteractive = allInteractive.filter((el) => inChrome(el));
         const chromeInteractiveCount = chromeInteractive.length;
@@ -275,13 +275,11 @@ export async function probeActivePage(tabId: number): Promise<PageProbe | null> 
         }));
 
         // ── brief: headings ─────────────────────────────────────────────────
-        const headings = Array.from(
-          document.querySelectorAll<HTMLElement>('h1, h2'),
-        )
+        const headings = Array.from(document.querySelectorAll<HTMLElement>('h1, h2'))
           .filter(isVisible)
           .slice(0, 12)
           .map((h) => ({
-            level: parseInt(h.tagName.slice(1), 10),
+            level: Number.parseInt(h.tagName.slice(1), 10),
             text: (h.innerText ?? h.textContent ?? '').trim().slice(0, 120),
           }))
           .filter((h) => h.text.length > 0);
@@ -325,7 +323,7 @@ export async function probeActivePage(tabId: number): Promise<PageProbe | null> 
           if (rect.width < 40 || rect.height < 40) return false;
           const style = window.getComputedStyle(iframe);
           if (style.display === 'none' || style.visibility === 'hidden') return false;
-          if (parseFloat(style.opacity || '1') === 0) return false;
+          if (Number.parseFloat(style.opacity || '1') === 0) return false;
           return true;
         });
         if (visibleCaptchaIframe) flags.push('captcha_present');
@@ -358,7 +356,7 @@ export async function probeActivePage(tabId: number): Promise<PageProbe | null> 
         ).filter((el) => {
           const s = window.getComputedStyle(el);
           if (s.position !== 'fixed' && s.position !== 'sticky') return false;
-          const z = parseInt(s.zIndex, 10);
+          const z = Number.parseInt(s.zIndex, 10);
           if (Number.isNaN(z) || z < 100) return false;
           const rect = el.getBoundingClientRect();
           // Modal-sized, not just a toast.
@@ -403,9 +401,7 @@ export async function probeActivePage(tabId: number): Promise<PageProbe | null> 
           return parts.join(' > ');
         }
 
-        function findCloseButton(
-          el: HTMLElement,
-        ): { selector: string; label: string } | null {
+        function findCloseButton(el: HTMLElement): { selector: string; label: string } | null {
           const candidates = el.querySelectorAll<HTMLElement>(
             'button, a, [role="button"], [aria-label]',
           );
@@ -486,9 +482,7 @@ export async function probeActivePage(tabId: number): Promise<PageProbe | null> 
             const priceMatch = itemText.match(
               /[$€£¥₹]\s*[\d,]+(?:\.\d+)?|\b\d+(?:\.\d+)?\s*(?:USD|EUR|GBP|CAD|AUD)\b/i,
             );
-            const ratingMatch = itemText.match(
-              /(\d(?:\.\d)?)\s*(?:\/|out of)\s*(?:5|10)|★+|⭐+/,
-            );
+            const ratingMatch = itemText.match(/(\d(?:\.\d)?)\s*(?:\/|out of)\s*(?:5|10)|★+|⭐+/);
             const img = item.querySelector('img');
             return {
               title,
@@ -518,7 +512,8 @@ export async function probeActivePage(tabId: number): Promise<PageProbe | null> 
         } else if (
           formsCount === 1 &&
           mainEl?.querySelector('form') &&
-          (mainEl.querySelector('form')?.querySelectorAll('input, textarea, select').length ?? 0) >= 3
+          (mainEl.querySelector('form')?.querySelectorAll('input, textarea, select').length ?? 0) >=
+            3
         ) {
           kind = 'form';
         } else if (

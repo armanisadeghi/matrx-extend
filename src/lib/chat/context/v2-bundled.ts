@@ -24,19 +24,19 @@
  */
 
 import { log } from '@/lib/debug/log';
+import { getPlan, listTasks, listUserTodos } from '@/lib/lists/storage';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
 import { prewarmReadPageCache } from '@/lib/tools/handlers/page-refs';
-import type { ContextBuildInputs } from './types';
 import { checkAuthState } from './check-auth-state';
 import { checkPageReady } from './check-page-ready';
 import { detectEmail, isEmailUrl } from './detect-email';
 import { detectPullRequest, isPullRequestUrl } from './detect-pull-request';
 import { detectTicket, isTicketUrl } from './detect-ticket';
-import { getPlan, listTasks, listUserTodos } from '@/lib/lists/storage';
 import { discoverFormsForContext } from './discover-forms';
 import { getDomainMemoForUrl } from './domain-memo';
 import { getGuidanceForUrl } from './guidance';
 import { probeActivePage } from './probe';
+import type { ContextBuildInputs } from './types';
 
 export async function buildContextV2Bundled(
   inputs: ContextBuildInputs,
@@ -161,19 +161,20 @@ export async function buildContextV2Bundled(
     // separate read_page round trip.
     await prewarmReadPageCache(tabId);
   }
-  const tasks = tabId !== null
-    ? Promise.all([
-        probeActivePage(tabId),
-        discoverFormsForContext(tabId),
-        checkPageReady(tabId),
-        isPullRequestUrl(url) ? detectPullRequest(tabId, url) : Promise.resolve(null),
-        isEmailUrl(url) ? detectEmail(tabId, url) : Promise.resolve(null),
-        isTicketUrl(url) ? detectTicket(tabId, url) : Promise.resolve(null),
-        url ? checkAuthState(tabId, url) : Promise.resolve(null),
-        url ? getDomainMemoForUrl(url) : Promise.resolve(null),
-        url ? getGuidanceForUrl(url) : Promise.resolve(null),
-      ])
-    : Promise.resolve([null, null, null, null, null, null, null, null, null] as const);
+  const tasks =
+    tabId !== null
+      ? Promise.all([
+          probeActivePage(tabId),
+          discoverFormsForContext(tabId),
+          checkPageReady(tabId),
+          isPullRequestUrl(url) ? detectPullRequest(tabId, url) : Promise.resolve(null),
+          isEmailUrl(url) ? detectEmail(tabId, url) : Promise.resolve(null),
+          isTicketUrl(url) ? detectTicket(tabId, url) : Promise.resolve(null),
+          url ? checkAuthState(tabId, url) : Promise.resolve(null),
+          url ? getDomainMemoForUrl(url) : Promise.resolve(null),
+          url ? getGuidanceForUrl(url) : Promise.resolve(null),
+        ])
+      : Promise.resolve([null, null, null, null, null, null, null, null, null] as const);
   const [probe, forms, pageReady, pullRequest, email, ticket, authState, domainMemo, guidance] =
     await tasks;
 
@@ -188,7 +189,7 @@ export async function buildContextV2Bundled(
   const scrape = manualScrape ?? autoScrape?.soup ?? null;
   const scrapeCapturedAt = manualScrape
     ? manualScrape.capturedAt
-    : autoScrape?.capturedAt ?? null;
+    : (autoScrape?.capturedAt ?? null);
 
   // ── page_brief — the always-loaded rich snapshot ───────────────────────
   if (probe) {
@@ -242,13 +243,14 @@ export async function buildContextV2Bundled(
             main_interactive: probe.brief.main_interactive,
           }
         : null,
-      content: trustworthy && scrape
-        ? {
-            excerpt: firstChars(scrape.article.content_markdown, 1500),
-            word_count: scrape.article.word_count,
-            reading_time_min: scrape.article.reading_time_minutes,
-          }
-        : null,
+      content:
+        trustworthy && scrape
+          ? {
+              excerpt: firstChars(scrape.article.content_markdown, 1500),
+              word_count: scrape.article.word_count,
+              reading_time_min: scrape.article.reading_time_minutes,
+            }
+          : null,
       more_available: briefMore,
     };
   }
@@ -401,7 +403,8 @@ export async function buildContextV2Bundled(
         bundle.images_filtered = {
           shown: filteredImages.length,
           dropped,
-          dropped_reason: 'tracking pixels, placeholders, and CDN wrappers — fetch `page_media_raw` for the full list',
+          dropped_reason:
+            'tracking pixels, placeholders, and CDN wrappers — fetch `page_media_raw` for the full list',
         };
       }
       ctx.page_media = bundle;
@@ -410,11 +413,7 @@ export async function buildContextV2Bundled(
     // downloading specific images can read it on demand. Cheap to ship
     // because the wire path is ctx-pagination; large payloads don't
     // auto-inline (see ctx_get(mode='page') in matrx-ai).
-    if (
-      scrape.images.length > 0 ||
-      scrape.videos.length > 0 ||
-      scrape.audio.length > 0
-    ) {
+    if (scrape.images.length > 0 || scrape.videos.length > 0 || scrape.audio.length > 0) {
       ctx.page_media_raw = {
         images: scrape.images,
         videos: scrape.videos,
@@ -545,7 +544,8 @@ function isProductBlock(block: unknown): boolean {
   if (!block || typeof block !== 'object') return false;
   const type = (block as Record<string, unknown>)['@type'];
   if (typeof type === 'string') return /Product|Offer/i.test(type);
-  if (Array.isArray(type)) return type.some((t) => typeof t === 'string' && /Product|Offer/i.test(t));
+  if (Array.isArray(type))
+    return type.some((t) => typeof t === 'string' && /Product|Offer/i.test(t));
   return false;
 }
 
@@ -607,11 +607,13 @@ interface FormattedResultListItem {
 // Common ad-network hostnames. Conservative — extend as we see more in
 // the wild. False negative is fine (item just shows up as content);
 // false positive is worse (model skips legit content).
-const AD_NETWORK_HOSTS = /\b(jd8trk|doubleclick|googleadservices|googlesyndication|taboola|outbrain|adsystem|adservice|criteo|adnxs)\.com\b/i;
+const AD_NETWORK_HOSTS =
+  /\b(jd8trk|doubleclick|googleadservices|googlesyndication|taboola|outbrain|adsystem|adservice|criteo|adnxs)\.com\b/i;
 
-function formatResultListForContext(
-  list: { count: number; items: RawResultListItem[] },
-): { count: number; items: FormattedResultListItem[] } {
+function formatResultListForContext(list: { count: number; items: RawResultListItem[] }): {
+  count: number;
+  items: FormattedResultListItem[];
+} {
   const items = list.items.map((item) => {
     const out: FormattedResultListItem = { title: item.title, url: item.url };
     if (item.price) out.price = item.price;
@@ -653,12 +655,10 @@ interface FormattedLink {
   rel?: string;
 }
 
-const SOCIAL_HOSTS = /\b(facebook|twitter|x|instagram|linkedin|youtube|tiktok|reddit|pinterest|threads\.net|mastodon|bsky\.app|github)\b/i;
+const SOCIAL_HOSTS =
+  /\b(facebook|twitter|x|instagram|linkedin|youtube|tiktok|reddit|pinterest|threads\.net|mastodon|bsky\.app|github)\b/i;
 
-function formatLinksForContext(
-  links: ContextLink[],
-  pageUrl: string | null,
-): FormattedLink[] {
+function formatLinksForContext(links: ContextLink[], pageUrl: string | null): FormattedLink[] {
   // Dedupe by href, preferring the entry with non-empty text.
   const byHref = new Map<string, ContextLink>();
   for (const link of links) {

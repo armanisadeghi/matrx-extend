@@ -21,8 +21,8 @@ export function PrepareTab() {
             Prepare page
           </div>
           <div className="text-xs text-muted-foreground">
-            Heuristic-only cleanup before extraction. Dismisses cookie banners, clicks
-            "Load more" buttons, and scrolls to trigger lazy-loaded content. No AI.
+            Heuristic-only cleanup before extraction. Dismisses cookie banners, clicks "Load more"
+            buttons, and scrolls to trigger lazy-loaded content. No AI.
           </div>
         </div>
 
@@ -75,11 +75,7 @@ export function PrepareTab() {
               count={report.load_more_clicks.length}
               items={report.load_more_clicks.map((b) => `"${b.text}"`)}
             />
-            <ReportRow
-              label="Scroll steps"
-              count={report.scroll_steps}
-              items={[]}
-            />
+            <ReportRow label="Scroll steps" count={report.scroll_steps} items={[]} />
           </div>
         )}
       </div>

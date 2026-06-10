@@ -8,9 +8,9 @@ import { JsonLdTab } from './tabs/JsonLdTab';
 import { ListPatternTab } from './tabs/ListPatternTab';
 import { MicrodataTab } from './tabs/MicrodataTab';
 import { NetworkTab } from './tabs/NetworkTab';
-import { RecipesTab } from './tabs/RecipesTab';
 import { PatternsTab } from './tabs/PatternsTab';
 import { PrepareTab } from './tabs/PrepareTab';
+import { RecipesTab } from './tabs/RecipesTab';
 import { SnapshotTab } from './tabs/SnapshotTab';
 import { TablesTab } from './tabs/TablesTab';
 

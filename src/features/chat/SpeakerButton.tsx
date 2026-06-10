@@ -17,10 +17,10 @@
  * actually pressed Play allocate one.
  */
 
+import { useCartesiaSpeaker } from '@/lib/tts/useCartesiaSpeaker';
+import { cn } from '@/lib/utils';
 import { Loader2, Pause, Volume2, VolumeX } from 'lucide-react';
 import { useCallback, useState } from 'react';
-import { cn } from '@/lib/utils';
-import { useCartesiaSpeaker } from '@/lib/tts/useCartesiaSpeaker';
 
 interface SpeakerButtonProps {
   /** Raw markdown the agent emitted; stripped to plain text before sending. */

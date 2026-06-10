@@ -17,6 +17,7 @@
  * caching behaviour in production.
  */
 
+import { canonicalJson } from '@/lib/audit/device-key';
 import {
   PENDING_OUTPUT,
   RECEIPT_SCHEMA_VERSION,
@@ -25,7 +26,6 @@ import {
   buildReceipt,
   verifyReceipt,
 } from '@/lib/audit/receipt';
-import { canonicalJson } from '@/lib/audit/device-key';
 import { describe, expect, it } from 'vitest';
 
 const baseInput = (overrides: Partial<Parameters<typeof buildReceipt>[0]> = {}) => ({
@@ -107,10 +107,7 @@ describe('ToolReceipt schema v1 backward compatibility', () => {
     const sigBytes = new Uint8Array(sig);
     let bin = '';
     for (let i = 0; i < sigBytes.byteLength; i++) bin += String.fromCharCode(sigBytes[i] as number);
-    const sigB64Url = btoa(bin)
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
+    const sigB64Url = btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 
     const v1Receipt: ToolReceipt = {
       ...v1Body,

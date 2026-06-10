@@ -17,20 +17,14 @@
  *   - error          — terminal; the consumer can reset by calling reset()
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { uploadFile } from '@/lib/api/routes/files';
 import { log } from '@/lib/debug/log';
 import { base64ToBlob } from '@/lib/messaging/binary-transport';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import {
-  hasOptionalPermissions,
-  requestOptionalPermission,
-} from '@/lib/permissions/optional';
-import {
-  useRecordingsStore,
-  type RecordingEntry,
-} from '@/lib/video/recordings-store';
+import { hasOptionalPermissions, requestOptionalPermission } from '@/lib/permissions/optional';
+import { type RecordingEntry, useRecordingsStore } from '@/lib/video/recordings-store';
 import type { VideoEvent, VideoRequestPayload } from '@/lib/video/video-types';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type RecorderStatus =
   | 'idle'

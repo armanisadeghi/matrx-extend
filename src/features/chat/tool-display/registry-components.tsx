@@ -126,7 +126,8 @@ function toDataUri(value: unknown): string {
   const raw = pickString(obj, ['image_base64', 'base64', 'data', 'image']);
   if (!raw) return '';
   if (raw.startsWith('data:')) return raw;
-  const mediaType = pickString(obj, ['media_type', 'mediaType', 'mime_type', 'mimeType']) ??
+  const mediaType =
+    pickString(obj, ['media_type', 'mediaType', 'mime_type', 'mimeType']) ??
     formatToMime(pickString(obj, ['format'])) ??
     'image/png';
   return `data:${mediaType};base64,${raw}`;
@@ -234,9 +235,7 @@ const TabCard = ({ value, className }: FieldProps) => {
         <Globe className="size-5 shrink-0 text-muted-foreground" />
       )}
       <div className="min-w-0 flex-1 space-y-0.5">
-        {title && (
-          <div className="truncate text-[12px] font-medium text-foreground">{title}</div>
-        )}
+        {title && <div className="truncate text-[12px] font-medium text-foreground">{title}</div>}
         {url && (
           <a
             href={url}
@@ -283,10 +282,7 @@ const Table = ({ value, className }: FieldProps) => {
 
   return (
     <div
-      className={cn(
-        'overflow-auto rounded-md border border-border/40 bg-background/40',
-        className,
-      )}
+      className={cn('overflow-auto rounded-md border border-border/40 bg-background/40', className)}
     >
       <table className="w-full border-collapse text-[11px]">
         <thead className="bg-muted/40">
@@ -303,10 +299,7 @@ const Table = ({ value, className }: FieldProps) => {
         </thead>
         <tbody>
           {rows.map((r, ri) => (
-            <tr
-              key={r.index ?? ri}
-              className="border-t border-border/20 hover:bg-muted/30"
-            >
+            <tr key={r.index ?? ri} className="border-t border-border/20 hover:bg-muted/30">
               {visibleCols.map((c) => {
                 const cell = r.cells?.[c.index];
                 return (

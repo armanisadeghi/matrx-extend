@@ -31,17 +31,24 @@ describe('normalizeSemanticMarkup — Mintlify/MDX paragraphs', () => {
     // Pre-fix bug: paragraphs were joined with a single space (no break).
     expect(md).not.toMatch(/First paragraph here\.[ \t]+Second separate paragraph\./);
     // Three paragraphs => blank-line separated.
-    const paras = md.split(/\n{2,}/).map((s) => s.trim()).filter(Boolean);
+    const paras = md
+      .split(/\n{2,}/)
+      .map((s) => s.trim())
+      .filter(Boolean);
     expect(paras).toHaveLength(3);
   });
 
   it('renames data-as headings to real heading tags', () => {
-    const md = toMarkdown(`<div data-as="h2">Managed buffering</div><span data-as="p">Body.</span>`);
+    const md = toMarkdown(
+      `<div data-as="h2">Managed buffering</div><span data-as="p">Body.</span>`,
+    );
     expect(md).toMatch(/^## Managed buffering$/m);
   });
 
   it('preserves inline markup inside a converted paragraph', () => {
-    const md = toMarkdown(`<span data-as="p">Set <code>max_buffer_delay_ms</code> to <strong>0</strong>.</span>`);
+    const md = toMarkdown(
+      `<span data-as="p">Set <code>max_buffer_delay_ms</code> to <strong>0</strong>.</span>`,
+    );
     expect(md).toContain('`max_buffer_delay_ms`');
     expect(md).toContain('**0**');
   });

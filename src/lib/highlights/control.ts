@@ -6,8 +6,8 @@
  * overlay, so calling start() while already active just re-paints.
  */
 
-import { CHANNELS } from '@/lib/messaging/schemas';
 import type { HighlightAnchor, HighlightListItem, HighlightMode } from '@/lib/highlights/types';
+import { CHANNELS } from '@/lib/messaging/schemas';
 
 function envelope(kind: string, payload: unknown) {
   return { __matrx: true, kind, payload };

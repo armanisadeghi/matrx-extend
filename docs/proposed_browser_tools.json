@@ -83,13 +83,7 @@
     "advanced": {
       "recommendation": "optional",
       "description": "Power-user and admin-gated tools. evaluate_javascript is admin-only by default. Include in the agent definition only if the standard kit is insufficient for the agent's purpose.",
-      "tools": [
-        "evaluate_javascript",
-        "resize_window",
-        "browser_batch",
-        "memory",
-        "record_gif"
-      ]
+      "tools": ["evaluate_javascript", "resize_window", "browser_batch", "memory", "record_gif"]
     }
   },
 

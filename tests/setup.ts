@@ -17,11 +17,7 @@ const _chromeLocal = {
     if (keys === null || keys === undefined) {
       return Object.fromEntries(_chromeStore);
     }
-    const list = Array.isArray(keys)
-      ? keys
-      : typeof keys === 'string'
-        ? [keys]
-        : Object.keys(keys);
+    const list = Array.isArray(keys) ? keys : typeof keys === 'string' ? [keys] : Object.keys(keys);
     const out: Record<string, unknown> = {};
     for (const k of list) if (_chromeStore.has(k)) out[k] = _chromeStore.get(k);
     return out;

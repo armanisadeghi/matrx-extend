@@ -21,6 +21,7 @@
  * plan approval) and live alongside it.
  */
 
+import { addTasks, savePlan, setPlanStatus } from '@/lib/lists/storage';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import type {
@@ -30,7 +31,6 @@ import type {
   UserAskKind,
   UserAskOption,
 } from '@/lib/tools/types';
-import { addTasks, savePlan, setPlanStatus } from '@/lib/lists/storage';
 import { z } from 'zod';
 
 // ─── unified `user` tool ──────────────────────────────────────────────────
@@ -94,9 +94,7 @@ const UserArgs = z
     const isBatch = !!v.questions && v.questions.length > 0;
     if (isBatch) {
       // Batched form: everything ELSE must be absent.
-      const stray = Object.entries(v).find(
-        ([k, val]) => k !== 'questions' && val !== undefined,
-      );
+      const stray = Object.entries(v).find(([k, val]) => k !== 'questions' && val !== undefined);
       if (stray) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -155,12 +153,12 @@ function isBatched(args: UserArgs): args is UserArgs & { questions: SingleQuesti
 }
 
 /** Normalize bare-string options to the rich shape. */
-function normalizeOptions(
-  raw: SingleQuestion['options'],
-): UserAskOption[] | undefined {
+function normalizeOptions(raw: SingleQuestion['options']): UserAskOption[] | undefined {
   if (!raw) return undefined;
   return raw.map((o) =>
-    typeof o === 'string' ? { label: o } : { label: o.label, description: o.description, preview: o.preview },
+    typeof o === 'string'
+      ? { label: o }
+      : { label: o.label, description: o.description, preview: o.preview },
   );
 }
 
@@ -221,8 +219,7 @@ async function runSingleQuestion(
     context: q.context,
     // Always offer a freeform "Other" escape on choice/choice_many — independent of
     // what the model sent (allow_other isn't even in the canonical model schema).
-    allow_other:
-      q.type === 'choice' || q.type === 'choice_many' ? true : q.allow_other,
+    allow_other: q.type === 'choice' || q.type === 'choice_many' ? true : q.allow_other,
     // Came from the `user` tool → enable the note + write-instead escapes in the card.
     allow_extras: true,
     batch_index: batch?.index,
@@ -429,9 +426,7 @@ export const update_plan: ToolHandler<UpdatePlanArgs, unknown> = {
       args.reasoning ? `\n_${args.reasoning}_` : '',
       '',
       renderedSteps,
-      args.domains && args.domains.length
-        ? `\n_Will visit: ${args.domains.join(', ')}_`
-        : '',
+      args.domains && args.domains.length ? `\n_Will visit: ${args.domains.join(', ')}_` : '',
       args.estimated_minutes
         ? `\n_~${args.estimated_minutes} minute${args.estimated_minutes === 1 ? '' : 's'}_`
         : '',

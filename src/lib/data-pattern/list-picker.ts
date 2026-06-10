@@ -224,9 +224,7 @@ function highlightSiblings() {
   try {
     const root = document.querySelector(listRootSel);
     if (!root) return;
-    nodes = Array.from(root.querySelectorAll(itemSel)).filter(
-      (n) => n.parentElement === root,
-    );
+    nodes = Array.from(root.querySelectorAll(itemSel)).filter((n) => n.parentElement === root);
   } catch {
     return;
   }

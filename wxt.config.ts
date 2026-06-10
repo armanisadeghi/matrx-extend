@@ -84,12 +84,7 @@ export default defineConfig({
     // wiring up the corresponding tools — see that file for the checklist):
     //   'userScripts', 'proxy', 'webRequest', 'desktopCapture', 'topSites',
     //   'management'
-    optional_permissions: [
-      'cookies',
-      'pageCapture',
-      'clipboardRead',
-      'tabCapture',
-    ],
+    optional_permissions: ['cookies', 'pageCapture', 'clipboardRead', 'tabCapture'],
     // Host permissions — broad web access at install time so the agent can
     // read / interact with arbitrary pages without the user fighting Chrome
     // dialogs every time. We previously experimented with moving <all_urls>

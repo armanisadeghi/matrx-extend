@@ -1,3 +1,20 @@
+import {
+  discardRecording,
+  getActiveRecording,
+  startRecording,
+  stopRecording,
+} from '@/lib/demos/recorder';
+import { replayDemo } from '@/lib/demos/replayer';
+import {
+  getDemo,
+  listDemos,
+  makeDemoId,
+  saveDemo,
+  deleteDemo as storageDeleteDemo,
+} from '@/lib/demos/storage';
+import type { Demo, DemoParameter, DemoStep } from '@/lib/demos/types';
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
+import type { ToolHandler, ToolTier } from '@/lib/tools/types';
 /**
  * Agent-callable tools for the demo system.
  *
@@ -19,12 +36,6 @@
  *    .research/demo-system-design-notes.md
  */
 import { z } from 'zod';
-import { deleteDemo as storageDeleteDemo, getDemo, listDemos, makeDemoId, saveDemo } from '@/lib/demos/storage';
-import { discardRecording, getActiveRecording, startRecording, stopRecording } from '@/lib/demos/recorder';
-import { replayDemo } from '@/lib/demos/replayer';
-import type { Demo, DemoParameter, DemoStep } from '@/lib/demos/types';
-import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
-import type { ToolHandler, ToolTier } from '@/lib/tools/types';
 
 // ─── record_demo ───────────────────────────────────────────────────────────
 const ParameterDefSchema = z.object({
@@ -107,7 +118,8 @@ export const record_demo: ToolHandler<RecordDemoArgs, unknown> = {
       if (step.param_placeholder && !declaredNames.has(step.param_placeholder)) {
         auto.push({
           name: step.param_placeholder,
-          description: step.element_snapshot?.accessible_name ?? `Auto-derived from step ${step.index}`,
+          description:
+            step.element_snapshot?.accessible_name ?? `Auto-derived from step ${step.index}`,
           sensitive: step.is_sensitive,
         });
         declaredNames.add(step.param_placeholder);
@@ -213,7 +225,9 @@ export const delete_demo: ToolHandler<DeleteDemoArgs, unknown> = {
   argsSchema: DeleteDemoArgs,
   run: async (args) => {
     const ok = await storageDeleteDemo(args.demo_id);
-    return ok ? { ok: true, deleted: true } : { ok: false, reason: `No demo with id=${args.demo_id}` };
+    return ok
+      ? { ok: true, deleted: true }
+      : { ok: false, reason: `No demo with id=${args.demo_id}` };
   },
 };
 

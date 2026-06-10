@@ -1,10 +1,10 @@
 import { AddToProjectButton } from '@/components/AddToProjectButton';
-import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { DiagnoseCard, DiagnoseLauncher } from '@/features/scrape/DiagnoseCard';
+import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { MarkdownView } from '@/components/MarkdownView';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DiagnoseCard, DiagnoseLauncher } from '@/features/scrape/DiagnoseCard';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { usePageRecognition } from '@/hooks/use-page-recognition';
 import { usePageScrollSync } from '@/hooks/use-page-scroll-sync';
@@ -33,10 +33,10 @@ import {
   ChevronsDown,
   Download,
   ImageIcon,
-  Link as LinkIcon,
-  Loader2,
   Link2,
   Link2Off,
+  Link as LinkIcon,
+  Loader2,
   Pencil,
   PlayCircle,
   Plus,
@@ -264,11 +264,7 @@ export function ScrapeView() {
                         placeholder="Article markdown — edit freely. Save persists to the in-memory capture; click Save below to write it to the server."
                       />
                       <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          onClick={commitArticleEdit}
-                          className="rounded-full"
-                        >
+                        <Button size="sm" onClick={commitArticleEdit} className="rounded-full">
                           <CheckCircle2 /> Apply
                         </Button>
                         <Button
@@ -383,10 +379,7 @@ export function ScrapeView() {
                       </a>
                       <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                         <CopyButton text={v.src} title="Copy video URL" size="xs" />
-                        <DeleteRowButton
-                          title="Remove video"
-                          onClick={() => removeVideo(v.src)}
-                        />
+                        <DeleteRowButton title="Remove video" onClick={() => removeVideo(v.src)} />
                       </div>
                     </div>
                   ))}
@@ -418,12 +411,7 @@ export function ScrapeView() {
                       className="group flex items-start gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-accent"
                     >
                       <LinkIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                      <a
-                        href={l.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="min-w-0 flex-1"
-                      >
+                      <a href={l.href} target="_blank" rel="noreferrer" className="min-w-0 flex-1">
                         <div className="truncate">{l.text || l.href}</div>
                         <div className="truncate text-xs text-muted-foreground">{l.href}</div>
                       </a>

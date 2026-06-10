@@ -1,3 +1,4 @@
+import * as cdp from '@/lib/cdp/client';
 /**
  * Per-tab GIF recording state, backed by Chrome DevTools Protocol's
  * `Page.startScreencast`.
@@ -24,7 +25,6 @@
  *    event-routing caveat, SW lifecycle, frame-rate throttling rationale.
  */
 import { log } from '@/lib/debug/log';
-import * as cdp from '@/lib/cdp/client';
 
 export interface RawFrame {
   /** Base64 JPEG payload from `Page.screencastFrame`. */
@@ -89,7 +89,10 @@ export async function startRecording(
   tabId: number,
 ): Promise<{ ok: boolean; reason?: string; width?: number; height?: number }> {
   if (STATES.has(tabId)) {
-    return { ok: false, reason: 'A recording is already active on this tab. Stop or clear it first.' };
+    return {
+      ok: false,
+      reason: 'A recording is already active on this tab. Stop or clear it first.',
+    };
   }
   const attached = await cdp.attach(tabId);
   if (!attached.ok) return { ok: false, reason: `cdp attach failed: ${attached.reason}` };
@@ -154,7 +157,7 @@ export async function startRecording(
   }
 
   STATES.set(tabId, state);
-  log.info('sw',`recording started on tab ${tabId}`);
+  log.info('sw', `recording started on tab ${tabId}`);
   return { ok: true };
 }
 
@@ -172,11 +175,12 @@ export async function stopRecording(
     chrome.debugger.onEvent.removeListener(state.cdpListener);
     state.cdpListener = null;
   }
-  log.info('sw',`recording stopped on tab ${tabId} (${state.frames.length} frames)`);
+  log.info('sw', `recording stopped on tab ${tabId} (${state.frames.length} frames)`);
   return {
     ok: true,
     frame_count: state.frames.length,
-    duration_ms: state.frames.length > 0 ? state.frames[state.frames.length - 1]!.ts - state.startedAt : 0,
+    duration_ms:
+      state.frames.length > 0 ? state.frames[state.frames.length - 1]!.ts - state.startedAt : 0,
   };
 }
 

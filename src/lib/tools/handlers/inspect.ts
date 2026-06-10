@@ -293,8 +293,7 @@ export const get_element_at_point: ToolHandler<ElementAtPointArgs, unknown> = {
         }
         const el = document.elementFromPoint(x, y);
         if (!el) return { ok: false, reason: 'No element at that point' };
-        const isPassword =
-          el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
+        const isPassword = el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
         const attrs: Record<string, string> = {};
         for (const a of Array.from(el.attributes)) {
           attrs[a.name] = isPassword && a.name === 'value' ? '***' : a.value;
@@ -329,8 +328,7 @@ export const inspect_element: ToolHandler<InspectArgs, unknown> = {
       func: (selector: string) => {
         const el = document.querySelector(selector) as HTMLElement | null;
         if (!el) return { ok: false, reason: `No element at ${selector}` };
-        const isPassword =
-          el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
+        const isPassword = el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
         const attrs: Record<string, string> = {};
         for (const a of Array.from(el.attributes)) {
           attrs[a.name] = isPassword && a.name === 'value' ? '***' : a.value;
@@ -405,8 +403,7 @@ export const get_element_details: ToolHandler<ElementDetailsArgs, unknown> = {
       func: (selector: string, includeHtml: boolean, includeStyles: boolean) => {
         const el = document.querySelector(selector) as HTMLElement | null;
         if (!el) return { ok: false, reason: `No element for ${selector}` };
-        const isPassword =
-          el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
+        const isPassword = el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
         const attrs: Record<string, string> = {};
         for (const a of Array.from(el.attributes)) {
           attrs[a.name] = isPassword && a.name === 'value' ? '***' : a.value;

@@ -35,7 +35,7 @@
  * you can see all three sources of truth side-by-side.
  */
 
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -112,9 +112,7 @@ function loadLocalRefs() {
   const catFile = readFileSync(resolve(ROOT, 'src/lib/tools/categories.ts'), 'utf8');
 
   const surfaceMatch = catFile.match(/CANONICAL_SURFACE.*?Set<string>.*?\[(.*?)\]/s);
-  const surface = surfaceMatch
-    ? [...surfaceMatch[1].matchAll(/'([^']+)'/g)].map((m) => m[1])
-    : [];
+  const surface = surfaceMatch ? [...surfaceMatch[1].matchAll(/'([^']+)'/g)].map((m) => m[1]) : [];
 
   const cbtMatch = catFile.match(
     /CATEGORY_BY_TOOL:\s*Record<string,\s*ToolCategory>\s*=\s*{([\s\S]*?)};/,
@@ -148,11 +146,7 @@ function summarizeParams(params) {
   return entries
     .map(([k, v]) => {
       const required = v && v.required === true ? '**' : '';
-      const type = v?.type
-        ? Array.isArray(v.type)
-          ? v.type.join('\\|')
-          : v.type
-        : '?';
+      const type = v?.type ? (Array.isArray(v.type) ? v.type.join('\\|') : v.type) : '?';
       const enumVals = v?.enum ? `[${v.enum.join('\\|')}]` : '';
       return `${required}${k}${required}: \`${type}${enumVals}\``;
     })
@@ -216,7 +210,9 @@ async function main() {
   lines.push(`Generated: ${now} UTC`);
   lines.push('');
   lines.push(`- **Total tools (\`tool_def\`):** ${allTools.length}`);
-  lines.push(`- **Total bindings (\`tool_binding\`, active):** ${allBindings.filter((b) => b.is_active).length}`);
+  lines.push(
+    `- **Total bindings (\`tool_binding\`, active):** ${allBindings.filter((b) => b.is_active).length}`,
+  );
   lines.push(`- **Total bundles (\`tool_bundle\`):** ${bundles.length}`);
   lines.push(`- **Total bundle members (\`tool_bundle_member\`):** ${members.length}`);
   lines.push(`- **Total executors (\`tool_executor\`):** ${executors.length}`);
@@ -233,9 +229,7 @@ async function main() {
   lines.push('');
   lines.push('## 1. Tool inventory by `tool_binding.executor_name`');
   lines.push('');
-  lines.push(
-    'A tool can appear under multiple executors if it has multiple active bindings.',
-  );
+  lines.push('A tool can appear under multiple executors if it has multiple active bindings.');
   lines.push('');
 
   for (const [executor, list] of [...byExecutor.entries()].sort()) {
@@ -270,9 +264,7 @@ async function main() {
   for (const t of ours) {
     lines.push(`### \`${t.name}\``);
     lines.push('');
-    const otherExecutors = (executorsByTool.get(t.id) ?? []).filter(
-      (e) => e !== EXECUTOR_NAME,
-    );
+    const otherExecutors = (executorsByTool.get(t.id) ?? []).filter((e) => e !== EXECUTOR_NAME);
     const sharedNote =
       otherExecutors.length > 0
         ? ` · **also bound to:** ${otherExecutors.map((e) => `\`${e}\``).join(', ')}`
@@ -292,9 +284,7 @@ async function main() {
   lines.push('');
   lines.push('## 3. Bundles (`tool_bundle`)');
   lines.push('');
-  lines.push(
-    'Every row in `tool_bundle` + its members. Empty bundles are explicitly',
-  );
+  lines.push('Every row in `tool_bundle` + its members. Empty bundles are explicitly');
   lines.push('flagged — they advertise themselves to the LLM but resolve to nothing.');
   lines.push('');
 
@@ -321,7 +311,9 @@ async function main() {
   for (const b of bundles) {
     const ms = membersByBundle.get(b.id) ?? [];
     const ownByUs = ms.filter((m) => {
-      const tid = members.find((x) => x.bundle_id === b.id && (toolIdToName.get(x.tool_id) ?? '') === m.name)?.tool_id;
+      const tid = members.find(
+        (x) => x.bundle_id === b.id && (toolIdToName.get(x.tool_id) ?? '') === m.name,
+      )?.tool_id;
       return tid ? ourToolIds.has(tid) : false;
     }).length;
     if (ms.length > 0 && ownByUs >= ms.length / 2) matrxBundles.push(b);
@@ -351,7 +343,9 @@ async function main() {
   lines.push('|---|---|---|');
   for (const b of mcpBundles) {
     const ms = membersByBundle.get(b.id) ?? [];
-    lines.push(`| \`${b.name}\` | ${ms.length} | ${escapeMd((b.description ?? '').slice(0, 100))} |`);
+    lines.push(
+      `| \`${b.name}\` | ${ms.length} | ${escapeMd((b.description ?? '').slice(0, 100))} |`,
+    );
   }
   lines.push('');
 
@@ -367,15 +361,19 @@ async function main() {
   const ourNames = new Set(ours.map((t) => t.name));
   const csOnly = [...canonicalSurface].filter((n) => !ourNames.has(n));
   const dbOnly = [...ourNames].filter((n) => !canonicalSurface.has(n));
-  lines.push("### 4a. `CANONICAL_SURFACE` (local) ↔ `tool_def` (DB, bound to `chrome-extension`)");
+  lines.push('### 4a. `CANONICAL_SURFACE` (local) ↔ `tool_def` (DB, bound to `chrome-extension`)');
   lines.push('');
   lines.push(`- Local CANONICAL_SURFACE entries: **${canonicalSurface.size}**`);
   lines.push(`- DB tools bound to chrome-extension: **${ours.length}**`);
   if (csOnly.length === 0 && dbOnly.length === 0) {
     lines.push('- ✅ Sets match exactly. Drift-check enforces this on every release.');
   } else {
-    lines.push(`- Local-only (advertised by client but missing in DB): ${csOnly.length ? csOnly.map((n) => `\`${n}\``).join(', ') : '(none)'}`);
-    lines.push(`- DB-only (in DB but client doesn't advertise): ${dbOnly.length ? dbOnly.map((n) => `\`${n}\``).join(', ') : '(none)'}`);
+    lines.push(
+      `- Local-only (advertised by client but missing in DB): ${csOnly.length ? csOnly.map((n) => `\`${n}\``).join(', ') : '(none)'}`,
+    );
+    lines.push(
+      `- DB-only (in DB but client doesn't advertise): ${dbOnly.length ? dbOnly.map((n) => `\`${n}\``).join(', ') : '(none)'}`,
+    );
   }
   lines.push('');
 
@@ -405,9 +403,7 @@ async function main() {
   // 4c. Local surface_bundles (from catalog) vs local CANONICAL_SURFACE
   lines.push('### 4c. Per-handler `surface_bundles` vs `CANONICAL_SURFACE` membership');
   lines.push('');
-  lines.push(
-    'Each `ToolHandler.surface_bundles` declares which bundles (assistant /',
-  );
+  lines.push('Each `ToolHandler.surface_bundles` declares which bundles (assistant /');
   lines.push('pilot / pilot+privileged) it ships with. CANONICAL_SURFACE is the set');
   lines.push('actually emitted to the LLM. These should agree.');
   lines.push('');
@@ -415,7 +411,9 @@ async function main() {
   const advertisedByHandler = localTools.filter((t) => (t.surface_bundles ?? []).length > 0);
   const noBundleHandlers = localTools.filter((t) => (t.surface_bundles ?? []).length === 0);
   lines.push(`- Local handlers with non-empty surface_bundles: **${advertisedByHandler.length}**`);
-  lines.push(`- Local handlers with empty surface_bundles: **${noBundleHandlers.length}** ${noBundleHandlers.length === 0 ? '✅' : '⚠️'}`);
+  lines.push(
+    `- Local handlers with empty surface_bundles: **${noBundleHandlers.length}** ${noBundleHandlers.length === 0 ? '✅' : '⚠️'}`,
+  );
   const inCSnotAdvertised = [...canonicalSurface].filter((n) => {
     const t = localByName.get(n);
     return t && (t.surface_bundles ?? []).length === 0;
@@ -425,9 +423,13 @@ async function main() {
     lines.push('- ✅ CANONICAL_SURFACE and surface_bundles agree on the advertised set.');
   } else {
     if (inCSnotAdvertised.length)
-      lines.push(`- ⚠️ In CANONICAL_SURFACE but handler has empty surface_bundles: ${inCSnotAdvertised.map((n) => `\`${n}\``).join(', ')}`);
+      lines.push(
+        `- ⚠️ In CANONICAL_SURFACE but handler has empty surface_bundles: ${inCSnotAdvertised.map((n) => `\`${n}\``).join(', ')}`,
+      );
     if (advertisedNotCS.length)
-      lines.push(`- ⚠️ Handler advertises bundle but not in CANONICAL_SURFACE: ${advertisedNotCS.map((t) => `\`${t.name}\``).join(', ')}`);
+      lines.push(
+        `- ⚠️ Handler advertises bundle but not in CANONICAL_SURFACE: ${advertisedNotCS.map((t) => `\`${t.name}\``).join(', ')}`,
+      );
   }
   lines.push('');
 
@@ -443,8 +445,10 @@ async function main() {
   if (bundleOnly.length === 0 && localOnly.length === 0) {
     lines.push('- ✅ Bundle/category names align.');
   } else {
-    if (bundleOnly.length) lines.push(`- DB-only bundles: ${bundleOnly.map((n) => `\`${n}\``).join(', ')}`);
-    if (localOnly.length) lines.push(`- Local-only categories: ${localOnly.map((n) => `\`${n}\``).join(', ')}`);
+    if (bundleOnly.length)
+      lines.push(`- DB-only bundles: ${bundleOnly.map((n) => `\`${n}\``).join(', ')}`);
+    if (localOnly.length)
+      lines.push(`- Local-only categories: ${localOnly.map((n) => `\`${n}\``).join(', ')}`);
   }
   lines.push('');
 
@@ -455,7 +459,9 @@ async function main() {
   if (emptyBundles.length === 0) {
     lines.push('- ✅ No empty chrome-extension bundles.');
   } else {
-    lines.push(`- ⚠️ **${emptyBundles.length} chrome-extension bundles have ZERO members in \`tool_bundle_member\`:**`);
+    lines.push(
+      `- ⚠️ **${emptyBundles.length} chrome-extension bundles have ZERO members in \`tool_bundle_member\`:**`,
+    );
     lines.push('');
     lines.push(emptyBundles.map((b) => `  - \`${b.name}\``).join('\n'));
     lines.push('');

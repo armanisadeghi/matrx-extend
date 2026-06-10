@@ -127,7 +127,7 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'human',
     label: 'Talk to the user',
     description:
-      'Loop the human in. `user` (six modes: confirm/choice/choice_many/text/secret/notify), `update_plan` (propose a plan and wait for approval), `request_user_takeover` (hand control back so the user can do something the agent cannot), `tasks` (agent\'s live tasklist), `user_todos` (assign work to the user). Per-conversation state.',
+      "Loop the human in. `user` (six modes: confirm/choice/choice_many/text/secret/notify), `update_plan` (propose a plan and wait for approval), `request_user_takeover` (hand control back so the user can do something the agent cannot), `tasks` (agent's live tasklist), `user_todos` (assign work to the user). Per-conversation state.",
     list_tool_name: 'list_human_tools',
   },
   memory: {
@@ -155,7 +155,7 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'guidance',
     label: 'User-saved hints',
     description:
-      'Domain-scoped notes, screenshots, GIFs, and demo references the user has saved for the agent. Whenever the user opens a tab on a matching domain, the agent\'s context auto-includes the saved hints. Tools here let the agent add notes, browse what exists, and remove stale items.',
+      "Domain-scoped notes, screenshots, GIFs, and demo references the user has saved for the agent. Whenever the user opens a tab on a matching domain, the agent's context auto-includes the saved hints. Tools here let the agent add notes, browse what exists, and remove stale items.",
     list_tool_name: 'list_guidance_tools',
   },
   devtools: {
@@ -170,7 +170,7 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'webmcp',
     label: 'Page-registered tools',
     description:
-      'Discover and call tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). The `chrome_webmcp` mega-tool lets the agent enumerate the page\'s tool catalog and invoke specific tools. Admin-only experimental capability.',
+      "Discover and call tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). The `chrome_webmcp` mega-tool lets the agent enumerate the page's tool catalog and invoke specific tools. Admin-only experimental capability.",
     list_tool_name: 'list_webmcp_tools',
     admin_only: true,
   },
@@ -178,7 +178,7 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'desktop',
     label: 'Desktop bridge',
     description:
-      'Bridge to matrx-local — the desktop engine. `desktop_run_command` invokes commands matrx-local exposes (file ops, system info, window control, etc.). Fails fast when the bridge isn\'t connected.',
+      "Bridge to matrx-local — the desktop engine. `desktop_run_command` invokes commands matrx-local exposes (file ops, system info, window control, etc.). Fails fast when the bridge isn't connected.",
     list_tool_name: 'list_desktop_tools',
   },
 };

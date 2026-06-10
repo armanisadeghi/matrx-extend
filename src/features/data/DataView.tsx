@@ -146,9 +146,7 @@ export function DataView() {
     if (!url) return [];
     return Array.from(autoRecords.values()).filter((r) => r.url === url);
   }, [autoRecords, tab.url]);
-  const autoForMatched = matched
-    ? autoForUrl.find((r) => r.pattern.id === matched.id)
-    : undefined;
+  const autoForMatched = matched ? autoForUrl.find((r) => r.pattern.id === matched.id) : undefined;
 
   return (
     <div className="flex h-full flex-col">
@@ -209,19 +207,15 @@ export function DataView() {
             </div>
           )}
 
-          {autoForMatched?.status === 'ok' &&
-            autoForMatched.rows.length > 0 &&
-            !rows && (
-              <Section
-                label={`Auto-extracted (${autoForMatched.rows.length} rows)`}
-              >
-                <pre className="max-h-[320px] overflow-auto whitespace-pre rounded-xl bg-secondary/40 p-3 text-[11px]">
-                  {JSON.stringify(autoForMatched.rows.slice(0, 50), null, 2)}
-                  {autoForMatched.rows.length > 50 &&
-                    `\n\n…(+${autoForMatched.rows.length - 50} more rows)`}
-                </pre>
-              </Section>
-            )}
+          {autoForMatched?.status === 'ok' && autoForMatched.rows.length > 0 && !rows && (
+            <Section label={`Auto-extracted (${autoForMatched.rows.length} rows)`}>
+              <pre className="max-h-[320px] overflow-auto whitespace-pre rounded-xl bg-secondary/40 p-3 text-[11px]">
+                {JSON.stringify(autoForMatched.rows.slice(0, 50), null, 2)}
+                {autoForMatched.rows.length > 50 &&
+                  `\n\n…(+${autoForMatched.rows.length - 50} more rows)`}
+              </pre>
+            </Section>
+          )}
 
           {hasFields && (
             <Section
@@ -278,8 +272,7 @@ export function DataView() {
                             ai: true,
                             getContent: () =>
                               wrapJsonForAgent(p, {
-                                description:
-                                  'a saved Matrx data-extraction pattern',
+                                description: 'a saved Matrx data-extraction pattern',
                                 source: { host: p.domain ?? null },
                                 meta: {
                                   patternName: p.name,

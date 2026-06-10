@@ -19,24 +19,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { TabCaptureDialog } from '@/features/tools/TabCaptureDialog';
-import {
-  type RecordingEntry,
-  useRecordingsStore,
-} from '@/lib/video/recordings-store';
-import {
-  type RecorderStatus,
-  useTabVideoRecorder,
-} from '@/lib/video/useTabVideoRecorder';
 import { cn } from '@/lib/utils';
-import {
-  Circle,
-  Copy,
-  ExternalLink,
-  Square,
-  Trash2,
-  Video,
-  VideoOff,
-} from 'lucide-react';
+import { type RecordingEntry, useRecordingsStore } from '@/lib/video/recordings-store';
+import { type RecorderStatus, useTabVideoRecorder } from '@/lib/video/useTabVideoRecorder';
+import { Circle, Copy, ExternalLink, Square, Trash2, Video, VideoOff } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 const MIN_DURATION_S = 1;
@@ -95,7 +81,10 @@ function StatusBadge({ status }: { status: RecorderStatus }) {
   };
   const c = config[status];
   return (
-    <Badge variant="outline" className={cn('h-5 px-2 text-[10px] uppercase tracking-wide', c.className)}>
+    <Badge
+      variant="outline"
+      className={cn('h-5 px-2 text-[10px] uppercase tracking-wide', c.className)}
+    >
       {c.label}
     </Badge>
   );
@@ -173,167 +162,156 @@ export function RecorderPane() {
 
   return (
     <>
-    <div className="flex h-full flex-col">
-      <div className="shrink-0 space-y-3 border-b px-3 pb-3 pt-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Video className="size-3.5 text-muted-foreground" />
-            <span className="text-sm font-medium">Tab recorder</span>
-            <StatusBadge status={status} />
-          </div>
-          <span className="text-[11px] text-muted-foreground">
-            {entries.length} saved
-          </span>
-        </div>
-
-        <div className="rounded-md border bg-card p-2.5">
-          <div className="mb-2 flex items-center gap-2 text-[11px] text-muted-foreground">
-            <span className="font-medium text-foreground">Target tab:</span>
-            <span className="truncate" title={activeTab?.url ?? ''}>
-              {activeTab?.title ?? '— no active tab —'}
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <label className="flex flex-col gap-1 text-[11px]">
-              <span className="font-medium text-foreground">Duration (sec)</span>
-              <Input
-                type="number"
-                min={MIN_DURATION_S}
-                max={MAX_DURATION_S}
-                step={1}
-                value={durationSec}
-                onChange={(e) => {
-                  const n = Number.parseInt(e.target.value, 10);
-                  if (Number.isFinite(n)) {
-                    setDurationSec(Math.min(MAX_DURATION_S, Math.max(MIN_DURATION_S, n)));
-                  }
-                }}
-                disabled={isBusy}
-                className="h-7 text-xs"
-              />
-            </label>
-            <label className="flex cursor-pointer items-center justify-between gap-2 rounded-md border bg-background px-2 py-1.5">
-              <span className="flex items-center gap-1.5 text-[11px] font-medium">
-                {audio ? (
-                  <Video className="size-3 text-emerald-600 dark:text-emerald-400" />
-                ) : (
-                  <VideoOff className="size-3 text-muted-foreground" />
-                )}
-                Capture audio
-              </span>
-              <Switch
-                checked={audio}
-                onCheckedChange={setAudio}
-                disabled={isBusy}
-              />
-            </label>
-          </div>
-
-          <div className="mt-2.5 flex items-center justify-between gap-2">
+      <div className="flex h-full flex-col">
+        <div className="shrink-0 space-y-3 border-b px-3 pb-3 pt-2">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {isRecording && (
-                <>
-                  <span
-                    className="size-2 rounded-full bg-rose-500"
-                    style={{ animation: 'pulse 1.2s ease-in-out infinite' }}
-                  />
-                  <span className="font-mono text-xs tabular-nums">
-                    {formatDuration(elapsedMs)}
-                  </span>
-                  {remainingMs != null && (
-                    <span className="text-[11px] text-muted-foreground">
-                      / {formatDuration(durationSec * 1000)}
-                    </span>
+              <Video className="size-3.5 text-muted-foreground" />
+              <span className="text-sm font-medium">Tab recorder</span>
+              <StatusBadge status={status} />
+            </div>
+            <span className="text-[11px] text-muted-foreground">{entries.length} saved</span>
+          </div>
+
+          <div className="rounded-md border bg-card p-2.5">
+            <div className="mb-2 flex items-center gap-2 text-[11px] text-muted-foreground">
+              <span className="font-medium text-foreground">Target tab:</span>
+              <span className="truncate" title={activeTab?.url ?? ''}>
+                {activeTab?.title ?? '— no active tab —'}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <label className="flex flex-col gap-1 text-[11px]">
+                <span className="font-medium text-foreground">Duration (sec)</span>
+                <Input
+                  type="number"
+                  min={MIN_DURATION_S}
+                  max={MAX_DURATION_S}
+                  step={1}
+                  value={durationSec}
+                  onChange={(e) => {
+                    const n = Number.parseInt(e.target.value, 10);
+                    if (Number.isFinite(n)) {
+                      setDurationSec(Math.min(MAX_DURATION_S, Math.max(MIN_DURATION_S, n)));
+                    }
+                  }}
+                  disabled={isBusy}
+                  className="h-7 text-xs"
+                />
+              </label>
+              <label className="flex cursor-pointer items-center justify-between gap-2 rounded-md border bg-background px-2 py-1.5">
+                <span className="flex items-center gap-1.5 text-[11px] font-medium">
+                  {audio ? (
+                    <Video className="size-3 text-emerald-600 dark:text-emerald-400" />
+                  ) : (
+                    <VideoOff className="size-3 text-muted-foreground" />
                   )}
-                </>
-              )}
-              {!isRecording && status === 'uploading' && (
-                <span className="text-[11px] text-muted-foreground">
-                  Uploading to cld_files…
+                  Capture audio
                 </span>
-              )}
-              {!isRecording && status === 'idle' && lastDurationMs != null && (
-                <span className="text-[11px] text-muted-foreground">
-                  Last recording {formatDuration(lastDurationMs)} — see list below
-                </span>
+                <Switch checked={audio} onCheckedChange={setAudio} disabled={isBusy} />
+              </label>
+            </div>
+
+            <div className="mt-2.5 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                {isRecording && (
+                  <>
+                    <span
+                      className="size-2 rounded-full bg-rose-500"
+                      style={{ animation: 'pulse 1.2s ease-in-out infinite' }}
+                    />
+                    <span className="font-mono text-xs tabular-nums">
+                      {formatDuration(elapsedMs)}
+                    </span>
+                    {remainingMs != null && (
+                      <span className="text-[11px] text-muted-foreground">
+                        / {formatDuration(durationSec * 1000)}
+                      </span>
+                    )}
+                  </>
+                )}
+                {!isRecording && status === 'uploading' && (
+                  <span className="text-[11px] text-muted-foreground">Uploading to cld_files…</span>
+                )}
+                {!isRecording && status === 'idle' && lastDurationMs != null && (
+                  <span className="text-[11px] text-muted-foreground">
+                    Last recording {formatDuration(lastDurationMs)} — see list below
+                  </span>
+                )}
+              </div>
+              {isRecording ? (
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => void stop()}
+                  className="h-7 gap-1.5 px-2.5 text-xs"
+                >
+                  <Square className="size-3" /> Stop
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  onClick={() => void handleStart()}
+                  disabled={isBusy || !activeTab?.id}
+                  className="h-7 gap-1.5 px-2.5 text-xs"
+                >
+                  <Circle className="size-3 fill-current" /> Record
+                </Button>
               )}
             </div>
-            {isRecording ? (
-              <Button
-                size="sm"
-                variant="destructive"
-                onClick={() => void stop()}
-                className="h-7 gap-1.5 px-2.5 text-xs"
-              >
-                <Square className="size-3" /> Stop
+          </div>
+
+          {status === 'error' && errorMessage && (
+            <div className="flex items-start justify-between gap-2 rounded-md border border-rose-300 bg-rose-50 p-2 text-[11px] text-rose-800 dark:border-rose-700/60 dark:bg-rose-950/30 dark:text-rose-300">
+              <span className="leading-snug">{errorMessage}</span>
+              <Button variant="ghost" size="sm" onClick={reset} className="h-5 px-2 text-[10px]">
+                Dismiss
               </Button>
-            ) : (
+            </div>
+          )}
+        </div>
+
+        <div className="flex-1 overflow-y-auto">
+          <div className="flex items-center justify-between border-b px-3 py-2">
+            <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+              Recordings
+            </span>
+            {entries.length > 0 && (
               <Button
+                variant="ghost"
                 size="sm"
-                onClick={() => void handleStart()}
-                disabled={isBusy || !activeTab?.id}
-                className="h-7 gap-1.5 px-2.5 text-xs"
+                onClick={() => void clearEntries()}
+                className="h-6 px-2 text-[11px] text-muted-foreground"
               >
-                <Circle className="size-3 fill-current" /> Record
+                Clear list
               </Button>
             )}
           </div>
-        </div>
-
-        {status === 'error' && errorMessage && (
-          <div className="flex items-start justify-between gap-2 rounded-md border border-rose-300 bg-rose-50 p-2 text-[11px] text-rose-800 dark:border-rose-700/60 dark:bg-rose-950/30 dark:text-rose-300">
-            <span className="leading-snug">{errorMessage}</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={reset}
-              className="h-5 px-2 text-[10px]"
-            >
-              Dismiss
-            </Button>
-          </div>
-        )}
-      </div>
-
-      <div className="flex-1 overflow-y-auto">
-        <div className="flex items-center justify-between border-b px-3 py-2">
-          <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-            Recordings
-          </span>
-          {entries.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => void clearEntries()}
-              className="h-6 px-2 text-[11px] text-muted-foreground"
-            >
-              Clear list
-            </Button>
+          {!hydrated ? (
+            <div className="px-3 py-6 text-center text-[11px] text-muted-foreground">Loading…</div>
+          ) : entries.length === 0 ? (
+            <div className="px-3 py-6 text-center text-[11px] text-muted-foreground">
+              No recordings yet. Hit Record to capture this tab.
+            </div>
+          ) : (
+            <ul className="divide-y">
+              {entries.map((entry) => (
+                <RecordingRow
+                  key={entry.id}
+                  entry={entry}
+                  onRemove={() => void removeEntry(entry.id)}
+                />
+              ))}
+            </ul>
           )}
         </div>
-        {!hydrated ? (
-          <div className="px-3 py-6 text-center text-[11px] text-muted-foreground">
-            Loading…
-          </div>
-        ) : entries.length === 0 ? (
-          <div className="px-3 py-6 text-center text-[11px] text-muted-foreground">
-            No recordings yet. Hit Record to capture this tab.
-          </div>
-        ) : (
-          <ul className="divide-y">
-            {entries.map((entry) => (
-              <RecordingRow key={entry.id} entry={entry} onRemove={() => void removeEntry(entry.id)} />
-            ))}
-          </ul>
-        )}
       </div>
-    </div>
-    {recoveryDialogOpen && (
-      <TabCaptureDialog
-        onConfirm={() => void confirmRecoveryDialog()}
-        onClose={closeRecoveryDialog}
-      />
-    )}
+      {recoveryDialogOpen && (
+        <TabCaptureDialog
+          onConfirm={() => void confirmRecoveryDialog()}
+          onClose={closeRecoveryDialog}
+        />
+      )}
     </>
   );
 }
@@ -357,7 +335,10 @@ function RecordingRow({
             {entry.tabTitle ?? 'Untitled tab'}
           </span>
           {entry.audio && (
-            <Badge variant="outline" className="h-4 border-emerald-300 bg-emerald-50 px-1 py-0 text-[9px] uppercase text-emerald-700 dark:border-emerald-700/60 dark:bg-emerald-950/30 dark:text-emerald-400">
+            <Badge
+              variant="outline"
+              className="h-4 border-emerald-300 bg-emerald-50 px-1 py-0 text-[9px] uppercase text-emerald-700 dark:border-emerald-700/60 dark:bg-emerald-950/30 dark:text-emerald-400"
+            >
               audio
             </Badge>
           )}

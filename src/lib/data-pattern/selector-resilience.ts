@@ -116,9 +116,7 @@ function localFingerprint(el: Element, includeNth = false): string {
   s += classChunk(el);
 
   if (includeNth && el.parentElement) {
-    const sibs = Array.from(el.parentElement.children).filter(
-      (c) => c.tagName === el.tagName,
-    );
+    const sibs = Array.from(el.parentElement.children).filter((c) => c.tagName === el.tagName);
     if (sibs.length > 1) {
       s += `:nth-of-type(${sibs.indexOf(el) + 1})`;
     }
@@ -155,12 +153,14 @@ function listItemFingerprintCandidates(el: Element): string[] {
   const tag = el.tagName.toLowerCase();
   const candidates: string[] = [];
   if (el.classList.length > 0) {
-    const classes = Array.from(el.classList).filter(
-      (c) => !isStateClass(c) && !isAutogenClass(c),
-    );
+    const classes = Array.from(el.classList).filter((c) => !isStateClass(c) && !isAutogenClass(c));
     if (classes.length >= 2) {
       candidates.push(
-        tag + classes.slice(0, 2).map((c) => `.${CSS.escape(c)}`).join(''),
+        tag +
+          classes
+            .slice(0, 2)
+            .map((c) => `.${CSS.escape(c)}`)
+            .join(''),
       );
     }
     if (classes.length >= 1) {
@@ -186,16 +186,12 @@ function listItemFingerprintCandidates(el: Element): string[] {
  * Tries progressively looser fingerprints at each level (e.g. tag.class.class
  * → tag.class → tag for li/article/tr).
  */
-export function inferListPattern(
-  clicked: Element,
-):
-  | {
-      listRoot: string;
-      itemSelector: string;
-      itemCount: number;
-      sampleItem: Element;
-    }
-  | null {
+export function inferListPattern(clicked: Element): {
+  listRoot: string;
+  itemSelector: string;
+  itemCount: number;
+  sampleItem: Element;
+} | null {
   let item: Element = clicked;
   let parent: Element | null = clicked.parentElement;
 

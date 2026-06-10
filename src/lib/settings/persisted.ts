@@ -35,9 +35,7 @@ interface PersistedSettingsBlob {
  * Handles both the JSON-string form zustand writes and (defensively) an
  * already-parsed object.
  */
-async function readPersistedSettingsState(): Promise<
-  PersistedSettingsBlob['state'] | null
-> {
+async function readPersistedSettingsState(): Promise<PersistedSettingsBlob['state'] | null> {
   try {
     const r = await chrome.storage.local.get([SETTINGS_PERSIST_KEY]);
     const raw = r[SETTINGS_PERSIST_KEY];

@@ -61,9 +61,10 @@ const RESTRICTED_URL_PATTERNS: RestrictedPattern[] = [
 ];
 
 /** Check whether a URL is on Chrome's hard-blocked list. */
-export function classifyTabUrl(
-  url: string | null | undefined,
-): { blocked: boolean; reason: string | null } {
+export function classifyTabUrl(url: string | null | undefined): {
+  blocked: boolean;
+  reason: string | null;
+} {
   if (!url) return { blocked: false, reason: null };
   for (const pattern of RESTRICTED_URL_PATTERNS) {
     if (pattern.test(url)) return { blocked: true, reason: pattern.reason };
@@ -151,8 +152,7 @@ export function buildCaptureErrorFromResult({
     return {
       class: 'unknown',
       title: 'Capture returned nothing',
-      description:
-        'The page responded but produced no content. Try reloading and capturing again.',
+      description: 'The page responded but produced no content. Try reloading and capturing again.',
       rawMessage,
       url,
       tabId,

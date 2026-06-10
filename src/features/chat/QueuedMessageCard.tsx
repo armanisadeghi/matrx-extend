@@ -11,11 +11,11 @@
  * by then been inserted into the transcript as a real user bubble.
  */
 
-import { cancelInboxMessage, editInboxMessage } from "@/lib/api/routes/ai";
-import { cn } from "@/lib/utils";
-import { type QueuedInjection, useTurnInboxStore } from "@/state/turn-inbox";
-import { AlertTriangle, Check, Clock, Loader2, Pencil, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { cancelInboxMessage, editInboxMessage } from '@/lib/api/routes/ai';
+import { cn } from '@/lib/utils';
+import { type QueuedInjection, useTurnInboxStore } from '@/state/turn-inbox';
+import { AlertTriangle, Check, Clock, Loader2, Pencil, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 /** How long a delivered card lingers (ms) before it removes itself. */
 const DELIVERED_LINGER_MS = 1600;
@@ -24,7 +24,7 @@ function elapsedLabel(ms: number): string {
   const s = Math.max(0, Math.floor(ms / 1000));
   if (s < 60) return `${s}s`;
   const m = Math.floor(s / 60);
-  return `${m}:${String(s % 60).padStart(2, "0")}`;
+  return `${m}:${String(s % 60).padStart(2, '0')}`;
 }
 
 /**
@@ -41,9 +41,7 @@ export function QueuedMessageStack({
 
   // One shared ticker re-renders the live timers ~once a second while any item
   // is still waiting. Stops when nothing is pending so we don't spin forever.
-  const hasWaiting = mine.some(
-    (i) => i.status === "sending" || i.status === "pending",
-  );
+  const hasWaiting = mine.some((i) => i.status === 'sending' || i.status === 'pending');
   const [, setTick] = useState(0);
   useEffect(() => {
     if (!hasWaiting) return;
@@ -73,14 +71,14 @@ function QueuedMessageCard({ item }: { item: QueuedInjection }) {
 
   // Self-dismiss shortly after delivery — the message is now a real bubble.
   useEffect(() => {
-    if (item.status !== "delivered") return;
+    if (item.status !== 'delivered') return;
     const id = setTimeout(() => remove(item.localId), DELIVERED_LINGER_MS);
     return () => clearTimeout(id);
   }, [item.status, item.localId, remove]);
 
   // Retract / edit need the server-assigned injection_id, which only exists
   // once the POST resolved (status 'pending'). 'sending' has no id yet.
-  const canMutate = item.status === "pending" && !!item.injectionId;
+  const canMutate = item.status === 'pending' && !!item.injectionId;
 
   const handleCancel = async () => {
     if (!canMutate || !item.injectionId || !item.conversationId) return;
@@ -101,11 +99,7 @@ function QueuedMessageCard({ item }: { item: QueuedInjection }) {
       return;
     }
     setBusy(true);
-    const res = await editInboxMessage(
-      item.conversationId,
-      item.injectionId,
-      next,
-    );
+    const res = await editInboxMessage(item.conversationId, item.injectionId, next);
     setBusy(false);
     setEditing(false);
     // 200 → keep the edited text locally so the card + delivered bubble match.
@@ -118,17 +112,17 @@ function QueuedMessageCard({ item }: { item: QueuedInjection }) {
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-2xl border px-3 py-2 shadow-md backdrop-blur-sm transition-all",
-        "border-violet-300/40 dark:border-violet-400/20",
-        item.status === "delivered"
-          ? "bg-emerald-50/80 dark:bg-emerald-950/30"
-          : item.status === "failed"
-            ? "bg-red-50/80 dark:bg-red-950/30"
-            : "bg-gradient-to-br from-indigo-50/80 to-violet-50/70 dark:from-indigo-950/40 dark:to-violet-950/30",
+        'relative overflow-hidden rounded-2xl border px-3 py-2 shadow-md backdrop-blur-sm transition-all',
+        'border-violet-300/40 dark:border-violet-400/20',
+        item.status === 'delivered'
+          ? 'bg-emerald-50/80 dark:bg-emerald-950/30'
+          : item.status === 'failed'
+            ? 'bg-red-50/80 dark:bg-red-950/30'
+            : 'bg-gradient-to-br from-indigo-50/80 to-violet-50/70 dark:from-indigo-950/40 dark:to-violet-950/30',
       )}
     >
       {/* Dreamy drifting sheen — only while the item is waiting. */}
-      {(item.status === "sending" || item.status === "pending") && (
+      {(item.status === 'sending' || item.status === 'pending') && (
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 animate-dreamy-drift bg-[linear-gradient(110deg,transparent_20%,rgba(139,92,246,0.10)_50%,transparent_80%)] [background-size:200%_200%]"
@@ -136,21 +130,19 @@ function QueuedMessageCard({ item }: { item: QueuedInjection }) {
       )}
 
       <div className="relative flex items-center gap-2 text-[11px] font-medium">
-        {item.status === "sending" && (
+        {item.status === 'sending' && (
           <>
             <Loader2 className="size-3 animate-spin text-violet-500" />
             <span className="text-violet-700 dark:text-violet-300">Sending…</span>
           </>
         )}
-        {item.status === "pending" && (
+        {item.status === 'pending' && (
           <>
             <span className="relative flex size-2">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-violet-400/70" />
               <span className="relative inline-flex size-2 rounded-full bg-violet-500" />
             </span>
-            <span className="text-violet-700 dark:text-violet-300">
-              Queued — waiting its turn
-            </span>
+            <span className="text-violet-700 dark:text-violet-300">Queued — waiting its turn</span>
             <span className="ml-auto inline-flex items-center gap-1 tabular-nums text-violet-600/80 dark:text-violet-300/70">
               <Clock className="size-3" />
               {elapsedLabel(elapsed)}
@@ -178,25 +170,19 @@ function QueuedMessageCard({ item }: { item: QueuedInjection }) {
                   title="Retract — remove before it's delivered"
                   aria-label="Retract queued message"
                 >
-                  {busy ? (
-                    <Loader2 className="size-3 animate-spin" />
-                  ) : (
-                    <X className="size-3" />
-                  )}
+                  {busy ? <Loader2 className="size-3 animate-spin" /> : <X className="size-3" />}
                 </button>
               </span>
             )}
           </>
         )}
-        {item.status === "delivered" && (
+        {item.status === 'delivered' && (
           <>
             <Check className="size-3 text-emerald-600 dark:text-emerald-400" />
-            <span className="text-emerald-700 dark:text-emerald-300">
-              Delivered to the agent
-            </span>
+            <span className="text-emerald-700 dark:text-emerald-300">Delivered to the agent</span>
           </>
         )}
-        {item.status === "failed" && (
+        {item.status === 'failed' && (
           <>
             <AlertTriangle className="size-3 text-red-600 dark:text-red-400" />
             <span className="text-red-700 dark:text-red-400">Couldn't queue</span>
@@ -220,10 +206,10 @@ function QueuedMessageCard({ item }: { item: QueuedInjection }) {
             value={editDraft}
             onChange={(e) => setEditDraft(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
+              if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 void handleSaveEdit();
-              } else if (e.key === "Escape") {
+              } else if (e.key === 'Escape') {
                 e.preventDefault();
                 setEditing(false);
               }
@@ -246,22 +232,22 @@ function QueuedMessageCard({ item }: { item: QueuedInjection }) {
               disabled={busy || !editDraft.trim()}
               className="rounded bg-violet-600 px-2 py-0.5 text-[11px] font-medium text-white hover:opacity-90 disabled:opacity-40"
             >
-              {busy ? "Saving…" : "Save"}
+              {busy ? 'Saving…' : 'Save'}
             </button>
           </div>
         </div>
       ) : (
         <p
           className={cn(
-            "relative mt-1 line-clamp-3 whitespace-pre-wrap text-xs leading-snug text-foreground/80",
-            item.status === "failed" && "text-red-700/80 dark:text-red-300/80",
+            'relative mt-1 line-clamp-3 whitespace-pre-wrap text-xs leading-snug text-foreground/80',
+            item.status === 'failed' && 'text-red-700/80 dark:text-red-300/80',
           )}
         >
           {item.text}
         </p>
       )}
 
-      {item.status === "failed" && item.error && (
+      {item.status === 'failed' && item.error && (
         <p className="relative mt-1 text-[10px] text-red-600/70 dark:text-red-400/70">
           {item.error}
         </p>

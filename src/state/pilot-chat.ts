@@ -22,12 +22,12 @@
  */
 
 import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
-import {
-  type ChatMessage,
-  type MessagePart,
-  type PermissionMode,
-  type ToolPartCall,
-  type ToolProgressEntry,
+import type {
+  ChatMessage,
+  MessagePart,
+  PermissionMode,
+  ToolPartCall,
+  ToolProgressEntry,
 } from '@/state/chat';
 import { useToolInbox } from '@/state/tool-inbox';
 import { create } from 'zustand';
@@ -92,9 +92,7 @@ export const usePilotChatStore = create<PilotChatState>()(
         useToolInbox.getState().resetAll();
       },
       adoptConversationId: (id) =>
-        set((s) =>
-          s.selectedConversationId === id ? s : { selectedConversationId: id },
-        ),
+        set((s) => (s.selectedConversationId === id ? s : { selectedConversationId: id })),
       setDraft: (draft) => set({ draft }),
       pushMessage: (m) =>
         set((s) => ({
@@ -111,9 +109,7 @@ export const usePilotChatStore = create<PilotChatState>()(
           messages: s.messages.map((m) => {
             if (m.id !== messageId) return m;
             const parts = m.parts ?? [];
-            const idx = parts.findIndex(
-              (p) => p.type === 'tool' && p.tool.callId === callId,
-            );
+            const idx = parts.findIndex((p) => p.type === 'tool' && p.tool.callId === callId);
             if (idx === -1) {
               const fresh: ToolPartCall = {
                 kind: patch.kind ?? 'server',
@@ -145,9 +141,7 @@ export const usePilotChatStore = create<PilotChatState>()(
           messages: s.messages.map((m) => {
             if (m.id !== messageId) return m;
             const parts = m.parts ?? [];
-            const idx = parts.findIndex(
-              (p) => p.type === 'tool' && p.tool.callId === callId,
-            );
+            const idx = parts.findIndex((p) => p.type === 'tool' && p.tool.callId === callId);
             if (idx === -1) {
               const fresh: ToolPartCall = {
                 kind: meta?.kind ?? 'server',
@@ -211,9 +205,7 @@ export const usePilotChatStore = create<PilotChatState>()(
         })),
       finalizeAssistant: (id) =>
         set((s) => ({
-          messages: s.messages.map((m) =>
-            m.id === id ? { ...m, pending: false } : m,
-          ),
+          messages: s.messages.map((m) => (m.id === id ? { ...m, pending: false } : m)),
         })),
       setStreaming: (isStreaming) => set({ isStreaming }),
       setMessages: (messages) => set({ messages }),

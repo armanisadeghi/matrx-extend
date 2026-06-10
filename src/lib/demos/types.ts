@@ -27,14 +27,7 @@ export type DemoStepKind =
  */
 export interface SelectorStrategy {
   /** Why we trust this strategy (informational, also used to rank). */
-  kind:
-    | 'matrx-ref'
-    | 'id'
-    | 'data-testid'
-    | 'name-attr'
-    | 'aria'
-    | 'text'
-    | 'css-path';
+  kind: 'matrx-ref' | 'id' | 'data-testid' | 'name-attr' | 'aria' | 'text' | 'css-path';
   /** A CSS selector (or pseudo-selector) the resolver knows how to consume. */
   selector: string;
   /** Optional accessible-name / visible-text for `aria` and `text` strategies. */

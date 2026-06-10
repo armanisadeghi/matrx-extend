@@ -19,7 +19,7 @@ import { uploadFile } from '@/lib/api/routes/files';
 import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { saveScreenshot, type ScreenshotSource } from '@/lib/supabase/queries';
+import { type ScreenshotSource, saveScreenshot } from '@/lib/supabase/queries';
 import { normalizeUrl } from '@/lib/url/match';
 
 interface PersistInput {

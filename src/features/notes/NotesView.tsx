@@ -12,8 +12,8 @@
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { listMyNotes } from '@/lib/notes/queries';
-import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { useNotesUiStore } from '@/state/notes';
+import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { useQuery } from '@tanstack/react-query';
 import { NoteEditor } from './NoteEditor';
 import { NotesList } from './NotesList';

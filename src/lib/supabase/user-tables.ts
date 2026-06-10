@@ -253,9 +253,7 @@ export function inferDataType(value: unknown): UserTableDataType {
   return 'string';
 }
 
-export function inferSchemaFromRow(
-  row: Record<string, unknown>,
-): {
+export function inferSchemaFromRow(row: Record<string, unknown>): {
   field_name: string;
   display_name: string;
   data_type: UserTableDataType;

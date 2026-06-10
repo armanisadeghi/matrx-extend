@@ -15,7 +15,7 @@ import { log } from '@/lib/debug/log';
 import { classifyTabUrl } from '@/lib/scrape/capture-error';
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
-import { resolveProfile, type ScreenshotProfile } from '@/lib/screenshot/profiles';
+import { type ScreenshotProfile, resolveProfile } from '@/lib/screenshot/profiles';
 import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
@@ -300,10 +300,7 @@ async function processScreenshot(
   let bin = '';
   const chunkSize = 0x8000;
   for (let i = 0; i < bytes.length; i += chunkSize) {
-    bin += String.fromCharCode.apply(
-      null,
-      Array.from(bytes.subarray(i, i + chunkSize)),
-    );
+    bin += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + chunkSize)));
   }
   const base64 = btoa(bin);
   return { base64, width: targetW, height: targetH, sourceWidth, sourceHeight, resized };

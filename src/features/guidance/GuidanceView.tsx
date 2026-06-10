@@ -20,14 +20,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { log } from '@/lib/debug/log';
 import { listAllGuidance } from '@/lib/guidance/storage';
 import type { GuidanceKind, GuidanceSummary } from '@/lib/guidance/types';
-import { useGuidanceStore, type GuidanceFilter } from '@/state/guidance';
+import { type GuidanceFilter, useGuidanceStore } from '@/state/guidance';
 import {
   BookOpen,
   Camera,
   Clapperboard,
   ImageIcon,
   Loader2,
-  PenLine,
   Play,
   Plus,
   StickyNote,
@@ -35,6 +34,8 @@ import {
   X,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { DemoSaveDialog } from './DemoSaveDialog';
+import { GuidancePreview } from './GuidancePreview';
 import {
   captureScreenshotAsGuidance,
   deleteGuidance,
@@ -46,8 +47,6 @@ import {
   stopDemoRecordingAndSave,
   stopGifRecordingAsGuidance,
 } from './actions';
-import { DemoSaveDialog } from './DemoSaveDialog';
-import { GuidancePreview } from './GuidancePreview';
 
 type AddMenu = 'closed' | 'note' | 'demo-stop' | 'gif-stop';
 
@@ -64,7 +63,9 @@ export function GuidanceView() {
   const removeSummary = useGuidanceStore((s) => s.removeSummary);
 
   const [addMenu, setAddMenu] = useState<AddMenu>('closed');
-  const [busy, setBusy] = useState<null | 'screenshot' | 'gif-start' | 'gif-stop' | 'demo-start' | 'demo-stop'>(null);
+  const [busy, setBusy] = useState<
+    null | 'screenshot' | 'gif-start' | 'gif-stop' | 'demo-start' | 'demo-stop'
+  >(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [activeDomain, setActiveDomain] = useState<string | null>(null);
 
@@ -346,7 +347,12 @@ export function GuidanceView() {
         <FilterPill value="note" current={filter} count={counts.note} onSelect={setFilter}>
           Notes
         </FilterPill>
-        <FilterPill value="screenshot" current={filter} count={counts.screenshot} onSelect={setFilter}>
+        <FilterPill
+          value="screenshot"
+          current={filter}
+          count={counts.screenshot}
+          onSelect={setFilter}
+        >
           Screenshots
         </FilterPill>
         <FilterPill value="gif" current={filter} count={counts.gif} onSelect={setFilter}>
@@ -444,7 +450,9 @@ function RecordingChip({
       }`}
     >
       <span className="inline-block size-1.5 animate-pulse rounded-full bg-white" />
-      {kind === 'demo' ? `Recording demo${stepCount != null ? ` · ${stepCount}` : ''}` : 'Recording GIF'}
+      {kind === 'demo'
+        ? `Recording demo${stepCount != null ? ` · ${stepCount}` : ''}`
+        : 'Recording GIF'}
       <span className="ml-1 opacity-80">stop</span>
     </button>
   );
@@ -478,7 +486,11 @@ function AddBar({
           onClick={onScreenshot}
           disabled={busy === 'screenshot'}
         >
-          {busy === 'screenshot' ? <Loader2 className="size-3 animate-spin" /> : <Camera className="size-3" />}
+          {busy === 'screenshot' ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : (
+            <Camera className="size-3" />
+          )}
           Screenshot
         </Button>
         <Button
@@ -488,7 +500,11 @@ function AddBar({
           onClick={onStartGif}
           disabled={busy === 'gif-start'}
         >
-          {busy === 'gif-start' ? <Loader2 className="size-3 animate-spin" /> : <ImageIcon className="size-3" />}
+          {busy === 'gif-start' ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : (
+            <ImageIcon className="size-3" />
+          )}
           GIF
         </Button>
         <Button
@@ -498,15 +514,14 @@ function AddBar({
           onClick={onStartDemo}
           disabled={busy === 'demo-start'}
         >
-          {busy === 'demo-start' ? <Loader2 className="size-3 animate-spin" /> : <Clapperboard className="size-3" />}
+          {busy === 'demo-start' ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : (
+            <Clapperboard className="size-3" />
+          )}
           Demo
         </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="ml-auto h-7 px-2 text-xs"
-          onClick={onClose}
-        >
+        <Button size="sm" variant="ghost" className="ml-auto h-7 px-2 text-xs" onClick={onClose}>
           <X className="size-3" />
         </Button>
       </div>

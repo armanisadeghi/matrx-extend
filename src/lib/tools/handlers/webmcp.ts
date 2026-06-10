@@ -62,20 +62,22 @@ export const webmcp_list_page_tools: ToolHandler<NoArgs, unknown> = {
         target: { tabId },
         world: 'MAIN',
         func: () => {
-          const mc = (navigator as unknown as {
-            modelContext?: {
-              tools?: Array<{
-                name: string;
-                description?: string;
-                inputSchema?: unknown;
-              }>;
-              getTools?: () => Array<{
-                name: string;
-                description?: string;
-                inputSchema?: unknown;
-              }>;
-            };
-          }).modelContext;
+          const mc = (
+            navigator as unknown as {
+              modelContext?: {
+                tools?: Array<{
+                  name: string;
+                  description?: string;
+                  inputSchema?: unknown;
+                }>;
+                getTools?: () => Array<{
+                  name: string;
+                  description?: string;
+                  inputSchema?: unknown;
+                }>;
+              };
+            }
+          ).modelContext;
           if (!mc) return { ok: false, reason: 'WebMCP unavailable' };
           const list = typeof mc.getTools === 'function' ? mc.getTools() : (mc.tools ?? []);
           return {
@@ -115,15 +117,17 @@ export const webmcp_call_page_tool: ToolHandler<CallPageToolArgs, unknown> = {
         target: { tabId },
         world: 'MAIN',
         func: async (toolName: string, toolArgs: unknown) => {
-          const mc = (navigator as unknown as {
-            modelContext?: {
-              callTool?: (name: string, args?: unknown) => Promise<unknown>;
-              tools?: Array<{
-                name: string;
-                run?: (args?: unknown) => Promise<unknown>;
-              }>;
-            };
-          }).modelContext;
+          const mc = (
+            navigator as unknown as {
+              modelContext?: {
+                callTool?: (name: string, args?: unknown) => Promise<unknown>;
+                tools?: Array<{
+                  name: string;
+                  run?: (args?: unknown) => Promise<unknown>;
+                }>;
+              };
+            }
+          ).modelContext;
           if (!mc) return { ok: false, reason: 'WebMCP unavailable' };
           // Spec landed under callTool; older builds expose .tools[i].run.
           if (typeof mc.callTool === 'function') {

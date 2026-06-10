@@ -3,11 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useUserTables } from '@/hooks/use-user-tables';
-import {
-  type ExtractionPatternField,
-  type PatternKind,
-  savePattern,
-} from '@/lib/supabase/queries';
+import { type ExtractionPatternField, type PatternKind, savePattern } from '@/lib/supabase/queries';
 import { inferSchemaFromRow } from '@/lib/supabase/user-tables';
 import { CheckCircle2, Loader2, Save } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -194,7 +190,10 @@ export function SaveAsPattern({
               ) : (
                 <div className="max-h-32 space-y-0.5 overflow-y-auto">
                   {inferredFields.map((f) => (
-                    <div key={f.field_name} className="flex items-center justify-between gap-2 text-[11px]">
+                    <div
+                      key={f.field_name}
+                      className="flex items-center justify-between gap-2 text-[11px]"
+                    >
                       <span className="min-w-0 truncate">
                         <span className="truncate font-mono">{f.field_name}</span>
                         {f.display_name !== f.field_name && (

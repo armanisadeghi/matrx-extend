@@ -9,10 +9,10 @@
 
 import { useAuth } from '@/hooks/use-auth';
 import {
+  type SetSensitiveItemArgs,
   type UserFormContext,
   type UserFormProfile,
   type UserFormProfilePatch,
-  type SetSensitiveItemArgs,
   deleteSensitiveItem,
   emptyProfile,
   fetchUserFormContext,

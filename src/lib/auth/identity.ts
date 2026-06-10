@@ -33,9 +33,7 @@ export interface ExtensionIdentity {
 
 export function readExtensionIdentity(): ExtensionIdentity {
   const runtime_id = chrome.runtime.id;
-  const redirect_uri = chrome.identity?.getRedirectURL
-    ? chrome.identity.getRedirectURL()
-    : '';
+  const redirect_uri = chrome.identity?.getRedirectURL ? chrome.identity.getRedirectURL() : '';
   return {
     runtime_id,
     redirect_uri,

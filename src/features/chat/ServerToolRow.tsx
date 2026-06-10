@@ -12,11 +12,11 @@ import { cn } from '@/lib/utils';
 import type { ServerToolCall } from '@/state/chat';
 import { AlertTriangle, CheckCircle2, ChevronRight, Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import type { ToolTimelineEntry } from './ToolTimelineRow';
 import { ConfigurableToolRow, ToolDisplayBoundary } from './tool-display/ConfigurableToolRow';
 import { CopyToolButton } from './tool-display/CopyToolButton';
 import { ToolProgressView } from './tool-display/ToolProgressView';
 import { toolDisplayRegistry } from './tool-display/registry';
-import type { ToolTimelineEntry } from './ToolTimelineRow';
 
 export function ServerToolRow({ tool }: { tool: ServerToolCall }) {
   const cfg = toolDisplayRegistry[tool.toolName];

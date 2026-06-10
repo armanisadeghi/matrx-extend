@@ -875,9 +875,7 @@ export function useChatStream() {
         const manualScrape = useScrapeStore.getState().current;
         const autoScrape = useAutoScrapeStore.getState().current;
         context = await buildChatContext({
-          user: user
-            ? { id: user.id, email: user.email, full_name: user.full_name ?? null }
-            : null,
+          user: user ? { id: user.id, email: user.email, full_name: user.full_name ?? null } : null,
           desktopTransport: desktop.transport,
           scrape: manualScrape,
           autoScrape,

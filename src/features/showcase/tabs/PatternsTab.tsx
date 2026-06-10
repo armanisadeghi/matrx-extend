@@ -88,7 +88,11 @@ export function PatternsTab() {
             className="size-7"
             title="Refresh"
           >
-            {loading ? <Loader2 className="size-3.5 animate-spin" /> : <RefreshCw className="size-3.5" />}
+            {loading ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <RefreshCw className="size-3.5" />
+            )}
           </Button>
         </div>
 
@@ -101,10 +105,7 @@ export function PatternsTab() {
         {patterns && patterns.length > 0 && (
           <div className="space-y-1.5">
             {patterns.map((p) => (
-              <div
-                key={p.id}
-                className="space-y-1.5 rounded-xl bg-secondary/40 px-3 py-2"
-              >
+              <div key={p.id} className="space-y-1.5 rounded-xl bg-secondary/40 px-3 py-2">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
@@ -113,10 +114,9 @@ export function PatternsTab() {
                       <StatusBadge status={p.last_status} />
                     </div>
                     <div className="text-[11px] text-muted-foreground">
-                      {p.fields.length > 0 && `${p.fields.length} field${p.fields.length === 1 ? '' : 's'} · `}
-                      {p.last_run_at
-                        ? `last run ${formatRelative(p.last_run_at)}`
-                        : 'never run'}
+                      {p.fields.length > 0 &&
+                        `${p.fields.length} field${p.fields.length === 1 ? '' : 's'} · `}
+                      {p.last_run_at ? `last run ${formatRelative(p.last_run_at)}` : 'never run'}
                       {p.last_run_count != null && ` · ${p.last_run_count} rows`}
                     </div>
                   </div>
@@ -166,8 +166,7 @@ function StatusBadge({ status }: { status: ExtractionPattern['last_status'] }) {
     <span
       className={cn(
         'flex items-center gap-0.5 rounded-full px-1.5 py-px text-[9px] font-medium uppercase tracking-wider',
-        status === 'ok' &&
-          'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
+        status === 'ok' && 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
         status === 'broken' && 'bg-red-500/15 text-red-600 dark:text-red-400',
         status === 'never_run' && 'bg-secondary text-muted-foreground',
       )}

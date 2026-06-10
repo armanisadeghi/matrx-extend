@@ -74,11 +74,7 @@ function installListeners() {
   });
 }
 
-function handleConsoleEvent(
-  tabId: number,
-  method: string,
-  params: Record<string, unknown>,
-): void {
+function handleConsoleEvent(tabId: number, method: string, params: Record<string, unknown>): void {
   const buf = consoleBuffers.get(tabId);
   if (!buf) return;
   if (method === 'Runtime.consoleAPICalled') {
@@ -86,7 +82,11 @@ function handleConsoleEvent(
     const text = args
       .map((a) => (a.value !== undefined ? String(a.value) : (a.description ?? '')))
       .join(' ');
-    const stack = (params.stackTrace as { callFrames?: Array<{ url?: string; lineNumber?: number; columnNumber?: number }> })?.callFrames?.[0];
+    const stack = (
+      params.stackTrace as {
+        callFrames?: Array<{ url?: string; lineNumber?: number; columnNumber?: number }>;
+      }
+    )?.callFrames?.[0];
     buf.push({
       level: String(params.type ?? 'log'),
       text,
@@ -97,7 +97,13 @@ function handleConsoleEvent(
     });
   } else if (method === 'Runtime.exceptionThrown') {
     const ex = params.exceptionDetails as
-      | { text?: string; url?: string; lineNumber?: number; columnNumber?: number; exception?: { description?: string } }
+      | {
+          text?: string;
+          url?: string;
+          lineNumber?: number;
+          columnNumber?: number;
+          exception?: { description?: string };
+        }
       | undefined;
     buf.push({
       level: 'error',
@@ -147,11 +153,7 @@ export function drainConsoleCapture(
   return records;
 }
 
-function handleNetworkEvent(
-  tabId: number,
-  method: string,
-  params: Record<string, unknown>,
-): void {
+function handleNetworkEvent(tabId: number, method: string, params: Record<string, unknown>): void {
   const requests = networkRequests.get(tabId);
   if (!requests) return;
   const requestId = params.requestId as string | undefined;
@@ -230,11 +232,7 @@ export async function send<T = unknown>(
     const r = await attach(tabId);
     if (!r.ok) throw new Error(`attach failed: ${r.reason}`);
   }
-  const result = (await chrome.debugger.sendCommand(
-    { tabId },
-    method,
-    params,
-  )) as T;
+  const result = (await chrome.debugger.sendCommand({ tabId }, method, params)) as T;
   return result;
 }
 
@@ -256,9 +254,7 @@ export async function stopNetworkCapture(tabId: number): Promise<void> {
   networkBuffers.delete(tabId);
   networkRequests.delete(tabId);
   if (attachedTabs.has(tabId)) {
-    await chrome.debugger
-      .sendCommand({ tabId }, 'Network.disable')
-      .catch(() => {});
+    await chrome.debugger.sendCommand({ tabId }, 'Network.disable').catch(() => {});
   }
 }
 

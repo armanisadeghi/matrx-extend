@@ -27,27 +27,24 @@
  * `frontend->extension` reply.
  */
 
-import { recordBridgeTraffic } from "@/lib/debug/bridge-traffic";
-import { log } from "@/lib/debug/log";
-import { getCurrentUser } from "@/lib/auth/flow";
+import { getCurrentUser } from '@/lib/auth/flow';
+import { recordBridgeTraffic } from '@/lib/debug/bridge-traffic';
+import { log } from '@/lib/debug/log';
 import {
   FRONTEND_RPC_CHANNEL,
-  FrontendRpcEnvelopeSchema,
   type FrontendRpcEnvelope,
+  FrontendRpcEnvelopeSchema,
   type FrontendRpcResponse,
   handleFrontendRpc,
-} from "@/lib/frontend-bridge/handler";
-import { getSupabase } from "@/lib/supabase/client";
-import type { RealtimeChannel } from "@supabase/supabase-js";
-import { z } from "zod";
+} from '@/lib/frontend-bridge/handler';
+import { getSupabase } from '@/lib/supabase/client';
+import type { RealtimeChannel } from '@supabase/supabase-js';
+import { z } from 'zod';
 
 // ─── Wire format (CONTRACTUAL — must match frontend) ────────────────────────
 
 const BroadcastPayloadSchema = z.object({
-  direction: z.union([
-    z.literal("frontend->extension"),
-    z.literal("extension->frontend"),
-  ]),
+  direction: z.union([z.literal('frontend->extension'), z.literal('extension->frontend')]),
   action: z.string().min(1),
   requestId: z.string().min(1),
   payload: z.unknown().optional(),
@@ -60,7 +57,7 @@ type BroadcastPayload = z.infer<typeof BroadcastPayloadSchema>;
 // (matrx-frontend: lib/types/bridge-envelope.ts). It previously read 'rpc',
 // which silently dropped every cross-machine envelope — both sides shared
 // the channel but listened on different events. Keep these in lockstep.
-const BROADCAST_EVENT_NAME = "FRONTEND_RPC";
+const BROADCAST_EVENT_NAME = 'FRONTEND_RPC';
 const OUTBOUND_TIMEOUT_MS = 30_000;
 
 // ─── Module state ───────────────────────────────────────────────────────────
@@ -96,7 +93,7 @@ export async function connectBroadcast(): Promise<void> {
     try {
       const user = await getCurrentUser();
       if (!user?.id) {
-        log.info("frontend-bridge", "broadcast: no auth — skipping subscribe");
+        log.info('frontend-bridge', 'broadcast: no auth — skipping subscribe');
         return;
       }
       const channelName = `matrx-extension-bridge:${user.id}`;
@@ -104,7 +101,7 @@ export async function connectBroadcast(): Promise<void> {
       const channel = supabase.channel(channelName, {
         config: {
           broadcast: { self: false, ack: false },
-          presence: { key: "" },
+          presence: { key: '' },
         },
       });
 
@@ -114,17 +111,13 @@ export async function connectBroadcast(): Promise<void> {
         pending: new Map(),
       };
 
-      channel.on("broadcast", { event: BROADCAST_EVENT_NAME }, (msg) => {
+      channel.on('broadcast', { event: BROADCAST_EVENT_NAME }, (msg) => {
         // Realtime delivers the published payload under `payload` for the
         // 'broadcast' event type (see Supabase Realtime docs).
         const raw = (msg as { payload?: unknown }).payload;
         const parsed = BroadcastPayloadSchema.safeParse(raw);
         if (!parsed.success) {
-          log.warn(
-            "frontend-bridge",
-            "broadcast: malformed payload",
-            parsed.error.format(),
-          );
+          log.warn('frontend-bridge', 'broadcast: malformed payload', parsed.error.format());
           return;
         }
         void routeBroadcastMessage(parsed.data, next);
@@ -138,19 +131,12 @@ export async function connectBroadcast(): Promise<void> {
           if (err) reject(err);
           else resolve();
         };
-        const timer = setTimeout(
-          () => settle(new Error("subscribe timeout")),
-          10_000,
-        );
+        const timer = setTimeout(() => settle(new Error('subscribe timeout')), 10_000);
         channel.subscribe((status, error) => {
-          if (status === "SUBSCRIBED") {
+          if (status === 'SUBSCRIBED') {
             clearTimeout(timer);
             settle(null);
-          } else if (
-            status === "CLOSED" ||
-            status === "CHANNEL_ERROR" ||
-            status === "TIMED_OUT"
-          ) {
+          } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
             clearTimeout(timer);
             settle(error ?? new Error(`subscribe failed: ${status}`));
           }
@@ -158,13 +144,9 @@ export async function connectBroadcast(): Promise<void> {
       });
 
       state = next;
-      log.success("frontend-bridge", `broadcast subscribed: ${channelName}`);
+      log.success('frontend-bridge', `broadcast subscribed: ${channelName}`);
     } catch (err) {
-      log.warn(
-        "frontend-bridge",
-        "broadcast: connect failed",
-        (err as Error).message,
-      );
+      log.warn('frontend-bridge', 'broadcast: connect failed', (err as Error).message);
     } finally {
       connecting = null;
     }
@@ -184,26 +166,22 @@ export async function disconnectBroadcast(): Promise<void> {
     clearTimeout(p.timer);
     p.resolve({
       ok: false,
-      error: "broadcast disconnected",
-      requestId: "",
+      error: 'broadcast disconnected',
+      requestId: '',
     });
   }
   s.pending.clear();
   try {
     await s.channel.unsubscribe();
   } catch (err) {
-    log.warn(
-      "frontend-bridge",
-      "broadcast: unsubscribe failed",
-      (err as Error).message,
-    );
+    log.warn('frontend-bridge', 'broadcast: unsubscribe failed', (err as Error).message);
   }
   try {
     await getSupabase().removeChannel(s.channel);
   } catch {
     /* already removed */
   }
-  log.info("frontend-bridge", "broadcast disconnected");
+  log.info('frontend-bridge', 'broadcast disconnected');
 }
 
 /**
@@ -229,7 +207,7 @@ export async function publishToFrontend(
       requestId,
       promise: Promise.resolve<FrontendRpcResponse>({
         ok: false,
-        error: "broadcast not connected",
+        error: 'broadcast not connected',
         requestId,
       }),
     };
@@ -248,7 +226,7 @@ export async function publishToFrontend(
   });
 
   const outbound: BroadcastPayload = {
-    direction: "extension->frontend",
+    direction: 'extension->frontend',
     action,
     requestId,
     payload,
@@ -256,7 +234,7 @@ export async function publishToFrontend(
   };
   try {
     await s.channel.send({
-      type: "broadcast",
+      type: 'broadcast',
       event: BROADCAST_EVENT_NAME,
       payload: outbound,
     });
@@ -277,16 +255,13 @@ export async function publishToFrontend(
 
 // ─── Internal routing ───────────────────────────────────────────────────────
 
-async function routeBroadcastMessage(
-  msg: BroadcastPayload,
-  s: ConnectionState,
-): Promise<void> {
-  if (msg.direction === "extension->frontend") {
+async function routeBroadcastMessage(msg: BroadcastPayload, s: ConnectionState): Promise<void> {
+  if (msg.direction === 'extension->frontend') {
     // This is our own outbound — Supabase shouldn't echo it (self:false),
     // but if it does, ignore it.
     return;
   }
-  if (msg.direction === "frontend->extension") {
+  if (msg.direction === 'frontend->extension') {
     // Two cases:
     //   1. The frontend is initiating an RPC — treat as a request, route
     //      through handleFrontendRpc, publish the response.
@@ -308,10 +283,7 @@ async function routeBroadcastMessage(
       } else {
         pending.resolve({
           ok: false,
-          error:
-            typeof replyPayload.error === "string"
-              ? replyPayload.error
-              : "no error",
+          error: typeof replyPayload.error === 'string' ? replyPayload.error : 'no error',
           requestId: msg.requestId,
         });
       }
@@ -327,11 +299,7 @@ async function routeBroadcastMessage(
     };
     const validated = FrontendRpcEnvelopeSchema.safeParse(envelope);
     if (!validated.success) {
-      log.warn(
-        "frontend-bridge",
-        "broadcast: invalid envelope",
-        validated.error.format(),
-      );
+      log.warn('frontend-bridge', 'broadcast: invalid envelope', validated.error.format());
       return;
     }
     // Per-user channel name implies authenticated origin (Supabase RLS
@@ -340,8 +308,8 @@ async function routeBroadcastMessage(
 
     // Optional Debug-tab buffer (no-op when disabled).
     recordBridgeTraffic({
-      stream: "broadcast",
-      direction: "in",
+      stream: 'broadcast',
+      direction: 'in',
       action: msg.action,
       requestId: msg.requestId,
       sender: `broadcast:${s.userId}`,
@@ -352,7 +320,7 @@ async function routeBroadcastMessage(
     });
 
     const reply: BroadcastPayload = {
-      direction: "extension->frontend",
+      direction: 'extension->frontend',
       action: msg.action,
       requestId: msg.requestId,
       payload: response,
@@ -360,13 +328,13 @@ async function routeBroadcastMessage(
     };
     try {
       await s.channel.send({
-        type: "broadcast",
+        type: 'broadcast',
         event: BROADCAST_EVENT_NAME,
         payload: reply,
       });
     } catch (err) {
       log.warn(
-        "frontend-bridge",
+        'frontend-bridge',
         `broadcast: reply send failed (req=${msg.requestId})`,
         (err as Error).message,
       );
@@ -376,10 +344,7 @@ async function routeBroadcastMessage(
 
 function generateRequestId(): string {
   // crypto.randomUUID is available in MV3 service workers and offscreen.
-  if (
-    typeof crypto !== "undefined" &&
-    typeof crypto.randomUUID === "function"
-  ) {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
   }
   // Fallback (vanishingly unlikely path).

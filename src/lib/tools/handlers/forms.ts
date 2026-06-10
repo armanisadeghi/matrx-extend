@@ -187,12 +187,7 @@ export const select_dropdown_option: ToolHandler<SelectDropdownArgs, unknown> = 
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (
-        selector: string,
-        value: string | null,
-        label: string | null,
-        idx: number | null,
-      ) => {
+      func: (selector: string, value: string | null, label: string | null, idx: number | null) => {
         const el = document.querySelector(selector) as HTMLSelectElement | null;
         if (!el || el.tagName.toLowerCase() !== 'select') {
           return { ok: false, reason: `No <select> at ${selector}` };
@@ -293,12 +288,7 @@ export const set_radio: ToolHandler<SetRadioArgs, unknown> = {
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (
-        selector: string,
-        value: string | null,
-        label: string | null,
-        idx: number | null,
-      ) => {
+      func: (selector: string, value: string | null, label: string | null, idx: number | null) => {
         const probe = document.querySelector(selector) as HTMLElement | null;
         if (!probe) return { ok: false, reason: `No element at ${selector}` };
         const root: Element =
@@ -425,10 +415,7 @@ export const file_upload: ToolHandler<FileUploadArgs, unknown> = {
     try {
       const [first] = await chrome.scripting.executeScript({
         target: { tabId },
-        func: (
-          selector: string,
-          files: { name: string; mime: string; base64: string }[],
-        ) => {
+        func: (selector: string, files: { name: string; mime: string; base64: string }[]) => {
           const el = document.querySelector(selector) as HTMLInputElement | null;
           if (!el || el.tagName.toLowerCase() !== 'input' || el.type !== 'file') {
             return { ok: false, reason: `Not a file input at ${selector}` };

@@ -40,7 +40,7 @@ function parseField(raw: string, min: number, max: number): Set<number> {
     const slash = part.split('/');
     const rangePart = slash[0] ?? '';
     const stepPart = slash[1];
-    const step = stepPart ? parseInt(stepPart, 10) : 1;
+    const step = stepPart ? Number.parseInt(stepPart, 10) : 1;
     if (!Number.isFinite(step) || step < 1) {
       throw new Error(`invalid step in cron field: "${part}"`);
     }
@@ -51,10 +51,10 @@ function parseField(raw: string, min: number, max: number): Set<number> {
       hi = max;
     } else if (rangePart.includes('-')) {
       const dash = rangePart.split('-');
-      lo = parseInt(dash[0] ?? '', 10);
-      hi = parseInt(dash[1] ?? '', 10);
+      lo = Number.parseInt(dash[0] ?? '', 10);
+      hi = Number.parseInt(dash[1] ?? '', 10);
     } else {
-      lo = parseInt(rangePart, 10);
+      lo = Number.parseInt(rangePart, 10);
       hi = lo;
     }
     if (!Number.isFinite(lo) || !Number.isFinite(hi)) {

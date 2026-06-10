@@ -177,7 +177,11 @@ export async function quickPrompt(
 ): Promise<OnboxResult<string>> {
   const ai = getAi();
   if (!ai?.languageModel) {
-    return { ok: false, reason: 'languageModel API unavailable in this Chrome', availability: 'unavailable' };
+    return {
+      ok: false,
+      reason: 'languageModel API unavailable in this Chrome',
+      availability: 'unavailable',
+    };
   }
   const availability = (await checkAvailability('languageModel')) ?? 'unavailable';
   if (availability === 'unavailable') {
@@ -354,10 +358,12 @@ export async function proofread(
         firedAt: Date.now(),
       });
       const session = await ai.proofreader.create();
-      const out = (await session.prompt(text)) as unknown as {
-        correctedInput?: string;
-        corrections?: unknown;
-      } | string;
+      const out = (await session.prompt(text)) as unknown as
+        | {
+            correctedInput?: string;
+            corrections?: unknown;
+          }
+        | string;
       session.destroy?.();
       if (typeof out === 'string') return { ok: true, data: { correctedInput: out } };
       return {

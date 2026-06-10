@@ -105,9 +105,7 @@ export async function connectWs(): Promise<WsControlResult> {
         stage: 'auth',
       };
     }
-    wsUrl =
-      baseUrl.replace(/^http/, 'ws') +
-      `/extension/ws?token=${encodeURIComponent(token)}`;
+    wsUrl = baseUrl.replace(/^http/, 'ws') + `/extension/ws?token=${encodeURIComponent(token)}`;
   } catch (err) {
     const error = (err as Error).message;
     log.warn('desktop', 'ws connectWs discovery failed', error);
@@ -121,10 +119,9 @@ export async function connectWs(): Promise<WsControlResult> {
     return { ok: false, error, stage: 'ensure-offscreen' };
   }
   try {
-    const r = await send<{ wsUrl: string }, { ok: boolean; error?: string }>(
-      CHANNELS.WS_START,
-      { wsUrl },
-    );
+    const r = await send<{ wsUrl: string }, { ok: boolean; error?: string }>(CHANNELS.WS_START, {
+      wsUrl,
+    });
     if (r && r.ok === false) {
       const error = r.error ?? 'unknown error';
       log.warn('desktop', 'ws connectWs offscreen returned error', error);

@@ -19,10 +19,7 @@
  * conversation switch as a hard reset.
  */
 
-import type {
-  PendingAskUserRequest,
-  PendingConfirmRequest,
-} from '@/lib/tools/types';
+import type { PendingAskUserRequest, PendingConfirmRequest } from '@/lib/tools/types';
 import { create } from 'zustand';
 
 export interface PendingConfirmInbox extends PendingConfirmRequest {

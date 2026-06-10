@@ -17,7 +17,14 @@ export interface MicRequestPayload {
 
 export interface MicRunPayload extends MicRequestPayload {}
 
-export type MicEventType = 'started' | 'stopped' | 'paused' | 'resumed' | 'chunk' | 'level' | 'error';
+export type MicEventType =
+  | 'started'
+  | 'stopped'
+  | 'paused'
+  | 'resumed'
+  | 'chunk'
+  | 'level'
+  | 'error';
 
 export interface MicChunkEvent {
   type: 'chunk';

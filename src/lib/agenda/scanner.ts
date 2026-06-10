@@ -22,6 +22,7 @@ import { ALARMS } from '@/config/env';
 import { log } from '@/lib/debug/log';
 import { send as msgSend } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { cooldownElapsed, tabMatchesTask } from './context-match';
 import {
   type AgendaTask,
   type TriggerConfig,
@@ -30,7 +31,6 @@ import {
   listDueForSurface,
   updateTask,
 } from './queries';
-import { cooldownElapsed, tabMatchesTask } from './context-match';
 
 const NOTIFICATION_PREFIX = 'matrx-agenda:';
 const SCAN_PERIOD_MIN = 1;

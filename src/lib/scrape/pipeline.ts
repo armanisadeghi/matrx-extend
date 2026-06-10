@@ -325,8 +325,7 @@ async function defuddleExtract(doc: Document): Promise<SoupResult['article'] | n
  * other heuristics functioning while neutralizing the worst false
  * positives.
  */
-const READABILITY_NEGATIVE_TOKENS =
-  /\b(meta|comment|footnote|footer|byline|hidden|hid|sidebar)\b/i;
+const READABILITY_NEGATIVE_TOKENS = /\b(meta|comment|footnote|footer|byline|hidden|hid|sidebar)\b/i;
 
 /**
  * Pre-pass mutating a CLONED Readability input so short value-bearing

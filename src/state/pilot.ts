@@ -32,8 +32,8 @@
  * wants kept parallel.
  */
 
-import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import { log } from '@/lib/debug/log';
+import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -103,9 +103,7 @@ const inactiveSession = (): PilotSession => ({
   startedAt: null,
 });
 
-async function resolveSeedTab(
-  seedTabId: number | undefined,
-): Promise<chrome.tabs.Tab | null> {
+async function resolveSeedTab(seedTabId: number | undefined): Promise<chrome.tabs.Tab | null> {
   if (seedTabId != null) {
     try {
       return await chrome.tabs.get(seedTabId);
@@ -202,8 +200,7 @@ export const usePilotStore = create<PilotStore>()(
           s.session.conversationId === id ? s : { session: { ...s.session, conversationId: id } },
         ),
 
-      setAgentId: (agentId) =>
-        set((s) => ({ session: { ...s.session, agentId } })),
+      setAgentId: (agentId) => set((s) => ({ session: { ...s.session, agentId } })),
 
       isTabInSession: async (tabId) => {
         const { session } = get();

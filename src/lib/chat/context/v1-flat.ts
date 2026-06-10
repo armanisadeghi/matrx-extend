@@ -8,8 +8,8 @@
 
 import { log } from '@/lib/debug/log';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
-import type { ContextBuildInputs } from './types';
 import { probeActivePage } from './probe';
+import type { ContextBuildInputs } from './types';
 
 /** First N words of a markdown-ish string. */
 function firstWords(s: string | null | undefined, n: number): string | null {
@@ -120,7 +120,7 @@ export async function buildContextV1Flat(
   const scrape = manualScrape ?? autoScrape?.soup ?? null;
   const scrapeCapturedAt = manualScrape
     ? manualScrape.capturedAt
-    : autoScrape?.capturedAt ?? null;
+    : (autoScrape?.capturedAt ?? null);
 
   if (scrape && scrapeCapturedAt !== null) {
     ctx.clean_content_markdown = scrape.article.content_markdown;

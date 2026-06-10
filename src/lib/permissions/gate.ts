@@ -33,10 +33,7 @@
  */
 
 import { log } from '@/lib/debug/log';
-import {
-  hasOptionalPermissions,
-  requestOptionalPermission,
-} from '@/lib/permissions/optional';
+import { hasOptionalPermissions, requestOptionalPermission } from '@/lib/permissions/optional';
 import {
   type GatedPermission,
   type PermissionVerdict,
@@ -113,9 +110,7 @@ export async function ensurePermission(
 }
 
 /** Convenience: does the user need to be bothered, or do we already have it? */
-export async function hasPermissionOrAlways(
-  permission: GatedPermission,
-): Promise<boolean> {
+export async function hasPermissionOrAlways(permission: GatedPermission): Promise<boolean> {
   if (await isLiveGranted(permission)) return true;
   const s = usePermissionPromptsStore.getState();
   return s.autonomous || !!s.alwaysAllow[keyOf(permission)];

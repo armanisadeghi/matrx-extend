@@ -29,10 +29,7 @@ export function makeGuidanceId(): string {
 }
 
 /** Domain-match helper. Memos/guidance on a parent domain apply to subdomains. */
-export function guidanceMatchesDomain(
-  itemDomain: string,
-  currentDomain: string,
-): boolean {
+export function guidanceMatchesDomain(itemDomain: string, currentDomain: string): boolean {
   if (itemDomain === currentDomain) return true;
   if (currentDomain.endsWith(`.${itemDomain}`)) return true;
   return false;
@@ -88,9 +85,9 @@ export async function getGuidanceItems(ids: string[]): Promise<GuidanceItem[]> {
   try {
     const keys = ids.map(itemKey);
     const r = await chrome.storage.local.get(keys);
-    return ids.map((id) => r[itemKey(id)] as GuidanceItem | undefined).filter(
-      (v): v is GuidanceItem => v != null,
-    );
+    return ids
+      .map((id) => r[itemKey(id)] as GuidanceItem | undefined)
+      .filter((v): v is GuidanceItem => v != null);
   } catch {
     return [];
   }

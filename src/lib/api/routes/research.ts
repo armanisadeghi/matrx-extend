@@ -230,14 +230,8 @@ export interface AddSourceRequest {
  * Idempotent on (topic_id, url): if a source already exists at this URL in
  * the topic, the server returns the existing row (200), no duplicate.
  */
-export async function addSourceToTopic(
-  topicId: string,
-  body: AddSourceRequest,
-) {
-  return apiPost<ResearchSource>(
-    `/research/topics/${encodeURIComponent(topicId)}/sources`,
-    body,
-  );
+export async function addSourceToTopic(topicId: string, body: AddSourceRequest) {
+  return apiPost<ResearchSource>(`/research/topics/${encodeURIComponent(topicId)}/sources`, body);
 }
 
 export const SourceUrlMatchSchema = z.object({
@@ -253,13 +247,9 @@ export type SourceUrlMatch = z.infer<typeof SourceUrlMatchSchema>;
  * the "already in: X" inline hint.
  */
 export async function findSourcesByUrl(url: string) {
-  const r = await apiGet<unknown>(
-    `/research/sources/by-url?url=${encodeURIComponent(url)}`,
-  );
+  const r = await apiGet<unknown>(`/research/sources/by-url?url=${encodeURIComponent(url)}`);
   if (!r.ok) return r;
-  const parsed = z
-    .object({ matches: z.array(SourceUrlMatchSchema) })
-    .safeParse(r.data);
+  const parsed = z.object({ matches: z.array(SourceUrlMatchSchema) }).safeParse(r.data);
   if (!parsed.success) {
     console.warn('[matrx-extend] /research/sources/by-url failed schema', parsed.error.format());
     return { ok: false as const, status: 0, error: 'Schema validation failed' };

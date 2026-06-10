@@ -31,6 +31,19 @@
  */
 
 import {
+  list_bookmark_tree,
+  list_recent_history,
+  search_bookmarks,
+  search_history,
+} from '@/lib/tools/handlers/browser-data';
+import {
+  cdp_attach,
+  cdp_attached_tabs,
+  cdp_clear_emulation,
+  cdp_detach,
+  cdp_emulate_device,
+} from '@/lib/tools/handlers/cdp';
+import {
   ai_check_availability,
   ai_check_prompt_injection,
   ai_classify,
@@ -42,32 +55,12 @@ import {
   ai_translate,
 } from '@/lib/tools/handlers/onbox-ai';
 import {
-  cdp_attach,
-  cdp_attached_tabs,
-  cdp_clear_emulation,
-  cdp_detach,
-  cdp_emulate_device,
-} from '@/lib/tools/handlers/cdp';
-import {
-  list_bookmark_tree,
-  list_recent_history,
-  search_bookmarks,
-  search_history,
-} from '@/lib/tools/handlers/browser-data';
-import {
   delete_cookie,
   get_cookies,
   list_recently_closed,
   restore_recently_closed,
   set_cookie,
 } from '@/lib/tools/handlers/optional-perms';
-import {
-  add_tabs_to_group,
-  create_tab_group,
-  get_tab_groups,
-  remove_tabs_from_group,
-  update_tab_group,
-} from '@/lib/tools/handlers/tabs';
 import {
   delete_extension_storage,
   execute_javascript,
@@ -77,6 +70,13 @@ import {
   remove_stylesheet,
   set_extension_storage,
 } from '@/lib/tools/handlers/privileged';
+import {
+  add_tabs_to_group,
+  create_tab_group,
+  get_tab_groups,
+  remove_tabs_from_group,
+  update_tab_group,
+} from '@/lib/tools/handlers/tabs';
 import {
   webmcp_call_page_tool,
   webmcp_check_availability,
@@ -142,10 +142,7 @@ export const ai: ToolHandler<AiArgs, unknown> = {
       case 'classify':
         if (!args.text || !args.categories?.length)
           return { ok: false, reason: "'text' and 'categories' required for classify" };
-        return ai_classify.run(
-          { text: args.text, categories: args.categories } as never,
-          ctx,
-        );
+        return ai_classify.run({ text: args.text, categories: args.categories } as never, ctx);
       case 'extract_json':
         if (!args.text || !args.schema)
           return { ok: false, reason: "'text' and 'schema' required for extract_json" };
@@ -180,8 +177,7 @@ export const ai: ToolHandler<AiArgs, unknown> = {
           ctx,
         );
       case 'check_prompt_injection':
-        if (!args.text)
-          return { ok: false, reason: "'text' required for check_prompt_injection" };
+        if (!args.text) return { ok: false, reason: "'text' required for check_prompt_injection" };
         return ai_check_prompt_injection.run({ text: args.text } as never, ctx);
       default:
         return { ok: false, reason: `Unknown ai action: ${args.action as string}` };
@@ -221,10 +217,7 @@ export const cookies: ToolHandler<CookiesArgs, unknown> = {
   argsSchema: CookiesArgs,
   run: async (args, ctx) => {
     if (args.action === 'get') {
-      return get_cookies.run(
-        { url: args.url, domain: args.domain, name: args.name } as never,
-        ctx,
-      );
+      return get_cookies.run({ url: args.url, domain: args.domain, name: args.name } as never, ctx);
     }
     if (args.action === 'set') {
       if (!args.name || args.value == null)
@@ -356,8 +349,7 @@ export const tab_groups: ToolHandler<TabGroupsArgs, unknown> = {
   run: async (args, ctx) => {
     if (args.action === 'list') return get_tab_groups.run({} as never, ctx);
     if (args.action === 'create') {
-      if (!args.tab_ids?.length)
-        return { ok: false, reason: "'tab_ids' required for create" };
+      if (!args.tab_ids?.length) return { ok: false, reason: "'tab_ids' required for create" };
       return create_tab_group.run(
         { tab_ids: args.tab_ids, title: args.title, color: args.color } as never,
         ctx,
@@ -372,13 +364,11 @@ export const tab_groups: ToolHandler<TabGroupsArgs, unknown> = {
       );
     }
     if (args.action === 'remove') {
-      if (!args.tab_ids?.length)
-        return { ok: false, reason: "'tab_ids' required for remove" };
+      if (!args.tab_ids?.length) return { ok: false, reason: "'tab_ids' required for remove" };
       return remove_tabs_from_group.run({ tab_ids: args.tab_ids } as never, ctx);
     }
     if (args.action === 'update') {
-      if (args.group_id == null)
-        return { ok: false, reason: "'group_id' required for update" };
+      if (args.group_id == null) return { ok: false, reason: "'group_id' required for update" };
       return update_tab_group.run(
         {
           group_id: args.group_id,
@@ -461,10 +451,7 @@ export const history: ToolHandler<HistoryArgs, unknown> = {
       );
     }
     if (args.action === 'recent') {
-      return list_recent_history.run(
-        { minutes: args.minutes, limit: args.limit } as never,
-        ctx,
-      );
+      return list_recent_history.run({ minutes: args.minutes, limit: args.limit } as never, ctx);
     }
     return { ok: false, reason: `Unknown history action: ${args.action as string}` };
   },
@@ -520,10 +507,7 @@ export const stylesheet: ToolHandler<StylesheetArgs, unknown> = {
       );
     }
     if (args.action === 'remove') {
-      return remove_stylesheet.run(
-        { css: args.css, tab_id: args.tab_id } as never,
-        ctx,
-      );
+      return remove_stylesheet.run({ css: args.css, tab_id: args.tab_id } as never, ctx);
     }
     return { ok: false, reason: `Unknown stylesheet action: ${args.action as string}` };
   },
@@ -630,10 +614,7 @@ export const evaluate_javascript: ToolHandler<EvaluateJsArgs, unknown> = {
   argsSchema: EvaluateJsArgs,
   run: async (args, ctx) => {
     const tabId = args.tab_id ? Number.parseInt(args.tab_id, 10) : undefined;
-    return execute_javascript.run(
-      { code: args.text, tab_id: tabId, arg: args.arg } as never,
-      ctx,
-    );
+    return execute_javascript.run({ code: args.text, tab_id: tabId, arg: args.arg } as never, ctx);
   },
 };
 

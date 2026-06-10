@@ -297,9 +297,7 @@ function seoAuditToText(a: SeoAudit): string {
   const lines: string[] = [];
   lines.push(`URL: ${a.url}`);
   lines.push(`Title (${a.title.length} chars): ${a.title.value || '—'}`);
-  lines.push(
-    `Description (${a.description.length} chars): ${a.description.value ?? '—'}`,
-  );
+  lines.push(`Description (${a.description.length} chars): ${a.description.value ?? '—'}`);
   lines.push(`Canonical: ${a.canonical ?? '—'}`);
   lines.push(`Robots: ${a.robots ?? '—'}`);
   lines.push('');

@@ -64,7 +64,10 @@ interface DnrRulesResult {
   total: number;
 }
 
-export const list_network_blocking_rules: ToolHandler<NoArgs, DnrRulesResult | { ok: false; reason: string }> = {
+export const list_network_blocking_rules: ToolHandler<
+  NoArgs,
+  DnrRulesResult | { ok: false; reason: string }
+> = {
   name: 'list_network_blocking_rules',
   tier: 'read',
   admin_only: true,

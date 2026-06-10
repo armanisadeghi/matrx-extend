@@ -19,8 +19,8 @@
  */
 
 import { getSupabase } from '@/lib/supabase/client';
-import { nextCronTime } from './cron';
 import { z } from 'zod';
+import { nextCronTime } from './cron';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -353,8 +353,7 @@ export interface CreateTaskInput {
  */
 export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
   const c = getSupabase();
-  const nextDueAt =
-    input.next_due_at ?? computeFirstDue(input.trigger_type, input.trigger_config);
+  const nextDueAt = input.next_due_at ?? computeFirstDue(input.trigger_type, input.trigger_config);
 
   // 1. sch_task
   const { data: taskRow, error: taskErr } = await c
@@ -496,9 +495,7 @@ export async function claimRun(
 ): Promise<AgendaRun | null> {
   const c = getSupabase();
   const claimToken = crypto.randomUUID();
-  const claimExpiresAt = new Date(
-    Date.now() + (opts.lease_seconds ?? 600) * 1000,
-  ).toISOString();
+  const claimExpiresAt = new Date(Date.now() + (opts.lease_seconds ?? 600) * 1000).toISOString();
   const now = new Date().toISOString();
 
   const { data, error } = await c
@@ -529,9 +526,7 @@ export async function markRunStarted(runId: string, conversationId?: string): Pr
     .update({
       status: 'running',
       started_at: new Date().toISOString(),
-      output_ref: conversationId
-        ? { kind: 'conversation', id: conversationId }
-        : null,
+      output_ref: conversationId ? { kind: 'conversation', id: conversationId } : null,
     })
     .eq('id', runId);
 }

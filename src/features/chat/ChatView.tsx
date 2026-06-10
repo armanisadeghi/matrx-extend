@@ -2,52 +2,40 @@ import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { GuestBanner } from '@/components/GuestBanner';
 import { Markdown } from '@/components/markdown';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  USER_MODEL_LABEL_BY_ID,
-  USER_MODEL_PRESETS,
-} from '@/lib/agents/model-presets';
-import {
-  ALL_SCOPES,
-  type AgentScope,
-  SCOPE_LABEL,
-  countByScope,
-  filterAgentsByScope,
-  scopeOf,
-} from '@/lib/agents/scope';
 import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
 import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
-import { formatAssistantBody } from '@/features/chat/copy-conversation';
-import { LanguagePicker } from '@/features/chat/LanguagePicker';
 import { HighlightAttachmentChip } from '@/features/chat/HighlightAttachmentChip';
+import { LanguagePicker } from '@/features/chat/LanguagePicker';
 import { QueuedMessageStack } from '@/features/chat/QueuedMessageCard';
 import { SandboxPickerChip } from '@/features/chat/SandboxPickerChip';
 import { ServerToolRow } from '@/features/chat/ServerToolRow';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
+import { formatAssistantBody } from '@/features/chat/copy-conversation';
 import { TaskPanel, TaskPanelChip } from '@/features/lists/TaskPanel';
-import { enqueueInboxMessage } from '@/lib/api/routes/ai';
 import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
-import { newId } from '@/lib/id';
-import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
-import { useVoicePrefsStore } from '@/state/voice-prefs';
-import { log } from '@/lib/debug/log';
-import { CHANNELS } from '@/lib/messaging/schemas';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
+import { USER_MODEL_LABEL_BY_ID, USER_MODEL_PRESETS } from '@/lib/agents/model-presets';
+import {
+  ALL_SCOPES,
+  SCOPE_LABEL,
+  countByScope,
+  filterAgentsByScope,
+  scopeOf,
+} from '@/lib/agents/scope';
+import { enqueueInboxMessage } from '@/lib/api/routes/ai';
+import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
 import { wrapForAgent } from '@/lib/clipboard/copy';
+import { log } from '@/lib/debug/log';
+import { newId } from '@/lib/id';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import {
   type AgxAgent,
   type Conversation,
@@ -62,6 +50,7 @@ import { type ChatMessage, type MessagePart, useChatStore } from '@/state/chat';
 import { useSettingsStore } from '@/state/settings';
 import { useToolInbox } from '@/state/tool-inbox';
 import { useTurnInboxStore } from '@/state/turn-inbox';
+import { useVoicePrefsStore } from '@/state/voice-prefs';
 import {
   AlertTriangle,
   ArrowUp,
@@ -78,7 +67,6 @@ import {
   Plus,
   RefreshCw,
   ScanLine,
-  Settings2,
   Sliders,
   Sparkles,
   Square,
@@ -209,11 +197,7 @@ export function ChatView() {
       // user can pick something that exists.
       const chat = useChatStore.getState();
       const savedDefaultId = useSettingsStore.getState().defaultAgentId;
-      if (
-        !chat.selectedAgentId &&
-        savedDefaultId &&
-        a.some((x) => x.id === savedDefaultId)
-      ) {
+      if (!chat.selectedAgentId && savedDefaultId && a.some((x) => x.id === savedDefaultId)) {
         chat.setAgent(savedDefaultId);
       }
     })();
@@ -267,9 +251,9 @@ export function ChatView() {
   // dropped but the rest rendered (banner appears above the messages).
   // Full details (Zod issues, raw row, error stack) go to the admin event
   // stream via log.error so the Debug tab has them.
-  const [loadError, setLoadError] = useState<
-    { kind: 'fatal' | 'partial'; text: string } | null
-  >(null);
+  const [loadError, setLoadError] = useState<{ kind: 'fatal' | 'partial'; text: string } | null>(
+    null,
+  );
 
   useEffect(() => {
     // Clear any previous conversation's load error when switching threads.
@@ -785,9 +769,7 @@ function AgentPicker({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
                       <span className="truncate text-sm">{a.name}</span>
-                      {a.is_favorite && (
-                        <Sparkles className="size-3 shrink-0 text-amber-500" />
-                      )}
+                      {a.is_favorite && <Sparkles className="size-3 shrink-0 text-amber-500" />}
                     </div>
                     {a.description && (
                       <div className="line-clamp-1 text-[10px] text-muted-foreground">
@@ -1132,8 +1114,7 @@ function MessageRow({ message }: { message: ChatMessage }) {
               {
                 label: 'With everything',
                 adminOnly: true,
-                description:
-                  'Text, thinking, tool calls with full args and results.',
+                description: 'Text, thinking, tool calls with full args and results.',
                 getContent: () =>
                   formatAssistantBody(message, {
                     includeToolCalls: true,
@@ -1433,12 +1414,11 @@ function Composer({
             <span className="font-medium">
               {voiceError ? 'Voice input failed' : 'Voice input — partial failure'}
             </span>
-            <span className="mt-0.5 block opacity-90">
-              {voiceError ?? voiceWarning}
-            </span>
+            <span className="mt-0.5 block opacity-90">{voiceError ?? voiceWarning}</span>
             {!voiceError && failedChunkCount > 0 && (
               <span className="mt-0.5 block opacity-75">
-                {failedChunkCount} chunk{failedChunkCount === 1 ? '' : 's'} dropped — your transcript may be incomplete.
+                {failedChunkCount} chunk{failedChunkCount === 1 ? '' : 's'} dropped — your
+                transcript may be incomplete.
               </span>
             )}
           </div>
@@ -1496,7 +1476,9 @@ function Composer({
               }
               style={
                 isRecording
-                  ? { boxShadow: `0 0 0 ${Math.min(6, Math.round(audioLevel / 12))}px rgba(239,68,68,0.18)` }
+                  ? {
+                      boxShadow: `0 0 0 ${Math.min(6, Math.round(audioLevel / 12))}px rgba(239,68,68,0.18)`,
+                    }
                   : undefined
               }
             >
@@ -1574,7 +1556,9 @@ function Composer({
                     <span
                       className={cn(
                         'absolute -bottom-0.5 -right-0.5 inline-flex items-center justify-center rounded-full p-0.5',
-                        canQueue ? 'bg-rose-600 text-white' : 'bg-muted-foreground/40 text-background',
+                        canQueue
+                          ? 'bg-rose-600 text-white'
+                          : 'bg-muted-foreground/40 text-background',
                       )}
                     >
                       <Square className="size-2" fill="currentColor" />

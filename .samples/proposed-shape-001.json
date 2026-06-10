@@ -35,9 +35,7 @@
         { "level": 2, "text": "Configuring OpenAI to Use Cerebras API" }
       ],
       "primary_action": null,
-      "main_interactive": [
-        { "ref": "ref:7", "role": "link", "name": "Get Started" }
-      ]
+      "main_interactive": [{ "ref": "ref:7", "role": "link", "name": "Get Started" }]
     },
 
     "content": {

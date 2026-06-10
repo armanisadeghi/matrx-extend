@@ -23,25 +23,25 @@
  * registration plumbing and one example `ping` handler.
  */
 
-import {
-    TaskClaimRaceError,
-    createSchedulerClient,
-    type Json,
-    type SchTaskRow,
-    type SchedulerClient,
-    type TaskEvent,
-} from '@/lib/scheduler-client';
 import { getOrMintInstanceId } from '@/lib/cross-component/instance-id';
 import { log } from '@/lib/debug/log';
+import {
+  type Json,
+  type SchTaskRow,
+  type SchedulerClient,
+  TaskClaimRaceError,
+  type TaskEvent,
+  createSchedulerClient,
+} from '@/lib/scheduler-client';
 import { getSupabase } from '@/lib/supabase/client';
 
 // ── Handler registry ───────────────────────────────────────────────────────
 
 export interface TaskHandlerResult {
-    ok: boolean;
-    resultSummary?: string;
-    errorMessage?: string;
-    resultMetadata?: Record<string, unknown>;
+  ok: boolean;
+  resultSummary?: string;
+  errorMessage?: string;
+  resultMetadata?: Record<string, unknown>;
 }
 
 export type TaskHandler = (task: SchTaskRow) => Promise<TaskHandlerResult>;
@@ -54,12 +54,12 @@ const HANDLERS = new Map<string, TaskHandler>();
  * ships an example `ping` handler; production kinds land in later phases.
  */
 export function registerTaskHandler(kind: string, handler: TaskHandler): void {
-    HANDLERS.set(kind, handler);
+  HANDLERS.set(kind, handler);
 }
 
 /** Visibility for diagnostics — admin Debug tab uses this to render coverage. */
 export function listRegisteredKinds(): string[] {
-    return Array.from(HANDLERS.keys()).sort();
+  return Array.from(HANDLERS.keys()).sort();
 }
 
 // ── Host state (singleton, SW-scoped) ──────────────────────────────────────
@@ -78,72 +78,66 @@ let starting: Promise<void> | null = null;
  * successful start (e.g. after a SW wake or manual retry).
  */
 export async function startSchedulerHost(userId: string): Promise<void> {
+  if (activeUserId === userId && activeTeardown) return;
+  if (starting) {
+    await starting;
     if (activeUserId === userId && activeTeardown) return;
-    if (starting) {
-        await starting;
-        if (activeUserId === userId && activeTeardown) return;
-    }
+  }
 
-    starting = (async () => {
-        try {
-            if (activeTeardown) {
-                await stopSchedulerHost();
-            }
-
-            const supabase = getSupabase();
-            const instanceId = await getOrMintInstanceId();
-
-            const client: SchedulerClient = createSchedulerClient({
-                supabaseClient: supabase,
-                surface: 'chrome-extension-chat',
-                instanceId,
-            });
-
-            const teardown = client.subscribeToTasks({
-                userId,
-                onTask: (event) => {
-                    void handleTaskEvent(client, event);
-                },
-            });
-
-            activeTeardown = teardown;
-            activeUserId = userId;
-            log.success(
-                'sys',
-                `scheduler-host: started for user=${userId} surface=chrome-extension-chat instance=${instanceId}`,
-            );
-        } catch (err) {
-            log.warn(
-                'sys',
-                `scheduler-host: start failed: ${(err as Error).message}`,
-            );
-        }
-    })();
-
+  starting = (async () => {
     try {
-        await starting;
-    } finally {
-        starting = null;
+      if (activeTeardown) {
+        await stopSchedulerHost();
+      }
+
+      const supabase = getSupabase();
+      const instanceId = await getOrMintInstanceId();
+
+      const client: SchedulerClient = createSchedulerClient({
+        supabaseClient: supabase,
+        surface: 'chrome-extension-chat',
+        instanceId,
+      });
+
+      const teardown = client.subscribeToTasks({
+        userId,
+        onTask: (event) => {
+          void handleTaskEvent(client, event);
+        },
+      });
+
+      activeTeardown = teardown;
+      activeUserId = userId;
+      log.success(
+        'sys',
+        `scheduler-host: started for user=${userId} surface=chrome-extension-chat instance=${instanceId}`,
+      );
+    } catch (err) {
+      log.warn('sys', `scheduler-host: start failed: ${(err as Error).message}`);
     }
+  })();
+
+  try {
+    await starting;
+  } finally {
+    starting = null;
+  }
 }
 
 /**
  * Tear down the active subscription. Idempotent.
  */
 export async function stopSchedulerHost(): Promise<void> {
-    const fn = activeTeardown;
-    activeTeardown = null;
-    activeUserId = null;
-    if (!fn) return;
-    try {
-        await fn();
-        log.info('sys', 'scheduler-host: stopped');
-    } catch (err) {
-        log.warn(
-            'sys',
-            `scheduler-host: teardown failed: ${(err as Error).message}`,
-        );
-    }
+  const fn = activeTeardown;
+  activeTeardown = null;
+  activeUserId = null;
+  if (!fn) return;
+  try {
+    await fn();
+    log.info('sys', 'scheduler-host: stopped');
+  } catch (err) {
+    log.warn('sys', `scheduler-host: teardown failed: ${(err as Error).message}`);
+  }
 }
 
 // ── Event handling ────────────────────────────────────────────────────────
@@ -158,122 +152,98 @@ export async function stopSchedulerHost(): Promise<void> {
  * - This function applies HOST-LEVEL filters: enabled flag, due-now check,
  *   registered handler. Each is a reason to bail without ever touching the DB.
  */
-async function handleTaskEvent(
-    client: SchedulerClient,
-    event: TaskEvent,
-): Promise<void> {
-    if (event.type === 'DELETE') return;
+async function handleTaskEvent(client: SchedulerClient, event: TaskEvent): Promise<void> {
+  if (event.type === 'DELETE') return;
 
-    const task = event.task;
-    if (!task.enabled) return;
-    if (task.next_due_at == null) return;
+  const task = event.task;
+  if (!task.enabled) return;
+  if (task.next_due_at == null) return;
 
-    // Only claim if the task is due now or in the past. Future tasks will be
-    // picked up by the matching UPDATE event when next_due_at rolls into the
-    // present (the Python scanner is what advances next_due_at, so the
-    // extension never has to compute due times itself).
-    if (new Date(task.next_due_at).getTime() > Date.now()) return;
+  // Only claim if the task is due now or in the past. Future tasks will be
+  // picked up by the matching UPDATE event when next_due_at rolls into the
+  // present (the Python scanner is what advances next_due_at, so the
+  // extension never has to compute due times itself).
+  if (new Date(task.next_due_at).getTime() > Date.now()) return;
 
-    const handler = HANDLERS.get(task.kind);
-    if (!handler) {
-        log.info(
-            'sys',
-            `scheduler-host: no handler for kind=${task.kind} task=${task.id} — skipping`,
-        );
-        return;
+  const handler = HANDLERS.get(task.kind);
+  if (!handler) {
+    log.info('sys', `scheduler-host: no handler for kind=${task.kind} task=${task.id} — skipping`);
+    return;
+  }
+
+  let runId: string | null = null;
+  let claimToken: string | null = null;
+
+  try {
+    const run = await client.claimTask({ task });
+    runId = run.id;
+    claimToken = run.claim_token;
+    log.info('sys', `scheduler-host: claimed task=${task.id} run=${run.id} kind=${task.kind}`);
+  } catch (err) {
+    if (err instanceof TaskClaimRaceError) {
+      // Another claimer won the race — expected, not an error.
+      return;
     }
+    log.warn('sys', `scheduler-host: claim failed for task=${task.id}: ${(err as Error).message}`);
+    return;
+  }
 
-    let runId: string | null = null;
-    let claimToken: string | null = null;
+  if (!claimToken) {
+    // The DB enforces NOT NULL on claim_token at INSERT; this branch is
+    // defensive in case a future schema change relaxes that.
+    log.warn(
+      'sys',
+      `scheduler-host: claim returned no claim_token for run=${runId} — cannot finalize`,
+    );
+    return;
+  }
 
+  try {
+    const result = await handler(task);
+    if (result.ok) {
+      const won = await client.completeRun({
+        runId,
+        claimToken,
+        resultSummary: result.resultSummary ?? null,
+        resultMetadata: toResultMetadata(result.resultMetadata),
+      });
+      if (!won) {
+        log.warn('sys', `scheduler-host: lease lost before completeRun for run=${runId}`);
+      } else {
+        log.success('sys', `scheduler-host: completed run=${runId} task=${task.id}`);
+      }
+    } else {
+      const won = await client.failRun({
+        runId,
+        claimToken,
+        errorMessage: result.errorMessage ?? 'handler reported failure',
+        resultMetadata: toResultMetadata(result.resultMetadata),
+      });
+      if (!won) {
+        log.warn('sys', `scheduler-host: lease lost before failRun for run=${runId}`);
+      }
+    }
+  } catch (handlerErr) {
+    const message = handlerErr instanceof Error ? handlerErr.message : String(handlerErr);
+    log.error(
+      'sys',
+      `scheduler-host: handler crashed for run=${runId} task=${task.id}: ${message}`,
+      handlerErr,
+    );
     try {
-        const run = await client.claimTask({ task });
-        runId = run.id;
-        claimToken = run.claim_token;
-        log.info(
-            'sys',
-            `scheduler-host: claimed task=${task.id} run=${run.id} kind=${task.kind}`,
-        );
-    } catch (err) {
-        if (err instanceof TaskClaimRaceError) {
-            // Another claimer won the race — expected, not an error.
-            return;
-        }
-        log.warn(
-            'sys',
-            `scheduler-host: claim failed for task=${task.id}: ${(err as Error).message}`,
-        );
-        return;
+      await client.failRun({
+        runId,
+        claimToken,
+        errorMessage: message,
+      });
+    } catch (failErr) {
+      log.error(
+        'sys',
+        `scheduler-host: failRun also failed for run=${runId}: ${(failErr as Error).message}`,
+        failErr,
+      );
     }
-
-    if (!claimToken) {
-        // The DB enforces NOT NULL on claim_token at INSERT; this branch is
-        // defensive in case a future schema change relaxes that.
-        log.warn(
-            'sys',
-            `scheduler-host: claim returned no claim_token for run=${runId} — cannot finalize`,
-        );
-        return;
-    }
-
-    try {
-        const result = await handler(task);
-        if (result.ok) {
-            const won = await client.completeRun({
-                runId,
-                claimToken,
-                resultSummary: result.resultSummary ?? null,
-                resultMetadata: toResultMetadata(result.resultMetadata),
-            });
-            if (!won) {
-                log.warn(
-                    'sys',
-                    `scheduler-host: lease lost before completeRun for run=${runId}`,
-                );
-            } else {
-                log.success(
-                    'sys',
-                    `scheduler-host: completed run=${runId} task=${task.id}`,
-                );
-            }
-        } else {
-            const won = await client.failRun({
-                runId,
-                claimToken,
-                errorMessage: result.errorMessage ?? 'handler reported failure',
-                resultMetadata: toResultMetadata(result.resultMetadata),
-            });
-            if (!won) {
-                log.warn(
-                    'sys',
-                    `scheduler-host: lease lost before failRun for run=${runId}`,
-                );
-            }
-        }
-    } catch (handlerErr) {
-        const message =
-            handlerErr instanceof Error
-                ? handlerErr.message
-                : String(handlerErr);
-        log.error(
-            'sys',
-            `scheduler-host: handler crashed for run=${runId} task=${task.id}: ${message}`,
-            handlerErr,
-        );
-        try {
-            await client.failRun({
-                runId,
-                claimToken,
-                errorMessage: message,
-            });
-        } catch (failErr) {
-            log.error(
-                'sys',
-                `scheduler-host: failRun also failed for run=${runId}: ${(failErr as Error).message}`,
-                failErr,
-            );
-        }
-    }
+  }
 }
 
 /**
@@ -285,8 +255,8 @@ async function handleTaskEvent(
  * return values against the imported `Json` alias.
  */
 function toResultMetadata(
-    metadata: Record<string, unknown> | undefined,
+  metadata: Record<string, unknown> | undefined,
 ): Record<string, Json> | null {
-    if (metadata == null) return null;
-    return metadata as Record<string, Json>;
+  if (metadata == null) return null;
+  return metadata as Record<string, Json>;
 }

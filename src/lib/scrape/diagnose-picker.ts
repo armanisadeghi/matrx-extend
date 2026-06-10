@@ -13,10 +13,7 @@
  */
 
 import { CHANNELS } from '@/lib/messaging/schemas';
-import {
-  type DiagnosePickPayload,
-  capturePickPayload,
-} from '@/lib/scrape/diagnose-bundle';
+import { type DiagnosePickPayload, capturePickPayload } from '@/lib/scrape/diagnose-bundle';
 
 const HOST_ID = 'matrx-diagnose-picker-host';
 
@@ -39,7 +36,7 @@ export function mountDiagnosePicker(initialMode: 'missing' | 'unwanted'): void {
   const modeLabel =
     mode === 'missing'
       ? 'Click the element that SHOULD be in the scrape'
-      : 'Click the element that SHOULDN\'T be in the scrape';
+      : "Click the element that SHOULDN'T be in the scrape";
 
   shadow.innerHTML = `
     <style>

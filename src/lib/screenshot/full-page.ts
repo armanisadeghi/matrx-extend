@@ -41,10 +41,7 @@ async function getPageMetrics(tabId: number): Promise<PageMetrics> {
       scrollY: window.scrollY,
       innerWidth: window.innerWidth,
       innerHeight: window.innerHeight,
-      scrollWidth: Math.max(
-        document.documentElement.scrollWidth,
-        document.body?.scrollWidth ?? 0,
-      ),
+      scrollWidth: Math.max(document.documentElement.scrollWidth, document.body?.scrollWidth ?? 0),
       scrollHeight: Math.max(
         document.documentElement.scrollHeight,
         document.body?.scrollHeight ?? 0,
@@ -112,9 +109,7 @@ export async function captureFullPage(tab: chrome.tabs.Tab): Promise<FullPageCap
       // last viewport always lands flush — avoids a partial unscrolled
       // tail tile that overlaps the previous tile awkwardly.
       const targetY =
-        i === tileCount - 1
-          ? Math.max(0, effectiveTotalH - innerHeight)
-          : i * innerHeight;
+        i === tileCount - 1 ? Math.max(0, effectiveTotalH - innerHeight) : i * innerHeight;
       await setScroll(tabId, origX, targetY);
       await new Promise((r) => setTimeout(r, TILE_SETTLE_MS));
 

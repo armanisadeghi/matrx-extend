@@ -77,11 +77,7 @@ export function encodeGif(opts: EncodeGifOptions): Uint8Array {
 }
 
 // ─── frame quantization ────────────────────────────────────────────────────
-function buildSampleBuffer(
-  frames: GifFrameInput[],
-  width: number,
-  height: number,
-): Uint8Array {
+function buildSampleBuffer(frames: GifFrameInput[], width: number, height: number): Uint8Array {
   // NeuQuant wants an RGB stream (no alpha) sampled across all frames. To
   // keep palette learning bounded for long recordings we cap total samples
   // at ~600k pixels, picking from frames evenly.
@@ -435,7 +431,7 @@ class NeuQuant {
     let bestbiaspos = bestpos;
     for (let i = 0; i < NeuQuant.NETSIZE; i++) {
       const n = this.network[i]!;
-      let dist = Math.abs(n[0]! - b) + Math.abs(n[1]! - g) + Math.abs(n[2]! - r);
+      const dist = Math.abs(n[0]! - b) + Math.abs(n[1]! - g) + Math.abs(n[2]! - r);
       if (dist < bestd) {
         bestd = dist;
         bestpos = i;

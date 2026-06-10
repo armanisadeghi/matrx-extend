@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { RECIPES, type Recipe, recipesForUrl } from '@/lib/data-pattern/recipes';
 import { runMode } from '@/lib/data-pattern/run-pattern';
-import { type Recipe, RECIPES, recipesForUrl } from '@/lib/data-pattern/recipes';
 import { cn } from '@/lib/utils';
 import { Loader2, PlayCircle, Sparkles } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -64,8 +64,8 @@ export function RecipesTab() {
 
         {visible.length === 0 ? (
           <div className="grid place-items-center rounded-xl bg-secondary/40 px-4 py-8 text-center text-sm text-muted-foreground">
-            Try one of the supported sites: LinkedIn, Indeed, Yelp, Amazon, Eventbrite, Hacker
-            News, recipe sites.
+            Try one of the supported sites: LinkedIn, Indeed, Yelp, Amazon, Eventbrite, Hacker News,
+            recipe sites.
           </div>
         ) : (
           <div className="space-y-1.5">
@@ -74,8 +74,7 @@ export function RecipesTab() {
                 key={r.id}
                 className={cn(
                   'rounded-xl bg-secondary/40 px-3 py-2',
-                  matching.find((m) => m.id === r.id) &&
-                    'ring-1 ring-violet-500/40',
+                  matching.find((m) => m.id === r.id) && 'ring-1 ring-violet-500/40',
                 )}
               >
                 <div className="flex items-start justify-between gap-2">
@@ -91,9 +90,7 @@ export function RecipesTab() {
                         </span>
                       )}
                     </div>
-                    <div className="mt-0.5 text-[11px] text-muted-foreground">
-                      {r.description}
-                    </div>
+                    <div className="mt-0.5 text-[11px] text-muted-foreground">{r.description}</div>
                     <div className="mt-0.5 truncate text-[10px] text-muted-foreground/70">
                       {r.hosts.join(', ')}
                     </div>

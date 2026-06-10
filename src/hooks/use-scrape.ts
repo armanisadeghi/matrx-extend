@@ -38,16 +38,8 @@ interface CaptureOptions {
 }
 
 export function useScrape() {
-  const {
-    current,
-    loading,
-    error,
-    edited,
-    setCurrent,
-    setLoading,
-    setError,
-    markSaved,
-  } = useScrapeStore();
+  const { current, loading, error, edited, setCurrent, setLoading, setError, markSaved } =
+    useScrapeStore();
   const setDiagnosePicking = useScrapeStore((s) => s.setDiagnosePicking);
   const setDiagnoseResult = useScrapeStore((s) => s.setDiagnoseResult);
   const diagnoseMode = useScrapeStore((s) => s.diagnose.mode);

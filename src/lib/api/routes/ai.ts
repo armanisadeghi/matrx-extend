@@ -129,7 +129,7 @@ export const conversationInboxPath = (conversationId: string): string =>
 
 export interface InboxEnqueueRequest {
   /** 'user_message' (default) shows in the transcript; 'system_message' steers. */
-  kind?: "user_message" | "system_message";
+  kind?: 'user_message' | 'system_message';
   text: string;
   is_visible_to_user?: boolean;
   is_visible_to_model?: boolean;
@@ -144,12 +144,9 @@ export interface InboxEnqueueResponse {
   run_active: boolean;
 }
 
-export function enqueueInboxMessage(
-  conversationId: string,
-  body: InboxEnqueueRequest,
-) {
+export function enqueueInboxMessage(conversationId: string, body: InboxEnqueueRequest) {
   return apiPost<InboxEnqueueResponse>(conversationInboxPath(conversationId), {
-    kind: "user_message",
+    kind: 'user_message',
     is_visible_to_user: true,
     is_visible_to_model: true,
     ...body,
@@ -159,7 +156,7 @@ export function enqueueInboxMessage(
 /** A single still-pending inbox item, as returned by the list/mutate endpoints. */
 export interface InboxItem {
   injection_id: string;
-  kind: "user_message" | "system_message";
+  kind: 'user_message' | 'system_message';
   text: string;
   status: string;
   queued_at?: string;
@@ -175,9 +172,7 @@ const inboxItemPath = (conversationId: string, injectionId: string): string =>
  * Used to rebuild "waiting its turn" cards when client state was lost.
  */
 export function listPendingInboxMessages(conversationId: string) {
-  return apiGet<InboxItem[]>(
-    `${conversationInboxPath(conversationId)}?status=pending`,
-  );
+  return apiGet<InboxItem[]>(`${conversationInboxPath(conversationId)}?status=pending`);
 }
 
 /**
@@ -195,11 +190,7 @@ export function cancelInboxMessage(conversationId: string, injectionId: string) 
  * PATCH /ai/conversations/{id}/inbox/{injection_id} — edit a pending item's
  * text. `200 {status:'pending'}` on success; 409 if drained; 404 if absent.
  */
-export function editInboxMessage(
-  conversationId: string,
-  injectionId: string,
-  text: string,
-) {
+export function editInboxMessage(conversationId: string, injectionId: string, text: string) {
   return apiPatch<{ injection_id: string; status: string }>(
     inboxItemPath(conversationId, injectionId),
     { text },

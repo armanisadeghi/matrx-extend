@@ -72,19 +72,11 @@ interface ParallelRunsState {
   /** Replace or insert a session. */
   upsertSession: (session: ParallelSession) => void;
   /** Mutate a sub-run by parentCallId + runId. */
-  patchSubRun: (
-    parentCallId: string,
-    runId: string,
-    patch: Partial<ParallelSubRun>,
-  ) => void;
+  patchSubRun: (parentCallId: string, runId: string, patch: Partial<ParallelSubRun>) => void;
   /** Append text to a sub-run's accumulated assistant output. */
   appendSubRunText: (parentCallId: string, runId: string, text: string) => void;
   /** Append a `data` event payload (for json_array merge). */
-  pushSubRunData: (
-    parentCallId: string,
-    runId: string,
-    payload: Record<string, unknown>,
-  ) => void;
+  pushSubRunData: (parentCallId: string, runId: string, payload: Record<string, unknown>) => void;
   /** Mark the whole session ended. */
   finishSession: (parentCallId: string) => void;
   /** Toggle the collapsed flag for the session. */

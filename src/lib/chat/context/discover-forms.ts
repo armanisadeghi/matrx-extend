@@ -65,9 +65,7 @@ export interface DiscoveredForm {
  * Run inside the active tab. Returns null if no forms are present in the
  * MAIN area — chrome-only forms (e.g. header search) are skipped.
  */
-export async function discoverFormsForContext(
-  tabId: number,
-): Promise<DiscoveredForm[] | null> {
+export async function discoverFormsForContext(tabId: number): Promise<DiscoveredForm[] | null> {
   try {
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -112,7 +110,10 @@ export async function discoverFormsForContext(
           }
           const wrapping = input.closest('label');
           if (wrapping?.textContent) {
-            return wrapping.textContent.replace(input.textContent ?? '', '').trim().slice(0, 100);
+            return wrapping.textContent
+              .replace(input.textContent ?? '', '')
+              .trim()
+              .slice(0, 100);
           }
           const aria = input.getAttribute('aria-label');
           if (aria) return aria.trim().slice(0, 100);
@@ -150,20 +151,16 @@ export async function discoverFormsForContext(
           if (!inMain && forms.length > 1) continue;
 
           const inputs = Array.from(
-            form.querySelectorAll<
-              HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-            >('input:not([type="hidden"]), select, textarea, [contenteditable="true"]'),
+            form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+              'input:not([type="hidden"]), select, textarea, [contenteditable="true"]',
+            ),
           );
           if (inputs.length === 0) continue;
 
           const fields: DiscoveredField[] = inputs.map((el) => {
             const tag = el.tagName.toLowerCase();
             const inputType =
-              tag === 'input'
-                ? (el as HTMLInputElement).type
-                : tag === 'select'
-                  ? 'select'
-                  : tag;
+              tag === 'input' ? (el as HTMLInputElement).type : tag === 'select' ? 'select' : tag;
 
             let value: string | boolean | string[] | null = null;
             if (tag === 'select') {

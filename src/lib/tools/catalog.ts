@@ -347,10 +347,7 @@ export function buildToolCatalogManifest(): ToolCatalogManifest {
   // Core bundle = tools in 'core' category PLUS every list_<category>_tools.
   const listToolNames = Object.values(CATEGORIES).map((m) => m.list_tool_name);
   const coreBundle = Array.from(
-    new Set([
-      ...tools.filter((t) => t.category === 'core').map((t) => t.name),
-      ...listToolNames,
-    ]),
+    new Set([...tools.filter((t) => t.category === 'core').map((t) => t.name), ...listToolNames]),
   );
   return {
     generated_at: new Date().toISOString(),

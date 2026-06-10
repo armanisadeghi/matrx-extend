@@ -104,9 +104,7 @@ export const useAdminFlagsStore = create<AdminFlagsState>()(
  * values so we never override a server default unless the admin asked for
  * it. Returns ONLY non-null fields so spreading into the request is safe.
  */
-export function projectAdminFlagsToRequest(
-  state: AdminFlagsValues,
-): Record<string, unknown> {
+export function projectAdminFlagsToRequest(state: AdminFlagsValues): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   if (state.debug !== null) out.debug = state.debug;
   if (state.snapshot !== null) out.snapshot = state.snapshot;

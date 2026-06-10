@@ -90,22 +90,19 @@ export function startWsOffscreenRuntime(): void {
   if (state.initialized) return;
   state.initialized = true;
 
-  on<{ wsUrl?: string }, { ok: boolean; error?: string }>(
-    CHANNELS.WS_START,
-    async (payload) => {
-      state.stopped = false;
-      if (payload?.wsUrl) state.wsUrl = payload.wsUrl;
-      if (state.ws && state.ws.readyState === WebSocket.OPEN) {
-        return { ok: true };
-      }
-      try {
-        await openWebSocket();
-        return { ok: true };
-      } catch (err) {
-        return { ok: false, error: (err as Error).message };
-      }
-    },
-  );
+  on<{ wsUrl?: string }, { ok: boolean; error?: string }>(CHANNELS.WS_START, async (payload) => {
+    state.stopped = false;
+    if (payload?.wsUrl) state.wsUrl = payload.wsUrl;
+    if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+      return { ok: true };
+    }
+    try {
+      await openWebSocket();
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, error: (err as Error).message };
+    }
+  });
 
   on<unknown, { ok: boolean }>(CHANNELS.WS_STOP, () => {
     state.stopped = true;
@@ -151,9 +148,7 @@ async function openWebSocket(): Promise<void> {
     try {
       const wsUrl = state.wsUrl;
       if (!wsUrl) {
-        throw new Error(
-          'no wsUrl cached — caller must send WS_START with a resolved URL first',
-        );
+        throw new Error('no wsUrl cached — caller must send WS_START with a resolved URL first');
       }
       const safeUrl = redactToken(wsUrl);
       log.info('desktop-ws-offscreen', `connecting → ${safeUrl}`);
@@ -277,12 +272,10 @@ function handleClose(code: number, reason: string): void {
 
   // Schedule reconnect with exponential backoff.
   const delayIdx = Math.min(state.reconnectAttempt, RECONNECT_DELAYS_MS.length - 1);
-  const delay = RECONNECT_DELAYS_MS[delayIdx] ?? RECONNECT_DELAYS_MS[RECONNECT_DELAYS_MS.length - 1] ?? 30_000;
+  const delay =
+    RECONNECT_DELAYS_MS[delayIdx] ?? RECONNECT_DELAYS_MS[RECONNECT_DELAYS_MS.length - 1] ?? 30_000;
   state.reconnectAttempt += 1;
-  log.info(
-    'desktop-ws-offscreen',
-    `reconnect attempt #${state.reconnectAttempt} in ${delay}ms`,
-  );
+  log.info('desktop-ws-offscreen', `reconnect attempt #${state.reconnectAttempt} in ${delay}ms`);
   cancelReconnect();
   state.reconnectTimer = setTimeout(() => {
     state.reconnectTimer = null;
@@ -319,14 +312,9 @@ function handleInboundFrame(raw: unknown): void {
 
   // Intercept pong to track engine_version + tool_catalog_hash. We still
   // forward to the SW so it can observe heartbeat liveness.
-  if (
-    payload &&
-    typeof payload === 'object' &&
-    (payload as { type?: unknown }).type === 'pong'
-  ) {
+  if (payload && typeof payload === 'object' && (payload as { type?: unknown }).type === 'pong') {
     const pong = payload as { tool_catalog_hash?: unknown };
-    const hash =
-      typeof pong.tool_catalog_hash === 'string' ? pong.tool_catalog_hash : null;
+    const hash = typeof pong.tool_catalog_hash === 'string' ? pong.tool_catalog_hash : null;
     if (hash !== null && state.lastCatalogHash !== null && hash !== state.lastCatalogHash) {
       log.info('desktop-ws-offscreen', 'tool_catalog_hash changed → SW refetch');
       broadcast(CHANNELS.WS_MESSAGE, { type: 'ws.catalog-stale' });
@@ -366,10 +354,7 @@ function startIdleWatchdog(): void {
   state.idleTimer = setInterval(() => {
     const idleFor = Date.now() - state.lastActivityAt;
     if (idleFor >= IDLE_DISCONNECT_MS) {
-      log.info(
-        'desktop-ws-offscreen',
-        `idle for ${Math.round(idleFor / 1000)}s — disconnecting`,
-      );
+      log.info('desktop-ws-offscreen', `idle for ${Math.round(idleFor / 1000)}s — disconnecting`);
       // Mark as stopped so we don't auto-reconnect; the SW will reopen
       // on next outbound send.
       state.stopped = true;

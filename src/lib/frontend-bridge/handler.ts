@@ -22,8 +22,8 @@
  *   - "callTool"     → run a registered tool through the same dispatch path WebMCP uses
  */
 
-import { log } from '@/lib/debug/log';
 import { readIsAdminFromStorage } from '@/lib/auth/is-admin';
+import { log } from '@/lib/debug/log';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
 import { readDefaultPermissionMode } from '@/lib/settings/persisted';
 import { ensureToolDescriptions } from '@/lib/tools/descriptions';
@@ -126,10 +126,7 @@ export async function handleFrontendRpc(
 
 // ─── Actions ────────────────────────────────────────────────────────────────
 
-async function actionPing(
-  payload: unknown,
-  requestId: string,
-): Promise<FrontendRpcResponse> {
+async function actionPing(payload: unknown, requestId: string): Promise<FrontendRpcResponse> {
   PingPayloadSchema.parse(payload);
   const version = chrome.runtime.getManifest().version;
   return {
@@ -172,10 +169,7 @@ async function actionCapabilities(
   };
 }
 
-async function actionOpenPanel(
-  payload: unknown,
-  requestId: string,
-): Promise<FrontendRpcResponse> {
+async function actionOpenPanel(payload: unknown, requestId: string): Promise<FrontendRpcResponse> {
   const parsed = OpenPanelPayloadSchema.safeParse(payload);
   if (!parsed.success) {
     return {
@@ -232,10 +226,7 @@ async function actionOpenPanel(
   };
 }
 
-async function actionCallTool(
-  payload: unknown,
-  requestId: string,
-): Promise<FrontendRpcResponse> {
+async function actionCallTool(payload: unknown, requestId: string): Promise<FrontendRpcResponse> {
   const parsed = CallToolPayloadSchema.safeParse(payload);
   if (!parsed.success) {
     return {
@@ -262,4 +253,3 @@ async function actionCallTool(
     requestId,
   };
 }
-

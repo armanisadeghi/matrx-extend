@@ -16,32 +16,25 @@
  */
 
 import { uploadFile } from '@/lib/api/routes/files';
-import {
-  attachDemoAsGuidance,
-  deleteGuidanceItem,
-  makeGuidanceId,
-  saveGuidanceItem,
-} from '@/lib/guidance/storage';
-import type {
-  GuidanceGif,
-  GuidanceNote,
-  GuidanceScreenshot,
-} from '@/lib/guidance/types';
-import {
-  hideRecordingBanner,
-  showRecordingBanner,
-} from '@/lib/guidance/in-page-banner';
+import { log } from '@/lib/debug/log';
 import {
   discardRecording,
   getActiveRecording,
   startRecording,
   stopRecording,
 } from '@/lib/demos/recorder';
-import { saveDemo, makeDemoId } from '@/lib/demos/storage';
+import { makeDemoId, saveDemo } from '@/lib/demos/storage';
 import type { Demo, DemoParameter, DemoStep } from '@/lib/demos/types';
-import { record_gif } from '@/lib/tools/handlers/record';
+import { hideRecordingBanner, showRecordingBanner } from '@/lib/guidance/in-page-banner';
+import {
+  attachDemoAsGuidance,
+  deleteGuidanceItem,
+  makeGuidanceId,
+  saveGuidanceItem,
+} from '@/lib/guidance/storage';
+import type { GuidanceGif, GuidanceNote, GuidanceScreenshot } from '@/lib/guidance/types';
 import { take_screenshot } from '@/lib/tools/handlers/read';
-import { log } from '@/lib/debug/log';
+import { record_gif } from '@/lib/tools/handlers/record';
 
 interface ToolCtxStub {
   callId: string;
@@ -229,10 +222,7 @@ export async function stopGifRecordingAsGuidance(args: {
 }
 
 export async function discardGifRecording(tabId: number): Promise<void> {
-  await record_gif.run(
-    { action: 'clear', tab_id: String(tabId) } as never,
-    UI_CTX as never,
-  );
+  await record_gif.run({ action: 'clear', tab_id: String(tabId) } as never, UI_CTX as never);
   await hideRecordingBanner(tabId);
 }
 
@@ -284,7 +274,8 @@ export async function stopDemoRecordingAndSave(input: DemoSaveInput): Promise<{
     if (step.param_placeholder && !declaredNames.has(step.param_placeholder)) {
       auto.push({
         name: step.param_placeholder,
-        description: step.element_snapshot?.accessible_name ?? `Auto-derived from step ${step.index}`,
+        description:
+          step.element_snapshot?.accessible_name ?? `Auto-derived from step ${step.index}`,
         sensitive: step.is_sensitive,
       });
       declaredNames.add(step.param_placeholder);

@@ -11,8 +11,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CHANNELS } from '@/lib/messaging/schemas';
-import { on } from '@/lib/messaging/native';
 import {
   clearCompletedTasks,
   clearDoneUserTodos,
@@ -22,10 +20,11 @@ import {
   purgeConversation,
   removeTask,
   removeUserTodo,
-  updateTask,
   updateUserTodo,
 } from '@/lib/lists/storage';
 import type { ConversationListsSummary, Task, UserTodo } from '@/lib/lists/types';
+import { on } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
@@ -55,13 +54,13 @@ export function ListsHubView(): React.JSX.Element {
     };
     void refresh();
 
-    const off = on<{ kind: 'plan' | 'tasks' | 'user_todos'; conversation_id: string }, { ack: true }>(
-      CHANNELS.LISTS_CHANGED,
-      () => {
-        void refresh();
-        return { ack: true };
-      },
-    );
+    const off = on<
+      { kind: 'plan' | 'tasks' | 'user_todos'; conversation_id: string },
+      { ack: true }
+    >(CHANNELS.LISTS_CHANGED, () => {
+      void refresh();
+      return { ack: true };
+    });
     return () => {
       cancelled = true;
       off();
@@ -174,7 +173,9 @@ function SummaryRow({
             </span>
           </div>
         </div>
-        <ChevronRight className={cn('ml-2 h-4 w-4 transition-transform', expanded ? 'rotate-90' : '')} />
+        <ChevronRight
+          className={cn('ml-2 h-4 w-4 transition-transform', expanded ? 'rotate-90' : '')}
+        />
       </button>
       {expanded && detail ? <ExpandedView detail={detail} summary={summary} /> : null}
     </li>
@@ -223,7 +224,9 @@ function ExpandedView({
       {detail.tasks.length ? (
         <div>
           <div className="mb-1 flex items-center justify-between">
-            <h4 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Tasks</h4>
+            <h4 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
+              Tasks
+            </h4>
             <Button
               type="button"
               variant="ghost"

@@ -180,16 +180,19 @@ function teardownStream(): void {
 
 function startLevelMeter(): void {
   if (state.levelTimer) clearInterval(state.levelTimer);
-  state.levelTimer = setInterval(() => {
-    const a = state.analyser;
-    if (!a) return;
-    const buf = new Uint8Array(a.frequencyBinCount);
-    a.getByteFrequencyData(buf);
-    const avg = buf.reduce((acc, v) => acc + v, 0) / buf.length;
-    const level = Math.min(100, (avg / 255) * 150);
-    const ev: MicLevelEvent = { type: 'level', level };
-    emit(ev);
-  }, Math.round(1000 / LEVEL_BROADCAST_HZ));
+  state.levelTimer = setInterval(
+    () => {
+      const a = state.analyser;
+      if (!a) return;
+      const buf = new Uint8Array(a.frequencyBinCount);
+      a.getByteFrequencyData(buf);
+      const avg = buf.reduce((acc, v) => acc + v, 0) / buf.length;
+      const level = Math.min(100, (avg / 255) * 150);
+      const ev: MicLevelEvent = { type: 'level', level };
+      emit(ev);
+    },
+    Math.round(1000 / LEVEL_BROADCAST_HZ),
+  );
 }
 
 function armWatchdog(): void {

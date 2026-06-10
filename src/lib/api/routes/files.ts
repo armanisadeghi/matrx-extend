@@ -97,7 +97,9 @@ export async function uploadFile(
  * normally, but the *extension* surface needs to materialize bytes inside the
  * page sandbox (DataTransfer requires a real File object).
  */
-export async function downloadFileBytes(fileId: string): Promise<{ blob: Blob; filename: string; mimeType: string }> {
+export async function downloadFileBytes(
+  fileId: string,
+): Promise<{ blob: Blob; filename: string; mimeType: string }> {
   const baseUrl = await getBackendUrl();
   const token = await getAccessToken();
   const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};

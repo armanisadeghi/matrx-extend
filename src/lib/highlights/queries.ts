@@ -11,7 +11,6 @@
  * tab is signed-in-only, matching the Notes tab.
  */
 
-import { getSupabase } from '@/lib/supabase/client';
 import {
   type CreateHighlightInput,
   type Highlight,
@@ -20,6 +19,7 @@ import {
   HighlightSchema,
   type UpdateHighlightPatch,
 } from '@/lib/highlights/types';
+import { getSupabase } from '@/lib/supabase/client';
 
 const TABLE = 'wbx_highlight';
 

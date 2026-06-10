@@ -14,7 +14,7 @@
  *    .research/demo-system-design-notes.md
  */
 import { log } from '@/lib/debug/log';
-import { mountRecorderInPage, type CapturedEvent } from '@/lib/demos/event-capture';
+import { type CapturedEvent, mountRecorderInPage } from '@/lib/demos/event-capture';
 import type { DemoStep, RecordingState } from '@/lib/demos/types';
 
 let active: RecordingState | null = null;
@@ -24,8 +24,11 @@ export function getActiveRecording(): RecordingState | null {
   return active;
 }
 
-export async function startRecording(tabId: number): Promise<{ ok: boolean; reason?: string; recording_id?: string }> {
-  if (active) return { ok: false, reason: 'A demo recording is already in progress on this device.' };
+export async function startRecording(
+  tabId: number,
+): Promise<{ ok: boolean; reason?: string; recording_id?: string }> {
+  if (active)
+    return { ok: false, reason: 'A demo recording is already in progress on this device.' };
 
   let tab: chrome.tabs.Tab;
   try {
@@ -92,7 +95,11 @@ export function onCapturedEvent(payload: CapturedEvent, senderTabId: number | un
   // (browsers sometimes fire change + blur close together for one user action).
   if (step.kind === 'type' || step.kind === 'check' || step.kind === 'select') {
     const last = active.steps[active.steps.length - 1];
-    if (last && last.kind === step.kind && JSON.stringify(last.selector_chain) === JSON.stringify(step.selector_chain)) {
+    if (
+      last &&
+      last.kind === step.kind &&
+      JSON.stringify(last.selector_chain) === JSON.stringify(step.selector_chain)
+    ) {
       // Replace the last step with the more recent value; coalesces typing.
       active.steps[active.steps.length - 1] = step;
       return;
@@ -100,7 +107,11 @@ export function onCapturedEvent(payload: CapturedEvent, senderTabId: number | un
   }
   // Suppress consecutive navigate steps with the same URL (initial-load
   // re-injection re-fires the navigate event).
-  if (step.kind === 'navigate' && step.navigation_url === active.lastUrl && active.steps.length > 0) {
+  if (
+    step.kind === 'navigate' &&
+    step.navigation_url === active.lastUrl &&
+    active.steps.length > 0
+  ) {
     return;
   }
   if (step.kind === 'navigate' && step.navigation_url) {
@@ -239,20 +250,26 @@ function eventToStep(ev: CapturedEvent, state: RecordingState): DemoStep | null 
   }
 }
 
-function deriveParamName(snapshot: { accessible_name?: string; attrs?: Record<string, string> } | undefined, idx: number): string {
+function deriveParamName(
+  snapshot: { accessible_name?: string; attrs?: Record<string, string> } | undefined,
+  idx: number,
+): string {
   const candidate =
     snapshot?.accessible_name ??
     snapshot?.attrs?.name ??
     snapshot?.attrs?.placeholder ??
     `field_${idx}`;
-  return candidate
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '')
-    .slice(0, 32) || `field_${idx}`;
+  return (
+    candidate
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '')
+      .slice(0, 32) || `field_${idx}`
+  );
 }
 
 function makeId(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+    return crypto.randomUUID();
   return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
 }

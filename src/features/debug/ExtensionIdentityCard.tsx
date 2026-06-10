@@ -12,7 +12,6 @@
  */
 
 import { Button } from '@/components/ui/button';
-import { isExpectedExtensionId } from '@/config/identity';
 import { readExtensionIdentity } from '@/lib/auth/identity';
 import { cn } from '@/lib/utils';
 import { Check, Copy, ShieldAlert } from 'lucide-react';
@@ -59,17 +58,14 @@ export function ExtensionIdentityCard() {
           <div
             className={cn(
               'text-[11px] font-medium uppercase tracking-wider',
-              ok
-                ? 'text-emerald-700 dark:text-emerald-400'
-                : 'text-red-700 dark:text-red-400',
+              ok ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400',
             )}
           >
             Extension identity {ok ? 'ok' : 'DRIFT'}
           </div>
           {!ok && (
             <div className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
-              Runtime ID is not on the EXPECTED_EXTENSION_IDS list. Sign-in
-              will fail unless{' '}
+              Runtime ID is not on the EXPECTED_EXTENSION_IDS list. Sign-in will fail unless{' '}
               <code className="rounded bg-secondary px-1 py-px text-[10px]">
                 https://{identity.runtime_id}.chromiumapp.org/
               </code>{' '}
@@ -95,21 +91,16 @@ export function ExtensionIdentityCard() {
         <Field label="version" value={identity.extension_version} mono />
         <Field label="oauth client" value={identity.oauth_client_id} mono />
         <Field label="supabase" value={identity.supabase_url} mono />
-        <Field
-          label="expected ids"
-          value={identity.expected_ids.join(', ') || '(none)'}
-          mono
-        />
+        <Field label="expected ids" value={identity.expected_ids.join(', ') || '(none)'} mono />
       </dl>
 
       <div className="mt-2 text-[10px] leading-snug text-muted-foreground">
-        Hotfix when DRIFT: in the Matrx Supabase project → Authentication →
-        URL Configuration, add the redirect URI above to the allowlist. Save.
-        Sign-in works within seconds. To prevent recurrence, add the runtime
-        id to{' '}
-        <code className="rounded bg-secondary px-1 py-px">EXPECTED_EXTENSION_IDS</code>
-        {' '}in <code className="rounded bg-secondary px-1 py-px">src/config/identity.ts</code>
-        {' '}so the warning clears.
+        Hotfix when DRIFT: in the Matrx Supabase project → Authentication → URL Configuration, add
+        the redirect URI above to the allowlist. Save. Sign-in works within seconds. To prevent
+        recurrence, add the runtime id to{' '}
+        <code className="rounded bg-secondary px-1 py-px">EXPECTED_EXTENSION_IDS</code> in{' '}
+        <code className="rounded bg-secondary px-1 py-px">src/config/identity.ts</code> so the
+        warning clears.
       </div>
     </div>
   );
@@ -127,13 +118,10 @@ function Field({
   highlight?: boolean;
 }) {
   // Mark drift-relevant rows so the eye lands on them.
-  const checkDrift =
-    highlight && (label === 'runtime id' || label === 'redirect uri');
+  const checkDrift = highlight && (label === 'runtime id' || label === 'redirect uri');
   return (
     <>
-      <dt className="text-[10px] uppercase tracking-wide text-muted-foreground">
-        {label}
-      </dt>
+      <dt className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</dt>
       <dd
         className={cn(
           'truncate',

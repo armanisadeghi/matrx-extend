@@ -26,9 +26,7 @@ export function GuestBanner() {
       <Sparkles className="size-3.5 text-amber-500" />
       <span className="flex-1 text-muted-foreground">
         You're using Matrx as a guest.{' '}
-        <span className="hidden sm:inline">
-          Sign up free to unlock everything.
-        </span>
+        <span className="hidden sm:inline">Sign up free to unlock everything.</span>
       </span>
       <Button
         variant="ghost"

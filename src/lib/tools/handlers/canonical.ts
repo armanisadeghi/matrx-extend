@@ -17,24 +17,21 @@
  * to `handler.tier`.
  */
 
-import { uploadFile, downloadFileBytes } from '@/lib/api/routes/files';
+import { downloadFileBytes, uploadFile } from '@/lib/api/routes/files';
 import { extractPdfText } from '@/lib/api/routes/pdf';
 import { log } from '@/lib/debug/log';
+import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import {
   click_element,
+  wait_for as legacy_wait_for,
   navigate_active_tab,
   scroll_page,
   set_clipboard,
   type_into_element,
-  wait_for as legacy_wait_for,
 } from '@/lib/tools/handlers/action';
 import { list_downloads } from '@/lib/tools/handlers/browser-data';
 import { cancel_download, download_url } from '@/lib/tools/handlers/downloads';
-import {
-  select_dropdown_option,
-  set_checkbox,
-  set_radio,
-} from '@/lib/tools/handlers/forms';
+import { select_dropdown_option, set_checkbox, set_radio } from '@/lib/tools/handlers/forms';
 import {
   blur_element,
   focus_element,
@@ -43,7 +40,6 @@ import {
   right_click_element,
 } from '@/lib/tools/handlers/keyboard';
 import { take_screenshot } from '@/lib/tools/handlers/read';
-import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import {
   close_tab,
   duplicate_tab,
@@ -66,7 +62,9 @@ import { z } from 'zod';
  * Activate a tab (so subsequent active-tab-implicit handlers target it).
  * Accepts canonical string tabId; coerces to chrome's int.
  */
-async function activateTab(tabId: string): Promise<{ ok: true; id: number } | { ok: false; reason: string }> {
+async function activateTab(
+  tabId: string,
+): Promise<{ ok: true; id: number } | { ok: false; reason: string }> {
   const id = Number.parseInt(tabId, 10);
   if (!Number.isFinite(id)) return { ok: false, reason: `Invalid tabId: ${tabId}` };
   try {
@@ -128,10 +126,7 @@ export const computer: ToolHandler<ComputerArgs, unknown> = {
         if (args.coordinate && !args.ref) {
           return clickAtCoord(act.id, args.coordinate[0]!, args.coordinate[1]!);
         }
-        return click_element.run(
-          { ref: args.ref, selector: undefined, nth: 0 } as never,
-          ctx,
-        );
+        return click_element.run({ ref: args.ref, selector: undefined, nth: 0 } as never, ctx);
       }
       case 'right_click':
         return right_click_element.run({ ref: args.ref, selector: undefined } as never, ctx);
@@ -165,8 +160,10 @@ export const computer: ToolHandler<ComputerArgs, unknown> = {
         if (!args.scroll_direction)
           return { ok: false, reason: "'scroll_direction' is required for action='scroll'" };
         const delta = args.scroll_amount * 100; // ~1 wheel tick = 100px
-        if (args.scroll_direction === 'up') return scroll_page.run({ direction: 'by', delta_y: -delta } as never, ctx);
-        if (args.scroll_direction === 'down') return scroll_page.run({ direction: 'by', delta_y: delta } as never, ctx);
+        if (args.scroll_direction === 'up')
+          return scroll_page.run({ direction: 'by', delta_y: -delta } as never, ctx);
+        if (args.scroll_direction === 'down')
+          return scroll_page.run({ direction: 'by', delta_y: delta } as never, ctx);
         // left/right: fall through to scripted axis scroll
         return scrollAxis(act.id, args.scroll_direction, delta);
       }
@@ -183,7 +180,10 @@ export const computer: ToolHandler<ComputerArgs, unknown> = {
         return doScreenshot(args.tab_id, ctx);
       case 'left_click_drag':
         if (!args.start_coordinate || !args.coordinate) {
-          return { ok: false, reason: "'start_coordinate' and 'coordinate' are required for left_click_drag" };
+          return {
+            ok: false,
+            reason: "'start_coordinate' and 'coordinate' are required for left_click_drag",
+          };
         }
         return dragFromTo(
           act.id,
@@ -191,7 +191,10 @@ export const computer: ToolHandler<ComputerArgs, unknown> = {
           [args.coordinate[0]!, args.coordinate[1]!],
         );
       default:
-        return { ok: false, reason: `Unknown computer action: ${(args as { action: string }).action}` };
+        return {
+          ok: false,
+          reason: `Unknown computer action: ${(args as { action: string }).action}`,
+        };
     }
   },
 };
@@ -284,7 +287,8 @@ async function dragFromTo(tabId: number, from: [number, number], to: [number, nu
     func: (fx: number, fy: number, tx: number, ty: number) => {
       const start = document.elementFromPoint(fx, fy);
       const end = document.elementFromPoint(tx, ty);
-      if (!(start instanceof HTMLElement)) return { ok: false, reason: 'No element at start_coordinate' };
+      if (!(start instanceof HTMLElement))
+        return { ok: false, reason: 'No element at start_coordinate' };
       const init = (x: number, y: number) => ({
         bubbles: true,
         cancelable: true,
@@ -404,7 +408,10 @@ export const form_input: ToolHandler<FormInputArgs, unknown> = {
     if (kind === 'missing') return { ok: false, reason: `No element for ${args.ref}` };
     if (kind === 'select') {
       return select_dropdown_option.run(
-        { ref: args.ref, value: typeof args.value === 'string' ? args.value : String(args.value) } as never,
+        {
+          ref: args.ref,
+          value: typeof args.value === 'string' ? args.value : String(args.value),
+        } as never,
         ctx,
       );
     }
@@ -515,7 +522,7 @@ export const tabs: ToolHandler<TabsArgs, unknown> = {
         status: tab.status,
       };
     }
-    const id = args.tab_id ? Number.parseInt(args.tab_id, 10) : NaN;
+    const id = args.tab_id ? Number.parseInt(args.tab_id, 10) : Number.NaN;
     if (!Number.isFinite(id))
       return { ok: false, reason: `tab_id required for action='${args.action}'` };
     if (args.action === 'close') return close_tab.run({ tab_id: id } as never, ctx);
@@ -563,7 +570,7 @@ export const downloads: ToolHandler<DownloadsArgs, unknown> = {
   run: async (args, ctx) => {
     if (args.action === 'list') return list_downloads.run({} as never, ctx);
     if (args.action === 'cancel') {
-      const id = args.download_id ? Number.parseInt(args.download_id, 10) : NaN;
+      const id = args.download_id ? Number.parseInt(args.download_id, 10) : Number.NaN;
       if (!Number.isFinite(id))
         return { ok: false, reason: "download_id required for action='cancel'" };
       return cancel_download.run({ download_id: id } as never, ctx);
@@ -572,7 +579,7 @@ export const downloads: ToolHandler<DownloadsArgs, unknown> = {
       // Canonical surfaces this as a user-permission step. In our extension,
       // downloads complete on their own; we no-op and surface what the agent
       // already saw via 'list'.
-      const id = args.download_id ? Number.parseInt(args.download_id, 10) : NaN;
+      const id = args.download_id ? Number.parseInt(args.download_id, 10) : Number.NaN;
       if (!Number.isFinite(id))
         return { ok: false, reason: "download_id required for action='confirm'" };
       try {
@@ -611,7 +618,11 @@ export const scratchpad: ToolHandler<ScratchpadArgs, unknown> = {
   argsSchema: ScratchpadArgs,
   run: async (args) => {
     if (args.action === 'list') {
-      return { ok: true, keys: Array.from(SESSION_SCRATCHPAD.keys()), count: SESSION_SCRATCHPAD.size };
+      return {
+        ok: true,
+        keys: Array.from(SESSION_SCRATCHPAD.keys()),
+        count: SESSION_SCRATCHPAD.size,
+      };
     }
     if (!args.key) return { ok: false, reason: "key required for action='" + args.action + "'" };
     if (args.action === 'get') {
@@ -625,10 +636,16 @@ export const scratchpad: ToolHandler<ScratchpadArgs, unknown> = {
     if (args.action === 'set') {
       if (args.value == null) return { ok: false, reason: "value required for action='set'" };
       if (args.value.length > SCRATCHPAD_VALUE_CAP) {
-        return { ok: false, reason: `value exceeds ${SCRATCHPAD_VALUE_CAP} bytes; trim before storing` };
+        return {
+          ok: false,
+          reason: `value exceeds ${SCRATCHPAD_VALUE_CAP} bytes; trim before storing`,
+        };
       }
       if (!SESSION_SCRATCHPAD.has(args.key) && SESSION_SCRATCHPAD.size >= SCRATCHPAD_KEY_CAP) {
-        return { ok: false, reason: `scratchpad at ${SCRATCHPAD_KEY_CAP}-key cap; delete a key first` };
+        return {
+          ok: false,
+          reason: `scratchpad at ${SCRATCHPAD_KEY_CAP}-key cap; delete a key first`,
+        };
       }
       SESSION_SCRATCHPAD.set(args.key, args.value);
       return { ok: true, key: args.key, size: args.value.length };
@@ -689,10 +706,9 @@ const WaitForArgs = z
     scroll: z.boolean().default(false),
     timeout_ms: z.number().int().positive().default(10000),
   })
-  .refine(
-    (a) => a.condition === 'network_idle' || (a.target != null && a.target.length > 0),
-    { message: 'target is required for condition=element|text|url' },
-  );
+  .refine((a) => a.condition === 'network_idle' || (a.target != null && a.target.length > 0), {
+    message: 'target is required for condition=element|text|url',
+  });
 type WaitForArgs = z.infer<typeof WaitForArgs>;
 
 export const wait_for: ToolHandler<WaitForArgs, unknown> = {
@@ -704,9 +720,7 @@ export const wait_for: ToolHandler<WaitForArgs, unknown> = {
     if (!act.ok) return { ok: false, reason: act.reason };
     if (args.condition === 'element') {
       const isRef = args.target!.startsWith('ref:');
-      const selector = isRef
-        ? `[data-matrx-ref="${args.target!.slice(4)}"]`
-        : args.target!;
+      const selector = isRef ? `[data-matrx-ref="${args.target!.slice(4)}"]` : args.target!;
       return waitForElement(act.id, selector, args.timeout_ms, args.scroll);
     }
     if (args.condition === 'text') {
@@ -887,7 +901,10 @@ export const drop_file: ToolHandler<DropFileArgs, unknown> = {
       resolvedFilename = args.filename ?? fetched.filename;
       mime = fetched.mimeType;
     } catch (err) {
-      return { ok: false, reason: `failed to fetch file_id=${args.file_id}: ${(err as Error).message}` };
+      return {
+        ok: false,
+        reason: `failed to fetch file_id=${args.file_id}: ${(err as Error).message}`,
+      };
     }
     const buf = await blob.arrayBuffer();
     const bytes = new Uint8Array(buf);
@@ -931,7 +948,13 @@ export const drop_file: ToolHandler<DropFileArgs, unknown> = {
         target.dispatchEvent(new DragEvent('drop', init));
         return { ok: true };
       },
-      args: [refSelector, args.coordinate ? [args.coordinate[0]!, args.coordinate[1]!] : null, base64, resolvedFilename, mime],
+      args: [
+        refSelector,
+        args.coordinate ? [args.coordinate[0]!, args.coordinate[1]!] : null,
+        base64,
+        resolvedFilename,
+        mime,
+      ],
     });
     return r?.result ?? { ok: false, reason: 'drop failed' };
   },

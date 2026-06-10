@@ -14,18 +14,12 @@
 import { cn } from '@/lib/utils';
 import { ChevronRight, Globe } from 'lucide-react';
 import { Component, type ComponentType, type ReactNode, useState } from 'react';
-import type { ToolTimelineEntry } from '../ToolTimelineRow';
 import { ShimmerText } from '../BreathingOrb';
+import type { ToolTimelineEntry } from '../ToolTimelineRow';
 import { CopyToolButton } from './CopyToolButton';
-import {
-  applyTransforms,
-  getByPath,
-  resolveColor,
-  resolveIcon,
-  resolvePhase,
-} from './helpers';
-import { fieldComponents } from './registry-components';
 import { ToolProgressView } from './ToolProgressView';
+import { applyTransforms, getByPath, resolveColor, resolveIcon, resolvePhase } from './helpers';
+import { fieldComponents } from './registry-components';
 import type {
   ArgsConfig,
   IconName,
@@ -134,14 +128,7 @@ export function ConfigurableToolRow({ entry, kind, cfg }: Props) {
           <ResultsSection result={entry.output} cfg={results} />
         </div>
       )}
-      {open && (
-        <ExpandedBody
-          entry={entry}
-          kind={kind}
-          cfg={cfg}
-          skipResults={alwaysShowResults}
-        />
-      )}
+      {open && <ExpandedBody entry={entry} kind={kind} cfg={cfg} skipResults={alwaysShowResults} />}
     </div>
   );
 }
@@ -198,11 +185,7 @@ function InlineIcon({
   return <LucideIcon className={cn('size-3.5 shrink-0', colorClass, spin && 'animate-spin')} />;
 }
 
-function ExpandedBody({
-  entry,
-  cfg,
-  skipResults = false,
-}: Props & { skipResults?: boolean }) {
+function ExpandedBody({ entry, cfg, skipResults = false }: Props & { skipResults?: boolean }) {
   const phase = entry.phase as Phase;
   const args = cfg.args ?? {};
   const results = cfg.results ?? {};
@@ -243,11 +226,7 @@ function SectionLabel({ label, children }: { label: string; children: ReactNode 
 
 function ArgsSection({ args, cfg }: { args: unknown; cfg: ArgsConfig }) {
   const displayType = cfg.displayType ?? 'json';
-  return (
-    <SectionLabel label="args">
-      {renderStandardDisplay(args, displayType)}
-    </SectionLabel>
-  );
+  return <SectionLabel label="args">{renderStandardDisplay(args, displayType)}</SectionLabel>;
 }
 
 function ResultsSection({ result, cfg }: { result: unknown; cfg: ResultsConfig }) {
@@ -259,11 +238,7 @@ function ResultsSection({ result, cfg }: { result: unknown; cfg: ResultsConfig }
       </SectionLabel>
     );
   }
-  return (
-    <SectionLabel label="result">
-      {renderStandardDisplay(result, displayType)}
-    </SectionLabel>
-  );
+  return <SectionLabel label="result">{renderStandardDisplay(result, displayType)}</SectionLabel>;
 }
 
 function renderStandardDisplay(
@@ -311,7 +286,11 @@ function CustomResults({ result, keysInfo }: { result: unknown; keysInfo: KeyDis
   return (
     <div className="mt-0.5 space-y-1.5">
       {keysInfo.map((info, i) => (
-        <CustomResultField key={`${info.key}-${i}`} result={result as Record<string, unknown>} info={info} />
+        <CustomResultField
+          key={`${info.key}-${i}`}
+          result={result as Record<string, unknown>}
+          info={info}
+        />
       ))}
     </div>
   );
@@ -424,7 +403,8 @@ function resolveInfo(entry: ToolTimelineEntry, info: string | InfoSpec | undefin
   const transformed = applyTransforms(raw, spec.transform ?? null);
   if (transformed == null || transformed === '') return spec.fallback ?? '';
   if (typeof transformed === 'string') return transformed;
-  if (typeof transformed === 'number' || typeof transformed === 'boolean') return String(transformed);
+  if (typeof transformed === 'number' || typeof transformed === 'boolean')
+    return String(transformed);
   try {
     return JSON.stringify(transformed);
   } catch {

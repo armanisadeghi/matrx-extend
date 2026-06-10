@@ -72,16 +72,13 @@ export const useScrapeStore = create<ScrapeState>((set) => ({
   setAlreadyCaptured: (alreadyCapturedAt) => set({ alreadyCapturedAt }),
   markSaved: () => set({ edited: false }),
 
-  setDiagnoseMode: (mode) =>
-    set((s) => ({ diagnose: { ...s.diagnose, mode } })),
-  setDiagnosePicking: (picking) =>
-    set((s) => ({ diagnose: { ...s.diagnose, picking } })),
+  setDiagnoseMode: (mode) => set((s) => ({ diagnose: { ...s.diagnose, mode } })),
+  setDiagnosePicking: (picking) => set((s) => ({ diagnose: { ...s.diagnose, picking } })),
   setDiagnoseResult: (lastResult) =>
     set((s) => ({
       diagnose: { ...s.diagnose, lastResult, picking: false },
     })),
-  setDiagnoseDraftNote: (draftNote) =>
-    set((s) => ({ diagnose: { ...s.diagnose, draftNote } })),
+  setDiagnoseDraftNote: (draftNote) => set((s) => ({ diagnose: { ...s.diagnose, draftNote } })),
   clearDiagnose: () =>
     set((s) => ({
       diagnose: { ...s.diagnose, lastResult: null, draftNote: '', picking: false },

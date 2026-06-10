@@ -47,7 +47,10 @@ export async function ensureToolDescriptions(): Promise<Map<string, string>> {
         return new Map<string, string>();
       }
       const map = new Map<string, string>();
-      for (const row of (data ?? []) as Array<{ name: string | null; description: string | null }>) {
+      for (const row of (data ?? []) as Array<{
+        name: string | null;
+        description: string | null;
+      }>) {
         if (row?.name && typeof row.description === 'string' && row.description) {
           map.set(row.name, row.description);
         }

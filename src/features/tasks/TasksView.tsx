@@ -1,11 +1,10 @@
 import { AddToProjectButton } from '@/components/AddToProjectButton';
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
-import { ParallelRunsPanel } from '@/features/tasks/ParallelRunsPanel';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ParallelRunsPanel } from '@/features/tasks/ParallelRunsPanel';
 import { useActiveTab } from '@/hooks/use-active-tab';
-import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
 import {
   type ExtensionScrapeItem,
   type ExtensionScrapeQueue,
@@ -16,17 +15,18 @@ import {
   submitExtensionContent,
   submitPasteContent,
 } from '@/lib/api/routes/research';
+import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { getOuterHtml } from '@/lib/scrape/capture-html';
 import { scrollToLoadLazy, settlePage } from '@/lib/scrape/page-ready';
 import { removeCaptureOverlay, showCaptureOverlay } from '@/lib/scrape/user-gate-overlay';
-import { CHANNELS } from '@/lib/messaging/schemas';
 import { urlsMatch } from '@/lib/url/match';
 import { cn } from '@/lib/utils';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertTriangle,
-  CheckCircle2,
   CheckCircle,
+  CheckCircle2,
   ChevronDown,
   ExternalLink,
   Loader2,
@@ -73,11 +73,7 @@ const RUNNING_STATUSES: ReadonlySet<TaskStatus> = new Set([
   'submitting',
 ]);
 
-const TERMINAL_STATUSES: ReadonlySet<TaskStatus> = new Set([
-  'success',
-  'thin',
-  'completed',
-]);
+const TERMINAL_STATUSES: ReadonlySet<TaskStatus> = new Set(['success', 'thin', 'completed']);
 
 function itemKey(it: ExtensionScrapeItem): string {
   return `${it.topic_id}:${it.source_id}`;
@@ -101,10 +97,12 @@ export function TasksView() {
     level_3_user_gated: true,
     level_4_paste: true,
   });
-  const [batchProgress, setBatchProgress] = useState<
-    | { current: number; total: number; succeeded: number; failed: number }
-    | null
-  >(null);
+  const [batchProgress, setBatchProgress] = useState<{
+    current: number;
+    total: number;
+    succeeded: number;
+    failed: number;
+  } | null>(null);
   const batchRunning = batchProgress !== null;
 
   const {
@@ -210,8 +208,7 @@ export function TasksView() {
   const setItemState = (id: string, patch: ItemState) =>
     setStatusByItem((s) => ({ ...s, [id]: patch }));
 
-  const invalidateQueue = () =>
-    queryClient.invalidateQueries({ queryKey: ['scrape-queue'] });
+  const invalidateQueue = () => queryClient.invalidateQueries({ queryKey: ['scrape-queue'] });
 
   /** Capture flow for Level 1 / 2 / 3. Level 4 (paste) goes through `runPaste`. */
   const runAutomated = async (
@@ -316,10 +313,7 @@ export function TasksView() {
    * at the page and knows it's dead (404) or gated (login/paywall) — no
    * scrape needed, just record their answer and clean up.
    */
-  const runUserPreDecided = async (
-    item: ExtensionScrapeItem,
-    verdict: 'dead_link' | 'gated',
-  ) => {
+  const runUserPreDecided = async (item: ExtensionScrapeItem, verdict: 'dead_link' | 'gated') => {
     const id = itemKey(item);
     const tabId = statusRef.current[id]?.tabId;
     if (tabId != null) void removeCaptureOverlay(tabId);
@@ -448,7 +442,10 @@ export function TasksView() {
   const runVerdict = async (item: ExtensionScrapeItem, verdict: UserVerdict) => {
     const id = itemKey(item);
     const prev = statusRef.current[id];
-    setStatusByItem((s) => ({ ...s, [id]: { ...prev, status: prev?.status ?? 'idle', verdictPending: verdict } }));
+    setStatusByItem((s) => ({
+      ...s,
+      [id]: { ...prev, status: prev?.status ?? 'idle', verdictPending: verdict },
+    }));
     const r = await applyVerdict(item.topic_id, item.source_id, verdict);
     if (!r.ok) {
       setItemState(id, { status: 'error', error: r.error });
@@ -509,7 +506,9 @@ export function TasksView() {
     pinnedIds.size === 0 ? items : items.filter((it) => !pinnedIds.has(itemKey(it)));
   const displayL1 = queue ? filterPinned(queue.level_1_quick) : [];
   const displayL2 = queue ? filterPinned(queue.level_2_scroll) : [];
-  const pinnedFromServer = queue ? new Set(queue.level_3_user_gated.map(itemKey)) : new Set<string>();
+  const pinnedFromServer = queue
+    ? new Set(queue.level_3_user_gated.map(itemKey))
+    : new Set<string>();
   const displayL3 = queue
     ? [
         ...Object.values(pinnedL3).filter((it) => !pinnedFromServer.has(itemKey(it))),
@@ -535,21 +534,15 @@ export function TasksView() {
     ];
     return all.filter((it) => urlsMatch(it.url, activeTab.url));
   }, [queue, activeTab.url]);
-  const matchingIds = useMemo(
-    () => new Set(matchingItems.map(itemKey)),
-    [matchingItems],
-  );
+  const matchingIds = useMemo(() => new Set(matchingItems.map(itemKey)), [matchingItems]);
 
-  const toggleSection = (k: string) =>
-    setOpenSections((s) => ({ ...s, [k]: !s[k] }));
+  const toggleSection = (k: string) => setOpenSections((s) => ({ ...s, [k]: !s[k] }));
 
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-9 shrink-0 items-center px-3">
         <span className="text-sm font-medium">Scrape queue</span>
-        {queue && (
-          <span className="ml-1.5 text-xs text-muted-foreground">{totalAll}</span>
-        )}
+        {queue && <span className="ml-1.5 text-xs text-muted-foreground">{totalAll}</span>}
         <div className="ml-auto flex items-center gap-0.5">
           {queue && totalAll > 0 && (
             <CopyMenu
@@ -582,9 +575,7 @@ export function TasksView() {
                       meta: { count: all.length },
                       format: 'text',
                       content: all
-                        .map((it) =>
-                          `- ${it.topic_name ?? it.topic_id}\n  ${it.url}`,
-                        )
+                        .map((it) => `- ${it.topic_name ?? it.topic_id}\n  ${it.url}`)
                         .join('\n'),
                     });
                   },
@@ -1046,9 +1037,7 @@ function PasteRow({
 function ItemContext({ item }: { item: ExtensionScrapeItem }) {
   // Server line — every item here has been tried by the server and given up
   // on (server_gave_up = true by queue contract), so this is always shown.
-  const serverBits: string[] = [
-    `server tried ${item.server_attempts}×`,
-  ];
+  const serverBits: string[] = [`server tried ${item.server_attempts}×`];
   if (item.last_server_attempt_at) {
     const ago = relativeTime(item.last_server_attempt_at);
     if (ago) serverBits.push(ago);

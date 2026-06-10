@@ -31,19 +31,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
+  type OnboxRequestEvent,
   detectLanguage,
   proofread,
   quickPrompt,
   summarize,
   translate,
-  type OnboxRequestEvent,
 } from '@/lib/onbox-ai/client';
 import {
+  INJECTION_RESPONSE_SCHEMA,
   buildClassifySchema,
   buildClassifySystemPrompt,
   buildExtractSystemPrompt,
   buildInjectionSystemPrompt,
-  INJECTION_RESPONSE_SCHEMA,
 } from '@/lib/tools/handlers/onbox-ai';
 import { get_page_selection, read_active_page } from '@/lib/tools/handlers/read';
 import type { ToolContext, ToolHandler } from '@/lib/tools/types';
@@ -184,9 +184,7 @@ function ScenarioCard({
               )}
               Run
             </Button>
-            {state.running && (
-              <span className="text-[10px] text-muted-foreground">running…</span>
-            )}
+            {state.running && <span className="text-[10px] text-muted-foreground">running…</span>}
           </div>
 
           {state.steps.length > 0 && (
@@ -290,18 +288,17 @@ function ModelInputEvent({
   total: number;
   event: OnboxRequestEvent;
 }) {
-  const initialPrompts = (event.createOptions?.initialPrompts ?? null) as
-    | Array<{ role: string; content: string }>
-    | null;
+  const initialPrompts = (event.createOptions?.initialPrompts ?? null) as Array<{
+    role: string;
+    content: string;
+  }> | null;
   const systemPrompt = initialPrompts?.find((p) => p.role === 'system')?.content;
 
   return (
     <div className="space-y-1.5 rounded border bg-card/60 p-1.5">
       <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
         {total > 1 && <span className="rounded bg-muted px-1 tabular-nums">#{index}</span>}
-        <span className="font-mono">
-          {event.api}.create() → .prompt()
-        </span>
+        <span className="font-mono">{event.api}.create() → .prompt()</span>
         <span
           className={cn(
             'rounded px-1',
@@ -385,7 +382,9 @@ function eventToText(event: OnboxRequestEvent): string {
   }
   parts.push(
     `\n## prompt() input\n${
-      typeof event.promptInput === 'string' ? event.promptInput : stringifyPayload(event.promptInput)
+      typeof event.promptInput === 'string'
+        ? event.promptInput
+        : stringifyPayload(event.promptInput)
     }`,
   );
   return parts.join('\n');
@@ -501,7 +500,13 @@ function useScenarioRunner() {
       setState((s) => ({ ...s, modelInputs: [...events] }));
     };
     const finish = (patch: Partial<ScenarioState>) => {
-      setState((s) => ({ ...s, ...patch, running: false, steps: [...steps], modelInputs: [...events] }));
+      setState((s) => ({
+        ...s,
+        ...patch,
+        running: false,
+        steps: [...steps],
+        modelInputs: [...events],
+      }));
     };
     return { pushStep, onRequest, finish };
   };
@@ -647,7 +652,9 @@ function ClassifyPageScenario() {
       }
       try {
         const parsed = JSON.parse(r.data) as { label: string; confidence?: number };
-        finish({ result: { ok: true, label: parsed.label, confidence: parsed.confidence ?? null } });
+        finish({
+          result: { ok: true, label: parsed.label, confidence: parsed.confidence ?? null },
+        });
       } catch (err) {
         finish({
           result: {
@@ -956,7 +963,11 @@ function ProofreadSelectionScenario() {
       renderResult={(r) => {
         const o = r as {
           input: string;
-          output: { ok?: boolean; data?: { correctedInput: string; corrections?: unknown }; reason?: string };
+          output: {
+            ok?: boolean;
+            data?: { correctedInput: string; corrections?: unknown };
+            reason?: string;
+          };
         };
         if (!o.output?.ok)
           return <ResultBlock label="failed" body={o.output?.reason ?? 'unknown'} />;
@@ -1057,7 +1068,11 @@ function DescribeFirstImageScenario() {
       if (!page.first_image_url) throw new Error('No images found on the active page.');
       const tFetch = performance.now();
       const { blob, mime, bytes } = await fetchImageAsBlob(page.first_image_url);
-      pushStep('fetch image', performance.now() - tFetch, `${(bytes / 1024).toFixed(0)} KB · ${mime}`);
+      pushStep(
+        'fetch image',
+        performance.now() - tFetch,
+        `${(bytes / 1024).toFixed(0)} KB · ${mime}`,
+      );
       const t0 = performance.now();
       const out = await quickPrompt(
         [

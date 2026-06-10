@@ -9,13 +9,13 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { getDemo } from '@/lib/demos/storage';
 import { replayDemo } from '@/lib/demos/replayer';
+import { getDemo } from '@/lib/demos/storage';
 import type { Demo } from '@/lib/demos/types';
 import { getGuidanceItem, saveGuidanceItem } from '@/lib/guidance/storage';
 import type { GuidanceItem } from '@/lib/guidance/types';
 import { Camera, Loader2, Pencil, Play } from 'lucide-react';
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 
 const AnnotationEditor = lazy(() =>
   import('./AnnotationEditor').then((m) => ({ default: m.AnnotationEditor })),
@@ -243,9 +243,7 @@ function DemoPreview({ item }: { item: Extract<GuidanceItem, { kind: 'demo_ref' 
         {demo?.description && <div className="text-muted-foreground">{demo.description}</div>}
         <div className="mt-1 text-[11px] text-muted-foreground">
           {item.step_count} steps
-          {item.parameter_names.length > 0 && (
-            <> · params: {item.parameter_names.join(', ')}</>
-          )}
+          {item.parameter_names.length > 0 && <> · params: {item.parameter_names.join(', ')}</>}
         </div>
       </div>
       {confirming ? (

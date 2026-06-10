@@ -12,8 +12,8 @@
  * cognitive step, and they often forget which row they were on.
  */
 
-import { CHANNELS } from '@/lib/messaging/schemas';
 import { log } from '@/lib/debug/log';
+import { CHANNELS } from '@/lib/messaging/schemas';
 
 const OVERLAY_ID = '__matrx_user_gate_overlay__';
 

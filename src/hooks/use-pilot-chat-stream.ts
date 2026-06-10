@@ -526,9 +526,7 @@ export function usePilotChatStream() {
       try {
         const user = useAuthStore.getState().user;
         context = await buildChatContext({
-          user: user
-            ? { id: user.id, email: user.email, full_name: user.full_name ?? null }
-            : null,
+          user: user ? { id: user.id, email: user.email, full_name: user.full_name ?? null } : null,
           desktopTransport: useDesktopStore.getState().transport,
           scrape: useScrapeStore.getState().current,
           autoScrape: useAutoScrapeStore.getState().current,
@@ -537,7 +535,11 @@ export function usePilotChatStream() {
           highlights: null,
         });
       } catch (err) {
-        log.warn('pilot-stream', 'buildChatContext failed for resume; resuming without context', err);
+        log.warn(
+          'pilot-stream',
+          'buildChatContext failed for resume; resuming without context',
+          err,
+        );
       }
 
       const body: Record<string, unknown> = {

@@ -107,10 +107,9 @@ export const autoTableMode: ExtractionMode<AutoTableConfig> = {
       const cells = Array.from(tr.querySelectorAll('th, td'));
       for (const cell of cells) {
         while (o[col]) col++;
-        const text =
-          ((cell as HTMLElement).innerText ?? cell.textContent ?? '').trim();
-        const colspan = parseInt(cell.getAttribute('colspan') || '1', 10) || 1;
-        const rowspan = parseInt(cell.getAttribute('rowspan') || '1', 10) || 1;
+        const text = ((cell as HTMLElement).innerText ?? cell.textContent ?? '').trim();
+        const colspan = Number.parseInt(cell.getAttribute('colspan') || '1', 10) || 1;
+        const rowspan = Number.parseInt(cell.getAttribute('rowspan') || '1', 10) || 1;
         for (let dr = 0; dr < rowspan; dr++) {
           const slot = ensureRow(r + dr);
           for (let dc = 0; dc < colspan; dc++) {
@@ -141,9 +140,7 @@ export const autoTableMode: ExtractionMode<AutoTableConfig> = {
     const tbody = table.querySelector('tbody');
     const bodyTrs = tbody
       ? Array.from(tbody.querySelectorAll<HTMLTableRowElement>('tr'))
-      : Array.from(table.querySelectorAll<HTMLTableRowElement>('tr')).slice(
-          headerTrs.length,
-        );
+      : Array.from(table.querySelectorAll<HTMLTableRowElement>('tr')).slice(headerTrs.length);
 
     return bodyTrs.map((tr) => {
       const row: Record<string, string> = {};

@@ -15,8 +15,6 @@
  * sidepanel store + any open tabs refresh without polling.
  */
 
-import { CHANNELS } from '@/lib/messaging/schemas';
-import { broadcast } from '@/lib/messaging/native';
 import type {
   ConversationListsSummary,
   Plan,
@@ -25,6 +23,8 @@ import type {
   TaskStatus,
   UserTodo,
 } from '@/lib/lists/types';
+import { broadcast } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
 
 const PLAN_KEY = 'matrx.lists.plans';
 const TASKS_KEY = 'matrx.lists.tasks';
@@ -165,12 +165,7 @@ export async function updateTask(
     ...current,
     title: patch.title ?? current.title,
     status: patch.status ?? current.status,
-    note:
-      patch.note === undefined
-        ? current.note
-        : patch.note === null
-          ? undefined
-          : patch.note,
+    note: patch.note === undefined ? current.note : patch.note === null ? undefined : patch.note,
     updated_at: Date.now(),
   };
   list[idx] = next;
@@ -276,15 +271,15 @@ export async function updateUserTodo(
     ...cur,
     title: patch.title ?? cur.title,
     context:
-      patch.context === undefined ? cur.context : patch.context === null ? undefined : patch.context,
+      patch.context === undefined
+        ? cur.context
+        : patch.context === null
+          ? undefined
+          : patch.context,
     due: patch.due === undefined ? cur.due : patch.due === null ? undefined : patch.due,
     done: patch.done ?? cur.done,
     done_at:
-      patch.done === true && !wasDone
-        ? Date.now()
-        : patch.done === false
-          ? undefined
-          : cur.done_at,
+      patch.done === true && !wasDone ? Date.now() : patch.done === false ? undefined : cur.done_at,
   };
   list[idx] = next;
   await chrome.storage.local.set({ [TODOS_KEY]: map });
@@ -334,7 +329,7 @@ export async function getAllConversationLists(): Promise<ConversationListsSummar
     const lastActivity = Math.max(
       plan?.updated_at ?? 0,
       ...t.map((x) => x.updated_at),
-      ...u.map((x) => (x.done_at ?? x.created_at)),
+      ...u.map((x) => x.done_at ?? x.created_at),
       0,
     );
     out.push({

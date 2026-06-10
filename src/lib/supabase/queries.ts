@@ -44,7 +44,7 @@ function parseRowsSafe<T>(
       const raw = rows[i] as Record<string, unknown> | null;
       log.error('supabase', `${context}: row ${i} failed validation`, {
         issues: parsed.error.issues,
-        row_id: raw && typeof raw === 'object' ? raw.id ?? null : null,
+        row_id: raw && typeof raw === 'object' ? (raw.id ?? null) : null,
         raw,
       });
     }
@@ -397,7 +397,10 @@ export function dbMessagesToChatMessages(
       log.error('supabase', 'dbMessagesToChatMessages: row transform threw', {
         message_id: m.id,
         role: m.role,
-        error: err instanceof Error ? { name: err.name, message: err.message, stack: err.stack } : String(err),
+        error:
+          err instanceof Error
+            ? { name: err.name, message: err.message, stack: err.stack }
+            : String(err),
       });
     }
   }
@@ -420,15 +423,15 @@ export function dbMessagesToChatMessages(
         if (block.type !== 'tool_result') continue;
         const callId = String(block.call_id ?? block.tool_use_id ?? '');
         if (!callId) continue;
-        const part = last.parts.find(
-          (p) => p.type === 'tool' && p.tool.callId === callId,
-        );
+        const part = last.parts.find((p) => p.type === 'tool' && p.tool.callId === callId);
         if (!part || part.type !== 'tool') continue;
         const tc = byCallId.get(callId);
         const isError = Boolean(tc?.is_error ?? block.is_error);
         part.tool.phase = isError ? 'error' : 'completed';
         part.tool.result = parseToolOutput(tc?.output);
-        const errMsg = tc?.error_message ?? (typeof block.error_message === 'string' ? block.error_message : null);
+        const errMsg =
+          tc?.error_message ??
+          (typeof block.error_message === 'string' ? block.error_message : null);
         if (errMsg) part.tool.message = errMsg;
         else if (!isError) part.tool.message = 'Done';
         if (typeof tc?.duration_ms === 'number' && tc.duration_ms >= 0) {
@@ -798,9 +801,7 @@ export interface SaveScreenshotPayload {
  * be in cld_files via uploadFile(); this function only stores the pointer
  * + per-page metadata so the Screenshots side-panel tab can list them.
  */
-export async function saveScreenshot(
-  p: SaveScreenshotPayload,
-): Promise<{ id: string } | null> {
+export async function saveScreenshot(p: SaveScreenshotPayload): Promise<{ id: string } | null> {
   const c = getSupabase();
   const { data, error } = await c
     .from('wbx_screenshot')

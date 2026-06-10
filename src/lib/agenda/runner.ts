@@ -82,9 +82,7 @@ export async function runTask(task: AgendaTask, send: SendFn): Promise<AgendaRun
   // Agent preference, then the hardcoded constant as last resort. Same
   // resolution order as the chat surface.
   const agentId =
-    task.agent_id ??
-    useSettingsStore.getState().defaultAgentId ??
-    DEFAULT_AGENDA_AGENT_ID;
+    task.agent_id ?? useSettingsStore.getState().defaultAgentId ?? DEFAULT_AGENDA_AGENT_ID;
   chat.setAgent(agentId);
   if (task.persistent_conversation_id) {
     chat.setConversation(task.persistent_conversation_id);
@@ -129,11 +127,7 @@ export async function runTask(task: AgendaTask, send: SendFn): Promise<AgendaRun
     started = true;
     conversationId = payload.conversationId ?? conversationId;
     await markRunStarted(run.id, conversationId ?? undefined);
-    if (
-      task.trigger_type === 'heartbeat' &&
-      !task.persistent_conversation_id &&
-      conversationId
-    ) {
+    if (task.trigger_type === 'heartbeat' && !task.persistent_conversation_id && conversationId) {
       await updateTask(task.id, { persistent_conversation_id: conversationId });
       log.info('sys', `agenda: heartbeat ${task.id} persists in convo ${conversationId}`);
     }

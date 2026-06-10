@@ -78,9 +78,7 @@ export function ConfirmDialog({
       >
         <div className="flex items-start justify-between gap-2 border-b px-4 py-3">
           <div className="flex items-center gap-2 min-w-0">
-            {destructive && (
-              <AlertTriangle className="size-4 text-red-600 dark:text-red-400" />
-            )}
+            {destructive && <AlertTriangle className="size-4 text-red-600 dark:text-red-400" />}
             <div className="text-base font-semibold leading-tight">{title}</div>
           </div>
           <button
@@ -95,9 +93,7 @@ export function ConfirmDialog({
 
         <div className="space-y-2 px-4 py-3 text-sm leading-relaxed text-foreground/90">
           {typeof description === 'string'
-            ? description
-                .split('\n\n')
-                .map((para, i) => <p key={i}>{para}</p>)
+            ? description.split('\n\n').map((para, i) => <p key={i}>{para}</p>)
             : description}
         </div>
 

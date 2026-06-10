@@ -10,9 +10,9 @@
  * because it's a once-in-a-while destination, not a workflow tab.
  */
 
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Collapsible } from '@/components/ui/collapsible';
-import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -215,11 +215,7 @@ export function ProfileView() {
             </Collapsible>
 
             <Collapsible label="Shipping address" defaultOpen={false}>
-              <AddressCard
-                prefix="shipping"
-                profile={profile.draft}
-                setField={profile.setField}
-              />
+              <AddressCard prefix="shipping" profile={profile.draft} setField={profile.setField} />
             </Collapsible>
 
             <Collapsible label="Billing address" defaultOpen={false}>
@@ -691,11 +687,7 @@ function SensitiveItemsEditor({
       <ConfirmDialog
         open={pendingRemove !== null}
         title="Delete sensitive item?"
-        description={
-          pendingRemove
-            ? `Delete ${pendingRemove.label || pendingRemove.kind}?`
-            : ''
-        }
+        description={pendingRemove ? `Delete ${pendingRemove.label || pendingRemove.kind}?` : ''}
         confirmLabel="Delete"
         destructive
         onConfirm={() => void confirmRemove()}
@@ -948,7 +940,11 @@ function TextField({
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <div className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground/70">{children}</div>;
+  return (
+    <div className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground/70">
+      {children}
+    </div>
+  );
 }
 
 function ListSection({

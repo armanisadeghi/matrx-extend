@@ -95,11 +95,7 @@ export function DiagnoseCard() {
           onClick={() => setShowSelectors((v) => !v)}
           className="inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         >
-          {showSelectors ? (
-            <ChevronDown className="size-3" />
-          ) : (
-            <ChevronRight className="size-3" />
-          )}
+          {showSelectors ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
           Selectors ({result.selectorChain.length})
         </button>
         <button
@@ -134,7 +130,7 @@ export function DiagnoseCard() {
               },
               {
                 label: 'Leaf HTML only',
-                description: 'Just the picked element\'s outerHTML',
+                description: "Just the picked element's outerHTML",
                 getContent: () => result.leafHtml,
               },
             ]}

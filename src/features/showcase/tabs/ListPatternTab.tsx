@@ -2,25 +2,14 @@ import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useActiveTab } from '@/hooks/use-active-tab';
-import { stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
-import {
-  type CandidateField,
-  inspectCardInPage,
-} from '@/lib/data-pattern/card-inspector';
+import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
+import { type CandidateField, inspectCardInPage } from '@/lib/data-pattern/card-inspector';
 import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { runMode } from '@/lib/data-pattern/run-pattern';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { cn } from '@/lib/utils';
-import {
-  ChevronDown,
-  ChevronRight,
-  Crosshair,
-  Loader2,
-  PlayCircle,
-  Plus,
-  X,
-} from 'lucide-react';
+import { ChevronDown, ChevronRight, Crosshair, Loader2, PlayCircle, Plus, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
@@ -203,7 +192,9 @@ export function ListPatternTab() {
           // Cap each sample to ~3KB so we don't blow out a clipboard paste.
           return items.map((it) => {
             const html = (it as HTMLElement).outerHTML ?? '';
-            return html.length > 3000 ? `${html.slice(0, 3000)}\n…(+${html.length - 3000} chars truncated)` : html;
+            return html.length > 3000
+              ? `${html.slice(0, 3000)}\n…(+${html.length - 3000} chars truncated)`
+              : html;
           });
         },
         args: [{ list_root: config.list_root, item_selector: config.item_selector }],
@@ -272,9 +263,7 @@ export function ListPatternTab() {
 
   const unusedCandidates = useMemo(() => {
     if (!candidates) return [];
-    return candidates.filter(
-      (c) => !usedSelectors.has(`${c.rel_selector}|${c.attr ?? 'text'}`),
-    );
+    return candidates.filter((c) => !usedSelectors.has(`${c.rel_selector}|${c.attr ?? 'text'}`));
   }, [candidates, usedSelectors]);
 
   // ── Copy options for the pattern config + samples + rows ────────────────
@@ -337,12 +326,21 @@ export function ListPatternTab() {
             format: 'markdown',
             content: sections.join('\n'),
             followUp:
-              "Help me improve this pattern: (1) suggest better/more-stable selectors for any fragile fields, (2) recommend additional fields worth extracting based on the sample HTML, (3) call out any fields whose extracted value looks wrong vs what the HTML actually contains.",
+              'Help me improve this pattern: (1) suggest better/more-stable selectors for any fragile fields, (2) recommend additional fields worth extracting based on the sample HTML, (3) call out any fields whose extracted value looks wrong vs what the HTML actually contains.',
           });
         },
       },
     ];
-  }, [config, sampleHtml, rows, candidates, unusedCandidates, tab.url, tab.title, captureSampleHtml]);
+  }, [
+    config,
+    sampleHtml,
+    rows,
+    candidates,
+    unusedCandidates,
+    tab.url,
+    tab.title,
+    captureSampleHtml,
+  ]);
 
   return (
     <div className="h-full overflow-y-auto">
@@ -352,8 +350,8 @@ export function ListPatternTab() {
             List Pattern
           </div>
           <div className="text-xs text-muted-foreground">
-            Click one example item — we find every similar sibling. Then pick fields inside, OR
-            use the suggested-fields panel below for one-click adds.
+            Click one example item — we find every similar sibling. Then pick fields inside, OR use
+            the suggested-fields panel below for one-click adds.
           </div>
         </div>
 
@@ -403,7 +401,11 @@ export function ListPatternTab() {
                           className="text-muted-foreground hover:text-foreground"
                           title={expanded ? 'Collapse' : 'Expand to view/edit selector'}
                         >
-                          {expanded ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
+                          {expanded ? (
+                            <ChevronDown className="size-3" />
+                          ) : (
+                            <ChevronRight className="size-3" />
+                          )}
                         </button>
                         <Input
                           value={f.name}
@@ -633,9 +635,7 @@ function CandidatesPanel({
                 >
                   <Plus className="size-3 shrink-0 text-violet-500" />
                   <span className="w-24 shrink-0 truncate font-mono">{c.name}</span>
-                  <span className="min-w-0 flex-1 truncate text-muted-foreground">
-                    {c.label}
-                  </span>
+                  <span className="min-w-0 flex-1 truncate text-muted-foreground">{c.label}</span>
                   <span className="shrink-0 truncate font-mono text-[10px] opacity-60">
                     {c.sample_value}
                   </span>

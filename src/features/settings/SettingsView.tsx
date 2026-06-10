@@ -9,10 +9,9 @@
  * extension at staging / dev / localhost from here.
  */
 
-import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapabilities';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Collapsible } from '@/components/ui/collapsible';
-import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -22,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapabilities';
 import { useAuth } from '@/hooks/use-auth';
 import { useDesktopBridge } from '@/hooks/use-desktop';
 import {
@@ -282,9 +282,7 @@ export function SettingsView() {
                   inputMode="numeric"
                   pattern="[0-9]*"
                   value={enginePortInput}
-                  onChange={(e) =>
-                    setEnginePortInput(e.target.value.replace(/[^0-9]/g, ''))
-                  }
+                  onChange={(e) => setEnginePortInput(e.target.value.replace(/[^0-9]/g, ''))}
                   placeholder="auto"
                   className="h-7 w-20 rounded-full border-0 bg-secondary text-right focus-visible:ring-1"
                 />

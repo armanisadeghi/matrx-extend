@@ -32,7 +32,7 @@ import {
   Sparkles,
   Wrench,
 } from 'lucide-react';
-import { type ComponentType, lazy, Suspense, useEffect } from 'react';
+import { type ComponentType, Suspense, lazy, useEffect } from 'react';
 
 // Per-tab dynamic imports. Single source of truth for module paths so each
 // view ships in its own chunk and the eager sidepanel bundle stays small.
@@ -41,15 +41,11 @@ import { type ComponentType, lazy, Suspense, useEffect } from 'react';
 // loader twice doesn't double-fetch).
 const VIEW_LOADERS = {
   chat: () => import('@/features/chat/ChatView').then((m) => ({ default: m.ChatView })),
-  pilot: () =>
-    import('@/features/chat/PilotView').then((m) => ({ default: m.PilotView })),
+  pilot: () => import('@/features/chat/PilotView').then((m) => ({ default: m.PilotView })),
   tasks: () => import('@/features/tasks/TasksView').then((m) => ({ default: m.TasksView })),
-  lists: () =>
-    import('@/features/lists/ListsHubView').then((m) => ({ default: m.ListsHubView })),
-  agenda: () =>
-    import('@/features/agenda/AgendaView').then((m) => ({ default: m.AgendaView })),
-  scrape: () =>
-    import('@/features/scrape/ScrapeView').then((m) => ({ default: m.ScrapeView })),
+  lists: () => import('@/features/lists/ListsHubView').then((m) => ({ default: m.ListsHubView })),
+  agenda: () => import('@/features/agenda/AgendaView').then((m) => ({ default: m.AgendaView })),
+  scrape: () => import('@/features/scrape/ScrapeView').then((m) => ({ default: m.ScrapeView })),
   data: () => import('@/features/data/DataView').then((m) => ({ default: m.DataView })),
   highlight: () =>
     import('@/features/highlights/HighlightView').then((m) => ({ default: m.HighlightView })),
@@ -64,8 +60,7 @@ const VIEW_LOADERS = {
   tools: () => import('@/features/tools/ToolsView').then((m) => ({ default: m.ToolsView })),
   settings: () =>
     import('@/features/settings/SettingsView').then((m) => ({ default: m.SettingsView })),
-  profile: () =>
-    import('@/features/profile/ProfileView').then((m) => ({ default: m.ProfileView })),
+  profile: () => import('@/features/profile/ProfileView').then((m) => ({ default: m.ProfileView })),
   showcase: () =>
     import('@/features/showcase/ShowcaseView').then((m) => ({ default: m.ShowcaseView })),
   debug: () => import('@/features/debug/DebugView').then((m) => ({ default: m.DebugView })),
@@ -241,11 +236,7 @@ export function App() {
                     <TabsTrigger value="notes" className="size-7 p-0" title="Notes">
                       <NotebookPen className="size-3.5" />
                     </TabsTrigger>
-                    <TabsTrigger
-                      value="screenshots"
-                      className="size-7 p-0"
-                      title="Screenshots"
-                    >
+                    <TabsTrigger value="screenshots" className="size-7 p-0" title="Screenshots">
                       <Camera className="size-3.5" />
                     </TabsTrigger>
                     <TabsTrigger value="tools" className="size-7 p-0" title="Tools">

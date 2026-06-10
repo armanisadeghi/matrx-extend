@@ -19,8 +19,8 @@
 
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Layers, Loader2 } from 'lucide-react';
-import { type ToolTimelineEntry, ToolTimelineRow } from '../ToolTimelineRow';
 import { ShimmerText } from '../BreathingOrb';
+import { type ToolTimelineEntry, ToolTimelineRow } from '../ToolTimelineRow';
 
 type Phase = 'started' | 'completed' | 'error';
 
@@ -86,8 +86,7 @@ export function BatchToolDisplay({
   // Split the batch wall-clock evenly across sub-calls so the per-row
   // duration display stays meaningful (we don't get per-sub timestamps
   // from the handler today; if that ever ships, prefer those instead).
-  const totalMs =
-    entry.endedAt != null ? Math.max(1, entry.endedAt - entry.startedAt) : 0;
+  const totalMs = entry.endedAt != null ? Math.max(1, entry.endedAt - entry.startedAt) : 0;
   const perCallMs = calls.length > 0 ? Math.max(1, Math.floor(totalMs / calls.length)) : 0;
 
   const Icon = phase === 'started' ? Loader2 : phase === 'error' ? AlertTriangle : Layers;
@@ -106,9 +105,7 @@ export function BatchToolDisplay({
       callId: `${entry.callId}__${i}`,
       toolName: String(call?.name ?? sub?.name ?? '(unknown)'),
       startedAt: subStart,
-      ...(phase === 'started'
-        ? {}
-        : { endedAt: subStart + perCallMs }),
+      ...(phase === 'started' ? {} : { endedAt: subStart + perCallMs }),
       phase: subPhase,
       args: call?.arguments,
       ...(subPhase !== 'started' ? { output: pickOutput(sub) } : {}),
@@ -127,19 +124,13 @@ export function BatchToolDisplay({
     <div className="space-y-0.5">
       <div className="flex items-center gap-1.5 text-[11px]">
         <Icon
-          className={cn(
-            'size-3.5 shrink-0',
-            colorClass,
-            phase === 'started' && 'animate-spin',
-          )}
+          className={cn('size-3.5 shrink-0', colorClass, phase === 'started' && 'animate-spin')}
         />
         <span className="text-muted-foreground">
           {phase === 'started' ? <ShimmerText>{headerText}</ShimmerText> : headerText}
         </span>
         {phase !== 'started' && entry.endedAt && (
-          <span className="ml-auto text-[10px] text-muted-foreground">
-            {totalMs}ms
-          </span>
+          <span className="ml-auto text-[10px] text-muted-foreground">{totalMs}ms</span>
         )}
       </div>
       <div className="ml-4 space-y-0.5 border-l border-border/40 pl-2">

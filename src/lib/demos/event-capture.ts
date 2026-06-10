@@ -207,20 +207,33 @@ export function mountRecorderInPage(): string {
   function buildSelectorChain(el: Element): InlineSelectorStrategy[] {
     const chain: InlineSelectorStrategy[] = [];
     const matrxRef = el.getAttribute('data-matrx-ref');
-    if (matrxRef) chain.push({ kind: 'matrx-ref', selector: `[data-matrx-ref="${cssEscape(matrxRef)}"]` });
+    if (matrxRef)
+      chain.push({ kind: 'matrx-ref', selector: `[data-matrx-ref="${cssEscape(matrxRef)}"]` });
     const id = el.getAttribute('id');
     if (id && isStableId(id)) chain.push({ kind: 'id', selector: `#${cssEscape(id)}` });
-    const testId = el.getAttribute('data-testid') ?? el.getAttribute('data-test') ?? el.getAttribute('data-cy');
-    if (testId) chain.push({ kind: 'data-testid', selector: `[data-testid="${cssEscape(testId)}"]` });
+    const testId =
+      el.getAttribute('data-testid') ?? el.getAttribute('data-test') ?? el.getAttribute('data-cy');
+    if (testId)
+      chain.push({ kind: 'data-testid', selector: `[data-testid="${cssEscape(testId)}"]` });
     const name = el.getAttribute('name');
     if (name && (el.tagName === 'INPUT' || el.tagName === 'SELECT' || el.tagName === 'TEXTAREA')) {
-      chain.push({ kind: 'name-attr', selector: `${el.tagName.toLowerCase()}[name="${cssEscape(name)}"]` });
+      chain.push({
+        kind: 'name-attr',
+        selector: `${el.tagName.toLowerCase()}[name="${cssEscape(name)}"]`,
+      });
     }
     const role = el.getAttribute('role') ?? implicitRole(el);
     const aname = accessibleName(el);
-    if (role && aname) chain.push({ kind: 'aria', selector: `[role="${cssEscape(role)}"]`, role, match_text: aname });
+    if (role && aname)
+      chain.push({
+        kind: 'aria',
+        selector: `[role="${cssEscape(role)}"]`,
+        role,
+        match_text: aname,
+      });
     const visible = (el.textContent ?? '').trim();
-    if (visible && visible.length <= 80) chain.push({ kind: 'text', selector: el.tagName.toLowerCase(), match_text: visible });
+    if (visible && visible.length <= 80)
+      chain.push({ kind: 'text', selector: el.tagName.toLowerCase(), match_text: visible });
     chain.push({ kind: 'css-path', selector: cssPath(el) });
     return chain;
   }
@@ -233,7 +246,12 @@ export function mountRecorderInPage(): string {
       role: role ?? undefined,
       accessible_name: accessibleName(el) ?? undefined,
       visible_text: ((el.textContent ?? '').trim() || undefined)?.slice(0, 200),
-      bounding_rect: { x: Math.round(r.left), y: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height) },
+      bounding_rect: {
+        x: Math.round(r.left),
+        y: Math.round(r.top),
+        w: Math.round(r.width),
+        h: Math.round(r.height),
+      },
     };
     const interesting = ['type', 'name', 'placeholder', 'href', 'aria-label', 'title'];
     const attrs: Record<string, string> = {};

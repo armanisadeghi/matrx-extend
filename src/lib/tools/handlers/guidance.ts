@@ -17,12 +17,12 @@
 
 import { log } from '@/lib/debug/log';
 import {
-  deleteGuidanceItem as storageDelete,
   getGuidanceItem,
   listAllGuidance,
   listGuidanceForDomain,
   makeGuidanceId,
   saveGuidanceItem,
+  deleteGuidanceItem as storageDelete,
 } from '@/lib/guidance/storage';
 import type { GuidanceNote } from '@/lib/guidance/types';
 import type { ToolHandler } from '@/lib/tools/types';
@@ -73,9 +73,7 @@ export const list_guidance: ToolHandler<ListGuidanceArgs, unknown> = {
   tier: 'read',
   argsSchema: ListGuidanceArgs,
   run: async (args) => {
-    const items = args.domain
-      ? await listGuidanceForDomain(args.domain)
-      : await listAllGuidance();
+    const items = args.domain ? await listGuidanceForDomain(args.domain) : await listAllGuidance();
     return { ok: true, count: items.length, items };
   },
 };
@@ -105,7 +103,9 @@ export const delete_guidance_item: ToolHandler<DeleteGuidanceItemArgs, unknown> 
   argsSchema: DeleteGuidanceItemArgs,
   run: async (args) => {
     const ok = await storageDelete(args.id);
-    return ok ? { ok: true, deleted: true } : { ok: false, reason: `No guidance item with id=${args.id}` };
+    return ok
+      ? { ok: true, deleted: true }
+      : { ok: false, reason: `No guidance item with id=${args.id}` };
   },
 };
 

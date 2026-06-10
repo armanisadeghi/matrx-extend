@@ -30,12 +30,12 @@ import { useActiveTab } from '@/hooks/use-active-tab';
 import { newId } from '@/lib/id';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import type { ScreenshotSavedPayload } from '@/lib/screenshot/persist';
 import {
   type ScreenshotRow,
   deleteScreenshot,
   fetchScreenshotsForUrl,
 } from '@/lib/supabase/queries';
-import type { ScreenshotSavedPayload } from '@/lib/screenshot/persist';
 import { take_screenshot } from '@/lib/tools/handlers/read';
 import { normalizeUrl } from '@/lib/url/match';
 import {
@@ -71,30 +71,27 @@ export function ScreenshotsView() {
   // event is still in flight.
   const lastFetchedUrlRef = useRef<string | null>(null);
 
-  const reload = useCallback(
-    async (urlCanonical: string | null) => {
-      if (!urlCanonical) {
-        setRows([]);
-        setLoadState('idle');
-        return;
-      }
-      setLoadState('loading');
-      setError(null);
-      try {
-        const data = await fetchScreenshotsForUrl(urlCanonical);
-        // Guard against a stale request resolving after the user has
-        // navigated to a new page — only commit if the URL still matches.
-        if (lastFetchedUrlRef.current !== urlCanonical) return;
-        setRows(data);
-        setLoadState('ready');
-      } catch (err) {
-        if (lastFetchedUrlRef.current !== urlCanonical) return;
-        setError((err as Error).message ?? 'Failed to load screenshots');
-        setLoadState('error');
-      }
-    },
-    [],
-  );
+  const reload = useCallback(async (urlCanonical: string | null) => {
+    if (!urlCanonical) {
+      setRows([]);
+      setLoadState('idle');
+      return;
+    }
+    setLoadState('loading');
+    setError(null);
+    try {
+      const data = await fetchScreenshotsForUrl(urlCanonical);
+      // Guard against a stale request resolving after the user has
+      // navigated to a new page — only commit if the URL still matches.
+      if (lastFetchedUrlRef.current !== urlCanonical) return;
+      setRows(data);
+      setLoadState('ready');
+    } catch (err) {
+      if (lastFetchedUrlRef.current !== urlCanonical) return;
+      setError((err as Error).message ?? 'Failed to load screenshots');
+      setLoadState('error');
+    }
+  }, []);
 
   // Re-query whenever the active tab's canonical URL changes.
   useEffect(() => {
@@ -109,15 +106,12 @@ export function ScreenshotsView() {
   // chrome.runtime.sendMessage to the sender's own context); the inline
   // reload after `captureNow` covers that case.
   useEffect(() => {
-    const off = on<ScreenshotSavedPayload, { ack: true }>(
-      CHANNELS.SCREENSHOT_SAVED,
-      (evt) => {
-        if (evt.pageUrlCanonical === lastFetchedUrlRef.current) {
-          void reload(lastFetchedUrlRef.current);
-        }
-        return { ack: true };
-      },
-    );
+    const off = on<ScreenshotSavedPayload, { ack: true }>(CHANNELS.SCREENSHOT_SAVED, (evt) => {
+      if (evt.pageUrlCanonical === lastFetchedUrlRef.current) {
+        void reload(lastFetchedUrlRef.current);
+      }
+      return { ack: true };
+    });
     return off;
   }, [reload]);
 
@@ -126,15 +120,15 @@ export function ScreenshotsView() {
   // failed to insert the row but the tool itself returned ok, this still
   // triggers a refresh so the gallery doesn't appear stale.
   useEffect(() => {
-    const off = on<
-      { callId: string; toolName: string; phase: string },
-      { ack: true }
-    >(CHANNELS.TOOL_TIMELINE_EVENT, (evt) => {
-      if (evt.toolName === 'take_screenshot' && evt.phase === 'completed') {
-        void reload(lastFetchedUrlRef.current);
-      }
-      return { ack: true };
-    });
+    const off = on<{ callId: string; toolName: string; phase: string }, { ack: true }>(
+      CHANNELS.TOOL_TIMELINE_EVENT,
+      (evt) => {
+        if (evt.toolName === 'take_screenshot' && evt.phase === 'completed') {
+          void reload(lastFetchedUrlRef.current);
+        }
+        return { ack: true };
+      },
+    );
     return off;
   }, [reload]);
 
@@ -200,9 +194,7 @@ export function ScreenshotsView() {
               'Captured, but failed to save to the gallery. Check the SW console for the error.',
             );
           } else if (mode === 'full_page' && r.truncated) {
-            setPersistWarning(
-              'Page exceeded the 30-screen tile cap; the bottom is cropped.',
-            );
+            setPersistWarning('Page exceeded the 30-screen tile cap; the bottom is cropped.');
           }
           broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
             callId,
@@ -359,8 +351,7 @@ function ScreenshotCard({
     ) : (
       <Camera className="size-3" />
     );
-  const sourceLabel =
-    row.source === 'agent' ? 'Agent' : row.source === 'user' ? 'You' : 'Unknown';
+  const sourceLabel = row.source === 'agent' ? 'Agent' : row.source === 'user' ? 'You' : 'Unknown';
 
   const openFullSize = useCallback(() => {
     if (row.file_url) void chrome.tabs.create({ url: row.file_url });
@@ -475,10 +466,7 @@ function SkeletonGrid() {
   return (
     <div className="grid grid-cols-2 gap-2 px-3 py-3">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div
-          key={i}
-          className="overflow-hidden rounded-md border border-border/60 bg-card"
-        >
+        <div key={i} className="overflow-hidden rounded-md border border-border/60 bg-card">
           <div className="aspect-[4/3] w-full animate-pulse bg-muted/60" />
           <div className="space-y-1 p-2">
             <div className="h-2 w-1/2 animate-pulse rounded bg-muted/60" />
@@ -501,9 +489,7 @@ function EmptyMessage({
 }) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
-      <div className="flex size-9 items-center justify-center rounded-full bg-muted/60">
-        {icon}
-      </div>
+      <div className="flex size-9 items-center justify-center rounded-full bg-muted/60">{icon}</div>
       <div className="text-sm font-medium">{title}</div>
       <div className="max-w-xs text-xs text-muted-foreground">{body}</div>
     </div>

@@ -148,7 +148,10 @@ function fenceFor(fmt: AgentWrapFormat): string {
 }
 
 function humanKey(k: string): string {
-  return k.replace(/([A-Z])/g, ' $1').replace(/[_-]/g, ' ').replace(/^./, (c) => c.toUpperCase());
+  return k
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/[_-]/g, ' ')
+    .replace(/^./, (c) => c.toUpperCase());
 }
 
 function formatTimestamp(t: string | number): string {

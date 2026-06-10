@@ -11,16 +11,12 @@
  *   (any write) ──HIGHLIGHTS_CHANGED──▶ re-list so every surface refreshes
  */
 
-import { useEffect } from 'react';
+import { clearHighlightsForUrl, createHighlight, listMyHighlights } from '@/lib/highlights/queries';
+import type { CreateHighlightInput, HighlightListItem } from '@/lib/highlights/types';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import {
-  clearHighlightsForUrl,
-  createHighlight,
-  listMyHighlights,
-} from '@/lib/highlights/queries';
-import type { CreateHighlightInput, HighlightListItem } from '@/lib/highlights/types';
 import { useHighlightStore } from '@/state/highlights';
+import { useEffect } from 'react';
 
 function toListItem(h: {
   id: string;

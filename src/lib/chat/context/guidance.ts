@@ -20,11 +20,7 @@
  */
 
 import { log } from '@/lib/debug/log';
-import {
-  getGuidanceItems,
-  guidanceMatchesDomain,
-  listAllGuidance,
-} from '@/lib/guidance/storage';
+import { getGuidanceItems, guidanceMatchesDomain, listAllGuidance } from '@/lib/guidance/storage';
 import type {
   GuidanceDemoRef,
   GuidanceGif,

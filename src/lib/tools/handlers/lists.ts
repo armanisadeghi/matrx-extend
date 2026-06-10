@@ -73,13 +73,25 @@ const TasksArgs = z
       });
     }
     if ((v.action === 'set_status' || v.action === 'update' || v.action === 'remove') && !v.id) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: `'${v.action}' requires \`id\``, path: ['action'] });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `'${v.action}' requires \`id\``,
+        path: ['action'],
+      });
     }
     if (v.action === 'set_status' && !v.status) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "'set_status' requires `status`", path: ['action'] });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "'set_status' requires `status`",
+        path: ['action'],
+      });
     }
     if (v.action === 'reorder' && (!v.ids || v.ids.length === 0)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "'reorder' requires non-empty `ids`", path: ['action'] });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "'reorder' requires non-empty `ids`",
+        path: ['action'],
+      });
     }
   });
 type TasksArgs = z.infer<typeof TasksArgs>;
@@ -100,7 +112,9 @@ export const tasks: ToolHandler<TasksArgs, unknown> = {
       return { ok: true, tasks };
     }
     if (args.action === 'add') {
-      const items = args.items ?? [{ title: args.title!, status: args.status, note: args.note ?? undefined }];
+      const items = args.items ?? [
+        { title: args.title!, status: args.status, note: args.note ?? undefined },
+      ];
       const created = await addTasks(conv, items, 'agent');
       return { ok: true, created };
     }
@@ -158,10 +172,18 @@ const UserTodosArgs = z
   })
   .superRefine((v, ctx) => {
     if (v.action === 'add' && !v.title) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "'add' requires `title`", path: ['action'] });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "'add' requires `title`",
+        path: ['action'],
+      });
     }
     if ((v.action === 'update' || v.action === 'remove' || v.action === 'mark_done') && !v.id) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: `'${v.action}' requires \`id\``, path: ['action'] });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `'${v.action}' requires \`id\``,
+        path: ['action'],
+      });
     }
   });
 type UserTodosArgs = z.infer<typeof UserTodosArgs>;

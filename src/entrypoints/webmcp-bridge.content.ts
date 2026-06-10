@@ -49,9 +49,7 @@ const isPageCallMessage = (v: unknown): v is PageCallMessage => {
   if (typeof v !== 'object' || v === null) return false;
   const o = v as Record<string, unknown>;
   return (
-    o.__matrx_webmcp_call === true &&
-    typeof o.callId === 'string' &&
-    typeof o.toolName === 'string'
+    o.__matrx_webmcp_call === true && typeof o.callId === 'string' && typeof o.toolName === 'string'
   );
 };
 

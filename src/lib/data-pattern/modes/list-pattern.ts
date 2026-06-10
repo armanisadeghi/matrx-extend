@@ -29,8 +29,7 @@ export type ListPatternConfig = z.infer<typeof listPatternConfigSchema>;
 export const listPatternMode: ExtractionMode<ListPatternConfig> = {
   id: 'list_pattern',
   label: 'List Pattern',
-  description:
-    'Click one example item; we infer all similar siblings. Then pick fields inside it.',
+  description: 'Click one example item; we infer all similar siblings. Then pick fields inside it.',
   configSchema: listPatternConfigSchema,
   defaultConfig: () => ({ list_root: '', item_selector: '', field_paths: [] }),
 
@@ -89,8 +88,7 @@ export const listPatternMode: ExtractionMode<ListPatternConfig> = {
       const row: Record<string, string | null> = {};
       for (const f of cfg.field_paths) {
         try {
-          const el =
-            f.rel_selector === ':scope' ? item : item.querySelector(f.rel_selector);
+          const el = f.rel_selector === ':scope' ? item : item.querySelector(f.rel_selector);
           row[f.name] = el ? readValue(el, f.attr, f.transform) : null;
         } catch {
           row[f.name] = null;

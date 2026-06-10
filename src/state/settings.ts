@@ -138,7 +138,10 @@ export const useSettingsStore = create<SettingsState>()(
       version: 2,
       migrate: (persisted, fromVersion) => {
         const state = (persisted ?? {}) as Partial<SettingsState>;
-        if (fromVersion < 2 && (state.defaultAgentId === null || state.defaultAgentId === undefined)) {
+        if (
+          fromVersion < 2 &&
+          (state.defaultAgentId === null || state.defaultAgentId === undefined)
+        ) {
           state.defaultAgentId = DEFAULT_AGENDA_AGENT_ID;
         }
         return state as SettingsState;

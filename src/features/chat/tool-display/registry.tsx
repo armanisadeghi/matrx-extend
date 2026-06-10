@@ -433,8 +433,16 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
       icon: { started: 'Loader2', completed: 'Hourglass', error: 'AlertTriangle' },
       prefix: '',
       name: {
-        started: { path: 'args.condition', transform: 'waitForConditionPresent', fallback: 'Waiting' },
-        completed: { path: 'args.condition', transform: 'waitForConditionVerb', fallback: 'Waited' },
+        started: {
+          path: 'args.condition',
+          transform: 'waitForConditionPresent',
+          fallback: 'Waiting',
+        },
+        completed: {
+          path: 'args.condition',
+          transform: 'waitForConditionVerb',
+          fallback: 'Waited',
+        },
         error: 'Wait timed out',
       },
       info: { path: 'args.target', transform: 'truncate80' },

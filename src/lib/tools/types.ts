@@ -204,13 +204,7 @@ export interface ConfirmResponse {
  * One pending-request shape covers every variant. The card branches on
  * `kind`. Fields that don't apply to a kind are simply omitted.
  */
-export type UserAskKind =
-  | 'confirm'
-  | 'choice'
-  | 'choice_many'
-  | 'text'
-  | 'secret'
-  | 'notify';
+export type UserAskKind = 'confirm' | 'choice' | 'choice_many' | 'text' | 'secret' | 'notify';
 
 /**
  * Rich option shape (2026-05-19). The card always receives this normalized

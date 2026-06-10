@@ -100,8 +100,8 @@ export function AiExtractTab() {
             AI Extract
           </div>
           <div className="text-xs text-muted-foreground">
-            Describe what you want; the extractor agent reads the page and returns rows that
-            match your schema. Best for hostile UIs and ad-hoc shapes.
+            Describe what you want; the extractor agent reads the page and returns rows that match
+            your schema. Best for hostile UIs and ad-hoc shapes.
           </div>
         </div>
 
@@ -137,7 +137,12 @@ export function AiExtractTab() {
             <div className="text-[11px] font-medium text-muted-foreground">
               Output schema (optional)
             </div>
-            <Button size="sm" variant="ghost" onClick={addField} className="h-6 gap-1 px-2 text-[10px]">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={addField}
+              className="h-6 gap-1 px-2 text-[10px]"
+            >
               <Plus className="size-3" /> Field
             </Button>
           </div>
@@ -182,11 +187,7 @@ export function AiExtractTab() {
         </div>
 
         <div className="flex gap-2">
-          <Button
-            onClick={handleRun}
-            disabled={!canRun}
-            className="flex-1 rounded-full"
-          >
+          <Button onClick={handleRun} disabled={!canRun} className="flex-1 rounded-full">
             {running ? <Loader2 className="animate-spin" /> : <Sparkles />}
             {running ? 'Extracting…' : 'Extract'}
           </Button>
@@ -224,8 +225,8 @@ export function AiExtractTab() {
                 Convert to reusable pattern
               </div>
               <div className="mt-0.5 text-[11px] text-muted-foreground">
-                Hand the extracted rows + sample HTML to the Pattern-from-Data agent. It returns
-                CSS selectors that re-create these rows with no AI on future runs.
+                Hand the extracted rows + sample HTML to the Pattern-from-Data agent. It returns CSS
+                selectors that re-create these rows with no AI on future runs.
               </div>
               {patternResult ? (
                 <div className="mt-2 space-y-2">
@@ -266,7 +267,12 @@ export function AiExtractTab() {
                     </ul>
                   )}
                   <div className="flex justify-end gap-2">
-                    <Button size="sm" variant="ghost" onClick={resetPattern} className="rounded-full">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={resetPattern}
+                      className="rounded-full"
+                    >
                       Discard
                     </Button>
                     <SaveAsPattern

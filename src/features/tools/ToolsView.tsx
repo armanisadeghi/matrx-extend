@@ -195,7 +195,9 @@ function CatalogPane({ handlers }: { handlers: AnyToolHandler[] }) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="canonical">Agent surface ({surfaceCounts.canonical})</SelectItem>
-              <SelectItem value="internal">Internal delegates ({surfaceCounts.internal})</SelectItem>
+              <SelectItem value="internal">
+                Internal delegates ({surfaceCounts.internal})
+              </SelectItem>
               <SelectItem value="all">All handlers ({surfaceCounts.all})</SelectItem>
             </SelectContent>
           </Select>
@@ -470,10 +472,7 @@ function ToolDetail({
       </Section>
 
       {error && (
-        <Section
-          label="error"
-          trailing={<CopyButton text={error} title="Copy error" size="xs" />}
-        >
+        <Section label="error" trailing={<CopyButton text={error} title="Copy error" size="xs" />}>
           <pre className="max-h-40 overflow-auto rounded bg-red-50 p-1.5 text-[10px] leading-snug text-red-800 dark:bg-red-950/40 dark:text-red-300">
             {error}
           </pre>

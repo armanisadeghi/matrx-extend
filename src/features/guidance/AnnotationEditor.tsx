@@ -18,7 +18,7 @@ import { saveGuidanceItem } from '@/lib/guidance/storage';
 import type { GuidanceScreenshot } from '@/lib/guidance/types';
 import { Loader2, Save, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
-import { type Editor, getSnapshot, loadSnapshot, Tldraw } from 'tldraw';
+import { type Editor, Tldraw, getSnapshot, loadSnapshot } from 'tldraw';
 import 'tldraw/tldraw.css';
 
 export function AnnotationEditor({
@@ -154,10 +154,7 @@ export function AnnotationEditor({
  * onto a single canvas; return as a PNG blob. Falls back to either side
  * if the other is missing.
  */
-async function composite(
-  screenshotUrl: string,
-  markupBlob: Blob | null,
-): Promise<Blob> {
+async function composite(screenshotUrl: string, markupBlob: Blob | null): Promise<Blob> {
   if (!screenshotUrl) {
     if (!markupBlob) throw new Error('Nothing to save — no screenshot URL and no markup.');
     return markupBlob;

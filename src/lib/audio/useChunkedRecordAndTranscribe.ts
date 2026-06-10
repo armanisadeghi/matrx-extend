@@ -16,11 +16,11 @@
  *     lose audio
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { getAccessToken } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { base64ToBlob } from '@/lib/messaging/binary-transport';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { audioSafetyStore } from './audioSafetyStore';
 import { AUDIO_API_ROUTES, AUDIO_LIMITS, VERCEL_LIMITS } from './constants';
 import type { MicEvent, MicRequestPayload } from './mic-types';
@@ -47,7 +47,10 @@ export interface UseChunkedRecordAndTranscribeProps {
 async function sendMicRequest(payload: MicRequestPayload): Promise<void> {
   const env = { __matrx: true, kind: CHANNELS.MIC_REQUEST, payload };
   log.info('audio', 'hook: MIC_REQUEST → start sent', { action: payload.action, payload });
-  const res = (await chrome.runtime.sendMessage(env)) as { __error?: string } | { ok: true } | undefined;
+  const res = (await chrome.runtime.sendMessage(env)) as
+    | { __error?: string }
+    | { ok: true }
+    | undefined;
   log.info('audio', 'hook: MIC_REQUEST result', { res });
   if (res && typeof res === 'object' && '__error' in res) {
     throw new Error((res as { __error: string }).__error);

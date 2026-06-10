@@ -139,18 +139,15 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
     } as typeof xhr.open;
     xhr.addEventListener('load', () => {
       try {
-        const respText = xhr.responseType === '' || xhr.responseType === 'text'
-          ? xhr.responseText
-          : '';
+        const respText =
+          xhr.responseType === '' || xhr.responseType === 'text' ? xhr.responseText : '';
         const t = truncate(respText);
         const headersRaw = xhr.getAllResponseHeaders();
         const responseHeaders: Record<string, string> = {};
         for (const line of headersRaw.split('\r\n')) {
           const colon = line.indexOf(':');
           if (colon < 0) continue;
-          responseHeaders[line.slice(0, colon).trim().toLowerCase()] = line
-            .slice(colon + 1)
-            .trim();
+          responseHeaders[line.slice(0, colon).trim().toLowerCase()] = line.slice(colon + 1).trim();
         }
         post({
           ts_ms: t0,

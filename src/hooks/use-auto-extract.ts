@@ -1,7 +1,11 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { urlMatchesPattern } from '@/lib/data-pattern/matcher';
 import { runPattern } from '@/lib/data-pattern/run-pattern';
-import { type ExtractionPattern, bumpPatternRun, fetchPatternsForDomain } from '@/lib/supabase/queries';
+import {
+  type ExtractionPattern,
+  bumpPatternRun,
+  fetchPatternsForDomain,
+} from '@/lib/supabase/queries';
 import { autoExtractKey, useAutoExtractStore } from '@/state/auto-extract';
 import { useEffect, useRef } from 'react';
 
@@ -76,11 +80,7 @@ export function useAutoExtract(): void {
           if (cancelled) return;
           const key = autoExtractKey(pattern.id, url);
           const existing = records.get(key);
-          if (
-            existing &&
-            existing.status === 'ok' &&
-            Date.now() - existing.lastRunAt < TTL_MS
-          ) {
+          if (existing && existing.status === 'ok' && Date.now() - existing.lastRunAt < TTL_MS) {
             return; // recent successful run — skip
           }
           setRecord(key, {

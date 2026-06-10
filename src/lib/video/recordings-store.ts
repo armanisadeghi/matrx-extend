@@ -7,8 +7,8 @@
  * links across sidepanel reloads.
  */
 
-import { create } from 'zustand';
 import { log } from '@/lib/debug/log';
+import { create } from 'zustand';
 
 const STORAGE_KEY = 'matrx.recordings.v1';
 const MAX_ENTRIES = 50;

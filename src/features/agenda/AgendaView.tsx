@@ -11,8 +11,8 @@
  * read that here and scroll the matching row into view.
  */
 
-import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -22,6 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useChatStream } from '@/hooks/use-chat-stream';
+import { isValidCron, nextCronTime } from '@/lib/agenda/cron';
 import {
   type AgendaTask,
   type AuthMode,
@@ -32,22 +34,10 @@ import {
   listMyTasks,
   updateTask,
 } from '@/lib/agenda/queries';
-import { isValidCron, nextCronTime } from '@/lib/agenda/cron';
 import { isTaskRunning, runTask } from '@/lib/agenda/runner';
-import { cn } from '@/lib/utils';
 import { log } from '@/lib/debug/log';
-import { useChatStream } from '@/hooks/use-chat-stream';
-import {
-  Calendar,
-  Clock,
-  Heart,
-  Pause,
-  Play,
-  PlayCircle,
-  Plus,
-  Trash2,
-  Zap,
-} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Calendar, Clock, Heart, Pause, Play, PlayCircle, Plus, Trash2, Zap } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 const FOCUS_KEY = 'matrx.agenda.focus_task_id';
@@ -215,15 +205,11 @@ function TaskRow({
             </span>
           ))}
           {task.next_due_at && (
-            <span title={task.next_due_at}>
-              · next {formatRelativeTime(task.next_due_at)}
-            </span>
+            <span title={task.next_due_at}>· next {formatRelativeTime(task.next_due_at)}</span>
           )}
         </div>
         {task.description && (
-          <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-            {task.description}
-          </div>
+          <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">{task.description}</div>
         )}
       </div>
       <div className="flex shrink-0 items-center gap-0.5">
@@ -419,7 +405,7 @@ function NewTaskForm({ onCancel, onCreated }: { onCancel: () => void; onCreated:
             type="number"
             min={60}
             value={intervalSec}
-            onChange={(e) => setIntervalSec(parseInt(e.target.value, 10) || 60)}
+            onChange={(e) => setIntervalSec(Number.parseInt(e.target.value, 10) || 60)}
             className="h-8 text-xs"
           />
         </div>
@@ -473,8 +459,8 @@ function NewTaskForm({ onCancel, onCreated }: { onCancel: () => void; onCreated:
             />
           </div>
           <p className="text-[10px] text-muted-foreground">
-            Fires when your active tab matches. Set at least one condition. Re-fires at
-            most once every 10 min per task while the match holds.
+            Fires when your active tab matches. Set at least one condition. Re-fires at most once
+            every 10 min per task while the match holds.
           </p>
         </div>
       )}

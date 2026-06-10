@@ -44,7 +44,9 @@ function openDB(): Promise<IDBDatabase> {
 }
 
 function tx(db: IDBDatabase, mode: IDBTransactionMode): IDBObjectStore {
-  return db.transaction(SAFETY_STORE_CONFIG.STORE_NAME, mode).objectStore(SAFETY_STORE_CONFIG.STORE_NAME);
+  return db
+    .transaction(SAFETY_STORE_CONFIG.STORE_NAME, mode)
+    .objectStore(SAFETY_STORE_CONFIG.STORE_NAME);
 }
 
 function promisify<T>(request: IDBRequest<T>): Promise<T> {

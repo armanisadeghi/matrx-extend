@@ -6,17 +6,17 @@
  * when the user is offline or RLS rejects.
  */
 
-import { getSupabase } from '@/lib/supabase/client';
 import {
   type CreateNoteInput,
   type Note,
-  NoteFolderSchema,
   type NoteFolder,
+  NoteFolderSchema,
   type NoteListItem,
   NoteListItemSchema,
   NoteSchema,
   type UpdateNotePatch,
 } from '@/lib/notes/types';
+import { getSupabase } from '@/lib/supabase/client';
 
 const LIST_COLUMNS =
   'id, user_id, label, folder_name, folder_id, tags, updated_at, position, is_public';
@@ -65,11 +65,7 @@ export async function listMyFolders(): Promise<NoteFolder[]> {
 
 export async function getNote(id: string): Promise<Note | null> {
   const c = getSupabase();
-  const { data, error } = await c
-    .from('notes')
-    .select(FULL_COLUMNS)
-    .eq('id', id)
-    .maybeSingle();
+  const { data, error } = await c.from('notes').select(FULL_COLUMNS).eq('id', id).maybeSingle();
   if (error || !data) {
     if (error) console.warn('[notes] getNote error', error.message);
     return null;
@@ -100,11 +96,7 @@ export async function createNote(input: CreateNoteInput): Promise<Note | null> {
     folder_id: input.folder_id ?? null,
     is_deleted: false,
   };
-  const { data, error } = await c
-    .from('notes')
-    .insert(payload)
-    .select(FULL_COLUMNS)
-    .single();
+  const { data, error } = await c.from('notes').insert(payload).select(FULL_COLUMNS).single();
   if (error || !data) {
     console.warn('[notes] createNote error', error?.message);
     return null;
@@ -113,10 +105,7 @@ export async function createNote(input: CreateNoteInput): Promise<Note | null> {
   return parsed.success ? parsed.data : null;
 }
 
-export async function updateNote(
-  id: string,
-  patch: UpdateNotePatch,
-): Promise<Note | null> {
+export async function updateNote(id: string, patch: UpdateNotePatch): Promise<Note | null> {
   const c = getSupabase();
   const { data, error } = await c
     .from('notes')

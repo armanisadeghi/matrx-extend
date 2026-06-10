@@ -15,14 +15,14 @@
  * version (.code vs .message stringification).
  */
 export function isClaimRaceLoss(error: unknown): boolean {
-    if (typeof error !== "object" || error === null) return false;
-    const err = error as { code?: string; message?: string; details?: string };
-    if (err.code === "23505") return true;
-    const haystack = `${err.message ?? ""} ${err.details ?? ""}`.toLowerCase();
-    if (haystack.includes("23505")) return true;
-    if (haystack.includes("sch_run_unique_active_per_task")) return true;
-    if (haystack.includes("duplicate key")) return true;
-    return false;
+  if (typeof error !== 'object' || error === null) return false;
+  const err = error as { code?: string; message?: string; details?: string };
+  if (err.code === '23505') return true;
+  const haystack = `${err.message ?? ''} ${err.details ?? ''}`.toLowerCase();
+  if (haystack.includes('23505')) return true;
+  if (haystack.includes('sch_run_unique_active_per_task')) return true;
+  if (haystack.includes('duplicate key')) return true;
+  return false;
 }
 
 /**
@@ -31,13 +31,13 @@ export function isClaimRaceLoss(error: unknown): boolean {
  * code / hint / details when they need to.
  */
 export class SchedulerClientError extends Error {
-    public override readonly cause?: unknown;
+  public override readonly cause?: unknown;
 
-    constructor(message: string, cause?: unknown) {
-        super(message);
-        this.name = "SchedulerClientError";
-        this.cause = cause;
-    }
+  constructor(message: string, cause?: unknown) {
+    super(message);
+    this.name = 'SchedulerClientError';
+    this.cause = cause;
+  }
 }
 
 /**
@@ -45,11 +45,11 @@ export class SchedulerClientError extends Error {
  * back off and look at the next due task rather than retry the same one.
  */
 export class TaskClaimRaceError extends SchedulerClientError {
-    public readonly taskId: string;
+  public readonly taskId: string;
 
-    constructor(taskId: string, cause?: unknown) {
-        super(`Lost race to claim task ${taskId}`, cause);
-        this.name = "TaskClaimRaceError";
-        this.taskId = taskId;
-    }
+  constructor(taskId: string, cause?: unknown) {
+    super(`Lost race to claim task ${taskId}`, cause);
+    this.name = 'TaskClaimRaceError';
+    this.taskId = taskId;
+  }
 }

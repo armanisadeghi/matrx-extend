@@ -10,14 +10,14 @@
  * — UI components should NEVER write directly to chrome.storage.local.
  */
 
-import { CHANNELS } from '@/lib/messaging/schemas';
-import { on } from '@/lib/messaging/native';
 import {
   getPlan as storageGetPlan,
   listTasks as storageListTasks,
   listUserTodos as storageListUserTodos,
 } from '@/lib/lists/storage';
 import type { Plan, Task, UserTodo } from '@/lib/lists/types';
+import { on } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { useEffect } from 'react';
 import { create } from 'zustand';
 
@@ -50,8 +50,7 @@ export const useListsStore = create<ListsState>((set) => ({
   setTasks: (tasks) => set({ tasks }),
   setUserTodos: (user_todos) => set({ user_todos }),
   setLoading: (loading) => set({ loading }),
-  clear: () =>
-    set({ conversationId: null, plan: null, tasks: [], user_todos: [], loading: false }),
+  clear: () => set({ conversationId: null, plan: null, tasks: [], user_todos: [], loading: false }),
 }));
 
 async function refreshAll(conversationId: string): Promise<void> {
@@ -86,33 +85,33 @@ export function useListsSubscriber(conversationId: string | null): void {
     useListsStore.getState().setLoading(true);
     void refreshAll(conversationId);
 
-    const off = on<{ kind: 'plan' | 'tasks' | 'user_todos'; conversation_id: string }, { ack: true }>(
-      CHANNELS.LISTS_CHANGED,
-      (payload) => {
-        if (payload.conversation_id !== conversationId) return { ack: true };
-        // Re-read just the slice that changed to keep storage I/O minimal.
-        if (payload.kind === 'plan') {
-          void storageGetPlan(conversationId).then((plan) => {
-            if (useListsStore.getState().conversationId === conversationId) {
-              useListsStore.setState({ plan });
-            }
-          });
-        } else if (payload.kind === 'tasks') {
-          void storageListTasks(conversationId).then((tasks) => {
-            if (useListsStore.getState().conversationId === conversationId) {
-              useListsStore.setState({ tasks });
-            }
-          });
-        } else {
-          void storageListUserTodos(conversationId).then((user_todos) => {
-            if (useListsStore.getState().conversationId === conversationId) {
-              useListsStore.setState({ user_todos });
-            }
-          });
-        }
-        return { ack: true };
-      },
-    );
+    const off = on<
+      { kind: 'plan' | 'tasks' | 'user_todos'; conversation_id: string },
+      { ack: true }
+    >(CHANNELS.LISTS_CHANGED, (payload) => {
+      if (payload.conversation_id !== conversationId) return { ack: true };
+      // Re-read just the slice that changed to keep storage I/O minimal.
+      if (payload.kind === 'plan') {
+        void storageGetPlan(conversationId).then((plan) => {
+          if (useListsStore.getState().conversationId === conversationId) {
+            useListsStore.setState({ plan });
+          }
+        });
+      } else if (payload.kind === 'tasks') {
+        void storageListTasks(conversationId).then((tasks) => {
+          if (useListsStore.getState().conversationId === conversationId) {
+            useListsStore.setState({ tasks });
+          }
+        });
+      } else {
+        void storageListUserTodos(conversationId).then((user_todos) => {
+          if (useListsStore.getState().conversationId === conversationId) {
+            useListsStore.setState({ user_todos });
+          }
+        });
+      }
+      return { ack: true };
+    });
 
     return () => {
       off();
