@@ -56,7 +56,28 @@ export const execute_javascript: ToolHandler<ExecuteJsArgs, unknown> = {
         },
         args: [args.code, args.arg ?? null],
       });
-      return first?.result ?? { ok: false, reason: 'no result' };
+      const raw = first?.result ?? { ok: false, reason: 'no result' };
+      // Cap + provenance-tag the value flowing back into the conversation
+      // (audit P2-6). A MAIN-world script reads attacker-controlled page
+      // state; un-capped, a hostile page could pump megabytes of
+      // prompt-injection text straight into the model's context through
+      // this one tool. 256KB is far beyond any legitimate scripted result.
+      const MAX_RESULT_CHARS = 256_000;
+      try {
+        const serialized = JSON.stringify(raw);
+        if (serialized && serialized.length > MAX_RESULT_CHARS) {
+          return {
+            ok: true,
+            truncated: true,
+            full_chars: serialized.length,
+            note: 'result truncated at 256KB — page-origin data is untrusted; re-run with a narrower script if more is needed',
+            result: serialized.slice(0, MAX_RESULT_CHARS),
+          };
+        }
+      } catch {
+        /* unserializable result — let it pass through; postResult handles it */
+      }
+      return raw;
     } catch (err) {
       return { ok: false, reason: (err as Error).message };
     }

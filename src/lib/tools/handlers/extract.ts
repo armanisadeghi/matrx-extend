@@ -206,10 +206,16 @@ function extractTableInPage(
         const cell = rawCell as HTMLTableCellElement;
         // Skip cells already occupied by a rowspan from above.
         while (grid[r]![c] !== undefined) c++;
-        const colspan = Math.max(1, cell.colSpan ?? 1);
-        const rowspan = Math.max(1, cell.rowSpan ?? 1);
+        // Clamp spans BEFORE grid allocation (audit P2-8): a hostile/broken
+        // page declaring rowspan="100000" used to allocate ~100k row arrays
+        // here regardless of maxRows (which only caps OUTPUT rows) — a
+        // hang/OOM inside the page. Real tables never span further than the
+        // rows that exist, so cap at the remaining row count (and a sane
+        // column ceiling).
+        const colspan = Math.min(200, Math.max(1, cell.colSpan ?? 1));
+        const rowspan = Math.min(rows.length - r, Math.max(1, cell.rowSpan ?? 1));
         const v: VirtualCell = {
-          value: norm(cell.innerText ?? cell.textContent ?? ''),
+          value: norm(cell.innerText ?? cell.textContent ?? '').slice(0, 2000),
           isHeader: cell.tagName === 'TH',
           colspan,
           rowspan,

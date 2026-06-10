@@ -55,7 +55,7 @@ import type {
   ToolContext,
   ToolTier,
 } from '@/lib/tools/types';
-import { getPilotSessionSnapshot } from '@/state/pilot';
+import { getPilotSessionSnapshotAsync } from '@/state/pilot';
 
 interface RunMeta {
   conversationId: string | null;
@@ -415,7 +415,7 @@ async function enforcePilotGroupScope(
   parsedArgs: unknown,
   effectiveTier: ToolTier,
 ): Promise<string | null> {
-  const session = getPilotSessionSnapshot();
+  const session = await getPilotSessionSnapshotAsync();
   if (!session.active || session.groupId == null) return null;
   // The dispatcher resolves `tierFor(parsedArgs)` before calling us, so a
   // mega-tool router's read-only sub-action passes while its mutating
@@ -581,7 +581,7 @@ async function handleCall(
   //     this is captured at message send-time (Pilot's first turn) and
   //     persists across the session.
   //   - everything else is the standard agent chat.
-  const origin: ReceiptOrigin = detectOrigin(ctx);
+  const origin: ReceiptOrigin = await detectOrigin(ctx);
 
   // Roadmap item #8 — partial cryptographic receipt at start. Best-effort:
   // signing failures must not block tool execution. Fire-and-forget.
@@ -1306,9 +1306,9 @@ async function emitCompletedReceipt(
  * WebMCP calls never reach `handleCall`; their origin tag is set
  * directly inside `handleWebmcpCall`.
  */
-function detectOrigin(ctx: ToolContext): ReceiptOrigin {
+async function detectOrigin(ctx: ToolContext): Promise<ReceiptOrigin> {
   if (ctx.runId.startsWith('parrun-')) return 'parallel';
-  const pilot = getPilotSessionSnapshot();
+  const pilot = await getPilotSessionSnapshotAsync();
   if (
     pilot.active &&
     pilot.conversationId !== null &&

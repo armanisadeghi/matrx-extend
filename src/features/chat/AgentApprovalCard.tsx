@@ -72,8 +72,16 @@ export function AgentApprovalCard({ req }: { req: PendingConfirmRequest }) {
               </span>
             )}
           </div>
-          {req.description && (
+          {req.description ? (
             <div className="mt-0.5 text-xs text-muted-foreground">{req.description}</div>
+          ) : (
+            // No live description (DB cache cold / offline / RLS hiccup) —
+            // say so explicitly rather than silently omitting it. Approving
+            // a privileged tool on name alone is blind approval (audit
+            // P2-20).
+            <div className="mt-0.5 text-xs italic text-amber-700 dark:text-amber-400">
+              Description unavailable (offline?) — review the arguments below carefully.
+            </div>
           )}
         </div>
       </div>

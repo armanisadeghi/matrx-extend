@@ -23,6 +23,7 @@ import {
 import { startAudibleLog } from '@/lib/audio/audible-log';
 import { refreshAccessToken } from '@/lib/auth/flow';
 import { logExtensionIdentityOnce } from '@/lib/auth/identity';
+import { reconcileOnBoot as reconcileCdpOnBoot } from '@/lib/cdp/client';
 import { hydrateBridgeTrafficEnabled, recordBridgeTraffic } from '@/lib/debug/bridge-traffic';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import type { CapturedEvent } from '@/lib/demos/event-capture';
@@ -63,7 +64,7 @@ import type {
   VideoRunPayload,
 } from '@/lib/video/video-types';
 import { registerToolsOnActiveTab } from '@/lib/webmcp/register';
-import { usePilotStore } from '@/state/pilot';
+import { getPilotSessionSnapshotAsync, usePilotStore } from '@/state/pilot';
 
 let bootstrapped = false;
 
@@ -168,6 +169,34 @@ export function bootstrapBackground(): void {
   //       sidepanel would think a pilot session is still active and refuse
   //       new actions until the user explicitly clicked "End Session".
   registerPilotLifecycleListeners();
+
+  // CDP listener registration + orphaned-attachment sweep (audit P1/P2-7).
+  // Listeners were lazily installed inside attach(), so an SW restart with a
+  // surviving chrome.debugger attachment dropped every event and left the
+  // "is being debugged" banner stuck until tab close.
+  reconcileCdpOnBoot();
+
+  // Phantom-session sweep (audit P1-12): tab-group ids are NOT stable
+  // across browser restarts, and if Chrome exited with a Pilot session
+  // active no removal event ever fired (the extension wasn't running).
+  // The persisted record then pointed at a group id matching nothing —
+  // and `enforcePilotGroupScope` rejected EVERY action-tier tool
+  // (including normal Assistant runs) with pilot_group_violation until
+  // the user manually ended the phantom session. `isGroupValid()`
+  // existed for exactly this but had zero callers.
+  void (async () => {
+    try {
+      const session = await getPilotSessionSnapshotAsync();
+      if (!session.active) return;
+      const valid = await usePilotStore.getState().isGroupValid();
+      if (!valid) {
+        log.info('pilot', 'boot sweep: persisted session group no longer exists — resetting');
+        usePilotStore.getState().resetLocal();
+      }
+    } catch (err) {
+      log.warn('pilot', 'boot session validation failed', err);
+    }
+  })();
 }
 
 let lastDesktopTransport: 'native' | 'http' | 'none' | null = null;

@@ -278,9 +278,14 @@ export const blur_element: ToolHandler<BlurArgs, unknown> = {
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
+    // `?? null` is load-bearing: executeScript args must be JSON-serializable
+    // and `undefined` is NOT — Chrome rejected every no-selector blur
+    // (including computer action='blur') with "Value is unserializable"
+    // before the script even ran (audit P1-22; the CLAUDE.md convention this
+    // file's siblings already follow).
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (selector: string | undefined) => {
+      func: (selector: string | null) => {
         const el =
           (selector
             ? (document.querySelector(selector) as HTMLElement | null)
@@ -289,7 +294,7 @@ export const blur_element: ToolHandler<BlurArgs, unknown> = {
         el.blur();
         return { ok: true };
       },
-      args: [args.selector],
+      args: [args.selector ?? null],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },

@@ -17,8 +17,11 @@
  *   - Device + geolocation emulation.
  *
  * UX:
- *   - Chrome shows a "is being debugged" banner while attached. We auto-detach
- *     when the run ends. The Settings tab has a "Stop debugging all tabs"
+ *   - Chrome shows a "is being debugged" banner while attached. Attachments
+ *     auto-detach after 10 idle minutes (no CDP command) — NOT at stream end,
+ *     since the server hard-suspends the stream around every delegated call
+ *     and multi-step CDP workflows span many short streams. SW boot sweeps
+ *     orphaned attachments. The Settings tab has a "Stop debugging all tabs"
  *     button as a kill switch.
  *
  * NOTE: To run, the `debugger` permission must be present. The dispatcher

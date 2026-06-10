@@ -45,7 +45,7 @@ import {
   type ParallelSubRunStatus,
   useParallelRunsStore,
 } from '@/state/parallel-runs';
-import { getPilotSessionSnapshot } from '@/state/pilot';
+import { getPilotSessionSnapshotAsync } from '@/state/pilot';
 import { useSettingsStore } from '@/state/settings';
 import { z } from 'zod';
 
@@ -457,7 +457,7 @@ export const parallel_for_each_tab: ToolHandler<ParallelArgs, unknown> = {
     //     its tab id, which the dispatcher's pilot gate would catch — but
     //     refusing up front avoids spawning N child agents only to have
     //     each one fail mid-call).
-    const pilot = getPilotSessionSnapshot();
+    const pilot = await getPilotSessionSnapshotAsync();
     if (pilot.active && pilot.groupId != null) {
       const outside: number[] = [];
       for (const id of args.tab_ids) {
