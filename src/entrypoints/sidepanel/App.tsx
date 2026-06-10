@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useAutoExtract } from '@/hooks/use-auto-extract';
 import { useAutoScrape } from '@/hooks/use-auto-scrape';
 import { useContextMenuListener } from '@/hooks/use-context-menu-listener';
+import { useGuidanceSync } from '@/hooks/use-guidance-sync';
 import { useHighlightBridge } from '@/hooks/use-highlight-bridge';
 import { useParallelEventBridge } from '@/hooks/use-parallel-event-bridge';
 import { useDebugStore } from '@/lib/debug/log';
@@ -140,6 +141,11 @@ export function App() {
   // on-page overlay (the page can't reach Supabase) and keeps the highlight
   // store in sync regardless of which tab is active.
   useHighlightBridge();
+
+  // Mount ONCE: on sign-in, hydrate guidance metadata from the cloud
+  // (wbx_guidance) into the local cache so guidance follows the user across
+  // machines (TASK-004). Writes mirror to the cloud automatically.
+  useGuidanceSync();
 
   // Pre-warm the active tab's chunk. Fires on mount (so the default Chat
   // view is already fetched by the time Suspense reaches it — no flash on

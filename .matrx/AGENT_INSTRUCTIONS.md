@@ -19,7 +19,7 @@ A 3-file pipeline for turning user thoughts into completed work. **Read this ful
    - **Unclear**: don't guess on intent. Create the task with status `needs-clarification` and write the exact question in **Notes**, then move on.
 3. **Agents working `AGENT_TASKS.md`** execute active tasks, update status, and condense on completion.
 
-The Inbox should trend toward empty. Anything sitting there means an agent hasn't done their job. The Processed log is the audit trail — **never delete from it.**
+The Inbox should trend toward empty. Anything sitting there means an agent hasn't done their job. The Processed log is a short-lived pointer trail, **not** a permanent archive — git history is the real audit trail. Prune Processed entries older than one week (see the retention policy below).
 
 ## Task IDs
 
@@ -60,7 +60,16 @@ When a task is finished:
 1. **Verify it's actually done** — tests pass, code merged or staged for commit, behavior works. Don't mark prematurely.
 2. **Move the block** from Active to Completed.
 3. **Condense to one line**, 5–15 words, with a date and a code reference (commit SHA, PR number, or primary file path). The code is now the source of truth; the verbose explanation is dead weight.
-4. **Keep Completed sorted newest-first.** When it grows past ~50 entries, move everything older than 90 days into `AGENT_TASKS_ARCHIVE.md` (create if missing).
+4. **Keep Completed sorted newest-first.**
+
+## Retention policy (prune weekly)
+
+To stop these files from ballooning, completed/processed task records have a **one-week shelf life**:
+
+- A completed task stays in the `## Completed` / `## Processed` sections only while it is **less than a week old**. Tasks finished this week stay visible (recent context matters); anything completed more than a week ago is **deleted outright** — git history (commit messages + the code) is the permanent audit trail, so nothing is actually lost.
+- The same applies to `TASKS_FROM_USER.md` `## To Test` items: once verified or once they age past a week, drop them. The canonical, maintained test catalog is [`docs/feature-tests.md`](../docs/feature-tests.md), not this file.
+- When you prune, leave a one-line marker (e.g. `_(May 2026 batch pruned YYYY-MM-DD — see git history)_`) and **preserve the "Highest TASK ID issued" line** at the top of `AGENT_TASKS.md` so IDs are never reused.
+- Open items (`ready`, `in-progress`, `blocked`, `needs-clarification`) are **never** pruned on age — only completed ones.
 
 Condensation example:
 - Before: 600-word block describing the chat streaming refactor with 8 subtasks and 3 paragraphs of context.
@@ -90,8 +99,8 @@ When you ask, set status `needs-clarification` and put the question in **Notes**
 
 - Don't reformat the user's inbox writing. Paraphrase into `Source`, mark Processed, leave the original prose alone.
 - Don't condense an active task. Condensation is for completion only.
-- Don't reuse or renumber task IDs.
-- Don't delete Processed entries. They're the audit trail.
+- Don't reuse or renumber task IDs (the "Highest TASK ID issued" line survives every prune).
+- Don't prune OPEN entries on age — only completed/processed ones older than a week (see Retention policy).
 - Don't add subtasks to a completed task. If something else came up, file a new task.
 - Don't take destructive actions (deletions, force-pushes, prod changes) without explicit user confirmation, even if a task seems to authorize it.
 

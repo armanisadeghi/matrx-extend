@@ -7,7 +7,7 @@
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-06-10T00:19:13.561Z
+Generated: 2026-06-10T17:37:25.256Z
 Total tools: 80
 
 ## ai
@@ -74,7 +74,7 @@ Read the user's bookmarks. Actions: 'search' (free-text against title and URL; p
 
 ### `chrome_cookies`
 
-_privileged_
+_privileged · admin-only_
 
 Manage cookies for any domain. Actions: 'get' (read; pass `name` for a specific cookie or omit for all matching), 'set' (write; requires `name` + `value`; optional `domain`/`path`/`expires_in_seconds`/`same_site`/`http_only`/`secure`), 'delete' (requires `name`). Always pass `url` (or `domain` for 'get'). Admin-only.
 
@@ -178,7 +178,7 @@ Dump the accessibility tree of the active tab via Accessibility.getFullAXTree. E
 
 ### `cdp_emulate`
 
-_privileged_
+_privileged · admin-only_
 
 Override viewport / device metrics on an attached CDP tab for responsive testing. Actions: 'set' (apply `width`+`height`+optional `device_scale_factor`/`mobile`/`user_agent`), 'clear' (revert overrides). Tab must be attached via cdp_session first.
 
@@ -258,7 +258,7 @@ Print a tab to PDF via Page.printToPDF. Returns base64 PDF data. Useful for arch
 
 ### `cdp_session`
 
-_privileged_
+_privileged · admin-only_
 
 Manage Chrome DevTools Protocol attachments. Actions: 'attach' (begin debugger session on `tab_id` — required before any other cdp_* tool), 'detach' (end session), 'list' (which tabs are currently attached). Admin + `debugger` permission.
 
@@ -672,7 +672,7 @@ Manage browser tabs. Actions: 'list' (all tabs in current window), 'create' (ope
 
 ### `chrome_webmcp`
 
-_action_
+_action · admin-only_
 
 Discover and invoke tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). Actions: 'check' (probe API + count tools), 'list' (enumerate page-registered tools), 'call' (invoke; pass `tool_name` and `arguments`). Admin-only experimental capability.
 

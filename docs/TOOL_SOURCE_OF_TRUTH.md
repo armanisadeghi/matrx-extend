@@ -139,9 +139,9 @@ They must become **one shared comparison spec** with identical semantics (the "w
 match means" list above) and identical loud output, consumed by all three surfaces.
 
 ### GAP 4 — Three matrx-frontend tools drift from the DB  🟡 2 of 3 FIXED (Rules 2, 3)
-See [GAP4_storage_takeover_cross_repo.md](./GAP4_storage_takeover_cross_repo.md) for
-the cross-repo executor map (these tools each have 3 executors: matrx-extend.browser,
-matrx-user.ui-first, server:matrx_ai).
+These tools each have 3 executors: matrx-extend.browser, matrx-user.ui-first,
+server:matrx_ai. (The detailed GAP-4 coordination doc was completed and pruned on
+2026-06-10 — see git history if the original cross-repo executor map is needed.)
 - **`memory` (name collision).** 🟡 IN PROGRESS. The web app registered a client-side,
   single-session **scratchpad** (`get/set/list/delete` on `cx_agent_memory`) under the
   name `memory`, colliding with the server's persistent **semantic memory** tool

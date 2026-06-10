@@ -1,6 +1,6 @@
 {
   "name": "matrx-extend",
-  "version": "0.1.52",
+  "version": "0.1.54",
   "private": true,
   "type": "module",
   "description": "Matrx Extend — agentic Chrome extension for chat, tasks, scraping, structured data extraction, and SEO",
@@ -101,6 +101,10 @@
     "*.{ts,tsx,js,jsx,json,css}": "biome check --write --no-errors-on-unmatched"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "spawn-sync"]
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "esbuild",
+      "spawn-sync"
+    ]
   }
 }

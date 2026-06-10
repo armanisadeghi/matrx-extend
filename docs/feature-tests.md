@@ -648,6 +648,26 @@ Every entry follows this shape:
 
 ---
 
+### Guidance cloud sync (TASK-004)
+- **What it does:** Guidance metadata (notes / screenshots / GIFs / demo refs) now persists to the cloud (`public.wbx_guidance`), not just the artifact bytes — so guidance created on one machine shows up on another after sign-in. DB is the source of truth; `chrome.storage.local` is an offline cache. Every save/delete (UI **or** agent tool) best-effort mirrors to the cloud; sign-in hydrates cloud→local last-write-wins.
+- **Where to test:** Side panel - **Guidance** tab; cross-machine (or simulate by clearing local storage).
+- **Prereq:** `migrations/2026_06_10_wbx_guidance.sql` is applied to the Matrx Supabase project (`txzxabzwovsujtloxrus`) — already applied + ledger-recorded on 2026-06-10.
+- **Steps:**
+  1. Signed in, open Guidance and save a note for the current domain (and/or a screenshot/GIF). It appears in the list as before.
+  2. Confirm cloud write: SW console logs `guidance synced to cloud id=gd_…`, or query `select id, kind, domain from wbx_guidance` in Supabase.
+  3. Simulate a fresh machine: in DevTools run `chrome.storage.local.remove(['matrx.guidance.list'])` plus the `matrx.guidance.<id>` keys (or clear local storage), then reload the side panel while signed in.
+  4. Open Guidance again.
+- **Expected:**
+  - After reload, the previously-saved guidance reappears (hydrated from the cloud). SW console logs `guidance hydrated from cloud — merged N item(s)`.
+  - Deleting an item locally also removes the `wbx_guidance` row.
+  - Agent-created guidance (`save_guidance_note` etc.) syncs identically — the hook is at the storage layer, so all paths are covered.
+- **Edge cases worth poking:**
+  - Offline / signed-out: local save still works; cloud push silently no-ops and the item stays local (best-effort, never blocks the UI).
+  - Last-write-wins: edit the same item on two machines — the newer `updated_at` wins on next hydrate; local-only (not-yet-pushed) items are never deleted by a hydrate.
+  - `demo_ref`: the pointer syncs but the recorded demo body does NOT yet — on a fresh machine the demo lists but `replay_demo` fails until demo bodies sync (tracked in docs/KNOWN_ISSUES.md).
+
+---
+
 ### Sidepanel default-to-new-chat (TASK-010)
 - **What it does:** Opening the side panel always starts on a fresh chat, even if a previous conversation was active when it was last closed.
 - **Where to test:** Chat tab.
