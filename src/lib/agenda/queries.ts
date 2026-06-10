@@ -144,6 +144,38 @@ interface SchTaskJoinedRow {
 const SELECT_AGENDA_TASK =
   '*, agent:sch_agent_task!inner(agent_id, prompt, variables, persistent_conversation_id, auth_mode, max_runtime_seconds, max_concurrent), triggers:sch_trigger(type, config, enabled, next_due_at)';
 
+/**
+ * Variant with an INNER trigger join so PostgREST embedded-resource filters
+ * (`.eq('triggers.type', …)`) can both filter parents and constrain the
+ * embed. Used by `listContextMatchTasks` — `trigger_type` is NOT a column on
+ * `sch_task` (it lived on the dropped `agenda_task`), so the old top-level
+ * `.eq('trigger_type', …)` 42703'd on every scan and context-match triggers
+ * silently never fired. docs/AUDIT_2026_06_10.md P2-17.
+ */
+const SELECT_AGENDA_TASK_TRIGGER_INNER =
+  '*, agent:sch_agent_task!inner(agent_id, prompt, variables, persistent_conversation_id, auth_mode, max_runtime_seconds, max_concurrent), triggers:sch_trigger!inner(type, config, enabled, next_due_at)';
+
+/**
+ * Per-row-guarded mapping. `rowToAgendaTask` throws on a corrupt task (no
+ * agent extension row, no triggers, out-of-enum trigger type) — and one bad
+ * row inside a bare `.map()` used to reject the whole fetch: the Agenda tab
+ * bricked, and worse, the SW scanner aborted its ENTIRE pass every minute
+ * forever (the corrupt row sorts first by next_due_at and its date never
+ * advances). Skip + warn instead. docs/AUDIT_2026_06_10.md P1-16.
+ */
+function rowsToAgendaTasks(rows: unknown[]): AgendaTask[] {
+  const out: AgendaTask[] = [];
+  for (const row of rows) {
+    try {
+      out.push(rowToAgendaTask(row as SchTaskJoinedRow));
+    } catch (err) {
+      const id = (row as { id?: string })?.id ?? '(unknown id)';
+      console.warn(`[matrx-extend] skipping malformed sch_task ${id}: ${(err as Error).message}`);
+    }
+  }
+  return out;
+}
+
 function rowToAgendaTask(row: SchTaskJoinedRow): AgendaTask {
   if (!row.agent) {
     throw new Error(`sch_task ${row.id} (kind=${row.kind}) has no agent extension row`);
@@ -241,7 +273,7 @@ export async function listMyTasks(opts?: {
     console.warn('[matrx-extend] listMyTasks error', error.message);
     return [];
   }
-  return (data ?? []).map((row) => rowToAgendaTask(row as unknown as SchTaskJoinedRow));
+  return rowsToAgendaTasks(data ?? []);
 }
 
 /**
@@ -267,7 +299,7 @@ export async function listDueForSurface(
     console.warn('[matrx-extend] listDueForSurface error', error.message);
     return [];
   }
-  return (data ?? []).map((row) => rowToAgendaTask(row as unknown as SchTaskJoinedRow));
+  return rowsToAgendaTasks(data ?? []);
 }
 
 /**
@@ -283,17 +315,19 @@ export async function listContextMatchTasks(
   const c = getSupabase();
   const { data, error } = await c
     .from('sch_task')
-    .select(SELECT_AGENDA_TASK)
+    .select(SELECT_AGENDA_TASK_TRIGGER_INNER)
     .eq('kind', 'agent')
     .eq('enabled', true)
-    .eq('trigger_type', 'context-match')
+    // Embedded-resource filter on the trigger row — sch_task has no
+    // trigger_type column (see SELECT_AGENDA_TASK_TRIGGER_INNER docs).
+    .eq('triggers.type', 'context-match')
     .or(`surfaces.cs.{${surface}},surfaces.cs.{any}`)
     .limit(opts?.limit ?? 50);
   if (error) {
     console.warn('[matrx-extend] listContextMatchTasks error', error.message);
     return [];
   }
-  return (data ?? []).map((row) => rowToAgendaTask(row as unknown as SchTaskJoinedRow));
+  return rowsToAgendaTasks(data ?? []);
 }
 
 export async function getTask(id: string): Promise<AgendaTask | null> {
@@ -304,7 +338,12 @@ export async function getTask(id: string): Promise<AgendaTask | null> {
     .eq('id', id)
     .maybeSingle();
   if (error || !data) return null;
-  return rowToAgendaTask(data as unknown as SchTaskJoinedRow);
+  try {
+    return rowToAgendaTask(data as unknown as SchTaskJoinedRow);
+  } catch (err) {
+    console.warn(`[matrx-extend] getTask ${id} malformed: ${(err as Error).message}`);
+    return null;
+  }
 }
 
 export async function listRunsForTask(
@@ -466,6 +505,89 @@ export async function updateTask(
     if (error) return null;
   }
   return getTask(id);
+}
+
+/**
+ * Atomically claim a due fire (docs/AUDIT_2026_06_10.md P0-7 / P2-15).
+ *
+ * The scanner used to notify/broadcast FIRST and advance `next_due_at`
+ * AFTER the dispatch settled — so a run outlasting the 1-minute alarm
+ * period re-fired on the next scan (the stale next_due_at was still <=
+ * now), the boot-scan raced the alarm-scan, and two devices on the same
+ * account both fired. This is a compare-and-set UPDATE: it only matches
+ * when the schedule field still holds the value THIS scanner observed, so
+ * exactly one concurrent scanner wins. Firing happens AFTER the claim —
+ * a crash between claim and notify is a missed fire (recoverable, the
+ * user re-enables / next cron window), never a duplicate run.
+ *
+ * Clock triggers CAS on `next_due_at`; context-match triggers have no
+ * schedule, so they CAS on `last_run_at` (the cooldown stamp).
+ */
+export async function claimDueFire(
+  task: AgendaTask,
+  patch: { next_due_at: string | null; last_run_at: string; enabled: boolean },
+): Promise<boolean> {
+  const c = getSupabase();
+  let q = c
+    .from('sch_task')
+    .update({
+      next_due_at: patch.next_due_at,
+      last_run_at: patch.last_run_at,
+      enabled: patch.enabled,
+    })
+    .eq('id', task.id);
+  if (task.trigger_type === 'context-match') {
+    q =
+      task.last_run_at === null ? q.is('last_run_at', null) : q.eq('last_run_at', task.last_run_at);
+  } else {
+    q =
+      task.next_due_at === null ? q.is('next_due_at', null) : q.eq('next_due_at', task.next_due_at);
+  }
+  const { data, error } = await q.select('id');
+  if (error) {
+    console.warn('[matrx-extend] claimDueFire error', error.message);
+    return false;
+  }
+  const won = (data?.length ?? 0) > 0;
+  if (won) {
+    // Mirror onto the trigger row (best-effort, non-CAS — the task row is
+    // the authoritative schedule; this keeps the future multi-trigger
+    // scanner consistent, same as updateTask does).
+    await c
+      .from('sch_trigger')
+      .update({ next_due_at: patch.next_due_at, enabled: patch.enabled })
+      .eq('task_id', task.id);
+  }
+  return won;
+}
+
+/**
+ * Fail-close runs whose claim lease expired with no surface finishing them
+ * (docs/AUDIT_2026_06_10.md P1-16). `claim_expires_at` was written on every
+ * claim but READ nowhere — a sidepanel closed mid-run left the row
+ * 'claimed'/'running' forever, and the partial unique index
+ * `sch_run_unique_active_per_task` then blocked every future run of that
+ * task at the DB level. Runs as part of the minute scan; RLS scopes the
+ * sweep to this user's rows.
+ */
+export async function reapExpiredRuns(): Promise<number> {
+  const c = getSupabase();
+  const now = new Date().toISOString();
+  const { data, error } = await c
+    .from('sch_run')
+    .update({
+      status: 'failed',
+      error_message: 'lease expired — no surface finished this run (reaped)',
+      finished_at: now,
+    })
+    .in('status', ['queued', 'claimed', 'running'])
+    .lt('claim_expires_at', now)
+    .select('id');
+  if (error) {
+    console.warn('[matrx-extend] reapExpiredRuns error', error.message);
+    return 0;
+  }
+  return data?.length ?? 0;
 }
 
 export async function deleteTask(id: string): Promise<boolean> {

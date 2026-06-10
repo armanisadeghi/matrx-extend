@@ -9,7 +9,7 @@ import { progressFromWire } from '@/lib/chat/tool-progress';
 import { log } from '@/lib/debug/log';
 import { getHighlightsByIds } from '@/lib/highlights/queries';
 import { newId } from '@/lib/id';
-import { on, send } from '@/lib/messaging/native';
+import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { attemptResume } from '@/lib/stream/resume';
 import { createStreamWatchdog } from '@/lib/stream/watchdog';
@@ -74,6 +74,21 @@ interface SendOptions {
    * Pilot uses this to keep every tool call inside the session's tab group.
    */
   assignedTabId?: number | null;
+  /**
+   * Invoked SYNCHRONOUSLY with the freshly-claimed runId, before any await in
+   * the send path. Callers that need to subscribe stream listeners filtered
+   * by runId (the agenda runner) use this — subscribing after the returned
+   * promise settles is too late, since `sendMessage` only resolves after
+   * context assembly and the STREAM_START handoff.
+   */
+  onRunId?: (runId: string) => void;
+  /**
+   * Invoked when the STREAM_START handoff fails before any chunk arrived —
+   * the run never started. Same-context callers (the agenda runner) need
+   * this because `broadcast` does not loop back to the sending context, so
+   * they'd never see a terminal chunk for the failed run.
+   */
+  onStartFailed?: (err: Error) => void;
 }
 
 interface StreamChunk {
@@ -541,6 +556,9 @@ export function useChatStream() {
       requestIdRef.current = null;
       eventCountRef.current = 0;
       lastSendRef.current = { input: text, opts };
+      // Synchronous — before ANY await — so callers can subscribe their
+      // runId-filtered listeners with zero gap for STREAM_OPENED to slip by.
+      opts.onRunId?.(runId);
       // Drop any queued resume — a fresh send supersedes it. (If a resume
       // was queued from a previous turn and the user typed a new message
       // before the previous stream's `done` fired, the new send is the
@@ -732,7 +750,19 @@ export function useChatStream() {
       // to pin every tool call in this turn — so the user can switch
       // tabs mid-execution without dragging `read_page`/`click`/`screenshot`
       // along.
-      await send(CHANNELS.STREAM_START, {
+      // Fire-and-forget with a guarded failure path. Two reasons NOT to
+      // await this to completion:
+      //   1. The SW's STREAM_START handler only responds after the offscreen
+      //      doc has finished the ENTIRE SSE — awaiting it here parked
+      //      callers (the agenda runner) until the run was already over,
+      //      which is what broke every scheduled run (audit P0-6).
+      //   2. The promise also rejects when the SW is reaped MID-stream
+      //      ("message port closed") even though the stream itself is alive
+      //      in the offscreen doc — chunks arrive via broadcast, not this
+      //      port. Only a rejection BEFORE the first chunk means the run
+      //      genuinely failed to start (offscreen creation / handler crash);
+      //      that case used to leave a 75s stuck spinner (audit follow-up).
+      void send(CHANNELS.STREAM_START, {
         runId,
         endpoint: agentExecutePath(opts.agentId),
         body,
@@ -740,6 +770,30 @@ export function useChatStream() {
         agentName: opts.agentName ?? null,
         permissionMode,
         assignedTabId: effectiveAssignedTabId,
+      }).catch((err) => {
+        const stillThisRun = runIdRef.current === runId;
+        const sawAnyEvent = eventCountRef.current > 0;
+        if (!stillThisRun || sawAnyEvent) return; // benign port death mid-stream
+        log.error('stream', `STREAM_START failed for ${runId}`, err);
+        watchdogRef.current?.stop();
+        if (targetIdRef.current) useChatStore.getState().finalizeAssistant(targetIdRef.current);
+        useChatStore.getState().setStreaming(false);
+        useChatStore.getState().setStreamInterruption({
+          runId,
+          reason: 'error',
+          lastInput: text,
+          at: Date.now(),
+        });
+        // Synthesize the terminal chunk for OTHER contexts (the SW clears
+        // its live-stream marker off this), and tell the same-context caller
+        // directly — broadcast doesn't loop back to the sender's context.
+        broadcast(CHANNELS.STREAM_CHUNK, {
+          runId,
+          type: 'error',
+          payload: { message: `stream failed to start: ${(err as Error)?.message ?? err}` },
+        });
+        broadcast(CHANNELS.STREAM_CHUNK, { runId, type: 'done', payload: {} });
+        opts.onStartFailed?.(err as Error);
       });
       return runId;
     },
