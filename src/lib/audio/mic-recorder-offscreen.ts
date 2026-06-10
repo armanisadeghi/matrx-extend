@@ -309,6 +309,14 @@ function createRecorder(): MediaRecorder {
       message: `${name}: ${message}`,
       code: 'RECORDER_ERROR',
     } as MicErrorEvent);
+    // Tear the capture down (audit P1-17): the hook flips its UI to
+    // not-recording on this error, but the offscreen side used to keep the
+    // mic track, rotation timer, and level meter running headless — a hot
+    // microphone with no surface showing it.
+    clearTimers();
+    teardownStream();
+    state.recorder = null;
+    emit({ type: 'stopped' } as MicLifecycleEvent);
   };
 
   // No timeslice — see file header note (3). Each recorder lifecycle is one
@@ -613,6 +621,12 @@ function pauseRecording(): void {
   state.recorder.stop();
   state.recorder = null;
   state.pausedAt = Date.now();
+  // Mute the live track during pause (audit P1-17). The stream stays open
+  // for instant resume, but with `enabled=false` no audio is captured and
+  // (on most platforms) the OS recording indicator reflects the pause —
+  // previously the mic stayed fully hot and a user who paused and walked
+  // away was still being listened to as far as the hardware was concerned.
+  for (const track of state.stream?.getAudioTracks() ?? []) track.enabled = false;
   emit({ type: 'paused' } as MicLifecycleEvent);
 }
 
@@ -622,11 +636,52 @@ function resumeRecording(): void {
     state.pausedDuration += Date.now() - state.pausedAt;
     state.pausedAt = 0;
   }
+  for (const track of state.stream.getAudioTracks()) track.enabled = true;
   state.recorder = createRecorder();
   startLevelMeter();
   scheduleNextRotation();
   armWatchdog();
   emit({ type: 'resumed' } as MicLifecycleEvent);
+}
+
+export const MIC_KEEPALIVE_PORT = 'matrx.mic.keepalive';
+
+/**
+ * Sidepanel-liveness watchdog (audit P1-17). The recorder is an offscreen
+ * singleton deliberately decoupled from the sidepanel — but that meant
+ * closing the panel mid-recording left the mic PHYSICALLY HOT forever (OS
+ * indicator lit, chunks broadcast into the void) with no surface offering a
+ * stop button; only an extension reload recovered it. The recording surface
+ * now holds a named port open for the duration of the recording; when every
+ * port is gone we stop after a short grace window (survives StrictMode
+ * remounts and quick panel reopens). Wired from the offscreen entrypoint.
+ */
+const keepalivePorts = new Set<chrome.runtime.Port>();
+let keepaliveGraceTimer: ReturnType<typeof setTimeout> | null = null;
+const KEEPALIVE_GRACE_MS = 5_000;
+
+export function registerMicKeepalive(): void {
+  chrome.runtime.onConnect.addListener((port) => {
+    if (port.name !== MIC_KEEPALIVE_PORT) return;
+    keepalivePorts.add(port);
+    if (keepaliveGraceTimer) {
+      clearTimeout(keepaliveGraceTimer);
+      keepaliveGraceTimer = null;
+    }
+    port.onDisconnect.addListener(() => {
+      keepalivePorts.delete(port);
+      if (keepalivePorts.size > 0) return;
+      if (!state.recorder && !state.stream) return; // nothing recording
+      if (keepaliveGraceTimer) clearTimeout(keepaliveGraceTimer);
+      keepaliveGraceTimer = setTimeout(() => {
+        keepaliveGraceTimer = null;
+        if (keepalivePorts.size > 0) return; // a surface came back
+        if (!state.recorder && !state.stream) return;
+        log.warn('audio', 'no recording surface remains — auto-stopping mic');
+        void stopRecording();
+      }, KEEPALIVE_GRACE_MS);
+    });
+  });
 }
 
 export async function handleMicRun(payload: MicRunPayload): Promise<{ ok: boolean }> {

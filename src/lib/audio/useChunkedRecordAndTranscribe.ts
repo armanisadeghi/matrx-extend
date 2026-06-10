@@ -22,7 +22,7 @@ import { base64ToBlob } from '@/lib/messaging/binary-transport';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { audioSafetyStore } from './audioSafetyStore';
-import { AUDIO_API_ROUTES, AUDIO_LIMITS, VERCEL_LIMITS } from './constants';
+import { AUDIO_API_ROUTES, AUDIO_LIMITS, RETRY_CONFIG, VERCEL_LIMITS } from './constants';
 import type { MicEvent, MicRequestPayload } from './mic-types';
 import type { TranscriptionOptions, TranscriptionResult } from './types';
 
@@ -90,6 +90,10 @@ export function useChunkedRecordAndTranscribe({
   transcriptionOptions,
 }: UseChunkedRecordAndTranscribeProps = {}) {
   const [isRecording, setIsRecording] = useState(false);
+  const keepalivePortRef = useRef<chrome.runtime.Port | null>(null);
+  // Late-binding ref so the duration-cap check (declared before
+  // stopRecording) can call it without dependency-order gymnastics.
+  const stopRecordingRef = useRef<(() => Promise<void>) | null>(null);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -142,7 +146,16 @@ export function useChunkedRecordAndTranscribe({
   const startDurationTimer = useCallback(() => {
     stopDurationTimer();
     durationTimerRef.current = setInterval(() => {
-      setDuration(Math.floor((Date.now() - startTimeRef.current) / 1000));
+      const secs = Math.floor((Date.now() - startTimeRef.current) / 1000);
+      setDuration(secs);
+      // Enforce the cap (audit P2-19): MAX_DURATION_SECONDS was defined but
+      // checked nowhere — an unbounded recording held every chunk blob in
+      // RAM plus a second copy in IndexedDB, growing O(n) per rotation.
+      if (secs >= AUDIO_LIMITS.MAX_DURATION_SECONDS && !isStoppingRef.current) {
+        log.warn('audio', `recording hit the ${AUDIO_LIMITS.MAX_DURATION_SECONDS}s cap — stopping`);
+        onErrorRef.current?.('Recording stopped at the 60-minute limit.');
+        void stopRecordingRef.current?.();
+      }
     }, 250);
   }, [stopDurationTimer]);
 
@@ -292,11 +305,31 @@ export function useChunkedRecordAndTranscribe({
           isCombo,
           url: AUDIO_API_ROUTES.TRANSCRIBE,
         });
-        const res = await fetch(AUDIO_API_ROUTES.TRANSCRIBE, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
-          body: form,
-        });
+        // Bounded retry on transient failures (audit P2-19): RETRY_CONFIG
+        // existed but was never used — a single 429 (Groq free tier is 20
+        // RPM) permanently lost that chunk's text unless the end-of-
+        // recording full-blob fallback happened to fit Vercel's body cap.
+        let res: Response;
+        let attempt = 0;
+        for (;;) {
+          attempt += 1;
+          res = await fetch(AUDIO_API_ROUTES.TRANSCRIBE, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            body: form,
+          });
+          const retryable = RETRY_CONFIG.RETRYABLE_STATUS_CODES.includes(res.status);
+          if (res.ok || !retryable || attempt >= RETRY_CONFIG.MAX_ATTEMPTS) break;
+          const delay = Math.min(
+            RETRY_CONFIG.MAX_DELAY_MS,
+            RETRY_CONFIG.BASE_DELAY_MS * 2 ** (attempt - 1),
+          );
+          log.warn('audio', `transcribe ${res.status} — retrying chunk in ${delay}ms`, {
+            chunkIndex: idx,
+            attempt,
+          });
+          await new Promise((r) => setTimeout(r, delay));
+        }
         const data = await res.json();
         const textLen = typeof data?.text === 'string' ? data.text.length : 0;
         if (res.ok) {
@@ -475,6 +508,21 @@ export function useChunkedRecordAndTranscribe({
     isStoppingRef.current = false;
     pendingRef.current = 0;
 
+    // Liveness port (audit P1-17): the offscreen recorder auto-stops when
+    // every holder of this port is gone — closing the sidepanel mid-
+    // recording used to leave the mic hot forever with no UI attached.
+    try {
+      keepalivePortRef.current?.disconnect();
+    } catch {
+      /* already gone */
+    }
+    try {
+      keepalivePortRef.current = chrome.runtime.connect({ name: 'matrx.mic.keepalive' });
+    } catch (err) {
+      log.warn('audio', 'mic keepalive port failed to open', err);
+      keepalivePortRef.current = null;
+    }
+
     const sessionId = `session_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     const safetyId = `rec_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     safetyIdRef.current = safetyId;
@@ -498,6 +546,12 @@ export function useChunkedRecordAndTranscribe({
 
   const stopRecording = useCallback(async () => {
     isStoppingRef.current = true;
+    try {
+      keepalivePortRef.current?.disconnect();
+    } catch {
+      /* already gone */
+    }
+    keepalivePortRef.current = null;
     if (safetyIdRef.current) {
       audioSafetyStore.setStatus(safetyIdRef.current, 'transcribing').catch(() => {});
     }
@@ -509,6 +563,7 @@ export function useChunkedRecordAndTranscribe({
       onErrorRef.current?.(msg);
     }
   }, []);
+  stopRecordingRef.current = stopRecording;
 
   const pauseRecording = useCallback(async () => {
     try {
@@ -547,10 +602,23 @@ export function useChunkedRecordAndTranscribe({
     stopDurationTimer();
   }, [stopDurationTimer]);
 
-  // Cleanup the duration timer if the consumer unmounts mid-recording.
-  // Don't auto-stop the offscreen recorder — the consumer might remount and
-  // want to keep listening. The user must explicitly call stopRecording().
-  useEffect(() => () => stopDurationTimer(), [stopDurationTimer]);
+  // Cleanup on unmount: stop the duration timer and release the keepalive
+  // port. We still don't force-stop the recorder synchronously — the
+  // offscreen side waits a grace window after the LAST port drops, so a
+  // quick remount (StrictMode, layout shuffle) keeps the recording alive,
+  // while a real teardown (panel closed) auto-stops the mic.
+  useEffect(
+    () => () => {
+      stopDurationTimer();
+      try {
+        keepalivePortRef.current?.disconnect();
+      } catch {
+        /* already gone */
+      }
+      keepalivePortRef.current = null;
+    },
+    [stopDurationTimer],
+  );
 
   return {
     isRecording,

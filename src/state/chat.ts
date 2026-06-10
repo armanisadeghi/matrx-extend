@@ -462,6 +462,26 @@ export const useChatStore = create<ChatState>()(
         const p = (persisted ?? {}) as Partial<ChatState>;
         return { ...current, ...p, selectedConversationId: null, messages: [] };
       },
+      // Versioned + validated rehydration (audit P2-10). The blind spread
+      // above keeps unknown keys, but each known key is type-checked here —
+      // an old release's shape (or hand-edited storage) silently
+      // overwriting typed defaults produced runtime TypeErrors far from
+      // the cause. Unknown versions fall back to defaults.
+      version: 1,
+      migrate: (persisted) => {
+        const p = (persisted ?? {}) as Record<string, unknown>;
+        const out: Record<string, unknown> = {};
+        if (typeof p.selectedAgentId === 'string' || p.selectedAgentId === null)
+          out.selectedAgentId = p.selectedAgentId;
+        if (typeof p.draft === 'string') out.draft = p.draft;
+        if (p.variableValues && typeof p.variableValues === 'object')
+          out.variableValues = p.variableValues;
+        if (p.permissionMode && typeof p.permissionMode === 'object')
+          out.permissionMode = p.permissionMode;
+        if (p.boundComputeTarget === null || typeof p.boundComputeTarget === 'object')
+          out.boundComputeTarget = p.boundComputeTarget;
+        return out as Partial<ChatState>;
+      },
     },
   ),
 );

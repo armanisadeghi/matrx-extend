@@ -156,12 +156,23 @@ export const useParallelRunsStore = create<ParallelRunsState>((set) => ({
     set((s) => {
       const session = s.sessions[parentCallId];
       if (!session) return s;
-      return {
-        sessions: {
-          ...s.sessions,
-          [parentCallId]: { ...session, endedAt: Date.now() },
-        },
+      const next: Record<string, ParallelSession> = {
+        ...s.sessions,
+        [parentCallId]: { ...session, endedAt: Date.now() },
       };
+      // Auto-evict (audit P2-11): finished sessions used to accumulate
+      // forever unless the user clicked dismiss — each one pinning its
+      // sub-runs' full text + data events in memory, duplicated across the
+      // SW and sidepanel store copies. Keep the most recent few finished
+      // sessions for review; live ones are never evicted.
+      const MAX_FINISHED = 5;
+      const finished = Object.values(next)
+        .filter((x) => x.endedAt != null)
+        .sort((a, b) => (b.endedAt ?? 0) - (a.endedAt ?? 0));
+      for (const stale of finished.slice(MAX_FINISHED)) {
+        delete next[stale.parentCallId];
+      }
+      return { sessions: next };
     }),
 
   toggleCollapsed: (parentCallId) =>

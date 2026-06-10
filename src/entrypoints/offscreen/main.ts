@@ -7,7 +7,7 @@
  */
 
 import { streamFetch } from '@/lib/api/stream';
-import { handleMicRun } from '@/lib/audio/mic-recorder-offscreen';
+import { handleMicRun, registerMicKeepalive } from '@/lib/audio/mic-recorder-offscreen';
 import type { MicRunPayload } from '@/lib/audio/mic-types';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import { startWsOffscreenRuntime } from '@/lib/desktop/ws-offscreen';
@@ -43,6 +43,9 @@ interface RunArgs {
   /** Latched permission mode for client tools run during this stream. */
   permissionMode?: 'ask' | 'act';
 }
+
+// Mic keepalive: auto-stop capture when no recording surface remains.
+registerMicKeepalive();
 
 on<RunArgs, { ok: true }>(CHANNELS.STREAM_RUN, async (args) => {
   log.info('stream', `offscreen run ${args.runId} → ${args.url}`);

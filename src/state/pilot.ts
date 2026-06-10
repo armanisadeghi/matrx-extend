@@ -234,6 +234,22 @@ export const usePilotStore = create<PilotStore>()(
       // the Pilot view to show the still-active session if Chrome wasn't
       // restarted in the meantime.
       partialize: (s) => ({ session: s.session }),
+      // Versioned + validated rehydration (audit P2-10): a malformed
+      // persisted session would otherwise flow straight into the SW's
+      // sandbox gate.
+      version: 1,
+      migrate: (persisted) => {
+        const p = (persisted ?? {}) as { session?: Record<string, unknown> };
+        const sess = p.session;
+        if (
+          !sess ||
+          typeof sess.active !== 'boolean' ||
+          (sess.groupId !== null && typeof sess.groupId !== 'number')
+        ) {
+          return { session: inactiveSession() };
+        }
+        return p;
+      },
     },
   ),
 );

@@ -243,6 +243,20 @@ export const usePilotChatStore = create<PilotChatState>()(
         variableValues: s.variableValues,
         permissionMode: s.permissionMode,
       }),
+      // Versioned + validated rehydration (audit P2-10) — see chat.ts.
+      version: 1,
+      migrate: (persisted) => {
+        const p = (persisted ?? {}) as Record<string, unknown>;
+        const out: Record<string, unknown> = {};
+        if (typeof p.selectedAgentId === 'string' || p.selectedAgentId === null)
+          out.selectedAgentId = p.selectedAgentId;
+        if (typeof p.draft === 'string') out.draft = p.draft;
+        if (p.variableValues && typeof p.variableValues === 'object')
+          out.variableValues = p.variableValues;
+        if (p.permissionMode && typeof p.permissionMode === 'object')
+          out.permissionMode = p.permissionMode;
+        return out;
+      },
     },
   ),
 );

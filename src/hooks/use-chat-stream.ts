@@ -405,6 +405,19 @@ export function useChatStream() {
         lastInput: lastSendRef.current?.input ?? '',
         at: Date.now(),
       });
+      // Queued turn-boundary cards can't be drained by a dead run — flip
+      // them to failed so the user isn't watching a forever-ticking
+      // "waiting its turn" timer (audit P2-5). The server-side inbox item
+      // survives; it delivers on the conversation's next run.
+      const inbox = useTurnInboxStore.getState();
+      for (const item of inbox.items) {
+        if (item.status === 'pending' || item.status === 'sending') {
+          inbox.markFailed(
+            item.localId,
+            'Run ended before this was delivered — it will reach the agent on the next run.',
+          );
+        }
+      }
       watchdogRef.current?.stop();
       runIdRef.current = null;
       targetIdRef.current = null;

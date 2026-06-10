@@ -466,6 +466,11 @@ export function ChatView() {
   // the supposedly-fresh chat.
   const handleNewChat = () => {
     if (isStreaming) void cancel();
+    // Queued turn-boundary cards for the conversation we're leaving would
+    // otherwise tick "waiting its turn" forever (audit P2-5) — the run that
+    // would have drained them is gone from this surface. The server still
+    // holds the inbox item; it delivers on that conversation's next run.
+    useTurnInboxStore.getState().clearForConversation(selectedConversationId);
     setConversation(null);
     setMessages([]);
   };
@@ -473,6 +478,7 @@ export function ChatView() {
   const handlePickConversation = (id: string) => {
     if (id === selectedConversationId) return;
     if (isStreaming) void cancel();
+    useTurnInboxStore.getState().clearForConversation(selectedConversationId);
     setConversation(id);
   };
 
@@ -589,6 +595,7 @@ export function ChatView() {
         isStreaming={isStreaming}
         canSend={Boolean(selectedAgentId || agents[0]?.id)}
         canQueue={Boolean(selectedConversationId)}
+        voiceAvailable={Boolean(user)}
         placeholder={
           selectedAgent
             ? `Message ${selectedAgent.name}…`
@@ -1248,6 +1255,7 @@ function Composer({
   isStreaming,
   canSend,
   canQueue,
+  voiceAvailable,
   placeholder,
 }: {
   value: string;
@@ -1268,6 +1276,13 @@ function Composer({
    * server-assigned conversation id). Only consulted while `isStreaming`.
    */
   canQueue: boolean;
+  /**
+   * Voice (STT) requires a signed-in session — the aimatrx.com transcribe
+   * routes are Bearer-only and used to hard-fail guests AFTER recording
+   * with a dead-end "Not signed in" error (audit P1-21). When false, the
+   * mic button becomes a sign-in affordance instead.
+   */
+  voiceAvailable: boolean;
   placeholder: string;
 }) {
   const taRef = useRef<HTMLTextAreaElement>(null);
@@ -1406,6 +1421,10 @@ function Composer({
   // reliably shows its prompt.
   const handleMicClick = () => {
     log.info('audio', 'mic button clicked', { isRecording });
+    if (!voiceAvailable) {
+      setVoiceError('Voice input needs an account — sign in (top of the panel) to use it.');
+      return;
+    }
     if (isRecording) {
       void stopRecording();
       return;
@@ -1489,13 +1508,15 @@ function Composer({
                     : 'text-muted-foreground hover:bg-accent hover:text-foreground',
               )}
               title={
-                voiceError
-                  ? voiceError
-                  : isRecording
-                    ? 'Stop recording'
-                    : isTranscribing
-                      ? 'Finishing transcription…'
-                      : 'Voice input'
+                !voiceAvailable
+                  ? 'Sign in to use voice input'
+                  : voiceError
+                    ? voiceError
+                    : isRecording
+                      ? 'Stop recording'
+                      : isTranscribing
+                        ? 'Finishing transcription…'
+                        : 'Voice input'
               }
               style={
                 isRecording

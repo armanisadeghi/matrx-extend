@@ -21,7 +21,12 @@
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { exportPublicKeyJwk, rotateDeviceKey } from '@/lib/audit/device-key';
-import { MAX_RECEIPTS, getReceiptCount, getRecentReceipts } from '@/lib/audit/log';
+import {
+  MAX_RECEIPTS,
+  getAuditFailureCount,
+  getReceiptCount,
+  getRecentReceipts,
+} from '@/lib/audit/log';
 import type { ReceiptOrigin, ToolReceipt } from '@/lib/audit/receipt';
 import { cn } from '@/lib/utils';
 import { Check, Copy, KeyRound } from 'lucide-react';
@@ -50,17 +55,20 @@ export function AuditKeyCard() {
   const [recent, setRecent] = useState<ToolReceipt[] | null>(null);
   const [originFilter, setOriginFilter] = useState<ReceiptOrigin | 'all'>('all');
   const [rotateOpen, setRotateOpen] = useState(false);
+  const [failureCount, setFailureCount] = useState(0);
 
   const refresh = useCallback(async () => {
-    const [pk, c, r] = await Promise.all([
+    const [pk, c, r, f] = await Promise.all([
       exportPublicKeyJwk(),
       getReceiptCount(),
       getRecentReceipts(RECENT_LIMIT),
+      getAuditFailureCount(),
     ]);
     setPublicKeyId(pk.publicKeyId);
     setCreatedAt(pk.createdAt);
     setCount(c);
     setRecent(r);
+    setFailureCount(f);
   }, []);
 
   useEffect(() => {
@@ -106,6 +114,12 @@ export function AuditKeyCard() {
       <div className="text-[11px] text-muted-foreground">
         Every tool call is signed with a device-bound Ed25519 key and stored in a local audit log.
         Cap: {MAX_RECEIPTS} receipts (FIFO).
+        {failureCount > 0 && (
+          <span className="ml-2 font-medium text-rose-600 dark:text-rose-400">
+            ⚠ {failureCount} receipt{failureCount === 1 ? '' : 's'} failed to sign/persist — audit
+            coverage has gaps.
+          </span>
+        )}
       </div>
 
       <div className="space-y-1 pt-1">

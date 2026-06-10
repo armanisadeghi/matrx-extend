@@ -56,11 +56,32 @@ export function appendReceipt(receipt: ToolReceipt): Promise<void> {
       }
       await setOne(STORAGE_KEY, existing);
     } catch (err) {
-      // Audit log is best-effort. Surface to console only.
+      // Audit log is best-effort — but an UNDETECTABLE gap is the worst
+      // failure mode for a chain-of-custody feature (audit P2-21): an
+      // auditor can't distinguish "call never happened" from "signing
+      // failed". Count failures durably so the Settings audit card can
+      // surface non-zero coverage gaps.
       console.warn('[matrx-extend][audit] appendReceipt failed', err);
+      void recordAuditFailure();
     }
   });
   return appendQueue;
+}
+
+const FAILURE_COUNT_KEY = 'matrx.audit.failedCount';
+
+/** Durable count of receipts that failed to sign or persist. */
+export async function recordAuditFailure(): Promise<void> {
+  try {
+    const n = (await getOne<number>(FAILURE_COUNT_KEY)) ?? 0;
+    await setOne(FAILURE_COUNT_KEY, n + 1);
+  } catch {
+    /* counting the failure failed too — console already has the original */
+  }
+}
+
+export async function getAuditFailureCount(): Promise<number> {
+  return (await getOne<number>(FAILURE_COUNT_KEY)) ?? 0;
 }
 
 /**

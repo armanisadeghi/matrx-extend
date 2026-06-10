@@ -26,7 +26,7 @@
  */
 
 import { postToolResults } from '@/lib/api/routes/tool-results';
-import { appendReceipt } from '@/lib/audit/log';
+import { appendReceipt, recordAuditFailure } from '@/lib/audit/log';
 import { PENDING_OUTPUT, type ReceiptOrigin, buildReceipt } from '@/lib/audit/receipt';
 import { readIsAdminFromStorage } from '@/lib/auth/is-admin';
 import { BROWSER, isBrowserSupported } from '@/lib/browser/detect';
@@ -1255,6 +1255,7 @@ async function emitPartialReceipt(
     await appendReceipt(receipt);
   } catch (err) {
     log.warn('sw', `audit receipt (partial) failed for ${toolName}`, err);
+    void recordAuditFailure();
   }
 }
 
@@ -1283,6 +1284,7 @@ async function emitCompletedReceipt(
     await appendReceipt(receipt);
   } catch (err) {
     log.warn('sw', `audit receipt (completed) failed for ${toolName}`, err);
+    void recordAuditFailure();
   }
 }
 
