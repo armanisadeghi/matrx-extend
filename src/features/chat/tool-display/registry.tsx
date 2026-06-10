@@ -1200,6 +1200,21 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
+  data_patterns: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Table2', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Working with saved patterns',
+        completed: 'Saved patterns',
+        error: 'Pattern action failed',
+      },
+      name: '',
+      info: { path: 'args.action', fallback: '' },
+      color: { started: 'primary', completed: 'violet', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
   tasks: {
     inline: {
       icon: { started: 'Loader2', completed: 'ListChecks', error: 'AlertTriangle' },
