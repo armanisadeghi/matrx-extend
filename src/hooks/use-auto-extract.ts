@@ -124,7 +124,7 @@ export function useAutoExtract(): void {
     };
     // We intentionally exclude `records` and `setRecord` from deps — they're
     // stable from Zustand and including `records` would re-fire on every
-    // store update.
-    // biome-ignore lint/correctness/useExhaustiveDependencies: see comment.
+    // store update. (useExhaustiveDependencies is warn-level during the
+    // lint-baseline ratchet, so no suppression needed.)
   }, [tab.id, tab.url]);
 }

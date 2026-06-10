@@ -963,5 +963,6 @@ export async function fetchAllGuidanceRows(): Promise<WbxGuidanceRow[]> {
     console.warn('[matrx-extend] fetchAllGuidanceRows error', error.message);
     return [];
   }
-  return parseRowsSafe(WbxGuidanceRowSchema, (data ?? []) as unknown[], 'fetchAllGuidanceRows').rows;
+  return parseRowsSafe(WbxGuidanceRowSchema, (data ?? []) as unknown[], 'fetchAllGuidanceRows')
+    .rows;
 }

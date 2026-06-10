@@ -11,8 +11,8 @@
  * Mounted once at the App root, alongside the other ambient effect hooks.
  */
 
-import { useGuidanceStore } from '@/state/guidance';
 import { useAuthStore } from '@/state/auth';
+import { useGuidanceStore } from '@/state/guidance';
 import { useEffect, useRef } from 'react';
 
 export function useGuidanceSync(): void {
