@@ -448,9 +448,22 @@ export function ChatView() {
     void interruptAndSend(trimmed, args.opts);
   };
 
+  // Leaving a conversation mid-stream must CANCEL the run (audit P1-11).
+  // Without it: isStreaming leaked into the destination (composer stuck in
+  // queue-to-inbox mode posting steering messages to a conversation with no
+  // live run), the old run kept driving the user's tabs invisibly, and on
+  // "New chat" a late STREAM_OPENED re-adopted the OLD conversation id into
+  // the supposedly-fresh chat.
   const handleNewChat = () => {
+    if (isStreaming) void cancel();
     setConversation(null);
     setMessages([]);
+  };
+
+  const handlePickConversation = (id: string) => {
+    if (id === selectedConversationId) return;
+    if (isStreaming) void cancel();
+    setConversation(id);
   };
 
   return (
@@ -481,7 +494,7 @@ export function ChatView() {
           setConversation(null);
         }}
         onNewChat={handleNewChat}
-        onPickConversation={(id) => setConversation(id)}
+        onPickConversation={handlePickConversation}
         onToggleTaskPanel={() => setTaskPanelOpen((v) => !v)}
         hasMessages={messages.length > 0}
         getMessages={() => useChatStore.getState().messages}

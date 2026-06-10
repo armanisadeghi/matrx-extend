@@ -290,7 +290,38 @@ function handleInjectionConsumed(
  */
 const STALL_MS = 75_000;
 
+/**
+ * Cross-instance resume claim. `useChatStream` is mounted by several
+ * co-mounted components (ChatView, the agenda listener at the App root,
+ * every InteractionAskCard) — each registers its own STREAM_CONTINUE
+ * listener, and before this claim a single broadcast made EVERY idle
+ * instance POST /resume: the server's atomic claim 409'd the losers, whose
+ * bounded retry loops then pushed ghost assistant bubbles (the residual
+ * tail of the 2026-06-09 duplicate-resume incident — audit P1-13). The map
+ * is module-scoped (shared by all instances in this JS context), keyed by
+ * user_request_id. The owning instance may re-enter for its own 409
+ * retries; everyone else bails before mutating any UI state.
+ */
+const resumeClaims = new Map<string, { owner: string; at: number }>();
+const RESUME_CLAIM_TTL_MS = 30_000;
+
+function claimResume(userRequestId: string, owner: string): boolean {
+  const existing = resumeClaims.get(userRequestId);
+  const now = Date.now();
+  if (existing && existing.owner !== owner && now - existing.at < RESUME_CLAIM_TTL_MS) {
+    return false;
+  }
+  resumeClaims.set(userRequestId, { owner, at: now });
+  if (resumeClaims.size > 50) {
+    const oldest = resumeClaims.keys().next().value;
+    if (oldest !== undefined) resumeClaims.delete(oldest);
+  }
+  return true;
+}
+
 export function useChatStream() {
+  // Stable identity for this hook instance — the resume-claim owner key.
+  const instanceIdRef = useRef<string>(newId('chathook'));
   const runIdRef = useRef<string | null>(null);
   const targetIdRef = useRef<string | null>(null);
   // For stall recovery: the request id (resume key), how many events we've
@@ -335,6 +366,13 @@ export function useChatStream() {
       onStall: () => onStallRef.current(),
     });
   }
+
+  // Teardown on unmount (audit P1-14). The watchdog timer is not a chrome
+  // listener — it survived unmount (sidepanel tab switch unmounts ChatView)
+  // and later fired with stale refs against the SHARED chat store: a new
+  // run's spinner got killed and a false "stalled" banner appeared mid-
+  // healthy-stream. Stop it with the instance that armed it.
+  useEffect(() => () => watchdogRef.current?.stop(), []);
 
   onStallRef.current = () => {
     const runId = runIdRef.current;
@@ -843,6 +881,16 @@ export function useChatStream() {
         log.info(
           'stream',
           `STREAM_CONTINUE ignored — conversation ${conversationId} not selected (selected=${selectedId})`,
+        );
+        return null;
+      }
+      // Exactly one hook instance may own this continuation — see
+      // claimResume's docstring. Must come BEFORE any state mutation
+      // (including pendingContinueRef queueing) so losers are pure no-ops.
+      if (!claimResume(userRequestId, instanceIdRef.current)) {
+        log.info(
+          'stream',
+          `STREAM_CONTINUE ignored — another hook instance owns the resume for ${userRequestId}`,
         );
         return null;
       }

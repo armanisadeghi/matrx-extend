@@ -26,6 +26,15 @@ import { useEffect } from 'react';
 
 interface TimelinePayload {
   callId: string;
+  /**
+   * Conversation that owns this call (the dispatcher's ctx.conversationId).
+   * Null for runs whose STREAM_OPENED hasn't resolved yet and for paths with
+   * no conversation (WebMCP). Non-null values are filtered against the
+   * selected conversation — without this, a run surviving a conversation
+   * switch attached its tool args/results to the LAST assistant message of
+   * whatever conversation the user switched TO (audit P1-11).
+   */
+  conversationId?: string | null;
   toolName: string;
   phase: 'started' | 'completed' | 'error';
   args?: unknown;
@@ -94,6 +103,15 @@ export function useToolInbox$Subscribe(): void {
     const offTimeline = on<TimelinePayload, { ack: true }>(
       CHANNELS.TOOL_TIMELINE_EVENT,
       (payload) => {
+        // Conversation isolation: drop events for a conversation the user
+        // isn't looking at. Null conversationId (pre-STREAM_OPENED race,
+        // WebMCP) keeps the legacy attach-to-active behavior.
+        if (payload.conversationId != null) {
+          const selected = useChatStore.getState().selectedConversationId;
+          if (selected !== null && selected !== payload.conversationId) {
+            return { ack: true };
+          }
+        }
         const messageId = activeAssistantMessageId();
         if (!messageId) return { ack: true };
         // Incremental progress update — append to the part's progress log

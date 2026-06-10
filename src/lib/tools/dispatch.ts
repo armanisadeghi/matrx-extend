@@ -516,6 +516,7 @@ async function postUnknownToolError(
     // Still surface the failure to the UI so the user knows the agent is stuck.
     broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
       callId: ctx.callId,
+      conversationId: ctx.conversationId,
       toolName,
       phase: 'error',
       message: `Tool '${toolName}' is not registered and the conversation could not be reached. The agent loop may be stuck — try sending another message.`,
@@ -534,6 +535,7 @@ async function postUnknownToolError(
   ]);
   broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
     callId: ctx.callId,
+    conversationId: ctx.conversationId,
     toolName,
     phase: 'error',
     message,
@@ -559,6 +561,7 @@ async function handleCall(
   log.info('sw', `tool ${handler.name} call_id=${ctx.callId}`, rawArgs);
   broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
     callId: ctx.callId,
+    conversationId: ctx.conversationId,
     toolName: handler.name,
     phase: 'started',
     args: rawArgs,
@@ -688,6 +691,7 @@ async function handleCall(
     const u = typeof update === 'string' ? { label: update } : update;
     broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
       callId: ctx.callId,
+      conversationId: ctx.conversationId,
       toolName: handler.name,
       phase: 'started',
       progress: u,
@@ -705,6 +709,7 @@ async function handleCall(
   await postResult(handler, ctx, result, false, null, Date.now() - startedAt);
   broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
     callId: ctx.callId,
+    conversationId: ctx.conversationId,
     toolName: handler.name,
     phase: 'completed',
     output: result,
@@ -739,6 +744,7 @@ async function finishWithError(
   }
   broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
     callId: ctx.callId,
+    conversationId: ctx.conversationId,
     toolName: handler.name,
     phase: 'error',
     message,
@@ -768,6 +774,7 @@ async function postResult(
     );
     broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
       callId: ctx.callId,
+      conversationId: ctx.conversationId,
       toolName: handler.name,
       phase: 'error',
       message: `The agent's loop could not be reached. Your tool result wasn't delivered. Try sending another message to recover.`,
@@ -805,6 +812,7 @@ async function postResult(
           : `The AI server returned an error (${r.status}). The agent loop may be stuck.`;
     broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
       callId: ctx.callId,
+      conversationId: ctx.conversationId,
       toolName: handler.name,
       phase: 'error',
       message: hint,
@@ -822,6 +830,7 @@ async function postResult(
     );
     broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
       callId: ctx.callId,
+      conversationId: ctx.conversationId,
       toolName: handler.name,
       phase: 'error',
       message:
@@ -1192,6 +1201,7 @@ export async function handleWebmcpCall(
     const result = await handler.run(parsed.data as never, ctx);
     broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
       callId,
+      conversationId: ctx.conversationId,
       toolName: handler.name,
       phase: 'completed',
       output: result,
@@ -1203,6 +1213,7 @@ export async function handleWebmcpCall(
     log.error('sw', `webmcp ${handler.name} error`, message);
     broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
       callId,
+      conversationId: ctx.conversationId,
       toolName: handler.name,
       phase: 'error',
       message,

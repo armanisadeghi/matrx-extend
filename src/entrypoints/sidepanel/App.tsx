@@ -271,13 +271,27 @@ export function App() {
               </TabsList>
               <UserMenu />
             </div>
-            <TabsContent value="chat" className="flex-1 min-h-0">
+            {/* forceMount (audit P1-14): ChatView owns the live stream-chunk
+                listeners and the stall watchdog. Radix unmounts inactive tab
+                content by default, so switching sidepanel tabs mid-stream
+                dropped every chunk in the gap and orphaned the watchdog
+                (which later fired against the new run). Keep the chat
+                surfaces mounted; visibility via data-state. */}
+            <TabsContent
+              value="chat"
+              forceMount
+              className="flex-1 min-h-0 data-[state=inactive]:hidden"
+            >
               <Suspense fallback={TabFallback}>
                 <ChatView />
               </Suspense>
             </TabsContent>
             {isAdmin && (
-              <TabsContent value="pilot" className="flex-1 min-h-0">
+              <TabsContent
+                value="pilot"
+                forceMount
+                className="flex-1 min-h-0 data-[state=inactive]:hidden"
+              >
                 <Suspense fallback={TabFallback}>
                   <PilotView />
                 </Suspense>

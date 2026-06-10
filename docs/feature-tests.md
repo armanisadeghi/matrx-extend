@@ -1250,6 +1250,27 @@ Every entry follows this shape:
     earlier in the chat → still shows the card (trust shortcut no longer
     applies to privileged).
 
+### Stream survives sidepanel tab switches; leaving a conversation cancels its run
+- **What it does:** Chat/Pilot views stay mounted across sidepanel tab
+  switches (no more dropped chunks / phantom stall banners), and switching
+  conversation or clicking New Chat mid-stream cancels the live run instead
+  of leaking its state into the destination.
+- **Where to test:** Chat tab.
+- **Steps:**
+  1. Start a long agent run, switch to the Tools tab for ~10s, switch back.
+  2. Start another run, then pick a different conversation from history.
+  3. Start another run, then click New Chat.
+- **Expected:** (1) The transcript contains the text streamed while you were
+  away; no "stalled" banner appears afterwards. (2)+(3) The spinner stops,
+  the composer is in normal send mode (not the indigo queue mode), and the
+  old run's tool cards/results do NOT appear in the new conversation.
+- **Edge cases worth poking:**
+  - Queue a turn-boundary message, then switch conversations — the queued
+    card should not deliver into the wrong transcript.
+  - Multiple ask-cards open while a continuation fires — exactly ONE resume
+    (no duplicate ghost bubbles; SW log shows others "another hook instance
+    owns the resume").
+
 ## Template (copy when adding a new entry)
 
 ```markdown

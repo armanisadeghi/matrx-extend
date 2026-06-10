@@ -202,6 +202,10 @@ export function usePilotChatStream() {
     });
   }
 
+  // Teardown on unmount (audit P1-14) — same rationale as use-chat-stream:
+  // an orphaned timer firing after a tab switch mutates the shared store.
+  useEffect(() => () => watchdogRef.current?.stop(), []);
+
   useEffect(() => {
     return on<StreamOpened, { ack: true }>(CHANNELS.STREAM_OPENED, (payload) => {
       if (payload.runId !== runIdRef.current) return { ack: true };

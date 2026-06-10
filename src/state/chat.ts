@@ -257,7 +257,16 @@ export const useChatStore = create<ChatState>()(
             conversationId: m.conversationId ?? s.selectedConversationId,
           };
           const idx = beforeId ? s.messages.findIndex((x) => x.id === beforeId) : -1;
-          if (idx === -1) return { messages: [...s.messages, tagged] };
+          if (idx === -1) {
+            // A non-null beforeId that we can't find means the target
+            // assistant bubble belongs to a conversation that's no longer
+            // loaded (the user switched mid-stream). Appending here used to
+            // leak the consumed inbox message into the WRONG conversation's
+            // transcript (audit P1-11). The message isn't lost — the server
+            // already persisted it into its real conversation's history.
+            if (beforeId) return s;
+            return { messages: [...s.messages, tagged] };
+          }
           const next = s.messages.slice();
           next.splice(idx, 0, tagged);
           return { messages: next };
