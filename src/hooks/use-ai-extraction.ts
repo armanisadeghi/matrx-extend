@@ -1,6 +1,7 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
 import { aiExtractCapturePage } from '@/lib/data-pattern/modes/ai-extract';
+import { parseAgentResponse } from '@/lib/data-pattern/run-interactive';
 import type { ExtractedRow } from '@/lib/data-pattern/types';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
@@ -20,13 +21,6 @@ interface StreamChunk {
     data?: Record<string, unknown>;
     message?: string;
   };
-}
-
-interface ExtractionResponse {
-  rows: ExtractedRow[];
-  confidence?: 'high' | 'medium' | 'low';
-  notes?: string;
-  inferred_schema?: unknown;
 }
 
 interface ExtractInput {
@@ -207,43 +201,4 @@ export function useAiExtraction() {
   }, []);
 
   return { rows, running, error, notes, confidence, extract, cancel, reset };
-}
-
-/**
- * Parse the streamed agent response into our expected envelope.
- * Tolerates leading/trailing whitespace, code-fenced blocks, and a trailing
- * narrative line — agents sometimes prefix/suffix the JSON with prose.
- */
-function parseAgentResponse(raw: string): ExtractionResponse {
-  const trimmed = raw.trim();
-  if (!trimmed) throw new Error('empty response');
-
-  let body = trimmed;
-  const fence = body.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/m);
-  if (fence?.[1]) body = fence[1].trim();
-
-  // Find the outermost JSON object/array if there's wrapping prose.
-  const firstBrace = body.search(/[{[]/);
-  const lastBrace = Math.max(body.lastIndexOf('}'), body.lastIndexOf(']'));
-  if (firstBrace >= 0 && lastBrace > firstBrace) {
-    body = body.slice(firstBrace, lastBrace + 1);
-  }
-
-  const parsed = JSON.parse(body) as unknown;
-
-  if (Array.isArray(parsed)) {
-    return { rows: parsed as ExtractedRow[] };
-  }
-  if (parsed && typeof parsed === 'object') {
-    const obj = parsed as Record<string, unknown>;
-    const rows = Array.isArray(obj.rows) ? (obj.rows as ExtractedRow[]) : [];
-    return {
-      rows,
-      confidence: obj.confidence as 'high' | 'medium' | 'low' | undefined,
-      notes: typeof obj.notes === 'string' ? obj.notes : undefined,
-      inferred_schema: obj.inferred_schema,
-    };
-  }
-
-  throw new Error('agent response was not a JSON object or array');
 }

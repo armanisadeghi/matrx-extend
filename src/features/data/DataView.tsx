@@ -4,11 +4,7 @@ import { Input } from '@/components/ui/input';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { rowsToTsv, stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { findFirstMatch } from '@/lib/data-pattern/matcher';
-import {
-  InteractiveOnlyError,
-  isInteractiveOnlyKind,
-  runPattern,
-} from '@/lib/data-pattern/run-pattern';
+import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
@@ -32,6 +28,7 @@ export function DataView() {
   const [running, setRunning] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [runNote, setRunNote] = useState<string | null>(null);
 
   const host = (() => {
     try {
@@ -140,11 +137,11 @@ export function DataView() {
     setRunning(true);
     setError(null);
     try {
-      const data = await runPattern(pattern, tab.id);
+      const data = await runSavedPattern(pattern, tab.id, { onProgress: setRunNote });
       setRows(data);
       void bumpPatternRun(pattern.id, 'ok', data.length);
     } catch (err) {
-      if (err instanceof InteractiveOnlyError) {
+      if (err instanceof NetworkNoMatchError) {
         setError(err.message);
       } else {
         setError(
@@ -154,6 +151,7 @@ export function DataView() {
       }
     } finally {
       setRunning(false);
+      setRunNote(null);
     }
   };
 
@@ -183,6 +181,13 @@ export function DataView() {
           {error && (
             <div className="rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
               {error}
+            </div>
+          )}
+
+          {running && runNote && (
+            <div className="flex items-center gap-1.5 rounded-xl bg-secondary/40 px-3 py-2 text-xs text-muted-foreground">
+              <Loader2 className="size-3 animate-spin" />
+              {runNote}
             </div>
           )}
 
@@ -224,7 +229,7 @@ export function DataView() {
                 size="sm"
                 className="h-7 shrink-0 rounded-full px-3 text-xs"
                 onClick={() => void handleRun(matched)}
-                disabled={running || isInteractiveOnlyKind(matched.kind)}
+                disabled={running}
               >
                 {running ? (
                   <Loader2 className="size-3.5 animate-spin" />
@@ -321,12 +326,8 @@ export function DataView() {
                         variant="ghost"
                         className="size-7"
                         onClick={() => void handleRun(p)}
-                        disabled={running || isInteractiveOnlyKind(p.kind)}
-                        title={
-                          isInteractiveOnlyKind(p.kind)
-                            ? 'This pattern kind runs interactively from the Showcase tab.'
-                            : 'Run pattern'
-                        }
+                        disabled={running}
+                        title="Run pattern"
                       >
                         <Play className="size-3.5" />
                       </Button>

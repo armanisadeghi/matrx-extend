@@ -1,10 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { useActiveTab } from '@/hooks/use-active-tab';
-import {
-  InteractiveOnlyError,
-  isInteractiveOnlyKind,
-  runPattern,
-} from '@/lib/data-pattern/run-pattern';
+import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
 import { Input } from '@/components/ui/input';
 import {
   type ExtractionPattern,
@@ -47,6 +43,7 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [runError, setRunError] = useState<string | null>(null);
   const [runningId, setRunningId] = useState<string | null>(null);
+  const [runNote, setRunNote] = useState<string | null>(null);
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
   const [activeName, setActiveName] = useState<string | null>(null);
 
@@ -83,22 +80,23 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
     setActiveName(p.name);
     setRows(null);
     setRunError(null);
+    setRunNote(null);
     try {
-      const data = await runPattern(p, tab.id);
+      const data = await runSavedPattern(p, tab.id, { onProgress: setRunNote });
       setRows(data);
       void bumpPatternRun(p.id, 'ok', data.length);
     } catch (err) {
-      if (err instanceof InteractiveOnlyError) {
-        // Routing condition, not a pattern failure — don't mark it broken.
+      if (err instanceof NetworkNoMatchError) {
+        // Circumstantial — the page may just not have fired that API on
+        // reload. Guidance only; don't mark the pattern broken.
         setRunError(err.message);
       } else {
-        setRunError(
-          `"${p.name}" failed: ${err instanceof Error ? err.message : String(err)}`,
-        );
+        setRunError(`"${p.name}" failed: ${err instanceof Error ? err.message : String(err)}`);
         void bumpPatternRun(p.id, 'broken', 0);
       }
     } finally {
       setRunningId(null);
+      setRunNote(null);
       void refresh();
     }
   };
@@ -163,12 +161,8 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
                 key={p.id}
                 pattern={p}
                 running={runningId === p.id}
-                canRun={Boolean(tab.id) && !isInteractiveOnlyKind(p.kind)}
-                runDisabledReason={
-                  isInteractiveOnlyKind(p.kind)
-                    ? `${KIND_LABELS[p.kind] ?? p.kind} patterns run interactively from their own tab — one-click re-run is coming next.`
-                    : undefined
-                }
+                runNote={runningId === p.id ? runNote : null}
+                canRun={Boolean(tab.id)}
                 onRun={() => void handleRun(p)}
                 onChanged={() => void refresh()}
               />
@@ -192,15 +186,15 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
 function PatternRow({
   pattern: p,
   running,
+  runNote,
   canRun,
-  runDisabledReason,
   onRun,
   onChanged,
 }: {
   pattern: ExtractionPattern;
   running: boolean;
+  runNote?: string | null;
   canRun: boolean;
-  runDisabledReason?: string;
   onRun: () => void;
   onChanged: () => void;
 }) {
@@ -352,7 +346,7 @@ function PatternRow({
             variant="ghost"
             onClick={onRun}
             disabled={running || !canRun}
-            title={runDisabledReason ?? 'Run pattern'}
+            title="Run pattern"
             className="size-7"
           >
             {running ? (
@@ -363,6 +357,12 @@ function PatternRow({
           </Button>
         </div>
       </div>
+      {running && runNote && (
+        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <Loader2 className="size-3 animate-spin" />
+          {runNote}
+        </div>
+      )}
       {rowError && <div className="text-[11px] text-destructive">{rowError}</div>}
     </div>
   );
