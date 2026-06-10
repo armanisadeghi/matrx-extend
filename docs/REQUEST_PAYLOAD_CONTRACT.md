@@ -7,7 +7,7 @@
 > into prompts and the server's discovery handler reads
 > `client.state["browser-dom"]` field-by-field.
 >
-> Last reviewed: 2026-05-18.
+> Last reviewed: 2026-06-10.
 
 ---
 
@@ -124,7 +124,7 @@ shape that should be used.
 | `page_meta`    | `{canonical, robots, referrer, charset, content_type, viewport_meta, og, twitter}`.                                                                            |
 | `viewport_state`| `{width, height, scroll_y, scroll_height}`.                                                                                                                   |
 | `tab_state`    | `{tab_id, window_id, tab_index, pinned, incognito, status}`. Six fields.                                                                                       |
-| `auth_state`   | Whenever there's a URL. `{signed_in: "yes"|"likely"|"no"|"unknown", user_chip, signals: {sign_out_link, profile_chip, avatar, sign_in_cta, password_field_present}}`. |
+| `auth_state`   | Whenever there's a URL AND Settings → Privacy → "Share page identity" is on (default on). `{signed_in: "yes"|"likely"|"no"|"unknown", user_chip, signals: {sign_out_link, profile_chip, avatar_image, sign_in_cta, login_form_visible}}`. (Field names corrected 2026-06-10 — the doc previously said `avatar`/`password_field_present`, which never matched the code.) |
 
 ### 2.1 `page_brief` — always attached
 
@@ -339,6 +339,40 @@ The relevant files to keep in lockstep:
 ---
 
 ## Changelog
+
+### 2026-06-10 — audit hardening (size caps, confidence gate, privacy gate)
+
+- **Confidence gate now covers scrape-derived keys.** `page_full_content`,
+  `page_seo_audit`, `article_summary`, `product_data` are omitted when
+  `page_brief.snapshot.confidence === 'low'` — previously only
+  `page_brief.structure/content` honored the gate, so a CAPTCHA page's body
+  still shipped.
+- **`page_brief` always present when a tab exists.** When the probe fails
+  (chrome:// page, PDF viewer, blocked scripting) a minimal brief is emitted:
+  `kind:'unknown'`, `snapshot.confidence:'low'`,
+  `flags:['unreadable_or_restricted']`, null structure/content.
+- **`page_brief.content` honesty:** new `excerpt_truncated: boolean` and
+  `full_in: 'page_full_content'`; `word_count`/`reading_time_min` describe the
+  FULL text (unchanged), the flag prevents misreading the 1500-char excerpt
+  as the whole article.
+- **Size caps at the extension boundary:** `page_full_content.markdown`
+  capped at 120k chars, `.html` at 150k — when capped, `truncated: true` +
+  `full_chars: {markdown, html}` are added. `page_media_raw` lists capped at
+  100 entries each — when capped, `truncated: true` +
+  `full_counts: {images, videos, audio}`.
+- **Privacy gate:** `auth_state` and `email_inbox`/`email_thread` are gated
+  by the Settings → Privacy → "Share page identity & email content" toggle
+  (default ON). When off, the keys are absent AND the detectors don't run.
+- **`form_elements.fields[].current_value` is always `null` for
+  `type=password` inputs** — typed-but-unsubmitted passwords no longer leave
+  the browser. The field shell (type/label/required) still appears.
+- Conditional keys present in code but previously missing from this doc:
+  `highlights` (user-attached highlight bundles), `current_plan`,
+  `task_list`, `user_todos` (lists state, attached when non-empty). The
+  `client.state["browser-dom"]` envelope also carries
+  `bound_compute_target_kind` / `bound_compute_target_id` (18 keys total,
+  not 16).
+
 
 ### 2026-05-18 — Context cleanup pass (browser-agent feedback)
 

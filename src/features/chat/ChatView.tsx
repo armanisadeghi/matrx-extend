@@ -179,10 +179,20 @@ export function ChatView() {
     // fresh; persistence kicks in when they sign up.
     let cancelled = false;
     void (async () => {
-      const [a, c] = await Promise.all([
-        fetchUserAgents(user?.id),
-        user ? fetchConversationHistory(50) : Promise.resolve([] as Conversation[]),
-      ]);
+      // The queries are per-row-fault-tolerant now, but a thrown rejection
+      // here (network shape change, future regression) used to leave
+      // agentsLoading stuck true FOREVER — the whole chat surface bricked
+      // with no error (audit P2-18). Fail into the empty state instead.
+      let a: Awaited<ReturnType<typeof fetchUserAgents>> = [];
+      let c: Conversation[] = [];
+      try {
+        [a, c] = await Promise.all([
+          fetchUserAgents(user?.id),
+          user ? fetchConversationHistory(50) : Promise.resolve([] as Conversation[]),
+        ]);
+      } catch (err) {
+        log.error('sys', 'chat mount fetch failed', err);
+      }
       if (cancelled) return;
       setAgents(a);
       setConversations(c);

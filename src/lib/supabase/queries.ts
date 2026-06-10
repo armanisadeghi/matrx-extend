@@ -29,7 +29,9 @@ import { z } from 'zod';
  * gets a non-zero `badCount` to surface a UI banner.
  */
 function parseRowsSafe<T>(
-  schema: z.ZodType<T>,
+  // Wide input type so schemas with .default()/.transform() (input shape !=
+  // output shape) still infer T as the OUTPUT type.
+  schema: z.ZodType<T, z.ZodTypeDef, unknown>,
   rows: unknown[],
   context: string,
 ): { rows: T[]; badCount: number } {
@@ -146,7 +148,9 @@ export async function fetchAgentList(): Promise<AgxAgent[]> {
     return [FALLBACK_DEFAULT_AGENT];
   }
   // RLS + RPC body filter actives/non-archived already, but be defensive.
-  const all = z.array(AgxAgentSchema).parse(data ?? []);
+  // Per-row safeParse (audit P2-18): one malformed agent row used to reject
+  // the whole fetch and brick the chat surface (agents never loaded).
+  const all = parseRowsSafe(AgxAgentSchema, (data ?? []) as unknown[], 'fetchAgentList').rows;
   const visible = all
     .filter((a) => a.is_active !== false && a.is_archived !== true)
     .sort((a, b) => {
@@ -256,7 +260,8 @@ export async function fetchConversationHistory(limit = 30): Promise<Conversation
     console.warn('[matrx-extend] fetchConversationHistory error', error.message);
     return [];
   }
-  return z.array(ConversationSchema).parse(data ?? []);
+  return parseRowsSafe(ConversationSchema, (data ?? []) as unknown[], 'fetchConversationHistory')
+    .rows;
 }
 
 // ─── Messages (cx_message) ──────────────────────────────────────────────────
@@ -521,7 +526,12 @@ export async function lookupCapturedByUrl(url: string): Promise<CapturedPage | n
   }
   const row = (data ?? [])[0];
   if (!row) return null;
-  return CapturedPageSchema.parse(row);
+  const parsed = CapturedPageSchema.safeParse(row);
+  if (!parsed.success) {
+    log.error('supabase', 'lookupCapturedByUrl: row failed validation', parsed.error.issues);
+    return null;
+  }
+  return parsed.data;
 }
 
 export interface SaveCapturePayload {
@@ -630,7 +640,8 @@ export async function fetchPatternsForDomain(domain: string): Promise<Extraction
     console.warn('[matrx-extend] fetchPatternsForDomain error', error.message);
     return [];
   }
-  return z.array(ExtractionPatternSchema).parse(data ?? []);
+  return parseRowsSafe(ExtractionPatternSchema, (data ?? []) as unknown[], 'fetchPatternsForDomain')
+    .rows;
 }
 
 export type SavePatternInput = {
@@ -751,7 +762,17 @@ export async function fetchLatestSeoAuditForUrl(url: string): Promise<SeoAuditRo
     return null;
   }
   const row = (data ?? [])[0];
-  return row ? SeoAuditRowSchema.parse(row) : null;
+  if (!row) return null;
+  const parsedSeo = SeoAuditRowSchema.safeParse(row);
+  if (!parsedSeo.success) {
+    log.error(
+      'supabase',
+      'fetchLatestSeoAuditForUrl: row failed validation',
+      parsedSeo.error.issues,
+    );
+    return null;
+  }
+  return parsedSeo.data;
 }
 
 export async function attachSeoRecommendations(
@@ -845,7 +866,8 @@ export async function fetchScreenshotsForUrl(
     console.warn('[matrx-extend] fetchScreenshotsForUrl error', error.message);
     return [];
   }
-  return z.array(ScreenshotRowSchema).parse(data ?? []);
+  return parseRowsSafe(ScreenshotRowSchema, (data ?? []) as unknown[], 'fetchScreenshotsForUrl')
+    .rows;
 }
 
 export async function deleteScreenshot(id: string): Promise<boolean> {

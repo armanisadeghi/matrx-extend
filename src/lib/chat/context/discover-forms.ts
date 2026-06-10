@@ -163,7 +163,14 @@ export async function discoverFormsForContext(tabId: number): Promise<Discovered
               tag === 'input' ? (el as HTMLInputElement).type : tag === 'select' ? 'select' : tag;
 
             let value: string | boolean | string[] | null = null;
-            if (tag === 'select') {
+            if (inputType === 'password') {
+              // NEVER capture password values (audit P1-10) — a typed-but-
+              // unsubmitted password would otherwise ship to the server in
+              // form_elements.current_value on the next send. The field
+              // shell (type/label/required) still surfaces so the agent
+              // knows a password input exists.
+              value = null;
+            } else if (tag === 'select') {
               const sel = el as HTMLSelectElement;
               value = sel.multiple
                 ? Array.from(sel.selectedOptions).map((o) => o.value)

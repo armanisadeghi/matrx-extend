@@ -188,6 +188,21 @@ export function SettingsView() {
             </Card>
           </Collapsible>
 
+          <Collapsible label="Privacy">
+            <Card>
+              <ControlRow
+                label="Share page identity & email content"
+                hint="lets the agent see your visible username on sites and Gmail subjects/excerpts"
+                control={
+                  <Switch
+                    checked={settings.sharePageIdentity}
+                    onCheckedChange={settings.setSharePageIdentity}
+                  />
+                }
+              />
+            </Card>
+          </Collapsible>
+
           <Collapsible label="Scrape">
             <Card>
               <ControlRow

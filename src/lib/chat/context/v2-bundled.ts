@@ -27,6 +27,7 @@ import { log } from '@/lib/debug/log';
 import { getPlan, listTasks, listUserTodos } from '@/lib/lists/storage';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
 import { prewarmReadPageCache } from '@/lib/tools/handlers/page-refs';
+import { useSettingsStore } from '@/state/settings';
 import { checkAuthState } from './check-auth-state';
 import { checkPageReady } from './check-page-ready';
 import { detectEmail, isEmailUrl } from './detect-email';
@@ -130,7 +131,13 @@ export async function buildContextV2Bundled(
   let tabMeta: chrome.tabs.Tab | null = inputs.activeTab ?? null;
   if (tabMeta) {
     tabId = tabMeta.id ?? null;
-  } else {
+  } else if (inputs.activeTab === undefined) {
+    // Legacy/one-off caller that didn't resolve a tab at all. An EXPLICIT
+    // null means the caller's single resolveActiveTab() found nothing — in
+    // that case we must NOT run our own query: this builder and
+    // buildBrowserDomState each re-querying independently is exactly the
+    // cross-tab race (page_brief.tab_id != browser-dom.current_tab_id) the
+    // single-resolve convention exists to prevent (audit P2-13).
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       tabId = tab?.id ?? null;
@@ -154,6 +161,11 @@ export async function buildContextV2Bundled(
   //   pull_request  — only when URL is a GitHub/GitLab PR
   //   email         — only when URL is Gmail/Outlook/Hey/Superhuman
   const url = tabMeta?.url ?? '';
+  // Privacy gate (audit P1-10, user decision 2026-06-10): auth_state's
+  // visible-username and the Gmail inbox/thread bundles are PII shipped to
+  // the server — user-toggleable in Settings, default ON. Checked HERE so
+  // the detectors' executeScripts don't even run when sharing is off.
+  const sharePageIdentity = useSettingsStore.getState().sharePageIdentity;
   if (tabId !== null) {
     // Wait for ref tagging before kicking off the rest. Adds ~30-80ms
     // serially but every form field now ships with a `ref` the agent
@@ -168,9 +180,9 @@ export async function buildContextV2Bundled(
           discoverFormsForContext(tabId),
           checkPageReady(tabId),
           isPullRequestUrl(url) ? detectPullRequest(tabId, url) : Promise.resolve(null),
-          isEmailUrl(url) ? detectEmail(tabId, url) : Promise.resolve(null),
+          sharePageIdentity && isEmailUrl(url) ? detectEmail(tabId, url) : Promise.resolve(null),
           isTicketUrl(url) ? detectTicket(tabId, url) : Promise.resolve(null),
-          url ? checkAuthState(tabId, url) : Promise.resolve(null),
+          sharePageIdentity && url ? checkAuthState(tabId, url) : Promise.resolve(null),
           url ? getDomainMemoForUrl(url) : Promise.resolve(null),
           url ? getGuidanceForUrl(url) : Promise.resolve(null),
         ])
@@ -191,6 +203,15 @@ export async function buildContextV2Bundled(
     ? manualScrape.capturedAt
     : (autoScrape?.capturedAt ?? null);
 
+  // Confidence gate, hoisted so EVERY content-bearing key honors it — not
+  // just page_brief.structure/content. On a CAPTCHA / bot-blocked /
+  // unhydrated page the scrape-derived keys (page_full_content,
+  // page_seo_audit, article_summary, product_data) used to ship the
+  // challenge page's body anyway, defeating the whole point of the gate
+  // (audit P1-9). No probe = can't assess; treat as trustworthy (the scrape
+  // is then usually absent too).
+  const trustworthy = probe ? probe.brief.confidence !== 'low' : true;
+
   // ── page_brief — the always-loaded rich snapshot ───────────────────────
   if (probe) {
     const briefMore = probe.brief.more_available;
@@ -205,10 +226,6 @@ export async function buildContextV2Bundled(
         seo_audit: 'available',
       });
     }
-
-    // Drop heavy fields when confidence is low — better to send less than to
-    // mislead the model about a CAPTCHA-blocked or unhydrated page.
-    const trustworthy = probe.brief.confidence !== 'low';
 
     // Trim snapshot.ready to the two fields the agent actually reasons
     // about. document/load_event_ms/mutation_count/pending_images are
@@ -247,11 +264,38 @@ export async function buildContextV2Bundled(
         trustworthy && scrape
           ? {
               excerpt: firstChars(scrape.article.content_markdown, 1500),
+              // word_count/reading_time describe the FULL page text, not the
+              // 1500-char excerpt above — the flag keeps the model from
+              // treating the excerpt as the whole article (audit P2-12).
+              excerpt_truncated: (scrape.article.content_markdown?.length ?? 0) > 1500,
               word_count: scrape.article.word_count,
               reading_time_min: scrape.article.reading_time_minutes,
+              full_in: 'page_full_content',
             }
           : null,
       more_available: briefMore,
+    };
+  } else if (tabMeta) {
+    // Probe failed (chrome:// page, PDF viewer, scripting blocked, script
+    // threw). Without this the request shipped tab_state but NO page_brief
+    // at all — the agent couldn't distinguish "page unreadable" from "key
+    // missing" (audit P2-12). Emit an honest minimal brief instead.
+    ctx.page_brief = {
+      url: tabMeta.url ?? null,
+      title: tabMeta.title ?? null,
+      description: null,
+      lang: null,
+      kind: 'unknown',
+      ready: null,
+      snapshot: {
+        captured_at: new Date().toISOString(),
+        confidence: 'low',
+        flags: ['unreadable_or_restricted'],
+        ready: null,
+      },
+      structure: null,
+      content: null,
+      more_available: {},
     };
   }
 
@@ -337,10 +381,24 @@ export async function buildContextV2Bundled(
   }
 
   // ── page_full_content — full clean body ────────────────────────────────
-  if (scrape && scrapeCapturedAt !== null) {
+  // Capped at the extension boundary (audit P1-8): "the server trims it"
+  // doesn't help the UPLOAD path — a long page was a multi-MB POST on every
+  // message. The caps are generous (well past what a model turn can use);
+  // `truncated` + the original char counts keep the bundle honest.
+  if (scrape && scrapeCapturedAt !== null && trustworthy) {
+    const md = scrape.article.content_markdown ?? '';
+    const html = scrape.article.content_html_safe ?? '';
+    const MD_CAP = 120_000;
+    const HTML_CAP = 150_000;
     ctx.page_full_content = {
-      markdown: scrape.article.content_markdown,
-      html: scrape.article.content_html_safe,
+      markdown: md.length > MD_CAP ? md.slice(0, MD_CAP) : md,
+      html: html.length > HTML_CAP ? html.slice(0, HTML_CAP) : html,
+      ...(md.length > MD_CAP || html.length > HTML_CAP
+        ? {
+            truncated: true,
+            full_chars: { markdown: md.length, html: html.length },
+          }
+        : {}),
       title: scrape.article.title,
       byline: scrape.article.byline,
       excerpt: scrape.article.excerpt,
@@ -358,7 +416,7 @@ export async function buildContextV2Bundled(
   // perf metrics, etc. Only obvious always-noise field is an empty
   // hreflang array (most pages); drop it when empty so the bundle
   // doesn't carry `hreflang: []` on every send.
-  if (scrape) {
+  if (scrape && trustworthy) {
     const seo = scrape.seo as unknown as Record<string, unknown>;
     const hreflang = seo.hreflang;
     if (Array.isArray(hreflang) && hreflang.length === 0) {
@@ -414,10 +472,25 @@ export async function buildContextV2Bundled(
     // because the wire path is ctx-pagination; large payloads don't
     // auto-inline (see ctx_get(mode='page') in matrx-ai).
     if (scrape.images.length > 0 || scrape.videos.length > 0 || scrape.audio.length > 0) {
+      // Capped (audit P1-8): media-heavy pages shipped hundreds of opaque
+      // 400-char CDN URLs in this one key. Counts make the cap honest.
+      const RAW_CAP = 100;
       ctx.page_media_raw = {
-        images: scrape.images,
-        videos: scrape.videos,
-        audio: scrape.audio,
+        images: scrape.images.slice(0, RAW_CAP),
+        videos: scrape.videos.slice(0, RAW_CAP),
+        audio: scrape.audio.slice(0, RAW_CAP),
+        ...(scrape.images.length > RAW_CAP ||
+        scrape.videos.length > RAW_CAP ||
+        scrape.audio.length > RAW_CAP
+          ? {
+              truncated: true,
+              full_counts: {
+                images: scrape.images.length,
+                videos: scrape.videos.length,
+                audio: scrape.audio.length,
+              },
+            }
+          : {}),
       };
     }
   }
@@ -458,7 +531,7 @@ export async function buildContextV2Bundled(
 
   // article: convenience bundle of just title + byline + excerpt for slots
   // that want the gist without the full body.
-  if (probe?.brief.kind === 'article' && scrape) {
+  if (probe?.brief.kind === 'article' && scrape && trustworthy) {
     ctx.article_summary = {
       title: scrape.article.title,
       byline: scrape.article.byline,
@@ -467,7 +540,7 @@ export async function buildContextV2Bundled(
   }
 
   // product: lift product schema into a clean bundle.
-  if (probe?.brief.kind === 'product' && scrape) {
+  if (probe?.brief.kind === 'product' && scrape && trustworthy) {
     const product = scrape.ld_json.find((b) => isProductBlock(b));
     if (product) ctx.product_data = product;
   }
@@ -485,7 +558,7 @@ export async function buildContextV2Bundled(
 
   // email: Gmail / Outlook / Hey / Superhuman. Either inbox-list or
   // single-thread shape, distinguished by the bundle's `shape` field.
-  if (email) {
+  if (email && sharePageIdentity) {
     if (email.shape === 'inbox') {
       ctx.email_inbox = email;
     } else {
@@ -496,7 +569,7 @@ export async function buildContextV2Bundled(
   // auth_state: cross-cutting "are you signed in here?" signal — saves a
   // turn every session by letting the agent check the sidebar instead of
   // navigating. Always attached when we have a URL (works on every page).
-  if (authState) {
+  if (authState && sharePageIdentity) {
     ctx.auth_state = authState;
   }
 

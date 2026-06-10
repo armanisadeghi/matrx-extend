@@ -66,6 +66,17 @@ interface SettingsState {
    */
   modelOverrideId: string | null;
 
+  // ─── Privacy ───────────────────────────────────────────────────────────
+  /**
+   * Share page identity & email content with the agent. Gates the
+   * `auth_state` (visible username on the current site) and
+   * `email_inbox`/`email_thread` (Gmail subjects + body excerpts) context
+   * keys — both are PII shipped to the server on every send when present
+   * (audit P1-10). Default ON: they're a large part of what makes the agent
+   * useful on those pages; this toggle makes the trade visible + reversible.
+   */
+  sharePageIdentity: boolean;
+
   // ─── Scrape auto-capture ───────────────────────────────────────────────
   /** Auto-run a scrape on every page load (background). Gates useAutoScrape. */
   scrapeAutoOnLoad: boolean;
@@ -85,6 +96,7 @@ interface SettingsState {
   toggleAgentScope: (scope: AgentScope) => void;
   setAutoFullScrollOnFirstSubmit: (b: boolean) => void;
   setModelOverrideId: (id: string | null) => void;
+  setSharePageIdentity: (b: boolean) => void;
   setScrapeAutoOnLoad: (b: boolean) => void;
   setScrapeAutoMode: (m: ScrapeAutoMode) => void;
 }
@@ -100,6 +112,7 @@ export const useSettingsStore = create<SettingsState>()(
       agentScopes: ['mine'],
       autoFullScrollOnFirstSubmit: false,
       modelOverrideId: null,
+      sharePageIdentity: true,
       scrapeAutoOnLoad: true,
       scrapeAutoMode: 'capture',
       setTheme: (theme) => set({ theme }),
@@ -122,6 +135,7 @@ export const useSettingsStore = create<SettingsState>()(
       setAutoFullScrollOnFirstSubmit: (autoFullScrollOnFirstSubmit) =>
         set({ autoFullScrollOnFirstSubmit }),
       setModelOverrideId: (modelOverrideId) => set({ modelOverrideId }),
+      setSharePageIdentity: (sharePageIdentity) => set({ sharePageIdentity }),
       setScrapeAutoOnLoad: (scrapeAutoOnLoad) => set({ scrapeAutoOnLoad }),
       setScrapeAutoMode: (scrapeAutoMode) => set({ scrapeAutoMode }),
     }),
