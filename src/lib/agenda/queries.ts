@@ -641,16 +641,28 @@ export async function claimRun(
   return rowToAgendaRun(data as unknown as SchRunRow);
 }
 
+/**
+ * Terminal/start transitions are gated on still being in an ACTIVE state
+ * (audit P2-15). Unconditional `.eq('id')` updates let a late finisher —
+ * e.g. a run the reaper already failed for an expired lease — overwrite the
+ * terminal row (`success` stomping `failed`, or re-nulling a fresh claim's
+ * token). The scheduler-client twins gate on claim_token; the agenda façade
+ * gates on status, which is the equivalent invariant the reaper maintains.
+ * Errors are logged (they used to be silently ignored — a failed write left
+ * the row stuck while the UI believed it finished).
+ */
 export async function markRunStarted(runId: string, conversationId?: string): Promise<void> {
   const c = getSupabase();
-  await c
+  const { error } = await c
     .from('sch_run')
     .update({
       status: 'running',
       started_at: new Date().toISOString(),
       output_ref: conversationId ? { kind: 'conversation', id: conversationId } : null,
     })
-    .eq('id', runId);
+    .eq('id', runId)
+    .in('status', ['queued', 'claimed']);
+  if (error) console.warn('[matrx-extend] markRunStarted error', error.message);
 }
 
 export async function finishRun(
@@ -659,7 +671,7 @@ export async function finishRun(
   details?: { result_summary?: string; error_message?: string; result_metadata?: object },
 ): Promise<void> {
   const c = getSupabase();
-  await c
+  const { error } = await c
     .from('sch_run')
     .update({
       status: outcome,
@@ -670,7 +682,9 @@ export async function finishRun(
       error_message: details?.error_message ?? null,
       result_metadata: details?.result_metadata ?? null,
     })
-    .eq('id', runId);
+    .eq('id', runId)
+    .in('status', ['queued', 'claimed', 'running']);
+  if (error) console.warn('[matrx-extend] finishRun error', error.message);
 }
 
 // ─── Time math helpers ──────────────────────────────────────────────────────
