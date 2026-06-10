@@ -11,7 +11,8 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 const isJsonContentType = (ct: string | undefined): boolean => !!ct && /json/.test(ct);
 
 export function NetworkTab() {
-  const { capturing, events, error, installed, start, stop, reload, clear, source } = useNetworkCapture();
+  const { capturing, events, error, installed, start, stop, reload, clear, source, dropped } =
+    useNetworkCapture();
   const [filter, setFilter] = useState('');
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [extractKeyPath, setExtractKeyPath] = useState('');
@@ -127,6 +128,11 @@ export function NetworkTab() {
             <>{events.length} responses captured · stopped</>
           ) : (
             <>Start capture, then interact with the page</>
+          )}
+          {dropped > 0 && (
+            <span className="ml-1 text-amber-700 dark:text-amber-400">
+              · {dropped} oldest dropped (500-event cap)
+            </span>
           )}
         </div>
 

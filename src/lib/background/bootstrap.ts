@@ -435,20 +435,26 @@ function registerHandlers(): void {
     return { ack: true };
   });
 
-  on<unknown, { ack: true }>(CHANNELS.LIST_PICKER_RESULT, (payload) => {
-    broadcast(CHANNELS.LIST_PICKER_RESULT, payload);
+  // Picker relays carry the sender tab id so a sidepanel only consumes
+  // results from the tab IT started picking on — with two windows open,
+  // window A's pick must not land in window B's builder (audit M1).
+  on<Record<string, unknown>, { ack: true }>(CHANNELS.LIST_PICKER_RESULT, (payload, sender) => {
+    broadcast(CHANNELS.LIST_PICKER_RESULT, { ...payload, tab_id: sender.tab?.id ?? null });
     return { ack: true };
   });
 
-  on<unknown, { ack: true }>(CHANNELS.LIST_PICKER_EXIT, () => {
-    broadcast(CHANNELS.LIST_PICKER_EXIT, {});
+  on<unknown, { ack: true }>(CHANNELS.LIST_PICKER_EXIT, (_payload, sender) => {
+    broadcast(CHANNELS.LIST_PICKER_EXIT, { tab_id: sender.tab?.id ?? null });
     return { ack: true };
   });
 
-  on<unknown, { ack: true }>(CHANNELS.LIST_PICKER_ITEM_DETECTED, (payload) => {
-    broadcast(CHANNELS.LIST_PICKER_ITEM_DETECTED, payload);
-    return { ack: true };
-  });
+  on<Record<string, unknown>, { ack: true }>(
+    CHANNELS.LIST_PICKER_ITEM_DETECTED,
+    (payload, sender) => {
+      broadcast(CHANNELS.LIST_PICKER_ITEM_DETECTED, { ...payload, tab_id: sender.tab?.id ?? null });
+      return { ack: true };
+    },
+  );
 
   // Demo recording: in-page event-capture function calls
   // chrome.runtime.sendMessage with a DEMO_EVENT envelope. We forward to
@@ -459,9 +465,12 @@ function registerHandlers(): void {
   });
 
   // Network capture: ISOLATED-world relay forwards every intercepted
-  // fetch/XHR via NET_CAPTURE_EVENT. We just rebroadcast — sidepanel buffers.
-  on<unknown, { ack: true }>(CHANNELS.NET_CAPTURE_EVENT, (payload) => {
-    broadcast(CHANNELS.NET_CAPTURE_EVENT, payload);
+  // fetch/XHR via NET_CAPTURE_EVENT. Stamp the sender tab id before
+  // rebroadcasting — the sidepanel filters on it so a previously-tapped tab
+  // can't pollute another tab's capture session (audit I1). There is NO
+  // buffering here: if no sidepanel is listening, the event is dropped.
+  on<Record<string, unknown>, { ack: true }>(CHANNELS.NET_CAPTURE_EVENT, (payload, sender) => {
+    broadcast(CHANNELS.NET_CAPTURE_EVENT, { ...payload, tab_id: sender.tab?.id ?? null });
     return { ack: true };
   });
 
