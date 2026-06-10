@@ -131,6 +131,14 @@ body,
   background: var(--muted-foreground);
 }
 
+/* Hide the scrollbar on horizontal tab strips while keeping them scrollable. */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /*
  * Checkerboard "transparent canvas" background. Tile background for scraped
  * images so PNG/SVG/WebP assets with alpha channels stay legible:

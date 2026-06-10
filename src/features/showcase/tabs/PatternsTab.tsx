@@ -1,6 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { useActiveTab } from '@/hooks/use-active-tab';
-import { runPattern } from '@/lib/data-pattern/run-pattern';
+import {
+  InteractiveOnlyError,
+  isInteractiveOnlyKind,
+  runPattern,
+} from '@/lib/data-pattern/run-pattern';
 import {
   type ExtractionPattern,
   bumpPatternRun,
@@ -19,12 +23,16 @@ const KIND_LABELS: Record<string, string> = {
   next_data: 'Framework',
   ai_extract: 'AI',
   list_pattern: 'List',
+  microdata: 'Microdata',
+  network_capture: 'Network',
 };
 
 export function PatternsTab() {
   const tab = useActiveTab();
   const [patterns, setPatterns] = useState<ExtractionPattern[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [runError, setRunError] = useState<string | null>(null);
   const [runningId, setRunningId] = useState<string | null>(null);
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
   const [activeName, setActiveName] = useState<string | null>(null);
@@ -40,8 +48,11 @@ export function PatternsTab() {
   const refresh = useCallback(async () => {
     if (!host) return;
     setLoading(true);
+    setLoadError(null);
     try {
       setPatterns(await fetchPatternsForDomain(host));
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }
@@ -56,13 +67,21 @@ export function PatternsTab() {
     setRunningId(p.id);
     setActiveName(p.name);
     setRows(null);
+    setRunError(null);
     try {
       const data = await runPattern(p, tab.id);
       setRows(data);
       void bumpPatternRun(p.id, 'ok', data.length);
     } catch (err) {
-      console.warn('[matrx-extend] pattern run failed', err);
-      void bumpPatternRun(p.id, 'broken', 0);
+      if (err instanceof InteractiveOnlyError) {
+        // Routing condition, not a pattern failure — don't mark it broken.
+        setRunError(err.message);
+      } else {
+        setRunError(
+          `"${p.name}" failed: ${err instanceof Error ? err.message : String(err)}`,
+        );
+        void bumpPatternRun(p.id, 'broken', 0);
+      }
     } finally {
       setRunningId(null);
       void refresh();
@@ -96,7 +115,27 @@ export function PatternsTab() {
           </Button>
         </div>
 
-        {patterns && patterns.length === 0 && (
+        {loadError && (
+          <div className="flex items-center justify-between gap-2 rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
+            <span className="min-w-0">{loadError}</span>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => void refresh()}
+              className="h-6 shrink-0 rounded-full px-2 text-[11px]"
+            >
+              Retry
+            </Button>
+          </div>
+        )}
+
+        {runError && (
+          <div className="rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
+            {runError}
+          </div>
+        )}
+
+        {!loadError && patterns && patterns.length === 0 && (
           <div className="grid place-items-center rounded-xl bg-secondary/40 px-4 py-8 text-center text-sm text-muted-foreground">
             No saved patterns for this host yet. Save one from any tab.
           </div>
@@ -124,7 +163,12 @@ export function PatternsTab() {
                     size="icon"
                     variant="ghost"
                     onClick={() => void handleRun(p)}
-                    disabled={runningId === p.id || !tab.id}
+                    disabled={runningId === p.id || !tab.id || isInteractiveOnlyKind(p.kind)}
+                    title={
+                      isInteractiveOnlyKind(p.kind)
+                        ? `${KIND_LABELS[p.kind] ?? p.kind} patterns run interactively from their own tab — one-click re-run is coming next.`
+                        : 'Run pattern'
+                    }
                     className="size-7 shrink-0"
                   >
                     {runningId === p.id ? (

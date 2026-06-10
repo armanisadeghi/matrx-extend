@@ -32,20 +32,29 @@ export function ShowcaseView() {
       </div>
 
       <Tabs defaultValue="doctor" className="flex flex-1 flex-col min-h-0">
-        <TabsList className="mx-3 mt-1 self-start gap-1 bg-transparent p-0">
-          <ShowcaseTab value="doctor">Doctor</ShowcaseTab>
-          <ShowcaseTab value="recipes">Recipes</ShowcaseTab>
-          <ShowcaseTab value="prepare">Prepare</ShowcaseTab>
-          <ShowcaseTab value="snapshot">Snapshot</ShowcaseTab>
-          <ShowcaseTab value="json_ld">JSON-LD</ShowcaseTab>
-          <ShowcaseTab value="microdata">Microdata</ShowcaseTab>
-          <ShowcaseTab value="tables">Tables</ShowcaseTab>
-          <ShowcaseTab value="framework">Framework</ShowcaseTab>
-          <ShowcaseTab value="ai_extract">AI Extract</ShowcaseTab>
-          <ShowcaseTab value="list_pattern">List Pattern</ShowcaseTab>
-          <ShowcaseTab value="network">Network</ShowcaseTab>
-          <ShowcaseTab value="patterns">Patterns</ShowcaseTab>
-        </TabsList>
+        {/* 12 triggers don't fit a ~360px panel: the strip is its own
+            horizontal scroller (scrollbar hidden, fade edges) so the rest of
+            the panel never scrolls sideways. */}
+        <div className="relative mx-3 mt-1 min-w-0 shrink-0">
+          <div className="scrollbar-none overflow-x-auto">
+            <TabsList className="w-max gap-1 bg-transparent p-0">
+              <ShowcaseTab value="doctor">Doctor</ShowcaseTab>
+              <ShowcaseTab value="recipes">Recipes</ShowcaseTab>
+              <ShowcaseTab value="prepare">Prepare</ShowcaseTab>
+              <ShowcaseTab value="snapshot">Snapshot</ShowcaseTab>
+              <ShowcaseTab value="json_ld">JSON-LD</ShowcaseTab>
+              <ShowcaseTab value="microdata">Microdata</ShowcaseTab>
+              <ShowcaseTab value="tables">Tables</ShowcaseTab>
+              <ShowcaseTab value="framework">Framework</ShowcaseTab>
+              <ShowcaseTab value="ai_extract">AI Extract</ShowcaseTab>
+              <ShowcaseTab value="list_pattern">List Pattern</ShowcaseTab>
+              <ShowcaseTab value="network">Network</ShowcaseTab>
+              <ShowcaseTab value="patterns">Patterns</ShowcaseTab>
+            </TabsList>
+          </div>
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-background to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-background to-transparent" />
+        </div>
 
         <TabsContent value="doctor" className="flex-1 min-h-0">
           <DoctorTab />

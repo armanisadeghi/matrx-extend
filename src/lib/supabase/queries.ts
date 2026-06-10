@@ -636,9 +636,11 @@ export async function fetchPatternsForDomain(domain: string): Promise<Extraction
     .eq('domain', domain)
     .order('last_used_at', { ascending: false, nullsFirst: false });
   if (error) {
+    // Pre-migration installs have no table — genuinely "no patterns".
     if (/relation .* does not exist/i.test(error.message)) return [];
-    console.warn('[matrx-extend] fetchPatternsForDomain error', error.message);
-    return [];
+    // Anything else (network, timeout, 5xx) must NOT masquerade as an empty
+    // list — callers render "no saved patterns" for []. Let them show an error.
+    throw new Error(`Could not load saved patterns: ${error.message}`);
   }
   return parseRowsSafe(ExtractionPatternSchema, (data ?? []) as unknown[], 'fetchPatternsForDomain')
     .rows;
@@ -676,14 +678,6 @@ export async function savePattern(p: SavePatternInput): Promise<{ id: string } |
     return null;
   }
   return data as { id: string };
-}
-
-export async function bumpPatternLastUsed(patternId: string): Promise<void> {
-  const c = getSupabase();
-  await c
-    .from('wbx_pattern')
-    .update({ last_used_at: new Date().toISOString() })
-    .eq('id', patternId);
 }
 
 /**

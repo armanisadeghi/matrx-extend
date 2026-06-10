@@ -4,7 +4,11 @@ import { Input } from '@/components/ui/input';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { rowsToTsv, stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { findFirstMatch } from '@/lib/data-pattern/matcher';
-import { runPattern } from '@/lib/data-pattern/run-pattern';
+import {
+  InteractiveOnlyError,
+  isInteractiveOnlyKind,
+  runPattern,
+} from '@/lib/data-pattern/run-pattern';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
@@ -27,6 +31,7 @@ export function DataView() {
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
   const [running, setRunning] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const host = (() => {
     try {
@@ -40,8 +45,12 @@ export function DataView() {
     if (!host) return;
     let cancelled = false;
     void (async () => {
-      const p = await fetchPatternsForDomain(host);
-      if (!cancelled) setPatterns(p);
+      try {
+        const p = await fetchPatternsForDomain(host);
+        if (!cancelled) setPatterns(p);
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : String(err));
+      }
     })();
     return () => {
       cancelled = true;
@@ -97,38 +106,52 @@ export function DataView() {
   const handleSavePattern = async () => {
     if (!host || pickedFields.length === 0) return;
     setSaving(true);
-    const r = await savePattern({
-      name: patternName || `${host} pattern`,
-      domain: host,
-      route_pattern: tab.url ? new URL(tab.url).pathname : null,
-      list_root_selector: null,
-      kind: 'manual_css',
-      config: {},
-      fields: pickedFields.map((f) => ({
-        name: f.name,
-        selector: f.selector,
-        is_list: false,
-      })),
-    });
-    setSaving(false);
-    if (r) {
+    setError(null);
+    try {
+      const r = await savePattern({
+        name: patternName || `${host} pattern`,
+        domain: host,
+        route_pattern: tab.url ? new URL(tab.url).pathname : null,
+        list_root_selector: null,
+        kind: 'manual_css',
+        config: {},
+        fields: pickedFields.map((f) => ({
+          name: f.name,
+          selector: f.selector,
+          is_list: false,
+        })),
+      });
+      if (!r) {
+        setError('Failed to save pattern. Check your connection and try again.');
+        return;
+      }
       setPatternName('');
       setPickedFields([]);
-      const refreshed = await fetchPatternsForDomain(host);
-      setPatterns(refreshed);
+      setPatterns(await fetchPatternsForDomain(host));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleRun = async (pattern: ExtractionPattern) => {
     if (!tab.id) return;
     setRunning(true);
+    setError(null);
     try {
       const data = await runPattern(pattern, tab.id);
       setRows(data);
       void bumpPatternRun(pattern.id, 'ok', data.length);
     } catch (err) {
-      console.warn('[matrx-extend] pattern run failed', err);
-      void bumpPatternRun(pattern.id, 'broken', 0);
+      if (err instanceof InteractiveOnlyError) {
+        setError(err.message);
+      } else {
+        setError(
+          `"${pattern.name}" failed: ${err instanceof Error ? err.message : String(err)}`,
+        );
+        void bumpPatternRun(pattern.id, 'broken', 0);
+      }
     } finally {
       setRunning(false);
     }
@@ -157,6 +180,12 @@ export function DataView() {
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 px-3 pb-3">
+          {error && (
+            <div className="rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
+              {error}
+            </div>
+          )}
+
           {matched && (
             <div className="flex items-center justify-between gap-2 rounded-xl bg-emerald-500/10 px-3 py-2.5">
               <div className="min-w-0 text-xs">
@@ -195,7 +224,7 @@ export function DataView() {
                 size="sm"
                 className="h-7 shrink-0 rounded-full px-3 text-xs"
                 onClick={() => void handleRun(matched)}
-                disabled={running}
+                disabled={running || isInteractiveOnlyKind(matched.kind)}
               >
                 {running ? (
                   <Loader2 className="size-3.5 animate-spin" />
@@ -292,7 +321,12 @@ export function DataView() {
                         variant="ghost"
                         className="size-7"
                         onClick={() => void handleRun(p)}
-                        title="Run pattern"
+                        disabled={running || isInteractiveOnlyKind(p.kind)}
+                        title={
+                          isInteractiveOnlyKind(p.kind)
+                            ? 'This pattern kind runs interactively from the Showcase tab.'
+                            : 'Run pattern'
+                        }
                       >
                         <Play className="size-3.5" />
                       </Button>

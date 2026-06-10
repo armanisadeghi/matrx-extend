@@ -30,6 +30,7 @@ export const aiExtractMode: ExtractionMode<AiExtractConfig> = {
   // Stub — the showcase orchestrates the agent call directly. This runInPage
   // is reserved for the backend re-run flow and intentionally returns nothing.
   runInPage: () => [],
+  interactiveOnly: true,
 };
 
 /**

@@ -27,4 +27,5 @@ export const networkCaptureMode: ExtractionMode<NetworkCaptureConfig> = {
   defaultConfig: () => ({ url_filter: '' }),
   detectInPage: () => ({ available: true, summary: 'Always available — interactive only' }),
   runInPage: () => [],
+  interactiveOnly: true,
 };

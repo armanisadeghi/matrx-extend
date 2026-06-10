@@ -102,17 +102,25 @@ export function SaveAsPattern({
         return;
       }
 
-      let appendedCount = 0;
       if (targetTableId && rows.length > 0) {
         const result = await appendRows(targetTableId, rows);
-        appendedCount = result?.inserted ?? 0;
+        if (result === null) {
+          // The pattern row IS saved — but the rows are not. Saying
+          // "0 rows appended" here would be a success banner over data loss.
+          setErr(
+            `Pattern saved, but appending ${rows.length} row${rows.length === 1 ? '' : 's'} to the table failed. Run the pattern again and re-save, or append from the Patterns tab.`,
+          );
+          onSaved?.();
+          setSaving(false);
+          return;
+        }
+        const appendedCount = result.inserted;
+        setSavedSummary(
+          `Pattern saved · ${appendedCount} row${appendedCount === 1 ? '' : 's'} appended`,
+        );
+      } else {
+        setSavedSummary('Pattern saved');
       }
-
-      setSavedSummary(
-        targetTableId
-          ? `Pattern saved · ${appendedCount} row${appendedCount === 1 ? '' : 's'} appended`
-          : 'Pattern saved',
-      );
       onSaved?.();
       setTimeout(() => setOpen(false), 1200);
     } catch (e) {

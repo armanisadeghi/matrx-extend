@@ -1,6 +1,6 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { urlMatchesPattern } from '@/lib/data-pattern/matcher';
-import { runPattern } from '@/lib/data-pattern/run-pattern';
+import { isInteractiveOnlyKind, runPattern } from '@/lib/data-pattern/run-pattern';
 import {
   type ExtractionPattern,
   bumpPatternRun,
@@ -71,7 +71,11 @@ export function useAutoExtract(): void {
       }
       if (cancelled) return;
 
-      const matched = patterns.filter((p) => urlMatchesPattern(url, p));
+      // Interactive-only kinds (ai_extract, network_capture) are never run in
+      // the background — no surprise reloads or agent spend without a click.
+      const matched = patterns.filter(
+        (p) => urlMatchesPattern(url, p) && !isInteractiveOnlyKind(p.kind),
+      );
       if (matched.length === 0) return;
 
       // Fire each matching pattern in parallel.
