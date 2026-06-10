@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
-import { RECIPES, type Recipe, recipesForUrl } from '@/lib/data-pattern/recipes';
+import { RECIPES, type Recipe, loadRecipes, recipesForUrl } from '@/lib/data-pattern/recipes';
 import { runMode } from '@/lib/data-pattern/run-pattern';
 import { cn } from '@/lib/utils';
 import { Loader2, PlayCircle, Sparkles } from 'lucide-react';
@@ -17,9 +17,22 @@ export function RecipesTab() {
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [source, setSource] = useState<ExtractionSource | null>(null);
+  // DB-backed catalog (updatable without a release); bundled list until the
+  // fetch lands and as the offline fallback.
+  const [recipes, setRecipes] = useState<Recipe[]>(RECIPES);
 
-  const matching = useMemo(() => recipesForUrl(tab.url ?? ''), [tab.url]);
-  const visible = showAll ? RECIPES : matching;
+  useEffect(() => {
+    let cancelled = false;
+    void loadRecipes().then((r) => {
+      if (!cancelled) setRecipes(r);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const matching = useMemo(() => recipesForUrl(tab.url ?? '', recipes), [tab.url, recipes]);
+  const visible = showAll ? recipes : matching;
 
   // Rows from the previous page must not display (or save) under the new one.
   useEffect(() => {

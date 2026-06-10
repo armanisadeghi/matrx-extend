@@ -6,7 +6,9 @@
  * The user can then save it as a wbx_pattern (or tweak first).
  */
 
-import type { PatternKind } from '@/lib/supabase/queries';
+import { PATTERN_KINDS, type PatternKind } from '@/lib/supabase/queries';
+import { getSupabase } from '@/lib/supabase/client';
+import { z } from 'zod';
 
 export interface Recipe {
   /** Unique within this file. */
@@ -182,7 +184,7 @@ const routeMatches = (path: string, glob: string): boolean => {
   return re.test(path);
 };
 
-export function recipesForUrl(url: string): Recipe[] {
+export function recipesForUrl(url: string, recipes: Recipe[] = RECIPES): Recipe[] {
   let parsed: URL;
   try {
     parsed = new URL(url);
@@ -191,9 +193,64 @@ export function recipesForUrl(url: string): Recipe[] {
   }
   const host = parsed.host.toLowerCase();
   const path = parsed.pathname;
-  return RECIPES.filter((r) => {
+  return recipes.filter((r) => {
     if (!r.hosts.some((h) => hostMatches(host, h))) return false;
     if (!r.routes || r.routes.length === 0) return true;
     return r.routes.some((g) => routeMatches(path, g));
   });
+}
+
+// ── DB-backed recipes (decision D6) ─────────────────────────────────────────
+// public.wbx_recipe is the live catalog — updatable without shipping a
+// release. The bundled RECIPES above is the seed and the offline fallback.
+
+const RecipeRowSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  description: z.string().default(''),
+  hosts: z.array(z.string()),
+  routes: z.array(z.string()).nullable(),
+  kind: z.enum(PATTERN_KINDS),
+  config: z.record(z.string(), z.unknown()).default({}),
+  yields_rows: z.boolean().default(false),
+});
+
+let recipeCache: { recipes: Recipe[]; fetchedAt: number } | null = null;
+const RECIPE_CACHE_TTL_MS = 10 * 60 * 1000;
+
+/**
+ * Live recipe catalog: DB rows when reachable, bundled list otherwise.
+ * Cached for 10 minutes — recipes change rarely and the Recipes tab calls
+ * this on every URL change.
+ */
+export async function loadRecipes(): Promise<Recipe[]> {
+  if (recipeCache && Date.now() - recipeCache.fetchedAt < RECIPE_CACHE_TTL_MS) {
+    return recipeCache.recipes;
+  }
+  try {
+    const c = getSupabase();
+    const { data, error } = await c
+      .from('wbx_recipe')
+      .select('id, label, description, hosts, routes, kind, config, yields_rows')
+      .eq('is_active', true)
+      .order('id');
+    if (error) throw new Error(error.message);
+    const rows = z.array(RecipeRowSchema).parse(data ?? []);
+    if (rows.length === 0) return RECIPES; // empty table → seed not applied yet
+    const recipes: Recipe[] = rows.map((r) => ({
+      id: r.id,
+      label: r.label,
+      description: r.description,
+      hosts: r.hosts,
+      routes: r.routes ?? undefined,
+      kind: r.kind,
+      config: r.config,
+      yieldsRows: r.yields_rows,
+    }));
+    recipeCache = { recipes, fetchedAt: Date.now() };
+    return recipes;
+  } catch (err) {
+    console.warn('[matrx-extend] loadRecipes fell back to bundled list:', err);
+    return RECIPES;
+  }
 }

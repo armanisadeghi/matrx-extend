@@ -659,25 +659,60 @@ export type SavePatternInput = {
 
 export async function savePattern(p: SavePatternInput): Promise<{ id: string } | null> {
   const c = getSupabase();
-  const { data, error } = await c
-    .from('wbx_pattern')
-    .insert({
-      name: p.name,
-      domain: p.domain,
-      route_pattern: p.route_pattern,
-      list_root_selector: p.list_root_selector,
-      fields: p.fields,
-      kind: p.kind ?? 'manual_css',
-      config: p.config ?? {},
-      target_user_table_id: p.target_user_table_id ?? null,
-    })
-    .select('id')
-    .single();
-  if (error) {
-    console.warn('[matrx-extend] savePattern error', error.message);
-    return null;
+  // UNIQUE(user_id, domain, name) — on a name collision, auto-suffix
+  // "name (2)", "name (3)", … instead of failing the save (decision D3).
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const name = attempt === 0 ? p.name : `${p.name} (${attempt + 1})`;
+    const { data, error } = await c
+      .from('wbx_pattern')
+      .insert({
+        name,
+        domain: p.domain,
+        route_pattern: p.route_pattern,
+        list_root_selector: p.list_root_selector,
+        fields: p.fields,
+        kind: p.kind ?? 'manual_css',
+        config: p.config ?? {},
+        target_user_table_id: p.target_user_table_id ?? null,
+      })
+      .select('id')
+      .single();
+    if (!error) return data as { id: string };
+    if (error.code !== '23505') {
+      console.warn('[matrx-extend] savePattern error', error.message);
+      return null;
+    }
   }
-  return data as { id: string };
+  console.warn('[matrx-extend] savePattern: name collision persisted after 5 attempts');
+  return null;
+}
+
+/** Hard-delete a saved pattern. Returns false (with a console.warn) on failure. */
+export async function deletePattern(patternId: string): Promise<boolean> {
+  const c = getSupabase();
+  const { error } = await c.from('wbx_pattern').delete().eq('id', patternId);
+  if (error) {
+    console.warn('[matrx-extend] deletePattern error', error.message);
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Rename a saved pattern. Returns an error string suitable for inline display
+ * (e.g. on a name collision within the same domain), or null on success.
+ */
+export async function renamePattern(patternId: string, name: string): Promise<string | null> {
+  const trimmed = name.trim();
+  if (!trimmed) return 'Name cannot be empty.';
+  const c = getSupabase();
+  const { error } = await c.from('wbx_pattern').update({ name: trimmed }).eq('id', patternId);
+  if (error) {
+    if (error.code === '23505') return 'A pattern with that name already exists for this site.';
+    console.warn('[matrx-extend] renamePattern error', error.message);
+    return `Rename failed: ${error.message}`;
+  }
+  return null;
 }
 
 /**

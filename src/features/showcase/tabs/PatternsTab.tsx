@@ -5,13 +5,26 @@ import {
   isInteractiveOnlyKind,
   runPattern,
 } from '@/lib/data-pattern/run-pattern';
+import { Input } from '@/components/ui/input';
 import {
   type ExtractionPattern,
   bumpPatternRun,
+  deletePattern,
   fetchPatternsForDomain,
+  renamePattern,
 } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
-import { CheckCircle2, Loader2, PlayCircle, RefreshCw, XCircle } from 'lucide-react';
+import {
+  Check,
+  CheckCircle2,
+  Loader2,
+  Pencil,
+  PlayCircle,
+  RefreshCw,
+  Trash2,
+  X,
+  XCircle,
+} from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 
@@ -146,41 +159,19 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
         {patterns && patterns.length > 0 && (
           <div className="space-y-1.5">
             {patterns.map((p) => (
-              <div key={p.id} className="space-y-1.5 rounded-xl bg-secondary/40 px-3 py-2">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <span className="truncate text-sm font-medium">{p.name}</span>
-                      <KindBadge kind={p.kind} />
-                      <StatusBadge status={p.last_status} />
-                    </div>
-                    <div className="text-[11px] text-muted-foreground">
-                      {p.fields.length > 0 &&
-                        `${p.fields.length} field${p.fields.length === 1 ? '' : 's'} · `}
-                      {p.last_run_at ? `last run ${formatRelative(p.last_run_at)}` : 'never run'}
-                      {p.last_run_count != null && ` · ${p.last_run_count} rows`}
-                    </div>
-                  </div>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => void handleRun(p)}
-                    disabled={runningId === p.id || !tab.id || isInteractiveOnlyKind(p.kind)}
-                    title={
-                      isInteractiveOnlyKind(p.kind)
-                        ? `${KIND_LABELS[p.kind] ?? p.kind} patterns run interactively from their own tab — one-click re-run is coming next.`
-                        : 'Run pattern'
-                    }
-                    className="size-7 shrink-0"
-                  >
-                    {runningId === p.id ? (
-                      <Loader2 className="size-3.5 animate-spin" />
-                    ) : (
-                      <PlayCircle className="size-3.5" />
-                    )}
-                  </Button>
-                </div>
-              </div>
+              <PatternRow
+                key={p.id}
+                pattern={p}
+                running={runningId === p.id}
+                canRun={Boolean(tab.id) && !isInteractiveOnlyKind(p.kind)}
+                runDisabledReason={
+                  isInteractiveOnlyKind(p.kind)
+                    ? `${KIND_LABELS[p.kind] ?? p.kind} patterns run interactively from their own tab — one-click re-run is coming next.`
+                    : undefined
+                }
+                onRun={() => void handleRun(p)}
+                onChanged={() => void refresh()}
+              />
             ))}
           </div>
         )}
@@ -194,6 +185,185 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function PatternRow({
+  pattern: p,
+  running,
+  canRun,
+  runDisabledReason,
+  onRun,
+  onChanged,
+}: {
+  pattern: ExtractionPattern;
+  running: boolean;
+  canRun: boolean;
+  runDisabledReason?: string;
+  onRun: () => void;
+  onChanged: () => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draftName, setDraftName] = useState(p.name);
+  const [rowError, setRowError] = useState<string | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  // The two-step delete confirm disarms itself so a stray click later
+  // doesn't delete.
+  useEffect(() => {
+    if (!confirmingDelete) return;
+    const t = setTimeout(() => setConfirmingDelete(false), 3000);
+    return () => clearTimeout(t);
+  }, [confirmingDelete]);
+
+  const commitRename = async () => {
+    if (draftName.trim() === p.name) {
+      setEditing(false);
+      return;
+    }
+    setBusy(true);
+    setRowError(null);
+    const err = await renamePattern(p.id, draftName);
+    setBusy(false);
+    if (err) {
+      setRowError(err);
+      return;
+    }
+    setEditing(false);
+    onChanged();
+  };
+
+  const handleDelete = async () => {
+    if (!confirmingDelete) {
+      setConfirmingDelete(true);
+      return;
+    }
+    setBusy(true);
+    setRowError(null);
+    const ok = await deletePattern(p.id);
+    setBusy(false);
+    setConfirmingDelete(false);
+    if (!ok) {
+      setRowError('Delete failed. Check your connection and try again.');
+      return;
+    }
+    onChanged();
+  };
+
+  return (
+    <div className="group space-y-1.5 rounded-xl bg-secondary/40 px-3 py-2">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          {editing ? (
+            <div className="flex items-center gap-1">
+              <Input
+                value={draftName}
+                onChange={(e) => setDraftName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') void commitRename();
+                  if (e.key === 'Escape') {
+                    setDraftName(p.name);
+                    setEditing(false);
+                    setRowError(null);
+                  }
+                }}
+                autoFocus
+                className="h-6 rounded-full bg-background px-2 text-xs"
+              />
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => void commitRename()}
+                disabled={busy}
+                className="size-6 shrink-0"
+                title="Save name"
+              >
+                {busy ? (
+                  <Loader2 className="size-3 animate-spin" />
+                ) : (
+                  <Check className="size-3" />
+                )}
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => {
+                  setDraftName(p.name);
+                  setEditing(false);
+                  setRowError(null);
+                }}
+                className="size-6 shrink-0"
+                title="Cancel"
+              >
+                <X className="size-3" />
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5">
+              <span className="truncate text-sm font-medium">{p.name}</span>
+              <KindBadge kind={p.kind} />
+              <StatusBadge status={p.last_status} />
+            </div>
+          )}
+          <div className="text-[11px] text-muted-foreground">
+            {p.fields.length > 0 &&
+              `${p.fields.length} field${p.fields.length === 1 ? '' : 's'} · `}
+            {p.last_run_at ? `last run ${formatRelative(p.last_run_at)}` : 'never run'}
+            {p.last_run_count != null && ` · ${p.last_run_count} rows`}
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center gap-0.5">
+          {!editing && (
+            <>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => {
+                  setDraftName(p.name);
+                  setEditing(true);
+                  setConfirmingDelete(false);
+                }}
+                className="size-7 opacity-0 transition-opacity group-hover:opacity-100"
+                title="Rename"
+              >
+                <Pencil className="size-3.5" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => void handleDelete()}
+                disabled={busy}
+                className={cn(
+                  'size-7 transition-opacity',
+                  confirmingDelete
+                    ? 'bg-destructive/15 text-destructive opacity-100'
+                    : 'opacity-0 group-hover:opacity-100',
+                )}
+                title={confirmingDelete ? 'Click again to delete permanently' : 'Delete pattern'}
+              >
+                <Trash2 className="size-3.5" />
+              </Button>
+            </>
+          )}
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={onRun}
+            disabled={running || !canRun}
+            title={runDisabledReason ?? 'Run pattern'}
+            className="size-7"
+          >
+            {running ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <PlayCircle className="size-3.5" />
+            )}
+          </Button>
+        </div>
+      </div>
+      {rowError && <div className="text-[11px] text-destructive">{rowError}</div>}
     </div>
   );
 }
