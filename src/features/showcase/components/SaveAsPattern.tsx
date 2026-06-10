@@ -5,7 +5,12 @@ import { useActiveTab } from '@/hooks/use-active-tab';
 import type { ExtractionSource } from '@/hooks/use-extraction';
 import { useUserTables } from '@/hooks/use-user-tables';
 import { type ExtractionPatternField, type PatternKind, savePattern } from '@/lib/supabase/queries';
-import { inferSchemaFromRow } from '@/lib/supabase/user-tables';
+import {
+  buildFieldNameMap,
+  getUserTableSchema,
+  inferSchemaFromRows,
+  unionRowKeys,
+} from '@/lib/supabase/user-tables';
 import { CheckCircle2, Loader2, Save, TriangleAlert } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
@@ -55,11 +60,10 @@ export function SaveAsPattern({
 
   const { tables, createTable, appendRows } = useUserTables();
 
-  const inferredFields = useMemo(() => {
-    const first = rows[0];
-    if (!first) return [];
-    return inferSchemaFromRow(first);
-  }, [rows]);
+  // Union across ALL rows — the preview table shows every column, so the
+  // created table must too (single-row inference silently dropped columns
+  // that only appear in later rows).
+  const inferredFields = useMemo(() => (rows.length ? inferSchemaFromRows(rows) : []), [rows]);
 
   const liveHost = useMemo(() => {
     try {
@@ -119,6 +123,22 @@ export function SaveAsPattern({
       }
 
       if (targetTableId && rows.length > 0) {
+        // Appending to an EXISTING table: the RPC silently drops keys with no
+        // matching column. Diff against the live schema so dropped columns
+        // are reported, not invisible.
+        let unmatchedNote = '';
+        if (target !== NEW_TABLE) {
+          const schema = await getUserTableSchema(targetTableId);
+          if (schema.length > 0) {
+            const declared = new Set(schema.map((f) => f.field_name));
+            const mapped = buildFieldNameMap(unionRowKeys(rows));
+            const unmatched = [...new Set(mapped.values())].filter((f) => !declared.has(f));
+            if (unmatched.length > 0) {
+              unmatchedNote = ` · ${unmatched.length} column${unmatched.length === 1 ? '' : 's'} had no match (${unmatched.slice(0, 3).join(', ')}${unmatched.length > 3 ? ', …' : ''}) and was dropped`;
+            }
+          }
+        }
+
         const result = await appendRows(targetTableId, rows);
         if (result === null) {
           // The pattern row IS saved — but the rows are not. Saying
@@ -132,7 +152,7 @@ export function SaveAsPattern({
         }
         const appendedCount = result.inserted;
         setSavedSummary(
-          `Pattern saved · ${appendedCount} row${appendedCount === 1 ? '' : 's'} appended`,
+          `Pattern saved · ${appendedCount} row${appendedCount === 1 ? '' : 's'} appended${unmatchedNote}`,
         );
       } else {
         setSavedSummary('Pattern saved');
