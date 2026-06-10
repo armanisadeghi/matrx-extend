@@ -381,7 +381,12 @@ function BackendSwitcher() {
 
   const saveOverride = async (val: string) => {
     const prev = backend.override;
-    await setBackendOverride(val);
+    try {
+      await setBackendOverride(val);
+    } catch (err) {
+      log.warn('sys', `backend override rejected: ${(err as Error).message}`);
+      return;
+    }
     log.info('sys', val ? `backend URL override → ${val}` : 'backend URL override cleared');
     if (val !== prev) void pingHealth(val ? `switched override to ${val}` : 'cleared override');
   };

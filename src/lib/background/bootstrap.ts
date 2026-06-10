@@ -176,7 +176,24 @@ function setupAlarms(): void {
   chrome.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name === ALARMS.TOKEN_REFRESH) {
       console.log('[matrx-extend] alarm: token refresh');
-      await refreshAccessToken();
+      try {
+        const refreshed = await refreshAccessToken();
+        if (!refreshed) {
+          // Transient failure (network down, server hiccup): the alarm is
+          // one-shot and only re-armed on SUCCESS inside scheduleRefresh —
+          // without this retry, proactive refresh silently stopped for the
+          // rest of the session (audit P2: TOKEN_REFRESH not re-armed).
+          // Only retry while a refresh token actually exists; a signed-out
+          // / signed-out-by-failure state must not loop a dead alarm.
+          const stored = await chrome.storage.local.get([STORAGE_KEYS.REFRESH_TOKEN_ENC]);
+          if (stored[STORAGE_KEYS.REFRESH_TOKEN_ENC]) {
+            chrome.alarms.create(ALARMS.TOKEN_REFRESH, { delayInMinutes: 5 });
+          }
+        }
+      } catch (err) {
+        console.warn('[matrx-extend] token refresh alarm failed — retrying in 5min', err);
+        chrome.alarms.create(ALARMS.TOKEN_REFRESH, { delayInMinutes: 5 });
+      }
       await rehydrateSupabaseSession();
     } else if (alarm.name === ALARMS.DESKTOP_PROBE) {
       const state = await probeDesktop();

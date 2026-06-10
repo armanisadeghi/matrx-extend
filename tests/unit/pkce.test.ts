@@ -1,25 +1,26 @@
-import {
-  encodeState,
-  extractVerifierFromState,
-  generateCodeChallenge,
-  generateCodeVerifier,
-  generateNonce,
-} from '@/lib/auth/pkce';
+import { generateCodeChallenge, generateCodeVerifier, generateNonce } from '@/lib/auth/pkce';
 import { describe, expect, it } from 'vitest';
 
 describe('PKCE helpers', () => {
-  it('verifier round-trips through state', () => {
-    const v = generateCodeVerifier();
-    const n = generateNonce();
-    const state = encodeState(v, n);
-    expect(extractVerifierFromState(state)).toBe(v);
-  });
-
-  it('verifier is base64url (no =, +, /)', () => {
+  it('verifier is base64url (no =, +, /) with RFC 7636 length', () => {
     for (let i = 0; i < 20; i++) {
       const v = generateCodeVerifier();
       expect(v).toMatch(/^[A-Za-z0-9_-]+$/);
+      // 32 random bytes → 43 base64url chars (RFC 7636 minimum).
+      expect(v.length).toBeGreaterThanOrEqual(43);
     }
+  });
+
+  it('verifiers are unique', () => {
+    const seen = new Set<string>();
+    for (let i = 0; i < 50; i++) seen.add(generateCodeVerifier());
+    expect(seen.size).toBe(50);
+  });
+
+  it('nonce is base64url and non-empty', () => {
+    const n = generateNonce();
+    expect(n).toMatch(/^[A-Za-z0-9_-]+$/);
+    expect(n.length).toBeGreaterThan(0);
   });
 
   it('code_challenge is deterministic for a given verifier', async () => {
@@ -30,8 +31,9 @@ describe('PKCE helpers', () => {
     expect(c1).toMatch(/^[A-Za-z0-9_-]+$/);
   });
 
-  it('extractVerifierFromState returns null for malformed state', () => {
-    expect(extractVerifierFromState('no-dot-here')).toBeNull();
-    expect(extractVerifierFromState('')).toBeNull();
+  it('different verifiers produce different challenges', async () => {
+    const c1 = await generateCodeChallenge('a'.repeat(43));
+    const c2 = await generateCodeChallenge('b'.repeat(43));
+    expect(c1).not.toBe(c2);
   });
 });

@@ -66,11 +66,39 @@ function isBackendEnv(v: unknown): v is BackendEnv {
   return v === 'prod' || v === 'staging' || v === 'dev' || v === 'local';
 }
 
+/**
+ * Validate a backend override at the READ site — defense-in-depth (audit
+ * P1-19). The setter's admin gate is UI-only; chrome.storage is writable by
+ * any extension context, and the bearer token + full conversation payloads
+ * flow to whatever this returns. Require a parseable https URL (http only
+ * for loopback). Anything else is ignored with a loud warning rather than
+ * silently shipping credentials to a garbage/downgraded destination.
+ */
+function validateOverrideUrl(raw: string): string | null {
+  const value = raw.trim();
+  if (!value) return null;
+  let u: URL;
+  try {
+    u = new URL(value);
+  } catch {
+    console.warn(`[matrx-extend] backend override is not a valid URL — ignoring: ${value}`);
+    return null;
+  }
+  const isLoopback = u.hostname === 'localhost' || u.hostname === '127.0.0.1';
+  if (u.protocol !== 'https:' && !(u.protocol === 'http:' && isLoopback)) {
+    console.warn(
+      `[matrx-extend] backend override must be https (or http://localhost) — ignoring: ${value}`,
+    );
+    return null;
+  }
+  return value.replace(/\/$/, '');
+}
+
 /** Async — guaranteed to reflect chrome.storage.local. Call from API client. */
 export async function getBackendUrl(): Promise<string> {
   await init();
-  const o = cachedOverride.trim();
-  if (o) return o.replace(/\/$/, '');
+  const valid = validateOverrideUrl(cachedOverride);
+  if (valid) return valid;
   return BACKEND_URLS[cachedEnv];
 }
 
@@ -95,6 +123,11 @@ export async function setBackendEnv(env: BackendEnv): Promise<void> {
 
 export async function setBackendOverride(url: string): Promise<void> {
   const value = url.trim();
+  // Reject obviously-invalid values at write time too (clearing is always
+  // allowed). The read-site validation above is the real gate.
+  if (value && validateOverrideUrl(value) === null) {
+    throw new Error('Backend override must be a valid https URL (http allowed for localhost).');
+  }
   await chrome.storage.local.set({ [STORAGE_KEYS.BACKEND_URL_OVERRIDE]: value });
   cachedOverride = value;
   notify();

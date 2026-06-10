@@ -26,17 +26,20 @@ const RPC_TIMEOUT_MS = 30_000;
 
 /**
  * Resolve the bearer token used by every desktop-engine transport (HTTP RPC
- * Authorization header, WS `?token=` query param). Prefers the explicit
- * pair-token if Settings → Pair desktop ran, falls back to the user's
- * Supabase access token otherwise.
+ * Authorization header, WS `?token=` query param). EXPLICIT pair-token only.
+ *
+ * The previous fallback to the user's Supabase ACCESS token was a credential
+ * leak (audit P1-5): the engine's base URL is discovered by probing
+ * localhost ports 22140-22159 for anything whose /health matches a known,
+ * guessable JSON shape — any unprivileged local process binding a port in
+ * that range could harvest the user's full Supabase JWT over plaintext HTTP.
+ * The pairing flow (Settings → Pair desktop) exists; un-paired = no bridge
+ * auth, and callers surface the "open Settings → Pair desktop" remediation.
  */
 export async function getPairToken(): Promise<string | null> {
-  const r = await chrome.storage.local.get([
-    STORAGE_KEYS.DESKTOP_PAIR_TOKEN,
-    STORAGE_KEYS.ACCESS_TOKEN,
-  ]);
-  const v = r[STORAGE_KEYS.DESKTOP_PAIR_TOKEN] || r[STORAGE_KEYS.ACCESS_TOKEN];
-  return typeof v === 'string' ? v : null;
+  const r = await chrome.storage.local.get([STORAGE_KEYS.DESKTOP_PAIR_TOKEN]);
+  const v = r[STORAGE_KEYS.DESKTOP_PAIR_TOKEN];
+  return typeof v === 'string' && v.length > 0 ? v : null;
 }
 
 export async function setPairToken(token: string): Promise<void> {

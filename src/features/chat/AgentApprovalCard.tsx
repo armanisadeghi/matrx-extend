@@ -43,6 +43,16 @@ export function AgentApprovalCard({ req }: { req: PendingConfirmRequest }) {
   const argsPreview = useMemo(() => prettyArgs(req.args), [req.args]);
   const externalLabel = req.initiator ? EXTERNAL_INITIATOR_LABELS[req.initiator] : undefined;
 
+  // desktop_run_command executes on the user's MACHINE via matrx-local —
+  // the generic scroll-clipped args <pre> hid the tail of long commands,
+  // so users could approve a command they hadn't fully seen (audit P1-6).
+  // Surface the full command un-clipped and visually distinct.
+  const desktopCommand = useMemo(() => {
+    if (req.toolName !== 'desktop_run_command') return null;
+    const cmd = (req.args as { command?: unknown })?.command;
+    return typeof cmd === 'string' ? cmd : null;
+  }, [req.toolName, req.args]);
+
   return (
     <div className="rounded-xl border border-amber-300/60 bg-amber-50/70 p-3 text-sm shadow-sm dark:border-amber-700/60 dark:bg-amber-950/30">
       {externalLabel && (
@@ -67,6 +77,17 @@ export function AgentApprovalCard({ req }: { req: PendingConfirmRequest }) {
           )}
         </div>
       </div>
+
+      {desktopCommand && (
+        <div className="mt-2 rounded-md border border-rose-300/70 bg-rose-50/60 p-2 dark:border-rose-700/60 dark:bg-rose-950/30">
+          <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-rose-700 dark:text-rose-300">
+            Runs on your computer
+          </div>
+          <pre className="whitespace-pre-wrap break-all text-[11px] leading-snug">
+            {desktopCommand}
+          </pre>
+        </div>
+      )}
 
       {argsPreview && (
         <pre className="mt-2 max-h-40 overflow-auto rounded-md bg-background/60 p-2 text-[11px] leading-snug">

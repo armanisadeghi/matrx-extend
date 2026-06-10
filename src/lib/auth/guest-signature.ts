@@ -59,9 +59,24 @@ async function compute(): Promise<string> {
   let nonce = stored[STORAGE_KEYS.GUEST_NONCE] as string | undefined;
   let createdAt = stored[STORAGE_KEYS.GUEST_CREATED_AT] as number | undefined;
   if (!nonce || !createdAt) {
-    const minted = await mintNonce();
-    nonce = minted.nonce;
-    createdAt = minted.createdAt;
+    await mintNonce();
+    // CROSS-context race guard (audit P3-8): the in-flight-promise dedup
+    // below is per-JS-context — the SW, sidepanel, and offscreen each have
+    // their own module instance, so a fresh install's first concurrent
+    // callers could each mint a DIFFERENT nonce, splitting the guest into
+    // two anonymous server identities (conversations/usage forked, one
+    // orphaned). Re-reading after the mint adopts whichever write landed
+    // last in storage — all racers converge on the same value, and the
+    // signature below is derived from the AGREED nonce, never the local one.
+    const reread = await chrome.storage.local.get([
+      STORAGE_KEYS.GUEST_NONCE,
+      STORAGE_KEYS.GUEST_CREATED_AT,
+    ]);
+    nonce = reread[STORAGE_KEYS.GUEST_NONCE] as string | undefined;
+    createdAt = reread[STORAGE_KEYS.GUEST_CREATED_AT] as number | undefined;
+    if (!nonce || !createdAt) {
+      throw new Error('guest nonce mint did not persist');
+    }
   }
   const installId = chrome.runtime.id;
   const signature = await sha256Hex(`${installId}|${nonce}|${createdAt}`);
