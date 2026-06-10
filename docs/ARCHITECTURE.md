@@ -133,7 +133,7 @@ The extension reads from Supabase directly using the user's JWT, never via the F
 
 - `openapi.json` — OpenAPI 3 spec (252 routes, 189 schemas as of Apr 2026)
 - `api-types.ts` — TypeScript types from openapi-typescript
-- `stream-events.ts` — typed SSE event union with type guards
+- `stream-events.ts` — typed NDJSON event union with type guards
 - `stream-events.schema.json` — JSON Schema mirror
 - `llm-params*.{json,ts}` — model config
 

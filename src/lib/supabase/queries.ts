@@ -879,3 +879,89 @@ export async function deleteScreenshot(id: string): Promise<boolean> {
   }
   return true;
 }
+
+// ─── wbx_guidance (cloud-synced guidance metadata, TASK-004) ────────────────
+/**
+ * One guidance index row. The `id` is the CLIENT-generated guidance id
+ * (`gd_<ts>_<rand>`, a text PK — not a uuid) so the local chrome.storage.local
+ * cache and the cloud row map 1:1. Kind-specific fields live in the `data`
+ * jsonb so the GuidanceItem discriminated union survives the round-trip.
+ * Heavy bytes stay in cld_files; `data` only carries pointers.
+ */
+export const WbxGuidanceRowSchema = z.object({
+  id: z.string(),
+  domain: z.string(),
+  kind: z.string(),
+  caption: z.string().nullable(),
+  origin_url: z.string().nullable(),
+  data: z.unknown().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+export type WbxGuidanceRow = z.infer<typeof WbxGuidanceRowSchema>;
+
+export interface SaveGuidanceRowPayload {
+  id: string;
+  domain: string;
+  kind: string;
+  caption?: string | null;
+  origin_url?: string | null;
+  data: unknown;
+  /** ISO timestamps (the client stores epoch-ms; the cloud-sync mapper converts). */
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Upsert one guidance row keyed by its client id. `user_id` is intentionally
+ * omitted — the column DEFAULTs to `auth.uid()` on insert and the RLS UPDATE
+ * policy pins existing rows to the owner, so a row can never change hands.
+ */
+export async function upsertGuidanceRow(p: SaveGuidanceRowPayload): Promise<boolean> {
+  const c = getSupabase();
+  const { error } = await c.from('wbx_guidance').upsert(
+    {
+      id: p.id,
+      domain: p.domain,
+      kind: p.kind,
+      caption: p.caption ?? null,
+      origin_url: p.origin_url ?? null,
+      data: p.data ?? {},
+      created_at: p.created_at,
+      updated_at: p.updated_at,
+    },
+    { onConflict: 'id' },
+  );
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return false;
+    console.warn('[matrx-extend] upsertGuidanceRow error', error.message);
+    return false;
+  }
+  return true;
+}
+
+export async function deleteGuidanceRow(id: string): Promise<boolean> {
+  const c = getSupabase();
+  const { error } = await c.from('wbx_guidance').delete().eq('id', id);
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return false;
+    console.warn('[matrx-extend] deleteGuidanceRow error', error.message);
+    return false;
+  }
+  return true;
+}
+
+/** Fetch all of the signed-in user's guidance rows (RLS scopes to the owner). */
+export async function fetchAllGuidanceRows(): Promise<WbxGuidanceRow[]> {
+  const c = getSupabase();
+  const { data, error } = await c
+    .from('wbx_guidance')
+    .select('id, domain, kind, caption, origin_url, data, created_at, updated_at')
+    .order('updated_at', { ascending: false });
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return [];
+    console.warn('[matrx-extend] fetchAllGuidanceRows error', error.message);
+    return [];
+  }
+  return parseRowsSafe(WbxGuidanceRowSchema, (data ?? []) as unknown[], 'fetchAllGuidanceRows').rows;
+}

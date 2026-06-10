@@ -96,8 +96,17 @@ export async function getGuidanceItems(ids: string[]): Promise<GuidanceItem[]> {
 /**
  * Upsert. Updates the list index when the item is new, refreshes its
  * summary when fields like `caption`/`updated_at` change.
+ *
+ * Also best-effort mirrors the item to the cloud (`wbx_guidance`) so guidance
+ * follows the user across machines (TASK-004). The cloud push is
+ * fire-and-forget — connectivity loss never blocks the local write. Pass
+ * `{ sync: false }` to write the local cache only (used by the cloud→local
+ * hydration so a merge doesn't echo straight back to the cloud).
  */
-export async function saveGuidanceItem(item: GuidanceItem): Promise<void> {
+export async function saveGuidanceItem(
+  item: GuidanceItem,
+  opts?: { sync?: boolean },
+): Promise<void> {
   await chrome.storage.local.set({ [itemKey(item.id)]: item });
   const list = await loadList();
   const idx = list.findIndex((g) => g.id === item.id);
@@ -109,9 +118,12 @@ export async function saveGuidanceItem(item: GuidanceItem): Promise<void> {
   }
   await saveList(list);
   log.info('sys', `guidance saved id=${item.id} kind=${item.kind} domain=${item.domain}`);
+  if (opts?.sync !== false) {
+    void import('@/lib/guidance/cloud-sync').then((m) => m.pushGuidanceToCloud(item));
+  }
 }
 
-export async function deleteGuidanceItem(id: string): Promise<boolean> {
+export async function deleteGuidanceItem(id: string, opts?: { sync?: boolean }): Promise<boolean> {
   const list = await loadList();
   const idx = list.findIndex((g) => g.id === id);
   if (idx < 0) return false;
@@ -119,6 +131,9 @@ export async function deleteGuidanceItem(id: string): Promise<boolean> {
   await saveList(list);
   await chrome.storage.local.remove([itemKey(id)]);
   log.info('sys', `guidance deleted id=${id}`);
+  if (opts?.sync !== false) {
+    void import('@/lib/guidance/cloud-sync').then((m) => m.removeGuidanceFromCloud(id));
+  }
   return true;
 }
 

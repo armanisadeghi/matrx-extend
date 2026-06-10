@@ -359,8 +359,8 @@ This repository is intended to become the Chrome extension client for the Matrx 
 - **Framework**: [WXT](https://wxt.dev) 0.20.x (Manifest V3, Vite-based, file-based entrypoints, sidepanel + offscreen helpers)
 - **UI**: React 19, Tailwind CSS 4, shadcn/ui primitives, Radix UI, Lucide icons
 - **State**: Zustand 5 (persisted to `chrome.storage.local`), TanStack Query 5
-- **Validation**: Zod 4 at every external boundary
-- **Cross-context messaging**: webext-bridge 6 (typed SW ↔ side panel ↔ content ↔ offscreen)
+- **Validation**: Zod 3 (`^3.24`) at every external boundary
+- **Cross-context messaging**: native `chrome.runtime` wrapper (typed SW ↔ side panel ↔ content ↔ offscreen)
 - **Auth / DB**: `@supabase/supabase-js` 2 with custom `chrome.storage` adapter, `autoRefreshToken: false`, manual refresh via `chrome.alarms`
 - **Scraping**: Defuddle (primary) → Mozilla Readability (fallback) → DOMPurify → Turndown (markdown), plus first-class collectors for images, videos, audio, links, JSON-LD, microdata, OpenGraph/Twitter
 - **Streaming**: native `fetch` + `ReadableStream`, run inside an **offscreen document** so SW kills don't cut long agent / scrape streams
@@ -383,10 +383,10 @@ matrx-extend/
 │   ├── config/env.ts             # build-time env, runtime-overridable backend URL
 │   ├── lib/
 │   │   ├── auth/                 # PKCE flow, Supabase storage adapter, AES-GCM crypto
-│   │   ├── api/                  # REST client + SSE stream + per-route modules
+│   │   ├── api/                  # REST client + NDJSON stream + per-route modules
 │   │   ├── supabase/             # client + RLS-gated queries
 │   │   ├── desktop/              # bridge facade + native + http transports
-│   │   ├── messaging/            # webext-bridge wrapper + channel registry + Zod schemas
+│   │   ├── messaging/            # native chrome.runtime wrapper + channel registry + Zod schemas
 │   │   ├── scrape/               # pipeline + collectors
 │   │   ├── data-pattern/         # picker, runner, matcher
 │   │   ├── seo/                  # audit collector
@@ -448,7 +448,7 @@ The extension hits Supabase's OAuth endpoints directly — Supabase renders the 
 3. `chrome.identity.launchWebAuthFlow` opens an auth window pointed at `${SUPABASE_URL}/auth/v1/oauth/authorize?...`
 4. Supabase redirects to `https://<EXTENSION_ID>.chromiumapp.org/?code=…&state=…`
 5. SW recovers verifier from state, POSTs to `${SUPABASE_URL}/auth/v1/oauth/token` (no `client_secret`, no `openid` scope)
-6. Tokens stored: access in `chrome.storage.session` (cleared on browser restart), refresh AES-GCM-encrypted in `chrome.storage.local`
+6. Tokens stored: access token in `chrome.storage.local`, refresh token AES-GCM-encrypted in `chrome.storage.local`; the PKCE verifier lives in `chrome.storage.session` (cleared on browser restart) for the duration of the flow
 7. `chrome.alarms.create('matrx.alarm.tokenRefresh')` fires ~50 min later to rotate before expiry
 
 See [matrx-oauth/](matrx-oauth/) for full architecture, gotchas (the five hard-won facts), and the debugging playbook.
@@ -471,14 +471,14 @@ Capability-detected at runtime — prefers native messaging, falls back to local
 
 Localhost is exempt from Private Network Access prompts in current Chrome — no CORS preflight juggling needed.
 
-## Streaming — offscreen-buffered SSE
+## Streaming — offscreen-buffered NDJSON
 
 MV3 service workers are killed after ~30s idle. To keep AI agent / scrape streams alive across SW restarts:
 
 ```
 side panel → SW: stream:start { runId, endpoint, body, parser }
 SW: ensureOffscreen() → sends stream:start to offscreen window
-offscreen: holds the fetch ReadableStream, parses SSE
+offscreen: holds the fetch ReadableStream, parses NDJSON
 offscreen → SW → side panel: stream:chunk { runId, type, payload }
 ```
 

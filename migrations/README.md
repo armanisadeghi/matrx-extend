@@ -18,6 +18,8 @@ Parallel platform prefixes (NOT owned by this repo): `cx_` (chat), `agx_` (agent
 | 5 | `2026_05_03_agenda_v0.sql` | `public.agenda_task` + `public.agenda_run` — scheduled agent runs (**superseded by `sch_*`; dropped in step 7**) |
 | 6 | `2026_05_08_wbx_screenshot.sql` | `public.wbx_screenshot` — captured screenshots from the agent / pilot surfaces |
 | 7 | `2026_05_10_sch_v0.sql` | `public.sch_task` + `public.sch_agent_task` + `public.sch_trigger` + `public.sch_run` — kind-agnostic scheduling spine. Migrates legacy `agenda_*` rows in and drops the old tables. |
+| 8 | `2026_05_20_wbx_highlight.sql` | `public.wbx_highlight` — on-page highlights captured by the highlighter overlay |
+| 9 | `2026_06_10_wbx_guidance.sql` | `public.wbx_guidance` — cloud-synced guidance metadata (notes / screenshots / GIFs / demo refs) keyed by client guidance id; pointers only, bytes stay in `cld_files` |
 
 ## How to apply (and why the ledger matters)
 
@@ -51,7 +53,7 @@ lines (e.g. `2026_05_03_agenda_v0.sql`, superseded by `sch_*`).
 
 ## RLS
 
-All three tables enable RLS with a single owner-only policy: `user_id = auth.uid()`. The user's JWT (set by the extension via `supabase.auth.setSession`) is what makes this work — `auth.uid()` resolves to their Supabase user ID, so they can only read/write their own rows.
+Every `wbx_*` table enables RLS with owner-only policies keyed on `user_id = auth.uid()`. The user's JWT (set by the extension via `supabase.auth.setSession`) is what makes this work — `auth.uid()` resolves to their Supabase user ID, so they can only read/write their own rows. Most tables expose select/insert/delete; `wbx_guidance` adds an **update** policy because guidance items are mutable (its sync path uses `INSERT … ON CONFLICT DO UPDATE`).
 
 ## Tables this extension only READS (not created here)
 
@@ -59,9 +61,7 @@ All three tables enable RLS with a single owner-only policy: `user_id = auth.uid
 - `cx_conversation`, `cx_message` — conversation history for the Chat tab
 - `rs_*` — research data, accessed via FastAPI endpoints (`/research/*`), not direct Supabase queries
 
-> **2026-06-10 audit notes:** `2026_05_20_wbx_highlight.sql` (order 8) is
-> missing from the table above — nine tables now enable RLS, not three.
-> Also: the live DB carries a partial unique index
+> **2026-06-10 audit notes:** the live DB carries a partial unique index
 > `sch_run_unique_active_per_task` (one active run per task) that was
 > applied out-of-band and is NOT in `2026_05_10_sch_v0.sql` — tracked with
 > the aidream team in docs/AIDREAM_ISSUES.md so a DB rebuild doesn't lose

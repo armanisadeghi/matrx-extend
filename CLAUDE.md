@@ -342,6 +342,15 @@ discovery handler).
   screenshot grabs, GIF recordings, demo references. Whatever's saved
   for the current page's domain is auto-attached to every chat sent
   from that domain. Backs the `guidance` tool category.
+  **Cloud-synced (2026-06-10, TASK-004):** guidance *metadata* persists to
+  `public.wbx_guidance` (not just the artifact bytes in `cld_files`), so it
+  follows the user across machines. DB is the source of truth;
+  `chrome.storage.local` is an offline cache. Every `saveGuidanceItem` /
+  `deleteGuidanceItem` best-effort mirrors to the cloud
+  ([src/lib/guidance/cloud-sync.ts](./src/lib/guidance/cloud-sync.ts)); a
+  sign-in hydration ([src/hooks/use-guidance-sync.ts](./src/hooks/use-guidance-sync.ts))
+  merges cloud→local last-write-wins. Caveat: `demo_ref` bodies don't sync yet
+  — see [docs/KNOWN_ISSUES.md](./docs/KNOWN_ISSUES.md).
 - **SEO** — audit + AI recommendations
 - **Notes** — list / search / folder picker / editor for user-authored
   notes (separate from guidance — notes are general personal text;

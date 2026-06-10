@@ -195,11 +195,14 @@ tag-implied-by-role, empty fields, `expanded:false` were removed.
 
 ## 11. Canonical tool set IS documented (confirmed)
 
-[docs/proposed_browser_tools.json](./proposed_browser_tools.json) is the
-declared single source of truth — `_meta.status: "canonical"`,
-`_meta.version: "1.0.0"`, dated 2026-05-04. 27 tools in 5 groups.
+> **Note (2026-06-10):** this section originally referenced a
+> `proposed_browser_tools.json` "canonical" file. That file was orphaned
+> (no consumer) and has been deleted — the single source of truth is now
+> the DB (`public.tool_def` + `tool_surface_defaults`); see
+> [TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md). The `core`-group
+> analysis below is preserved as the original May-2026 finding.
 
-The `core` group (12 tools, `recommendation: "browser_default"`):
+The original proposed `core` group (12 tools, `recommendation: "browser_default"`):
 ```
 read_page · find · get_page_text · find_text_on_page · computer ·
 form_input · navigate · tabs · wait_for · ask_user · notify_user · update_plan
