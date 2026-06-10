@@ -5,9 +5,11 @@ import { useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
 
-export function TablesTab() {
+export function TablesTab({ active = true }: { active?: boolean }) {
   const [tableIndex, setTableIndex] = useState(0);
-  const { detection, rows, running, error, run } = useExtraction('auto_table');
+  const { detection, rows, running, error, run } = useExtraction('auto_table', {
+    autoDetect: active,
+  });
 
   const tableCount = detection?.count ?? 0;
   const indices = Array.from({ length: tableCount }, (_, i) => i);

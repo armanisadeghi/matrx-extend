@@ -4,8 +4,10 @@ import { Camera, Loader2 } from 'lucide-react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
 
-export function SnapshotTab() {
-  const { detection, rows, running, error, run } = useExtraction('og_meta');
+export function SnapshotTab({ active = true }: { active?: boolean }) {
+  const { detection, rows, running, error, run } = useExtraction('og_meta', {
+    autoDetect: active,
+  });
 
   return (
     <div className="h-full overflow-y-auto">

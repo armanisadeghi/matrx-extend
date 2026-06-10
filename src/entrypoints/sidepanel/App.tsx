@@ -376,8 +376,17 @@ export function App() {
                 <ProfileView />
               </Suspense>
             </TabsContent>
+            {/* forceMount (audit P1-1): Showcase sub-tabs hold in-progress
+                work (network capture buffers, half-built list-pattern
+                configs, AI extract results). Leaving and returning must not
+                destroy it. Auto-probes are gated on visibility inside
+                ShowcaseView, so the mounted-but-hidden tree stays idle. */}
             {isAdmin && (
-              <TabsContent value="showcase" className="flex-1 min-h-0">
+              <TabsContent
+                value="showcase"
+                forceMount
+                className="flex-1 min-h-0 data-[state=inactive]:hidden"
+              >
                 <Suspense fallback={TabFallback}>
                   <ShowcaseView />
                 </Suspense>

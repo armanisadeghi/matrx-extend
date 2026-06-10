@@ -9,9 +9,11 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 
 type ParsedSource = { source: string; data: unknown };
 
-export function FrameworkTab() {
+export function FrameworkTab({ active = true }: { active?: boolean }) {
   const tab = useActiveTab();
-  const { detection, rows, running, error, run } = useExtraction('next_data');
+  const { detection, rows, running, error, run } = useExtraction('next_data', {
+    autoDetect: active,
+  });
   const [sources, setSources] = useState<ParsedSource[]>([]);
   const [activeSource, setActiveSource] = useState<string | null>(null);
   const [keyPath, setKeyPath] = useState('');

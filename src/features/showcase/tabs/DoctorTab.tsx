@@ -18,7 +18,7 @@ const MODE_LABELS: Record<string, string> = {
   og_meta: 'Snapshot tab',
 };
 
-export function DoctorTab() {
+export function DoctorTab({ active = true }: { active?: boolean }) {
   const tab = useActiveTab();
   const [diag, setDiag] = useState<PageDiagnostic | null>(null);
   const [running, setRunning] = useState(false);
@@ -46,9 +46,11 @@ export function DoctorTab() {
     }
   }, [tab.id]);
 
+  // `active` gates the auto-probe: with every sub-tab forceMounted, only the
+  // visible one should scan the page. Becoming active (re)probes.
   useEffect(() => {
-    if (tab.id) void run();
-  }, [run, tab.id, tab.url]);
+    if (active && tab.id) void run();
+  }, [active, run, tab.id, tab.url]);
 
   const copyOptions = useMemo(() => {
     if (!diag) return [];

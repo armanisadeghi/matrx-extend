@@ -6,9 +6,11 @@ import { useMemo, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
 
-export function JsonLdTab() {
+export function JsonLdTab({ active = true }: { active?: boolean }) {
   const [filter, setFilter] = useState('');
-  const { detection, rows, running, error, run } = useExtraction('json_ld');
+  const { detection, rows, running, error, run } = useExtraction('json_ld', {
+    autoDetect: active,
+  });
 
   const types = useMemo(() => {
     const meta = detection?.meta as { types?: Record<string, number> } | undefined;

@@ -27,7 +27,7 @@ const KIND_LABELS: Record<string, string> = {
   network_capture: 'Network',
 };
 
-export function PatternsTab() {
+export function PatternsTab({ active = true }: { active?: boolean }) {
   const tab = useActiveTab();
   const [patterns, setPatterns] = useState<ExtractionPattern[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -58,9 +58,11 @@ export function PatternsTab() {
     }
   }, [host]);
 
+  // Re-fetch whenever this tab becomes the visible one — picks up patterns
+  // saved from sibling tabs without a manual refresh.
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    if (active) void refresh();
+  }, [active, refresh]);
 
   const handleRun = async (p: ExtractionPattern) => {
     if (!tab.id) return;
