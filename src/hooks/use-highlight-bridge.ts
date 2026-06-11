@@ -102,4 +102,26 @@ export function useHighlightBridge(): void {
       offChanged();
     };
   }, [upsertItem, setItems, setOverlay, setMode]);
+
+  // The content-script overlay dies silently on navigation/reload — the
+  // panel kept showing "Stop highlighting" for a dead overlay and the first
+  // toggle click was eaten "stopping" it. Watch the overlay tab and reset.
+  const overlayTabId = useHighlightStore((s) => s.overlayTabId);
+  useEffect(() => {
+    if (overlayTabId == null) return;
+    const onUpdated = (tabId: number, change: chrome.tabs.TabChangeInfo) => {
+      if (tabId === overlayTabId && change.status === 'loading') {
+        setOverlay({ active: false, tabId: null, count: 0 });
+      }
+    };
+    const onRemoved = (tabId: number) => {
+      if (tabId === overlayTabId) setOverlay({ active: false, tabId: null, count: 0 });
+    };
+    chrome.tabs.onUpdated.addListener(onUpdated);
+    chrome.tabs.onRemoved.addListener(onRemoved);
+    return () => {
+      chrome.tabs.onUpdated.removeListener(onUpdated);
+      chrome.tabs.onRemoved.removeListener(onRemoved);
+    };
+  }, [overlayTabId, setOverlay]);
 }

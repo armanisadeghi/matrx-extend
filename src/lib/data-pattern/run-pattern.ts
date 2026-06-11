@@ -89,6 +89,10 @@ export async function runMode(
 ): Promise<ExtractedRow[]> {
   const mode = getMode(modeId);
   if (!mode) throw new Error(`Unknown mode: ${modeId}`);
+  // Same guard as runPattern — the in-page stub for interactive kinds
+  // "succeeds" with 0 rows, which a DB-added ai_extract/network recipe
+  // would otherwise silently hit.
+  if (mode.interactiveOnly) throw new InteractiveOnlyError(modeId);
   const result = await chrome.scripting.executeScript({
     target: { tabId },
     func: mode.runInPage as (cfg: unknown) => ExtractedRow[],

@@ -10,9 +10,10 @@
  *      action-tier tools when you're in Ask mode).
  *
  * The "Run" button calls the handler directly — no SSE round-trip. It
- * skips the permission gate (since it's user-initiated) but flows the
- * result through TOOL_TIMELINE_EVENT so the same UI you see during agent
- * runs renders here too.
+ * skips the permission gate (since it's user-initiated). Results render in
+ * the inline output section below the form; the chat transcript timeline is
+ * deliberately dispatcher-only (manual runs would otherwise attach stray
+ * tool rows to whatever assistant message happens to be last).
  */
 
 import { CopyButton } from '@/components/CopyMenu';

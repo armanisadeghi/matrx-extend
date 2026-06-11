@@ -266,7 +266,9 @@ export function AiExtractTab() {
                 <div className="mt-2 space-y-2">
                   <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
                     <CheckCircle2 className="size-3.5" />
-                    Pattern generated · verified on this page
+                    {patternProbe
+                      ? 'Pattern generated · verified on this page'
+                      : 'Pattern generated (not verified — no tab to probe)'}
                     {patternResult.confidence && (
                       <span className="rounded-full bg-emerald-500/15 px-1.5 py-px text-[9px] font-medium uppercase tracking-wider">
                         {patternResult.confidence}

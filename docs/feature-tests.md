@@ -1433,6 +1433,28 @@ Every entry follows this shape:
   audio is captured. Guests see "Sign in to use voice input" instead of a
   recording that fails at transcription.
 
+### Bug-hunt 2026-06-10 — quick regression passes
+- **Guidance Add button:** Guidance tab → Add → the Note/Screenshot/GIF/Demo
+  bar must open (it was completely dead). Edit a note → Save → the preview
+  shows the NEW text immediately. Delete a demo row → `list_demos` (Tools
+  tab) no longer lists it. Delete on machine A → machine B drops it after
+  its next sign-in hydrate.
+- **Lists repaint:** TaskPanel (chat header chip) → add a task → it appears
+  INSTANTLY. Check a todo, delete a task, "Clear done" — all repaint live.
+- **Tasks overlay:** trigger an L3 capture, switch sidepanel tabs, click the
+  in-page Capture button — it still works (TasksView stays mounted). With
+  the panel fully closed, the overlay unlocks with a "side panel is closed"
+  notice instead of freezing on "Capturing…".
+- **Parallel runs:** text renders once (was doubled).
+- **Scrape:** Save while signed out shows a red failure line (was silent
+  fake-success); a failed "Scroll & capture" retries WITH scrolling;
+  fetch_url_as_markdown returns the FETCHED page's metadata/links.
+- **SEO:** audit a link-heavy page — internal/external link counts are real
+  numbers (they were hardcoded 0); chrome:// pages explain themselves.
+- **Chat:** answer an agent questionnaire → Stop now stops that run; ask
+  cards with a countdown disappear at 0; streamed code blocks no longer
+  flash between plain and highlighted.
+
 ## Template (copy when adding a new entry)
 
 ```markdown
