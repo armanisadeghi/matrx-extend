@@ -226,13 +226,13 @@ export const useChatStore = create<ChatState>()(
       boundComputeTarget: null,
       setAgent: (selectedAgentId) => set({ selectedAgentId }),
       setConversation: (selectedConversationId) => {
+        const leaving = get().selectedConversationId;
         set({ selectedConversationId, messages: [], streamInterruption: null });
-        // Wipe any pending approval / ask cards from the previous
-        // conversation. They were tied to a different runId; the SW will
-        // time them out on its end. Keeping them visible here would just
-        // confuse the user since responding to them no longer reaches a
-        // listener that cares.
-        useToolInbox.getState().resetAll();
+        // Drop the LEAVING conversation's approval / ask cards only — the
+        // inbox is shared with the Pilot surface, and resetAll() here used
+        // to vaporize a pending Pilot approval, hanging that run for the
+        // SW's full 5-minute timeout.
+        useToolInbox.getState().clearForConversation(leaving);
       },
       adoptConversationId: (id) =>
         set((s) => (s.selectedConversationId === id ? s : { selectedConversationId: id })),

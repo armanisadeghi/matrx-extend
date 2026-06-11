@@ -35,6 +35,8 @@ interface Props {
   conversationId: string | null;
   open: boolean;
   onClose: () => void;
+  /** Claim the lists store only while this surface's tab is visible. */
+  enabled?: boolean;
 }
 
 const STATUS_ORDER: TaskStatus[] = ['pending', 'in_progress', 'done', 'blocked', 'skipped'];
@@ -67,8 +69,13 @@ const STATUS_META: Record<TaskStatus, { label: string; tone: string; icon: typeo
   },
 };
 
-export function TaskPanel({ conversationId, open, onClose }: Props): React.JSX.Element | null {
-  useListsSubscriber(conversationId);
+export function TaskPanel({
+  conversationId,
+  open,
+  onClose,
+  enabled = true,
+}: Props): React.JSX.Element | null {
+  useListsSubscriber(conversationId, enabled);
   const plan = useListsStore((s) => s.plan);
   const tasks = useListsStore((s) => s.tasks);
   const userTodos = useListsStore((s) => s.user_todos);
@@ -378,11 +385,14 @@ function UserTodoRow({
 export function TaskPanelChip({
   conversationId,
   onClick,
+  enabled = true,
 }: {
   conversationId: string | null;
   onClick: () => void;
+  /** Claim the lists store only while this surface's tab is visible. */
+  enabled?: boolean;
 }): React.JSX.Element | null {
-  useListsSubscriber(conversationId);
+  useListsSubscriber(conversationId, enabled);
   const plan = useListsStore((s) => s.plan);
   const tasks = useListsStore((s) => s.tasks);
   const userTodos = useListsStore((s) => s.user_todos);

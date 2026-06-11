@@ -25,7 +25,7 @@ import { useScrapeStore } from '@/state/scrape';
 import { useSettingsStore } from '@/state/settings';
 import { useTurnInboxStore } from '@/state/turn-inbox';
 import type { ConsumedInjection } from '@gen/stream-events';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 
 /**
  * Materialize the highlights the user attached via the Highlight tab into the
@@ -319,60 +319,68 @@ function claimResume(userRequestId: string, owner: string): boolean {
   return true;
 }
 
-export function useChatStream() {
-  // Stable identity for this hook instance — the resume-claim owner key.
-  const instanceIdRef = useRef<string>(newId('chathook'));
-  const runIdRef = useRef<string | null>(null);
-  const targetIdRef = useRef<string | null>(null);
-  // For stall recovery: the request id (resume key), how many events we've
-  // seen (resume cursor), and the last send (to power Retry).
-  const requestIdRef = useRef<string | null>(null);
-  const eventCountRef = useRef(0);
-  const lastSendRef = useRef<{ input: string; opts: SendOptions } | null>(null);
-  // Pending STREAM_CONTINUE that arrived while the original stream was still
-  // wrapping up. Drained on the next `done` chunk so the resume actually
-  // fires instead of being dropped on the floor. See the resumeRun /
-  // CHANNELS.STREAM_CONTINUE useEffect for the round-trip rationale.
-  const pendingContinueRef = useRef<{
-    conversationId: string;
-    userRequestId: string;
-  } | null>(null);
-  // Late-binding ref for `resumeRun` so the STREAM_CHUNK `done` handler can
-  // call it even though useCallback declarations come after the useEffect.
-  // The function moves; the ref doesn't.
-  const resumeRunRef = useRef<
-    (conversationId: string, userRequestId: string) => Promise<string | null>
-  >(async () => null);
-  // Retryable-409 recovery for /resume. The server's atomic run claim
-  // returns 409 code=resume_conflict when the SUSPENDING run hasn't
-  // finished persisting status='paused' yet (a fast client tool's result
-  // POST can beat that write) — retry shortly instead of stalling the
-  // conversation. Bounded per user_request so a genuinely-stuck request
-  // can't loop forever.
-  const resumeRetryRef = useRef<{
+/* ── Module-scoped stream CONTROLLER ──────────────────────────────────────
+ *
+ * One controller per JS context, shared by every useChatStream() instance.
+ * Run ownership used to live in per-instance useRefs — and useChatStream is
+ * mounted by ChatView, the agenda listener, AND every InteractionAskCard.
+ * A run started through a card's instance was invisible to ChatView's:
+ * Stop did nothing, "Stop & send" started a SECOND concurrent run, and when
+ * the card unmounted (conversation switch) its chunk listener died with it,
+ * leaving isStreaming=true FOREVER — composer locked in queue-mode, chat
+ * surface bricked until panel reload. Module scope makes every instance
+ * operate on the one real run, and the (single) listeners/watchdog live for
+ * the context lifetime, so unmount can't orphan them.
+ */
+const instanceIdRef = { current: newId('chathook') };
+const runIdRef: { current: string | null } = { current: null };
+const targetIdRef: { current: string | null } = { current: null };
+// For stall recovery: the request id (resume key), how many events we've
+// seen (resume cursor), and the last send (to power Retry).
+const requestIdRef: { current: string | null } = { current: null };
+const eventCountRef = { current: 0 };
+const lastSendRef: { current: { input: string; opts: SendOptions } | null } = { current: null };
+// Pending STREAM_CONTINUE that arrived while the original stream was still
+// wrapping up. Drained on the next `done` chunk so the resume actually
+// fires instead of being dropped on the floor.
+const pendingContinueRef: {
+  current: { conversationId: string; userRequestId: string } | null;
+} = { current: null };
+// Late-binding ref for `resumeRun` so the STREAM_CHUNK `done` handler can
+// call it even though the function is (re)bound inside the hook.
+const resumeRunRef: {
+  current: (conversationId: string, userRequestId: string) => Promise<string | null>;
+} = { current: async () => null };
+// Retryable-409 recovery for /resume. Bounded per user_request.
+const resumeRetryRef: {
+  current: {
     conversationId: string;
     userRequestId: string;
     runId: string;
     attempts: number;
-  } | null>(null);
+  } | null;
+} = { current: null };
 
-  // The watchdog is created once; it calls the latest `onStall` via a ref so
-  // the closure always sees current refs without re-creating timers.
-  const onStallRef = useRef<() => void>(() => {});
-  const watchdogRef = useRef<ReturnType<typeof createStreamWatchdog> | null>(null);
-  if (!watchdogRef.current) {
-    watchdogRef.current = createStreamWatchdog({
-      stallMs: STALL_MS,
-      onStall: () => onStallRef.current(),
-    });
-  }
+// The watchdog is created once per context; onStall late-binds below.
+const onStallRef = { current: () => {} };
+const watchdogRef = {
+  current: createStreamWatchdog({
+    stallMs: STALL_MS,
+    onStall: () => onStallRef.current(),
+  }),
+};
 
-  // Teardown on unmount (audit P1-14). The watchdog timer is not a chrome
-  // listener — it survived unmount (sidepanel tab switch unmounts ChatView)
-  // and later fired with stale refs against the SHARED chat store: a new
-  // run's spinner got killed and a false "stalled" banner appeared mid-
-  // healthy-stream. Stop it with the instance that armed it.
-  useEffect(() => () => watchdogRef.current?.stop(), []);
+let listenersInstalled = false;
+
+/**
+ * Install the context-singleton stream listeners + the stall handler.
+ * Idempotent; never torn down (the controller lives as long as the
+ * document). Previously each hook instance registered its own copies —
+ * see the controller docblock above for why that broke.
+ */
+function ensureStreamListeners(): void {
+  if (listenersInstalled) return;
+  listenersInstalled = true;
 
   onStallRef.current = () => {
     const runId = runIdRef.current;
@@ -428,152 +436,168 @@ export function useChatStream() {
   // Without this, every turn would POST `conversation_id: null` and the
   // backend would open a new conversation for every message — even though
   // the server-side route handles continue-mode correctly when given an id.
-  useEffect(() => {
-    return on<StreamOpened, { ack: true }>(CHANNELS.STREAM_OPENED, (payload) => {
-      if (payload.runId !== runIdRef.current) return { ack: true };
-      if (payload.requestId) requestIdRef.current = payload.requestId;
-      watchdogRef.current?.touch();
-      if (payload.conversationId) {
-        useChatStore.getState().adoptConversationId(payload.conversationId);
+  on<StreamOpened, { ack: true }>(CHANNELS.STREAM_OPENED, (payload) => {
+    if (payload.runId !== runIdRef.current) return { ack: true };
+    if (payload.requestId) requestIdRef.current = payload.requestId;
+    watchdogRef.current?.touch();
+    if (payload.conversationId) {
+      useChatStore.getState().adoptConversationId(payload.conversationId);
+    }
+    return { ack: true };
+  });
+
+  on<StreamChunk, { ack: true }>(CHANNELS.STREAM_CHUNK, (chunk) => {
+    if (chunk.runId !== runIdRef.current) return { ack: true };
+    const target = targetIdRef.current;
+    if (!target) return { ack: true };
+
+    // Any chunk — text, reasoning, event (incl. the server's `heartbeat`),
+    // tool, error — is a sign of life. Reset the stall watchdog and bump the
+    // resume cursor.
+    eventCountRef.current += 1;
+    watchdogRef.current?.touch();
+
+    if (chunk.type === 'text') {
+      if (chunk.payload.content)
+        useChatStore.getState().appendAssistantText(target, chunk.payload.content);
+    } else if (chunk.type === 'reasoning') {
+      // Reasoning chunks are model "thinking" tokens. Append to the
+      // active assistant message's parts in arrival order so they show
+      // between text + tool entries exactly where the model produced them.
+      if (chunk.payload.content)
+        useChatStore.getState().appendAssistantReasoning(target, chunk.payload.content);
+    } else if (chunk.type === 'event') {
+      if (chunk.payload.eventName === 'tool_event') {
+        // Two side-effects on top of the regular per-message routing:
+        // (a) record category-discovery completions so future requests can
+        //     hint `loaded_categories`; (b) push the tool entry as a part
+        //     on the active assistant message so it interleaves with text.
+        const convId = useChatStore.getState().selectedConversationId;
+        handleDiscoveryToolEvent(convId, chunk.payload.data);
+        handleToolEvent(target, chunk.payload.data);
+      } else if (
+        chunk.payload.eventName === 'resource_changed' ||
+        chunk.payload.eventName === 'RESOURCE_CHANGED'
+      ) {
+        // Live tool-set updates. Used by the Tools tab UI to show what the
+        // agent currently has available after each load_browser_tools call.
+        handleResourceChangedEvent(chunk.payload.data);
+      } else if (chunk.payload.eventName === 'injection_consumed') {
+        // Turn-boundary inbox: queued message(s) drained by the running
+        // agent. Render them as user bubbles + flip their floating cards.
+        handleInjectionConsumed(target, chunk.payload.data);
+      } else if (
+        chunk.payload.eventName === 'info' &&
+        (chunk.payload.data as { code?: unknown } | undefined)?.code === 'inbox_continue'
+      ) {
+        // The agent had produced what looked like its final answer, but a
+        // queued message arrived in the same turn — the run continues rather
+        // than going idle. Nothing to render; the answer follows as chunks.
+        log.info(
+          'stream',
+          'inbox_continue — agent will address a queued message',
+          chunk.payload.data,
+        );
+      } else {
+        // Other events: phase, completion, render_block, etc. — log only.
+        log.info(
+          'stream',
+          `event: ${chunk.payload.eventName}`,
+          chunk.payload.data,
+          chunk.payload.eventName,
+        );
       }
-      return { ack: true };
-    });
-  }, []);
-
-  useEffect(() => {
-    return on<StreamChunk, { ack: true }>(CHANNELS.STREAM_CHUNK, (chunk) => {
-      if (chunk.runId !== runIdRef.current) return { ack: true };
-      const target = targetIdRef.current;
-      if (!target) return { ack: true };
-
-      // Any chunk — text, reasoning, event (incl. the server's `heartbeat`),
-      // tool, error — is a sign of life. Reset the stall watchdog and bump the
-      // resume cursor.
-      eventCountRef.current += 1;
-      watchdogRef.current?.touch();
-
-      if (chunk.type === 'text') {
-        if (chunk.payload.content)
-          useChatStore.getState().appendAssistantText(target, chunk.payload.content);
-      } else if (chunk.type === 'reasoning') {
-        // Reasoning chunks are model "thinking" tokens. Append to the
-        // active assistant message's parts in arrival order so they show
-        // between text + tool entries exactly where the model produced them.
-        if (chunk.payload.content)
-          useChatStore.getState().appendAssistantReasoning(target, chunk.payload.content);
-      } else if (chunk.type === 'event') {
-        if (chunk.payload.eventName === 'tool_event') {
-          // Two side-effects on top of the regular per-message routing:
-          // (a) record category-discovery completions so future requests can
-          //     hint `loaded_categories`; (b) push the tool entry as a part
-          //     on the active assistant message so it interleaves with text.
-          const convId = useChatStore.getState().selectedConversationId;
-          handleDiscoveryToolEvent(convId, chunk.payload.data);
-          handleToolEvent(target, chunk.payload.data);
-        } else if (
-          chunk.payload.eventName === 'resource_changed' ||
-          chunk.payload.eventName === 'RESOURCE_CHANGED'
+    } else if (chunk.type === 'error') {
+      const message = chunk.payload.message ?? 'stream error';
+      const status = chunk.payload.status;
+      // 409 on /resume = "outstanding_delegated_calls" — benign. The user
+      // still has pending ask cards in the inbox; the server is telling us
+      // it can't continue the loop yet because answers are missing. Don't
+      // render it as a stream error; just clean up the empty assistant
+      // bubble and let the inbox cards drive the next step. The full
+      // protocol contract is at
+      // matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md §2.5.
+      if (status === 409) {
+        // Three 409 shapes from /resume:
+        //   * outstanding_delegated_calls — benign; the user still has
+        //     pending ask cards. No retry.
+        //   * resume_conflict (retryable) — the suspending run hasn't
+        //     persisted status='paused' yet, or a duplicate continuation
+        //     lost the atomic claim. Retry with backoff (bounded).
+        //   * not_resumable — terminal request status. No retry.
+        const retryState = resumeRetryRef.current;
+        const RESUME_CONFLICT_MAX_RETRIES = 4;
+        if (
+          message.includes('resume_conflict') &&
+          retryState &&
+          retryState.runId === chunk.runId &&
+          retryState.attempts < RESUME_CONFLICT_MAX_RETRIES
         ) {
-          // Live tool-set updates. Used by the Tools tab UI to show what the
-          // agent currently has available after each load_browser_tools call.
-          handleResourceChangedEvent(chunk.payload.data);
-        } else if (chunk.payload.eventName === 'injection_consumed') {
-          // Turn-boundary inbox: queued message(s) drained by the running
-          // agent. Render them as user bubbles + flip their floating cards.
-          handleInjectionConsumed(target, chunk.payload.data);
-        } else if (
-          chunk.payload.eventName === 'info' &&
-          (chunk.payload.data as { code?: unknown } | undefined)?.code === 'inbox_continue'
-        ) {
-          // The agent had produced what looked like its final answer, but a
-          // queued message arrived in the same turn — the run continues rather
-          // than going idle. Nothing to render; the answer follows as chunks.
+          retryState.attempts += 1;
+          const delay = 700 * retryState.attempts;
           log.info(
             'stream',
-            'inbox_continue — agent will address a queued message',
-            chunk.payload.data,
+            `409 resume_conflict — retrying resume in ${delay}ms (attempt ${retryState.attempts}/${RESUME_CONFLICT_MAX_RETRIES})`,
+            { runId: chunk.runId },
           );
+          setTimeout(() => {
+            void resumeRunRef.current(retryState.conversationId, retryState.userRequestId);
+          }, delay);
         } else {
-          // Other events: phase, completion, render_block, etc. — log only.
           log.info(
             'stream',
-            `event: ${chunk.payload.eventName}`,
-            chunk.payload.data,
-            chunk.payload.eventName,
+            '409 on resume — not retrying (outstanding answers, terminal status, or retries exhausted)',
+            { runId: chunk.runId, message },
           );
         }
-      } else if (chunk.type === 'error') {
-        const message = chunk.payload.message ?? 'stream error';
-        const status = chunk.payload.status;
-        // 409 on /resume = "outstanding_delegated_calls" — benign. The user
-        // still has pending ask cards in the inbox; the server is telling us
-        // it can't continue the loop yet because answers are missing. Don't
-        // render it as a stream error; just clean up the empty assistant
-        // bubble and let the inbox cards drive the next step. The full
-        // protocol contract is at
-        // matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md §2.5.
-        if (status === 409) {
-          // Three 409 shapes from /resume:
-          //   * outstanding_delegated_calls — benign; the user still has
-          //     pending ask cards. No retry.
-          //   * resume_conflict (retryable) — the suspending run hasn't
-          //     persisted status='paused' yet, or a duplicate continuation
-          //     lost the atomic claim. Retry with backoff (bounded).
-          //   * not_resumable — terminal request status. No retry.
-          const retryState = resumeRetryRef.current;
-          const RESUME_CONFLICT_MAX_RETRIES = 4;
-          if (
-            message.includes('resume_conflict') &&
-            retryState &&
-            retryState.runId === chunk.runId &&
-            retryState.attempts < RESUME_CONFLICT_MAX_RETRIES
-          ) {
-            retryState.attempts += 1;
-            const delay = 700 * retryState.attempts;
-            log.info(
-              'stream',
-              `409 resume_conflict — retrying resume in ${delay}ms (attempt ${retryState.attempts}/${RESUME_CONFLICT_MAX_RETRIES})`,
-              { runId: chunk.runId },
-            );
-            setTimeout(() => {
-              void resumeRunRef.current(retryState.conversationId, retryState.userRequestId);
-            }, delay);
-          } else {
-            log.info(
-              'stream',
-              '409 on resume — not retrying (outstanding answers, terminal status, or retries exhausted)',
-              { runId: chunk.runId, message },
-            );
-          }
-          // Drop the placeholder assistant bubble we allocated for the resume —
-          // there's no continuation to render. The `done` chunk that follows
-          // this error handler in streamFetch's error path will finalize it,
-          // and the ask cards remain interactive.
-        } else {
-          useChatStore.getState().appendAssistantText(target, `\n\n_Error:_ ${message}`);
-        }
-      } else if (chunk.type === 'done') {
-        watchdogRef.current?.stop();
-        useChatStore.getState().finalizeAssistant(target);
-        useChatStore.getState().setStreaming(false);
-        runIdRef.current = null;
-        targetIdRef.current = null;
-        // Drain any STREAM_CONTINUE that raced the stream end. A fast
-        // client tool (e.g. one that doesn't need user input) can finish
-        // and POST its result before the offscreen→sidepanel `done` chunk
-        // reaches us. The SW broadcasts STREAM_CONTINUE the moment the
-        // server says `continuation_needed=true` — if that broadcast won
-        // the race against `done`, we queued it; now is the moment to
-        // fire it.
-        const pending = pendingContinueRef.current;
-        if (pending) {
-          pendingContinueRef.current = null;
-          log.info('stream', 'draining queued STREAM_CONTINUE after stream done', pending);
-          void resumeRunRef.current(pending.conversationId, pending.userRequestId);
-        }
+        // Drop the placeholder assistant bubble we allocated for the resume —
+        // there's no continuation to render. The `done` chunk that follows
+        // this error handler in streamFetch's error path will finalize it,
+        // and the ask cards remain interactive.
+      } else {
+        useChatStore.getState().appendAssistantText(target, `\n\n_Error:_ ${message}`);
       }
+    } else if (chunk.type === 'done') {
+      watchdogRef.current?.stop();
+      useChatStore.getState().finalizeAssistant(target);
+      useChatStore.getState().setStreaming(false);
+      runIdRef.current = null;
+      targetIdRef.current = null;
+      // Drain any STREAM_CONTINUE that raced the stream end. A fast
+      // client tool (e.g. one that doesn't need user input) can finish
+      // and POST its result before the offscreen→sidepanel `done` chunk
+      // reaches us. The SW broadcasts STREAM_CONTINUE the moment the
+      // server says `continuation_needed=true` — if that broadcast won
+      // the race against `done`, we queued it; now is the moment to
+      // fire it.
+      const pending = pendingContinueRef.current;
+      if (pending) {
+        pendingContinueRef.current = null;
+        log.info('stream', 'draining queued STREAM_CONTINUE after stream done', pending);
+        void resumeRunRef.current(pending.conversationId, pending.userRequestId);
+      }
+    }
+    return { ack: true };
+  });
+
+  // The SW broadcasts {conversationId, userRequestId} the moment a posted
+  // tool result comes back continuation_needed=true; we open a fresh
+  // /resume stream. Late-bound through resumeRunRef (set by the hook).
+  on<{ conversationId: string; userRequestId: string }, { ack: true }>(
+    CHANNELS.STREAM_CONTINUE,
+    (payload) => {
+      void resumeRunRef.current(payload.conversationId, payload.userRequestId);
       return { ack: true };
-    });
+    },
+  );
+}
+
+export function useChatStream() {
+  // Register the context-singleton listeners; every instance shares the
+  // module controller, so Stop/retry/done work no matter which mounted
+  // component initiated the run.
+  useEffect(() => {
+    ensureStreamListeners();
   }, []);
 
   const sendMessage = useCallback(
@@ -1037,15 +1061,6 @@ export function useChatStream() {
   // (_suspend_for_delegation) means the original stream is GONE the moment a
   // client tool gets delegated — without this, the user submits an answer and
   // nothing happens. See matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md.
-  useEffect(() => {
-    return on<{ conversationId: string; userRequestId: string }, { ack: true }>(
-      CHANNELS.STREAM_CONTINUE,
-      (payload) => {
-        void resumeRun(payload.conversationId, payload.userRequestId);
-        return { ack: true };
-      },
-    );
-  }, [resumeRun]);
 
   // Re-send the interrupted turn. Until backend resume ships, recovery is a
   // replay of the last user input (a fresh turn), which clears the banner.

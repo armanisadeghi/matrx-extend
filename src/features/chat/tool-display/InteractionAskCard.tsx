@@ -238,8 +238,10 @@ function QuestionRow({
 function isAnswered(q: QuestionSpec, v: AnswerValue | undefined): boolean {
   const componentType = (q.component_type ?? '').toLowerCase();
   if (componentType === 'toggle' || componentType === 'switch') {
-    // A toggle is always "answered" — false is a valid choice.
-    return typeof v === 'boolean';
+    // A toggle is ALWAYS answered — an untouched switch is a valid "no"
+    // (defaultFor materializes false at submit). Requiring typeof boolean
+    // forced users to physically click every switch before Send unlocked.
+    return true;
   }
   if (componentType === 'radio' || (Array.isArray(q.options) && q.options.length > 0)) {
     return typeof v === 'string' && v.length > 0;

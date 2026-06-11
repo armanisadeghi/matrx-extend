@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { respondToAsk } from '@/hooks/use-tool-inbox';
 import type { AskUserResponse, PendingAskUserRequest, UserAskOption } from '@/lib/tools/types';
+import { useToolInbox } from '@/state/tool-inbox';
 import { AlertTriangle, Bell, CheckCircle2, HelpCircle, Info, XCircle } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -35,6 +36,16 @@ export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
   const [writeMode, setWriteMode] = useState(false);
   const [writeText, setWriteText] = useState('');
   const remaining = useCountdown(req.expires_at_ms);
+
+  // Auto-dismiss on expiry (the header comment always promised this; the
+  // card actually sat at "0s" forever). The SW already resolved the tool
+  // with timed_out — answers typed after this point were silently
+  // discarded, so leaving the card interactive was a lie.
+  useEffect(() => {
+    if (remaining !== null && remaining <= 0) {
+      useToolInbox.getState().removeAsk(req.callId);
+    }
+  }, [remaining, req.callId]);
 
   // Normalize options for legacy + new shapes
   const options: UserAskOption[] = useMemo(

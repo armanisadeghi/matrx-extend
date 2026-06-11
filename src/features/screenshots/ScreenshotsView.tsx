@@ -202,14 +202,9 @@ export function ScreenshotsView() {
             phase: 'completed',
             output: result,
           });
-          // Same-context broadcasts don't loop back, so refresh the
-          // gallery directly when this view is the originator. The
-          // agent / Tools-tab paths broadcast from a different context
-          // (SW or another sidepanel), so their listeners pick up
-          // SCREENSHOT_SAVED above.
-          if (r.screenshot_id) {
-            void reload(lastFetchedUrlRef.current);
-          }
+          // broadcast() self-delivers since 2026-06-10, so the
+          // TOOL_TIMELINE_EVENT listener above refreshes the gallery for
+          // this context too — no direct reload needed (it double-fetched).
         }
       } catch (err) {
         const msg = (err as Error).message ?? 'Screenshot failed';

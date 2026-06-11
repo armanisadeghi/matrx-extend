@@ -61,8 +61,24 @@ function activeAssistantMessageId(): string | null {
   return null;
 }
 
+/**
+ * Context-singleton guard. ChatView AND PilotView both call this hook and
+ * both are forceMounted — two live subscriptions meant every tool-progress
+ * entry appended twice (the other handlers are idempotent by callId, but
+ * appendToolProgress is a blind append). Refcounted so the listeners exist
+ * exactly once per JS context regardless of how many surfaces subscribe.
+ */
+let subscriberCount = 0;
+let unsubscribeAll: (() => void) | null = null;
+
 export function useToolInbox$Subscribe(): void {
   useEffect(() => {
+    subscriberCount += 1;
+    if (subscriberCount > 1) {
+      return () => {
+        subscriberCount -= 1;
+      };
+    }
     const offConfirm = on<PendingConfirmRequest, { ack: true }>(
       CHANNELS.TOOL_CONFIRM_REQUEST,
       (payload) => {
@@ -103,6 +119,14 @@ export function useToolInbox$Subscribe(): void {
     const offTimeline = on<TimelinePayload, { ack: true }>(
       CHANNELS.TOOL_TIMELINE_EVENT,
       (payload) => {
+        // Only DISPATCHER-originated events belong in the chat transcript —
+        // the dispatcher always stamps `conversationId` (null until
+        // STREAM_OPENED resolves; WebMCP stamps null too). Decorative
+        // broadcasts from manual surfaces (ScreenshotsView, ToolsView) omit
+        // the key entirely; now that broadcast() self-delivers, accepting
+        // them would attach stray tool rows to whatever assistant message
+        // is last in the chat.
+        if (payload.conversationId === undefined) return { ack: true };
         // Conversation isolation: drop events for a conversation the user
         // isn't looking at. Null conversationId (pre-STREAM_OPENED race,
         // WebMCP) keeps the legacy attach-to-active behavior.
@@ -144,11 +168,18 @@ export function useToolInbox$Subscribe(): void {
         return { ack: true };
       },
     );
-    return () => {
+    unsubscribeAll = () => {
       offConfirm();
       offExpired();
       offAsk();
       offTimeline();
+    };
+    return () => {
+      subscriberCount -= 1;
+      if (subscriberCount === 0) {
+        unsubscribeAll?.();
+        unsubscribeAll = null;
+      }
     };
   }, []);
 }

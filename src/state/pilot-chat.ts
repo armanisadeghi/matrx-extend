@@ -96,8 +96,10 @@ export const usePilotChatStore = create<PilotChatState>()(
       permissionMode: {},
       setAgent: (selectedAgentId) => set({ selectedAgentId }),
       setConversation: (selectedConversationId) => {
+        const leaving = get().selectedConversationId;
         set({ selectedConversationId, messages: [] });
-        useToolInbox.getState().resetAll();
+        // Scoped clear — see chat.ts setConversation for why not resetAll.
+        useToolInbox.getState().clearForConversation(leaving);
       },
       adoptConversationId: (id) =>
         set((s) => (s.selectedConversationId === id ? s : { selectedConversationId: id })),

@@ -77,8 +77,12 @@ async function refreshAll(conversationId: string): Promise<void> {
  * active conversation's data changes from elsewhere (SW tool handler,
  * a parallel sidepanel, another tab editing the same data, etc.).
  */
-export function useListsSubscriber(conversationId: string | null): void {
+export function useListsSubscriber(conversationId: string | null, enabled = true): void {
   useEffect(() => {
+    // Disabled subscribers (surfaces whose sidepanel tab is hidden) must not
+    // claim OR clear the singleton — clearing would clobber the active
+    // surface's slice.
+    if (!enabled) return;
     useListsStore.getState().setConversation(conversationId);
     if (!conversationId) return;
 
@@ -116,5 +120,5 @@ export function useListsSubscriber(conversationId: string | null): void {
     return () => {
       off();
     };
-  }, [conversationId]);
+  }, [conversationId, enabled]);
 }

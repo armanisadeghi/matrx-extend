@@ -41,6 +41,14 @@ interface ToolInboxState {
   removeAsk: (callId: string) => void;
   /** Wipe everything (used on conversation switch / sign-out). */
   resetAll: () => void;
+  /**
+   * Drop only the cards owned by ONE conversation. Conversation switches
+   * must use this, not resetAll — the inbox is SHARED between the Assistant
+   * and Pilot surfaces (both forceMounted), and a "New chat" in one surface
+   * used to vaporize the OTHER surface's pending approval card, hanging its
+   * run until the SW's 5-minute timeout.
+   */
+  clearForConversation: (conversationId: string | null) => void;
 }
 
 export const useToolInbox = create<ToolInboxState>((set) => ({
@@ -70,4 +78,10 @@ export const useToolInbox = create<ToolInboxState>((set) => ({
     })),
 
   resetAll: () => set({ pendingConfirms: [], pendingAsks: [] }),
+
+  clearForConversation: (conversationId) =>
+    set((s) => ({
+      pendingConfirms: s.pendingConfirms.filter((r) => r.conversationId !== conversationId),
+      pendingAsks: s.pendingAsks.filter((r) => r.conversationId !== conversationId),
+    })),
 }));

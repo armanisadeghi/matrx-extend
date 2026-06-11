@@ -211,12 +211,15 @@ const Chips = ({ value, className }: FieldProps) => {
  * `title`, and `url` keys; tolerates camelCase variants too.
  */
 const TabCard = ({ value, className }: FieldProps) => {
+  // Hooks BEFORE any conditional return (rules of hooks) — useState after
+  // the null-guard would crash any mounted instance whose value flips
+  // between object and null across renders.
+  const [faviconErr, setFaviconErr] = useState(false);
   if (value == null || typeof value !== 'object') return null;
   const obj = value as Record<string, unknown>;
   const title = pickString(obj, ['title']) ?? '';
   const url = pickString(obj, ['url']) ?? '';
   const favicon = pickString(obj, ['fav_icon_url', 'favIconUrl', 'favicon']);
-  const [faviconErr, setFaviconErr] = useState(false);
   return (
     <div
       className={cn(

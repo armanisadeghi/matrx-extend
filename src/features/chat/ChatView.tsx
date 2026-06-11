@@ -48,6 +48,7 @@ import {
 import { cn } from '@/lib/utils';
 import { type ChatMessage, type MessagePart, useChatStore } from '@/state/chat';
 import { useSettingsStore } from '@/state/settings';
+import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { useToolInbox } from '@/state/tool-inbox';
 import { useTurnInboxStore } from '@/state/turn-inbox';
 import { useVoicePrefsStore } from '@/state/voice-prefs';
@@ -169,6 +170,7 @@ export function ChatView() {
 
   const [agentsRefreshing, setAgentsRefreshing] = useState(false);
   const [taskPanelOpen, setTaskPanelOpen] = useState(false);
+  const sidepanelTab = useSidepanelTabStore((s) => s.tab);
 
   useEffect(() => {
     // Guests get the builtin-agents list (anon role can read agx_agent rows
@@ -489,6 +491,7 @@ export function ChatView() {
         conversationId={selectedConversationId}
         open={taskPanelOpen}
         onClose={() => setTaskPanelOpen(false)}
+        enabled={sidepanelTab === 'chat'}
       />
       <ChatHeader
         agents={agents}
@@ -506,6 +509,10 @@ export function ChatView() {
           const next = v || null;
           if (next === selectedAgentId) return;
           if (isStreaming) cancel();
+          // Same teardown as New chat — without this, re-opening the old
+          // conversation resurrected an orphaned "waiting its turn" card
+          // ticking forever.
+          useTurnInboxStore.getState().clearForConversation(selectedConversationId);
           setAgent(next);
           setConversation(null);
         }}
@@ -859,6 +866,9 @@ function ChatHeader({
   getMessages: () => ChatMessage[];
   getAgent: () => { id: string; name: string } | null;
 }) {
+  // The lists store is a context singleton shared with Pilot — only the
+  // visible surface may claim it (see useListsSubscriber).
+  const chipEnabled = useSidepanelTabStore((s) => s.tab) === 'chat';
   return (
     <div className="flex h-9 shrink-0 items-center px-2">
       {agentsLoading ? (
@@ -883,7 +893,11 @@ function ChatHeader({
         </>
       )}
       <div className="ml-auto flex items-center gap-1">
-        <TaskPanelChip conversationId={selectedConversationId} onClick={onToggleTaskPanel} />
+        <TaskPanelChip
+          conversationId={selectedConversationId}
+          onClick={onToggleTaskPanel}
+          enabled={chipEnabled}
+        />
         <LanguagePicker />
         <SandboxPickerChip />
         <PermissionModeChip
@@ -1291,6 +1305,10 @@ function Composer({
   useEffect(() => {
     const el = taRef.current;
     if (!el) return;
+    // Skip measurement while the forceMounted tab is hidden — scrollHeight
+    // is 0 under display:none and the latched 0px height left the composer
+    // a clipped sliver until the first keystroke.
+    if (el.offsetParent === null) return;
     el.style.height = 'auto';
     el.style.height = `${Math.min(el.scrollHeight, 180)}px`;
   }, [value]);

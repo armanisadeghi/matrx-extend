@@ -53,6 +53,7 @@ import type { ChatMessage, MessagePart } from '@/state/chat';
 import { usePilotStore } from '@/state/pilot';
 import { usePilotChatStore } from '@/state/pilot-chat';
 import { useSettingsStore } from '@/state/settings';
+import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { useToolInbox } from '@/state/tool-inbox';
 import {
   AlertTriangle,
@@ -84,6 +85,7 @@ export function PilotView() {
   const { user, isAdmin } = useAuth();
   const { selectedAgentId, draft, messages, isStreaming, setAgent, setDraft, setMessages } =
     usePilotChatStore();
+  const pilotTabActive = useSidepanelTabStore((s) => s.tab) === 'pilot';
   const streamInterruption = usePilotChatStore((s) => s.streamInterruption);
   const setStreamInterruption = usePilotChatStore((s) => s.setStreamInterruption);
   const { send, cancel } = usePilotChatStream();
@@ -354,11 +356,13 @@ export function PilotView() {
       )}
       <div className="absolute right-2 top-1 z-30">
         <TaskPanelChip
+          enabled={pilotTabActive}
           conversationId={pilotConversationId}
           onClick={() => setTaskPanelOpen((v) => !v)}
         />
       </div>
       <TaskPanel
+        enabled={pilotTabActive}
         conversationId={pilotConversationId}
         open={taskPanelOpen}
         onClose={() => setTaskPanelOpen(false)}
@@ -1007,6 +1011,10 @@ function Composer({
   useEffect(() => {
     const el = taRef.current;
     if (!el) return;
+    // Skip measurement while the forceMounted tab is hidden — scrollHeight
+    // is 0 under display:none and the latched 0px height left the composer
+    // a clipped sliver until the first keystroke.
+    if (el.offsetParent === null) return;
     el.style.height = 'auto';
     el.style.height = `${Math.min(el.scrollHeight, 180)}px`;
   }, [value]);
