@@ -211,9 +211,11 @@ export function useScrape() {
         flesch_reading_ease: current.seo.flesch_reading_ease,
         word_count: current.seo.word_count,
       }).catch(() => undefined);
-      // The persisted row now matches the in-memory state — clear the
-      // "edited" flag so the badge disappears and Re-capture stops warning.
-      markSaved();
+      // Only clear the "edited" flag when the row ACTUALLY persisted —
+      // saveCapture returns null on failure (offline, guest RLS), and the
+      // unconditional markSaved() used to silently disarm the unsaved-edits
+      // guard so a Re-capture could destroy edits the user believed saved.
+      if (captureRow) markSaved();
       return captureRow;
     },
     [current, markSaved],

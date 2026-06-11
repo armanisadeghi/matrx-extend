@@ -56,8 +56,12 @@ export function ListPatternTab() {
   const [source, setSource] = useState<ExtractionSource | null>(null);
 
   useEffect(() => {
+    // STRICT: only the SW's stamped rebroadcast counts. The raw content-
+    // script delivery (tab_id absent) reaches every sidepanel directly —
+    // accepting it processed each pick TWICE and let window A's pick land
+    // in window B's builder.
     const fromOurPick = (tabId: unknown) =>
-      tabId == null || pickTabRef.current == null || tabId === pickTabRef.current;
+      typeof tabId === 'number' && tabId === pickTabRef.current;
     const offResult = on<ListPickerResult & { tab_id?: number | null }, { ack: true }>(
       CHANNELS.LIST_PICKER_RESULT,
       (payload) => {

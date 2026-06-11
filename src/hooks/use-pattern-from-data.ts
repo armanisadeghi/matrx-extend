@@ -4,6 +4,7 @@ import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { createStreamWatchdog } from '@/lib/stream/watchdog';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface StreamChunk {
@@ -137,6 +138,22 @@ export function usePatternFromData() {
   const runIdRef = useRef<string | null>(null);
   const accumRef = useRef('');
   const tabIdRef = useRef<number | null>(null);
+  // Stall watchdog (mirrors useAiExtraction): without it, a stream dying
+  // with no terminal done/error chunk left "Generate pattern" spinning
+  // forever with no recovery affordance.
+  const watchdogRef = useRef<ReturnType<typeof createStreamWatchdog> | null>(null);
+  if (!watchdogRef.current) {
+    watchdogRef.current = createStreamWatchdog({
+      stallMs: 75_000,
+      onStall: () => {
+        if (!runIdRef.current) return;
+        runIdRef.current = null;
+        setError('Pattern generation stalled — no response from the server. Try again.');
+        setRunning(false);
+      },
+    });
+  }
+  useEffect(() => () => watchdogRef.current?.stop(), []);
 
   // The agent writes selectors from sample HTML — they can look plausible
   // and match NOTHING live (audit K3). Probe before declaring success.
@@ -183,13 +200,16 @@ export function usePatternFromData() {
   useEffect(() => {
     return on<StreamChunk, { ack: true }>(CHANNELS.STREAM_CHUNK, (chunk) => {
       if (chunk.runId !== runIdRef.current) return { ack: true };
+      watchdogRef.current?.touch();
       if (chunk.type === 'text' && chunk.payload.content) {
         accumRef.current += chunk.payload.content;
       } else if (chunk.type === 'error') {
+        watchdogRef.current?.stop();
         setError(chunk.payload.message ?? 'stream error');
         setRunning(false);
         runIdRef.current = null;
       } else if (chunk.type === 'done') {
+        watchdogRef.current?.stop();
         setRawResponse(accumRef.current);
         try {
           const parsed = parseAgentJson(accumRef.current) as PatternFromDataResult;
@@ -252,6 +272,7 @@ export function usePatternFromData() {
 
       const runId = newId('pfd');
       runIdRef.current = runId;
+      watchdogRef.current?.start();
 
       const body: AgentStartRequest = {
         user_input: input.userInput,

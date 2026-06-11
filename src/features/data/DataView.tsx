@@ -31,6 +31,14 @@ export function DataView() {
   const [error, setError] = useState<string | null>(null);
   const [runNote, setRunNote] = useState<string | null>(null);
 
+  // Navigating the tab orphans any extracted rows on screen — they belonged
+  // to the previous page and rendered with zero indication of that.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: clear on URL change only
+  useEffect(() => {
+    setRows(null);
+    setRunNote(null);
+  }, [tab.url]);
+
   const host = (() => {
     try {
       return tab.url ? new URL(tab.url).host : '';
@@ -56,10 +64,12 @@ export function DataView() {
   }, [host]);
 
   useEffect(() => {
-    // Only consume picks from the tab THIS view started picking on — with
-    // two windows open, window A's pick must not land here (audit M1).
+    // STRICT: only the SW's stamped rebroadcast counts. The raw content-
+    // script delivery (tab_id absent) reaches every sidepanel directly —
+    // accepting it processed each pick TWICE and let window A's pick land
+    // in window B's builder.
     const fromOurPick = (tabId: unknown) =>
-      tabId == null || pickTabRef.current == null || tabId === pickTabRef.current;
+      typeof tabId === 'number' && tabId === pickTabRef.current;
     const offResult = on<
       { fields?: { name: string; selector: string }[]; tab_id?: number | null },
       { ack: true }
@@ -147,6 +157,10 @@ export function DataView() {
     if (!tab.id) return;
     setRunning(true);
     setError(null);
+    // A failed run used to leave the PREVIOUS run's rows rendered under the
+    // error — clear up front so what's on screen always belongs to this run.
+    setRows(null);
+    setRunNote(null);
     try {
       const data = await runSavedPattern(pattern, tab.id, { onProgress: setRunNote });
       setRows(data);

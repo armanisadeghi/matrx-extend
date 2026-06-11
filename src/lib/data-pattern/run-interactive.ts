@@ -142,7 +142,14 @@ export async function runAiExtractPattern(
     const armStall = () => {
       clearTimeout(stallTimer);
       stallTimer = setTimeout(() => {
-        void send(CHANNELS.STREAM_CANCEL, { runId }).catch(() => {});
+        if (typeof window === 'undefined') {
+          // SW context — cancel via the proxy directly (see start path).
+          void import('@/lib/stream/offscreen-proxy')
+            .then((m) => m.cancelStream(runId))
+            .catch(() => {});
+        } else {
+          void send(CHANNELS.STREAM_CANCEL, { runId }).catch(() => {});
+        }
         finish(() => reject(new Error('Extraction stalled — no response from the server.')));
       }, stallMs);
     };
@@ -171,14 +178,27 @@ export async function runAiExtractPattern(
     });
 
     armStall();
-    void send(CHANNELS.STREAM_START, {
+    const startArgs = {
       runId,
       endpoint: agentExecutePath(agent_id),
       body,
       parser: 'rich-events' as const,
       agentName: null,
       permissionMode: 'auto',
-    }).catch((e) => finish(() => reject(e instanceof Error ? e : new Error(String(e)))));
+    };
+    // In the SW (data_patterns tool) there is no `window`; STREAM_START's
+    // only handler IS this context and sendMessage never self-delivers —
+    // the run silently never started, the stall timer fired, and a healthy
+    // pattern got marked 'broken'. Call the offscreen proxy directly.
+    const startPromise =
+      typeof window === 'undefined'
+        ? import('@/lib/stream/offscreen-proxy').then((m) =>
+            m.startStream(startArgs as Parameters<typeof m.startStream>[0]),
+          )
+        : send(CHANNELS.STREAM_START, startArgs);
+    void startPromise.catch((e) =>
+      finish(() => reject(e instanceof Error ? e : new Error(String(e)))),
+    );
   });
 }
 

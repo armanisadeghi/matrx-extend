@@ -75,6 +75,11 @@ export function ScrapeView() {
   const tab = useActiveTab();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  // Retry must replay the mode the user actually picked — activeMode is
+  // cleared in the hook's finally, so the error card's fallback was ALWAYS
+  // 'fast' (a failed Scroll & capture silently retried without scrolling).
+  const lastModeRef = useRef<'fast' | 'deep' | null>(null);
   /**
    * Side-by-side scroll sync. Off by default — opt-in. Some pages can't
    * stream scroll events (chrome:// etc.), but the hook degrades silently.
@@ -117,6 +122,11 @@ export function ScrapeView() {
       return;
     }
     setEditingArticle(false);
+    lastModeRef.current = mode;
+    // A fresh capture is unsaved by definition — the Saved badge used to
+    // persist across re-captures of the same URL.
+    setSaved(false);
+    setSaveError(null);
     void captureActiveTab({ mode });
   };
 
@@ -125,6 +135,9 @@ export function ScrapeView() {
     setPendingCaptureMode(null);
     if (!mode) return;
     setEditingArticle(false);
+    lastModeRef.current = mode;
+    setSaved(false);
+    setSaveError(null);
     void captureActiveTab({ mode });
   };
 
@@ -147,9 +160,16 @@ export function ScrapeView() {
   const handleSave = async () => {
     setSaving(true);
     setSaved(false);
+    setSaveError(null);
     const r = await save();
     setSaving(false);
-    if (r) setSaved(true);
+    if (r) {
+      setSaved(true);
+    } else {
+      // null = insert failed (offline / signed-out hitting RLS / DB error) —
+      // the button silently returning to "Save" looked like success.
+      setSaveError('Save failed — check your connection and sign-in, then try again.');
+    }
   };
 
   return (
@@ -175,7 +195,9 @@ export function ScrapeView() {
             error={error}
             isAdmin={isAdmin}
             onReloadTab={() => void reloadActiveTab()}
-            onTryAgain={() => void captureActiveTab({ mode: activeMode ?? 'fast' })}
+            onTryAgain={() =>
+              void captureActiveTab({ mode: activeMode ?? lastModeRef.current ?? 'fast' })
+            }
             onDismiss={clearError}
           />
         )}
@@ -529,6 +551,9 @@ export function ScrapeView() {
           </Button>
         )}
       </div>
+      {saveError && (
+        <div className="px-3 pb-1 text-[11px] text-red-600 dark:text-red-400">{saveError}</div>
+      )}
       <ConfirmDialog
         open={pendingCaptureMode !== null}
         title="Discard unsaved edits?"
