@@ -180,7 +180,10 @@ export async function removeTask(conversationId: string, id: string): Promise<bo
   if (!list) return false;
   const next = list.filter((t) => t.id !== id);
   if (next.length === list.length) return false;
-  map[conversationId] = next;
+  // Drop the key when the list empties — a lingering empty array produced
+  // ghost "Conversation xxxxxxxx · 12/31/1969" rows in the Lists hub.
+  if (next.length === 0) delete map[conversationId];
+  else map[conversationId] = next;
   await chrome.storage.local.set({ [TASKS_KEY]: map });
   notify('tasks', conversationId);
   return true;
@@ -211,7 +214,8 @@ export async function clearCompletedTasks(conversationId: string): Promise<numbe
   const next = list.filter((t) => t.status !== 'done' && t.status !== 'skipped');
   const removed = list.length - next.length;
   if (!removed) return 0;
-  map[conversationId] = next;
+  if (next.length === 0) delete map[conversationId];
+  else map[conversationId] = next;
   await chrome.storage.local.set({ [TASKS_KEY]: map });
   notify('tasks', conversationId);
   return removed;
@@ -306,7 +310,8 @@ export async function clearDoneUserTodos(conversationId: string): Promise<number
   const next = list.filter((t) => !t.done);
   const removed = list.length - next.length;
   if (!removed) return 0;
-  map[conversationId] = next;
+  if (next.length === 0) delete map[conversationId];
+  else map[conversationId] = next;
   await chrome.storage.local.set({ [TODOS_KEY]: map });
   notify('user_todos', conversationId);
   return removed;
@@ -326,6 +331,9 @@ export async function getAllConversationLists(): Promise<ConversationListsSummar
     const plan = plans[id];
     const t = tasks[id] ?? [];
     const u = todos[id] ?? [];
+    // Legacy empty arrays (pre-cleanup installs) would render as ghost
+    // epoch-dated rows.
+    if (!plan && t.length === 0 && u.length === 0) continue;
     const lastActivity = Math.max(
       plan?.updated_at ?? 0,
       ...t.map((x) => x.updated_at),

@@ -53,9 +53,16 @@ export function useUserProfile(): UseUserProfileResult {
       return;
     }
     setLoading(true);
-    const ctx = await fetchUserFormContext(user.id);
-    setContext(ctx);
-    setDraft(ctx?.profile ?? emptyProfile());
+    const res = await fetchUserFormContext(user.id);
+    if (!res.ok) {
+      // Surface load failures — the existing error banner renders this.
+      setError(`Could not load your profile: ${res.error}`);
+      setLoading(false);
+      return;
+    }
+    setError(null);
+    setContext(res.context);
+    setDraft(res.context?.profile ?? emptyProfile());
     setLoading(false);
   }, [user?.id]);
 

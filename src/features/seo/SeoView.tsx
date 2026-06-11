@@ -2,6 +2,7 @@ import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
+import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import type { SeoAudit } from '@/lib/seo/audit';
 import { fetchLatestSeoAuditForUrl, saveSeoAudit } from '@/lib/supabase/queries';
 import { CheckCircle2, Loader2, Save, Search, Sparkles } from 'lucide-react';
@@ -52,65 +53,41 @@ export function SeoView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab.id, tab.url]);
 
+  const [auditError, setAuditError] = useState<string | null>(null);
+  // Live tab snapshot for the out-of-order guard above.
+  const tabRef = useRef(tab);
+  tabRef.current = tab;
+
   const runAudit = async () => {
     if (!tab.id) return;
     setRunning(true);
     setSavedId(null);
+    setAuditError(null);
+    const requestedTab = tab.id;
+    const requestedUrl = tab.url;
     try {
-      const result = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: () => {
-          const og: Record<string, string> = {};
-          const twitter: Record<string, string> = {};
-          document.querySelectorAll('meta').forEach((m) => {
-            const property = m.getAttribute('property') ?? '';
-            const name = m.getAttribute('name') ?? '';
-            const content = m.getAttribute('content') ?? '';
-            if (!content) return;
-            if (property.startsWith('og:')) og[property] = content;
-            if (name.startsWith('twitter:')) twitter[name] = content;
-          });
-          const headings = Array.from(
-            document.querySelectorAll<HTMLHeadingElement>('h1, h2, h3, h4, h5, h6'),
-          )
-            .map((h) => ({ level: Number(h.tagName.slice(1)), text: (h.textContent ?? '').trim() }))
-            .slice(0, 200);
-          const imgs = document.querySelectorAll<HTMLImageElement>('img');
-          const missing_alt = Array.from(imgs).filter(
-            (i) => !i.alt || i.alt.trim().length === 0,
-          ).length;
-          const desc =
-            document.querySelector<HTMLMetaElement>('meta[name="description"]')?.content ?? null;
-          const robots =
-            document.querySelector<HTMLMetaElement>('meta[name="robots"]')?.content ?? null;
-          const canonical =
-            document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href ?? null;
-          const text = (document.body?.innerText ?? '').replace(/\s+/g, ' ').trim();
-          const word_count = text ? text.split(/\s+/).length : 0;
-          return {
-            url: location.href,
-            fetched_at: Date.now(),
-            title: { value: document.title, length: document.title.length },
-            description: { value: desc, length: desc?.length ?? 0 },
-            canonical,
-            robots,
-            hreflang: [],
-            og,
-            twitter,
-            schema_types: [],
-            headings,
-            links: { internal: 0, external: 0 },
-            images: { total: imgs.length, missing_alt },
-            word_count,
-            flesch_reading_ease: null,
-            performance: { nav_type: null, duration_ms: null, transfer_size_bytes: null },
-          } as SeoAudit;
-        },
-      });
-      const data = (result?.[0]?.result ?? null) as SeoAudit | null;
-      setAudit(data);
+      // ONE code path: the content script's full collector (lib/seo/audit)
+      // via the shared capture primitive. The previous hand-rolled inline
+      // func HARDCODED links {internal:0, external:0}, empty schema_types/
+      // hreflang, and flesch_reading_ease null — Copy presented those as
+      // real measurements and Save persisted them to wbx_seo_audit.
+      const cap = await captureWithFallback(requestedTab, requestedUrl ?? null);
+      // Out-of-order / navigation guard: a slow audit of page A must not
+      // overwrite page B's fresh state.
+      if (tabRef.current.id !== requestedTab || tabRef.current.url !== requestedUrl) return;
+      if (!cap.ok || !cap.soup) {
+        setAudit(null);
+        setAuditError(
+          cap.reason === 'unreachable-url'
+            ? 'This page cannot be audited (browser-internal or restricted URL).'
+            : `Audit failed: ${cap.detail ?? cap.reason ?? 'unknown error'}`,
+        );
+        return;
+      }
+      setAudit(cap.soup.seo);
     } catch (err) {
-      console.warn('[matrx-extend] audit failed', err);
+      setAudit(null);
+      setAuditError(`Audit failed: ${(err as Error).message}`);
     } finally {
       setRunning(false);
     }
@@ -129,6 +106,8 @@ export function SeoView() {
     if (r) {
       setSavedId(r.id);
       setPreviousAuditedAt(new Date().toISOString());
+    } else {
+      setAuditError('Save failed — check your connection and sign-in, then try again.');
     }
   };
 
@@ -244,6 +223,9 @@ export function SeoView() {
           </Button>
         )}
       </div>
+      {auditError && (
+        <div className="px-3 pb-2 text-[11px] text-red-600 dark:text-red-400">{auditError}</div>
+      )}
     </div>
   );
 }

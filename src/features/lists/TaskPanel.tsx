@@ -324,7 +324,13 @@ function TaskRow({
         ) : (
           <button
             type="button"
-            onClick={() => setEditing(true)}
+            onClick={() => {
+              // Seed from the CURRENT title — the once-per-mount useState
+              // meant an agent rename showed (and blur wrote back) the
+              // stale title, silently undoing the agent's update.
+              setDraft(task.title);
+              setEditing(true);
+            }}
             className={cn(
               'block w-full text-left',
               task.status === 'done' || task.status === 'skipped'

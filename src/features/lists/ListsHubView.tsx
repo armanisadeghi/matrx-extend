@@ -8,6 +8,7 @@
  * broadcast so the view stays live.
  */
 
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -189,6 +190,9 @@ function ExpandedView({
   detail: ExpandedDetail;
   summary: ConversationListsSummary;
 }): React.JSX.Element {
+  // window.confirm can be suppressed in extension side panels — "Wipe all"
+  // would then be a silent no-op. Use the shared dialog like everywhere else.
+  const [wipeConfirmOpen, setWipeConfirmOpen] = useState(false);
   return (
     <div className="mt-2 space-y-3 rounded-md bg-zinc-50 p-3 text-xs dark:bg-zinc-900">
       <div className="flex items-center justify-between">
@@ -210,13 +214,22 @@ function ExpandedView({
             variant="ghost"
             size="sm"
             className="h-6 px-2 text-xs text-rose-600"
-            onClick={() => {
-              if (confirm('Wipe plan + tasks + todos for this conversation?'))
-                void purgeConversation(detail.conversationId);
-            }}
+            onClick={() => setWipeConfirmOpen(true)}
           >
             Wipe all
           </Button>
+          <ConfirmDialog
+            open={wipeConfirmOpen}
+            title="Wipe this conversation's lists?"
+            description="Plan, tasks, and todos for this conversation will be permanently removed."
+            confirmLabel="Wipe all"
+            destructive
+            onConfirm={() => {
+              setWipeConfirmOpen(false);
+              void purgeConversation(detail.conversationId);
+            }}
+            onClose={() => setWipeConfirmOpen(false)}
+          />
         </div>
         <p className="text-[10px] text-zinc-500">{summary.conversation_id.slice(0, 12)}…</p>
       </div>

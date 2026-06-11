@@ -46,6 +46,7 @@ export function SettingsView() {
   const [agents, setAgents] = useState<AgxAgent[]>([]);
   const [enginePortInput, setEnginePortInput] = useState('');
   const [enginePortSaved, setEnginePortSaved] = useState<number | null>(null);
+  const [enginePortError, setEnginePortError] = useState<string | null>(null);
   const [clearLocalDataOpen, setClearLocalDataOpen] = useState(false);
 
   useEffect(() => {
@@ -83,7 +84,12 @@ export function SettingsView() {
       return;
     }
     const n = Number(trimmed);
-    if (!Number.isInteger(n) || n < 1 || n > 65535) return;
+    if (!Number.isInteger(n) || n < 1 || n > 65535) {
+      // Silent return left the input showing a value that was never applied.
+      setEnginePortError('Port must be 1–65535.');
+      return;
+    }
+    setEnginePortError(null);
     await setEnginePortOverride(n);
     await invalidateEnginePortCache();
     setEnginePortSaved(n);
@@ -314,6 +320,11 @@ export function SettingsView() {
                   </span>
                 )}
               </div>
+              {enginePortError && (
+                <div className="px-3.5 pb-2 text-[11px] text-red-600 dark:text-red-400">
+                  {enginePortError}
+                </div>
+              )}
             </Card>
           </Collapsible>
 
@@ -323,7 +334,7 @@ export function SettingsView() {
             </Collapsible>
           )}
 
-          <Collapsible label="Privacy">
+          <Collapsible label="Data & reset">
             <Card>
               <ActionRow
                 label="Clear local data on this device"

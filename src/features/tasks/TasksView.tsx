@@ -1160,7 +1160,7 @@ function Status({ status, charCount }: { status: TaskStatus; charCount?: number 
   if (status === 'error') {
     return (
       <span className="inline-flex items-center gap-1 text-xs text-destructive">
-        <ExternalLink className="size-3.5" /> error
+        <AlertTriangle className="size-3.5" /> error
       </span>
     );
   }

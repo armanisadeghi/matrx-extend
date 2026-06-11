@@ -112,20 +112,25 @@ export function emptyProfile(): UserFormProfile {
   return UserFormProfileSchema.parse({});
 }
 
-export async function fetchUserFormContext(userId: string): Promise<UserFormContext | null> {
+export async function fetchUserFormContext(
+  userId: string,
+): Promise<{ ok: true; context: UserFormContext | null } | { ok: false; error: string }> {
   const c = getSupabase();
   const { data, error } = await c.rpc('get_user_form_context', { p_user_id: userId });
   if (error) {
     console.warn('[matrx-extend] fetchUserFormContext error', error.message);
-    return null;
+    // Distinguish FAILURE from "no profile yet" — collapsing both to null
+    // rendered a blank profile with zero error on a transient fetch failure,
+    // looking exactly like the user's data was wiped.
+    return { ok: false, error: error.message };
   }
-  if (!data) return null;
+  if (!data) return { ok: true, context: null };
   const parsed = UserFormContextSchema.safeParse(data);
   if (!parsed.success) {
     console.warn('[matrx-extend] fetchUserFormContext shape mismatch', parsed.error.format());
-    return null;
+    return { ok: false, error: 'Profile data came back in an unexpected shape.' };
   }
-  return parsed.data;
+  return { ok: true, context: parsed.data };
 }
 
 export type UserFormProfilePatch = Partial<UserFormProfile>;
