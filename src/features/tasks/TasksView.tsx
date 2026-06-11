@@ -218,16 +218,23 @@ export function TasksView() {
     const id = itemKey(item);
     const wantsActiveTab = level === 3;
 
-    // Reuse the active tab if the user is already on this URL — opening a
-    // duplicate tab is wasteful and confusing. The page is loaded; we can
-    // skip the navigate-and-wait step entirely.
+    // Reuse the active tab if the user is RIGHT NOW on this URL. Re-query
+    // instead of trusting the render-closure `activeTab` — a batch runs for
+    // minutes, and the stale snapshot let the loop scrape whatever page the
+    // user had wandered to and submit it as content for the queued URL.
+    let liveActive: chrome.tabs.Tab | undefined;
+    try {
+      [liveActive] = await chrome.tabs.query({ active: true, currentWindow: true });
+    } catch {
+      /* fall through — no reuse */
+    }
     const reuseActive =
-      activeTab.id != null && activeTab.url != null && urlsMatch(activeTab.url, item.url);
+      liveActive?.id != null && liveActive.url != null && urlsMatch(liveActive.url, item.url);
 
     setItemState(id, { status: 'navigating' });
     let tabId: number;
     if (reuseActive) {
-      tabId = activeTab.id!;
+      tabId = liveActive!.id!;
       if (wantsActiveTab) {
         try {
           await chrome.tabs.update(tabId, { active: true });
@@ -356,12 +363,24 @@ export function TasksView() {
     options: { acceptThin?: boolean } = {},
   ): Promise<{ ok: boolean; isGood: boolean }> => {
     const id = itemKey(item);
+    // Close the tab on EVERY exit when we created it (batch path) — failed
+    // captures used to bail before the remove and leaked one orphan
+    // background tab per failure.
+    const closeTab = async () => {
+      if (keepTabOpen) return;
+      try {
+        await chrome.tabs.remove(tabId);
+      } catch {
+        /* ignore */
+      }
+    };
     setItemState(id, { status: 'scraping', tabId });
     let html: string;
     try {
       html = await getOuterHtml(tabId);
     } catch (err) {
       setItemState(id, { status: 'error', error: (err as Error).message });
+      await closeTab();
       return { ok: false, isGood: false };
     }
 
@@ -369,16 +388,11 @@ export function TasksView() {
     const result = await submitExtensionContent(item.topic_id, item.source_id, html, level);
     if (!result.ok) {
       setItemState(id, { status: 'error', error: result.error });
+      await closeTab();
       return { ok: false, isGood: false };
     }
 
-    if (!keepTabOpen) {
-      try {
-        await chrome.tabs.remove(tabId);
-      } catch {
-        /* ignore */
-      }
-    }
+    await closeTab();
 
     const { is_good_scrape, char_count, next_level } = result.data;
 
@@ -448,9 +462,18 @@ export function TasksView() {
     }));
     const r = await applyVerdict(item.topic_id, item.source_id, verdict);
     if (!r.ok) {
-      setItemState(id, { status: 'error', error: r.error });
+      // MERGE, don't replace — replacing dropped showVerdictCard/preview/
+      // charCount, vaporizing the whole card on a transient network error.
+      setStatusByItem((s) => ({
+        ...s,
+        [id]: { ...s[id], status: 'error', error: r.error, verdictPending: undefined },
+      }));
       return;
     }
+    // The in-page overlay (if this item had one) is now orphaned — its item
+    // left the queue, so its buttons would silently dead-end. Tear it down.
+    const overlayTab = statusRef.current[id]?.tabId;
+    if (overlayTab != null) void removeCaptureOverlay(overlayTab);
     // 'retry' requeues the source — the next queue refresh will re-show it.
     // The other two are terminal and the row will disappear from the queue.
     setItemState(id, {
@@ -518,7 +541,15 @@ export function TasksView() {
   const displayL4 = queue ? filterPinned(queue.level_4_paste) : [];
 
   const totalAutomated = displayL1.length + displayL2.length;
-  const totalAll = queue?.totals?.all ?? 0;
+  // Derive from the arrays we actually render — the response schema allows
+  // `totals` to be absent, and trusting it produced "Nothing in the queue"
+  // banners above fully populated sections.
+  const totalAll = queue
+    ? queue.level_1_quick.length +
+      queue.level_2_scroll.length +
+      queue.level_3_user_gated.length +
+      queue.level_4_paste.length
+    : 0;
 
   // Items in the queue that match the URL the user is currently viewing.
   // Used to surface a top-of-list banner so they don't have to hunt the row
@@ -1348,15 +1379,29 @@ function extractTextPreview(html: string, max = 300): string {
 
 function waitForTab(tabId: number): Promise<void> {
   return new Promise((resolve) => {
+    const cleanup = () => {
+      chrome.tabs.onUpdated.removeListener(check);
+      chrome.tabs.onRemoved.removeListener(onGone);
+      clearTimeout(timer);
+    };
     const check = (id: number, change: chrome.tabs.TabChangeInfo) => {
       if (id === tabId && change.status === 'complete') {
-        chrome.tabs.onUpdated.removeListener(check);
+        cleanup();
         resolve();
       }
     };
+    // Tab closed during load — resolve immediately (the caller's capture
+    // will fail fast with a real error) instead of spinning the row on
+    // "navigating" for the full 30s.
+    const onGone = (id: number) => {
+      if (id !== tabId) return;
+      cleanup();
+      resolve();
+    };
     chrome.tabs.onUpdated.addListener(check);
-    setTimeout(() => {
-      chrome.tabs.onUpdated.removeListener(check);
+    chrome.tabs.onRemoved.addListener(onGone);
+    const timer = setTimeout(() => {
+      cleanup();
       resolve();
     }, 30_000);
   });

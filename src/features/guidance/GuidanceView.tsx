@@ -272,11 +272,7 @@ export function GuidanceView() {
             size="sm"
             variant="secondary"
             className="h-7 gap-1 px-2 text-xs"
-            onClick={() => setAddMenu(addMenu === 'closed' ? 'closed' : 'closed') /* close any */}
-            onClickCapture={(e) => {
-              e.preventDefault();
-              setAddMenu(addMenu === 'closed' ? 'note' : 'closed');
-            }}
+            onClick={() => setAddMenu(addMenu === 'closed' ? 'note' : 'closed')}
           >
             <Plus className="size-3" />
             Add

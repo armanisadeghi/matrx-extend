@@ -64,7 +64,36 @@ export async function send<TReq, TRes>(kind: string, payload: TReq): Promise<TRe
 }
 
 /**
+ * Same-context fan-out registry. chrome.runtime.sendMessage NEVER delivers
+ * to onMessage listeners in the SENDER'S OWN document — a fact several
+ * surfaces silently tripped over: the Lists hub / TaskPanel mutated storage,
+ * broadcast LISTS_CHANGED, and waited for their own (never-arriving)
+ * broadcast to repaint, so every user edit looked dead; ToolsView's manual
+ * runs never reached the local chat timeline for the same reason. `on()`
+ * registers handlers here too, and `broadcast()` fans out locally — so a
+ * broadcast now behaves like a true bus: every context INCLUDING the sender.
+ * `send()` (request/response) deliberately does NOT self-deliver: callers
+ * like the agenda scanner's tryBroadcastRunNow depend on "no OTHER context
+ * answered" semantics.
+ */
+const localHandlers = new Map<string, Set<(payload: unknown) => void>>();
+
+function dispatchLocal(env: Envelope): void {
+  const handlers = localHandlers.get(env.kind);
+  if (!handlers) return;
+  for (const h of [...handlers]) {
+    try {
+      h(env.payload);
+    } catch (err) {
+      log.error('msg', `local handler(${env.kind}) threw`, err);
+    }
+  }
+}
+
+/**
  * Fire-and-forget broadcast. Used for state-change notifications.
+ * Delivers to every OTHER context via chrome.runtime AND to this context's
+ * own `on()` listeners (see localHandlers above).
  */
 export function broadcast<T>(kind: string, payload: T): void {
   const env: Envelope<T> = { __matrx: true, kind, payload };
@@ -77,6 +106,7 @@ export function broadcast<T>(kind: string, payload: T): void {
     }
     log.warn('msg', `broadcast(${kind}) failed`, err);
   });
+  dispatchLocal(env);
 }
 
 type AsyncHandler<TReq, TRes> = (
@@ -88,6 +118,19 @@ type AsyncHandler<TReq, TRes> = (
  * Listen for a kind. Returns an unsubscribe function.
  */
 export function on<TReq, TRes>(kind: string, handler: AsyncHandler<TReq, TRes>): () => void {
+  // Local fan-out registration (response ignored on this path — broadcasts
+  // are fire-and-forget). The fake sender carries no tab/url, matching what
+  // same-extension broadcasts look like.
+  const localHandler = (payload: unknown) => {
+    void handler(payload as TReq, {} as chrome.runtime.MessageSender);
+  };
+  let set = localHandlers.get(kind);
+  if (!set) {
+    set = new Set();
+    localHandlers.set(kind, set);
+  }
+  set.add(localHandler);
+
   const listener = (
     msg: unknown,
     sender: chrome.runtime.MessageSender,
@@ -119,5 +162,8 @@ export function on<TReq, TRes>(kind: string, handler: AsyncHandler<TReq, TRes>):
     return false;
   };
   chrome.runtime.onMessage.addListener(listener);
-  return () => chrome.runtime.onMessage.removeListener(listener);
+  return () => {
+    chrome.runtime.onMessage.removeListener(listener);
+    localHandlers.get(kind)?.delete(localHandler);
+  };
 }

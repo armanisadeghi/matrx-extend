@@ -15,7 +15,6 @@
  */
 
 import { Button } from '@/components/ui/button';
-import { useParallelEventBridge } from '@/hooks/use-parallel-event-bridge';
 import {
   type ParallelSession,
   type ParallelSubRun,
@@ -201,7 +200,10 @@ function SessionCard({ session }: { session: ParallelSession }) {
 }
 
 export function ParallelRunsPanel() {
-  useParallelEventBridge();
+  // NOTE: useParallelEventBridge is mounted ONCE at the App root — mounting
+  // it here too registered a second onMessage listener and every sub-run
+  // chunk rendered twice ("hellohello worldworld") with doubled data-event
+  // counts.
   const sessions = useParallelRunsStore((s) => s.sessions);
   const sessionList = Object.values(sessions).sort((a, b) => b.startedAt - a.startedAt);
   if (sessionList.length === 0) return null;

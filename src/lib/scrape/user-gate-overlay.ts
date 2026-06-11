@@ -98,16 +98,41 @@ function inPageMount(
 
   const allButtons: HTMLButtonElement[] = [];
 
-  const send = (kind: string) => {
-    try {
-      chrome.runtime.sendMessage({
-        __matrx: true,
-        kind,
-        payload: { topicId, sourceId },
-      });
-    } catch {
-      /* runtime may be gone */
+  // Inline notice line for recoverable failures (sidepanel closed, etc.).
+  // Hidden until needed.
+  const noteEl = document.createElement('div');
+  noteEl.style.cssText = 'margin-top:10px;font-size:11px;line-height:1.4;display:none';
+
+  /**
+   * Send to the sidepanel and report whether ANY receiver acked. When the
+   * sidepanel is closed there is no listener — sendMessage rejects with
+   * "Receiving end does not exist" — and the buttons used to lock to
+   * "Capturing…" forever with no recovery.
+   */
+  const send = (kind: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      try {
+        chrome.runtime.sendMessage({ __matrx: true, kind, payload: { topicId, sourceId } }, () => {
+          resolve(!chrome.runtime.lastError);
+        });
+      } catch {
+        resolve(false);
+      }
+    });
+  };
+
+  const unlockButtons = (notice: string) => {
+    for (const b of allButtons) {
+      b.disabled = false;
+      b.style.cursor = 'pointer';
+      b.style.opacity = '1';
+      if (b.dataset.matrxLabel && b.dataset.matrxVariant !== 'icon') {
+        b.textContent = b.dataset.matrxLabel;
+      }
     }
+    noteEl.textContent = notice;
+    noteEl.style.color = '#fca5a5';
+    noteEl.style.display = 'block';
   };
 
   const lockButtons = (clickedLabel: string) => {
@@ -185,11 +210,19 @@ function inPageMount(
     b.style.cssText = ['cursor:pointer', ...variants[variant]].join(';');
 
     b.addEventListener('click', () => {
-      send(kind);
       lockButtons(label);
       // Cancel removes the overlay synchronously; the others wait for the
       // sidepanel handler to call removeCaptureOverlay.
-      if (kind === cancelKind) document.getElementById(overlayId)?.remove();
+      if (kind === cancelKind) {
+        void send(kind);
+        document.getElementById(overlayId)?.remove();
+        return;
+      }
+      void send(kind).then((acked) => {
+        if (!acked) {
+          unlockButtons('Matrx side panel is closed — open it on the Tasks tab, then try again.');
+        }
+      });
     });
     allButtons.push(b);
     return b;
@@ -223,6 +256,7 @@ function inPageMount(
   primaryRow.appendChild(makeBtn('Expect thin content', expectThinKind, 'secondary'));
   primaryRow.appendChild(makeBtn('Capture page', goKind, 'primary'));
   root.appendChild(primaryRow);
+  root.appendChild(noteEl);
 
   // ── Verdicts: report this source as bad
   const verdictWrap = document.createElement('div');

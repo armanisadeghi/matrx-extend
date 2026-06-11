@@ -310,7 +310,16 @@ export function App() {
                     <ListsHubView />
                   </Suspense>
                 </TabsContent>
-                <TabsContent value="tasks" className="flex-1 min-h-0">
+                {/* forceMount: TasksView's onMessage listener is the ONLY
+                    receiver for the in-page capture overlay's buttons, and the
+                    batch-run progress/guard live in component state — Radix
+                    unmounting it on tab switch bricked the overlay mid-capture
+                    and let a hidden batch run twice. Same pattern as Chat. */}
+                <TabsContent
+                  value="tasks"
+                  forceMount
+                  className="flex-1 min-h-0 data-[state=inactive]:hidden"
+                >
                   <Suspense fallback={TabFallback}>
                     <TasksView />
                   </Suspense>
