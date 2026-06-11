@@ -426,13 +426,18 @@ function registerHandlers(): void {
   on<{ fields: { name: string; selector: string }[] }, { ack: true }>(
     CHANNELS.DATA_PICKER_RESULT,
     (payload, sender) => {
-      broadcast(CHANNELS.DATA_PICKER_RESULT, { ...payload, tab_id: sender.tab?.id ?? null });
+      // Relay ONLY genuine content-script events (sender.tab present) — the
+      // SW's own broadcast self-delivery would otherwise loop this handler
+      // on its own stamped rebroadcast forever.
+      if (!sender.tab) return { ack: true };
+      broadcast(CHANNELS.DATA_PICKER_RESULT, { ...payload, tab_id: sender.tab.id ?? null });
       return { ack: true };
     },
   );
 
   on<unknown, { ack: true }>(CHANNELS.DATA_PICKER_EXIT, (_payload, sender) => {
-    broadcast(CHANNELS.DATA_PICKER_EXIT, { tab_id: sender.tab?.id ?? null });
+    if (!sender.tab) return { ack: true }; // see DATA_PICKER_RESULT loop guard
+    broadcast(CHANNELS.DATA_PICKER_EXIT, { tab_id: sender.tab.id ?? null });
     return { ack: true };
   });
 
@@ -440,19 +445,22 @@ function registerHandlers(): void {
   // results from the tab IT started picking on — with two windows open,
   // window A's pick must not land in window B's builder (audit M1).
   on<Record<string, unknown>, { ack: true }>(CHANNELS.LIST_PICKER_RESULT, (payload, sender) => {
-    broadcast(CHANNELS.LIST_PICKER_RESULT, { ...payload, tab_id: sender.tab?.id ?? null });
+    if (!sender.tab) return { ack: true }; // loop guard (broadcast self-delivery)
+    broadcast(CHANNELS.LIST_PICKER_RESULT, { ...payload, tab_id: sender.tab.id ?? null });
     return { ack: true };
   });
 
   on<unknown, { ack: true }>(CHANNELS.LIST_PICKER_EXIT, (_payload, sender) => {
-    broadcast(CHANNELS.LIST_PICKER_EXIT, { tab_id: sender.tab?.id ?? null });
+    if (!sender.tab) return { ack: true }; // loop guard (broadcast self-delivery)
+    broadcast(CHANNELS.LIST_PICKER_EXIT, { tab_id: sender.tab.id ?? null });
     return { ack: true };
   });
 
   on<Record<string, unknown>, { ack: true }>(
     CHANNELS.LIST_PICKER_ITEM_DETECTED,
     (payload, sender) => {
-      broadcast(CHANNELS.LIST_PICKER_ITEM_DETECTED, { ...payload, tab_id: sender.tab?.id ?? null });
+      if (!sender.tab) return { ack: true }; // loop guard (broadcast self-delivery)
+      broadcast(CHANNELS.LIST_PICKER_ITEM_DETECTED, { ...payload, tab_id: sender.tab.id ?? null });
       return { ack: true };
     },
   );
@@ -471,7 +479,8 @@ function registerHandlers(): void {
   // can't pollute another tab's capture session (audit I1). There is NO
   // buffering here: if no sidepanel is listening, the event is dropped.
   on<Record<string, unknown>, { ack: true }>(CHANNELS.NET_CAPTURE_EVENT, (payload, sender) => {
-    broadcast(CHANNELS.NET_CAPTURE_EVENT, { ...payload, tab_id: sender.tab?.id ?? null });
+    if (!sender.tab) return { ack: true }; // loop guard (broadcast self-delivery)
+    broadcast(CHANNELS.NET_CAPTURE_EVENT, { ...payload, tab_id: sender.tab.id ?? null });
     return { ack: true };
   });
 
