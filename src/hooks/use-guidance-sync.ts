@@ -23,7 +23,6 @@ export function useGuidanceSync(): void {
   useEffect(() => {
     if (!userId) return;
     if (syncedFor.current === userId) return;
-    syncedFor.current = userId;
 
     let cancelled = false;
     void (async () => {
@@ -31,7 +30,11 @@ export function useGuidanceSync(): void {
         import('@/lib/guidance/cloud-sync'),
         import('@/lib/guidance/storage'),
       ]);
-      const { merged } = await hydrateGuidanceFromCloud();
+      const { merged, ok } = await hydrateGuidanceFromCloud();
+      // Latch only on SUCCESS — marking the sync done before/despite a
+      // failed fetch meant guidance from other machines never appeared for
+      // the rest of the session even after connectivity returned.
+      if (ok && !cancelled) syncedFor.current = userId;
       if (cancelled || merged === 0) return;
       // Refresh any open Guidance tab from the now-updated cache.
       const list = await listAllGuidance();

@@ -926,6 +926,8 @@ export const WbxGuidanceRowSchema = z.object({
   data: z.unknown().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
+  /** Tombstone — deletes propagate as soft-deletes so other machines can apply them. */
+  is_deleted: z.boolean().default(false),
 });
 export type WbxGuidanceRow = z.infer<typeof WbxGuidanceRowSchema>;
 
@@ -958,6 +960,9 @@ export async function upsertGuidanceRow(p: SaveGuidanceRowPayload): Promise<bool
       data: p.data ?? {},
       created_at: p.created_at,
       updated_at: p.updated_at,
+      // An intentional save revives a tombstoned row — the user actively
+      // edited it on this machine, which outranks an older delete.
+      is_deleted: false,
     },
     { onConflict: 'id' },
   );
@@ -971,7 +976,13 @@ export async function upsertGuidanceRow(p: SaveGuidanceRowPayload): Promise<bool
 
 export async function deleteGuidanceRow(id: string): Promise<boolean> {
   const c = getSupabase();
-  const { error } = await c.from('wbx_guidance').delete().eq('id', id);
+  // SOFT delete (tombstone) — a hard DELETE left nothing for other
+  // machines' hydrate to apply, so deletes never propagated and a later
+  // edit on a stale machine resurrected the item everywhere.
+  const { error } = await c
+    .from('wbx_guidance')
+    .update({ is_deleted: true, updated_at: new Date().toISOString() })
+    .eq('id', id);
   if (error) {
     if (/relation .* does not exist/i.test(error.message)) return false;
     console.warn('[matrx-extend] deleteGuidanceRow error', error.message);
@@ -985,7 +996,7 @@ export async function fetchAllGuidanceRows(): Promise<WbxGuidanceRow[]> {
   const c = getSupabase();
   const { data, error } = await c
     .from('wbx_guidance')
-    .select('id, domain, kind, caption, origin_url, data, created_at, updated_at')
+    .select('id, domain, kind, caption, origin_url, data, created_at, updated_at, is_deleted')
     .order('updated_at', { ascending: false });
   if (error) {
     if (/relation .* does not exist/i.test(error.message)) return [];

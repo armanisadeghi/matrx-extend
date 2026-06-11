@@ -152,20 +152,34 @@ export async function removeGuidanceFromCloud(id: string): Promise<void> {
  * offline, not yet pushed) are never removed. Writes with `sync:false` so the
  * merge doesn't echo straight back to the cloud.
  */
-export async function hydrateGuidanceFromCloud(): Promise<{ merged: number }> {
+export async function hydrateGuidanceFromCloud(): Promise<{ merged: number; ok: boolean }> {
   let rows: WbxGuidanceRow[];
   try {
     const { fetchAllGuidanceRows } = await import('@/lib/supabase/queries');
     rows = await fetchAllGuidanceRows();
   } catch (err) {
     log.warn('sys', 'guidance cloud hydrate failed', err);
-    return { merged: 0 };
+    // ok:false lets the sign-in hook retry — a fetch that failed (offline,
+    // token race) used to be recorded as "synced" for the whole session.
+    return { merged: 0, ok: false };
   }
-  if (rows.length === 0) return { merged: 0 };
+  if (rows.length === 0) return { merged: 0, ok: true };
 
-  const { getGuidanceItem, saveGuidanceItem } = await import('@/lib/guidance/storage');
+  const { getGuidanceItem, saveGuidanceItem, deleteGuidanceItem } = await import(
+    '@/lib/guidance/storage'
+  );
   let merged = 0;
   for (const row of rows) {
+    // Tombstone application: a cloud delete that's newer than our local
+    // copy removes it here too (deletes used to be invisible to hydrate).
+    if (row.is_deleted) {
+      const localOfDeleted = await getGuidanceItem(row.id);
+      if (localOfDeleted && new Date(row.updated_at).getTime() >= localOfDeleted.updated_at) {
+        await deleteGuidanceItem(row.id, { sync: false });
+        merged += 1;
+      }
+      continue;
+    }
     const cloud = rowToItem(row);
     if (!cloud) continue;
     const local = await getGuidanceItem(cloud.id);
@@ -174,5 +188,5 @@ export async function hydrateGuidanceFromCloud(): Promise<{ merged: number }> {
     merged += 1;
   }
   if (merged > 0) log.info('sys', `guidance hydrated from cloud — merged ${merged} item(s)`);
-  return { merged };
+  return { merged, ok: true };
 }

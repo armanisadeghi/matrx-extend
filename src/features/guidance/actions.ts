@@ -29,6 +29,7 @@ import { hideRecordingBanner, showRecordingBanner } from '@/lib/guidance/in-page
 import {
   attachDemoAsGuidance,
   deleteGuidanceItem,
+  getGuidanceItem,
   makeGuidanceId,
   saveGuidanceItem,
 } from '@/lib/guidance/storage';
@@ -330,5 +331,13 @@ export async function discardDemoRecording(): Promise<void> {
 // ────────────────────────────────────────────────────────────────────────
 
 export async function deleteGuidance(id: string): Promise<void> {
+  // Honor the contract in the comment above — the implementation never
+  // actually dropped the demo, leaving it listed by list_demos and
+  // replayable by the agent after the user "deleted" it here.
+  const item = await getGuidanceItem(id);
+  if (item?.kind === 'demo_ref' && item.demo_id) {
+    const { deleteDemo } = await import('@/lib/demos/storage');
+    await deleteDemo(item.demo_id).catch(() => undefined);
+  }
   await deleteGuidanceItem(id);
 }

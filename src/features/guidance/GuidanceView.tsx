@@ -235,23 +235,32 @@ export function GuidanceView() {
         setErrorMsg('Open a tab to attach this note to a domain.');
         return;
       }
-      const tab = await chrome.tabs.query({ active: true, currentWindow: true }).then(([t]) => t);
-      const item = await saveNoteAsGuidance({
-        domain: activeDomain,
-        text,
-        caption,
-        origin_url: tab?.url ?? undefined,
-      });
-      upsertSummary(toSummary(item));
-      setAddMenu('closed');
+      try {
+        const tab = await chrome.tabs.query({ active: true, currentWindow: true }).then(([t]) => t);
+        const item = await saveNoteAsGuidance({
+          domain: activeDomain,
+          text,
+          caption,
+          origin_url: tab?.url ?? undefined,
+        });
+        upsertSummary(toSummary(item));
+        setAddMenu('closed');
+      } catch (err) {
+        // An unhandled rejection here left the form open with zero feedback.
+        setErrorMsg(`Save failed: ${(err as Error).message}`);
+      }
     },
     [activeDomain, upsertSummary],
   );
 
   const handleDelete = useCallback(
     async (id: string) => {
-      await deleteGuidance(id);
-      removeSummary(id);
+      try {
+        await deleteGuidance(id);
+        removeSummary(id);
+      } catch (err) {
+        setErrorMsg(`Delete failed: ${(err as Error).message}`);
+      }
     },
     [removeSummary],
   );
@@ -285,7 +294,9 @@ export function GuidanceView() {
               recording.kind === 'demo'
                 ? setAddMenu('demo-stop')
                 : recording.kind === 'gif'
-                  ? handleStopGif()
+                  ? // Route through the caption bar like demos do — calling
+                    // handleStopGif() here saved instantly with no caption.
+                    setAddMenu('gif-stop')
                   : undefined
             }
           />
