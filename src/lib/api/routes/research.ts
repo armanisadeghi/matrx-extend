@@ -108,15 +108,29 @@ export interface ExtensionContentResponse {
   needs_user_action: boolean;
 }
 
+/**
+ * Browser-measured image sent with the capture. The server overlays
+ * width/height (naturalWidth/naturalHeight) onto its HTML-parsed images so the
+ * research media gallery gets exact dimensions without re-downloading. Optional
+ * and additive — omitting it just falls back to server-side dimension probing.
+ */
+export interface ExtensionImagePayload {
+  src: string;
+  alt: string | null;
+  width: number | null;
+  height: number | null;
+}
+
 export async function submitExtensionContent(
   topicId: string,
   sourceId: string,
   htmlContent: string,
   captureLevel: SubmittableLevel,
+  images: ExtensionImagePayload[] = [],
 ) {
   return apiPost<ExtensionContentResponse>(
     `/research/topics/${encodeURIComponent(topicId)}/sources/${encodeURIComponent(sourceId)}/extension-content`,
-    { html_content: htmlContent, capture_level: captureLevel },
+    { html_content: htmlContent, capture_level: captureLevel, images },
   );
 }
 

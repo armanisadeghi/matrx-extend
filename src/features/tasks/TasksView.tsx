@@ -18,6 +18,7 @@ import {
 import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { getOuterHtml } from '@/lib/scrape/capture-html';
+import { getCaptureImages } from '@/lib/scrape/capture-media';
 import { scrollToLoadLazy, settlePage } from '@/lib/scrape/page-ready';
 import { removeCaptureOverlay, showCaptureOverlay } from '@/lib/scrape/user-gate-overlay';
 import { urlsMatch } from '@/lib/url/match';
@@ -384,8 +385,13 @@ export function TasksView() {
       return { ok: false, isGood: false };
     }
 
+    // Browser-measured image dimensions (naturalWidth/Height), captured from the
+    // same loaded DOM. Sent so the server gallery gets exact sizes without
+    // re-downloading each image. Best-effort — returns [] on failure.
+    const images = await getCaptureImages(tabId);
+
     setItemState(id, { status: 'submitting', tabId });
-    const result = await submitExtensionContent(item.topic_id, item.source_id, html, level);
+    const result = await submitExtensionContent(item.topic_id, item.source_id, html, level, images);
     if (!result.ok) {
       setItemState(id, { status: 'error', error: result.error });
       await closeTab();
