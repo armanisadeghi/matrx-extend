@@ -64,10 +64,12 @@ the server parses `<video>`/`<audio>` tags, PDF/doc/video **links**, and even
 embedded **`<iframe>` YouTube/Vimeo** players out of the raw HTML. So no extra
 extension payload is required for files/videos today.
 
-**Optional future enhancement (not done):** `collectors.ts` already has
-`collectVideos()` / `collectAudio()` (incl. `currentSrc` for `<video>` and
-iframe YouTube). Sending those alongside `images` would catch JS-injected media
-that isn't in the serialized HTML. Low marginal value right now; left for later.
+**Next, bigger step → see [`RESEARCH_ENRICHMENT.md`](./RESEARCH_ENRICHMENT.md):**
+the browser can capture a large class of things the server can't (authenticated
+content, rendered SPA DOM, XHR JSON, transcripts, screenshots, expanded comments).
+That doc specs sending the already-computed `collectVideos()`/`collectAudio()`/
+`collectMetadata()` collectors **and** a new `enrich` task kind — where the server
+asks the extension to get a *specific* missing thing, not just re-scrape a page.
 
 ---
 
