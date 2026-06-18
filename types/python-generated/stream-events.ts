@@ -708,6 +708,7 @@ export interface SearchResultsData {
 
 export interface StructuredInputFailure {
   url?: string;
+  ref?: string;
   reason?: string;
 }
 
@@ -1166,6 +1167,8 @@ export interface SlideTheme {
   accentColor?: string;
   backgroundColor?: string;
   textColor?: string;
+  variant?: string;
+  font?: string | null;
 }
 
 export interface Ingredient {
@@ -1478,6 +1481,8 @@ export interface SlideTheme {
   accentColor?: string;
   backgroundColor?: string;
   textColor?: string;
+  variant?: string;
+  font?: string | null;
 }
 
 export interface PresentationBlockData {
@@ -1552,6 +1557,14 @@ export interface DiagramBlockData {
   nodes?: DiagramNode[];
   edges?: DiagramEdge[];
   layout?: DiagramLayout;
+}
+
+export interface MermaidBlockData {
+  title?: string | null;
+  diagramType?: string;
+  source: string;
+  isValid?: boolean | null;
+  diagnostics?: string[];
 }
 
 export interface TableBlockData {
@@ -2029,6 +2042,16 @@ export interface DiagramRenderBlock {
   metadata?: Record<string, unknown>;
 }
 
+export interface MermaidRenderBlock {
+  blockId: string;
+  blockIndex: number;
+  type: "mermaid";
+  status: "streaming" | "complete" | "error";
+  content?: string | null;
+  data?: MermaidBlockData | null;
+  metadata?: Record<string, unknown>;
+}
+
 export interface MathProblemRenderBlock {
   blockId: string;
   blockIndex: number;
@@ -2146,6 +2169,7 @@ export type TypedRenderBlock =
   | DecisionRenderBlock
   | ResearchRenderBlock
   | DiagramRenderBlock
+  | MermaidRenderBlock
   | MathProblemRenderBlock
   | ArtifactRenderBlock
   | InfoRenderBlock
@@ -2157,7 +2181,7 @@ export type TypedRenderBlock =
   | ToolRenderBlock;
 
 const TYPED_RENDER_BLOCK_TYPES = new Set<string>([
-  "text", "code", "table", "thinking", "reasoning", "consolidated_reasoning", "image", "video", "tasks", "transcript", "structured_info", "matrxBroker", "questionnaire", "flashcards", "quiz", "presentation", "cooking_recipe", "timeline", "progress_tracker", "comparison_table", "troubleshooting", "resources", "decision_tree", "decision", "research", "diagram", "math_problem", "artifact", "info", "task", "database", "private", "plan", "event", "tool",
+  "text", "code", "table", "thinking", "reasoning", "consolidated_reasoning", "image", "video", "tasks", "transcript", "structured_info", "matrxBroker", "questionnaire", "flashcards", "quiz", "presentation", "cooking_recipe", "timeline", "progress_tracker", "comparison_table", "troubleshooting", "resources", "decision_tree", "decision", "research", "diagram", "mermaid", "math_problem", "artifact", "info", "task", "database", "private", "plan", "event", "tool",
 ]);
 
 export function isTypedRenderBlock(e: RenderBlockPayload): e is RenderBlockPayload & TypedRenderBlock {
@@ -2307,33 +2331,38 @@ export interface PreFetchedUrl {
 export interface WebpageInputPart {
   metadata?: Record<string, unknown>;
   type?: "input_webpage";
-  urls?: string | PreFetchedUrl[];
+  urls?: (string | PreFetchedUrl)[];
   convert_to_text?: boolean;
   optional_context?: boolean;
   keep_fresh?: boolean;
-  editable?: boolean;
+  editable?: boolean | null;
+}
+
+export interface ResourceRefInput {
+  id?: string | null;
+  mode?: "reference" | "snapshot";
 }
 
 export interface NotesInputPart {
   metadata?: Record<string, unknown>;
   type?: "input_notes";
-  note_ids?: string[];
+  note_ids?: (string | ResourceRefInput)[];
   template?: string;
   convert_to_text?: boolean;
   optional_context?: boolean;
   keep_fresh?: boolean;
-  editable?: boolean;
+  editable?: boolean | null;
 }
 
 export interface TaskInputPart {
   metadata?: Record<string, unknown>;
   type?: "input_task";
-  task_ids?: string[];
+  task_ids?: (string | ResourceRefInput)[];
   template?: string;
   convert_to_text?: boolean;
   optional_context?: boolean;
   keep_fresh?: boolean;
-  editable?: boolean;
+  editable?: boolean | null;
 }
 
 export interface TableInputPart {
@@ -2343,7 +2372,7 @@ export interface TableInputPart {
   convert_to_text?: boolean;
   optional_context?: boolean;
   keep_fresh?: boolean;
-  editable?: boolean;
+  editable?: boolean | null;
 }
 
 export interface ListInputPart {
@@ -2353,7 +2382,7 @@ export interface ListInputPart {
   convert_to_text?: boolean;
   optional_context?: boolean;
   keep_fresh?: boolean;
-  editable?: boolean;
+  editable?: boolean | null;
 }
 
 export interface DataInputPart {
@@ -2363,7 +2392,7 @@ export interface DataInputPart {
   convert_to_text?: boolean;
   optional_context?: boolean;
   keep_fresh?: boolean;
-  editable?: boolean;
+  editable?: boolean | null;
 }
 
 export interface ContextInputPart {
@@ -2375,7 +2404,7 @@ export interface ContextInputPart {
   convert_to_text?: boolean;
   optional_context?: boolean;
   keep_fresh?: boolean;
-  editable?: boolean;
+  editable?: boolean | null;
 }
 
 export type MessagePart =
