@@ -4,14 +4,31 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ParallelRunsPanel } from '@/features/tasks/ParallelRunsPanel';
+import { type BatchProgress, QueueSelectionBar } from '@/features/tasks/QueueSelectionBar';
+import { QueueToolbar } from '@/features/tasks/QueueToolbar';
+import {
+  BUCKET_LABELS,
+  BUCKET_LEVEL,
+  type BucketKey,
+  type FlatQueueItem,
+  buildGroups,
+  computeFacets,
+  domainOf,
+  filterAndSort,
+  flattenQueue,
+  itemKey,
+} from '@/features/tasks/queue-view';
+import { VERDICT_OPTIONS, VERDICT_SHORT } from '@/features/tasks/verdicts';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import {
+  type BulkVerdictItem,
   type ExtensionScrapeItem,
   type ExtensionScrapeQueue,
   type PolicyCategory,
   type SubmittableLevel,
   type UserVerdict,
   applyVerdict,
+  applyVerdictBulk,
   getExtensionScrapeQueue,
   submitExtensionContent,
   submitPasteContent,
@@ -26,11 +43,13 @@ import { scrollToLoadLazy, settlePage } from '@/lib/scrape/page-ready';
 import { removeCaptureOverlay, showCaptureOverlay } from '@/lib/scrape/user-gate-overlay';
 import { urlsMatch } from '@/lib/url/match';
 import { cn } from '@/lib/utils';
+import { useScrapeQueueView } from '@/state/scrape-queue-view';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertTriangle,
   CheckCircle,
   CheckCircle2,
+  CheckSquare,
   ChevronDown,
   ExternalLink,
   EyeOff,
@@ -42,6 +61,7 @@ import {
   RotateCcw,
   Skull,
   Sparkles,
+  Square,
   Target,
   Wand2,
 } from 'lucide-react';
@@ -83,9 +103,13 @@ const RUNNING_STATUSES: ReadonlySet<TaskStatus> = new Set([
 
 const TERMINAL_STATUSES: ReadonlySet<TaskStatus> = new Set(['success', 'thin', 'completed']);
 
-function itemKey(it: ExtensionScrapeItem): string {
-  return `${it.topic_id}:${it.source_id}`;
-}
+/**
+ * Auto-capturable buckets (no user interaction needed): L1/L2 + low-value.
+ * L3 / gated_login need the overlay flow, so they're excluded from batch capture.
+ * Module-scoped → stable identity (no useMemo dep churn).
+ */
+const isAutoCapturable = (b: BucketKey): boolean =>
+  b === 'level_1_quick' || b === 'level_2_scroll' || b === 'low_value';
 
 export function TasksView() {
   const queryClient = useQueryClient();
@@ -116,6 +140,14 @@ export function TasksView() {
     failed: number;
   } | null>(null);
   const batchRunning = batchProgress !== null;
+
+  // Filter / search / sort / group state (persisted across reopens).
+  const { filters, sort, groupMode } = useScrapeQueueView();
+  // Multi-select for batch actions — keys are itemKey(item).
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  // Selection-based batch (verdict / capture) progress, separate from the
+  // automated runBatch progress.
+  const [batchOp, setBatchOp] = useState<BatchProgress | null>(null);
 
   const {
     data: queue,
@@ -573,18 +605,17 @@ export function TasksView() {
   };
 
   /**
-   * Run automated batch — Level 1 + Level 2 sequentially.
-   * Skips items already in a running or terminal state from this session.
+   * Run automated batch — the currently-visible Level 1 + Level 2 items
+   * sequentially (so a project/domain filter scopes the batch). Skips items
+   * already in a running or terminal state from this session.
    */
   const runBatch = async () => {
-    if (!queue) return;
-    const targets = [
-      ...queue.level_1_quick.map((it) => ({ item: it, level: 1 as const })),
-      ...queue.level_2_scroll.map((it) => ({ item: it, level: 2 as const })),
-    ].filter(({ item }) => {
-      const cur = statusByItem[itemKey(item)]?.status;
-      return !cur || (!RUNNING_STATUSES.has(cur) && !TERMINAL_STATUSES.has(cur));
-    });
+    const targets = automatedTargets
+      .map((f) => ({ item: f.item, level: BUCKET_LEVEL[f.bucket] as SubmittableLevel }))
+      .filter(({ item }) => {
+        const cur = statusByItem[itemKey(item)]?.status;
+        return !cur || (!RUNNING_STATUSES.has(cur) && !TERMINAL_STATUSES.has(cur));
+      });
     if (targets.length === 0) return;
     setBatchProgress({ current: 0, total: targets.length, succeeded: 0, failed: 0 });
     try {
@@ -605,52 +636,144 @@ export function TasksView() {
     }
   };
 
-  // Pinned-to-L3 sources (those with an open verdict card) override whatever
-  // bucket the server now reports, so the row hosting the card never vanishes
-  // mid-decision. These are filtered out of the other buckets to avoid double
-  // rendering.
-  const pinnedIds = new Set(Object.keys(pinnedL3));
-  const filterPinned = (items: ExtensionScrapeItem[]) =>
-    pinnedIds.size === 0 ? items : items.filter((it) => !pinnedIds.has(itemKey(it)));
-  const displayL1 = queue ? filterPinned(queue.level_1_quick) : [];
-  const displayL2 = queue ? filterPinned(queue.level_2_scroll) : [];
-  const pinnedFromServer = queue
-    ? new Set(queue.level_3_user_gated.map(itemKey))
-    : new Set<string>();
-  const displayL3 = queue
-    ? [
-        ...Object.values(pinnedL3).filter((it) => !pinnedFromServer.has(itemKey(it))),
-        ...queue.level_3_user_gated,
-      ]
-    : [];
-  const displayL4 = queue ? filterPinned(queue.level_4_paste) : [];
-  // §5 policy buckets — rendered as their own sections, deliberately routed.
-  const displayGatedLogin = queue ? queue.gated_login : [];
-  const displayLowValue = queue ? queue.low_value : [];
-  // Flat list across every bucket — for the copy-queue menu.
-  const allQueueItems = queue
-    ? [
-        ...queue.level_1_quick,
-        ...queue.level_2_scroll,
-        ...queue.level_3_user_gated,
-        ...queue.level_4_paste,
-        ...queue.gated_login,
-        ...queue.low_value,
-      ]
-    : [];
+  /**
+   * Batch verdict — apply one verdict to every selected source via the bulk
+   * endpoint (with a per-source fallback until it deploys). Terminal verdicts
+   * drop the sources from the queue on the next refresh.
+   */
+  const runBatchVerdict = async (verdict: UserVerdict) => {
+    const chosen = selectedItems;
+    if (chosen.length === 0) return;
+    const items: BulkVerdictItem[] = chosen.map((f) => ({
+      topicId: f.item.topic_id,
+      sourceId: f.item.source_id,
+    }));
+    const label = `Applying "${VERDICT_SHORT[verdict]}"…`;
+    setBatchOp({ done: 0, total: items.length, label });
+    try {
+      const result = await applyVerdictBulk(items, verdict, undefined, (done, total) =>
+        setBatchOp({ done, total, label }),
+      );
+      // Tear down verdict cards / pins for sources that resolved.
+      const resolvedKeys = new Set(
+        chosen.filter((f) => result.succeeded.includes(f.item.source_id)).map((f) => f.key),
+      );
+      if (resolvedKeys.size > 0) {
+        setPinnedL3((p) => {
+          let changed = false;
+          const next: Record<string, ExtensionScrapeItem> = {};
+          for (const [k, v] of Object.entries(p)) {
+            if (resolvedKeys.has(k)) changed = true;
+            else next[k] = v;
+          }
+          return changed ? next : p;
+        });
+      }
+      if (result.failed.length > 0) {
+        console.warn(
+          `[matrx-extend] batch verdict: ${result.failed.length}/${items.length} failed`,
+          result.failed,
+        );
+      }
+    } finally {
+      setBatchOp(null);
+      // Keep only the sources that failed selected, so the user can see + retry.
+      clearSelection();
+      void invalidateQueue();
+    }
+  };
 
-  const totalAutomated = displayL1.length + displayL2.length;
-  // Derive from the arrays we actually render — the response schema allows
-  // `totals` to be absent (trusting it produced "Nothing in the queue" banners
-  // above fully populated sections), and `totals.all` predates the §5 policy
-  // buckets so it undercounts them. Sum every displayed bucket instead.
-  const totalAll =
-    displayL1.length +
-    displayL2.length +
-    displayL3.length +
-    displayL4.length +
-    displayGatedLogin.length +
-    displayLowValue.length;
+  /** Batch capture — run the auto-capturable selected sources (L1/L2/low-value). */
+  const runBatchCapture = async () => {
+    const targets = capturableSelected;
+    if (targets.length === 0) return;
+    setBatchOp({ done: 0, total: targets.length, label: 'Capturing…' });
+    try {
+      let done = 0;
+      for (const f of targets) {
+        const level = Math.min(BUCKET_LEVEL[f.bucket], 3) as SubmittableLevel;
+        // eslint-disable-next-line no-await-in-loop
+        await runAutomated(f.item, level);
+        done++;
+        setBatchOp({ done, total: targets.length, label: 'Capturing…' });
+      }
+    } finally {
+      setBatchOp(null);
+      clearSelection();
+    }
+  };
+
+  // ── Queue view model: flatten → filter/search/sort → group ────────────────
+  // Re-pin any open-verdict L3 sources onto the L3 bucket so the row hosting the
+  // verdict card never vanishes when the server advances it to L4 mid-decision.
+  const flat = useMemo<FlatQueueItem[]>(() => {
+    const base = flattenQueue(queue);
+    const pinnedKeys = new Set(Object.keys(pinnedL3));
+    if (pinnedKeys.size === 0) return base;
+    const out = base.map((f) =>
+      pinnedKeys.has(f.key) ? { ...f, bucket: 'level_3_user_gated' as BucketKey } : f,
+    );
+    const present = new Set(out.map((f) => f.key));
+    for (const [key, it] of Object.entries(pinnedL3)) {
+      if (!present.has(key)) {
+        out.push({ item: it, bucket: 'level_3_user_gated', key, domain: domainOf(it.url) });
+      }
+    }
+    return out;
+  }, [queue, pinnedL3]);
+
+  const facets = useMemo(() => computeFacets(flat), [flat]);
+  const visible = useMemo(() => filterAndSort(flat, filters, sort), [flat, filters, sort]);
+  const groups = useMemo(() => buildGroups(visible, groupMode), [visible, groupMode]);
+  const visibleKeys = useMemo(() => visible.map((f) => f.key), [visible]);
+
+  const totalAll = flat.length;
+  const allQueueItems = useMemo(() => flat.map((f) => f.item), [flat]);
+
+  // "Run automated batch" targets — respect the active filter so a project-
+  // scoped view batches only that project.
+  const automatedTargets = useMemo(
+    () => visible.filter((f) => f.bucket === 'level_1_quick' || f.bucket === 'level_2_scroll'),
+    [visible],
+  );
+  const totalAutomated = automatedTargets.length;
+
+  // ── Selection ─────────────────────────────────────────────────────────────
+  const selectedItems = useMemo(() => flat.filter((f) => selected.has(f.key)), [flat, selected]);
+  const capturableSelected = useMemo(
+    () => selectedItems.filter((f) => isAutoCapturable(f.bucket)),
+    [selectedItems],
+  );
+  const allVisibleSelected = visibleKeys.length > 0 && visibleKeys.every((k) => selected.has(k));
+
+  const toggleSelect = (key: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  const setKeysSelected = (keys: string[], on: boolean) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      for (const k of keys) {
+        if (on) next.add(k);
+        else next.delete(k);
+      }
+      return next;
+    });
+  const toggleSelectAllVisible = () => setKeysSelected(visibleKeys, !allVisibleSelected);
+  const clearSelection = () => setSelected(new Set());
+
+  // Prune selection of keys no longer present (queue refreshed, items resolved).
+  useEffect(() => {
+    setSelected((prev) => {
+      if (prev.size === 0) return prev;
+      const present = new Set(flat.map((f) => f.key));
+      const next = new Set([...prev].filter((k) => present.has(k)));
+      return next.size === prev.size ? prev : next;
+    });
+  }, [flat]);
 
   // Items in the queue that match the URL the user is currently viewing.
   // Used to surface a top-of-list banner so they don't have to hunt the row
@@ -671,6 +794,49 @@ export function TasksView() {
   const matchingIds = useMemo(() => new Set(matchingItems.map(itemKey)), [matchingItems]);
 
   const toggleSection = (k: string) => setOpenSections((s) => ({ ...s, [k]: !s[k] }));
+  // Group open by default, except low-value (opt-in). Project groups (topic ids)
+  // default open too.
+  const isGroupOpen = (id: string) => openSections[id] ?? id !== 'low_value';
+
+  /** Render one flat item as a PasteRow (L4) or Row (everything else). */
+  const renderItem = (f: FlatQueueItem) => {
+    const id = f.key;
+    const isOnPage = matchingIds.has(id);
+    if (f.bucket === 'level_4_paste') {
+      return (
+        <PasteRow
+          key={id}
+          item={f.item}
+          state={statusByItem[id]}
+          isOnPage={isOnPage}
+          value={pasteByItem[id] ?? ''}
+          onChange={(v) => setPasteByItem((p) => ({ ...p, [id]: v }))}
+          onSubmit={() => void runPaste(f.item)}
+          onVerdict={(v) => void runVerdict(f.item, v)}
+          selected={selected.has(id)}
+          onToggleSelect={() => toggleSelect(id)}
+        />
+      );
+    }
+    const rowLevel = Math.min(BUCKET_LEVEL[f.bucket], 3) as 1 | 2 | 3;
+    return (
+      <Row
+        key={id}
+        item={f.item}
+        level={rowLevel}
+        bucket={f.bucket}
+        showLevel={groupMode === 'project'}
+        state={statusByItem[id]}
+        isOnPage={isOnPage}
+        onRun={() => void runAutomated(f.item, rowLevel)}
+        onUserGo={() => void runUserGo(f.item)}
+        onEnrich={() => void runEnrichItem(f.item)}
+        onVerdict={(v) => void runVerdict(f.item, v)}
+        selected={selected.has(id)}
+        onToggleSelect={() => toggleSelect(id)}
+      />
+    );
+  };
 
   return (
     <div className="flex h-full flex-col">
@@ -723,6 +889,23 @@ export function TasksView() {
         </div>
       </div>
 
+      {queue && totalAll > 0 && (
+        <QueueToolbar facets={facets} filteredCount={visible.length} totalCount={totalAll} />
+      )}
+
+      <QueueSelectionBar
+        selectedCount={selected.size}
+        filteredCount={visible.length}
+        allFilteredSelected={allVisibleSelected}
+        capturableCount={capturableSelected.length}
+        busy={batchOp !== null}
+        progress={batchOp}
+        onToggleSelectAll={toggleSelectAllVisible}
+        onClear={clearSelection}
+        onCapture={() => void runBatchCapture()}
+        onVerdict={(v) => void runBatchVerdict(v)}
+      />
+
       {matchingItems.length > 0 && (
         <ActiveTabMatchBanner
           items={matchingItems}
@@ -758,147 +941,33 @@ export function TasksView() {
             </div>
           )}
 
-          {queue && (displayL1.length > 0 || displayL2.length > 0) && (
-            <Section
-              title="Automated"
-              subtitle="No interaction needed — extension scrapes for you."
-              count={totalAutomated}
-              open={!!(openSections.level_1_quick || openSections.level_2_scroll)}
-              onToggle={() => {
-                const both = openSections.level_1_quick && openSections.level_2_scroll;
-                setOpenSections((s) => ({
-                  ...s,
-                  level_1_quick: !both,
-                  level_2_scroll: !both,
-                }));
-              }}
-            >
-              {displayL1.map((it) => (
-                <Row
-                  key={itemKey(it)}
-                  item={it}
-                  level={1}
-                  state={statusByItem[itemKey(it)]}
-                  isOnPage={matchingIds.has(itemKey(it))}
-                  onRun={() => void runAutomated(it, 1)}
-                  onEnrich={() => void runEnrichItem(it)}
-                  onVerdict={(v) => void runVerdict(it, v)}
-                />
-              ))}
-              {displayL2.map((it) => (
-                <Row
-                  key={itemKey(it)}
-                  item={it}
-                  level={2}
-                  state={statusByItem[itemKey(it)]}
-                  isOnPage={matchingIds.has(itemKey(it))}
-                  onRun={() => void runAutomated(it, 2)}
-                  onEnrich={() => void runEnrichItem(it)}
-                  onVerdict={(v) => void runVerdict(it, v)}
-                />
-              ))}
-            </Section>
+          {queue && totalAll > 0 && visible.length === 0 && !error && (
+            <div className="grid place-items-center px-4 py-12 text-center text-sm text-muted-foreground">
+              No sources match your filters.
+            </div>
           )}
 
-          {queue && displayL3.length > 0 && (
-            <Section
-              title="Needs your help"
-              subtitle="The auto-scraper kept getting thin pages here. Trigger one, get the page fully loaded, then press Go — or resolve it directly."
-              count={displayL3.length}
-              open={!!openSections.level_3_user_gated}
-              onToggle={() => toggleSection('level_3_user_gated')}
-              tone="amber"
-            >
-              {displayL3.map((it) => (
-                <Row
-                  key={itemKey(it)}
-                  item={it}
-                  level={3}
-                  state={statusByItem[itemKey(it)]}
-                  isOnPage={matchingIds.has(itemKey(it))}
-                  onRun={() => void runAutomated(it, 3)}
-                  onUserGo={() => void runUserGo(it)}
-                  onEnrich={() => void runEnrichItem(it)}
-                  onVerdict={(v) => void runVerdict(it, v)}
-                />
-              ))}
-            </Section>
-          )}
-
-          {queue && displayGatedLogin.length > 0 && (
-            <Section
-              title="Sign in to capture"
-              subtitle="Login / paywall sources. Only you can capture these — as the signed-in user. Open one, make sure you're signed in, then press Go."
-              count={displayGatedLogin.length}
-              open={!!openSections.gated_login}
-              onToggle={() => toggleSection('gated_login')}
-              tone="amber"
-            >
-              {displayGatedLogin.map((it) => (
-                <Row
-                  key={itemKey(it)}
-                  item={it}
-                  level={3}
-                  state={statusByItem[itemKey(it)]}
-                  isOnPage={matchingIds.has(itemKey(it))}
-                  onRun={() => void runAutomated(it, 3)}
-                  onUserGo={() => void runUserGo(it)}
-                  onEnrich={() => void runEnrichItem(it)}
-                  onVerdict={(v) => void runVerdict(it, v)}
-                />
-              ))}
-            </Section>
-          )}
-
-          {queue && displayLowValue.length > 0 && (
-            <Section
-              title="Low-value"
-              subtitle="Rarely useful sources (nav junk, social walls). Opt in only if you know one matters — these never auto-queue or auto-batch."
-              count={displayLowValue.length}
-              open={!!openSections.low_value}
-              onToggle={() => toggleSection('low_value')}
-            >
-              {displayLowValue.map((it) => (
-                <Row
-                  key={itemKey(it)}
-                  item={it}
-                  level={2}
-                  state={statusByItem[itemKey(it)]}
-                  isOnPage={matchingIds.has(itemKey(it))}
-                  onRun={() => void runAutomated(it, 2)}
-                  onEnrich={() => void runEnrichItem(it)}
-                  onVerdict={(v) => void runVerdict(it, v)}
-                />
-              ))}
-            </Section>
-          )}
-
-          {queue && displayL4.length > 0 && (
-            <Section
-              title="Manual paste"
-              subtitle="Open the URL in a normal tab, copy the content, paste it here — or resolve directly if the page is gone."
-              count={displayL4.length}
-              open={!!openSections.level_4_paste}
-              onToggle={() => toggleSection('level_4_paste')}
-              tone="amber"
-            >
-              {displayL4.map((it) => {
-                const id = itemKey(it);
-                return (
-                  <PasteRow
-                    key={id}
-                    item={it}
-                    state={statusByItem[id]}
-                    isOnPage={matchingIds.has(id)}
-                    value={pasteByItem[id] ?? ''}
-                    onChange={(v) => setPasteByItem((p) => ({ ...p, [id]: v }))}
-                    onSubmit={() => void runPaste(it)}
-                    onVerdict={(v) => void runVerdict(it, v)}
-                  />
-                );
-              })}
-            </Section>
-          )}
+          {groups.map((group) => {
+            const groupKeys = group.items.map((f) => f.key);
+            const selCount = groupKeys.filter((k) => selected.has(k)).length;
+            const selectState =
+              selCount === 0 ? 'none' : selCount === groupKeys.length ? 'all' : 'some';
+            return (
+              <Section
+                key={group.id}
+                title={group.label}
+                subtitle={group.subtitle}
+                count={group.items.length}
+                tone={group.tone}
+                open={isGroupOpen(group.id)}
+                onToggle={() => toggleSection(group.id)}
+                selectState={selectState}
+                onToggleSelect={() => setKeysSelected(groupKeys, selectState !== 'all')}
+              >
+                {group.items.map(renderItem)}
+              </Section>
+            );
+          })}
         </div>
       </div>
 
@@ -906,7 +975,7 @@ export function TasksView() {
         <div className="shrink-0 px-3 pb-3 pt-1">
           <Button
             onClick={() => void runBatch()}
-            disabled={batchRunning}
+            disabled={batchRunning || batchOp !== null}
             className="w-full rounded-full"
           >
             {batchProgress ? (
@@ -988,59 +1057,114 @@ function Section({
   open,
   onToggle,
   tone,
+  selectState,
+  onToggleSelect,
   children,
 }: {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   count: number;
   open: boolean;
   onToggle: () => void;
   tone?: 'amber';
+  /** Select-all-in-group tri-state. Omit to hide the group checkbox. */
+  selectState?: 'none' | 'some' | 'all';
+  onToggleSelect?: () => void;
   children: React.ReactNode;
 }) {
   return (
     <div className="space-y-1.5">
-      <button
-        type="button"
-        onClick={onToggle}
-        className={`flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-secondary/40 ${
-          tone === 'amber' ? 'text-amber-700 dark:text-amber-400' : ''
-        }`}
+      <div
+        className={cn(
+          'flex items-center gap-1.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-secondary/40',
+          tone === 'amber' && 'text-amber-700 dark:text-amber-400',
+        )}
       >
-        <div className="min-w-0">
-          <div className="text-sm font-medium">
-            {title}
-            <span className="ml-1.5 text-xs text-muted-foreground">{count}</span>
+        {onToggleSelect && (
+          <button
+            type="button"
+            onClick={onToggleSelect}
+            className="shrink-0 text-muted-foreground hover:text-foreground"
+            title={selectState === 'all' ? 'Deselect group' : 'Select all in group'}
+          >
+            {selectState === 'all' ? (
+              <CheckSquare className="size-4 text-primary" />
+            ) : selectState === 'some' ? (
+              <CheckSquare className="size-4 opacity-60" />
+            ) : (
+              <Square className="size-4" />
+            )}
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={onToggle}
+          className="flex min-w-0 flex-1 items-center justify-between text-left"
+        >
+          <div className="min-w-0">
+            <div className="font-medium text-sm">
+              {title}
+              <span className="ml-1.5 text-muted-foreground text-xs">{count}</span>
+            </div>
+            {subtitle && <div className="truncate text-muted-foreground text-xs">{subtitle}</div>}
           </div>
-          <div className="truncate text-xs text-muted-foreground">{subtitle}</div>
-        </div>
-        <ChevronDown
-          className={`size-4 shrink-0 text-muted-foreground transition-transform ${open ? '' : '-rotate-90'}`}
-        />
-      </button>
+          <ChevronDown
+            className={`size-4 shrink-0 text-muted-foreground transition-transform ${open ? '' : '-rotate-90'}`}
+          />
+        </button>
+      </div>
       {open && <div className="space-y-1.5">{children}</div>}
     </div>
+  );
+}
+
+/** Row/paste-row selection checkbox. Renders nothing when selection is disabled. */
+function SelectCheckbox({ checked, onToggle }: { checked: boolean; onToggle?: () => void }) {
+  if (!onToggle) return null;
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="mt-0.5 shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+      title={checked ? 'Deselect' : 'Select'}
+      aria-pressed={checked}
+    >
+      {checked ? (
+        <CheckSquare className="size-4 text-primary" />
+      ) : (
+        <Square className="size-4 opacity-50 transition-opacity group-hover:opacity-100" />
+      )}
+    </button>
   );
 }
 
 function Row({
   item,
   level,
+  bucket,
+  showLevel,
   state,
   isOnPage,
   onRun,
   onUserGo,
   onEnrich,
   onVerdict,
+  selected,
+  onToggleSelect,
 }: {
   item: ExtensionScrapeItem;
   level: 1 | 2 | 3;
+  bucket: BucketKey;
+  /** Show a capture-level chip — useful in project grouping where levels mix. */
+  showLevel?: boolean;
   state?: ItemState;
   isOnPage?: boolean;
   onRun: () => void;
   onUserGo?: () => void;
   onEnrich?: () => void;
   onVerdict: (verdict: UserVerdict) => void;
+  selected?: boolean;
+  onToggleSelect?: () => void;
 }) {
   const status = state?.status ?? 'idle';
   const errorMsg = state?.error;
@@ -1054,12 +1178,19 @@ function Row({
       className={cn(
         'group rounded-xl bg-secondary/40 px-3 py-2.5 transition-colors hover:bg-secondary/70',
         isOnPage && 'bg-emerald-500/10 ring-1 ring-emerald-500/40 hover:bg-emerald-500/15',
+        selected && 'bg-primary/10 ring-1 ring-primary/40 hover:bg-primary/15',
       )}
     >
-      <div className="flex items-start justify-between gap-2">
+      <div className="flex items-start gap-2">
+        <SelectCheckbox checked={!!selected} onToggle={onToggleSelect} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
             <div className="truncate text-sm font-medium">{item.topic_name}</div>
+            {showLevel && (
+              <span className="inline-flex shrink-0 items-center rounded-full bg-secondary px-1.5 py-0 text-[9px] font-medium uppercase tracking-wider text-muted-foreground">
+                {BUCKET_LABELS[bucket]}
+              </span>
+            )}
             {isOnPage && (
               <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-500/20 px-1.5 py-0 text-[9px] font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
                 <Target className="size-2.5" /> on this page
@@ -1202,6 +1333,8 @@ function PasteRow({
   onChange,
   onSubmit,
   onVerdict,
+  selected,
+  onToggleSelect,
 }: {
   item: ExtensionScrapeItem;
   state?: ItemState;
@@ -1210,6 +1343,8 @@ function PasteRow({
   onChange: (v: string) => void;
   onSubmit: () => void;
   onVerdict: (verdict: UserVerdict) => void;
+  selected?: boolean;
+  onToggleSelect?: () => void;
 }) {
   const status = state?.status ?? 'idle';
   const errorMsg = state?.error;
@@ -1220,11 +1355,13 @@ function PasteRow({
   return (
     <div
       className={cn(
-        'space-y-2 rounded-xl bg-secondary/40 px-3 py-2.5',
+        'group space-y-2 rounded-xl bg-secondary/40 px-3 py-2.5',
         isOnPage && 'bg-emerald-500/10 ring-1 ring-emerald-500/40',
+        selected && 'bg-primary/10 ring-1 ring-primary/40',
       )}
     >
-      <div className="flex items-start justify-between gap-2">
+      <div className="flex items-start gap-2">
+        <SelectCheckbox checked={!!selected} onToggle={onToggleSelect} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
             <div className="truncate text-sm font-medium">{item.topic_name}</div>
@@ -1452,33 +1589,16 @@ function ResolveMenu({
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-64 p-1">
-        <VerdictMenuItem
-          icon={CheckCircle}
-          label="This is the whole page"
-          description="Sparse content is correct — accept and move on."
-          onClick={() => choose('accept_as_is')}
-        />
-        <VerdictMenuItem
-          icon={Lock}
-          label="Page is gated"
-          description="Login / paywall / captcha. Stop trying."
-          onClick={() => choose('gated')}
-        />
-        <VerdictMenuItem
-          icon={Skull}
-          label="Page is dead / 404"
-          description="URL is gone. Don't surface this again."
-          onClick={() => choose('dead_link')}
-        />
-        {includeRetry && (
+      <PopoverContent align="end" className="w-72 p-1">
+        {VERDICT_OPTIONS.filter((o) => !o.retryOnly || includeRetry).map((o) => (
           <VerdictMenuItem
-            icon={RotateCcw}
-            label="Retry from scratch"
-            description="Throw away the last result and requeue."
-            onClick={() => choose('retry')}
+            key={o.verdict}
+            icon={o.icon}
+            label={o.label}
+            description={o.description}
+            onClick={() => choose(o.verdict)}
           />
-        )}
+        ))}
       </PopoverContent>
     </Popover>
   );

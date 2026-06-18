@@ -1322,6 +1322,52 @@ Every entry follows this shape:
   expand/comments; `details` accordions are opened; generic "load more" controls
   are capped at 8 clicks so it can't runaway-click a page.
 
+### Scrape queue — filter / search / sort / group-by
+- **What it does:** A toolbar on the Tasks tab to focus a huge multi-project
+  queue: filter by **project**, free-text **search** (url/title/project/domain), a
+  **Filters** popover (domain · status · policy category · capture level), **sort**
+  (project / domain / recency / chars / attempts / status), and a **group-by**
+  toggle (capture level ↔ project). Selections persist across reopens.
+- **Where to test:** Tasks tab (needs a queue spanning several projects/domains).
+- **Steps:**
+  1. Pick a project in the **project dropdown** → only that project's sources show;
+     the header count + "N of M shown" reflect the filter.
+  2. Type part of a domain/title in **search** → list narrows live; clear with ×.
+  3. Open the **Filters** popover → tick a domain / status / capture level →
+     results narrow; the funnel icon shows an active-count badge.
+  4. Flip **group-by** to **project** (folder icon) → sections become one per
+     project, each row showing a capture-level chip; flip back to level (list icon).
+  5. Change **sort** → order updates within every section.
+  6. Close + reopen the side panel → your project filter + sort + group mode are
+     still applied.
+- **Expected:** Filters compose (AND); "Clear filters" (×) resets them; an empty
+  result shows "No sources match your filters"; a legacy server build with no
+  policy fields still works (everything reads as an `open` scrape task).
+
+### Scrape queue — batch actions + new statuses (ignored / content_mismatch)
+- **What it does:** Select multiple sources and act in bulk — **Capture** (auto-
+  capturable) or **Resolve** with any verdict. Adds two honest verdicts: **Ignore**
+  ("not interested" — not dead/gated) → status `ignored`, and **Wrong content**
+  ("page isn't what it claimed — redirect/changed page, not a 404") →
+  `content_mismatch`. Both terminal. See docs/RESEARCH_QUEUE_MANAGEMENT.md.
+- **Where to test:** Tasks tab.
+- **Steps:**
+  1. Filter to a project you're done with. Click the **section checkbox** (or
+     "select all filtered" in the action bar) → an action bar shows "N selected".
+  2. Click **Resolve → Ignore — don't want it** → progress shows, the sources
+     leave the queue, selection clears.
+  3. Per-row **Resolve** dropdown now also lists "Ignore" and "Wrong content"
+     alongside accept / gated / dead / retry.
+  4. Select a few L1/L2 sources → **Capture** → they scrape in sequence.
+- **Expected:** Bulk resolve removes terminal-verdict sources on the next refresh;
+  `retry` requeues them; a few failures are logged but don't sink the batch.
+  Resolved sources show the new status in the **web research UI** once aidream +
+  matrx-frontend deploy (until then batch still works via a per-source fallback,
+  and the web UI shows a muted badge for the new statuses).
+- **Edge cases worth poking:** "Capture" is disabled when no selected source is
+  auto-capturable (paste-only / sign-in). Selecting across projects then resolving
+  applies to all of them (server resolves each source's topic + checks access).
+
 ### Agenda — Cron trigger
 - **What it does:** Creating an agenda task with a Cron trigger now actually
   fires. A 5-field cron expression (min hour dom month dow, evaluated in your

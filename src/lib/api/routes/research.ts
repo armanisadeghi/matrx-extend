@@ -30,6 +30,10 @@ export const ScrapeStatusSchema = z.enum([
   'complete',
   'dead_link',
   'gated',
+  // 2026-06-18 — honest terminal statuses (see UserVerdict below). Both drop out
+  // of the scrape queue (server adds them to _TERMINAL_STATUSES).
+  'ignored',
+  'content_mismatch',
 ]);
 export type ScrapeStatus = z.infer<typeof ScrapeStatusSchema>;
 
@@ -37,13 +41,24 @@ export type ScrapeStatus = z.infer<typeof ScrapeStatusSchema>;
  * User verdicts — optional escape hatch when the auto-pipeline can't decide.
  * The user being on the page is what makes "blocked" not a verdict — they're
  * past whatever the obstacle was. See research/docs/EXTENSION_API.md.
- *   - accept_as_is: the sparse content IS the page
- *   - dead_link:    URL is gone (404 / removed)
- *   - retry:        throw away the last result, requeue
- *   - gated:        page exists but is locked (login / paywall / captcha) —
- *                   not dead, but stop trying
+ *   - accept_as_is:     the sparse content IS the page → status `complete`
+ *   - dead_link:        URL is gone (404 / removed) → status `dead_link`
+ *   - retry:            throw away the last result, requeue → status `pending`
+ *   - gated:            page is locked (login / paywall / captcha) → status `gated`
+ *   - ignored:          not interested — stop surfacing it. Not dead, not gated,
+ *                       just not wanted. Honest "make it go away" → status `ignored`
+ *   - content_mismatch: the page loaded but isn't what it claimed to be (redirect
+ *                       / changed page / wrong content) — NOT a 404 → status
+ *                       `content_mismatch`
+ * `ignored` + `content_mismatch` are terminal (drop out of the queue).
  */
-export type UserVerdict = 'accept_as_is' | 'dead_link' | 'retry' | 'gated';
+export type UserVerdict =
+  | 'accept_as_is'
+  | 'dead_link'
+  | 'retry'
+  | 'gated'
+  | 'ignored'
+  | 'content_mismatch';
 
 const captureLevel = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]);
 
@@ -275,6 +290,90 @@ export async function applyVerdict(
     `/research/topics/${encodeURIComponent(topicId)}/sources/${encodeURIComponent(sourceId)}/verdict`,
     notes ? { verdict, notes } : { verdict },
   );
+}
+
+export interface BulkVerdictItem {
+  topicId: string;
+  sourceId: string;
+}
+
+export interface BulkVerdictResult {
+  succeeded: string[];
+  failed: { sourceId: string; error: string }[];
+}
+
+/** Server response shape for the bulk endpoint (snake_case, mirrors FastAPI). */
+interface BulkVerdictServerResponse {
+  succeeded: string[];
+  failed: { source_id: string; error: string }[];
+}
+
+/**
+ * Apply one verdict to many sources. Prefers the atomic server bulk endpoint
+ * (`POST /research/extension/sources/verdict_bulk`); if that endpoint isn't
+ * deployed yet (404), falls back to a concurrency-capped loop over the live
+ * per-source endpoint so bulk actions work TODAY without waiting on a backend
+ * deploy. The fallback is intentional graceful degradation (same convention as
+ * the topic-picker endpoints above), not a permanent second path — once the
+ * bulk endpoint ships everywhere the 404 branch is simply never taken.
+ *
+ * `onProgress(done, total)` fires as the fallback loop advances (the bulk
+ * endpoint resolves in one shot). Per-source failures are collected, never
+ * thrown — one bad source can't abort the batch.
+ */
+export async function applyVerdictBulk(
+  items: BulkVerdictItem[],
+  verdict: UserVerdict,
+  notes?: string,
+  onProgress?: (done: number, total: number) => void,
+): Promise<BulkVerdictResult> {
+  if (items.length === 0) return { succeeded: [], failed: [] };
+
+  // 1) Atomic server path.
+  const bulk = await apiPost<BulkVerdictServerResponse>(
+    '/research/extension/sources/verdict_bulk',
+    {
+      source_ids: items.map((i) => i.sourceId),
+      verdict,
+      ...(notes ? { notes } : {}),
+    },
+  );
+  if (bulk.ok) {
+    onProgress?.(items.length, items.length);
+    return {
+      succeeded: bulk.data.succeeded ?? [],
+      failed: (bulk.data.failed ?? []).map((f) => ({ sourceId: f.source_id, error: f.error })),
+    };
+  }
+  // Only fall back when the endpoint is genuinely absent. A real error (5xx/4xx
+  // other than 404) means the endpoint exists and rejected us — don't risk
+  // double-applying via the loop.
+  if (bulk.status !== 404) {
+    return {
+      succeeded: [],
+      failed: items.map((i) => ({ sourceId: i.sourceId, error: bulk.error })),
+    };
+  }
+
+  // 2) Fallback: concurrency-capped per-source loop over the live endpoint.
+  const CONCURRENCY = 6;
+  const succeeded: string[] = [];
+  const failed: { sourceId: string; error: string }[] = [];
+  let done = 0;
+  for (let i = 0; i < items.length; i += CONCURRENCY) {
+    const chunk = items.slice(i, i + CONCURRENCY);
+    // eslint-disable-next-line no-await-in-loop
+    await Promise.all(
+      chunk.map(async (item) => {
+        const r = await applyVerdict(item.topicId, item.sourceId, verdict, notes);
+        if (r.ok) succeeded.push(item.sourceId);
+        else failed.push({ sourceId: item.sourceId, error: r.error });
+        done++;
+        onProgress?.(done, items.length);
+      }),
+    );
+  }
+  return { succeeded, failed };
 }
 
 export const ResearchSourceSchema = z.object({
