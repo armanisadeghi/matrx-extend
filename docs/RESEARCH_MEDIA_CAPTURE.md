@@ -20,9 +20,9 @@ measured image dimensions.
 
 | File | Change |
 |---|---|
-| `src/lib/scrape/capture-media.ts` | **NEW.** `getCaptureImages(tabId)` — reads each `<img>`'s `currentSrc` + `naturalWidth`/`naturalHeight` from the loaded DOM via `chrome.scripting.executeScript`. Mirrors `collectImages()` in `collectors.ts`, inlined because the injected `func` can't import. Best-effort: returns `[]` on failure. |
-| `src/lib/api/routes/research.ts` | `submitExtensionContent(...)` gained an optional `images: ExtensionImagePayload[]` arg, added to the POST body. New exported `ExtensionImagePayload` type. |
-| `src/features/tasks/TasksView.tsx` | After `getOuterHtml`, calls `getCaptureImages(tabId)` and passes the result to `submitExtensionContent`. |
+| `src/lib/scrape/capture-media.ts` | **NEW.** `getCaptureImages(tabId)` — reads each `<img>`'s `currentSrc` + `naturalWidth`/`naturalHeight` from the loaded DOM via `chrome.scripting.executeScript`. Mirrors `collectImages()` in `collectors.ts`, inlined because the injected `func` can't import. Best-effort: returns `[]` on failure. **(Superseded 2026-06-17 by `getCapturePageData`, which gathers images + media + structured in one pass — see RESEARCH_ENRICHMENT.md §4.)** |
+| `src/lib/api/routes/research.ts` | `submitExtensionContent(...)` gained an optional `images: ExtensionImagePayload[]` arg, added to the POST body. New exported `ExtensionImagePayload` type. *(Later extended with a `media`/`structured`/`enrich_goal` extras object — §4/§3.)* |
+| `src/features/tasks/TasksView.tsx` | After `getOuterHtml`, calls `getCaptureImages(tabId)` and passes the result to `submitExtensionContent`. *(Now `getCapturePageData`.)* |
 
 ### Wire contract (additive, backward-compatible)
 

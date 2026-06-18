@@ -14,6 +14,7 @@
  */
 
 import { apiGet, apiPatch, apiPost } from '@/lib/api/client';
+import { ENRICH_GOALS, type EnrichGoal } from '@/lib/research/enrich-types';
 import { z } from 'zod';
 
 export type CaptureLevel = 1 | 2 | 3 | 4;
@@ -47,12 +48,47 @@ export type UserVerdict = 'accept_as_is' | 'dead_link' | 'retry' | 'gated';
 const captureLevel = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]);
 
 /**
- * Items returned by /research/extension/scrape-queue. The contract narrows
- * the broad ScrapeStatus enum: only sources where the server has given up
- * (server_gave_up = true) and the user has approved (is_included = true)
- * appear here, so scrape_status is always 'thin' or 'failed' on this shape.
- * If the server ever returns 'pending' / 'success' / etc., that's a backend
- * bug — schema parse will warn and the queue load will fail loudly.
+ * Domain-policy category the server resolved for a source (RESEARCH_ENRICHMENT.md
+ * §5; aidream research/domain_policy.py). Drives how the queue UI treats it:
+ *   - open          — normal scrape ladder.
+ *   - gated_login   — login/paywall; show "Sign in to capture", never auto-retry.
+ *   - low_value     — rarely useful (e.g. Facebook); never auto-queue.
+ *   - special       — capturable with a tuned selector (e.g. Reddit); worth it.
+ *   - blocked       — server won't touch it.
+ * Optional/nullable — legacy server builds omit it (treated as `open`).
+ */
+export const PolicyCategorySchema = z.enum([
+  'open',
+  'gated_login',
+  'low_value',
+  'special',
+  'blocked',
+]);
+export type PolicyCategory = z.infer<typeof PolicyCategorySchema>;
+
+/**
+ * Enrich directive carried on an `enrich` task (RESEARCH_ENRICHMENT.md §3). The
+ * goal enum mirrors ENRICH_GOALS; `enrich-types.ts` owns the canonical list.
+ */
+export const EnrichDirectiveSchema = z.object({
+  goal: z.enum([...ENRICH_GOALS] as [EnrichGoal, ...EnrichGoal[]]),
+  reason: z.string().nullable().optional(),
+  hints: z
+    .object({
+      selector: z.string().nullable().optional(),
+      expect_chars_min: z.number().nullable().optional(),
+    })
+    .passthrough()
+    .nullable()
+    .optional(),
+});
+
+/**
+ * Items returned by /research/extension/scrape-queue. The four level buckets are
+ * sources the server gave up on (server_gave_up = true). The two policy buckets
+ * (gated_login / low_value, §5) are NOT failures — they're deliberately routed —
+ * so `scrape_status` here spans the full enum, not just 'thin'/'failed'. A
+ * legacy item with no policy/task fields parses as an `open` `scrape` task.
  */
 export const ExtensionScrapeItemSchema = z.object({
   source_id: z.string().uuid(),
@@ -60,7 +96,7 @@ export const ExtensionScrapeItemSchema = z.object({
   topic_name: z.string(),
   url: z.string().url(),
   title: z.string().nullable().optional(),
-  scrape_status: z.enum(['thin', 'failed']),
+  scrape_status: ScrapeStatusSchema,
   is_included: z.boolean(),
   next_level: captureLevel,
   attempted_levels: z.array(captureLevel).default([]),
@@ -68,11 +104,17 @@ export const ExtensionScrapeItemSchema = z.object({
   last_char_count: z.number().nullable().optional(),
   last_failure_reason: z.string().nullable().optional(),
   // Server-side accounting — always present on queue items by contract.
-  // server_attempts >= 1 and server_gave_up === true on every item here.
+  // server_attempts >= 1 and server_gave_up === true on every level item.
   server_attempts: z.number().int(),
   last_server_attempt_at: z.string().nullable().optional(),
   last_server_failure_reason: z.string().nullable().optional(),
   server_gave_up: z.boolean(),
+  // §5 domain policy (optional — absent on legacy server builds → 'open').
+  policy_category: PolicyCategorySchema.nullable().optional(),
+  policy_reason: z.string().nullable().optional(),
+  // §3 enrich task kind (optional — absent → a plain 'scrape' task).
+  task_kind: z.enum(['scrape', 'enrich']).default('scrape'),
+  enrich: EnrichDirectiveSchema.nullable().optional(),
 });
 export type ExtensionScrapeItem = z.infer<typeof ExtensionScrapeItemSchema>;
 
@@ -81,6 +123,9 @@ export const ExtensionScrapeQueueSchema = z.object({
   level_2_scroll: z.array(ExtensionScrapeItemSchema).default([]),
   level_3_user_gated: z.array(ExtensionScrapeItemSchema).default([]),
   level_4_paste: z.array(ExtensionScrapeItemSchema).default([]),
+  // §5 policy buckets — present on current server builds, defaulted for older ones.
+  gated_login: z.array(ExtensionScrapeItemSchema).default([]),
+  low_value: z.array(ExtensionScrapeItemSchema).default([]),
   totals: z.record(z.string(), z.number()).default({}),
 });
 export type ExtensionScrapeQueue = z.infer<typeof ExtensionScrapeQueueSchema>;
@@ -121,16 +166,67 @@ export interface ExtensionImagePayload {
   height: number | null;
 }
 
+/**
+ * Media + structured data the live DOM has but the server's HTML scan can't see
+ * — JS-injected `<video>`/`<audio>`/iframe players and clean OpenGraph/JSON-LD
+ * (RESEARCH_ENRICHMENT.md §4). Additive: the server ignores unknown body fields
+ * today (ExtensionContentSubmit has no `extra='forbid'`), so sending these is a
+ * harmless no-op until the server consumes them.
+ */
+export interface ExtensionMediaPayload {
+  videos: { src: string; poster: string | null; duration: number | null }[];
+  audio: { src: string; type: string | null }[];
+}
+
+export interface ExtensionStructuredPayload {
+  metadata: {
+    title: string;
+    description: string | null;
+    canonical: string | null;
+    lang: string | null;
+    og: Record<string, string>;
+    twitter: Record<string, string>;
+    schemaTypes: string[];
+  } | null;
+  jsonLd: unknown[];
+}
+
+export interface SubmitExtras {
+  media?: ExtensionMediaPayload;
+  structured?: ExtensionStructuredPayload;
+  /** §3 — routes the result server-side (a transcript → content, a screenshot → rs_media). */
+  enrichGoal?: EnrichGoal;
+}
+
 export async function submitExtensionContent(
   topicId: string,
   sourceId: string,
   htmlContent: string,
   captureLevel: SubmittableLevel,
   images: ExtensionImagePayload[] = [],
+  extras: SubmitExtras = {},
 ) {
+  const body: Record<string, unknown> = {
+    html_content: htmlContent,
+    capture_level: captureLevel,
+    images,
+  };
+  // Only attach the new keys when there's something to send — keeps legacy
+  // captures byte-for-byte identical and the body lean.
+  if (extras.media && (extras.media.videos.length > 0 || extras.media.audio.length > 0)) {
+    body.media = extras.media;
+  }
+  if (
+    extras.structured &&
+    (extras.structured.metadata != null || extras.structured.jsonLd.length > 0)
+  ) {
+    body.structured = extras.structured;
+  }
+  if (extras.enrichGoal) body.enrich_goal = extras.enrichGoal;
+
   return apiPost<ExtensionContentResponse>(
     `/research/topics/${encodeURIComponent(topicId)}/sources/${encodeURIComponent(sourceId)}/extension-content`,
-    { html_content: htmlContent, capture_level: captureLevel, images },
+    body,
   );
 }
 

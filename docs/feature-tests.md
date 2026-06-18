@@ -1257,6 +1257,71 @@ Every entry follows this shape:
 - **Edge cases worth poking:** Switching mode mid-session takes effect on the
   next capture (read fresh, no listener re-register). chrome:// pages skip.
 
+### Research capture — media + structured collectors (§4)
+- **What it does:** A research capture now sends, alongside the HTML + image
+  dims, the JS-injected media (`<video>`/`<audio>` + YouTube/Vimeo iframes) and
+  clean structured data (OpenGraph/Twitter metadata + parsed JSON-LD) the
+  server's HTML scan can't compute — gathered in one injected pass.
+- **Where to test:** Tasks tab → run any capture (L1/L2/L3) on a media- or
+  schema-rich page (e.g. a news article or product page); DevTools Network panel.
+- **Steps:**
+  1. Open the DevTools Network panel for the side panel (or inspect the SW).
+  2. Run a capture on a queued source that has video embeds and JSON-LD.
+  3. Find the `POST …/extension-content` request and read its body.
+- **Expected:** The body has `images` (as before) PLUS `media: { videos, audio }`
+  and `structured: { metadata, jsonLd }` when the page has any. A page with no
+  media/structured omits those keys (kept lean). The capture still succeeds and
+  the source advances exactly as before (server ignores unknown keys today).
+- **Edge cases worth poking:** A page with zero videos/jsonLd → `media`/
+  `structured` absent, body identical to the old shape. Injection failure →
+  empty data, capture still proceeds off the HTML.
+
+### Research queue — domain-policy categories (§5)
+- **What it does:** The scrape queue now renders the server's per-source policy
+  category: `gated_login` sources appear under a **"Sign in to capture"** section
+  (open → sign in → Go via the user-gated overlay), `low_value` sources under a
+  **collapsed "Low-value"** section that never auto-batches, and `special`
+  sources get a violet **"Worth it"** badge. The human `policy_reason` ("Login
+  required …") shows on the row.
+- **Where to test:** Tasks tab, with a topic whose sources include a login-walled
+  site (e.g. NYT), a low-value site (e.g. Facebook), and a tuned site (e.g.
+  Reddit).
+- **Steps:**
+  1. Open the Tasks tab. Confirm gated_login sources are under "Sign in to
+     capture" with a "Login required" badge + reason, and are NOT in the
+     automated batch.
+  2. Confirm low_value sources are under a collapsed "Low-value" section; expand
+     it to opt in. The "Run automated batch" button count excludes them.
+  3. Confirm a `special` source shows the "Worth it" badge.
+  4. On a gated_login row press **Trigger** → the tab opens, you sign in, press
+     **Go** in the overlay → it captures as you.
+- **Expected:** Categories group + label correctly; low-value never auto-runs;
+  gated_login uses the sign-in-then-Go flow; the header count + empty-state
+  include the policy buckets.
+- **Edge cases worth poking:** A legacy server build (no policy fields) → every
+  source is a plain `open` scrape task, no badges, exactly as before. Being on a
+  gated_login URL surfaces the top-of-list "you're on a queued source" banner.
+
+### Research enrich tasks (§3) — dormant until the server emits them
+- **What it does:** When the server tags a queue item `task_kind:'enrich'` with a
+  directive (goal: rendered_dom / authenticated / expand / comments / structured
+  / …), the row shows a violet goal badge + an **Enrich** button. Pressing it
+  opens/reuses the tab, runs the goal-specific capture (settle/scroll/click →
+  capture html + page data), and submits with `enrich_goal`. Artifact goals
+  (screenshot/download/xhr_json/transcript) show an honest "not available yet"
+  error naming the missing server piece.
+- **Where to test:** Not yet end-to-end — **no server emits enrich items today**
+  (the generator is a filed server contract). The goal→plan mapping is covered by
+  `tests/unit/research-enrich.test.ts`. To exercise the UI before the server
+  lands it, hand-craft a queue item with `task_kind:'enrich'` + an `enrich`
+  directive in a mocked queue response.
+- **Expected:** Supported goals capture + submit (and the row goes success/thin);
+  unsupported goals surface the named-gap message; a plain scrape item is
+  unaffected (no badge, normal Run).
+- **Edge cases worth poking:** `hints.selector` is clicked first on
+  expand/comments; `details` accordions are opened; generic "load more" controls
+  are capped at 8 clicks so it can't runaway-click a page.
+
 ### Agenda — Cron trigger
 - **What it does:** Creating an agenda task with a Cron trigger now actually
   fires. A 5-field cron expression (min hour dom month dow, evaluated in your

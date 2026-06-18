@@ -1,9 +1,21 @@
 # Research — Browser Capture & Enrichment Tasks (spec)
 
-**Date:** 2026-06-17 · **Status:** spec for the extension team to build. Server-side
-contract is partially in place (see "Server side" below); the rest is proposed.
+**Date:** 2026-06-17 · **Status:** **extension side implemented** (2026-06-17).
 **Tester:** only the human operator can visually verify extension behaviour in a
-real browser — keep a manual checklist with each capability.
+real browser — keep a manual checklist with each capability (docs/feature-tests.md
+→ "Research capture — *", "Research queue — *", "Research enrich *").
+
+### Implementation status (2026-06-17)
+
+| Section | Extension | Server | Notes |
+|---|---|---|---|
+| **§4 collectors** (media + structured) | ✅ shipped — `getCapturePageData` sends `media`/`structured` | ⏳ ignores them today (additive, harmless) | `ExtensionContentSubmit` has no `extra='forbid'`; filed for consumption. |
+| **§5 domain categories** | ✅ shipped — category-aware queue UI | ✅ **already live** — `policy_category`/`policy_reason` + `gated_login`/`low_value` buckets on the queue | The doc under-stated the server here; it was ready. |
+| **§3 enrich task kind** | ✅ built + unit-tested, **dormant** — fulfils a directive via existing capture primitives | ❌ no generator; asset-upload endpoint is `501` | Lights up the instant the server tags items `task_kind:'enrich'`. Capture-family goals work; artifact goals (screenshot/download/xhr_json/transcript) need the server sink — they return an honest "not available yet". |
+
+Server-side follow-ups are filed via matrx-feedback (the enrich-task generator +
+`enrich_goal` routing, `media`/`structured` consumption, and the `/sources/upload`
+endpoint). The extension degrades gracefully against every gap.
 
 ---
 
@@ -128,8 +140,10 @@ Server work to consume these is small (mirror the existing `images` overlay +
 
 ## 5. Domain-aware routing (why some sources should never be auto-scraped)
 
-The server is gaining **site categories** (see aidream `research/domain_policy`).
-The extension should treat them differently in the queue UI:
+The server **already resolves** site categories (aidream `research/domain_policy.py`)
+and surfaces them on every scrape-queue item as `policy_category` + `policy_reason`,
+plus dedicated `gated_login` / `low_value` buckets. The extension treats them
+differently in the queue UI (✅ implemented — see §5 status above):
 
 - **`open`** — normal scrape ladder.
 - **`login_required`** (e.g. NYT) — the server will NOT keep trying. The extension
@@ -161,9 +175,11 @@ levels / content selectors); the media gallery now renders videos/docs/audio.
 2. Accept `media`/`structured` (§4) and `enrich_goal` on the submit body.
 3. Domain **categories** + user-facing reason (§5), surfaced on `rs_source`.
 
-**Needed (extension):** §4 collectors now; then the `enrich` handlers (§3) wired
-to existing tools (computer/navigate/read_page/find/screenshot/download/
-evaluate_javascript); the category-aware queue UI (§5).
+**Done (extension, 2026-06-17):** §4 collectors (`src/lib/scrape/capture-media.ts`
+→ `getCapturePageData`, sent via `submitExtensionContent`); the category-aware
+queue UI (§5, `src/features/tasks/TasksView.tsx`); the `enrich` executor (§3,
+`src/lib/research/enrich.ts` + `enrich-types.ts`) reusing the existing capture
+primitives, surfaced in the queue and dormant until the server emits enrich items.
 
 ---
 

@@ -8,6 +8,7 @@ import { useActiveTab } from '@/hooks/use-active-tab';
 import {
   type ExtensionScrapeItem,
   type ExtensionScrapeQueue,
+  type PolicyCategory,
   type SubmittableLevel,
   type UserVerdict,
   applyVerdict,
@@ -17,8 +18,10 @@ import {
 } from '@/lib/api/routes/research';
 import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { runEnrich } from '@/lib/research/enrich';
+import { ENRICH_GOAL_INFO } from '@/lib/research/enrich-types';
 import { getOuterHtml } from '@/lib/scrape/capture-html';
-import { getCaptureImages } from '@/lib/scrape/capture-media';
+import { getCapturePageData } from '@/lib/scrape/capture-media';
 import { scrollToLoadLazy, settlePage } from '@/lib/scrape/page-ready';
 import { removeCaptureOverlay, showCaptureOverlay } from '@/lib/scrape/user-gate-overlay';
 import { urlsMatch } from '@/lib/url/match';
@@ -30,13 +33,17 @@ import {
   CheckCircle2,
   ChevronDown,
   ExternalLink,
+  EyeOff,
   Loader2,
   Lock,
+  LogIn,
   PlayCircle,
   RefreshCw,
   RotateCcw,
   Skull,
+  Sparkles,
   Target,
+  Wand2,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -97,6 +104,10 @@ export function TasksView() {
     level_2_scroll: true,
     level_3_user_gated: true,
     level_4_paste: true,
+    gated_login: true,
+    // Low-value sources are opt-in — collapsed by default so they never read as
+    // work the user should do (§5).
+    low_value: false,
   });
   const [batchProgress, setBatchProgress] = useState<{
     current: number;
@@ -149,7 +160,9 @@ export function TasksView() {
       if (!payload?.topicId || !payload.sourceId) return;
       const q = queueRef.current;
       if (!q) return;
-      const item = q.level_3_user_gated.find(
+      // gated_login (§5) sources also use the user-gated overlay flow — open,
+      // let the user confirm they're signed in, then Go — so search both buckets.
+      const item = [...q.level_3_user_gated, ...q.gated_login].find(
         (it) => it.topic_id === payload.topicId && it.source_id === payload.sourceId,
       );
       if (!item) return;
@@ -385,13 +398,25 @@ export function TasksView() {
       return { ok: false, isGood: false };
     }
 
-    // Browser-measured image dimensions (naturalWidth/Height), captured from the
-    // same loaded DOM. Sent so the server gallery gets exact sizes without
-    // re-downloading each image. Best-effort — returns [] on failure.
-    const images = await getCaptureImages(tabId);
+    // Browser-measured page data from the same loaded DOM, in one injection:
+    // image dims (naturalWidth/Height), JS-injected media, and clean structured
+    // data (OG/JSON-LD) the server's HTML scan can't compute. Sent alongside the
+    // HTML so the gallery + structured fields are exact. Best-effort — empty on
+    // failure (the server still derives everything from the HTML). §4.
+    const page = await getCapturePageData(tabId);
 
     setItemState(id, { status: 'submitting', tabId });
-    const result = await submitExtensionContent(item.topic_id, item.source_id, html, level, images);
+    const result = await submitExtensionContent(
+      item.topic_id,
+      item.source_id,
+      html,
+      level,
+      page.images,
+      {
+        media: { videos: page.videos, audio: page.audio },
+        structured: { metadata: page.metadata, jsonLd: page.jsonLd },
+      },
+    );
     if (!result.ok) {
       setItemState(id, { status: 'error', error: result.error });
       await closeTab();
@@ -436,6 +461,60 @@ export function TasksView() {
       void invalidateQueue();
     }
     return { ok: true, isGood: is_good_scrape };
+  };
+
+  /**
+   * Run an `enrich` task (§3) — open/reuse the tab, fulfil the directive via the
+   * existing capture primitives (settle/scroll/click → capture → submit with
+   * enrich_goal), then close any tab we opened. Dormant until the server emits
+   * `task_kind:'enrich'` items, but fully wired.
+   */
+  const runEnrichItem = async (item: ExtensionScrapeItem) => {
+    const id = itemKey(item);
+    if (!item.enrich) return;
+
+    const reuseActive =
+      activeTab.id != null && activeTab.url != null && urlsMatch(activeTab.url, item.url);
+    setItemState(id, { status: 'navigating' });
+    let tabId: number;
+    let openedTab = false;
+    if (reuseActive && activeTab.id != null) {
+      tabId = activeTab.id;
+    } else {
+      let tab: chrome.tabs.Tab;
+      try {
+        tab = await chrome.tabs.create({ url: item.url, active: false });
+      } catch (err) {
+        setItemState(id, { status: 'error', error: (err as Error).message });
+        return;
+      }
+      if (!tab.id) {
+        setItemState(id, { status: 'error', error: 'Tab has no id' });
+        return;
+      }
+      tabId = tab.id;
+      openedTab = true;
+      await waitForTab(tabId);
+    }
+
+    setItemState(id, { status: 'scraping', tabId });
+    const outcome = await runEnrich(item, tabId);
+    if (openedTab) {
+      try {
+        await chrome.tabs.remove(tabId);
+      } catch {
+        /* ignore */
+      }
+    }
+    if (!outcome.ok) {
+      setItemState(id, { status: 'error', error: outcome.reason });
+      return;
+    }
+    setItemState(id, {
+      status: outcome.isGood ? 'success' : 'thin',
+      charCount: outcome.charCount,
+    });
+    void invalidateQueue();
   };
 
   const runPaste = async (item: ExtensionScrapeItem) => {
@@ -545,17 +624,33 @@ export function TasksView() {
       ]
     : [];
   const displayL4 = queue ? filterPinned(queue.level_4_paste) : [];
+  // §5 policy buckets — rendered as their own sections, deliberately routed.
+  const displayGatedLogin = queue ? queue.gated_login : [];
+  const displayLowValue = queue ? queue.low_value : [];
+  // Flat list across every bucket — for the copy-queue menu.
+  const allQueueItems = queue
+    ? [
+        ...queue.level_1_quick,
+        ...queue.level_2_scroll,
+        ...queue.level_3_user_gated,
+        ...queue.level_4_paste,
+        ...queue.gated_login,
+        ...queue.low_value,
+      ]
+    : [];
 
   const totalAutomated = displayL1.length + displayL2.length;
   // Derive from the arrays we actually render — the response schema allows
-  // `totals` to be absent, and trusting it produced "Nothing in the queue"
-  // banners above fully populated sections.
-  const totalAll = queue
-    ? queue.level_1_quick.length +
-      queue.level_2_scroll.length +
-      queue.level_3_user_gated.length +
-      queue.level_4_paste.length
-    : 0;
+  // `totals` to be absent (trusting it produced "Nothing in the queue" banners
+  // above fully populated sections), and `totals.all` predates the §5 policy
+  // buckets so it undercounts them. Sum every displayed bucket instead.
+  const totalAll =
+    displayL1.length +
+    displayL2.length +
+    displayL3.length +
+    displayL4.length +
+    displayGatedLogin.length +
+    displayLowValue.length;
 
   // Items in the queue that match the URL the user is currently viewing.
   // Used to surface a top-of-list banner so they don't have to hunt the row
@@ -568,6 +663,8 @@ export function TasksView() {
       ...queue.level_2_scroll,
       ...queue.level_3_user_gated,
       ...queue.level_4_paste,
+      ...queue.gated_login,
+      ...queue.low_value,
     ];
     return all.filter((it) => urlsMatch(it.url, activeTab.url));
   }, [queue, activeTab.url]);
@@ -587,26 +684,13 @@ export function TasksView() {
               options={[
                 {
                   label: 'URLs (one per line)',
-                  getContent: () =>
-                    [
-                      ...queue.level_1_quick,
-                      ...queue.level_2_scroll,
-                      ...queue.level_3_user_gated,
-                      ...queue.level_4_paste,
-                    ]
-                      .map((it) => it.url)
-                      .join('\n'),
+                  getContent: () => allQueueItems.map((it) => it.url).join('\n'),
                 },
                 {
                   label: 'For AI agent',
                   ai: true,
                   getContent: () => {
-                    const all = [
-                      ...queue.level_1_quick,
-                      ...queue.level_2_scroll,
-                      ...queue.level_3_user_gated,
-                      ...queue.level_4_paste,
-                    ];
+                    const all = allQueueItems;
                     return wrapForAgent({
                       description: 'a queue of pending scrape tasks from Matrx',
                       meta: { count: all.length },
@@ -697,6 +781,7 @@ export function TasksView() {
                   state={statusByItem[itemKey(it)]}
                   isOnPage={matchingIds.has(itemKey(it))}
                   onRun={() => void runAutomated(it, 1)}
+                  onEnrich={() => void runEnrichItem(it)}
                   onVerdict={(v) => void runVerdict(it, v)}
                 />
               ))}
@@ -708,6 +793,7 @@ export function TasksView() {
                   state={statusByItem[itemKey(it)]}
                   isOnPage={matchingIds.has(itemKey(it))}
                   onRun={() => void runAutomated(it, 2)}
+                  onEnrich={() => void runEnrichItem(it)}
                   onVerdict={(v) => void runVerdict(it, v)}
                 />
               ))}
@@ -732,6 +818,55 @@ export function TasksView() {
                   isOnPage={matchingIds.has(itemKey(it))}
                   onRun={() => void runAutomated(it, 3)}
                   onUserGo={() => void runUserGo(it)}
+                  onEnrich={() => void runEnrichItem(it)}
+                  onVerdict={(v) => void runVerdict(it, v)}
+                />
+              ))}
+            </Section>
+          )}
+
+          {queue && displayGatedLogin.length > 0 && (
+            <Section
+              title="Sign in to capture"
+              subtitle="Login / paywall sources. Only you can capture these — as the signed-in user. Open one, make sure you're signed in, then press Go."
+              count={displayGatedLogin.length}
+              open={!!openSections.gated_login}
+              onToggle={() => toggleSection('gated_login')}
+              tone="amber"
+            >
+              {displayGatedLogin.map((it) => (
+                <Row
+                  key={itemKey(it)}
+                  item={it}
+                  level={3}
+                  state={statusByItem[itemKey(it)]}
+                  isOnPage={matchingIds.has(itemKey(it))}
+                  onRun={() => void runAutomated(it, 3)}
+                  onUserGo={() => void runUserGo(it)}
+                  onEnrich={() => void runEnrichItem(it)}
+                  onVerdict={(v) => void runVerdict(it, v)}
+                />
+              ))}
+            </Section>
+          )}
+
+          {queue && displayLowValue.length > 0 && (
+            <Section
+              title="Low-value"
+              subtitle="Rarely useful sources (nav junk, social walls). Opt in only if you know one matters — these never auto-queue or auto-batch."
+              count={displayLowValue.length}
+              open={!!openSections.low_value}
+              onToggle={() => toggleSection('low_value')}
+            >
+              {displayLowValue.map((it) => (
+                <Row
+                  key={itemKey(it)}
+                  item={it}
+                  level={2}
+                  state={statusByItem[itemKey(it)]}
+                  isOnPage={matchingIds.has(itemKey(it))}
+                  onRun={() => void runAutomated(it, 2)}
+                  onEnrich={() => void runEnrichItem(it)}
                   onVerdict={(v) => void runVerdict(it, v)}
                 />
               ))}
@@ -895,6 +1030,7 @@ function Row({
   isOnPage,
   onRun,
   onUserGo,
+  onEnrich,
   onVerdict,
 }: {
   item: ExtensionScrapeItem;
@@ -903,12 +1039,15 @@ function Row({
   isOnPage?: boolean;
   onRun: () => void;
   onUserGo?: () => void;
+  onEnrich?: () => void;
   onVerdict: (verdict: UserVerdict) => void;
 }) {
   const status = state?.status ?? 'idle';
   const errorMsg = state?.error;
   const charCount = state?.charCount;
   const showVerdictCard = state?.showVerdictCard === true;
+  // §3 — an enrich task gets a goal-specific action instead of plain Run/Trigger.
+  const isEnrich = item.task_kind === 'enrich' && !!item.enrich;
 
   return (
     <div
@@ -919,13 +1058,15 @@ function Row({
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <div className="truncate text-sm font-medium">{item.topic_name}</div>
             {isOnPage && (
               <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-500/20 px-1.5 py-0 text-[9px] font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
                 <Target className="size-2.5" /> on this page
               </span>
             )}
+            <PolicyBadge category={item.policy_category} />
+            <EnrichBadge item={item} />
           </div>
           <a
             href={item.url}
@@ -954,17 +1095,28 @@ function Row({
               Go
             </Button>
           )}
-          {(status === 'idle' || status === 'error') && (
-            <Button
-              size="sm"
-              variant={level === 3 || isOnPage ? 'default' : 'ghost'}
-              className="h-7 rounded-full px-3 text-xs"
-              onClick={onRun}
-              title={isOnPage ? 'Capture the active tab' : undefined}
-            >
-              {isOnPage ? 'Capture this tab' : level === 3 ? 'Trigger' : 'Run'}
-            </Button>
-          )}
+          {(status === 'idle' || status === 'error') &&
+            (isEnrich ? (
+              <Button
+                size="sm"
+                variant="default"
+                className="h-7 rounded-full bg-violet-600 px-3 text-xs hover:bg-violet-700"
+                onClick={onEnrich}
+                title={item.enrich ? ENRICH_GOAL_INFO[item.enrich.goal].blurb : undefined}
+              >
+                <Wand2 className="size-3.5" /> Enrich
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                variant={level === 3 || isOnPage ? 'default' : 'ghost'}
+                className="h-7 rounded-full px-3 text-xs"
+                onClick={onRun}
+                title={isOnPage ? 'Capture the active tab' : undefined}
+              >
+                {isOnPage ? 'Capture this tab' : level === 3 ? 'Trigger' : 'Run'}
+              </Button>
+            ))}
           <ResolveMenu
             onVerdict={onVerdict}
             pending={state?.verdictPending}
@@ -982,6 +1134,63 @@ function Row({
         />
       )}
     </div>
+  );
+}
+
+/**
+ * Small chip showing the domain-policy category (§5). Renders nothing for the
+ * default `open` (or absent) category — only the deliberately-routed ones get a
+ * badge so the user knows why a source is treated specially.
+ */
+function PolicyBadge({ category }: { category?: PolicyCategory | null }) {
+  if (!category || category === 'open') return null;
+  const MAP: Record<
+    Exclude<PolicyCategory, 'open'>,
+    { icon: typeof Lock; label: string; cls: string }
+  > = {
+    gated_login: {
+      icon: LogIn,
+      label: 'Login required',
+      cls: 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
+    },
+    low_value: {
+      icon: EyeOff,
+      label: 'Low-value',
+      cls: 'bg-muted text-muted-foreground',
+    },
+    special: {
+      icon: Sparkles,
+      label: 'Worth it',
+      cls: 'bg-violet-500/15 text-violet-700 dark:text-violet-300',
+    },
+    blocked: {
+      icon: Lock,
+      label: 'Blocked',
+      cls: 'bg-rose-500/15 text-rose-700 dark:text-rose-300',
+    },
+  };
+  const m = MAP[category];
+  if (!m) return null;
+  const Icon = m.icon;
+  return (
+    <span
+      className={cn(
+        'inline-flex shrink-0 items-center gap-1 rounded-full px-1.5 py-0 text-[9px] font-medium uppercase tracking-wider',
+        m.cls,
+      )}
+    >
+      <Icon className="size-2.5" /> {m.label}
+    </span>
+  );
+}
+
+/** Chip showing an enrich task's goal (§3). Nothing for plain scrape tasks. */
+function EnrichBadge({ item }: { item: ExtensionScrapeItem }) {
+  if (item.task_kind !== 'enrich' || !item.enrich) return null;
+  return (
+    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-violet-500/15 px-1.5 py-0 text-[9px] font-medium uppercase tracking-wider text-violet-700 dark:text-violet-300">
+      <Wand2 className="size-2.5" /> {ENRICH_GOAL_INFO[item.enrich.goal].label}
+    </span>
   );
 }
 
@@ -1017,13 +1226,15 @@ function PasteRow({
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <div className="truncate text-sm font-medium">{item.topic_name}</div>
             {isOnPage && (
               <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-500/20 px-1.5 py-0 text-[9px] font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
                 <Target className="size-2.5" /> on this page
               </span>
             )}
+            <PolicyBadge category={item.policy_category} />
+            <EnrichBadge item={item} />
           </div>
           <a
             href={item.url}
@@ -1093,8 +1304,26 @@ function ItemContext({ item }: { item: ExtensionScrapeItem }) {
     if (ago) extBits.push(ago);
   }
 
+  // §5/§3 — the human reason the source is routed specially (policy) or what the
+  // enrich task is after. Shown above the attempt history.
+  const policyReason = item.policy_reason?.trim() || null;
+  const enrichReason =
+    item.task_kind === 'enrich' && item.enrich
+      ? item.enrich.reason?.trim() || ENRICH_GOAL_INFO[item.enrich.goal].blurb
+      : null;
+
   return (
     <div className="mt-0.5 space-y-0.5">
+      {policyReason && (
+        <div className="truncate text-[11px] font-medium text-amber-700/80 dark:text-amber-300/80">
+          {policyReason}
+        </div>
+      )}
+      {enrichReason && (
+        <div className="truncate text-[11px] text-violet-700/80 dark:text-violet-300/80">
+          {enrichReason}
+        </div>
+      )}
       <div
         className="truncate text-[11px] text-muted-foreground/70"
         title={item.last_server_failure_reason ?? undefined}
