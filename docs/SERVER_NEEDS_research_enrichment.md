@@ -1,5 +1,24 @@
 # Server needs — research browser-capture enrichment
 
+> **✅ SERVER SIDE IMPLEMENTED (aidream, 2026-06-17).** All three items below are
+> live. Summary:
+> - **§1 (media + structured):** `ExtensionContentSubmit` now accepts `media`
+>   (`videos`/`audio`) and `structured` (`metadata`/`jsonLd`). `media` flows into
+>   `collect_page_resources` → `rs_media`; `structured` backfills `rs_source`
+>   title/description and the content row's `published_at`/`modified_at`.
+> - **§2 (enrich tasks + `enrich_goal`):** queue items now carry
+>   `task_kind` + `enrich` (generated in `research/enrich.py` — `authenticated`
+>   for `gated_login`, `comments` for thread hosts, `rendered_dom` for known
+>   SPAs). `enrich_goal` is accepted + routed on the submit body.
+> - **§3 (asset upload):** `POST /research/topics/{tid}/sources/upload` is
+>   implemented (multipart → cloud-file pipeline → `rs_media` row). The old `501`
+>   is gone.
+>
+> Server contract details are in `research/docs/EXTENSION_API.md` (§2.2 optional
+> fields, §2.1 `task_kind`/`enrich`, §2.7 upload). One caveat on the upload
+> endpoint: a private artifact's `url` is a signed-inline URL that expires —
+> persist `file_id` for anything long-lived.
+
 Companion to [RESEARCH_ENRICHMENT.md](./RESEARCH_ENRICHMENT.md). The **extension
 side is shipped** (commit on `main`, 2026-06-17). These are the aidream-side
 contracts that complete the loop. Every one is additive and back-compatible — the
