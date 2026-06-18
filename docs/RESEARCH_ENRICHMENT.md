@@ -13,9 +13,11 @@ real browser — keep a manual checklist with each capability (docs/feature-test
 | **§5 domain categories** | ✅ shipped — category-aware queue UI | ✅ **already live** — `policy_category`/`policy_reason` + `gated_login`/`low_value` buckets on the queue | The doc under-stated the server here; it was ready. |
 | **§3 enrich task kind** | ✅ built + unit-tested, **dormant** — fulfils a directive via existing capture primitives | ❌ no generator; asset-upload endpoint is `501` | Lights up the instant the server tags items `task_kind:'enrich'`. Capture-family goals work; artifact goals (screenshot/download/xhr_json/transcript) need the server sink — they return an honest "not available yet". |
 
-Server-side follow-ups are filed via matrx-feedback (the enrich-task generator +
-`enrich_goal` routing, `media`/`structured` consumption, and the `/sources/upload`
-endpoint). The extension degrades gracefully against every gap.
+Server-side follow-ups (the enrich-task generator + `enrich_goal` routing,
+`media`/`structured` consumption, and the `/sources/upload` endpoint) are written
+up with exact contracts in
+[SERVER_NEEDS_research_enrichment.md](./SERVER_NEEDS_research_enrichment.md). The
+extension degrades gracefully against every gap.
 
 ---
 
