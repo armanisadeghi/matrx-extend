@@ -174,6 +174,22 @@ interface DispatchOptions {
 }
 
 /**
+ * Payload for COLD_RESUME_CALL — the sidepanel re-dispatching a persisted
+ * client-delegated call when a paused conversation is reopened. There is no
+ * live stream, so the sidepanel supplies everything the SW would otherwise have
+ * latched at STREAM_START (permission mode, the current active tab).
+ */
+interface ColdResumeCallPayload {
+  conversationId: string;
+  userRequestId: string | null;
+  callId: string;
+  toolName: string;
+  args: unknown;
+  permissionMode: 'ask' | 'act';
+  assignedTabId: number | null;
+}
+
+/**
  * Single-flight guard for STREAM_CONTINUE broadcasts, keyed by
  * user_request_id. The server's continuation_needed flag is best-effort:
  * when the model issued PARALLEL delegated calls, the concurrent
@@ -392,6 +408,80 @@ export function startToolDispatcher(opts: DispatchOptions): void {
       return { ack: true };
     },
   );
+
+  // COLD-RESUME: the sidepanel re-dispatches a persisted client-delegated call
+  // when a paused conversation is reopened (the user closed the tab mid-prompt
+  // and came back — minutes, hours, or weeks later). There is no live
+  // stream/runId, so we synthesize run metadata from the payload and feed the
+  // call through the SAME handleCall path as a live tool_delegated event: the
+  // confirmation card, the handler, postResult, and the continuation handshake
+  // (→ STREAM_CONTINUE → resumeRun) all behave identically. See
+  // src/lib/chat/cold-resume.ts and docs/COLD_RESUME.md.
+  on<ColdResumeCallPayload, { ack: true }>(CHANNELS.COLD_RESUME_CALL, (p) => {
+    const callId = String(p.callId ?? '');
+    const wireName = String(p.toolName ?? '');
+    if (!callId || !wireName) return { ack: true };
+
+    // Synthetic run scoped to the suspended turn — stable so a second
+    // cold-resume pass for the same call (a remount, a second open) is deduped
+    // by markDispatched instead of spawning a duplicate handleCall.
+    const runId = `coldresume:${p.userRequestId ?? p.conversationId}`;
+    if (!markDispatched(runId, callId)) {
+      log.info('sw', 'cold-resume duplicate suppressed', { runId, callId, tool: wireName });
+      return { ack: true };
+    }
+
+    const permissionMode: 'ask' | 'act' = p.permissionMode === 'act' ? 'act' : 'ask';
+    const meta: RunMeta = {
+      conversationId: p.conversationId,
+      requestId: p.userRequestId ?? null,
+      permissionMode,
+      agentName: null,
+      trustedThisConversation: new Set<string>(),
+      assignedTabId: p.assignedTabId ?? null,
+    };
+    runs.set(runId, meta);
+    mirrorRunMeta(runId, meta);
+
+    const ctx: ToolContext = {
+      conversationId: p.conversationId,
+      runId,
+      callId,
+      agentName: null,
+      permissionMode,
+      assignedTabId: p.assignedTabId ?? null,
+    };
+
+    const handler = lookupTool(wireName);
+    if (!handler) {
+      const suggestions = suggestSimilar(wireName, allToolNames({ isAdmin: true }));
+      const hint = suggestions.length
+        ? ` Did you mean: ${suggestions.join(', ')}? Or call list_browser_tools to see what's available.`
+        : ' Call list_browser_tools to see what is available.';
+      log.warn('sw', `cold-resume tool '${wireName}' not in registry`, { suggestions });
+      void postUnknownToolError(ctx, wireName, hint).catch((err) =>
+        log.error('sw', `failed to post cold-resume unknown-tool error for ${wireName}`, err),
+      );
+      return { ack: true };
+    }
+
+    void handleCall(handler, p.args, ctx, meta).catch(async (err) => {
+      const message = (err as Error)?.message ?? String(err);
+      log.error('sw', `cold-resume dispatch crashed for ${wireName}`, err);
+      try {
+        await postResult(handler, ctx, null, true, `Tool dispatch crashed: ${message}`);
+      } catch (postErr) {
+        log.error('sw', `failed to surface cold-resume crash for ${wireName}`, postErr);
+      }
+      broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+        callId: ctx.callId,
+        toolName: handler.name,
+        phase: 'error',
+        message: `Tool dispatch crashed: ${message}`,
+      });
+    });
+    return { ack: true };
+  });
 }
 
 /**

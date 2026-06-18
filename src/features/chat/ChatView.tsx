@@ -32,6 +32,7 @@ import {
 } from '@/lib/agents/scope';
 import { enqueueInboxMessage } from '@/lib/api/routes/ai';
 import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
+import { triggerColdResume } from '@/lib/chat/cold-resume';
 import { wrapForAgent } from '@/lib/clipboard/copy';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
@@ -305,6 +306,13 @@ export function ChatView() {
         const transformed = dbMessagesToChatMessages(msgResult.rows, toolResult.rows);
         setMessages(transformed.messages);
         loadedConversationIdRef.current = selectedConversationId;
+        // Cold-resume: if the server left this conversation paused waiting on a
+        // client-delegated tool the user never answered (closed the tab
+        // mid-prompt), re-surface the prompt(s) so they can answer now and
+        // resume the agent. Fire-and-forget; routed through the same SW
+        // handleCall path as a live tool_delegated event (the SW dedupes
+        // repeats per call). See src/lib/chat/cold-resume.ts.
+        void triggerColdResume(selectedConversationId);
         const droppedRows = msgResult.badCount + toolResult.badCount + transformed.badCount;
         if (droppedRows > 0) {
           log.warn('supabase', 'conversation loaded with dropped rows', {

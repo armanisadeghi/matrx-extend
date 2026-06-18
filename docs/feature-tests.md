@@ -1332,6 +1332,29 @@ Every entry follows this shape:
   - Very fast tools (tabs list) → if the resume races the suspend, the log
     shows "409 resume_conflict — retrying" and recovers within ~1-3s.
 
+### Cold-resume — answer a paused conversation after closing the panel
+- **What it does:** When the user closes the side panel while the agent is waiting
+  on a client-delegated tool, the conversation is left paused on the server. On
+  reopen, the extension fetches the outstanding delegated calls
+  (`GET /ai/conversations/{id}/pending_calls`) and re-drives each one through the
+  same dispatch path as a live `tool_delegated` event — the approval card
+  re-appears, the tool runs, and the agent resumes. See docs/COLD_RESUME.md.
+- **Where to test:** Chat tab, on any normal page.
+- **Steps:**
+  1. In **Ask** mode, send a message that forces an action tool, e.g. "click the
+     first link on this page".
+  2. When the approval card appears, **close the side panel** without answering.
+  3. Reopen the side panel and re-select the same conversation.
+  4. The approval card should re-appear. Click **Allow**.
+- **Expected:** The tool runs once, the result posts, and the agent resumes and
+  finishes its turn (one continuation, no duplicate run).
+- **Edge cases worth poking:**
+  - A **read-tier** delegated call (rare) runs immediately on reopen with no card.
+  - Reopen the conversation twice quickly → the SW log shows
+    "cold-resume duplicate suppressed"; the handler runs only once.
+  - If the user is signed out / the conversation has no pending calls, reopen is a
+    silent no-op (no spurious cards).
+
 ### read_active_page on a normal page
 - **What it does:** Full readable capture of the assigned tab via the content
   script pipeline (now statically imported in the SW — no more chunk-loading

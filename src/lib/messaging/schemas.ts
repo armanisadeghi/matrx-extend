@@ -63,6 +63,11 @@ export const CHANNELS = {
   TOOL_ASK_USER_REQUEST: 'tool:ask-user-request', // SW → sidepanel: agent asked the user a question
   TOOL_ASK_USER_RESPONSE: 'tool:ask-user-response', // sidepanel → SW: user's answer
   TOOL_TIMELINE_EVENT: 'tool:timeline-event', // SW → sidepanel: render in the chat (started / completed / error)
+  // sidepanel → SW: re-dispatch a persisted client-delegated call on conversation
+  // open (cold-resume). The conversation was left paused waiting on the call; the
+  // SW feeds it through the same handleCall path as a live tool_delegated event.
+  // Payload: { conversationId, userRequestId, callId, toolName, args, permissionMode, assignedTabId }.
+  COLD_RESUME_CALL: 'tool:cold-resume-call',
 
   // Scrape (sidepanel → content script via chrome.tabs.sendMessage)
   SCRAPE_CAPTURE: 'scrape:capture-page',

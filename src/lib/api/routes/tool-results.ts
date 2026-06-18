@@ -13,7 +13,7 @@
  * deaf and the user has to start over. Better to delay by a few seconds.
  */
 
-import { apiPost } from '@/lib/api/client';
+import { apiGet, apiPost } from '@/lib/api/client';
 import type { ApiResult } from '@/lib/api/client';
 import { log } from '@/lib/debug/log';
 
@@ -107,3 +107,41 @@ export async function postToolResults(
  */
 export const conversationResumePath = (conversationId: string): string =>
   `/ai/conversations/${encodeURIComponent(conversationId)}/resume`;
+
+/**
+ * A client-delegated tool call the server is still waiting on for this
+ * conversation (cx_tool_call row in status='delegated'). Mirrors the FastAPI
+ * `PendingCallSummary` model. This is the canonical COLD-RESUME discovery
+ * contract — the same endpoint matrx-frontend uses — so both clients read one
+ * source of truth for "what is this conversation paused on".
+ */
+export interface PendingCall {
+  id: string;
+  call_id: string;
+  conversation_id: string;
+  user_request_id: string | null;
+  message_id: string | null;
+  tool_name: string;
+  arguments: Record<string, unknown>;
+  iteration: number;
+  created_at: string | null;
+  /** After this the server's abandonment sweep marks the row timed-out (30d default). */
+  expires_at: string | null;
+}
+
+/**
+ * GET /ai/conversations/{id}/pending_calls — the delegated tool calls awaiting
+ * the user's answer in this conversation. Called on conversation open to drive
+ * cold-resume (see src/lib/chat/cold-resume.ts). Pure read; never mutates.
+ */
+export async function getPendingCalls(conversationId: string): Promise<ApiResult<PendingCall[]>> {
+  const path = `/ai/conversations/${encodeURIComponent(conversationId)}/pending_calls`;
+  log.info('msg', `→ GET ${path}`);
+  const r = await apiGet<PendingCall[]>(path);
+  if (r.ok) {
+    log.success('msg', `← pending_calls (${(r.data ?? []).length})`);
+  } else {
+    log.warn('msg', `✗ pending_calls status=${r.status} (${r.error})`);
+  }
+  return r;
+}
