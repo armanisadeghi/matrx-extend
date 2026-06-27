@@ -59,10 +59,21 @@ export function loadSupabaseEnv(): { url: string; key: string } | null {
 }
 
 /**
- * Fetch JSON from the public schema. Throws on a non-2xx response so callers
- * can treat "couldn't read" as a non-blocking warning (it is NOT drift).
+ * Fetch JSON from a Supabase schema via PostgREST. Throws on a non-2xx
+ * response so callers can treat "couldn't read" as a non-blocking warning
+ * (it is NOT drift).
+ *
+ * @param schema - The Postgres schema to target via `Accept-Profile` header.
+ *   Defaults to `'public'`. After the 2026-06 schema canonicalization the
+ *   tool tables moved to the `tool` schema (`tool.definition`, `tool.binding`,
+ *   `tool.surface_defaults`), so pass `'tool'` for those queries.
  */
-export async function fetchPublicJson<T>(url: string, key: string, path: string): Promise<T> {
+export async function fetchPublicJson<T>(
+  url: string,
+  key: string,
+  path: string,
+  schema = 'public',
+): Promise<T> {
   const endpoint = `${url.replace(/\/$/, '')}/rest/v1/${path}`;
   const res = await fetch(endpoint, {
     headers: {
@@ -70,12 +81,12 @@ export async function fetchPublicJson<T>(url: string, key: string, path: string)
       Authorization: `Bearer ${key}`,
       Accept: 'application/json',
       // The custom Supabase proxy at db.matrxserver.com defaults to schema
-      // 'api'; these tables live in 'public', so request it explicitly.
-      'Accept-Profile': 'public',
+      // 'api'; always request the schema explicitly.
+      'Accept-Profile': schema,
     },
   });
   if (!res.ok) {
-    throw new Error(`Supabase fetch failed (${res.status}) on ${path}: ${await res.text()}`);
+    throw new Error(`Supabase fetch failed (${res.status}) on ${schema}.${path}: ${await res.text()}`);
   }
   return (await res.json()) as T;
 }

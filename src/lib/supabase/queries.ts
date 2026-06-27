@@ -3,9 +3,12 @@
  * the user's JWT (set via setSupabaseSession) gates rows server-side.
  *
  * Schema mirror — these tables already exist in the Matrx Supabase project:
- *   - agx_agent          (Agent definitions, replaces legacy `prompts`)
- *   - cx_conversation    (Chat conversations)
- *   - cx_message         (Chat messages — JSONB content[])
+ *   - agent.definition   (Agent definitions — was public.agx_agent)
+ *   - chat.conversation  (Chat conversations — was public.cx_conversation)
+ *   - chat.message       (Chat messages, JSONB content[] — was public.cx_message)
+ *   - chat.tool_call     (Tool call records — was public.cx_tool_call)
+ *   - ai.model           (AI model registry — was public.ai_model)
+ *   - tool.definition    (Tool definitions — was public.tool_def)
  *
  * Tables this extension OWNS (created by ./migrations/*.sql):
  *   - wbx_capture        (Page captures from Scrape tab)
@@ -166,7 +169,7 @@ export async function fetchAgentList(): Promise<AgxAgent[]> {
 /** Backwards-compat shim — older callers reference `fetchUserAgents`. */
 export const fetchUserAgents = (_userId?: string): Promise<AgxAgent[]> => fetchAgentList();
 
-// ─── ai_model (admin model picker) ──────────────────────────────────────────
+// ─── ai.model (admin model picker) ──────────────────────────────────────────
 export const AiModelSchema = z.object({
   id: z.string().uuid(),
   common_name: z.string(),
@@ -183,7 +186,8 @@ export type AiModel = z.infer<typeof AiModelSchema>;
 export async function fetchActiveModels(): Promise<AiModel[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('ai_model')
+    .schema('ai')
+    .from('model')
     .select('id, common_name, is_deprecated')
     .eq('is_deprecated', false)
     .order('common_name', { ascending: true });
@@ -230,12 +234,13 @@ export async function fetchAgentExecution(agentId: string): Promise<AgxAgentExec
   return rows.data[0] ?? null;
 }
 
-// ─── Conversations (cx_conversation) ────────────────────────────────────────
+// ─── Conversations (chat.conversation) ──────────────────────────────────────
+// NOTE: post-canonicalization the table moved to the `chat` schema.
+// `user_id` is now `created_by`; `status` column was removed from this table.
 export const ConversationSchema = z.object({
   id: z.string().uuid(),
-  user_id: z.string().uuid().nullable(),
+  created_by: z.string().uuid().nullable(),
   title: z.string().nullable(),
-  status: z.string().nullable(),
   last_model_id: z.string().uuid().nullable(),
   message_count: z.number().int().nullable(),
   created_at: z.string(),
@@ -248,12 +253,12 @@ export type Conversation = z.infer<typeof ConversationSchema>;
 export async function fetchConversationHistory(limit = 30): Promise<Conversation[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('cx_conversation')
+    .schema('chat')
+    .from('conversation')
     .select(
-      'id, user_id, title, status, last_model_id, message_count, created_at, updated_at, deleted_at, metadata',
+      'id, created_by, title, last_model_id, message_count, created_at, updated_at, deleted_at, metadata',
     )
     .is('deleted_at', null)
-    .eq('status', 'active')
     .order('updated_at', { ascending: false })
     .limit(limit);
   if (error) {
@@ -264,7 +269,7 @@ export async function fetchConversationHistory(limit = 30): Promise<Conversation
     .rows;
 }
 
-// ─── Messages (cx_message) ──────────────────────────────────────────────────
+// ─── Messages (chat.message) ─────────────────────────────────────────────────
 export const MessageSchema = z.object({
   id: z.string().uuid(),
   conversation_id: z.string().uuid(),
@@ -282,7 +287,8 @@ export async function fetchConversationMessages(
 ): Promise<{ rows: Message[]; badCount: number }> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('cx_message')
+    .schema('chat')
+    .from('message')
     .select('id, conversation_id, role, position, status, content, created_at, metadata')
     .eq('conversation_id', conversationId)
     .is('deleted_at', null)
@@ -298,16 +304,14 @@ export async function fetchConversationMessages(
   return parseRowsSafe(MessageSchema, (data ?? []) as unknown[], 'fetchConversationMessages');
 }
 
-// ─── Tool calls (cx_tool_call) ──────────────────────────────────────────────
+// ─── Tool calls (chat.tool_call) ─────────────────────────────────────────────
 /**
  * One tool execution row. Lives on the `role: 'tool'` message and carries
  * the actual output the matching `tool_call` block produced. The output
  * column is a JSON-encoded STRING — needs `JSON.parse` before it's usable
  * by the tool-display registry transforms.
  *
- * Table renamed from `cx_tl_call` → `cx_tool_call` in the 2026-05-27 tool
- * refactor (migration 0090). Columns are unchanged; the rename is purely
- * naming housekeeping in step with `tl_def → tool_def` and friends.
+ * Moved to `chat.tool_call` in the 2026-06 schema canonicalization.
  */
 export const ToolCallRowSchema = z.object({
   call_id: z.string(),
@@ -331,7 +335,8 @@ export async function fetchConversationToolCalls(
 ): Promise<{ rows: ToolCallRow[]; badCount: number }> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('cx_tool_call')
+    .schema('chat')
+    .from('tool_call')
     .select(
       'call_id, message_id, conversation_id, tool_name, tool_type, status, arguments, output, is_error, error_type, error_message, duration_ms, created_at',
     )
