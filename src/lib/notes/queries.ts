@@ -18,18 +18,22 @@ import {
 } from '@/lib/notes/types';
 import { getSupabase } from '@/lib/supabase/client';
 
+// The notes tables live in the `workbench` Postgres schema, not `public`.
+const NOTES_SCHEMA = 'workbench';
+
 const LIST_COLUMNS =
-  'id, user_id, label, folder_name, folder_id, tags, updated_at, position, is_public';
-const FULL_COLUMNS = `${LIST_COLUMNS}, content, metadata, is_deleted, version, created_at`;
+  'id, created_by, label, folder_name, folder_id, tags, updated_at, position, visibility';
+const FULL_COLUMNS = `${LIST_COLUMNS}, content, metadata, deleted_at, version, created_at`;
 
 // ─── Reads ──────────────────────────────────────────────────────────────────
 
 export async function listMyNotes(): Promise<NoteListItem[]> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema(NOTES_SCHEMA)
     .from('notes')
     .select(LIST_COLUMNS)
-    .eq('is_deleted', false)
+    .is('deleted_at', null)
     .order('updated_at', { ascending: false });
   if (error) {
     console.warn('[notes] listMyNotes error', error.message);
@@ -47,9 +51,10 @@ export async function listMyNotes(): Promise<NoteListItem[]> {
 export async function listMyFolders(): Promise<NoteFolder[]> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema(NOTES_SCHEMA)
     .from('note_folders')
     .select('*')
-    .eq('is_deleted', false)
+    .is('deleted_at', null)
     .order('position', { ascending: true });
   if (error) {
     console.warn('[notes] listMyFolders error', error.message);
@@ -65,7 +70,12 @@ export async function listMyFolders(): Promise<NoteFolder[]> {
 
 export async function getNote(id: string): Promise<Note | null> {
   const c = getSupabase();
-  const { data, error } = await c.from('notes').select(FULL_COLUMNS).eq('id', id).maybeSingle();
+  const { data, error } = await c
+    .schema(NOTES_SCHEMA)
+    .from('notes')
+    .select(FULL_COLUMNS)
+    .eq('id', id)
+    .maybeSingle();
   if (error || !data) {
     if (error) console.warn('[notes] getNote error', error.message);
     return null;
@@ -89,14 +99,18 @@ export async function createNote(input: CreateNoteInput): Promise<Note | null> {
     return null;
   }
   const payload = {
-    user_id: userId,
+    created_by: userId,
     label: input.label?.trim() || 'Untitled',
     content: input.content ?? '',
     folder_name: input.folder_name ?? null,
     folder_id: input.folder_id ?? null,
-    is_deleted: false,
   };
-  const { data, error } = await c.from('notes').insert(payload).select(FULL_COLUMNS).single();
+  const { data, error } = await c
+    .schema(NOTES_SCHEMA)
+    .from('notes')
+    .insert(payload)
+    .select(FULL_COLUMNS)
+    .single();
   if (error || !data) {
     console.warn('[notes] createNote error', error?.message);
     return null;
@@ -108,6 +122,7 @@ export async function createNote(input: CreateNoteInput): Promise<Note | null> {
 export async function updateNote(id: string, patch: UpdateNotePatch): Promise<Note | null> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema(NOTES_SCHEMA)
     .from('notes')
     .update({ ...patch, updated_at: new Date().toISOString() })
     .eq('id', id)
@@ -124,8 +139,9 @@ export async function updateNote(id: string, patch: UpdateNotePatch): Promise<No
 export async function softDeleteNote(id: string): Promise<boolean> {
   const c = getSupabase();
   const { error } = await c
+    .schema(NOTES_SCHEMA)
     .from('notes')
-    .update({ is_deleted: true, updated_at: new Date().toISOString() })
+    .update({ deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .eq('id', id);
   if (error) {
     console.warn('[notes] softDeleteNote error', error.message);
