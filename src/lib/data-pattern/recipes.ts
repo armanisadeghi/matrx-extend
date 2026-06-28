@@ -230,7 +230,7 @@ export async function loadRecipes(): Promise<Recipe[]> {
   try {
     const c = getSupabase();
     const { data, error } = await c
-      .from('wbx_recipe')
+      .schema('extend').from('wbx_recipe')
       .select('id, label, description, hosts, routes, kind, config, yields_rows')
       .eq('is_active', true)
       .order('id');

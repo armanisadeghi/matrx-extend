@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 const mkPattern = (overrides: Partial<ExtractionPattern>): ExtractionPattern => ({
   id: '00000000-0000-0000-0000-000000000000',
-  user_id: '00000000-0000-0000-0000-000000000000',
+  created_by: '00000000-0000-0000-0000-000000000000',
   name: 'test',
   domain: 'example.com',
   route_pattern: null,

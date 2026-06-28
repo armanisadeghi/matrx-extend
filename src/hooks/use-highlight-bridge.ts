@@ -20,7 +20,7 @@ import { useEffect } from 'react';
 
 function toListItem(h: {
   id: string;
-  user_id: string;
+  created_by: string | null;
   conversation_id: string | null;
   mode: 'text' | 'element';
   url: string;
@@ -34,7 +34,7 @@ function toListItem(h: {
 }): HighlightListItem {
   return {
     id: h.id,
-    user_id: h.user_id,
+    created_by: h.created_by,
     conversation_id: h.conversation_id,
     mode: h.mode,
     url: h.url,

@@ -55,7 +55,7 @@ export type HighlightAnchor = z.infer<typeof HighlightAnchorSchema>;
 
 export const HighlightSchema = z.object({
   id: z.string().uuid(),
-  user_id: z.string().uuid(),
+  created_by: z.string().uuid().nullable(),
   conversation_id: z.string().uuid().nullable(),
   mode: z.enum(['text', 'element']),
   url: z.string(),
