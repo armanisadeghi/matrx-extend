@@ -4,7 +4,7 @@
  *
  * When the user closes the sidepanel/extension while the agent is waiting on a
  * delegated tool (a browser action awaiting confirmation, etc.), the server
- * leaves the conversation `paused` with the call persisted in `cx_tool_call`
+ * leaves the conversation `paused` with the call persisted in `chat.tool_call`
  * (status='delegated'). On reopen — minutes, hours, or weeks later — this fetches
  * those calls (`GET /ai/conversations/{id}/pending_calls`, the same canonical
  * discovery contract matrx-frontend uses) and asks the SW to re-dispatch each

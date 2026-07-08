@@ -1,31 +1,25 @@
 #!/usr/bin/env node
 /**
- * Dump current `public.tool_def` + `public.tool_bundle` state to a single
- * readable markdown file so the team can review what the LLM actually
- * sees and flag changes.
+ * Dump current `tool.definition` + `tool.binding` state to a single readable
+ * markdown file so the team can review what the LLM actually sees and flag
+ * changes.
  *
  *   pnpm catalog:tools:db-dump            → writes types/tool-db-dump.md
  *
- * Source-of-truth schema (post 2026-05-27 tool refactor — see
- * /Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md):
+ * Source-of-truth schema (post 2026-06 canonicalization — tables moved from
+ * `public` to the `tool` schema; see check-tool-db-drift.ts for details):
  *
- *   - `public.tool_def`              — name, description, parameters,
- *                                       tier, admin_only, category,
- *                                       is_active, source_kind. No more
- *                                       `source_app` column.
- *   - `public.tool_binding`          — (tool_id, executor_name, is_active).
- *                                       Tools are owned by an executor via
- *                                       a binding row; our claim is
- *                                       `executor_name='chrome-extension'`.
- *   - `public.tool_bundle`,
- *     `public.tool_bundle_member`    — bundle inventory (unchanged from the
- *                                       old `tl_bundle*` apart from the
- *                                       rename).
+ *   - `tool.definition`  — was public.tool_def: name, description, parameters,
+ *                           tier, admin_only, category, is_active, source_kind.
+ *   - `tool.binding`     — was public.tool_binding: (tool_id, executor_name,
+ *                           is_active). Our claim: executor_name='chrome-extension'.
+ *   - `tool.bundle`,
+ *     `tool.bundle_member` — bundle inventory.
  *
  * Three sections:
  *   1. Tool inventory by executor (every row bound to chrome-extension,
  *      with description, tier, admin_only, params summary).
- *   2. Bundles inventory (every tool_bundle row + its tool_bundle_member
+ *   2. Bundles inventory (every tool.bundle row + its tool.bundle_member
  *      tools, plus the empty bundles we keep around).
  *   3. Sources-of-truth audit — cross-references DB bundles with the
  *      local `CANONICAL_SURFACE` + `CATEGORY_BY_TOOL` + per-handler
@@ -88,7 +82,7 @@ function loadEnv() {
   return { url, key };
 }
 
-async function fetchAll(url, key, table, select, extraQuery = '') {
+async function fetchAll(url, key, table, select, extraQuery = '', schema = 'tool') {
   const qs = `select=${encodeURIComponent(select)}${extraQuery ? `&${extraQuery}` : ''}`;
   const endpoint = `${url.replace(/\/$/, '')}/rest/v1/${table}?${qs}`;
   const res = await fetch(endpoint, {
@@ -96,11 +90,12 @@ async function fetchAll(url, key, table, select, extraQuery = '') {
       apikey: key,
       Authorization: `Bearer ${key}`,
       Accept: 'application/json',
-      'Accept-Profile': 'public',
+      // Post 2026-06 canonicalization: tool tables moved to `tool` schema.
+      'Accept-Profile': schema,
     },
   });
   if (!res.ok) {
-    console.error(`Supabase fetch failed (${res.status}) on ${table}: ${await res.text()}`);
+    console.error(`Supabase fetch failed (${res.status}) on ${schema}.${table}: ${await res.text()}`);
     process.exit(2);
   }
   return res.json();
@@ -158,21 +153,21 @@ function summarizeParams(params) {
 async function main() {
   const { url, key } = loadEnv();
 
-  // Pull EVERY active tool_def along with its executor bindings so we can
+  // Pull EVERY active tool.definition along with its executor bindings so we can
   // group by owner (chrome-extension vs everyone else) without paging.
-  // `tool_binding` has ~200 rows total across the platform — small enough
-  // to fetch in one shot.
+  // `tool.binding` has ~200 rows total across the platform — small enough
+  // to fetch in one shot. All tables are in the `tool` schema (2026-06 canon).
   const [allTools, allBindings, bundles, members, executors] = await Promise.all([
     fetchAll(
       url,
       key,
-      'tool_def',
+      'definition',
       'id,name,description,parameters,tier,admin_only,is_active,category,tool_group,source_kind,version,updated_at',
     ),
-    fetchAll(url, key, 'tool_binding', 'tool_id,executor_name,is_active'),
-    fetchAll(url, key, 'tool_bundle', 'id,name,description,metadata,is_active,is_system'),
-    fetchAll(url, key, 'tool_bundle_member', 'bundle_id,tool_id,local_alias,sort_order'),
-    fetchAll(url, key, 'tool_executor', 'name,description,parent_executor_name,is_active'),
+    fetchAll(url, key, 'binding', 'tool_id,executor_name,is_active'),
+    fetchAll(url, key, 'bundle', 'id,name,description,metadata,is_active,is_system'),
+    fetchAll(url, key, 'bundle_member', 'bundle_id,tool_id,local_alias,sort_order'),
+    fetchAll(url, key, 'executor', 'name,description,parent_executor_name,is_active'),
   ]);
 
   // Group binding executors per tool_id.
@@ -209,13 +204,13 @@ async function main() {
   lines.push('');
   lines.push(`Generated: ${now} UTC`);
   lines.push('');
-  lines.push(`- **Total tools (\`tool_def\`):** ${allTools.length}`);
+  lines.push(`- **Total tools (\`tool.definition\`):** ${allTools.length}`);
   lines.push(
-    `- **Total bindings (\`tool_binding\`, active):** ${allBindings.filter((b) => b.is_active).length}`,
+    `- **Total bindings (\`tool.binding\`, active):** ${allBindings.filter((b) => b.is_active).length}`,
   );
-  lines.push(`- **Total bundles (\`tool_bundle\`):** ${bundles.length}`);
-  lines.push(`- **Total bundle members (\`tool_bundle_member\`):** ${members.length}`);
-  lines.push(`- **Total executors (\`tool_executor\`):** ${executors.length}`);
+  lines.push(`- **Total bundles (\`tool.bundle\`):** ${bundles.length}`);
+  lines.push(`- **Total bundle members (\`tool.bundle_member\`):** ${members.length}`);
+  lines.push(`- **Total executors (\`tool.executor\`):** ${executors.length}`);
   lines.push('');
   lines.push('Read order:');
   lines.push('1. **Tool inventory** — every executor and its bound tools.');
@@ -227,7 +222,7 @@ async function main() {
   // ── 1. Tool inventory grouped by executor ───────────────────────────────
   lines.push('---');
   lines.push('');
-  lines.push('## 1. Tool inventory by `tool_binding.executor_name`');
+  lines.push('## 1. Tool inventory by `tool.binding.executor_name`');
   lines.push('');
   lines.push('A tool can appear under multiple executors if it has multiple active bindings.');
   lines.push('');
@@ -282,9 +277,9 @@ async function main() {
   // ── 3. Bundles inventory ────────────────────────────────────────────────
   lines.push('---');
   lines.push('');
-  lines.push('## 3. Bundles (`tool_bundle`)');
+  lines.push('## 3. Bundles (`tool.bundle`)');
   lines.push('');
-  lines.push('Every row in `tool_bundle` + its members. Empty bundles are explicitly');
+  lines.push('Every row in `tool.bundle` + its members. Empty bundles are explicitly');
   lines.push('flagged — they advertise themselves to the LLM but resolve to nothing.');
   lines.push('');
 
@@ -357,11 +352,11 @@ async function main() {
   lines.push('Where two systems claim authority over the same fact, list the divergence.');
   lines.push('');
 
-  // 4a. CANONICAL_SURFACE vs tool_def (chrome-extension subset)
+  // 4a. CANONICAL_SURFACE vs tool.definition (chrome-extension subset)
   const ourNames = new Set(ours.map((t) => t.name));
   const csOnly = [...canonicalSurface].filter((n) => !ourNames.has(n));
   const dbOnly = [...ourNames].filter((n) => !canonicalSurface.has(n));
-  lines.push('### 4a. `CANONICAL_SURFACE` (local) ↔ `tool_def` (DB, bound to `chrome-extension`)');
+  lines.push('### 4a. `CANONICAL_SURFACE` (local) ↔ `tool.definition` (DB, bound to `chrome-extension`)');
   lines.push('');
   lines.push(`- Local CANONICAL_SURFACE entries: **${canonicalSurface.size}**`);
   lines.push(`- DB tools bound to chrome-extension: **${ours.length}**`);
@@ -377,8 +372,8 @@ async function main() {
   }
   lines.push('');
 
-  // 4b. CATEGORY_BY_TOOL (local) vs tool_def.category (DB)
-  lines.push('### 4b. `CATEGORY_BY_TOOL` (local) ↔ `tool_def.category` (DB)');
+  // 4b. CATEGORY_BY_TOOL (local) vs tool.definition.category (DB)
+  lines.push('### 4b. `CATEGORY_BY_TOOL` (local) ↔ `tool.definition.category` (DB)');
   lines.push('');
   const catMismatches = [];
   for (const t of ours) {
@@ -433,8 +428,8 @@ async function main() {
   }
   lines.push('');
 
-  // 4d. DB tool_bundle vs local categories
-  lines.push('### 4d. DB `tool_bundle` (chrome-extension) ↔ local categories');
+  // 4d. DB tool.bundle vs local categories
+  lines.push('### 4d. DB `tool.bundle` (chrome-extension) ↔ local categories');
   lines.push('');
   const localCatSet = new Set(Object.values(categoryByTool));
   const dbBundleNames = new Set(matrxBundles.map((b) => b.name));
@@ -454,20 +449,20 @@ async function main() {
 
   // 4e. Empty chrome-extension bundles in DB
   const emptyBundles = matrxBundles.filter((b) => (membersByBundle.get(b.id) ?? []).length === 0);
-  lines.push('### 4e. Empty `tool_bundle` rows (DB advertises but resolves to nothing)');
+  lines.push('### 4e. Empty `tool.bundle` rows (DB advertises but resolves to nothing)');
   lines.push('');
   if (emptyBundles.length === 0) {
     lines.push('- ✅ No empty chrome-extension bundles.');
   } else {
     lines.push(
-      `- ⚠️ **${emptyBundles.length} chrome-extension bundles have ZERO members in \`tool_bundle_member\`:**`,
+      `- ⚠️ **${emptyBundles.length} chrome-extension bundles have ZERO members in \`tool.bundle_member\`:**`,
     );
     lines.push('');
     lines.push(emptyBundles.map((b) => `  - \`${b.name}\``).join('\n'));
     lines.push('');
     lines.push('  These rows make `load_browser_tools({category: X})` look like a');
     lines.push('  legitimate option to the LLM but return an empty list at runtime.');
-    lines.push('  Either populate `tool_bundle_member` OR set `is_active = false` so');
+    lines.push('  Either populate `tool.bundle_member` OR set `is_active = false` so');
     lines.push('  the discovery handler stops advertising them.');
   }
   lines.push('');
@@ -484,7 +479,7 @@ async function main() {
     '- **Confirm tier + admin_only** — Tier drives the approval UX; admin_only gates visibility. Eyeball any tool where the surface looks risky for the tier shown.',
   );
   lines.push(
-    '- **Decide bundle strategy** — Section 4d/4e show DB bundles drifting from local categories. Three options: deprecate `tool_bundle` for chrome-extension (use local categories only), populate the DB bundles to match local, or split-domain (DB bundles for MCP marketplace, local categories for browser tools).',
+    '- **Decide bundle strategy** — Section 4d/4e show DB bundles drifting from local categories. Three options: deprecate `tool.bundle` for chrome-extension (use local categories only), populate the DB bundles to match local, or split-domain (DB bundles for MCP marketplace, local categories for browser tools).',
   );
   lines.push(
     '- **Hunt missing parameters** — Section 2 shows the param summary. Look for tools where the LLM has no signal about what to pass (no required fields, generic types).',

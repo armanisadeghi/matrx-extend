@@ -8,7 +8,7 @@
  *   - args      — Zod schema for inbound arguments
  *
  * Descriptions are NOT declared here — they live ONLY in the database
- * (`public.tool_def.description`) and are read live for UI via
+ * (`tool.definition.description`) and are read live for UI via
  * `src/lib/tools/descriptions.ts`. See docs/TOOL_SOURCE_OF_TRUTH.md (Rule 4).
  */
 

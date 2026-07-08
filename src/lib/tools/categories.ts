@@ -387,9 +387,9 @@ export function categoryOf(toolName: string): ToolCategory {
 }
 
 /**
- * The canonical surface — names that exist as active rows in `public.tool_def`
+ * The canonical surface — names that exist as active rows in `tool.definition`
  * (the DB the server uses to advertise tools to agents) and are bound to the
- * `chrome-extension` executor via `public.tool_binding`. Everything else
+ * `chrome-extension` executor via `tool.binding`. Everything else
  * the registry exports is either:
  *   - an internal delegate that a mega-tool router calls (`click_element`
  *     called by `computer.action='left_click'`, `take_screenshot` by

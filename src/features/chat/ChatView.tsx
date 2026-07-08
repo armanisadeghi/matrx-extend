@@ -177,7 +177,7 @@ export function ChatView() {
     // Guests get the builtin-agents list (anon role can read agx_agent rows
     // where agent_type='builtin' AND is_active=true via the
     // agx_agent_builtin_read RLS policy). Conversation history is skipped
-    // for guests — they have no JWT, so anon can't see any cx_conversation
+    // for guests — they have no JWT, so anon can't see any chat.conversation
     // rows for their server-side guest user id. Each guest session starts
     // fresh; persistence kicks in when they sign up.
     let cancelled = false;
@@ -292,7 +292,7 @@ export function ChatView() {
       return;
     }
     void (async () => {
-      // Tool outputs live in a separate table (cx_tool_call) joined by call_id —
+      // Tool outputs live in a separate table (chat.tool_call) joined by call_id —
       // fetch both in parallel so tool rows render with their actual results
       // instead of being stuck in 'started'. NEVER let a single malformed
       // row blank the entire conversation (silent fail we hit on 0.1.23):

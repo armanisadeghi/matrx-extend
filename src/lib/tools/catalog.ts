@@ -6,7 +6,7 @@
  *   { name, tier, input_schema, required_permissions, surface_bundles }
  *
  * Descriptions are intentionally absent — they are not code; they live ONLY in
- * `public.tool_def.description` and are read live for UI via
+ * `tool.definition.description` and are read live for UI via
  * `src/lib/tools/descriptions.ts` (Rule 4, docs/TOOL_SOURCE_OF_TRUTH.md).
  *
  * `input_schema` is a strict JSON Schema produced from the Zod definition.

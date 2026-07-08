@@ -23,7 +23,7 @@ export interface ClientToolResultBody {
   output?: unknown;
   is_error?: boolean;
   error_message?: string | null;
-  /** Client-measured execution time. Persisted to cx_tool_call.duration_ms —
+  /** Client-measured execution time. Persisted to chat.tool_call.duration_ms —
    * without it every client-delegated call lands as duration_ms=0. */
   duration_ms?: number;
 }
@@ -110,7 +110,7 @@ export const conversationResumePath = (conversationId: string): string =>
 
 /**
  * A client-delegated tool call the server is still waiting on for this
- * conversation (cx_tool_call row in status='delegated'). Mirrors the FastAPI
+ * conversation (chat.tool_call row in status='delegated'). Mirrors the FastAPI
  * `PendingCallSummary` model. This is the canonical COLD-RESUME discovery
  * contract — the same endpoint matrx-frontend uses — so both clients read one
  * source of truth for "what is this conversation paused on".
