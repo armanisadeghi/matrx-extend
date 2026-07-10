@@ -5,6 +5,8 @@
 > their researchers to please let them out of their current harness and
 > into AI Matrx. Everything in here serves that.
 
+> Cross-repo system-of-record for the unified content pipeline (this repo's stream parsing at `src/lib/api/stream.ts` + `src/components/markdown/block-parser.ts` is slated to adopt the shared pure-TS content kernel and start consuming `render_block` events): `/Users/armanisadeghi/code/common-docs/unified-content-pipeline/FEATURE.md` — read it before touching stream parsing or markdown block rendering in ANY repo.
+
 ---
 
 ## ✅ What the system can do today
