@@ -29,7 +29,8 @@ import { log, startDebugRelay } from '@/lib/debug/log';
 import type { CapturedEvent } from '@/lib/demos/event-capture';
 import { onCapturedEvent } from '@/lib/demos/recorder';
 import { desktopRpc, probeDesktop, startDesktopProbeAlarm } from '@/lib/desktop/bridge';
-import { connectWs, onWsMessage, sendWs } from '@/lib/desktop/ws-client';
+import { connectWs } from '@/lib/desktop/ws-client';
+import { registerWsReverseInvocationHandler } from '@/lib/desktop/ws-invoke';
 import { connectBroadcast } from '@/lib/frontend-bridge/broadcast';
 import {
   FRONTEND_RPC_CHANNEL,
@@ -638,92 +639,10 @@ function registerFrontendRpcExternalListener(): void {
   log.info('sw', 'frontend-rpc external listener installed');
 }
 
-/**
- * Phase 2 C2 — register an inbound handler for the WS reverse channel.
- *
- * Two kinds of inbound payloads:
- *
- *   1. `{ type: "extension.invoke", callId, toolName, args }` — matrx-local
- *      asks the browser to run a registered tool. Routed through the same
- *      `handleWebmcpCall` path used by WebMCP and FRONTEND_RPC for uniform
- *      permission gating.
- *
- *   2. `{ type: "ws.catalog-stale" }` — the offscreen document detected a
- *      tool_catalog_hash mismatch on a pong. Kick off a background HTTP
- *      RPC `capabilities` refetch so the cached desktop capability state
- *      is brought back in sync.
- */
-function registerWsReverseInvocationHandler(): void {
-  onWsMessage((payload) => {
-    if (!payload || typeof payload !== 'object') return;
-    const p = payload as Record<string, unknown>;
-    const type = p.type as string | undefined;
-
-    if (type === 'extension.invoke') {
-      void handleExtensionInvoke(p);
-      return;
-    }
-    if (type === 'ws.catalog-stale') {
-      void handleCatalogStale();
-      return;
-    }
-    // pong / other server frames are observed via this hook for telemetry
-    // but require no SW action.
-  });
-}
-
-async function handleExtensionInvoke(p: Record<string, unknown>): Promise<void> {
-  const callId = typeof p.callId === 'string' ? p.callId : '';
-  const toolName = typeof p.toolName === 'string' ? p.toolName : '';
-  const args = p.args;
-  if (!callId || !toolName) {
-    log.warn('sw', 'ws extension.invoke missing callId/toolName', p);
-    return;
-  }
-  const permissionMode = await readDefaultPermissionMode();
-  const result = await handleWebmcpCall(
-    { callId, toolName, args },
-    { permissionMode, initiator: 'desktop' },
-  );
-  // Wire result back to the engine.
-  const wireFrame = result.ok
-    ? { type: 'extension.result', callId, ok: true, result: result.result }
-    : {
-        type: 'extension.result',
-        callId,
-        ok: false,
-        error: result.error ?? 'tool failed',
-      };
-  try {
-    await sendWs(wireFrame);
-  } catch (err) {
-    log.warn('sw', `ws extension.result send failed for ${callId}`, (err as Error).message);
-  }
-}
-
-async function handleCatalogStale(): Promise<void> {
-  log.info('sw', 'ws catalog-stale → refetching capabilities');
-  try {
-    const r = await desktopRpc({ command: 'capabilities' });
-    if (!r.ok) {
-      log.warn('sw', 'capabilities refetch failed', r.error);
-      return;
-    }
-    // The bridge state caches health, not capabilities — stash the result
-    // under a stable key so any UI that wants the freshest catalog can pick
-    // it up. We deliberately don't add a new typed cache module here; the
-    // raw RPC response is sufficient until the consumer arrives.
-    await chrome.storage.local.set({
-      'matrx.desktop.lastCapabilities': {
-        data: r.data,
-        fetchedAt: Date.now(),
-      },
-    });
-    log.success('sw', 'capabilities refetched and stashed');
-  } catch (err) {
-    log.warn('sw', 'capabilities refetch threw', (err as Error).message);
-  }
-}
+// The WS reverse-channel consumer (engine→extension `extension.invoke`
+// servicing + catalog-stale refetch) lives in `@/lib/desktop/ws-invoke` —
+// extracted so the protocol logic is unit-testable. Registered in
+// bootstrapBackground() step 7.
 
 /**
  * Pilot lifecycle listeners — CLAUDE.md roadmap item #9.
