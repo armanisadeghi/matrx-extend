@@ -40,7 +40,10 @@ import { type ComponentType, Suspense, lazy, useEffect } from 'react';
 // Used both as the loader for `lazy()` and to pre-warm the chunk on tab
 // change (browsers + Vite dedupe identical `import()` calls, so calling the
 // loader twice doesn't double-fetch).
-const VIEW_LOADERS = {
+// Annotated, not `satisfies`: `satisfies` keeps each entry's *inferred* type,
+// which contextual typing widens to `{ default: () => JSX.Element } | { default: ComponentType }`.
+// `lazy()` can't pick a component type out of that union (TS7 rejects it).
+const VIEW_LOADERS: Record<SidepanelTab, () => Promise<{ default: ComponentType }>> = {
   chat: () => import('@/features/chat/ChatView').then((m) => ({ default: m.ChatView })),
   pilot: () => import('@/features/chat/PilotView').then((m) => ({ default: m.PilotView })),
   tasks: () => import('@/features/tasks/TasksView').then((m) => ({ default: m.TasksView })),
@@ -65,7 +68,7 @@ const VIEW_LOADERS = {
   showcase: () =>
     import('@/features/showcase/ShowcaseView').then((m) => ({ default: m.ShowcaseView })),
   debug: () => import('@/features/debug/DebugView').then((m) => ({ default: m.DebugView })),
-} satisfies Record<SidepanelTab, () => Promise<{ default: ComponentType }>>;
+};
 
 const ChatView = lazy(VIEW_LOADERS.chat);
 const PilotView = lazy(VIEW_LOADERS.pilot);

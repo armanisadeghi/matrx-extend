@@ -93,7 +93,8 @@
     "tailwindcss": "^4.2.0",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.19.2",
-    "typescript": "^5.9.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vitest": "^2.1.0",
     "wxt": "^0.20.17"
   },
@@ -101,10 +102,6 @@
     "*.{ts,tsx,js,jsx,json,css}": "biome check --write --no-errors-on-unmatched"
   },
   "pnpm": {
-    "onlyBuiltDependencies": [
-      "@biomejs/biome",
-      "esbuild",
-      "spawn-sync"
-    ]
+    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "spawn-sync"]
   }
 }
