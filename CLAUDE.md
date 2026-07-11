@@ -1266,11 +1266,103 @@ for side-by-side comparison in a single session.
 
 ```bash
 pnpm dev                  # WXT dev server
-pnpm tsc --noEmit         # typecheck
+pnpm compile              # typecheck (tsc --noEmit) — ~1s, native TS 7
 pnpm wxt build            # production build
 pnpm catalog:tools:md     # regenerate tool catalog
 pnpm update-api-types     # sync FastAPI types
 ```
+
+---
+
+## 🧬 TypeScript — the dual install (read before touching `typescript` in package.json)
+
+We run **TypeScript 7** (the Go rewrite). A full-repo typecheck is ~**1.1s**
+wall (multithreaded, ~550% CPU), down from ~25s. `pnpm compile` is fast
+enough to run on every save — treat a red typecheck as an immediate stop.
+
+The install is **dual**, and the two entries look backwards until you know why:
+
+```json
+"@typescript/native": "npm:typescript@^7.0.2",       // -> bin `tsc`  (native Go)
+"typescript": "npm:@typescript/typescript6@^6.0.2"   // -> the 6.0 API + bin `tsc6`
+```
+
+**Why not a plain bump.** TS 7 ships no programmatic API yet — its package
+exports only `lib/version.cjs` plus a few `unstable/*` entries. Anything that
+`import`s `typescript` (rather than merely shelling out to `tsc`) breaks against
+it. This repo has exactly one such consumer: **`openapi-typescript`**, which
+builds its output through `ts.factory` and backs `pnpm update-api-types`.
+
+**Why the aliasing works.** `@typescript/typescript6` deliberately ships its
+binary as **`tsc6`**, not `tsc`. So the `tsc` name stays free for the native
+compiler while `import 'typescript'` still resolves to a complete 6.0 API. Net
+effect: `tsc` is native and fast, `update-api-types` still runs.
+
+Consequences to keep in mind:
+
+- **`pnpm add -D typescript@latest` will break the codegen script.** If you ever
+  need to collapse this back to a single install, first confirm
+  `openapi-typescript` has shipped TS 7 support.
+- Biome does the linting here, so there is no `typescript-eslint` to keep on the
+  6.0 API. `tsx`, `vitest`, and `wxt` all parse via esbuild/Vite and never touch
+  the TS API — none of them constrain this.
+- The lone peer warning (`openapi-typescript` wants `typescript: ^5.x`, finds
+  6.0.x) is expected and benign; the 6.0 API is a superset of what it uses.
+
+### Strictness — what's on, and the one flag that stays off
+
+Beyond `strict`, the following are on. Each was enabled only after its blast
+radius was measured and every surfaced error was **fixed at the source** —
+there is not a single `any`, `@ts-ignore`, or `@ts-expect-error` holding this up,
+and there must never be:
+
+`noUncheckedIndexedAccess` · `noImplicitOverride` · `exactOptionalPropertyTypes` ·
+`noImplicitReturns` · `noFallthroughCasesInSwitch` · `noUnusedLocals` ·
+`noUnusedParameters` · `allowUnreachableCode:false` · `allowUnusedLabels:false` ·
+`noUncheckedSideEffectImports` · `verbatimModuleSyntax` · `erasableSyntaxOnly` ·
+`strictBuiltinIteratorReturn`
+
+**`exactOptionalPropertyTypes` is the one with teeth.** `{ a?: string }` no
+longer accepts `{ a: undefined }` — "absent" and "explicitly undefined" are
+different things. That is the type-level enforcement of the context rule already
+written into this file ("*No shallow keys for empty things … if a bundle would be
+empty, omit the bundle*"). When it fires, the fix depends on which side you're on:
+
+- **React props** — widen the *receiving* declaration to `foo?: T | undefined`.
+  For a prop, "not passed" and "passed as undefined" are identical, and reading a
+  `foo?: T` already yields `T | undefined`. This is the honest type, not a loosening.
+- **Anything serialized, persisted, or merged** (a JSON body, a Supabase upsert, a
+  `chrome.storage` write, a zustand `set`, an `Object.assign`) — do **not** widen the
+  type. **Omit the key**: `...(x !== undefined && { key: x })`. `{key: undefined}`
+  and `{}` genuinely differ for a merge: one clobbers the stored value, the other
+  leaves it alone. That bug class is the entire reason the flag is on.
+
+**`noPropertyAccessFromIndexSignature` stays OFF — deliberately. Don't "fix" it.**
+It would produce ~600 errors, and **all of them are TS4111**, which is purely
+syntactic (`x.foo` → `x['foo']`). It buys **zero** type safety here, because
+`noUncheckedIndexedAccess` is already on and *already* forces the undefined-check
+on dotted index-signature access (verified: `rec.foo` then `.length` errors
+TS18048). Turning it on means ~600 mechanical edits and uglier code
+(`process.env['NODE_ENV']`) in exchange for nothing.
+
+**`erasableSyntaxOnly` means no TS-only runtime syntax** — no `enum`, no
+`namespace`, no constructor parameter properties (`constructor(private x: T)`).
+Use plain fields and `const` objects / union types.
+
+Two gotchas that will waste your afternoon:
+
+- **`tsconfig.json` must be strict JSON — no comments.** TS accepts JSONC, but
+  WXT's tsconfig loader does a plain `JSON.parse` and the build dies with an
+  opaque `TSCONFIG_ERROR`. Rationale goes here, not in the file.
+- **Duplicate keys are silent.** TS takes the last one and says nothing. A stale
+  second `verbatimModuleSyntax` had been quietly disabling the flag.
+
+`src/vite-env.d.ts` declares `*.css` **by hand and does not reference
+`vite/client`** — on purpose. Under pnpm, `vite` is a transitive dep of wxt and is
+never hoisted, so the reference resolved to nothing; and `vite/client` declares
+`interface ImportMetaEnv { [key: string]: any }`, whose index signature would merge
+into ours and turn every typo'd `import.meta.env.WXT_*` into a silent `any` —
+exactly what the env-var rules above exist to prevent.
 
 ---
 
