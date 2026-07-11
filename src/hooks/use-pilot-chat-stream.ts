@@ -26,6 +26,7 @@ import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { deadlineFor, parseProviderRetry } from '@/lib/stream/provider-retry';
 import { createStreamWatchdog } from '@/lib/stream/watchdog';
 import { lookup as lookupTool } from '@/lib/tools/registry';
 import { useActiveToolsStore } from '@/state/active-tools';
@@ -247,6 +248,22 @@ export function usePilotChatStream() {
           chunk.payload.eventName === 'RESOURCE_CHANGED'
         ) {
           handleResourceChangedEvent(chunk.payload.data);
+        } else if (chunk.payload.eventName === 'provider_retry') {
+          // Same correctness fix as the Assistant surface: a scheduled provider
+          // retry makes the stream go silent ON PURPOSE, for longer than the stall
+          // threshold. Without holding the watchdog, Pilot kills a healthy run
+          // mid-backoff. (Pilot has no retry banner yet — it clears the spinner on
+          // stall rather than offering Retry — so this hold is the whole fix here.)
+          const retry = parseProviderRetry(chunk.payload.data);
+          if (retry) {
+            const deadline = deadlineFor(retry);
+            if (deadline !== null) watchdogRef.current?.hold(deadline);
+            log.info(
+              'pilot-stream',
+              `provider_retry: ${retry.state} (${retry.provider})`,
+              chunk.payload.data,
+            );
+          }
         } else {
           log.info(
             'pilot-stream',

@@ -1,4 +1,5 @@
 import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
+import type { ProviderRetryState } from '@/lib/stream/provider-retry';
 import type { ToolProgressUpdate } from '@/lib/tools/types';
 import { useToolInbox } from '@/state/tool-inbox';
 import type { ComputeTargetRef } from '@/types/compute-target';
@@ -51,7 +52,17 @@ export interface ToolPartCall {
  */
 export type MessagePart =
   | { type: 'text'; content: string }
-  | { type: 'reasoning'; content: string }
+  | {
+      type: 'reasoning';
+      content: string;
+      /**
+       * The model finished this thinking block (server sent `reasoning:stopped`).
+       * A closed part never accepts more chunks, so a SECOND thinking block later
+       * in the same turn renders as its own part instead of silently merging into
+       * the first. Absent on parts from before the server emitted boundaries.
+       */
+      closed?: boolean;
+    }
   | { type: 'tool'; tool: ToolPartCall };
 
 export interface ChatMessage {
@@ -107,6 +118,13 @@ interface ChatState {
   isStreaming: boolean;
   /** Set when a run stalled or errored abnormally; gates the Retry banner. */
   streamInterruption: StreamInterruption | null;
+  /**
+   * Live upstream-provider retry, when the server is backing off and re-trying an
+   * LLM call. Non-null means the stream is DELIBERATELY quiet — it is not stalled,
+   * and the spinner should stay up. Cleared on `recovered` / `cancelled` and at
+   * the end of the run.
+   */
+  providerRetry: ProviderRetryState | null;
   /**
    * Per-agent variable values, keyed by `<agentId>.<varName>`. Persisted
    * across reloads so users don't have to re-fill every time. Cleared per
@@ -169,6 +187,12 @@ interface ChatState {
    * so the UI can style / collapse independently from regular text.
    */
   appendAssistantReasoning: (id: string, chunk: string) => void;
+  /**
+   * Close the open reasoning part, on the server's `reasoning: stopped` boundary.
+   * Subsequent reasoning chunks then start a NEW part rather than merging into
+   * the block the model already finished.
+   */
+  closeReasoning: (id: string) => void;
   finalizeAssistant: (id: string) => void;
   /**
    * Upsert a tool call (server- or client-side) attached to an assistant
@@ -199,6 +223,8 @@ interface ChatState {
   setStreaming: (b: boolean) => void;
   /** Set or clear the abnormal-end marker that drives the Retry banner. */
   setStreamInterruption: (i: StreamInterruption | null) => void;
+  /** Set or clear the live provider-retry banner. */
+  setProviderRetry: (r: ProviderRetryState | null) => void;
   setMessages: (ms: ChatMessage[]) => void;
   setVariable: (agentId: string, name: string, value: string) => void;
   getAgentVariables: (agentId: string) => Record<string, string>;
@@ -221,13 +247,19 @@ export const useChatStore = create<ChatState>()(
       messages: [],
       isStreaming: false,
       streamInterruption: null,
+      providerRetry: null,
       variableValues: {},
       permissionMode: {},
       boundComputeTarget: null,
       setAgent: (selectedAgentId) => set({ selectedAgentId }),
       setConversation: (selectedConversationId) => {
         const leaving = get().selectedConversationId;
-        set({ selectedConversationId, messages: [], streamInterruption: null });
+        set({
+          selectedConversationId,
+          messages: [],
+          streamInterruption: null,
+          providerRetry: null,
+        });
         // Drop the LEAVING conversation's approval / ask cards only — the
         // inbox is shared with the Pilot surface, and resetAll() here used
         // to vaporize a pending Pilot approval, hanging that run for the
@@ -383,7 +415,10 @@ export const useChatStore = create<ChatState>()(
             const parts = m.parts ?? [];
             const last = parts[parts.length - 1];
             let nextParts: MessagePart[];
-            if (last && last.type === 'reasoning') {
+            // Only extend the trailing reasoning part if it is still OPEN. Once the
+            // server has said `reasoning:stopped`, a later thinking block is a
+            // genuinely separate block and gets its own part.
+            if (last && last.type === 'reasoning' && last.closed !== true) {
               nextParts = parts.slice(0, -1).concat({
                 type: 'reasoning',
                 content: last.content + chunk,
@@ -394,12 +429,26 @@ export const useChatStore = create<ChatState>()(
             return { ...m, parts: nextParts };
           }),
         })),
+      closeReasoning: (id) =>
+        set((s) => ({
+          messages: s.messages.map((m) => {
+            if (m.id !== id) return m;
+            const parts = m.parts ?? [];
+            const last = parts[parts.length - 1];
+            if (!last || last.type !== 'reasoning' || last.closed === true) return m;
+            return {
+              ...m,
+              parts: parts.slice(0, -1).concat({ ...last, closed: true }),
+            };
+          }),
+        })),
       finalizeAssistant: (id) =>
         set((s) => ({
           messages: s.messages.map((m) => (m.id === id ? { ...m, pending: false } : m)),
         })),
       setStreaming: (isStreaming) => set({ isStreaming }),
       setStreamInterruption: (streamInterruption) => set({ streamInterruption }),
+      setProviderRetry: (providerRetry) => set({ providerRetry }),
       setMessages: (messages) => set({ messages }),
       setVariable: (agentId, name, value) =>
         set((s) => ({

@@ -11,6 +11,12 @@ import { getHighlightsByIds } from '@/lib/highlights/queries';
 import { newId } from '@/lib/id';
 import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import {
+  deadlineFor,
+  isTerminal,
+  parseProviderRetry,
+  toRetryState,
+} from '@/lib/stream/provider-retry';
 import { attemptResume } from '@/lib/stream/resume';
 import { createStreamWatchdog } from '@/lib/stream/watchdog';
 import { lookup as lookupTool } from '@/lib/tools/registry';
@@ -439,6 +445,7 @@ function ensureStreamListeners(): void {
         }
       }
       watchdogRef.current?.stop();
+      useChatStore.getState().setProviderRetry(null);
       runIdRef.current = null;
       targetIdRef.current = null;
     })();
@@ -510,6 +517,38 @@ function ensureStreamListeners(): void {
           'inbox_continue — agent will address a queued message',
           chunk.payload.data,
         );
+      } else if (chunk.payload.eventName === 'provider_retry') {
+        // The upstream LLM provider failed and the server is backing off.
+        //
+        // This is the one event where the stream's silence is EXPECTED. The
+        // generic `touch()` above already reset the 75s stall timer once — but
+        // the backoff can be much longer than that, and the server sends nothing
+        // (not even a heartbeat) while it waits. Without a hold, the watchdog
+        // would declare a perfectly healthy run dead mid-retry and show the user
+        // a bogus "connection lost" banner. `hold()` pushes the deadline out to
+        // the server's own retry_at, so a stall is still caught if the retry
+        // never actually lands.
+        const retry = parseProviderRetry(chunk.payload.data);
+        if (retry) {
+          const deadline = deadlineFor(retry);
+          if (deadline !== null) watchdogRef.current?.hold(deadline);
+          useChatStore.getState().setProviderRetry(isTerminal(retry) ? null : toRetryState(retry));
+          log.info(
+            'stream',
+            `provider_retry: ${retry.state} (${retry.provider})`,
+            chunk.payload.data,
+          );
+        }
+      } else if (chunk.payload.eventName === 'reasoning') {
+        // Reasoning block boundary ({state: 'started' | 'stopped'}). The tokens
+        // themselves still arrive as `reasoning_chunk`; this only delimits them.
+        // We don't need to open a part here — appendAssistantReasoning already
+        // starts a fresh part whenever the previous part is a different type —
+        // but on 'stopped' we finalize so any following text can't be appended
+        // into the thinking block.
+        const state = (chunk.payload.data as { state?: unknown } | undefined)?.state;
+        if (state === 'stopped') useChatStore.getState().closeReasoning(target);
+        log.info('stream', `reasoning: ${String(state)}`, chunk.payload.data);
       } else {
         // Other events: phase, completion, render_block, etc. — log only.
         log.info(
@@ -571,6 +610,7 @@ function ensureStreamListeners(): void {
       }
     } else if (chunk.type === 'done') {
       watchdogRef.current?.stop();
+      useChatStore.getState().setProviderRetry(null);
       useChatStore.getState().finalizeAssistant(target);
       useChatStore.getState().setStreaming(false);
       runIdRef.current = null;
@@ -863,6 +903,7 @@ export function useChatStream() {
         if (!stillThisRun || sawAnyEvent) return; // benign port death mid-stream
         log.error('stream', `STREAM_START failed for ${runId}`, err);
         watchdogRef.current?.stop();
+        useChatStore.getState().setProviderRetry(null);
         if (targetIdRef.current) useChatStore.getState().finalizeAssistant(targetIdRef.current);
         useChatStore.getState().setStreaming(false);
         useChatStore.getState().setStreamInterruption({
@@ -890,6 +931,7 @@ export function useChatStream() {
   const cancel = useCallback(async () => {
     if (!runIdRef.current) return;
     watchdogRef.current?.stop();
+    useChatStore.getState().setProviderRetry(null);
     // Cancelling the user's run means the user wants OUT — discard any
     // queued resume so we don't snap back into the conversation a moment
     // later. The server will see the cancel + the outstanding tool call;

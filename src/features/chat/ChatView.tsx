@@ -37,6 +37,7 @@ import { wrapForAgent } from '@/lib/clipboard/copy';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import type { ProviderRetryState } from '@/lib/stream/provider-retry';
 import {
   type AgxAgent,
   type Conversation,
@@ -129,6 +130,7 @@ export function ChatView() {
   } = useChatStore();
   const { send, cancel, retry, interruptAndSend } = useChatStream();
   const streamInterruption = useChatStore((s) => s.streamInterruption);
+  const providerRetry = useChatStore((s) => s.providerRetry);
   const { variableDefs } = useAgentExecution(selectedAgentId);
   const getAgentVariables = useChatStore((s) => s.getAgentVariables);
   const defaultPermissionMode = useSettingsStore((s) => s.defaultPermissionMode);
@@ -588,6 +590,11 @@ export function ChatView() {
         )}
       </div>
 
+      {/* The upstream provider failed and the server is backing off. The stream is
+          deliberately silent, so without this the user just sees a frozen spinner
+          for the whole retry window and assumes we hung. */}
+      {providerRetry && <ProviderRetryBanner retry={providerRetry} />}
+
       {streamInterruption && !isStreaming && (
         <StreamInterruptionBanner
           reason={streamInterruption.reason}
@@ -629,6 +636,46 @@ export function ChatView() {
  * user a one-click recovery. The retry replays the last turn until backend
  * stream-resume ships (see lib/stream/resume.ts).
  */
+/**
+ * Upstream LLM provider failed; the server is retrying. The stream goes silent
+ * for the backoff, so this is the ONLY thing telling the user the system is still
+ * working — without it a 30s provider retry is indistinguishable from a hang.
+ *
+ * Copy comes from the server (`user_message`); we never invent our own wording for
+ * a provider error. The countdown is derived locally from `retryAtMs` purely so the
+ * pause feels accounted-for.
+ */
+function ProviderRetryBanner({ retry }: { retry: ProviderRetryState }) {
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (retry.retryAtMs === null) {
+      setSecondsLeft(null);
+      return;
+    }
+    const tick = () => {
+      const ms = (retry.retryAtMs ?? 0) - Date.now();
+      setSecondsLeft(Math.max(0, Math.ceil(ms / 1000)));
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [retry.retryAtMs]);
+
+  return (
+    <div className="mx-3 mb-2 flex items-start gap-2 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs">
+      <Loader2 className="mt-0.5 size-3.5 shrink-0 animate-spin text-amber-600 dark:text-amber-400" />
+      <div className="min-w-0 flex-1">
+        <p className="text-amber-800 dark:text-amber-200">{retry.userMessage}</p>
+        <p className="mt-0.5 text-amber-700/70 dark:text-amber-300/70">
+          {retry.provider} · attempt {retry.failedAttempt} of {retry.maxRetries}
+          {secondsLeft !== null && secondsLeft > 0 ? ` · retrying in ${secondsLeft}s` : ''}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function StreamInterruptionBanner({
   reason,
   silentMs,

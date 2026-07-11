@@ -7,6 +7,7 @@
 export const EventType = {
   CHUNK: "chunk",
   REASONING_CHUNK: "reasoning_chunk",
+  REASONING: "reasoning",
   PHASE: "phase",
   WARNING: "warning",
   INFO: "info",
@@ -27,6 +28,7 @@ export const EventType = {
   CONTEXT_STATE: "context_state",
   CONTEXT_TRIMMED: "context_trimmed",
   INJECTION_CONSUMED: "injection_consumed",
+  PROVIDER_RETRY: "provider_retry",
 } as const;
 
 export type EventType = (typeof EventType)[keyof typeof EventType];
@@ -79,6 +81,10 @@ export interface ReasoningChunkPayload {
   text: string;
 }
 
+export interface ReasoningPayload {
+  state: "started" | "stopped";
+}
+
 export interface PhasePayload {
   phase: "connected" | "processing" | "generating" | "using_tools" | "persisting" | "searching" | "scraping" | "analyzing" | "synthesizing" | "retrying" | "executing" | "complete";
 }
@@ -119,6 +125,28 @@ export interface ErrorPayload {
   user_message?: string;
   code?: string | null;
   details?: Record<string, unknown> | null;
+}
+
+export interface ProviderRetryPayload {
+  state: "scheduled" | "retrying_now" | "cancelled" | "suspended" | "recovered";
+  provider: string;
+  error_type: string;
+  message: string;
+  user_message: string;
+  status_code?: number | null;
+  model?: string | null;
+  request_id?: string | null;
+  conversation_id?: string | null;
+  iteration: number;
+  failed_attempt: number;
+  next_attempt?: number | null;
+  max_retries: number;
+  retry_delay?: number | null;
+  retry_at?: number | null;
+  schedule?: number[];
+  can_cancel?: boolean;
+  can_retry_now?: boolean;
+  actions?: Record<string, string>;
 }
 
 export interface ToolEventPayload {
@@ -248,7 +276,7 @@ export interface ContextTrimmedPayload {
 // --- Typed Record Reservation Variants (discriminated on `table`) ---
 
 // Narrows RecordReservedPayload.metadata / parent_refs by table.
-// Server guarantees these shapes for cx_message, cx_request, cx_tool_call.
+// Server guarantees these shapes for message, request, tool_call.
 
 export interface CxMessageReservedParentRefs {
   [key: string]: unknown;
@@ -288,19 +316,19 @@ export interface CxToolCallReservedMetadata {
 }
 
 export type CxMessageReservedPayload = RecordReservedPayload & {
-  table: "cx_message";
+  table: "message";
   parent_refs: CxMessageReservedParentRefs;
   metadata: CxMessageReservedMetadata;
 };
 
 export type CxRequestReservedPayload = RecordReservedPayload & {
-  table: "cx_request";
+  table: "request";
   parent_refs: CxRequestReservedParentRefs;
   metadata: CxRequestReservedMetadata;
 };
 
 export type CxToolCallReservedPayload = RecordReservedPayload & {
-  table: "cx_tool_call";
+  table: "tool_call";
   parent_refs: CxToolCallReservedParentRefs;
   metadata: CxToolCallReservedMetadata;
 };
@@ -313,22 +341,22 @@ export type TypedRecordReservedPayload =
 
 /** True when the reservation is for a known table with typed metadata. */
 export function isTypedRecordReservedPayload(p: RecordReservedPayload): p is RecordReservedPayload & TypedRecordReservedPayload {
-  return p.table === "cx_message" || p.table === "cx_request" || p.table === "cx_tool_call";
+  return p.table === "message" || p.table === "request" || p.table === "tool_call";
 }
 
 /** Narrows to CxMessageReservedPayload — `metadata.role` and `metadata.position` are guaranteed. */
 export function isCxMessageReservation(p: RecordReservedPayload): p is CxMessageReservedPayload {
-  return p.table === "cx_message";
+  return p.table === "message";
 }
 
 /** Narrows to CxRequestReservedPayload — `metadata.iteration` is guaranteed. */
 export function isCxRequestReservation(p: RecordReservedPayload): p is CxRequestReservedPayload {
-  return p.table === "cx_request";
+  return p.table === "request";
 }
 
 /** Narrows to CxToolCallReservedPayload — `metadata.tool_name`, `metadata.call_id`, and `metadata.iteration` are guaranteed. */
 export function isCxToolCallReservation(p: RecordReservedPayload): p is CxToolCallReservedPayload {
-  return p.table === "cx_tool_call";
+  return p.table === "tool_call";
 }
 
 // --- Typed Data Payloads ---
@@ -396,6 +424,32 @@ export interface ContextChangedData {
   source_id?: string | null;
 }
 
+export interface ContextConflictData {
+  type?: "context_conflict";
+  key: string;
+  command: string;
+  source_kind?: string;
+  source_id?: string | null;
+  base_version?: number | null;
+}
+
+export interface ContextDeltaData {
+  type?: "context_delta";
+  key: string;
+  command: string;
+  object_type?: string;
+  source_kind?: string;
+  source_id?: string | null;
+  seq?: number;
+  delta_kind?: "splice" | "full";
+  start?: number | null;
+  end?: number | null;
+  text?: string | null;
+  base_len?: number | null;
+  new_len?: number;
+  content?: string | null;
+}
+
 export interface ContextPersistFailedData {
   type?: "context_persist_failed";
   key: string;
@@ -412,6 +466,7 @@ export interface ContextPersistedData {
   command: string;
   source_kind?: string;
   source_id?: string | null;
+  materialized?: boolean;
 }
 
 export interface ConversationIdData {
@@ -425,6 +480,17 @@ export interface ConversationLabeledData {
   title: string;
   description?: string;
   keywords?: string[];
+}
+
+export interface DictionaryPublishCompleteData {
+  type?: "dictionary_publish_complete";
+  status: string;
+  level: string;
+  owner_id?: string | null;
+  external_id?: string | null;
+  version_id?: string | null;
+  rule_count?: number;
+  rules_hash?: string | null;
 }
 
 export interface QuestionnaireQuestion {
@@ -445,6 +511,32 @@ export interface QuestionnaireDisplayData {
   questions?: QuestionnaireQuestion[];
 }
 
+export interface ExtractionIndexCompleteData {
+  type?: "extraction_index_complete";
+  run_id: string;
+  job_id: string;
+  derivative_id: string;
+  derivative_outcome: string;
+  results_total: number;
+  chunks_written: number;
+  chunks_skipped: number;
+  priority_applied: number;
+  agent_id?: string | null;
+  embedding_model: string;
+}
+
+export interface ExtractionIndexProgressData {
+  type?: "extraction_index_progress";
+  run_id: string;
+  stage: string;
+  message?: string;
+  results_total?: number;
+  chunks_built?: number;
+  chunks_skipped?: number;
+  embedded?: number;
+  total_to_embed?: number;
+}
+
 export interface FetchResultItem {
   url?: string;
   title?: string;
@@ -458,6 +550,82 @@ export interface FetchResultsData {
   results?: FetchResultItem[];
 }
 
+export interface FileAnalysisCompleteData {
+  type?: "file_analysis_complete";
+  file_id: string;
+  status: string;
+  results_count?: number;
+  failures?: string[];
+  elapsed_ms?: number;
+  head?: Record<string, unknown>;
+  results?: Record<string, unknown>[];
+}
+
+export interface FileAnalysisStartedData {
+  type?: "file_analysis_started";
+  file_id: string;
+  mime_type?: string | null;
+  total_detectors: number;
+}
+
+export interface FileDetectorCompletedData {
+  type?: "file_detector_completed";
+  file_id: string;
+  detector_kind: string;
+  tier: string;
+  status: string;
+  elapsed_ms?: number;
+  error?: string | null;
+  complete: number;
+  total: number;
+}
+
+export interface FileSearchBboxItem {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
+
+export interface FileSearchHitItem {
+  page_number: number;
+  page_id?: string | null;
+  bbox: FileSearchBboxItem;
+  snippet: string;
+  matched_text: string;
+  char_start?: number | null;
+  char_end?: number | null;
+}
+
+export interface FileSearchCompleteData {
+  type?: "file_search_complete";
+  file_id: string;
+  query: string;
+  regex?: boolean;
+  case_sensitive?: boolean;
+  hits?: FileSearchHitItem[];
+  truncated?: boolean;
+  pages_scanned?: number;
+  total_pages?: number;
+}
+
+export interface FileSearchPageData {
+  type?: "file_search_page";
+  page_number: number;
+  total_pages: number;
+  hits?: FileSearchHitItem[];
+  total_hits?: number;
+}
+
+export interface FileSearchStartedData {
+  type?: "file_search_started";
+  file_id: string;
+  query: string;
+  regex?: boolean;
+  case_sensitive?: boolean;
+  total_pages: number;
+}
+
 export interface FunctionResultData {
   type?: "function_result";
   function_name: string;
@@ -465,6 +633,34 @@ export interface FunctionResultData {
   result?: unknown;
   error?: string | null;
   duration_ms?: number | null;
+}
+
+export interface ImageDocumentDetectedData {
+  type?: "image_document_detected";
+  found: boolean;
+  top_left?: unknown[] | null;
+  top_right?: unknown[] | null;
+  bottom_right?: unknown[] | null;
+  bottom_left?: unknown[] | null;
+  confidence?: number;
+  image_width?: number;
+  image_height?: number;
+}
+
+export interface ImageEditCompleteData {
+  type?: "image_edit_complete";
+  op: string;
+  file_id?: string | null;
+  asset?: Record<string, unknown>;
+}
+
+export interface ImageOpStageData {
+  type?: "image_op_stage";
+  op: string;
+  stage: string;
+  detail?: string | null;
+  source_id?: string | null;
+  mask_id?: string | null;
 }
 
 export interface ImageOutputData {
@@ -477,10 +673,91 @@ export interface ImageOutputData {
   download_url?: string | null;
 }
 
+export interface ImageStudioCommitCompleteData {
+  type?: "image_studio_commit_complete";
+  job_id: string;
+  folder_path: string;
+  saved_count?: number;
+  failed_count?: number;
+  result?: Record<string, unknown>;
+}
+
+export interface ImageStudioCommitItemData {
+  type?: "image_studio_commit_item";
+  job_id: string;
+  preset_id: string;
+  status: string;
+  file_id?: string | null;
+  filename?: string | null;
+  file_path?: string | null;
+  size?: number | null;
+  public_url?: string | null;
+  error?: string | null;
+  completed?: number;
+  total?: number;
+}
+
+export interface ImageStudioProcessCompleteData {
+  type?: "image_studio_process_complete";
+  job_id: string;
+  result?: Record<string, unknown>;
+}
+
+export interface ImageStudioVariantData {
+  type?: "image_studio_variant";
+  job_id: string;
+  preset_id: string;
+  filename?: string | null;
+  format?: string | null;
+  width?: number | null;
+  height?: number | null;
+  quality?: number | null;
+  size?: number | null;
+  signed_url?: string | null;
+  expires_in?: number | null;
+  compression_ratio?: number | null;
+  notes?: string[];
+  error?: string | null;
+  completed?: number;
+  total?: number;
+}
+
+export interface LegalSyncEventData {
+  type?: "legal_sync_event";
+  phase: string;
+  run_id?: string | null;
+  resource?: string | null;
+  resources?: string[] | null;
+  court_id?: string | null;
+  court_ids?: string[] | null;
+  cluster_id?: number | null;
+  cluster_count?: number | null;
+  rows?: number | null;
+  court_rows?: number | null;
+  total_rows?: number | null;
+  rows_pumped?: number | null;
+  rows_inserted?: number | null;
+  bytes_received?: number | null;
+  s3_key?: string | null;
+  size_bytes?: number | null;
+  dump_date?: string | null;
+  bucket?: string | null;
+  table?: string | null;
+  target?: string | null;
+  batch_size?: number | null;
+  last_id?: number | null;
+  reason?: string | null;
+  per_court_counts?: Record<string, number> | null;
+  per_court_errors?: Record<string, string> | null;
+  per_cluster_errors?: Record<string, string> | null;
+  per_resource_rows?: Record<string, number> | null;
+  per_resource_errors?: Record<string, string> | null;
+  error?: string | null;
+}
+
 export interface AudioBlock {
   origin: "matrx" | "external";
   file_id?: string | null;
-  file_uri?: string | null;
   visibility?: "public" | "private" | "shared" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
@@ -506,7 +783,6 @@ export interface AudioBlock {
 export interface DocumentBlock {
   origin: "matrx" | "external";
   file_id?: string | null;
-  file_uri?: string | null;
   visibility?: "public" | "private" | "shared" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
@@ -532,7 +808,6 @@ export interface DocumentBlock {
 export interface ImageBlock {
   origin: "matrx" | "external";
   file_id?: string | null;
-  file_uri?: string | null;
   visibility?: "public" | "private" | "shared" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
@@ -562,7 +837,6 @@ export interface JsonValue {
 export interface VideoBlock {
   origin: "matrx" | "external";
   file_id?: string | null;
-  file_uri?: string | null;
   visibility?: "public" | "private" | "shared" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
@@ -590,7 +864,6 @@ export interface VideoBlock {
 export interface YouTubeBlock {
   origin?: "external";
   file_id?: string | null;
-  file_uri?: string | null;
   visibility?: "public" | "private" | "shared" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
@@ -676,20 +949,329 @@ export interface PartialImageData {
   mime_type?: string;
 }
 
-export interface PodcastCompleteData {
-  type?: "podcast_complete";
-  show_id: string;
-  success: boolean;
-  episode_count?: number;
+export interface PdfPageClassificationItem {
+  page_number: number;
+  page_class: string;
+  confidence: number;
+  indicators?: string[];
+}
+
+export interface PdfClassifyCompleteData {
+  type?: "pdf_classify_complete";
+  page_count: number;
+  pages?: PdfPageClassificationItem[];
+  classifier_version?: string;
+}
+
+export interface PdfCleanStartedData {
+  type?: "pdf_clean_started";
+  mode?: "per_page" | "aggregate";
+  doc_id: string;
+  total_pages?: number;
+}
+
+export interface PdfExtractCompleteData {
+  type?: "pdf_extract_complete";
+  filename?: string | null;
+  page_count: number;
+  ocr_pages: number;
+  total_chars: number;
+  text_content: string;
+  file_id?: string | null;
+}
+
+export interface PdfExtractStartedData {
+  type?: "pdf_extract_started";
+  filename?: string | null;
+  total_pages: number;
+}
+
+export interface PdfPageClassifiedData {
+  type?: "pdf_page_classified";
+  page_number: number;
+  total_pages: number;
+  page_class: string;
+  confidence: number;
+  indicators?: string[];
+}
+
+export interface PdfPageExtractedData {
+  type?: "pdf_page_extracted";
+  page_number: number;
+  total_pages: number;
+  extraction_method: string;
+  char_count: number;
+  preview?: string;
+}
+
+export interface PdfPipelineResultData {
+  type?: "pdf_pipeline_result";
+  raw_text?: string | null;
+  page_count?: number;
+  chunks?: string[] | null;
+  ai_processed?: Record<string, unknown>[] | null;
+  cloud_uri?: string | null;
+  supabase_url?: string | null;
+  file_id?: string | null;
+}
+
+export interface PdfReadingOrderBlockItem {
+  block_index: number;
+  column_index: number;
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+  text: string;
+}
+
+export interface PdfReadingOrderPageItem {
+  page_number: number;
+  column_count: number;
+  blocks_in_order?: PdfReadingOrderBlockItem[];
+}
+
+export interface PdfReadingOrderCompleteData {
+  type?: "pdf_reading_order_complete";
+  page_count: number;
+  pages?: PdfReadingOrderPageItem[];
+}
+
+export interface PdfReadingOrderPageData {
+  type?: "pdf_reading_order_page";
+  page_number: number;
+  total_pages: number;
+  column_count: number;
+  block_count: number;
+  preview?: string;
+}
+
+export interface PdfRepeatedRegionBboxItem {
+  page_number: number;
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+  raw_text?: string;
+}
+
+export interface PdfRepeatedRegionItem {
+  region_id: string;
+  kind: string;
+  text_template: string;
+  pages?: number[];
+  bbox_per_page?: PdfRepeatedRegionBboxItem[];
+  confidence: number;
+}
+
+export interface PdfRepeatedRegionsCompleteData {
+  type?: "pdf_repeated_regions_complete";
+  page_count: number;
+  regions?: PdfRepeatedRegionItem[];
+  detector_version?: string;
+}
+
+export interface PdfRepeatedRegionsProgressData {
+  type?: "pdf_repeated_regions_progress";
+  stage: "detect" | "extract_text" | "strip";
+  page_number: number;
+  total_pages: number;
+}
+
+export interface PdfRepeatedRegionsStripCompleteData {
+  type?: "pdf_repeated_regions_strip_complete";
+  page_count: number;
+  pages_text?: string[];
+  regions?: PdfRepeatedRegionItem[];
+  detector_version?: string;
+  stripped_region_ids?: string[];
+}
+
+export interface PdfTableExtractedData {
+  type?: "pdf_table_extracted";
+  page_number: number;
+  total_pages: number;
+  table_index: number;
+  row_count: number;
+  column_count: number;
+  markdown_preview?: string;
+}
+
+export interface PdfExtractedTableItem {
+  page_number: number;
+  table_index: number;
+  bbox: PdfTableBboxItem;
+  row_count: number;
+  column_count: number;
+  header?: (string | null)[];
+  rows?: (string | null)[][];
+  markdown?: string;
+}
+
+export interface PdfTableBboxItem {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
+
+export interface PdfTablesCompleteData {
+  type?: "pdf_tables_complete";
+  page_count: number;
+  table_count: number;
+  tables?: PdfExtractedTableItem[];
+  detector?: string;
+  detector_version?: string;
+}
+
+export interface PdfTablesPageData {
+  type?: "pdf_tables_page";
+  page_number: number;
+  total_pages: number;
+  tables_found: number;
+}
+
+export interface PdfTablesStartedData {
+  type?: "pdf_tables_started";
+  filename?: string | null;
+  total_pages: number;
+}
+
+export interface PodcastAssetEvent {
+  type?: "podcast_asset";
+  asset_kind: "image" | "video";
+  index: number;
+  url?: string;
+  prompt?: string;
+  success?: boolean;
+  error?: string | null;
+  note?: string | null;
+}
+
+export interface PodcastAssetGenStartedEvent {
+  type?: "podcast_asset_gen_started";
+  run_id: string;
+  asset_kind: "image" | "video";
+  slot: number;
+  prompt?: string;
+  model_alias?: string | null;
+  is_manual?: boolean;
+}
+
+export interface PodcastAssetResultEvent {
+  type?: "podcast_asset_result";
+  run_id: string;
+  asset_id?: string | null;
+  asset_kind: "image" | "video";
+  slot: number;
+  status: string;
+  url?: string | null;
+  file_id?: string | null;
+  prompt?: string | null;
+  model_alias?: string | null;
+  is_manual?: boolean;
   error?: string | null;
 }
 
-export interface PodcastStageData {
+export interface PodcastCompleteEvent {
+  type?: "podcast_complete";
+  show_id: string;
+  success: boolean;
+  episode_id?: string | null;
+  episode_slug?: string | null;
+  script?: string;
+  audio_url?: string;
+  title?: string;
+  description?: string;
+  image_urls?: string[];
+  video_urls?: string[];
+  official_video_url?: string;
+  official_video_error?: string;
+  host_count?: number;
+  speakers?: Record<string, unknown>[];
+  error?: string | null;
+}
+
+export interface PodcastMetadataEvent {
+  type?: "podcast_metadata";
+  title?: string;
+  description?: string;
+  image_descriptions?: string[];
+  video_descriptions?: string[];
+}
+
+export interface PodcastOfficialVideoEvent {
+  type?: "podcast_official_video";
+  url?: string;
+  success?: boolean;
+  error?: string | null;
+}
+
+export interface PodcastRunEvent {
+  type?: "podcast_run";
+  run_id?: string;
+  total?: number;
+}
+
+export interface PodcastStageEvent {
   type?: "podcast_stage";
   stage: string;
+  label?: string;
   success: boolean;
+  output?: string;
   error?: string | null;
-  result_keys?: string[];
+  step?: number;
+  total?: number;
+}
+
+export interface PodcastStageStartedEvent {
+  type?: "podcast_stage_started";
+  stage: string;
+  label?: string;
+  step?: number;
+  total?: number;
+}
+
+export interface PodcastTickEvent {
+  type?: "podcast_tick";
+  stage: string;
+  label?: string;
+  elapsed_seconds?: number;
+  step?: number;
+  total?: number;
+}
+
+export interface RagVerifyClaimsData {
+  type?: "rag_verify_claims";
+  claims?: string[];
+  count: number;
+  judge_model: string;
+}
+
+export interface RagVerifyClaimItem {
+  claim: string;
+  verdict: string;
+  confidence: number;
+  supporting_chunk_ids?: string[];
+  reasoning?: string;
+}
+
+export interface RagVerifyResultData {
+  type?: "rag_verify_result";
+  claims?: RagVerifyClaimItem[];
+  overall_faithfulness: number;
+  judge_model: string;
+  latency_ms: number;
+}
+
+export interface RagVerifyVerdictData {
+  type?: "rag_verify_verdict";
+  index: number;
+  claim: string;
+  verdict: string;
+  confidence: number;
+  supporting_chunk_ids?: string[];
+  reasoning?: string;
 }
 
 export interface ScrapeBatchCompleteData {
@@ -739,6 +1321,17 @@ export interface VideoOutputData {
   download_url?: string | null;
 }
 
+export interface WorkflowNodeTestResultData {
+  type?: "workflow_node_test_result";
+  success: boolean;
+  duration_ms: number;
+  node_id: string;
+  spec_type: string;
+  output?: Record<string, unknown> | null;
+  error_type?: string | null;
+  error_message?: string | null;
+}
+
 export interface WorkflowStepData {
   type?: "workflow_step";
   step_name: string;
@@ -752,13 +1345,32 @@ export type TypedDataPayload =
   | AudioStreamEndData
   | CategorizationResultData
   | ContextChangedData
+  | ContextConflictData
+  | ContextDeltaData
   | ContextPersistFailedData
   | ContextPersistedData
   | ConversationIdData
   | ConversationLabeledData
+  | DictionaryPublishCompleteData
+  | ExtractionIndexCompleteData
+  | ExtractionIndexProgressData
   | FetchResultsData
+  | FileAnalysisCompleteData
+  | FileAnalysisStartedData
+  | FileDetectorCompletedData
+  | FileSearchCompleteData
+  | FileSearchPageData
+  | FileSearchStartedData
   | FunctionResultData
+  | ImageDocumentDetectedData
+  | ImageEditCompleteData
+  | ImageOpStageData
   | ImageOutputData
+  | ImageStudioCommitCompleteData
+  | ImageStudioCommitItemData
+  | ImageStudioProcessCompleteData
+  | ImageStudioVariantData
+  | LegalSyncEventData
   | MediaBlockData
   | MediaNoticeData
   | MemoryBufferSpawnedData
@@ -767,14 +1379,42 @@ export type TypedDataPayload =
   | MemoryObserverCompletedData
   | MemoryReflectorCompletedData
   | PartialImageData
-  | PodcastCompleteData
-  | PodcastStageData
+  | PdfClassifyCompleteData
+  | PdfCleanStartedData
+  | PdfExtractCompleteData
+  | PdfExtractStartedData
+  | PdfPageClassifiedData
+  | PdfPageExtractedData
+  | PdfPipelineResultData
+  | PdfReadingOrderCompleteData
+  | PdfReadingOrderPageData
+  | PdfRepeatedRegionsCompleteData
+  | PdfRepeatedRegionsProgressData
+  | PdfRepeatedRegionsStripCompleteData
+  | PdfTableExtractedData
+  | PdfTablesCompleteData
+  | PdfTablesPageData
+  | PdfTablesStartedData
+  | PodcastAssetEvent
+  | PodcastAssetGenStartedEvent
+  | PodcastAssetResultEvent
+  | PodcastCompleteEvent
+  | PodcastMetadataEvent
+  | PodcastOfficialVideoEvent
+  | PodcastRunEvent
+  | PodcastStageEvent
+  | PodcastStageStartedEvent
+  | PodcastTickEvent
   | QuestionnaireDisplayData
+  | RagVerifyClaimsData
+  | RagVerifyResultData
+  | RagVerifyVerdictData
   | ScrapeBatchCompleteData
   | SearchErrorData
   | SearchResultsData
   | StructuredInputWarningData
   | VideoOutputData
+  | WorkflowNodeTestResultData
   | WorkflowStepData;
 
 /** Fallback for data events whose `type` isn't in TypedDataPayload. */
@@ -2245,7 +2885,6 @@ export interface ImageMediaPart {
   origin?: "matrx" | "external" | null;
   file_id?: string | null;
   url?: string | null;
-  file_uri?: string | null;
   mime_type?: string | null;
   size_bytes?: number | null;
   type?: "media";
@@ -2259,7 +2898,6 @@ export interface AudioMediaPart {
   origin?: "matrx" | "external" | null;
   file_id?: string | null;
   url?: string | null;
-  file_uri?: string | null;
   mime_type?: string | null;
   size_bytes?: number | null;
   type?: "media";
@@ -2273,7 +2911,6 @@ export interface VideoMediaPart {
   origin?: "matrx" | "external" | null;
   file_id?: string | null;
   url?: string | null;
-  file_uri?: string | null;
   mime_type?: string | null;
   size_bytes?: number | null;
   type?: "media";
@@ -2288,7 +2925,6 @@ export interface DocumentMediaPart {
   origin?: "matrx" | "external" | null;
   file_id?: string | null;
   url?: string | null;
-  file_uri?: string | null;
   mime_type?: string | null;
   size_bytes?: number | null;
   type?: "media";
@@ -2303,7 +2939,6 @@ export interface YouTubeMediaPart {
   origin?: "external";
   file_id?: string | null;
   url: string;
-  file_uri?: string | null;
   mime_type?: string | null;
   size_bytes?: number | null;
   type?: "media";
@@ -2377,20 +3012,74 @@ export interface TaskInputPart {
   editable?: boolean | null;
 }
 
+export interface FullTableBookmark {
+  type?: "full_table";
+  table_id: string;
+  table_name?: string | null;
+}
+
+export interface TableCellBookmark {
+  type?: "table_cell";
+  table_id: string;
+  row_id: string;
+  column_name: string;
+  table_name?: string | null;
+}
+
+export interface TableColumnBookmark {
+  type?: "table_column";
+  table_id: string;
+  column_name: string;
+  table_name?: string | null;
+}
+
+export interface TableRowBookmark {
+  type?: "table_row";
+  table_id: string;
+  row_id: string;
+  table_name?: string | null;
+}
+
+export interface TableSchemaBookmark {
+  type?: "table_schema";
+  table_id: string;
+  table_name?: string | null;
+}
+
 export interface TableInputPart {
   metadata?: Record<string, unknown>;
   type?: "input_table";
-  bookmarks?: Record<string, unknown>[];
+  bookmarks?: (FullTableBookmark | TableColumnBookmark | TableRowBookmark | TableCellBookmark | TableSchemaBookmark)[];
   convert_to_text?: boolean;
   optional_context?: boolean;
   keep_fresh?: boolean;
   editable?: boolean | null;
 }
 
+export interface FullListBookmark {
+  type?: "full_list";
+  list_id: string;
+  list_name?: string | null;
+}
+
+export interface ListGroupBookmark {
+  type?: "list_group";
+  list_id: string;
+  group_name: string;
+  list_name?: string | null;
+}
+
+export interface ListItemBookmark {
+  type?: "list_item";
+  list_id: string;
+  item_id: string;
+  list_name?: string | null;
+}
+
 export interface ListInputPart {
   metadata?: Record<string, unknown>;
   type?: "input_list";
-  bookmarks?: Record<string, unknown>[];
+  bookmarks?: (FullListBookmark | ListGroupBookmark | ListItemBookmark)[];
   convert_to_text?: boolean;
   optional_context?: boolean;
   keep_fresh?: boolean;
@@ -2453,6 +3142,11 @@ export interface ChunkEvent {
 export interface ReasoningChunkEvent {
   event: "reasoning_chunk";
   data: ReasoningChunkPayload;
+}
+
+export interface ReasoningEvent {
+  event: "reasoning";
+  data: ReasoningPayload;
 }
 
 export interface PhaseEvent {
@@ -2555,10 +3249,16 @@ export interface InjectionConsumedEvent {
   data: InjectionConsumedPayload;
 }
 
+export interface ProviderRetryEvent {
+  event: "provider_retry";
+  data: ProviderRetryPayload;
+}
+
 /** Discriminated union — `event.event === "chunk"` narrows `data` automatically. */
 export type TypedStreamEvent =
   | ChunkEvent
   | ReasoningChunkEvent
+  | ReasoningEvent
   | PhaseEvent
   | WarningEvent
   | InfoEvent
@@ -2578,7 +3278,8 @@ export type TypedStreamEvent =
   | StructuredOutputEvent
   | ContextStateEvent
   | ContextTrimmedEvent
-  | InjectionConsumedEvent;
+  | InjectionConsumedEvent
+  | ProviderRetryEvent;
 
 /**
  * @deprecated Use `TypedStreamEvent` instead — it provides automatic type narrowing
@@ -2620,6 +3321,10 @@ export function isChunkEvent(e: TypedStreamEvent): e is { event: "chunk"; data: 
 
 export function isReasoningChunkEvent(e: TypedStreamEvent): e is { event: "reasoning_chunk"; data: ReasoningChunkPayload } {
   return e.event === "reasoning_chunk";
+}
+
+export function isReasoningEvent(e: TypedStreamEvent): e is { event: "reasoning"; data: ReasoningPayload } {
+  return e.event === "reasoning";
 }
 
 export function isPhaseEvent(e: TypedStreamEvent): e is { event: "phase"; data: PhasePayload } {
@@ -2700,6 +3405,10 @@ export function isContextTrimmedEvent(e: TypedStreamEvent): e is { event: "conte
 
 export function isInjectionConsumedEvent(e: TypedStreamEvent): e is { event: "injection_consumed"; data: InjectionConsumedPayload } {
   return e.event === "injection_consumed";
+}
+
+export function isProviderRetryEvent(e: TypedStreamEvent): e is { event: "provider_retry"; data: ProviderRetryPayload } {
+  return e.event === "provider_retry";
 }
 
 export function isCompactChunkEvent(e: unknown): e is CompactChunkEvent {
