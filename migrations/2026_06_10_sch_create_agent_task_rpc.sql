@@ -1,3 +1,14 @@
+-- migrate: skip: SUPERSEDED — this created a DUPLICATE overload of
+-- public.create_agent_task. matrx-frontend/migrations/sch_create_agent_task.sql
+-- had already defined the same RPC with a different param order/arity, and
+-- CREATE OR REPLACE FUNCTION does not replace across a differing signature — it
+-- creates an OVERLOAD. With both live, every param that differed had a DEFAULT,
+-- so PostgREST could not choose between them and returned HTTP 300 / PGRST203 on
+-- EVERY call. This overload was dropped by
+-- migrations/2026_07_11_drop_duplicate_create_agent_task.sql. Re-applying this
+-- file would recreate the ambiguity and break Agenda task creation again.
+-- The surviving canonical RPC is matrx-frontend's 16-arg version.
+--
 -- Atomic agent-task creation (matrx-extend audit P2-16, approved 2026-06-10).
 --
 -- APPLIED 2026-06-10 directly via the Supabase MCP (recorded in Supabase's
