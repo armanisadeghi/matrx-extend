@@ -89,7 +89,7 @@ export function subscribeToTasks(
       'postgres_changes',
       {
         event: 'INSERT',
-        schema: 'public',
+        schema: 'scheduler',
         table: 'sch_task',
         filter: `user_id=eq.${opts.userId}`,
       },
@@ -100,7 +100,7 @@ export function subscribeToTasks(
       'postgres_changes',
       {
         event: 'UPDATE',
-        schema: 'public',
+        schema: 'scheduler',
         table: 'sch_task',
         filter: `user_id=eq.${opts.userId}`,
       },
@@ -111,7 +111,7 @@ export function subscribeToTasks(
       'postgres_changes',
       {
         event: 'DELETE',
-        schema: 'public',
+        schema: 'scheduler',
         table: 'sch_task',
         filter: `user_id=eq.${opts.userId}`,
       },

@@ -145,6 +145,27 @@ for (const file of walk(SRC)) {
       detail: `unqualified — resolves to public.${table}, which does not exist. Route via ${wantSchema} (see src/lib/supabase/schemas.ts).`,
     });
   });
+
+  // Realtime is a SEPARATE routing path with its own `schema` field, and it fails
+  // even more quietly than a query: a `postgres_changes` subscription pointed at
+  // the wrong schema does not error, it just never fires. Match `schema: 'x'` to
+  // the `table: 'y'` it is paired with inside the same subscription object.
+  const RT = /schema:\s*['"]([a-z_]+)['"][\s\S]{0,120}?table:\s*['"]([a-zA-Z0-9_]+)['"]/g;
+  let rt: RegExpExecArray | null = RT.exec(source);
+  while (rt !== null) {
+    const gotSchema = rt[1];
+    const table = rt[2];
+    const wantSchema = table === undefined ? undefined : MOVED_TABLES[table];
+    if (table !== undefined && wantSchema !== undefined && gotSchema !== wantSchema) {
+      findings.push({
+        file,
+        line: source.slice(0, rt.index).split('\n').length,
+        table,
+        detail: `realtime subscription is on schema '${gotSchema}' but ${table} lives in '${wantSchema}'. It will NEVER FIRE — silently, with no error.`,
+      });
+    }
+    rt = RT.exec(source);
+  }
 }
 
 if (findings.length === 0) {
