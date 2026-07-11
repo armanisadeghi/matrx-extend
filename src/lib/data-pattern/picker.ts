@@ -17,7 +17,6 @@ const HOST_ID = 'matrx-data-picker-host';
 
 let host: HTMLElement | null = null;
 let shadow: ShadowRoot | null = null;
-let _panel: HTMLElement | null = null;
 let highlight: HTMLElement | null = null;
 const picked: PickedField[] = [];
 
@@ -73,7 +72,6 @@ export function mountPicker(): void {
     <div class="hl" id="hl" style="display:none"></div>
   `;
 
-  _panel = shadow.querySelector('.panel');
   highlight = shadow.querySelector('#hl');
 
   document.addEventListener('mouseover', onHover, true);
@@ -89,7 +87,6 @@ export function unmountPicker(): void {
   host?.remove();
   host = null;
   shadow = null;
-  _panel = null;
   highlight = null;
   picked.length = 0;
   const w = window as { __matrxDataPickerTeardown?: () => void };

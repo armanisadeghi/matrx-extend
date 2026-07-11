@@ -20,7 +20,6 @@ const HOST_ID = 'matrx-diagnose-picker-host';
 let host: HTMLElement | null = null;
 let shadow: ShadowRoot | null = null;
 let highlight: HTMLElement | null = null;
-let banner: HTMLElement | null = null;
 let mode: 'missing' | 'unwanted' = 'missing';
 
 export function mountDiagnosePicker(initialMode: 'missing' | 'unwanted'): void {
@@ -74,7 +73,6 @@ export function mountDiagnosePicker(initialMode: 'missing' | 'unwanted'): void {
     <div class="hl" id="hl" style="display:none"></div>
   `;
 
-  banner = shadow.querySelector('.banner');
   highlight = shadow.querySelector('#hl');
 
   document.addEventListener('mouseover', onHover, true);
@@ -91,7 +89,6 @@ export function unmountDiagnosePicker(): void {
   host = null;
   shadow = null;
   highlight = null;
-  banner = null;
 }
 
 function onHover(e: Event) {

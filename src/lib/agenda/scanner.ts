@@ -148,7 +148,7 @@ async function fireDueTask(task: AgendaTask): Promise<void> {
     type: task.trigger_type,
     ...task.trigger_config,
   } as TriggerConfig;
-  const next = computeNextDueAfterRun(task.trigger_type, triggerConfig);
+  const next = computeNextDueAfterRun(triggerConfig);
   const claimed = await claimDueFire(task, {
     next_due_at: next ?? null,
     last_run_at: new Date().toISOString(),

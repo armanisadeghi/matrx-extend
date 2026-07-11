@@ -390,7 +390,7 @@ export interface CreateTaskInput {
  */
 export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
   const c = getSupabase();
-  const nextDueAt = input.next_due_at ?? computeFirstDue(input.trigger_type, input.trigger_config);
+  const nextDueAt = input.next_due_at ?? computeFirstDue(input.trigger_config);
 
   const { data: rpcId, error: rpcErr } = await c.rpc('create_agent_task', {
     p_title: input.title,
@@ -724,7 +724,7 @@ export async function finishRun(
  * Cron is computed via the local cron parser (src/lib/agenda/cron.ts),
  * evaluated in the host's local timezone.
  */
-export function computeFirstDue(type: TriggerType, config: TriggerConfig): string | null {
+export function computeFirstDue(config: TriggerConfig): string | null {
   switch (config.type) {
     case 'one-shot':
       return config.at;
@@ -738,18 +738,13 @@ export function computeFirstDue(type: TriggerType, config: TriggerConfig): strin
       return next ? next.toISOString() : null;
     }
   }
-  // Fallback for unrecognized types.
-  return null;
 }
 
 /**
  * Compute the next-due timestamp after a successful run. Used by the
  * scanner to advance `last_run_at` and `next_due_at` for recurring tasks.
  */
-export function computeNextDueAfterRun(
-  trigger_type: TriggerType,
-  trigger_config: TriggerConfig,
-): string | null {
+export function computeNextDueAfterRun(trigger_config: TriggerConfig): string | null {
   switch (trigger_config.type) {
     case 'interval':
     case 'heartbeat':
@@ -763,5 +758,4 @@ export function computeNextDueAfterRun(
       return next ? next.toISOString() : null;
     }
   }
-  return null;
 }

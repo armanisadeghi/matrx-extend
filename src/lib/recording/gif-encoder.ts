@@ -309,10 +309,14 @@ class NeuQuant {
   private freq = new Int32Array(NeuQuant.NETSIZE);
   private radpower = new Int32Array(NeuQuant.INIT_RAD);
 
-  constructor(
-    private readonly pixels: Uint8Array,
-    private readonly sampleFac: number,
-  ) {
+  // Explicit fields rather than constructor parameter properties: the latter
+  // is TS-only syntax that can't be erased, which `erasableSyntaxOnly` rejects.
+  private readonly pixels: Uint8Array;
+  private readonly sampleFac: number;
+
+  constructor(pixels: Uint8Array, sampleFac: number) {
+    this.pixels = pixels;
+    this.sampleFac = sampleFac;
     for (let i = 0; i < NeuQuant.NETSIZE; i++) {
       const v = (i << (NeuQuant.INT_BIAS_SHIFT + 8)) / NeuQuant.NETSIZE;
       this.network.push([v, v, v, 0]);

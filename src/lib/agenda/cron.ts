@@ -23,9 +23,11 @@
  * trigger config's `tz` field was previously a silent no-op. Default stays
  * the device's local timezone (what a user means by "0 9 * * *").
  *
- * The hand-rolled field parser below is retained for VALIDATION + the
- * matches() unit surface (cron-parser accepts some 6-field/extension forms
- * we deliberately don't, so validation stays strict 5-field).
+ * The hand-rolled field parser below is retained purely for VALIDATION
+ * (cron-parser accepts some 6-field/extension forms we deliberately don't, so
+ * validation stays strict 5-field). Its companion `matches()` matcher was
+ * removed once next-fire computation moved to cron-parser — it had no callers
+ * and its day-of-month/day-of-week OR-rule is now cron-parser's job.
  */
 import { CronExpressionParser } from 'cron-parser';
 
@@ -92,20 +94,6 @@ export function parseCron(expression: string): CronFields {
     domRestricted: dom.trim() !== '*',
     dowRestricted: dow.trim() !== '*',
   };
-}
-
-function matches(fields: CronFields, d: Date): boolean {
-  if (!fields.minute.has(d.getMinutes())) return false;
-  if (!fields.hour.has(d.getHours())) return false;
-  if (!fields.month.has(d.getMonth() + 1)) return false;
-
-  const domOk = fields.dom.has(d.getDate());
-  const dowOk = fields.dow.has(d.getDay());
-  // Standard cron OR-rule for day fields.
-  if (fields.domRestricted && fields.dowRestricted) return domOk || dowOk;
-  if (fields.domRestricted) return domOk;
-  if (fields.dowRestricted) return dowOk;
-  return true;
 }
 
 /**

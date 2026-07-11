@@ -116,7 +116,7 @@ export function useAutoScrape(): void {
       }
     }
 
-    function onUpdated(tabId: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
+    function onUpdated(_tabId: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
       if (info.status !== 'complete' && info.url == null) return;
       if (!tab.active) return;
       scheduleCapture(tab);

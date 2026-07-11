@@ -507,7 +507,6 @@ export function startToolDispatcher(opts: DispatchOptions): void {
  * neither mutates state.
  */
 async function enforcePilotGroupScope(
-  handler: AnyToolHandler,
   ctx: ToolContext,
   parsedArgs: unknown,
   effectiveTier: ToolTier,
@@ -761,7 +760,7 @@ async function handleCall(
   // Read-tier tools are allowed everywhere — they don't mutate state, and
   // restricting them would block introspection (e.g. the agent reading a
   // reference page outside the group to inform an action inside it).
-  const pilotErr = await enforcePilotGroupScope(handler, ctx, parsed.data, effectiveTier);
+  const pilotErr = await enforcePilotGroupScope(ctx, parsed.data, effectiveTier);
   if (pilotErr) {
     return fail(pilotErr);
   }
