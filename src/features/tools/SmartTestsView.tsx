@@ -70,7 +70,7 @@ const TEST_CTX: ToolContext = {
   assignedTabId: null,
 };
 
-type Step = { label: string; ms: number; detail?: string };
+type Step = { label: string; ms: number; detail?: string | undefined };
 
 type ScenarioState = {
   running: boolean;

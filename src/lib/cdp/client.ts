@@ -145,9 +145,9 @@ function handleConsoleEvent(tabId: number, method: string, params: Record<string
     buf.push({
       level: String(params.type ?? 'log'),
       text,
-      url: stack?.url,
-      line: stack?.lineNumber,
-      column: stack?.columnNumber,
+      ...(stack?.url !== undefined && { url: stack.url }),
+      ...(stack?.lineNumber !== undefined && { line: stack.lineNumber }),
+      ...(stack?.columnNumber !== undefined && { column: stack.columnNumber }),
       ts_ms: Date.now(),
     });
   } else if (method === 'Runtime.exceptionThrown') {
@@ -163,9 +163,9 @@ function handleConsoleEvent(tabId: number, method: string, params: Record<string
     buf.push({
       level: 'error',
       text: ex?.exception?.description ?? ex?.text ?? 'unknown exception',
-      url: ex?.url,
-      line: ex?.lineNumber,
-      column: ex?.columnNumber,
+      ...(ex?.url !== undefined && { url: ex.url }),
+      ...(ex?.lineNumber !== undefined && { line: ex.lineNumber }),
+      ...(ex?.columnNumber !== undefined && { column: ex.columnNumber }),
       ts_ms: Date.now(),
     });
   }

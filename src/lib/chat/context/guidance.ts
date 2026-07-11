@@ -94,7 +94,7 @@ export async function getGuidanceForUrl(url: string): Promise<GuidanceContextBun
       notes.push({
         id: n.id,
         text: n.text,
-        caption: n.caption,
+        ...(n.caption !== undefined && { caption: n.caption }),
         updated_at: n.updated_at,
       });
     } else if (item.kind === 'screenshot') {
@@ -105,9 +105,9 @@ export async function getGuidanceForUrl(url: string): Promise<GuidanceContextBun
         // user wanted the agent to see.
         url: s.annotated_url ?? s.url,
         annotated_url: s.annotated_url ?? null,
-        caption: s.caption,
-        width: s.width,
-        height: s.height,
+        ...(s.caption !== undefined && { caption: s.caption }),
+        ...(s.width !== undefined && { width: s.width }),
+        ...(s.height !== undefined && { height: s.height }),
         has_annotations: s.annotated_file_id != null,
         updated_at: s.updated_at,
       });
@@ -116,8 +116,8 @@ export async function getGuidanceForUrl(url: string): Promise<GuidanceContextBun
       gifs.push({
         id: g.id,
         url: g.url,
-        caption: g.caption,
-        duration_ms: g.duration_ms,
+        ...(g.caption !== undefined && { caption: g.caption }),
+        ...(g.duration_ms !== undefined && { duration_ms: g.duration_ms }),
         updated_at: g.updated_at,
       });
     } else if (item.kind === 'demo_ref') {
@@ -125,7 +125,7 @@ export async function getGuidanceForUrl(url: string): Promise<GuidanceContextBun
       demos.push({
         demo_id: d.demo_id,
         name: d.name,
-        caption: d.caption,
+        ...(d.caption !== undefined && { caption: d.caption }),
         step_count: d.step_count,
         parameter_names: d.parameter_names,
         updated_at: d.updated_at,

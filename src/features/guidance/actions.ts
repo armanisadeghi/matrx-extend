@@ -74,8 +74,8 @@ async function activeTab(): Promise<chrome.tabs.Tab | null> {
 export async function saveNoteAsGuidance(args: {
   domain: string;
   text: string;
-  caption?: string;
-  origin_url?: string;
+  caption?: string | undefined;
+  origin_url?: string | undefined;
 }): Promise<GuidanceNote> {
   const now = Date.now();
   const item: GuidanceNote = {
@@ -83,8 +83,8 @@ export async function saveNoteAsGuidance(args: {
     kind: 'note',
     domain: args.domain,
     text: args.text,
-    caption: args.caption,
-    origin_url: args.origin_url,
+    ...(args.caption !== undefined && { caption: args.caption }),
+    ...(args.origin_url !== undefined && { origin_url: args.origin_url }),
     created_at: now,
     updated_at: now,
   };
@@ -126,16 +126,18 @@ export async function captureScreenshotAsGuidance(opts?: {
   });
 
   const now = Date.now();
+  const width = r.width as number | undefined;
+  const height = r.height as number | undefined;
   const item: GuidanceScreenshot = {
     id: makeGuidanceId(),
     kind: 'screenshot',
     domain,
     file_id: upload.file_id,
     url: upload.url ?? upload.cdn_url ?? null,
-    width: r.width as number | undefined,
-    height: r.height as number | undefined,
-    caption: opts?.caption,
-    origin_url: tab.url ?? undefined,
+    ...(width !== undefined && { width }),
+    ...(height !== undefined && { height }),
+    ...(opts?.caption !== undefined && { caption: opts.caption }),
+    ...(tab.url !== undefined && { origin_url: tab.url }),
     created_at: now,
     updated_at: now,
   };
@@ -172,7 +174,7 @@ export async function startGifRecordingAsGuidance(): Promise<GifRecordingHandle>
 
 export async function stopGifRecordingAsGuidance(args: {
   tabId: number;
-  caption?: string;
+  caption?: string | undefined;
 }): Promise<GuidanceGif> {
   const tabIdStr = String(args.tabId);
   // 1. Stop frames.
@@ -205,16 +207,17 @@ export async function stopGifRecordingAsGuidance(args: {
   if (!domain) throw new Error('Could not derive domain from recording tab');
 
   const now = Date.now();
+  const durationMs = exp.duration_ms ?? stop.duration_ms;
   const item: GuidanceGif = {
     id: makeGuidanceId(),
     kind: 'gif',
     domain,
     file_id: exp.file_id,
     url: exp.file_url ?? null,
-    duration_ms: exp.duration_ms ?? stop.duration_ms,
-    frame_count: stop.frame_count,
-    caption: args.caption,
-    origin_url: tab?.url ?? undefined,
+    ...(durationMs !== undefined && { duration_ms: durationMs }),
+    ...(stop.frame_count !== undefined && { frame_count: stop.frame_count }),
+    ...(args.caption !== undefined && { caption: args.caption }),
+    ...(tab?.url !== undefined && { origin_url: tab.url }),
     created_at: now,
     updated_at: now,
   };
@@ -251,7 +254,7 @@ export async function startDemoRecordingAsGuidance(): Promise<DemoRecordingHandl
 
 export interface DemoSaveInput {
   name: string;
-  description?: string;
+  description?: string | undefined;
   parameters?: DemoParameter[];
 }
 
@@ -277,7 +280,7 @@ export async function stopDemoRecordingAndSave(input: DemoSaveInput): Promise<{
         name: step.param_placeholder,
         description:
           step.element_snapshot?.accessible_name ?? `Auto-derived from step ${step.index}`,
-        sensitive: step.is_sensitive,
+        ...(step.is_sensitive !== undefined && { sensitive: step.is_sensitive }),
       });
       declaredNames.add(step.param_placeholder);
     }

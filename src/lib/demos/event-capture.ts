@@ -241,11 +241,13 @@ export function mountRecorderInPage(): string {
   function snapshotElement(el: Element): InlineElementSnapshot {
     const r = el.getBoundingClientRect();
     const role = el.getAttribute('role') ?? implicitRole(el);
+    const accessibleNameValue = accessibleName(el);
+    const visibleTextValue = (el.textContent ?? '').trim().slice(0, 200);
     const out: InlineElementSnapshot = {
       tag: el.tagName.toLowerCase(),
-      role: role ?? undefined,
-      accessible_name: accessibleName(el) ?? undefined,
-      visible_text: ((el.textContent ?? '').trim() || undefined)?.slice(0, 200),
+      ...(role !== null && { role }),
+      ...(accessibleNameValue !== null && { accessible_name: accessibleNameValue }),
+      ...(visibleTextValue !== '' && { visible_text: visibleTextValue }),
       bounding_rect: {
         x: Math.round(r.left),
         y: Math.round(r.top),
@@ -415,8 +417,10 @@ export function mountRecorderInPage(): string {
         url: location.href,
         ts: Date.now(),
         key_combo: parts.join('+'),
-        selector_chain: target ? buildSelectorChain(target) : undefined,
-        element_snapshot: target ? snapshotElement(target) : undefined,
+        ...(target && {
+          selector_chain: buildSelectorChain(target),
+          element_snapshot: snapshotElement(target),
+        }),
       });
     },
     { capture: true },

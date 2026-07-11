@@ -147,7 +147,11 @@ export function useScrape() {
         }
         setError(
           buildCaptureErrorFromResult({
-            result: { ok: false, reason: cap.reason, detail: cap.detail },
+            result: {
+              ok: false,
+              ...(cap.reason !== undefined ? { reason: cap.reason } : {}),
+              ...(cap.detail !== undefined ? { detail: cap.detail } : {}),
+            },
             url: tabUrl,
             tabId,
           }),
@@ -191,15 +195,19 @@ export function useScrape() {
       // current.seo, so it round-trips with the snapshot).
       const captureRow = await saveCapture({
         url: current.url,
-        title: current.metadata.title || undefined,
-        description: current.metadata.description ?? undefined,
-        lang: current.metadata.lang ?? undefined,
+        ...(current.metadata.title ? { title: current.metadata.title } : {}),
+        ...(current.metadata.description != null
+          ? { description: current.metadata.description }
+          : {}),
+        ...(current.metadata.lang != null ? { lang: current.metadata.lang } : {}),
         soup: current,
-        markdown: current.article.content_markdown ?? undefined,
+        ...(current.article.content_markdown != null
+          ? { markdown: current.article.content_markdown }
+          : {}),
         metadata: current.metadata,
         ld_json: current.ld_json,
         media_count: current.images.length + current.videos.length + current.audio.length,
-        pattern_id: extra.patternId,
+        ...(extra.patternId !== undefined ? { pattern_id: extra.patternId } : {}),
       });
       // Also write a normalized wbx_seo_audit row so the standalone SEO tab's
       // "Previously audited" recognition works without us re-fetching the

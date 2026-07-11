@@ -16,10 +16,10 @@ export interface ToolCopyData {
   toolName: string;
   args?: unknown;
   result?: unknown;
-  message?: string;
+  message?: string | undefined;
   phase: 'started' | 'completed' | 'error';
   startedAt: number;
-  endedAt?: number;
+  endedAt?: number | undefined;
   callId?: string;
 }
 

@@ -222,12 +222,27 @@ function classifyToolEvent(toolName: string, args: unknown): RecordedEvent | nul
   switch (toolName) {
     case 'click_element':
     case 'computer.left_click':
-      return { ts, kind: 'click', label: 'click', coordinate: coord };
+      return {
+        ts,
+        kind: 'click',
+        label: 'click',
+        ...(coord !== undefined && { coordinate: coord }),
+      };
     case 'right_click_element':
-      return { ts, kind: 'right_click', label: 'right click', coordinate: coord };
+      return {
+        ts,
+        kind: 'right_click',
+        label: 'right click',
+        ...(coord !== undefined && { coordinate: coord }),
+      };
     case 'type_into_element': {
       const text = typeof a.text === 'string' ? truncateLabel(a.text) : '';
-      return { ts, kind: 'type', label: text ? `type: ${text}` : 'type', coordinate: coord };
+      return {
+        ts,
+        kind: 'type',
+        label: text ? `type: ${text}` : 'type',
+        ...(coord !== undefined && { coordinate: coord }),
+      };
     }
     case 'press_keys': {
       const keys = typeof a.keys === 'string' ? a.keys : '';
@@ -242,16 +257,36 @@ function classifyToolEvent(toolName: string, args: unknown): RecordedEvent | nul
     case 'computer': {
       const action = typeof a.action === 'string' ? a.action : '';
       if (action === 'left_click') {
-        return { ts, kind: 'click', label: 'click', coordinate: coord };
+        return {
+          ts,
+          kind: 'click',
+          label: 'click',
+          ...(coord !== undefined && { coordinate: coord }),
+        };
       }
       if (action === 'right_click') {
-        return { ts, kind: 'right_click', label: 'right click', coordinate: coord };
+        return {
+          ts,
+          kind: 'right_click',
+          label: 'right click',
+          ...(coord !== undefined && { coordinate: coord }),
+        };
       }
       if (action === 'double_click') {
-        return { ts, kind: 'double_click', label: 'double click', coordinate: coord };
+        return {
+          ts,
+          kind: 'double_click',
+          label: 'double click',
+          ...(coord !== undefined && { coordinate: coord }),
+        };
       }
       if (action === 'triple_click') {
-        return { ts, kind: 'triple_click', label: 'triple click', coordinate: coord };
+        return {
+          ts,
+          kind: 'triple_click',
+          label: 'triple click',
+          ...(coord !== undefined && { coordinate: coord }),
+        };
       }
       if (action === 'left_click_drag') {
         const start = a.start_coordinate as [number, number] | undefined;

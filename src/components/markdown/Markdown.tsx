@@ -78,7 +78,7 @@ function BlockRenderer({
   registry,
 }: {
   block: Block;
-  registry?: MarkdownRegistry;
+  registry?: MarkdownRegistry | undefined;
 }) {
   if (block.kind === 'markdown') {
     return (

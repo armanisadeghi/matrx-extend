@@ -292,7 +292,7 @@ async function processScreenshot(
 
   const out = await canvas.convertToBlob({
     type: format === 'jpeg' ? 'image/jpeg' : 'image/png',
-    quality: format === 'jpeg' ? quality / 100 : undefined,
+    ...(format === 'jpeg' && { quality: quality / 100 }),
   });
   // Blob → base64 without involving FileReader (which doesn't exist in SW).
   const buf = await out.arrayBuffer();
@@ -385,12 +385,12 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
         byte_length: processed.base64.length,
         resized: processed.resized,
         profile: profileName,
-        est_tokens: profile.est_tokens,
+        ...(profile.est_tokens !== undefined && { est_tokens: profile.est_tokens }),
         file_id: fileId,
         file_url: fileUrl,
         screenshot_id: screenshotId,
-        tile_count: tileCount,
-        truncated,
+        ...(tileCount !== undefined && { tile_count: tileCount }),
+        ...(truncated !== undefined && { truncated }),
       };
     } catch (err) {
       return { ok: false, reason: (err as Error).message };

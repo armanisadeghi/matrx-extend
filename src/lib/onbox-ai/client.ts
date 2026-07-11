@@ -166,7 +166,7 @@ export async function quickPrompt(
      * the user exactly what the model received without reconstruction.
      * Pass-through when called as a fallback from summarize/translate/etc.
      */
-    onRequest?: OnboxOnRequest;
+    onRequest?: OnboxOnRequest | undefined;
     /**
      * Override the `task` field on the emitted onRequest event. Defaults to
      * 'languageModel.prompt'. Used by fallback callers to label the event
@@ -211,7 +211,7 @@ export async function quickPrompt(
       task: opts?.requestTask ?? 'languageModel.prompt',
       createOptions: createOpts,
       promptInput: input,
-      promptOptions: promptOpts,
+      ...(promptOpts !== undefined && { promptOptions: promptOpts }),
       firedAt: Date.now(),
     });
   } catch (cbErr) {

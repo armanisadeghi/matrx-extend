@@ -199,7 +199,7 @@ export function GuidanceView() {
   }, [busy, recording.kind, setRecording]);
 
   const handleStopDemo = useCallback(
-    async (input: { name: string; description?: string }) => {
+    async (input: { name: string; description?: string | undefined }) => {
       if (recording.kind !== 'demo') return;
       setBusy('demo-stop');
       setErrorMsg(null);
@@ -443,7 +443,7 @@ function RecordingChip({
   onStop,
 }: {
   kind: 'demo' | 'gif';
-  stepCount?: number;
+  stepCount?: number | undefined;
   onStop: () => void;
 }) {
   return (
@@ -727,9 +727,9 @@ function toSummary(item: {
     id: item.id,
     kind: item.kind,
     domain: item.domain,
-    caption: item.caption,
+    ...(item.caption !== undefined && { caption: item.caption }),
     created_at: item.created_at,
     updated_at: item.updated_at,
-    demo_id: item.demo_id,
+    ...(item.demo_id !== undefined && { demo_id: item.demo_id }),
   };
 }

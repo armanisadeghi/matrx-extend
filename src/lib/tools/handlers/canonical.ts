@@ -1006,8 +1006,8 @@ export const read_pdf: ToolHandler<ReadPdfArgs, unknown> = {
     if (!fileId) return { ok: false, reason: 'Could not resolve PDF source' };
     const r = await extractPdfText({
       fileId,
-      pageStart: args.page_start,
-      pageEnd: args.page_end,
+      ...(args.page_start !== undefined && { pageStart: args.page_start }),
+      ...(args.page_end !== undefined && { pageEnd: args.page_end }),
     });
     if (!r.ok) return { ok: false, reason: r.error };
     let text = r.data.text ?? '';

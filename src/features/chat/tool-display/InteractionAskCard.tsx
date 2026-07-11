@@ -83,7 +83,7 @@ export function InteractionAskCard({
     const text = formatAnswerMessage(args, filled);
     void send(text, {
       agentId: selectedAgentId,
-      conversationId: conversationId ?? undefined,
+      ...(conversationId != null && { conversationId }),
     });
   };
 

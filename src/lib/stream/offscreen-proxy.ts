@@ -122,11 +122,11 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
   const payload: StreamRunPayload = {
     runId: args.runId,
     url,
-    body: args.body,
+    ...(args.body !== undefined ? { body: args.body } : {}),
     parser: args.parser,
     headers,
     agentName: args.agentName ?? null,
-    permissionMode: args.permissionMode,
+    ...(args.permissionMode !== undefined ? { permissionMode: args.permissionMode } : {}),
   };
   // Mark the run live BEFORE handing it to the offscreen doc so a SW reap +
   // rewake during the stream can't have boot close the document under it

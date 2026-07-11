@@ -99,7 +99,7 @@ export function mountListPicker(): void {
 }
 
 export function unmountListPicker(): void {
-  (window as { __matrxListPickerCancel?: () => void }).__matrxListPickerCancel = undefined;
+  delete (window as { __matrxListPickerCancel?: () => void }).__matrxListPickerCancel;
   document.removeEventListener('mouseover', onHover, true);
   document.removeEventListener('click', onClick, true);
   clearSiblingHighlights();

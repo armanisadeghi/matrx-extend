@@ -884,7 +884,7 @@ async function postResult(
       output,
       is_error: isError,
       error_message: errorMessage,
-      duration_ms: durationMs ?? undefined,
+      ...(durationMs !== null && { duration_ms: durationMs }),
     },
   ]);
 
@@ -911,7 +911,7 @@ async function postResult(
           output,
           is_error: isError,
           error_message: errorMessage,
-          duration_ms: durationMs ?? undefined,
+          ...(durationMs !== null && { duration_ms: durationMs }),
         },
       });
     }
@@ -991,7 +991,7 @@ async function postResult(
 
 interface ConfirmResult {
   allow: boolean;
-  reason?: string;
+  reason?: string | undefined;
 }
 
 /**

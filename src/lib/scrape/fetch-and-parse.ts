@@ -73,7 +73,7 @@ export async function fetchUrlAndParse(
     res = await fetch(url, {
       credentials: req.use_session ? 'include' : 'omit',
       redirect: req.follow_redirects === false ? 'manual' : 'follow',
-      headers: req.user_agent ? { 'User-Agent': req.user_agent } : undefined,
+      ...(req.user_agent && { headers: { 'User-Agent': req.user_agent } }),
     });
   } catch (err) {
     return { ok: false, reason: `fetch failed: ${(err as Error).message}` };

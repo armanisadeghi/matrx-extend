@@ -275,12 +275,16 @@ function watchMutationsInPage(
             lastText = after;
           }
         } else if (m.type === 'attributes' && watchAttrs) {
+          const afterAttr = (m.target as Element)
+            .getAttribute(m.attributeName ?? '')
+            ?.slice(0, 200);
+          const beforeAttr = m.oldValue?.slice(0, 200);
           push({
             ts_ms: ts,
             kind: 'attributes',
-            attribute: m.attributeName ?? undefined,
-            before: m.oldValue?.slice(0, 200),
-            after: (m.target as Element).getAttribute(m.attributeName ?? '')?.slice(0, 200),
+            ...(m.attributeName != null && { attribute: m.attributeName }),
+            ...(beforeAttr !== undefined && { before: beforeAttr }),
+            ...(afterAttr !== undefined && { after: afterAttr }),
           });
         } else if (m.type === 'childList') {
           if (watchChildren && (m.addedNodes.length || m.removedNodes.length)) {

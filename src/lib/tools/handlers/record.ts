@@ -79,7 +79,14 @@ async function activateTab(id: number): Promise<{ ok: boolean; reason?: string }
 }
 
 function resolveRenderOptions(input: RecordGifArgs['options']): RenderOptions {
-  return { ...DEFAULT_RENDER_OPTIONS, ...(input ?? {}) };
+  return {
+    showClickIndicators: input?.showClickIndicators ?? DEFAULT_RENDER_OPTIONS.showClickIndicators,
+    showDragPaths: input?.showDragPaths ?? DEFAULT_RENDER_OPTIONS.showDragPaths,
+    showActionLabels: input?.showActionLabels ?? DEFAULT_RENDER_OPTIONS.showActionLabels,
+    showProgressBar: input?.showProgressBar ?? DEFAULT_RENDER_OPTIONS.showProgressBar,
+    showWatermark: input?.showWatermark ?? DEFAULT_RENDER_OPTIONS.showWatermark,
+    quality: input?.quality ?? DEFAULT_RENDER_OPTIONS.quality,
+  };
 }
 
 async function dropFileOnTarget(

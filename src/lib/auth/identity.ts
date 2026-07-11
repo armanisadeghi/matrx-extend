@@ -43,7 +43,7 @@ export function readExtensionIdentity(): ExtensionIdentity {
     matches_expected: isExpectedExtensionId(runtime_id),
     extension_version: chrome.runtime.getManifest().version,
     extension_name: chrome.runtime.getManifest().name,
-    user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+    ...(typeof navigator !== 'undefined' && { user_agent: navigator.userAgent }),
   };
 }
 

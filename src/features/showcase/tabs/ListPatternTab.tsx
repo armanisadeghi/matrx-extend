@@ -18,8 +18,12 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 interface FieldPath {
   name: string;
   rel_selector: string;
-  attr?: string;
-  transform?: { kind: 'regex'; expr: string };
+  // Explicit `undefined` is a valid write here (not merely "absent") — the
+  // Attribute input clears back to innerText via `updateField(i, { attr:
+  // undefined })`, and that must overwrite a previously-set attr through the
+  // `{ ...f, ...patch }` merge in `updateField`.
+  attr?: string | undefined;
+  transform?: { kind: 'regex'; expr: string } | undefined;
 }
 
 interface ListPickerResult {

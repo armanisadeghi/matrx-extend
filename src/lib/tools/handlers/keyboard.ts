@@ -16,7 +16,9 @@ import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
 
-function resolveRef(args: { selector?: string; ref?: string }): string | null {
+function resolveRef(args: { selector?: string | undefined; ref?: string | undefined }):
+  | string
+  | null {
   if (args.ref) {
     const n = args.ref.startsWith('ref:') ? args.ref.slice(4) : args.ref;
     return `[data-matrx-ref="${n.replace(/"/g, '\\"')}"]`;

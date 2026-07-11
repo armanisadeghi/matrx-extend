@@ -238,7 +238,7 @@ function ToolRow({
   description,
 }: {
   handler: AnyToolHandler;
-  description?: string;
+  description?: string | undefined;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -340,7 +340,7 @@ function ToolDetail({
   description,
 }: {
   handler: AnyToolHandler;
-  description?: string;
+  description?: string | undefined;
 }) {
   const schema = useMemo(
     () => zodToJsonSchema(handler.argsSchema, { $refStrategy: 'none', target: 'jsonSchema7' }),

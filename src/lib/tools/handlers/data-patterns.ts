@@ -196,7 +196,7 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
         route_pattern: route,
         list_root_selector: null,
         fields: (args.fields ?? []) as ExtractionPatternField[],
-        kind: args.kind,
+        ...(args.kind !== undefined && { kind: args.kind }),
         config: args.config ?? {},
         target_user_table_id: null,
       });

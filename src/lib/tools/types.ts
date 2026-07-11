@@ -120,7 +120,7 @@ export interface ToolHandler<TArgs, TResult> {
    * experimental / risky / privacy-sensitive capabilities until we're ready
    * to ship them broadly.
    */
-  admin_only?: boolean;
+  admin_only?: boolean | undefined;
   /**
    * Optional Chrome `permissions` keys this tool requires that are NOT in the
    * default manifest — i.e. they live in `optional_permissions` and must be
@@ -193,7 +193,7 @@ export interface PendingConfirmRequest {
    * Omitted when the live lookup hasn't loaded yet; the card falls back to
    * name + args.
    */
-  description?: string;
+  description?: string | undefined;
   /** Args the agent supplied — surfaced verbatim so the user sees what's about to happen. */
   args: unknown;
   /**
@@ -238,7 +238,7 @@ export type UserAskKind = 'confirm' | 'choice' | 'choice_many' | 'text' | 'secre
 export interface UserAskOption {
   label: string;
   /** Per-option explanation rendered beside / under the label. */
-  description?: string;
+  description?: string | undefined;
   /**
    * Optional preview content (code, markdown, ASCII mockup). When ANY
    * option in a single-select question has a preview, the card switches
@@ -246,7 +246,7 @@ export interface UserAskOption {
    * of the focused option on the right. Multi-select questions ignore
    * previews even if supplied.
    */
-  preview?: string;
+  preview?: string | undefined;
 }
 
 export interface PendingAskUserRequest {
@@ -263,33 +263,33 @@ export interface PendingAskUserRequest {
   conversationId?: string | null;
   kind: UserAskKind;
   /** Required for confirm / choice / choice_many / text / secret. */
-  question?: string;
+  question?: string | undefined;
   /**
    * Optional short chip label (≤12 chars). Renders as a small tag at the
    * top of the card, useful when batching multiple questions so the user
    * can scan which question they're answering. New 2026-05-19.
    */
-  header?: string;
+  header?: string | undefined;
   /**
    * Required for choice / choice_many. Normalized to UserAskOption[] in
    * the handler — string callers get hoisted automatically.
    */
-  options?: UserAskOption[];
+  options?: UserAskOption[] | undefined;
   /** Required for notify — the body of the notification. */
-  message?: string;
+  message?: string | undefined;
   /** Optional notify action button labels (UI always appends 'Other'). */
-  actions?: string[];
+  actions?: string[] | undefined;
   /** Notify visual treatment. Default 'info'. */
-  level?: 'info' | 'success' | 'warning' | 'error';
+  level?: 'info' | 'success' | 'warning' | 'error' | undefined;
   /** Optional one-line "why is the agent asking?" context. */
-  context?: string;
+  context?: string | undefined;
   /**
    * choice / choice_many only. When true, the card appends a freeform
    * "Other" option (radio or checkbox respectively) with a text input
    * underneath. The response sets `freeform` to whatever the user typed.
    * New 2026-05-19.
    */
-  allow_other?: boolean;
+  allow_other?: boolean | undefined;
   /**
    * True when this card came from the `user` ask tool, which supports the extra
    * escape hatches: a final "Additional instructions" note and a "Write message
@@ -304,15 +304,15 @@ export interface PendingAskUserRequest {
    * fields let the card show "Question N of M" if desired. Single-question
    * requests omit both fields. New 2026-05-19.
    */
-  batch_index?: number;
-  batch_total?: number;
+  batch_index?: number | undefined;
+  batch_total?: number | undefined;
   /**
    * Absolute wall-clock deadline (ms epoch) when the request auto-resolves
    * with `timed_out: true`. Omitted when the call has no timeout. The
    * dispatcher computes this from `timeout_seconds` so the UI can render
    * a countdown without separately tracking the start time.
    */
-  expires_at_ms?: number;
+  expires_at_ms?: number | undefined;
 }
 
 /**

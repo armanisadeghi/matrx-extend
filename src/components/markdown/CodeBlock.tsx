@@ -24,7 +24,7 @@ export interface CodeBlockProps {
   lang: string;
   code: string;
   complete: boolean;
-  registry?: MarkdownRegistry;
+  registry?: MarkdownRegistry | undefined;
 }
 
 export function CodeBlock({ lang, code, complete, registry }: CodeBlockProps) {

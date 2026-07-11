@@ -95,7 +95,7 @@ export function AddToProjectButton({ url, title, variant = 'inline' }: AddToProj
     setAdding(topic.id);
     const r = await addSourceToTopic(topic.id, {
       url,
-      title: title ?? undefined,
+      ...(title != null && { title }),
     });
     setAdding(null);
     if (!r.ok) {

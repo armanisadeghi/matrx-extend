@@ -304,7 +304,7 @@ function CustomResultField({
   info: KeyDisplay;
 }) {
   const FieldComponent = fieldComponents[info.component] as
-    | ComponentType<{ value: unknown; className?: string }>
+    | ComponentType<{ value: unknown; className?: string | undefined }>
     | undefined;
   if (!FieldComponent) {
     console.warn(`[tool-display] unknown field component: "${info.component}"`);

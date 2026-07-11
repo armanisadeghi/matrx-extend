@@ -66,8 +66,8 @@ export const DEFAULT_SORT: SortSpec = { key: 'topic', dir: 'asc' };
 export interface QueueGroup {
   id: string;
   label: string;
-  subtitle?: string;
-  tone?: 'amber';
+  subtitle?: string | undefined;
+  tone?: 'amber' | undefined;
   /** The buckets this group draws from (level mode) — drives section toggles + batch-run scope. */
   buckets: BucketKey[];
   items: FlatQueueItem[];

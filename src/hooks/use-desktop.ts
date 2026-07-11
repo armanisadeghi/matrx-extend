@@ -27,5 +27,5 @@ export async function callDesktop<T = unknown>(
   return send<
     { command: string; args?: Record<string, unknown> },
     { ok: boolean; data?: T; error?: string }
-  >(CHANNELS.DESKTOP_RPC, { command, args });
+  >(CHANNELS.DESKTOP_RPC, { command, ...(args !== undefined ? { args } : {}) });
 }

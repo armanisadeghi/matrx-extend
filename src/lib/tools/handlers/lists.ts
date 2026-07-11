@@ -28,6 +28,7 @@ import {
   updateTask,
   updateUserTodo,
 } from '@/lib/lists/storage';
+import type { TaskStatus } from '@/lib/lists/types';
 import type { ToolHandler, ToolTier } from '@/lib/tools/types';
 import { z } from 'zod';
 
@@ -112,22 +113,44 @@ export const tasks: ToolHandler<TasksArgs, unknown> = {
       return { ok: true, tasks };
     }
     if (args.action === 'add') {
-      const items = args.items ?? [
-        { title: args.title!, status: args.status, note: args.note ?? undefined },
-      ];
+      const buildItem = (
+        title: string,
+        status: TaskStatus | undefined,
+        note: string | null | undefined,
+      ): { title: string; status?: TaskStatus; note?: string | null } => {
+        const item: { title: string; status?: TaskStatus; note?: string | null } = { title };
+        if (status !== undefined) item.status = status;
+        if (note !== undefined) item.note = note;
+        return item;
+      };
+      // `items` (batch) and the flat title/status/note args (single) are BOTH
+      // optional in the schema, so a model can legally call `add` with neither.
+      // Branching (rather than `args.title!`) both narrows `title` to a string
+      // without an assertion and lets us answer the empty call honestly instead
+      // of persisting a task whose title is undefined.
+      let items: Array<{ title: string; status?: TaskStatus; note?: string | null }>;
+      if (args.items) {
+        items = args.items.map((it) => buildItem(it.title, it.status, it.note));
+      } else if (args.title) {
+        items = [buildItem(args.title, args.status, args.note)];
+      } else {
+        return { ok: false, reason: 'tasks.add requires either `items` or a `title`' };
+      }
       const created = await addTasks(conv, items, 'agent');
       return { ok: true, created };
     }
     if (args.action === 'set_status') {
-      const updated = await updateTask(conv, args.id!, { status: args.status });
+      const updated = await updateTask(conv, args.id!, {
+        ...(args.status !== undefined && { status: args.status }),
+      });
       if (!updated) return { ok: false, reason: `No task ${args.id}` };
       return { ok: true, task: updated };
     }
     if (args.action === 'update') {
       const updated = await updateTask(conv, args.id!, {
-        title: args.title,
-        status: args.status,
-        note: args.note,
+        ...(args.title !== undefined && { title: args.title }),
+        ...(args.status !== undefined && { status: args.status }),
+        ...(args.note !== undefined && { note: args.note }),
       });
       if (!updated) return { ok: false, reason: `No task ${args.id}` };
       return { ok: true, task: updated };
@@ -221,8 +244,8 @@ export const user_todos: ToolHandler<UserTodosArgs, unknown> = {
     if (args.action === 'add') {
       const todo = await addUserTodo(conv, {
         title: args.title!,
-        context: args.context ?? undefined,
-        due: args.due ?? undefined,
+        ...(args.context != null && { context: args.context }),
+        ...(args.due != null && { due: args.due }),
       });
       if (!args.silent) {
         void fireTodoNotification(todo.title, todo.context);
@@ -231,9 +254,9 @@ export const user_todos: ToolHandler<UserTodosArgs, unknown> = {
     }
     if (args.action === 'update') {
       const updated = await updateUserTodo(conv, args.id!, {
-        title: args.title,
-        context: args.context,
-        due: args.due,
+        ...(args.title !== undefined && { title: args.title }),
+        ...(args.context !== undefined && { context: args.context }),
+        ...(args.due !== undefined && { due: args.due }),
       });
       if (!updated) return { ok: false, reason: `No todo ${args.id}` };
       return { ok: true, todo: updated };

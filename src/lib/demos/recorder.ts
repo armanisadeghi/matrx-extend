@@ -185,7 +185,11 @@ function eventToStep(ev: CapturedEvent, state: RecordingState): DemoStep | null 
         is_sensitive: ev.is_sensitive,
         // Sensitive fields auto-parameterize: they cannot be saved with the
         // recorded value. The user / agent must supply a placeholder.
-        param_placeholder: ev.is_sensitive ? deriveParamName(ev.element_snapshot, idx) : undefined,
+        // Omit the key entirely for non-sensitive fields — an explicit
+        // `undefined` here previously meant a saved demo step could carry a
+        // literal null placeholder, which the replayer's `param_placeholder`
+        // presence check treats differently from "absent".
+        ...(ev.is_sensitive && { param_placeholder: deriveParamName(ev.element_snapshot, idx) }),
       };
     case 'check':
       return {
@@ -231,7 +235,7 @@ function eventToStep(ev: CapturedEvent, state: RecordingState): DemoStep | null 
         source_tab_id: state.tabId,
         ts_ms_offset: baseOffset,
         selector_chain: ev.selector_chain ?? [],
-        element_snapshot: ev.element_snapshot,
+        ...(ev.element_snapshot !== undefined && { element_snapshot: ev.element_snapshot }),
         input_text: ev.key_combo,
       };
     case 'scroll':

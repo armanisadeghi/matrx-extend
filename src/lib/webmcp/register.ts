@@ -81,7 +81,9 @@ export async function registerToolsOnActiveTab(
     tabId = tab.id;
   }
 
-  const tools = await buildRegistrablePilotTools({ isAdmin: opts.isAdmin });
+  const tools = await buildRegistrablePilotTools(
+    opts.isAdmin !== undefined ? { isAdmin: opts.isAdmin } : {},
+  );
 
   try {
     const [first] = await chrome.scripting.executeScript({

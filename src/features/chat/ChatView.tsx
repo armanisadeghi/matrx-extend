@@ -427,9 +427,9 @@ export function ChatView() {
       agentId,
       opts: {
         agentId,
-        agentName,
-        conversationId: selectedConversationId ?? undefined,
-        variables: Object.keys(variables).length > 0 ? variables : undefined,
+        ...(agentName !== undefined && { agentName }),
+        ...(selectedConversationId != null && { conversationId: selectedConversationId }),
+        ...(Object.keys(variables).length > 0 && { variables }),
       },
     };
   };
@@ -636,7 +636,7 @@ function StreamInterruptionBanner({
   onDismiss,
 }: {
   reason: 'stalled' | 'error';
-  silentMs?: number;
+  silentMs?: number | undefined;
   onRetry: () => void;
   onDismiss: () => void;
 }) {
@@ -1355,7 +1355,7 @@ function Composer({
     stopRecording,
   } = useRecordAndTranscribe({
     streaming: true,
-    transcriptionOptions: voiceLanguage ? { language: voiceLanguage } : undefined,
+    ...(voiceLanguage && { transcriptionOptions: { language: voiceLanguage } }),
     onChunkTranscribed: (_snippet, accumulated) => {
       const baseline = recordBaselineRef.current;
       const sep = baseline && !baseline.endsWith(' ') ? ' ' : '';

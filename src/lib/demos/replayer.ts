@@ -154,8 +154,8 @@ export async function replayDemo(opts: ReplayOptions): Promise<ReplayResult> {
       index: step.index,
       kind: step.kind,
       ok: result.ok,
-      resolved_via: result.resolved_via,
-      error: result.error,
+      ...(result.resolved_via !== undefined && { resolved_via: result.resolved_via }),
+      ...(result.error !== undefined && { error: result.error }),
       elapsed_ms: Date.now() - stepStart,
     });
     if (!result.ok) {
@@ -385,7 +385,7 @@ function finalize(
     step_results: stepResults,
     duration_ms: Date.now() - startedAt,
   };
-  if (!ok) {
+  if (!ok && failedAtIndex !== undefined) {
     result.failed_at_index = failedAtIndex;
   }
   if (!ok && reason) log.warn('sw', `demo replay failed: ${reason}`);

@@ -125,7 +125,7 @@ export async function listTasks(conversationId: string): Promise<Task[]> {
 
 export async function addTasks(
   conversationId: string,
-  items: Array<{ title: string; status?: TaskStatus; note?: string }>,
+  items: Array<{ title: string; status?: TaskStatus; note?: string | null }>,
   createdBy: 'agent' | 'user' = 'agent',
 ): Promise<Task[]> {
   if (!items.length) return [];
@@ -138,7 +138,9 @@ export async function addTasks(
     conversation_id: conversationId,
     title: it.title,
     status: it.status ?? 'pending',
-    note: it.note,
+    // `null` means "no note" — same as omitting it (this can arrive from a
+    // Zod-nullable tool-arg schema, e.g. src/lib/tools/handlers/lists.ts).
+    ...(it.note !== undefined && it.note !== null && { note: it.note }),
     order: nextOrder++,
     created_by: createdBy,
     created_at: now,
@@ -161,13 +163,22 @@ export async function updateTask(
   const idx = list.findIndex((t) => t.id === id);
   if (idx < 0) return null;
   const current = list[idx]!;
+  // Build from a note-less base so an explicit `patch.note === null` (clear)
+  // can OMIT the key entirely instead of writing an explicit `undefined` over
+  // the stored item — the latter is indistinguishable from "not provided" at
+  // the type level but, worse, is exactly the persisted-merge footgun EOPT
+  // exists to catch: it would silently wipe `note` on any patch that doesn't
+  // mean to touch it.
+  const { note: _currentNote, ...currentRest } = current;
   const next: Task = {
-    ...current,
+    ...currentRest,
     title: patch.title ?? current.title,
     status: patch.status ?? current.status,
-    note: patch.note === undefined ? current.note : patch.note === null ? undefined : patch.note,
     updated_at: Date.now(),
   };
+  const nextNote =
+    patch.note === undefined ? current.note : patch.note === null ? undefined : patch.note;
+  if (nextNote !== undefined) next.note = nextNote;
   list[idx] = next;
   await chrome.storage.local.set({ [TASKS_KEY]: map });
   notify('tasks', conversationId);
@@ -248,8 +259,8 @@ export async function addUserTodo(
     id: makeTodoId(),
     conversation_id: conversationId,
     title: item.title,
-    context: item.context,
-    due: item.due,
+    ...(item.context !== undefined && { context: item.context }),
+    ...(item.due !== undefined && { due: item.due }),
     done: false,
     created_at: Date.now(),
   };
@@ -271,20 +282,25 @@ export async function updateUserTodo(
   if (idx < 0) return null;
   const cur = list[idx]!;
   const wasDone = cur.done;
+  // Same footgun as updateTask above: build from a base that OMITS the
+  // clearable optional keys, then only set them when the resolved value is
+  // defined. Writing an explicit `undefined` here would be indistinguishable
+  // from "field not stored" at read time but would still be a needless
+  // persisted-merge foot-gun under EOPT.
+  const { context: _curContext, due: _curDue, done_at: _curDoneAt, ...curRest } = cur;
   const next: UserTodo = {
-    ...cur,
+    ...curRest,
     title: patch.title ?? cur.title,
-    context:
-      patch.context === undefined
-        ? cur.context
-        : patch.context === null
-          ? undefined
-          : patch.context,
-    due: patch.due === undefined ? cur.due : patch.due === null ? undefined : patch.due,
     done: patch.done ?? cur.done,
-    done_at:
-      patch.done === true && !wasDone ? Date.now() : patch.done === false ? undefined : cur.done_at,
   };
+  const nextContext =
+    patch.context === undefined ? cur.context : patch.context === null ? undefined : patch.context;
+  if (nextContext !== undefined) next.context = nextContext;
+  const nextDue = patch.due === undefined ? cur.due : patch.due === null ? undefined : patch.due;
+  if (nextDue !== undefined) next.due = nextDue;
+  const nextDoneAt =
+    patch.done === true && !wasDone ? Date.now() : patch.done === false ? undefined : cur.done_at;
+  if (nextDoneAt !== undefined) next.done_at = nextDoneAt;
   list[idx] = next;
   await chrome.storage.local.set({ [TODOS_KEY]: map });
   notify('user_todos', conversationId);
@@ -343,8 +359,8 @@ export async function getAllConversationLists(): Promise<ConversationListsSummar
     out.push({
       conversation_id: id,
       has_plan: !!plan,
-      plan_title: plan?.title,
-      plan_status: plan?.status,
+      ...(plan?.title !== undefined && { plan_title: plan.title }),
+      ...(plan?.status !== undefined && { plan_status: plan.status }),
       tasks_total: t.length,
       tasks_in_progress: t.filter((x) => x.status === 'in_progress').length,
       tasks_done: t.filter((x) => x.status === 'done').length,

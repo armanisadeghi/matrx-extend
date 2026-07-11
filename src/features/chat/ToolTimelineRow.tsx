@@ -24,13 +24,13 @@ export interface ToolTimelineEntry {
   callId: string;
   toolName: string;
   startedAt: number;
-  endedAt?: number;
+  endedAt?: number | undefined;
   phase: 'started' | 'completed' | 'error';
   args?: unknown;
   output?: unknown;
-  message?: string;
+  message?: string | undefined;
   /** Incremental progress log (long-running tools only; usually absent). */
-  progress?: ToolProgressEntry[];
+  progress?: ToolProgressEntry[] | undefined;
 }
 
 export function ToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {

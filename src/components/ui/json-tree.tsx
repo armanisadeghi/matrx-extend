@@ -25,9 +25,9 @@ const previewValue = (v: unknown): string => {
 interface JsonTreeProps {
   data: unknown;
   /** Called with the dot-path the user clicked (empty string for root). */
-  onSelectPath?: (path: string) => void;
+  onSelectPath?: ((path: string) => void) | undefined;
   /** Highlight this path with a ring. */
-  selectedPath?: string;
+  selectedPath?: string | undefined;
   /** Initial expand depth. */
   defaultDepth?: number;
 }
@@ -64,8 +64,8 @@ function Node({
   path: string;
   depth: number;
   defaultDepth: number;
-  onSelectPath?: (path: string) => void;
-  selectedPath?: string;
+  onSelectPath?: ((path: string) => void) | undefined;
+  selectedPath?: string | undefined;
 }) {
   const [open, setOpen] = useState(depth < defaultDepth);
   const [childLimit, setChildLimit] = useState(CHILD_PAGE_SIZE);

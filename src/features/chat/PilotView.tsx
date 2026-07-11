@@ -291,9 +291,9 @@ export function PilotView() {
   ) => {
     void send(text, {
       agentId,
-      agentName,
-      conversationId: session.conversationId ?? undefined,
-      variables: Object.keys(variables).length > 0 ? variables : undefined,
+      ...(agentName !== undefined && { agentName }),
+      ...(session.conversationId != null && { conversationId: session.conversationId }),
+      ...(Object.keys(variables).length > 0 && { variables }),
       assignedTabId: tabId,
     });
   };

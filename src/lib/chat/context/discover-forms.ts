@@ -185,7 +185,7 @@ export async function discoverFormsForContext(tabId: number): Promise<Discovered
             // Build the validation bag with only fields that are actually
             // set. When the input declares nothing, the bag is omitted
             // entirely so we don't carry six nulls per field on every form.
-            const validation: Partial<DiscoveredField['validation']> = {};
+            const validation: NonNullable<DiscoveredField['validation']> = {};
             if (inputEl.pattern) validation.pattern = inputEl.pattern;
             if (inputEl.minLength > 0) validation.min_length = inputEl.minLength;
             if (inputEl.maxLength > 0) validation.max_length = inputEl.maxLength;
@@ -222,7 +222,7 @@ export async function discoverFormsForContext(tabId: number): Promise<Discovered
             };
             if (refAttr) result.ref = `ref:${refAttr}`;
             if (Object.keys(validation).length > 0) {
-              result.validation = validation as DiscoveredField['validation'];
+              result.validation = validation;
             }
             return result;
           });

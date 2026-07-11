@@ -66,8 +66,8 @@ const CallToolPayloadSchema = z.object({
 // ─── Handler ────────────────────────────────────────────────────────────────
 
 interface SenderInfo {
-  url?: string;
-  origin?: string;
+  url?: string | undefined;
+  origin?: string | undefined;
 }
 
 /**

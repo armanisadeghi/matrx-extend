@@ -50,7 +50,7 @@ export interface DebugEvent {
    * Debug tab can filter the stream firehose by individual event type, not
    * just the whole `stream` source. Undefined for most logs.
    */
-  tag?: string;
+  tag?: string | undefined;
   ctx: 'sidepanel' | 'sw' | 'offscreen' | 'content' | 'popup' | 'options' | 'unknown';
 }
 
@@ -120,7 +120,7 @@ interface PushArgs {
   source: LogSource;
   message: string;
   detail?: unknown;
-  tag?: string;
+  tag?: string | undefined;
 }
 
 function emit(level: LogLevel, args: PushArgs): void {

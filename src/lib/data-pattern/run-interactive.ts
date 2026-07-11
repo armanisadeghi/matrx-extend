@@ -71,11 +71,13 @@ export function parseAgentResponse(raw: string): AiExtractionEnvelope {
   if (parsed && typeof parsed === 'object') {
     const obj = parsed as Record<string, unknown>;
     const rows = Array.isArray(obj.rows) ? (obj.rows as ExtractedRow[]) : [];
+    const confidence = obj.confidence as 'high' | 'medium' | 'low' | undefined;
+    const notes = typeof obj.notes === 'string' ? obj.notes : undefined;
     return {
       rows,
-      confidence: obj.confidence as 'high' | 'medium' | 'low' | undefined,
-      notes: typeof obj.notes === 'string' ? obj.notes : undefined,
-      inferred_schema: obj.inferred_schema,
+      ...(confidence !== undefined && { confidence }),
+      ...(notes !== undefined && { notes }),
+      ...(obj.inferred_schema !== undefined && { inferred_schema: obj.inferred_schema }),
     };
   }
 

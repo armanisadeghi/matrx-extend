@@ -17,7 +17,7 @@ export function DemoSaveDialog({
   onDiscard,
   busy,
 }: {
-  onSave: (input: { name: string; description?: string }) => void;
+  onSave: (input: { name: string; description?: string | undefined }) => void;
   onDiscard: () => void;
   busy: boolean;
 }) {

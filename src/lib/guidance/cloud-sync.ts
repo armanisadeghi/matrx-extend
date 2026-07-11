@@ -73,11 +73,12 @@ export function itemToRowPayload(item: GuidanceItem): SaveGuidanceRowPayload {
 export function rowToItem(row: WbxGuidanceRow): GuidanceItem | null {
   if (!KNOWN_KINDS.has(row.kind as GuidanceItem['kind'])) return null;
   const d = (row.data && typeof row.data === 'object' ? row.data : {}) as Record<string, unknown>;
+  const caption = row.caption ?? undefined;
   const base = {
     id: row.id,
     domain: row.domain,
-    caption: row.caption ?? undefined,
-    origin_url: row.origin_url ?? undefined,
+    ...(caption !== undefined && { caption }),
+    ...(row.origin_url != null && { origin_url: row.origin_url }),
     created_at: Number.isFinite(Date.parse(row.created_at)) ? Date.parse(row.created_at) : 0,
     updated_at: Number.isFinite(Date.parse(row.updated_at)) ? Date.parse(row.updated_at) : 0,
   };
@@ -87,33 +88,41 @@ export function rowToItem(row: WbxGuidanceRow): GuidanceItem | null {
   switch (row.kind) {
     case 'note':
       return { ...base, kind: 'note', text: str(d.text) ?? '' };
-    case 'screenshot':
+    case 'screenshot': {
+      const width = num(d.width);
+      const height = num(d.height);
+      const annotatedFileId = str(d.annotated_file_id);
+      const annotatedUrl = str(d.annotated_url);
       return {
         ...base,
         kind: 'screenshot',
         file_id: str(d.file_id) ?? '',
         url: str(d.url) ?? null,
-        width: num(d.width),
-        height: num(d.height),
-        annotated_file_id: str(d.annotated_file_id),
-        annotated_url: str(d.annotated_url) ?? undefined,
+        ...(width !== undefined && { width }),
+        ...(height !== undefined && { height }),
+        ...(annotatedFileId !== undefined && { annotated_file_id: annotatedFileId }),
+        ...(annotatedUrl !== undefined && { annotated_url: annotatedUrl }),
         annotation_doc: d.annotation_doc,
       };
-    case 'gif':
+    }
+    case 'gif': {
+      const durationMs = num(d.duration_ms);
+      const frameCount = num(d.frame_count);
       return {
         ...base,
         kind: 'gif',
         file_id: str(d.file_id) ?? '',
         url: str(d.url) ?? null,
-        duration_ms: num(d.duration_ms),
-        frame_count: num(d.frame_count),
+        ...(durationMs !== undefined && { duration_ms: durationMs }),
+        ...(frameCount !== undefined && { frame_count: frameCount }),
       };
+    }
     case 'demo_ref':
       return {
         ...base,
         kind: 'demo_ref',
         demo_id: str(d.demo_id) ?? '',
-        name: str(d.name) ?? base.caption ?? 'Demo',
+        name: str(d.name) ?? caption ?? 'Demo',
         step_count: num(d.step_count) ?? 0,
         parameter_names: Array.isArray(d.parameter_names)
           ? d.parameter_names.filter((x): x is string => typeof x === 'string')

@@ -34,7 +34,9 @@ export const navigate_active_tab: ToolHandler<NavigateArgs, unknown> = {
  * `data-matrx-ref` attributes attached by `read_page`; passing a ref is
  * preferred over a selector when you've just read the page.
  */
-function resolveRef(args: { selector?: string; ref?: string }): string | null {
+function resolveRef(args: { selector?: string | undefined; ref?: string | undefined }):
+  | string
+  | null {
   if (args.ref) {
     const n = args.ref.startsWith('ref:') ? args.ref.slice(4) : args.ref;
     return `[data-matrx-ref="${n.replace(/"/g, '\\"')}"]`;

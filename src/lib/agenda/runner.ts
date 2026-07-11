@@ -176,7 +176,9 @@ export async function runTask(task: AgendaTask, send: SendFn): Promise<AgendaRun
   try {
     const returnedRunId = await send(task.prompt, {
       agentId,
-      conversationId: task.persistent_conversation_id ?? undefined,
+      ...(task.persistent_conversation_id
+        ? { conversationId: task.persistent_conversation_id }
+        : {}),
       onRunId: subscribe,
       onStartFailed: (err) => {
         // Same-context signal — broadcast chunks don't loop back to us.

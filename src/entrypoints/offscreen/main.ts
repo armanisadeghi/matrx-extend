@@ -57,7 +57,7 @@ on<RunArgs, { ok: true }>(CHANNELS.STREAM_RUN, async (args) => {
       url: args.url,
       headers: args.headers,
       body: args.body,
-      parser: args.parser,
+      ...(args.parser !== undefined && { parser: args.parser }),
       signal: ctrl.signal,
       onOpened: (info) => {
         log.info('stream', `opened ${args.runId}`, info);
@@ -119,7 +119,7 @@ on<FetchAndParseRequest & { include_extras?: boolean }, FetchAndParseResult>(
   async (payload) => {
     log.info('stream', `offscreen fetch-page ${payload.url}`);
     const { include_extras, ...req } = payload;
-    return fetchUrlAndParse(req, { include_extras });
+    return fetchUrlAndParse(req, include_extras !== undefined ? { include_extras } : {});
   },
 );
 

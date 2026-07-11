@@ -170,7 +170,12 @@ export async function apiGet<T>(
   signal?: AbortSignal,
   opts?: { silent?: boolean },
 ): Promise<ApiResult<T>> {
-  return rawRequest<T>({ method: 'GET', path, signal, silent: opts?.silent });
+  return rawRequest<T>({
+    method: 'GET',
+    path,
+    ...(signal !== undefined ? { signal } : {}),
+    ...(opts?.silent !== undefined ? { silent: opts.silent } : {}),
+  });
 }
 
 export async function apiPost<T>(
@@ -178,7 +183,7 @@ export async function apiPost<T>(
   body: unknown,
   signal?: AbortSignal,
 ): Promise<ApiResult<T>> {
-  return rawRequest<T>({ method: 'POST', path, body, signal });
+  return rawRequest<T>({ method: 'POST', path, body, ...(signal !== undefined ? { signal } : {}) });
 }
 
 export async function apiPatch<T>(
@@ -186,7 +191,12 @@ export async function apiPatch<T>(
   body: unknown,
   signal?: AbortSignal,
 ): Promise<ApiResult<T>> {
-  return rawRequest<T>({ method: 'PATCH', path, body, signal });
+  return rawRequest<T>({
+    method: 'PATCH',
+    path,
+    body,
+    ...(signal !== undefined ? { signal } : {}),
+  });
 }
 
 export async function apiPut<T>(
@@ -194,11 +204,11 @@ export async function apiPut<T>(
   body: unknown,
   signal?: AbortSignal,
 ): Promise<ApiResult<T>> {
-  return rawRequest<T>({ method: 'PUT', path, body, signal });
+  return rawRequest<T>({ method: 'PUT', path, body, ...(signal !== undefined ? { signal } : {}) });
 }
 
 export async function apiDelete<T>(path: string, signal?: AbortSignal): Promise<ApiResult<T>> {
-  return rawRequest<T>({ method: 'DELETE', path, signal });
+  return rawRequest<T>({ method: 'DELETE', path, ...(signal !== undefined ? { signal } : {}) });
 }
 
 /**

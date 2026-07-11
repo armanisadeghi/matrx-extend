@@ -23,7 +23,7 @@ import type { Phase, ProgressConfig } from './types';
 interface Props {
   progress: ToolProgressEntry[] | undefined;
   phase: Phase;
-  cfg?: ProgressConfig;
+  cfg?: ProgressConfig | undefined;
 }
 
 export function ToolProgressView({ progress, phase, cfg }: Props) {

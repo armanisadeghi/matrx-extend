@@ -59,7 +59,7 @@ export const fetch_url_as_markdown: ToolHandler<FetchUrlAsMarkdownArgs, FetchAnd
       url: args.url,
       use_session: args.use_session,
       follow_redirects: args.follow_redirects,
-      user_agent: args.user_agent,
+      ...(args.user_agent !== undefined && { user_agent: args.user_agent }),
       max_chars: args.max_chars,
       include_extras: args.include_extras,
     };

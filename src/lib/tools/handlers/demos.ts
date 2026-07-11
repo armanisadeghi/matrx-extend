@@ -120,7 +120,7 @@ export const record_demo: ToolHandler<RecordDemoArgs, unknown> = {
           name: step.param_placeholder,
           description:
             step.element_snapshot?.accessible_name ?? `Auto-derived from step ${step.index}`,
-          sensitive: step.is_sensitive,
+          ...(step.is_sensitive !== undefined && { sensitive: step.is_sensitive }),
         });
         declaredNames.add(step.param_placeholder);
       }
@@ -207,9 +207,9 @@ export const replay_demo: ToolHandler<ReplayDemoArgs, unknown> = {
     if (!demo) return { ok: false, reason: `No demo with id=${args.demo_id}` };
     const result = await replayDemo({
       demo,
-      tabId: args.tab_id,
-      params: args.params,
-      dry_run: args.dry_run,
+      ...(args.tab_id !== undefined && { tabId: args.tab_id }),
+      ...(args.params !== undefined && { params: args.params }),
+      ...(args.dry_run !== undefined && { dry_run: args.dry_run }),
     });
     return result;
   },

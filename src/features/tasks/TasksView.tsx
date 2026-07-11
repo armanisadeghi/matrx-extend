@@ -81,16 +81,16 @@ type TaskStatus =
 
 interface ItemState {
   status: TaskStatus;
-  tabId?: number;
-  charCount?: number;
-  error?: string;
-  nextLevel?: 1 | 2 | 3 | 4;
+  tabId?: number | undefined;
+  charCount?: number | undefined;
+  error?: string | undefined;
+  nextLevel?: (1 | 2 | 3 | 4) | undefined;
   /** First ~300 chars of the last capture, shown in the verdict card. */
-  preview?: string;
+  preview?: string | undefined;
   /** Set after a user-driven thin L3 capture so the verdict card stays visible. */
-  showVerdictCard?: boolean;
+  showVerdictCard?: boolean | undefined;
   /** Verdict request in flight — disables buttons. */
-  verdictPending?: UserVerdict;
+  verdictPending?: UserVerdict | undefined;
 }
 
 const RUNNING_STATUSES: ReadonlySet<TaskStatus> = new Set([
@@ -1062,14 +1062,14 @@ function Section({
   children,
 }: {
   title: string;
-  subtitle?: string;
+  subtitle?: string | undefined;
   count: number;
   open: boolean;
   onToggle: () => void;
-  tone?: 'amber';
+  tone?: 'amber' | undefined;
   /** Select-all-in-group tri-state. Omit to hide the group checkbox. */
-  selectState?: 'none' | 'some' | 'all';
-  onToggleSelect?: () => void;
+  selectState?: ('none' | 'some' | 'all') | undefined;
+  onToggleSelect?: (() => void) | undefined;
   children: React.ReactNode;
 }) {
   return (
@@ -1119,7 +1119,13 @@ function Section({
 }
 
 /** Row/paste-row selection checkbox. Renders nothing when selection is disabled. */
-function SelectCheckbox({ checked, onToggle }: { checked: boolean; onToggle?: () => void }) {
+function SelectCheckbox({
+  checked,
+  onToggle,
+}: {
+  checked: boolean;
+  onToggle?: (() => void) | undefined;
+}) {
   if (!onToggle) return null;
   return (
     <button
@@ -1156,15 +1162,15 @@ function Row({
   level: 1 | 2 | 3;
   bucket: BucketKey;
   /** Show a capture-level chip — useful in project grouping where levels mix. */
-  showLevel?: boolean;
-  state?: ItemState;
-  isOnPage?: boolean;
+  showLevel?: boolean | undefined;
+  state?: ItemState | undefined;
+  isOnPage?: boolean | undefined;
   onRun: () => void;
-  onUserGo?: () => void;
-  onEnrich?: () => void;
+  onUserGo?: (() => void) | undefined;
+  onEnrich?: (() => void) | undefined;
   onVerdict: (verdict: UserVerdict) => void;
-  selected?: boolean;
-  onToggleSelect?: () => void;
+  selected?: boolean | undefined;
+  onToggleSelect?: (() => void) | undefined;
 }) {
   const status = state?.status ?? 'idle';
   const errorMsg = state?.error;
@@ -1273,7 +1279,7 @@ function Row({
  * default `open` (or absent) category — only the deliberately-routed ones get a
  * badge so the user knows why a source is treated specially.
  */
-function PolicyBadge({ category }: { category?: PolicyCategory | null }) {
+function PolicyBadge({ category }: { category?: PolicyCategory | null | undefined }) {
   if (!category || category === 'open') return null;
   const MAP: Record<
     Exclude<PolicyCategory, 'open'>,
@@ -1337,14 +1343,14 @@ function PasteRow({
   onToggleSelect,
 }: {
   item: ExtensionScrapeItem;
-  state?: ItemState;
-  isOnPage?: boolean;
+  state?: ItemState | undefined;
+  isOnPage?: boolean | undefined;
   value: string;
   onChange: (v: string) => void;
   onSubmit: () => void;
   onVerdict: (verdict: UserVerdict) => void;
-  selected?: boolean;
-  onToggleSelect?: () => void;
+  selected?: boolean | undefined;
+  onToggleSelect?: (() => void) | undefined;
 }) {
   const status = state?.status ?? 'idle';
   const errorMsg = state?.error;
@@ -1504,7 +1510,13 @@ function relativeTime(iso: string): string | null {
   return `${d}d ago`;
 }
 
-function Status({ status, charCount }: { status: TaskStatus; charCount?: number }) {
+function Status({
+  status,
+  charCount,
+}: {
+  status: TaskStatus;
+  charCount?: number | undefined;
+}) {
   if (status === 'idle') return null;
   if (status === 'success') {
     return (
@@ -1563,7 +1575,7 @@ function ResolveMenu({
   includeRetry,
 }: {
   onVerdict: (verdict: UserVerdict) => void;
-  pending?: UserVerdict;
+  pending?: UserVerdict | undefined;
   includeRetry: boolean;
 }) {
   const [open, setOpen] = useState(false);
@@ -1641,9 +1653,9 @@ function VerdictCard({
   pending,
   onVerdict,
 }: {
-  charCount?: number;
-  preview?: string;
-  pending?: UserVerdict;
+  charCount?: number | undefined;
+  preview?: string | undefined;
+  pending?: UserVerdict | undefined;
   onVerdict: (verdict: UserVerdict) => void;
 }) {
   return (

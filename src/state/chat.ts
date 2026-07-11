@@ -302,14 +302,15 @@ export const useChatStore = create<ChatState>()(
             const phaseLocked =
               (existing.tool.phase === 'completed' || existing.tool.phase === 'error') &&
               patch.phase === 'started';
+            const nextEndedAt =
+              patch.phase === 'completed' || patch.phase === 'error'
+                ? Date.now()
+                : existing.tool.endedAt;
             const merged: ToolPartCall = {
               ...existing.tool,
               ...patch,
               ...(phaseLocked ? { phase: existing.tool.phase } : {}),
-              endedAt:
-                patch.phase === 'completed' || patch.phase === 'error'
-                  ? Date.now()
-                  : existing.tool.endedAt,
+              ...(nextEndedAt !== undefined && { endedAt: nextEndedAt }),
             };
             const next = parts.slice();
             next[idx] = { type: 'tool', tool: merged };

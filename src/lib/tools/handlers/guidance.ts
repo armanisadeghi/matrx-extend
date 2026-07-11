@@ -48,8 +48,8 @@ export const save_guidance_note: ToolHandler<SaveGuidanceNoteArgs, unknown> = {
       kind: 'note',
       domain: args.domain,
       text: args.text,
-      caption: args.caption,
-      origin_url: args.origin_url,
+      ...(args.caption !== undefined && { caption: args.caption }),
+      ...(args.origin_url !== undefined && { origin_url: args.origin_url }),
       created_at: now,
       updated_at: now,
     };

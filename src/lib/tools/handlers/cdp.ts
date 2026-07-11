@@ -623,8 +623,8 @@ export const read_console_messages: ToolHandler<ReadConsoleArgs, unknown> = {
     const max = args.limit ?? args.max ?? 100;
     const messages = cdp.drainConsoleCapture(tabId, {
       max,
-      level_filter: filter,
-      pattern,
+      ...(filter !== undefined && { level_filter: filter }),
+      ...(pattern !== undefined && { pattern }),
       clear: args.clear,
     });
     return { ok: true, count: messages.length, messages };

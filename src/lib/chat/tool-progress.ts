@@ -28,11 +28,12 @@ export function progressFromWire(
     (typeof inner.label === 'string' ? inner.label : undefined) ??
     (typeof inner.message === 'string' ? inner.message : undefined) ??
     (typeof inner.status === 'string' ? inner.status : undefined);
+  const status = asStatus(inner.status);
   return {
     at: Date.now(),
     ...(label !== undefined ? { label } : {}),
     ...(typeof inner.step === 'string' ? { step: inner.step } : {}),
-    ...(asStatus(inner.status) ? { status: asStatus(inner.status) } : {}),
+    ...(status !== undefined ? { status } : {}),
     ...(typeof inner.percent === 'number' ? { percent: inner.percent } : {}),
     // Keep the raw payload for custom renderers, but only when it carries more
     // than the fields we already lifted out — avoids a redundant `data` blob.

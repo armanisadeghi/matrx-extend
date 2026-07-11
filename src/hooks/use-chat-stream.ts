@@ -43,11 +43,23 @@ async function resolveAttachedHighlights(): Promise<AttachedHighlight[] | null> 
     text: h.text,
     url: h.url,
     ref: {
-      selector: h.anchor.selector,
-      ref: h.anchor.ref,
-      text_quote: h.anchor.text_quote,
-      role: h.anchor.role,
-      tag: h.anchor.tag,
+      ...(h.anchor.selector !== undefined ? { selector: h.anchor.selector } : {}),
+      ...(h.anchor.ref !== undefined ? { ref: h.anchor.ref } : {}),
+      ...(h.anchor.text_quote !== undefined
+        ? {
+            text_quote: {
+              exact: h.anchor.text_quote.exact,
+              ...(h.anchor.text_quote.prefix !== undefined
+                ? { prefix: h.anchor.text_quote.prefix }
+                : {}),
+              ...(h.anchor.text_quote.suffix !== undefined
+                ? { suffix: h.anchor.text_quote.suffix }
+                : {}),
+            },
+          }
+        : {}),
+      ...(h.anchor.role !== undefined ? { role: h.anchor.role } : {}),
+      ...(h.anchor.tag !== undefined ? { tag: h.anchor.tag } : {}),
     },
   }));
 }

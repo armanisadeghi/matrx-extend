@@ -614,7 +614,7 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
       bitmap.close();
       const out = await canvas.convertToBlob({
         type: format === 'jpeg' ? 'image/jpeg' : 'image/png',
-        quality: format === 'jpeg' ? quality / 100 : undefined,
+        ...(format === 'jpeg' && { quality: quality / 100 }),
       });
       const buf = await out.arrayBuffer();
       const bytes = new Uint8Array(buf);

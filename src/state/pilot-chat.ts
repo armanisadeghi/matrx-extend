@@ -133,13 +133,14 @@ export const usePilotChatStore = create<PilotChatState>()(
             }
             const existing = parts[idx];
             if (!existing || existing.type !== 'tool') return m;
+            const nextEndedAt =
+              patch.phase === 'completed' || patch.phase === 'error'
+                ? Date.now()
+                : existing.tool.endedAt;
             const merged: ToolPartCall = {
               ...existing.tool,
               ...patch,
-              endedAt:
-                patch.phase === 'completed' || patch.phase === 'error'
-                  ? Date.now()
-                  : existing.tool.endedAt,
+              ...(nextEndedAt !== undefined && { endedAt: nextEndedAt }),
             };
             const next = parts.slice();
             next[idx] = { type: 'tool', tool: merged };

@@ -35,13 +35,13 @@ export interface ChunkCompleteInfo {
 }
 
 export interface UseChunkedRecordAndTranscribeProps {
-  onTranscriptionComplete?: (result: TranscriptionResult) => void;
-  onChunkTranscribed?: (chunkText: string, accumulatedText: string) => void;
-  onChunkComplete?: (info: ChunkCompleteInfo) => void;
-  onChunkError?: (chunkIndex: number, error: string) => void;
-  onError?: (error: string, errorCode?: string) => void;
-  chunkDurationMs?: number;
-  transcriptionOptions?: TranscriptionOptions;
+  onTranscriptionComplete?: ((result: TranscriptionResult) => void) | undefined;
+  onChunkTranscribed?: ((chunkText: string, accumulatedText: string) => void) | undefined;
+  onChunkComplete?: ((info: ChunkCompleteInfo) => void) | undefined;
+  onChunkError?: ((chunkIndex: number, error: string) => void) | undefined;
+  onError?: ((error: string, errorCode?: string) => void) | undefined;
+  chunkDurationMs?: number | undefined;
+  transcriptionOptions?: TranscriptionOptions | undefined;
 }
 
 async function sendMicRequest(payload: MicRequestPayload): Promise<void> {

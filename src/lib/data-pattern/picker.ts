@@ -90,7 +90,7 @@ export function unmountPicker(): void {
   highlight = null;
   picked.length = 0;
   const w = window as { __matrxDataPickerTeardown?: () => void };
-  if (w.__matrxDataPickerTeardown) w.__matrxDataPickerTeardown = undefined;
+  if (w.__matrxDataPickerTeardown) delete w.__matrxDataPickerTeardown;
 }
 
 function onHover(e: Event) {

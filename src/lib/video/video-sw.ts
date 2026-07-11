@@ -163,7 +163,7 @@ export async function runVideoCapture(args: RunVideoCaptureArgs): Promise<RunVid
       durationMs: args.durationMs,
       source,
       targetTabId: args.targetTabId,
-      streamId,
+      ...(streamId !== undefined && { streamId }),
     };
 
     // Use chrome.runtime.sendMessage directly so the offscreen recorder

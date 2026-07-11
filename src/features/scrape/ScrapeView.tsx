@@ -455,7 +455,10 @@ export function ScrapeView() {
                   ]}
                   onAdd={(values) => {
                     if (!values.href) return false;
-                    addLink({ href: values.href, text: values.text });
+                    addLink({
+                      href: values.href,
+                      ...(values.text !== undefined && { text: values.text }),
+                    });
                     return true;
                   }}
                 />

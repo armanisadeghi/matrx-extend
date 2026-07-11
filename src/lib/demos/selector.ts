@@ -82,11 +82,13 @@ export function buildSelectorChain(el: Element): SelectorStrategy[] {
 export function snapshotElement(el: Element): ElementSnapshot {
   const rect = el.getBoundingClientRect();
   const role = el.getAttribute('role') ?? implicitRole(el);
+  const accessibleNameValue = accessibleName(el);
+  const visibleTextValue = (el.textContent ?? '').trim().slice(0, 200);
   const out: ElementSnapshot = {
     tag: el.tagName.toLowerCase(),
-    role: role ?? undefined,
-    accessible_name: accessibleName(el) ?? undefined,
-    visible_text: (el.textContent ?? '').trim().slice(0, 200) || undefined,
+    ...(role !== null && { role }),
+    ...(accessibleNameValue !== null && { accessible_name: accessibleNameValue }),
+    ...(visibleTextValue !== '' && { visible_text: visibleTextValue }),
     bounding_rect: {
       x: Math.round(rect.left),
       y: Math.round(rect.top),

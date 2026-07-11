@@ -864,7 +864,7 @@ function SensitiveItemForm({
               setSaving(true);
               setError(null);
               const result = await onSave({
-                item_id: existing?.id,
+                item_id: existing?.id ?? null,
                 kind,
                 label: label || null,
                 full_value: fullValue,

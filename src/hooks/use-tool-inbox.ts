@@ -190,7 +190,11 @@ export function respondToConfirm(
   rememberFor?: 'session' | 'conversation',
 ): void {
   useToolInbox.getState().removeConfirm(callId);
-  const res: ConfirmResponse = { callId, decision, rememberFor };
+  const res: ConfirmResponse = {
+    callId,
+    decision,
+    ...(rememberFor !== undefined ? { rememberFor } : {}),
+  };
   broadcast(CHANNELS.TOOL_CONFIRM_RESPONSE, res);
 }
 

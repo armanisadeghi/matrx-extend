@@ -316,7 +316,7 @@ async function routeBroadcastMessage(msg: BroadcastPayload, s: ConnectionState):
       payload: msg.payload,
       response,
       ok: response.ok,
-      error: response.ok ? undefined : response.error,
+      ...(!response.ok && { error: response.error }),
     });
 
     const reply: BroadcastPayload = {

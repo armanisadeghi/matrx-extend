@@ -51,8 +51,6 @@ describe('guidance cloud-sync mappers', () => {
       id: 'gd_shot_1',
       kind: 'screenshot',
       domain: 'example.com',
-      caption: undefined,
-      origin_url: undefined,
       file_id: 'file-abc',
       url: 'https://cdn/x.jpg',
       width: 1280,

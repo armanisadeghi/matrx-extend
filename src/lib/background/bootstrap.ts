@@ -258,7 +258,7 @@ function registerHandlers(): void {
     // STREAM_OPENED is processed — see recordAssignedTab's docstring.
     if (payload.runId) {
       recordAssignedTab(payload.runId, payload.assignedTabId ?? null, {
-        permissionMode: payload.permissionMode,
+        ...(payload.permissionMode !== undefined && { permissionMode: payload.permissionMode }),
         agentName: payload.agentName ?? null,
       });
     }
@@ -603,7 +603,7 @@ function registerFrontendRpcExternalListener(): void {
           payload: parsed.data.payload,
           response,
           ok: response.ok,
-          error: response.ok ? undefined : response.error,
+          ...(!response.ok && { error: response.error }),
         });
         try {
           sendResponse(response);

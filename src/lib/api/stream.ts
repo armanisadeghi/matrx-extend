@@ -66,8 +66,8 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
     res = await fetch(opts.url, {
       method: 'POST',
       headers: opts.headers,
-      body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
-      signal: opts.signal,
+      ...(opts.body !== undefined ? { body: JSON.stringify(opts.body) } : {}),
+      ...(opts.signal !== undefined ? { signal: opts.signal } : {}),
     });
   } catch (err) {
     log.error('stream', `✗ ${opts.url} network error`, err);

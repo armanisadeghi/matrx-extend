@@ -18,7 +18,7 @@ export interface Recipe {
   /** Match: any of these hosts (suffix-matched, so `www.linkedin.com` matches `linkedin.com`). */
   hosts: string[];
   /** Match: optional path glob (`/jobs/**`, `/in/**`). */
-  routes?: string[];
+  routes?: string[] | undefined;
   kind: PatternKind;
   config: Record<string, unknown>;
   /** Recipes that target a list / many rows are visually marked. */
@@ -230,7 +230,8 @@ export async function loadRecipes(): Promise<Recipe[]> {
   try {
     const c = getSupabase();
     const { data, error } = await c
-      .schema('extend').from('wbx_recipe')
+      .schema('extend')
+      .from('wbx_recipe')
       .select('id, label, description, hosts, routes, kind, config, yields_rows')
       .eq('is_active', true)
       .order('id');

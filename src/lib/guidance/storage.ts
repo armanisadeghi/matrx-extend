@@ -54,10 +54,10 @@ function toSummary(item: GuidanceItem): GuidanceSummary {
     id: item.id,
     kind: item.kind,
     domain: item.domain,
-    caption: item.caption,
+    ...(item.caption !== undefined && { caption: item.caption }),
     created_at: item.created_at,
     updated_at: item.updated_at,
-    demo_id: item.kind === 'demo_ref' ? item.demo_id : undefined,
+    ...(item.kind === 'demo_ref' && { demo_id: item.demo_id }),
   };
 }
 
