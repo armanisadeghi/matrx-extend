@@ -110,6 +110,29 @@ for (const file of walk(SRC)) {
 
   lines.forEach((line, i) => {
     const m = /\.from\(['"]([a-zA-Z0-9_]+)['"]\)/.exec(line);
+
+    // `.from(TABLE)` / `.from(`${x}`)` — the table name is not a literal, so we
+    // cannot tell WHICH table it is. We can still demand it be schema-qualified;
+    // an unqualified dynamic name is the same runtime 404, just harder to spot.
+    // (Excludes Array.from / Object.from / Buffer.from etc.)
+    if (!m && /(?<!Array|Object|Uint8Array|Buffer|Set|Map)\.from\(\s*[A-Za-z_$`]/.test(line)) {
+      const chain = lines
+        .slice(Math.max(0, i - 3), i + 1)
+        .join(' ')
+        .replace(/\s+/g, ' ');
+      if (/\.schema\(/.test(chain) || ACCESSOR.test(chain)) return;
+      const recv = /(?:^|[^\w$.])([A-Za-z_$][\w$]*)\s*\.\s*from\(/.exec(chain);
+      if (recv?.[1] !== undefined && qualifiedVars.has(recv[1])) return;
+      findings.push({
+        file,
+        line: i + 1,
+        table: '(dynamic)',
+        detail:
+          'dynamic table name with NO schema qualification. Cannot be verified statically — route it through src/lib/supabase/schemas.ts.',
+      });
+      return;
+    }
+
     if (!m) return;
     const table = m[1];
     if (table === undefined) return;
