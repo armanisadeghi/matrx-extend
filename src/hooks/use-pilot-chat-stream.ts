@@ -27,6 +27,7 @@ import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { deadlineFor, parseProviderRetry } from '@/lib/stream/provider-retry';
+import { attemptResume } from '@/lib/stream/resume';
 import { createStreamWatchdog } from '@/lib/stream/watchdog';
 import { lookup as lookupTool } from '@/lib/tools/registry';
 import { useActiveToolsStore } from '@/state/active-tools';
@@ -171,6 +172,10 @@ const PILOT_STALL_MS = 75_000;
 export function usePilotChatStream() {
   const runIdRef = useRef<string | null>(null);
   const targetIdRef = useRef<string | null>(null);
+  // Stall-recovery resume key — the server's user_request_id for the current
+  // run, latched from STREAM_OPENED.requestId (== X-Request-ID == the same
+  // id /tool_results reports as user_request_id). See lib/stream/resume.ts.
+  const requestIdRef = useRef<string | null>(null);
   // STREAM_CONTINUE arrived while the previous run hadn't fully finalized.
   // See useChatStream for the rationale; Pilot inherits the same race because
   // both stores are driven by the same SW dispatcher broadcasting one
@@ -191,19 +196,38 @@ export function usePilotChatStream() {
     watchdogRef.current = createStreamWatchdog({
       stallMs: PILOT_STALL_MS,
       onStall: () => {
+        const runId = runIdRef.current;
         const target = targetIdRef.current;
-        if (!runIdRef.current || !target) return;
+        if (!runId || !target) return;
         log.warn('pilot-stream', `stream stalled — no activity for ${PILOT_STALL_MS}ms`);
-        usePilotChatStore.getState().finalizeAssistant(target);
-        usePilotChatStore.getState().setStreaming(false);
-        // Surface the stall (audit P3-13) — the spinner used to just vanish
-        // with no explanation on the Pilot surface.
-        usePilotChatStore
-          .getState()
-          .setStreamInterruption({ runId: runIdRef.current ?? '', at: Date.now() });
-        watchdogRef.current?.stop();
-        runIdRef.current = null;
-        targetIdRef.current = null;
+        const conversationId = usePilotChatStore.getState().selectedConversationId;
+        const requestId = requestIdRef.current;
+        void (async () => {
+          // Reset to idle BEFORE attempting resume — resumeRun treats a
+          // non-null runIdRef as "previous run still finalizing" and queues
+          // itself instead of opening a stream. Same reasoning as the
+          // Assistant surface's onStallRef; see use-chat-stream.ts.
+          watchdogRef.current?.stop();
+          usePilotChatStore.getState().finalizeAssistant(target);
+          runIdRef.current = null;
+          targetIdRef.current = null;
+
+          const resume = await attemptResume(
+            { runId, conversationId, requestId },
+            resumeRunRef.current,
+          );
+          if (resume.resumed) {
+            log.info('pilot-stream', 'stream resumed after stall (via /resume, no replay)', {
+              runId,
+            });
+            return;
+          }
+          log.warn('pilot-stream', `stream giving up (${resume.reason})`, { runId });
+          usePilotChatStore.getState().setStreaming(false);
+          // Surface the stall (audit P3-13) — the spinner used to just vanish
+          // with no explanation on the Pilot surface.
+          usePilotChatStore.getState().setStreamInterruption({ runId, at: Date.now() });
+        })();
       },
     });
   }
@@ -215,6 +239,7 @@ export function usePilotChatStream() {
   useEffect(() => {
     return on<StreamOpened, { ack: true }>(CHANNELS.STREAM_OPENED, (payload) => {
       if (payload.runId !== runIdRef.current) return { ack: true };
+      if (payload.requestId) requestIdRef.current = payload.requestId;
       watchdogRef.current?.touch();
       if (payload.conversationId) {
         usePilotChatStore.getState().adoptConversationId(payload.conversationId);
@@ -333,6 +358,7 @@ export function usePilotChatStream() {
       const runId = newId('run');
       runIdRef.current = runId;
       targetIdRef.current = assistantMsg.id;
+      requestIdRef.current = null;
       watchdogRef.current?.start();
 
       // Pre-send page-context refresh — same path as the assistant. Pilot
@@ -530,6 +556,7 @@ export function usePilotChatStream() {
       const runId = newId('run');
       runIdRef.current = runId;
       targetIdRef.current = assistantMsg.id;
+      requestIdRef.current = null;
       watchdogRef.current?.start();
 
       // Resolve the pinned tab. Pilot runs MUST stay inside the session's

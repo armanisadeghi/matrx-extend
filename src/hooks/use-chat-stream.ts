@@ -405,24 +405,36 @@ function ensureStreamListeners(): void {
     const target = targetIdRef.current;
     if (!runId || !target) return; // run already ended cleanly
     log.warn('stream', `stream stalled — no activity for ${STALL_MS}ms`, { runId });
+    const conversationId = useChatStore.getState().selectedConversationId;
+    const requestId = requestIdRef.current;
     void (async () => {
-      // Try to resume the live run before giving up (no-op until the backend
-      // resume endpoint ships — see lib/stream/resume.ts).
-      const resume = await attemptResume({
-        runId,
-        conversationId: useChatStore.getState().selectedConversationId,
-        requestId: requestIdRef.current,
-        cursor: eventCountRef.current,
-      });
-      if (runIdRef.current !== runId) return; // a new run started meanwhile
+      // Reset this run's bookkeeping to "idle" BEFORE attempting resume.
+      // `resumeRun` treats a non-null runIdRef as "previous run still
+      // finalizing" and QUEUES itself as a pendingContinue instead of
+      // actually opening a stream (see resumeRun's idle guard) — so calling
+      // it without this reset would silently no-op. We also finalize the
+      // stalled bubble here since a successful resume renders its
+      // continuation into a FRESH assistant message, exactly like a real
+      // STREAM_CONTINUE does.
+      watchdogRef.current?.stop();
+      useChatStore.getState().finalizeAssistant(target);
+      runIdRef.current = null;
+      targetIdRef.current = null;
+
+      const resume = await attemptResume(
+        { runId, conversationId, requestId },
+        resumeRunRef.current,
+      );
       if (resume.resumed) {
-        log.info('stream', 'stream resumed after stall', { runId });
-        watchdogRef.current?.start();
+        log.info('stream', 'stream resumed after stall (via /resume, no replay)', { runId });
+        // resumeRun already pushed a new assistant message, set runIdRef/
+        // targetIdRef, and re-armed the watchdog for the new run — nothing
+        // left to do here.
         return;
       }
-      // Give up: clear the stuck spinner and surface a Retry.
+      // Give up: clear the stuck spinner and surface a Retry (full-turn
+      // replay). This is the pre-existing fallback, unchanged.
       log.warn('stream', `stream giving up (${resume.reason})`, { runId });
-      useChatStore.getState().finalizeAssistant(target);
       useChatStore.getState().setStreaming(false);
       useChatStore.getState().setStreamInterruption({
         runId,
@@ -444,10 +456,7 @@ function ensureStreamListeners(): void {
           );
         }
       }
-      watchdogRef.current?.stop();
       useChatStore.getState().setProviderRetry(null);
-      runIdRef.current = null;
-      targetIdRef.current = null;
     })();
   };
 

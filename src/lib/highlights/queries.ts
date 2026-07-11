@@ -43,7 +43,8 @@ function parseList(rows: unknown[] | null): HighlightListItem[] {
 export async function listMyHighlights(limit = 500): Promise<HighlightListItem[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .schema('extend').from(TABLE)
+    .schema('extend')
+    .from(TABLE)
     .select(LIST_COLUMNS)
     .eq('is_deleted', false)
     .order('updated_at', { ascending: false })
@@ -59,7 +60,8 @@ export async function listMyHighlights(limit = 500): Promise<HighlightListItem[]
 export async function listHighlightsForUrl(url: string): Promise<HighlightListItem[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .schema('extend').from(TABLE)
+    .schema('extend')
+    .from(TABLE)
     .select(LIST_COLUMNS)
     .eq('url', url)
     .eq('is_deleted', false)
@@ -75,7 +77,8 @@ export async function listHighlightsForUrl(url: string): Promise<HighlightListIt
 export async function listHighlightsForDomain(domain: string): Promise<HighlightListItem[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .schema('extend').from(TABLE)
+    .schema('extend')
+    .from(TABLE)
     .select(LIST_COLUMNS)
     .eq('domain', domain)
     .eq('is_deleted', false)
@@ -93,7 +96,8 @@ export async function listHighlightsForConversation(
 ): Promise<HighlightListItem[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .schema('extend').from(TABLE)
+    .schema('extend')
+    .from(TABLE)
     .select(LIST_COLUMNS)
     .eq('conversation_id', conversationId)
     .eq('is_deleted', false)
@@ -107,7 +111,12 @@ export async function listHighlightsForConversation(
 
 export async function getHighlight(id: string): Promise<Highlight | null> {
   const c = getSupabase();
-  const { data, error } = await c.schema('extend').from(TABLE).select(FULL_COLUMNS).eq('id', id).maybeSingle();
+  const { data, error } = await c
+    .schema('extend')
+    .from(TABLE)
+    .select(FULL_COLUMNS)
+    .eq('id', id)
+    .maybeSingle();
   if (error || !data) {
     if (error) console.warn('[highlights] getHighlight error', error.message);
     return null;
@@ -121,7 +130,8 @@ export async function getHighlightsByIds(ids: string[]): Promise<Highlight[]> {
   if (ids.length === 0) return [];
   const c = getSupabase();
   const { data, error } = await c
-    .schema('extend').from(TABLE)
+    .schema('extend')
+    .from(TABLE)
     .select(FULL_COLUMNS)
     .in('id', ids)
     .eq('is_deleted', false);
@@ -161,7 +171,12 @@ export async function createHighlight(input: CreateHighlightInput): Promise<High
     metadata: input.metadata ?? {},
     is_deleted: false,
   };
-  const { data, error } = await c.schema('extend').from(TABLE).insert(payload).select(FULL_COLUMNS).single();
+  const { data, error } = await c
+    .schema('extend')
+    .from(TABLE)
+    .insert(payload)
+    .select(FULL_COLUMNS)
+    .single();
   if (error || !data) {
     console.warn('[highlights] createHighlight error', error?.message);
     return null;
@@ -176,7 +191,8 @@ export async function updateHighlight(
 ): Promise<Highlight | null> {
   const c = getSupabase();
   const { data, error } = await c
-    .schema('extend').from(TABLE)
+    .schema('extend')
+    .from(TABLE)
     .update({ ...patch, updated_at: new Date().toISOString() })
     .eq('id', id)
     .select(FULL_COLUMNS)
@@ -192,7 +208,8 @@ export async function updateHighlight(
 export async function deleteHighlight(id: string): Promise<boolean> {
   const c = getSupabase();
   const { error } = await c
-    .schema('extend').from(TABLE)
+    .schema('extend')
+    .from(TABLE)
     .update({ is_deleted: true, updated_at: new Date().toISOString() })
     .eq('id', id);
   if (error) {
@@ -206,7 +223,8 @@ export async function deleteHighlight(id: string): Promise<boolean> {
 export async function clearHighlightsForUrl(url: string): Promise<number> {
   const c = getSupabase();
   const { data, error } = await c
-    .schema('extend').from(TABLE)
+    .schema('extend')
+    .from(TABLE)
     .update({ is_deleted: true, updated_at: new Date().toISOString() })
     .eq('url', url)
     .eq('is_deleted', false)

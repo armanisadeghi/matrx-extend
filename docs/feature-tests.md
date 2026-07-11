@@ -1053,28 +1053,45 @@ Every entry follows this shape:
   part); `steps` mode dedupes by `step` keeping latest status; pilot surface
   mirrors via `usePilotChatStore`.
 
-### Stream stall watchdog + Retry banner (stuck-UI fix)
-- **What it does:** Detects a stalled run (no chunk/heartbeat for 75s),
-  clears the stuck spinner, and shows an amber Retry banner above the
-  composer. Consumes the server `heartbeat` event as a liveness signal.
-  Attempts resume first (no-op until backend ships — see
-  docs/STREAM_RESUME_PROTOCOL.md), then falls back to Retry (replays the
-  last turn).
-- **Where to test:** chat surface. Hard to trigger naturally; force it.
+### Stream stall watchdog + real resume (stuck-UI fix)
+- **What it does:** Detects a stalled run (no chunk/heartbeat for 75s) and
+  first attempts a REAL resume via `POST /ai/conversations/{id}/resume`
+  (`user_request_id` = the requestId latched from `STREAM_OPENED`) — the same
+  endpoint the client-tool-suspend `STREAM_CONTINUE` path already uses
+  successfully. If that succeeds, the run just continues in a fresh assistant
+  bubble — no banner, no replayed tool calls, no double billing. Only if the
+  resume can't be attempted (missing ids, `matrx.stream.resume.enabled` flag
+  off, conversation no longer selected, or the resume call itself errors)
+  does it fall back to clearing the spinner and showing the amber Retry
+  banner (full-turn replay). See docs/STREAM_RESUME_PROTOCOL.md and
+  src/lib/stream/resume.ts.
+- **Where to test:** chat surface (Assistant + Pilot). Hard to trigger
+  naturally; force it.
 - **Steps:**
-  1. Send a message, then kill the stream silently — e.g. in DevTools
+  1. Send a message that keeps the agent talking for a while (or one that
+     calls a tool), then kill the stream silently — e.g. in DevTools
      terminate the offscreen document, or block the network mid-stream so no
      `done` ever arrives.
-  2. Wait ~75s. Spinner stops; the amber "The response stalled (no activity
-     for 75s)." banner appears with **Retry** + dismiss (✕).
-  3. Click Retry → the last turn re-sends and the banner clears. Dismiss (✕)
-     hides it without re-sending.
+  2. Wait ~75s. Watch the debug log: `stream stalled — no activity for
+     75000ms` followed by either `stream resumed after stall (via /resume, no
+     replay)` (success — a new assistant message appears and the run
+     continues) or `stream giving up (<reason>)` (falls back to the Retry
+     banner as before).
+  3. To force the fallback path deliberately: `chrome.storage.local.set({
+     'matrx.stream.resume.enabled': false })`, repeat step 1 — the amber
+     "The response stalled (no activity for 75s)." banner appears with
+     **Retry** + dismiss (✕). Click Retry → the last turn re-sends (full
+     replay) and the banner clears.
 - **Expected:** A normal completed run never shows the banner (watchdog
   stopped on `done`). Cancelling clears it. Switching conversations clears it.
-  Pilot surface clears its spinner on stall too (no banner — by design).
+  A successful resume never shows the banner at all. Pilot surface follows
+  the same resume-then-fallback order (no banner on Pilot either way — it
+  just clears the spinner on ultimate give-up, by design).
 - **Edge cases:** a late chunk after stall doesn't re-arm the watchdog; a new
   send while a stall handler is mid-flight is detected (runId mismatch) and the
-  stale handler no-ops.
+  stale handler no-ops; a stall on a conversation the user has since navigated
+  away from declines the resume (`resumeRun` checks `selectedConversationId`)
+  and falls back to give-up cleanly.
 
 ---
 

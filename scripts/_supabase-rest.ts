@@ -86,7 +86,9 @@ export async function fetchPublicJson<T>(
     },
   });
   if (!res.ok) {
-    throw new Error(`Supabase fetch failed (${res.status}) on ${schema}.${path}: ${await res.text()}`);
+    throw new Error(
+      `Supabase fetch failed (${res.status}) on ${schema}.${path}: ${await res.text()}`,
+    );
   }
   return (await res.json()) as T;
 }
