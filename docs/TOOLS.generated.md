@@ -1,13 +1,13 @@
 # matrx-extend tools
 
-> **AUTO-GENERATED — do not edit.** Produced from `public.tool_def`
-> rows bound to `executor_name='chrome-extension'` via `public.tool_binding`,
+> **AUTO-GENERATED — do not edit.** Produced from `tool.definition`
+> rows bound to `executor_name='chrome-extension'` via `tool.binding`,
 > the source of truth. Tool names, descriptions, and argument
 > contracts live ONLY in the database (Rule 4,
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-06-19T18:15:40.456Z
+Generated: 2026-07-11T17:33:32.816Z
 Total tools: 81
 
 ## ai
