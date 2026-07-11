@@ -794,17 +794,45 @@ Shipped (client):
   resets it; 75s of total silence fires `onStall`. Wired into both
   `use-chat-stream` and `use-pilot-chat-stream` (`start` on send, `touch` per
   chunk + on `STREAM_OPENED`, `stop` on done/cancel).
+- **`hold(untilEpochMs)` — silence is NOT always death (2026-07-11).** The server
+  emits **`provider_retry`** when an upstream LLM provider fails (rate limit, 5xx)
+  and a retry is scheduled. It then goes **deliberately silent** for the backoff —
+  no chunks, no heartbeat — and `retry_delay` routinely exceeds the 75s threshold.
+  A plain dead-man's switch cannot tell that apart from a hang, so it used to KILL
+  a healthy run mid-backoff and show a false "connection lost". `hold()` pushes the
+  deadline to the server's own `retry_at` plus the normal grace, so a real stall is
+  still caught if the retry never lands. Logic + normalizer in
+  [src/lib/stream/provider-retry.ts](./src/lib/stream/provider-retry.ts) (pure,
+  18 unit tests). **If you add any event that implies expected silence, it must
+  `hold()` the watchdog or it will read as a stall.**
+  - Only `scheduled` / `suspended` hold — `retrying_now` means the request is
+    already in flight, so normal stall rules resume.
+  - `retry_at` is disambiguated seconds-vs-ms **by magnitude**: a seconds value read
+    as ms lands in 1970 and would silently produce no hold at all.
+  - `ProviderRetryBanner` (ChatView) shows the server's own `user_message` + a live
+    countdown. Never invent copy for a provider error — the server ships it.
+- **`reasoning` (`{state: 'started' | 'stopped'}`)** delimits thinking blocks; the
+  tokens still arrive as `reasoning_chunk`. Reasoning `MessagePart`s carry a
+  `closed` flag so a SECOND thinking block in one turn renders separately instead
+  of silently merging into the first.
 - Assistant surface: on stall, clears the spinner + shows a Retry banner
   (`StreamInterruptionBanner` in ChatView, gated on
   `useChatStore.streamInterruption`). Retry replays the last turn. Pilot clears
   the spinner (no banner yet).
 
-Pending (backend — filed via matrx-feedback, contract in
-[docs/STREAM_RESUME_PROTOCOL.md](./docs/STREAM_RESUME_PROTOCOL.md)):
-- [ ] `/ai/agent/runs/{request_id}/resume` so `attemptResume`
-  ([src/lib/stream/resume.ts](./src/lib/stream/resume.ts), flag-gated no-op
-  today) can re-attach + replay the unsent tail instead of replaying the turn.
-- [ ] Reliable `heartbeat` cadence (≤~20s) DURING long tool execution.
+Pending — but the backend half is DONE; this is now CLIENT work
+(contract in [docs/STREAM_RESUME_PROTOCOL.md](./docs/STREAM_RESUME_PROTOCOL.md)):
+- [ ] **Cursor-replay resume.** `attemptResume`
+  ([src/lib/stream/resume.ts](./src/lib/stream/resume.ts)) is still a flag-gated
+  no-op, and it targets `GET /ai/agent/runs/{request_id}/resume?cursor=N` — an
+  endpoint that does NOT exist. What the live server actually ships (verified
+  2026-07-11 against its OpenAPI) is **`POST /ai/conversations/{id}/resume`**, a
+  different shape: durable continuation, not cursor replay. So the scaffold cannot
+  simply be flipped on — it needs rewriting against the endpoint that exists.
+  Until then, a stall still replays the whole turn.
+- [ ] Reliable `heartbeat` cadence (≤~20s) DURING long tool execution. (Note the
+  `provider_retry` hold above now covers the *backoff* case specifically, which was
+  the most common source of false stalls.)
 
 ### 15. ✅ Turn-boundary inbox — queue/steer a running agent (2026-05-20)
 **Why:** stop forcing "wait for the agent to finish before I can type" and

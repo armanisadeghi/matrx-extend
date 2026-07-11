@@ -1589,6 +1589,38 @@ Every entry follows this shape:
   cards with a countdown disappear at 0; streamed code blocks no longer
   flash between plain and highlighted.
 
+### Stream — provider retry (no false "connection lost")
+- **What it does:** when the upstream LLM provider rate-limits or 5xx's, the server
+  backs off and retries. The stream goes silent for the backoff. The extension must
+  keep the spinner up, hold the 75s stall watchdog, and tell the user what's
+  happening — instead of declaring the run dead.
+- **Where to test:** Chat tab.
+- **Prereq:** hard to force naturally. Easiest repro is Debug tab → watch the stream
+  log for a `provider_retry` event during a busy period; or ask the backend team to
+  point an agent at a provider/model that is currently rate-limited.
+- **Steps:**
+  1. Send a message on an agent whose provider is rate-limiting.
+  2. Watch for an amber banner above the composer.
+- **Expected:** amber banner with the server's own message (e.g. "Anthropic is
+  rate-limiting…"), the provider name, "attempt N of M", and a live "retrying in Xs"
+  countdown. The spinner keeps spinning. When the retry lands, the banner disappears
+  and the answer streams in normally.
+- **Edge cases worth poking:**
+  - A backoff LONGER than 75 seconds. This is the whole point: the old build showed
+    a false "connection lost / Retry" banner here. It must NOT.
+  - Retry that never lands → after the retry deadline plus 75s the normal stall
+    banner SHOULD appear. The hold must not make the run un-killable.
+  - Cancel the run mid-retry → banner clears with the run, does not linger.
+
+### Stream — reasoning block boundaries
+- **What it does:** the server now marks where a thinking block starts and stops, so
+  two separate thinking blocks in one turn render as two blocks rather than merging.
+- **Where to test:** Chat tab, with a reasoning-capable model.
+- **Steps:**
+  1. Ask something that makes the model think, call a tool, then think again.
+  2. Expand the reasoning parts in the assistant bubble.
+- **Expected:** two distinct reasoning parts, in stream order, not one merged block.
+
 ## Template (copy when adding a new entry)
 
 ```markdown
