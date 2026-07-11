@@ -114,24 +114,38 @@ Required changes:
 
 ---
 
-## 3. 🔴 BLOCKER — No privacy policy, and we handle a LOT of personal data.
+## 3. 🟢 MOSTLY DONE — Privacy policy exists and is extension-specific (one gap)
 
-There is **no privacy policy anywhere in this repo**, and I could find no evidence one
-is registered in the dashboard.
+**Correction to an earlier version of this doc:** it said there was no privacy policy.
+That was wrong — it checked the repo, not the website. The policy exists, resolves 200,
+and is **written specifically for this extension**:
 
-We read and transmit: page content of every site visited (`<all_urls>`), browsing
-**history**, **bookmarks**, **cookies**, **downloads**, tab/session data, screenshots,
-and the user's typed input — and we send page content to a third-party server
-(aidream) and on to LLM providers.
+**`https://www.aimatrx.com/privacy-policy`**
 
-Requirements:
-- A working privacy-policy URL **in the dashboard's designated field** (not in the
-  description — that is its own rejection reason).
-- Prominent disclosure of **all** data collection.
-- Under the **2026 Limited Use update**: user data collected must be *"strictly
-  necessary to the extension's disclosed single purpose."* This links §3 back to §2 —
-  once we declare the single purpose, every permission and every byte we collect must
-  visibly serve it.
+Verified 2026-07-11 that it already covers, by name: "the Matrx Extend Chrome extension,"
+the page content it reads ("visible text or rendered HTML/markdown, the accessibility
+tree, headings, links, page metadata"), sending that to the backend + LLM providers
+("forwards your message and any included page context to whichever provider…"), browsing
+**history**, **bookmarks**, and **cookies**, and a deletion path (email support@aimatrx.com).
+That is a strong policy and directly addresses the data-handling rejection class.
+
+**Two things still to do:**
+1. **Confirm the URL is in the dashboard's Privacy → "Privacy policy URL" field.** A great
+   policy the reviewer can't find still fails. (I can't see the dashboard, so this is
+   unverified — check it.)
+2. **Add a short guest/anonymous-usage paragraph.** The policy currently reads as
+   account-required, but the extension has **guest mode** (2026-05-16), which mints an
+   anonymous `auth.users` row server-side via the install fingerprint. The 2026 disclosure
+   rules require disclosing that collection. Suggested addition:
+   > *"You can use the extension as a guest without creating an account. When you do, we
+   > create an anonymous account tied to a randomly-generated identifier for your install,
+   > so we can provide the service and apply usage limits. Guest data is handled the same
+   > way as account data; email support@aimatrx.com to request deletion."*
+
+Under the **2026 Limited Use update**, collected data must be *"strictly necessary to the
+disclosed single purpose."* This links back to §2: once the single purpose is declared,
+every permission and every byte must visibly serve it — the policy already frames it that
+way ("pages you choose to give it").
 
 ---
 

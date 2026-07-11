@@ -79,24 +79,19 @@ features genuinely serve that one purpose — and it is what a reviewer needs to
 
 ---
 
-## Privacy policy — what it must say (for `titaniumsuccess`/aimatrx-hosted page + dashboard field)
+## Privacy policy — ALREADY EXISTS and is good
 
-The policy URL goes in the dashboard's **Privacy → "Privacy policy URL"** field (NOT in the
-description). Under the **1 Aug 2026** Limited-Use update, the data we collect must be
-*strictly necessary to the single purpose above*, and disclosure must be prominent.
+`https://www.aimatrx.com/privacy-policy` — verified 2026-07-11. It is written specifically
+for "the Matrx Extend Chrome extension" and already covers page-content collection, the
+page-content → Matrx-server → LLM-provider data flow, history/bookmarks/cookies, and a
+deletion path (support@aimatrx.com). Nothing to write from scratch.
 
-The policy must cover, in plain language:
-- **What we access:** the content of pages the user engages the assistant on; the user's
-  input; and — only when the user explicitly invokes those features — history and bookmarks.
-- **Why:** solely to provide the AI-assistant functionality on the page the user chose.
-- **Where it goes:** page content + the user's message are sent to the Matrx AI service
-  (server.app.matrxserver.com) and to the AI model providers that generate responses.
-- **What we do NOT do:** we do not sell user data; we do not use it for advertising; we do
-  not collect data beyond what the assistant needs to answer on the current page.
-- **Guests:** guest usage still creates an anonymous account server-side to provide the
-  service; describe it and how to request deletion.
-- A contact/deletion path.
-
-*(If a policy already exists on the website, it likely needs a short section added that names
-the extension explicitly and states the page-content → Matrx-server → LLM-provider data flow.
-That is the part reviewers look for.)*
+Two small actions only:
+1. **Paste the URL into the dashboard's Privacy → "Privacy policy URL" field** (if it isn't
+   already there). This is where a reviewer looks; a policy the reviewer can't find fails.
+2. **Add one guest-mode paragraph** (the policy currently reads as account-required, but the
+   extension has guest mode, which creates an anonymous server-side account). Suggested text:
+   > *"You can use the extension as a guest without creating an account. When you do, we
+   > create an anonymous account tied to a randomly-generated identifier for your install,
+   > so we can provide the service and apply usage limits. Guest data is handled the same
+   > way as account data; email support@aimatrx.com to request deletion."*
