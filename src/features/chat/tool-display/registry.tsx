@@ -691,20 +691,6 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
-  evaluate_javascript: {
-    inline: {
-      icon: { started: 'Loader2', completed: 'Code2', error: 'AlertTriangle' },
-      prefix: {
-        started: 'Evaluating JavaScript',
-        completed: 'Evaluated JavaScript',
-        error: 'JavaScript failed',
-      },
-      name: '',
-      color: { started: 'primary', completed: 'red', error: 'red' },
-    },
-    args: { displayType: 'json' },
-  },
-
   // ─── CDP / debug (admin) ─────────────────────────────────────────────
 
   cdp_session: {

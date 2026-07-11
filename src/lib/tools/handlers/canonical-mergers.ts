@@ -20,8 +20,6 @@
  *   cdp_session     — cdp_attach, cdp_detach, cdp_attached_tabs
  *   cdp_emulate     — cdp_emulate_device, cdp_clear_emulation
  *
- * Plus `evaluate_javascript` — canonical-named handler that delegates to
- * the existing `execute_javascript` implementation.
  *
  * Strategy: each merger is a thin router. We delegate to the existing
  * specific handlers via `delegate()` (leaf-schema parse), building the inner args from the merger's
@@ -63,7 +61,6 @@ import {
 } from '@/lib/tools/handlers/optional-perms';
 import {
   delete_extension_storage,
-  execute_javascript,
   get_extension_storage,
   inject_stylesheet,
   list_extension_storage,
@@ -606,25 +603,6 @@ export const cdp_emulate: ToolHandler<CdpEmulateArgs, unknown> = {
 };
 
 // ────────────────────────────────────────────────────────────────────────────
-// evaluate_javascript — canonical name for execute_javascript
-// ────────────────────────────────────────────────────────────────────────────
-
-const EvaluateJsArgs = z.object({
-  text: z.string().min(1),
-  tab_id: z.string().optional(),
-  arg: z.unknown().optional(),
-});
-type EvaluateJsArgs = z.infer<typeof EvaluateJsArgs>;
-
-export const evaluate_javascript: ToolHandler<EvaluateJsArgs, unknown> = {
-  name: 'evaluate_javascript',
-  tier: 'privileged',
-  argsSchema: EvaluateJsArgs,
-  run: async (args, ctx) => {
-    const tabId = args.tab_id ? Number.parseInt(args.tab_id, 10) : undefined;
-    return delegate(execute_javascript, { code: args.text, tab_id: tabId, arg: args.arg }, ctx);
-  },
-};
 
 // ────────────────────────────────────────────────────────────────────────────
 // Bundle export
@@ -642,5 +620,4 @@ export const canonical_merger_handlers = [
   stylesheet,
   cdp_session,
   cdp_emulate,
-  evaluate_javascript,
 ];

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-11T17:34:47.757Z",
+  "generated_at": "2026-07-11T18:36:15.029Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -76,8 +76,6 @@
     "get_cookies",
     "cdp_attached_tabs",
     "cdp_perf_metrics",
-    "get_system_info",
-    "list_network_blocking_rules",
     "webmcp_check_availability",
     "webmcp_list_page_tools",
     "list_demos",
@@ -191,8 +189,6 @@
     "get_cookies",
     "cdp_attached_tabs",
     "cdp_perf_metrics",
-    "get_system_info",
-    "list_network_blocking_rules",
     "webmcp_check_availability",
     "webmcp_list_page_tools",
     "webmcp_call_page_tool",
@@ -350,8 +346,6 @@
     "read_console_messages",
     "read_network_requests",
     "get_request_body",
-    "get_system_info",
-    "list_network_blocking_rules",
     "webmcp_check_availability",
     "webmcp_list_page_tools",
     "webmcp_call_page_tool",
@@ -360,7 +354,6 @@
     "update_plan",
     "tasks",
     "user_todos",
-    "execute_javascript",
     "inject_stylesheet",
     "remove_stylesheet",
     "set_extension_storage",
@@ -408,8 +401,7 @@
     "chrome_recently_closed",
     "stylesheet",
     "cdp_session",
-    "cdp_emulate",
-    "evaluate_javascript"
+    "cdp_emulate"
   ],
   "categories": [
     {
@@ -492,7 +484,6 @@
         "set_radio",
         "submit_form",
         "file_upload",
-        "execute_javascript",
         "inject_stylesheet",
         "remove_stylesheet",
         "get_clipboard",
@@ -503,8 +494,7 @@
         "wait_for",
         "upload_file",
         "drop_file",
-        "stylesheet",
-        "evaluate_javascript"
+        "stylesheet"
       ]
     },
     {
@@ -679,8 +669,6 @@
         "read_console_messages",
         "read_network_requests",
         "get_request_body",
-        "get_system_info",
-        "list_network_blocking_rules",
         "cdp_session",
         "cdp_emulate"
       ]
@@ -4895,58 +4883,6 @@
       ]
     },
     {
-      "name": "get_system_info",
-      "tier": "read",
-      "category": "devtools",
-      "input_schema": {
-        "type": "object",
-        "properties": {},
-        "additionalProperties": false,
-        "default": {},
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [
-        "system.cpu",
-        "system.memory",
-        "system.display"
-      ],
-      "required_optional_permissions": [],
-      "admin_only": true,
-      "surface_bundles": [
-        "assistant",
-        "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome"
-      ]
-    },
-    {
-      "name": "list_network_blocking_rules",
-      "tier": "read",
-      "category": "devtools",
-      "input_schema": {
-        "type": "object",
-        "properties": {},
-        "additionalProperties": false,
-        "default": {},
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [
-        "declarativeNetRequestWithHostAccess"
-      ],
-      "required_optional_permissions": [],
-      "admin_only": true,
-      "surface_bundles": [
-        "assistant",
-        "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome"
-      ]
-    },
-    {
       "name": "webmcp_check_availability",
       "tier": "read",
       "category": "webmcp",
@@ -5515,47 +5451,6 @@
       "admin_only": false,
       "surface_bundles": [
         "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
-      "name": "execute_javascript",
-      "tier": "privileged",
-      "category": "interaction",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "minLength": 1
-          },
-          "arg": {},
-          "main_world": {
-            "type": "boolean",
-            "default": false
-          },
-          "tab_id": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "code"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [
-        "activeTab",
-        "scripting"
-      ],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
         "pilot+privileged"
       ],
       "supported_browsers": [
@@ -7974,43 +7869,6 @@
       ],
       "supported_browsers": [
         "chrome"
-      ]
-    },
-    {
-      "name": "evaluate_javascript",
-      "tier": "privileged",
-      "category": "interaction",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "text": {
-            "type": "string",
-            "minLength": 1
-          },
-          "tab_id": {
-            "type": "string"
-          },
-          "arg": {}
-        },
-        "required": [
-          "text"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [
-        "activeTab",
-        "scripting"
-      ],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
       ]
     }
   ]

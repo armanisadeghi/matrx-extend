@@ -138,7 +138,6 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   request_user_takeover: [],
 
   // privileged
-  execute_javascript: ['activeTab', 'scripting'],
   inject_stylesheet: ['activeTab', 'scripting'],
   remove_stylesheet: ['activeTab', 'scripting'],
   set_extension_storage: ['storage'],
@@ -174,11 +173,6 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   cdp_perf_metrics: ['activeTab'],
   cdp_emulate_device: ['activeTab'],
   cdp_clear_emulation: [],
-
-  // System / DNR diagnostics. Each row exercises exactly the manifest
-  // permission listed; no host or activeTab needed.
-  get_system_info: ['system.cpu', 'system.memory', 'system.display'],
-  list_network_blocking_rules: ['declarativeNetRequestWithHostAccess'],
 
   // recording (CDP-backed; uses scripting + downloads on export)
   record_gif: ['activeTab', 'tabs', 'scripting', 'downloads'],
@@ -265,7 +259,6 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   stylesheet: ['activeTab', 'scripting'],
   cdp_session: ['activeTab'],
   cdp_emulate: ['activeTab'],
-  evaluate_javascript: ['activeTab', 'scripting'],
 };
 
 function bundlesForTier(tier: ToolTier): ToolCatalogEntry['surface_bundles'] {

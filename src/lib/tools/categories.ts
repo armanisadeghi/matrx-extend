@@ -226,7 +226,6 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   clipboard: 'interaction',
   upload_file: 'interaction',
   drop_file: 'interaction',
-  evaluate_javascript: 'interaction',
   stylesheet: 'interaction',
   // ─── interaction (absorbed granular handlers) ─────────────────────────
   navigate_active_tab: 'interaction',
@@ -244,7 +243,6 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   file_upload: 'interaction',
   set_clipboard: 'interaction',
   get_clipboard: 'interaction',
-  execute_javascript: 'interaction',
   inject_stylesheet: 'interaction',
   remove_stylesheet: 'interaction',
 
@@ -360,8 +358,6 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   read_console_messages: 'devtools',
   read_network_requests: 'devtools',
   get_request_body: 'devtools',
-  get_system_info: 'devtools',
-  list_network_blocking_rules: 'devtools',
   // ─── devtools (absorbed granular handlers) ────────────────────────────
   cdp_attach: 'devtools',
   cdp_detach: 'devtools',
@@ -433,7 +429,6 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'chrome_history',
   'chrome_recently_closed',
   'stylesheet',
-  'evaluate_javascript',
   'chrome_cookies',
   'chrome_webmcp',
   'cdp_session',

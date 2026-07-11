@@ -54,7 +54,6 @@ import { parallel_handlers } from '@/lib/tools/handlers/parallel';
 import { privileged_handlers, privileged_read_handlers } from '@/lib/tools/handlers/privileged';
 import { read_handlers } from '@/lib/tools/handlers/read';
 import { record_handlers } from '@/lib/tools/handlers/record';
-import { system_info_handlers } from '@/lib/tools/handlers/system-info';
 import { tab_action_handlers, tab_read_handlers } from '@/lib/tools/handlers/tabs';
 import { user_handlers } from '@/lib/tools/handlers/user';
 import { video_handlers } from '@/lib/tools/handlers/video';
@@ -95,7 +94,6 @@ const ALL: AnyToolHandler[] = [
   ...cookies_handlers,
   ...cdp_handlers,
   // ─── system / DNR diagnostics (admin) ──────────────────────────────────
-  ...system_info_handlers,
   // ─── webmcp ────────────────────────────────────────────────────────────
   ...webmcp_handlers,
   // ─── ask-user ──────────────────────────────────────────────────────────

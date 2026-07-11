@@ -1,14 +1,14 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-07-11T17:34:47.757Z
+Generated: 2026-07-11T18:36:15.029Z
 
-- **Total tools:** 170
-- **Assistant bundle:** 75 tools (read-only)
-- **Pilot bundle:** 139 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 170 tools
+- **Total tools:** 166
+- **Assistant bundle:** 73 tools (read-only)
+- **Pilot bundle:** 137 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 166 tools
 
 
-## Tier: read (75)
+## Tier: read (73)
 
 ### `list_browser_tools`
 
@@ -1354,36 +1354,6 @@ Generated: 2026-07-11T17:34:47.757Z
       "type": "integer"
     }
   },
-  "additionalProperties": false,
-  "default": {},
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `get_system_info`
-
-- **Required permissions:** `system.cpu`, `system.memory`, `system.display`
-- **Surface bundles:** assistant, pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {},
-  "additionalProperties": false,
-  "default": {},
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `list_network_blocking_rules`
-
-- **Required permissions:** `declarativeNetRequestWithHostAccess`
-- **Surface bundles:** assistant, pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {},
   "additionalProperties": false,
   "default": {},
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -4489,7 +4459,7 @@ Generated: 2026-07-11T17:34:47.757Z
 }
 ```
 
-## Tier: privileged (31)
+## Tier: privileged (29)
 
 ### `set_cookie`
 
@@ -5057,36 +5027,6 @@ Generated: 2026-07-11T17:34:47.757Z
 }
 ```
 
-### `execute_javascript`
-
-- **Required permissions:** `activeTab`, `scripting`
-- **Surface bundles:** pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "code": {
-      "type": "string",
-      "minLength": 1
-    },
-    "arg": {},
-    "main_world": {
-      "type": "boolean",
-      "default": false
-    },
-    "tab_id": {
-      "type": "integer"
-    }
-  },
-  "required": [
-    "code"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
 ### `inject_stylesheet`
 
 - **Required permissions:** `activeTab`, `scripting`
@@ -5457,32 +5397,6 @@ Generated: 2026-07-11T17:34:47.757Z
   },
   "required": [
     "action"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `evaluate_javascript`
-
-- **Required permissions:** `activeTab`, `scripting`
-- **Surface bundles:** pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "text": {
-      "type": "string",
-      "minLength": 1
-    },
-    "tab_id": {
-      "type": "string"
-    },
-    "arg": {}
-  },
-  "required": [
-    "text"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
