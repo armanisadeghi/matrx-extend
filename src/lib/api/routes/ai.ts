@@ -1,13 +1,40 @@
 /**
  * AI route definitions. Endpoint paths and request shapes verified against
- * `types/python-generated/openapi.json` (run `pnpm update-api-types` to refresh).
+ * `types/python-generated/openapi.json` (run `pnpm update-api-types` to refresh)
+ * AND directly diffed against the live backend's `/openapi.json` (2026-07-11).
+ *
+ * ── v1 vs v2 (the "spine") ──────────────────────────────────────────────────
+ * The backend exposes exactly 6 `/v2/ai/*` operations (tag "v2 (runtime
+ * spine)"). Every one of them is a byte-for-byte alias of its v1
+ * counterpart: same request schema (`AgentStartRequest` / `ChatRequest` /
+ * `ConversationContinueRequest` — no `*V2` variant exists), same response
+ * shape, same auth (verified live: an unauthenticated POST to both
+ * `/ai/agent/{id}` and `/v2/ai/agent/{id}` returns an identical
+ * `401 {"error":"auth_required",...}` body). The v2 operation descriptions
+ * say it outright: "identical pipeline to `/api/ai/agents/{agent_id}`" etc.
+ * This is a PATH move, not a payload/stream/event change.
+ *
+ * The v2 surface does NOT include: warm, cancel, tool_results, inbox, or
+ * resume/pending_calls. Those endpoints only exist under `/ai/*` — calling
+ * them is correct and NOT a bug. `API_VERSION` below is the one knob that
+ * moves the two run-start paths (`agentExecutePath`, `CHAT_PATH`) that DO
+ * have a v2 form; everything else in this file and in
+ * `./tool-results.ts` stays hardcoded to `/ai/...` deliberately.
  */
 
 import { apiDelete, apiGet, apiPatch, apiPost } from '@/lib/api/client';
 
-/** POST /ai/agent/{agent_id} — start agent stream. agent_id is in the URL. */
+/**
+ * Single source of truth for which spine version the agent-run paths use.
+ * Bump this to move `agentExecutePath` + `CHAT_PATH` to a future v3 in one
+ * edit — never hardcode a version segment at a call site or anywhere else
+ * in this file.
+ */
+const API_VERSION = 'v2' as const;
+
+/** POST /{API_VERSION}/ai/agent/{agent_id} — start agent stream. agent_id is in the URL. */
 export const agentExecutePath = (agentId: string): string =>
-  `/ai/agent/${encodeURIComponent(agentId)}`;
+  `/${API_VERSION}/ai/agent/${encodeURIComponent(agentId)}`;
 
 /**
  * Capability-based client envelope. Replaces the old `client_tools: string[]`
@@ -98,14 +125,20 @@ export interface AgentStartRequest {
   writable_variables?: string[];
 }
 
-/** POST /ai/chat — direct chat with explicit ai_model_id (not used by extension v1). */
-export const CHAT_PATH = '/ai/chat';
+/** POST /{API_VERSION}/ai/chat — direct chat with explicit ai_model_id (not used by extension currently). */
+export const CHAT_PATH = `/${API_VERSION}/ai/chat`;
 
-/** POST /ai/agents/{agent_id}/warm — warm an agent before sending. */
+/**
+ * POST /ai/agents/{agent_id}/warm — warm an agent before sending.
+ * No `/v2/ai/agents/{agent_id}/warm` exists on the backend — stays on v1.
+ */
 export const agentWarmPath = (agentId: string): string =>
   `/ai/agents/${encodeURIComponent(agentId)}/warm`;
 
-/** POST /ai/cancel/{request_id} — cancel an in-flight stream. */
+/**
+ * POST /ai/cancel/{request_id} — cancel an in-flight stream.
+ * No `/v2/ai/cancel/{request_id}` exists on the backend — stays on v1.
+ */
 export const cancelPath = (requestId: string): string =>
   `/ai/cancel/${encodeURIComponent(requestId)}`;
 
@@ -123,6 +156,9 @@ export function cancelRequest(requestId: string) {
  * The running agent drains the item at its next natural pause and answers it
  * on the same stream. Plain JSON response (not a stream).
  * See docs/TURN_BOUNDARY_INBOX.md.
+ *
+ * NOT versioned: there is no `/v2/ai/conversations/{id}/inbox` on the
+ * backend. Do not "fix" this to use `API_VERSION` — see the file-header note.
  */
 export const conversationInboxPath = (conversationId: string): string =>
   `/ai/conversations/${encodeURIComponent(conversationId)}/inbox`;

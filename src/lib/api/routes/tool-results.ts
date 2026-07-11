@@ -11,6 +11,13 @@
  * 5xx + network errors: retried with exponential backoff (3 attempts total).
  * Dropping a result is the worst possible outcome — the conversation goes
  * deaf and the user has to start over. Better to delay by a few seconds.
+ *
+ * DELIBERATELY NOT ON /v2: the backend's v2 "spine" surface is exactly 6
+ * endpoints (agent/agents start, chat/manual, conversation/conversations
+ * continue) — see the header comment in `./ai.ts`. `tool_results`,
+ * `resume`, and `pending_calls` have no v2 form, so every path in this file
+ * stays hardcoded to `/ai/...`. This is intentional, not a leftover — the
+ * extension is (and will remain) mixed v1/v2 for these three routes.
  */
 
 import { apiGet, apiPost } from '@/lib/api/client';
