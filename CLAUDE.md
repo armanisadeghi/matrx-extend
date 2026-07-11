@@ -1354,8 +1354,12 @@ Two gotchas that will waste your afternoon:
 - **`tsconfig.json` must be strict JSON — no comments.** TS accepts JSONC, but
   WXT's tsconfig loader does a plain `JSON.parse` and the build dies with an
   opaque `TSCONFIG_ERROR`. Rationale goes here, not in the file.
-- **Duplicate keys are silent.** TS takes the last one and says nothing. A stale
-  second `verbatimModuleSyntax` had been quietly disabling the flag.
+- **Duplicate keys are silent.** TS takes the *last* one and says nothing, so a flag
+  you "added" can be dead on arrival. This bit us during the TS 7 migration itself:
+  `verbatimModuleSyntax: true` was appended while a `verbatimModuleSyntax: false`
+  already sat further down, so the flag stayed off and the typecheck's clean bill of
+  health was meaningless. WXT's loader is what caught it — it `JSON.parse`s the file
+  and rejects the duplicate outright. If you add a flag, grep the file for it first.
 
 `src/vite-env.d.ts` declares `*.css` **by hand and does not reference
 `vite/client`** — on purpose. Under pnpm, `vite` is a transitive dep of wxt and is
