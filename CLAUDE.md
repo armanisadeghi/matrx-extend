@@ -413,6 +413,65 @@ live for UI via [src/lib/tools/descriptions.ts](./src/lib/tools/descriptions.ts)
 (approval card, Tools tab) and the client discovery / WebMCP / frontend-bridge
 tools. Never reintroduce a hardcoded `description` on a `ToolHandler`.
 
+### 🗄️ The DB is multi-schema now — `public` is NOT where our tables live
+
+The platform database was reorganized: the single `public` schema was split into
+**~48 domain schemas**. Every table this extension touches moved. This is the
+highest-risk thing in the repo, because **nothing in the build can see it**:
+
+```
+supabase.from('wbx_pattern')          // compiles. builds. passes every test.
+                                      // 404s in the user's browser:
+                                      //   PGRST205  Could not find the table
+                                      //   'public.wbx_pattern' in the schema cache
+```
+
+`tsc`, Biome, vitest and `wxt build` are all blind to it — the table name is just
+a string. So there is a dedicated gate: **`pnpm check:schema-routing`** (strict
+variant runs in CI and blocks `release.sh`).
+
+**Never hand-write `.schema('x')`.** Route through the single source of truth,
+[src/lib/supabase/schemas.ts](./src/lib/supabase/schemas.ts):
+
+```ts
+import { extendDb, schedulerDb, workbenchDb } from '@/lib/supabase/schemas';
+const { data } = await extendDb().from('wbx_pattern').select('*');
+```
+
+| Tables | Schema | Accessor |
+|---|---|---|
+| `wbx_*` (pattern, recipe, capture, guidance, screenshot, seo_audit, highlight) | `extend` | `extendDb()` |
+| `sch_task` · `sch_run` · `sch_trigger` · `sch_agent_task` | `scheduler` | `schedulerDb()` |
+| `notes` · `note_folders` · `udt_datasets` · `udt_dataset_fields` | `workbench` | `workbenchDb()` |
+| `conversation` · `message` · `tool_call` | `chat` | `chatDb()` |
+| `user_form_profile` | `users` | `usersDb()` |
+| `admins` | `admin` | `adminDb()` |
+| `definition` (tool defs) | `tool` | `toolDb()` |
+| `model_definition` | `ai` | `aiDb()` |
+
+**RPCs did NOT move — they are all still in `public`.** A schema-scoped client
+would route them to the wrong schema. Always call `.rpc()` on the plain
+`getSupabase()` client.
+
+#### Ownership columns — there is no blanket rule, and guessing corrupts data
+
+The moved tables adopted a common base-entity template (`organization_id`,
+`created_by`, `updated_by`, `version`, `deleted_at`, `visibility`). **But only
+some tables dropped `user_id`:**
+
+- **`extend.*` and `workbench.notes` / `note_folders` have NO `user_id` anymore** —
+  ownership is **`created_by`**. Filter on that.
+- **`scheduler.sch_*`, `admin.admins`, `users.user_form_profile`, and
+  `workbench.udt_*` KEPT `user_id`.** Do not "helpfully" rename it.
+
+**On INSERT, never send `created_by` or `organization_id`.** Two BEFORE-INSERT
+triggers stamp them: `platform._stamp_actor()` sets `created_by = auth.uid()`, and
+`_stamp_org_default()` resolves the actor's personal org via
+`ensure_personal_organization()`. `organization_id` is NOT NULL **with no default**,
+so this is not optional plumbing — it is the only thing that makes an insert
+succeed. RLS `WITH CHECK` (`created_by = auth.uid()`) runs *after* the triggers and
+validates the result.
+
 ### Database migrations — the DB is the source of truth, NOT the files
 
 A `.sql` file in [migrations/](./migrations/) has changed **nothing** until it is

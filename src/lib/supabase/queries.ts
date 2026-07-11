@@ -3,12 +3,21 @@
  * the user's JWT (set via setSupabaseSession) gates rows server-side.
  *
  * Schema mirror — these tables already exist in the Matrx Supabase project:
- *   - agent.definition   (Agent definitions — was public.agx_agent)
- *   - chat.conversation  (Chat conversations — was public.cx_conversation)
- *   - chat.message       (Chat messages, JSONB content[] — was public.cx_message)
- *   - chat.tool_call     (Tool call records — was public.cx_tool_call)
- *   - ai.model           (AI model registry — was public.ai_model)
- *   - tool.definition    (Tool definitions — was public.tool_def)
+ *   - agent.definition        (Agent definitions — was public.agx_agent)
+ *   - chat.conversation       (Chat conversations — was public.cx_conversation)
+ *   - chat.message            (Chat messages, JSONB content[] — was public.cx_message)
+ *   - chat.tool_call          (Tool call records — was public.cx_tool_call)
+ *   - ai.model_definition     (AI model registry — `ai.model` was SPLIT into
+ *                              model_definition/_public/_admin/_alias; only
+ *                              model_definition has our 3 columns AND is readable
+ *                              by the publishable key)
+ *   - tool.definition         (Tool definitions — was public.tool_def)
+ *   - admin.admins            (Admin allowlist — was public.admins)
+ *
+ * Table -> schema routing is centralized in `@/lib/supabase/schemas`. Use those
+ * accessors (adminDb(), aiDb(), …) rather than hand-writing `.schema('x')`:
+ * an unqualified `.from()` silently resolves against `public` and 404s at
+ * RUNTIME (PGRST205) — tsc and the build will not catch it.
  *
  * Tables this extension OWNS now live in the dedicated `extend` schema
  * (moved out of public in the 2026-06-27 DB transition — reached via
@@ -22,6 +31,7 @@
 import { DEFAULT_AGENDA_AGENT_ID } from '@/lib/agenda/constants';
 import { log } from '@/lib/debug/log';
 import { getSupabase } from '@/lib/supabase/client';
+import { adminDb, aiDb } from '@/lib/supabase/schemas';
 import type { ChatMessage, MessagePart } from '@/state/chat';
 import { z } from 'zod';
 
@@ -79,8 +89,14 @@ function parseRowsSafe<T>(
  * is gated on this check.
  */
 export async function checkIsAdmin(userId: string): Promise<boolean> {
-  const c = getSupabase();
-  const { data, error } = await c.from('admins').select('user_id').eq('user_id', userId).limit(1);
+  // `admins` lives in the `admin` schema now, not `public`. It kept its
+  // `user_id` column (unlike the extend/* tables, which renamed it to
+  // `created_by`) — so only the routing changes here.
+  const { data, error } = await adminDb()
+    .from('admins')
+    .select('user_id')
+    .eq('user_id', userId)
+    .limit(1);
   if (error) {
     console.warn('[matrx-extend] checkIsAdmin error', error.message);
     return false;
@@ -195,10 +211,15 @@ export type AiModel = z.infer<typeof AiModelSchema>;
  * so the extension never needs to touch model names.
  */
 export async function fetchActiveModels(): Promise<AiModel[]> {
-  const c = getSupabase();
-  const { data, error } = await c
-    .schema('ai')
-    .from('model')
+  // `ai.model` was SPLIT, not moved: it is now model_definition (base table) +
+  // model_public / model_admin / model_alias / model_config / model_offering.
+  // `model_definition` is the right target — it is the only one that carries all
+  // three columns we read AND is readable by this client. (`model_admin` has the
+  // columns but is `permission denied for view` to the publishable key; and
+  // `model_public` dropped `is_deprecated` entirely, so the filter below would
+  // 42703.) Verified against the live DB.
+  const { data, error } = await aiDb()
+    .from('model_definition')
     .select('id, common_name, is_deprecated')
     .eq('is_deprecated', false)
     .order('common_name', { ascending: true });
@@ -530,7 +551,8 @@ export type CapturedPage = z.infer<typeof CapturedPageSchema>;
 export async function lookupCapturedByUrl(url: string): Promise<CapturedPage | null> {
   const c = getSupabase();
   const { data, error } = await c
-    .schema(EXTEND_SCHEMA).from('wbx_capture')
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_capture')
     .select('id, url, captured_at, title')
     .eq('url', url)
     .order('captured_at', { ascending: false })
@@ -566,7 +588,8 @@ export interface SaveCapturePayload {
 export async function saveCapture(p: SaveCapturePayload): Promise<{ id: string } | null> {
   const c = getSupabase();
   const { data, error } = await c
-    .schema(EXTEND_SCHEMA).from('wbx_capture')
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_capture')
     .insert({
       url: p.url,
       title: p.title ?? null,
@@ -647,7 +670,8 @@ export type ExtractionPattern = z.infer<typeof ExtractionPatternSchema>;
 export async function fetchPatternsForDomain(domain: string): Promise<ExtractionPattern[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .schema(EXTEND_SCHEMA).from('wbx_pattern')
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_pattern')
     .select('*')
     .eq('domain', domain)
     .order('last_used_at', { ascending: false, nullsFirst: false });
@@ -680,7 +704,8 @@ export async function savePattern(p: SavePatternInput): Promise<{ id: string } |
   for (let attempt = 0; attempt < 5; attempt++) {
     const name = attempt === 0 ? p.name : `${p.name} (${attempt + 1})`;
     const { data, error } = await c
-      .schema(EXTEND_SCHEMA).from('wbx_pattern')
+      .schema(EXTEND_SCHEMA)
+      .from('wbx_pattern')
       .insert({
         name,
         domain: p.domain,
@@ -722,7 +747,11 @@ export async function renamePattern(patternId: string, name: string): Promise<st
   const trimmed = name.trim();
   if (!trimmed) return 'Name cannot be empty.';
   const c = getSupabase();
-  const { error } = await c.schema(EXTEND_SCHEMA).from('wbx_pattern').update({ name: trimmed }).eq('id', patternId);
+  const { error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_pattern')
+    .update({ name: trimmed })
+    .eq('id', patternId);
   if (error) {
     if (error.code === '23505') return 'A pattern with that name already exists for this site.';
     console.warn('[matrx-extend] renamePattern error', error.message);
@@ -742,7 +771,8 @@ export async function bumpPatternRun(
 ): Promise<void> {
   const c = getSupabase();
   await c
-    .schema(EXTEND_SCHEMA).from('wbx_pattern')
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_pattern')
     .update({
       last_run_at: new Date().toISOString(),
       last_used_at: new Date().toISOString(),
@@ -776,7 +806,8 @@ export interface SaveSeoAuditPayload {
 export async function saveSeoAudit(p: SaveSeoAuditPayload): Promise<{ id: string } | null> {
   const c = getSupabase();
   const { data, error } = await c
-    .schema(EXTEND_SCHEMA).from('wbx_seo_audit')
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_seo_audit')
     .insert({
       url: p.url,
       signals: p.signals,
@@ -796,7 +827,8 @@ export async function saveSeoAudit(p: SaveSeoAuditPayload): Promise<{ id: string
 export async function fetchLatestSeoAuditForUrl(url: string): Promise<SeoAuditRow | null> {
   const c = getSupabase();
   const { data, error } = await c
-    .schema(EXTEND_SCHEMA).from('wbx_seo_audit')
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_seo_audit')
     .select('id, url, audited_at, signals, recommendations, flesch_reading_ease, word_count, notes')
     .eq('url', url)
     .order('audited_at', { ascending: false })
@@ -825,7 +857,11 @@ export async function attachSeoRecommendations(
   recommendations: unknown,
 ): Promise<void> {
   const c = getSupabase();
-  const { error } = await c.schema(EXTEND_SCHEMA).from('wbx_seo_audit').update({ recommendations }).eq('id', auditId);
+  const { error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_seo_audit')
+    .update({ recommendations })
+    .eq('id', auditId);
   if (error) console.warn('[matrx-extend] attachSeoRecommendations error', error.message);
 }
 
@@ -870,7 +906,8 @@ export interface SaveScreenshotPayload {
 export async function saveScreenshot(p: SaveScreenshotPayload): Promise<{ id: string } | null> {
   const c = getSupabase();
   const { data, error } = await c
-    .schema(EXTEND_SCHEMA).from('wbx_screenshot')
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_screenshot')
     .insert({
       page_url_canonical: p.page_url_canonical,
       page_url_full: p.page_url_full,
@@ -899,7 +936,8 @@ export async function fetchScreenshotsForUrl(
 ): Promise<ScreenshotRow[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .schema(EXTEND_SCHEMA).from('wbx_screenshot')
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_screenshot')
     .select(
       'id, page_url_canonical, page_url_full, page_title, file_id, file_url, width, height, mime_type, byte_length, source, captured_at',
     )
@@ -966,22 +1004,25 @@ export interface SaveGuidanceRowPayload {
  */
 export async function upsertGuidanceRow(p: SaveGuidanceRowPayload): Promise<boolean> {
   const c = getSupabase();
-  const { error } = await c.schema(EXTEND_SCHEMA).from('wbx_guidance').upsert(
-    {
-      id: p.id,
-      domain: p.domain,
-      kind: p.kind,
-      caption: p.caption ?? null,
-      origin_url: p.origin_url ?? null,
-      data: p.data ?? {},
-      created_at: p.created_at,
-      updated_at: p.updated_at,
-      // An intentional save revives a tombstoned row — the user actively
-      // edited it on this machine, which outranks an older delete.
-      is_deleted: false,
-    },
-    { onConflict: 'id' },
-  );
+  const { error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_guidance')
+    .upsert(
+      {
+        id: p.id,
+        domain: p.domain,
+        kind: p.kind,
+        caption: p.caption ?? null,
+        origin_url: p.origin_url ?? null,
+        data: p.data ?? {},
+        created_at: p.created_at,
+        updated_at: p.updated_at,
+        // An intentional save revives a tombstoned row — the user actively
+        // edited it on this machine, which outranks an older delete.
+        is_deleted: false,
+      },
+      { onConflict: 'id' },
+    );
   if (error) {
     if (/relation .* does not exist/i.test(error.message)) return false;
     console.warn('[matrx-extend] upsertGuidanceRow error', error.message);
@@ -996,7 +1037,8 @@ export async function deleteGuidanceRow(id: string): Promise<boolean> {
   // machines' hydrate to apply, so deletes never propagated and a later
   // edit on a stale machine resurrected the item everywhere.
   const { error } = await c
-    .schema(EXTEND_SCHEMA).from('wbx_guidance')
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_guidance')
     .update({ is_deleted: true, updated_at: new Date().toISOString() })
     .eq('id', id);
   if (error) {
@@ -1011,7 +1053,8 @@ export async function deleteGuidanceRow(id: string): Promise<boolean> {
 export async function fetchAllGuidanceRows(): Promise<WbxGuidanceRow[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .schema(EXTEND_SCHEMA).from('wbx_guidance')
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_guidance')
     .select('id, domain, kind, caption, origin_url, data, created_at, updated_at, is_deleted')
     .order('updated_at', { ascending: false });
   if (error) {

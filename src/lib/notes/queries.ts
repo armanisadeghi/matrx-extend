@@ -17,9 +17,7 @@ import {
   type UpdateNotePatch,
 } from '@/lib/notes/types';
 import { getSupabase } from '@/lib/supabase/client';
-
-// The notes tables live in the `workbench` Postgres schema, not `public`.
-const NOTES_SCHEMA = 'workbench';
+import { workbenchDb } from '@/lib/supabase/schemas';
 
 const LIST_COLUMNS =
   'id, created_by, label, folder_name, folder_id, tags, updated_at, position, visibility';
@@ -28,9 +26,7 @@ const FULL_COLUMNS = `${LIST_COLUMNS}, content, metadata, deleted_at, version, c
 // ─── Reads ──────────────────────────────────────────────────────────────────
 
 export async function listMyNotes(): Promise<NoteListItem[]> {
-  const c = getSupabase();
-  const { data, error } = await c
-    .schema(NOTES_SCHEMA)
+  const { data, error } = await workbenchDb()
     .from('notes')
     .select(LIST_COLUMNS)
     .is('deleted_at', null)
@@ -49,9 +45,7 @@ export async function listMyNotes(): Promise<NoteListItem[]> {
 }
 
 export async function listMyFolders(): Promise<NoteFolder[]> {
-  const c = getSupabase();
-  const { data, error } = await c
-    .schema(NOTES_SCHEMA)
+  const { data, error } = await workbenchDb()
     .from('note_folders')
     .select('*')
     .is('deleted_at', null)
@@ -69,9 +63,7 @@ export async function listMyFolders(): Promise<NoteFolder[]> {
 }
 
 export async function getNote(id: string): Promise<Note | null> {
-  const c = getSupabase();
-  const { data, error } = await c
-    .schema(NOTES_SCHEMA)
+  const { data, error } = await workbenchDb()
     .from('notes')
     .select(FULL_COLUMNS)
     .eq('id', id)
@@ -105,8 +97,7 @@ export async function createNote(input: CreateNoteInput): Promise<Note | null> {
     folder_name: input.folder_name ?? null,
     folder_id: input.folder_id ?? null,
   };
-  const { data, error } = await c
-    .schema(NOTES_SCHEMA)
+  const { data, error } = await workbenchDb()
     .from('notes')
     .insert(payload)
     .select(FULL_COLUMNS)
@@ -120,9 +111,7 @@ export async function createNote(input: CreateNoteInput): Promise<Note | null> {
 }
 
 export async function updateNote(id: string, patch: UpdateNotePatch): Promise<Note | null> {
-  const c = getSupabase();
-  const { data, error } = await c
-    .schema(NOTES_SCHEMA)
+  const { data, error } = await workbenchDb()
     .from('notes')
     .update({ ...patch, updated_at: new Date().toISOString() })
     .eq('id', id)
@@ -137,9 +126,7 @@ export async function updateNote(id: string, patch: UpdateNotePatch): Promise<No
 }
 
 export async function softDeleteNote(id: string): Promise<boolean> {
-  const c = getSupabase();
-  const { error } = await c
-    .schema(NOTES_SCHEMA)
+  const { error } = await workbenchDb()
     .from('notes')
     .update({ deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .eq('id', id);

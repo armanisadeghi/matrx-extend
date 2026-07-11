@@ -3,7 +3,7 @@
   "version": "0.1.59",
   "private": true,
   "type": "module",
-  "description": "Matrx Extend — agentic Chrome extension for chat, tasks, scraping, structured data extraction, and SEO",
+  "description": "Matrx Extend \u2014 agentic Chrome extension for chat, tasks, scraping, structured data extraction, and SEO",
   "packageManager": "pnpm@10.30.3",
   "scripts": {
     "dev": "wxt",
@@ -31,7 +31,9 @@
     "check:migrations": "tsx scripts/check-migrations.ts",
     "check:migrations:strict": "tsx scripts/check-migrations.ts --strict",
     "ui:add": "pnpm dlx shadcn@latest add",
-    "prepare": "wxt prepare && husky || true"
+    "prepare": "wxt prepare && husky || true",
+    "check:schema-routing": "tsx scripts/check-schema-routing.ts",
+    "check:schema-routing:strict": "tsx scripts/check-schema-routing.ts --strict"
   },
   "dependencies": {
     "@cartesia/cartesia-js": "^2.2.9",
@@ -101,10 +103,6 @@
     "*.{ts,tsx,js,jsx,json,css}": "biome check --write --no-errors-on-unmatched"
   },
   "pnpm": {
-    "onlyBuiltDependencies": [
-      "@biomejs/biome",
-      "esbuild",
-      "spawn-sync"
-    ]
+    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "spawn-sync"]
   }
 }

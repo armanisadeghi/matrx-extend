@@ -71,7 +71,12 @@ export async function claimTask(
     claim_expires_at: expires.toISOString(),
   };
 
-  const { data, error } = await supabase.from('sch_run').insert(row).select().single();
+  const { data, error } = await supabase
+    .schema('scheduler')
+    .from('sch_run')
+    .insert(row)
+    .select()
+    .single();
 
   if (error) {
     if (isClaimRaceLoss(error)) {
@@ -112,6 +117,7 @@ export async function completeRun(
   opts: CompleteRunOptions,
 ): Promise<boolean> {
   const { data, error } = await supabase
+    .schema('scheduler')
     .from('sch_run')
     .update({
       status: 'success' satisfies RunStatus,
@@ -152,6 +158,7 @@ export interface FailRunOptions {
  */
 export async function failRun(supabase: SupabaseClient, opts: FailRunOptions): Promise<boolean> {
   const { data, error } = await supabase
+    .schema('scheduler')
     .from('sch_run')
     .update({
       status: 'failed' satisfies RunStatus,
@@ -201,6 +208,7 @@ export async function markRunRunning(
   }
 
   const { data, error } = await supabase
+    .schema('scheduler')
     .from('sch_run')
     .update(patch)
     .eq('id', opts.runId)

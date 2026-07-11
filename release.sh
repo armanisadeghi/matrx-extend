@@ -394,6 +394,18 @@ else
     ok "Typecheck passed"
 fi
 
+# Supabase table routing — BLOCKING, and deliberately not covered by
+# --skip-typecheck. The DB split `public` into ~48 domain schemas; an
+# unqualified `.from('wbx_pattern')` compiles, builds, and passes every test,
+# then 404s (PGRST205) in the user's browser. Shipping that is how the extension
+# silently loses every DB read. Nothing else in this pipeline can see it.
+CURRENT_STEP="schema-routing"
+if pnpm check:schema-routing:strict; then
+    ok "Supabase schema routing clean"
+else
+    fail "Unqualified Supabase table routing — these 404 at RUNTIME. Run 'pnpm check:schema-routing' for the list."
+fi
+
 # ── 3. Bump version ─────────────────────────────────────────────────────────
 CURRENT_STEP="version-bump"
 step "3/8  Bump version → ${NEW_VERSION}"

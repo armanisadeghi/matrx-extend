@@ -29,6 +29,7 @@
  */
 
 import { getSupabase } from '@/lib/supabase/client';
+import { workbenchDb } from '@/lib/supabase/schemas';
 import { z } from 'zod';
 
 /**
@@ -106,8 +107,7 @@ export const TableFieldSchema = z.object({
 export type TableField = z.infer<typeof TableFieldSchema>;
 
 export async function listUserTables(): Promise<UserTable[]> {
-  const c = getSupabase();
-  const { data, error } = await c
+  const { data, error } = await workbenchDb()
     .from('udt_datasets')
     .select(
       'id, table_name, description, user_id, is_public, version, organization_id, project_id, task_id, created_at, updated_at',
@@ -123,8 +123,7 @@ export async function listUserTables(): Promise<UserTable[]> {
 }
 
 export async function getUserTableSchema(tableId: string): Promise<TableField[]> {
-  const c = getSupabase();
-  const { data, error } = await c
+  const { data, error } = await workbenchDb()
     .from('udt_dataset_fields')
     .select('id, table_id, field_name, data_type, field_order, validation_rules')
     .eq('table_id', tableId)

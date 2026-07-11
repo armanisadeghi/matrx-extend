@@ -50,6 +50,13 @@ jobs:
       - name: Typecheck
         run: pnpm compile
 
+      # Supabase table routing. The DB split `public` into ~48 domain schemas, so
+      # an unqualified `.from('wbx_pattern')` resolves to a table that no longer
+      # exists and 404s (PGRST205) in the USER'S BROWSER — tsc, lint, the tests,
+      # and the build are all blind to it. This is the only gate that sees it.
+      - name: Schema routing
+        run: pnpm check:schema-routing:strict
+
       - name: Lint
         run: pnpm lint
 

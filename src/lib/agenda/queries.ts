@@ -19,6 +19,7 @@
  */
 
 import { getSupabase } from '@/lib/supabase/client';
+import { schedulerDb } from '@/lib/supabase/schemas';
 import { z } from 'zod';
 import { nextCronTime } from './cron';
 
@@ -260,7 +261,7 @@ export async function listMyTasks(opts?: {
   enabled_only?: boolean;
   limit?: number;
 }): Promise<AgendaTask[]> {
-  const c = getSupabase();
+  const c = schedulerDb();
   let q = c
     .from('sch_task')
     .select(SELECT_AGENDA_TASK)
@@ -285,7 +286,7 @@ export async function listDueForSurface(
   surface: SurfaceTarget,
   opts?: { limit?: number },
 ): Promise<AgendaTask[]> {
-  const c = getSupabase();
+  const c = schedulerDb();
   const { data, error } = await c
     .from('sch_task')
     .select(SELECT_AGENDA_TASK)
@@ -312,7 +313,7 @@ export async function listContextMatchTasks(
   surface: SurfaceTarget,
   opts?: { limit?: number },
 ): Promise<AgendaTask[]> {
-  const c = getSupabase();
+  const c = schedulerDb();
   const { data, error } = await c
     .from('sch_task')
     .select(SELECT_AGENDA_TASK_TRIGGER_INNER)
@@ -331,7 +332,7 @@ export async function listContextMatchTasks(
 }
 
 export async function getTask(id: string): Promise<AgendaTask | null> {
-  const c = getSupabase();
+  const c = schedulerDb();
   const { data, error } = await c
     .from('sch_task')
     .select(SELECT_AGENDA_TASK)
@@ -350,7 +351,7 @@ export async function listRunsForTask(
   taskId: string,
   opts?: { limit?: number },
 ): Promise<AgendaRun[]> {
-  const c = getSupabase();
+  const c = schedulerDb();
   const { data, error } = await c
     .from('sch_run')
     .select('*')
@@ -389,7 +390,10 @@ export interface CreateTaskInput {
  * fallback for DBs where the function hasn't been applied yet (42883).
  */
 export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
+  // RPCs still live in `public` — must stay on the plain (unscoped) client.
   const c = getSupabase();
+  // Table fallback path below targets `scheduler.sch_*` — scoped client.
+  const sch = schedulerDb();
   const nextDueAt = input.next_due_at ?? computeFirstDue(input.trigger_config);
 
   const { data: rpcId, error: rpcErr } = await c.rpc('create_agent_task', {
@@ -423,7 +427,7 @@ export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
   console.warn('[matrx-extend] create_agent_task RPC unavailable — using legacy 3-insert path');
 
   // 1. sch_task
-  const { data: taskRow, error: taskErr } = await c
+  const { data: taskRow, error: taskErr } = await sch
     .from('sch_task')
     .insert({
       kind: 'agent',
@@ -442,7 +446,7 @@ export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
   const taskId = taskRow.id as string;
 
   // 2. sch_agent_task — cleanup parent if this fails.
-  const { error: agentErr } = await c.from('sch_agent_task').insert({
+  const { error: agentErr } = await sch.from('sch_agent_task').insert({
     id: taskId,
     agent_id: input.agent_id ?? null,
     prompt: input.prompt,
@@ -453,12 +457,12 @@ export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
     max_concurrent: input.max_concurrent ?? 1,
   });
   if (agentErr) {
-    await c.from('sch_task').delete().eq('id', taskId);
+    await sch.from('sch_task').delete().eq('id', taskId);
     throw new Error(`createTask (sch_agent_task): ${agentErr.message}`);
   }
 
   // 3. sch_trigger — cleanup parent if this fails.
-  const { error: trigErr } = await c.from('sch_trigger').insert({
+  const { error: trigErr } = await sch.from('sch_trigger').insert({
     task_id: taskId,
     type: input.trigger_type,
     config: input.trigger_config,
@@ -466,7 +470,7 @@ export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
     next_due_at: nextDueAt,
   });
   if (trigErr) {
-    await c.from('sch_task').delete().eq('id', taskId);
+    await sch.from('sch_task').delete().eq('id', taskId);
     throw new Error(`createTask (sch_trigger): ${trigErr.message}`);
   }
 
@@ -488,7 +492,7 @@ export async function updateTask(
   id: string,
   patch: Partial<CreateTaskInput> & { enabled?: boolean; last_run_at?: string },
 ): Promise<AgendaTask | null> {
-  const c = getSupabase();
+  const c = schedulerDb();
 
   // Split the patch by destination table.
   const taskPatch: Record<string, unknown> = {};
@@ -555,7 +559,7 @@ export async function claimDueFire(
   task: AgendaTask,
   patch: { next_due_at: string | null; last_run_at: string; enabled: boolean },
 ): Promise<boolean> {
-  const c = getSupabase();
+  const c = schedulerDb();
   let q = c
     .from('sch_task')
     .update({
@@ -599,7 +603,7 @@ export async function claimDueFire(
  * sweep to this user's rows.
  */
 export async function reapExpiredRuns(): Promise<number> {
-  const c = getSupabase();
+  const c = schedulerDb();
   const now = new Date().toISOString();
   const { data, error } = await c
     .from('sch_run')
@@ -620,7 +624,7 @@ export async function reapExpiredRuns(): Promise<number> {
 
 export async function deleteTask(id: string): Promise<boolean> {
   // FK cascades drop sch_agent_task, sch_trigger, sch_run rows automatically.
-  const c = getSupabase();
+  const c = schedulerDb();
   const { error } = await c.from('sch_task').delete().eq('id', id);
   return !error;
 }
@@ -643,7 +647,7 @@ export async function claimRun(
   surface: SurfaceTarget,
   opts: { lease_seconds?: number } = {},
 ): Promise<AgendaRun | null> {
-  const c = getSupabase();
+  const c = schedulerDb();
   const claimToken = crypto.randomUUID();
   const claimExpiresAt = new Date(Date.now() + (opts.lease_seconds ?? 600) * 1000).toISOString();
   const now = new Date().toISOString();
@@ -680,7 +684,7 @@ export async function claimRun(
  * the row stuck while the UI believed it finished).
  */
 export async function markRunStarted(runId: string, conversationId?: string): Promise<void> {
-  const c = getSupabase();
+  const c = schedulerDb();
   const { error } = await c
     .from('sch_run')
     .update({
@@ -698,7 +702,7 @@ export async function finishRun(
   outcome: 'success' | 'failed' | 'cancelled',
   details?: { result_summary?: string; error_message?: string; result_metadata?: object },
 ): Promise<void> {
-  const c = getSupabase();
+  const c = schedulerDb();
   const { error } = await c
     .from('sch_run')
     .update({

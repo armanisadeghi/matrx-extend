@@ -13,6 +13,7 @@
  */
 
 import { getSupabase } from '@/lib/supabase/client';
+import { usersDb } from '@/lib/supabase/schemas';
 import { z } from 'zod';
 
 // ─── Multi-value sub-schemas ────────────────────────────────────────────────
@@ -139,8 +140,7 @@ export async function upsertUserFormProfile(
   userId: string,
   patch: UserFormProfilePatch,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
-  const c = getSupabase();
-  const { error } = await c
+  const { error } = await usersDb()
     .from('user_form_profile')
     .upsert({ user_id: userId, ...patch }, { onConflict: 'user_id' });
   if (error) {
