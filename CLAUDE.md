@@ -1303,6 +1303,18 @@ Consequences to keep in mind:
 - **`pnpm add -D typescript@latest` will break the codegen script.** If you ever
   need to collapse this back to a single install, first confirm
   `openapi-typescript` has shipped TS 7 support.
+- **Never invoke `tsc` by path.** `./node_modules/typescript/bin/tsc` does not exist
+  anymore (that package's only bin is `tsc6`). Go through the bin — `pnpm exec tsc`
+  or a package script. `scripts/update-api-types.mjs` hardcoded the old path and
+  reported the resulting `MODULE_NOT_FOUND` as "TYPE ERRORS DETECTED", which is how
+  a broken toolchain spent a while impersonating a backend contract drift.
+- **In VS Code, do NOT set `typescript.tsdk` / "Use Workspace Version."** The
+  workspace `typescript` package is the 6.0 API bundle: it ships `typescript.js` and
+  `tsserverlibrary.js` but **no `tsserver.js`**, which is the file VS Code's TS
+  extension loads. Pointing the editor at it errors or silently falls back. Let VS
+  Code use its **bundled** TypeScript for IntelliSense (checking semantics are the
+  same — TS 7 is a faithful port), and treat **`pnpm compile` as the source of
+  truth**. TS 7 ships no tsserver-compatible LSP yet; when it does, revisit.
 - Biome does the linting here, so there is no `typescript-eslint` to keep on the
   6.0 API. `tsx`, `vitest`, and `wxt` all parse via esbuild/Vite and never touch
   the TS API — none of them constrain this.
