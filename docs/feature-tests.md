@@ -1503,8 +1503,8 @@ Every entry follows this shape:
   only advertisement was filtered.
 - **Where to test:** Tools tab as a NON-admin account (or sign out → guest).
 - **Steps:**
-  1. As a non-admin, force-run an admin tool (e.g. `get_system_info` or
-     `chrome_cookies` with `{"action":"get"}`) via the Tools tab Run button
+  1. As a non-admin, force-run an admin tool (e.g. `chrome_cookies` with
+     `{"action":"get"}`, or a `cdp_*` tool) via the Tools tab Run button
      or by having a test page post a `__matrx_webmcp_call` for it.
   2. As an admin, run the same tool.
 - **Expected:** Non-admin gets a structured `admin_only:` /
