@@ -201,8 +201,11 @@ export function recipesForUrl(url: string, recipes: Recipe[] = RECIPES): Recipe[
 }
 
 // ── DB-backed recipes (decision D6) ─────────────────────────────────────────
-// public.wbx_recipe is the live catalog — updatable without shipping a
+// extend.wbx_recipe is the live catalog — updatable without shipping a
 // release. The bundled RECIPES above is the seed and the offline fallback.
+// (It is a shared read-only catalog: no per-user ownership column at all, and
+// its RLS is a plain `SELECT true` — unlike the rest of extend.*, which is
+// owned via `created_by`.)
 
 const RecipeRowSchema = z.object({
   id: z.string(),

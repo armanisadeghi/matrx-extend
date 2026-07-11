@@ -28,8 +28,16 @@
  *
  * 1. `extend.*` and `workbench.notes` / `workbench.note_folders` have NO
  *    `user_id` column anymore — ownership is `created_by`. Filter on that.
- *    (`scheduler.sch_*`, `admin.admins`, `users.user_form_profile`, and
- *    `workbench.udt_*` DID keep `user_id` — this is not a blanket rename.)
+ *    (`scheduler.sch_task` / `sch_run` / `sch_trigger`, `admin.admins`,
+ *    `users.user_form_profile`, and `workbench.udt_*` DID keep `user_id` —
+ *    this is NOT a blanket rename. Check the table before you filter.)
+ *
+ *    Two tables have neither, and both are load-bearing exceptions:
+ *      - `extend.wbx_recipe`      — a SHARED read-only catalog. No ownership
+ *                                   column at all; RLS is a plain `SELECT true`.
+ *      - `scheduler.sch_agent_task` — the 1:1 agent extension of `sch_task`.
+ *                                   Ownership lives on the parent; never filter
+ *                                   this table by a user column directly.
  *
  * 2. NEVER send `created_by` or `organization_id` on an INSERT. Two BEFORE-INSERT
  *    triggers stamp them: `platform._stamp_actor()` sets `created_by = auth.uid()`,

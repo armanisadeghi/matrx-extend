@@ -90,8 +90,15 @@ export async function createNote(input: CreateNoteInput): Promise<Note | null> {
     console.warn('[notes] createNote: no auth user');
     return null;
   }
+  // Owner (`created_by`) is stamped server-side by the platform _stamp_actor
+  // trigger from auth.uid(); we do NOT send it. The trigger is a
+  // COALESCE(NEW.created_by, uid), so a client-supplied value WINS over the
+  // DB's — and RLS `WITH CHECK (created_by = auth.uid())` then rejects the whole
+  // insert if the cached session id has drifted from the JWT. Sending it buys
+  // nothing and turns a token-refresh skew into a failed save.
+  // (`organization_id` is likewise stamped, by _stamp_org_default.)
+  // Same rule as createHighlight() — see src/lib/supabase/schemas.ts.
   const payload = {
-    created_by: userId,
     label: input.label?.trim() || 'Untitled',
     content: input.content ?? '',
     folder_name: input.folder_name ?? null,

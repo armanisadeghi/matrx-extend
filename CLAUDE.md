@@ -461,8 +461,13 @@ some tables dropped `user_id`:**
 
 - **`extend.*` and `workbench.notes` / `note_folders` have NO `user_id` anymore** —
   ownership is **`created_by`**. Filter on that.
-- **`scheduler.sch_*`, `admin.admins`, `users.user_form_profile`, and
-  `workbench.udt_*` KEPT `user_id`.** Do not "helpfully" rename it.
+- **`scheduler.sch_task`/`sch_run`/`sch_trigger`, `admin.admins`,
+  `users.user_form_profile`, and `workbench.udt_*` KEPT `user_id`.** Do not
+  "helpfully" rename it.
+- **Two tables have NEITHER:** `extend.wbx_recipe` is a shared read-only catalog
+  (no ownership column; RLS is plain `SELECT true`), and `scheduler.sch_agent_task`
+  is the 1:1 extension of `sch_task` whose ownership lives on the parent. Never
+  filter either by a user column directly.
 
 **On INSERT, never send `created_by` or `organization_id`.** Two BEFORE-INSERT
 triggers stamp them: `platform._stamp_actor()` sets `created_by = auth.uid()`, and
