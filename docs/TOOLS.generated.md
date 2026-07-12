@@ -7,8 +7,8 @@
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-07-11T17:34:49.231Z
-Total tools: 81
+Generated: 2026-07-12T22:18:26.097Z
+Total tools: 80
 
 ## ai
 
@@ -389,14 +389,6 @@ _action_
 Synthesize a drag-and-drop of a single file onto a target element or coordinate. Use for drop zones that aren't backed by <input type='file'>. Provide ref OR coordinate. file_id is a MediaRef (e.g. from a prior screenshot or upload).
 
 **Parameters:** `ref` (string); `tab_id` (string, required); `file_id` (string, required); `filename` (string); `coordinate` (array)
-
-### `evaluate_javascript`
-
-_privileged_
-
-Evaluate JavaScript in the page context. Returns the value of the last expression — do NOT use 'return' at top level. Prefer DOM tools (read_page, find, computer, form_input) when possible — JS exec is XSS-equivalent and bypasses our safety nets.
-
-**Parameters:** `arg` (any); `text` (string, required); `tab_id` (string)
 
 ### `form_input`
 
