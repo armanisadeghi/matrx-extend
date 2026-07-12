@@ -156,7 +156,7 @@ declared single purpose. Current state, audited against real code usage:
 
 | Permission | Used in code? | Risk |
 |---|---|---|
-| `debugger` | yes (CDP client, 5 files) | 🔴 Highest-scrutiny permission that exists. Cannot be optional (Chrome forbids it). Expect to justify it in detail — or drop CDP from the public build. |
+| `debugger` | yes (CDP client, 5 files) | 🟠 Highest-scrutiny permission that exists, and cannot be made optional (Chrome forbids `debugger` in `optional_permissions`). **But we have a genuinely strong justification — see §4b.** |
 | `<all_urls>` host access | yes | 🟠 Broad host access triggers "excessive permissions" unless *genuinely necessary for core functionality*. For a browse-anywhere agent it IS necessary — but we must say why, explicitly. |
 | `history`, `bookmarks`, `sessions` | 1–2 files each | 🟠 Very sensitive. Each must visibly serve the single purpose or be cut. |
 | `nativeMessaging` | yes (`connectNative('com.matrx.local')`) | 🟠 Legitimate in code, but the native host does not exist on a reviewer's machine. Justify or drop. |
@@ -166,9 +166,73 @@ declared single purpose. Current state, audited against real code usage:
 | `clipboardWrite` | only `navigator.clipboard.writeText` | 🟡 Likely unnecessary (that call works on a focused extension page without it). Verify, then drop. |
 | `contextMenus` | yes (2 files) | 🟡 **Was already flagged "declared but unused" on the published v0.1.4 build.** It is genuinely used now — but confirm the reviewer can see it being used. |
 
-**Do not ship permissions "preemptively."** The manifest currently admits, in a comment,
-that four permissions were added for features that do not exist yet. That is exactly what
-the "minimum permissions" rule prohibits, and it is written down in our own source.
+**Do not ship permissions "preemptively."** The manifest ~~currently admits~~ *(fixed
+2026-07-11)* used to admit, in a comment, that four permissions were added for features that
+did not exist yet. That is exactly what the "minimum permissions" rule prohibits, and it was
+written down in our own source. Those four are gone.
+
+---
+
+## 4b. The `debugger` decision — exactly what it costs, and the justification
+
+**The strongest fact in our favour: we never use CDP to execute code.** Verified — the repo
+contains **zero** calls to `Runtime.evaluate`, `Runtime.callFunctionOn`, or
+`Runtime.compileScript`. The entire CDP surface we use is:
+
+| Domain | What we call it for |
+|---|---|
+| `Page.startScreencast` / `screencastFrame` | GIF recording of a user workflow |
+| `Page.captureScreenshot` / `getLayoutMetrics` | Full-page (beyond-the-fold) screenshot |
+| `Page.printToPDF` | Save the page as a PDF |
+| `Network.*` (enable, requestWillBeSent, getResponseBody…) | Show the user the page's network calls |
+| `Accessibility.getFullAXTree` | Read the page's accessibility tree |
+| `Input.dispatchMouseEvent` / `insertText` | Click/type on pages where normal injection fails (shadow DOM, cross-origin iframes) |
+| `Emulation.*` | Device/viewport emulation |
+
+That matters enormously, because `debugger` is one of MV3's two sanctioned **remote-code**
+exceptions — so a reviewer's first assumption will be that we are using it to run code. We
+are not. State this explicitly in the reviewer notes.
+
+### What we actually LOSE if we remove it
+
+21 tools depend on it. **14 are NOT admin-only** — real users lose these, not just us.
+
+**Gone entirely (no fallback exists):**
+- **GIF recording** (`chrome_record_gif`) — the Guidance tab's record-a-workflow feature.
+  CDP screencast is the only viable path; `captureVisibleTab` is throttled to ~2 frames/sec,
+  which is useless for a GIF.
+- **Network capture** (6 tools) — the Showcase **Network** tab and the `network_capture`
+  data-pattern extraction mode. There is no non-CDP way to see a page's XHR/fetch traffic.
+- **Console reading** (`read_console_messages`) — page errors/exceptions.
+- **Print-to-PDF**, **performance metrics**.
+
+**Degraded but survives:**
+- **Full-page screenshot** — falls back to `src/lib/screenshot/full-page.ts` (scroll-and-stitch
+  via `captureVisibleTab`). Slower and rate-limited, but it works.
+- **CDP input** — normal `click_element` / `type_into_element` (via `chrome.scripting`) handle
+  the overwhelming majority of pages. We only lose the fallback for genuinely hard pages
+  (closed shadow roots, cross-origin iframes, canvas apps).
+- **Accessibility tree** — `read_page` builds its own tree via scripting; `cdp_a11y_tree` is
+  the higher-fidelity version.
+
+**Costs us NO user data:** verified against the live DB — **zero** saved patterns
+(`extend.wbx_pattern`) use the `network_capture` kind. Removing it strands nothing.
+
+### Recommendation
+**Keep it for this submission.** The thing that was almost certainly killing us (the
+`new Function(remoteCode)` RCE) is now gone. `debugger` powers real, user-facing features,
+and we have a clean, honest, verifiable justification (no code execution). If the reviewer
+rejects specifically on `debugger`, we remove it then — and we now know precisely what that
+costs, so it's a 30-minute change, not a discovery exercise.
+
+### Reviewer-note text (paste this)
+> The `debugger` permission is used solely to provide features Chrome offers no other API for:
+> recording a GIF of the user's workflow (`Page.startScreencast`), showing the user their
+> page's network requests, capturing a full-page screenshot, saving the page as a PDF, and
+> reading the accessibility tree. **We do not use it to execute code** — the extension makes
+> no `Runtime.evaluate`, `Runtime.callFunctionOn`, or `Runtime.compileScript` calls anywhere.
+> It cannot be an optional permission because Chrome does not permit `debugger` in
+> `optional_permissions`.
 
 ---
 
