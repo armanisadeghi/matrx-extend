@@ -44,6 +44,7 @@ import { startSchedulerHost, stopSchedulerHost } from '@/lib/scheduler-host';
 import '@/lib/scheduler-host/handlers/ping';
 import type { MicRequestPayload, MicRunPayload } from '@/lib/audio/mic-types';
 import type { UserProfile } from '@/lib/auth/types';
+import { clearBrokerCacheOnSignOut, registerBrokerHandlers } from '@/lib/broker/sw-host';
 import { setupContextMenus } from '@/lib/context-menus/setup';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -93,6 +94,11 @@ export function bootstrapBackground(): void {
 
   // ── 1. Register message handlers SYNCHRONOUSLY so they're ready immediately.
   registerHandlers();
+
+  // ── 1a. Token broker — the SW owns the canonical in-memory credential
+  //        cache; sidepanel/offscreen mint + consume through these channels
+  //        (src/lib/broker/). Tokens are memory-only, never persisted.
+  registerBrokerHandlers();
 
   // ── 2. Tool dispatcher subscribes to STREAM_OPENED + STREAM_CHUNK.
   //       Per-run permission mode is latched from the chat hook; this default
@@ -804,6 +810,9 @@ function registerSchedulerHostUserWatcher(): void {
       void startSchedulerHost(next.id);
     } else {
       void stopSchedulerHost();
+      // Brokered grants belong to the user who minted them — drop the
+      // in-memory credential cache the moment the profile clears.
+      clearBrokerCacheOnSignOut();
     }
   });
 }

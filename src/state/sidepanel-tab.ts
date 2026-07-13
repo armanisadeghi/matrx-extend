@@ -22,6 +22,7 @@ export type SidepanelTab =
   | 'settings'
   | 'profile'
   | 'showcase'
+  | 'broker'
   | 'debug';
 
 interface SidepanelTabState {

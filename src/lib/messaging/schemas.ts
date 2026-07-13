@@ -218,6 +218,16 @@ export const CHANNELS = {
   VIDEO_REQUEST: 'video:request',
   VIDEO_RUN: 'video:run',
   VIDEO_EVENT: 'video:event',
+
+  // Token broker (any surface → SW; request/response via send()).
+  // The SW owns the canonical in-memory credential cache — these channels
+  // let other contexts mint/consume through it so every context shares one
+  // cache and brokered tokens live primarily in SW memory. Payload shapes
+  // in src/lib/broker/index.ts. Tokens are NEVER persisted or logged.
+  BROKER_MINT: 'broker:mint', // → BrokerResult<BrokeredCredential>
+  BROKER_INVALIDATE: 'broker:invalidate', // → { ok: true }
+  BROKER_SNAPSHOT: 'broker:snapshot', // → BrokerCacheEntrySnapshot[] (token-free)
+  BROKER_PROXIED_JSON: 'broker:proxied-json', // SW-side gateway call → BrokerProxiedJsonResult
 } as const;
 
 export type ChannelName = (typeof CHANNELS)[keyof typeof CHANNELS];

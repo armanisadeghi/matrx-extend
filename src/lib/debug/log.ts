@@ -33,7 +33,8 @@ export type LogSource =
   | 'frontend-bridge'
   | 'pilot'
   | 'pilot-stream'
-  | 'audio';
+  | 'audio'
+  | 'broker';
 
 export interface DebugEvent {
   id: string;

@@ -22,6 +22,7 @@ import {
   Crosshair,
   Database,
   Highlighter,
+  KeyRound,
   ListChecks,
   ListTodo,
   Loader2,
@@ -67,6 +68,7 @@ const VIEW_LOADERS: Record<SidepanelTab, () => Promise<{ default: ComponentType 
   profile: () => import('@/features/profile/ProfileView').then((m) => ({ default: m.ProfileView })),
   showcase: () =>
     import('@/features/showcase/ShowcaseView').then((m) => ({ default: m.ShowcaseView })),
+  broker: () => import('@/features/broker/BrokerView'),
   debug: () => import('@/features/debug/DebugView').then((m) => ({ default: m.DebugView })),
 };
 
@@ -86,6 +88,7 @@ const ToolsView = lazy(VIEW_LOADERS.tools);
 const SettingsView = lazy(VIEW_LOADERS.settings);
 const ProfileView = lazy(VIEW_LOADERS.profile);
 const ShowcaseView = lazy(VIEW_LOADERS.showcase);
+const BrokerView = lazy(VIEW_LOADERS.broker);
 const DebugView = lazy(VIEW_LOADERS.debug);
 
 const TabFallback = (
@@ -267,6 +270,15 @@ export function App() {
                 )}
                 {isAdmin && (
                   <TabsTrigger
+                    value="broker"
+                    className="size-7 p-0 data-[state=active]:text-cyan-600 dark:data-[state=active]:text-cyan-400"
+                    title="Token broker (admin only)"
+                  >
+                    <KeyRound className="size-3.5" />
+                  </TabsTrigger>
+                )}
+                {isAdmin && (
+                  <TabsTrigger
                     value="debug"
                     className="relative size-7 p-0 data-[state=active]:text-amber-600 dark:data-[state=active]:text-amber-400"
                     title="Debug (admin only)"
@@ -401,6 +413,13 @@ export function App() {
               >
                 <Suspense fallback={TabFallback}>
                   <ShowcaseView />
+                </Suspense>
+              </TabsContent>
+            )}
+            {isAdmin && (
+              <TabsContent value="broker" className="flex-1 min-h-0 overflow-y-auto">
+                <Suspense fallback={TabFallback}>
+                  <BrokerView />
                 </Suspense>
               </TabsContent>
             )}

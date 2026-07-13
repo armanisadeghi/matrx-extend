@@ -1638,6 +1638,35 @@ Every entry follows this shape:
   2. Expand the reasoning parts in the assistant bubble.
 - **Expected:** two distinct reasoning parts, in stream order, not one merged block.
 
+### Token broker — demo surface
+- **What it does:** mints scoped short-lived credentials from aidream's token broker
+  (`POST /broker/tokens`), shows the SW-owned credential cache, and runs a proxied
+  Anthropic round-trip through the gateway (executed in the SW; the token never
+  reaches the sidepanel).
+- **Where to test:** admin sidepanel → Broker tab (KeyRound icon, cyan). Admin + signed in.
+- **Prereq:** the target server must have `BROKER_TOKEN_SIGNING_KEY` + `public_url`
+  configured (otherwise every mint shows the loud 503 card — which is itself a test).
+- **Steps:**
+  1. Pick audience `anthropic`, tier policy `none` (note: Mint is disabled until a
+     tier is explicitly chosen — no default, by contract).
+  2. Click **Mint (cached)** → green card: `proxied` / `anthropic_messages`, gateway
+     endpoint URL, masked token tail, live expiry countdown. Cache list shows one row.
+  3. Click **Mint (cached)** again → no new row / same token tail (cache hit).
+     **Force fresh** → token tail changes.
+  4. Mint audience `openai_realtime` with model `gpt-realtime` → `native_ephemeral`
+     row with an OpenAI endpoint.
+  5. In "Proxied test", send the default prompt → JSON result with the model's reply
+     ("broker gateway OK").
+  6. Trash-icon a cache row → it disappears; next mint re-mints.
+- **Expected:** all of the above; tokens never appear anywhere in full (UI, logs,
+  Debug tab), only 6-char tails.
+- **Edge cases worth poking:**
+  - Tier `guest` on the proxied test with a premium model → server rewrites the
+    model (visible on Anthropic's response `model` field) — tier enforcement.
+  - Signed out / guest → mint fails 401 (guests cannot mint in v1).
+  - Backend env pointed at a host without the broker configured → 503 card with
+    the "deploy problem — do not retry" copy, no silent fallback.
+
 ## Template (copy when adding a new entry)
 
 ```markdown
