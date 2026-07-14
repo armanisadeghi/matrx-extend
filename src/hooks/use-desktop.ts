@@ -1,21 +1,27 @@
-import { on, send } from '@/lib/messaging/native';
-import { CHANNELS } from '@/lib/messaging/schemas';
-import { useDesktopStore } from '@/state/desktop';
-import { useEffect } from 'react';
+import { on, send } from "@/lib/messaging/native";
+import { CHANNELS } from "@/lib/messaging/schemas";
+import type { DesktopHealth } from "@/lib/desktop/types";
+import { useDesktopStore } from "@/state/desktop";
+import { useEffect } from "react";
 
 export function useDesktopBridge() {
   const state = useDesktopStore();
   useEffect(() => {
-    return on<{ transport: 'native' | 'http' | 'none'; lastChecked: number }, { ack: true }>(
-      CHANNELS.DESKTOP_AVAILABILITY,
-      (payload) => {
-        useDesktopStore.getState().set({
-          transport: payload.transport,
-          lastChecked: payload.lastChecked,
-        });
-        return { ack: true };
+    return on<
+      {
+        transport: "native" | "http" | "none";
+        health: DesktopHealth | null;
+        lastChecked: number;
       },
-    );
+      { ack: true }
+    >(CHANNELS.DESKTOP_AVAILABILITY, (payload) => {
+      useDesktopStore.getState().set({
+        transport: payload.transport,
+        health: payload.health ?? null,
+        lastChecked: payload.lastChecked,
+      });
+      return { ack: true };
+    });
   }, []);
   return state;
 }
