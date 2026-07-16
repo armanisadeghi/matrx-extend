@@ -323,6 +323,26 @@ function handleInboundFrame(raw: unknown): void {
     // fall through — also forward the raw pong
   }
 
+  if (payload && typeof payload === 'object' && (payload as { type?: unknown }).type === 'hello') {
+    // Chrome does not expose a profile identifier to extensions. Runtime ID
+    // and manifest version still let Matrx Local distinguish live builds and
+    // avoid presenting a server-generated session UUID as an identity.
+    const manifest = chrome.runtime.getManifest();
+    try {
+      state.ws?.send(
+        JSON.stringify({
+          type: 'extension.identify',
+          extension_id: chrome.runtime.id,
+          extension_version: manifest.version,
+          extension_name: manifest.name,
+        }),
+      );
+      bumpActivity();
+    } catch (err) {
+      log.warn('desktop-ws-offscreen', 'failed to send extension identity', err);
+    }
+  }
+
   broadcast(CHANNELS.WS_MESSAGE, payload);
 }
 
