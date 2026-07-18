@@ -17,12 +17,14 @@ import { getEngineBaseUrl, invalidateEnginePortCache } from '@/lib/desktop/disco
 import {
   type DesktopHealth,
   DesktopHealthSchema,
+  DesktopPairResponseSchema,
   type DesktopRpcRequest,
   type DesktopRpcResponse,
 } from '@/lib/desktop/types';
 
 const HEALTH_TIMEOUT_MS = 500;
 const RPC_TIMEOUT_MS = 30_000;
+const PAIR_TIMEOUT_MS = 3_000;
 
 /**
  * Resolve the bearer token used by every desktop-engine transport (HTTP RPC
@@ -48,6 +50,43 @@ export async function setPairToken(token: string): Promise<void> {
 
 export async function clearPairToken(): Promise<void> {
   await chrome.storage.local.remove([STORAGE_KEYS.DESKTOP_PAIR_TOKEN]);
+}
+
+/**
+ * Zero-touch pairing: fetch the ENGINE-ISSUED pairing token from
+ * `POST /extension/pair` and persist it. This does not weaken P1-5 — no
+ * user credential is transmitted (the request carries no auth at all), and
+ * the worst a port-squatting impostor can do is hand us a useless token,
+ * which the 401 re-pair path in `rpcHttp` self-heals. The engine only
+ * serves this endpoint over direct loopback; remote (tunnel) pairing stays
+ * manual via Settings → Desktop Bridge → Pair code.
+ */
+export async function autoPair(baseUrl: string): Promise<string | null> {
+  try {
+    const res = await timedFetch(
+      `${baseUrl}/extension/pair`,
+      { method: 'POST' },
+      PAIR_TIMEOUT_MS,
+    );
+    if (!res.ok) return null;
+    const parsed = DesktopPairResponseSchema.safeParse(await res.json());
+    if (!parsed.success) return null;
+    await setPairToken(parsed.data.pair_token);
+    return parsed.data.pair_token;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The stored pair token, auto-pairing over loopback when none exists yet.
+ * Every desktop transport (HTTP RPC and the WS query param) resolves its
+ * bearer through this.
+ */
+export async function ensurePairToken(baseUrl: string): Promise<string | null> {
+  const existing = await getPairToken();
+  if (existing) return existing;
+  return autoPair(baseUrl);
 }
 
 export async function probeHttp(): Promise<DesktopHealth | null> {
@@ -84,10 +123,23 @@ export async function rpcHttp(req: DesktopRpcRequest): Promise<DesktopRpcRespons
         'desktop engine not reachable — start matrx-local or set the port override in Settings',
     };
   }
-  const token = await getPairToken();
+  const token = await ensurePairToken(baseUrl);
   if (!token) {
-    return { ok: false, error: 'desktop not paired — open Settings → Pair desktop' };
+    return {
+      ok: false,
+      error:
+        'desktop not paired — auto-pairing failed (engine offline or pre-pairing version); or paste the pair code from the desktop app in Settings → Desktop Bridge',
+    };
   }
+  return rpcHttpWithToken(baseUrl, token, req, /* canRepair */ true);
+}
+
+async function rpcHttpWithToken(
+  baseUrl: string,
+  token: string,
+  req: DesktopRpcRequest,
+  canRepair: boolean,
+): Promise<DesktopRpcResponse> {
   try {
     const res = await timedFetch(
       `${baseUrl}/extension/rpc`,
@@ -102,6 +154,14 @@ export async function rpcHttp(req: DesktopRpcRequest): Promise<DesktopRpcRespons
       RPC_TIMEOUT_MS,
     );
     if (!res.ok) {
+      // 401 = the stored pair token no longer matches this engine (token
+      // rotated, engine home wiped, or a stale/poisoned token). Self-heal
+      // once: drop it, re-pair over loopback, retry.
+      if (res.status === 401 && canRepair) {
+        await clearPairToken();
+        const fresh = await autoPair(baseUrl);
+        if (fresh) return rpcHttpWithToken(baseUrl, fresh, req, false);
+      }
       const errText = await res.text().catch(() => res.statusText);
       // 5xx / connection-refused-shaped errors invalidate the cache so the
       // next call re-discovers (engine may have restarted on a new port).

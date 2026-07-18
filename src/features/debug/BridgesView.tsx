@@ -39,11 +39,12 @@ import {
   formatDesktopConnectionLabel,
 } from "@/lib/desktop/types";
 import {
+  getEngineBaseUrl,
   getEnginePortOverride,
   invalidateEnginePortCache,
   setEnginePortOverride,
 } from "@/lib/desktop/discovery";
-import { rpcHttp } from "@/lib/desktop/http";
+import { autoPair, clearPairToken, getPairToken, rpcHttp } from "@/lib/desktop/http";
 import {
   type WsControlResult,
   connectWs,
@@ -286,10 +287,13 @@ function DiscoverySection() {
   const [resolved, setResolved] = useState<string | null>(null);
   const [healthDetail, setHealthDetail] = useState<string | null>(null);
   const [working, setWorking] = useState(false);
+  const [paired, setPaired] = useState<boolean>(false);
+  const [pairWorking, setPairWorking] = useState(false);
 
   const refresh = useCallback(async () => {
     const ov = await getEnginePortOverride();
     setOverrideState(ov);
+    setPaired((await getPairToken()) !== null);
     const s = getDesktopState();
     if (s.transport !== "none") {
       setResolved(formatDesktopConnectionLabel(s.transport, s.health));
@@ -359,11 +363,33 @@ function DiscoverySection() {
     await refresh();
   }, [refresh]);
 
+  const onRepair = useCallback(async () => {
+    setPairWorking(true);
+    await clearPairToken();
+    const baseUrl = await getEngineBaseUrl();
+    if (!baseUrl) {
+      log.warn("desktop", "bridges: re-pair failed — engine base URL unresolved");
+      setPaired(false);
+      setPairWorking(false);
+      return;
+    }
+    const token = await autoPair(baseUrl);
+    setPaired(token !== null);
+    log.info(
+      "desktop",
+      token !== null
+        ? "bridges: re-pair OK (engine-issued token stored)"
+        : "bridges: re-pair failed — engine offline or pre-pairing version",
+    );
+    setPairWorking(false);
+  }, []);
+
   return (
     <Section label="Discovery">
       <KV k="override" v={override === null ? "(none)" : String(override)} />
       <KV k="status" v={resolved ?? "(not yet probed this session)"} />
       {healthDetail && <KV k="health" v={healthDetail} />}
+      <KV k="paired" v={paired ? "yes (token stored)" : "no"} />
       <div className="flex flex-wrap items-center gap-1.5 pt-1">
         <Button
           size="sm"
@@ -375,6 +401,17 @@ function DiscoverySection() {
             className={cn("mr-1 size-3.5", working && "animate-spin")}
           />{" "}
           Re-discover
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={onRepair}
+          disabled={pairWorking}
+        >
+          <RefreshCw
+            className={cn("mr-1 size-3.5", pairWorking && "animate-spin")}
+          />{" "}
+          Re-pair
         </Button>
         <Button size="sm" variant="outline" onClick={onClearOverride}>
           Clear override

@@ -34,7 +34,7 @@
 
 import { log } from '@/lib/debug/log';
 import { getEngineBaseUrl } from '@/lib/desktop/discovery';
-import { getPairToken } from '@/lib/desktop/http';
+import { ensurePairToken } from '@/lib/desktop/http';
 import { broadcast, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { ensureOffscreen } from '@/lib/stream/offscreen-proxy';
@@ -97,11 +97,12 @@ export async function connectWs(): Promise<WsControlResult> {
     }
     // Browsers don't allow custom headers on WebSocket — engine reads the
     // bearer from a `?token=` query param instead of an Authorization header.
-    const token = await getPairToken();
+    const token = await ensurePairToken(baseUrl);
     if (!token) {
       return {
         ok: false,
-        error: 'desktop not paired — open Settings → Pair desktop',
+        error:
+          'desktop not paired — auto-pairing failed (engine offline or pre-pairing version); or paste the pair code in Settings → Desktop Bridge',
         stage: 'auth',
       };
     }

@@ -28,6 +28,18 @@ export const DesktopHealthSchema = z.object({
 });
 export type DesktopHealth = z.infer<typeof DesktopHealthSchema>;
 
+/**
+ * matrx-local GET/POST /extension/pair response. Loopback-only on the
+ * engine side — the engine hard-rejects tunnel-originated pair requests,
+ * so this only ever succeeds against a same-machine engine.
+ */
+export const DesktopPairResponseSchema = z.object({
+  pair_token: z.string().min(1),
+  engine_version: z.string(),
+  service: z.literal("matrx-local"),
+});
+export type DesktopPairResponse = z.infer<typeof DesktopPairResponseSchema>;
+
 export const DesktopRpcRequestSchema = z.object({
   command: z.string().min(1),
   args: z.record(z.unknown()).optional(),

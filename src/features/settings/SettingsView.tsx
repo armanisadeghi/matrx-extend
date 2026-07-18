@@ -319,6 +319,14 @@ export function SettingsView() {
                 />
               )}
               {desktop.transport !== "native" && (
+                <p className="px-3.5 pt-2 text-xs text-muted-foreground">
+                  Pairing is automatic when the Matrx desktop app runs on
+                  this computer. The code below is only needed to pair with
+                  a desktop app on another machine — copy it from that
+                  app&apos;s Settings → Bridge Test → Extension pairing.
+                </p>
+              )}
+              {desktop.transport !== "native" && (
                 <div className="flex items-center gap-2 px-3.5 py-2">
                   <Input
                     value={pairTokenInput}
