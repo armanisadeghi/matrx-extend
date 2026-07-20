@@ -221,6 +221,32 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
         log.warn('sw', 'cdp_full_page_screenshot persistence failed; returning inline only', err);
       }
 
+      if (fileId) {
+        const { cloudScreenshotRef } = await import('@/lib/screenshot/persist');
+        return {
+          ok: true,
+          ...cloudScreenshotRef({
+            persisted: { fileId, fileUrl, screenshotId },
+            mediaType,
+            width,
+            height,
+            sizeBytes: Math.floor((result.data.length * 3) / 4),
+            capture: {
+              full_page: args.full_page,
+              format,
+              capture_scale: captureScale,
+              profile: profileName,
+            },
+          }),
+          format,
+          width,
+          height,
+          capture_scale: captureScale,
+          profile: profileName,
+          est_tokens: profile.est_tokens,
+        };
+      }
+
       return {
         ok: true,
         media_type: mediaType,

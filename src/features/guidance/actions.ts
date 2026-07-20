@@ -111,19 +111,29 @@ export async function captureScreenshotAsGuidance(opts?: {
     { profile: 'auto' } as never,
     UI_CTX as never,
   )) as unknown as Record<string, unknown>;
-  if (r.ok !== true || typeof r.image_base64 !== 'string') {
+  if (r.ok !== true) {
     throw new Error(`Screenshot capture failed: ${(r as { reason?: string }).reason ?? 'unknown'}`);
   }
 
   const mime = (r.media_type as string) ?? 'image/jpeg';
-  const ext = mime.includes('png') ? 'png' : 'jpg';
-  const filename = `guidance-${Date.now()}.${ext}`;
-  const bytes = Uint8Array.from(atob(r.image_base64 as string), (c) => c.charCodeAt(0));
-  const blob = new Blob([bytes], { type: mime });
-  const upload = await uploadFile(blob, filename, {
-    path: `browser-agent/guidance/screenshots/${filename}`,
-    metadata: { domain, kind: 'guidance_screenshot', origin_url: tab.url },
-  });
+  let fileId = typeof r.file_id === 'string' ? r.file_id : null;
+  let fileUrl =
+    typeof r.url === 'string' ? r.url : typeof r.file_url === 'string' ? r.file_url : null;
+  if (!fileId) {
+    if (typeof r.image_base64 !== 'string') {
+      throw new Error('Screenshot capture produced neither a cloud file nor inline recovery bytes');
+    }
+    const ext = mime.includes('png') ? 'png' : 'jpg';
+    const filename = `guidance-${Date.now()}.${ext}`;
+    const bytes = Uint8Array.from(atob(r.image_base64 as string), (c) => c.charCodeAt(0));
+    const blob = new Blob([bytes], { type: mime });
+    const upload = await uploadFile(blob, filename, {
+      path: `browser-agent/guidance/screenshots/${filename}`,
+      metadata: { domain, kind: 'guidance_screenshot', origin_url: tab.url },
+    });
+    fileId = upload.file_id;
+    fileUrl = upload.url ?? upload.cdn_url ?? null;
+  }
 
   const now = Date.now();
   const width = r.width as number | undefined;
@@ -132,8 +142,8 @@ export async function captureScreenshotAsGuidance(opts?: {
     id: makeGuidanceId(),
     kind: 'screenshot',
     domain,
-    file_id: upload.file_id,
-    url: upload.url ?? upload.cdn_url ?? null,
+    file_id: fileId,
+    url: fileUrl,
     ...(width !== undefined && { width }),
     ...(height !== undefined && { height }),
     ...(opts?.caption !== undefined && { caption: opts.caption }),

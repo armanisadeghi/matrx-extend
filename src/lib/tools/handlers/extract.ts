@@ -650,6 +650,30 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
         log.warn('sw', 'screenshot_region persistence failed; returning inline only', err);
       }
 
+      if (fileId) {
+        const { cloudScreenshotRef } = await import('@/lib/screenshot/persist');
+        return {
+          ok: true,
+          ...cloudScreenshotRef({
+            persisted: { fileId, fileUrl, screenshotId },
+            mediaType,
+            width: cropW,
+            height: cropH,
+            sizeBytes: bytes.byteLength,
+            capture: {
+              source_rect: padded,
+              format,
+              profile: profileName,
+            },
+          }),
+          format,
+          width: cropW,
+          height: cropH,
+          source_rect: padded,
+          profile: profileName,
+        };
+      }
+
       return {
         ok: true,
         media_type: mediaType,

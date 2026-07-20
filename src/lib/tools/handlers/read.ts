@@ -372,6 +372,35 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
         }
       }
 
+      if (fileId) {
+        const { cloudScreenshotRef } = await import('@/lib/screenshot/persist');
+        return {
+          ok: true,
+          ...cloudScreenshotRef({
+            persisted: { fileId, fileUrl, screenshotId },
+            mediaType,
+            width: processed.width,
+            height: processed.height,
+            sizeBytes: Math.floor((processed.base64.length * 3) / 4),
+            capture: {
+              mode,
+              format,
+              profile: profileName,
+              resized: processed.resized,
+              source_width: processed.sourceWidth,
+              source_height: processed.sourceHeight,
+              ...(tileCount !== undefined && { tile_count: tileCount }),
+              ...(truncated !== undefined && { truncated }),
+            },
+          }),
+          mode,
+          format,
+          width: processed.width,
+          height: processed.height,
+          profile: profileName,
+        } as ScreenshotResult;
+      }
+
       return {
         ok: true,
         mode,
