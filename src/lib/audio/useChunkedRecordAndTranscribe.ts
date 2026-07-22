@@ -176,7 +176,7 @@ export function useChunkedRecordAndTranscribe({
    * incomplete; succeeding here restores the full text.
    *
    * Adapted from matrx-frontend's `audioFallbackUpload.ts`. The frontend
-   * uploads via Supabase Storage and uses `/transcribe-url` to bypass
+   * uploads through canonical Files and uses `/transcribe-url` to avoid
    * Vercel's 4.5MB function body limit. The extension has no equivalent
    * upload helper, so we fall back to direct POST and only attempt when
    * the concatenated blob fits under the Vercel cap (~4.7 minutes of

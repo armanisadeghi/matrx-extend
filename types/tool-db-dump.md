@@ -1084,7 +1084,7 @@ MCP marketplace + any non-chrome-extension surface bundles.
 | `slack` | 0 | Search channels, send messages, manage canvases, and access your team conversations. |
 | `square` | 0 | Process payments and manage inventory. |
 | `stripe` | 0 | Manage payments, subscriptions, invoices, and customers. |
-| `supabase` | 0 | Manage your database, auth, storage, and edge functions. |
+| `supabase` | 0 | Manage your database, auth, realtime, and edge functions. |
 | `vercel` | 0 | Manage deployments, projects, domains, and view logs. |
 | `webflow` | 0 | Manage CMS content, improve SEO, localize content, and publish sites. |
 | `wix` | 0 | Build and manage websites through AI. |

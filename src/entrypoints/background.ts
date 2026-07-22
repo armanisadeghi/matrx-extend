@@ -7,7 +7,7 @@ export default defineBackground({
   main() {
     console.log('[matrx-extend] background SW starting', { id: chrome.runtime.id });
 
-    // Vite's __vitePreload helper and a few @supabase visibility/storage
+    // Vite's __vitePreload helper and a few browser visibility/session
     // shims dereference `document` / `window` in code paths that fire
     // here even though the SW has no DOM. The libs catch the throw
     // internally — Chrome still prints it as "Uncaught (in promise)".

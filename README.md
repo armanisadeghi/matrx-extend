@@ -382,7 +382,7 @@ matrx-extend/
 │   │   └── data-picker.content.ts # runtime-injected only — no auto-inject
 │   ├── config/env.ts             # build-time env, runtime-overridable backend URL
 │   ├── lib/
-│   │   ├── auth/                 # PKCE flow, Supabase storage adapter, AES-GCM crypto
+│   │   ├── auth/                 # PKCE flow, deprecated file backend adapter, AES-GCM crypto
 │   │   ├── api/                  # REST client + NDJSON stream + per-route modules
 │   │   ├── supabase/             # client + RLS-gated queries
 │   │   ├── desktop/              # bridge facade + native + http transports
