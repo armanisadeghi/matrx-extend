@@ -121,12 +121,22 @@ export function FilesView() {
       setBusyFileId(fileId);
       setError(null);
       try {
-        if (attachedIds.has(fileId)) {
+        const wasAttached = attachedIds.has(fileId);
+        if (wasAttached) {
           await detachFileFromConversation(fileId, conversationId);
         } else {
           await attachFileToConversation(fileId, conversationId, name);
         }
         if (useChatStore.getState().selectedConversationId !== conversationId) return;
+        // Reflect the committed mutation immediately. The reload below remains
+        // authoritative, but a reconciliation failure must not display the
+        // inverse of a mutation that already succeeded.
+        setAttachedIds((current) => {
+          const next = new Set(current);
+          if (wasAttached) next.delete(fileId);
+          else next.add(fileId);
+          return next;
+        });
         // Invalidate any pre-commit snapshot, then replace local state with an
         // authoritative post-commit read instead of patching a possibly stale
         // set left behind by rapid conversation switches.

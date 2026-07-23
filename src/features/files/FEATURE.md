@@ -26,6 +26,9 @@ does not create a second file store.
   These RPCs operate on the platform's existing canonical role-less
   `file → conversation` edge, so the extension and web client cannot create
   parallel attachment records.
+  A successful mutation updates the visible attachment state immediately and
+  then performs an authoritative reload; if reconciliation fails, the UI keeps
+  the committed state and surfaces the reload error.
   The backend resolves the attached file's readable family at request time.
   No file content is copied into the request payload.
 - **Screenshot cards** open the canonical Files viewer by `file_id`. The
