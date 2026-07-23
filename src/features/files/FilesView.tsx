@@ -14,15 +14,16 @@ import {
   FileImage,
   Files,
   GitBranch,
-  ImageOff,
   Loader2,
   Paperclip,
   RefreshCw,
   Search,
   Unlink,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  type FileFamilyFile,
+  type FileFamilyProcessedDocument,
   type FileInventoryItem,
   type FileResourceFamily,
   attachFileToConversation,
@@ -51,9 +52,12 @@ export function FilesView() {
   const [family, setFamily] = useState<FileResourceFamily | null>(null);
   const [familyState, setFamilyState] = useState<LoadState>('loading');
   const [familyError, setFamilyError] = useState<string | null>(null);
+  const loadGeneration = useRef(0);
+  const familyGeneration = useRef(0);
 
   const reload = useCallback(async () => {
     if (!user) return;
+    const generation = ++loadGeneration.current;
     setState('loading');
     setError(null);
     try {
@@ -62,11 +66,13 @@ export function FilesView() {
         fetchRecentExtensionCaptures(),
         conversationId ? fetchAttachedFileIds(conversationId) : Promise.resolve(new Set<string>()),
       ]);
+      if (generation !== loadGeneration.current) return;
       setFiles(library);
       setCaptures(recentCaptures);
       setAttachedIds(attached);
       setState('ready');
     } catch (cause) {
+      if (generation !== loadGeneration.current) return;
       setError(cause instanceof Error ? cause.message : 'Could not load files.');
       setState('error');
     }
@@ -77,14 +83,18 @@ export function FilesView() {
   }, [reload]);
 
   const openFamily = useCallback(async (id: string, name: string) => {
+    const generation = ++familyGeneration.current;
     setFamilyFile({ id, name });
     setFamily(null);
     setFamilyState('loading');
     setFamilyError(null);
     try {
-      setFamily(await fetchFileResourceFamily(id));
+      const result = await fetchFileResourceFamily(id);
+      if (generation !== familyGeneration.current) return;
+      setFamily(result);
       setFamilyState('ready');
     } catch (cause) {
+      if (generation !== familyGeneration.current) return;
       setFamilyError(cause instanceof Error ? cause.message : 'Could not load the file family.');
       setFamilyState('error');
     }
@@ -98,6 +108,7 @@ export function FilesView() {
       try {
         if (attachedIds.has(fileId)) {
           await detachFileFromConversation(fileId, conversationId);
+          if (useChatStore.getState().selectedConversationId !== conversationId) return;
           setAttachedIds((current) => {
             const next = new Set(current);
             next.delete(fileId);
@@ -105,6 +116,7 @@ export function FilesView() {
           });
         } else {
           await attachFileToConversation(fileId, conversationId, name);
+          if (useChatStore.getState().selectedConversationId !== conversationId) return;
           setAttachedIds((current) => new Set(current).add(fileId));
         }
       } catch (cause) {
@@ -147,7 +159,10 @@ export function FilesView() {
         family={family}
         state={familyState}
         error={familyError}
-        onBack={() => setFamilyFile(null)}
+        onBack={() => {
+          familyGeneration.current += 1;
+          setFamilyFile(null);
+        }}
       />
     );
   }
@@ -161,7 +176,7 @@ export function FilesView() {
             <h1 className="text-sm font-semibold">Files</h1>
           </div>
           <p className="mt-0.5 text-[11px] text-muted-foreground">
-            Your Matrx library and files captured by this extension.
+            Your Matrx library and saved extension screenshots.
           </p>
         </div>
         <Button
@@ -221,7 +236,7 @@ export function FilesView() {
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="captures" className="h-7 text-xs">
-            Captures
+            Screenshots
             <Badge variant="secondary" className="ml-1.5 px-1.5 text-[9px]">
               {captures.length}
             </Badge>
@@ -245,7 +260,8 @@ export function FilesView() {
                   file={file}
                   attached={attachedIds.has(file.id)}
                   attachEnabled={conversationId !== null}
-                  busy={busyFileId === file.id}
+                  attachmentDisabled={busyFileId !== null}
+                  working={busyFileId === file.id}
                   onFamily={() => void openFamily(file.id, file.name)}
                   onAttach={() => void toggleAttachment(file.id, file.name)}
                   onOpen={() =>
@@ -276,12 +292,18 @@ export function FilesView() {
                   capture={capture}
                   attached={attachedIds.has(capture.file_id)}
                   attachEnabled={conversationId !== null}
-                  busy={busyFileId === capture.file_id}
+                  attachmentDisabled={busyFileId !== null}
+                  working={busyFileId === capture.file_id}
                   onFamily={() =>
                     void openFamily(capture.file_id, capture.page_title ?? capture.page_url_full)
                   }
                   onAttach={() =>
                     void toggleAttachment(capture.file_id, capture.page_title ?? 'Screenshot')
+                  }
+                  onOpen={() =>
+                    void chrome.tabs.create({
+                      url: `${ENV.FRONTEND_URL}/files/f/${encodeURIComponent(capture.file_id)}`,
+                    })
                   }
                 />
               ))}
@@ -297,7 +319,8 @@ function FileRow({
   file,
   attached,
   attachEnabled,
-  busy,
+  attachmentDisabled,
+  working,
   onFamily,
   onAttach,
   onOpen,
@@ -305,7 +328,8 @@ function FileRow({
   file: FileInventoryItem;
   attached: boolean;
   attachEnabled: boolean;
-  busy: boolean;
+  attachmentDisabled: boolean;
+  working: boolean;
   onFamily: () => void;
   onAttach: () => void;
   onOpen: () => void;
@@ -334,7 +358,8 @@ function FileRow({
       <RowActions
         attached={attached}
         attachEnabled={attachEnabled}
-        busy={busy}
+        attachmentDisabled={attachmentDisabled}
+        working={working}
         onFamily={onFamily}
         onAttach={onAttach}
         onOpen={onOpen}
@@ -347,38 +372,33 @@ function CaptureCard({
   capture,
   attached,
   attachEnabled,
-  busy,
+  attachmentDisabled,
+  working,
   onFamily,
   onAttach,
+  onOpen,
 }: {
   capture: ScreenshotRow;
   attached: boolean;
   attachEnabled: boolean;
-  busy: boolean;
+  attachmentDisabled: boolean;
+  working: boolean;
   onFamily: () => void;
   onAttach: () => void;
+  onOpen: () => void;
 }) {
   return (
     <div className="overflow-hidden rounded-md border border-border/60 bg-card">
       <button
         type="button"
-        className="block aspect-[4/3] w-full bg-muted/40"
-        onClick={() => capture.file_url && void chrome.tabs.create({ url: capture.file_url })}
-        disabled={!capture.file_url}
-        title={capture.file_url ? 'Open capture' : 'Capture URL unavailable'}
+        className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-1 bg-muted/40 px-2 text-muted-foreground hover:bg-muted/60"
+        onClick={onOpen}
+        title="Open capture in Files"
       >
-        {capture.file_url ? (
-          <img
-            src={capture.file_url}
-            alt={capture.page_title ?? 'Screenshot'}
-            className="size-full object-cover"
-            loading="lazy"
-          />
-        ) : (
-          <span className="flex size-full items-center justify-center text-muted-foreground">
-            <ImageOff className="size-5" />
-          </span>
-        )}
+        <FileImage className="size-6 text-violet-500" />
+        <span className="line-clamp-2 text-center text-[9px]">
+          {capture.page_title ?? 'Saved screenshot'}
+        </span>
       </button>
       <div className="px-2 py-1.5">
         <div className="truncate text-[11px] font-medium" title={capture.page_title ?? ''}>
@@ -403,7 +423,7 @@ function CaptureCard({
           variant={attached ? 'secondary' : 'ghost'}
           className="size-6 p-0"
           onClick={onAttach}
-          disabled={!attachEnabled || busy}
+          disabled={!attachEnabled || attachmentDisabled}
           title={
             attachEnabled
               ? attached
@@ -412,7 +432,7 @@ function CaptureCard({
               : 'Send the first chat message before attaching'
           }
         >
-          {busy ? (
+          {working ? (
             <Loader2 className="size-3 animate-spin" />
           ) : attached ? (
             <Unlink className="size-3" />
@@ -428,14 +448,16 @@ function CaptureCard({
 function RowActions({
   attached,
   attachEnabled,
-  busy,
+  attachmentDisabled,
+  working,
   onFamily,
   onAttach,
   onOpen,
 }: {
   attached: boolean;
   attachEnabled: boolean;
-  busy: boolean;
+  attachmentDisabled: boolean;
+  working: boolean;
   onFamily: () => void;
   onAttach: () => void;
   onOpen: () => void;
@@ -456,7 +478,7 @@ function RowActions({
         variant={attached ? 'secondary' : 'ghost'}
         className="size-7 p-0"
         onClick={onAttach}
-        disabled={!attachEnabled || busy}
+        disabled={!attachEnabled || attachmentDisabled}
         title={
           attachEnabled
             ? attached
@@ -465,7 +487,7 @@ function RowActions({
             : 'Send the first chat message before attaching'
         }
       >
-        {busy ? (
+        {working ? (
           <Loader2 className="size-3.5 animate-spin" />
         ) : attached ? (
           <Unlink className="size-3.5" />
@@ -499,8 +521,6 @@ function FamilyInspector({
   error: string | null;
   onBack: () => void;
 }) {
-  const duplicateLinks =
-    family?.files.filter((row) => typeof row.duplicate_of_file_id === 'string').length ?? 0;
   return (
     <div className="flex h-full flex-col">
       <div className="flex shrink-0 items-center gap-2 border-b border-border/60 px-2 py-2">
@@ -509,7 +529,7 @@ function FamilyInspector({
         </Button>
         <div className="min-w-0">
           <div className="truncate text-sm font-semibold">{file.name}</div>
-          <div className="text-[10px] text-muted-foreground">Complete readable family</div>
+          <div className="text-[10px] text-muted-foreground">Readable provenance family</div>
         </div>
       </div>
       {state === 'loading' ? (
@@ -534,7 +554,7 @@ function FamilyInspector({
           <div className="grid grid-cols-3 gap-2">
             <FamilyStat label="Stored files" value={family.files.length} />
             <FamilyStat label="Processing results" value={family.processedDocuments.length} />
-            <FamilyStat label="Duplicate links" value={duplicateLinks} />
+            <FamilyStat label="Representations" value={family.representations.length} />
           </div>
 
           <section>
@@ -544,10 +564,7 @@ function FamilyInspector({
                 label="Requested file"
                 value={shortId(family.requestedFileId || file.id)}
               />
-              <Relationship
-                label="Root ancestor"
-                value={family.rootFileId ? shortId(family.rootFileId) : 'Unavailable'}
-              />
+              <Relationship label="Readable family anchor" value={shortId(family.rootFileId)} />
               <Relationship
                 label="Binary lineage"
                 value={`${family.files.length} readable node${family.files.length === 1 ? '' : 's'}`}
@@ -558,7 +575,35 @@ function FamilyInspector({
                   family.processedDocuments.length === 1 ? '' : 's'
                 }`}
               />
+              <Relationship label="Duplicate family" value="Not enumerated here" />
             </div>
+          </section>
+
+          <section>
+            <h2 className="mb-1.5 font-medium">Stored-file ancestry</h2>
+            <p className="mb-2 text-[10px] leading-relaxed text-muted-foreground">
+              Each indented row points to the stored file above it through{' '}
+              <code>parent_file_id</code>. This is the binary ancestry graph.
+            </p>
+            <BinaryFamilyGraph family={family} />
+          </section>
+
+          <section>
+            <h2 className="mb-1.5 font-medium">Processing-result ancestry</h2>
+            <p className="mb-2 text-[10px] leading-relaxed text-muted-foreground">
+              These are processing records derived from stored files or from another processing
+              result. They are not extra copies of the binary.
+            </p>
+            <ProcessedFamilyGraph documents={family.processedDocuments} />
+          </section>
+
+          <section className="rounded-md border border-border/60 p-2">
+            <h2 className="font-medium">Dedupe boundary</h2>
+            <p className="mt-1 text-[10px] leading-relaxed text-muted-foreground">
+              <code>duplicate_of_file_id</code> records equivalent content separately from ancestry.
+              This provenance view intentionally does not walk or reveal a separate duplicate
+              family, because dedupe must not become an access-sharing path.
+            </p>
           </section>
 
           <section>
@@ -587,12 +632,184 @@ function FamilyInspector({
             </div>
             <p className="mt-1.5 text-[10px] leading-relaxed text-muted-foreground">
               Attaching this file gives the agent the readable family through these bounded
-              capabilities. Family discovery itself does not create processing work.
+              capabilities. The inventory returns completely within its 16-generation and 5,000-row
+              safety contract or fails loudly; discovery itself creates no processing work.
             </p>
           </section>
         </div>
       )}
     </div>
+  );
+}
+
+function BinaryFamilyGraph({ family }: { family: FileResourceFamily }) {
+  const ordered = orderBinaryFamily(family.files);
+  if (ordered.length === 0) {
+    return <FamilyGraphEmpty body="No readable stored-file nodes were returned." />;
+  }
+  const relationById = binaryRelations(family.files, family.requestedFileId);
+  return (
+    <div className="space-y-1 rounded-md border border-border/60 p-2">
+      {ordered.map(({ node, depth }) => (
+        <div
+          key={node.id}
+          className="rounded border border-border/40 bg-background/60 px-2 py-1.5"
+          style={{ marginLeft: `${Math.min(depth, 12) * 10}px` }}
+        >
+          <div className="flex min-w-0 items-center gap-1.5">
+            <GitBranch className="size-3 shrink-0 text-sky-500" />
+            <span className="min-w-0 flex-1 truncate text-[11px] font-medium">{node.name}</span>
+            <Badge
+              variant={node.id === family.requestedFileId ? 'default' : 'secondary'}
+              className="text-[8px]"
+            >
+              {relationById.get(node.id) ?? 'related branch'}
+            </Badge>
+          </div>
+          <div className="mt-1 flex flex-wrap gap-x-2 gap-y-0.5 font-mono text-[9px] text-muted-foreground">
+            <span>{shortId(node.id)}</span>
+            {node.parentFileId && <span>parent {shortId(node.parentFileId)}</span>}
+            {node.derivationKind && <span>{node.derivationKind}</span>}
+            {node.duplicateOfFileId && <span>equivalent to {shortId(node.duplicateOfFileId)}</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ProcessedFamilyGraph({
+  documents,
+}: {
+  documents: FileFamilyProcessedDocument[];
+}) {
+  const ordered = orderProcessedFamily(documents);
+  if (ordered.length === 0) {
+    return <FamilyGraphEmpty body="This family has no readable processing results yet." />;
+  }
+  return (
+    <div className="space-y-1 rounded-md border border-border/60 p-2">
+      {ordered.map(({ node, depth }) => (
+        <div
+          key={node.id}
+          className="rounded border border-border/40 bg-background/60 px-2 py-1.5"
+          style={{ marginLeft: `${Math.min(depth, 12) * 10}px` }}
+        >
+          <div className="flex min-w-0 items-center gap-1.5">
+            <File className="size-3 shrink-0 text-emerald-500" />
+            <span className="min-w-0 flex-1 truncate text-[11px] font-medium">
+              {node.name ?? 'Processing result'}
+            </span>
+            {node.cleanReady && (
+              <Badge variant="secondary" className="text-[8px]">
+                clean text
+              </Badge>
+            )}
+          </div>
+          <div className="mt-1 flex flex-wrap gap-x-2 gap-y-0.5 font-mono text-[9px] text-muted-foreground">
+            <span>{shortId(node.id)}</span>
+            {node.parentProcessedId ? (
+              <span>parent {shortId(node.parentProcessedId)}</span>
+            ) : node.sourceId ? (
+              <span>source {shortId(node.sourceId)}</span>
+            ) : (
+              <span>source redacted</span>
+            )}
+            {node.derivationKind && <span>{node.derivationKind}</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function FamilyGraphEmpty({ body }: { body: string }) {
+  return (
+    <div className="rounded-md border border-dashed border-border/60 px-2 py-3 text-center text-[10px] text-muted-foreground">
+      {body}
+    </div>
+  );
+}
+
+function orderBinaryFamily(
+  nodes: FileFamilyFile[],
+): Array<{ node: FileFamilyFile; depth: number }> {
+  return orderFamilyNodes(
+    nodes,
+    (node) => node.id,
+    (node) => node.parentFileId,
+  );
+}
+
+function orderProcessedFamily(
+  nodes: FileFamilyProcessedDocument[],
+): Array<{ node: FileFamilyProcessedDocument; depth: number }> {
+  return orderFamilyNodes(
+    nodes,
+    (node) => node.id,
+    (node) => node.parentProcessedId,
+  );
+}
+
+function orderFamilyNodes<T>(
+  nodes: T[],
+  getId: (node: T) => string,
+  getParentId: (node: T) => string | null,
+): Array<{ node: T; depth: number }> {
+  const byId = new Map(nodes.map((node) => [getId(node), node]));
+  const children = new Map<string, T[]>();
+  const roots: T[] = [];
+  for (const node of nodes) {
+    const parentId = getParentId(node);
+    if (!parentId || !byId.has(parentId)) {
+      roots.push(node);
+      continue;
+    }
+    const siblings = children.get(parentId) ?? [];
+    siblings.push(node);
+    children.set(parentId, siblings);
+  }
+  const result: Array<{ node: T; depth: number }> = [];
+  const visited = new Set<string>();
+  const visit = (node: T, depth: number) => {
+    const id = getId(node);
+    if (visited.has(id)) return;
+    visited.add(id);
+    result.push({ node, depth });
+    for (const child of children.get(id) ?? []) visit(child, depth + 1);
+  };
+  for (const root of roots) visit(root, 0);
+  for (const node of nodes) visit(node, 0);
+  return result;
+}
+
+function binaryRelations(nodes: FileFamilyFile[], requestedId: string): Map<string, string> {
+  const byId = new Map(nodes.map((node) => [node.id, node]));
+  const ancestors = new Set<string>();
+  let cursor = byId.get(requestedId)?.parentFileId ?? null;
+  while (cursor && !ancestors.has(cursor)) {
+    ancestors.add(cursor);
+    cursor = byId.get(cursor)?.parentFileId ?? null;
+  }
+  const isDescendant = (node: FileFamilyFile): boolean => {
+    const seen = new Set<string>();
+    let parentId = node.parentFileId;
+    while (parentId && !seen.has(parentId)) {
+      if (parentId === requestedId) return true;
+      seen.add(parentId);
+      parentId = byId.get(parentId)?.parentFileId ?? null;
+    }
+    return false;
+  };
+  const requestedParent = byId.get(requestedId)?.parentFileId ?? null;
+  return new Map(
+    nodes.map((node) => {
+      if (node.id === requestedId) return [node.id, 'requested'];
+      if (ancestors.has(node.id)) return [node.id, 'ancestor'];
+      if (isDescendant(node)) return [node.id, 'descendant'];
+      if (requestedParent && node.parentFileId === requestedParent) return [node.id, 'sibling'];
+      return [node.id, 'related branch'];
+    }),
   );
 }
 

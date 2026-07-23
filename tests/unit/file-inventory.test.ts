@@ -51,7 +51,18 @@ describe('extension file inventory', () => {
         resource_type: 'file',
         requested_file_id: FILE_ID,
         root_file_id: FILE_ID,
-        files: [{ id: FILE_ID }],
+        files: [
+          {
+            id: FILE_ID,
+            parent_file_id: null,
+            duplicate_of_file_id: null,
+            canonical_processed_document_id: null,
+            file_name: 'report.pdf',
+            mime_type: 'application/pdf',
+            size_bytes: 42,
+            derivation_kind: null,
+          },
+        ],
         processed_documents: [],
         representations: [
           {
@@ -82,12 +93,41 @@ describe('extension file inventory', () => {
     ).toThrow('Unsupported file-family schema version 3');
   });
 
-  it('keeps only incoming file attachments for the selected conversation', () => {
+  it('rejects missing or malformed required family fields instead of rendering an empty family', () => {
+    expect(() =>
+      parseFileResourceFamily({
+        resource_type: 'file',
+        requested_file_id: FILE_ID,
+        root_file_id: FILE_ID,
+        files: [],
+        processed_documents: [],
+        representations: [],
+        capabilities: [],
+        counts: {},
+      }),
+    ).toThrow('invalid schema_version');
+
+    expect(() =>
+      parseFileResourceFamily({
+        schema_version: 2,
+        resource_type: 'file',
+        requested_file_id: FILE_ID,
+        root_file_id: FILE_ID,
+        files: [{ id: FILE_ID }],
+        processed_documents: [],
+        representations: [],
+        capabilities: [],
+        counts: {},
+      }),
+    ).toThrow('invalid files[0].file_name');
+  });
+
+  it('keeps only valid file IDs from the conversation-scoped attachment RPC', () => {
     expect(
       parseAttachedFileIds([
-        { direction: 'incoming', other_type: 'file', other_id: FILE_ID },
-        { direction: 'outgoing', other_type: 'file', other_id: SECOND_FILE_ID },
-        { direction: 'incoming', other_type: 'working_document', other_id: SECOND_FILE_ID },
+        { file_id: FILE_ID, label: 'Report' },
+        { file_id: 'not-a-uuid' },
+        { other_id: SECOND_FILE_ID },
       ]),
     ).toEqual(new Set([FILE_ID]));
   });

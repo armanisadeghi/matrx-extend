@@ -8,19 +8,28 @@ does not create a second file store.
 - **Library** calls the public, identity-locked `get_user_file_tree` RPC with
   `p_order_by = updated_at_desc`. That is the same discoverability boundary as
   the web Files UI: owned and explicitly granted root files are listable;
-  contextual access, binary derivatives, and the extension's hidden `system/`
-  namespace do not become globally discoverable.
+  contextual access, binary derivatives, and the extension's hidden
+  `system-files/matrx-extend/` namespace do not become globally discoverable.
 - **Captures** reads `extend.wbx_screenshot`, whose rows are metadata pointers
   to canonical file IDs. RLS owns the user boundary. This is intentionally
   cross-page; the existing Screenshots tab remains the current-page capture
   and delete surface.
 - **Family inspector** calls `get_file_resource_family(file_id)`. It is
   read-only and never schedules extraction, cleanup, RAG, transcription,
-  analysis, or verification work.
-- **Attach/detach** uses the canonical `assoc_add` / `assoc_remove` RPCs to
-  write a role-less `file -> conversation` edge with
-  `metadata = { file_id }`. The backend resolves that file's complete readable
-  family at request time. No file content is copied into the request payload.
+  analysis, or verification work. It renders every returned stored-file and
+  processed-document node with its parent edge, derivation kind, and relation
+  to the requested file.
+- **Attach/detach** uses the dedicated `conversation_file_add`,
+  `conversation_file_remove`, and `conversation_files` RPCs. Add requires
+  editor authority over both the conversation and file because the edge
+  re-shares viewer context; list/remove independently gate the conversation.
+  The backend resolves the attached file's readable family at request time.
+  No file content is copied into the request payload.
+- **Screenshot cards** open the canonical Files viewer by `file_id`. The
+  persisted `extend.wbx_screenshot.file_url` is an expiring upload-time URL and
+  is never treated as a durable thumbnail or destination. The current-page
+  Screenshots tab resolves fresh authenticated bytes by `file_id` for previews
+  and copies/opens the durable Files route.
 
 ## Relationship vocabulary
 
@@ -32,8 +41,13 @@ does not create a second file store.
   are earlier sources; descendants are derived outputs; siblings share a
   parent.
 - `duplicate_of_file_id` is an equivalence/dedupe edge, not a provenance edge.
-  It remains visible as related metadata but does not automatically expand the
-  readable family or sharing boundary.
+  It is tracked separately in storage. This provenance-family RPC intentionally
+  does not enumerate a separate duplicate family, and visibility redaction
+  normally removes a duplicate pointer whose target is outside the readable
+  provenance family. That keeps dedupe from becoming an access-sharing path.
+- The RPC's implementation is bounded to 16 generations and 5,000 rows. It
+  returns a complete result within that contract or fails loudly on depth,
+  breadth, or cycle overflow; the UI never presents a silently partial graph.
 
 ## Deliberate first version boundary
 

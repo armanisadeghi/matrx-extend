@@ -631,10 +631,10 @@ Every entry follows this shape:
   1. Navigate to a regular web page.
   2. Open Screenshots tab - click **Visible**. The current viewport is captured and a card appears in the gallery.
   3. Click **Full page** on a page taller than one screen. The page scrolls top → bottom (visible to the user; this is expected); after ~1 sec/screen a card appears whose thumbnail is the entire page stitched.
-  4. Click a thumbnail (or the open icon) to view full size in a new tab; click the link icon to copy the URL; click the trash icon (then Delete) to remove the index row (file in cloud storage is kept).
+  4. Click a thumbnail (or the open icon) to open the canonical Files viewer; click the link icon to copy that durable Files URL; click the trash icon (then Delete) to remove the index row (file in cloud storage is kept).
   5. Switch to Chat - ask the agent "take a screenshot of this page" - it lands in the same gallery on next refresh, live via the timeline event. Ask "take a full-page screenshot" and it uses `mode: 'full_page'`.
 - **Expected:**
-  - Each card shows: thumbnail (lazy-loaded from `file_url`), source label ("You" / "Agent"), relative timestamp, dimensions. Full-page captures are visibly tall.
+  - Each card shows: thumbnail (authenticated fresh-byte download by `file_id`, never the expired upload-time `file_url`), source label ("You" / "Agent"), relative timestamp, dimensions. Full-page captures are visibly tall.
   - Refreshes automatically when `take_screenshot` completes anywhere in the side panel.
   - Empty state on a fresh page; skeleton on first load.
   - If the cld_files upload or `wbx_screenshot` insert fails, an amber warning under the buttons reads "Captured, but failed to save to the gallery."
@@ -654,11 +654,11 @@ Every entry follows this shape:
 - **Steps:**
   1. Sign in and open Files. Confirm Library shows the same recent root files visible in the web Files app; Captures shows screenshots from multiple pages.
   2. Search by filename, path, page title, and page URL.
-  3. Click the branch icon. Confirm the inspector distinguishes stored files from processing results and shows representations/capabilities returned by `get_file_resource_family`.
+  3. Click the branch icon. Confirm the inspector renders stored-file and processing-result nodes, parent edges, derivation kinds, requested/ancestor/sibling/descendant labels, and representations/capabilities returned by `get_file_resource_family`.
   4. Open an existing conversation (or send one message), then click the paperclip. Switch to Chat and send another message about the file; the backend should resolve the durable `file -> conversation` edge. Return to Files and click the unlink icon to detach it.
   5. Click the external-link action to open `/files/f/{fileId}` in the full Files app.
-- **Expected:** Context-only/shared attachment access does not make a file appear in Library; hidden `system/matrx-extend/` captures appear only in Captures. Attach state refreshes when the selected conversation changes. Family inspection never schedules processing.
-- **Edge cases worth poking:** Fresh chat before its first message shows an explicit conversation-ID notice and disables attachment; malformed family schema fails loudly; expired capture URLs show a broken/unavailable preview without losing the canonical `file_id`.
+- **Expected:** Context-only/shared attachment access does not make a file appear in Library; hidden `system-files/matrx-extend/` screenshots appear only in Screenshots. Attach state refreshes when the selected conversation changes, and attach requires editor authority over both the file and conversation. Family inspection never schedules processing.
+- **Edge cases worth poking:** Fresh chat before its first message shows an explicit conversation-ID notice and disables attachment; malformed family schema fails loudly; a family deeper than 16 generations or broader than 5,000 rows fails instead of showing a partial graph; old expiring `file_url` values are ignored and screenshot cards still open the canonical Files viewer by `file_id`.
 
 ---
 
