@@ -141,19 +141,22 @@ export async function uploadFile(
  */
 export async function downloadFileBytes(
   fileId: string,
+  signal?: AbortSignal,
 ): Promise<{ blob: Blob; filename: string; mimeType: string }> {
   const baseUrl = await getBackendUrl();
   const token = await getAccessToken();
   const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
   const url = `${baseUrl}/files/${encodeURIComponent(fileId)}/download`;
-  let res = await fetch(url, { headers });
+  let res = await fetch(url, signal ? { headers, signal } : { headers });
   if (res.status === 401) {
     const refreshed = await refreshAccessToken();
     if (refreshed) {
       const t2 = await getAccessToken();
-      res = await fetch(url, {
-        headers: t2 ? { Authorization: `Bearer ${t2}` } : {},
-      });
+      const refreshedHeaders = t2 ? { Authorization: `Bearer ${t2}` } : {};
+      res = await fetch(
+        url,
+        signal ? { headers: refreshedHeaders, signal } : { headers: refreshedHeaders },
+      );
     }
   }
   if (!res.ok) {

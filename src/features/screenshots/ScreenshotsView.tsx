@@ -72,8 +72,10 @@ export function ScreenshotsView() {
   // doesn't fire a redundant load while a refresh from the timeline
   // event is still in flight.
   const lastFetchedUrlRef = useRef<string | null>(null);
+  const loadGenerationRef = useRef(0);
 
   const reload = useCallback(async (urlCanonical: string | null) => {
+    const generation = ++loadGenerationRef.current;
     if (!urlCanonical) {
       setRows([]);
       setLoadState('idle');
@@ -84,12 +86,14 @@ export function ScreenshotsView() {
     try {
       const data = await fetchScreenshotsForUrl(urlCanonical);
       // Guard against a stale request resolving after the user has
-      // navigated to a new page — only commit if the URL still matches.
-      if (lastFetchedUrlRef.current !== urlCanonical) return;
+      // navigated or a newer reload of the same URL has started.
+      if (generation !== loadGenerationRef.current || lastFetchedUrlRef.current !== urlCanonical)
+        return;
       setRows(data);
       setLoadState('ready');
     } catch (err) {
-      if (lastFetchedUrlRef.current !== urlCanonical) return;
+      if (generation !== loadGenerationRef.current || lastFetchedUrlRef.current !== urlCanonical)
+        return;
       setError((err as Error).message ?? 'Failed to load screenshots');
       setLoadState('error');
     }
@@ -340,6 +344,8 @@ function ScreenshotCard({
   const [confirming, setConfirming] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFailed, setPreviewFailed] = useState(false);
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const previewTargetRef = useRef<HTMLButtonElement | null>(null);
   const captured = useMemo(() => formatTimestamp(row.captured_at), [row.captured_at]);
   const dim = row.width && row.height ? `${row.width}×${row.height}` : null;
   const sourceIcon =
@@ -362,11 +368,32 @@ function ScreenshotCard({
   }, [canonicalFileUrl]);
 
   useEffect(() => {
+    const target = previewTargetRef.current;
+    if (!target || typeof IntersectionObserver === 'undefined') {
+      setPreviewVisible(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setPreviewVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '160px' },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!previewVisible) return;
     let active = true;
     let objectUrl: string | null = null;
+    const controller = new AbortController();
     setPreviewUrl(null);
     setPreviewFailed(false);
-    void downloadFileBytes(row.file_id)
+    void downloadFileBytes(row.file_id, controller.signal)
       .then(({ blob }) => {
         if (!active) return;
         objectUrl = URL.createObjectURL(blob);
@@ -377,13 +404,15 @@ function ScreenshotCard({
       });
     return () => {
       active = false;
+      controller.abort();
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [row.file_id]);
+  }, [previewVisible, row.file_id]);
 
   return (
     <div className="group overflow-hidden rounded-md border border-border/60 bg-card text-xs">
       <button
+        ref={previewTargetRef}
         type="button"
         onClick={openFullSize}
         className="block w-full bg-muted/40 transition-opacity hover:opacity-90"

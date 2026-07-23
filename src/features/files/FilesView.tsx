@@ -36,6 +36,7 @@ import {
 
 type LoadState = 'loading' | 'ready' | 'error';
 type InventoryTab = 'library' | 'captures';
+const GRAPH_PAGE_SIZE = 100;
 
 export function FilesView() {
   const { user } = useAuth();
@@ -54,10 +55,19 @@ export function FilesView() {
   const [familyError, setFamilyError] = useState<string | null>(null);
   const loadGeneration = useRef(0);
   const familyGeneration = useRef(0);
+  const attachmentGeneration = useRef(0);
 
   const reload = useCallback(async () => {
-    if (!user) return;
     const generation = ++loadGeneration.current;
+    const attachmentSnapshot = attachmentGeneration.current;
+    if (!user) {
+      setFiles([]);
+      setCaptures([]);
+      setAttachedIds(new Set());
+      setState('ready');
+      setError(null);
+      return;
+    }
     setState('loading');
     setError(null);
     try {
@@ -69,7 +79,11 @@ export function FilesView() {
       if (generation !== loadGeneration.current) return;
       setFiles(library);
       setCaptures(recentCaptures);
-      setAttachedIds(attached);
+      // A refresh that began before an attach/detach must not restore its
+      // older attachment snapshot after the mutation succeeds.
+      if (attachmentSnapshot === attachmentGeneration.current) {
+        setAttachedIds(attached);
+      }
       setState('ready');
     } catch (cause) {
       if (generation !== loadGeneration.current) return;
@@ -103,6 +117,7 @@ export function FilesView() {
   const toggleAttachment = useCallback(
     async (fileId: string, name: string) => {
       if (!conversationId || busyFileId) return;
+      const mutationGeneration = ++attachmentGeneration.current;
       setBusyFileId(fileId);
       setError(null);
       try {
@@ -122,7 +137,9 @@ export function FilesView() {
       } catch (cause) {
         setError(cause instanceof Error ? cause.message : 'Could not update the attachment.');
       } finally {
-        setBusyFileId(null);
+        if (mutationGeneration === attachmentGeneration.current) {
+          setBusyFileId(null);
+        }
       }
     },
     [attachedIds, busyFileId, conversationId],
@@ -644,13 +661,16 @@ function FamilyInspector({
 
 function BinaryFamilyGraph({ family }: { family: FileResourceFamily }) {
   const ordered = orderBinaryFamily(family.files);
+  const [visibleCount, setVisibleCount] = useState(GRAPH_PAGE_SIZE);
   if (ordered.length === 0) {
     return <FamilyGraphEmpty body="No readable stored-file nodes were returned." />;
   }
   const relationById = binaryRelations(family.files, family.requestedFileId);
+  const visible = ordered.slice(0, visibleCount);
+  const remaining = ordered.length - visible.length;
   return (
     <div className="space-y-1 rounded-md border border-border/60 p-2">
-      {ordered.map(({ node, depth }) => (
+      {visible.map(({ node, depth }) => (
         <div
           key={node.id}
           className="rounded border border-border/40 bg-background/60 px-2 py-1.5"
@@ -674,6 +694,16 @@ function BinaryFamilyGraph({ family }: { family: FileResourceFamily }) {
           </div>
         </div>
       ))}
+      {remaining > 0 && (
+        <Button
+          size="sm"
+          variant="secondary"
+          className="h-7 w-full text-[10px]"
+          onClick={() => setVisibleCount((current) => current + GRAPH_PAGE_SIZE)}
+        >
+          Show next {Math.min(GRAPH_PAGE_SIZE, remaining)} ({remaining} remaining)
+        </Button>
+      )}
     </div>
   );
 }
@@ -684,12 +714,15 @@ function ProcessedFamilyGraph({
   documents: FileFamilyProcessedDocument[];
 }) {
   const ordered = orderProcessedFamily(documents);
+  const [visibleCount, setVisibleCount] = useState(GRAPH_PAGE_SIZE);
   if (ordered.length === 0) {
     return <FamilyGraphEmpty body="This family has no readable processing results yet." />;
   }
+  const visible = ordered.slice(0, visibleCount);
+  const remaining = ordered.length - visible.length;
   return (
     <div className="space-y-1 rounded-md border border-border/60 p-2">
-      {ordered.map(({ node, depth }) => (
+      {visible.map(({ node, depth }) => (
         <div
           key={node.id}
           className="rounded border border-border/40 bg-background/60 px-2 py-1.5"
@@ -719,6 +752,16 @@ function ProcessedFamilyGraph({
           </div>
         </div>
       ))}
+      {remaining > 0 && (
+        <Button
+          size="sm"
+          variant="secondary"
+          className="h-7 w-full text-[10px]"
+          onClick={() => setVisibleCount((current) => current + GRAPH_PAGE_SIZE)}
+        >
+          Show next {Math.min(GRAPH_PAGE_SIZE, remaining)} ({remaining} remaining)
+        </Button>
+      )}
     </div>
   );
 }

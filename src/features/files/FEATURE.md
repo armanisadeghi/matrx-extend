@@ -23,6 +23,9 @@ does not create a second file store.
   `conversation_file_remove`, and `conversation_files` RPCs. Add requires
   editor authority over both the conversation and file because the edge
   re-shares viewer context; list/remove independently gate the conversation.
+  These RPCs operate on the platform's existing canonical role-less
+  `file → conversation` edge, so the extension and web client cannot create
+  parallel attachment records.
   The backend resolves the attached file's readable family at request time.
   No file content is copied into the request payload.
 - **Screenshot cards** open the canonical Files viewer by `file_id`. The
@@ -48,6 +51,17 @@ does not create a second file store.
 - The RPC's implementation is bounded to 16 generations and 5,000 rows. It
   returns a complete result within that contract or fails loudly on depth,
   breadth, or cycle overflow; the UI never presents a silently partial graph.
+  The UI renders large inventories in 100-node increments so a valid maximum
+  family cannot freeze the side panel.
+
+## Runtime race and byte-loading rules
+
+- Attachment mutations are globally serialized in this compact surface. A
+  refresh that started before an attach/detach cannot overwrite the
+  server-confirmed result when it resolves later.
+- Current-page screenshot previews download authenticated bytes only when the
+  card approaches the viewport and abort on unmount. Reloads use a generation
+  token, so an older query for the same URL cannot overwrite a newer result.
 
 ## Deliberate first version boundary
 
