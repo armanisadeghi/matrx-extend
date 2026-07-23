@@ -228,16 +228,19 @@ export function ScreenshotsView() {
     [capturingMode, tab.id, tab.url],
   );
 
-  const onDelete = useCallback(async (id: string) => {
-    const ok = await deleteScreenshot(id);
-    if (ok) {
-      // A query that started before deletion may still contain this row.
-      // Invalidate it before committing the local removal.
-      loadGenerationRef.current += 1;
-      setRows((prev) => prev.filter((r) => r.id !== id));
-      setLoadState('ready');
-    }
-  }, []);
+  const onDelete = useCallback(
+    async (id: string) => {
+      const ok = await deleteScreenshot(id);
+      if (ok) {
+        setRows((prev) => prev.filter((r) => r.id !== id));
+        // Supersede any query that captured the deleted row, while retaining
+        // unrelated captures and honoring a page navigation that happened
+        // during deletion.
+        void reload(lastFetchedUrlRef.current);
+      }
+    },
+    [reload],
+  );
 
   return (
     <div className="flex h-full flex-col">

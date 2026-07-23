@@ -64,8 +64,9 @@ does not create a second file store.
   server-confirmed result when it resolves later.
 - Current-page screenshot previews download authenticated bytes only when the
   card approaches the viewport, then abort and revoke their blob URL after the
-  card leaves it. Reloads and deletes use a generation token, so an older query
-  cannot overwrite a newer result or resurrect a deleted card.
+  card leaves it. Reloads use a generation token, and a successful delete
+  starts an authoritative current-page reload, so an older query cannot
+  overwrite a newer result or resurrect a deleted card.
 
 ## Deliberate first version boundary
 
