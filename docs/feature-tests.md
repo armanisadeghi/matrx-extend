@@ -648,6 +648,20 @@ Every entry follows this shape:
 
 ---
 
+### Files tab
+- **What it does:** Shows recent discoverable Matrx library files and every screenshot captured by the extension, opens the canonical web viewer, inspects the file's live family inventory, and durably attaches/detaches a file to the current conversation.
+- **Where to test:** Side panel - **Files** tab (stacked-files icon).
+- **Steps:**
+  1. Sign in and open Files. Confirm Library shows the same recent root files visible in the web Files app; Captures shows screenshots from multiple pages.
+  2. Search by filename, path, page title, and page URL.
+  3. Click the branch icon. Confirm the inspector distinguishes stored files from processing results and shows representations/capabilities returned by `get_file_resource_family`.
+  4. Open an existing conversation (or send one message), then click the paperclip. Switch to Chat and send another message about the file; the backend should resolve the durable `file -> conversation` edge. Return to Files and click the unlink icon to detach it.
+  5. Click the external-link action to open `/files/f/{fileId}` in the full Files app.
+- **Expected:** Context-only/shared attachment access does not make a file appear in Library; hidden `system/matrx-extend/` captures appear only in Captures. Attach state refreshes when the selected conversation changes. Family inspection never schedules processing.
+- **Edge cases worth poking:** Fresh chat before its first message shows an explicit conversation-ID notice and disables attachment; malformed family schema fails loudly; expired capture URLs show a broken/unavailable preview without losing the canonical `file_id`.
+
+---
+
 ### Guidance cloud sync (TASK-004)
 - **What it does:** Guidance metadata (notes / screenshots / GIFs / demo refs) now persists to the cloud (`public.wbx_guidance`), not just the artifact bytes — so guidance created on one machine shows up on another after sign-in. DB is the source of truth; `chrome.storage.local` is an offline cache. Every save/delete (UI **or** agent tool) best-effort mirrors to the cloud; sign-in hydrates cloud→local last-write-wins.
 - **Where to test:** Side panel - **Guidance** tab; cross-machine (or simulate by clearing local storage).

@@ -21,6 +21,7 @@ import {
   Camera,
   Crosshair,
   Database,
+  Files,
   Highlighter,
   KeyRound,
   ListChecks,
@@ -58,6 +59,7 @@ const VIEW_LOADERS: Record<SidepanelTab, () => Promise<{ default: ComponentType 
     import('@/features/guidance/GuidanceView').then((m) => ({ default: m.GuidanceView })),
   seo: () => import('@/features/seo/SeoView').then((m) => ({ default: m.SeoView })),
   notes: () => import('@/features/notes/NotesView').then((m) => ({ default: m.NotesView })),
+  files: () => import('@/features/files/FilesView').then((m) => ({ default: m.FilesView })),
   screenshots: () =>
     import('@/features/screenshots/ScreenshotsView').then((m) => ({
       default: m.ScreenshotsView,
@@ -83,6 +85,7 @@ const HighlightView = lazy(VIEW_LOADERS.highlight);
 const GuidanceView = lazy(VIEW_LOADERS.guidance);
 const SeoView = lazy(VIEW_LOADERS.seo);
 const NotesView = lazy(VIEW_LOADERS.notes);
+const FilesView = lazy(VIEW_LOADERS.files);
 const ScreenshotsView = lazy(VIEW_LOADERS.screenshots);
 const ToolsView = lazy(VIEW_LOADERS.tools);
 const SettingsView = lazy(VIEW_LOADERS.settings);
@@ -199,7 +202,7 @@ export function App() {
             className="flex flex-1 flex-col min-h-0"
           >
             <div className="flex shrink-0 items-center gap-1 px-2 py-1.5">
-              <TabsList className="flex flex-1 justify-start gap-0.5 bg-transparent p-0">
+              <TabsList className="flex min-w-0 flex-1 justify-start gap-0.5 overflow-x-auto bg-transparent p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&_[role=tab]]:shrink-0">
                 <TabsTrigger value="chat" className="size-7 p-0" title="Chat">
                   <MessageSquare className="size-3.5" />
                 </TabsTrigger>
@@ -247,6 +250,9 @@ export function App() {
                     </TabsTrigger>
                     <TabsTrigger value="notes" className="size-7 p-0" title="Notes">
                       <NotebookPen className="size-3.5" />
+                    </TabsTrigger>
+                    <TabsTrigger value="files" className="size-7 p-0" title="Files">
+                      <Files className="size-3.5" />
                     </TabsTrigger>
                     <TabsTrigger value="screenshots" className="size-7 p-0" title="Screenshots">
                       <Camera className="size-3.5" />
@@ -376,6 +382,11 @@ export function App() {
                 <TabsContent value="notes" className="flex-1 min-h-0">
                   <Suspense fallback={TabFallback}>
                     <NotesView />
+                  </Suspense>
+                </TabsContent>
+                <TabsContent value="files" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <FilesView />
                   </Suspense>
                 </TabsContent>
                 <TabsContent value="screenshots" className="flex-1 min-h-0">

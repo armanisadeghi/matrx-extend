@@ -953,6 +953,25 @@ export async function fetchScreenshotsForUrl(
     .rows;
 }
 
+/** Cross-page screenshot history for the Files tab, newest first. */
+export async function fetchRecentScreenshots(limit = 100): Promise<ScreenshotRow[]> {
+  const c = getSupabase();
+  const { data, error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_screenshot')
+    .select(
+      'id, page_url_canonical, page_url_full, page_title, file_id, file_url, width, height, mime_type, byte_length, source, captured_at',
+    )
+    .order('captured_at', { ascending: false })
+    .limit(Math.min(Math.max(limit, 1), 200));
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return [];
+    throw new Error(`fetchRecentScreenshots: ${error.message}`);
+  }
+  return parseRowsSafe(ScreenshotRowSchema, (data ?? []) as unknown[], 'fetchRecentScreenshots')
+    .rows;
+}
+
 export async function deleteScreenshot(id: string): Promise<boolean> {
   const c = getSupabase();
   const { error } = await c.schema(EXTEND_SCHEMA).from('wbx_screenshot').delete().eq('id', id);

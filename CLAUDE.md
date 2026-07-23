@@ -361,6 +361,13 @@ discovery handler).
 - **Notes** — list / search / folder picker / editor for user-authored
   notes (separate from guidance — notes are general personal text;
   guidance is agent-facing clues).
+- **Files** — recent discoverable library files plus cross-page extension
+  captures. Opens canonical `/files/f/{id}` viewers, inspects the live
+  `get_file_resource_family` inventory, and attaches/detaches a canonical
+  `file → conversation` edge for the current chat. The existing Screenshots
+  tab remains the current-page capture surface. The icon rail scrolls
+  horizontally at narrow side-panel widths so the expanded tab set stays
+  reachable instead of shrinking or clipping.
 - **Tools** — full visible catalog of every tool, search + filter, JSON
   argument editor, **Run** button per tool that flows through the same
   dispatcher path the agent uses. Use this to test capabilities directly.
