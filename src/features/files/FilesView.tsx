@@ -186,6 +186,7 @@ export function FilesView() {
         family={family}
         state={familyState}
         error={familyError}
+        onRetry={() => void openFamily(familyFile.id, familyFile.name)}
         onBack={() => {
           familyGeneration.current += 1;
           setFamilyFile(null);
@@ -540,12 +541,14 @@ function FamilyInspector({
   family,
   state,
   error,
+  onRetry,
   onBack,
 }: {
   file: { id: string; name: string };
   family: FileResourceFamily | null;
   state: LoadState;
   error: string | null;
+  onRetry: () => void;
   onBack: () => void;
 }) {
   return (
@@ -562,11 +565,17 @@ function FamilyInspector({
       {state === 'loading' ? (
         <Loading />
       ) : state === 'error' || !family ? (
-        <Empty
-          icon={<AlertTriangle className="size-5" />}
-          title="Couldn't load this family"
-          body={error ?? 'Try again.'}
-        />
+        <div className="flex flex-1 flex-col items-center justify-center gap-3">
+          <Empty
+            icon={<AlertTriangle className="size-5" />}
+            title="Couldn't load this family"
+            body={error ?? 'Try again.'}
+          />
+          <Button size="sm" variant="outline" onClick={onRetry}>
+            <RefreshCw className="size-3.5" />
+            Try again
+          </Button>
+        </div>
       ) : (
         <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3 text-xs">
           <div className="rounded-lg border border-border/60 bg-muted/20 p-3">

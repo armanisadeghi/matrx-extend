@@ -18,7 +18,8 @@ does not create a second file store.
   read-only and never schedules extraction, cleanup, RAG, transcription,
   analysis, or verification work. It renders every returned stored-file and
   processed-document node with its parent edge, derivation kind, and relation
-  to the requested file.
+  to the requested file. Load failures retain the selected file and expose a
+  real retry action.
 - **Attach/detach** uses the dedicated `conversation_file_add`,
   `conversation_file_remove`, and `conversation_files` RPCs. Add requires
   editor authority over both the conversation and file because the edge
@@ -60,6 +61,8 @@ does not create a second file store.
   breadth, or cycle overflow; the UI never presents a silently partial graph.
   The UI renders true 100-node pages (replacing, not accumulating, the prior
   page) so a valid maximum family cannot freeze the side panel.
+  Every traversed node is caller-readable; a hidden ancestor ends the visible
+  path and cannot influence an overflow error.
 
 ## Runtime race and byte-loading rules
 
@@ -70,7 +73,9 @@ does not create a second file store.
   card approaches the viewport, then abort and revoke their blob URL after the
   card leaves it. Reloads use a generation token, and a successful delete
   starts an authoritative current-page reload, so an older query cannot
-  overwrite a newer result or resurrect a deleted card.
+  overwrite a newer result or resurrect a deleted card. Query and deletion
+  failures are visible; a failed read never masquerades as an empty gallery,
+  and a delete is disabled while pending.
 
 ## Deliberate first version boundary
 

@@ -946,8 +946,7 @@ export async function fetchScreenshotsForUrl(
     .limit(limit);
   if (error) {
     if (/relation .* does not exist/i.test(error.message)) return [];
-    console.warn('[matrx-extend] fetchScreenshotsForUrl error', error.message);
-    return [];
+    throw new Error(`fetchScreenshotsForUrl: ${error.message}`);
   }
   return parseRowsSafe(ScreenshotRowSchema, (data ?? []) as unknown[], 'fetchScreenshotsForUrl')
     .rows;

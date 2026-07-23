@@ -68,6 +68,8 @@ export function ScreenshotsView() {
   const [capturingMode, setCapturingMode] = useState<CaptureMode | null>(null);
   const [captureError, setCaptureError] = useState<string | null>(null);
   const [persistWarning, setPersistWarning] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   // Track the URL we last fetched for, so the "tab url change" effect
   // doesn't fire a redundant load while a refresh from the timeline
   // event is still in flight.
@@ -230,16 +232,25 @@ export function ScreenshotsView() {
 
   const onDelete = useCallback(
     async (id: string) => {
-      const ok = await deleteScreenshot(id);
-      if (ok) {
-        setRows((prev) => prev.filter((r) => r.id !== id));
+      if (deletingId) return;
+      setDeletingId(id);
+      setDeleteError(null);
+      try {
+        const ok = await deleteScreenshot(id);
+        if (!ok) {
+          setDeleteError('Could not delete the screenshot. Try again.');
+          return;
+        }
+        setRows((prev) => prev.filter((row) => row.id !== id));
         // Supersede any query that captured the deleted row, while retaining
         // unrelated captures and honoring a page navigation that happened
         // during deletion.
         void reload(lastFetchedUrlRef.current);
+      } finally {
+        setDeletingId((current) => (current === id ? null : current));
       }
     },
-    [reload],
+    [deletingId, reload],
   );
 
   return (
@@ -288,7 +299,12 @@ export function ScreenshotsView() {
         ) : (
           <div className="grid grid-cols-2 gap-2 px-3 py-3">
             {rows.map((row) => (
-              <ScreenshotCard key={row.id} row={row} onDelete={() => void onDelete(row.id)} />
+              <ScreenshotCard
+                key={row.id}
+                row={row}
+                deleting={deletingId === row.id}
+                onDelete={() => void onDelete(row.id)}
+              />
             ))}
           </div>
         )}
@@ -305,6 +321,12 @@ export function ScreenshotsView() {
           <div className="flex items-start gap-1.5 text-xs text-amber-600 dark:text-amber-400">
             <AlertTriangle className="mt-0.5 size-3 shrink-0" />
             <span>{persistWarning}</span>
+          </div>
+        )}
+        {deleteError && (
+          <div className="flex items-start gap-1.5 text-xs text-destructive">
+            <AlertTriangle className="mt-0.5 size-3 shrink-0" />
+            <span>{deleteError}</span>
           </div>
         )}
         <div className="flex gap-1.5">
@@ -343,9 +365,11 @@ export function ScreenshotsView() {
 
 function ScreenshotCard({
   row,
+  deleting,
   onDelete,
 }: {
   row: ScreenshotRow;
+  deleting: boolean;
   onDelete: () => void;
 }) {
   const [confirming, setConfirming] = useState(false);
@@ -482,8 +506,13 @@ function ScreenshotCard({
                 variant="ghost"
                 className="size-6 p-0 text-muted-foreground hover:text-destructive"
                 title="Delete"
+                disabled={deleting}
               >
-                <Trash2 className="size-3" />
+                {deleting ? (
+                  <Loader2 className="size-3 animate-spin" />
+                ) : (
+                  <Trash2 className="size-3" />
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-56 p-2 text-xs">
@@ -508,8 +537,9 @@ function ScreenshotCard({
                     setConfirming(false);
                     onDelete();
                   }}
+                  disabled={deleting}
                 >
-                  Delete
+                  {deleting ? 'Deleting…' : 'Delete'}
                 </Button>
               </div>
             </PopoverContent>
