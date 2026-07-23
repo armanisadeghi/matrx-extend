@@ -303,6 +303,7 @@ export function ScreenshotsView() {
                 key={row.id}
                 row={row}
                 deleting={deletingId === row.id}
+                deletePending={deletingId !== null}
                 onDelete={() => void onDelete(row.id)}
               />
             ))}
@@ -366,10 +367,12 @@ export function ScreenshotsView() {
 function ScreenshotCard({
   row,
   deleting,
+  deletePending,
   onDelete,
 }: {
   row: ScreenshotRow;
   deleting: boolean;
+  deletePending: boolean;
   onDelete: () => void;
 }) {
   const [confirming, setConfirming] = useState(false);
@@ -506,7 +509,7 @@ function ScreenshotCard({
                 variant="ghost"
                 className="size-6 p-0 text-muted-foreground hover:text-destructive"
                 title="Delete"
-                disabled={deleting}
+                disabled={deletePending}
               >
                 {deleting ? (
                   <Loader2 className="size-3 animate-spin" />
@@ -537,7 +540,7 @@ function ScreenshotCard({
                     setConfirming(false);
                     onDelete();
                   }}
-                  disabled={deleting}
+                  disabled={deletePending}
                 >
                   {deleting ? 'Deleting…' : 'Delete'}
                 </Button>

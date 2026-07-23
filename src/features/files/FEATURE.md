@@ -75,7 +75,8 @@ does not create a second file store.
   starts an authoritative current-page reload, so an older query cannot
   overwrite a newer result or resurrect a deleted card. Query and deletion
   failures are visible; a failed read never masquerades as an empty gallery,
-  and a delete is disabled while pending.
+  and all delete controls are disabled while the single serialized deletion is
+  pending.
 
 ## Deliberate first version boundary
 
