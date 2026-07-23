@@ -231,7 +231,11 @@ export function ScreenshotsView() {
   const onDelete = useCallback(async (id: string) => {
     const ok = await deleteScreenshot(id);
     if (ok) {
+      // A query that started before deletion may still contain this row.
+      // Invalidate it before committing the local removal.
+      loadGenerationRef.current += 1;
       setRows((prev) => prev.filter((r) => r.id !== id));
+      setLoadState('ready');
     }
   }, []);
 
@@ -375,10 +379,7 @@ function ScreenshotCard({
     }
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry?.isIntersecting) {
-          setPreviewVisible(true);
-          observer.disconnect();
-        }
+        setPreviewVisible(entry?.isIntersecting ?? false);
       },
       { rootMargin: '160px' },
     );
@@ -387,7 +388,11 @@ function ScreenshotCard({
   }, []);
 
   useEffect(() => {
-    if (!previewVisible) return;
+    if (!previewVisible) {
+      setPreviewUrl(null);
+      setPreviewFailed(false);
+      return;
+    }
     let active = true;
     let objectUrl: string | null = null;
     const controller = new AbortController();

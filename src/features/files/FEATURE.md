@@ -54,8 +54,8 @@ does not create a second file store.
 - The RPC's implementation is bounded to 16 generations and 5,000 rows. It
   returns a complete result within that contract or fails loudly on depth,
   breadth, or cycle overflow; the UI never presents a silently partial graph.
-  The UI renders large inventories in 100-node increments so a valid maximum
-  family cannot freeze the side panel.
+  The UI renders true 100-node pages (replacing, not accumulating, the prior
+  page) so a valid maximum family cannot freeze the side panel.
 
 ## Runtime race and byte-loading rules
 
@@ -63,8 +63,9 @@ does not create a second file store.
   refresh that started before an attach/detach cannot overwrite the
   server-confirmed result when it resolves later.
 - Current-page screenshot previews download authenticated bytes only when the
-  card approaches the viewport and abort on unmount. Reloads use a generation
-  token, so an older query for the same URL cannot overwrite a newer result.
+  card approaches the viewport, then abort and revoke their blob URL after the
+  card leaves it. Reloads and deletes use a generation token, so an older query
+  cannot overwrite a newer result or resurrect a deleted card.
 
 ## Deliberate first version boundary
 

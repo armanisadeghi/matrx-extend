@@ -138,6 +138,9 @@ export function FilesView() {
         setError(cause instanceof Error ? cause.message : 'Could not update the attachment.');
       } finally {
         if (mutationGeneration === attachmentGeneration.current) {
+          // Invalidate refreshes that began after the mutation started but
+          // before its RPC committed and therefore may hold the old edge set.
+          attachmentGeneration.current += 1;
           setBusyFileId(null);
         }
       }
@@ -201,7 +204,7 @@ export function FilesView() {
           variant="ghost"
           className="size-7 p-0"
           onClick={() => void reload()}
-          disabled={state === 'loading'}
+          disabled={state === 'loading' || busyFileId !== null}
           title="Refresh files"
         >
           <RefreshCw className={`size-3.5 ${state === 'loading' ? 'animate-spin' : ''}`} />
@@ -663,13 +666,15 @@ function FamilyInspector({
 
 function BinaryFamilyGraph({ family }: { family: FileResourceFamily }) {
   const ordered = orderBinaryFamily(family.files);
-  const [visibleCount, setVisibleCount] = useState(GRAPH_PAGE_SIZE);
+  const [page, setPage] = useState(0);
   if (ordered.length === 0) {
     return <FamilyGraphEmpty body="No readable stored-file nodes were returned." />;
   }
   const relationById = binaryRelations(family.files, family.requestedFileId);
-  const visible = ordered.slice(0, visibleCount);
-  const remaining = ordered.length - visible.length;
+  const pageCount = Math.ceil(ordered.length / GRAPH_PAGE_SIZE);
+  const safePage = Math.min(page, pageCount - 1);
+  const start = safePage * GRAPH_PAGE_SIZE;
+  const visible = ordered.slice(start, start + GRAPH_PAGE_SIZE);
   return (
     <div className="space-y-1 rounded-md border border-border/60 p-2">
       {visible.map(({ node, depth }) => (
@@ -696,15 +701,15 @@ function BinaryFamilyGraph({ family }: { family: FileResourceFamily }) {
           </div>
         </div>
       ))}
-      {remaining > 0 && (
-        <Button
-          size="sm"
-          variant="secondary"
-          className="h-7 w-full text-[10px]"
-          onClick={() => setVisibleCount((current) => current + GRAPH_PAGE_SIZE)}
-        >
-          Show next {Math.min(GRAPH_PAGE_SIZE, remaining)} ({remaining} remaining)
-        </Button>
+      {pageCount > 1 && (
+        <GraphPager
+          page={safePage}
+          pageCount={pageCount}
+          start={start}
+          visibleCount={visible.length}
+          total={ordered.length}
+          onPage={setPage}
+        />
       )}
     </div>
   );
@@ -716,12 +721,14 @@ function ProcessedFamilyGraph({
   documents: FileFamilyProcessedDocument[];
 }) {
   const ordered = orderProcessedFamily(documents);
-  const [visibleCount, setVisibleCount] = useState(GRAPH_PAGE_SIZE);
+  const [page, setPage] = useState(0);
   if (ordered.length === 0) {
     return <FamilyGraphEmpty body="This family has no readable processing results yet." />;
   }
-  const visible = ordered.slice(0, visibleCount);
-  const remaining = ordered.length - visible.length;
+  const pageCount = Math.ceil(ordered.length / GRAPH_PAGE_SIZE);
+  const safePage = Math.min(page, pageCount - 1);
+  const start = safePage * GRAPH_PAGE_SIZE;
+  const visible = ordered.slice(start, start + GRAPH_PAGE_SIZE);
   return (
     <div className="space-y-1 rounded-md border border-border/60 p-2">
       {visible.map(({ node, depth }) => (
@@ -754,16 +761,58 @@ function ProcessedFamilyGraph({
           </div>
         </div>
       ))}
-      {remaining > 0 && (
-        <Button
-          size="sm"
-          variant="secondary"
-          className="h-7 w-full text-[10px]"
-          onClick={() => setVisibleCount((current) => current + GRAPH_PAGE_SIZE)}
-        >
-          Show next {Math.min(GRAPH_PAGE_SIZE, remaining)} ({remaining} remaining)
-        </Button>
+      {pageCount > 1 && (
+        <GraphPager
+          page={safePage}
+          pageCount={pageCount}
+          start={start}
+          visibleCount={visible.length}
+          total={ordered.length}
+          onPage={setPage}
+        />
       )}
+    </div>
+  );
+}
+
+function GraphPager({
+  page,
+  pageCount,
+  start,
+  visibleCount,
+  total,
+  onPage,
+}: {
+  page: number;
+  pageCount: number;
+  start: number;
+  visibleCount: number;
+  total: number;
+  onPage: (page: number) => void;
+}) {
+  return (
+    <div className="flex items-center gap-1 pt-1">
+      <Button
+        size="sm"
+        variant="secondary"
+        className="h-7 flex-1 text-[10px]"
+        disabled={page === 0}
+        onClick={() => onPage(page - 1)}
+      >
+        Previous
+      </Button>
+      <span className="shrink-0 px-1 text-[9px] text-muted-foreground">
+        {start + 1}–{start + visibleCount} of {total}
+      </span>
+      <Button
+        size="sm"
+        variant="secondary"
+        className="h-7 flex-1 text-[10px]"
+        disabled={page + 1 >= pageCount}
+        onClick={() => onPage(page + 1)}
+      >
+        Next
+      </Button>
     </div>
   );
 }
