@@ -26,7 +26,9 @@
 
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ENV } from '@/config/env';
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { downloadFileBytes } from '@/lib/api/routes/files';
 import { newId } from '@/lib/id';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -219,7 +221,7 @@ export function ScreenshotsView() {
         setCapturingMode(null);
       }
     },
-    [capturingMode, tab.id, tab.url, reload],
+    [capturingMode, tab.id, tab.url],
   );
 
   const onDelete = useCallback(async (id: string) => {
@@ -336,6 +338,8 @@ function ScreenshotCard({
   onDelete: () => void;
 }) {
   const [confirming, setConfirming] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewFailed, setPreviewFailed] = useState(false);
   const captured = useMemo(() => formatTimestamp(row.captured_at), [row.captured_at]);
   const dim = row.width && row.height ? `${row.width}×${row.height}` : null;
   const sourceIcon =
@@ -347,34 +351,58 @@ function ScreenshotCard({
       <Camera className="size-3" />
     );
   const sourceLabel = row.source === 'agent' ? 'Agent' : row.source === 'user' ? 'You' : 'Unknown';
+  const canonicalFileUrl = `${ENV.FRONTEND_URL}/files/f/${encodeURIComponent(row.file_id)}`;
 
   const openFullSize = useCallback(() => {
-    if (row.file_url) void chrome.tabs.create({ url: row.file_url });
-  }, [row.file_url]);
+    void chrome.tabs.create({ url: canonicalFileUrl });
+  }, [canonicalFileUrl]);
 
   const copyUrl = useCallback(() => {
-    if (row.file_url) void navigator.clipboard.writeText(row.file_url).catch(() => undefined);
-  }, [row.file_url]);
+    void navigator.clipboard.writeText(canonicalFileUrl).catch(() => undefined);
+  }, [canonicalFileUrl]);
+
+  useEffect(() => {
+    let active = true;
+    let objectUrl: string | null = null;
+    setPreviewUrl(null);
+    setPreviewFailed(false);
+    void downloadFileBytes(row.file_id)
+      .then(({ blob }) => {
+        if (!active) return;
+        objectUrl = URL.createObjectURL(blob);
+        setPreviewUrl(objectUrl);
+      })
+      .catch(() => {
+        if (active) setPreviewFailed(true);
+      });
+    return () => {
+      active = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [row.file_id]);
 
   return (
     <div className="group overflow-hidden rounded-md border border-border/60 bg-card text-xs">
       <button
         type="button"
         onClick={openFullSize}
-        disabled={!row.file_url}
-        className="block w-full bg-muted/40 transition-opacity hover:opacity-90 disabled:cursor-default disabled:hover:opacity-100"
-        title={row.file_url ? 'Open full size' : 'Image URL unavailable'}
+        className="block w-full bg-muted/40 transition-opacity hover:opacity-90"
+        title="Open in Files"
       >
-        {row.file_url ? (
+        {previewUrl ? (
           <img
-            src={row.file_url}
+            src={previewUrl}
             alt={row.page_title ?? 'screenshot'}
             loading="lazy"
             className="block aspect-[4/3] w-full object-cover"
           />
         ) : (
           <div className="flex aspect-[4/3] w-full items-center justify-center text-muted-foreground">
-            <ImageOff className="size-5" />
+            {previewFailed ? (
+              <ImageOff className="size-5" />
+            ) : (
+              <Loader2 className="size-4 animate-spin" />
+            )}
           </div>
         )}
       </button>
@@ -397,8 +425,7 @@ function ScreenshotCard({
             variant="ghost"
             className="size-6 p-0 text-muted-foreground"
             onClick={openFullSize}
-            disabled={!row.file_url}
-            title="Open full size"
+            title="Open in Files"
           >
             <ExternalLink className="size-3" />
           </Button>
@@ -407,8 +434,7 @@ function ScreenshotCard({
             variant="ghost"
             className="size-6 p-0 text-muted-foreground"
             onClick={copyUrl}
-            disabled={!row.file_url}
-            title="Copy image URL"
+            title="Copy durable Files URL"
           >
             <Link2 className="size-3" />
           </Button>
@@ -460,8 +486,8 @@ function ScreenshotCard({
 function SkeletonGrid() {
   return (
     <div className="grid grid-cols-2 gap-2 px-3 py-3">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="overflow-hidden rounded-md border border-border/60 bg-card">
+      {['top-left', 'top-right', 'bottom-left', 'bottom-right'].map((slot) => (
+        <div key={slot} className="overflow-hidden rounded-md border border-border/60 bg-card">
           <div className="aspect-[4/3] w-full animate-pulse bg-muted/60" />
           <div className="space-y-1 p-2">
             <div className="h-2 w-1/2 animate-pulse rounded bg-muted/60" />
