@@ -617,9 +617,11 @@ function FamilyInspector({
           <section className="rounded-md border border-border/60 p-2">
             <h2 className="font-medium">Dedupe boundary</h2>
             <p className="mt-1 text-[10px] leading-relaxed text-muted-foreground">
-              <code>duplicate_of_file_id</code> records equivalent content separately from ancestry.
-              This provenance view intentionally does not walk or reveal a separate duplicate
-              family, because dedupe must not become an access-sharing path.
+              Matching bytes are checksum-deduped within the owner or organization. Normal reuse
+              returns the canonical file instead of making another row. A deliberate force-copy
+              needs a reason and records <code>duplicate_of_file_id</code>. That equivalence link is
+              separate from ancestry and is not expanded here, so dedupe cannot become an
+              access-sharing path.
             </p>
           </section>
 

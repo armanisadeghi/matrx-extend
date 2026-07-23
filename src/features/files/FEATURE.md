@@ -44,10 +44,13 @@ does not create a second file store.
   are earlier sources; descendants are derived outputs; siblings share a
   parent.
 - `duplicate_of_file_id` is an equivalence/dedupe edge, not a provenance edge.
-  It is tracked separately in storage. This provenance-family RPC intentionally
-  does not enumerate a separate duplicate family, and visibility redaction
-  normally removes a duplicate pointer whose target is outside the readable
-  provenance family. That keeps dedupe from becoming an access-sharing path.
+  The strict-intent upload contract checksum-matches within the owner or org:
+  `create` fails loudly on a match, `alias_existing` reuses the canonical row,
+  and only `force_new_copy` (with a reason) creates a second identity carrying
+  this pointer. This provenance-family RPC intentionally does not enumerate a
+  separate duplicate family, and visibility redaction normally removes a
+  pointer whose target is outside the readable provenance family. That keeps
+  dedupe from becoming an access-sharing path.
 - The RPC's implementation is bounded to 16 generations and 5,000 rows. It
   returns a complete result within that contract or fails loudly on depth,
   breadth, or cycle overflow; the UI never presents a silently partial graph.
