@@ -123,29 +123,26 @@ export function FilesView() {
       try {
         if (attachedIds.has(fileId)) {
           await detachFileFromConversation(fileId, conversationId);
-          if (useChatStore.getState().selectedConversationId !== conversationId) return;
-          setAttachedIds((current) => {
-            const next = new Set(current);
-            next.delete(fileId);
-            return next;
-          });
         } else {
           await attachFileToConversation(fileId, conversationId, name);
-          if (useChatStore.getState().selectedConversationId !== conversationId) return;
-          setAttachedIds((current) => new Set(current).add(fileId));
         }
-      } catch (cause) {
-        setError(cause instanceof Error ? cause.message : 'Could not update the attachment.');
-      } finally {
+        if (useChatStore.getState().selectedConversationId !== conversationId) return;
+        // Invalidate any pre-commit snapshot, then replace local state with an
+        // authoritative post-commit read instead of patching a possibly stale
+        // set left behind by rapid conversation switches.
         if (mutationGeneration === attachmentGeneration.current) {
-          // Invalidate refreshes that began after the mutation started but
-          // before its RPC committed and therefore may hold the old edge set.
           attachmentGeneration.current += 1;
-          setBusyFileId(null);
         }
+        await reload();
+      } catch (cause) {
+        if (useChatStore.getState().selectedConversationId === conversationId) {
+          setError(cause instanceof Error ? cause.message : 'Could not update the attachment.');
+        }
+      } finally {
+        setBusyFileId((current) => (current === fileId ? null : current));
       }
     },
-    [attachedIds, busyFileId, conversationId],
+    [attachedIds, busyFileId, conversationId, reload],
   );
 
   const normalizedQuery = query.trim().toLowerCase();
@@ -620,10 +617,11 @@ function FamilyInspector({
           <section className="rounded-md border border-border/60 p-2">
             <h2 className="font-medium">Dedupe boundary</h2>
             <p className="mt-1 text-[10px] leading-relaxed text-muted-foreground">
-              Matching bytes are checksum-deduped within the owner or organization. Normal reuse
-              returns the canonical file instead of making another row. A deliberate force-copy
-              needs a reason and records <code>duplicate_of_file_id</code>. That equivalence link is
-              separate from ancestry and is not expanded here, so dedupe cannot become an
+              Extension uploads checksum-match within your identity in the organization and reuse
+              the canonical file instead of making another row. The broader Files service also
+              supports explicit create, reuse, and force-copy intents; only a deliberate force-copy
+              needs a reason and records <code>duplicate_of_file_id</code>. That equivalence link
+              stays separate from ancestry and is not expanded here, so it cannot become an
               access-sharing path.
             </p>
           </section>
