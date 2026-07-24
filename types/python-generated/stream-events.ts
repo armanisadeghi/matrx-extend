@@ -29,6 +29,7 @@ export const EventType = {
   CONTEXT_TRIMMED: "context_trimmed",
   INJECTION_CONSUMED: "injection_consumed",
   PROVIDER_RETRY: "provider_retry",
+  CITATION: "citation",
 } as const;
 
 export type EventType = (typeof EventType)[keyof typeof EventType];
@@ -75,6 +76,11 @@ export type InitCompletionStatus =
 
 export interface ChunkPayload {
   text: string;
+}
+
+export interface CitationPayload {
+  block_index?: number | null;
+  citation: Record<string, unknown>;
 }
 
 export interface ReasoningChunkPayload {
@@ -367,6 +373,14 @@ export function isCxToolCallReservation(p: RecordReservedPayload): p is CxToolCa
 
 export interface DataPayload {
   type: string;
+}
+
+export interface AssignmentProgressData {
+  type?: "assignment_progress";
+  session_id: string;
+  completed: number;
+  total: number;
+  status: "pending" | "running" | "completed" | "partially_failed" | "failed" | "cancelled";
 }
 
 export interface AudioOutputData {
@@ -762,7 +776,7 @@ export interface LegalSyncEventData {
 export interface AudioBlock {
   origin: "matrx" | "external";
   file_id?: string | null;
-  visibility?: "public" | "private" | "shared" | null;
+  visibility?: "public" | "personal" | "shared" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
   download_url?: string | null;
@@ -787,7 +801,7 @@ export interface AudioBlock {
 export interface DocumentBlock {
   origin: "matrx" | "external";
   file_id?: string | null;
-  visibility?: "public" | "private" | "shared" | null;
+  visibility?: "public" | "personal" | "shared" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
   download_url?: string | null;
@@ -812,7 +826,7 @@ export interface DocumentBlock {
 export interface ImageBlock {
   origin: "matrx" | "external";
   file_id?: string | null;
-  visibility?: "public" | "private" | "shared" | null;
+  visibility?: "public" | "personal" | "shared" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
   download_url?: string | null;
@@ -841,7 +855,7 @@ export interface JsonValue {
 export interface VideoBlock {
   origin: "matrx" | "external";
   file_id?: string | null;
-  visibility?: "public" | "private" | "shared" | null;
+  visibility?: "public" | "personal" | "shared" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
   download_url?: string | null;
@@ -868,7 +882,7 @@ export interface VideoBlock {
 export interface YouTubeBlock {
   origin?: "external";
   file_id?: string | null;
-  visibility?: "public" | "private" | "shared" | null;
+  visibility?: "public" | "personal" | "shared" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
   download_url?: string | null;
@@ -1343,6 +1357,7 @@ export interface WorkflowStepData {
 }
 
 export type TypedDataPayload =
+  | AssignmentProgressData
   | AudioOutputData
   | AudioStreamChunkData
   | AudioStreamEndData
@@ -1469,6 +1484,61 @@ export function isContextGroomedEvent(value: unknown): value is ContextGroomedEv
     && (value as { kind?: unknown }).kind === "value_store.groomed";
 }
 
+// --- SEO Streamed Result Models (kind-discriminated data events) ---
+
+export interface KeywordClassifyResult {
+  eligible?: number;
+  batches?: number;
+  updated?: number;
+  skipped_error?: number;
+  missing_keyword_ids?: string[];
+}
+
+export interface KeywordResearchArtifact {
+  primary_keyword: string;
+  keyword_lists?: KeywordResearchList[];
+}
+
+export interface KeywordResearchIngestSummary {
+  primary_keyword_ids?: string[];
+  keywords_created?: number;
+  keywords_already_existed?: number;
+  edges_written?: number;
+  edges_skipped_rejected?: number;
+  edges_skipped_self?: number;
+}
+
+export interface KeywordResearchList {
+  label: string;
+  keywords?: string[];
+}
+
+export interface KeywordVolumeBatchReceipt {
+  run_id: string;
+  keyword_count: number;
+  created_observations?: number;
+  existing_observations?: number;
+  from_cache?: boolean;
+}
+
+export interface KeywordVolumeRefreshResult {
+  result_kind?: "keywords.volume_refresh";
+  requested_phrases?: number;
+  skipped_fresh?: number;
+  fetched_phrases?: number;
+  batches?: KeywordVolumeBatchReceipt[];
+}
+
+export interface KeywordResearchResult {
+  result_kind?: "keywords.relationship_research";
+  primary_keyword: string;
+  research_doc_id: string;
+  artifact: KeywordResearchArtifact;
+  ingest: KeywordResearchIngestSummary;
+  volume?: KeywordVolumeRefreshResult | null;
+  classification?: KeywordClassifyResult | null;
+}
+
 // --- Completion Result Models ---
 
 export interface LlmRequestResult {
@@ -1530,6 +1600,10 @@ export interface UsageTotals {
   total_requests?: number;
   unique_models?: number;
   total_cost?: number | null;
+  known_cost_subtotal?: number;
+  provider_reported_requests?: number;
+  catalog_priced_requests?: number;
+  unknown_cost_requests?: number;
 }
 
 export interface UserRequestResult {
@@ -1666,7 +1740,7 @@ export interface ToolResultPreviewData {
 }
 
 export interface ToolCompletedData {
-  result?: string | Record<string, unknown> | null;
+  result?: JsonValue;
 }
 
 export interface ToolErrorData {
@@ -1751,7 +1825,7 @@ export interface ToolResultPreviewToolEvent {
 }
 
 export interface ToolCompletedData {
-  result?: string | Record<string, unknown> | null;
+  result?: JsonValue;
 }
 
 export interface ToolCompletedToolEvent {
@@ -2933,7 +3007,7 @@ export interface VideoOutputRenderBlock {
   metadata?: Record<string, unknown>;
 }
 
-/** Web search results block — unregistered shape candidate (tool_io). */
+/** Web search results block — registered kind `search_results` (inactive; data-event arrival unchanged). */
 export interface SearchResultsRenderBlock {
   type: "search_results";
   content: string;
@@ -2941,7 +3015,7 @@ export interface SearchResultsRenderBlock {
   metadata?: Record<string, unknown>;
 }
 
-/** URL fetch results block — unregistered shape candidate (tool_io). */
+/** URL fetch results block — registered kind `fetch_results` (inactive; data-event arrival unchanged). */
 export interface FetchResultsRenderBlock {
   type: "fetch_results";
   content: string;
@@ -2949,7 +3023,7 @@ export interface FetchResultsRenderBlock {
   metadata?: Record<string, unknown>;
 }
 
-/** Prompt categorization result — unregistered shape candidate. */
+/** Prompt categorization result — registered kind `categorization_result` (inactive; data-event arrival unchanged). */
 export interface CategorizationResultRenderBlock {
   type: "categorization_result";
   content: string;
@@ -3113,12 +3187,29 @@ export type ServerOnlyBlockType = ServerOnlyRenderBlock["type"];
 
 // --- Message Part Models (cx_message.content[] items) ---
 
+export interface NormalizedCitation {
+  kind: "document_char" | "document_page" | "document_block" | "search_result" | "web" | "grounding";
+  provider: "anthropic" | "openai" | "google" | "xai";
+  cited_text?: string | null;
+  title?: string | null;
+  url?: string | null;
+  source_index?: number;
+  file_id?: string | null;
+  page?: number | null;
+  end_page?: number | null;
+  source_start?: number | null;
+  source_end?: number | null;
+  answer_start?: number | null;
+  answer_end?: number | null;
+  raw?: Record<string, unknown>;
+}
+
 export interface TextPart {
   metadata?: Record<string, unknown>;
   type?: "text";
   text?: string;
   id?: string;
-  citations?: unknown[];
+  citations?: NormalizedCitation[];
 }
 
 export interface ThinkingPart {
@@ -3126,7 +3217,7 @@ export interface ThinkingPart {
   type?: "thinking";
   text?: string;
   id?: string;
-  provider?: "openai" | "anthropic" | "google" | "cerebras" | null;
+  provider?: "openai" | "anthropic" | "google" | "cerebras" | "moonshot" | "together" | "groq" | "xai" | "generic_openai" | null;
   signature?: string | null;
   signature_encoding?: "base64" | null;
   summary?: unknown[];
@@ -3525,6 +3616,11 @@ export interface ProviderRetryEvent {
   data: ProviderRetryPayload;
 }
 
+export interface CitationEvent {
+  event: "citation";
+  data: CitationPayload;
+}
+
 /** Discriminated union — `event.event === "chunk"` narrows `data` automatically. */
 export type TypedStreamEvent =
   | ChunkEvent
@@ -3550,7 +3646,8 @@ export type TypedStreamEvent =
   | ContextStateEvent
   | ContextTrimmedEvent
   | InjectionConsumedEvent
-  | ProviderRetryEvent;
+  | ProviderRetryEvent
+  | CitationEvent;
 
 /**
  * @deprecated Use `TypedStreamEvent` instead — it provides automatic type narrowing
@@ -3680,6 +3777,10 @@ export function isInjectionConsumedEvent(e: TypedStreamEvent): e is { event: "in
 
 export function isProviderRetryEvent(e: TypedStreamEvent): e is { event: "provider_retry"; data: ProviderRetryPayload } {
   return e.event === "provider_retry";
+}
+
+export function isCitationEvent(e: TypedStreamEvent): e is { event: "citation"; data: CitationPayload } {
+  return e.event === "citation";
 }
 
 export function isCompactChunkEvent(e: unknown): e is CompactChunkEvent {
