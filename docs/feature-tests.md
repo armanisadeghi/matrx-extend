@@ -1606,6 +1606,10 @@ Every entry follows this shape:
   its next sign-in hydrate.
 - **Lists repaint:** TaskPanel (chat header chip) → add a task → it appears
   INSTANTLY. Check a todo, delete a task, "Clear done" — all repaint live.
+  Then have the running agent add/update a task through the `tasks` tool:
+  the same row must repaint in TaskPanel and the Lists tab via
+  `chat.agent_task` Realtime. Tool routing diagnostics must show executor
+  `aidream`, no `chrome-extension` binding, and zero findings.
 - **Tasks overlay:** trigger an L3 capture, switch sidepanel tabs, click the
   in-page Capture button — it still works (TasksView stays mounted). With
   the panel fully closed, the overlay unlocks with a "side panel is closed"

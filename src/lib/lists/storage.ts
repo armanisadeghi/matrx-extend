@@ -1,12 +1,15 @@
 /**
- * chrome.storage.local persistence for plan / tasks / user_todos.
+ * Persistence for plan / tasks / user_todos.
  *
- * Storage layout — three top-level maps, each keyed by conversation_id:
+ * Plans and user todos are small extension-local maps keyed by conversation_id:
  *   matrx.lists.plans       → Record<conversation_id, Plan>
- *   matrx.lists.tasks       → Record<conversation_id, Task[]>
  *   matrx.lists.user_todos  → Record<conversation_id, UserTodo[]>
  *
- * Map shape (vs per-conversation keys) trades a slightly larger write
+ * Agent tasks live in `chat.agent_task`, shared with aidream's canonical
+ * server-executed `tasks` tool. The extension reads and edits that table
+ * directly so its panel and the server always show the same task list.
+ *
+ * Map shape (vs per-conversation keys) trades a slightly larger local write
  * payload for trivial aggregate-view iteration without a secondary
  * index. Volumes here are tiny — a few conversations × a handful of
  * items each — so the simpler shape wins.
@@ -15,6 +18,7 @@
  * sidepanel store + any open tabs refresh without polling.
  */
 
+import { getCurrentUser } from '@/lib/auth/flow';
 import type {
   ConversationListsSummary,
   Plan,
@@ -25,14 +29,28 @@ import type {
 } from '@/lib/lists/types';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { chatDb } from '@/lib/supabase/schemas';
 
 const PLAN_KEY = 'matrx.lists.plans';
-const TASKS_KEY = 'matrx.lists.tasks';
 const TODOS_KEY = 'matrx.lists.user_todos';
 
 type PlanMap = Record<string, Plan>;
-type TaskMap = Record<string, Task[]>;
 type TodoMap = Record<string, UserTodo[]>;
+
+interface AgentTaskRow {
+  id: string;
+  conversation_id: string;
+  title: string;
+  status: TaskStatus;
+  note: string | null;
+  position: number;
+  created_by: 'agent' | 'user';
+  created_at: string;
+  updated_at: string;
+}
+
+const AGENT_TASK_COLUMNS =
+  'id,conversation_id,title,status,note,position,created_by,created_at,updated_at';
 
 // ─── core map I/O ───────────────────────────────────────────────────────────
 
@@ -40,11 +58,6 @@ async function readPlans(): Promise<PlanMap> {
   const r = await chrome.storage.local.get([PLAN_KEY]);
   const v = r[PLAN_KEY];
   return v && typeof v === 'object' ? (v as PlanMap) : {};
-}
-async function readTasks(): Promise<TaskMap> {
-  const r = await chrome.storage.local.get([TASKS_KEY]);
-  const v = r[TASKS_KEY];
-  return v && typeof v === 'object' ? (v as TaskMap) : {};
 }
 async function readTodos(): Promise<TodoMap> {
   const r = await chrome.storage.local.get([TODOS_KEY]);
@@ -57,13 +70,6 @@ function notify(kind: 'plan' | 'tasks' | 'user_todos', conversationId: string): 
 }
 
 // ─── id helpers ─────────────────────────────────────────────────────────────
-
-export function makeTaskId(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return `t_${crypto.randomUUID().slice(0, 8)}`;
-  }
-  return `t_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
-}
 
 export function makeTodoId(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -118,9 +124,32 @@ export async function clearPlan(conversationId: string): Promise<void> {
 
 // ─── tasks ──────────────────────────────────────────────────────────────────
 
+function taskFromRow(row: AgentTaskRow): Task {
+  return {
+    id: row.id,
+    conversation_id: row.conversation_id,
+    title: row.title,
+    status: row.status,
+    ...(row.note !== null && { note: row.note }),
+    order: row.position,
+    created_by: row.created_by,
+    created_at: Date.parse(row.created_at),
+    updated_at: Date.parse(row.updated_at),
+  };
+}
+
+function taskRows(data: unknown): Task[] {
+  return ((data ?? []) as AgentTaskRow[]).map(taskFromRow);
+}
+
 export async function listTasks(conversationId: string): Promise<Task[]> {
-  const tasks = await readTasks();
-  return (tasks[conversationId] ?? []).slice().sort((a, b) => a.order - b.order);
+  const { data, error } = await chatDb()
+    .from('agent_task')
+    .select(AGENT_TASK_COLUMNS)
+    .eq('conversation_id', conversationId)
+    .order('position', { ascending: true });
+  if (error) throw new Error(`Failed to load agent tasks: ${error.message}`);
+  return taskRows(data);
 }
 
 export async function addTasks(
@@ -129,27 +158,23 @@ export async function addTasks(
   createdBy: 'agent' | 'user' = 'agent',
 ): Promise<Task[]> {
   if (!items.length) return [];
-  const map = await readTasks();
-  const list = map[conversationId] ?? [];
-  let nextOrder = list.reduce((m, t) => Math.max(m, t.order), 0) + 1;
-  const now = Date.now();
-  const created: Task[] = items.map((it) => ({
-    id: makeTaskId(),
+  const user = await getCurrentUser();
+  if (!user) throw new Error('Cannot add agent tasks without an authenticated user');
+  const existing = await listTasks(conversationId);
+  let nextPosition = existing.reduce((max, task) => Math.max(max, task.order), -1) + 1;
+  const rows = items.map((item) => ({
     conversation_id: conversationId,
-    title: it.title,
-    status: it.status ?? 'pending',
-    // `null` means "no note" — same as omitting it (this can arrive from a
-    // Zod-nullable tool-arg schema, e.g. src/lib/tools/handlers/lists.ts).
-    ...(it.note !== undefined && it.note !== null && { note: it.note }),
-    order: nextOrder++,
+    user_id: user.id,
+    title: item.title,
+    status: item.status ?? 'pending',
+    note: item.note ?? null,
+    position: nextPosition++,
     created_by: createdBy,
-    created_at: now,
-    updated_at: now,
   }));
-  map[conversationId] = [...list, ...created];
-  await chrome.storage.local.set({ [TASKS_KEY]: map });
+  const { data, error } = await chatDb().from('agent_task').insert(rows).select(AGENT_TASK_COLUMNS);
+  if (error) throw new Error(`Failed to add agent tasks: ${error.message}`);
   notify('tasks', conversationId);
-  return created;
+  return taskRows(data);
 }
 
 export async function updateTask(
@@ -157,87 +182,76 @@ export async function updateTask(
   id: string,
   patch: { title?: string; status?: TaskStatus; note?: string | null },
 ): Promise<Task | null> {
-  const map = await readTasks();
-  const list = map[conversationId];
-  if (!list) return null;
-  const idx = list.findIndex((t) => t.id === id);
-  if (idx < 0) return null;
-  const current = list[idx]!;
-  // Build from a note-less base so an explicit `patch.note === null` (clear)
-  // can OMIT the key entirely instead of writing an explicit `undefined` over
-  // the stored item — the latter is indistinguishable from "not provided" at
-  // the type level but, worse, is exactly the persisted-merge footgun EOPT
-  // exists to catch: it would silently wipe `note` on any patch that doesn't
-  // mean to touch it.
-  const { note: _currentNote, ...currentRest } = current;
-  const next: Task = {
-    ...currentRest,
-    title: patch.title ?? current.title,
-    status: patch.status ?? current.status,
-    updated_at: Date.now(),
-  };
-  const nextNote =
-    patch.note === undefined ? current.note : patch.note === null ? undefined : patch.note;
-  if (nextNote !== undefined) next.note = nextNote;
-  list[idx] = next;
-  await chrome.storage.local.set({ [TASKS_KEY]: map });
+  const values: { title?: string; status?: TaskStatus; note?: string | null } = {};
+  if (patch.title !== undefined) values.title = patch.title;
+  if (patch.status !== undefined) values.status = patch.status;
+  if (patch.note !== undefined) values.note = patch.note;
+  if (Object.keys(values).length === 0) return null;
+  const { data, error } = await chatDb()
+    .from('agent_task')
+    .update(values)
+    .eq('conversation_id', conversationId)
+    .eq('id', id)
+    .select(AGENT_TASK_COLUMNS)
+    .maybeSingle();
+  if (error) throw new Error(`Failed to update agent task: ${error.message}`);
   notify('tasks', conversationId);
-  return next;
+  return data ? taskFromRow(data as AgentTaskRow) : null;
 }
 
 export async function removeTask(conversationId: string, id: string): Promise<boolean> {
-  const map = await readTasks();
-  const list = map[conversationId];
-  if (!list) return false;
-  const next = list.filter((t) => t.id !== id);
-  if (next.length === list.length) return false;
-  // Drop the key when the list empties — a lingering empty array produced
-  // ghost "Conversation xxxxxxxx · 12/31/1969" rows in the Lists hub.
-  if (next.length === 0) delete map[conversationId];
-  else map[conversationId] = next;
-  await chrome.storage.local.set({ [TASKS_KEY]: map });
+  const { data, error } = await chatDb()
+    .from('agent_task')
+    .delete()
+    .eq('conversation_id', conversationId)
+    .eq('id', id)
+    .select('id');
+  if (error) throw new Error(`Failed to remove agent task: ${error.message}`);
+  const removed = (data ?? []).length > 0;
+  if (!removed) return false;
   notify('tasks', conversationId);
   return true;
 }
 
 export async function reorderTasks(conversationId: string, ids: string[]): Promise<Task[]> {
-  const map = await readTasks();
-  const list = map[conversationId];
-  if (!list || !ids.length) return list ?? [];
-  const indexOf = new Map(ids.map((id, i) => [id, i]));
-  const now = Date.now();
-  for (const t of list) {
-    const i = indexOf.get(t.id);
-    if (i != null) {
-      t.order = i + 1;
-      t.updated_at = now;
-    }
-  }
-  await chrome.storage.local.set({ [TASKS_KEY]: map });
+  if (!ids.length) return listTasks(conversationId);
+  await Promise.all(
+    ids.map(async (id, index) => {
+      const { error } = await chatDb()
+        .from('agent_task')
+        .update({ position: index + 1 })
+        .eq('conversation_id', conversationId)
+        .eq('id', id);
+      if (error) throw new Error(`Failed to reorder agent task ${id}: ${error.message}`);
+    }),
+  );
   notify('tasks', conversationId);
-  return list.slice().sort((a, b) => a.order - b.order);
+  return listTasks(conversationId);
 }
 
 export async function clearCompletedTasks(conversationId: string): Promise<number> {
-  const map = await readTasks();
-  const list = map[conversationId];
-  if (!list) return 0;
-  const next = list.filter((t) => t.status !== 'done' && t.status !== 'skipped');
-  const removed = list.length - next.length;
+  const { data, error } = await chatDb()
+    .from('agent_task')
+    .delete()
+    .eq('conversation_id', conversationId)
+    .in('status', ['done', 'skipped'])
+    .select('id');
+  if (error) throw new Error(`Failed to clear completed agent tasks: ${error.message}`);
+  const removed = (data ?? []).length;
   if (!removed) return 0;
-  if (next.length === 0) delete map[conversationId];
-  else map[conversationId] = next;
-  await chrome.storage.local.set({ [TASKS_KEY]: map });
   notify('tasks', conversationId);
   return removed;
 }
 
 export async function clearAllTasks(conversationId: string): Promise<number> {
-  const map = await readTasks();
-  const removed = map[conversationId]?.length ?? 0;
+  const { data, error } = await chatDb()
+    .from('agent_task')
+    .delete()
+    .eq('conversation_id', conversationId)
+    .select('id');
+  if (error) throw new Error(`Failed to clear agent tasks: ${error.message}`);
+  const removed = (data ?? []).length;
   if (!removed) return 0;
-  delete map[conversationId];
-  await chrome.storage.local.set({ [TASKS_KEY]: map });
   notify('tasks', conversationId);
   return removed;
 }
@@ -280,7 +294,8 @@ export async function updateUserTodo(
   if (!list) return null;
   const idx = list.findIndex((t) => t.id === id);
   if (idx < 0) return null;
-  const cur = list[idx]!;
+  const cur = list[idx];
+  if (!cur) return null;
   const wasDone = cur.done;
   // Same footgun as updateTask above: build from a base that OMITS the
   // clearable optional keys, then only set them when the resolved value is
@@ -336,7 +351,20 @@ export async function clearDoneUserTodos(conversationId: string): Promise<number
 // ─── aggregate view (powers ListsHubView) ───────────────────────────────────
 
 export async function getAllConversationLists(): Promise<ConversationListsSummary[]> {
-  const [plans, tasks, todos] = await Promise.all([readPlans(), readTasks(), readTodos()]);
+  const [plans, taskResult, todos] = await Promise.all([
+    readPlans(),
+    chatDb().from('agent_task').select(AGENT_TASK_COLUMNS).order('position', { ascending: true }),
+    readTodos(),
+  ]);
+  if (taskResult.error) {
+    throw new Error(`Failed to load agent task summaries: ${taskResult.error.message}`);
+  }
+  const tasks: Record<string, Task[]> = {};
+  for (const task of taskRows(taskResult.data)) {
+    const conversationTasks = tasks[task.conversation_id] ?? [];
+    conversationTasks.push(task);
+    tasks[task.conversation_id] = conversationTasks;
+  }
   const ids = new Set<string>([
     ...Object.keys(plans),
     ...Object.keys(tasks),
@@ -375,16 +403,20 @@ export async function getAllConversationLists(): Promise<ConversationListsSummar
 
 /** Wipe everything for one conversation. Used when the user clears a chat. */
 export async function purgeConversation(conversationId: string): Promise<void> {
-  const [plans, tasks, todos] = await Promise.all([readPlans(), readTasks(), readTodos()]);
+  const [plans, todos, taskResult] = await Promise.all([
+    readPlans(),
+    readTodos(),
+    chatDb().from('agent_task').delete().eq('conversation_id', conversationId).select('id'),
+  ]);
+  if (taskResult.error) {
+    throw new Error(`Failed to purge agent tasks: ${taskResult.error.message}`);
+  }
   let changed = false;
   if (plans[conversationId]) {
     delete plans[conversationId];
     changed = true;
   }
-  if (tasks[conversationId]) {
-    delete tasks[conversationId];
-    changed = true;
-  }
+  if ((taskResult.data ?? []).length > 0) changed = true;
   if (todos[conversationId]) {
     delete todos[conversationId];
     changed = true;
@@ -392,7 +424,6 @@ export async function purgeConversation(conversationId: string): Promise<void> {
   if (!changed) return;
   await chrome.storage.local.set({
     [PLAN_KEY]: plans,
-    [TASKS_KEY]: tasks,
     [TODOS_KEY]: todos,
   });
   notify('plan', conversationId);

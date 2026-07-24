@@ -1,10 +1,9 @@
 /**
  * Sidepanel-side mirror of the plan + tasks + user_todos storage layer.
  *
- * Source of truth lives in chrome.storage.local (see src/lib/lists/storage.ts).
- * This store is a thin reactive cache scoped to the conversation the UI is
- * currently displaying. Pattern mirrors src/state/guidance.ts — optimistic
- * updates + a subscriber that watches LISTS_CHANGED broadcasts to refresh.
+ * Agent tasks come from shared `chat.agent_task`; plan and user-todo state
+ * lives in chrome.storage.local (see src/lib/lists/storage.ts). This store is
+ * a thin reactive cache scoped to the conversation the UI is displaying.
  *
  * Mutations go through src/lib/lists/storage.ts (which fires LISTS_CHANGED)
  * — UI components should NEVER write directly to chrome.storage.local.
@@ -18,6 +17,7 @@ import {
 import type { Plan, Task, UserTodo } from '@/lib/lists/types';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { getSupabase } from '@/lib/supabase/client';
 import { useEffect } from 'react';
 import { create } from 'zustand';
 
@@ -117,8 +117,54 @@ export function useListsSubscriber(conversationId: string | null, enabled = true
       return { ack: true };
     });
 
+    const refreshTasks = (): void => {
+      void storageListTasks(conversationId).then((tasks) => {
+        if (useListsStore.getState().conversationId === conversationId) {
+          useListsStore.setState({ tasks });
+        }
+      });
+    };
+    const supabase = getSupabase();
+    const taskChannel = supabase
+      .channel(`chat-agent-task:${conversationId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'chat',
+          table: 'agent_task',
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        refreshTasks,
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'chat',
+          table: 'agent_task',
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        refreshTasks,
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'chat',
+          table: 'agent_task',
+        },
+        refreshTasks,
+      )
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR') {
+          console.error('[lists] chat.agent_task Realtime subscription failed');
+        }
+      });
+
     return () => {
       off();
+      void supabase.removeChannel(taskChannel);
     };
   }, [conversationId, enabled]);
 }

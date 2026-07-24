@@ -51,6 +51,7 @@ const ALLOWED_NON_CANONICAL = new Set<string>([
   'list_browser_tools',
   'ctx_get',
   'interaction_ask',
+  'tasks',
   // granular handlers folded into mega-tools but still appearing in older
   // timelines / direct Tools-tab runs
   'click_element',

@@ -492,10 +492,11 @@ itself so the panel can render it during AND after approval.
 
 ### `tasks` — agent's live tasklist
 
-Eight actions, one mega-tool, per-conversation. Tier downgrades to
-`read` for `list`.
+Eight actions, one aidream-native mega-tool, per-conversation. The server is
+the only executor; matrx-extend deliberately has no `tasks` tool handler or
+`chrome-extension` binding.
 
-**Schema:** [`src/lib/tools/handlers/lists.ts:31`](../src/lib/tools/handlers/lists.ts#L31)
+**Schema + handler:** [`aidream/aidream/tools/agent_tasks_tool.py`](../../aidream/aidream/tools/agent_tasks_tool.py)
 
 ```ts
 action: 'add' | 'list' | 'set_status' | 'update' | 'remove' |
@@ -503,13 +504,17 @@ action: 'add' | 'list' | 'set_status' | 'update' | 'remove' |
 status: 'pending' | 'in_progress' | 'done' | 'blocked' | 'skipped'
 ```
 
-**Handler:** same file, line 89. All CRUD goes through `src/lib/lists/storage.ts`.
-
-**Storage:** [`src/lib/lists/storage.ts`](../src/lib/lists/storage.ts) — `addTasks` / `listTasks` / `updateTask` / `removeTask` / `reorderTasks` / `clearCompletedTasks` / `clearAllTasks`. **Map shape**: `Record<conversationId, Task[]>` in one storage key. Every write broadcasts `LISTS_CHANGED`.
+**Storage:** `chat.agent_task` in the shared Supabase database. The extension
+accessors in [`src/lib/lists/storage.ts`](../src/lib/lists/storage.ts) read and
+edit that table directly for the UI; server tool calls write it through the
+Matrx ORM. Extension-originated writes broadcast `LISTS_CHANGED`.
 
 **Types:** [`src/lib/lists/types.ts`](../src/lib/lists/types.ts) — `Task` + `TaskStatus`.
 
-**Live store mirror:** [`src/state/lists.ts`](../src/state/lists.ts) — `useListsStore` + `useListsSubscriber(conversationId)`. The subscriber re-reads only the slice that changed (selective refresh, not full reload).
+**Live store mirror:** [`src/state/lists.ts`](../src/state/lists.ts) —
+`useListsStore` + `useListsSubscriber(conversationId)`. Local broadcasts and
+Supabase Realtime both refresh the task slice, so aidream writes repaint while
+the run is in progress.
 
 **Per-chat UI:** [`src/features/lists/TaskPanel.tsx`](../src/features/lists/TaskPanel.tsx) — drawer with inline-edit titles, status cycling (click icon to advance), keyboard-friendly add row.
 
@@ -519,7 +524,9 @@ status: 'pending' | 'in_progress' | 'done' | 'blocked' | 'skipped'
 
 **Context injection:** [`src/lib/chat/context/v2-bundled.ts`](../src/lib/chat/context/v2-bundled.ts) — adds `task_list` key when non-empty. Slim shape: `[{id, title, status, note}]`. The user's edits since last turn ride this key automatically.
 
-**Next.js port:** trivial. The whole stack works as-is; just swap `chrome.storage.local` reads/writes for a Supabase table (`cx_task` with columns `id, conversation_id, title, status, note, order, created_by, ...`). The broadcast → mirror loop becomes Supabase Realtime → React Query invalidation (or a websocket → zustand setter, whichever your stack prefers).
+**Other clients:** consume the same `chat.agent_task` table directly and use
+Realtime to repaint. Do not add another tool executor merely to display or edit
+task rows.
 
 ---
 

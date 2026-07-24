@@ -28,9 +28,10 @@
  *
  * 1. `extend.*` and `workbench.notes` / `workbench.note_folders` have NO
  *    `user_id` column anymore — ownership is `created_by`. Filter on that.
- *    (`scheduler.sch_task` / `sch_run` / `sch_trigger`, `admin.admins`,
- *    `users.user_form_profile`, and `workbench.udt_*` DID keep `user_id` —
- *    this is NOT a blanket rename. Check the table before you filter.)
+ *    (`scheduler.sch_task` / `sch_run` / `sch_trigger`, `chat.agent_task`,
+ *    `admin.admins`, `users.user_form_profile`, and `workbench.udt_*` DID
+ *    keep `user_id` — this is NOT a blanket rename. Check the table before
+ *    you filter.)
  *
  *    Two tables have neither, and both are load-bearing exceptions:
  *      - `extend.wbx_recipe`      — a SHARED read-only catalog. No ownership
@@ -78,6 +79,7 @@ export const TABLE_SCHEMA = {
   conversation: 'chat',
   message: 'chat',
   tool_call: 'chat',
+  agent_task: 'chat',
   // misc
   user_form_profile: 'users',
   admins: 'admin',
@@ -96,7 +98,7 @@ export const schedulerDb = () => getSupabase().schema('scheduler');
 /** `workbench` — notes (`created_by`) + udt_* (`user_id`). Mind the difference. */
 export const workbenchDb = () => getSupabase().schema('workbench');
 
-/** `chat` — conversation / message / tool_call. Ownership: `created_by`. */
+/** `chat` — conversations/messages use `created_by`; agent_task keeps `user_id`. */
 export const chatDb = () => getSupabase().schema('chat');
 
 /** `users` — user_form_profile. Ownership: `user_id` (kept). */

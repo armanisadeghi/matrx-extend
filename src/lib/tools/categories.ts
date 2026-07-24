@@ -42,7 +42,7 @@ import type { AnyToolHandler, ToolTier } from '@/lib/tools/types';
  *   - tabs         : "manage browser tabs / windows"
  *   - capture      : "save or capture something" (downloads, MHTML, GIFs, video)
  *   - chrome       : "the user's personal Chrome data" (cookies, bookmarks, history)
- *   - human        : "human in the loop" (ask user, plan, tasks, todos)
+ *   - human        : "human in the loop" (ask user, plan, user todos)
  *   - memory       : "agent state" (scratchpad, storage, domain memos)
  *   - ai           : on-device Chrome AI
  *   - demos        : record + replay user workflows
@@ -127,7 +127,7 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'human',
     label: 'Talk to the user',
     description:
-      "Loop the human in. `user` (six modes: confirm/choice/choice_many/text/secret/notify), `update_plan` (propose a plan and wait for approval), `request_user_takeover` (hand control back so the user can do something the agent cannot), `tasks` (agent's live tasklist), `user_todos` (assign work to the user). Per-conversation state.",
+      'Loop the human in. `user` (six modes: confirm/choice/choice_many/text/secret/notify), `update_plan` (propose a plan and wait for approval), `request_user_takeover` (hand control back so the user can do something the agent cannot), and `user_todos` (assign work to the user). Per-conversation state.',
     list_tool_name: 'list_human_tools',
   },
   memory: {
@@ -304,7 +304,6 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   user: 'human',
   update_plan: 'human',
   request_user_takeover: 'human',
-  tasks: 'human',
   user_todos: 'human',
 
   // ─── memory ───────────────────────────────────────────────────────────
@@ -454,9 +453,8 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'chrome_tab_audio_inspect',
   // ─── ask ────────────────────────────────────────────────────────────────
   'request_user_takeover',
-  // ─── plan & tasks ───────────────────────────────────────────────────────
+  // ─── plan & user todos (tasks executes natively in aidream) ─────────────
   'update_plan',
-  'tasks',
   'user_todos',
   // ─── files / windows ────────────────────────────────────────────────────
   'chrome_save_page_as_mhtml',

@@ -4,8 +4,9 @@
  * place to triage everything in one go (bulk delete, clear done, jump
  * to a conversation).
  *
- * Reads via getAllConversationLists() on mount + on every LISTS_CHANGED
- * broadcast so the view stays live.
+ * Reads via getAllConversationLists() on mount, local LISTS_CHANGED
+ * broadcasts, and `chat.agent_task` Realtime events so server task writes
+ * repaint without polling.
  */
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
@@ -26,6 +27,7 @@ import {
 import type { ConversationListsSummary, Task, UserTodo } from '@/lib/lists/types';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { getSupabase } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
@@ -62,32 +64,64 @@ export function ListsHubView(): React.JSX.Element {
       void refresh();
       return { ack: true };
     });
+    const supabase = getSupabase();
+    const taskChannel = supabase
+      .channel('lists-hub-agent-tasks')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'chat', table: 'agent_task' },
+        () => void refresh(),
+      )
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR') {
+          console.error('[lists] aggregate agent-task Realtime subscription failed');
+        }
+      });
     return () => {
       cancelled = true;
       off();
+      void supabase.removeChannel(taskChannel);
     };
   }, []);
 
+  const expandedConversationId = expanded?.conversationId ?? null;
+
   // When the expanded conversation's data changes, refresh that detail too.
   useEffect(() => {
-    if (!expanded) return;
+    if (!expandedConversationId) return;
     const refresh = async (): Promise<void> => {
       const [tasks, user_todos] = await Promise.all([
-        listTasks(expanded.conversationId),
-        listUserTodos(expanded.conversationId),
+        listTasks(expandedConversationId),
+        listUserTodos(expandedConversationId),
       ]);
-      setExpanded({ conversationId: expanded.conversationId, tasks, user_todos });
+      setExpanded({ conversationId: expandedConversationId, tasks, user_todos });
     };
     void refresh();
     const off = on<{ conversation_id: string }, { ack: true }>(
       CHANNELS.LISTS_CHANGED,
       (payload) => {
-        if (payload.conversation_id === expanded.conversationId) void refresh();
+        if (payload.conversation_id === expandedConversationId) void refresh();
         return { ack: true };
       },
     );
-    return () => off();
-  }, [expanded?.conversationId]);
+    const supabase = getSupabase();
+    const taskChannel = supabase
+      .channel(`lists-hub-detail:${expandedConversationId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'chat', table: 'agent_task' },
+        () => void refresh(),
+      )
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR') {
+          console.error('[lists] detail agent-task Realtime subscription failed');
+        }
+      });
+    return () => {
+      off();
+      void supabase.removeChannel(taskChannel);
+    };
+  }, [expandedConversationId]);
 
   if (loading) {
     return <div className="p-4 text-sm text-zinc-500">Loading…</div>;

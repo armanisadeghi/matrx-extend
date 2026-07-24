@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T07:12:23.408Z",
+  "generated_at": "2026-07-24T07:21:22.912Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -195,7 +195,6 @@
     "user",
     "request_user_takeover",
     "update_plan",
-    "tasks",
     "user_todos",
     "parallel_for_each_tab",
     "chrome_record_gif",
@@ -352,7 +351,6 @@
     "user",
     "request_user_takeover",
     "update_plan",
-    "tasks",
     "user_todos",
     "inject_stylesheet",
     "remove_stylesheet",
@@ -579,7 +577,6 @@
         "user",
         "request_user_takeover",
         "update_plan",
-        "tasks",
         "user_todos"
       ]
     },
@@ -5262,113 +5259,6 @@
             "maximum": 900
           }
         },
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
-        "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
-      "name": "tasks",
-      "tier": "action",
-      "category": "human",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "action": {
-            "type": "string",
-            "enum": [
-              "add",
-              "list",
-              "set_status",
-              "update",
-              "remove",
-              "reorder",
-              "clear_completed",
-              "clear_all"
-            ]
-          },
-          "title": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
-          },
-          "items": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "title": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 200
-                },
-                "status": {
-                  "type": "string",
-                  "enum": [
-                    "pending",
-                    "in_progress",
-                    "done",
-                    "blocked",
-                    "skipped"
-                  ]
-                },
-                "note": {
-                  "type": "string",
-                  "maxLength": 500
-                }
-              },
-              "required": [
-                "title"
-              ],
-              "additionalProperties": false
-            },
-            "maxItems": 40
-          },
-          "id": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "pending",
-              "in_progress",
-              "done",
-              "blocked",
-              "skipped"
-            ]
-          },
-          "note": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 500
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "ids": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "action"
-        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },

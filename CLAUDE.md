@@ -17,7 +17,7 @@
 
 ### Agent harness (the core)
 
-- **166 registered client-side tools** (74 read · 136 read+action+ask ·
+- **165 registered client-side tools** (73 read · 136 read+action+ask ·
   full kit with privileged) wired end-to-end through SW dispatcher →
   permission gate → handler → result POST → timeline event. The
   canonical "advertised" surface is smaller — see `CANONICAL_SURFACE`
@@ -47,7 +47,7 @@
   - `chrome` — user's personal Chrome data (cookies/bookmarks/history),
     admin-restricted
   - `human` — talk to user (user, update_plan, request_user_takeover,
-    tasks, user_todos)
+    user_todos; `tasks` is server-executed by aidream)
   - `memory` — agent state (scratchpad, storage, remember_for_domain)
   - `ai` — on-device Gemini Nano
   - `demos` — record + replay user workflows
@@ -85,8 +85,8 @@
   `matrx-extend:` colon-prefix is GONE from every row in `tool_def`.
   Three tiers replace it:
   1. **Bare global names** (~58 tools) — UI-first + everything
-     Playwright can also do. Examples: `update_plan`, `tasks`,
-     `user_todos`, `user`, `request_user_takeover`, `scratchpad`,
+     Playwright can also do. Examples: `update_plan`, `user_todos`,
+     `user`, `request_user_takeover`, `scratchpad`,
      `read_page`, `find`, `computer`, `tabs`, `navigate`,
      `form_input`, `evaluate_javascript`, `clipboard`, `ai`,
      `record_demo`, `replay_demo`, `desktop_run_command`, ...
@@ -138,14 +138,15 @@
   `executor_name='chrome-extension'` are this extension's claim on
   tools — that's the single ownership fact. Master reference:
   [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md).
-- **Plan / Tasks / User-Todos (2026-05-19)** — three linked surfaces
+- **Plan / Tasks / User-Todos (2026-07-24)** — three linked surfaces
   that pair with the existing `update_plan` flow.
   - **Plan** — what the user approved; persisted per-conversation,
     auto-populated into the tasklist on approval.
   - **Tasks** — agent's own live work items, per-conversation, with
-    statuses (`pending|in_progress|done|blocked|skipped`). `tasks`
-    mega-tool actions: `add`, `list`, `set_status`, `update`, `remove`,
-    `reorder`, `clear_completed`, `clear_all`.
+    statuses (`pending|in_progress|done|blocked|skipped`). The canonical
+    `tasks` mega-tool executes in aidream and writes `chat.agent_task`;
+    the extension has no tasks handler or `chrome-extension` binding.
+    Its panel reads and edits that shared table directly.
   - **User todos** — work the agent assigns BACK to the user.
     `user_todos` actions: `add` (fires Chrome notification unless
     `silent:true`), `list`, `update`, `remove`, `mark_done`,
@@ -154,9 +155,10 @@
   `task_list`, `user_todos` keys when non-empty — user edits flow back
   to the model on the next turn. Per-chat surface lives in the
   TaskPanel drawer (chip in chat header opens it); cross-conversation
-  triage lives in the new `lists` sidepanel tab. Storage at
+  triage lives in the new `lists` sidepanel tab. Access at
   [src/lib/lists/storage.ts](./src/lib/lists/storage.ts); every
-  mutation broadcasts `LISTS_CHANGED` so SW + sidepanel stay in sync.
+  local mutation broadcasts `LISTS_CHANGED`, while Supabase Realtime
+  delivers aidream task writes to both task views.
 - **Reference-ID system** — `read_page` tags every interactive element with
   `data-matrx-ref="N"` and returns refs (`ref:N`) the agent passes to
   interaction tools instead of brittle CSS selectors. Refs survive DOM
@@ -175,8 +177,8 @@
 - **4-tier permission model:** `read` (auto) · `action` (Ask/Act) · `ask-user`
   (renders question card) · `privileged` (always confirms, even in Act mode).
 - **4 tool bundles:** core (always-on, 28 entries — agent's default surface) ·
-  assistant (74 read-tier tools) · pilot (136: read+action+ask) ·
-  pilot+privileged (166, trusted agents only).
+  assistant (73 read-tier tools) · pilot (136: read+action+ask) ·
+  pilot+privileged (165, trusted agents only).
 - **Per-conversation tab assignment (2026-05-06)** — when the user
   sends a message, the active tab at that moment is latched as the
   agent's `assignedTabId` for that turn. All client-side tool handlers
@@ -238,7 +240,7 @@ discovery handler).
   under one schema)
 - `ask_user`
 
-#### Read tier (74 tools total across categories)
+#### Read tier (73 tools total across categories)
 - **Page reading:** `get_active_tab`, `get_page_selection`, `read_active_page`
   (full scrape with `deep:true` for lazy loaders), `take_screenshot`,
   `query_elements`, `read_page` (ref system), `find` (NL search),

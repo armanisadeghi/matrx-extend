@@ -98,7 +98,7 @@ const ALL: AnyToolHandler[] = [
   ...webmcp_handlers,
   // ─── ask-user ──────────────────────────────────────────────────────────
   ...user_handlers,
-  // ─── plan / tasks / user_todos ────────────────────────────────────────
+  // ─── plan / user_todos (tasks executes natively in aidream) ───────────
   ...lists_handlers,
   // ─── privileged ────────────────────────────────────────────────────────
   ...privileged_handlers,

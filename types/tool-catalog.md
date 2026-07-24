@@ -1,11 +1,11 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-07-24T07:12:23.408Z
+Generated: 2026-07-24T07:21:22.912Z
 
-- **Total tools:** 166
+- **Total tools:** 165
 - **Assistant bundle:** 73 tools (read-only)
-- **Pilot bundle:** 137 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 166 tools
+- **Pilot bundle:** 136 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 165 tools
 
 
 ## Tier: read (73)
@@ -2011,7 +2011,7 @@ Generated: 2026-07-24T07:12:23.408Z
 }
 ```
 
-## Tier: action (61)
+## Tier: action (60)
 
 ### `navigate_active_tab`
 
@@ -3103,104 +3103,6 @@ Generated: 2026-07-24T07:12:23.408Z
   },
   "required": [
     "name"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `tasks`
-
-- **Required permissions:** (none)
-- **Surface bundles:** pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "action": {
-      "type": "string",
-      "enum": [
-        "add",
-        "list",
-        "set_status",
-        "update",
-        "remove",
-        "reorder",
-        "clear_completed",
-        "clear_all"
-      ]
-    },
-    "title": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 200
-    },
-    "items": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "pending",
-              "in_progress",
-              "done",
-              "blocked",
-              "skipped"
-            ]
-          },
-          "note": {
-            "type": "string",
-            "maxLength": 500
-          }
-        },
-        "required": [
-          "title"
-        ],
-        "additionalProperties": false
-      },
-      "maxItems": 40
-    },
-    "id": {
-      "type": "string"
-    },
-    "status": {
-      "type": "string",
-      "enum": [
-        "pending",
-        "in_progress",
-        "done",
-        "blocked",
-        "skipped"
-      ]
-    },
-    "note": {
-      "anyOf": [
-        {
-          "type": "string",
-          "maxLength": 500
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "ids": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    }
-  },
-  "required": [
-    "action"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

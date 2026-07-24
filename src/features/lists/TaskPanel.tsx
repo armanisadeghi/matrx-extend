@@ -6,9 +6,9 @@
  * + a controlled open flag). The store subscriber refreshes the slice
  * whenever LISTS_CHANGED fires for this conversation.
  *
- * All edits go through src/lib/lists/storage.ts so the SW handlers and
- * the UI share one mutation path — the resulting LISTS_CHANGED broadcast
- * keeps the model's next-turn context aligned with what the user sees.
+ * All edits go through src/lib/lists/storage.ts. Tasks use the shared
+ * `chat.agent_task` table written by aidream; plans and user todos remain
+ * local. Broadcasts plus Realtime keep the panel aligned with server writes.
  */
 
 import { Badge } from '@/components/ui/badge';
@@ -121,7 +121,7 @@ export function TaskPanel({
             ) : null}
             <ol className="mt-2 space-y-1 text-xs">
               {plan.steps.map((s, i) => (
-                <li key={i} className="flex gap-2">
+                <li key={`${i}:${s}`} className="flex gap-2">
                   <span className="w-4 text-zinc-400">{i + 1}.</span>
                   <span>{s}</span>
                 </li>
@@ -289,7 +289,7 @@ function TaskRow({
         className="mt-0.5"
         onClick={() => {
           const idx = STATUS_ORDER.indexOf(task.status);
-          const next = STATUS_ORDER[(idx + 1) % STATUS_ORDER.length]!;
+          const next = STATUS_ORDER[(idx + 1) % STATUS_ORDER.length] ?? 'pending';
           void updateTask(conversationId, task.id, { status: next });
         }}
         title={`${meta.label} — click to cycle`}
