@@ -271,7 +271,10 @@ export function startToolDispatcher(opts: DispatchOptions): void {
     mirrorRunMeta(payload.runId, merged);
     // A run actually opened for this user_request — re-arm the
     // continuation single-flight guard so its NEXT suspend can broadcast.
+    // Also clear the conversation-keyed fallback entry (used when the
+    // server reported no user_request_id).
     if (payload.requestId) recentContinueBroadcasts.delete(payload.requestId);
+    recentContinueBroadcasts.delete(`conv:${payload.conversationId}`);
     log.info('sw', `tool dispatcher tracking run=${payload.runId}`, payload);
     return { ack: true };
   });
@@ -968,17 +971,21 @@ async function postResult(
   // mirrors `send()` to allocate a fresh assistant bubble + runId, then
   // STREAM_STARTs against the resume path. See the canonical protocol at
   // matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md.
-  if (r.data.continuation_needed && r.data.user_request_id) {
-    const userRequestId = r.data.user_request_id;
-    const prev = recentContinueBroadcasts.get(userRequestId);
+  if (r.data.continuation_needed) {
+    // user_request_id may be null (conversation-keyed resume, 2026-07-23) —
+    // the broadcast must still fire; suppression falls back to the
+    // conversation id as its single-flight key.
+    const userRequestId = r.data.user_request_id ?? null;
+    const suppressKey = userRequestId ?? `conv:${conversationId}`;
+    const prev = recentContinueBroadcasts.get(suppressKey);
     if (prev && Date.now() - prev < CONTINUE_SUPPRESS_TTL_MS) {
       log.info(
         'sw',
-        `continuation_needed duplicate suppressed for ${conversationId} (request ${userRequestId} already broadcast ${Date.now() - prev}ms ago)`,
+        `continuation_needed duplicate suppressed for ${conversationId} (key ${suppressKey} already broadcast ${Date.now() - prev}ms ago)`,
       );
       return;
     }
-    recentContinueBroadcasts.set(userRequestId, Date.now());
+    recentContinueBroadcasts.set(suppressKey, Date.now());
     log.info('sw', `continuation_needed → broadcast STREAM_CONTINUE for ${conversationId}`, {
       userRequestId,
     });
@@ -1216,11 +1223,13 @@ async function drainUndeliveredResults(): Promise<void> {
       'sw',
       `replayed undelivered tool result ${entry.result.call_id} for ${entry.conversationId}`,
     );
-    if (r.data.continuation_needed && r.data.user_request_id) {
-      const userRequestId = r.data.user_request_id;
-      const prev = recentContinueBroadcasts.get(userRequestId);
+    if (r.data.continuation_needed) {
+      // Same null-tolerant keying as the live path above.
+      const userRequestId = r.data.user_request_id ?? null;
+      const suppressKey = userRequestId ?? `conv:${entry.conversationId}`;
+      const prev = recentContinueBroadcasts.get(suppressKey);
       if (prev && Date.now() - prev < CONTINUE_SUPPRESS_TTL_MS) continue;
-      recentContinueBroadcasts.set(userRequestId, Date.now());
+      recentContinueBroadcasts.set(suppressKey, Date.now());
       broadcast(CHANNELS.STREAM_CONTINUE, {
         conversationId: entry.conversationId,
         userRequestId,

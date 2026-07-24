@@ -22,15 +22,14 @@ describe('decideResume — pure decision, no network', () => {
     });
   });
 
-  it('refuses without a requestId', () => {
+  it('allows without a requestId — /resume is conversation-keyed (2026-07-23)', () => {
     expect(decideResume({ runId: 'r1', conversationId: 'conv-1', requestId: null })).toEqual({
-      attempt: false,
-      reason: 'no-request-id',
+      attempt: true,
+      reason: 'ok',
     });
   });
 
   it('refuses when both are missing', () => {
-    // conversationId is checked first — order matters for a deterministic reason.
     expect(decideResume({ runId: 'r1', conversationId: null, requestId: null })).toEqual({
       attempt: false,
       reason: 'no-conversation-id',
@@ -98,6 +97,16 @@ describe('attemptResume — orchestration around a caller-supplied resumeRun', (
       resumeRun,
     );
     expect(resumeRun).toHaveBeenCalledWith('conv-1', 'req-1');
+    expect(result).toEqual({ resumed: true, reason: 'ok' });
+  });
+
+  it('calls resumeRun with (conversationId, null) when no requestId was latched', async () => {
+    const resumeRun = vi.fn().mockResolvedValue('run-2');
+    const result = await attemptResume(
+      { runId: 'run-1', conversationId: 'conv-1', requestId: null },
+      resumeRun,
+    );
+    expect(resumeRun).toHaveBeenCalledWith('conv-1', null);
     expect(result).toEqual({ resumed: true, reason: 'ok' });
   });
 

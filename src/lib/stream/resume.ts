@@ -53,7 +53,11 @@ export interface ResumeTarget {
   /**
    * The server's `user_request_id` for the stalled turn — latched from
    * `STREAM_OPENED.requestId` (== the `X-Request-ID` response header ==
-   * `cx_user_request.id`). Required to call `/resume`.
+   * `cx_user_request.id`). OPTIONAL since 2026-07-23: `/resume` is keyed by
+   * the conversation id in the URL; when this is null the server resolves
+   * the turn from the conversation's newest answered client-delegated tool
+   * call (404 `resume_target_not_found` if there's nothing to resume).
+   * When present it is still sent and remains exact.
    */
   requestId: string | null;
 }
@@ -76,7 +80,8 @@ export interface ResumeDecision {
  */
 export function decideResume(target: ResumeTarget): ResumeDecision {
   if (!target.conversationId) return { attempt: false, reason: 'no-conversation-id' };
-  if (!target.requestId) return { attempt: false, reason: 'no-request-id' };
+  // requestId is intentionally NOT required — the server resumes by
+  // conversation id alone (see ResumeTarget.requestId docblock).
   return { attempt: true, reason: 'ok' };
 }
 
@@ -112,7 +117,7 @@ export async function isResumeEnabled(): Promise<boolean> {
  */
 export async function attemptResume(
   target: ResumeTarget,
-  resumeRun: (conversationId: string, userRequestId: string) => Promise<string | null>,
+  resumeRun: (conversationId: string, userRequestId: string | null) => Promise<string | null>,
 ): Promise<ResumeResult> {
   const decision = decideResume(target);
   if (!decision.attempt) {
@@ -124,10 +129,9 @@ export async function attemptResume(
     return { resumed: false, reason: 'resume-disabled' };
   }
   try {
-    // Non-null per `decideResume` above.
+    // Non-null per `decideResume` above; requestId may legitimately be null.
     const conversationId = target.conversationId as string;
-    const userRequestId = target.requestId as string;
-    const runId = await resumeRun(conversationId, userRequestId);
+    const runId = await resumeRun(conversationId, target.requestId);
     if (!runId) {
       log.warn(
         'stream',

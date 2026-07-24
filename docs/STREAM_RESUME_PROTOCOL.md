@@ -9,7 +9,10 @@
 >
 > **The fix (shipped):** stall recovery now reuses the durable-continuation
 > endpoint that already exists and is already proven —
-> `POST /ai/conversations/{id}/resume` (`user_request_id` body), the same one
+> `POST /ai/conversations/{id}/resume` (`user_request_id` body — OPTIONAL
+> since 2026-07-23: the resume is keyed by the conversation id in the URL;
+> when omitted the server resolves the turn from the newest answered
+> client-delegated call, 404 `resume_target_not_found` if none), the same one
 > `useChatStream.resumeRun()` / `usePilotChatStream`'s equivalent call after a
 > `STREAM_CONTINUE` broadcast (client-tool hard-suspend). That endpoint
 > reconstructs the whole loop from the DB, so it needs no cursor and no

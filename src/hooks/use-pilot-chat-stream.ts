@@ -182,13 +182,13 @@ export function usePilotChatStream() {
   // `stream:continue` channel.
   const pendingContinueRef = useRef<{
     conversationId: string;
-    userRequestId: string;
+    userRequestId: string | null;
     assignedTabId: number;
   } | null>(null);
   // Late-binding ref so the STREAM_CHUNK `done` handler can drain a queued
   // continue without dependency-array gymnastics.
   const resumeRunRef = useRef<
-    (conversationId: string, userRequestId: string) => Promise<string | null>
+    (conversationId: string, userRequestId: string | null) => Promise<string | null>
   >(async () => null);
 
   const watchdogRef = useRef<ReturnType<typeof createStreamWatchdog> | null>(null);
@@ -517,7 +517,7 @@ export function usePilotChatStream() {
    * matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md.
    */
   const resumeRun = useCallback(
-    async (conversationId: string, userRequestId: string): Promise<string | null> => {
+    async (conversationId: string, userRequestId: string | null): Promise<string | null> => {
       const selectedId = usePilotChatStore.getState().selectedConversationId;
       if (selectedId !== conversationId) {
         log.info(
@@ -598,7 +598,6 @@ export function usePilotChatStream() {
       }
 
       const body: Record<string, unknown> = {
-        user_request_id: userRequestId,
         context,
         client: {
           capabilities: ['browser-dom'],
@@ -607,6 +606,11 @@ export function usePilotChatStream() {
           },
         },
       };
+      // Conversation-keyed resume (2026-07-23): include user_request_id only
+      // when we actually have one; the URL path param is the required key.
+      if (typeof userRequestId === 'string' && userRequestId.length > 0) {
+        body.user_request_id = userRequestId;
+      }
 
       await send(CHANNELS.STREAM_START, {
         runId,
@@ -631,7 +635,7 @@ export function usePilotChatStream() {
   // EVERY surface (assistant + pilot) — only the surface whose conversation
   // matches actually fires its resume, so two subscribers don't double-run.
   useEffect(() => {
-    return on<{ conversationId: string; userRequestId: string }, { ack: true }>(
+    return on<{ conversationId: string; userRequestId: string | null }, { ack: true }>(
       CHANNELS.STREAM_CONTINUE,
       (payload) => {
         void resumeRun(payload.conversationId, payload.userRequestId);

@@ -48,7 +48,10 @@ The synthetic `runId` is `coldresume:{userRequestId ?? conversationId}` — stab
 so a remount or a second open dedupes via `markDispatched` instead of double-running
 the handler. The continuation handshake keys off the server's `user_request_id`
 (returned by `/tool_results`), **not** the runId, so resume behaves identically to
-the live path. `use-chat-stream`'s `STREAM_CONTINUE` listener only resumes when the
+the live path. (Since 2026-07-23 `user_request_id` may be null — the server's
+resume is conversation-keyed, the id optional in the `/resume` body — so the
+handshake falls back to per-conversation keying end-to-end.)
+`use-chat-stream`'s `STREAM_CONTINUE` listener only resumes when the
 conversation is the selected one — which it is, because selecting it is what
 triggered the cold-resume.
 

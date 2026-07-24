@@ -362,18 +362,18 @@ const lastSendRef: { current: { input: string; opts: SendOptions } | null } = { 
 // wrapping up. Drained on the next `done` chunk so the resume actually
 // fires instead of being dropped on the floor.
 const pendingContinueRef: {
-  current: { conversationId: string; userRequestId: string } | null;
+  current: { conversationId: string; userRequestId: string | null } | null;
 } = { current: null };
 // Late-binding ref for `resumeRun` so the STREAM_CHUNK `done` handler can
 // call it even though the function is (re)bound inside the hook.
 const resumeRunRef: {
-  current: (conversationId: string, userRequestId: string) => Promise<string | null>;
+  current: (conversationId: string, userRequestId: string | null) => Promise<string | null>;
 } = { current: async () => null };
 // Retryable-409 recovery for /resume. Bounded per user_request.
 const resumeRetryRef: {
   current: {
     conversationId: string;
-    userRequestId: string;
+    userRequestId: string | null;
     runId: string;
     attempts: number;
   } | null;
@@ -644,7 +644,7 @@ function ensureStreamListeners(): void {
   // The SW broadcasts {conversationId, userRequestId} the moment a posted
   // tool result comes back continuation_needed=true; we open a fresh
   // /resume stream. Late-bound through resumeRunRef (set by the hook).
-  on<{ conversationId: string; userRequestId: string }, { ack: true }>(
+  on<{ conversationId: string; userRequestId: string | null }, { ack: true }>(
     CHANNELS.STREAM_CONTINUE,
     (payload) => {
       void resumeRunRef.current(payload.conversationId, payload.userRequestId);
@@ -969,7 +969,7 @@ export function useChatStream() {
    * (matrx-frontend repo) for the full protocol.
    */
   const resumeRun = useCallback(
-    async (conversationId: string, userRequestId: string): Promise<string | null> => {
+    async (conversationId: string, userRequestId: string | null): Promise<string | null> => {
       // Ignore continuations for conversations the user isn't looking at —
       // runIdRef holds at most one run, and re-pointing it to a different
       // conversation would race the active run and steer its chunks into the
@@ -987,10 +987,13 @@ export function useChatStream() {
       // Exactly one hook instance may own this continuation — see
       // claimResume's docstring. Must come BEFORE any state mutation
       // (including pendingContinueRef queueing) so losers are pure no-ops.
-      if (!claimResume(userRequestId, instanceIdRef.current)) {
+      // When the server no longer reports a user_request_id (conversation-
+      // keyed resume, 2026-07-23), claim per-conversation instead.
+      const claimKey = userRequestId ?? `conv:${conversationId}`;
+      if (!claimResume(claimKey, instanceIdRef.current)) {
         log.info(
           'stream',
-          `STREAM_CONTINUE ignored — another hook instance owns the resume for ${userRequestId}`,
+          `STREAM_CONTINUE ignored — another hook instance owns the resume for ${claimKey}`,
         );
         return null;
       }
@@ -1090,7 +1093,6 @@ export function useChatStream() {
       }
 
       const body: Record<string, unknown> = {
-        user_request_id: userRequestId,
         context,
         client: {
           capabilities: ['browser-dom'],
@@ -1099,6 +1101,13 @@ export function useChatStream() {
           },
         },
       };
+      // The resume is keyed by the conversation id in the URL. Send
+      // user_request_id only when we actually have one (still supported and
+      // exact); otherwise omit it and let the server resolve the turn from
+      // the newest answered client-delegated call (2026-07-23 contract).
+      if (typeof userRequestId === 'string' && userRequestId.length > 0) {
+        body.user_request_id = userRequestId;
+      }
 
       await send(CHANNELS.STREAM_START, {
         runId,
