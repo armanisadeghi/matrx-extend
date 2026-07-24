@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T07:21:22.912Z",
+  "generated_at": "2026-07-24T07:25:27.163Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -570,7 +570,7 @@
     {
       "category": "human",
       "label": "Talk to the user",
-      "description": "Loop the human in. `user` (six modes: confirm/choice/choice_many/text/secret/notify), `update_plan` (propose a plan and wait for approval), `request_user_takeover` (hand control back so the user can do something the agent cannot), `tasks` (agent's live tasklist), `user_todos` (assign work to the user). Per-conversation state.",
+      "description": "Loop the human in. `user` (six modes: confirm/choice/choice_many/text/secret/notify), `update_plan` (propose a plan and wait for approval), `request_user_takeover` (hand control back so the user can do something the agent cannot), and `user_todos` (assign work to the user). Per-conversation state.",
       "list_tool": "list_human_tools",
       "admin_only": false,
       "tool_names": [

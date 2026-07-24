@@ -7,8 +7,8 @@
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-07-24T07:12:25.000Z
-Total tools: 80
+Generated: 2026-07-24T07:25:28.868Z
+Total tools: 79
 
 ## ai
 
@@ -331,14 +331,6 @@ _ask-user_
 Hand keyboard/mouse control to the user so they can perform an action the agent cannot or should not (logging in, MFA, CAPTCHA, sensitive form filling, decisions only the user can make). The user types/clicks directly into the page; when they're done they signal completion in the UI. The agent should re-read the page after takeover ends to see what changed. Distinct from `user` (Q&A) — this is full page handoff.
 
 **Parameters:** `reason` (string, required); `tab_id` (string); `instructions` (string); `expected_action` (string); `timeout_seconds` (integer)
-
-### `tasks`
-
-_action_
-
-Manage the agent's own tasklist for the current conversation. Actions: 'add' (one via `title` or many via `items`), 'list' (read current tasks), 'set_status' (`id` + `status`), 'update' (`id` + `title` and/or `note`; pass note=null to clear), 'remove' (`id`), 'reorder' (`ids` in desired order), 'clear_completed' (drop done + skipped), 'clear_all'. Statuses: pending, in_progress, done, blocked, skipped. The list and any user edits to it are surfaced to you in `task_list` context on every turn — set statuses as you work so the user can see live progress.
-
-**Parameters:** `id` (string); `ids` (array); `note` (any); `items` (array); `title` (string); `action` (string, required) = ["add","list","set_status","update","remove","reorder","clear_completed","clear_all"]; `status` (string) = ["pending","in_progress","done","blocked","skipped"]
 
 ### `update_plan`
 
