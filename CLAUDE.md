@@ -200,6 +200,9 @@
     the Phase 5 activation switch, and `pnpm catalog:tools:drift` reports the
     missing surface inclusion **by design** until it flips.
   - Plan: `/Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/PLAN.md`.
+    **Picking this up cold?** Read
+    `/Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/HANDOFF.md`
+    first — vision, gap analysis, cross-repo architecture, next steps, landmines.
     Tests: `tests/unit/credential-login-leak.test.ts` (plaintext egress across
     every channel + wrong-origin/unsafe-destination refusal + two-step flow +
     clear-on-stall) and `tests/unit/credential-redaction.test.ts` (each
