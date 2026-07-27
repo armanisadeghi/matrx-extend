@@ -2,6 +2,7 @@
  * Tier: READ — informational tools. Run automatically without approval.
  */
 
+import { SENSITIVE_ATTR, sensitiveSelectorsForTab } from '@/lib/credentials/sensitive-fields';
 import { log } from '@/lib/debug/log';
 // Static imports — these three were dynamic (`await import(...)`) inside
 // read_active_page. In an MV3 SW a dynamic import loads a SHARED Vite chunk,
@@ -444,14 +445,35 @@ export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
     try {
       const [first] = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: (selector: string, attrs: string[] | null, limit: number) => {
+        func: (
+          selector: string,
+          attrs: string[] | null,
+          limit: number,
+          sensitiveSelectors: string[],
+          sensitiveAttr: string,
+        ) => {
+          // Redaction is the OR of three signals — marker attribute, the
+          // extension's own filled-field memory, and the legacy live
+          // `type === 'password'` check. The first two survive a page that
+          // strips the marker or toggles the input type.
+          // See src/lib/credentials/sensitive-fields.ts.
+          const sensitiveEls = new Set<Element>();
+          for (const s of sensitiveSelectors) {
+            try {
+              for (const e of Array.from(document.querySelectorAll(s))) sensitiveEls.add(e);
+            } catch {
+              /* a selector that no longer parses simply matches nothing */
+            }
+          }
           const out: Array<Record<string, unknown>> = [];
           const list = document.querySelectorAll(selector);
           const total = list.length;
           for (let i = 0; i < Math.min(list.length, limit); i++) {
             const el = list[i] as HTMLElement;
             const isPassword =
-              el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
+              el.hasAttribute(sensitiveAttr) ||
+              sensitiveEls.has(el) ||
+              (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password');
             const item: Record<string, unknown> = {
               index: i,
               tag: el.tagName.toLowerCase(),
@@ -478,7 +500,13 @@ export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
           }
           return { total, returned: out.length, items: out };
         },
-        args: [args.selector, args.attributes ?? null, args.limit],
+        args: [
+          args.selector,
+          args.attributes ?? null,
+          args.limit,
+          sensitiveSelectorsForTab(tab.id),
+          SENSITIVE_ATTR,
+        ],
       });
       return first?.result ?? { total: 0, returned: 0, items: [] };
     } catch (err) {

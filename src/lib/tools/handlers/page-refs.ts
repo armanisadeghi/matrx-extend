@@ -28,6 +28,7 @@
  *     Lighter than `read_active_page` (which returns the full scrape).
  */
 
+import { SENSITIVE_ATTR, sensitiveSelectorsForTab } from '@/lib/credentials/sensitive-fields';
 import { quickPrompt } from '@/lib/onbox-ai/client';
 import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
@@ -227,7 +228,28 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
           maxNodes: number,
           includeText: boolean,
           includeBounds: boolean,
+          sensitiveSelectors: string[],
+          sensitiveAttr: string,
         ) => {
+          // Redaction is the OR of three signals — marker attribute, the
+          // extension's own filled-field memory, and the legacy live
+          // `type === 'password'` check. The first two survive a page that
+          // strips the marker or toggles the input type; page-controlled DOM
+          // state is never the only line of defence.
+          // See src/lib/credentials/sensitive-fields.ts.
+          const sensitiveEls = new Set<Element>();
+          for (const s of sensitiveSelectors) {
+            try {
+              for (const e of Array.from(document.querySelectorAll(s))) sensitiveEls.add(e);
+            } catch {
+              /* a selector that no longer parses simply matches nothing */
+            }
+          }
+          const isSensitive = (el: Element): boolean =>
+            el.hasAttribute(sensitiveAttr) ||
+            sensitiveEls.has(el) ||
+            (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password');
+
           const INTERACTIVE = [
             'a[href]',
             'button',
@@ -384,8 +406,9 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
             if (el instanceof HTMLInputElement) {
               entry.type = el.type;
               // Never echo password/secret values back to the agent — the field
-              // may be autofilled. Surface presence + length only.
-              if (el.type === 'password') {
+              // may be autofilled or filled by credential_login. Surface
+              // presence + length only.
+              if (isSensitive(el)) {
                 if (el.value) {
                   entry.value = '***';
                   entry.value_length = el.value.length;
@@ -425,6 +448,8 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
           args.max_nodes,
           args.include_text,
           args.include_bounds,
+          sensitiveSelectorsForTab(tabId),
+          SENSITIVE_ATTR,
         ],
       });
       const result = first?.result as

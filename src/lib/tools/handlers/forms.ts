@@ -12,6 +12,7 @@
  *                              the form's primary submit button.
  */
 
+import { SENSITIVE_ATTR, sensitiveSelectorsForTab } from '@/lib/credentials/sensitive-fields';
 import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
@@ -43,7 +44,25 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (formSelector: string | null) => {
+      func: (formSelector: string | null, sensitiveSelectors: string[], sensitiveAttr: string) => {
+        // Redaction is the OR of three signals — marker attribute, the
+        // extension's own filled-field memory, and the legacy live
+        // `type === 'password'` check. The first two survive a page that
+        // strips the marker or toggles the input type.
+        // See src/lib/credentials/sensitive-fields.ts.
+        const sensitiveEls = new Set<Element>();
+        for (const s of sensitiveSelectors) {
+          try {
+            for (const e of Array.from(document.querySelectorAll(s))) sensitiveEls.add(e);
+          } catch {
+            /* a selector that no longer parses simply matches nothing */
+          }
+        }
+        const isSensitive = (el: Element): boolean =>
+          el.hasAttribute(sensitiveAttr) ||
+          sensitiveEls.has(el) ||
+          (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password');
+
         function uniqueSelector(el: Element): string {
           if ('id' in el && (el as { id: string }).id) {
             const id = (el as { id: string }).id;
@@ -103,19 +122,21 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
             let value: string | boolean | string[] | null = null;
             let masked = false;
             let valueLength: number | null = null;
-            if (tag === 'select') {
+            if (isSensitive(el)) {
+              // Never echo a secret value — autofill or credential_login may
+              // have populated this. Checked before every other branch so a
+              // filled USERNAME (type="text") is masked too.
+              const raw = (el as HTMLInputElement).value ?? '';
+              value = raw ? '***' : '';
+              valueLength = raw.length;
+              masked = true;
+            } else if (tag === 'select') {
               const sel = el as HTMLSelectElement;
               value = sel.multiple
                 ? Array.from(sel.selectedOptions).map((o) => o.value)
                 : sel.value;
             } else if (type === 'checkbox' || type === 'radio') {
               value = (el as HTMLInputElement).checked;
-            } else if (type === 'password') {
-              // Never echo password values — autofill may have populated this.
-              const raw = (el as HTMLInputElement).value ?? '';
-              value = raw ? '***' : '';
-              valueLength = raw.length;
-              masked = true;
             } else if ('value' in el) {
               value = (el as HTMLInputElement | HTMLTextAreaElement).value ?? null;
             } else if ((el as HTMLElement).isContentEditable) {
@@ -160,7 +181,7 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
         });
         return { count: items.length, forms: items };
       },
-      args: [args.selector ?? null],
+      args: [args.selector ?? null, sensitiveSelectorsForTab(tabId), SENSITIVE_ATTR],
     });
     return first?.result ?? { count: 0, forms: [] };
   },

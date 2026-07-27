@@ -414,6 +414,24 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
+  // Vault browser login. The row shows the OUTCOME STATUS and nothing else —
+  // no field names, no page text, no value. `args` can only ever be an
+  // optional `credential_item_id` (the tool accepts no URL / username /
+  // password / selector). See src/lib/tools/handlers/credential-login.ts.
+  credential_login: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'KeyRound', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Signing in with a saved login',
+        completed: 'Saved login',
+        error: 'Saved login failed',
+      },
+      name: { path: 'result.status', fallback: '' },
+      color: { started: 'primary', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
   submit_form: {
     inline: {
       icon: { started: 'Loader2', completed: 'SendHorizontal', error: 'AlertTriangle' },

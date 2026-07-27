@@ -159,6 +159,56 @@
   [src/lib/lists/storage.ts](./src/lib/lists/storage.ts); every
   local mutation broadcasts `LISTS_CHANGED`, while Supabase Realtime
   delivers aidream task writes to both task views.
+- **Agent-safe browser login — `credential_login` (2026-07-26)** — the agent
+  asks for a login and never learns the credential. One action-tier handler
+  ([src/lib/tools/handlers/credential-login.ts](./src/lib/tools/handlers/credential-login.ts))
+  does resolve → materialize → fill → submit → verify inside a single `run()`;
+  the plaintext lives in one `const` in that scope and nowhere else.
+  - **Arguments are `{credential_item_id?}` and NOTHING else.** No URL, no
+    username, no password, no selector, no script. The extension derives the
+    real tab origin itself (`getAssignedTab`) and detects the fields itself, so
+    a confused or hostile model cannot aim the fill. Injection is
+    `frameIds: [0]` — top frame only.
+  - **Refusals happen before any decrypt:** non-https (except loopback), not
+    the top frame, a live page origin that disagrees with the tab, or a
+    materialize response authorized for a different origin.
+  - **Server contract** lives in
+    [src/lib/api/routes/vault.ts](./src/lib/api/routes/vault.ts) —
+    `/api/vault/browser-login/{matches, {id}/materialize, {id}/result}`, all
+    through the one `apiPost` client and all gated on a REAL user JWT. The
+    guest-fingerprint identity the rest of the extension treats as
+    first-class is rejected server-side for this flow, so it is
+    short-circuited here rather than failing opaquely.
+  - **Returns ONLY this enum:** `authenticated | needs_mfa |
+    captcha_or_takeover | credentials_rejected | selection_required |
+    no_matching_login | unsafe_destination | unknown`. `unknown` is NOT
+    success. MFA and CAPTCHA are never bypassed — they stop for user takeover.
+    If submission never proceeds, the filled fields are cleared before returning.
+  - **Redaction is no longer password-centric.** Every page-reading tool used
+    to key on the live `type === 'password'`, so a filled USERNAME was echoed
+    verbatim and a "show password" toggle un-redacted the password itself.
+    Redaction is now the OR of **the marker attribute
+    (`data-matrx-sensitive`) OR the extension's own filled-field memory OR the
+    legacy password check** — contract + consumer list in
+    [src/lib/credentials/sensitive-fields.ts](./src/lib/credentials/sensitive-fields.ts),
+    applied in `read_page`, `get_form_fields`, `query_elements`, and the
+    inspect family. Page-controlled DOM state is never the only defence, so a
+    page that strips the attribute or rewrites the input type changes nothing.
+  - **Not advertised yet.** The `tool.definition` + `tool.binding` rows exist
+    (`admin_only=false`, `tier=action`, `category=credentials`), but no
+    `tool.surface_defaults.always_include_tools` array lists it — that array is
+    the Phase 5 activation switch, and `pnpm catalog:tools:drift` reports the
+    missing surface inclusion **by design** until it flips.
+  - Plan: `/Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/PLAN.md`.
+    Tests: `tests/unit/credential-login-leak.test.ts` (plaintext egress across
+    every channel + wrong-origin/unsafe-destination refusal + two-step flow +
+    clear-on-stall) and `tests/unit/credential-redaction.test.ts` (each
+    redaction signal defends alone, plus a grep guard over the four sites).
+  - **Known boundary:** a login form using `method="get"` serializes whatever
+    is in its fields into the URL on submit, which then appears in the tab URL,
+    history, and `read_page`'s `url`. That exposure is created by the SITE and
+    cannot be redacted afterwards without retaining the plaintext this handler
+    deliberately drops.
 - **Reference-ID system** — `read_page` tags every interactive element with
   `data-matrx-ref="N"` and returns refs (`ref:N`) the agent passes to
   interaction tools instead of brittle CSS selectors. Refs survive DOM

@@ -50,6 +50,7 @@ import type { AnyToolHandler, ToolTier } from '@/lib/tools/types';
  *   - devtools     : CDP-backed diagnostics + host (admin)
  *   - webmcp       : tools registered by the page via navigator.modelContext
  *   - desktop      : bridge to matrx-local
+ *   - credentials  : sign in to a site using a saved Matrx vault login
  */
 export type ToolCategory =
   | 'core'
@@ -65,7 +66,8 @@ export type ToolCategory =
   | 'guidance'
   | 'devtools'
   | 'webmcp'
-  | 'desktop';
+  | 'desktop'
+  | 'credentials';
 
 export interface CategoryMeta {
   category: ToolCategory;
@@ -180,6 +182,13 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     description:
       "Bridge to matrx-local — the desktop engine. `desktop_run_command` invokes commands matrx-local exposes (file ops, system info, window control, etc.). Fails fast when the bridge isn't connected.",
     list_tool_name: 'list_desktop_tools',
+  },
+  credentials: {
+    category: 'credentials',
+    label: 'Saved logins',
+    description:
+      "Sign in to the site in the current tab using a login saved in the user's Matrx vault. `credential_login` resolves, fills, submits, and verifies in one call and returns only an outcome status — the agent never receives, and cannot supply, a URL, username, password, or selector. MFA and CAPTCHA stop automation for user takeover rather than being worked around.",
+    list_tool_name: 'list_credentials_tools',
   },
 };
 
@@ -372,6 +381,11 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
 
   // ─── desktop (matrx-local bridge) ─────────────────────────────────────
   desktop_run_command: 'desktop',
+
+  // ─── credentials (vault browser login) ────────────────────────────────
+  // Category comes from the DB (`tool.definition.category = 'credentials'`),
+  // which is the source of truth — do not "tidy" this into `interaction`.
+  credential_login: 'credentials',
 };
 
 export function categoryOf(toolName: string): ToolCategory {
@@ -488,6 +502,13 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'read_network_requests',
   'get_request_body',
   'desktop_run_command',
+  // ─── credentials (vault browser login) ──────────────────────────────────
+  // An active `tool.definition` row bound to the `chrome-extension` executor,
+  // so it belongs here by definition. Being listed here does NOT advertise it:
+  // agent advertisement is `tool.surface_defaults.always_include_tools`, and no
+  // surface includes `credential_login` yet (Phase 5 of the
+  // credential-sharing-browser-login plan is the activation switch).
+  'credential_login',
 ]);
 
 export function isCanonicalSurface(toolName: string): boolean {

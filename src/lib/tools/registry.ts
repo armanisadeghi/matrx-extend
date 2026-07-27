@@ -28,6 +28,7 @@ import { browser_data_handlers } from '@/lib/tools/handlers/browser-data';
 import { canonical_handlers } from '@/lib/tools/handlers/canonical';
 import { canonical_merger_handlers } from '@/lib/tools/handlers/canonical-mergers';
 import { cdp_handlers } from '@/lib/tools/handlers/cdp';
+import { credential_handlers } from '@/lib/tools/handlers/credential-login';
 import { data_pattern_handlers } from '@/lib/tools/handlers/data-patterns';
 import { demo_handlers } from '@/lib/tools/handlers/demos';
 import { discover_handlers } from '@/lib/tools/handlers/discover';
@@ -86,6 +87,8 @@ const ALL: AnyToolHandler[] = [
   // ─── browser-level actions ─────────────────────────────────────────────
   ...tab_action_handlers,
   ...download_handlers,
+  // ─── vault browser login (agent never sees the credential) ─────────────
+  ...credential_handlers,
   // ─── memory ────────────────────────────────────────────────────────────
   ...memory_handlers,
   // ─── optional-permission tools ─────────────────────────────────────────
