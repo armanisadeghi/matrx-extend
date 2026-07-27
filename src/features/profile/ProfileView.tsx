@@ -3,66 +3,28 @@
  *
  * iOS-style: grouped cards, single-row controls, soft separators. Each
  * Collapsible section maps to one logical chunk of the user_form_profile
- * row. Sensitive items live in their own Vault-backed section at the
- * bottom.
+ * row.
  *
  * Reachable from the avatar dropdown. Not advertised in the tab strip
  * because it's a once-in-a-while destination, not a workflow tab.
  */
 
-import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Collapsible } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/hooks/use-auth';
 import { useUserProfile } from '@/hooks/use-user-profile';
-import {
-  type EmailEntry,
-  type EmergencyContact,
-  type Phone,
-  type SensitiveItemListing,
-  type SocialHandle,
-  type UserFormProfile,
-  autoPreview,
+import type {
+  EmailEntry,
+  EmergencyContact,
+  Phone,
+  SocialHandle,
+  UserFormProfile,
 } from '@/lib/supabase/user-profile';
 import { cn } from '@/lib/utils';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
-import {
-  Check,
-  ChevronLeft,
-  Eye,
-  EyeOff,
-  KeyRound,
-  Loader2,
-  Plus,
-  Star,
-  Trash2,
-} from 'lucide-react';
-import { useState } from 'react';
-
-const SENSITIVE_KIND_OPTIONS = [
-  { value: 'ssn', label: 'Social Security Number' },
-  { value: 'tax_id', label: 'Tax ID' },
-  { value: 'ein', label: 'EIN' },
-  { value: 'drivers_license', label: "Driver's License" },
-  { value: 'passport', label: 'Passport' },
-  { value: 'national_id', label: 'National ID' },
-  { value: 'bank_account', label: 'Bank Account' },
-  { value: 'routing_number', label: 'Routing Number' },
-  { value: 'green_card', label: 'Green Card' },
-  { value: 'work_visa', label: 'Work Visa' },
-  { value: 'voter_id', label: 'Voter ID' },
-  { value: 'military_id', label: 'Military ID' },
-  { value: 'other', label: 'Other' },
-];
+import { Check, ChevronLeft, Loader2, Plus, Star, Trash2 } from 'lucide-react';
 
 export function ProfileView() {
   const { user } = useAuth();
@@ -260,14 +222,6 @@ export function ProfileView() {
               <EmergencyContactsEditor
                 contacts={profile.draft.emergency_contacts}
                 onChange={(next) => profile.setField('emergency_contacts', next)}
-              />
-            </Collapsible>
-
-            <Collapsible label="Sensitive items" defaultOpen={false}>
-              <SensitiveItemsEditor
-                items={profile.context?.sensitive_items ?? []}
-                onSave={profile.saveSensitive}
-                onRemove={profile.removeSensitive}
               />
             </Collapsible>
 
@@ -644,257 +598,6 @@ function EmergencyContactsEditor({
   );
 }
 
-// ─── Sensitive items editor ─────────────────────────────────────────────────
-function SensitiveItemsEditor({
-  items,
-  onSave,
-  onRemove,
-}: {
-  items: SensitiveItemListing[];
-  onSave: ReturnType<typeof useUserProfile>['saveSensitive'];
-  onRemove: ReturnType<typeof useUserProfile>['removeSensitive'];
-}) {
-  const [editingId, setEditingId] = useState<string | 'new' | null>(null);
-  const [pendingRemove, setPendingRemove] = useState<SensitiveItemListing | null>(null);
-
-  const confirmRemove = async () => {
-    if (!pendingRemove) return;
-    const id = pendingRemove.id;
-    setPendingRemove(null);
-    await onRemove(id);
-  };
-
-  return (
-    <div className="space-y-2">
-      <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-[11px] text-amber-700 dark:text-amber-400">
-        <KeyRound className="mr-1 inline-block size-3" /> Encrypted in Vault. Only you can decrypt.
-        Agents read the preview by default; full value is fetched on demand for form fills.
-      </div>
-
-      {items.length > 0 && (
-        <Card>
-          {items.map((item) => (
-            <SensitiveItemRow
-              key={item.id}
-              item={item}
-              onEdit={() => setEditingId(item.id)}
-              onRemove={() => setPendingRemove(item)}
-            />
-          ))}
-        </Card>
-      )}
-
-      <ConfirmDialog
-        open={pendingRemove !== null}
-        title="Delete sensitive item?"
-        description={pendingRemove ? `Delete ${pendingRemove.label || pendingRemove.kind}?` : ''}
-        confirmLabel="Delete"
-        destructive
-        onConfirm={() => void confirmRemove()}
-        onClose={() => setPendingRemove(null)}
-      />
-
-      {editingId !== 'new' && (
-        <button
-          type="button"
-          onClick={() => setEditingId('new')}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed bg-card/50 px-3.5 py-3 text-xs text-muted-foreground transition-colors hover:bg-accent/40 hover:text-foreground"
-        >
-          <Plus className="size-3.5" /> Add sensitive item
-        </button>
-      )}
-
-      {editingId !== null && (
-        <SensitiveItemForm
-          existing={editingId === 'new' ? null : (items.find((i) => i.id === editingId) ?? null)}
-          onCancel={() => setEditingId(null)}
-          onSave={async (args) => {
-            const result = await onSave(args);
-            if (result.ok) setEditingId(null);
-            return result;
-          }}
-        />
-      )}
-    </div>
-  );
-}
-
-function SensitiveItemRow({
-  item,
-  onEdit,
-  onRemove,
-}: {
-  item: SensitiveItemListing;
-  onEdit: () => void;
-  onRemove: () => void;
-}) {
-  return (
-    <div className="flex items-center gap-2 px-3.5 py-2">
-      <KindBadge kind={item.kind} />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5 truncate text-sm">
-          <span className="truncate">{item.label || labelForKind(item.kind)}</span>
-          {item.is_primary && <Star className="size-3 fill-amber-500 text-amber-500" />}
-        </div>
-        {item.preview && (
-          <div className="truncate font-mono text-[11px] text-muted-foreground">{item.preview}</div>
-        )}
-      </div>
-      <button
-        type="button"
-        onClick={onEdit}
-        className="rounded-full px-2.5 py-1 text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
-      >
-        Edit
-      </button>
-      <button
-        type="button"
-        onClick={onRemove}
-        className="flex size-7 items-center justify-center rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-      >
-        <Trash2 className="size-3.5" />
-      </button>
-    </div>
-  );
-}
-
-function SensitiveItemForm({
-  existing,
-  onCancel,
-  onSave,
-}: {
-  existing: SensitiveItemListing | null;
-  onCancel: () => void;
-  onSave: (
-    args: Parameters<ReturnType<typeof useUserProfile>['saveSensitive']>[0],
-  ) => Promise<{ ok: boolean; error?: string }>;
-}) {
-  const [kind, setKind] = useState(existing?.kind ?? 'ssn');
-  const [label, setLabel] = useState(existing?.label ?? '');
-  const [fullValue, setFullValue] = useState('');
-  const [preview, setPreview] = useState(existing?.preview ?? '');
-  const [isPrimary, setIsPrimary] = useState(existing?.is_primary ?? false);
-  const [showValue, setShowValue] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const canSave = fullValue.trim().length > 0;
-
-  return (
-    <div className="rounded-xl border bg-card p-3">
-      <div className="mb-2 text-xs font-medium text-muted-foreground">
-        {existing ? 'Edit sensitive item' : 'New sensitive item'}
-      </div>
-      <div className="space-y-2">
-        <div>
-          <Label>Kind</Label>
-          <Select value={kind} onValueChange={setKind}>
-            <SelectTrigger className="h-8 rounded-lg border-secondary bg-secondary text-sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {SENSITIVE_KIND_OPTIONS.map((o) => (
-                <SelectItem key={o.value} value={o.value}>
-                  {o.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Label>Label</Label>
-          <Input
-            value={label}
-            placeholder={`e.g. "Personal ${labelForKind(kind)}"`}
-            className="h-8 rounded-lg border-secondary bg-secondary"
-            onChange={(e) => setLabel(e.target.value)}
-          />
-        </div>
-        <div>
-          <Label>{existing ? 'New value (replaces existing)' : 'Value'}</Label>
-          <div className="relative">
-            <Input
-              value={fullValue}
-              type={showValue ? 'text' : 'password'}
-              placeholder={existing ? 'Re-enter the full value to update' : 'Enter the full value'}
-              className="h-8 rounded-lg border-secondary bg-secondary pr-9 font-mono"
-              onChange={(e) => {
-                setFullValue(e.target.value);
-                if (!preview && e.target.value) setPreview(autoPreview(e.target.value));
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowValue((s) => !s)}
-              className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-accent"
-            >
-              {showValue ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
-            </button>
-          </div>
-        </div>
-        <div>
-          <Label>Preview (safe to display)</Label>
-          <Input
-            value={preview}
-            placeholder="XXX-XX-1234"
-            className="h-8 rounded-lg border-secondary bg-secondary font-mono"
-            onChange={(e) => setPreview(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center justify-between rounded-lg bg-secondary/50 px-3 py-1.5">
-          <span className="text-sm">Primary for this kind</span>
-          <Switch checked={isPrimary} onCheckedChange={setIsPrimary} />
-        </div>
-        {error && <div className="text-xs text-destructive">{error}</div>}
-        <div className="flex justify-end gap-2 pt-1">
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-8 rounded-full px-3"
-            onClick={onCancel}
-            disabled={saving}
-          >
-            Cancel
-          </Button>
-          <Button
-            size="sm"
-            className="h-8 rounded-full px-4"
-            disabled={!canSave || saving}
-            onClick={async () => {
-              setSaving(true);
-              setError(null);
-              const result = await onSave({
-                item_id: existing?.id ?? null,
-                kind,
-                label: label || null,
-                full_value: fullValue,
-                preview: preview || null,
-                is_primary: isPrimary,
-              });
-              setSaving(false);
-              if (!result.ok) setError(result.error ?? 'Save failed');
-            }}
-          >
-            {saving ? <Loader2 className="size-3.5 animate-spin" /> : 'Save'}
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function KindBadge({ kind }: { kind: string }) {
-  return (
-    <span className="inline-flex shrink-0 items-center rounded-md bg-violet-500/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-violet-700 dark:text-violet-400">
-      {kind}
-    </span>
-  );
-}
-
-function labelForKind(kind: string): string {
-  return SENSITIVE_KIND_OPTIONS.find((o) => o.value === kind)?.label ?? kind;
-}
-
 // ─── Reusable building blocks ───────────────────────────────────────────────
 function Card({ children }: { children: React.ReactNode }) {
   return (
@@ -936,14 +639,6 @@ function TextField({
         'focus:bg-accent/50',
       )}
     />
-  );
-}
-
-function Label({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground/70">
-      {children}
-    </div>
   );
 }
 
