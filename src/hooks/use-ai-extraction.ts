@@ -140,7 +140,10 @@ export function useAiExtraction() {
 
       const body: AgentStartRequest = {
         user_input: input.description,
-        conversation_id: null,
+        // Required on every start request; a one-shot run still mints an id
+        // (correlation) and stays ephemeral via store:false.
+        conversation_id: crypto.randomUUID(),
+        is_new: true,
         variables: {
           page_url: captured.url,
           page_text: captured.page_text,

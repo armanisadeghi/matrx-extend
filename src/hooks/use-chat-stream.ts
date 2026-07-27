@@ -460,10 +460,10 @@ function ensureStreamListeners(): void {
     })();
   };
 
-  // Adopt the server-assigned conversation_id as soon as the response opens.
-  // Without this, every turn would POST `conversation_id: null` and the
-  // backend would open a new conversation for every message — even though
-  // the server-side route handles continue-mode correctly when given an id.
+  // Echo-adopt the conversation_id the response reports. The client now mints
+  // its own id before the first send (see the send path below), so this is a
+  // confirmation rather than the source — it stays because the server is the
+  // authority on which conversation the stream actually ran against.
   on<StreamOpened, { ack: true }>(CHANNELS.STREAM_OPENED, (payload) => {
     if (payload.runId !== runIdRef.current) return { ack: true };
     if (payload.requestId) requestIdRef.current = payload.requestId;
@@ -792,7 +792,16 @@ export function useChatStream() {
       // `loaded_categories` is the per-conversation hint — once cross-request
       // tool persistence ships server-side, the handler can use it to
       // short-circuit re-discovery.
-      const conversationId = opts.conversationId ?? null;
+      // conversation_id is REQUIRED on every start request — the client mints
+      // it. Turn 1 has none yet, so we mint here and adopt it immediately
+      // (rather than waiting for STREAM_OPENED to hand one back), which also
+      // means several in-flight sends can never be confused for each other.
+      const existingConversationId = opts.conversationId ?? null;
+      const conversationId = existingConversationId ?? crypto.randomUUID();
+      const isNewConversation = existingConversationId === null;
+      if (isNewConversation) {
+        useChatStore.getState().adoptConversationId(conversationId);
+      }
       const loadedCategories = useActiveToolsStore.getState().getLoaded(conversationId);
       const surface = opts.surface ?? 'assistant';
       // Reuse the active tab from above and lift `page_lang` out of the
@@ -851,6 +860,7 @@ export function useChatStream() {
       const body: AgentStartRequest = {
         user_input: text,
         conversation_id: conversationId,
+        is_new: isNewConversation,
         variables: opts.variables ?? null,
         context,
         stream: true,

@@ -66,10 +66,17 @@ export interface AgentClientEnvelope {
 export interface AgentStartRequest {
   user_input?: string;
   variables?: Record<string, unknown> | null;
-  conversation_id?: string | null;
-  is_new?: boolean | null;
+  /**
+   * REQUIRED, client-minted, always. It is our correlation handle for this
+   * request; with several sends in flight a server-assigned id that only
+   * arrives when the response opens cannot tell them apart.
+   */
+  conversation_id: string;
+  /** REQUIRED assertion about that id: create it (true) or continue it (false). */
+  is_new: boolean;
+  /** REQUIRED. The ONLY ephemeral signal — false means the server writes nothing. */
+  store: boolean;
   stream?: boolean;
-  store?: boolean;
   /**
    * Capability declaration + per-capability state. The capability brings
    * `load_browser_tools` (the discovery tool) online; everything else loads

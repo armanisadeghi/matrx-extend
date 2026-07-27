@@ -403,7 +403,15 @@ export function usePilotChatStream() {
 
       const permissionMode = usePilotChatStore.getState().getPermissionMode(opts.agentId);
 
-      const conversationId = opts.conversationId ?? null;
+      // conversation_id is REQUIRED on every start request — the client mints
+      // it. Turn 1 has none yet, so mint and adopt immediately.
+      const existingConversationId = opts.conversationId ?? null;
+      const conversationId = existingConversationId ?? crypto.randomUUID();
+      const isNewConversation = existingConversationId === null;
+      if (isNewConversation) {
+        usePilotChatStore.getState().adoptConversationId(conversationId);
+        usePilotStore.getState().setConversationId(conversationId);
+      }
       const loadedCategories = useActiveToolsStore.getState().getLoaded(conversationId);
       const briefLang = (context.page_brief as { lang?: string | null } | undefined)?.lang ?? null;
       const browserDomState = await buildBrowserDomState({
@@ -436,6 +444,7 @@ export function usePilotChatStream() {
       const body: AgentStartRequest = {
         user_input: text,
         conversation_id: conversationId,
+        is_new: isNewConversation,
         variables: opts.variables ?? null,
         context,
         stream: true,

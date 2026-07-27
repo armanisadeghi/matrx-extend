@@ -1,22 +1,18 @@
 /**
- * useUserProfile — loads + mutates user_form_profile + user_sensitive_items.
+ * useUserProfile — loads + mutates user_form_profile.
  *
  * One round-trip on mount via get_user_form_context RPC. Local edits are
  * staged in `draft`; calling save() upserts only the dirty subset and
- * refetches. Sensitive items go through their own RPCs (set/delete) and
- * locally refresh the listing on success.
+ * refetches.
  */
 
 import { useAuth } from '@/hooks/use-auth';
 import {
-  type SetSensitiveItemArgs,
   type UserFormContext,
   type UserFormProfile,
   type UserFormProfilePatch,
-  deleteSensitiveItem,
   emptyProfile,
   fetchUserFormContext,
-  setSensitiveItem,
   upsertUserFormProfile,
 } from '@/lib/supabase/user-profile';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -32,8 +28,6 @@ interface UseUserProfileResult {
   resetDraft: () => void;
   save: () => Promise<{ ok: boolean }>;
   refresh: () => Promise<void>;
-  saveSensitive: (args: SetSensitiveItemArgs) => Promise<{ ok: boolean; error?: string }>;
-  removeSensitive: (id: string) => Promise<{ ok: boolean; error?: string }>;
 }
 
 export function useUserProfile(): UseUserProfileResult {
@@ -105,26 +99,6 @@ export function useUserProfile(): UseUserProfileResult {
     return { ok: true };
   }, [user?.id, context, draft, load]);
 
-  const saveSensitive = useCallback(
-    async (args: SetSensitiveItemArgs) => {
-      const result = await setSensitiveItem(args);
-      if (!result.ok) return { ok: false, error: result.error };
-      await load();
-      return { ok: true };
-    },
-    [load],
-  );
-
-  const removeSensitive = useCallback(
-    async (id: string) => {
-      const result = await deleteSensitiveItem(id);
-      if (!result.ok) return { ok: false, error: result.error };
-      await load();
-      return { ok: true };
-    },
-    [load],
-  );
-
   return {
     loading,
     context,
@@ -136,8 +110,6 @@ export function useUserProfile(): UseUserProfileResult {
     resetDraft,
     save,
     refresh: load,
-    saveSensitive,
-    removeSensitive,
   };
 }
 
