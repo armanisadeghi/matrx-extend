@@ -11,6 +11,8 @@
 
 > Cross-repo system-of-record for the TOKEN BROKER (scoped short-lived credentials for privileged reach — provider realtime sessions, direct provider calls): `/Users/armanisadeghi/code/common-docs/systems/token-broker/FEATURE.md` — read it before touching this feature in ANY repo. **Client primitive SHIPPED 2026-07-12**: [src/lib/broker/](./src/lib/broker/) (its FEATURE.md is the repo contract) — SW-owned in-memory cache via `CHANNELS.BROKER_*`, `useBroker()` hook, admin **Broker** demo tab, repo skill `.claude/skills/token-broker-client/`. Consume through the primitive — never hand-roll a mint call, cache, or gateway URL; new server-side audiences need zero client changes.
 
+> 🚨 **Every agent-start request MUST send `conversation_id` (client-minted, always) + `is_new` + `store`.** aidream rejects anything else with a 422 — `conversation_id: null` is no longer accepted, and `store:false` (not a missing id) is what makes a run ephemeral. `AgentStartRequest` in [src/lib/api/routes/ai.ts](./src/lib/api/routes/ai.ts) marks all three required so the compiler catches a new call site. Contract: `/Users/armanisadeghi/code/aidream/aidream/services/conversation_context/FEATURE.md` § "Starting a conversation".
+
 ---
 
 ## ✅ What the system can do today
