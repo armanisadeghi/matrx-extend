@@ -33,6 +33,7 @@ import {
   Search,
   Settings as SettingsIcon,
   Sparkles,
+  Vault,
   Wrench,
 } from 'lucide-react';
 import { type ComponentType, Suspense, lazy, useEffect } from 'react';
@@ -64,6 +65,7 @@ const VIEW_LOADERS: Record<SidepanelTab, () => Promise<{ default: ComponentType 
     import('@/features/screenshots/ScreenshotsView').then((m) => ({
       default: m.ScreenshotsView,
     })),
+  vault: () => import('@/features/vault/VaultView').then((m) => ({ default: m.VaultView })),
   tools: () => import('@/features/tools/ToolsView').then((m) => ({ default: m.ToolsView })),
   settings: () =>
     import('@/features/settings/SettingsView').then((m) => ({ default: m.SettingsView })),
@@ -87,6 +89,7 @@ const SeoView = lazy(VIEW_LOADERS.seo);
 const NotesView = lazy(VIEW_LOADERS.notes);
 const FilesView = lazy(VIEW_LOADERS.files);
 const ScreenshotsView = lazy(VIEW_LOADERS.screenshots);
+const VaultView = lazy(VIEW_LOADERS.vault);
 const ToolsView = lazy(VIEW_LOADERS.tools);
 const SettingsView = lazy(VIEW_LOADERS.settings);
 const ProfileView = lazy(VIEW_LOADERS.profile);
@@ -257,6 +260,9 @@ export function App() {
                     <TabsTrigger value="screenshots" className="size-7 p-0" title="Screenshots">
                       <Camera className="size-3.5" />
                     </TabsTrigger>
+                    <TabsTrigger value="vault" className="size-7 p-0" title="Vault">
+                      <Vault className="size-3.5" />
+                    </TabsTrigger>
                     <TabsTrigger value="tools" className="size-7 p-0" title="Tools">
                       <Wrench className="size-3.5" />
                     </TabsTrigger>
@@ -392,6 +398,14 @@ export function App() {
                 <TabsContent value="screenshots" className="flex-1 min-h-0">
                   <Suspense fallback={TabFallback}>
                     <ScreenshotsView />
+                  </Suspense>
+                </TabsContent>
+                {/* NOT forceMount: unmounting on tab switch is a FEATURE here
+                    — it drops any revealed credential held in component state
+                    the moment the user leaves the Vault. */}
+                <TabsContent value="vault" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <VaultView />
                   </Suspense>
                 </TabsContent>
                 <TabsContent value="tools" className="flex-1 min-h-0">

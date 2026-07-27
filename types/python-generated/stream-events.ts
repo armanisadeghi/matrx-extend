@@ -149,6 +149,7 @@ export interface ProviderRetryPayload {
   max_retries: number;
   retry_delay?: number | null;
   retry_at?: number | null;
+  discard_partial_output?: boolean;
   schedule?: number[];
   can_cancel?: boolean;
   can_retry_now?: boolean;
@@ -776,7 +777,7 @@ export interface LegalSyncEventData {
 export interface AudioBlock {
   origin: "matrx" | "external";
   file_id?: string | null;
-  visibility?: "public" | "personal" | "shared" | null;
+  visibility?: "personal" | "internal" | "link" | "public" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
   download_url?: string | null;
@@ -801,7 +802,7 @@ export interface AudioBlock {
 export interface DocumentBlock {
   origin: "matrx" | "external";
   file_id?: string | null;
-  visibility?: "public" | "personal" | "shared" | null;
+  visibility?: "personal" | "internal" | "link" | "public" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
   download_url?: string | null;
@@ -826,7 +827,7 @@ export interface DocumentBlock {
 export interface ImageBlock {
   origin: "matrx" | "external";
   file_id?: string | null;
-  visibility?: "public" | "personal" | "shared" | null;
+  visibility?: "personal" | "internal" | "link" | "public" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
   download_url?: string | null;
@@ -855,7 +856,7 @@ export interface JsonValue {
 export interface VideoBlock {
   origin: "matrx" | "external";
   file_id?: string | null;
-  visibility?: "public" | "personal" | "shared" | null;
+  visibility?: "personal" | "internal" | "link" | "public" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
   download_url?: string | null;
@@ -882,7 +883,7 @@ export interface VideoBlock {
 export interface YouTubeBlock {
   origin?: "external";
   file_id?: string | null;
-  visibility?: "public" | "personal" | "shared" | null;
+  visibility?: "personal" | "internal" | "link" | "public" | null;
   cdn_url?: string | null;
   signed_url?: string | null;
   download_url?: string | null;
@@ -1154,6 +1155,46 @@ export interface PdfTablesStartedData {
   total_pages: number;
 }
 
+export interface PlanDeepenResultData {
+  type?: "plan_deepen_result";
+  node_id: string;
+  route?: string;
+  brief_lines?: number;
+  sources_attached?: number;
+}
+
+export interface PlanGenAppliedData {
+  type?: "plan_gen_applied";
+  site_id: string;
+  created: number;
+  existing: number;
+  failed: number;
+  errors?: string[];
+  dry_run?: boolean;
+}
+
+export interface PlanGenCandidateData {
+  type?: "plan_gen_candidate";
+  angle: string;
+  node_count: number;
+  rationale?: string;
+}
+
+export interface PlanGenMergedData {
+  type?: "plan_gen_merged";
+  node_count: number;
+  summary?: string;
+  candidates_used?: number;
+}
+
+export interface PlanGenStartedData {
+  type?: "plan_gen_started";
+  site_id: string;
+  domain: string;
+  angles?: string[];
+  keyword_count?: number;
+}
+
 export interface PodcastAssetEvent {
   type?: "podcast_asset";
   asset_kind: "image" | "video";
@@ -1413,6 +1454,11 @@ export type TypedDataPayload =
   | PdfTablesCompleteData
   | PdfTablesPageData
   | PdfTablesStartedData
+  | PlanDeepenResultData
+  | PlanGenAppliedData
+  | PlanGenCandidateData
+  | PlanGenMergedData
+  | PlanGenStartedData
   | PodcastAssetEvent
   | PodcastAssetGenStartedEvent
   | PodcastAssetResultEvent

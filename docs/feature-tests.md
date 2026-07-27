@@ -1685,6 +1685,45 @@ Every entry follows this shape:
   - Backend env pointed at a host without the broker configured → 503 card with
     the "deploy problem — do not retry" copy, no silent fallback.
 
+### Vault — side-panel password manager
+- **What it does:** lists your saved logins (Mine + Shared with me) masked, surfaces
+  the logins the SERVER approves for the current tab with a one-click **Use here**,
+  reveals/copies a field on explicit request (auto-hides after 30s), toggles browser
+  fill, adds the current page as a login URL, and creates a login from the page.
+  Sharing / transfer / ownership deliberately live on the web (`/vault`).
+- **Where to test:** sidepanel → Vault tab (vault icon, between Screenshots and Tools).
+  Signed in — the tab is hidden for guests and the panel refuses guest identity.
+- **Prereq:** at least one `website_login` item in the Vault with `browser_fill_enabled`
+  and a `login_urls` entry for the site you test on.
+- **Steps:**
+  1. Sign out (or use a guest profile) and open the Vault tab → sign-in prompt only;
+     no list, and no request to `/api/vault/*` in the Debug tab.
+  2. Sign in. Navigate to a saved site's https login page, open the Vault tab.
+     The top strip shows the host and your matching login(s).
+  3. Click **Use here** → the page fills and submits; the strip reports one of the
+     fixed statuses (Signed in / verification step / challenge / rejected / …).
+  4. Expand any item → fields show mask hints only. Click the eye → the value appears;
+     wait 30s → it hides itself. Click copy → the value lands on the clipboard.
+  5. Toggle **Browser fill** off → the item leaves the top strip. Toggle back on →
+     it returns.
+  6. On a page the item does not cover, expand it → **Use this login on &lt;host&gt;**;
+     click it → the page is added and the item now appears in the top strip.
+  7. On a login page with nothing saved → **Save this site** → fill name / username /
+     password → **Save to Vault** → the new item appears in Mine and in the top strip.
+  8. **Shared** tab → items others granted you; a shared item you cannot edit shows
+     its fill switch disabled.
+- **Expected:** every value is masked until an explicit reveal; nothing you reveal
+  survives a tab switch (leaving the Vault tab unmounts it); the Debug tab shows
+  `→ POST vault/items/{item}/reveal` and `← vault reveal ok` but never a value.
+- **Edge cases worth poking:**
+  - An http (non-loopback) page → "Browser login only runs on https pages", no matches
+    fetched, and creating from that page attaches no site.
+  - A sealed field → no eye/copy buttons and a "can never be shown" note.
+  - Two matching logins on one page → both listed, each with its own **Use here**
+    (the agent path returns `selection_required` in the same situation).
+  - Sign out with the panel open → the next action reports
+    "Sign in to Matrx to use the Vault".
+
 ## Template (copy when adding a new entry)
 
 ```markdown

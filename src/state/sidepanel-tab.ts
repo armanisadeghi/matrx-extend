@@ -19,6 +19,7 @@ export type SidepanelTab =
   | 'notes'
   | 'files'
   | 'screenshots'
+  | 'vault'
   | 'tools'
   | 'settings'
   | 'profile'

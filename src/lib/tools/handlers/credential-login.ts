@@ -36,6 +36,7 @@ import {
   reportBrowserLoginResult,
 } from '@/lib/api/routes/vault';
 import { checkAuthState } from '@/lib/chat/context/check-auth-state';
+import { isSafeDestination } from '@/lib/credentials/login-urls';
 import {
   SENSITIVE_ATTR,
   forgetSensitiveFields,
@@ -98,19 +99,11 @@ const WAIT_AFTER_SUBMIT_MS = 15_000;
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
 // ── Origin safety ───────────────────────────────────────────────────────────
-
-const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]', '::1']);
-
-/**
- * HTTPS only, with an explicit carve-out for loopback development. Everything
- * else — http on a real host, file:, chrome:, chrome-extension:, about:,
- * data: — is refused before any vault call is made.
- */
-function isSafeDestination(url: URL): boolean {
-  if (url.protocol === 'https:') return true;
-  if (url.protocol === 'http:' && LOOPBACK_HOSTS.has(url.hostname)) return true;
-  return false;
-}
+// `isSafeDestination` (HTTPS, or http on loopback) lives in
+// src/lib/credentials/login-urls.ts so the Vault side panel enforces the EXACT
+// same rule when deciding whether to offer "Use here" on the current tab. Two
+// copies of this rule is how a surface starts advertising a fill the handler
+// would refuse.
 
 // ── Injected page probes ────────────────────────────────────────────────────
 // Everything below runs in the PAGE. Each function is self-contained (no

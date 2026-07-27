@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T07:25:27.163Z",
+  "generated_at": "2026-07-27T06:17:27.740Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -17,6 +17,7 @@
     "list_devtools_tools",
     "list_webmcp_tools",
     "list_desktop_tools",
+    "list_credentials_tools",
     "browser_batch",
     "delete_extension_storage",
     "parallel_for_each_tab"
@@ -37,6 +38,7 @@
     "list_devtools_tools",
     "list_webmcp_tools",
     "list_desktop_tools",
+    "list_credentials_tools",
     "browser_batch",
     "read_page",
     "find",
@@ -112,6 +114,7 @@
     "list_devtools_tools",
     "list_webmcp_tools",
     "list_desktop_tools",
+    "list_credentials_tools",
     "browser_batch",
     "read_page",
     "find",
@@ -182,6 +185,7 @@
     "update_tab_group",
     "download_url",
     "cancel_download",
+    "credential_login",
     "remember_for_domain",
     "list_recently_closed",
     "restore_recently_closed",
@@ -250,6 +254,7 @@
     "list_devtools_tools",
     "list_webmcp_tools",
     "list_desktop_tools",
+    "list_credentials_tools",
     "browser_batch",
     "read_page",
     "find",
@@ -320,6 +325,7 @@
     "update_tab_group",
     "download_url",
     "cancel_download",
+    "credential_login",
     "remember_for_domain",
     "list_recently_closed",
     "restore_recently_closed",
@@ -424,6 +430,7 @@
         "list_devtools_tools",
         "list_webmcp_tools",
         "list_desktop_tools",
+        "list_credentials_tools",
         "browser_batch",
         "delete_extension_storage",
         "parallel_for_each_tab"
@@ -691,6 +698,16 @@
       "admin_only": false,
       "tool_names": [
         "desktop_run_command"
+      ]
+    },
+    {
+      "category": "credentials",
+      "label": "Saved logins",
+      "description": "Sign in to the site in the current tab using a login saved in the user's Matrx vault. `credential_login` resolves, fills, submits, and verifies in one call and returns only an outcome status — the agent never receives, and cannot supply, a URL, username, password, or selector. MFA and CAPTCHA stop automation for user takeover rather than being worked around.",
+      "list_tool": "list_credentials_tools",
+      "admin_only": false,
+      "tool_names": [
+        "credential_login"
       ]
     }
   ],
@@ -1047,6 +1064,31 @@
     },
     {
       "name": "list_desktop_tools",
+      "tier": "read",
+      "category": "core",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
+      ]
+    },
+    {
+      "name": "list_credentials_tools",
       "tier": "read",
       "category": "core",
       "input_schema": {
@@ -3916,6 +3958,33 @@
         "chrome",
         "firefox",
         "safari"
+      ]
+    },
+    {
+      "name": "credential_login",
+      "tier": "action",
+      "category": "credentials",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "credential_item_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
       ]
     },
     {

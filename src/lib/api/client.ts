@@ -178,24 +178,40 @@ export async function apiGet<T>(
   });
 }
 
+/**
+ * `opts.silent` suppresses the per-request error log line. Callers still get
+ * the structured `ApiResult`. REQUIRED for any endpoint whose response body
+ * can hold credential plaintext (`/api/vault/**` reveal + materialize): a
+ * 2xx body that fails `JSON.parse` produces an engine error message that
+ * quotes the offending body, and that quote would land in the debug log.
+ */
 export async function apiPost<T>(
   path: string,
   body: unknown,
   signal?: AbortSignal,
+  opts?: { silent?: boolean },
 ): Promise<ApiResult<T>> {
-  return rawRequest<T>({ method: 'POST', path, body, ...(signal !== undefined ? { signal } : {}) });
+  return rawRequest<T>({
+    method: 'POST',
+    path,
+    body,
+    ...(signal !== undefined ? { signal } : {}),
+    ...(opts?.silent !== undefined ? { silent: opts.silent } : {}),
+  });
 }
 
 export async function apiPatch<T>(
   path: string,
   body: unknown,
   signal?: AbortSignal,
+  opts?: { silent?: boolean },
 ): Promise<ApiResult<T>> {
   return rawRequest<T>({
     method: 'PATCH',
     path,
     body,
     ...(signal !== undefined ? { signal } : {}),
+    ...(opts?.silent !== undefined ? { silent: opts.silent } : {}),
   });
 }
 

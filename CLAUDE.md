@@ -420,6 +420,28 @@ discovery handler).
   tab remains the current-page capture surface. The icon rail scrolls
   horizontally at narrow side-panel widths so the expanded tab set stays
   reachable instead of shrinking or clipping.
+- **Vault** — the password-manager surface over the unified credential
+  Vault (`{BACKEND}/api/vault/*`). Signed-in only: the extension's guest
+  fingerprint identity is rejected for credentials **by design**, so
+  [src/lib/api/routes/vault.ts](./src/lib/api/routes/vault.ts) short-circuits
+  every call on `hasRealUserToken()` before a request goes out. Top strip =
+  the everyday path: the logins the SERVER approves for the CURRENT tab
+  (`POST /browser-login/matches`) with **Use here**, which runs the SAME
+  `credential_login` handler the agent runs — one code path, so the human
+  button can never fill where the agent could not. Below it: search,
+  **Mine / Shared with me**, per-item browser-fill toggle, "add this page as
+  a login URL", and create-from-this-page (`definition_key: website_login`).
+  **Rules:** masked by default (`value_hint` is a server mask, never a
+  value); a revealed value comes only from `POST /items/{id}/reveal` and
+  lives ONLY in [transient-secret.ts](./src/lib/credentials/transient-secret.ts)
+  (auto-clears ~30s, dropped on unmount, never storage / a store / a log /
+  model context); both plaintext routes pass `silent: true` so a malformed
+  2xx body can't be quoted into the debug log; destination rules
+  (https-or-loopback, match modes) live once in
+  [login-urls.ts](./src/lib/credentials/login-urls.ts) and are imported by
+  both the panel and the tool. Sharing / transfer / ownership / field
+  editing are deliberately NOT rebuilt here — they link out to `/vault` on
+  the web. Guarded by `tests/unit/vault-panel.test.ts`.
 - **Tools** — full visible catalog of every tool, search + filter, JSON
   argument editor, **Run** button per tool that flows through the same
   dispatcher path the agent uses. Use this to test capabilities directly.
