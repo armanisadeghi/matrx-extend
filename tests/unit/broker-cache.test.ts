@@ -3,7 +3,7 @@
  * and the mode-dispatch transport (src/lib/broker/transport.ts).
  *
  * Covers the client-side invariants from the cross-repo contract
- * (common-docs/token-broker/FEATURE.md):
+ * (common-docs/systems/token-broker/FEATURE.md):
  *   - cache keyed on (audience, tier_policy, model)
  *   - refresh-ahead: re-mint when < ~20% of TTL remains
  *   - single-flight: concurrent callers share one mint
