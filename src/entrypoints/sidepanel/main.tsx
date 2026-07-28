@@ -1,3 +1,4 @@
+import { RootErrorBoundary } from '@/components/RootErrorBoundary';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
@@ -22,8 +23,13 @@ const queryClient = new QueryClient({
 const root = createRoot(document.getElementById('app')!);
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
+    {/* Outermost, so it catches provider-level failures too. A blank panel is
+        the least debuggable outcome available — this turns any render throw
+        into a readable message plus a stack. */}
+    <RootErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
+    </RootErrorBoundary>
   </React.StrictMode>,
 );
