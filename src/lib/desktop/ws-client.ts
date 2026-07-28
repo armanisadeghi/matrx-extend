@@ -120,8 +120,24 @@ export async function connectWs(): Promise<WsControlResult> {
     return { ok: false, error, stage: 'ensure-offscreen' };
   }
   try {
-    const r = await send<{ wsUrl: string }, { ok: boolean; error?: string }>(CHANNELS.WS_START, {
+    // Build identity is resolved HERE, in the SW, because an offscreen
+    // document has messaging but not the rest of `chrome.runtime` —
+    // `getManifest()` is undefined there. Same reason `wsUrl` is passed in
+    // rather than re-resolved offscreen.
+    const manifest = chrome.runtime.getManifest();
+    const r = await send<
+      {
+        wsUrl: string;
+        identity: { extensionId: string; version: string; name: string };
+      },
+      { ok: boolean; error?: string }
+    >(CHANNELS.WS_START, {
       wsUrl,
+      identity: {
+        extensionId: chrome.runtime.id,
+        version: manifest.version,
+        name: manifest.name,
+      },
     });
     if (r && r.ok === false) {
       const error = r.error ?? 'unknown error';

@@ -47,6 +47,15 @@ interface RuntimeState {
    * the offscreen has no chrome.storage access of its own to re-resolve.
    */
   wsUrl: string | null;
+  /**
+   * Build identity handed in via WS_START, for the `extension.identify` frame.
+   *
+   * An offscreen document does NOT get the full `chrome.runtime` surface —
+   * messaging works, `getManifest()` does not — so reading the manifest here
+   * threw and killed the hello handler before it could reply. The SW has the
+   * full API, so it supplies this the same way it supplies `wsUrl`.
+   */
+  identity: { extensionId: string; version: string; name: string } | null;
   /** When did we last see ANY traffic (in or out)? */
   lastActivityAt: number;
   /** Heartbeat interval id. */
@@ -71,6 +80,7 @@ interface RuntimeState {
 const state: RuntimeState = {
   ws: null,
   wsUrl: null,
+  identity: null,
   lastActivityAt: 0,
   heartbeatTimer: null,
   idleTimer: null,
@@ -90,19 +100,23 @@ export function startWsOffscreenRuntime(): void {
   if (state.initialized) return;
   state.initialized = true;
 
-  on<{ wsUrl?: string }, { ok: boolean; error?: string }>(CHANNELS.WS_START, async (payload) => {
-    state.stopped = false;
-    if (payload?.wsUrl) state.wsUrl = payload.wsUrl;
-    if (state.ws && state.ws.readyState === WebSocket.OPEN) {
-      return { ok: true };
-    }
-    try {
-      await openWebSocket();
-      return { ok: true };
-    } catch (err) {
-      return { ok: false, error: (err as Error).message };
-    }
-  });
+  on<{ wsUrl?: string; identity?: RuntimeState['identity'] }, { ok: boolean; error?: string }>(
+    CHANNELS.WS_START,
+    async (payload) => {
+      state.stopped = false;
+      if (payload?.wsUrl) state.wsUrl = payload.wsUrl;
+      if (payload?.identity) state.identity = payload.identity;
+      if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+        return { ok: true };
+      }
+      try {
+        await openWebSocket();
+        return { ok: true };
+      } catch (err) {
+        return { ok: false, error: (err as Error).message };
+      }
+    },
+  );
 
   on<unknown, { ok: boolean }>(CHANNELS.WS_STOP, () => {
     state.stopped = true;
@@ -327,19 +341,32 @@ function handleInboundFrame(raw: unknown): void {
     // Chrome does not expose a profile identifier to extensions. Runtime ID
     // and manifest version still let Matrx Local distinguish live builds and
     // avoid presenting a server-generated session UUID as an identity.
-    const manifest = chrome.runtime.getManifest();
-    try {
-      state.ws?.send(
-        JSON.stringify({
-          type: 'extension.identify',
-          extension_id: chrome.runtime.id,
-          extension_version: manifest.version,
-          extension_name: manifest.name,
-        }),
+    //
+    // The identity comes from the SW via WS_START — NOT from
+    // chrome.runtime.getManifest(), which does not exist in an offscreen
+    // document and threw here, aborting the handler before it could reply.
+    const identity = state.identity;
+    if (!identity) {
+      // Loud: Matrx Local silently attributing frames to an unknown build is
+      // exactly what this handshake exists to prevent.
+      log.warn(
+        'desktop-ws-offscreen',
+        'hello received before WS_START supplied build identity — skipping extension.identify',
       );
-      bumpActivity();
-    } catch (err) {
-      log.warn('desktop-ws-offscreen', 'failed to send extension identity', err);
+    } else {
+      try {
+        state.ws?.send(
+          JSON.stringify({
+            type: 'extension.identify',
+            extension_id: identity.extensionId,
+            extension_version: identity.version,
+            extension_name: identity.name,
+          }),
+        );
+        bumpActivity();
+      } catch (err) {
+        log.warn('desktop-ws-offscreen', 'failed to send extension identity', err);
+      }
     }
   }
 
