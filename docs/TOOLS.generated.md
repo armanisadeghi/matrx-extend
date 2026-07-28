@@ -7,8 +7,8 @@
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-07-24T07:25:28.868Z
-Total tools: 79
+Generated: 2026-07-28T00:36:34.286Z
+Total tools: 80
 
 ## ai
 
@@ -113,6 +113,16 @@ _read_
 Index of every browser-tool category the extension exposes. Returns one entry per category: name, label, description, count of tools, name of the category-specific list tool. To get the full schemas for a category, call its `list_tool` (e.g. `list_page_tools`). Use this whenever the model needs more capabilities than its current toolset offers.
 
 **Parameters:** _No parameters._
+
+## credentials
+
+### `credential_login`
+
+_action_
+
+Sign in to the website in the current browser tab using a saved Matrx login. You never see or handle the username or password: the extension asks the server for them, fills the form, submits it, and reports only the outcome. Pass credential_item_id only when a previous call returned selection_required; otherwise omit it and the correct login is matched from the tab's own address. You cannot supply a URL, username, password, or selector. Returns one of: authenticated, needs_mfa, captcha_or_takeover, credentials_rejected, selection_required, no_matching_login, unsafe_destination, unknown. If MFA or a CAPTCHA appears, stop and hand control to the user — never try to work around it.
+
+**Parameters:** `credential_item_id` (string)
 
 ## demos
 
