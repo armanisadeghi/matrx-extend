@@ -14,11 +14,7 @@
  */
 
 import type { CopyOption } from '@/components/CopyMenu';
-import {
-  stringifyJson,
-  wrapForAgent,
-  wrapJsonForAgent,
-} from '@/lib/clipboard/copy';
+import { stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import type { SoupResult } from '@/lib/scrape/pipeline';
 import {
   articleToMarkdown,
@@ -238,8 +234,7 @@ export function schemaCopyOptions(soup: SoupResult): CopyOption[] {
     },
     {
       label: 'JSON',
-      getContent: () =>
-        stringifyJson({ metadata: soup.metadata, ld_json: soup.ld_json }),
+      getContent: () => stringifyJson({ metadata: soup.metadata, ld_json: soup.ld_json }),
     },
     {
       label: 'For AI agent',

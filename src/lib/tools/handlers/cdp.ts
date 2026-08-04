@@ -17,8 +17,11 @@
  *   - Device + geolocation emulation.
  *
  * UX:
- *   - Chrome shows a "is being debugged" banner while attached. We auto-detach
- *     when the run ends. The Settings tab has a "Stop debugging all tabs"
+ *   - Chrome shows a "is being debugged" banner while attached. Attachments
+ *     auto-detach after 10 idle minutes (no CDP command) — NOT at stream end,
+ *     since the server hard-suspends the stream around every delegated call
+ *     and multi-step CDP workflows span many short streams. SW boot sweeps
+ *     orphaned attachments. The Settings tab has a "Stop debugging all tabs"
  *     button as a kill switch.
  *
  * NOTE: To run, the `debugger` permission must be present. The dispatcher
@@ -27,7 +30,7 @@
 
 import * as cdp from '@/lib/cdp/client';
 import { log } from '@/lib/debug/log';
-import { resolveProfile, type ScreenshotProfile } from '@/lib/screenshot/profiles';
+import { type ScreenshotProfile, resolveProfile } from '@/lib/screenshot/profiles';
 import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
@@ -35,9 +38,7 @@ import { z } from 'zod';
 const NoArgs = z.object({}).default({});
 type NoArgs = z.infer<typeof NoArgs>;
 
-const CdpAttachArgs = z
-  .object({ tab_id: z.number().int().optional() })
-  .default({});
+const CdpAttachArgs = z.object({ tab_id: z.number().int().optional() }).default({});
 type CdpAttachArgs = z.infer<typeof CdpAttachArgs>;
 
 export const cdp_attach: ToolHandler<CdpAttachArgs, unknown> = {
@@ -54,9 +55,7 @@ export const cdp_attach: ToolHandler<CdpAttachArgs, unknown> = {
   },
 };
 
-const CdpDetachArgs = z
-  .object({ tab_id: z.number().int().optional() })
-  .default({});
+const CdpDetachArgs = z.object({ tab_id: z.number().int().optional() }).default({});
 type CdpDetachArgs = z.infer<typeof CdpDetachArgs>;
 
 export const cdp_detach: ToolHandler<CdpDetachArgs, unknown> = {
@@ -186,7 +185,9 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
       // Captured image dimensions (best-effort, in image-pixels). Full-page
       // applies captureScale via the clip; viewport capture does not.
       const scale = args.full_page ? captureScale : 1;
-      const baseW = args.full_page ? layout.contentSize.width : layout.cssLayoutViewport.clientWidth;
+      const baseW = args.full_page
+        ? layout.contentSize.width
+        : layout.cssLayoutViewport.clientWidth;
       const baseH = args.full_page
         ? layout.contentSize.height
         : layout.cssLayoutViewport.clientHeight;
@@ -218,6 +219,32 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
         screenshotId = persisted.screenshotId;
       } catch (err) {
         log.warn('sw', 'cdp_full_page_screenshot persistence failed; returning inline only', err);
+      }
+
+      if (fileId) {
+        const { cloudScreenshotRef } = await import('@/lib/screenshot/persist');
+        return {
+          ok: true,
+          ...cloudScreenshotRef({
+            persisted: { fileId, fileUrl, screenshotId },
+            mediaType,
+            width,
+            height,
+            sizeBytes: Math.floor((result.data.length * 3) / 4),
+            capture: {
+              full_page: args.full_page,
+              format,
+              capture_scale: captureScale,
+              profile: profileName,
+            },
+          }),
+          format,
+          width,
+          height,
+          capture_scale: captureScale,
+          profile: profileName,
+          est_tokens: profile.est_tokens,
+        };
       }
 
       return {
@@ -353,9 +380,7 @@ export const cdp_input_type: ToolHandler<InputTypeArgs, unknown> = {
   },
 };
 
-const NetCaptureStartArgs = z
-  .object({ tab_id: z.number().int().optional() })
-  .default({});
+const NetCaptureStartArgs = z.object({ tab_id: z.number().int().optional() }).default({});
 type NetCaptureStartArgs = z.infer<typeof NetCaptureStartArgs>;
 
 export const cdp_network_capture_start: ToolHandler<NetCaptureStartArgs, unknown> = {
@@ -405,9 +430,7 @@ export const cdp_network_capture_drain: ToolHandler<NetCaptureDrainArgs, unknown
   },
 };
 
-const NetCaptureStopArgs = z
-  .object({ tab_id: z.number().int().optional() })
-  .default({});
+const NetCaptureStopArgs = z.object({ tab_id: z.number().int().optional() }).default({});
 type NetCaptureStopArgs = z.infer<typeof NetCaptureStopArgs>;
 
 export const cdp_network_capture_stop: ToolHandler<NetCaptureStopArgs, unknown> = {
@@ -482,9 +505,7 @@ export const cdp_print_pdf: ToolHandler<PrintPdfArgs, unknown> = {
   },
 };
 
-const PerfMetricsArgs = z
-  .object({ tab_id: z.number().int().optional() })
-  .default({});
+const PerfMetricsArgs = z.object({ tab_id: z.number().int().optional() }).default({});
 type PerfMetricsArgs = z.infer<typeof PerfMetricsArgs>;
 
 export const cdp_perf_metrics: ToolHandler<PerfMetricsArgs, unknown> = {
@@ -554,9 +575,7 @@ export const cdp_emulate_device: ToolHandler<EmulateDeviceArgs, unknown> = {
   },
 };
 
-const ClearEmulationArgs = z
-  .object({ tab_id: z.number().int().optional() })
-  .default({});
+const ClearEmulationArgs = z.object({ tab_id: z.number().int().optional() }).default({});
 type ClearEmulationArgs = z.infer<typeof ClearEmulationArgs>;
 
 export const cdp_clear_emulation: ToolHandler<ClearEmulationArgs, unknown> = {
@@ -611,8 +630,7 @@ export const read_console_messages: ToolHandler<ReadConsoleArgs, unknown> = {
   argsSchema: ReadConsoleArgs,
   run: async (args, ctx) => {
     const tabId =
-      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ??
-      (await getAssignedTabId(ctx));
+      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ?? (await getAssignedTabId(ctx));
     if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
     if (args.auto_start) {
       try {
@@ -631,8 +649,8 @@ export const read_console_messages: ToolHandler<ReadConsoleArgs, unknown> = {
     const max = args.limit ?? args.max ?? 100;
     const messages = cdp.drainConsoleCapture(tabId, {
       max,
-      level_filter: filter,
-      pattern,
+      ...(filter !== undefined && { level_filter: filter }),
+      ...(pattern !== undefined && { pattern }),
       clear: args.clear,
     });
     return { ok: true, count: messages.length, messages };
@@ -668,8 +686,7 @@ export const read_network_requests: ToolHandler<ReadNetworkArgs, unknown> = {
   argsSchema: ReadNetworkArgs,
   run: async (args, ctx) => {
     const tabId =
-      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ??
-      (await getAssignedTabId(ctx));
+      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ?? (await getAssignedTabId(ctx));
     if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
     if (args.auto_start) {
       try {

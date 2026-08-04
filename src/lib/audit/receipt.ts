@@ -24,11 +24,7 @@
  * with any standard JWS library + the exported public-key JWK.
  */
 
-import {
-  canonicalJson,
-  getOrCreateDeviceKey,
-  getPublicKeyById,
-} from '@/lib/audit/device-key';
+import { canonicalJson, getOrCreateDeviceKey, getPublicKeyById } from '@/lib/audit/device-key';
 
 /**
  * Current schema version emitted by this build. The verifier accepts
@@ -264,7 +260,10 @@ export async function verifyReceipt(receipt: ToolReceipt): Promise<VerifyResult>
     return { valid: false, reason: `verify call threw: ${(err as Error).message}` };
   }
   if (!ok) {
-    return { valid: false, reason: 'signature does not match body — receipt may have been tampered with' };
+    return {
+      valid: false,
+      reason: 'signature does not match body — receipt may have been tampered with',
+    };
   }
   return { valid: true };
 }

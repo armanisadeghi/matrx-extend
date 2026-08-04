@@ -47,6 +47,15 @@ interface RuntimeState {
    * the offscreen has no chrome.storage access of its own to re-resolve.
    */
   wsUrl: string | null;
+  /**
+   * Build identity handed in via WS_START, for the `extension.identify` frame.
+   *
+   * An offscreen document does NOT get the full `chrome.runtime` surface —
+   * messaging works, `getManifest()` does not — so reading the manifest here
+   * threw and killed the hello handler before it could reply. The SW has the
+   * full API, so it supplies this the same way it supplies `wsUrl`.
+   */
+  identity: { extensionId: string; version: string; name: string } | null;
   /** When did we last see ANY traffic (in or out)? */
   lastActivityAt: number;
   /** Heartbeat interval id. */
@@ -71,6 +80,7 @@ interface RuntimeState {
 const state: RuntimeState = {
   ws: null,
   wsUrl: null,
+  identity: null,
   lastActivityAt: 0,
   heartbeatTimer: null,
   idleTimer: null,
@@ -90,11 +100,12 @@ export function startWsOffscreenRuntime(): void {
   if (state.initialized) return;
   state.initialized = true;
 
-  on<{ wsUrl?: string }, { ok: boolean; error?: string }>(
+  on<{ wsUrl?: string; identity?: RuntimeState['identity'] }, { ok: boolean; error?: string }>(
     CHANNELS.WS_START,
     async (payload) => {
       state.stopped = false;
       if (payload?.wsUrl) state.wsUrl = payload.wsUrl;
+      if (payload?.identity) state.identity = payload.identity;
       if (state.ws && state.ws.readyState === WebSocket.OPEN) {
         return { ok: true };
       }
@@ -151,9 +162,7 @@ async function openWebSocket(): Promise<void> {
     try {
       const wsUrl = state.wsUrl;
       if (!wsUrl) {
-        throw new Error(
-          'no wsUrl cached — caller must send WS_START with a resolved URL first',
-        );
+        throw new Error('no wsUrl cached — caller must send WS_START with a resolved URL first');
       }
       const safeUrl = redactToken(wsUrl);
       log.info('desktop-ws-offscreen', `connecting → ${safeUrl}`);
@@ -277,12 +286,10 @@ function handleClose(code: number, reason: string): void {
 
   // Schedule reconnect with exponential backoff.
   const delayIdx = Math.min(state.reconnectAttempt, RECONNECT_DELAYS_MS.length - 1);
-  const delay = RECONNECT_DELAYS_MS[delayIdx] ?? RECONNECT_DELAYS_MS[RECONNECT_DELAYS_MS.length - 1] ?? 30_000;
+  const delay =
+    RECONNECT_DELAYS_MS[delayIdx] ?? RECONNECT_DELAYS_MS[RECONNECT_DELAYS_MS.length - 1] ?? 30_000;
   state.reconnectAttempt += 1;
-  log.info(
-    'desktop-ws-offscreen',
-    `reconnect attempt #${state.reconnectAttempt} in ${delay}ms`,
-  );
+  log.info('desktop-ws-offscreen', `reconnect attempt #${state.reconnectAttempt} in ${delay}ms`);
   cancelReconnect();
   state.reconnectTimer = setTimeout(() => {
     state.reconnectTimer = null;
@@ -319,20 +326,48 @@ function handleInboundFrame(raw: unknown): void {
 
   // Intercept pong to track engine_version + tool_catalog_hash. We still
   // forward to the SW so it can observe heartbeat liveness.
-  if (
-    payload &&
-    typeof payload === 'object' &&
-    (payload as { type?: unknown }).type === 'pong'
-  ) {
+  if (payload && typeof payload === 'object' && (payload as { type?: unknown }).type === 'pong') {
     const pong = payload as { tool_catalog_hash?: unknown };
-    const hash =
-      typeof pong.tool_catalog_hash === 'string' ? pong.tool_catalog_hash : null;
+    const hash = typeof pong.tool_catalog_hash === 'string' ? pong.tool_catalog_hash : null;
     if (hash !== null && state.lastCatalogHash !== null && hash !== state.lastCatalogHash) {
       log.info('desktop-ws-offscreen', 'tool_catalog_hash changed → SW refetch');
       broadcast(CHANNELS.WS_MESSAGE, { type: 'ws.catalog-stale' });
     }
     if (hash !== null) state.lastCatalogHash = hash;
     // fall through — also forward the raw pong
+  }
+
+  if (payload && typeof payload === 'object' && (payload as { type?: unknown }).type === 'hello') {
+    // Chrome does not expose a profile identifier to extensions. Runtime ID
+    // and manifest version still let Matrx Local distinguish live builds and
+    // avoid presenting a server-generated session UUID as an identity.
+    //
+    // The identity comes from the SW via WS_START — NOT from
+    // chrome.runtime.getManifest(), which does not exist in an offscreen
+    // document and threw here, aborting the handler before it could reply.
+    const identity = state.identity;
+    if (!identity) {
+      // Loud: Matrx Local silently attributing frames to an unknown build is
+      // exactly what this handshake exists to prevent.
+      log.warn(
+        'desktop-ws-offscreen',
+        'hello received before WS_START supplied build identity — skipping extension.identify',
+      );
+    } else {
+      try {
+        state.ws?.send(
+          JSON.stringify({
+            type: 'extension.identify',
+            extension_id: identity.extensionId,
+            extension_version: identity.version,
+            extension_name: identity.name,
+          }),
+        );
+        bumpActivity();
+      } catch (err) {
+        log.warn('desktop-ws-offscreen', 'failed to send extension identity', err);
+      }
+    }
   }
 
   broadcast(CHANNELS.WS_MESSAGE, payload);
@@ -366,10 +401,7 @@ function startIdleWatchdog(): void {
   state.idleTimer = setInterval(() => {
     const idleFor = Date.now() - state.lastActivityAt;
     if (idleFor >= IDLE_DISCONNECT_MS) {
-      log.info(
-        'desktop-ws-offscreen',
-        `idle for ${Math.round(idleFor / 1000)}s — disconnecting`,
-      );
+      log.info('desktop-ws-offscreen', `idle for ${Math.round(idleFor / 1000)}s — disconnecting`);
       // Mark as stopped so we don't auto-reconnect; the SW will reopen
       // on next outbound send.
       state.stopped = true;

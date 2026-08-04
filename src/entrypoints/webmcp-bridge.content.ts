@@ -49,9 +49,7 @@ const isPageCallMessage = (v: unknown): v is PageCallMessage => {
   if (typeof v !== 'object' || v === null) return false;
   const o = v as Record<string, unknown>;
   return (
-    o.__matrx_webmcp_call === true &&
-    typeof o.callId === 'string' &&
-    typeof o.toolName === 'string'
+    o.__matrx_webmcp_call === true && typeof o.callId === 'string' && typeof o.toolName === 'string'
   );
 };
 
@@ -99,7 +97,7 @@ export default defineContentScript({
               callId,
               ok: result.ok,
               result: result.result,
-              error: result.error,
+              ...(result.error !== undefined && { error: result.error }),
             },
             window.location.origin,
           );
@@ -131,7 +129,7 @@ function normalizeResponse(raw: unknown): SwResponse {
     return {
       ok: o.ok,
       result: o.result,
-      error: typeof o.error === 'string' ? o.error : undefined,
+      ...(typeof o.error === 'string' && { error: o.error }),
     };
   }
   return { ok: false, error: 'malformed response from extension' };

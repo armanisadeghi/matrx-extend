@@ -2,52 +2,42 @@ import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { GuestBanner } from '@/components/GuestBanner';
 import { Markdown } from '@/components/markdown';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  USER_MODEL_LABEL_BY_ID,
-  USER_MODEL_PRESETS,
-} from '@/lib/agents/model-presets';
-import {
-  ALL_SCOPES,
-  type AgentScope,
-  SCOPE_LABEL,
-  countByScope,
-  filterAgentsByScope,
-  scopeOf,
-} from '@/lib/agents/scope';
 import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
 import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
-import { formatAssistantBody } from '@/features/chat/copy-conversation';
-import { LanguagePicker } from '@/features/chat/LanguagePicker';
 import { HighlightAttachmentChip } from '@/features/chat/HighlightAttachmentChip';
+import { LanguagePicker } from '@/features/chat/LanguagePicker';
 import { QueuedMessageStack } from '@/features/chat/QueuedMessageCard';
 import { SandboxPickerChip } from '@/features/chat/SandboxPickerChip';
 import { ServerToolRow } from '@/features/chat/ServerToolRow';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
+import { formatAssistantBody } from '@/features/chat/copy-conversation';
 import { TaskPanel, TaskPanelChip } from '@/features/lists/TaskPanel';
-import { enqueueInboxMessage } from '@/lib/api/routes/ai';
 import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
-import { newId } from '@/lib/id';
-import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
-import { useVoicePrefsStore } from '@/state/voice-prefs';
-import { log } from '@/lib/debug/log';
-import { CHANNELS } from '@/lib/messaging/schemas';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
+import { USER_MODEL_LABEL_BY_ID, USER_MODEL_PRESETS } from '@/lib/agents/model-presets';
+import {
+  ALL_SCOPES,
+  SCOPE_LABEL,
+  countByScope,
+  filterAgentsByScope,
+  scopeOf,
+} from '@/lib/agents/scope';
+import { enqueueInboxMessage } from '@/lib/api/routes/ai';
+import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
+import { triggerColdResume } from '@/lib/chat/cold-resume';
 import { wrapForAgent } from '@/lib/clipboard/copy';
+import { log } from '@/lib/debug/log';
+import { newId } from '@/lib/id';
+import { CHANNELS } from '@/lib/messaging/schemas';
+import type { ProviderRetryState } from '@/lib/stream/provider-retry';
 import {
   type AgxAgent,
   type Conversation,
@@ -60,8 +50,10 @@ import {
 import { cn } from '@/lib/utils';
 import { type ChatMessage, type MessagePart, useChatStore } from '@/state/chat';
 import { useSettingsStore } from '@/state/settings';
+import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { useToolInbox } from '@/state/tool-inbox';
 import { useTurnInboxStore } from '@/state/turn-inbox';
+import { useVoicePrefsStore } from '@/state/voice-prefs';
 import {
   AlertTriangle,
   ArrowUp,
@@ -78,7 +70,6 @@ import {
   Plus,
   RefreshCw,
   ScanLine,
-  Settings2,
   Sliders,
   Sparkles,
   Square,
@@ -139,6 +130,7 @@ export function ChatView() {
   } = useChatStore();
   const { send, cancel, retry, interruptAndSend } = useChatStream();
   const streamInterruption = useChatStore((s) => s.streamInterruption);
+  const providerRetry = useChatStore((s) => s.providerRetry);
   const { variableDefs } = useAgentExecution(selectedAgentId);
   const getAgentVariables = useChatStore((s) => s.getAgentVariables);
   const defaultPermissionMode = useSettingsStore((s) => s.defaultPermissionMode);
@@ -181,20 +173,31 @@ export function ChatView() {
 
   const [agentsRefreshing, setAgentsRefreshing] = useState(false);
   const [taskPanelOpen, setTaskPanelOpen] = useState(false);
+  const sidepanelTab = useSidepanelTabStore((s) => s.tab);
 
   useEffect(() => {
     // Guests get the builtin-agents list (anon role can read agx_agent rows
     // where agent_type='builtin' AND is_active=true via the
     // agx_agent_builtin_read RLS policy). Conversation history is skipped
-    // for guests — they have no JWT, so anon can't see any cx_conversation
+    // for guests — they have no JWT, so anon can't see any chat.conversation
     // rows for their server-side guest user id. Each guest session starts
     // fresh; persistence kicks in when they sign up.
     let cancelled = false;
     void (async () => {
-      const [a, c] = await Promise.all([
-        fetchUserAgents(user?.id),
-        user ? fetchConversationHistory(50) : Promise.resolve([] as Conversation[]),
-      ]);
+      // The queries are per-row-fault-tolerant now, but a thrown rejection
+      // here (network shape change, future regression) used to leave
+      // agentsLoading stuck true FOREVER — the whole chat surface bricked
+      // with no error (audit P2-18). Fail into the empty state instead.
+      let a: Awaited<ReturnType<typeof fetchUserAgents>> = [];
+      let c: Conversation[] = [];
+      try {
+        [a, c] = await Promise.all([
+          fetchUserAgents(user?.id),
+          user ? fetchConversationHistory(50) : Promise.resolve([] as Conversation[]),
+        ]);
+      } catch (err) {
+        log.error('sys', 'chat mount fetch failed', err);
+      }
       if (cancelled) return;
       setAgents(a);
       setConversations(c);
@@ -209,11 +212,7 @@ export function ChatView() {
       // user can pick something that exists.
       const chat = useChatStore.getState();
       const savedDefaultId = useSettingsStore.getState().defaultAgentId;
-      if (
-        !chat.selectedAgentId &&
-        savedDefaultId &&
-        a.some((x) => x.id === savedDefaultId)
-      ) {
+      if (!chat.selectedAgentId && savedDefaultId && a.some((x) => x.id === savedDefaultId)) {
         chat.setAgent(savedDefaultId);
       }
     })();
@@ -267,9 +266,9 @@ export function ChatView() {
   // dropped but the rest rendered (banner appears above the messages).
   // Full details (Zod issues, raw row, error stack) go to the admin event
   // stream via log.error so the Debug tab has them.
-  const [loadError, setLoadError] = useState<
-    { kind: 'fatal' | 'partial'; text: string } | null
-  >(null);
+  const [loadError, setLoadError] = useState<{ kind: 'fatal' | 'partial'; text: string } | null>(
+    null,
+  );
 
   useEffect(() => {
     // Clear any previous conversation's load error when switching threads.
@@ -295,7 +294,7 @@ export function ChatView() {
       return;
     }
     void (async () => {
-      // Tool outputs live in a separate table (cx_tool_call) joined by call_id —
+      // Tool outputs live in a separate table (chat.tool_call) joined by call_id —
       // fetch both in parallel so tool rows render with their actual results
       // instead of being stuck in 'started'. NEVER let a single malformed
       // row blank the entire conversation (silent fail we hit on 0.1.23):
@@ -309,6 +308,13 @@ export function ChatView() {
         const transformed = dbMessagesToChatMessages(msgResult.rows, toolResult.rows);
         setMessages(transformed.messages);
         loadedConversationIdRef.current = selectedConversationId;
+        // Cold-resume: if the server left this conversation paused waiting on a
+        // client-delegated tool the user never answered (closed the tab
+        // mid-prompt), re-surface the prompt(s) so they can answer now and
+        // resume the agent. Fire-and-forget; routed through the same SW
+        // handleCall path as a live tool_delegated event (the SW dedupes
+        // repeats per call). See src/lib/chat/cold-resume.ts.
+        void triggerColdResume(selectedConversationId);
         const droppedRows = msgResult.badCount + toolResult.badCount + transformed.badCount;
         if (droppedRows > 0) {
           log.warn('supabase', 'conversation loaded with dropped rows', {
@@ -423,9 +429,9 @@ export function ChatView() {
       agentId,
       opts: {
         agentId,
-        agentName,
-        conversationId: selectedConversationId ?? undefined,
-        variables: Object.keys(variables).length > 0 ? variables : undefined,
+        ...(agentName !== undefined && { agentName }),
+        ...(selectedConversationId != null && { conversationId: selectedConversationId }),
+        ...(Object.keys(variables).length > 0 && { variables }),
       },
     };
   };
@@ -464,9 +470,28 @@ export function ChatView() {
     void interruptAndSend(trimmed, args.opts);
   };
 
+  // Leaving a conversation mid-stream must CANCEL the run (audit P1-11).
+  // Without it: isStreaming leaked into the destination (composer stuck in
+  // queue-to-inbox mode posting steering messages to a conversation with no
+  // live run), the old run kept driving the user's tabs invisibly, and on
+  // "New chat" a late STREAM_OPENED re-adopted the OLD conversation id into
+  // the supposedly-fresh chat.
   const handleNewChat = () => {
+    if (isStreaming) void cancel();
+    // Queued turn-boundary cards for the conversation we're leaving would
+    // otherwise tick "waiting its turn" forever (audit P2-5) — the run that
+    // would have drained them is gone from this surface. The server still
+    // holds the inbox item; it delivers on that conversation's next run.
+    useTurnInboxStore.getState().clearForConversation(selectedConversationId);
     setConversation(null);
     setMessages([]);
+  };
+
+  const handlePickConversation = (id: string) => {
+    if (id === selectedConversationId) return;
+    if (isStreaming) void cancel();
+    useTurnInboxStore.getState().clearForConversation(selectedConversationId);
+    setConversation(id);
   };
 
   return (
@@ -476,6 +501,7 @@ export function ChatView() {
         conversationId={selectedConversationId}
         open={taskPanelOpen}
         onClose={() => setTaskPanelOpen(false)}
+        enabled={sidepanelTab === 'chat'}
       />
       <ChatHeader
         agents={agents}
@@ -493,11 +519,15 @@ export function ChatView() {
           const next = v || null;
           if (next === selectedAgentId) return;
           if (isStreaming) cancel();
+          // Same teardown as New chat — without this, re-opening the old
+          // conversation resurrected an orphaned "waiting its turn" card
+          // ticking forever.
+          useTurnInboxStore.getState().clearForConversation(selectedConversationId);
           setAgent(next);
           setConversation(null);
         }}
         onNewChat={handleNewChat}
-        onPickConversation={(id) => setConversation(id)}
+        onPickConversation={handlePickConversation}
         onToggleTaskPanel={() => setTaskPanelOpen((v) => !v)}
         hasMessages={messages.length > 0}
         getMessages={() => useChatStore.getState().messages}
@@ -560,6 +590,11 @@ export function ChatView() {
         )}
       </div>
 
+      {/* The upstream provider failed and the server is backing off. The stream is
+          deliberately silent, so without this the user just sees a frozen spinner
+          for the whole retry window and assumes we hung. */}
+      {providerRetry && <ProviderRetryBanner retry={providerRetry} />}
+
       {streamInterruption && !isStreaming && (
         <StreamInterruptionBanner
           reason={streamInterruption.reason}
@@ -582,6 +617,7 @@ export function ChatView() {
         isStreaming={isStreaming}
         canSend={Boolean(selectedAgentId || agents[0]?.id)}
         canQueue={Boolean(selectedConversationId)}
+        voiceAvailable={Boolean(user)}
         placeholder={
           selectedAgent
             ? `Message ${selectedAgent.name}…`
@@ -600,6 +636,46 @@ export function ChatView() {
  * user a one-click recovery. The retry replays the last turn until backend
  * stream-resume ships (see lib/stream/resume.ts).
  */
+/**
+ * Upstream LLM provider failed; the server is retrying. The stream goes silent
+ * for the backoff, so this is the ONLY thing telling the user the system is still
+ * working — without it a 30s provider retry is indistinguishable from a hang.
+ *
+ * Copy comes from the server (`user_message`); we never invent our own wording for
+ * a provider error. The countdown is derived locally from `retryAtMs` purely so the
+ * pause feels accounted-for.
+ */
+function ProviderRetryBanner({ retry }: { retry: ProviderRetryState }) {
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (retry.retryAtMs === null) {
+      setSecondsLeft(null);
+      return;
+    }
+    const tick = () => {
+      const ms = (retry.retryAtMs ?? 0) - Date.now();
+      setSecondsLeft(Math.max(0, Math.ceil(ms / 1000)));
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [retry.retryAtMs]);
+
+  return (
+    <div className="mx-3 mb-2 flex items-start gap-2 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs">
+      <Loader2 className="mt-0.5 size-3.5 shrink-0 animate-spin text-amber-600 dark:text-amber-400" />
+      <div className="min-w-0 flex-1">
+        <p className="text-amber-800 dark:text-amber-200">{retry.userMessage}</p>
+        <p className="mt-0.5 text-amber-700/70 dark:text-amber-300/70">
+          {retry.provider} · attempt {retry.failedAttempt} of {retry.maxRetries}
+          {secondsLeft !== null && secondsLeft > 0 ? ` · retrying in ${secondsLeft}s` : ''}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function StreamInterruptionBanner({
   reason,
   silentMs,
@@ -607,7 +683,7 @@ function StreamInterruptionBanner({
   onDismiss,
 }: {
   reason: 'stalled' | 'error';
-  silentMs?: number;
+  silentMs?: number | undefined;
   onRetry: () => void;
   onDismiss: () => void;
 }) {
@@ -785,9 +861,7 @@ function AgentPicker({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
                       <span className="truncate text-sm">{a.name}</span>
-                      {a.is_favorite && (
-                        <Sparkles className="size-3 shrink-0 text-amber-500" />
-                      )}
+                      {a.is_favorite && <Sparkles className="size-3 shrink-0 text-amber-500" />}
                     </div>
                     {a.description && (
                       <div className="line-clamp-1 text-[10px] text-muted-foreground">
@@ -847,6 +921,9 @@ function ChatHeader({
   getMessages: () => ChatMessage[];
   getAgent: () => { id: string; name: string } | null;
 }) {
+  // The lists store is a context singleton shared with Pilot — only the
+  // visible surface may claim it (see useListsSubscriber).
+  const chipEnabled = useSidepanelTabStore((s) => s.tab) === 'chat';
   return (
     <div className="flex h-9 shrink-0 items-center px-2">
       {agentsLoading ? (
@@ -871,7 +948,11 @@ function ChatHeader({
         </>
       )}
       <div className="ml-auto flex items-center gap-1">
-        <TaskPanelChip conversationId={selectedConversationId} onClick={onToggleTaskPanel} />
+        <TaskPanelChip
+          conversationId={selectedConversationId}
+          onClick={onToggleTaskPanel}
+          enabled={chipEnabled}
+        />
         <LanguagePicker />
         <SandboxPickerChip />
         <PermissionModeChip
@@ -1132,8 +1213,7 @@ function MessageRow({ message }: { message: ChatMessage }) {
               {
                 label: 'With everything',
                 adminOnly: true,
-                description:
-                  'Text, thinking, tool calls with full args and results.',
+                description: 'Text, thinking, tool calls with full args and results.',
                 getContent: () =>
                   formatAssistantBody(message, {
                     includeToolCalls: true,
@@ -1244,6 +1324,7 @@ function Composer({
   isStreaming,
   canSend,
   canQueue,
+  voiceAvailable,
   placeholder,
 }: {
   value: string;
@@ -1264,6 +1345,13 @@ function Composer({
    * server-assigned conversation id). Only consulted while `isStreaming`.
    */
   canQueue: boolean;
+  /**
+   * Voice (STT) requires a signed-in session — the aimatrx.com transcribe
+   * routes are Bearer-only and used to hard-fail guests AFTER recording
+   * with a dead-end "Not signed in" error (audit P1-21). When false, the
+   * mic button becomes a sign-in affordance instead.
+   */
+  voiceAvailable: boolean;
   placeholder: string;
 }) {
   const taRef = useRef<HTMLTextAreaElement>(null);
@@ -1272,6 +1360,10 @@ function Composer({
   useEffect(() => {
     const el = taRef.current;
     if (!el) return;
+    // Skip measurement while the forceMounted tab is hidden — scrollHeight
+    // is 0 under display:none and the latched 0px height left the composer
+    // a clipped sliver until the first keystroke.
+    if (el.offsetParent === null) return;
     el.style.height = 'auto';
     el.style.height = `${Math.min(el.scrollHeight, 180)}px`;
   }, [value]);
@@ -1310,7 +1402,7 @@ function Composer({
     stopRecording,
   } = useRecordAndTranscribe({
     streaming: true,
-    transcriptionOptions: voiceLanguage ? { language: voiceLanguage } : undefined,
+    ...(voiceLanguage && { transcriptionOptions: { language: voiceLanguage } }),
     onChunkTranscribed: (_snippet, accumulated) => {
       const baseline = recordBaselineRef.current;
       const sep = baseline && !baseline.endsWith(' ') ? ' ' : '';
@@ -1402,6 +1494,10 @@ function Composer({
   // reliably shows its prompt.
   const handleMicClick = () => {
     log.info('audio', 'mic button clicked', { isRecording });
+    if (!voiceAvailable) {
+      setVoiceError('Voice input needs an account — sign in (top of the panel) to use it.');
+      return;
+    }
     if (isRecording) {
       void stopRecording();
       return;
@@ -1433,12 +1529,11 @@ function Composer({
             <span className="font-medium">
               {voiceError ? 'Voice input failed' : 'Voice input — partial failure'}
             </span>
-            <span className="mt-0.5 block opacity-90">
-              {voiceError ?? voiceWarning}
-            </span>
+            <span className="mt-0.5 block opacity-90">{voiceError ?? voiceWarning}</span>
             {!voiceError && failedChunkCount > 0 && (
               <span className="mt-0.5 block opacity-75">
-                {failedChunkCount} chunk{failedChunkCount === 1 ? '' : 's'} dropped — your transcript may be incomplete.
+                {failedChunkCount} chunk{failedChunkCount === 1 ? '' : 's'} dropped — your
+                transcript may be incomplete.
               </span>
             )}
           </div>
@@ -1486,17 +1581,21 @@ function Composer({
                     : 'text-muted-foreground hover:bg-accent hover:text-foreground',
               )}
               title={
-                voiceError
-                  ? voiceError
-                  : isRecording
-                    ? 'Stop recording'
-                    : isTranscribing
-                      ? 'Finishing transcription…'
-                      : 'Voice input'
+                !voiceAvailable
+                  ? 'Sign in to use voice input'
+                  : voiceError
+                    ? voiceError
+                    : isRecording
+                      ? 'Stop recording'
+                      : isTranscribing
+                        ? 'Finishing transcription…'
+                        : 'Voice input'
               }
               style={
                 isRecording
-                  ? { boxShadow: `0 0 0 ${Math.min(6, Math.round(audioLevel / 12))}px rgba(239,68,68,0.18)` }
+                  ? {
+                      boxShadow: `0 0 0 ${Math.min(6, Math.round(audioLevel / 12))}px rgba(239,68,68,0.18)`,
+                    }
                   : undefined
               }
             >
@@ -1574,7 +1673,9 @@ function Composer({
                     <span
                       className={cn(
                         'absolute -bottom-0.5 -right-0.5 inline-flex items-center justify-center rounded-full p-0.5',
-                        canQueue ? 'bg-rose-600 text-white' : 'bg-muted-foreground/40 text-background',
+                        canQueue
+                          ? 'bg-rose-600 text-white'
+                          : 'bg-muted-foreground/40 text-background',
                       )}
                     >
                       <Square className="size-2" fill="currentColor" />

@@ -6,7 +6,7 @@
  *   { name, tier, input_schema, required_permissions, surface_bundles }
  *
  * Descriptions are intentionally absent — they are not code; they live ONLY in
- * `public.tool_def.description` and are read live for UI via
+ * `tool.definition.description` and are read live for UI via
  * `src/lib/tools/descriptions.ts` (Rule 4, docs/TOOL_SOURCE_OF_TRUTH.md).
  *
  * `input_schema` is a strict JSON Schema produced from the Zod definition.
@@ -138,7 +138,6 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   request_user_takeover: [],
 
   // privileged
-  execute_javascript: ['activeTab', 'scripting'],
   inject_stylesheet: ['activeTab', 'scripting'],
   remove_stylesheet: ['activeTab', 'scripting'],
   set_extension_storage: ['storage'],
@@ -174,11 +173,6 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   cdp_perf_metrics: ['activeTab'],
   cdp_emulate_device: ['activeTab'],
   cdp_clear_emulation: [],
-
-  // System / DNR diagnostics. Each row exercises exactly the manifest
-  // permission listed; no host or activeTab needed.
-  get_system_info: ['system.cpu', 'system.memory', 'system.display'],
-  list_network_blocking_rules: ['declarativeNetRequestWithHostAccess'],
 
   // recording (CDP-backed; uses scripting + downloads on export)
   record_gif: ['activeTab', 'tabs', 'scripting', 'downloads'],
@@ -229,19 +223,10 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   // discovery tools
   list_browser_tools: [],
   list_core_tools: [],
-  list_page_tools: [],
-  list_interact_tools: [],
-  list_forms_tools: [],
   list_tabs_tools: [],
-  list_history_tools: [],
   list_ai_tools: [],
-  list_files_tools: [],
   list_memory_tools: [],
-  list_ask_tools: [],
-  list_advanced_tools: [],
   list_demos_tools: [],
-  list_debug_tools: [],
-  list_cookies_tools: [],
   list_webmcp_tools: [],
 
   // batching
@@ -274,7 +259,6 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   stylesheet: ['activeTab', 'scripting'],
   cdp_session: ['activeTab'],
   cdp_emulate: ['activeTab'],
-  evaluate_javascript: ['activeTab', 'scripting'],
 };
 
 function bundlesForTier(tier: ToolTier): ToolCatalogEntry['surface_bundles'] {
@@ -347,10 +331,7 @@ export function buildToolCatalogManifest(): ToolCatalogManifest {
   // Core bundle = tools in 'core' category PLUS every list_<category>_tools.
   const listToolNames = Object.values(CATEGORIES).map((m) => m.list_tool_name);
   const coreBundle = Array.from(
-    new Set([
-      ...tools.filter((t) => t.category === 'core').map((t) => t.name),
-      ...listToolNames,
-    ]),
+    new Set([...tools.filter((t) => t.category === 'core').map((t) => t.name), ...listToolNames]),
   );
   return {
     generated_at: new Date().toISOString(),

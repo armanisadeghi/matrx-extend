@@ -27,7 +27,14 @@ export type StreamEvent =
   | { type: 'text'; content: string }
   | { type: 'reasoning'; content: string }
   | { type: 'event'; eventName: string; data: Record<string, unknown> }
-  | { type: 'error'; message: string }
+  /**
+   * `status` is the HTTP response status (or 0 for a network error) when the
+   * error originated at the request boundary. Undefined for mid-stream errors
+   * (parse failures, server-emitted `error` events, abort). Consumers use
+   * this to distinguish benign protocol responses — notably resume's 409
+   * "outstanding_delegated_calls" — from real failures.
+   */
+  | { type: 'error'; message: string; status?: number }
   | { type: 'done' };
 
 export interface StreamOpenInfo {
@@ -59,12 +66,12 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
     res = await fetch(opts.url, {
       method: 'POST',
       headers: opts.headers,
-      body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
-      signal: opts.signal,
+      ...(opts.body !== undefined ? { body: JSON.stringify(opts.body) } : {}),
+      ...(opts.signal !== undefined ? { signal: opts.signal } : {}),
     });
   } catch (err) {
     log.error('stream', `✗ ${opts.url} network error`, err);
-    opts.onEvent({ type: 'error', message: (err as Error).message });
+    opts.onEvent({ type: 'error', message: (err as Error).message, status: 0 });
     opts.onEvent({ type: 'done' });
     return;
   }
@@ -72,7 +79,7 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
   if (!res.ok) {
     const errText = await res.text().catch(() => res.statusText);
     log.error('stream', `✗ ${opts.url} ${res.status}`, errText);
-    opts.onEvent({ type: 'error', message: `${res.status}: ${errText}` });
+    opts.onEvent({ type: 'error', message: `${res.status}: ${errText}`, status: res.status });
     opts.onEvent({ type: 'done' });
     return;
   }

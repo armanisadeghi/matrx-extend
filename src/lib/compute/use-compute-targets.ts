@@ -29,9 +29,7 @@ interface UseComputeTargetsResult {
   refetch: () => Promise<void>;
 }
 
-export function useComputeTargets(
-  enabled: boolean = true,
-): UseComputeTargetsResult {
+export function useComputeTargets(enabled = true): UseComputeTargetsResult {
   const [data, setData] = useState<ComputeTargetListResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,9 +40,7 @@ export function useComputeTargets(
     const myId = ++fetchIdRef.current;
     setLoading(true);
     setError(null);
-    const result = await apiGet<ComputeTargetListResponse>(
-      '/api/compute-targets/',
-    );
+    const result = await apiGet<ComputeTargetListResponse>('/api/compute-targets/');
     if (myId !== fetchIdRef.current) return;
     if (result.ok) {
       setData(result.data);
@@ -75,10 +71,10 @@ export function useComputeTargets(
 export async function resolveComputeTarget(
   ref: ComputeTargetRef,
 ): Promise<SandboxBindingPayload | null> {
-  const result = await apiPost<SandboxBindingPayload>(
-    '/api/compute-targets/resolve',
-    { kind: ref.kind, id: ref.id },
-  );
+  const result = await apiPost<SandboxBindingPayload>('/api/compute-targets/resolve', {
+    kind: ref.kind,
+    id: ref.id,
+  });
   if (!result.ok) {
     // The server's structured errors arrive as `result.error`; surface them
     // to the picker via the chat-store's `boundTargetUnavailable` flag.

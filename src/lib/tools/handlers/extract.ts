@@ -1,3 +1,7 @@
+import { log } from '@/lib/debug/log';
+import { type ScreenshotProfile, resolveProfile } from '@/lib/screenshot/profiles';
+import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
+import type { ToolHandler } from '@/lib/tools/types';
 /**
  * Tier: READ.
  *
@@ -15,10 +19,6 @@
  *    .research/proposed-tools-and-features.md (items #2 and #4)
  */
 import { z } from 'zod';
-import { log } from '@/lib/debug/log';
-import { resolveProfile, type ScreenshotProfile } from '@/lib/screenshot/profiles';
-import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
-import type { ToolHandler } from '@/lib/tools/types';
 
 // ─── extract_table ─────────────────────────────────────────────────────────
 const ExtractTableArgs = z
@@ -59,8 +59,18 @@ interface ExtractTableResult {
   header_row_count?: number;
   truncated?: boolean;
   columns?: Array<{ index: number; path: string[] }>;
-  rows?: Array<{ index: number; cells: Array<{ value: string; is_header: boolean; colspan?: number; rowspan?: number }> }>;
-  merged_cells?: Array<{ row: number; col: number; colspan: number; rowspan: number; value: string; is_header: boolean }>;
+  rows?: Array<{
+    index: number;
+    cells: Array<{ value: string; is_header: boolean; colspan?: number; rowspan?: number }>;
+  }>;
+  merged_cells?: Array<{
+    row: number;
+    col: number;
+    colspan: number;
+    rowspan: number;
+    value: string;
+    is_header: boolean;
+  }>;
 }
 
 export const extract_table: ToolHandler<ExtractTableArgs, ExtractTableResult> = {
@@ -74,7 +84,13 @@ export const extract_table: ToolHandler<ExtractTableArgs, ExtractTableResult> = 
       const [first] = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: extractTableInPage,
-        args: [args.ref ?? null, args.selector ?? null, args.max_rows, args.normalize, args.compute_header_paths],
+        args: [
+          args.ref ?? null,
+          args.selector ?? null,
+          args.max_rows,
+          args.normalize,
+          args.compute_header_paths,
+        ],
       });
       return (first?.result as ExtractTableResult) ?? { ok: false, reason: 'no result' };
     } catch (err) {
@@ -132,7 +148,10 @@ function extractTableInPage(
 
   const target = findTarget();
   if (!target) {
-    return { ok: false, reason: ref || selector ? 'No element matched the selector' : 'No table found on the page' };
+    return {
+      ok: false,
+      reason: ref || selector ? 'No element matched the selector' : 'No table found on the page',
+    };
   }
 
   // ─── route to the right extractor ────────────────────────────────────
@@ -147,7 +166,10 @@ function extractTableInPage(
   if (innerTable) return extractHtmlTable(innerTable);
   const ancestorTable = target.closest('table');
   if (ancestorTable) return extractHtmlTable(ancestorTable);
-  return { ok: false, reason: `Element is not a table or grid (tag=${target.tagName.toLowerCase()})` };
+  return {
+    ok: false,
+    reason: `Element is not a table or grid (tag=${target.tagName.toLowerCase()})`,
+  };
 
   // ─── HTML <table> ────────────────────────────────────────────────────
   function extractHtmlTable(table: HTMLTableElement): ExtractTableResult {
@@ -162,7 +184,16 @@ function extractTableInPage(
 
     const rows = Array.from(table.rows);
     if (rows.length === 0) {
-      return { ok: true, table_kind: 'table', row_count: 0, column_count: 0, header_row_count: 0, columns: [], rows: [], merged_cells: [] };
+      return {
+        ok: true,
+        table_kind: 'table',
+        row_count: 0,
+        column_count: 0,
+        header_row_count: 0,
+        columns: [],
+        rows: [],
+        merged_cells: [],
+      };
     }
 
     // Build the virtual 2D grid honoring rowspan / colspan.
@@ -175,10 +206,16 @@ function extractTableInPage(
         const cell = rawCell as HTMLTableCellElement;
         // Skip cells already occupied by a rowspan from above.
         while (grid[r]![c] !== undefined) c++;
-        const colspan = Math.max(1, cell.colSpan ?? 1);
-        const rowspan = Math.max(1, cell.rowSpan ?? 1);
+        // Clamp spans BEFORE grid allocation (audit P2-8): a hostile/broken
+        // page declaring rowspan="100000" used to allocate ~100k row arrays
+        // here regardless of maxRows (which only caps OUTPUT rows) — a
+        // hang/OOM inside the page. Real tables never span further than the
+        // rows that exist, so cap at the remaining row count (and a sane
+        // column ceiling).
+        const colspan = Math.min(200, Math.max(1, cell.colSpan ?? 1));
+        const rowspan = Math.min(rows.length - r, Math.max(1, cell.rowSpan ?? 1));
         const v: VirtualCell = {
-          value: norm(cell.innerText ?? cell.textContent ?? ''),
+          value: norm(cell.innerText ?? cell.textContent ?? '').slice(0, 2000),
           isHeader: cell.tagName === 'TH',
           colspan,
           rowspan,
@@ -293,7 +330,8 @@ function extractTableInPage(
     const rowEls = Array.from(root.querySelectorAll('[role="row"]')).filter(
       (r) => r.closest('[role="table"], [role="grid"]') === root,
     );
-    if (rowEls.length === 0) return { ok: false, reason: 'role=table/grid has no role=row children' };
+    if (rowEls.length === 0)
+      return { ok: false, reason: 'role=table/grid has no role=row children' };
 
     interface VirtualCell {
       value: string;
@@ -310,12 +348,14 @@ function extractTableInPage(
       if (!grid[r]) grid[r] = [];
       let c = 0;
       const cellEls = Array.from(
-        rowEls[r]!.querySelectorAll('[role="cell"], [role="gridcell"], [role="columnheader"], [role="rowheader"]'),
+        rowEls[r]!.querySelectorAll(
+          '[role="cell"], [role="gridcell"], [role="columnheader"], [role="rowheader"]',
+        ),
       ).filter((cell) => cell.closest('[role="row"]') === rowEls[r]);
       for (const cell of cellEls) {
         while (grid[r]![c] !== undefined) c++;
-        const colspan = Math.max(1, parseInt(cell.getAttribute('aria-colspan') ?? '1', 10));
-        const rowspan = Math.max(1, parseInt(cell.getAttribute('aria-rowspan') ?? '1', 10));
+        const colspan = Math.max(1, Number.parseInt(cell.getAttribute('aria-colspan') ?? '1', 10));
+        const rowspan = Math.max(1, Number.parseInt(cell.getAttribute('aria-rowspan') ?? '1', 10));
         const role = cell.getAttribute('role') ?? '';
         const v: VirtualCell = {
           value: norm((cell as HTMLElement).innerText ?? cell.textContent ?? ''),
@@ -505,8 +545,11 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
           func: resolveRectInPage,
           args: [refSelector],
         });
-        const r = first?.result as { ok: boolean; rect?: { x: number; y: number; w: number; h: number }; reason?: string } | undefined;
-        if (!r?.ok || !r.rect) return { ok: false, reason: r?.reason ?? 'Could not resolve element rect' };
+        const r = first?.result as
+          | { ok: boolean; rect?: { x: number; y: number; w: number; h: number }; reason?: string }
+          | undefined;
+        if (!r?.ok || !r.rect)
+          return { ok: false, reason: r?.reason ?? 'Could not resolve element rect' };
         viewportRect = r.rect;
       } catch (err) {
         return { ok: false, reason: (err as Error).message };
@@ -556,7 +599,10 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
       const cropH = Math.min(bitmap.height - cropY, Math.round(padded.h * dpr));
       if (cropW <= 0 || cropH <= 0) {
         bitmap.close();
-        return { ok: false, reason: `Resolved rect is outside the viewport: ${JSON.stringify(padded)}` };
+        return {
+          ok: false,
+          reason: `Resolved rect is outside the viewport: ${JSON.stringify(padded)}`,
+        };
       }
       const canvas = new OffscreenCanvas(cropW, cropH);
       const ctx = canvas.getContext('2d');
@@ -568,7 +614,7 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
       bitmap.close();
       const out = await canvas.convertToBlob({
         type: format === 'jpeg' ? 'image/jpeg' : 'image/png',
-        quality: format === 'jpeg' ? quality / 100 : undefined,
+        ...(format === 'jpeg' && { quality: quality / 100 }),
       });
       const buf = await out.arrayBuffer();
       const bytes = new Uint8Array(buf);
@@ -602,6 +648,30 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
         screenshotId = persisted.screenshotId;
       } catch (err) {
         log.warn('sw', 'screenshot_region persistence failed; returning inline only', err);
+      }
+
+      if (fileId) {
+        const { cloudScreenshotRef } = await import('@/lib/screenshot/persist');
+        return {
+          ok: true,
+          ...cloudScreenshotRef({
+            persisted: { fileId, fileUrl, screenshotId },
+            mediaType,
+            width: cropW,
+            height: cropH,
+            sizeBytes: bytes.byteLength,
+            capture: {
+              source_rect: padded,
+              format,
+              profile: profileName,
+            },
+          }),
+          format,
+          width: cropW,
+          height: cropH,
+          source_rect: padded,
+          profile: profileName,
+        };
       }
 
       return {
@@ -643,10 +713,7 @@ function resolveRectInPage(selector: string): {
   const r0 = el.getBoundingClientRect();
   // Scroll into view only if any edge is outside the viewport.
   const offscreen =
-    r0.top < 0 ||
-    r0.left < 0 ||
-    r0.bottom > window.innerHeight ||
-    r0.right > window.innerWidth;
+    r0.top < 0 || r0.left < 0 || r0.bottom > window.innerHeight || r0.right > window.innerWidth;
   if (offscreen) {
     el.scrollIntoView({ block: 'center', inline: 'center' });
   }

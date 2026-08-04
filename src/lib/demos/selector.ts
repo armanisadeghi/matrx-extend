@@ -40,7 +40,8 @@ export function buildSelectorChain(el: Element): SelectorStrategy[] {
     chain.push({ kind: 'id', selector: `#${cssEscape(id)}` });
   }
 
-  const testId = el.getAttribute('data-testid') ?? el.getAttribute('data-test') ?? el.getAttribute('data-cy');
+  const testId =
+    el.getAttribute('data-testid') ?? el.getAttribute('data-test') ?? el.getAttribute('data-cy');
   if (testId) {
     chain.push({ kind: 'data-testid', selector: `[data-testid="${cssEscape(testId)}"]` });
   }
@@ -81,14 +82,29 @@ export function buildSelectorChain(el: Element): SelectorStrategy[] {
 export function snapshotElement(el: Element): ElementSnapshot {
   const rect = el.getBoundingClientRect();
   const role = el.getAttribute('role') ?? implicitRole(el);
+  const accessibleNameValue = accessibleName(el);
+  const visibleTextValue = (el.textContent ?? '').trim().slice(0, 200);
   const out: ElementSnapshot = {
     tag: el.tagName.toLowerCase(),
-    role: role ?? undefined,
-    accessible_name: accessibleName(el) ?? undefined,
-    visible_text: (el.textContent ?? '').trim().slice(0, 200) || undefined,
-    bounding_rect: { x: Math.round(rect.left), y: Math.round(rect.top), w: Math.round(rect.width), h: Math.round(rect.height) },
+    ...(role !== null && { role }),
+    ...(accessibleNameValue !== null && { accessible_name: accessibleNameValue }),
+    ...(visibleTextValue !== '' && { visible_text: visibleTextValue }),
+    bounding_rect: {
+      x: Math.round(rect.left),
+      y: Math.round(rect.top),
+      w: Math.round(rect.width),
+      h: Math.round(rect.height),
+    },
   };
-  const interestingAttrs = ['type', 'name', 'placeholder', 'href', 'aria-label', 'aria-labelledby', 'title'];
+  const interestingAttrs = [
+    'type',
+    'name',
+    'placeholder',
+    'href',
+    'aria-label',
+    'aria-labelledby',
+    'title',
+  ];
   const attrs: Record<string, string> = {};
   for (const a of interestingAttrs) {
     const v = el.getAttribute(a);
@@ -105,7 +121,9 @@ export function snapshotElement(el: Element): ElementSnapshot {
  */
 export function resolveSelectorChain(
   chain: SelectorStrategy[],
-): { ok: true; element: Element; resolved_via: SelectorStrategy['kind'] } | { ok: false; tried: SelectorStrategy['kind'][] } {
+):
+  | { ok: true; element: Element; resolved_via: SelectorStrategy['kind'] }
+  | { ok: false; tried: SelectorStrategy['kind'][] } {
   const tried: SelectorStrategy['kind'][] = [];
   for (const strat of chain) {
     tried.push(strat.kind);

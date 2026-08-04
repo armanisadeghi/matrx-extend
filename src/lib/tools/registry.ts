@@ -20,49 +20,45 @@
  * Each bundle accepts `{ isAdmin? }`. Non-admins never see admin-only tools.
  */
 
+import { isBrowserSupported } from '@/lib/browser/detect';
+import { CATEGORIES, type ToolCategory, categoryOf, toolsInCategory } from '@/lib/tools/categories';
 import { action_handlers } from '@/lib/tools/handlers/action';
 import { batch_handlers } from '@/lib/tools/handlers/batch';
 import { browser_data_handlers } from '@/lib/tools/handlers/browser-data';
 import { canonical_handlers } from '@/lib/tools/handlers/canonical';
 import { canonical_merger_handlers } from '@/lib/tools/handlers/canonical-mergers';
 import { cdp_handlers } from '@/lib/tools/handlers/cdp';
+import { credential_handlers } from '@/lib/tools/handlers/credential-login';
+import { data_pattern_handlers } from '@/lib/tools/handlers/data-patterns';
+import { demo_handlers } from '@/lib/tools/handlers/demos';
 import { discover_handlers } from '@/lib/tools/handlers/discover';
 import { download_handlers } from '@/lib/tools/handlers/downloads';
+import { extract_handlers } from '@/lib/tools/handlers/extract';
+import { extras_handlers } from '@/lib/tools/handlers/extras';
+import { fetch_handlers } from '@/lib/tools/handlers/fetch';
 import { form_action_handlers, form_read_handlers } from '@/lib/tools/handlers/forms';
+import { guidance_handlers } from '@/lib/tools/handlers/guidance';
+import { highlight_handlers } from '@/lib/tools/handlers/highlights';
 import { inspect_handlers } from '@/lib/tools/handlers/inspect';
 import { keyboard_handlers } from '@/lib/tools/handlers/keyboard';
+import { lists_handlers } from '@/lib/tools/handlers/lists';
 import { memory_handlers } from '@/lib/tools/handlers/memory';
+import { microdata_handlers } from '@/lib/tools/handlers/microdata';
 import { onbox_ai_handlers } from '@/lib/tools/handlers/onbox-ai';
 import {
   cookies_handlers,
   pagecapture_handlers,
   sessions_handlers,
 } from '@/lib/tools/handlers/optional-perms';
-import { parallel_handlers } from '@/lib/tools/handlers/parallel';
 import { page_ref_handlers } from '@/lib/tools/handlers/page-refs';
+import { parallel_handlers } from '@/lib/tools/handlers/parallel';
 import { privileged_handlers, privileged_read_handlers } from '@/lib/tools/handlers/privileged';
 import { read_handlers } from '@/lib/tools/handlers/read';
 import { record_handlers } from '@/lib/tools/handlers/record';
-import { system_info_handlers } from '@/lib/tools/handlers/system-info';
-import { video_handlers } from '@/lib/tools/handlers/video';
-import { demo_handlers } from '@/lib/tools/handlers/demos';
-import { guidance_handlers } from '@/lib/tools/handlers/guidance';
-import { highlight_handlers } from '@/lib/tools/handlers/highlights';
-import { extract_handlers } from '@/lib/tools/handlers/extract';
-import { extras_handlers } from '@/lib/tools/handlers/extras';
-import { microdata_handlers } from '@/lib/tools/handlers/microdata';
-import { fetch_handlers } from '@/lib/tools/handlers/fetch';
 import { tab_action_handlers, tab_read_handlers } from '@/lib/tools/handlers/tabs';
-import { lists_handlers } from '@/lib/tools/handlers/lists';
 import { user_handlers } from '@/lib/tools/handlers/user';
+import { video_handlers } from '@/lib/tools/handlers/video';
 import { webmcp_handlers } from '@/lib/tools/handlers/webmcp';
-import { isBrowserSupported } from '@/lib/browser/detect';
-import {
-  CATEGORIES,
-  type ToolCategory,
-  categoryOf,
-  toolsInCategory,
-} from '@/lib/tools/categories';
 import type { AnyToolHandler, ToolHandler } from '@/lib/tools/types';
 
 const ALL: AnyToolHandler[] = [
@@ -91,6 +87,8 @@ const ALL: AnyToolHandler[] = [
   // ─── browser-level actions ─────────────────────────────────────────────
   ...tab_action_handlers,
   ...download_handlers,
+  // ─── vault browser login (agent never sees the credential) ─────────────
+  ...credential_handlers,
   // ─── memory ────────────────────────────────────────────────────────────
   ...memory_handlers,
   // ─── optional-permission tools ─────────────────────────────────────────
@@ -99,12 +97,11 @@ const ALL: AnyToolHandler[] = [
   ...cookies_handlers,
   ...cdp_handlers,
   // ─── system / DNR diagnostics (admin) ──────────────────────────────────
-  ...system_info_handlers,
   // ─── webmcp ────────────────────────────────────────────────────────────
   ...webmcp_handlers,
   // ─── ask-user ──────────────────────────────────────────────────────────
   ...user_handlers,
-  // ─── plan / tasks / user_todos ────────────────────────────────────────
+  // ─── plan / user_todos (tasks executes natively in aidream) ───────────
   ...lists_handlers,
   // ─── privileged ────────────────────────────────────────────────────────
   ...privileged_handlers,
@@ -126,6 +123,8 @@ const ALL: AnyToolHandler[] = [
   ...extras_handlers,
   // ─── structured-data extractor (shares modes with Showcase tab) ────────
   ...microdata_handlers,
+  // Saved extraction patterns (Showcase/Data cross-working)
+  ...data_pattern_handlers,
   // ─── URL fetch + parse → markdown (shares scrape pipeline) ─────────────
   ...fetch_handlers,
   // ─── canonical routers ─────────────────────────────────────────────────
@@ -138,8 +137,25 @@ const ALL: AnyToolHandler[] = [
   ...canonical_merger_handlers,
 ] as AnyToolHandler[];
 
+/**
+ * Names where last-write-wins shadowing is INTENTIONAL — a canonical router
+ * deliberately replaces a legacy handler of the same name. Anything else
+ * colliding is a bug (two handlers accidentally sharing a name silently
+ * dropped one with zero signal — audit P3-10).
+ */
+const INTENTIONAL_SHADOWS = new Set(['wait_for']);
+
 const BY_NAME = new Map<string, AnyToolHandler>();
-for (const t of ALL) BY_NAME.set(t.name, t);
+for (const t of ALL) {
+  if (BY_NAME.has(t.name) && !INTENTIONAL_SHADOWS.has(t.name)) {
+    // Warn loudly — don't throw; a broken registry at SW boot is worse
+    // than a shadowed tool.
+    console.warn(
+      `[matrx-extend] duplicate tool name '${t.name}' in registry — later registration wins`,
+    );
+  }
+  BY_NAME.set(t.name, t);
+}
 
 export function lookup(name: string): AnyToolHandler | undefined {
   return BY_NAME.get(name);
@@ -164,9 +180,9 @@ function visible(t: AnyToolHandler, opts: BundleOptions): boolean {
  * demand.
  */
 export function coreToolNames(opts: BundleOptions = {}): string[] {
-  const out = ALL.filter(
-    (t) => categoryOf(t.name) === 'core' && visible(t, opts),
-  ).map((t) => t.name);
+  const out = ALL.filter((t) => categoryOf(t.name) === 'core' && visible(t, opts)).map(
+    (t) => t.name,
+  );
   // Add the per-category discovery tools so the agent can ask for any
   // category by name.
   for (const cat of Object.values(CATEGORIES)) {
@@ -177,10 +193,7 @@ export function coreToolNames(opts: BundleOptions = {}): string[] {
 }
 
 /** Tool names in a specific category (used by the server for dynamic registration). */
-export function categoryToolNames(
-  category: ToolCategory,
-  opts: BundleOptions = {},
-): string[] {
+export function categoryToolNames(category: ToolCategory, opts: BundleOptions = {}): string[] {
   return toolsInCategory(ALL, category, opts).map((t) => t.name);
 }
 
@@ -200,8 +213,7 @@ export function assistantToolNames(opts: BundleOptions = {}): string[] {
  */
 export function pilotToolNames(opts: BundleOptions = {}): string[] {
   return ALL.filter(
-    (t) =>
-      (t.tier === 'read' || t.tier === 'action' || t.tier === 'ask-user') && visible(t, opts),
+    (t) => (t.tier === 'read' || t.tier === 'action' || t.tier === 'ask-user') && visible(t, opts),
   ).map((t) => t.name);
 }
 

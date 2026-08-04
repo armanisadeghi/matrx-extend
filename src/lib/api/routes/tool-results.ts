@@ -7,9 +7,21 @@
  * The route is durable: if the originating SSE is still live, the existing
  * loop resumes inline. If it's gone, the response sets `continuation_needed`
  * and we open `/ai/conversations/{id}/resume` to keep the agent moving.
+ *
+ * 5xx + network errors: retried with exponential backoff (3 attempts total).
+ * Dropping a result is the worst possible outcome — the conversation goes
+ * deaf and the user has to start over. Better to delay by a few seconds.
+ *
+ * DELIBERATELY NOT ON /v2: the backend's v2 "spine" surface is exactly 6
+ * endpoints (agent/agents start, chat/manual, conversation/conversations
+ * continue) — see the header comment in `./ai.ts`. `tool_results`,
+ * `resume`, and `pending_calls` have no v2 form, so every path in this file
+ * stays hardcoded to `/ai/...`. This is intentional, not a leftover — the
+ * extension is (and will remain) mixed v1/v2 for these three routes.
  */
 
-import { apiPost } from '@/lib/api/client';
+import { apiGet, apiPost } from '@/lib/api/client';
+import type { ApiResult } from '@/lib/api/client';
 import { log } from '@/lib/debug/log';
 
 export interface ClientToolResultBody {
@@ -18,9 +30,12 @@ export interface ClientToolResultBody {
   output?: unknown;
   is_error?: boolean;
   error_message?: string | null;
+  /** Client-measured execution time. Persisted to chat.tool_call.duration_ms —
+   * without it every client-delegated call lands as duration_ms=0. */
+  duration_ms?: number;
 }
 
-interface ToolResultsResponse {
+export interface ToolResultsResponse {
   resolved: string[];
   already_resolved: string[];
   not_found: string[];
@@ -29,22 +44,67 @@ interface ToolResultsResponse {
   conversation_id: string;
 }
 
-export async function postToolResults(conversationId: string, results: ClientToolResultBody[]) {
-  log.info(
-    'msg',
-    `→ POST /ai/conversations/${conversationId}/tool_results (${results.length})`,
-    { results },
-  );
-  const r = await apiPost<ToolResultsResponse>(
-    `/ai/conversations/${encodeURIComponent(conversationId)}/tool_results`,
-    { results },
-  );
-  if (r.ok) {
-    log.success('msg', '← tool_results ok', r.data);
-  } else {
-    log.error('msg', '← tool_results FAILED', r.error);
+const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Whether a failed POST is worth retrying. We retry transient network /
+ * upstream errors but NOT semantic 4xx (404 = unknown call_id, 422 = bad
+ * payload — retrying these just delays the inevitable user-facing fix).
+ */
+function shouldRetry(status: number): boolean {
+  if (status === 0) return true; // network error / DNS / TLS / CORS
+  if (status === 408) return true; // request timeout
+  if (status === 429) return true; // rate limited
+  if (status >= 500) return true; // 5xx
+  return false;
+}
+
+export async function postToolResults(
+  conversationId: string,
+  results: ClientToolResultBody[],
+): Promise<ApiResult<ToolResultsResponse>> {
+  log.info('msg', `→ POST /ai/conversations/${conversationId}/tool_results (${results.length})`, {
+    results,
+  });
+  const path = `/ai/conversations/${encodeURIComponent(conversationId)}/tool_results`;
+  const maxAttempts = 3;
+  const baseDelayMs = 500;
+  let last: ApiResult<ToolResultsResponse> | null = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const r = await apiPost<ToolResultsResponse>(path, { results });
+    last = r;
+    if (r.ok) {
+      // Defensive shape check — server bugs / a stale gateway returning HTML
+      // shouldn't silently look like a successful submit (continuation_needed
+      // would be undefined, and the resume handshake would never fire).
+      const data = r.data as Partial<ToolResultsResponse> | undefined;
+      if (!data || typeof data !== 'object' || typeof data.continuation_needed !== 'boolean') {
+        log.error('msg', '← tool_results returned 200 but body is malformed', data);
+        return {
+          ok: false,
+          status: 200,
+          error: 'malformed_tool_results_response',
+        };
+      }
+      log.success('msg', '← tool_results ok', r.data);
+      return r;
+    }
+    log.error(
+      'msg',
+      `✗ tool_results attempt ${attempt}/${maxAttempts} status=${r.status} (${r.error})`,
+    );
+    if (!shouldRetry(r.status) || attempt === maxAttempts) {
+      return r;
+    }
+    // Exponential backoff with light jitter so two parallel tool results
+    // racing the same transient outage don't synchronize their retries.
+    const delay = baseDelayMs * 2 ** (attempt - 1) + Math.floor(Math.random() * 200);
+    log.warn('msg', `tool_results retrying in ${delay}ms`);
+    await sleep(delay);
   }
-  return r;
+  // Defensive — loop guarantees at least one assignment, but TypeScript
+  // can't see that without an explicit fallback.
+  return last ?? { ok: false, status: 0, error: 'tool_results: unreachable retry exit' };
 }
 
 /**
@@ -54,3 +114,41 @@ export async function postToolResults(conversationId: string, results: ClientToo
  */
 export const conversationResumePath = (conversationId: string): string =>
   `/ai/conversations/${encodeURIComponent(conversationId)}/resume`;
+
+/**
+ * A client-delegated tool call the server is still waiting on for this
+ * conversation (chat.tool_call row in status='delegated'). Mirrors the FastAPI
+ * `PendingCallSummary` model. This is the canonical COLD-RESUME discovery
+ * contract — the same endpoint matrx-frontend uses — so both clients read one
+ * source of truth for "what is this conversation paused on".
+ */
+export interface PendingCall {
+  id: string;
+  call_id: string;
+  conversation_id: string;
+  user_request_id: string | null;
+  message_id: string | null;
+  tool_name: string;
+  arguments: Record<string, unknown>;
+  iteration: number;
+  created_at: string | null;
+  /** After this the server's abandonment sweep marks the row timed-out (30d default). */
+  expires_at: string | null;
+}
+
+/**
+ * GET /ai/conversations/{id}/pending_calls — the delegated tool calls awaiting
+ * the user's answer in this conversation. Called on conversation open to drive
+ * cold-resume (see src/lib/chat/cold-resume.ts). Pure read; never mutates.
+ */
+export async function getPendingCalls(conversationId: string): Promise<ApiResult<PendingCall[]>> {
+  const path = `/ai/conversations/${encodeURIComponent(conversationId)}/pending_calls`;
+  log.info('msg', `→ GET ${path}`);
+  const r = await apiGet<PendingCall[]>(path);
+  if (r.ok) {
+    log.success('msg', `← pending_calls (${(r.data ?? []).length})`);
+  } else {
+    log.warn('msg', `✗ pending_calls status=${r.status} (${r.error})`);
+  }
+  return r;
+}

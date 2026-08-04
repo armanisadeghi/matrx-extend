@@ -50,6 +50,61 @@ interface NetworkRecord {
   ts_ms: number;
 }
 
+/**
+ * Idle auto-detach (audit P2-7). The "is being debugged" banner used to
+ * persist FOREVER after a run: the cdp.ts header claimed "we auto-detach
+ * when the run ends" but no run-end detach existed anywhere — and detaching
+ * on the stream's terminal event would be wrong anyway (aidream
+ * hard-suspends the stream around EVERY delegated tool call, so multi-step
+ * CDP workflows span many short streams). Instead: every attach/send
+ * touches a per-tab idle timer; 10 minutes without any CDP command =
+ * detach + buffer cleanup. In-memory timers die with the SW, so
+ * `reconcileOnBoot` (called from bootstrap) also sweeps attachments that
+ * survived an SW restart with no live timer.
+ */
+const IDLE_DETACH_MS = 10 * 60_000;
+const idleTimers = new Map<number, ReturnType<typeof setTimeout>>();
+
+function touchIdleTimer(tabId: number): void {
+  const prev = idleTimers.get(tabId);
+  if (prev) clearTimeout(prev);
+  idleTimers.set(
+    tabId,
+    setTimeout(() => {
+      idleTimers.delete(tabId);
+      void detach(tabId);
+    }, IDLE_DETACH_MS),
+  );
+}
+
+/**
+ * Bootstrap hook (audit P1: listeners were registered lazily inside
+ * attach(), so an SW restart with a surviving chrome.debugger attachment
+ * dropped every Network/Console event and never saw onDetach). Called
+ * synchronously from the SW bootstrap; also detaches attachments orphaned
+ * by the restart — the in-memory buffers/capture state they fed are gone,
+ * so a lingering attachment is pure stuck-banner.
+ */
+export function reconcileOnBoot(): void {
+  try {
+    installListeners();
+    chrome.debugger.getTargets((targets) => {
+      for (const t of targets) {
+        if (t.attached && typeof t.tabId === 'number' && !attachedTabs.has(t.tabId)) {
+          // Attached but not in OUR memory — either another debugger (the
+          // detach below fails harmlessly) or our own pre-restart orphan.
+          chrome.debugger.detach({ tabId: t.tabId }, () => {
+            // Swallow lastError — not-ours / already-detached are both fine.
+            void chrome.runtime.lastError;
+          });
+        }
+      }
+    });
+  } catch {
+    /* debugger permission can be absent in dev builds — never block boot */
+  }
+}
+
 let listenersInstalled = false;
 
 function installListeners() {
@@ -74,11 +129,7 @@ function installListeners() {
   });
 }
 
-function handleConsoleEvent(
-  tabId: number,
-  method: string,
-  params: Record<string, unknown>,
-): void {
+function handleConsoleEvent(tabId: number, method: string, params: Record<string, unknown>): void {
   const buf = consoleBuffers.get(tabId);
   if (!buf) return;
   if (method === 'Runtime.consoleAPICalled') {
@@ -86,25 +137,35 @@ function handleConsoleEvent(
     const text = args
       .map((a) => (a.value !== undefined ? String(a.value) : (a.description ?? '')))
       .join(' ');
-    const stack = (params.stackTrace as { callFrames?: Array<{ url?: string; lineNumber?: number; columnNumber?: number }> })?.callFrames?.[0];
+    const stack = (
+      params.stackTrace as {
+        callFrames?: Array<{ url?: string; lineNumber?: number; columnNumber?: number }>;
+      }
+    )?.callFrames?.[0];
     buf.push({
       level: String(params.type ?? 'log'),
       text,
-      url: stack?.url,
-      line: stack?.lineNumber,
-      column: stack?.columnNumber,
+      ...(stack?.url !== undefined && { url: stack.url }),
+      ...(stack?.lineNumber !== undefined && { line: stack.lineNumber }),
+      ...(stack?.columnNumber !== undefined && { column: stack.columnNumber }),
       ts_ms: Date.now(),
     });
   } else if (method === 'Runtime.exceptionThrown') {
     const ex = params.exceptionDetails as
-      | { text?: string; url?: string; lineNumber?: number; columnNumber?: number; exception?: { description?: string } }
+      | {
+          text?: string;
+          url?: string;
+          lineNumber?: number;
+          columnNumber?: number;
+          exception?: { description?: string };
+        }
       | undefined;
     buf.push({
       level: 'error',
       text: ex?.exception?.description ?? ex?.text ?? 'unknown exception',
-      url: ex?.url,
-      line: ex?.lineNumber,
-      column: ex?.columnNumber,
+      ...(ex?.url !== undefined && { url: ex.url }),
+      ...(ex?.lineNumber !== undefined && { line: ex.lineNumber }),
+      ...(ex?.columnNumber !== undefined && { column: ex.columnNumber }),
       ts_ms: Date.now(),
     });
   }
@@ -147,11 +208,7 @@ export function drainConsoleCapture(
   return records;
 }
 
-function handleNetworkEvent(
-  tabId: number,
-  method: string,
-  params: Record<string, unknown>,
-): void {
+function handleNetworkEvent(tabId: number, method: string, params: Record<string, unknown>): void {
   const requests = networkRequests.get(tabId);
   if (!requests) return;
   const requestId = params.requestId as string | undefined;
@@ -202,6 +259,7 @@ export async function attach(tabId: number): Promise<{ ok: boolean; reason?: str
   try {
     await chrome.debugger.attach({ tabId }, PROTOCOL_VERSION);
     attachedTabs.add(tabId);
+    touchIdleTimer(tabId);
     return { ok: true };
   } catch (err) {
     return { ok: false, reason: (err as Error).message ?? String(err) };
@@ -209,14 +267,26 @@ export async function attach(tabId: number): Promise<{ ok: boolean; reason?: str
 }
 
 export async function detach(tabId: number): Promise<{ ok: boolean; reason?: string }> {
+  const timer = idleTimers.get(tabId);
+  if (timer) {
+    clearTimeout(timer);
+    idleTimers.delete(tabId);
+  }
   try {
     await chrome.debugger.detach({ tabId });
     attachedTabs.delete(tabId);
     networkBuffers.delete(tabId);
     networkRequests.delete(tabId);
+    // Console buffers too (audit P2-7) — they held captured page output
+    // (request bodies, auth headers, console text) keyed only by tabId,
+    // drainable by a LATER conversation on the same tab.
+    consoleBuffers.delete(tabId);
     return { ok: true };
   } catch (err) {
     attachedTabs.delete(tabId);
+    networkBuffers.delete(tabId);
+    networkRequests.delete(tabId);
+    consoleBuffers.delete(tabId);
     return { ok: false, reason: (err as Error).message ?? String(err) };
   }
 }
@@ -230,11 +300,8 @@ export async function send<T = unknown>(
     const r = await attach(tabId);
     if (!r.ok) throw new Error(`attach failed: ${r.reason}`);
   }
-  const result = (await chrome.debugger.sendCommand(
-    { tabId },
-    method,
-    params,
-  )) as T;
+  touchIdleTimer(tabId);
+  const result = (await chrome.debugger.sendCommand({ tabId }, method, params)) as T;
   return result;
 }
 
@@ -256,9 +323,7 @@ export async function stopNetworkCapture(tabId: number): Promise<void> {
   networkBuffers.delete(tabId);
   networkRequests.delete(tabId);
   if (attachedTabs.has(tabId)) {
-    await chrome.debugger
-      .sendCommand({ tabId }, 'Network.disable')
-      .catch(() => {});
+    await chrome.debugger.sendCommand({ tabId }, 'Network.disable').catch(() => {});
   }
 }
 

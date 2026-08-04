@@ -11,11 +11,7 @@
  * a name to translate.)
  */
 
-export function suggestSimilar(
-  name: string,
-  knownNames: readonly string[],
-  limit = 3,
-): string[] {
+export function suggestSimilar(name: string, knownNames: readonly string[], limit = 3): string[] {
   const needle = name.toLowerCase();
   const scored = knownNames.map((n) => ({
     name: n,

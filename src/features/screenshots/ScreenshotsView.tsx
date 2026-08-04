@@ -26,16 +26,18 @@
 
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ENV } from '@/config/env';
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { downloadFileBytes } from '@/lib/api/routes/files';
 import { newId } from '@/lib/id';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import type { ScreenshotSavedPayload } from '@/lib/screenshot/persist';
 import {
   type ScreenshotRow,
   deleteScreenshot,
   fetchScreenshotsForUrl,
 } from '@/lib/supabase/queries';
-import type { ScreenshotSavedPayload } from '@/lib/screenshot/persist';
 import { take_screenshot } from '@/lib/tools/handlers/read';
 import { normalizeUrl } from '@/lib/url/match';
 import {
@@ -66,35 +68,38 @@ export function ScreenshotsView() {
   const [capturingMode, setCapturingMode] = useState<CaptureMode | null>(null);
   const [captureError, setCaptureError] = useState<string | null>(null);
   const [persistWarning, setPersistWarning] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   // Track the URL we last fetched for, so the "tab url change" effect
   // doesn't fire a redundant load while a refresh from the timeline
   // event is still in flight.
   const lastFetchedUrlRef = useRef<string | null>(null);
+  const loadGenerationRef = useRef(0);
 
-  const reload = useCallback(
-    async (urlCanonical: string | null) => {
-      if (!urlCanonical) {
-        setRows([]);
-        setLoadState('idle');
+  const reload = useCallback(async (urlCanonical: string | null) => {
+    const generation = ++loadGenerationRef.current;
+    if (!urlCanonical) {
+      setRows([]);
+      setLoadState('idle');
+      return;
+    }
+    setLoadState('loading');
+    setError(null);
+    try {
+      const data = await fetchScreenshotsForUrl(urlCanonical);
+      // Guard against a stale request resolving after the user has
+      // navigated or a newer reload of the same URL has started.
+      if (generation !== loadGenerationRef.current || lastFetchedUrlRef.current !== urlCanonical)
         return;
-      }
-      setLoadState('loading');
-      setError(null);
-      try {
-        const data = await fetchScreenshotsForUrl(urlCanonical);
-        // Guard against a stale request resolving after the user has
-        // navigated to a new page — only commit if the URL still matches.
-        if (lastFetchedUrlRef.current !== urlCanonical) return;
-        setRows(data);
-        setLoadState('ready');
-      } catch (err) {
-        if (lastFetchedUrlRef.current !== urlCanonical) return;
-        setError((err as Error).message ?? 'Failed to load screenshots');
-        setLoadState('error');
-      }
-    },
-    [],
-  );
+      setRows(data);
+      setLoadState('ready');
+    } catch (err) {
+      if (generation !== loadGenerationRef.current || lastFetchedUrlRef.current !== urlCanonical)
+        return;
+      setError((err as Error).message ?? 'Failed to load screenshots');
+      setLoadState('error');
+    }
+  }, []);
 
   // Re-query whenever the active tab's canonical URL changes.
   useEffect(() => {
@@ -109,15 +114,12 @@ export function ScreenshotsView() {
   // chrome.runtime.sendMessage to the sender's own context); the inline
   // reload after `captureNow` covers that case.
   useEffect(() => {
-    const off = on<ScreenshotSavedPayload, { ack: true }>(
-      CHANNELS.SCREENSHOT_SAVED,
-      (evt) => {
-        if (evt.pageUrlCanonical === lastFetchedUrlRef.current) {
-          void reload(lastFetchedUrlRef.current);
-        }
-        return { ack: true };
-      },
-    );
+    const off = on<ScreenshotSavedPayload, { ack: true }>(CHANNELS.SCREENSHOT_SAVED, (evt) => {
+      if (evt.pageUrlCanonical === lastFetchedUrlRef.current) {
+        void reload(lastFetchedUrlRef.current);
+      }
+      return { ack: true };
+    });
     return off;
   }, [reload]);
 
@@ -126,15 +128,15 @@ export function ScreenshotsView() {
   // failed to insert the row but the tool itself returned ok, this still
   // triggers a refresh so the gallery doesn't appear stale.
   useEffect(() => {
-    const off = on<
-      { callId: string; toolName: string; phase: string },
-      { ack: true }
-    >(CHANNELS.TOOL_TIMELINE_EVENT, (evt) => {
-      if (evt.toolName === 'take_screenshot' && evt.phase === 'completed') {
-        void reload(lastFetchedUrlRef.current);
-      }
-      return { ack: true };
-    });
+    const off = on<{ callId: string; toolName: string; phase: string }, { ack: true }>(
+      CHANNELS.TOOL_TIMELINE_EVENT,
+      (evt) => {
+        if (evt.toolName === 'take_screenshot' && evt.phase === 'completed') {
+          void reload(lastFetchedUrlRef.current);
+        }
+        return { ack: true };
+      },
+    );
     return off;
   }, [reload]);
 
@@ -200,9 +202,7 @@ export function ScreenshotsView() {
               'Captured, but failed to save to the gallery. Check the SW console for the error.',
             );
           } else if (mode === 'full_page' && r.truncated) {
-            setPersistWarning(
-              'Page exceeded the 30-screen tile cap; the bottom is cropped.',
-            );
+            setPersistWarning('Page exceeded the 30-screen tile cap; the bottom is cropped.');
           }
           broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
             callId,
@@ -210,14 +210,9 @@ export function ScreenshotsView() {
             phase: 'completed',
             output: result,
           });
-          // Same-context broadcasts don't loop back, so refresh the
-          // gallery directly when this view is the originator. The
-          // agent / Tools-tab paths broadcast from a different context
-          // (SW or another sidepanel), so their listeners pick up
-          // SCREENSHOT_SAVED above.
-          if (r.screenshot_id) {
-            void reload(lastFetchedUrlRef.current);
-          }
+          // broadcast() self-delivers since 2026-06-10, so the
+          // TOOL_TIMELINE_EVENT listener above refreshes the gallery for
+          // this context too — no direct reload needed (it double-fetched).
         }
       } catch (err) {
         const msg = (err as Error).message ?? 'Screenshot failed';
@@ -232,15 +227,31 @@ export function ScreenshotsView() {
         setCapturingMode(null);
       }
     },
-    [capturingMode, tab.id, tab.url, reload],
+    [capturingMode, tab.id, tab.url],
   );
 
-  const onDelete = useCallback(async (id: string) => {
-    const ok = await deleteScreenshot(id);
-    if (ok) {
-      setRows((prev) => prev.filter((r) => r.id !== id));
-    }
-  }, []);
+  const onDelete = useCallback(
+    async (id: string) => {
+      if (deletingId) return;
+      setDeletingId(id);
+      setDeleteError(null);
+      try {
+        const ok = await deleteScreenshot(id);
+        if (!ok) {
+          setDeleteError('Could not delete the screenshot. Try again.');
+          return;
+        }
+        setRows((prev) => prev.filter((row) => row.id !== id));
+        // Supersede any query that captured the deleted row, while retaining
+        // unrelated captures and honoring a page navigation that happened
+        // during deletion.
+        void reload(lastFetchedUrlRef.current);
+      } finally {
+        setDeletingId((current) => (current === id ? null : current));
+      }
+    },
+    [deletingId, reload],
+  );
 
   return (
     <div className="flex h-full flex-col">
@@ -288,7 +299,13 @@ export function ScreenshotsView() {
         ) : (
           <div className="grid grid-cols-2 gap-2 px-3 py-3">
             {rows.map((row) => (
-              <ScreenshotCard key={row.id} row={row} onDelete={() => void onDelete(row.id)} />
+              <ScreenshotCard
+                key={row.id}
+                row={row}
+                deleting={deletingId === row.id}
+                deletePending={deletingId !== null}
+                onDelete={() => void onDelete(row.id)}
+              />
             ))}
           </div>
         )}
@@ -305,6 +322,12 @@ export function ScreenshotsView() {
           <div className="flex items-start gap-1.5 text-xs text-amber-600 dark:text-amber-400">
             <AlertTriangle className="mt-0.5 size-3 shrink-0" />
             <span>{persistWarning}</span>
+          </div>
+        )}
+        {deleteError && (
+          <div className="flex items-start gap-1.5 text-xs text-destructive">
+            <AlertTriangle className="mt-0.5 size-3 shrink-0" />
+            <span>{deleteError}</span>
           </div>
         )}
         <div className="flex gap-1.5">
@@ -343,12 +366,20 @@ export function ScreenshotsView() {
 
 function ScreenshotCard({
   row,
+  deleting,
+  deletePending,
   onDelete,
 }: {
   row: ScreenshotRow;
+  deleting: boolean;
+  deletePending: boolean;
   onDelete: () => void;
 }) {
   const [confirming, setConfirming] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewFailed, setPreviewFailed] = useState(false);
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const previewTargetRef = useRef<HTMLButtonElement | null>(null);
   const captured = useMemo(() => formatTimestamp(row.captured_at), [row.captured_at]);
   const dim = row.width && row.height ? `${row.width}×${row.height}` : null;
   const sourceIcon =
@@ -359,36 +390,83 @@ function ScreenshotCard({
     ) : (
       <Camera className="size-3" />
     );
-  const sourceLabel =
-    row.source === 'agent' ? 'Agent' : row.source === 'user' ? 'You' : 'Unknown';
+  const sourceLabel = row.source === 'agent' ? 'Agent' : row.source === 'user' ? 'You' : 'Unknown';
+  const canonicalFileUrl = `${ENV.FRONTEND_URL}/files/f/${encodeURIComponent(row.file_id)}`;
 
   const openFullSize = useCallback(() => {
-    if (row.file_url) void chrome.tabs.create({ url: row.file_url });
-  }, [row.file_url]);
+    void chrome.tabs.create({ url: canonicalFileUrl });
+  }, [canonicalFileUrl]);
 
   const copyUrl = useCallback(() => {
-    if (row.file_url) void navigator.clipboard.writeText(row.file_url).catch(() => undefined);
-  }, [row.file_url]);
+    void navigator.clipboard.writeText(canonicalFileUrl).catch(() => undefined);
+  }, [canonicalFileUrl]);
+
+  useEffect(() => {
+    const target = previewTargetRef.current;
+    if (!target || typeof IntersectionObserver === 'undefined') {
+      setPreviewVisible(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setPreviewVisible(entry?.isIntersecting ?? false);
+      },
+      { rootMargin: '160px' },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!previewVisible) {
+      setPreviewUrl(null);
+      setPreviewFailed(false);
+      return;
+    }
+    let active = true;
+    let objectUrl: string | null = null;
+    const controller = new AbortController();
+    setPreviewUrl(null);
+    setPreviewFailed(false);
+    void downloadFileBytes(row.file_id, controller.signal)
+      .then(({ blob }) => {
+        if (!active) return;
+        objectUrl = URL.createObjectURL(blob);
+        setPreviewUrl(objectUrl);
+      })
+      .catch(() => {
+        if (active) setPreviewFailed(true);
+      });
+    return () => {
+      active = false;
+      controller.abort();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [previewVisible, row.file_id]);
 
   return (
     <div className="group overflow-hidden rounded-md border border-border/60 bg-card text-xs">
       <button
+        ref={previewTargetRef}
         type="button"
         onClick={openFullSize}
-        disabled={!row.file_url}
-        className="block w-full bg-muted/40 transition-opacity hover:opacity-90 disabled:cursor-default disabled:hover:opacity-100"
-        title={row.file_url ? 'Open full size' : 'Image URL unavailable'}
+        className="block w-full bg-muted/40 transition-opacity hover:opacity-90"
+        title="Open in Files"
       >
-        {row.file_url ? (
+        {previewUrl ? (
           <img
-            src={row.file_url}
+            src={previewUrl}
             alt={row.page_title ?? 'screenshot'}
             loading="lazy"
             className="block aspect-[4/3] w-full object-cover"
           />
         ) : (
           <div className="flex aspect-[4/3] w-full items-center justify-center text-muted-foreground">
-            <ImageOff className="size-5" />
+            {previewFailed ? (
+              <ImageOff className="size-5" />
+            ) : (
+              <Loader2 className="size-4 animate-spin" />
+            )}
           </div>
         )}
       </button>
@@ -411,8 +489,7 @@ function ScreenshotCard({
             variant="ghost"
             className="size-6 p-0 text-muted-foreground"
             onClick={openFullSize}
-            disabled={!row.file_url}
-            title="Open full size"
+            title="Open in Files"
           >
             <ExternalLink className="size-3" />
           </Button>
@@ -421,8 +498,7 @@ function ScreenshotCard({
             variant="ghost"
             className="size-6 p-0 text-muted-foreground"
             onClick={copyUrl}
-            disabled={!row.file_url}
-            title="Copy image URL"
+            title="Copy durable Files URL"
           >
             <Link2 className="size-3" />
           </Button>
@@ -433,8 +509,13 @@ function ScreenshotCard({
                 variant="ghost"
                 className="size-6 p-0 text-muted-foreground hover:text-destructive"
                 title="Delete"
+                disabled={deletePending}
               >
-                <Trash2 className="size-3" />
+                {deleting ? (
+                  <Loader2 className="size-3 animate-spin" />
+                ) : (
+                  <Trash2 className="size-3" />
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-56 p-2 text-xs">
@@ -459,8 +540,9 @@ function ScreenshotCard({
                     setConfirming(false);
                     onDelete();
                   }}
+                  disabled={deletePending}
                 >
-                  Delete
+                  {deleting ? 'Deleting…' : 'Delete'}
                 </Button>
               </div>
             </PopoverContent>
@@ -474,11 +556,8 @@ function ScreenshotCard({
 function SkeletonGrid() {
   return (
     <div className="grid grid-cols-2 gap-2 px-3 py-3">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div
-          key={i}
-          className="overflow-hidden rounded-md border border-border/60 bg-card"
-        >
+      {['top-left', 'top-right', 'bottom-left', 'bottom-right'].map((slot) => (
+        <div key={slot} className="overflow-hidden rounded-md border border-border/60 bg-card">
           <div className="aspect-[4/3] w-full animate-pulse bg-muted/60" />
           <div className="space-y-1 p-2">
             <div className="h-2 w-1/2 animate-pulse rounded bg-muted/60" />
@@ -501,9 +580,7 @@ function EmptyMessage({
 }) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
-      <div className="flex size-9 items-center justify-center rounded-full bg-muted/60">
-        {icon}
-      </div>
+      <div className="flex size-9 items-center justify-center rounded-full bg-muted/60">{icon}</div>
       <div className="text-sm font-medium">{title}</div>
       <div className="max-w-xs text-xs text-muted-foreground">{body}</div>
     </div>

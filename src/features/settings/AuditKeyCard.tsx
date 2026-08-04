@@ -18,20 +18,28 @@
  * `lib/audit/log`.
  */
 
-import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { MAX_RECEIPTS, getReceiptCount, getRecentReceipts } from '@/lib/audit/log';
-import type { ReceiptOrigin, ToolReceipt } from '@/lib/audit/receipt';
+import { Button } from '@/components/ui/button';
+import { exportPublicKeyJwk, rotateDeviceKey } from '@/lib/audit/device-key';
 import {
-  exportPublicKeyJwk,
-  rotateDeviceKey,
-} from '@/lib/audit/device-key';
+  MAX_RECEIPTS,
+  getAuditFailureCount,
+  getReceiptCount,
+  getRecentReceipts,
+} from '@/lib/audit/log';
+import type { ReceiptOrigin, ToolReceipt } from '@/lib/audit/receipt';
 import { cn } from '@/lib/utils';
 import { Check, Copy, KeyRound } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const RECENT_LIMIT = 20;
-const ORIGIN_FILTERS: Array<ReceiptOrigin | 'all'> = ['all', 'agent', 'pilot', 'parallel', 'webmcp'];
+const ORIGIN_FILTERS: Array<ReceiptOrigin | 'all'> = [
+  'all',
+  'agent',
+  'pilot',
+  'parallel',
+  'webmcp',
+];
 
 /** Treat receipts that pre-date schema v2 (no `origin` field) as 'agent'. */
 function originOf(r: ToolReceipt): ReceiptOrigin {
@@ -47,17 +55,20 @@ export function AuditKeyCard() {
   const [recent, setRecent] = useState<ToolReceipt[] | null>(null);
   const [originFilter, setOriginFilter] = useState<ReceiptOrigin | 'all'>('all');
   const [rotateOpen, setRotateOpen] = useState(false);
+  const [failureCount, setFailureCount] = useState(0);
 
   const refresh = useCallback(async () => {
-    const [pk, c, r] = await Promise.all([
+    const [pk, c, r, f] = await Promise.all([
       exportPublicKeyJwk(),
       getReceiptCount(),
       getRecentReceipts(RECENT_LIMIT),
+      getAuditFailureCount(),
     ]);
     setPublicKeyId(pk.publicKeyId);
     setCreatedAt(pk.createdAt);
     setCount(c);
     setRecent(r);
+    setFailureCount(f);
   }, []);
 
   useEffect(() => {
@@ -101,16 +112,19 @@ export function AuditKeyCard() {
         Audit key
       </div>
       <div className="text-[11px] text-muted-foreground">
-        Every tool call is signed with a device-bound Ed25519 key and stored in a
-        local audit log. Cap: {MAX_RECEIPTS} receipts (FIFO).
+        Every tool call is signed with a device-bound Ed25519 key and stored in a local audit log.
+        Cap: {MAX_RECEIPTS} receipts (FIFO).
+        {failureCount > 0 && (
+          <span className="ml-2 font-medium text-rose-600 dark:text-rose-400">
+            ⚠ {failureCount} receipt{failureCount === 1 ? '' : 's'} failed to sign/persist — audit
+            coverage has gaps.
+          </span>
+        )}
       </div>
 
       <div className="space-y-1 pt-1">
         <Row label="Public key ID" value={publicKeyId ?? '—'} mono />
-        <Row
-          label="Generated"
-          value={createdAt ? new Date(createdAt).toLocaleString() : '—'}
-        />
+        <Row label="Generated" value={createdAt ? new Date(createdAt).toLocaleString() : '—'} />
         <Row label="Receipts on file" value={count !== null ? String(count) : '—'} />
       </div>
 
@@ -256,8 +270,7 @@ function RecentReceiptsPanel({
 function ReceiptRow({ receipt }: { receipt: ToolReceipt }) {
   const origin = originOf(receipt);
   const ts = new Date(receipt.startedAt).toLocaleTimeString();
-  const status =
-    receipt.outputHash === 'pending' ? 'pending' : receipt.ok ? 'ok' : 'error';
+  const status = receipt.outputHash === 'pending' ? 'pending' : receipt.ok ? 'ok' : 'error';
   return (
     <div className="flex items-center gap-2 border-b px-2 py-1.5 text-[11px] last:border-b-0">
       <OriginChip origin={origin} />
@@ -274,7 +287,10 @@ function ReceiptRow({ receipt }: { receipt: ToolReceipt }) {
       >
         {status}
       </span>
-      <span className="shrink-0 tabular-nums text-muted-foreground" title={String(receipt.startedAt)}>
+      <span
+        className="shrink-0 tabular-nums text-muted-foreground"
+        title={String(receipt.startedAt)}
+      >
         {ts}
       </span>
     </div>

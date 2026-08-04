@@ -65,13 +65,10 @@ export function TabCaptureDialog({ onConfirm, onClose }: Props) {
         </div>
 
         <div className="space-y-3 px-4 py-3 text-sm leading-relaxed text-foreground/90">
-          <p>
-            We weren&apos;t able to start tab capture. To grant access:
-          </p>
+          <p>We weren&apos;t able to start tab capture. To grant access:</p>
           <ol className="list-decimal space-y-1 pl-5 text-xs text-muted-foreground">
             <li>
-              Click <span className="font-medium">Open extension permissions</span>{' '}
-              below.
+              Click <span className="font-medium">Open extension permissions</span> below.
             </li>
             <li>
               Toggle <span className="font-medium">Tab capture</span> on.

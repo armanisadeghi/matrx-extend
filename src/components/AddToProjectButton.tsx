@@ -95,7 +95,7 @@ export function AddToProjectButton({ url, title, variant = 'inline' }: AddToProj
     setAdding(topic.id);
     const r = await addSourceToTopic(topic.id, {
       url,
-      title: title ?? undefined,
+      ...(title != null && { title }),
     });
     setAdding(null);
     if (!r.ok) {
@@ -220,9 +220,7 @@ export function AddToProjectButton({ url, title, variant = 'inline' }: AddToProj
                       )}
                     </div>
                     {isAdding && <Loader2 className="size-3.5 shrink-0 animate-spin" />}
-                    {justAdded && (
-                      <Check className="size-3.5 shrink-0 text-emerald-500" />
-                    )}
+                    {justAdded && <Check className="size-3.5 shrink-0 text-emerald-500" />}
                     {alreadyIn && !isAdding && !justAdded && (
                       <Check className="size-3.5 shrink-0 text-muted-foreground" />
                     )}
@@ -236,9 +234,7 @@ export function AddToProjectButton({ url, title, variant = 'inline' }: AddToProj
           </>
         )}
 
-        {error && (
-          <div className="border-t px-3 py-2 text-[11px] text-destructive">{error}</div>
-        )}
+        {error && <div className="border-t px-3 py-2 text-[11px] text-destructive">{error}</div>}
       </PopoverContent>
     </Popover>
   );

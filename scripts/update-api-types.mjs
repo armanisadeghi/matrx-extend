@@ -78,13 +78,31 @@ if (skipTypeCheck) {
   console.log('\n  ⊘ Skipping type-check (--skip-typecheck)\n');
 } else {
   console.log('\n  Step 2: Running TypeScript type-check...\n');
+
+  // Resolve `tsc` through the bin, NOT through `./node_modules/typescript/bin/tsc`.
+  // Since the TS 7 migration, the `typescript` package name is aliased to
+  // @typescript/typescript6 (whose only bin is `tsc6`) so that openapi-typescript
+  // above still has a 6.0 programmatic API to import; the native TS 7 compiler is
+  // installed as @typescript/native and owns the `tsc` bin. Hardcoding the old path
+  // made this step die with MODULE_NOT_FOUND — which the catch below then reported
+  // as "TYPE ERRORS DETECTED", a flatly false message. See CLAUDE.md.
+  //
+  // The old `node --max-old-space-size=8192` prefix is gone with it: `tsc` is now a
+  // Go binary, not a Node script, so a V8 heap flag is meaningless to it (and it
+  // does not need one — a full typecheck is ~1s).
   try {
-    execSync('node --max-old-space-size=8192 ./node_modules/typescript/bin/tsc --noEmit', {
-      stdio: 'inherit',
-      cwd: PROJECT_ROOT,
-    });
+    execSync('pnpm exec tsc --noEmit', { stdio: 'inherit', cwd: PROJECT_ROOT });
     console.log('\n  ✓ Type-check passed — all types are aligned.\n');
-  } catch {
+  } catch (err) {
+    // A non-zero exit STATUS from tsc means real type errors. No status at all
+    // (binary missing, spawn failure) is a BROKEN TOOLCHAIN — reporting that as
+    // "type errors" sends the next engineer hunting for a bug that isn't there.
+    if (typeof err?.status !== 'number') {
+      console.error('\n  ✗ COULD NOT RUN THE TYPE-CHECKER (this is NOT a type error)');
+      console.error(`    ${err?.message ?? err}`);
+      console.error('    Check that `pnpm exec tsc --version` works.\n');
+      process.exit(1);
+    }
     console.error('\n  ✗ TYPE ERRORS DETECTED');
     console.error('    The codebase has types that are out of sync with the backend.');
     console.error('    Fix the errors above, then re-run: pnpm update-api-types\n');

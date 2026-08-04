@@ -12,6 +12,7 @@
  *                                 chain.
  */
 
+import { SENSITIVE_ATTR, sensitiveSelectorsForTab } from '@/lib/credentials/sensitive-fields';
 import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
@@ -267,7 +268,18 @@ export const get_element_at_point: ToolHandler<ElementAtPointArgs, unknown> = {
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (x: number, y: number) => {
+      func: (x: number, y: number, sensitiveSelectors: string[], sensitiveAttr: string) => {
+        // Redaction is the OR of three signals — marker attribute, the
+        // extension's own filled-field memory, and the legacy live
+        // `type === 'password'` check. See src/lib/credentials/sensitive-fields.ts.
+        const sensitiveEls = new Set<Element>();
+        for (const s of sensitiveSelectors) {
+          try {
+            for (const e of Array.from(document.querySelectorAll(s))) sensitiveEls.add(e);
+          } catch {
+            /* a selector that no longer parses simply matches nothing */
+          }
+        }
         function uniqueSelector(el: Element): string {
           if ('id' in el && (el as { id: string }).id) {
             return `#${CSS.escape((el as { id: string }).id)}`;
@@ -294,7 +306,9 @@ export const get_element_at_point: ToolHandler<ElementAtPointArgs, unknown> = {
         const el = document.elementFromPoint(x, y);
         if (!el) return { ok: false, reason: 'No element at that point' };
         const isPassword =
-          el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
+          el.hasAttribute(sensitiveAttr) ||
+          sensitiveEls.has(el) ||
+          (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password');
         const attrs: Record<string, string> = {};
         for (const a of Array.from(el.attributes)) {
           attrs[a.name] = isPassword && a.name === 'value' ? '***' : a.value;
@@ -308,7 +322,7 @@ export const get_element_at_point: ToolHandler<ElementAtPointArgs, unknown> = {
           ...(isPassword ? { masked: true } : {}),
         };
       },
-      args: [args.x, args.y],
+      args: [args.x, args.y, sensitiveSelectorsForTab(tabId), SENSITIVE_ATTR],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },
@@ -326,11 +340,24 @@ export const inspect_element: ToolHandler<InspectArgs, unknown> = {
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (selector: string) => {
+      func: (selector: string, sensitiveSelectors: string[], sensitiveAttr: string) => {
+        // Redaction is the OR of three signals — marker attribute, the
+        // extension's own filled-field memory, and the legacy live
+        // `type === 'password'` check. See src/lib/credentials/sensitive-fields.ts.
+        const sensitiveEls = new Set<Element>();
+        for (const s of sensitiveSelectors) {
+          try {
+            for (const e of Array.from(document.querySelectorAll(s))) sensitiveEls.add(e);
+          } catch {
+            /* a selector that no longer parses simply matches nothing */
+          }
+        }
         const el = document.querySelector(selector) as HTMLElement | null;
         if (!el) return { ok: false, reason: `No element at ${selector}` };
         const isPassword =
-          el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
+          el.hasAttribute(sensitiveAttr) ||
+          sensitiveEls.has(el) ||
+          (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password');
         const attrs: Record<string, string> = {};
         for (const a of Array.from(el.attributes)) {
           attrs[a.name] = isPassword && a.name === 'value' ? '***' : a.value;
@@ -367,7 +394,7 @@ export const inspect_element: ToolHandler<InspectArgs, unknown> = {
           ancestors,
         };
       },
-      args: [args.selector],
+      args: [args.selector, sensitiveSelectorsForTab(tabId), SENSITIVE_ATTR],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },
@@ -402,11 +429,31 @@ export const get_element_details: ToolHandler<ElementDetailsArgs, unknown> = {
     const refSelector = `[data-matrx-ref="${args.ref.replace(/^ref:/, '')}"]`;
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (selector: string, includeHtml: boolean, includeStyles: boolean) => {
+      func: (
+        selector: string,
+        includeHtml: boolean,
+        includeStyles: boolean,
+        sensitiveSelectors: string[],
+        sensitiveAttr: string,
+      ) => {
+        // Redaction is the OR of three signals — marker attribute, the
+        // extension's own filled-field memory, and the legacy live
+        // `type === 'password'` check. See src/lib/credentials/sensitive-fields.ts.
+        const sensitiveEls = new Set<Element>();
+        for (const s of sensitiveSelectors) {
+          try {
+            for (const e of Array.from(document.querySelectorAll(s))) sensitiveEls.add(e);
+          } catch {
+            /* a selector that no longer parses simply matches nothing */
+          }
+        }
+        const isSensitiveEl = (e: Element): boolean =>
+          e.hasAttribute(sensitiveAttr) ||
+          sensitiveEls.has(e) ||
+          (e.tagName === 'INPUT' && (e as HTMLInputElement).type === 'password');
         const el = document.querySelector(selector) as HTMLElement | null;
         if (!el) return { ok: false, reason: `No element for ${selector}` };
-        const isPassword =
-          el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
+        const isPassword = isSensitiveEl(el);
         const attrs: Record<string, string> = {};
         for (const a of Array.from(el.attributes)) {
           attrs[a.name] = isPassword && a.name === 'value' ? '***' : a.value;
@@ -442,7 +489,28 @@ export const get_element_details: ToolHandler<ElementDetailsArgs, unknown> = {
         }
         if (includeHtml) {
           const cap = 50 * 1024;
-          const html = el.innerHTML ?? '';
+          // Serialize from a CLONE whose sensitive descendants have their
+          // `value` attribute masked — otherwise a subtree containing a
+          // filled login field could round-trip the value as markup.
+          let html: string;
+          const descendants = Array.from(el.querySelectorAll('*'));
+          if (descendants.some(isSensitiveEl)) {
+            const clone = el.cloneNode(true) as HTMLElement;
+            const originals = [el, ...descendants];
+            const copies = [clone, ...Array.from(clone.querySelectorAll('*'))];
+            for (let i = 0; i < originals.length; i++) {
+              const orig = originals[i];
+              const copy = copies[i];
+              if (!orig || !copy) continue;
+              if (isSensitiveEl(orig) && copy.hasAttribute('value')) {
+                copy.setAttribute('value', '***');
+              }
+            }
+            html = clone.innerHTML ?? '';
+            out.html_redacted = true;
+          } else {
+            html = el.innerHTML ?? '';
+          }
           if (html.length > cap) {
             out.innerHTML = html.slice(0, cap);
             out.truncated = true;
@@ -452,7 +520,13 @@ export const get_element_details: ToolHandler<ElementDetailsArgs, unknown> = {
         }
         return out;
       },
-      args: [refSelector, args.include_html, args.include_styles],
+      args: [
+        refSelector,
+        args.include_html,
+        args.include_styles,
+        sensitiveSelectorsForTab(tabId),
+        SENSITIVE_ATTR,
+      ],
     });
     return first?.result ?? { ok: false, reason: 'no result' };
   },

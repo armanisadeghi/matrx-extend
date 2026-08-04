@@ -6,9 +6,9 @@
  * + a controlled open flag). The store subscriber refreshes the slice
  * whenever LISTS_CHANGED fires for this conversation.
  *
- * All edits go through src/lib/lists/storage.ts so the SW handlers and
- * the UI share one mutation path — the resulting LISTS_CHANGED broadcast
- * keeps the model's next-turn context aligned with what the user sees.
+ * All edits go through src/lib/lists/storage.ts. Tasks use the shared
+ * `chat.agent_task` table written by aidream; plans and user todos remain
+ * local. Broadcasts plus Realtime keep the panel aligned with server writes.
  */
 
 import { Badge } from '@/components/ui/badge';
@@ -28,35 +28,54 @@ import {
 import type { Task, TaskStatus, UserTodo } from '@/lib/lists/types';
 import { cn } from '@/lib/utils';
 import { useListsStore, useListsSubscriber } from '@/state/lists';
-import {
-  Check,
-  CircleDashed,
-  CircleSlash,
-  Clock,
-  Plus,
-  Trash2,
-  X,
-} from 'lucide-react';
+import { Check, CircleDashed, CircleSlash, Clock, Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface Props {
   conversationId: string | null;
   open: boolean;
   onClose: () => void;
+  /** Claim the lists store only while this surface's tab is visible. */
+  enabled?: boolean;
 }
 
 const STATUS_ORDER: TaskStatus[] = ['pending', 'in_progress', 'done', 'blocked', 'skipped'];
 
 const STATUS_META: Record<TaskStatus, { label: string; tone: string; icon: typeof Check }> = {
-  pending: { label: 'Pending', tone: 'bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300', icon: CircleDashed },
-  in_progress: { label: 'In progress', tone: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300', icon: Clock },
-  done: { label: 'Done', tone: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300', icon: Check },
-  blocked: { label: 'Blocked', tone: 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300', icon: CircleSlash },
-  skipped: { label: 'Skipped', tone: 'bg-zinc-200 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-500 line-through', icon: CircleSlash },
+  pending: {
+    label: 'Pending',
+    tone: 'bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
+    icon: CircleDashed,
+  },
+  in_progress: {
+    label: 'In progress',
+    tone: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
+    icon: Clock,
+  },
+  done: {
+    label: 'Done',
+    tone: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
+    icon: Check,
+  },
+  blocked: {
+    label: 'Blocked',
+    tone: 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300',
+    icon: CircleSlash,
+  },
+  skipped: {
+    label: 'Skipped',
+    tone: 'bg-zinc-200 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-500 line-through',
+    icon: CircleSlash,
+  },
 };
 
-export function TaskPanel({ conversationId, open, onClose }: Props): React.JSX.Element | null {
-  useListsSubscriber(conversationId);
+export function TaskPanel({
+  conversationId,
+  open,
+  onClose,
+  enabled = true,
+}: Props): React.JSX.Element | null {
+  useListsSubscriber(conversationId, enabled);
   const plan = useListsStore((s) => s.plan);
   const tasks = useListsStore((s) => s.tasks);
   const userTodos = useListsStore((s) => s.user_todos);
@@ -71,7 +90,9 @@ export function TaskPanel({ conversationId, open, onClose }: Props): React.JSX.E
     return (
       <div className="fixed inset-y-0 right-0 z-40 w-96 border-l border-zinc-200 bg-white p-4 shadow-xl dark:border-zinc-800 dark:bg-zinc-950">
         <Header onClose={onClose} />
-        <p className="mt-8 text-sm text-zinc-500">Start a conversation to begin tracking tasks here.</p>
+        <p className="mt-8 text-sm text-zinc-500">
+          Start a conversation to begin tracking tasks here.
+        </p>
       </div>
     );
   }
@@ -100,7 +121,7 @@ export function TaskPanel({ conversationId, open, onClose }: Props): React.JSX.E
             ) : null}
             <ol className="mt-2 space-y-1 text-xs">
               {plan.steps.map((s, i) => (
-                <li key={i} className="flex gap-2">
+                <li key={`${i}:${s}`} className="flex gap-2">
                   <span className="w-4 text-zinc-400">{i + 1}.</span>
                   <span>{s}</span>
                 </li>
@@ -121,7 +142,9 @@ export function TaskPanel({ conversationId, open, onClose }: Props): React.JSX.E
           />
           <div className="mt-2 space-y-1">
             {tasks.length === 0 ? (
-              <p className="text-xs text-zinc-500">No tasks yet. The agent will populate this as work progresses.</p>
+              <p className="text-xs text-zinc-500">
+                No tasks yet. The agent will populate this as work progresses.
+              </p>
             ) : (
               tasks.map((t) => <TaskRow key={t.id} task={t} conversationId={cid} />)
             )}
@@ -167,10 +190,14 @@ export function TaskPanel({ conversationId, open, onClose }: Props): React.JSX.E
           />
           <div className="mt-2 space-y-1">
             {userTodos.length === 0 ? (
-              <p className="text-xs text-zinc-500">No items from the agent. When it asks you to do something, it shows up here.</p>
+              <p className="text-xs text-zinc-500">
+                No items from the agent. When it asks you to do something, it shows up here.
+              </p>
             ) : (
               <>
-                {openTodos.map((t) => <UserTodoRow key={t.id} todo={t} conversationId={cid} />)}
+                {openTodos.map((t) => (
+                  <UserTodoRow key={t.id} todo={t} conversationId={cid} />
+                ))}
                 {doneTodos.length ? (
                   <details className="mt-2">
                     <summary className="cursor-pointer text-xs text-zinc-500">
@@ -234,7 +261,10 @@ function Header({ onClose }: { onClose: () => void }): React.JSX.Element {
   );
 }
 
-function SectionTitle({ label, right }: { label: string; right?: React.ReactNode }): React.JSX.Element {
+function SectionTitle({
+  label,
+  right,
+}: { label: string; right?: React.ReactNode }): React.JSX.Element {
   return (
     <div className="flex items-center justify-between border-b border-zinc-200 pb-1 dark:border-zinc-800">
       <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{label}</h3>
@@ -243,7 +273,10 @@ function SectionTitle({ label, right }: { label: string; right?: React.ReactNode
   );
 }
 
-function TaskRow({ task, conversationId }: { task: Task; conversationId: string }): React.JSX.Element {
+function TaskRow({
+  task,
+  conversationId,
+}: { task: Task; conversationId: string }): React.JSX.Element {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(task.title);
   const meta = STATUS_META[task.status];
@@ -256,12 +289,17 @@ function TaskRow({ task, conversationId }: { task: Task; conversationId: string 
         className="mt-0.5"
         onClick={() => {
           const idx = STATUS_ORDER.indexOf(task.status);
-          const next = STATUS_ORDER[(idx + 1) % STATUS_ORDER.length]!;
+          const next = STATUS_ORDER[(idx + 1) % STATUS_ORDER.length] ?? 'pending';
           void updateTask(conversationId, task.id, { status: next });
         }}
         title={`${meta.label} — click to cycle`}
       >
-        <Icon className={cn('h-3.5 w-3.5', task.status === 'done' ? 'text-emerald-600' : 'text-zinc-400')} />
+        <Icon
+          className={cn(
+            'h-3.5 w-3.5',
+            task.status === 'done' ? 'text-emerald-600' : 'text-zinc-400',
+          )}
+        />
       </button>
       <div className="min-w-0 flex-1">
         {editing ? (
@@ -286,10 +324,18 @@ function TaskRow({ task, conversationId }: { task: Task; conversationId: string 
         ) : (
           <button
             type="button"
-            onClick={() => setEditing(true)}
+            onClick={() => {
+              // Seed from the CURRENT title — the once-per-mount useState
+              // meant an agent rename showed (and blur wrote back) the
+              // stale title, silently undoing the agent's update.
+              setDraft(task.title);
+              setEditing(true);
+            }}
             className={cn(
               'block w-full text-left',
-              task.status === 'done' || task.status === 'skipped' ? 'text-zinc-400 line-through' : '',
+              task.status === 'done' || task.status === 'skipped'
+                ? 'text-zinc-400 line-through'
+                : '',
             )}
           >
             {task.title}
@@ -345,11 +391,14 @@ function UserTodoRow({
 export function TaskPanelChip({
   conversationId,
   onClick,
+  enabled = true,
 }: {
   conversationId: string | null;
   onClick: () => void;
+  /** Claim the lists store only while this surface's tab is visible. */
+  enabled?: boolean;
 }): React.JSX.Element | null {
-  useListsSubscriber(conversationId);
+  useListsSubscriber(conversationId, enabled);
   const plan = useListsStore((s) => s.plan);
   const tasks = useListsStore((s) => s.tasks);
   const userTodos = useListsStore((s) => s.user_todos);
@@ -373,9 +422,7 @@ export function TaskPanelChip({
           📋 {done}/{total}
         </span>
       ) : null}
-      {openTodos > 0 ? (
-        <span className="text-amber-600">📌 {openTodos}</span>
-      ) : null}
+      {openTodos > 0 ? <span className="text-amber-600">📌 {openTodos}</span> : null}
     </Button>
   );
 }

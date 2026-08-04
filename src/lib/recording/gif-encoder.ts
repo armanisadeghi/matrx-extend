@@ -77,11 +77,7 @@ export function encodeGif(opts: EncodeGifOptions): Uint8Array {
 }
 
 // ─── frame quantization ────────────────────────────────────────────────────
-function buildSampleBuffer(
-  frames: GifFrameInput[],
-  width: number,
-  height: number,
-): Uint8Array {
+function buildSampleBuffer(frames: GifFrameInput[], width: number, height: number): Uint8Array {
   // NeuQuant wants an RGB stream (no alpha) sampled across all frames. To
   // keep palette learning bounded for long recordings we cap total samples
   // at ~600k pixels, picking from frames evenly.
@@ -313,10 +309,14 @@ class NeuQuant {
   private freq = new Int32Array(NeuQuant.NETSIZE);
   private radpower = new Int32Array(NeuQuant.INIT_RAD);
 
-  constructor(
-    private readonly pixels: Uint8Array,
-    private readonly sampleFac: number,
-  ) {
+  // Explicit fields rather than constructor parameter properties: the latter
+  // is TS-only syntax that can't be erased, which `erasableSyntaxOnly` rejects.
+  private readonly pixels: Uint8Array;
+  private readonly sampleFac: number;
+
+  constructor(pixels: Uint8Array, sampleFac: number) {
+    this.pixels = pixels;
+    this.sampleFac = sampleFac;
     for (let i = 0; i < NeuQuant.NETSIZE; i++) {
       const v = (i << (NeuQuant.INT_BIAS_SHIFT + 8)) / NeuQuant.NETSIZE;
       this.network.push([v, v, v, 0]);
@@ -435,7 +435,7 @@ class NeuQuant {
     let bestbiaspos = bestpos;
     for (let i = 0; i < NeuQuant.NETSIZE; i++) {
       const n = this.network[i]!;
-      let dist = Math.abs(n[0]! - b) + Math.abs(n[1]! - g) + Math.abs(n[2]! - r);
+      const dist = Math.abs(n[0]! - b) + Math.abs(n[1]! - g) + Math.abs(n[2]! - r);
       if (dist < bestd) {
         bestd = dist;
         bestpos = i;

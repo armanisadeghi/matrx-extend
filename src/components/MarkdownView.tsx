@@ -57,7 +57,10 @@ const COMPONENTS: Components = {
     <p className="my-2 text-sm leading-relaxed first:mt-0 last:mb-0" {...props} />
   ),
   ul: ({ node: _n, ...props }) => (
-    <ul className="my-2 ml-5 list-disc space-y-0.5 text-sm marker:text-muted-foreground" {...props} />
+    <ul
+      className="my-2 ml-5 list-disc space-y-0.5 text-sm marker:text-muted-foreground"
+      {...props}
+    />
   ),
   ol: ({ node: _n, ...props }) => (
     <ol
@@ -115,9 +118,7 @@ const COMPONENTS: Components = {
     </div>
   ),
   thead: ({ node: _n, ...props }) => <thead className="border-b border-border" {...props} />,
-  th: ({ node: _n, ...props }) => (
-    <th className="px-2 py-1 text-left font-semibold" {...props} />
-  ),
+  th: ({ node: _n, ...props }) => <th className="px-2 py-1 text-left font-semibold" {...props} />,
   td: ({ node: _n, ...props }) => (
     <td className="border-b border-border/40 px-2 py-1 align-top" {...props} />
   ),

@@ -62,6 +62,7 @@ export interface ScrapeOptions {
   preferDefuddle: boolean;
   includeImages: boolean;
   includeVideos: boolean;
+  includeAudio: boolean;
   includeLinks: boolean;
   includeStructured: boolean;
 }
@@ -70,6 +71,7 @@ const DEFAULT_OPTS: ScrapeOptions = {
   preferDefuddle: true,
   includeImages: true,
   includeVideos: true,
+  includeAudio: true,
   includeLinks: true,
   includeStructured: true,
 };
@@ -88,7 +90,11 @@ export async function runScrape(
 ): Promise<SoupResult> {
   const o = { ...DEFAULT_OPTS, ...opts };
 
-  const metadata = collectMetadata();
+  // Thread `doc` to every collector — they defaulted to the GLOBAL document,
+  // which equals `doc` in a content script but is the EMPTY offscreen page in
+  // the fetch-and-parse path: fetch_url_as_markdown silently shipped wrong
+  // metadata and empty links/images/json-ld for every fetched URL.
+  const metadata = collectMetadata(doc);
   const article = await extractArticle(doc, o.preferDefuddle);
 
   return {
@@ -96,11 +102,12 @@ export async function runScrape(
     capturedAt: Date.now(),
     metadata,
     article,
-    images: o.includeImages ? collectImages() : [],
-    videos: o.includeVideos ? collectVideos() : [],
-    audio: o.includeImages ? collectAudio() : [],
-    links: o.includeLinks ? collectLinks() : [],
-    ld_json: o.includeStructured ? collectJsonLd() : [],
+    images: o.includeImages ? collectImages(doc) : [],
+    videos: o.includeVideos ? collectVideos(doc) : [],
+    // gated on its own flag — it was keyed to includeImages by accident
+    audio: o.includeAudio ? collectAudio(doc) : [],
+    links: o.includeLinks ? collectLinks(doc) : [],
+    ld_json: o.includeStructured ? collectJsonLd(doc) : [],
     seo: runAudit(doc),
     raw_html_size: doc.documentElement.outerHTML.length,
   };
@@ -325,8 +332,7 @@ async function defuddleExtract(doc: Document): Promise<SoupResult['article'] | n
  * other heuristics functioning while neutralizing the worst false
  * positives.
  */
-const READABILITY_NEGATIVE_TOKENS =
-  /\b(meta|comment|footnote|footer|byline|hidden|hid|sidebar)\b/i;
+const READABILITY_NEGATIVE_TOKENS = /\b(meta|comment|footnote|footer|byline|hidden|hid|sidebar)\b/i;
 
 /**
  * Pre-pass mutating a CLONED Readability input so short value-bearing

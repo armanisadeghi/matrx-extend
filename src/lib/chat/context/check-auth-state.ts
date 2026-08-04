@@ -55,7 +55,7 @@ export async function checkAuthState(tabId: number, url: string): Promise<AuthSt
           if (rect.width === 0 && rect.height === 0) return false;
           const style = window.getComputedStyle(el);
           if (style.visibility === 'hidden' || style.display === 'none') return false;
-          if (parseFloat(style.opacity || '1') === 0) return false;
+          if (Number.parseFloat(style.opacity || '1') === 0) return false;
           return true;
         }
 

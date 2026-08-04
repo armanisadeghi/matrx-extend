@@ -22,7 +22,6 @@
  */
 
 import {
-  checkAvailability,
   detectLanguage as detectLangApi,
   fullCapabilityReport,
   proofread as proofreadApi,
@@ -178,9 +177,13 @@ export const ai_translate: ToolHandler<TranslateArgs, unknown> = {
       }
     }
     const r = await translateApi(args.text, src, args.target_language);
-    if (!r.ok)
-      return { ok: false, reason: r.reason, availability: r.availability };
-    return { ok: true, translation: r.data, source_language: src, target_language: args.target_language };
+    if (!r.ok) return { ok: false, reason: r.reason, availability: r.availability };
+    return {
+      ok: true,
+      translation: r.data,
+      source_language: src,
+      target_language: args.target_language,
+    };
   },
 };
 
@@ -248,8 +251,7 @@ export const ai_describe_image: ToolHandler<DescribeImageArgs, unknown> = {
       ],
       { expectedInputs: [{ type: 'text' }, { type: 'image' }] },
     );
-    if (!r.ok)
-      return { ok: false, reason: r.reason, availability: r.availability };
+    if (!r.ok) return { ok: false, reason: r.reason, availability: r.availability };
     return { ok: true, description: r.data };
   },
 };

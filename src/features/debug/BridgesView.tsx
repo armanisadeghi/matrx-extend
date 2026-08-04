@@ -13,55 +13,60 @@
  * primitives are the engine.
  */
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { JsonTree } from '@/components/ui/json-tree';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { JsonTree } from "@/components/ui/json-tree";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-import { pingHealth } from '@/lib/api/routes/health';
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { pingHealth } from "@/lib/api/routes/health";
 import {
   type BridgeTrafficEntry,
   setBridgeTrafficEnabled,
   startBridgeTrafficRelay,
   useBridgeTrafficStore,
-} from '@/lib/debug/bridge-traffic';
-import { type DebugEvent, log, useDebugStore } from '@/lib/debug/log';
-import { getDesktopState, probeDesktop } from '@/lib/desktop/bridge';
+} from "@/lib/debug/bridge-traffic";
+import { type DebugEvent, log, useDebugStore } from "@/lib/debug/log";
+import { getDesktopState, probeDesktop } from "@/lib/desktop/bridge";
 import {
+  engineHealthState,
+  formatDesktopConnectionLabel,
+} from "@/lib/desktop/types";
+import {
+  getEngineBaseUrl,
   getEnginePortOverride,
   invalidateEnginePortCache,
   setEnginePortOverride,
-} from '@/lib/desktop/discovery';
-import { rpcHttp } from '@/lib/desktop/http';
+} from "@/lib/desktop/discovery";
+import { autoPair, clearPairToken, getPairToken, rpcHttp } from "@/lib/desktop/http";
 import {
+  type WsControlResult,
   connectWs,
   disconnectWs,
   getWsState,
   getWsStateChangedAt,
   onWsMessage,
-  type WsControlResult,
-} from '@/lib/desktop/ws-client';
+} from "@/lib/desktop/ws-client";
 import {
   connectBroadcast,
   disconnectBroadcast,
   publishToFrontend,
-} from '@/lib/frontend-bridge/broadcast';
-import { ALLOWED_ORIGIN_PATTERNS } from '@/lib/origin-allowlist';
+} from "@/lib/frontend-bridge/broadcast";
+import { ALLOWED_ORIGIN_PATTERNS } from "@/lib/origin-allowlist";
 import {
   webmcp_call_page_tool,
   webmcp_check_availability,
   webmcp_list_page_tools,
-} from '@/lib/tools/handlers/webmcp';
-import { registerToolsOnActiveTab } from '@/lib/webmcp/register';
-import { useActiveToolsStore } from '@/state/active-tools';
-import { cn } from '@/lib/utils';
+} from "@/lib/tools/handlers/webmcp";
+import { cn } from "@/lib/utils";
+import { registerToolsOnActiveTab } from "@/lib/webmcp/register";
+import { useActiveToolsStore } from "@/state/active-tools";
 import {
   ChevronDown,
   ChevronRight,
@@ -74,18 +79,18 @@ import {
   RefreshCw,
   Send,
   Wifi,
-} from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // Synthetic ToolContext for the debug runner — these tools don't post results
 // back to a conversation, so the conversation/run/call IDs are placeholders.
 function debugCtx(callId: string) {
   return {
     conversationId: null,
-    runId: 'debug-bridges',
+    runId: "debug-bridges",
     callId,
     agentName: null,
-    permissionMode: 'act' as const,
+    permissionMode: "act" as const,
     assignedTabId: null,
   };
 }
@@ -148,7 +153,13 @@ function Panel({
   );
 }
 
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
+function Section({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="space-y-1 rounded-md bg-background/40 p-2">
       <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -172,7 +183,9 @@ function ResultBox({ label, value }: { label: string; value: unknown }) {
   if (value === undefined) return null;
   return (
     <div className="space-y-1">
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
       <JsonTree data={value} defaultDepth={2} />
     </div>
   );
@@ -184,13 +197,16 @@ function ChannelAPanel() {
   const liveTools = useActiveToolsStore((s) => s.liveTools);
   const loadedByConvo = useActiveToolsStore((s) => s.loadedByConversation);
   const [pinging, setPinging] = useState(false);
-  const [pingResult, setPingResult] = useState<{ ms: number; ok: boolean } | null>(null);
+  const [pingResult, setPingResult] = useState<{
+    ms: number;
+    ok: boolean;
+  } | null>(null);
 
   const onPing = useCallback(async () => {
     setPinging(true);
     setPingResult(null);
     const t0 = Date.now();
-    const r = await pingHealth('debug bridges panel');
+    const r = await pingHealth("debug bridges panel");
     setPingResult({ ms: Date.now() - t0, ok: r !== null });
     setPinging(false);
   }, []);
@@ -202,17 +218,22 @@ function ChannelAPanel() {
     >
       <Section label="Health">
         <div className="flex items-center gap-2">
-          <Button size="sm" variant="outline" onClick={onPing} disabled={pinging}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onPing}
+            disabled={pinging}
+          >
             <PlugZap className="mr-1 size-3.5" /> Send test ping
           </Button>
           {pingResult && (
             <span
               className={cn(
-                'font-mono text-[11px]',
-                pingResult.ok ? 'text-emerald-500' : 'text-red-500',
+                "font-mono text-[11px]",
+                pingResult.ok ? "text-emerald-500" : "text-red-500",
               )}
             >
-              {pingResult.ok ? 'OK' : 'FAIL'} · {pingResult.ms}ms
+              {pingResult.ok ? "OK" : "FAIL"} · {pingResult.ms}ms
             </span>
           )}
           <span className="ml-auto text-[10px] text-muted-foreground">
@@ -262,18 +283,31 @@ function ChannelBPanel() {
 
 function DiscoverySection() {
   const [override, setOverrideState] = useState<number | null>(null);
-  const [overrideDraft, setOverrideDraft] = useState('');
+  const [overrideDraft, setOverrideDraft] = useState("");
   const [resolved, setResolved] = useState<string | null>(null);
+  const [healthDetail, setHealthDetail] = useState<string | null>(null);
   const [working, setWorking] = useState(false);
+  const [paired, setPaired] = useState<boolean>(false);
+  const [pairWorking, setPairWorking] = useState(false);
 
   const refresh = useCallback(async () => {
     const ov = await getEnginePortOverride();
     setOverrideState(ov);
+    setPaired((await getPairToken()) !== null);
     const s = getDesktopState();
-    if (s.transport === 'http' && s.health) {
-      // The bridge cached the resolved port — surface it via an HTTP probe.
-      // discovery.ts doesn't expose the cache value directly so we infer
-      // from a quick rpcHttp health round-trip.
+    if (s.transport !== "none") {
+      setResolved(formatDesktopConnectionLabel(s.transport, s.health));
+      const state = engineHealthState(s.health);
+      const parts: string[] = [`engine health: ${state}`];
+      if (s.health?.degraded?.length)
+        parts.push(`degraded: ${s.health.degraded.join(", ")}`);
+      if (s.health?.failed?.length)
+        parts.push(`failed: ${s.health.failed.join(", ")}`);
+      if (s.health?.version) parts.push(`v${s.health.version}`);
+      setHealthDetail(parts.join(" · "));
+    } else {
+      setResolved(null);
+      setHealthDetail(null);
     }
   }, []);
 
@@ -284,48 +318,100 @@ function DiscoverySection() {
   const onRediscover = useCallback(async () => {
     setWorking(true);
     setResolved(null);
+    setHealthDetail(null);
     await invalidateEnginePortCache();
     const r = await probeDesktop();
-    if (r.transport !== 'none') {
-      setResolved(r.transport === 'http' ? 'http transport active' : 'native transport active');
+    if (r.transport !== "none") {
+      setResolved(formatDesktopConnectionLabel(r.transport, r.health));
+      const state = engineHealthState(r.health);
+      const parts: string[] = [`engine health: ${state}`];
+      if (r.health?.degraded?.length)
+        parts.push(`degraded: ${r.health.degraded.join(", ")}`);
+      if (r.health?.failed?.length)
+        parts.push(`failed: ${r.health.failed.join(", ")}`);
+      if (r.health?.version) parts.push(`v${r.health.version}`);
+      setHealthDetail(parts.join(" · "));
     } else {
-      setResolved('engine offline');
+      setResolved("engine offline");
+      setHealthDetail(null);
     }
-    log.info('desktop', `bridges: re-discover → ${r.transport}`);
+    log.info("desktop", `bridges: re-discover → ${r.transport}`);
     setWorking(false);
   }, []);
 
   const onSaveOverride = useCallback(async () => {
     const v = overrideDraft.trim();
-    if (v === '') {
+    if (v === "") {
       await setEnginePortOverride(null);
-      log.info('desktop', 'bridges: override cleared');
+      log.info("desktop", "bridges: override cleared");
     } else {
       const n = Number(v);
       if (!Number.isInteger(n) || n < 1 || n > 65535) {
-        log.warn('desktop', `bridges: invalid port "${v}"`);
+        log.warn("desktop", `bridges: invalid port "${v}"`);
         return;
       }
       await setEnginePortOverride(n);
-      log.info('desktop', `bridges: override → ${n}`);
+      log.info("desktop", `bridges: override → ${n}`);
     }
     await refresh();
   }, [overrideDraft, refresh]);
 
   const onClearOverride = useCallback(async () => {
     await setEnginePortOverride(null);
-    setOverrideDraft('');
-    log.info('desktop', 'bridges: override cleared');
+    setOverrideDraft("");
+    log.info("desktop", "bridges: override cleared");
     await refresh();
   }, [refresh]);
 
+  const onRepair = useCallback(async () => {
+    setPairWorking(true);
+    await clearPairToken();
+    const baseUrl = await getEngineBaseUrl();
+    if (!baseUrl) {
+      log.warn("desktop", "bridges: re-pair failed — engine base URL unresolved");
+      setPaired(false);
+      setPairWorking(false);
+      return;
+    }
+    const token = await autoPair(baseUrl);
+    setPaired(token !== null);
+    log.info(
+      "desktop",
+      token !== null
+        ? "bridges: re-pair OK (engine-issued token stored)"
+        : "bridges: re-pair failed — engine offline or pre-pairing version",
+    );
+    setPairWorking(false);
+  }, []);
+
   return (
     <Section label="Discovery">
-      <KV k="override" v={override === null ? '(none)' : String(override)} />
-      <KV k="status" v={resolved ?? '(not yet probed this session)'} />
+      <KV k="override" v={override === null ? "(none)" : String(override)} />
+      <KV k="status" v={resolved ?? "(not yet probed this session)"} />
+      {healthDetail && <KV k="health" v={healthDetail} />}
+      <KV k="paired" v={paired ? "yes (token stored)" : "no"} />
       <div className="flex flex-wrap items-center gap-1.5 pt-1">
-        <Button size="sm" variant="outline" onClick={onRediscover} disabled={working}>
-          <RefreshCw className={cn('mr-1 size-3.5', working && 'animate-spin')} /> Re-discover
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={onRediscover}
+          disabled={working}
+        >
+          <RefreshCw
+            className={cn("mr-1 size-3.5", working && "animate-spin")}
+          />{" "}
+          Re-discover
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={onRepair}
+          disabled={pairWorking}
+        >
+          <RefreshCw
+            className={cn("mr-1 size-3.5", pairWorking && "animate-spin")}
+          />{" "}
+          Re-pair
         </Button>
         <Button size="sm" variant="outline" onClick={onClearOverride}>
           Clear override
@@ -353,8 +439,8 @@ function HttpRpcSection() {
   const [versionResult, setVersionResult] = useState<unknown>(undefined);
   const [capsResult, setCapsResult] = useState<unknown>(undefined);
   const [capsTools, setCapsTools] = useState<string[]>([]);
-  const [toolName, setToolName] = useState('');
-  const [argsText, setArgsText] = useState('{}');
+  const [toolName, setToolName] = useState("");
+  const [argsText, setArgsText] = useState("{}");
   const [callResult, setCallResult] = useState<unknown>(undefined);
 
   const run = useCallback(
@@ -363,7 +449,7 @@ function HttpRpcSection() {
       setter(undefined);
       const r = await rpcHttp({ command });
       setter(r);
-      log.info('desktop', `bridges: rpc ${command}`, r);
+      log.info("desktop", `bridges: rpc ${command}`, r);
       setBusy(null);
       return r;
     },
@@ -371,11 +457,11 @@ function HttpRpcSection() {
   );
 
   const onCapabilities = useCallback(async () => {
-    const r = await run('capabilities', 'capabilities', setCapsResult);
-    if (r.ok && r.data && typeof r.data === 'object') {
+    const r = await run("capabilities", "capabilities", setCapsResult);
+    if (r.ok && r.data && typeof r.data === "object") {
       const list = (r.data as { tools?: Array<{ name?: string }> }).tools;
       if (Array.isArray(list)) {
-        setCapsTools(list.map((t) => t.name ?? '').filter(Boolean));
+        setCapsTools(list.map((t) => t.name ?? "").filter(Boolean));
       }
     }
   }, [run]);
@@ -385,21 +471,24 @@ function HttpRpcSection() {
     try {
       parsed = JSON.parse(argsText);
     } catch (err) {
-      setCallResult({ ok: false, error: `invalid JSON: ${(err as Error).message}` });
+      setCallResult({
+        ok: false,
+        error: `invalid JSON: ${(err as Error).message}`,
+      });
       return;
     }
     if (!toolName.trim()) {
-      setCallResult({ ok: false, error: 'tool name required' });
+      setCallResult({ ok: false, error: "tool name required" });
       return;
     }
-    setBusy('call-tool');
+    setBusy("call-tool");
     setCallResult(undefined);
     const r = await rpcHttp({
-      command: 'tool',
+      command: "tool",
       args: { tool_name: toolName.trim(), tool_input: parsed },
     });
     setCallResult(r);
-    log.info('desktop', `bridges: call ${toolName}`, r);
+    log.info("desktop", `bridges: call ${toolName}`, r);
     setBusy(null);
   }, [argsText, toolName]);
 
@@ -409,7 +498,7 @@ function HttpRpcSection() {
         <Button
           size="sm"
           variant="outline"
-          onClick={() => void run('health', 'health', setHealthResult)}
+          onClick={() => void run("health", "health", setHealthResult)}
           disabled={busy !== null}
         >
           Health
@@ -417,7 +506,7 @@ function HttpRpcSection() {
         <Button
           size="sm"
           variant="outline"
-          onClick={() => void run('version', 'version', setVersionResult)}
+          onClick={() => void run("version", "version", setVersionResult)}
           disabled={busy !== null}
         >
           Version
@@ -441,7 +530,7 @@ function HttpRpcSection() {
           {capsTools.length > 0 && (
             <KV
               k="tool_count"
-              v={`${capsTools.length} (first 5: ${capsTools.slice(0, 5).join(', ')})`}
+              v={`${capsTools.length} (first 5: ${capsTools.slice(0, 5).join(", ")})`}
             />
           )}
           <JsonTree data={capsResult} defaultDepth={1} />
@@ -479,7 +568,12 @@ function HttpRpcSection() {
           rows={3}
           className="font-mono text-[11px]"
         />
-        <Button size="sm" variant="outline" onClick={() => void onCallTool()} disabled={busy !== null}>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => void onCallTool()}
+          disabled={busy !== null}
+        >
           <Send className="mr-1 size-3.5" /> Send
         </Button>
         <ResultBox label="result" value={callResult} />
@@ -495,10 +589,11 @@ function WsSection() {
   const [lastPing, setLastPing] = useState<number | null>(null);
   const [lastPong, setLastPong] = useState<number | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  const [lastResult, setLastResult] = useState<
-    | { kind: 'connect' | 'disconnect' | 'reconnect'; ts: number; result: WsControlResult }
-    | null
-  >(null);
+  const [lastResult, setLastResult] = useState<{
+    kind: "connect" | "disconnect" | "reconnect";
+    ts: number;
+    result: WsControlResult;
+  } | null>(null);
 
   useEffect(() => {
     const off = onWsMessage((payload) => {
@@ -507,13 +602,13 @@ function WsSection() {
         if (next.length > 10) next.length = 10;
         return next;
       });
-      if (payload && typeof payload === 'object') {
+      if (payload && typeof payload === "object") {
         const p = payload as Record<string, unknown>;
-        if (typeof p.tool_catalog_hash === 'string') {
+        if (typeof p.tool_catalog_hash === "string") {
           setLastHash(p.tool_catalog_hash);
         }
-        if (p.type === 'ping') setLastPing(Date.now());
-        if (p.type === 'pong') setLastPong(Date.now());
+        if (p.type === "ping") setLastPing(Date.now());
+        if (p.type === "pong") setLastPong(Date.now());
       }
     });
     const t = setInterval(() => force((n) => n + 1), 1000);
@@ -524,30 +619,30 @@ function WsSection() {
   }, []);
 
   const onConnect = useCallback(async () => {
-    setBusy('connect');
+    setBusy("connect");
     try {
       const r = await connectWs();
-      setLastResult({ kind: 'connect', ts: Date.now(), result: r });
+      setLastResult({ kind: "connect", ts: Date.now(), result: r });
     } finally {
       setBusy(null);
     }
   }, []);
   const onDisconnect = useCallback(async () => {
-    setBusy('disconnect');
+    setBusy("disconnect");
     try {
       const r = await disconnectWs();
-      setLastResult({ kind: 'disconnect', ts: Date.now(), result: r });
+      setLastResult({ kind: "disconnect", ts: Date.now(), result: r });
     } finally {
       setBusy(null);
     }
   }, []);
   const onForceReconnect = useCallback(async () => {
-    setBusy('reconnect');
+    setBusy("reconnect");
     try {
       await disconnectWs();
       await new Promise((r) => setTimeout(r, 100));
       const r = await connectWs();
-      setLastResult({ kind: 'reconnect', ts: Date.now(), result: r });
+      setLastResult({ kind: "reconnect", ts: Date.now(), result: r });
     } finally {
       setBusy(null);
     }
@@ -555,11 +650,11 @@ function WsSection() {
 
   const state = getWsState();
   const stateColor =
-    state === 'open'
-      ? 'text-emerald-500'
-      : state === 'closed'
-        ? 'text-amber-500'
-        : 'text-muted-foreground';
+    state === "open"
+      ? "text-emerald-500"
+      : state === "closed"
+        ? "text-amber-500"
+        : "text-muted-foreground";
   const stateChangedAt = getWsStateChangedAt();
   const isBusy = busy !== null;
 
@@ -578,17 +673,36 @@ function WsSection() {
           </span>
         }
       />
-      <KV k="last_ping" v={lastPing ? new Date(lastPing).toLocaleTimeString() : '—'} />
-      <KV k="last_pong" v={lastPong ? new Date(lastPong).toLocaleTimeString() : '—'} />
-      <KV k="last_tool_catalog_hash" v={lastHash ?? '—'} />
+      <KV
+        k="last_ping"
+        v={lastPing ? new Date(lastPing).toLocaleTimeString() : "—"}
+      />
+      <KV
+        k="last_pong"
+        v={lastPong ? new Date(lastPong).toLocaleTimeString() : "—"}
+      />
+      <KV k="last_tool_catalog_hash" v={lastHash ?? "—"} />
       <div className="flex flex-wrap items-center gap-1.5 pt-1">
-        <Button size="sm" variant="outline" onClick={() => void onConnect()} disabled={isBusy}>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => void onConnect()}
+          disabled={isBusy}
+        >
           <Plug
-            className={cn('mr-1 size-3.5', busy === 'connect' && 'animate-pulse')}
-          />{' '}
+            className={cn(
+              "mr-1 size-3.5",
+              busy === "connect" && "animate-pulse",
+            )}
+          />{" "}
           Connect
         </Button>
-        <Button size="sm" variant="outline" onClick={() => void onDisconnect()} disabled={isBusy}>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => void onDisconnect()}
+          disabled={isBusy}
+        >
           <Power className="mr-1 size-3.5" /> Disconnect
         </Button>
         <Button
@@ -598,8 +712,11 @@ function WsSection() {
           disabled={isBusy}
         >
           <RefreshCw
-            className={cn('mr-1 size-3.5', busy === 'reconnect' && 'animate-spin')}
-          />{' '}
+            className={cn(
+              "mr-1 size-3.5",
+              busy === "reconnect" && "animate-spin",
+            )}
+          />{" "}
           Force reconnect
         </Button>
         {busy && (
@@ -611,14 +728,16 @@ function WsSection() {
       {lastResult && (
         <div
           className={cn(
-            'rounded bg-secondary/40 p-1.5 font-mono text-[11px]',
-            lastResult.result.ok ? 'text-emerald-500' : 'text-red-500',
+            "rounded bg-secondary/40 p-1.5 font-mono text-[11px]",
+            lastResult.result.ok ? "text-emerald-500" : "text-red-500",
           )}
         >
           <span className="text-muted-foreground">
             {new Date(lastResult.ts).toLocaleTimeString()} · {lastResult.kind}
-          </span>{' '}
-          {lastResult.result.ok ? 'OK' : `FAIL${lastResult.result.stage ? ` @ ${lastResult.result.stage}` : ''}: ${lastResult.result.error ?? '(no error message)'}`}
+          </span>{" "}
+          {lastResult.result.ok
+            ? "OK"
+            : `FAIL${lastResult.result.stage ? ` @ ${lastResult.result.stage}` : ""}: ${lastResult.result.error ?? "(no error message)"}`}
         </div>
       )}
       <div className="space-y-1 pt-1">
@@ -626,11 +745,16 @@ function WsSection() {
           last 10 inbound frames
         </div>
         {tail.length === 0 ? (
-          <div className="text-[10px] text-muted-foreground">no inbound frames yet</div>
+          <div className="text-[10px] text-muted-foreground">
+            no inbound frames yet
+          </div>
         ) : (
           <div className="max-h-48 space-y-1 overflow-auto">
             {tail.map((entry) => (
-              <div key={`${entry.ts}-${Math.random()}`} className="rounded bg-secondary/40 p-1.5">
+              <div
+                key={`${entry.ts}-${Math.random()}`}
+                className="rounded bg-secondary/40 p-1.5"
+              >
                 <div className="font-mono text-[10px] text-muted-foreground">
                   {new Date(entry.ts).toLocaleTimeString()}
                 </div>
@@ -651,16 +775,16 @@ function ChannelCPanel() {
   const entries = useBridgeTrafficStore((s) => s.entries);
   const clearEntries = useBridgeTrafficStore((s) => s.clear);
   const [broadcastBusy, setBroadcastBusy] = useState(false);
-  const [pubAction, setPubAction] = useState('ping');
-  const [pubPayload, setPubPayload] = useState('{}');
+  const [pubAction, setPubAction] = useState("ping");
+  const [pubPayload, setPubPayload] = useState("{}");
   const [pubResult, setPubResult] = useState<unknown>(undefined);
 
   const inboundFrontendRpc = useMemo(
-    () => entries.filter((e) => e.stream === 'frontend-rpc').slice(0, 10),
+    () => entries.filter((e) => e.stream === "frontend-rpc").slice(0, 10),
     [entries],
   );
   const inboundBroadcast = useMemo(
-    () => entries.filter((e) => e.stream === 'broadcast').slice(0, 10),
+    () => entries.filter((e) => e.stream === "broadcast").slice(0, 10),
     [entries],
   );
 
@@ -680,17 +804,26 @@ function ChannelCPanel() {
     try {
       parsed = JSON.parse(pubPayload);
     } catch (err) {
-      setPubResult({ ok: false, error: `invalid JSON: ${(err as Error).message}` });
+      setPubResult({
+        ok: false,
+        error: `invalid JSON: ${(err as Error).message}`,
+      });
       return;
     }
     if (!pubAction.trim()) {
-      setPubResult({ ok: false, error: 'action required' });
+      setPubResult({ ok: false, error: "action required" });
       return;
     }
     setBroadcastBusy(true);
     setPubResult(undefined);
-    const { requestId, promise } = await publishToFrontend(pubAction.trim(), parsed);
-    log.info('frontend-bridge', `bridges: publish → ${pubAction} req=${requestId}`);
+    const { requestId, promise } = await publishToFrontend(
+      pubAction.trim(),
+      parsed,
+    );
+    log.info(
+      "frontend-bridge",
+      `bridges: publish → ${pubAction} req=${requestId}`,
+    );
     const r = await promise;
     setPubResult(r);
     setBroadcastBusy(false);
@@ -716,7 +849,7 @@ function ChannelCPanel() {
             onCheckedChange={(v: boolean) => void setBridgeTrafficEnabled(v)}
           />
           <span className="text-[11px]">
-            {enabled ? 'recording (last 50, FIFO)' : 'OFF (no production cost)'}
+            {enabled ? "recording (last 50, FIFO)" : "OFF (no production cost)"}
           </span>
           <Button
             size="sm"
@@ -730,7 +863,10 @@ function ChannelCPanel() {
       </Section>
 
       <Section label="Last 10 inbound FRONTEND_RPC envelopes">
-        <BridgeTrafficList entries={inboundFrontendRpc} emptyText="no inbound frontend-rpc yet" />
+        <BridgeTrafficList
+          entries={inboundFrontendRpc}
+          emptyText="no inbound frontend-rpc yet"
+        />
       </Section>
 
       <Section label="Broadcast">
@@ -782,7 +918,10 @@ function ChannelCPanel() {
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
             Last 10 inbound Broadcast envelopes
           </div>
-          <BridgeTrafficList entries={inboundBroadcast} emptyText="no inbound broadcast yet" />
+          <BridgeTrafficList
+            entries={inboundBroadcast}
+            emptyText="no inbound broadcast yet"
+          />
         </div>
       </Section>
     </Panel>
@@ -804,16 +943,20 @@ function BridgeTrafficList({
       {entries.map((e) => (
         <div key={e.id} className="rounded bg-secondary/40 p-1.5">
           <div className="flex items-baseline gap-2 font-mono text-[10px]">
-            <span className="text-muted-foreground">{new Date(e.ts).toLocaleTimeString()}</span>
+            <span className="text-muted-foreground">
+              {new Date(e.ts).toLocaleTimeString()}
+            </span>
             <span className="font-semibold">{e.action}</span>
-            <span className="text-muted-foreground">{e.requestId?.slice(0, 8) ?? ''}</span>
+            <span className="text-muted-foreground">
+              {e.requestId?.slice(0, 8) ?? ""}
+            </span>
             <span
               className={cn(
-                'ml-auto',
-                e.ok === false ? 'text-red-500' : 'text-emerald-500',
+                "ml-auto",
+                e.ok === false ? "text-red-500" : "text-emerald-500",
               )}
             >
-              {e.ok === false ? 'fail' : 'ok'}
+              {e.ok === false ? "fail" : "ok"}
             </span>
           </div>
           {e.payload !== undefined && (
@@ -834,28 +977,28 @@ function ChannelWebMcpPanel() {
   const [availability, setAvailability] = useState<unknown>(undefined);
   const [pageTools, setPageTools] = useState<unknown>(undefined);
   const [pageToolNames, setPageToolNames] = useState<string[]>([]);
-  const [callName, setCallName] = useState('');
-  const [callArgs, setCallArgs] = useState('{}');
+  const [callName, setCallName] = useState("");
+  const [callArgs, setCallArgs] = useState("{}");
   const [callResult, setCallResult] = useState<unknown>(undefined);
   const [registerResult, setRegisterResult] = useState<unknown>(undefined);
 
   const onCheck = useCallback(async () => {
-    setBusy('check');
+    setBusy("check");
     setAvailability(undefined);
-    const r = await webmcp_check_availability.run({}, debugCtx('webmcp-check'));
+    const r = await webmcp_check_availability.run({}, debugCtx("webmcp-check"));
     setAvailability(r);
     setBusy(null);
   }, []);
 
   const onList = useCallback(async () => {
-    setBusy('list');
+    setBusy("list");
     setPageTools(undefined);
-    const r = await webmcp_list_page_tools.run({}, debugCtx('webmcp-list'));
+    const r = await webmcp_list_page_tools.run({}, debugCtx("webmcp-list"));
     setPageTools(r);
-    if (r && typeof r === 'object') {
+    if (r && typeof r === "object") {
       const obj = r as { tools?: Array<{ name?: string }> };
       if (Array.isArray(obj.tools)) {
-        setPageToolNames(obj.tools.map((t) => t.name ?? '').filter(Boolean));
+        setPageToolNames(obj.tools.map((t) => t.name ?? "").filter(Boolean));
       }
     }
     setBusy(null);
@@ -866,21 +1009,24 @@ function ChannelWebMcpPanel() {
     try {
       parsed = JSON.parse(callArgs);
     } catch (err) {
-      setCallResult({ ok: false, error: `invalid JSON: ${(err as Error).message}` });
+      setCallResult({
+        ok: false,
+        error: `invalid JSON: ${(err as Error).message}`,
+      });
       return;
     }
-    setBusy('call');
+    setBusy("call");
     setCallResult(undefined);
     const r = await webmcp_call_page_tool.run(
       { name: callName.trim(), arguments: parsed },
-      debugCtx('webmcp-call'),
+      debugCtx("webmcp-call"),
     );
     setCallResult(r);
     setBusy(null);
   }, [callArgs, callName]);
 
   const onRegister = useCallback(async () => {
-    setBusy('register');
+    setBusy("register");
     setRegisterResult(undefined);
     const r = await registerToolsOnActiveTab({ isAdmin: true });
     setRegisterResult(r);
@@ -888,15 +1034,28 @@ function ChannelWebMcpPanel() {
   }, []);
 
   return (
-    <Panel title="WebMCP" subtitle="extension ↔ active page (navigator.modelContext)">
+    <Panel
+      title="WebMCP"
+      subtitle="extension ↔ active page (navigator.modelContext)"
+    >
       <Section label="Availability">
-        <Button size="sm" variant="outline" onClick={() => void onCheck()} disabled={busy !== null}>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => void onCheck()}
+          disabled={busy !== null}
+        >
           Check availability
         </Button>
         <ResultBox label="result" value={availability} />
       </Section>
       <Section label="Page-registered tools">
-        <Button size="sm" variant="outline" onClick={() => void onList()} disabled={busy !== null}>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => void onList()}
+          disabled={busy !== null}
+        >
           List page tools
         </Button>
         <ResultBox label="result" value={pageTools} />
@@ -958,7 +1117,11 @@ function ChannelWebMcpPanel() {
 
 // ─── Combined log ───────────────────────────────────────────────────────────
 
-const BRIDGE_SOURCES = new Set(['desktop', 'desktop-ws-offscreen', 'frontend-bridge']);
+const BRIDGE_SOURCES = new Set([
+  "desktop",
+  "desktop-ws-offscreen",
+  "frontend-bridge",
+]);
 
 function CombinedEventLog() {
   const events = useDebugStore((s) => s.events);
@@ -976,16 +1139,16 @@ function CombinedEventLog() {
 
   const merged = useMemo(() => {
     type Row =
-      | { kind: 'event'; ts: number; data: DebugEvent }
-      | { kind: 'traffic'; ts: number; data: BridgeTrafficEntry };
+      | { kind: "event"; ts: number; data: DebugEvent }
+      | { kind: "traffic"; ts: number; data: BridgeTrafficEntry };
     const rows: Row[] = [];
     for (const e of liveEvents) {
       if (BRIDGE_SOURCES.has(e.source)) {
-        rows.push({ kind: 'event', ts: e.ts, data: e });
+        rows.push({ kind: "event", ts: e.ts, data: e });
       }
     }
     for (const t of liveTraffic) {
-      rows.push({ kind: 'traffic', ts: t.ts, data: t });
+      rows.push({ kind: "traffic", ts: t.ts, data: t });
     }
     rows.sort((a, b) => b.ts - a.ts);
     return rows.slice(0, 80);
@@ -1007,7 +1170,11 @@ function CombinedEventLog() {
               setPaused((v) => !v);
             }}
           >
-            {paused ? <Play className="size-3" /> : <Pause className="size-3" />}
+            {paused ? (
+              <Play className="size-3" />
+            ) : (
+              <Pause className="size-3" />
+            )}
           </Button>
           <Button
             size="icon"
@@ -1031,12 +1198,14 @@ function CombinedEventLog() {
       ) : (
         <div className="max-h-72 space-y-0.5 overflow-auto font-mono text-[10px]">
           {merged.map((row) =>
-            row.kind === 'event' ? (
+            row.kind === "event" ? (
               <div key={row.data.id} className="flex items-baseline gap-2">
                 <span className="text-muted-foreground">
                   {new Date(row.ts).toLocaleTimeString()}
                 </span>
-                <span className={sourceClass(row.data.source)}>{row.data.source}</span>
+                <span className={sourceClass(row.data.source)}>
+                  {row.data.source}
+                </span>
                 <span className="truncate">{row.data.message}</span>
               </div>
             ) : (
@@ -1047,7 +1216,7 @@ function CombinedEventLog() {
                 <span className="text-sky-500">{row.data.stream}</span>
                 <span className="truncate">
                   {row.data.direction} {row.data.action}
-                  {row.data.error ? ` (${row.data.error})` : ''}
+                  {row.data.error ? ` (${row.data.error})` : ""}
                 </span>
               </div>
             ),
@@ -1059,7 +1228,8 @@ function CombinedEventLog() {
 }
 
 function sourceClass(source: string): string {
-  if (source === 'desktop' || source === 'desktop-ws-offscreen') return 'text-amber-500';
-  if (source === 'frontend-bridge') return 'text-violet-500';
-  return 'text-muted-foreground';
+  if (source === "desktop" || source === "desktop-ws-offscreen")
+    return "text-amber-500";
+  if (source === "frontend-bridge") return "text-violet-500";
+  return "text-muted-foreground";
 }

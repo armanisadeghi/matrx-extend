@@ -1,10 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
+import { RECIPES, type Recipe, loadRecipes, recipesForUrl } from '@/lib/data-pattern/recipes';
 import { runMode } from '@/lib/data-pattern/run-pattern';
-import { type Recipe, RECIPES, recipesForUrl } from '@/lib/data-pattern/recipes';
 import { cn } from '@/lib/utils';
 import { Loader2, PlayCircle, Sparkles } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
 
@@ -15,9 +16,31 @@ export function RecipesTab() {
   const [activeRecipe, setActiveRecipe] = useState<Recipe | null>(null);
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [source, setSource] = useState<ExtractionSource | null>(null);
+  // DB-backed catalog (updatable without a release); bundled list until the
+  // fetch lands and as the offline fallback.
+  const [recipes, setRecipes] = useState<Recipe[]>(RECIPES);
 
-  const matching = useMemo(() => recipesForUrl(tab.url ?? ''), [tab.url]);
-  const visible = showAll ? RECIPES : matching;
+  useEffect(() => {
+    let cancelled = false;
+    void loadRecipes().then((r) => {
+      if (!cancelled) setRecipes(r);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const matching = useMemo(() => recipesForUrl(tab.url ?? '', recipes), [tab.url, recipes]);
+  const visible = showAll ? recipes : matching;
+
+  // Rows from the previous page must not display (or save) under the new one.
+  useEffect(() => {
+    setRows(null);
+    setActiveRecipe(null);
+    setError(null);
+    setSource(null);
+  }, [tab.url]);
 
   const handleRun = async (recipe: Recipe) => {
     if (!tab.id) return;
@@ -25,9 +48,11 @@ export function RecipesTab() {
     setActiveRecipe(recipe);
     setError(null);
     setRows(null);
+    const sourceAtRun = sourceFromUrl(tab.url);
     try {
       const data = await runMode(recipe.kind, tab.id, recipe.config);
       setRows(data);
+      setSource(sourceAtRun);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -64,8 +89,8 @@ export function RecipesTab() {
 
         {visible.length === 0 ? (
           <div className="grid place-items-center rounded-xl bg-secondary/40 px-4 py-8 text-center text-sm text-muted-foreground">
-            Try one of the supported sites: LinkedIn, Indeed, Yelp, Amazon, Eventbrite, Hacker
-            News, recipe sites.
+            Try one of the supported sites: LinkedIn, Indeed, Yelp, Amazon, Eventbrite, Hacker News,
+            recipe sites.
           </div>
         ) : (
           <div className="space-y-1.5">
@@ -74,8 +99,7 @@ export function RecipesTab() {
                 key={r.id}
                 className={cn(
                   'rounded-xl bg-secondary/40 px-3 py-2',
-                  matching.find((m) => m.id === r.id) &&
-                    'ring-1 ring-violet-500/40',
+                  matching.find((m) => m.id === r.id) && 'ring-1 ring-violet-500/40',
                 )}
               >
                 <div className="flex items-start justify-between gap-2">
@@ -91,9 +115,7 @@ export function RecipesTab() {
                         </span>
                       )}
                     </div>
-                    <div className="mt-0.5 text-[11px] text-muted-foreground">
-                      {r.description}
-                    </div>
+                    <div className="mt-0.5 text-[11px] text-muted-foreground">{r.description}</div>
                     <div className="mt-0.5 truncate text-[10px] text-muted-foreground/70">
                       {r.hosts.join(', ')}
                     </div>
@@ -137,6 +159,7 @@ export function RecipesTab() {
                   kind={activeRecipe.kind}
                   config={activeRecipe.config}
                   rows={rows}
+                  source={source}
                   defaultName={activeRecipe.label}
                 />
               </div>

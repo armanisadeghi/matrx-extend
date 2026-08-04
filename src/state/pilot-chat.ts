@@ -22,12 +22,12 @@
  */
 
 import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
-import {
-  type ChatMessage,
-  type MessagePart,
-  type PermissionMode,
-  type ToolPartCall,
-  type ToolProgressEntry,
+import type {
+  ChatMessage,
+  MessagePart,
+  PermissionMode,
+  ToolPartCall,
+  ToolProgressEntry,
 } from '@/state/chat';
 import { useToolInbox } from '@/state/tool-inbox';
 import { create } from 'zustand';
@@ -39,6 +39,12 @@ interface PilotChatState {
   draft: string;
   messages: ChatMessage[];
   isStreaming: boolean;
+  /**
+   * Set when a Pilot run stalled (watchdog) so the view can show a notice
+   * instead of the spinner just vanishing (audit P3-13). Cleared on the
+   * next send / reset.
+   */
+  streamInterruption: { runId: string; at: number } | null;
   /** Per-agent variable values (mirrors useChatStore semantics). */
   variableValues: Record<string, string>;
   /**
@@ -66,6 +72,7 @@ interface PilotChatState {
     meta?: { toolName?: string; kind?: 'server' | 'client' },
   ) => void;
   setStreaming: (b: boolean) => void;
+  setStreamInterruption: (v: { runId: string; at: number } | null) => void;
   setMessages: (ms: ChatMessage[]) => void;
   setVariable: (agentId: string, name: string, value: string) => void;
   getAgentVariables: (agentId: string) => Record<string, string>;
@@ -84,17 +91,18 @@ export const usePilotChatStore = create<PilotChatState>()(
       draft: '',
       messages: [],
       isStreaming: false,
+      streamInterruption: null,
       variableValues: {},
       permissionMode: {},
       setAgent: (selectedAgentId) => set({ selectedAgentId }),
       setConversation: (selectedConversationId) => {
+        const leaving = get().selectedConversationId;
         set({ selectedConversationId, messages: [] });
-        useToolInbox.getState().resetAll();
+        // Scoped clear — see chat.ts setConversation for why not resetAll.
+        useToolInbox.getState().clearForConversation(leaving);
       },
       adoptConversationId: (id) =>
-        set((s) =>
-          s.selectedConversationId === id ? s : { selectedConversationId: id },
-        ),
+        set((s) => (s.selectedConversationId === id ? s : { selectedConversationId: id })),
       setDraft: (draft) => set({ draft }),
       pushMessage: (m) =>
         set((s) => ({
@@ -111,9 +119,7 @@ export const usePilotChatStore = create<PilotChatState>()(
           messages: s.messages.map((m) => {
             if (m.id !== messageId) return m;
             const parts = m.parts ?? [];
-            const idx = parts.findIndex(
-              (p) => p.type === 'tool' && p.tool.callId === callId,
-            );
+            const idx = parts.findIndex((p) => p.type === 'tool' && p.tool.callId === callId);
             if (idx === -1) {
               const fresh: ToolPartCall = {
                 kind: patch.kind ?? 'server',
@@ -127,13 +133,14 @@ export const usePilotChatStore = create<PilotChatState>()(
             }
             const existing = parts[idx];
             if (!existing || existing.type !== 'tool') return m;
+            const nextEndedAt =
+              patch.phase === 'completed' || patch.phase === 'error'
+                ? Date.now()
+                : existing.tool.endedAt;
             const merged: ToolPartCall = {
               ...existing.tool,
               ...patch,
-              endedAt:
-                patch.phase === 'completed' || patch.phase === 'error'
-                  ? Date.now()
-                  : existing.tool.endedAt,
+              ...(nextEndedAt !== undefined && { endedAt: nextEndedAt }),
             };
             const next = parts.slice();
             next[idx] = { type: 'tool', tool: merged };
@@ -145,9 +152,7 @@ export const usePilotChatStore = create<PilotChatState>()(
           messages: s.messages.map((m) => {
             if (m.id !== messageId) return m;
             const parts = m.parts ?? [];
-            const idx = parts.findIndex(
-              (p) => p.type === 'tool' && p.tool.callId === callId,
-            );
+            const idx = parts.findIndex((p) => p.type === 'tool' && p.tool.callId === callId);
             if (idx === -1) {
               const fresh: ToolPartCall = {
                 kind: meta?.kind ?? 'server',
@@ -211,11 +216,10 @@ export const usePilotChatStore = create<PilotChatState>()(
         })),
       finalizeAssistant: (id) =>
         set((s) => ({
-          messages: s.messages.map((m) =>
-            m.id === id ? { ...m, pending: false } : m,
-          ),
+          messages: s.messages.map((m) => (m.id === id ? { ...m, pending: false } : m)),
         })),
       setStreaming: (isStreaming) => set({ isStreaming }),
+      setStreamInterruption: (streamInterruption) => set({ streamInterruption }),
       setMessages: (messages) => set({ messages }),
       setVariable: (agentId, name, value) =>
         set((s) => ({
@@ -240,7 +244,7 @@ export const usePilotChatStore = create<PilotChatState>()(
         if (!agentId) return 'act';
         return get().permissionMode[agentId] ?? 'act';
       },
-      reset: () => set({ messages: [], draft: '', isStreaming: false }),
+      reset: () => set({ messages: [], draft: '', isStreaming: false, streamInterruption: null }),
     }),
     {
       name: 'matrx.pilot-chat.v1',
@@ -251,6 +255,20 @@ export const usePilotChatStore = create<PilotChatState>()(
         variableValues: s.variableValues,
         permissionMode: s.permissionMode,
       }),
+      // Versioned + validated rehydration (audit P2-10) — see chat.ts.
+      version: 1,
+      migrate: (persisted) => {
+        const p = (persisted ?? {}) as Record<string, unknown>;
+        const out: Record<string, unknown> = {};
+        if (typeof p.selectedAgentId === 'string' || p.selectedAgentId === null)
+          out.selectedAgentId = p.selectedAgentId;
+        if (typeof p.draft === 'string') out.draft = p.draft;
+        if (p.variableValues && typeof p.variableValues === 'object')
+          out.variableValues = p.variableValues;
+        if (p.permissionMode && typeof p.permissionMode === 'object')
+          out.permissionMode = p.permissionMode;
+        return out;
+      },
     },
   ),
 );

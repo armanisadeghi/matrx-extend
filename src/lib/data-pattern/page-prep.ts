@@ -92,9 +92,8 @@ export const preparePageInPage = async (config: PagePrepConfig): Promise<PagePre
     let hops = 0;
     while (cur && hops < 6) {
       const id = (cur.id ?? '').toLowerCase();
-      const cls = (cur.className && typeof cur.className === 'string'
-        ? cur.className
-        : ''
+      const cls = (
+        cur.className && typeof cur.className === 'string' ? cur.className : ''
       ).toLowerCase();
       const role = (cur.getAttribute('role') ?? '').toLowerCase();
       if (

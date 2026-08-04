@@ -50,8 +50,8 @@ export const remember_for_domain: ToolHandler<RememberArgs, unknown> = {
   run: async (args) => {
     const memo = await rememberForDomain({
       domain: args.domain,
-      note: args.note,
-      hints: args.hints,
+      ...(args.note !== undefined && { note: args.note }),
+      ...(args.hints !== undefined && { hints: args.hints }),
     });
     return { ok: true, memo };
   },

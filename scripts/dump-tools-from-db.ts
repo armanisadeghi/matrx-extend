@@ -2,12 +2,11 @@
 /**
  * Generate docs/TOOLS.generated.md FROM THE DATABASE.
  *
- * Source query (post 2026-05-27 refactor):
- *   `public.tool_def` rows ⋈ `public.tool_binding` where
+ * Source query (post 2026-06 schema canonicalization):
+ *   `tool.definition` rows ⋈ `tool.binding` where
  *   `executor_name = 'chrome-extension'` (or any `chrome-extension.*`
- *   sub-executor). Replaces the previous `source_app='matrx-extend'`
- *   filter — that column no longer exists on `tool_def`. Ownership lives
- *   on the binding row.
+ *   sub-executor). These tables moved from `public` to the `tool` schema
+ *   in the 2026-06 DB canonicalization. Ownership lives on the binding row.
  *
  * This file is the ONLY copy of tool descriptions allowed in the repo
  * (Rule 4, docs/TOOL_SOURCE_OF_TRUTH.md): descriptions live in the DB,
@@ -73,10 +72,12 @@ async function main(): Promise<void> {
     // Two-step: bindings → ids → defs. The PostgREST embedded-filter
     // pattern `tool_binding.executor_name=eq.chrome-extension` only filters
     // joined rows, not the parent — explicit two-step gives precise results.
+    // Post 2026-06 canonicalization: tool_binding → tool.binding, tool_def → tool.definition
     const bindings = await fetchPublicJson<DbBindingRow[]>(
       env.url,
       env.key,
-      `tool_binding?or=(executor_name.eq.${EXECUTOR_NAME},executor_name.like.${EXECUTOR_NAME}.*)&select=tool_id,executor_name,is_active`,
+      `binding?or=(executor_name.eq.${EXECUTOR_NAME},executor_name.like.${EXECUTOR_NAME}.*)&select=tool_id,executor_name,is_active`,
+      'tool',
     );
     const ids = [...new Set(bindings.filter((b) => b.is_active).map((b) => b.tool_id))];
     if (ids.length === 0) {
@@ -89,7 +90,8 @@ async function main(): Promise<void> {
     rows = await fetchPublicJson<DbToolRow[]>(
       env.url,
       env.key,
-      `tool_def?id=in.${inList}&select=name,description,tier,category,admin_only,parameters,is_active&order=category.asc,name.asc`,
+      `definition?id=in.${inList}&select=name,description,tier,category,admin_only,parameters,is_active&order=category.asc,name.asc`,
+      'tool',
     );
   } catch (err) {
     console.warn(
@@ -110,8 +112,8 @@ async function main(): Promise<void> {
   const lines: string[] = [];
   lines.push('# matrx-extend tools');
   lines.push('');
-  lines.push('> **AUTO-GENERATED — do not edit.** Produced from `public.tool_def`');
-  lines.push("> rows bound to `executor_name='chrome-extension'` via `public.tool_binding`,");
+  lines.push('> **AUTO-GENERATED — do not edit.** Produced from `tool.definition`');
+  lines.push("> rows bound to `executor_name='chrome-extension'` via `tool.binding`,");
   lines.push('> the source of truth. Tool names, descriptions, and argument');
   lines.push('> contracts live ONLY in the database (Rule 4,');
   lines.push('> [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).');

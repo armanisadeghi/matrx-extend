@@ -24,7 +24,7 @@ export interface CandidateField {
   /** Selector relative to the item element. ":scope" means the item itself. */
   rel_selector: string;
   /** Optional attribute to read instead of innerText. */
-  attr?: string;
+  attr?: string | undefined;
   /** Sample value (truncated) so the user can preview before selecting. */
   sample_value: string;
   /** Source kind for grouping in the UI. */

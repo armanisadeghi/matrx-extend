@@ -77,11 +77,7 @@ export interface GuidanceDemoRef extends GuidanceBase {
   parameter_names: string[];
 }
 
-export type GuidanceItem =
-  | GuidanceNote
-  | GuidanceScreenshot
-  | GuidanceGif
-  | GuidanceDemoRef;
+export type GuidanceItem = GuidanceNote | GuidanceScreenshot | GuidanceGif | GuidanceDemoRef;
 
 /** Lightweight projection used by the list-index and the sidepanel UI. */
 export interface GuidanceSummary {

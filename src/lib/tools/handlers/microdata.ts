@@ -1,3 +1,6 @@
+import { runMode } from '@/lib/data-pattern/run-pattern';
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
+import type { ToolHandler } from '@/lib/tools/types';
 /**
  * `extract_microdata` — agent-facing structured-data extractor.
  *
@@ -18,9 +21,6 @@
  * 🧪 Tests: docs/feature-tests.md → "extract_microdata"
  */
 import { z } from 'zod';
-import { runMode } from '@/lib/data-pattern/run-pattern';
-import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
-import type { ToolHandler } from '@/lib/tools/types';
 
 const KIND_VALUES = ['snapshot', 'json_ld', 'microdata'] as const;
 type Kind = (typeof KIND_VALUES)[number];

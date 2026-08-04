@@ -106,9 +106,7 @@ async function captureSoup(
  * single invocation: if a capture is already in flight, returns the existing
  * record without firing another.
  */
-export async function refreshPageContextBeforeSend(
-  opts: RefreshOptions,
-): Promise<RefreshDecision> {
+export async function refreshPageContextBeforeSend(opts: RefreshOptions): Promise<RefreshDecision> {
   const store = useAutoScrapeStore.getState();
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -126,8 +124,7 @@ export async function refreshPageContextBeforeSend(
   // above.
 
   const cur = store.current;
-  const haveFresh =
-    cur && cur.url === url && Date.now() - cur.capturedAt < FAST_FRESH_MS;
+  const haveFresh = cur && cur.url === url && Date.now() - cur.capturedAt < FAST_FRESH_MS;
   const haveDeep = cur && cur.url === url && cur.usedFullScroll;
   const wantsDeep = opts.autoFullScrollOnFirstSubmit && !haveDeep;
 
@@ -211,7 +208,7 @@ export async function refreshPageContextBeforeSend(
       url: soup.url,
       capturedAt: Date.now(),
       usedFullScroll: !!(cur && cur.url === url && cur.usedFullScroll),
-      initialScrollY: cur && cur.url === url ? cur.initialScrollY ?? null : null,
+      initialScrollY: cur && cur.url === url ? (cur.initialScrollY ?? null) : null,
       soup,
     };
     store.set(record);

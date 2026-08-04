@@ -24,9 +24,7 @@ export const microdataMode: ExtractionMode<MicrodataConfig> = {
 
   detectInPage: (config) => {
     const cfg = (config ?? {}) as { itemtype?: string };
-    const all = Array.from(
-      document.querySelectorAll<HTMLElement>('[itemscope][itemtype]'),
-    );
+    const all = Array.from(document.querySelectorAll<HTMLElement>('[itemscope][itemtype]'));
     if (all.length === 0) {
       return { available: false, summary: 'No microdata on this page' };
     }
@@ -83,24 +81,20 @@ export const microdataMode: ExtractionMode<MicrodataConfig> = {
 
       // Find descendant itemprops that aren't inside a NESTED itemscope
       // (those belong to that nested item, recursed below).
-      const props = Array.from(root.querySelectorAll<HTMLElement>('[itemprop]')).filter(
-        (el) => {
-          let p = el.parentElement;
-          while (p && p !== root) {
-            if (p.hasAttribute('itemscope')) return false;
-            p = p.parentElement;
-          }
-          return true;
-        },
-      );
+      const props = Array.from(root.querySelectorAll<HTMLElement>('[itemprop]')).filter((el) => {
+        let p = el.parentElement;
+        while (p && p !== root) {
+          if (p.hasAttribute('itemscope')) return false;
+          p = p.parentElement;
+        }
+        return true;
+      });
 
       for (const el of props) {
         const propsAttr = el.getAttribute('itemprop');
         if (!propsAttr) continue;
         const names = propsAttr.split(/\s+/);
-        const value: unknown = el.hasAttribute('itemscope')
-          ? extractItem(el)
-          : readPropValue(el);
+        const value: unknown = el.hasAttribute('itemscope') ? extractItem(el) : readPropValue(el);
         for (const name of names) {
           if (out[name] === undefined) {
             out[name] = value;
@@ -118,9 +112,7 @@ export const microdataMode: ExtractionMode<MicrodataConfig> = {
     // including nested ones (e.g. Event items inside a WebPage wrapper).
     // When no filter, return top-level only so we don't double-count nested
     // children that are already represented in their parent.
-    const all = Array.from(
-      document.querySelectorAll<HTMLElement>('[itemscope][itemtype]'),
-    );
+    const all = Array.from(document.querySelectorAll<HTMLElement>('[itemscope][itemtype]'));
     const candidates = cfg.itemtype
       ? all.filter((el) => {
           const t = el.getAttribute('itemtype') ?? '';

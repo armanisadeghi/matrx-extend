@@ -36,9 +36,10 @@ export async function getOrMintInstanceId(): Promise<string> {
     // Fall through to fresh-mint; cachedId still binds for this session.
   }
 
-  const fresh = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-    ? crypto.randomUUID()
-    : `ext-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  const fresh =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `ext-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
   try {
     await chrome.storage.session.set({ [STORAGE_KEY]: fresh });

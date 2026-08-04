@@ -17,15 +17,7 @@ import {
   extractUrlAndTitle,
 } from '@/lib/notes/extract';
 import { appendToContent } from '@/lib/notes/utils';
-import {
-  ChevronDown,
-  FileText,
-  Info,
-  Link as LinkIcon,
-  Link2,
-  Loader2,
-  Quote,
-} from 'lucide-react';
+import { ChevronDown, FileText, Info, Link2, Link as LinkIcon, Loader2, Quote } from 'lucide-react';
 import { useState } from 'react';
 
 type ExtractKind = 'url' | 'selection' | 'pageText' | 'links' | 'metadata';

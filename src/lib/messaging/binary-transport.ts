@@ -42,8 +42,7 @@ export async function blobToBase64(blob: Blob): Promise<string> {
       const comma = result.indexOf(',');
       resolve(comma === -1 ? '' : result.slice(comma + 1));
     };
-    reader.onerror = () =>
-      reject(reader.error ?? new Error('FileReader failed'));
+    reader.onerror = () => reject(reader.error ?? new Error('FileReader failed'));
     reader.readAsDataURL(blob);
   });
 }

@@ -86,7 +86,8 @@ const TAG_COLORS: Record<string, string> = {
   render_block: 'bg-pink-500/20 text-pink-600 dark:text-pink-400 border-pink-500/30',
   record_reserved: 'bg-teal-500/20 text-teal-600 dark:text-teal-400 border-teal-500/30',
   record_update: 'bg-teal-500/20 text-teal-600 dark:text-teal-400 border-teal-500/30',
-  resource_changed: 'bg-fuchsia-500/20 text-fuchsia-600 dark:text-fuchsia-400 border-fuchsia-500/30',
+  resource_changed:
+    'bg-fuchsia-500/20 text-fuchsia-600 dark:text-fuchsia-400 border-fuchsia-500/30',
   structured_output: 'bg-lime-500/20 text-lime-600 dark:text-lime-400 border-lime-500/30',
   context_analysis: 'bg-slate-500/20 text-slate-600 dark:text-slate-400 border-slate-500/30',
 };
@@ -283,63 +284,63 @@ export function DebugView() {
         </div>
       )}
       {subview === 'log' && (
-      <div className="flex-1 overflow-y-auto font-mono text-[11px]">
-        {filtered.length === 0 && (
-          <div className="px-3 py-12 text-center text-muted-foreground">
-            {events.length === 0
-              ? "No events yet. Use the extension and they'll show up here."
-              : 'No events match the current filter.'}
-          </div>
-        )}
-        {filtered.map((e) => {
-          const isOpen = expanded.has(e.id);
-          const hasDetail = e.detail !== undefined;
-          return (
-            <div key={e.id} className="hover:bg-accent/40">
-              <button
-                type="button"
-                onClick={() => hasDetail && toggleExpand(e.id)}
-                className={cn(
-                  'flex w-full items-baseline gap-2 px-3 py-1 text-left',
-                  levelClass(e.level),
-                  !hasDetail && 'cursor-default',
-                )}
-              >
-                <span className="size-3 shrink-0 text-muted-foreground/50">
-                  {hasDetail ? (
-                    isOpen ? (
-                      <ChevronDown className="size-3" />
-                    ) : (
-                      <ChevronRight className="size-3" />
-                    )
-                  ) : null}
-                </span>
-                <span className="shrink-0 text-muted-foreground/60">{fmtTime(e.ts)}</span>
-                <span className="shrink-0 text-[9px] uppercase text-muted-foreground/70">
-                  {e.ctx}
-                </span>
-                <span className="shrink-0 font-semibold">{e.source}</span>
-                {e.tag && (
-                  <span
-                    className={cn(
-                      'shrink-0 rounded border px-1 text-[9px] leading-tight',
-                      tagClass(e.tag),
-                    )}
-                  >
-                    {e.tag}
-                  </span>
-                )}
-                <span className="truncate">{e.message}</span>
-              </button>
-              {isOpen && hasDetail && (
-                <pre className="mx-3 mb-1.5 max-h-[280px] overflow-auto whitespace-pre-wrap break-words rounded-lg bg-secondary/40 p-2 text-[10px]">
-                  {safeStringify(e.detail)}
-                </pre>
-              )}
+        <div className="flex-1 overflow-y-auto font-mono text-[11px]">
+          {filtered.length === 0 && (
+            <div className="px-3 py-12 text-center text-muted-foreground">
+              {events.length === 0
+                ? "No events yet. Use the extension and they'll show up here."
+                : 'No events match the current filter.'}
             </div>
-          );
-        })}
-      </div>
+          )}
+          {filtered.map((e) => {
+            const isOpen = expanded.has(e.id);
+            const hasDetail = e.detail !== undefined;
+            return (
+              <div key={e.id} className="hover:bg-accent/40">
+                <button
+                  type="button"
+                  onClick={() => hasDetail && toggleExpand(e.id)}
+                  className={cn(
+                    'flex w-full items-baseline gap-2 px-3 py-1 text-left',
+                    levelClass(e.level),
+                    !hasDetail && 'cursor-default',
+                  )}
+                >
+                  <span className="size-3 shrink-0 text-muted-foreground/50">
+                    {hasDetail ? (
+                      isOpen ? (
+                        <ChevronDown className="size-3" />
+                      ) : (
+                        <ChevronRight className="size-3" />
+                      )
+                    ) : null}
+                  </span>
+                  <span className="shrink-0 text-muted-foreground/60">{fmtTime(e.ts)}</span>
+                  <span className="shrink-0 text-[9px] uppercase text-muted-foreground/70">
+                    {e.ctx}
+                  </span>
+                  <span className="shrink-0 font-semibold">{e.source}</span>
+                  {e.tag && (
+                    <span
+                      className={cn(
+                        'shrink-0 rounded border px-1 text-[9px] leading-tight',
+                        tagClass(e.tag),
+                      )}
+                    >
+                      {e.tag}
+                    </span>
+                  )}
+                  <span className="truncate">{e.message}</span>
+                </button>
+                {isOpen && hasDetail && (
+                  <pre className="mx-3 mb-1.5 max-h-[280px] overflow-auto whitespace-pre-wrap break-words rounded-lg bg-secondary/40 p-2 text-[10px]">
+                    {safeStringify(e.detail)}
+                  </pre>
+                )}
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );
@@ -380,7 +381,12 @@ function BackendSwitcher() {
 
   const saveOverride = async (val: string) => {
     const prev = backend.override;
-    await setBackendOverride(val);
+    try {
+      await setBackendOverride(val);
+    } catch (err) {
+      log.warn('sys', `backend override rejected: ${(err as Error).message}`);
+      return;
+    }
     log.info('sys', val ? `backend URL override → ${val}` : 'backend URL override cleared');
     if (val !== prev) void pingHealth(val ? `switched override to ${val}` : 'cleared override');
   };
@@ -435,10 +441,7 @@ function ContextShapeSwitcher() {
       const v = r[CONTEXT_SHAPE_STORAGE_KEY];
       if (v === 'v1-flat' || v === 'v2-bundled') setShape(v);
     });
-    const onChanged = (
-      changes: Record<string, chrome.storage.StorageChange>,
-      area: string,
-    ) => {
+    const onChanged = (changes: Record<string, chrome.storage.StorageChange>, area: string) => {
       if (area !== 'local') return;
       const c = changes[CONTEXT_SHAPE_STORAGE_KEY];
       if (!c) return;

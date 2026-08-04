@@ -631,10 +631,10 @@ Every entry follows this shape:
   1. Navigate to a regular web page.
   2. Open Screenshots tab - click **Visible**. The current viewport is captured and a card appears in the gallery.
   3. Click **Full page** on a page taller than one screen. The page scrolls top → bottom (visible to the user; this is expected); after ~1 sec/screen a card appears whose thumbnail is the entire page stitched.
-  4. Click a thumbnail (or the open icon) to view full size in a new tab; click the link icon to copy the URL; click the trash icon (then Delete) to remove the index row (file in cloud storage is kept).
+  4. Click a thumbnail (or the open icon) to open the canonical Files viewer; click the link icon to copy that durable Files URL; click the trash icon (then Delete) to remove the index row (file in cloud storage is kept).
   5. Switch to Chat - ask the agent "take a screenshot of this page" - it lands in the same gallery on next refresh, live via the timeline event. Ask "take a full-page screenshot" and it uses `mode: 'full_page'`.
 - **Expected:**
-  - Each card shows: thumbnail (lazy-loaded from `file_url`), source label ("You" / "Agent"), relative timestamp, dimensions. Full-page captures are visibly tall.
+  - Each card shows: thumbnail (authenticated fresh-byte download by `file_id`, never the expired upload-time `file_url`), source label ("You" / "Agent"), relative timestamp, dimensions. Full-page captures are visibly tall.
   - Refreshes automatically when `take_screenshot` completes anywhere in the side panel.
   - Empty state on a fresh page; skeleton on first load.
   - If the cld_files upload or `wbx_screenshot` insert fails, an amber warning under the buttons reads "Captured, but failed to save to the gallery."
@@ -645,6 +645,40 @@ Every entry follows this shape:
   - position:fixed / position:sticky elements (toolbars, cookie banners) repeat on every tile in full-page mode - known limitation; use `cdp_full_page_screenshot` (debugger perm) for a clean single-shot.
   - Mid-capture navigation: if the user navigates while full-page is running, captures may end up on the new page. The handler restores the original scroll position even on error.
   - Network down: handler returns inline image with `file_id: null`; no row added - the gallery still shows previously-saved entries unchanged, and the warning surfaces.
+
+---
+
+### Files tab
+- **What it does:** Shows recent discoverable Matrx library files and every screenshot captured by the extension, opens the canonical web viewer, inspects the file's live family inventory, and durably attaches/detaches a file to the current conversation.
+- **Where to test:** Side panel - **Files** tab (stacked-files icon).
+- **Steps:**
+  1. Sign in and open Files. Confirm Library shows the same recent root files visible in the web Files app; Captures shows screenshots from multiple pages.
+  2. Search by filename, path, page title, and page URL.
+  3. Click the branch icon. Confirm the inspector renders stored-file and processing-result nodes, parent edges, derivation kinds, requested/ancestor/sibling/descendant labels, and representations/capabilities returned by `get_file_resource_family`.
+  4. Open an existing conversation (or send one message), then click the paperclip. Switch to Chat and send another message about the file; the backend should resolve the durable `file -> conversation` edge. Return to Files and click the unlink icon to detach it.
+  5. Click the external-link action to open `/files/f/{fileId}` in the full Files app.
+- **Expected:** Context-only/shared attachment access does not make a file appear in Library; hidden `system-files/matrx-extend/` screenshots appear only in Screenshots. Attach state refreshes when the selected conversation changes, and attach requires editor authority over both the file and conversation. Family inspection never schedules processing.
+- **Edge cases worth poking:** Fresh chat before its first message shows an explicit conversation-ID notice and disables attachment; malformed family schema fails loudly; a family deeper than 16 generations or broader than 5,000 rows fails instead of showing a partial graph; old expiring `file_url` values are ignored and screenshot cards still open the canonical Files viewer by `file_id`.
+
+---
+
+### Guidance cloud sync (TASK-004)
+- **What it does:** Guidance metadata (notes / screenshots / GIFs / demo refs) now persists to the cloud (`public.wbx_guidance`), not just the artifact bytes — so guidance created on one machine shows up on another after sign-in. DB is the source of truth; `chrome.storage.local` is an offline cache. Every save/delete (UI **or** agent tool) best-effort mirrors to the cloud; sign-in hydrates cloud→local last-write-wins.
+- **Where to test:** Side panel - **Guidance** tab; cross-machine (or simulate by clearing local storage).
+- **Prereq:** `migrations/2026_06_10_wbx_guidance.sql` is applied to the Matrx Supabase project (`txzxabzwovsujtloxrus`) — already applied + ledger-recorded on 2026-06-10.
+- **Steps:**
+  1. Signed in, open Guidance and save a note for the current domain (and/or a screenshot/GIF). It appears in the list as before.
+  2. Confirm cloud write: SW console logs `guidance synced to cloud id=gd_…`, or query `select id, kind, domain from wbx_guidance` in Supabase.
+  3. Simulate a fresh machine: in DevTools run `chrome.storage.local.remove(['matrx.guidance.list'])` plus the `matrx.guidance.<id>` keys (or clear local storage), then reload the side panel while signed in.
+  4. Open Guidance again.
+- **Expected:**
+  - After reload, the previously-saved guidance reappears (hydrated from the cloud). SW console logs `guidance hydrated from cloud — merged N item(s)`.
+  - Deleting an item locally also removes the `wbx_guidance` row.
+  - Agent-created guidance (`save_guidance_note` etc.) syncs identically — the hook is at the storage layer, so all paths are covered.
+- **Edge cases worth poking:**
+  - Offline / signed-out: local save still works; cloud push silently no-ops and the item stays local (best-effort, never blocks the UI).
+  - Last-write-wins: edit the same item on two machines — the newer `updated_at` wins on next hydrate; local-only (not-yet-pushed) items are never deleted by a hydrate.
+  - `demo_ref`: the pointer syncs but the recorded demo body does NOT yet — on a fresh machine the demo lists but `replay_demo` fails until demo bodies sync (tracked in docs/KNOWN_ISSUES.md).
 
 ---
 
@@ -682,6 +716,53 @@ Every entry follows this shape:
   - Regression being guarded: the chip used to be `absolute right-2 top-1`,
     floating over the header and overlapping the History icon.
 
+### Showcase — shell (tab strip, persistence, forceMount)
+- **What it does:** Hosts the 12 extraction sub-tabs. The strip is its own
+  horizontal scroller; every sub-tab stays mounted so work survives switches.
+- **Where to test:** Side panel → Showcase (admin).
+- **Steps:**
+  1. Open Showcase. The tab strip scrolls horizontally (fade edges, no
+     wrap); the rest of the panel never scrolls sideways.
+  2. Click "Network", start a capture, switch to "Doctor", come back.
+  3. Close the side panel entirely; reopen → Showcase.
+- **Expected:** (2) capture events and recording state are still there.
+  (3) the previously-active sub-tab is restored (not reset to Doctor).
+- **Edge cases:** active trigger auto-scrolls into view when selected via a
+  Doctor recommendation; only the VISIBLE sub-tab auto-probes on navigation.
+
+### Showcase — Doctor tab
+- **What it does:** Probes the page for every structured-data signal and
+  recommends an extraction mode; recommendations are click-to-jump.
+- **Steps:** Open a recipe site (e.g. an Allrecipes page). Doctor auto-probes.
+  Click the "JSON-LD tab" recommendation.
+- **Expected:** Showcase switches to the JSON-LD sub-tab. Re-probe works.
+  On chrome:// pages a readable error shows (no spinner hang).
+- **Edge cases:** giant pages (50k+ elements) still probe quickly — the
+  repeating-group scan is capped at 20k elements.
+
+### Showcase — Recipes tab (DB-backed)
+- **What it does:** One-click curated extraction configs, loaded from
+  public.wbx_recipe (bundled list is the offline fallback).
+- **Steps:** Open news.ycombinator.com → Recipes shows "Hacker News" match →
+  Run. Navigate to another site mid-result.
+- **Expected:** Rows render with Save pattern; after navigation the stale
+  rows CLEAR (no cross-site leakage). "Show all" lists the full catalog.
+
+### Showcase — Prepare tab
+- **What it does:** Heuristic page cleanup (banners, load-more, scroll).
+- **Steps:** Run on a cookie-bannered site; then navigate to another page.
+- **Expected:** Report shows counts; report clears on navigation (a page-A
+  report never displays on page B).
+
+### Showcase — Snapshot / JSON-LD / Microdata tabs
+- **What it does:** One-shot metadata grab / typed JSON-LD blocks / Schema.org
+  microdata items, each with type-filter chips where applicable.
+- **Steps:** Wikipedia article → each tab auto-detects when visible →
+  Extract → Save pattern (create new table from fields).
+- **Expected:** Detection summary matches the page; rows render; saving with
+  a duplicate name auto-suffixes "(2)". The created table has EVERY column
+  the preview showed (union of all rows, not just row 1).
+
 ### Showcase — Tables tab (auto_table mode)
 - **What it does:** Detects every `<table>` on the page (≥2 rows) and
   extracts the chosen one as JSON rows. Auto-handles multi-tier headers
@@ -718,6 +799,75 @@ Every entry follows this shape:
   - Tables where data rows have `colspan` / `rowspan` are NOT yet
     expanded — values still zip positionally. Open a follow-up if a
     real page hits this.
+
+### Showcase — Framework tab (next_data)
+- **What it does:** Dumps __NEXT_DATA__/__NUXT_DATA__/Apollo/bpr-guid/window.*
+  state into a navigable tree; click a node to set the key path, Extract.
+- **Steps:** Open a Next.js site (e.g. vercel.com) → tree renders → click a
+  nested node → Extract from key path → Save pattern.
+- **Expected:** Huge dumps render incrementally ("+N more…" expanders, 100
+  children per node). Restricted pages show "Could not read framework data".
+  When BOTH an apollo script tag and window.__APOLLO_STATE__ exist, both
+  appear in the source picker.
+
+### Showcase — AI Extract tab
+- **What it does:** Describe what you want; the extractor agent reads the
+  page and returns schema-shaped rows. Convert-to-pattern generates CSS
+  selectors and VERIFIES them against the live page before showing success.
+- **Steps:** On a list page, describe "product name and price", add fields
+  name/price, Extract. Then "Convert to reusable pattern".
+- **Expected:** Streaming progress; Cancel works mid-run and clears results;
+  a stalled stream errors out by ~75s (no immortal spinner). The generated
+  pattern shows "verified on this page" + a live first-row preview; selector
+  sets that match nothing surface an error instead of a fake success.
+- **Edge cases:** empty/duplicate schema field names block Extract with an
+  inline warning; agent dropdown shows "Loading agents…".
+
+### Showcase — List Pattern tab
+- **What it does:** Two-phase visual picker (click one example item → click
+  fields inside) producing a reusable CSS config.
+- **Steps:** On Hacker News, "Pick an example item" → click one story row →
+  add suggested fields → Done → Extract → Save pattern.
+- **Expected:** While picking, the sidepanel shows a Cancel button that
+  works; navigating mid-pick clears the stuck state with a message; double
+  clicking Pick doesn't double-inject; re-entering picking replaces any
+  orphaned page overlay; chrome:// pages get a friendly "this page type
+  doesn't allow picking" error.
+
+### Showcase — Network tab
+- **What it does:** Captures top-frame fetch/XHR while you interact; pick a
+  response, drill into the JSON, save url_filter+key_path as a pattern.
+- **Steps:** Start capture on an SPA, scroll/click so API calls fire, select
+  a JSON response, click into the array node, Save pattern.
+- **Expected:** Only the captured tab's requests appear (another tab's
+  traffic never pollutes the list); Reload stops the recording state;
+  buffer caps at 500 events with a "dropped" notice; events survive
+  switching to another sub-tab and back.
+
+### Showcase — Patterns tab (lifecycle + re-run)
+- **What it does:** Lists every saved pattern for the host with health
+  badges; run / rename / delete inline.
+- **Steps:**
+  1. Run a DOM pattern (e.g. the JSON-LD one) → rows render, badge "ok".
+  2. Run a network_capture pattern → page reloads, progress notes show
+     ("Reloading page…", "Listening…"), rows arrive when the API fires.
+  3. Run an ai_extract pattern → agent re-extracts the current page.
+  4. Rename to a name that already exists → inline collision error.
+  5. Delete: first click arms (red), second click deletes; arms off in 3s.
+- **Expected:** Supabase outages show an error banner with Retry — NEVER the
+  "no saved patterns" empty state; a no-match network re-run shows guidance
+  and does NOT mark the pattern broken.
+
+### Showcase — Send to agent / data_patterns tool
+- **What it does:** "Send to agent" on any result stages rows (≤50) into the
+  chat composer; the `data_patterns` tool lets the agent list/describe/
+  run/save/delete patterns and read matching recipes.
+- **Steps:** Extract rows → Send to agent → composer pre-filled, Chat tab
+  active. In chat, ask the agent to "list my saved patterns for this site
+  and run the best one".
+- **Expected:** Agent calls data_patterns(list) then (run) with live
+  progress; rows return capped at 100 with true row_count; the
+  saved_patterns_for_domain context key is attached when patterns exist.
 
 ### parallel_for_each_tab
 - **What it does:** Fan out the same prompt across N existing tabs (max 8) and collect the results. Each sub-run is its own agent conversation pinned to one tab. Admin-only.
@@ -917,28 +1067,45 @@ Every entry follows this shape:
   part); `steps` mode dedupes by `step` keeping latest status; pilot surface
   mirrors via `usePilotChatStore`.
 
-### Stream stall watchdog + Retry banner (stuck-UI fix)
-- **What it does:** Detects a stalled run (no chunk/heartbeat for 75s),
-  clears the stuck spinner, and shows an amber Retry banner above the
-  composer. Consumes the server `heartbeat` event as a liveness signal.
-  Attempts resume first (no-op until backend ships — see
-  docs/STREAM_RESUME_PROTOCOL.md), then falls back to Retry (replays the
-  last turn).
-- **Where to test:** chat surface. Hard to trigger naturally; force it.
+### Stream stall watchdog + real resume (stuck-UI fix)
+- **What it does:** Detects a stalled run (no chunk/heartbeat for 75s) and
+  first attempts a REAL resume via `POST /ai/conversations/{id}/resume`
+  (`user_request_id` = the requestId latched from `STREAM_OPENED`) — the same
+  endpoint the client-tool-suspend `STREAM_CONTINUE` path already uses
+  successfully. If that succeeds, the run just continues in a fresh assistant
+  bubble — no banner, no replayed tool calls, no double billing. Only if the
+  resume can't be attempted (missing ids, `matrx.stream.resume.enabled` flag
+  off, conversation no longer selected, or the resume call itself errors)
+  does it fall back to clearing the spinner and showing the amber Retry
+  banner (full-turn replay). See docs/STREAM_RESUME_PROTOCOL.md and
+  src/lib/stream/resume.ts.
+- **Where to test:** chat surface (Assistant + Pilot). Hard to trigger
+  naturally; force it.
 - **Steps:**
-  1. Send a message, then kill the stream silently — e.g. in DevTools
+  1. Send a message that keeps the agent talking for a while (or one that
+     calls a tool), then kill the stream silently — e.g. in DevTools
      terminate the offscreen document, or block the network mid-stream so no
      `done` ever arrives.
-  2. Wait ~75s. Spinner stops; the amber "The response stalled (no activity
-     for 75s)." banner appears with **Retry** + dismiss (✕).
-  3. Click Retry → the last turn re-sends and the banner clears. Dismiss (✕)
-     hides it without re-sending.
+  2. Wait ~75s. Watch the debug log: `stream stalled — no activity for
+     75000ms` followed by either `stream resumed after stall (via /resume, no
+     replay)` (success — a new assistant message appears and the run
+     continues) or `stream giving up (<reason>)` (falls back to the Retry
+     banner as before).
+  3. To force the fallback path deliberately: `chrome.storage.local.set({
+     'matrx.stream.resume.enabled': false })`, repeat step 1 — the amber
+     "The response stalled (no activity for 75s)." banner appears with
+     **Retry** + dismiss (✕). Click Retry → the last turn re-sends (full
+     replay) and the banner clears.
 - **Expected:** A normal completed run never shows the banner (watchdog
   stopped on `done`). Cancelling clears it. Switching conversations clears it.
-  Pilot surface clears its spinner on stall too (no banner — by design).
+  A successful resume never shows the banner at all. Pilot surface follows
+  the same resume-then-fallback order (no banner on Pilot either way — it
+  just clears the spinner on ultimate give-up, by design).
 - **Edge cases:** a late chunk after stall doesn't re-arm the watchdog; a new
   send while a stall handler is mid-flight is detected (runId mismatch) and the
-  stale handler no-ops.
+  stale handler no-ops; a stall on a conversation the user has since navigated
+  away from declines the resume (`resumeRun` checks `selectedConversationId`)
+  and falls back to give-up cleanly.
 
 ---
 
@@ -1121,6 +1288,117 @@ Every entry follows this shape:
 - **Edge cases worth poking:** Switching mode mid-session takes effect on the
   next capture (read fresh, no listener re-register). chrome:// pages skip.
 
+### Research capture — media + structured collectors (§4)
+- **What it does:** A research capture now sends, alongside the HTML + image
+  dims, the JS-injected media (`<video>`/`<audio>` + YouTube/Vimeo iframes) and
+  clean structured data (OpenGraph/Twitter metadata + parsed JSON-LD) the
+  server's HTML scan can't compute — gathered in one injected pass.
+- **Where to test:** Tasks tab → run any capture (L1/L2/L3) on a media- or
+  schema-rich page (e.g. a news article or product page); DevTools Network panel.
+- **Steps:**
+  1. Open the DevTools Network panel for the side panel (or inspect the SW).
+  2. Run a capture on a queued source that has video embeds and JSON-LD.
+  3. Find the `POST …/extension-content` request and read its body.
+- **Expected:** The body has `images` (as before) PLUS `media: { videos, audio }`
+  and `structured: { metadata, jsonLd }` when the page has any. A page with no
+  media/structured omits those keys (kept lean). The capture still succeeds and
+  the source advances exactly as before (server ignores unknown keys today).
+- **Edge cases worth poking:** A page with zero videos/jsonLd → `media`/
+  `structured` absent, body identical to the old shape. Injection failure →
+  empty data, capture still proceeds off the HTML.
+
+### Research queue — domain-policy categories (§5)
+- **What it does:** The scrape queue now renders the server's per-source policy
+  category: `gated_login` sources appear under a **"Sign in to capture"** section
+  (open → sign in → Go via the user-gated overlay), `low_value` sources under a
+  **collapsed "Low-value"** section that never auto-batches, and `special`
+  sources get a violet **"Worth it"** badge. The human `policy_reason` ("Login
+  required …") shows on the row.
+- **Where to test:** Tasks tab, with a topic whose sources include a login-walled
+  site (e.g. NYT), a low-value site (e.g. Facebook), and a tuned site (e.g.
+  Reddit).
+- **Steps:**
+  1. Open the Tasks tab. Confirm gated_login sources are under "Sign in to
+     capture" with a "Login required" badge + reason, and are NOT in the
+     automated batch.
+  2. Confirm low_value sources are under a collapsed "Low-value" section; expand
+     it to opt in. The "Run automated batch" button count excludes them.
+  3. Confirm a `special` source shows the "Worth it" badge.
+  4. On a gated_login row press **Trigger** → the tab opens, you sign in, press
+     **Go** in the overlay → it captures as you.
+- **Expected:** Categories group + label correctly; low-value never auto-runs;
+  gated_login uses the sign-in-then-Go flow; the header count + empty-state
+  include the policy buckets.
+- **Edge cases worth poking:** A legacy server build (no policy fields) → every
+  source is a plain `open` scrape task, no badges, exactly as before. Being on a
+  gated_login URL surfaces the top-of-list "you're on a queued source" banner.
+
+### Research enrich tasks (§3) — dormant until the server emits them
+- **What it does:** When the server tags a queue item `task_kind:'enrich'` with a
+  directive (goal: rendered_dom / authenticated / expand / comments / structured
+  / …), the row shows a violet goal badge + an **Enrich** button. Pressing it
+  opens/reuses the tab, runs the goal-specific capture (settle/scroll/click →
+  capture html + page data), and submits with `enrich_goal`. Artifact goals
+  (screenshot/download/xhr_json/transcript) show an honest "not available yet"
+  error naming the missing server piece.
+- **Where to test:** Not yet end-to-end — **no server emits enrich items today**
+  (the generator is a filed server contract). The goal→plan mapping is covered by
+  `tests/unit/research-enrich.test.ts`. To exercise the UI before the server
+  lands it, hand-craft a queue item with `task_kind:'enrich'` + an `enrich`
+  directive in a mocked queue response.
+- **Expected:** Supported goals capture + submit (and the row goes success/thin);
+  unsupported goals surface the named-gap message; a plain scrape item is
+  unaffected (no badge, normal Run).
+- **Edge cases worth poking:** `hints.selector` is clicked first on
+  expand/comments; `details` accordions are opened; generic "load more" controls
+  are capped at 8 clicks so it can't runaway-click a page.
+
+### Scrape queue — filter / search / sort / group-by
+- **What it does:** A toolbar on the Tasks tab to focus a huge multi-project
+  queue: filter by **project**, free-text **search** (url/title/project/domain), a
+  **Filters** popover (domain · status · policy category · capture level), **sort**
+  (project / domain / recency / chars / attempts / status), and a **group-by**
+  toggle (capture level ↔ project). Selections persist across reopens.
+- **Where to test:** Tasks tab (needs a queue spanning several projects/domains).
+- **Steps:**
+  1. Pick a project in the **project dropdown** → only that project's sources show;
+     the header count + "N of M shown" reflect the filter.
+  2. Type part of a domain/title in **search** → list narrows live; clear with ×.
+  3. Open the **Filters** popover → tick a domain / status / capture level →
+     results narrow; the funnel icon shows an active-count badge.
+  4. Flip **group-by** to **project** (folder icon) → sections become one per
+     project, each row showing a capture-level chip; flip back to level (list icon).
+  5. Change **sort** → order updates within every section.
+  6. Close + reopen the side panel → your project filter + sort + group mode are
+     still applied.
+- **Expected:** Filters compose (AND); "Clear filters" (×) resets them; an empty
+  result shows "No sources match your filters"; a legacy server build with no
+  policy fields still works (everything reads as an `open` scrape task).
+
+### Scrape queue — batch actions + new statuses (ignored / content_mismatch)
+- **What it does:** Select multiple sources and act in bulk — **Capture** (auto-
+  capturable) or **Resolve** with any verdict. Adds two honest verdicts: **Ignore**
+  ("not interested" — not dead/gated) → status `ignored`, and **Wrong content**
+  ("page isn't what it claimed — redirect/changed page, not a 404") →
+  `content_mismatch`. Both terminal. See docs/RESEARCH_QUEUE_MANAGEMENT.md.
+- **Where to test:** Tasks tab.
+- **Steps:**
+  1. Filter to a project you're done with. Click the **section checkbox** (or
+     "select all filtered" in the action bar) → an action bar shows "N selected".
+  2. Click **Resolve → Ignore — don't want it** → progress shows, the sources
+     leave the queue, selection clears.
+  3. Per-row **Resolve** dropdown now also lists "Ignore" and "Wrong content"
+     alongside accept / gated / dead / retry.
+  4. Select a few L1/L2 sources → **Capture** → they scrape in sequence.
+- **Expected:** Bulk resolve removes terminal-verdict sources on the next refresh;
+  `retry` requeues them; a few failures are logged but don't sink the batch.
+  Resolved sources show the new status in the **web research UI** once aidream +
+  matrx-frontend deploy (until then batch still works via a per-source fallback,
+  and the web UI shows a muted badge for the new statuses).
+- **Edge cases worth poking:** "Capture" is disabled when no selected source is
+  auto-capturable (paste-only / sign-in). Selecting across projects then resolving
+  applies to all of them (server resolves each source's topic + checks access).
+
 ### Agenda — Cron trigger
 - **What it does:** Creating an agenda task with a Cron trigger now actually
   fires. A 5-field cron expression (min hour dom month dow, evaluated in your
@@ -1170,6 +1448,281 @@ Every entry follows this shape:
   to English → English transcription.
 - **Edge cases worth poking:** Default language is `en`. The pre-TTS on-device
   translation step (TASK-002d) is still pending — this entry covers STT only.
+
+### Client-tool suspend/resume — exactly one resume, context survives
+- **What it does:** When the agent calls a browser tool, the server hard-
+  suspends; the extension POSTs the result and opens exactly ONE `/resume`
+  stream (server enforces an atomic run claim; duplicates get a benign 409).
+  The resume re-sends a fresh context bundle so `page_brief` / `ctx_get` keep
+  working mid-conversation.
+- **Where to test:** Chat tab, on any normal page (e.g. a docs site).
+- **Steps:**
+  1. Ask the agent something that forces browser tools, e.g. "List my open
+     tabs, then read this page and summarize it" (Act mode for zero prompts).
+  2. Watch the timeline: each tool call completes once; the agent continues
+     after each result without re-calling the same tool with identical args.
+  3. Mid-conversation, ask "what page am I on?" — the agent should answer from
+     context (page_brief), not via web search, and `ctx_get` must not report
+     "No context objects are available".
+- **Expected:** No repeated identical tool calls, no "Triplicate call" errors,
+  one assistant bubble per continuation, tool rows in the DB carry real
+  `duration_ms`.
+- **Edge cases worth poking:**
+  - Multiple parallel tool calls in one turn (e.g. "screenshot AND list tabs")
+    → still exactly one resume; the SW log shows
+    "continuation_needed duplicate suppressed" for the extras.
+  - Very fast tools (tabs list) → if the resume races the suspend, the log
+    shows "409 resume_conflict — retrying" and recovers within ~1-3s.
+
+### Cold-resume — answer a paused conversation after closing the panel
+- **What it does:** When the user closes the side panel while the agent is waiting
+  on a client-delegated tool, the conversation is left paused on the server. On
+  reopen, the extension fetches the outstanding delegated calls
+  (`GET /ai/conversations/{id}/pending_calls`) and re-drives each one through the
+  same dispatch path as a live `tool_delegated` event — the approval card
+  re-appears, the tool runs, and the agent resumes. See docs/COLD_RESUME.md.
+- **Where to test:** Chat tab, on any normal page.
+- **Steps:**
+  1. In **Ask** mode, send a message that forces an action tool, e.g. "click the
+     first link on this page".
+  2. When the approval card appears, **close the side panel** without answering.
+  3. Reopen the side panel and re-select the same conversation.
+  4. The approval card should re-appear. Click **Allow**.
+- **Expected:** The tool runs once, the result posts, and the agent resumes and
+  finishes its turn (one continuation, no duplicate run).
+- **Edge cases worth poking:**
+  - A **read-tier** delegated call (rare) runs immediately on reopen with no card.
+  - Reopen the conversation twice quickly → the SW log shows
+    "cold-resume duplicate suppressed"; the handler runs only once.
+  - If the user is signed out / the conversation has no pending calls, reopen is a
+    silent no-op (no spurious cards).
+
+### read_active_page on a normal page
+- **What it does:** Full readable capture of the assigned tab via the content
+  script pipeline (now statically imported in the SW — no more chunk-loading
+  "document is not defined" failures).
+- **Where to test:** Tools tab → `read_active_page` → Run (or via chat).
+- **Steps:**
+  1. Open a regular article page, run `read_active_page` with `{}`.
+  2. Run again with `{"deep": true}` on a lazy-loading page.
+- **Expected:** Structured soup result (title, content). On a chrome:// page a
+  structured "Chrome blocks extensions…" reason — never a raw JS error.
+- **Edge cases worth poking:** A tab opened before the extension installed
+  (auto-inject + retry), an SPA mid-hydration.
+
+### Execution-time admin_only gate (dispatcher + WebMCP)
+- **What it does:** Admin-only tools are now refused at EXECUTION time for
+  non-admins, on both the streaming dispatcher and every external path
+  (WebMCP page bridge, frontend RPC, desktop reverse-invoke) — previously
+  only advertisement was filtered.
+- **Where to test:** Tools tab as a NON-admin account (or sign out → guest).
+- **Steps:**
+  1. As a non-admin, force-run an admin tool (e.g. `chrome_cookies` with
+     `{"action":"get"}`, or a `cdp_*` tool) via the Tools tab Run button
+     or by having a test page post a `__matrx_webmcp_call` for it.
+  2. As an admin, run the same tool.
+- **Expected:** Non-admin gets a structured `admin_only:` /
+  `webmcp: ... admin-only` error, never an execution. Admin path unchanged.
+- **Edge cases worth poking:**
+  - Fresh install before any sign-in (no cached flag) → treated as non-admin.
+  - The four mega-routers (`chrome_cookies`, `chrome_webmcp`, `cdp_session`,
+    `cdp_emulate`) now carry admin_only and disappear from non-admin surfaces.
+
+### External-caller confirmation (page / frontend / desktop)
+- **What it does:** Action-tier tool calls that originate OUTSIDE the agent
+  (WebMCP page bridge, aimatrx.com RPC, matrx-local) now ALWAYS show the
+  approval card — even in "Act without asking" mode — with a red banner
+  naming the initiator.
+- **Where to test:** A WebMCP-enabled allow-listed page + the chat sidepanel.
+- **Steps:**
+  1. Set permission mode to "Act without asking".
+  2. From the allow-listed page, invoke an action tool (e.g. `navigate`)
+     through `navigator.modelContext` / the bridge.
+  3. Observe the sidepanel.
+- **Expected:** An approval card appears with the rose "Requested by the web
+  page you have open — NOT by your agent" banner; the remember-for-this-chat
+  checkbox is absent (domain trust never applies to external callers). Deny
+  returns a structured error to the page.
+- **Edge cases worth poking:**
+  - Privileged tool from the page → refused outright (no card).
+  - Duplicate `tool_delegated` replays of the same call_id → second is
+    suppressed (SW log: "duplicate tool_delegated suppressed").
+  - A privileged call whose args carry a URL the user trust-remembered
+    earlier in the chat → still shows the card (trust shortcut no longer
+    applies to privileged).
+
+### Stream survives sidepanel tab switches; leaving a conversation cancels its run
+- **What it does:** Chat/Pilot views stay mounted across sidepanel tab
+  switches (no more dropped chunks / phantom stall banners), and switching
+  conversation or clicking New Chat mid-stream cancels the live run instead
+  of leaking its state into the destination.
+- **Where to test:** Chat tab.
+- **Steps:**
+  1. Start a long agent run, switch to the Tools tab for ~10s, switch back.
+  2. Start another run, then pick a different conversation from history.
+  3. Start another run, then click New Chat.
+- **Expected:** (1) The transcript contains the text streamed while you were
+  away; no "stalled" banner appears afterwards. (2)+(3) The spinner stops,
+  the composer is in normal send mode (not the indigo queue mode), and the
+  old run's tool cards/results do NOT appear in the new conversation.
+- **Edge cases worth poking:**
+  - Queue a turn-boundary message, then switch conversations — the queued
+    card should not deliver into the wrong transcript.
+  - Multiple ask-cards open while a continuation fires — exactly ONE resume
+    (no duplicate ghost bubbles; SW log shows others "another hook instance
+    owns the resume").
+
+### Privacy toggle — page identity & email context
+- **What it does:** Settings → Privacy → "Share page identity & email
+  content" (default ON) gates the `auth_state` and Gmail
+  `email_inbox`/`email_thread` context keys.
+- **Where to test:** Settings tab + Debug tab (context inspector) or server
+  request logs.
+- **Steps:**
+  1. On GitHub while signed in, send a chat message — context includes
+     `auth_state` with your visible username.
+  2. Turn the toggle OFF, send again.
+- **Expected:** `auth_state`/email keys absent from the request; the
+  detectors don't run (no executeScript for them). Password inputs NEVER
+  appear in `form_elements.current_value` regardless of the toggle.
+
+### Mic auto-stop when the panel closes
+- **What it does:** the offscreen recorder stops ~5s after the last
+  recording surface disappears; pause now disables the audio track.
+- **Where to test:** Chat composer mic button.
+- **Steps:**
+  1. Start recording, then close the side panel entirely.
+  2. Watch the OS/browser mic indicator.
+- **Expected:** indicator goes off within ~5 seconds. Reopening within the
+  grace window (quick toggle) keeps the recording alive. While PAUSED, no
+  audio is captured. Guests see "Sign in to use voice input" instead of a
+  recording that fails at transcription.
+
+### Bug-hunt 2026-06-10 — quick regression passes
+- **Guidance Add button:** Guidance tab → Add → the Note/Screenshot/GIF/Demo
+  bar must open (it was completely dead). Edit a note → Save → the preview
+  shows the NEW text immediately. Delete a demo row → `list_demos` (Tools
+  tab) no longer lists it. Delete on machine A → machine B drops it after
+  its next sign-in hydrate.
+- **Lists repaint:** TaskPanel (chat header chip) → add a task → it appears
+  INSTANTLY. Check a todo, delete a task, "Clear done" — all repaint live.
+  Then have the running agent add/update a task through the `tasks` tool:
+  the same row must repaint in TaskPanel and the Lists tab via
+  `chat.agent_task` Realtime. Tool routing diagnostics must show executor
+  `aidream`, no `chrome-extension` binding, and zero findings.
+- **Tasks overlay:** trigger an L3 capture, switch sidepanel tabs, click the
+  in-page Capture button — it still works (TasksView stays mounted). With
+  the panel fully closed, the overlay unlocks with a "side panel is closed"
+  notice instead of freezing on "Capturing…".
+- **Parallel runs:** text renders once (was doubled).
+- **Scrape:** Save while signed out shows a red failure line (was silent
+  fake-success); a failed "Scroll & capture" retries WITH scrolling;
+  fetch_url_as_markdown returns the FETCHED page's metadata/links.
+- **SEO:** audit a link-heavy page — internal/external link counts are real
+  numbers (they were hardcoded 0); chrome:// pages explain themselves.
+- **Chat:** answer an agent questionnaire → Stop now stops that run; ask
+  cards with a countdown disappear at 0; streamed code blocks no longer
+  flash between plain and highlighted.
+
+### Stream — provider retry (no false "connection lost")
+- **What it does:** when the upstream LLM provider rate-limits or 5xx's, the server
+  backs off and retries. The stream goes silent for the backoff. The extension must
+  keep the spinner up, hold the 75s stall watchdog, and tell the user what's
+  happening — instead of declaring the run dead.
+- **Where to test:** Chat tab.
+- **Prereq:** hard to force naturally. Easiest repro is Debug tab → watch the stream
+  log for a `provider_retry` event during a busy period; or ask the backend team to
+  point an agent at a provider/model that is currently rate-limited.
+- **Steps:**
+  1. Send a message on an agent whose provider is rate-limiting.
+  2. Watch for an amber banner above the composer.
+- **Expected:** amber banner with the server's own message (e.g. "Anthropic is
+  rate-limiting…"), the provider name, "attempt N of M", and a live "retrying in Xs"
+  countdown. The spinner keeps spinning. When the retry lands, the banner disappears
+  and the answer streams in normally.
+- **Edge cases worth poking:**
+  - A backoff LONGER than 75 seconds. This is the whole point: the old build showed
+    a false "connection lost / Retry" banner here. It must NOT.
+  - Retry that never lands → after the retry deadline plus 75s the normal stall
+    banner SHOULD appear. The hold must not make the run un-killable.
+  - Cancel the run mid-retry → banner clears with the run, does not linger.
+
+### Stream — reasoning block boundaries
+- **What it does:** the server now marks where a thinking block starts and stops, so
+  two separate thinking blocks in one turn render as two blocks rather than merging.
+- **Where to test:** Chat tab, with a reasoning-capable model.
+- **Steps:**
+  1. Ask something that makes the model think, call a tool, then think again.
+  2. Expand the reasoning parts in the assistant bubble.
+- **Expected:** two distinct reasoning parts, in stream order, not one merged block.
+
+### Token broker — demo surface
+- **What it does:** mints scoped short-lived credentials from aidream's token broker
+  (`POST /broker/tokens`), shows the SW-owned credential cache, and runs a proxied
+  Anthropic round-trip through the gateway (executed in the SW; the token never
+  reaches the sidepanel).
+- **Where to test:** admin sidepanel → Broker tab (KeyRound icon, cyan). Admin + signed in.
+- **Prereq:** the target server must have `BROKER_TOKEN_SIGNING_KEY` + `public_url`
+  configured (otherwise every mint shows the loud 503 card — which is itself a test).
+- **Steps:**
+  1. Pick audience `anthropic`, tier policy `none` (note: Mint is disabled until a
+     tier is explicitly chosen — no default, by contract).
+  2. Click **Mint (cached)** → green card: `proxied` / `anthropic_messages`, gateway
+     endpoint URL, masked token tail, live expiry countdown. Cache list shows one row.
+  3. Click **Mint (cached)** again → no new row / same token tail (cache hit).
+     **Force fresh** → token tail changes.
+  4. Mint audience `openai_realtime` with model `gpt-realtime` → `native_ephemeral`
+     row with an OpenAI endpoint.
+  5. In "Proxied test", send the default prompt → JSON result with the model's reply
+     ("broker gateway OK").
+  6. Trash-icon a cache row → it disappears; next mint re-mints.
+- **Expected:** all of the above; tokens never appear anywhere in full (UI, logs,
+  Debug tab), only 6-char tails.
+- **Edge cases worth poking:**
+  - Tier `guest` on the proxied test with a premium model → server rewrites the
+    model (visible on Anthropic's response `model` field) — tier enforcement.
+  - Signed out / guest → mint fails 401 (guests cannot mint in v1).
+  - Backend env pointed at a host without the broker configured → 503 card with
+    the "deploy problem — do not retry" copy, no silent fallback.
+
+### Vault — side-panel password manager
+- **What it does:** lists your saved logins (Mine + Shared with me) masked, surfaces
+  the logins the SERVER approves for the current tab with a one-click **Use here**,
+  reveals/copies a field on explicit request (auto-hides after 30s), toggles browser
+  fill, adds the current page as a login URL, and creates a login from the page.
+  Sharing / transfer / ownership deliberately live on the web (`/vault`).
+- **Where to test:** sidepanel → Vault tab (vault icon, between Screenshots and Tools).
+  Signed in — the tab is hidden for guests and the panel refuses guest identity.
+- **Prereq:** at least one `website_login` item in the Vault with `browser_fill_enabled`
+  and a `login_urls` entry for the site you test on.
+- **Steps:**
+  1. Sign out (or use a guest profile) and open the Vault tab → sign-in prompt only;
+     no list, and no request to `/api/vault/*` in the Debug tab.
+  2. Sign in. Navigate to a saved site's https login page, open the Vault tab.
+     The top strip shows the host and your matching login(s).
+  3. Click **Use here** → the page fills and submits; the strip reports one of the
+     fixed statuses (Signed in / verification step / challenge / rejected / …).
+  4. Expand any item → fields show mask hints only. Click the eye → the value appears;
+     wait 30s → it hides itself. Click copy → the value lands on the clipboard.
+  5. Toggle **Browser fill** off → the item leaves the top strip. Toggle back on →
+     it returns.
+  6. On a page the item does not cover, expand it → **Use this login on &lt;host&gt;**;
+     click it → the page is added and the item now appears in the top strip.
+  7. On a login page with nothing saved → **Save this site** → fill name / username /
+     password → **Save to Vault** → the new item appears in Mine and in the top strip.
+  8. **Shared** tab → items others granted you; a shared item you cannot edit shows
+     its fill switch disabled.
+- **Expected:** every value is masked until an explicit reveal; nothing you reveal
+  survives a tab switch (leaving the Vault tab unmounts it); the Debug tab shows
+  `→ POST vault/items/{item}/reveal` and `← vault reveal ok` but never a value.
+- **Edge cases worth poking:**
+  - An http (non-loopback) page → "Browser login only runs on https pages", no matches
+    fetched, and creating from that page attaches no site.
+  - A sealed field → no eye/copy buttons and a "can never be shown" note.
+  - Two matching logins on one page → both listed, each with its own **Use here**
+    (the agent path returns `selection_required` in the same situation).
+  - Sign out with the panel open → the next action reports
+    "Sign in to Matrx to use the Vault".
 
 ## Template (copy when adding a new entry)
 

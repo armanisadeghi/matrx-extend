@@ -11,7 +11,6 @@
  * tab is signed-in-only, matching the Notes tab.
  */
 
-import { getSupabase } from '@/lib/supabase/client';
 import {
   type CreateHighlightInput,
   type Highlight,
@@ -20,11 +19,12 @@ import {
   HighlightSchema,
   type UpdateHighlightPatch,
 } from '@/lib/highlights/types';
+import { getSupabase } from '@/lib/supabase/client';
 
 const TABLE = 'wbx_highlight';
 
 const LIST_COLUMNS =
-  'id, user_id, conversation_id, mode, url, domain, page_title, color, text, anchor, created_at, updated_at';
+  'id, created_by, conversation_id, mode, url, domain, page_title, color, text, anchor, created_at, updated_at';
 const FULL_COLUMNS = `${LIST_COLUMNS}, metadata, is_deleted`;
 
 function parseList(rows: unknown[] | null): HighlightListItem[] {
@@ -43,6 +43,7 @@ function parseList(rows: unknown[] | null): HighlightListItem[] {
 export async function listMyHighlights(limit = 500): Promise<HighlightListItem[]> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema('extend')
     .from(TABLE)
     .select(LIST_COLUMNS)
     .eq('is_deleted', false)
@@ -59,6 +60,7 @@ export async function listMyHighlights(limit = 500): Promise<HighlightListItem[]
 export async function listHighlightsForUrl(url: string): Promise<HighlightListItem[]> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema('extend')
     .from(TABLE)
     .select(LIST_COLUMNS)
     .eq('url', url)
@@ -75,6 +77,7 @@ export async function listHighlightsForUrl(url: string): Promise<HighlightListIt
 export async function listHighlightsForDomain(domain: string): Promise<HighlightListItem[]> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema('extend')
     .from(TABLE)
     .select(LIST_COLUMNS)
     .eq('domain', domain)
@@ -93,6 +96,7 @@ export async function listHighlightsForConversation(
 ): Promise<HighlightListItem[]> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema('extend')
     .from(TABLE)
     .select(LIST_COLUMNS)
     .eq('conversation_id', conversationId)
@@ -107,7 +111,12 @@ export async function listHighlightsForConversation(
 
 export async function getHighlight(id: string): Promise<Highlight | null> {
   const c = getSupabase();
-  const { data, error } = await c.from(TABLE).select(FULL_COLUMNS).eq('id', id).maybeSingle();
+  const { data, error } = await c
+    .schema('extend')
+    .from(TABLE)
+    .select(FULL_COLUMNS)
+    .eq('id', id)
+    .maybeSingle();
   if (error || !data) {
     if (error) console.warn('[highlights] getHighlight error', error.message);
     return null;
@@ -121,6 +130,7 @@ export async function getHighlightsByIds(ids: string[]): Promise<Highlight[]> {
   if (ids.length === 0) return [];
   const c = getSupabase();
   const { data, error } = await c
+    .schema('extend')
     .from(TABLE)
     .select(FULL_COLUMNS)
     .in('id', ids)
@@ -147,8 +157,9 @@ export async function createHighlight(input: CreateHighlightInput): Promise<High
     console.warn('[highlights] createHighlight: no auth user');
     return null;
   }
+  // Owner (`created_by`) is stamped server-side by the platform _stamp_actor
+  // trigger from auth.uid(); we no longer send it in the payload.
   const payload = {
-    user_id: userId,
     conversation_id: input.conversation_id ?? null,
     mode: input.mode,
     url: input.url,
@@ -160,7 +171,12 @@ export async function createHighlight(input: CreateHighlightInput): Promise<High
     metadata: input.metadata ?? {},
     is_deleted: false,
   };
-  const { data, error } = await c.from(TABLE).insert(payload).select(FULL_COLUMNS).single();
+  const { data, error } = await c
+    .schema('extend')
+    .from(TABLE)
+    .insert(payload)
+    .select(FULL_COLUMNS)
+    .single();
   if (error || !data) {
     console.warn('[highlights] createHighlight error', error?.message);
     return null;
@@ -175,6 +191,7 @@ export async function updateHighlight(
 ): Promise<Highlight | null> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema('extend')
     .from(TABLE)
     .update({ ...patch, updated_at: new Date().toISOString() })
     .eq('id', id)
@@ -191,6 +208,7 @@ export async function updateHighlight(
 export async function deleteHighlight(id: string): Promise<boolean> {
   const c = getSupabase();
   const { error } = await c
+    .schema('extend')
     .from(TABLE)
     .update({ is_deleted: true, updated_at: new Date().toISOString() })
     .eq('id', id);
@@ -205,6 +223,7 @@ export async function deleteHighlight(id: string): Promise<boolean> {
 export async function clearHighlightsForUrl(url: string): Promise<number> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema('extend')
     .from(TABLE)
     .update({ is_deleted: true, updated_at: new Date().toISOString() })
     .eq('url', url)

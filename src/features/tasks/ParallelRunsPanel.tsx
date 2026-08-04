@@ -15,7 +15,6 @@
  */
 
 import { Button } from '@/components/ui/button';
-import { useParallelEventBridge } from '@/hooks/use-parallel-event-bridge';
 import {
   type ParallelSession,
   type ParallelSubRun,
@@ -140,9 +139,7 @@ function SessionCard({ session }: { session: ParallelSession }) {
   const completed = subs.filter((s) => s.status === 'completed').length;
   const errored = subs.filter((s) => s.status === 'error').length;
   const timedOut = subs.filter((s) => s.status === 'timeout').length;
-  const running = subs.filter(
-    (s) => s.status === 'running' || s.status === 'pending',
-  ).length;
+  const running = subs.filter((s) => s.status === 'running' || s.status === 'pending').length;
   const isFinished = session.endedAt != null;
 
   return (
@@ -160,17 +157,11 @@ function SessionCard({ session }: { session: ParallelSession }) {
           )}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 text-xs font-medium">
-              {!isFinished && (
-                <Loader2 className="size-3 animate-spin text-blue-500" />
-              )}
+              {!isFinished && <Loader2 className="size-3 animate-spin text-blue-500" />}
               parallel_for_each_tab
-              <span className="text-[10px] text-muted-foreground">
-                · {total} tabs
-              </span>
+              <span className="text-[10px] text-muted-foreground">· {total} tabs</span>
             </div>
-            <div className="truncate text-[11px] text-muted-foreground">
-              {session.subPrompt}
-            </div>
+            <div className="truncate text-[11px] text-muted-foreground">{session.subPrompt}</div>
           </div>
         </button>
         <div className="flex items-center gap-1.5 text-[10px]">
@@ -181,9 +172,7 @@ function SessionCard({ session }: { session: ParallelSession }) {
             <span className="text-emerald-700 dark:text-emerald-300">{completed} done</span>
           )}
           {(errored > 0 || timedOut > 0) && (
-            <span className="text-destructive">
-              {errored + timedOut} failed
-            </span>
+            <span className="text-destructive">{errored + timedOut} failed</span>
           )}
         </div>
         <Button
@@ -200,9 +189,7 @@ function SessionCard({ session }: { session: ParallelSession }) {
       {!session.collapsed && (
         <div className="space-y-1 border-t px-2 py-1.5">
           {subs.length === 0 ? (
-            <div className="text-[11px] text-muted-foreground italic">
-              spinning up sub-runs…
-            </div>
+            <div className="text-[11px] text-muted-foreground italic">spinning up sub-runs…</div>
           ) : (
             subs.map((sub) => <SubRunRow key={sub.runId} sub={sub} />)
           )}
@@ -213,11 +200,12 @@ function SessionCard({ session }: { session: ParallelSession }) {
 }
 
 export function ParallelRunsPanel() {
-  useParallelEventBridge();
+  // NOTE: useParallelEventBridge is mounted ONCE at the App root — mounting
+  // it here too registered a second onMessage listener and every sub-run
+  // chunk rendered twice ("hellohello worldworld") with doubled data-event
+  // counts.
   const sessions = useParallelRunsStore((s) => s.sessions);
-  const sessionList = Object.values(sessions).sort(
-    (a, b) => b.startedAt - a.startedAt,
-  );
+  const sessionList = Object.values(sessions).sort((a, b) => b.startedAt - a.startedAt);
   if (sessionList.length === 0) return null;
   return (
     <div className="space-y-1.5">

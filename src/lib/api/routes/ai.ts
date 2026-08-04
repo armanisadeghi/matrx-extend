@@ -1,13 +1,40 @@
 /**
  * AI route definitions. Endpoint paths and request shapes verified against
- * `types/python-generated/openapi.json` (run `pnpm update-api-types` to refresh).
+ * `types/python-generated/openapi.json` (run `pnpm update-api-types` to refresh)
+ * AND directly diffed against the live backend's `/openapi.json` (2026-07-11).
+ *
+ * ── v1 vs v2 (the "spine") ──────────────────────────────────────────────────
+ * The backend exposes exactly 6 `/v2/ai/*` operations (tag "v2 (runtime
+ * spine)"). Every one of them is a byte-for-byte alias of its v1
+ * counterpart: same request schema (`AgentStartRequest` / `ChatRequest` /
+ * `ConversationContinueRequest` — no `*V2` variant exists), same response
+ * shape, same auth (verified live: an unauthenticated POST to both
+ * `/ai/agent/{id}` and `/v2/ai/agent/{id}` returns an identical
+ * `401 {"error":"auth_required",...}` body). The v2 operation descriptions
+ * say it outright: "identical pipeline to `/api/ai/agents/{agent_id}`" etc.
+ * This is a PATH move, not a payload/stream/event change.
+ *
+ * The v2 surface does NOT include: warm, cancel, tool_results, inbox, or
+ * resume/pending_calls. Those endpoints only exist under `/ai/*` — calling
+ * them is correct and NOT a bug. `API_VERSION` below is the one knob that
+ * moves the two run-start paths (`agentExecutePath`, `CHAT_PATH`) that DO
+ * have a v2 form; everything else in this file and in
+ * `./tool-results.ts` stays hardcoded to `/ai/...` deliberately.
  */
 
 import { apiDelete, apiGet, apiPatch, apiPost } from '@/lib/api/client';
 
-/** POST /ai/agent/{agent_id} — start agent stream. agent_id is in the URL. */
+/**
+ * Single source of truth for which spine version the agent-run paths use.
+ * Bump this to move `agentExecutePath` + `CHAT_PATH` to a future v3 in one
+ * edit — never hardcode a version segment at a call site or anywhere else
+ * in this file.
+ */
+const API_VERSION = 'v2' as const;
+
+/** POST /{API_VERSION}/ai/agent/{agent_id} — start agent stream. agent_id is in the URL. */
 export const agentExecutePath = (agentId: string): string =>
-  `/ai/agent/${encodeURIComponent(agentId)}`;
+  `/${API_VERSION}/ai/agent/${encodeURIComponent(agentId)}`;
 
 /**
  * Capability-based client envelope. Replaces the old `client_tools: string[]`
@@ -39,10 +66,17 @@ export interface AgentClientEnvelope {
 export interface AgentStartRequest {
   user_input?: string;
   variables?: Record<string, unknown> | null;
-  conversation_id?: string | null;
-  is_new?: boolean | null;
+  /**
+   * REQUIRED, client-minted, always. It is our correlation handle for this
+   * request; with several sends in flight a server-assigned id that only
+   * arrives when the response opens cannot tell them apart.
+   */
+  conversation_id: string;
+  /** REQUIRED assertion about that id: create it (true) or continue it (false). */
+  is_new: boolean;
+  /** REQUIRED. The ONLY ephemeral signal — false means the server writes nothing. */
+  store: boolean;
   stream?: boolean;
-  store?: boolean;
   /**
    * Capability declaration + per-capability state. The capability brings
    * `load_browser_tools` (the discovery tool) online; everything else loads
@@ -98,14 +132,20 @@ export interface AgentStartRequest {
   writable_variables?: string[];
 }
 
-/** POST /ai/chat — direct chat with explicit ai_model_id (not used by extension v1). */
-export const CHAT_PATH = '/ai/chat';
+/** POST /{API_VERSION}/ai/chat — direct chat with explicit ai_model_id (not used by extension currently). */
+export const CHAT_PATH = `/${API_VERSION}/ai/chat`;
 
-/** POST /ai/agents/{agent_id}/warm — warm an agent before sending. */
+/**
+ * POST /ai/agents/{agent_id}/warm — warm an agent before sending.
+ * No `/v2/ai/agents/{agent_id}/warm` exists on the backend — stays on v1.
+ */
 export const agentWarmPath = (agentId: string): string =>
   `/ai/agents/${encodeURIComponent(agentId)}/warm`;
 
-/** POST /ai/cancel/{request_id} — cancel an in-flight stream. */
+/**
+ * POST /ai/cancel/{request_id} — cancel an in-flight stream.
+ * No `/v2/ai/cancel/{request_id}` exists on the backend — stays on v1.
+ */
 export const cancelPath = (requestId: string): string =>
   `/ai/cancel/${encodeURIComponent(requestId)}`;
 
@@ -123,13 +163,16 @@ export function cancelRequest(requestId: string) {
  * The running agent drains the item at its next natural pause and answers it
  * on the same stream. Plain JSON response (not a stream).
  * See docs/TURN_BOUNDARY_INBOX.md.
+ *
+ * NOT versioned: there is no `/v2/ai/conversations/{id}/inbox` on the
+ * backend. Do not "fix" this to use `API_VERSION` — see the file-header note.
  */
 export const conversationInboxPath = (conversationId: string): string =>
   `/ai/conversations/${encodeURIComponent(conversationId)}/inbox`;
 
 export interface InboxEnqueueRequest {
   /** 'user_message' (default) shows in the transcript; 'system_message' steers. */
-  kind?: "user_message" | "system_message";
+  kind?: 'user_message' | 'system_message';
   text: string;
   is_visible_to_user?: boolean;
   is_visible_to_model?: boolean;
@@ -144,12 +187,9 @@ export interface InboxEnqueueResponse {
   run_active: boolean;
 }
 
-export function enqueueInboxMessage(
-  conversationId: string,
-  body: InboxEnqueueRequest,
-) {
+export function enqueueInboxMessage(conversationId: string, body: InboxEnqueueRequest) {
   return apiPost<InboxEnqueueResponse>(conversationInboxPath(conversationId), {
-    kind: "user_message",
+    kind: 'user_message',
     is_visible_to_user: true,
     is_visible_to_model: true,
     ...body,
@@ -159,7 +199,7 @@ export function enqueueInboxMessage(
 /** A single still-pending inbox item, as returned by the list/mutate endpoints. */
 export interface InboxItem {
   injection_id: string;
-  kind: "user_message" | "system_message";
+  kind: 'user_message' | 'system_message';
   text: string;
   status: string;
   queued_at?: string;
@@ -175,9 +215,7 @@ const inboxItemPath = (conversationId: string, injectionId: string): string =>
  * Used to rebuild "waiting its turn" cards when client state was lost.
  */
 export function listPendingInboxMessages(conversationId: string) {
-  return apiGet<InboxItem[]>(
-    `${conversationInboxPath(conversationId)}?status=pending`,
-  );
+  return apiGet<InboxItem[]>(`${conversationInboxPath(conversationId)}?status=pending`);
 }
 
 /**
@@ -195,11 +233,7 @@ export function cancelInboxMessage(conversationId: string, injectionId: string) 
  * PATCH /ai/conversations/{id}/inbox/{injection_id} — edit a pending item's
  * text. `200 {status:'pending'}` on success; 409 if drained; 404 if absent.
  */
-export function editInboxMessage(
-  conversationId: string,
-  injectionId: string,
-  text: string,
-) {
+export function editInboxMessage(conversationId: string, injectionId: string, text: string) {
   return apiPatch<{ injection_id: string; status: string }>(
     inboxItemPath(conversationId, injectionId),
     { text },

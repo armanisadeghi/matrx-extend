@@ -33,9 +33,7 @@ export interface ExtensionIdentity {
 
 export function readExtensionIdentity(): ExtensionIdentity {
   const runtime_id = chrome.runtime.id;
-  const redirect_uri = chrome.identity?.getRedirectURL
-    ? chrome.identity.getRedirectURL()
-    : '';
+  const redirect_uri = chrome.identity?.getRedirectURL ? chrome.identity.getRedirectURL() : '';
   return {
     runtime_id,
     redirect_uri,
@@ -45,7 +43,7 @@ export function readExtensionIdentity(): ExtensionIdentity {
     matches_expected: isExpectedExtensionId(runtime_id),
     extension_version: chrome.runtime.getManifest().version,
     extension_name: chrome.runtime.getManifest().name,
-    user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+    ...(typeof navigator !== 'undefined' && { user_agent: navigator.userAgent }),
   };
 }
 

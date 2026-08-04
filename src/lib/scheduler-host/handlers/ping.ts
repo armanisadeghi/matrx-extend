@@ -23,12 +23,12 @@
 import { registerTaskHandler } from '@/lib/scheduler-host';
 
 registerTaskHandler('ping', async (task) => {
-    return {
-        ok: true,
-        resultSummary: `pong from chrome-extension-chat (task=${task.id})`,
-        resultMetadata: {
-            handledBy: 'matrx-extend',
-            taskTitle: task.title,
-        },
-    };
+  return {
+    ok: true,
+    resultSummary: `pong from chrome-extension-chat (task=${task.id})`,
+    resultMetadata: {
+      handledBy: 'matrx-extend',
+      taskTitle: task.title,
+    },
+  };
 });

@@ -31,4 +31,12 @@ export type ExtractionMode<TConfig = unknown> = {
   detectInPage: (config?: TConfig) => DetectionHint;
   runInPage: (config: TConfig) => ExtractedRow[];
   buildConfig?: (pattern: PatternForBuildConfig) => TConfig;
+  /**
+   * True for modes whose runInPage is a stub (ai_extract, network_capture):
+   * a real run needs surface-level orchestration (agent stream / re-capture),
+   * not a single executeScript pass. `runPattern` refuses these so they can
+   * never silently "succeed" with 0 rows; surfaces route them to the
+   * interactive runner instead.
+   */
+  interactiveOnly?: boolean;
 };

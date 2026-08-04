@@ -272,10 +272,12 @@ export function formatDiagnoseBundle(args: FormatBundleArgs): string {
   if (result.mode === 'missing') {
     const cmp = compareToMarkdown(scrapeMarkdown, result.anchorCandidates);
     if (cmp.kind === 'no-markdown') {
-      lines.push('**Current scrape output:** _(no markdown captured — page may not have been scraped, or the article extractor returned nothing.)_');
+      lines.push(
+        '**Current scrape output:** _(no markdown captured — page may not have been scraped, or the article extractor returned nothing.)_',
+      );
     } else if (cmp.kind === 'not-found') {
       lines.push(
-        '**Current scrape output:** _the picked element\'s text does not appear in the scraped markdown — this is consistent with it being lost during extraction._',
+        "**Current scrape output:** _the picked element's text does not appear in the scraped markdown — this is consistent with it being lost during extraction._",
       );
     } else {
       lines.push('**Current scrape output near this element:**');
@@ -288,19 +290,20 @@ export function formatDiagnoseBundle(args: FormatBundleArgs): string {
     // For unwanted, the user is reacting to junk THEY saw in the markdown.
     // Don't quote the markdown back at them — they already know what's there.
     // Just confirm the element exists on the page.
-    lines.push('**Source DOM is above.** The user is reporting this as noise that shouldn\'t appear in the scrape output.');
+    lines.push(
+      "**Source DOM is above.** The user is reporting this as noise that shouldn't appear in the scrape output.",
+    );
     lines.push('');
   }
 
   // Trailing call to action.
   const followUp =
     result.mode === 'missing'
-      ? 'Diagnose why this element didn\'t make it into the scrape, then propose a fix. The scrape pipeline is in `src/lib/scrape/pipeline.ts`. Pre-pass hooks (e.g. `protectMicroData`) run on a cloned DOM before Readability; that\'s the cheapest place to intervene if the loss happens during article extraction.'
+      ? "Diagnose why this element didn't make it into the scrape, then propose a fix. The scrape pipeline is in `src/lib/scrape/pipeline.ts`. Pre-pass hooks (e.g. `protectMicroData`) run on a cloned DOM before Readability; that's the cheapest place to intervene if the loss happens during article extraction."
       : 'Diagnose why this element ended up in the scrape output, then propose a fix. The scrape pipeline is in `src/lib/scrape/pipeline.ts` and post-processing (e.g. `cleanArticleMarkdown`) lives in `src/lib/scrape/to-markdown.ts`.';
 
   return wrapForAgent({
-    description:
-      'a scrape-debugging bundle captured by clicking an element on the live page',
+    description: 'a scrape-debugging bundle captured by clicking an element on the live page',
     source: {
       url: result.pickedAtUrl,
       title: result.pickedAtTitle,
@@ -327,10 +330,7 @@ type MarkdownComparison =
  * Find the picked element's text in the scraped markdown. Returns a window
  * of ±MARKDOWN_EXCERPT_RADIUS chars around the first matching anchor.
  */
-function compareToMarkdown(
-  markdown: string | null,
-  anchors: string[],
-): MarkdownComparison {
+function compareToMarkdown(markdown: string | null, anchors: string[]): MarkdownComparison {
   if (!markdown) return { kind: 'no-markdown' };
   if (anchors.length === 0) return { kind: 'not-found' };
 

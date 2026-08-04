@@ -110,7 +110,7 @@ export const PROFILES: Record<ScreenshotProfile, ProfileConfig> = {
     max_dimension: 1536,
     quality: 85,
     rationale:
-      "Gemini 3 Pro/Flash with `media_resolution_high`. Token budget is FIXED at 1120 — pixel count above ~1500 px is wasted. 1536 hits the budget exactly without overhead.",
+      'Gemini 3 Pro/Flash with `media_resolution_high`. Token budget is FIXED at 1120 — pixel count above ~1500 px is wasted. 1536 hits the budget exactly without overhead.',
     est_tokens: 1120,
   },
   'gemini-overview': {
@@ -136,7 +136,7 @@ export const PROFILES: Record<ScreenshotProfile, ProfileConfig> = {
     max_dimension: 2048,
     quality: 92,
     rationale:
-      'Higher quality + larger max dimension for fine-text OCR. Goes through Anthropic Opus 4.7\'s 2576 px cap, OpenAI high\'s 2048 px cap, Gemini 3 high. q=92 preserves text edges that q=85 softens.',
+      "Higher quality + larger max dimension for fine-text OCR. Goes through Anthropic Opus 4.7's 2576 px cap, OpenAI high's 2048 px cap, Gemini 3 high. q=92 preserves text edges that q=85 softens.",
     est_tokens: 4100,
   },
   lossless: {
@@ -144,7 +144,7 @@ export const PROFILES: Record<ScreenshotProfile, ProfileConfig> = {
     max_dimension: 0,
     quality: 100,
     rationale:
-      'PNG, no resize. ONLY for archival / pixel-perfect comparison. Will blow past every provider\'s budget if used carelessly — agent server should reject this profile unless the caller explicitly asked for lossless.',
+      "PNG, no resize. ONLY for archival / pixel-perfect comparison. Will blow past every provider's budget if used carelessly — agent server should reject this profile unless the caller explicitly asked for lossless.",
   },
 };
 

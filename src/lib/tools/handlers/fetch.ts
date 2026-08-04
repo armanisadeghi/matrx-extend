@@ -1,3 +1,9 @@
+import { log } from '@/lib/debug/log';
+import { send } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
+import type { FetchAndParseRequest, FetchAndParseResult } from '@/lib/scrape/fetch-and-parse';
+import { ensureOffscreen } from '@/lib/stream/offscreen-proxy';
+import type { ToolHandler } from '@/lib/tools/types';
 /**
  * `fetch_url_as_markdown` — fetch any HTTP URL, parse the HTML, return
  * the same scrape-pipeline output shape the user-facing **Scrape** tab
@@ -16,15 +22,6 @@
  * 🧪 Tests: docs/feature-tests.md → "fetch_url_as_markdown"
  */
 import { z } from 'zod';
-import { log } from '@/lib/debug/log';
-import { send } from '@/lib/messaging/native';
-import { CHANNELS } from '@/lib/messaging/schemas';
-import { ensureOffscreen } from '@/lib/stream/offscreen-proxy';
-import type {
-  FetchAndParseRequest,
-  FetchAndParseResult,
-} from '@/lib/scrape/fetch-and-parse';
-import type { ToolHandler } from '@/lib/tools/types';
 
 const FetchUrlAsMarkdownArgs = z.object({
   url: z.string().url(),
@@ -62,7 +59,7 @@ export const fetch_url_as_markdown: ToolHandler<FetchUrlAsMarkdownArgs, FetchAnd
       url: args.url,
       use_session: args.use_session,
       follow_redirects: args.follow_redirects,
-      user_agent: args.user_agent,
+      ...(args.user_agent !== undefined && { user_agent: args.user_agent }),
       max_chars: args.max_chars,
       include_extras: args.include_extras,
     };

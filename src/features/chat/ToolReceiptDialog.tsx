@@ -15,11 +15,7 @@
 
 import { Button } from '@/components/ui/button';
 import { getReceiptByCallId } from '@/lib/audit/log';
-import {
-  type ToolReceipt,
-  exportReceiptJws,
-  verifyReceipt,
-} from '@/lib/audit/receipt';
+import { type ToolReceipt, exportReceiptJws, verifyReceipt } from '@/lib/audit/receipt';
 import { cn } from '@/lib/utils';
 import { Check, Copy, ShieldAlert, ShieldCheck, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -111,9 +107,7 @@ export function ToolReceiptDialog({
         <div className="flex items-center justify-between gap-2 border-b px-3.5 py-2.5">
           <div className="flex min-w-0 items-center gap-2">
             <span className="text-sm font-medium">Receipt</span>
-            <span className="truncate font-mono text-[11px] text-muted-foreground">
-              {toolName}
-            </span>
+            <span className="truncate font-mono text-[11px] text-muted-foreground">{toolName}</span>
           </div>
           <button
             type="button"
@@ -128,8 +122,8 @@ export function ToolReceiptDialog({
         <div className="space-y-2.5 px-3.5 py-3">
           {missing && (
             <div className="rounded-md border border-dashed bg-muted/40 p-3 text-xs text-muted-foreground">
-              No receipt found for this call. The audit log may have been cleared,
-              or this row predates the receipt feature.
+              No receipt found for this call. The audit log may have been cleared, or this row
+              predates the receipt feature.
             </div>
           )}
 

@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useAutoExtract } from '@/hooks/use-auto-extract';
 import { useAutoScrape } from '@/hooks/use-auto-scrape';
 import { useContextMenuListener } from '@/hooks/use-context-menu-listener';
+import { useGuidanceSync } from '@/hooks/use-guidance-sync';
 import { useHighlightBridge } from '@/hooks/use-highlight-bridge';
 import { useParallelEventBridge } from '@/hooks/use-parallel-event-bridge';
 import { useDebugStore } from '@/lib/debug/log';
@@ -20,7 +21,9 @@ import {
   Camera,
   Crosshair,
   Database,
+  Files,
   Highlighter,
+  KeyRound,
   ListChecks,
   ListTodo,
   Loader2,
@@ -30,26 +33,26 @@ import {
   Search,
   Settings as SettingsIcon,
   Sparkles,
+  Vault,
   Wrench,
 } from 'lucide-react';
-import { type ComponentType, lazy, Suspense, useEffect } from 'react';
+import { type ComponentType, Suspense, lazy, useEffect } from 'react';
 
 // Per-tab dynamic imports. Single source of truth for module paths so each
 // view ships in its own chunk and the eager sidepanel bundle stays small.
 // Used both as the loader for `lazy()` and to pre-warm the chunk on tab
 // change (browsers + Vite dedupe identical `import()` calls, so calling the
 // loader twice doesn't double-fetch).
-const VIEW_LOADERS = {
+// Annotated, not `satisfies`: `satisfies` keeps each entry's *inferred* type,
+// which contextual typing widens to `{ default: () => JSX.Element } | { default: ComponentType }`.
+// `lazy()` can't pick a component type out of that union (TS7 rejects it).
+const VIEW_LOADERS: Record<SidepanelTab, () => Promise<{ default: ComponentType }>> = {
   chat: () => import('@/features/chat/ChatView').then((m) => ({ default: m.ChatView })),
-  pilot: () =>
-    import('@/features/chat/PilotView').then((m) => ({ default: m.PilotView })),
+  pilot: () => import('@/features/chat/PilotView').then((m) => ({ default: m.PilotView })),
   tasks: () => import('@/features/tasks/TasksView').then((m) => ({ default: m.TasksView })),
-  lists: () =>
-    import('@/features/lists/ListsHubView').then((m) => ({ default: m.ListsHubView })),
-  agenda: () =>
-    import('@/features/agenda/AgendaView').then((m) => ({ default: m.AgendaView })),
-  scrape: () =>
-    import('@/features/scrape/ScrapeView').then((m) => ({ default: m.ScrapeView })),
+  lists: () => import('@/features/lists/ListsHubView').then((m) => ({ default: m.ListsHubView })),
+  agenda: () => import('@/features/agenda/AgendaView').then((m) => ({ default: m.AgendaView })),
+  scrape: () => import('@/features/scrape/ScrapeView').then((m) => ({ default: m.ScrapeView })),
   data: () => import('@/features/data/DataView').then((m) => ({ default: m.DataView })),
   highlight: () =>
     import('@/features/highlights/HighlightView').then((m) => ({ default: m.HighlightView })),
@@ -57,19 +60,21 @@ const VIEW_LOADERS = {
     import('@/features/guidance/GuidanceView').then((m) => ({ default: m.GuidanceView })),
   seo: () => import('@/features/seo/SeoView').then((m) => ({ default: m.SeoView })),
   notes: () => import('@/features/notes/NotesView').then((m) => ({ default: m.NotesView })),
+  files: () => import('@/features/files/FilesView').then((m) => ({ default: m.FilesView })),
   screenshots: () =>
     import('@/features/screenshots/ScreenshotsView').then((m) => ({
       default: m.ScreenshotsView,
     })),
+  vault: () => import('@/features/vault/VaultView').then((m) => ({ default: m.VaultView })),
   tools: () => import('@/features/tools/ToolsView').then((m) => ({ default: m.ToolsView })),
   settings: () =>
     import('@/features/settings/SettingsView').then((m) => ({ default: m.SettingsView })),
-  profile: () =>
-    import('@/features/profile/ProfileView').then((m) => ({ default: m.ProfileView })),
+  profile: () => import('@/features/profile/ProfileView').then((m) => ({ default: m.ProfileView })),
   showcase: () =>
     import('@/features/showcase/ShowcaseView').then((m) => ({ default: m.ShowcaseView })),
+  broker: () => import('@/features/broker/BrokerView'),
   debug: () => import('@/features/debug/DebugView').then((m) => ({ default: m.DebugView })),
-} satisfies Record<SidepanelTab, () => Promise<{ default: ComponentType }>>;
+};
 
 const ChatView = lazy(VIEW_LOADERS.chat);
 const PilotView = lazy(VIEW_LOADERS.pilot);
@@ -82,11 +87,14 @@ const HighlightView = lazy(VIEW_LOADERS.highlight);
 const GuidanceView = lazy(VIEW_LOADERS.guidance);
 const SeoView = lazy(VIEW_LOADERS.seo);
 const NotesView = lazy(VIEW_LOADERS.notes);
+const FilesView = lazy(VIEW_LOADERS.files);
 const ScreenshotsView = lazy(VIEW_LOADERS.screenshots);
+const VaultView = lazy(VIEW_LOADERS.vault);
 const ToolsView = lazy(VIEW_LOADERS.tools);
 const SettingsView = lazy(VIEW_LOADERS.settings);
 const ProfileView = lazy(VIEW_LOADERS.profile);
 const ShowcaseView = lazy(VIEW_LOADERS.showcase);
+const BrokerView = lazy(VIEW_LOADERS.broker);
 const DebugView = lazy(VIEW_LOADERS.debug);
 
 const TabFallback = (
@@ -146,6 +154,11 @@ export function App() {
   // store in sync regardless of which tab is active.
   useHighlightBridge();
 
+  // Mount ONCE: on sign-in, hydrate guidance metadata from the cloud
+  // (wbx_guidance) into the local cache so guidance follows the user across
+  // machines (TASK-004). Writes mirror to the cloud automatically.
+  useGuidanceSync();
+
   // Pre-warm the active tab's chunk. Fires on mount (so the default Chat
   // view is already fetched by the time Suspense reaches it — no flash on
   // sidepanel open) and on every tab change (so the second visit to a tab
@@ -192,7 +205,7 @@ export function App() {
             className="flex flex-1 flex-col min-h-0"
           >
             <div className="flex shrink-0 items-center gap-1 px-2 py-1.5">
-              <TabsList className="flex flex-1 justify-start gap-0.5 bg-transparent p-0">
+              <TabsList className="flex min-w-0 flex-1 justify-start gap-0.5 overflow-x-auto bg-transparent p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&_[role=tab]]:shrink-0">
                 <TabsTrigger value="chat" className="size-7 p-0" title="Chat">
                   <MessageSquare className="size-3.5" />
                 </TabsTrigger>
@@ -241,12 +254,14 @@ export function App() {
                     <TabsTrigger value="notes" className="size-7 p-0" title="Notes">
                       <NotebookPen className="size-3.5" />
                     </TabsTrigger>
-                    <TabsTrigger
-                      value="screenshots"
-                      className="size-7 p-0"
-                      title="Screenshots"
-                    >
+                    <TabsTrigger value="files" className="size-7 p-0" title="Files">
+                      <Files className="size-3.5" />
+                    </TabsTrigger>
+                    <TabsTrigger value="screenshots" className="size-7 p-0" title="Screenshots">
                       <Camera className="size-3.5" />
+                    </TabsTrigger>
+                    <TabsTrigger value="vault" className="size-7 p-0" title="Vault">
+                      <Vault className="size-3.5" />
                     </TabsTrigger>
                     <TabsTrigger value="tools" className="size-7 p-0" title="Tools">
                       <Wrench className="size-3.5" />
@@ -267,6 +282,15 @@ export function App() {
                 )}
                 {isAdmin && (
                   <TabsTrigger
+                    value="broker"
+                    className="size-7 p-0 data-[state=active]:text-cyan-600 dark:data-[state=active]:text-cyan-400"
+                    title="Token broker (admin only)"
+                  >
+                    <KeyRound className="size-3.5" />
+                  </TabsTrigger>
+                )}
+                {isAdmin && (
+                  <TabsTrigger
                     value="debug"
                     className="relative size-7 p-0 data-[state=active]:text-amber-600 dark:data-[state=active]:text-amber-400"
                     title="Debug (admin only)"
@@ -280,13 +304,27 @@ export function App() {
               </TabsList>
               <UserMenu />
             </div>
-            <TabsContent value="chat" className="flex-1 min-h-0">
+            {/* forceMount (audit P1-14): ChatView owns the live stream-chunk
+                listeners and the stall watchdog. Radix unmounts inactive tab
+                content by default, so switching sidepanel tabs mid-stream
+                dropped every chunk in the gap and orphaned the watchdog
+                (which later fired against the new run). Keep the chat
+                surfaces mounted; visibility via data-state. */}
+            <TabsContent
+              value="chat"
+              forceMount
+              className="flex-1 min-h-0 data-[state=inactive]:hidden"
+            >
               <Suspense fallback={TabFallback}>
                 <ChatView />
               </Suspense>
             </TabsContent>
             {isAdmin && (
-              <TabsContent value="pilot" className="flex-1 min-h-0">
+              <TabsContent
+                value="pilot"
+                forceMount
+                className="flex-1 min-h-0 data-[state=inactive]:hidden"
+              >
                 <Suspense fallback={TabFallback}>
                   <PilotView />
                 </Suspense>
@@ -299,7 +337,16 @@ export function App() {
                     <ListsHubView />
                   </Suspense>
                 </TabsContent>
-                <TabsContent value="tasks" className="flex-1 min-h-0">
+                {/* forceMount: TasksView's onMessage listener is the ONLY
+                    receiver for the in-page capture overlay's buttons, and the
+                    batch-run progress/guard live in component state — Radix
+                    unmounting it on tab switch bricked the overlay mid-capture
+                    and let a hidden batch run twice. Same pattern as Chat. */}
+                <TabsContent
+                  value="tasks"
+                  forceMount
+                  className="flex-1 min-h-0 data-[state=inactive]:hidden"
+                >
                   <Suspense fallback={TabFallback}>
                     <TasksView />
                   </Suspense>
@@ -343,9 +390,22 @@ export function App() {
                     <NotesView />
                   </Suspense>
                 </TabsContent>
+                <TabsContent value="files" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <FilesView />
+                  </Suspense>
+                </TabsContent>
                 <TabsContent value="screenshots" className="flex-1 min-h-0">
                   <Suspense fallback={TabFallback}>
                     <ScreenshotsView />
+                  </Suspense>
+                </TabsContent>
+                {/* NOT forceMount: unmounting on tab switch is a FEATURE here
+                    — it drops any revealed credential held in component state
+                    the moment the user leaves the Vault. */}
+                <TabsContent value="vault" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <VaultView />
                   </Suspense>
                 </TabsContent>
                 <TabsContent value="tools" className="flex-1 min-h-0">
@@ -365,10 +425,26 @@ export function App() {
                 <ProfileView />
               </Suspense>
             </TabsContent>
+            {/* forceMount (audit P1-1): Showcase sub-tabs hold in-progress
+                work (network capture buffers, half-built list-pattern
+                configs, AI extract results). Leaving and returning must not
+                destroy it. Auto-probes are gated on visibility inside
+                ShowcaseView, so the mounted-but-hidden tree stays idle. */}
             {isAdmin && (
-              <TabsContent value="showcase" className="flex-1 min-h-0">
+              <TabsContent
+                value="showcase"
+                forceMount
+                className="flex-1 min-h-0 data-[state=inactive]:hidden"
+              >
                 <Suspense fallback={TabFallback}>
                   <ShowcaseView />
+                </Suspense>
+              </TabsContent>
+            )}
+            {isAdmin && (
+              <TabsContent value="broker" className="flex-1 min-h-0 overflow-y-auto">
+                <Suspense fallback={TabFallback}>
+                  <BrokerView />
                 </Suspense>
               </TabsContent>
             )}

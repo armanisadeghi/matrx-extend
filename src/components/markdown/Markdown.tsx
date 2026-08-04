@@ -56,16 +56,21 @@ export function Markdown({ content, registry, className, density = 'comfortable'
       )}
     >
       {blocks.map((block, i) => (
-        <BlockRenderer key={`${i}:${blockKey(block)}`} block={block} registry={registry} />
+        // Key by position + KIND only. Embedding content length (the old
+        // blockKey) changed the key on EVERY streamed character — remounting
+        // the block, flashing code between plain and Shiki-highlighted, and
+        // resetting its horizontal scroll. The index prefix keeps keys
+        // unique; same-position same-kind blocks correctly update in place.
+        <BlockRenderer key={`${i}:${blockKindKey(block)}`} block={block} registry={registry} />
       ))}
     </div>
   );
 }
 
-function blockKey(block: Block): string {
-  if (block.kind === 'markdown') return `md:${block.text.length}`;
-  if (block.kind === 'xml') return `xml:${block.tag}:${block.inner.length}`;
-  return `code:${block.lang}:${block.code.length}`;
+function blockKindKey(block: Block): string {
+  if (block.kind === 'markdown') return 'md';
+  if (block.kind === 'xml') return `xml:${block.tag}`;
+  return `code:${block.lang}`;
 }
 
 function BlockRenderer({
@@ -73,7 +78,7 @@ function BlockRenderer({
   registry,
 }: {
   block: Block;
-  registry?: MarkdownRegistry;
+  registry?: MarkdownRegistry | undefined;
 }) {
   if (block.kind === 'markdown') {
     return (

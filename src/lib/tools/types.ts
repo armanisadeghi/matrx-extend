@@ -8,7 +8,7 @@
  *   - args      — Zod schema for inbound arguments
  *
  * Descriptions are NOT declared here — they live ONLY in the database
- * (`public.tool_def.description`) and are read live for UI via
+ * (`tool.definition.description`) and are read live for UI via
  * `src/lib/tools/descriptions.ts`. See docs/TOOL_SOURCE_OF_TRUTH.md (Rule 4).
  */
 
@@ -120,7 +120,7 @@ export interface ToolHandler<TArgs, TResult> {
    * experimental / risky / privacy-sensitive capabilities until we're ready
    * to ship them broadly.
    */
-  admin_only?: boolean;
+  admin_only?: boolean | undefined;
   /**
    * Optional Chrome `permissions` keys this tool requires that are NOT in the
    * default manifest — i.e. they live in `optional_permissions` and must be
@@ -150,6 +150,30 @@ export interface ToolHandler<TArgs, TResult> {
 
 export type AnyToolHandler = ToolHandler<unknown, unknown>;
 
+/**
+ * Route a mega-tool router's delegation through the LEAF handler's Zod
+ * schema (audit P2-24). Routers used to call `leaf.run(built as never, ctx)`
+ * with hand-assembled literals — bypassing `.default()` application, so
+ * every leaf default had to be hand-mirrored at every call site (the
+ * blur_element unserializable-undefined crash was this pattern biting).
+ * Parsing here applies defaults/coercion uniformly and turns a malformed
+ * delegation into a structured error instead of an exception.
+ */
+export async function delegate<TArgs, TResult>(
+  leaf: ToolHandler<TArgs, TResult>,
+  args: unknown,
+  ctx: ToolContext,
+): Promise<TResult | { ok: false; reason: string }> {
+  const parsed = leaf.argsSchema.safeParse(args);
+  if (!parsed.success) {
+    return {
+      ok: false,
+      reason: `delegated args failed ${leaf.name} schema: ${JSON.stringify(parsed.error.format())}`,
+    };
+  }
+  return leaf.run(parsed.data, ctx);
+}
+
 export interface ToolResultEnvelope {
   call_id: string;
   tool_name: string;
@@ -169,11 +193,26 @@ export interface PendingConfirmRequest {
    * Omitted when the live lookup hasn't loaded yet; the card falls back to
    * name + args.
    */
-  description?: string;
+  description?: string | undefined;
   /** Args the agent supplied — surfaced verbatim so the user sees what's about to happen. */
   args: unknown;
+  /**
+   * Effective tier for THIS call (mega-tool routers resolve `tierFor(args)`,
+   * so a privileged sub-action renders as privileged even when the catalog
+   * tier is 'action').
+   */
   tier: ToolTier;
+  /**
+   * Who initiated this call. 'agent' (default, the streaming dispatcher) is
+   * the user's own AI agent mid-conversation. Anything else is an EXTERNAL
+   * caller — a web page (WebMCP bridge), the aimatrx.com frontend RPC, or
+   * the matrx-local desktop engine — and the approval card must say so
+   * prominently: the user otherwise assumes their agent asked.
+   */
+  initiator?: ConfirmInitiator;
 }
+
+export type ConfirmInitiator = 'agent' | 'page' | 'frontend' | 'desktop';
 
 export interface ConfirmResponse {
   callId: string;
@@ -189,13 +228,7 @@ export interface ConfirmResponse {
  * One pending-request shape covers every variant. The card branches on
  * `kind`. Fields that don't apply to a kind are simply omitted.
  */
-export type UserAskKind =
-  | 'confirm'
-  | 'choice'
-  | 'choice_many'
-  | 'text'
-  | 'secret'
-  | 'notify';
+export type UserAskKind = 'confirm' | 'choice' | 'choice_many' | 'text' | 'secret' | 'notify';
 
 /**
  * Rich option shape (2026-05-19). The card always receives this normalized
@@ -205,7 +238,7 @@ export type UserAskKind =
 export interface UserAskOption {
   label: string;
   /** Per-option explanation rendered beside / under the label. */
-  description?: string;
+  description?: string | undefined;
   /**
    * Optional preview content (code, markdown, ASCII mockup). When ANY
    * option in a single-select question has a preview, the card switches
@@ -213,7 +246,7 @@ export interface UserAskOption {
    * of the focused option on the right. Multi-select questions ignore
    * previews even if supplied.
    */
-  preview?: string;
+  preview?: string | undefined;
 }
 
 export interface PendingAskUserRequest {
@@ -230,33 +263,33 @@ export interface PendingAskUserRequest {
   conversationId?: string | null;
   kind: UserAskKind;
   /** Required for confirm / choice / choice_many / text / secret. */
-  question?: string;
+  question?: string | undefined;
   /**
    * Optional short chip label (≤12 chars). Renders as a small tag at the
    * top of the card, useful when batching multiple questions so the user
    * can scan which question they're answering. New 2026-05-19.
    */
-  header?: string;
+  header?: string | undefined;
   /**
    * Required for choice / choice_many. Normalized to UserAskOption[] in
    * the handler — string callers get hoisted automatically.
    */
-  options?: UserAskOption[];
+  options?: UserAskOption[] | undefined;
   /** Required for notify — the body of the notification. */
-  message?: string;
+  message?: string | undefined;
   /** Optional notify action button labels (UI always appends 'Other'). */
-  actions?: string[];
+  actions?: string[] | undefined;
   /** Notify visual treatment. Default 'info'. */
-  level?: 'info' | 'success' | 'warning' | 'error';
+  level?: 'info' | 'success' | 'warning' | 'error' | undefined;
   /** Optional one-line "why is the agent asking?" context. */
-  context?: string;
+  context?: string | undefined;
   /**
    * choice / choice_many only. When true, the card appends a freeform
    * "Other" option (radio or checkbox respectively) with a text input
    * underneath. The response sets `freeform` to whatever the user typed.
    * New 2026-05-19.
    */
-  allow_other?: boolean;
+  allow_other?: boolean | undefined;
   /**
    * True when this card came from the `user` ask tool, which supports the extra
    * escape hatches: a final "Additional instructions" note and a "Write message
@@ -271,15 +304,15 @@ export interface PendingAskUserRequest {
    * fields let the card show "Question N of M" if desired. Single-question
    * requests omit both fields. New 2026-05-19.
    */
-  batch_index?: number;
-  batch_total?: number;
+  batch_index?: number | undefined;
+  batch_total?: number | undefined;
   /**
    * Absolute wall-clock deadline (ms epoch) when the request auto-resolves
    * with `timed_out: true`. Omitted when the call has no timeout. The
    * dispatcher computes this from `timeout_seconds` so the UI can render
    * a countdown without separately tracking the start time.
    */
-  expires_at_ms?: number;
+  expires_at_ms?: number | undefined;
 }
 
 /**

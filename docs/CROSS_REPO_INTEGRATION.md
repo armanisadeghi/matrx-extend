@@ -37,8 +37,8 @@ they reference back here for the full topology.
                                           │              │ /extension/rpc +
                                           │              │ WS reverse-push +
                                           │              │ ~/.matrx/local.json
-                                          │              │ (0% verified;
-                                          │              │  fixes in flight)
+                                          │              │ (ACTIVE; engine-
+                                          │              │  side verified)
                                           │              │
                                           │              ▼
                                           │  ┌──────────────────────┐
@@ -76,14 +76,14 @@ component. Reusable JWTs cross every boundary.
 
 | Field | Value |
 |---|---|
-| Status | 0% verified. Only `health` round-trips. |
-| Direction | Bidirectional. Extension calls `/extension/rpc`; engine pushes events over a WebSocket. |
-| Substrates | HTTP POST `/extension/rpc` (request/response) + WebSocket (reverse-push, currently unused by extension) |
-| Port discovery | Engine listens on the first free port in 22140–22159 and writes the chosen one to `~/.matrx/local.json`. **The extension currently hardcodes 22180** in `src/lib/desktop/http.ts` (via `ENV.DESKTOP_LOCAL_URL`) — that is the active bug. |
-| Tools called | `desktop_run_command` (privileged tier, src/lib/tools/handlers/privileged.ts:212-226). Zero callsites in the extension today. |
-| RPC support today | `/extension/rpc` only handles `health`. The dispatcher in `app/tools/dispatcher.py::dispatch` is wired but the route does not yet hand off to it for non-health methods. |
-| Extension-side reference files | `src/lib/desktop/http.ts`, `src/lib/desktop/types.ts`, `src/lib/tools/handlers/privileged.ts` |
-| matrx-local-side reference files | `app/api/extension_routes.py`, `app/tools/dispatcher.py`, `app/websocket_manager.py` (`broadcast()`, `broadcast_notification()`) |
+| Status | **FULLY ACTIVE (2026-07-10), engine-side verified.** Both directions ship: extension→engine RPC over HTTP, engine→extension tool invocations over the WS reverse channel, and a Supabase-Broadcast rpc fallback dispatching into the SAME engine command registry. Round trips pinned by matrx-local `tests/smoke/test_extension_channel.py` (real engine, WS client simulating this extension) and this repo's `tests/unit/ws-invoke.test.ts`. Remaining gap: a human-driven in-browser E2E (steps in matrx-local `docs/MATRX_EXTEND_CONNECTION.md` § Verification status). |
+| Direction | Bidirectional. Extension calls `POST /extension/rpc` (`health` / `version` / `capabilities` / `tool` → the full ~80-tool dispatcher); engine pushes `extension.invoke` frames over `/extension/ws`, serviced by `src/lib/desktop/ws-invoke.ts` through `handleWebmcpCall` (initiator `'desktop'`, uniform permission gating) and answered with `extension.result` by `callId`. |
+| Substrates | HTTP POST `/extension/rpc` + WebSocket `/extension/ws` (offscreen-document client, `ws-offscreen.ts`; ping/pong carries `tool_catalog_hash` for drift detection) + Supabase Broadcast channel `matrx-local-bridge:<userId>` (v2 CrossComponentEnvelope, `v: 2` — `src/lib/messaging/cross-component-envelope.ts`; engine dispatcher: matrx-local `app/api/cross_component_router.py`). |
+| Port discovery | Engine listens on the first free port in 22140–22159 and writes it to `~/.matrx/local.json`. The extension probes `GET /health` across the range in parallel and caches the winner 30 min (`src/lib/desktop/discovery.ts`); auth is the ENGINE-ISSUED pairing token — auto-fetched from `POST /extension/pair` (loopback-only) with zero user action, self-healing on 401, manual paste only for remote machines — never the raw Supabase access token. |
+| Tools called | `desktop_run_command` (privileged tier, `src/lib/tools/handlers/privileged.ts`) is registered + advertised (category `desktop`, `list_desktop_tools` discovery, canonical surface) — trusted agents invoke ANY engine command through it; `{"command":"tool","args":{"tool_name":…,"tool_input":…}}` is the generic passthrough to the engine's whole dispatcher catalog. |
+| Reverse-invoke consumer | `src/lib/background/bootstrap.ts` step 7 → `registerWsReverseInvocationHandler()` in `src/lib/desktop/ws-invoke.ts`. Engine-side callers use `invoke_extension_tool` (matrx-local `app/api/extension_invoke.py`); `POST /extension/invoke` is the HTTP test driver. |
+| Extension-side reference files | `src/lib/desktop/discovery.ts`, `http.ts`, `ws-client.ts`, `ws-offscreen.ts`, `ws-invoke.ts`, `src/lib/tools/handlers/privileged.ts`, `src/lib/messaging/cross-component-envelope.ts` |
+| matrx-local-side reference files | `app/api/extension_routes.py`, `extension_handlers.py` (HANDLERS + `invoke_command`), `extension_invoke.py`, `extension_ws_manager.py`, `extension_broadcast.py`, `cross_component_router.py`, `app/tools/dispatcher.py`; contract doc: `docs/MATRX_EXTEND_CONNECTION.md` |
 
 ### Channel C — matrx-extend ↔ matrx-frontend
 

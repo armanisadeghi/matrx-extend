@@ -1,7 +1,11 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { urlMatchesPattern } from '@/lib/data-pattern/matcher';
-import { runPattern } from '@/lib/data-pattern/run-pattern';
-import { type ExtractionPattern, bumpPatternRun, fetchPatternsForDomain } from '@/lib/supabase/queries';
+import { isInteractiveOnlyKind, runPattern } from '@/lib/data-pattern/run-pattern';
+import {
+  type ExtractionPattern,
+  bumpPatternRun,
+  fetchPatternsForDomain,
+} from '@/lib/supabase/queries';
 import { autoExtractKey, useAutoExtractStore } from '@/state/auto-extract';
 import { useEffect, useRef } from 'react';
 
@@ -67,7 +71,11 @@ export function useAutoExtract(): void {
       }
       if (cancelled) return;
 
-      const matched = patterns.filter((p) => urlMatchesPattern(url, p));
+      // Interactive-only kinds (ai_extract, network_capture) are never run in
+      // the background — no surprise reloads or agent spend without a click.
+      const matched = patterns.filter(
+        (p) => urlMatchesPattern(url, p) && !isInteractiveOnlyKind(p.kind),
+      );
       if (matched.length === 0) return;
 
       // Fire each matching pattern in parallel.
@@ -76,11 +84,7 @@ export function useAutoExtract(): void {
           if (cancelled) return;
           const key = autoExtractKey(pattern.id, url);
           const existing = records.get(key);
-          if (
-            existing &&
-            existing.status === 'ok' &&
-            Date.now() - existing.lastRunAt < TTL_MS
-          ) {
+          if (existing && existing.status === 'ok' && Date.now() - existing.lastRunAt < TTL_MS) {
             return; // recent successful run — skip
           }
           setRecord(key, {
@@ -124,7 +128,7 @@ export function useAutoExtract(): void {
     };
     // We intentionally exclude `records` and `setRecord` from deps — they're
     // stable from Zustand and including `records` would re-fire on every
-    // store update.
-    // biome-ignore lint/correctness/useExhaustiveDependencies: see comment.
+    // store update. (useExhaustiveDependencies is warn-level during the
+    // lint-baseline ratchet, so no suppression needed.)
   }, [tab.id, tab.url]);
 }

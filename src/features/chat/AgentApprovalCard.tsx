@@ -10,9 +10,22 @@
 
 import { Button } from '@/components/ui/button';
 import { respondToConfirm } from '@/hooks/use-tool-inbox';
-import type { PendingConfirmRequest } from '@/lib/tools/types';
-import { Check, ShieldAlert, X } from 'lucide-react';
+import type { ConfirmInitiator, PendingConfirmRequest } from '@/lib/tools/types';
+import { Check, Globe, ShieldAlert, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
+
+/**
+ * Human-readable initiator labels for EXTERNAL callers. The default
+ * (agent-initiated) renders no banner — that's the normal case the card was
+ * designed around. Anything else gets a loud "this did NOT come from your
+ * agent" strip so the user doesn't approve a page-driven action believing
+ * their own assistant asked for it.
+ */
+const EXTERNAL_INITIATOR_LABELS: Partial<Record<ConfirmInitiator, string>> = {
+  page: 'Requested by the web page you have open — NOT by your agent.',
+  frontend: 'Requested by aimatrx.com — NOT by your agent in this chat.',
+  desktop: 'Requested by the Matrx desktop app — NOT by your agent in this chat.',
+};
 
 export function AgentApprovalCard({ req }: { req: PendingConfirmRequest }) {
   const [remember, setRemember] = useState(false);
@@ -28,9 +41,26 @@ export function AgentApprovalCard({ req }: { req: PendingConfirmRequest }) {
   }, [req.args]);
 
   const argsPreview = useMemo(() => prettyArgs(req.args), [req.args]);
+  const externalLabel = req.initiator ? EXTERNAL_INITIATOR_LABELS[req.initiator] : undefined;
+
+  // desktop_run_command executes on the user's MACHINE via matrx-local —
+  // the generic scroll-clipped args <pre> hid the tail of long commands,
+  // so users could approve a command they hadn't fully seen (audit P1-6).
+  // Surface the full command un-clipped and visually distinct.
+  const desktopCommand = useMemo(() => {
+    if (req.toolName !== 'desktop_run_command') return null;
+    const cmd = (req.args as { command?: unknown })?.command;
+    return typeof cmd === 'string' ? cmd : null;
+  }, [req.toolName, req.args]);
 
   return (
     <div className="rounded-xl border border-amber-300/60 bg-amber-50/70 p-3 text-sm shadow-sm dark:border-amber-700/60 dark:bg-amber-950/30">
+      {externalLabel && (
+        <div className="mb-2 flex items-start gap-1.5 rounded-md border border-rose-300/70 bg-rose-50/80 px-2 py-1.5 text-[11px] font-medium text-rose-800 dark:border-rose-700/60 dark:bg-rose-950/40 dark:text-rose-300">
+          <Globe className="mt-px size-3.5 shrink-0" />
+          {externalLabel}
+        </div>
+      )}
       <div className="flex items-start gap-2">
         <ShieldAlert className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
         <div className="flex-1 min-w-0">
@@ -42,11 +72,30 @@ export function AgentApprovalCard({ req }: { req: PendingConfirmRequest }) {
               </span>
             )}
           </div>
-          {req.description && (
+          {req.description ? (
             <div className="mt-0.5 text-xs text-muted-foreground">{req.description}</div>
+          ) : (
+            // No live description (DB cache cold / offline / RLS hiccup) —
+            // say so explicitly rather than silently omitting it. Approving
+            // a privileged tool on name alone is blind approval (audit
+            // P2-20).
+            <div className="mt-0.5 text-xs italic text-amber-700 dark:text-amber-400">
+              Description unavailable (offline?) — review the arguments below carefully.
+            </div>
           )}
         </div>
       </div>
+
+      {desktopCommand && (
+        <div className="mt-2 rounded-md border border-rose-300/70 bg-rose-50/60 p-2 dark:border-rose-700/60 dark:bg-rose-950/30">
+          <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-rose-700 dark:text-rose-300">
+            Runs on your computer
+          </div>
+          <pre className="whitespace-pre-wrap break-all text-[11px] leading-snug">
+            {desktopCommand}
+          </pre>
+        </div>
+      )}
 
       {argsPreview && (
         <pre className="mt-2 max-h-40 overflow-auto rounded-md bg-background/60 p-2 text-[11px] leading-snug">
@@ -54,7 +103,9 @@ export function AgentApprovalCard({ req }: { req: PendingConfirmRequest }) {
         </pre>
       )}
 
-      {host && req.tier !== 'privileged' && (
+      {/* Domain-trust is agent-path + non-privileged only — the dispatcher
+          ignores rememberFor on every other combination, so don't offer it. */}
+      {host && req.tier !== 'privileged' && !externalLabel && (
         <label className="mt-2 flex items-center gap-2 text-[11px] text-muted-foreground">
           <input
             type="checkbox"

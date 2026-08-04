@@ -13,6 +13,27 @@ function safeArg(v: unknown): unknown {
 }
 
 /**
+ * Thrown when a saved pattern's kind can't be re-run via a plain in-page pass
+ * (ai_extract, network_capture). Surfaces catch this to route the pattern to
+ * its interactive runner — and to avoid bumping last_status='broken' for what
+ * is a routing condition, not a pattern failure.
+ */
+export class InteractiveOnlyError extends Error {
+  readonly kind: string;
+  constructor(kind: string) {
+    super(
+      `Pattern kind "${kind}" can't run in a single page pass — it needs its interactive runner.`,
+    );
+    this.name = 'InteractiveOnlyError';
+    this.kind = kind;
+  }
+}
+
+export function isInteractiveOnlyKind(kind: string): boolean {
+  return getMode(kind)?.interactiveOnly === true;
+}
+
+/**
  * Mode-aware pattern runner. Replaces inline chrome.scripting calls in DataView.
  * Looks up the pattern's kind in the registry, builds the per-mode config, and
  * executes the mode's runInPage function in the active tab.
@@ -23,6 +44,7 @@ export async function runPattern(
 ): Promise<ExtractedRow[]> {
   const mode = getMode(pattern.kind);
   if (!mode) throw new Error(`Unknown pattern kind: ${pattern.kind}`);
+  if (mode.interactiveOnly) throw new InteractiveOnlyError(pattern.kind);
 
   const config = mode.buildConfig
     ? mode.buildConfig({
@@ -67,6 +89,10 @@ export async function runMode(
 ): Promise<ExtractedRow[]> {
   const mode = getMode(modeId);
   if (!mode) throw new Error(`Unknown mode: ${modeId}`);
+  // Same guard as runPattern — the in-page stub for interactive kinds
+  // "succeeds" with 0 rows, which a DB-added ai_extract/network recipe
+  // would otherwise silently hit.
+  if (mode.interactiveOnly) throw new InteractiveOnlyError(modeId);
   const result = await chrome.scripting.executeScript({
     target: { tabId },
     func: mode.runInPage as (cfg: unknown) => ExtractedRow[],

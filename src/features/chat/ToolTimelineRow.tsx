@@ -5,6 +5,7 @@
  */
 
 import { cn } from '@/lib/utils';
+import type { ToolProgressEntry } from '@/state/chat';
 import { AlertTriangle, CheckCircle2, Loader2, Shield } from 'lucide-react';
 import { useState } from 'react';
 import { ToolReceiptDialog } from './ToolReceiptDialog';
@@ -12,7 +13,6 @@ import { ConfigurableToolRow, ToolDisplayBoundary } from './tool-display/Configu
 import { CopyToolButton } from './tool-display/CopyToolButton';
 import { ToolProgressView } from './tool-display/ToolProgressView';
 import { toolDisplayRegistry } from './tool-display/registry';
-import type { ToolProgressEntry } from '@/state/chat';
 
 /**
  * Display shape for a tool entry rendered inline. The chat-store's
@@ -24,13 +24,13 @@ export interface ToolTimelineEntry {
   callId: string;
   toolName: string;
   startedAt: number;
-  endedAt?: number;
+  endedAt?: number | undefined;
   phase: 'started' | 'completed' | 'error';
   args?: unknown;
   output?: unknown;
-  message?: string;
+  message?: string | undefined;
   /** Incremental progress log (long-running tools only; usually absent). */
-  progress?: ToolProgressEntry[];
+  progress?: ToolProgressEntry[] | undefined;
 }
 
 export function ToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {

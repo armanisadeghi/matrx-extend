@@ -21,9 +21,23 @@
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { Markdown } from '@/components/markdown';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
+import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
+import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
+import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
+import { LanguagePicker } from '@/features/chat/LanguagePicker';
+import { ServerToolRow } from '@/features/chat/ServerToolRow';
+import { SpeakerButton } from '@/features/chat/SpeakerButton';
+import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
+import { formatAssistantBody } from '@/features/chat/copy-conversation';
+import { TaskPanel, TaskPanelChip } from '@/features/lists/TaskPanel';
+import { useAgentExecution } from '@/hooks/use-agent-execution';
+import { useAuth } from '@/hooks/use-auth';
+import { usePilotChatStream } from '@/hooks/use-pilot-chat-stream';
+import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
 import {
   ALL_SCOPES,
   type AgentScope,
@@ -32,30 +46,14 @@ import {
   filterAgentsByScope,
   scopeOf,
 } from '@/lib/agents/scope';
-import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
-import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
-import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
-import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
-import { formatAssistantBody } from '@/features/chat/copy-conversation';
-import { LanguagePicker } from '@/features/chat/LanguagePicker';
-import { ServerToolRow } from '@/features/chat/ServerToolRow';
-import { SpeakerButton } from '@/features/chat/SpeakerButton';
-import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
-import { TaskPanel, TaskPanelChip } from '@/features/lists/TaskPanel';
-import { useAgentExecution } from '@/hooks/use-agent-execution';
-import { useAuth } from '@/hooks/use-auth';
-import { usePilotChatStream } from '@/hooks/use-pilot-chat-stream';
-import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
 import { wrapForAgent } from '@/lib/clipboard/copy';
-import {
-  type AgxAgent,
-  fetchUserAgents,
-} from '@/lib/supabase/queries';
+import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
-import { type ChatMessage, type MessagePart } from '@/state/chat';
-import { usePilotChatStore } from '@/state/pilot-chat';
+import type { ChatMessage, MessagePart } from '@/state/chat';
 import { usePilotStore } from '@/state/pilot';
+import { usePilotChatStore } from '@/state/pilot-chat';
 import { useSettingsStore } from '@/state/settings';
+import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { useToolInbox } from '@/state/tool-inbox';
 import {
   AlertTriangle,
@@ -85,15 +83,11 @@ const PILOT_SUGGESTIONS = [
 
 export function PilotView() {
   const { user, isAdmin } = useAuth();
-  const {
-    selectedAgentId,
-    draft,
-    messages,
-    isStreaming,
-    setAgent,
-    setDraft,
-    setMessages,
-  } = usePilotChatStore();
+  const { selectedAgentId, draft, messages, isStreaming, setAgent, setDraft, setMessages } =
+    usePilotChatStore();
+  const pilotTabActive = useSidepanelTabStore((s) => s.tab) === 'pilot';
+  const streamInterruption = usePilotChatStore((s) => s.streamInterruption);
+  const setStreamInterruption = usePilotChatStore((s) => s.setStreamInterruption);
   const { send, cancel } = usePilotChatStream();
   const { variableDefs } = useAgentExecution(selectedAgentId);
   const getAgentVariables = usePilotChatStore((s) => s.getAgentVariables);
@@ -297,9 +291,9 @@ export function PilotView() {
   ) => {
     void send(text, {
       agentId,
-      agentName,
-      conversationId: session.conversationId ?? undefined,
-      variables: Object.keys(variables).length > 0 ? variables : undefined,
+      ...(agentName !== undefined && { agentName }),
+      ...(session.conversationId != null && { conversationId: session.conversationId }),
+      ...(Object.keys(variables).length > 0 && { variables }),
       assignedTabId: tabId,
     });
   };
@@ -337,9 +331,8 @@ export function PilotView() {
         <Crosshair className="size-8 mb-3 text-primary" />
         <p className="text-sm font-medium">Pilot is admin-only while we shake it down.</p>
         <p className="mt-2 text-xs">
-          The Pilot surface drives a sandboxed Chrome tab group with the full
-          read+action+ask agent toolkit. It will graduate to general
-          availability once the rough edges are sanded.
+          The Pilot surface drives a sandboxed Chrome tab group with the full read+action+ask agent
+          toolkit. It will graduate to general availability once the rough edges are sanded.
         </p>
       </div>
     );
@@ -347,13 +340,29 @@ export function PilotView() {
 
   return (
     <div className="relative flex h-full flex-col bg-background">
+      {streamInterruption && !isStreaming && (
+        // Stall notice (audit P3-13) — the Pilot spinner used to vanish with
+        // zero explanation when the watchdog gave up on a silent stream.
+        <div className="mx-3 mt-2 flex items-center justify-between gap-2 rounded-md border border-amber-300/60 bg-amber-50/70 px-3 py-2 text-xs text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-200">
+          <span>The run went silent and was stopped. Send your message again to retry.</span>
+          <button
+            type="button"
+            className="shrink-0 rounded px-1.5 py-0.5 font-medium hover:bg-amber-200/50 dark:hover:bg-amber-800/40"
+            onClick={() => setStreamInterruption(null)}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
       <div className="absolute right-2 top-1 z-30">
         <TaskPanelChip
+          enabled={pilotTabActive}
           conversationId={pilotConversationId}
           onClick={() => setTaskPanelOpen((v) => !v)}
         />
       </div>
       <TaskPanel
+        enabled={pilotTabActive}
         conversationId={pilotConversationId}
         open={taskPanelOpen}
         onClose={() => setTaskPanelOpen(false)}
@@ -588,9 +597,7 @@ function PilotAgentPicker({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
                       <span className="truncate text-sm">{a.name}</span>
-                      {a.is_favorite && (
-                        <Sparkles className="size-3 shrink-0 text-amber-500" />
-                      )}
+                      {a.is_favorite && <Sparkles className="size-3 shrink-0 text-amber-500" />}
                     </div>
                     {a.description && (
                       <div className="line-clamp-1 text-[10px] text-muted-foreground">
@@ -866,8 +873,7 @@ function MessageRow({ message }: { message: ChatMessage }) {
               {
                 label: 'With everything',
                 adminOnly: true,
-                description:
-                  'Text, thinking, tool calls with full args and results.',
+                description: 'Text, thinking, tool calls with full args and results.',
                 getContent: () =>
                   formatAssistantBody(message, {
                     includeToolCalls: true,
@@ -948,13 +954,13 @@ function PilotEmptyState({
           Pilot{firstName ? `, ${firstName}` : ''}
         </h1>
         <p className="max-w-sm text-sm text-muted-foreground">
-          The Pilot surface drives a sandboxed Chrome tab group with the full
-          read+action+ask agent toolkit. Click <strong>Start Pilot</strong> in
-          the header to open a fresh group seeded with the active tab.
+          The Pilot surface drives a sandboxed Chrome tab group with the full read+action+ask agent
+          toolkit. Click <strong>Start Pilot</strong> in the header to open a fresh group seeded
+          with the active tab.
         </p>
         <p className="max-w-sm text-xs text-muted-foreground">
-          The agent can only act on tabs inside that group. Close the group
-          (or click <strong>End</strong>) to release control.
+          The agent can only act on tabs inside that group. Close the group (or click{' '}
+          <strong>End</strong>) to release control.
         </p>
       </div>
     );
@@ -964,9 +970,7 @@ function PilotEmptyState({
       <h1 className="text-3xl font-medium tracking-tight">
         <span className="text-primary">Ready{firstName ? `, ${firstName}` : ''}</span>
       </h1>
-      <p className="mt-1 text-2xl text-muted-foreground">
-        How should the Pilot drive the sandbox?
-      </p>
+      <p className="mt-1 text-2xl text-muted-foreground">How should the Pilot drive the sandbox?</p>
       <div className="mt-6 flex flex-col items-start gap-2">
         {PILOT_SUGGESTIONS.map(({ icon: Icon, label }) => (
           <button
@@ -1007,6 +1011,10 @@ function Composer({
   useEffect(() => {
     const el = taRef.current;
     if (!el) return;
+    // Skip measurement while the forceMounted tab is hidden — scrollHeight
+    // is 0 under display:none and the latched 0px height left the composer
+    // a clipped sliver until the first keystroke.
+    if (el.offsetParent === null) return;
     el.style.height = 'auto';
     el.style.height = `${Math.min(el.scrollHeight, 180)}px`;
   }, [value]);

@@ -1,11 +1,16 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
 import { aiExtractCapturePage } from '@/lib/data-pattern/modes/ai-extract';
+import { parseAgentResponse } from '@/lib/data-pattern/run-interactive';
 import type { ExtractedRow } from '@/lib/data-pattern/types';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { createStreamWatchdog } from '@/lib/stream/watchdog';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+/** Total stream silence before the extraction is declared stalled. */
+const STALL_MS = 75_000;
 
 interface StreamChunk {
   runId: string;
@@ -16,13 +21,6 @@ interface StreamChunk {
     data?: Record<string, unknown>;
     message?: string;
   };
-}
-
-interface ExtractionResponse {
-  rows: ExtractedRow[];
-  confidence?: 'high' | 'medium' | 'low';
-  notes?: string;
-  inferred_schema?: unknown;
 }
 
 interface ExtractInput {
@@ -51,17 +49,45 @@ export function useAiExtraction() {
   const runIdRef = useRef<string | null>(null);
   const accumRef = useRef('');
 
+  // Dead-man's switch: if the server goes silent without a terminal `done`,
+  // the spinner used to spin forever (audit K1). Any chunk for our run
+  // touches it; STALL_MS of silence kills the run with a visible error.
+  const watchdog = useMemo(
+    () =>
+      createStreamWatchdog({
+        stallMs: STALL_MS,
+        onStall: () => {
+          const runId = runIdRef.current;
+          runIdRef.current = null;
+          accumRef.current = '';
+          setRunning(false);
+          setError('Extraction stalled — no response from the server. Try again.');
+          if (runId) void send(CHANNELS.STREAM_CANCEL, { runId }).catch(() => {});
+        },
+      }),
+    [],
+  );
+  useEffect(() => () => watchdog.stop(), [watchdog]);
+
   useEffect(() => {
     return on<StreamChunk, { ack: true }>(CHANNELS.STREAM_CHUNK, (chunk) => {
-      if (chunk.runId !== runIdRef.current) return { ack: true };
+      // Capture the id ONCE — cancel() can null runIdRef between this check
+      // and the state writes below, and a cancelled run's `done` must not
+      // commit stale rows (audit K2).
+      const activeRunId = runIdRef.current;
+      if (!activeRunId || chunk.runId !== activeRunId) return { ack: true };
+      watchdog.touch();
 
       if (chunk.type === 'text' && chunk.payload.content) {
         accumRef.current += chunk.payload.content;
       } else if (chunk.type === 'error') {
+        watchdog.stop();
         setError(chunk.payload.message ?? 'stream error');
         setRunning(false);
         runIdRef.current = null;
       } else if (chunk.type === 'done') {
+        watchdog.stop();
+        if (runIdRef.current !== activeRunId) return { ack: true }; // cancelled mid-flight
         try {
           const parsed = parseAgentResponse(accumRef.current);
           setRows(parsed.rows);
@@ -75,7 +101,7 @@ export function useAiExtraction() {
       }
       return { ack: true };
     });
-  }, []);
+  }, [watchdog]);
 
   const extract = useCallback(
     async (input: ExtractInput) => {
@@ -114,7 +140,10 @@ export function useAiExtraction() {
 
       const body: AgentStartRequest = {
         user_input: input.description,
-        conversation_id: null,
+        // Required on every start request; a one-shot run still mints an id
+        // (correlation) and stays ephemeral via store:false.
+        conversation_id: crypto.randomUUID(),
+        is_new: true,
         variables: {
           page_url: captured.url,
           page_text: captured.page_text,
@@ -140,21 +169,32 @@ export function useAiExtraction() {
           agentName: null,
           permissionMode: 'auto',
         });
+        watchdog.start();
       } catch (e) {
         setError(`Failed to start extraction: ${e instanceof Error ? e.message : String(e)}`);
         setRunning(false);
         runIdRef.current = null;
       }
     },
-    [tab.id],
+    [tab.id, watchdog],
   );
 
   const cancel = useCallback(async () => {
     if (!runIdRef.current) return;
-    await send(CHANNELS.STREAM_CANCEL, { runId: runIdRef.current });
-    setRunning(false);
+    const runId = runIdRef.current;
+    // Null the ref BEFORE awaiting — a `done` chunk racing the cancel must
+    // not commit stale rows (audit K2). Clear results so a cancelled run
+    // doesn't keep displaying the previous run's output.
     runIdRef.current = null;
-  }, []);
+    accumRef.current = '';
+    watchdog.stop();
+    setRunning(false);
+    setRows(null);
+    setNotes(null);
+    setConfidence(null);
+    setError(null);
+    await send(CHANNELS.STREAM_CANCEL, { runId });
+  }, [watchdog]);
 
   const reset = useCallback(() => {
     setRows(null);
@@ -164,43 +204,4 @@ export function useAiExtraction() {
   }, []);
 
   return { rows, running, error, notes, confidence, extract, cancel, reset };
-}
-
-/**
- * Parse the streamed agent response into our expected envelope.
- * Tolerates leading/trailing whitespace, code-fenced blocks, and a trailing
- * narrative line — agents sometimes prefix/suffix the JSON with prose.
- */
-function parseAgentResponse(raw: string): ExtractionResponse {
-  const trimmed = raw.trim();
-  if (!trimmed) throw new Error('empty response');
-
-  let body = trimmed;
-  const fence = body.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/m);
-  if (fence?.[1]) body = fence[1].trim();
-
-  // Find the outermost JSON object/array if there's wrapping prose.
-  const firstBrace = body.search(/[{[]/);
-  const lastBrace = Math.max(body.lastIndexOf('}'), body.lastIndexOf(']'));
-  if (firstBrace >= 0 && lastBrace > firstBrace) {
-    body = body.slice(firstBrace, lastBrace + 1);
-  }
-
-  const parsed = JSON.parse(body) as unknown;
-
-  if (Array.isArray(parsed)) {
-    return { rows: parsed as ExtractedRow[] };
-  }
-  if (parsed && typeof parsed === 'object') {
-    const obj = parsed as Record<string, unknown>;
-    const rows = Array.isArray(obj.rows) ? (obj.rows as ExtractedRow[]) : [];
-    return {
-      rows,
-      confidence: obj.confidence as 'high' | 'medium' | 'low' | undefined,
-      notes: typeof obj.notes === 'string' ? obj.notes : undefined,
-      inferred_schema: obj.inferred_schema,
-    };
-  }
-
-  throw new Error('agent response was not a JSON object or array');
 }

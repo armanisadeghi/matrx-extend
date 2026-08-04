@@ -22,15 +22,16 @@ import { ALARMS } from '@/config/env';
 import { log } from '@/lib/debug/log';
 import { send as msgSend } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { cooldownElapsed, tabMatchesTask } from './context-match';
 import {
   type AgendaTask,
   type TriggerConfig,
+  claimDueFire,
   computeNextDueAfterRun,
   listContextMatchTasks,
   listDueForSurface,
-  updateTask,
+  reapExpiredRuns,
 } from './queries';
-import { cooldownElapsed, tabMatchesTask } from './context-match';
 
 const NOTIFICATION_PREFIX = 'matrx-agenda:';
 const SCAN_PERIOD_MIN = 1;
@@ -42,7 +43,22 @@ export function startAgendaScanner(): void {
   void scanAndNotify();
 }
 
-export async function scanAndNotify(): Promise<void> {
+/**
+ * Single-flight: the boot-time scan and an alarm-fired scan can overlap on
+ * SW wake (the alarm event is exactly what woke the SW). Both reading the
+ * same due set before either advanced it meant duplicate fires (audit P0-7).
+ */
+let scanInFlight: Promise<void> | null = null;
+
+export function scanAndNotify(): Promise<void> {
+  if (scanInFlight) return scanInFlight;
+  scanInFlight = doScan().finally(() => {
+    scanInFlight = null;
+  });
+  return scanInFlight;
+}
+
+async function doScan(): Promise<void> {
   let due: AgendaTask[] = [];
   try {
     due = await listDueForSurface('chrome-extension-chat', { limit: 10 });
@@ -53,11 +69,27 @@ export async function scanAndNotify(): Promise<void> {
   if (due.length > 0) {
     log.info('sw', `agenda: ${due.length} task(s) due`);
     for (const task of due) {
-      await fireDueTask(task);
+      // Per-task isolation — one task throwing must not abort the rest of
+      // the queue (or the context-match pass below). Audit P1-16.
+      try {
+        await fireDueTask(task);
+      } catch (err) {
+        log.warn('sw', `agenda: fireDueTask threw for ${task.id}`, err);
+      }
     }
   }
 
   await scanContextMatch();
+
+  // Fail-close runs whose lease expired with no surface finishing them —
+  // without this, a stuck 'claimed' row blocks the task's unique-active-run
+  // index forever. Best-effort, every scan.
+  try {
+    const reaped = await reapExpiredRuns();
+    if (reaped > 0) log.info('sw', `agenda: reaped ${reaped} expired run(s)`);
+  } catch (err) {
+    log.warn('sw', 'agenda: reapExpiredRuns threw', err);
+  }
 }
 
 /**
@@ -95,37 +127,49 @@ async function scanContextMatch(): Promise<void> {
     if (!cooldownElapsed(task)) continue;
     if (!tabMatchesTask(task, tabInfo)) continue;
     log.info('sw', `agenda: context-match fired for "${task.title}" on ${hostname}`);
-    await fireDueTask(task);
+    try {
+      await fireDueTask(task);
+    } catch (err) {
+      log.warn('sw', `agenda: context-match fire threw for ${task.id}`, err);
+    }
   }
 }
 
 async function fireDueTask(task: AgendaTask): Promise<void> {
-  // Auto mode: try the live sidepanel first. If it acks, the run starts
-  // there immediately (no notification, no click). If nothing acks within
-  // a short window, fall back to a notification so the user still sees
-  // the task became due.
-  let routedToSidepanel = false;
-  if (task.auth_mode === 'auto') {
-    routedToSidepanel = await tryBroadcastRunNow(task.id);
-    if (!routedToSidepanel) await notifyDue(task);
-  } else {
-    await notifyDue(task);
-  }
-
-  // Advance next_due_at so we don't re-fire on the next scan. For one-shot
-  // and context-match this nulls out (one-shot disables; context-match
-  // re-fires on a different signal).
+  // CLAIM FIRST, fire second (audit P0-7 / P2-15). The old order —
+  // notify/broadcast, then advance next_due_at after the dispatch settled —
+  // meant any run outlasting the 1-minute alarm period re-fired on the next
+  // scan, and two scanners (boot + alarm, or two devices) both fired. The
+  // CAS update makes exactly one scanner win; losing the race is the
+  // expected outcome for everyone else. A crash between claim and fire is a
+  // missed fire, never a duplicate — the right failure direction for
+  // "agent acts on the user's behalf".
   const triggerConfig: TriggerConfig = {
     type: task.trigger_type,
     ...task.trigger_config,
   } as TriggerConfig;
-  const next = computeNextDueAfterRun(task.trigger_type, triggerConfig);
-  await updateTask(task.id, {
+  const next = computeNextDueAfterRun(triggerConfig);
+  const claimed = await claimDueFire(task, {
     next_due_at: next ?? null,
     last_run_at: new Date().toISOString(),
     // One-shot tasks auto-disable after firing.
     enabled: task.trigger_type === 'one-shot' ? false : task.enabled,
   });
+  if (!claimed) {
+    log.info('sw', `agenda: lost the fire claim for ${task.id} (another scanner won)`);
+    return;
+  }
+
+  // Auto mode: try the live sidepanel first. If it acks, the run starts
+  // there immediately (no notification, no click). If nothing acks within
+  // a short window, fall back to a notification so the user still sees
+  // the task became due.
+  if (task.auth_mode === 'auto') {
+    const routedToSidepanel = await tryBroadcastRunNow(task.id);
+    if (!routedToSidepanel) await notifyDue(task);
+  } else {
+    await notifyDue(task);
+  }
 }
 
 /**

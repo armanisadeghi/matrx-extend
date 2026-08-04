@@ -114,9 +114,7 @@ export const delete_cookie: ToolHandler<DeleteCookieArgs, unknown> = {
 
 // ─── pageCapture ──────────────────────────────────────────────────────────
 
-const SaveAsMhtmlArgs = z
-  .object({ tab_id: z.number().int().optional() })
-  .default({});
+const SaveAsMhtmlArgs = z.object({ tab_id: z.number().int().optional() }).default({});
 type SaveAsMhtmlArgs = z.infer<typeof SaveAsMhtmlArgs>;
 
 export const save_page_as_mhtml: ToolHandler<SaveAsMhtmlArgs, unknown> = {
@@ -180,9 +178,7 @@ export const list_recently_closed: ToolHandler<ListClosedArgs, unknown> = {
       count: list.length,
       entries: list.map((s) => ({
         last_modified_ms: s.lastModified ? s.lastModified * 1000 : null,
-        tab: s.tab
-          ? { id: s.tab.sessionId, url: s.tab.url, title: s.tab.title }
-          : undefined,
+        tab: s.tab ? { id: s.tab.sessionId, url: s.tab.url, title: s.tab.title } : undefined,
         window: s.window
           ? {
               id: s.window.sessionId,

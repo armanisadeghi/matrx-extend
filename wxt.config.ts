@@ -55,21 +55,15 @@ export default defineConfig({
       // Chrome forbids 'debugger' in optional_permissions. CDP client + network
       // capture need it; keeping it required is the only way to keep them working.
       'debugger',
-      // Roadmap item #10 (manifest hygiene): added preemptively so future
-      // tools that need them don't trigger a re-install permission prompt.
-      // - system.cpu / system.memory / system.display: chrome.system.* APIs
-      //   for hardware/display info (planned: agent diagnostics, multi-display
-      //   pilot orchestration).
-      // - declarativeNetRequestWithHostAccess: declarative request modification
-      //   gated by host permission (planned: privacy-respecting request
-      //   blocking / rewriting per active host).
-      // None of these widen the install-dialog warnings beyond what users
-      // already see; the system.* trio is silent, and DNR-with-host-access
-      // is gated by whatever host_permissions the user grants.
-      'system.cpu',
-      'system.memory',
-      'system.display',
-      'declarativeNetRequestWithHostAccess',
+      // REMOVED 2026-07-11 for the Chrome Web Store submission:
+      //   system.cpu, system.memory, system.display,
+      //   declarativeNetRequestWithHostAccess
+      // These served ONLY two admin-gated diagnostic tools a reviewer can never
+      // reach, so they read as "declared but unused" — a documented rejection
+      // cause (same rule that flagged contextMenus on v0.1.4). The tools were
+      // removed with them. To restore, see docs/REMOVED_FOR_CWS_SUBMISSION.md §2
+      // — but every re-added permission MUST have a reviewer-reachable consumer
+      // first. Do not re-add "preemptively"; that is exactly what got flagged.
     ],
     // Risky / privacy-sensitive permissions live here. Granted at runtime via
     // chrome.permissions.request from the admin "Advanced agent capabilities"
@@ -84,12 +78,7 @@ export default defineConfig({
     // wiring up the corresponding tools — see that file for the checklist):
     //   'userScripts', 'proxy', 'webRequest', 'desktopCapture', 'topSites',
     //   'management'
-    optional_permissions: [
-      'cookies',
-      'pageCapture',
-      'clipboardRead',
-      'tabCapture',
-    ],
+    optional_permissions: ['cookies', 'pageCapture', 'clipboardRead', 'tabCapture'],
     // Host permissions — broad web access at install time so the agent can
     // read / interact with arbitrary pages without the user fighting Chrome
     // dialogs every time. We previously experimented with moving <all_urls>

@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { JsonTree } from '@/components/ui/json-tree';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useExtraction } from '@/hooks/use-extraction';
+import { frameworkDumpInPage } from '@/lib/data-pattern/framework-dump';
 import { Loader2, PlayCircle, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
@@ -9,152 +10,44 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 
 type ParsedSource = { source: string; data: unknown };
 
-export function FrameworkTab() {
+export function FrameworkTab({ active = true }: { active?: boolean }) {
   const tab = useActiveTab();
-  const { detection, rows, running, error, run } = useExtraction('next_data');
+  const { detection, rows, running, error, source, run } = useExtraction('next_data', {
+    autoDetect: active,
+  });
   const [sources, setSources] = useState<ParsedSource[]>([]);
   const [activeSource, setActiveSource] = useState<string | null>(null);
   const [keyPath, setKeyPath] = useState('');
   const [loadingTree, setLoadingTree] = useState(false);
+  const [dumpError, setDumpError] = useState<string | null>(null);
+
+  // The dumped framework state belongs to one page. If the new page has no
+  // framework data, the dump effect below won't fire — clear explicitly so
+  // page A's tree never renders under page B.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: tab.id/tab.url are the invalidation keys.
+  useEffect(() => {
+    setSources([]);
+    setActiveSource(null);
+    setKeyPath('');
+  }, [tab.id, tab.url]);
 
   const dump = useCallback(async () => {
     if (!tab.id) return;
     setLoadingTree(true);
+    setDumpError(null);
     try {
       const result = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: () => {
-          const out: { source: string; data: unknown }[] = [];
-          const tryParse = (id: string, node: Element | null) => {
-            if (!node?.textContent) return;
-            try {
-              out.push({ source: id, data: JSON.parse(node.textContent) });
-            } catch {
-              // skip
-            }
-          };
-          tryParse('__NEXT_DATA__', document.getElementById('__NEXT_DATA__'));
-          tryParse('__NUXT_DATA__', document.getElementById('__NUXT_DATA__'));
-          tryParse('apollo', document.getElementById('__APOLLO_STATE__'));
-
-          // LinkedIn bpr-guid hydration blocks
-          const bprBlocks = Array.from(
-            document.querySelectorAll<HTMLElement>('code[id^="bpr-guid-"]'),
-          );
-          if (bprBlocks.length > 0) {
-            const aggregated: Record<string, unknown> = {};
-            let included: unknown[] = [];
-            for (const b of bprBlocks) {
-              try {
-                const p = JSON.parse(b.textContent ?? '') as Record<string, unknown>;
-                aggregated[b.id] = p;
-                if (Array.isArray(p.included)) included = included.concat(p.included);
-              } catch {
-                // skip
-              }
-            }
-            if (Object.keys(aggregated).length > 0) {
-              out.push({ source: 'bpr-guid', data: { blocks: aggregated, included } });
-            }
-          }
-
-          // Inline window.* state (Indeed _initialData, Redux preloaded, etc.).
-          // Paren-balanced scan + JSON.parse with safe-eval fallback for sites
-          // that ship JS object literals (unquoted keys).
-          const WINDOW_NAMES = [
-            '_initialData',
-            '__INITIAL_STATE__',
-            '__INITIAL_DATA__',
-            '__PRELOADED_STATE__',
-            '__APP_STATE__',
-            '__REDUX_STATE__',
-            '__APOLLO_STATE__',
-            '__SERVER_STATE__',
-          ];
-          const inlineScripts = Array.from(
-            document.querySelectorAll<HTMLScriptElement>('script:not([src])'),
-          );
-          const extractWindow = (name: string): unknown | undefined => {
-            const escName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const lhsRe = new RegExp(
-              `(?:window\\.|self\\.|var\\s+|let\\s+|const\\s+)?${escName}\\s*=\\s*`,
-              'g',
-            );
-            for (const s of inlineScripts) {
-              const txt = s.textContent ?? '';
-              if (!txt.includes(name)) continue;
-              lhsRe.lastIndex = 0;
-              let m: RegExpExecArray | null;
-              while ((m = lhsRe.exec(txt))) {
-                const start = m.index + m[0].length;
-                const opener = txt[start];
-                if (opener !== '{' && opener !== '[') continue;
-                let i = start;
-                let depth = 0;
-                let inStr: string | null = null;
-                while (i < txt.length) {
-                  const ch = txt[i];
-                  if (inStr) {
-                    if (ch === '\\') {
-                      i += 2;
-                      continue;
-                    }
-                    if (ch === inStr) inStr = null;
-                    i++;
-                    continue;
-                  }
-                  if (ch === '"' || ch === "'" || ch === '`') {
-                    inStr = ch;
-                    i++;
-                    continue;
-                  }
-                  if (ch === '{' || ch === '[') depth++;
-                  else if (ch === '}' || ch === ']') {
-                    depth--;
-                    if (depth === 0) {
-                      i++;
-                      break;
-                    }
-                  }
-                  i++;
-                }
-                if (depth !== 0) continue;
-                const blob = txt.slice(start, i);
-                try {
-                  return JSON.parse(blob);
-                } catch {
-                  // fall through
-                }
-                if (
-                  /\b(?:function\s*[(*]|=>|eval\s*\(|new\s+Function|XMLHttpRequest|fetch\s*\()/.test(
-                    blob,
-                  )
-                ) {
-                  continue;
-                }
-                if (blob.length > 5_000_000) continue;
-                try {
-                  return new Function(`"use strict";return (${blob});`)();
-                } catch {
-                  // try next match
-                }
-              }
-            }
-            return undefined;
-          };
-          for (const name of WINDOW_NAMES) {
-            if (name === '__APOLLO_STATE__' && out.some((o) => o.source === 'apollo')) continue;
-            const data = extractWindow(name);
-            if (data !== undefined) out.push({ source: `window.${name}`, data });
-          }
-
-          return out;
-        },
+        func: frameworkDumpInPage,
       });
       const fetched = (result?.[0]?.result ?? []) as ParsedSource[];
       setSources(fetched);
       const first = fetched[0];
       if (first && !activeSource) setActiveSource(first.source);
+    } catch (err) {
+      // Previously try/finally with NO catch — restricted pages stopped the
+      // spinner with zero feedback (audit P1-5).
+      setDumpError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoadingTree(false);
     }
@@ -182,6 +75,12 @@ export function FrameworkTab() {
         <div className="rounded-xl bg-secondary/40 px-3 py-2 text-xs text-muted-foreground">
           {detection ? detection.summary : 'Detecting…'}
         </div>
+
+        {dumpError && (
+          <div className="rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
+            Could not read framework data: {dumpError}
+          </div>
+        )}
 
         {sources.length > 1 && (
           <div className="flex gap-1">
@@ -257,6 +156,7 @@ export function FrameworkTab() {
               kind="next_data"
               config={{ key_path: keyPath, source: activeSource ?? undefined }}
               rows={rows}
+              source={source}
               defaultName={`Framework: ${keyPath || '(root)'}`}
             />
           </div>

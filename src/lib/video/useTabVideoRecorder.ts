@@ -17,20 +17,14 @@
  *   - error          — terminal; the consumer can reset by calling reset()
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { uploadFile } from '@/lib/api/routes/files';
 import { log } from '@/lib/debug/log';
 import { base64ToBlob } from '@/lib/messaging/binary-transport';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import {
-  hasOptionalPermissions,
-  requestOptionalPermission,
-} from '@/lib/permissions/optional';
-import {
-  useRecordingsStore,
-  type RecordingEntry,
-} from '@/lib/video/recordings-store';
+import { hasOptionalPermissions, requestOptionalPermission } from '@/lib/permissions/optional';
+import { type RecordingEntry, useRecordingsStore } from '@/lib/video/recordings-store';
 import type { VideoEvent, VideoRequestPayload } from '@/lib/video/video-types';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type RecorderStatus =
   | 'idle'
@@ -88,6 +82,29 @@ function extensionFor(mimeType: string): string {
 
 export function useTabVideoRecorder(): UseTabVideoRecorderResult {
   const [status, setStatus] = useState<RecorderStatus>('idle');
+  // Busy-state watchdog: 'starting' / 'stopping' / 'uploading' with a lost
+  // event used to brick the recorder until remount — no Stop, no reset, just
+  // a frozen badge. The deadline flips to a recoverable error instead.
+  const busyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const statusRef = useRef<RecorderStatus>('idle');
+  statusRef.current = status;
+  const armBusyWatchdog = useCallback((stage: 'starting' | 'stopping' | 'uploading') => {
+    if (busyTimerRef.current) clearTimeout(busyTimerRef.current);
+    const deadline = stage === 'uploading' ? 120_000 : 30_000;
+    busyTimerRef.current = setTimeout(() => {
+      if (statusRef.current !== stage) return; // moved on — all good
+      setStatus('error');
+      setErrorMessage(
+        `Recorder stuck on "${stage}" — no response from the capture pipeline. Dismiss and try again.`,
+      );
+    }, deadline);
+  }, []);
+  useEffect(
+    () => () => {
+      if (busyTimerRef.current) clearTimeout(busyTimerRef.current);
+    },
+    [],
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [lastDurationMs, setLastDurationMs] = useState<number | null>(null);
@@ -123,6 +140,7 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
   const handleComplete = useCallback(
     async (data: string, mimeType: string, durationMs: number, source: 'tab' | 'display') => {
       setStatus('uploading');
+      armBusyWatchdog('uploading');
       setLastDurationMs(durationMs);
       const ext = extensionFor(mimeType);
       const titleBase = tabSnapshotRef.current.title
@@ -204,6 +222,7 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
         }
         case 'stopped': {
           setStatus('stopping');
+          armBusyWatchdog('stopping');
           stopTick();
           break;
         }
@@ -246,6 +265,7 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
       sessionIdRef.current = id;
       setSessionId(id);
       setStatus('starting');
+      armBusyWatchdog('starting');
       setElapsedMs(0);
       setLastDurationMs(null);
 
@@ -266,6 +286,12 @@ export function useTabVideoRecorder(): UseTabVideoRecorderResult {
         if (res && '__error' in res && res.__error) {
           setStatus('error');
           setErrorMessage(res.__error);
+        } else if (!res || res.ok === false) {
+          // undefined = no listener answered (SW asleep / handler missing);
+          // ok:false = refused. Both used to leave the badge on "Starting"
+          // forever with Record disabled and no escape hatch.
+          setStatus('error');
+          setErrorMessage('Recorder did not start — the service worker did not respond.');
         }
       } catch (err) {
         setStatus('error');

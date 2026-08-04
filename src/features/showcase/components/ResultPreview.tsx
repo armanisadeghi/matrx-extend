@@ -2,8 +2,13 @@ import { CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
 import { rowsToTsv, stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { cn } from '@/lib/utils';
-import { Braces, Table2 } from 'lucide-react';
+import { useChatStore } from '@/state/chat';
+import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { Bot, Braces, Table2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+
+/** Rows included inline when handing results to the agent (context cost). */
+const AGENT_HANDOFF_ROW_CAP = 50;
 
 type View = 'table' | 'json';
 
@@ -30,6 +35,29 @@ export function ResultPreview({
   description = 'extracted rows from a webpage',
 }: ResultPreviewProps) {
   const [view, setView] = useState<View>('table');
+  const setDraft = useChatStore((s) => s.setDraft);
+  const draft = useChatStore((s) => s.draft);
+  const setSidepanelTab = useSidepanelTabStore((s) => s.setTab);
+
+  // User-action → agent handoff (audit X3): stage the extracted rows into
+  // the chat composer and jump to Chat, so user-only steps (interactive
+  // picking, network capture) produce context the agent can act on.
+  const sendToAgent = () => {
+    const included = rows.slice(0, AGENT_HANDOFF_ROW_CAP);
+    const payload = wrapJsonForAgent(included, {
+      description,
+      source: source ?? {},
+      meta: {
+        row_count: rows.length,
+        included_rows: included.length,
+        ...(rows.length > included.length
+          ? { note: 'truncated — run the saved pattern via data_patterns for the full set' }
+          : {}),
+      },
+    });
+    setDraft(draft ? `${draft}\n\n${payload}` : payload);
+    setSidepanelTab('chat');
+  };
 
   const copyOptions = useMemo(
     () => [
@@ -73,6 +101,15 @@ export function ResultPreview({
           {rows.length} row{rows.length === 1 ? '' : 's'}
         </div>
         <div className="flex items-center gap-1">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={sendToAgent}
+            title="Stage these rows in the chat composer for the agent"
+            className="h-6 gap-1 rounded-md px-2 text-[10px] uppercase tracking-wider"
+          >
+            <Bot className="size-3" /> Send to agent
+          </Button>
           <CopyMenu options={copyOptions} title="Copy" size="sm" />
           <ViewToggle active={view === 'table'} onClick={() => setView('table')}>
             <Table2 className="size-3" /> Table
@@ -85,12 +122,7 @@ export function ResultPreview({
       {view === 'table' ? (
         <TableView rows={rows} maxHeight={maxHeight} />
       ) : (
-        <pre
-          className="overflow-auto whitespace-pre rounded-xl bg-secondary/40 p-3 text-[11px]"
-          style={{ maxHeight }}
-        >
-          {JSON.stringify(rows, null, 2)}
-        </pre>
+        <JsonView rows={rows} maxHeight={maxHeight} />
       )}
     </div>
   );
@@ -120,12 +152,38 @@ function ViewToggle({
   );
 }
 
+/** JSON view stringifies up to 500 rows ONCE per rows change, not per render. */
+function JsonView({ rows, maxHeight }: { rows: Record<string, unknown>[]; maxHeight: number }) {
+  const JSON_VIEW_ROW_CAP = 500;
+  const text = useMemo(() => {
+    const capped = rows.length > JSON_VIEW_ROW_CAP;
+    const body = JSON.stringify(capped ? rows.slice(0, JSON_VIEW_ROW_CAP) : rows, null, 2);
+    return capped
+      ? `${body}\n\n…(+${rows.length - JSON_VIEW_ROW_CAP} more rows — use Copy for all)`
+      : body;
+  }, [rows]);
+  return (
+    <pre
+      className="overflow-auto whitespace-pre rounded-xl bg-secondary/40 p-3 text-[11px]"
+      style={{ maxHeight }}
+    >
+      {text}
+    </pre>
+  );
+}
+
 function TableView({ rows, maxHeight }: { rows: Record<string, unknown>[]; maxHeight: number }) {
-  const cols = Array.from(
-    rows.reduce((acc, r) => {
-      for (const k of Object.keys(r)) acc.add(k);
-      return acc;
-    }, new Set<string>()),
+  // Column union scans every row — memoize so it runs per rows change, not
+  // per render (1000 rows × 50 keys was 50k property reads a render).
+  const cols = useMemo(
+    () =>
+      Array.from(
+        rows.reduce((acc, r) => {
+          for (const k of Object.keys(r)) acc.add(k);
+          return acc;
+        }, new Set<string>()),
+      ),
+    [rows],
   );
 
   const renderCell = (v: unknown): string => {
@@ -165,7 +223,7 @@ function TableView({ rows, maxHeight }: { rows: Record<string, unknown>[]; maxHe
       </table>
       {rows.length > 200 && (
         <div className="px-2 py-1.5 text-center text-muted-foreground">
-          Showing first 200 of {rows.length} rows
+          Showing first 200 of {rows.length} rows — Copy and Save include all of them
         </div>
       )}
     </div>

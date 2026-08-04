@@ -9,13 +9,13 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { getDemo } from '@/lib/demos/storage';
 import { replayDemo } from '@/lib/demos/replayer';
+import { getDemo } from '@/lib/demos/storage';
 import type { Demo } from '@/lib/demos/types';
 import { getGuidanceItem, saveGuidanceItem } from '@/lib/guidance/storage';
 import type { GuidanceItem } from '@/lib/guidance/types';
 import { Camera, Loader2, Pencil, Play } from 'lucide-react';
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 
 const AnnotationEditor = lazy(() =>
   import('./AnnotationEditor').then((m) => ({ default: m.AnnotationEditor })),
@@ -31,13 +31,25 @@ export function GuidancePreview({
   const [item, setItem] = useState<GuidanceItem | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const reload = useCallback(async () => {
+    const g = await getGuidanceItem(itemId);
+    setItem(g);
+    setLoading(false);
+  }, [itemId]);
+
   useEffect(() => {
     setLoading(true);
-    void getGuidanceItem(itemId).then((g) => {
-      setItem(g);
-      setLoading(false);
-    });
-  }, [itemId]);
+    void reload();
+  }, [reload]);
+
+  // Children report saves through this — without the local refetch the
+  // preview kept rendering the STALE item (old note text, un-annotated
+  // screenshot) until collapse + re-expand; onChanged only refreshes the
+  // parent's summaries.
+  const handleChanged = useCallback(async () => {
+    await reload();
+    await onChanged();
+  }, [reload, onChanged]);
 
   if (loading) {
     return (
@@ -49,8 +61,9 @@ export function GuidancePreview({
   }
   if (!item) return <div className="text-xs text-muted-foreground">Item missing.</div>;
 
-  if (item.kind === 'note') return <NotePreview item={item} onChanged={onChanged} />;
-  if (item.kind === 'screenshot') return <ScreenshotPreview item={item} onChanged={onChanged} />;
+  if (item.kind === 'note') return <NotePreview item={item} onChanged={handleChanged} />;
+  if (item.kind === 'screenshot')
+    return <ScreenshotPreview item={item} onChanged={handleChanged} />;
   if (item.kind === 'gif') return <GifPreview item={item} />;
   if (item.kind === 'demo_ref') return <DemoPreview item={item} />;
   return null;
@@ -65,6 +78,11 @@ function NotePreview({
 }) {
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(item.text);
+  // Track upstream refreshes (our own save round-trips through the parent
+  // reload) so the next edit starts from the saved text, not a stale copy.
+  useEffect(() => {
+    if (!editing) setText(item.text);
+  }, [item.text, editing]);
 
   const handleSave = useCallback(async () => {
     await saveGuidanceItem({ ...item, text, updated_at: Date.now() });
@@ -243,9 +261,7 @@ function DemoPreview({ item }: { item: Extract<GuidanceItem, { kind: 'demo_ref' 
         {demo?.description && <div className="text-muted-foreground">{demo.description}</div>}
         <div className="mt-1 text-[11px] text-muted-foreground">
           {item.step_count} steps
-          {item.parameter_names.length > 0 && (
-            <> · params: {item.parameter_names.join(', ')}</>
-          )}
+          {item.parameter_names.length > 0 && <> · params: {item.parameter_names.join(', ')}</>}
         </div>
       </div>
       {confirming ? (

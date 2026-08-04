@@ -39,19 +39,19 @@ export interface CollectedMetadata {
   schemaTypes: string[];
 }
 
-const abs = (raw: string): string | null => {
+const abs = (raw: string, doc: Document): string | null => {
   try {
-    return new URL(raw, document.baseURI).toString();
+    return new URL(raw, doc.baseURI).toString();
   } catch {
     return null;
   }
 };
 
-export function collectImages(): CollectedImage[] {
+export function collectImages(doc: Document = document): CollectedImage[] {
   const out: CollectedImage[] = [];
-  document.querySelectorAll('img').forEach((img) => {
+  doc.querySelectorAll('img').forEach((img) => {
     const src = img.currentSrc || img.src;
-    const resolved = src ? abs(src) : null;
+    const resolved = src ? abs(src, doc) : null;
     if (!resolved) return;
     out.push({
       src: resolved,
@@ -61,55 +61,55 @@ export function collectImages(): CollectedImage[] {
     });
   });
   // Background images via inline style — high-cardinality; keep the simple case.
-  document.querySelectorAll('[style*="background-image"]').forEach((el) => {
+  doc.querySelectorAll('[style*="background-image"]').forEach((el) => {
     const style = (el as HTMLElement).style.backgroundImage;
     const m = style.match(/url\((['"]?)([^'")]+)\1\)/);
     if (!m) return;
     const url = m[2];
     if (!url) return;
-    const resolved = abs(url);
+    const resolved = abs(url, doc);
     if (!resolved) return;
     out.push({ src: resolved, alt: null, width: null, height: null });
   });
   return dedupeBy(out, (i) => i.src);
 }
 
-export function collectVideos(): CollectedVideo[] {
+export function collectVideos(doc: Document = document): CollectedVideo[] {
   const out: CollectedVideo[] = [];
-  document.querySelectorAll('video').forEach((v) => {
+  doc.querySelectorAll('video').forEach((v) => {
     const src = v.currentSrc || v.src || v.querySelector('source')?.src || '';
-    const resolved = src ? abs(src) : null;
+    const resolved = src ? abs(src, doc) : null;
     if (!resolved) return;
     out.push({
       src: resolved,
-      poster: v.poster ? abs(v.poster) : null,
+      poster: v.poster ? abs(v.poster, doc) : null,
       duration: Number.isFinite(v.duration) ? v.duration : null,
     });
   });
-  document.querySelectorAll('iframe[src*="youtube"], iframe[src*="vimeo"]').forEach((f) => {
+  doc.querySelectorAll('iframe[src*="youtube"], iframe[src*="vimeo"]').forEach((f) => {
     const src = (f as HTMLIFrameElement).src;
-    const resolved = src ? abs(src) : null;
+    const resolved = src ? abs(src, doc) : null;
     if (!resolved) return;
     out.push({ src: resolved, poster: null, duration: null });
   });
   return dedupeBy(out, (v) => v.src);
 }
 
-export function collectAudio(): CollectedAudio[] {
+export function collectAudio(doc: Document = document): CollectedAudio[] {
   const out: CollectedAudio[] = [];
-  document.querySelectorAll('audio').forEach((a) => {
+  doc.querySelectorAll('audio').forEach((a) => {
     const src = a.currentSrc || a.src || a.querySelector('source')?.src || '';
-    const resolved = src ? abs(src) : null;
+    const resolved = src ? abs(src, doc) : null;
     if (!resolved) return;
     out.push({ src: resolved, type: a.querySelector('source')?.type ?? null });
   });
   return dedupeBy(out, (a) => a.src);
 }
 
-export function collectLinks(): CollectedLink[] {
+export function collectLinks(doc: Document = document): CollectedLink[] {
   const out: CollectedLink[] = [];
-  document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((a) => {
-    const href = abs(a.href);
+  doc.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((a) => {
+    const href = abs(a.href, doc);
     if (!href) return;
     out.push({
       href,
@@ -120,10 +120,10 @@ export function collectLinks(): CollectedLink[] {
   return dedupeBy(out, (l) => `${l.href}|${l.text}`);
 }
 
-export function collectMetadata(): CollectedMetadata {
+export function collectMetadata(doc: Document = document): CollectedMetadata {
   const og: Record<string, string> = {};
   const twitter: Record<string, string> = {};
-  document.querySelectorAll<HTMLMetaElement>('meta').forEach((m) => {
+  doc.querySelectorAll<HTMLMetaElement>('meta').forEach((m) => {
     const property = m.getAttribute('property') ?? '';
     const name = m.getAttribute('name') ?? '';
     const content = m.getAttribute('content') ?? '';
@@ -131,43 +131,41 @@ export function collectMetadata(): CollectedMetadata {
     if (property.startsWith('og:')) og[property] = content;
     if (name.startsWith('twitter:')) twitter[name] = content;
   });
-  const schemaTypes = collectSchemaTypes();
+  const schemaTypes = collectSchemaTypes(doc);
   const description =
-    document.querySelector<HTMLMetaElement>('meta[name="description"]')?.content ?? null;
-  const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href ?? null;
+    doc.querySelector<HTMLMetaElement>('meta[name="description"]')?.content ?? null;
+  const canonical = doc.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href ?? null;
   return {
-    title: document.title,
+    title: doc.title,
     description,
     canonical,
-    lang: document.documentElement.lang || null,
+    lang: doc.documentElement.lang || null,
     og,
     twitter,
     schemaTypes,
   };
 }
 
-export function collectJsonLd(): unknown[] {
+export function collectJsonLd(doc: Document = document): unknown[] {
   const out: unknown[] = [];
-  document
-    .querySelectorAll<HTMLScriptElement>('script[type="application/ld+json"]')
-    .forEach((s) => {
-      const text = s.textContent?.trim();
-      if (!text) return;
-      try {
-        out.push(JSON.parse(text));
-      } catch {
-        /* ignore malformed JSON-LD */
-      }
-    });
+  doc.querySelectorAll<HTMLScriptElement>('script[type="application/ld+json"]').forEach((s) => {
+    const text = s.textContent?.trim();
+    if (!text) return;
+    try {
+      out.push(JSON.parse(text));
+    } catch {
+      /* ignore malformed JSON-LD */
+    }
+  });
   return out;
 }
 
-function collectSchemaTypes(): string[] {
+function collectSchemaTypes(doc: Document = document): string[] {
   const types = new Set<string>();
-  for (const block of collectJsonLd()) {
+  for (const block of collectJsonLd(doc)) {
     walkType(block, types);
   }
-  document.querySelectorAll('[itemtype]').forEach((el) => {
+  doc.querySelectorAll('[itemtype]').forEach((el) => {
     const t = el.getAttribute('itemtype');
     if (t) types.add(t);
   });

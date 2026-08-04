@@ -15,16 +15,12 @@
  * — the repo CLAUDE.md prohibits emojis in user-visible UI.
  */
 
-import { Check, Languages } from 'lucide-react';
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useVoicePrefsStore } from '@/state/voice-prefs';
+import { Check, Languages } from 'lucide-react';
+import { useState } from 'react';
 
 interface LanguageOption {
   code: string;
@@ -46,8 +42,7 @@ export function LanguagePicker() {
   const setLanguage = useVoicePrefsStore((s) => s.setLanguage);
   const [open, setOpen] = useState(false);
 
-  const selected =
-    LANGUAGE_OPTIONS.find((o) => o.code === language) ?? LANGUAGE_OPTIONS[0]!;
+  const selected = LANGUAGE_OPTIONS.find((o) => o.code === language) ?? LANGUAGE_OPTIONS[0]!;
 
   const onPick = (code: string) => {
     setLanguage(code);
@@ -86,14 +81,10 @@ export function LanguagePicker() {
               <div className="flex-1 min-w-0">
                 <div className="text-sm">{opt.nativeName}</div>
                 {opt.nativeName !== opt.englishName && (
-                  <div className="text-[11px] text-muted-foreground">
-                    {opt.englishName}
-                  </div>
+                  <div className="text-[11px] text-muted-foreground">{opt.englishName}</div>
                 )}
               </div>
-              {isSelected && (
-                <Check className="size-3.5 shrink-0 text-primary" />
-              )}
+              {isSelected && <Check className="size-3.5 shrink-0 text-primary" />}
             </button>
           );
         })}

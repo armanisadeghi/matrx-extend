@@ -28,24 +28,60 @@ const STORAGE_KEY = 'matrx.audit.log';
 export const MAX_RECEIPTS = 1000;
 
 /**
+ * In-module write queue. The append is a read-modify-write on a single
+ * storage array, and the dispatcher fires receipts with `void` — partial +
+ * completed receipts of one call, and receipts from up to 8 concurrent
+ * `parallel_for_each_tab` sub-runs, all race the same row. Two appends that
+ * both read the same snapshot lose one receipt (classic lost-update) —
+ * exactly where the audit trail matters most. Chaining every append on this
+ * promise serializes the section without blocking callers (they `void` us).
+ * The catch keeps one failed append from wedging the chain forever.
+ */
+let appendQueue: Promise<void> = Promise.resolve();
+
+/**
  * Append a receipt to the log. Best-effort — if storage write fails,
  * we swallow and log to console so a write hiccup never blocks tool
- * execution.
+ * execution. Appends are serialized (see `appendQueue`).
  */
-export async function appendReceipt(receipt: ToolReceipt): Promise<void> {
-  try {
-    const existing = (await getOne<ToolReceipt[]>(STORAGE_KEY)) ?? [];
-    existing.push(receipt);
-    if (existing.length > MAX_RECEIPTS) {
-      // Drop oldest entries to fit. `splice` mutates in place; we then
-      // overwrite the storage row with the trimmed list.
-      existing.splice(0, existing.length - MAX_RECEIPTS);
+export function appendReceipt(receipt: ToolReceipt): Promise<void> {
+  appendQueue = appendQueue.then(async () => {
+    try {
+      const existing = (await getOne<ToolReceipt[]>(STORAGE_KEY)) ?? [];
+      existing.push(receipt);
+      if (existing.length > MAX_RECEIPTS) {
+        // Drop oldest entries to fit. `splice` mutates in place; we then
+        // overwrite the storage row with the trimmed list.
+        existing.splice(0, existing.length - MAX_RECEIPTS);
+      }
+      await setOne(STORAGE_KEY, existing);
+    } catch (err) {
+      // Audit log is best-effort — but an UNDETECTABLE gap is the worst
+      // failure mode for a chain-of-custody feature (audit P2-21): an
+      // auditor can't distinguish "call never happened" from "signing
+      // failed". Count failures durably so the Settings audit card can
+      // surface non-zero coverage gaps.
+      console.warn('[matrx-extend][audit] appendReceipt failed', err);
+      void recordAuditFailure();
     }
-    await setOne(STORAGE_KEY, existing);
-  } catch (err) {
-    // Audit log is best-effort. Surface to console only.
-    console.warn('[matrx-extend][audit] appendReceipt failed', err);
+  });
+  return appendQueue;
+}
+
+const FAILURE_COUNT_KEY = 'matrx.audit.failedCount';
+
+/** Durable count of receipts that failed to sign or persist. */
+export async function recordAuditFailure(): Promise<void> {
+  try {
+    const n = (await getOne<number>(FAILURE_COUNT_KEY)) ?? 0;
+    await setOne(FAILURE_COUNT_KEY, n + 1);
+  } catch {
+    /* counting the failure failed too — console already has the original */
   }
+}
+
+export async function getAuditFailureCount(): Promise<number> {
+  return (await getOne<number>(FAILURE_COUNT_KEY)) ?? 0;
 }
 
 /**

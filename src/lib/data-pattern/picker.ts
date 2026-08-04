@@ -17,17 +17,30 @@ const HOST_ID = 'matrx-data-picker-host';
 
 let host: HTMLElement | null = null;
 let shadow: ShadowRoot | null = null;
-let _panel: HTMLElement | null = null;
 let highlight: HTMLElement | null = null;
 const picked: PickedField[] = [];
 
 export function mountPicker(): void {
-  if (host) return;
+  // Re-entry mounts FRESH (mirrors list-picker): each executeScript
+  // re-evaluates the bundle with new module state, so the `if (host)` guard
+  // never saw a previous context's mount — the old panel stayed on screen
+  // forever and its capture-phase onClick kept preventDefault-ing EVERY page
+  // click until reload. The window hook lets THIS context tear the old one
+  // down before remounting.
+  if (host) unmountPicker();
+  const w = window as { __matrxDataPickerTeardown?: () => void };
+  try {
+    w.__matrxDataPickerTeardown?.();
+  } catch {
+    /* old context may be half-dead */
+  }
+  document.getElementById(HOST_ID)?.remove();
+  w.__matrxDataPickerTeardown = () => unmountPicker();
   host = document.createElement('div');
   host.id = HOST_ID;
   host.style.cssText =
     'all: initial; position: fixed; z-index: 2147483647; inset: 0; pointer-events: none;';
-  shadow = host.attachShadow({ mode: 'open' });
+  shadow = host.attachShadow({ mode: 'closed' }) /* closed: page can't reach in (audit P3-15) */;
   document.documentElement.appendChild(host);
 
   shadow.innerHTML = `
@@ -59,7 +72,6 @@ export function mountPicker(): void {
     <div class="hl" id="hl" style="display:none"></div>
   `;
 
-  _panel = shadow.querySelector('.panel');
   highlight = shadow.querySelector('#hl');
 
   document.addEventListener('mouseover', onHover, true);
@@ -75,9 +87,10 @@ export function unmountPicker(): void {
   host?.remove();
   host = null;
   shadow = null;
-  _panel = null;
   highlight = null;
   picked.length = 0;
+  const w = window as { __matrxDataPickerTeardown?: () => void };
+  if (w.__matrxDataPickerTeardown) delete w.__matrxDataPickerTeardown;
 }
 
 function onHover(e: Event) {

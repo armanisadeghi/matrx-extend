@@ -3,23 +3,15 @@ import { Input } from '@/components/ui/input';
 import { JsonTree } from '@/components/ui/json-tree';
 import { useNetworkCapture } from '@/hooks/use-network-capture';
 import { cn } from '@/lib/utils';
-import {
-  Circle,
-  Loader2,
-  RefreshCw,
-  Square,
-  Trash2,
-  Wifi,
-} from 'lucide-react';
+import { Circle, RefreshCw, Square, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
 
-const isJsonContentType = (ct: string | undefined): boolean =>
-  !!ct && /json/.test(ct);
+const isJsonContentType = (ct: string | undefined): boolean => !!ct && /json/.test(ct);
 
 export function NetworkTab() {
-  const { capturing, events, error, installed, start, stop, reload, clear } =
+  const { capturing, events, error, installed, start, stop, reload, clear, source, dropped } =
     useNetworkCapture();
   const [filter, setFilter] = useState('');
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
@@ -29,7 +21,8 @@ export function NetworkTab() {
     if (!filter) return events;
     const lower = filter.toLowerCase();
     return events.filter(
-      (e) => e.url.toLowerCase().includes(lower) || (e.content_type ?? '').toLowerCase().includes(lower),
+      (e) =>
+        e.url.toLowerCase().includes(lower) || (e.content_type ?? '').toLowerCase().includes(lower),
     );
   }, [events, filter]);
 
@@ -64,8 +57,7 @@ export function NetworkTab() {
       }
     }
     if (Array.isArray(target)) return target as Record<string, unknown>[];
-    if (target && typeof target === 'object')
-      return [target as Record<string, unknown>];
+    if (target && typeof target === 'object') return [target as Record<string, unknown>];
     return null;
   }, [parsedBody, extractKeyPath]);
 
@@ -78,9 +70,9 @@ export function NetworkTab() {
           </div>
           <div className="text-xs text-muted-foreground">
             Patches <code className="rounded bg-secondary/60 px-1">fetch</code> and{' '}
-            <code className="rounded bg-secondary/60 px-1">XMLHttpRequest</code> on the active
-            tab. Click anywhere on the page after starting — every API response gets recorded.
-            Your best path on hostile UIs.
+            <code className="rounded bg-secondary/60 px-1">XMLHttpRequest</code> on the active tab.
+            Click anywhere on the page after starting — every API response gets recorded. Your best
+            path on hostile UIs.
           </div>
         </div>
 
@@ -95,11 +87,7 @@ export function NetworkTab() {
               Start capture
             </Button>
           ) : (
-            <Button
-              onClick={stop}
-              variant="secondary"
-              className="flex-1 rounded-full"
-            >
+            <Button onClick={stop} variant="secondary" className="flex-1 rounded-full">
               <Square className="size-3.5" />
               Stop
             </Button>
@@ -139,7 +127,15 @@ export function NetworkTab() {
           ) : events.length > 0 ? (
             <>{events.length} responses captured · stopped</>
           ) : (
-            <>Start capture, then interact with the page</>
+            <>
+              Start capture, then interact with the page. Captures fetch/XHR from the top frame —
+              WebSockets, beacons, workers, and iframes are not intercepted.
+            </>
+          )}
+          {dropped > 0 && (
+            <span className="ml-1 text-amber-700 dark:text-amber-400">
+              · {dropped} oldest dropped (500-event cap)
+            </span>
           )}
         </div>
 
@@ -183,8 +179,7 @@ export function NetworkTab() {
               <div className="text-muted-foreground">
                 {selected.method} · {selected.status}
                 {selected.status_text ? ` ${selected.status_text}` : ''} ·{' '}
-                {selected.content_type ?? 'unknown'} ·{' '}
-                {(selected.body_size / 1024).toFixed(1)}KB
+                {selected.content_type ?? 'unknown'} · {(selected.body_size / 1024).toFixed(1)}KB
                 {selected.body_truncated && ' · truncated'}
               </div>
             </div>
@@ -227,6 +222,7 @@ export function NetworkTab() {
                     key_path: extractKeyPath,
                   }}
                   rows={extractedRows}
+                  source={source}
                   defaultName={`Network: ${shortenUrl(selected.url, 40)}`}
                 />
               </div>
@@ -242,7 +238,9 @@ function shortenUrl(url: string, maxLen = 80): string {
   try {
     const u = new URL(url);
     const tail = u.pathname + u.search;
-    return tail.length > maxLen ? `${u.host}…${tail.slice(-(maxLen - u.host.length - 1))}` : `${u.host}${tail}`;
+    return tail.length > maxLen
+      ? `${u.host}…${tail.slice(-(maxLen - u.host.length - 1))}`
+      : `${u.host}${tail}`;
   } catch {
     return url.slice(0, maxLen);
   }

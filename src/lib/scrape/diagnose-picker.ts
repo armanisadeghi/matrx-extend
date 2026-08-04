@@ -13,17 +13,13 @@
  */
 
 import { CHANNELS } from '@/lib/messaging/schemas';
-import {
-  type DiagnosePickPayload,
-  capturePickPayload,
-} from '@/lib/scrape/diagnose-bundle';
+import { type DiagnosePickPayload, capturePickPayload } from '@/lib/scrape/diagnose-bundle';
 
 const HOST_ID = 'matrx-diagnose-picker-host';
 
 let host: HTMLElement | null = null;
 let shadow: ShadowRoot | null = null;
 let highlight: HTMLElement | null = null;
-let banner: HTMLElement | null = null;
 let mode: 'missing' | 'unwanted' = 'missing';
 
 export function mountDiagnosePicker(initialMode: 'missing' | 'unwanted'): void {
@@ -39,7 +35,7 @@ export function mountDiagnosePicker(initialMode: 'missing' | 'unwanted'): void {
   const modeLabel =
     mode === 'missing'
       ? 'Click the element that SHOULD be in the scrape'
-      : 'Click the element that SHOULDN\'T be in the scrape';
+      : "Click the element that SHOULDN'T be in the scrape";
 
   shadow.innerHTML = `
     <style>
@@ -77,7 +73,6 @@ export function mountDiagnosePicker(initialMode: 'missing' | 'unwanted'): void {
     <div class="hl" id="hl" style="display:none"></div>
   `;
 
-  banner = shadow.querySelector('.banner');
   highlight = shadow.querySelector('#hl');
 
   document.addEventListener('mouseover', onHover, true);
@@ -94,7 +89,6 @@ export function unmountDiagnosePicker(): void {
   host = null;
   shadow = null;
   highlight = null;
-  banner = null;
 }
 
 function onHover(e: Event) {

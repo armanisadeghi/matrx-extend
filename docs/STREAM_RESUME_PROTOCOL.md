@@ -1,91 +1,52 @@
-# Stall-recovery cursor-replay (proposed) — backend coordination
+# Stall-recovery resume — retired proposal, replaced by the live `/resume` endpoint
 
-> Status: **client scaffold shipped, backend not yet implemented.**
-> Owner of the client side: matrx-extend (`src/lib/stream/resume.ts` +
-> `src/lib/stream/watchdog.ts`). Owner of the server side: aidream
-> (`/ai/agent` streaming route). Coordinate via the `connect-aidream` skill.
+> **Status: superseded.** This doc used to specify a cursor-replay protocol
+> (`GET /ai/agent/runs/{request_id}/resume?cursor=N`) for recovering a stalled
+> stream. The backend never built that endpoint — it was a proposal only, and
+> `src/lib/stream/resume.ts` was a permanent no-op scaffolded against it,
+> which meant every 75s stall fell through to a full-turn REPLAY (re-running
+> tool side effects, double-billing).
 >
-> ---
+> **The fix (shipped):** stall recovery now reuses the durable-continuation
+> endpoint that already exists and is already proven —
+> `POST /ai/conversations/{id}/resume` (`user_request_id` body — OPTIONAL
+> since 2026-07-23: the resume is keyed by the conversation id in the URL;
+> when omitted the server resolves the turn from the newest answered
+> client-delegated call, 404 `resume_target_not_found` if none), the same one
+> `useChatStream.resumeRun()` / `usePilotChatStream`'s equivalent call after a
+> `STREAM_CONTINUE` broadcast (client-tool hard-suspend). That endpoint
+> reconstructs the whole loop from the DB, so it needs no cursor and no
+> per-request event buffering — it works equally well for "the server
+> hard-suspended" and "the client gave up waiting."
 >
-> **⚠ NOT the durable client-tool resume (which ships TODAY).**
+> The key fact that makes this work: the `requestId` the client already
+> latches from `STREAM_OPENED` (sourced from the `X-Request-ID` response
+> header) **is** the server's `user_request_id` — aidream's
+> `AuthMiddleware._build_context` mints `ctx.request_id` from that header (or
+> a fresh UUID), echoes it back verbatim as `X-Request-ID`, and uses it as the
+> PK of `cx_user_request` — the same id `POST /tool_results` returns as
+> `user_request_id`. See `aidream/api/docs/cx_ids_streaming_timeline.md` and
+> `aidream/api/docs/agents-route-flow.md`.
 >
-> This document specifies a separate, future feature: recovering an interrupted
-> live stream (network drop, tab sleep, watchdog stall) by REPLAYING the
-> unsent tail of a still-live run. It is keyed by `request_id` + `cursor`,
-> the watchdog is the trigger, and it must NOT trigger any tool side effects.
+> Current implementation:
+> - [`src/lib/stream/resume.ts`](../src/lib/stream/resume.ts) — pure decision
+>   logic (`decideResume`) + a thin orchestrator (`attemptResume`) that calls a
+>   caller-supplied `resumeRun`. Unit tests:
+>   [`tests/unit/stream-resume.test.ts`](../tests/unit/stream-resume.test.ts).
+> - [`src/hooks/use-chat-stream.ts`](../src/hooks/use-chat-stream.ts)
+>   `onStallRef` — on stall, resets the run to idle (so `resumeRun`'s
+>   "previous run still finalizing" guard doesn't just queue the attempt),
+>   then calls `attemptResume`. Falls back to today's Retry-banner behavior
+>   (full-turn replay) only when the decision says no, the
+>   `matrx.stream.resume.enabled` flag is off, or `resumeRun` itself declines
+>   or throws.
+> - [`src/hooks/use-pilot-chat-stream.ts`](../src/hooks/use-pilot-chat-stream.ts) —
+>   same wiring for the Pilot surface (it now also latches `requestIdRef` from
+>   `STREAM_OPENED`, which it previously ignored).
+> - Kill switch: `matrx.stream.resume.enabled` in `chrome.storage.local`,
+>   **default ON**. Flip to `false` to force the old replay-on-stall path.
 >
-> The DIFFERENT mechanism that handles "the user just answered a client-tool;
-> the loop hard-suspended and we need to continue it" is the
-> `POST /ai/conversations/{id}/resume` endpoint and the `STREAM_CONTINUE`
-> broadcast, both LIVE and operational. That round-trip is documented in
-> the canonical protocol doc:
->     matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md
->
-> Wiring on this side: `src/lib/tools/dispatch.ts::postResult` →
-> `CHANNELS.STREAM_CONTINUE` → `useChatStream::resumeRun`.
->
-> Do not conflate the two. This file is the FUTURE stall-recovery feature.
->
-> ---
-
-## Why
-
-The extension streams agent runs over NDJSON (sidepanel → SW → offscreen →
-`fetch`). There was **no client-side timeout**: if the offscreen document died,
-the network hung mid-stream, or the server went silent without a terminal
-`done`, the sidepanel never learned the run ended and the spinner spun forever
-(the "stuck UI" bug).
-
-The client now runs a **stall watchdog** (`createStreamWatchdog`, 75s of total
-silence — any chunk, including the server's `heartbeat` event, resets it). On
-stall it clears the spinner and shows a Retry banner. Retry currently **replays
-the whole turn**, which re-runs tool side effects and bills again. True
-**resume** — re-attaching to the still-running request and replaying only the
-unsent tail — needs backend support.
-
-## Client behavior today
-
-1. `STREAM_OPENED` gives us `request_id` + `conversation_id`; we keep them and a
-   running `cursor` (count of events received).
-2. On stall, `attemptResume({ runId, conversationId, requestId, cursor })` is
-   called. It is gated by the `matrx.stream.resume.enabled` storage flag and
-   currently returns `{ resumed: false, reason: 'resume-unsupported' }`, so the
-   watchdog falls back to the Retry banner.
-3. When the backend ships the endpoint below, flip the flag (or default it on)
-   and implement the re-open in `attemptResume` (resolve auth → `STREAM_START`
-   with the resume URL so the offscreen doc re-attaches).
-
-## Proposed wire contract
-
-```
-GET /ai/agent/runs/{request_id}/resume?conversation_id={cid}&cursor={n}
-Accept: text/x-ndjson
-Authorization: Bearer <token>   (or X-Fingerprint-ID for guests)
-```
-
-Responses:
-
-| Status | Meaning | Client action |
-|---|---|---|
-| `200 text/x-ndjson` | Run still live (or buffered). Server replays events **after** `cursor`, then continues the live stream. | Re-attach; watchdog re-arms. |
-| `409 Conflict` | Run already completed while we were disconnected. | Don't replay — reconcile from the persisted `cx_conversation` / `cx_message` records, then mark the turn done. |
-| `404 Not Found` | Run unknown / expired / not resumable. | Fall back to Retry (replay the turn). |
-
-### Server requirements
-
-- Buffer (or be able to re-derive) emitted events per `request_id` for a short
-  TTL (e.g. 2–5 min) so a reconnect within the window can replay from `cursor`.
-- Emit `heartbeat` events on a fixed cadence (≤ ~20s) during long tool calls so
-  the client watchdog doesn't false-positive on legitimately slow steps. The
-  client already consumes `heartbeat` as a liveness signal (resets the
-  watchdog) — it just needs them to actually arrive during long gaps.
-- Make `cursor` semantics match the client's count: 1 increment per NDJSON
-  event line the client received (see `eventCountRef` in `use-chat-stream.ts`).
-
-## Open questions for the backend
-
-1. Is per-request event buffering feasible, or should resume reconcile purely
-   from the DB records (which would make `200`-replay impossible and leave only
-   the `409`-reconcile path)?
-2. What's the heartbeat cadence today, and during tool execution specifically?
-3. Should guest (fingerprint) runs be resumable, or Retry-only?
+> The `409 outstanding_delegated_calls` / `resume_conflict` / `not_resumable`
+> handling on `/resume` (already shipped for the STREAM_CONTINUE path) is
+> unchanged and applies identically to a stall-triggered resume, since it's
+> the exact same call.

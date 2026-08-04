@@ -4,8 +4,10 @@ import { Camera, Loader2 } from 'lucide-react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
 
-export function SnapshotTab() {
-  const { detection, rows, running, error, run } = useExtraction('og_meta');
+export function SnapshotTab({ active = true }: { active?: boolean }) {
+  const { detection, rows, running, error, source, run } = useExtraction('og_meta', {
+    autoDetect: active,
+  });
 
   return (
     <div className="h-full overflow-y-auto">
@@ -41,7 +43,13 @@ export function SnapshotTab() {
 
         {rows && rows.length > 0 && (
           <div className="flex justify-end">
-            <SaveAsPattern kind="og_meta" config={{}} rows={rows} defaultName="Page snapshot" />
+            <SaveAsPattern
+              kind="og_meta"
+              config={{}}
+              rows={rows}
+              source={source}
+              defaultName="Page snapshot"
+            />
           </div>
         )}
       </div>

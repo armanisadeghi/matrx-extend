@@ -2,14 +2,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useActiveTab } from '@/hooks/use-active-tab';
+import type { ExtractionSource } from '@/hooks/use-extraction';
 import { useUserTables } from '@/hooks/use-user-tables';
+import { type ExtractionPatternField, type PatternKind, savePattern } from '@/lib/supabase/queries';
 import {
-  type ExtractionPatternField,
-  type PatternKind,
-  savePattern,
-} from '@/lib/supabase/queries';
-import { inferSchemaFromRow } from '@/lib/supabase/user-tables';
-import { CheckCircle2, Loader2, Save } from 'lucide-react';
+  buildFieldNameMap,
+  getUserTableSchema,
+  inferSchemaFromRows,
+  unionRowKeys,
+} from '@/lib/supabase/user-tables';
+import { CheckCircle2, Loader2, Save, TriangleAlert } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const NEW_TABLE = '__new__';
@@ -25,6 +27,13 @@ interface SaveAsPatternProps {
   list_root_selector?: string | null;
   /** Preview rows that get appended to the target user_table on save. */
   rows: Record<string, unknown>[];
+  /**
+   * Where the rows were actually extracted (captured at extraction time).
+   * The pattern is stored under THIS host/route — not whatever tab the user
+   * happens to be on at save time (audit P0-2). When omitted, falls back to
+   * the live tab.
+   */
+  source?: ExtractionSource | null;
   disabled?: boolean;
   onSaved?: () => void;
 }
@@ -36,6 +45,7 @@ export function SaveAsPattern({
   fields,
   list_root_selector,
   rows,
+  source,
   disabled,
   onSaved,
 }: SaveAsPatternProps) {
@@ -50,13 +60,12 @@ export function SaveAsPattern({
 
   const { tables, createTable, appendRows } = useUserTables();
 
-  const inferredFields = useMemo(() => {
-    const first = rows[0];
-    if (!first) return [];
-    return inferSchemaFromRow(first);
-  }, [rows]);
+  // Union across ALL rows — the preview table shows every column, so the
+  // created table must too (single-row inference silently dropped columns
+  // that only appear in later rows).
+  const inferredFields = useMemo(() => (rows.length ? inferSchemaFromRows(rows) : []), [rows]);
 
-  const host = useMemo(() => {
+  const liveHost = useMemo(() => {
     try {
       return tab.url ? new URL(tab.url).host : '';
     } catch {
@@ -64,11 +73,27 @@ export function SaveAsPattern({
     }
   }, [tab.url]);
 
+  // Pattern identity comes from where the rows were EXTRACTED, not where the
+  // user is now. The mismatch warning covers flows whose rows can outlive a
+  // navigation (network capture, AI extract).
+  const host = source?.host ?? liveHost;
+  const routePattern = source?.pathname ?? (tab.url ? safePathname(tab.url) : null);
+  const hostMismatch = Boolean(source?.host && liveHost && source.host !== liveHost);
+
   const handleSave = async () => {
     if (!host) return;
     setSaving(true);
     setErr(null);
     setSavedSummary(null);
+
+    // Validate regex transforms NOW — a bad pattern saved today is a silent
+    // null column on every future run (audit G3).
+    const badRegex = invalidRegexInConfig(kind, config);
+    if (badRegex) {
+      setErr(`Field "${badRegex.field}" has an invalid regex: ${badRegex.error}`);
+      setSaving(false);
+      return;
+    }
 
     try {
       let targetTableId: string | null = null;
@@ -92,7 +117,7 @@ export function SaveAsPattern({
       const saved = await savePattern({
         name: name || `${host} ${kind}`,
         domain: host,
-        route_pattern: tab.url ? new URL(tab.url).pathname : null,
+        route_pattern: routePattern,
         list_root_selector: list_root_selector ?? null,
         fields: fields ?? [],
         kind,
@@ -106,17 +131,41 @@ export function SaveAsPattern({
         return;
       }
 
-      let appendedCount = 0;
       if (targetTableId && rows.length > 0) {
-        const result = await appendRows(targetTableId, rows);
-        appendedCount = result?.inserted ?? 0;
-      }
+        // Appending to an EXISTING table: the RPC silently drops keys with no
+        // matching column. Diff against the live schema so dropped columns
+        // are reported, not invisible.
+        let unmatchedNote = '';
+        if (target !== NEW_TABLE) {
+          const schema = await getUserTableSchema(targetTableId);
+          if (schema.length > 0) {
+            const declared = new Set(schema.map((f) => f.field_name));
+            const mapped = buildFieldNameMap(unionRowKeys(rows));
+            const unmatched = [...new Set(mapped.values())].filter((f) => !declared.has(f));
+            if (unmatched.length > 0) {
+              unmatchedNote = ` · ${unmatched.length} column${unmatched.length === 1 ? '' : 's'} had no match (${unmatched.slice(0, 3).join(', ')}${unmatched.length > 3 ? ', …' : ''}) and was dropped`;
+            }
+          }
+        }
 
-      setSavedSummary(
-        targetTableId
-          ? `Pattern saved · ${appendedCount} row${appendedCount === 1 ? '' : 's'} appended`
-          : 'Pattern saved',
-      );
+        const result = await appendRows(targetTableId, rows);
+        if (result === null) {
+          // The pattern row IS saved — but the rows are not. Saying
+          // "0 rows appended" here would be a success banner over data loss.
+          setErr(
+            `Pattern saved, but appending ${rows.length} row${rows.length === 1 ? '' : 's'} to the table failed. Run the pattern again and re-save, or append from the Patterns tab.`,
+          );
+          onSaved?.();
+          setSaving(false);
+          return;
+        }
+        const appendedCount = result.inserted;
+        setSavedSummary(
+          `Pattern saved · ${appendedCount} row${appendedCount === 1 ? '' : 's'} appended${unmatchedNote}`,
+        );
+      } else {
+        setSavedSummary('Pattern saved');
+      }
       onSaved?.();
       setTimeout(() => setOpen(false), 1200);
     } catch (e) {
@@ -150,6 +199,17 @@ export function SaveAsPattern({
             Stored under {host}. Backend can re-run on schedule.
           </div>
         </div>
+
+        {hostMismatch && (
+          <div className="flex items-start gap-1.5 rounded-lg bg-amber-500/10 px-2 py-1.5 text-[11px] text-amber-700 dark:text-amber-300">
+            <TriangleAlert className="mt-px size-3 shrink-0" />
+            <span>
+              These rows were extracted on <span className="font-medium">{source?.host}</span>, but
+              you're now on <span className="font-medium">{liveHost}</span>. The pattern saves under{' '}
+              {source?.host}.
+            </span>
+          </div>
+        )}
 
         <Input
           value={name}
@@ -194,7 +254,10 @@ export function SaveAsPattern({
               ) : (
                 <div className="max-h-32 space-y-0.5 overflow-y-auto">
                   {inferredFields.map((f) => (
-                    <div key={f.field_name} className="flex items-center justify-between gap-2 text-[11px]">
+                    <div
+                      key={f.field_name}
+                      className="flex items-center justify-between gap-2 text-[11px]"
+                    >
                       <span className="min-w-0 truncate">
                         <span className="truncate font-mono">{f.field_name}</span>
                         {f.display_name !== f.field_name && (
@@ -237,4 +300,36 @@ export function SaveAsPattern({
       </PopoverContent>
     </Popover>
   );
+}
+
+/** list_pattern configs carry per-field regex transforms — compile-check them. */
+function invalidRegexInConfig(
+  kind: PatternKind,
+  config: unknown,
+): { field: string; error: string } | null {
+  if (kind !== 'list_pattern' || !config || typeof config !== 'object') return null;
+  const fieldPaths = (config as { field_paths?: unknown }).field_paths;
+  if (!Array.isArray(fieldPaths)) return null;
+  for (const f of fieldPaths) {
+    const field = f as { name?: string; transform?: { kind?: string; expr?: string } };
+    if (field.transform?.kind === 'regex' && field.transform.expr) {
+      try {
+        new RegExp(field.transform.expr);
+      } catch (e) {
+        return {
+          field: field.name ?? '(unnamed)',
+          error: e instanceof Error ? e.message : String(e),
+        };
+      }
+    }
+  }
+  return null;
+}
+
+function safePathname(url: string): string | null {
+  try {
+    return new URL(url).pathname;
+  } catch {
+    return null;
+  }
 }

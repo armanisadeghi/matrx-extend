@@ -165,11 +165,21 @@ CATALOG_OK=true
 WARNINGS=()
 DRIFT_DETECTED=false
 
+# Portable in-place sed. BSD (macOS) sed wants `-i ''`; GNU (Linux) sed
+# treats that '' as the script argument and silently misbehaves — the
+# original macOS-only form left the key-toggle broken on Linux boxes
+# (docs/AUDIT_2026_06_10.md P0-9). A backup suffix works on both; we
+# delete the backup immediately.
+_sed_inplace() {
+    local script="$1" file="$2"
+    sed -i.matrxbak -E "$script" "$file"
+    rm -f "${file}.matrxbak"
+}
+
 _key_comment_out() {
     # Idempotent — bails if already commented.
     if grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG"; then
-        # macOS sed: -i '' for in-place no-backup
-        sed -i '' -E "s|^([[:space:]]*)(key: ')|\1// \2|" "$WXT_CONFIG"
+        _sed_inplace "s|^([[:space:]]*)(key: ')|\1// \2|" "$WXT_CONFIG"
         # Verify the swap actually happened.
         grep -qE "^[[:space:]]*// key: '" "$WXT_CONFIG" \
             || fail "Could not comment out key field in $WXT_CONFIG"
@@ -186,7 +196,7 @@ _key_restore() {
     # Idempotent — only acts if we did the commenting in this run.
     if $KEY_WAS_COMMENTED; then
         if grep -qE "^[[:space:]]*// key: '" "$WXT_CONFIG"; then
-            sed -i '' -E "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
+            _sed_inplace "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
             grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG" \
                 || fail "Could not restore key field in $WXT_CONFIG — RESTORE MANUALLY before next dev install."
             ok "Restored key field in $WXT_CONFIG"
@@ -223,7 +233,7 @@ if grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG"; then
 elif grep -qE "^[[:space:]]*// key: '" "$WXT_CONFIG"; then
     warn "wxt.config.ts has key field commented out — restoring before release."
     if ! $DRY_RUN; then
-        sed -i '' -E "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
+        _sed_inplace "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
         grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG" \
             || fail "Could not auto-restore key field — fix manually."
         KEY_HEALED=true
@@ -255,6 +265,56 @@ if [[ -n "$(git status --porcelain)" ]]; then
     fi
 else
     ok "Working tree clean — proceeding with current HEAD"
+fi
+
+# ── Sync with remote (BEFORE the long build, so a diverged branch never ──────
+# leaves an orphaned tag pointing at a commit that cannot be pushed). Runs ────
+# before any version bump/tag, so any abort here changes nothing. ────────────
+step "Sync with $REMOTE/$BRANCH"
+CURRENT_STEP="remote-sync"
+
+if ! git fetch --quiet "$REMOTE" "$BRANCH"; then
+    fail "Could not reach $REMOTE. Check your connection, then re-run. Nothing has been bumped or tagged."
+fi
+
+LOCAL_SHA=$(git rev-parse "$BRANCH")
+REMOTE_SHA=$(git rev-parse "$REMOTE/$BRANCH")
+BASE_SHA=$(git merge-base "$BRANCH" "$REMOTE/$BRANCH")
+
+if [[ "$LOCAL_SHA" == "$REMOTE_SHA" ]]; then
+    ok "Already in sync with $REMOTE/$BRANCH."
+elif [[ "$LOCAL_SHA" == "$BASE_SHA" ]]; then
+    # Local strictly behind — fast-forward is safe and lossless.
+    if $DRY_RUN; then
+        preview "$REMOTE/$BRANCH is ahead — would fast-forward."
+    else
+        info "$REMOTE/$BRANCH is ahead — fast-forwarding..."
+        git merge --ff-only --quiet "$REMOTE/$BRANCH" \
+            || fail "Fast-forward failed. Resolve manually. Nothing has been bumped or tagged."
+        ok "Fast-forwarded to $(git rev-parse --short HEAD)."
+    fi
+elif [[ "$REMOTE_SHA" == "$BASE_SHA" ]]; then
+    # Local strictly ahead — a normal push will work.
+    ok "Local is ahead of $REMOTE/$BRANCH by $(git rev-list --count "$REMOTE/$BRANCH..$BRANCH") commit(s) — ready to release."
+else
+    # Diverged — try a clean rebase, abort with guidance if it would conflict.
+    if $DRY_RUN; then
+        warn "Diverged from $REMOTE/$BRANCH — would attempt a clean rebase (abort if it conflicts)."
+    else
+        warn "Diverged from $REMOTE/$BRANCH — attempting a clean rebase..."
+        if git rebase "$REMOTE/$BRANCH" >/dev/null 2>&1; then
+            ok "Clean rebase succeeded — linear history restored."
+        else
+            git rebase --abort >/dev/null 2>&1 || true
+            echo "" >&2
+            echo -e "${RED}  Your commits not on $REMOTE/$BRANCH:${NC}" >&2
+            git log --oneline "$REMOTE/$BRANCH..$BRANCH" | sed 's/^/    /' >&2
+            echo -e "${RED}  $REMOTE/$BRANCH commits not in your branch:${NC}" >&2
+            git log --oneline "$BRANCH..$REMOTE/$BRANCH" | sed 's/^/    /' >&2
+            echo "" >&2
+            fail "Diverged and an automatic rebase would conflict. Resolve with 'git rebase $REMOTE/$BRANCH', then re-run. Nothing has been bumped or tagged."
+        fi
+    fi
 fi
 
 # ── Read + compute version ──────────────────────────────────────────────────
@@ -334,6 +394,18 @@ else
     ok "Typecheck passed"
 fi
 
+# Supabase table routing — BLOCKING, and deliberately not covered by
+# --skip-typecheck. The DB split `public` into ~48 domain schemas; an
+# unqualified `.from('wbx_pattern')` compiles, builds, and passes every test,
+# then 404s (PGRST205) in the user's browser. Shipping that is how the extension
+# silently loses every DB read. Nothing else in this pipeline can see it.
+CURRENT_STEP="schema-routing"
+if pnpm check:schema-routing:strict; then
+    ok "Supabase schema routing clean"
+else
+    fail "Unqualified Supabase table routing — these 404 at RUNTIME. Run 'pnpm check:schema-routing' for the list."
+fi
+
 # ── 3. Bump version ─────────────────────────────────────────────────────────
 CURRENT_STEP="version-bump"
 step "3/8  Bump version → ${NEW_VERSION}"
@@ -371,24 +443,31 @@ else
         WARNINGS+=("Tool catalog regen FAILED (non-blocking). types/tool-catalog.* will be stale until you fix the import-time env issue and run 'pnpm catalog:tools:md' manually.")
     fi
 
-    # ── 4b. Diff local catalog against public.tl_def (NON-FATAL) ─────────────
+    # ── 4b. Diff local catalog against public.tool_def (BLOCKING) ────────────
     #
-    # The LLM sees tool schemas from public.tl_def (in Supabase). The
+    # The LLM sees tool schemas from public.tool_def (in Supabase). The
     # extension's dispatcher validates calls against the local Zod schemas
     # captured in types/tool-catalog.json. When they drift, the model
     # crafts a call the dispatcher rejects (or vice versa) — see the
-    # 'tabs.action=get_info' incident on 2026-05-19. Warn-only: bringing
-    # tl_def in line with code happens manually via Supabase MCP / admin
-    # API; we don't want a drift to gate a release that's otherwise ready.
+    # 'tabs.action=get_info' incident on 2026-05-19.
+    # Strict mode: drift AND inability-to-verify both block the release.
+    # Override only with an explicit MATRX_ALLOW_DRIFT=1 (leaves an obvious
+    # trail in the shell history) — the audit found releases shipping with
+    # the LLM-visible tool_def schema drifted from the Zod the dispatcher
+    # validates (docs/AUDIT_2026_06_10.md P1-25).
     if $CATALOG_OK; then
-        if pnpm catalog:tools:drift; then
-            ok "tool-catalog ↔ tl_def in sync"
+        if pnpm catalog:tools:drift:strict; then
+            ok "tool-catalog ↔ tool_def in sync (verified)"
         else
             DRIFT_DETECTED=true
-            WARNINGS+=("Tool catalog DRIFTED from public.tl_def (non-blocking). Run 'pnpm catalog:tools:drift' for the diff; reconcile via Supabase MCP / admin API.")
+            if [[ "${MATRX_ALLOW_DRIFT:-0}" == "1" ]]; then
+                WARNINGS+=("Tool catalog DRIFTED from public.tool_def — RELEASE FORCED via MATRX_ALLOW_DRIFT=1. Reconcile via Supabase MCP / admin API ASAP.")
+            else
+                fail "Tool catalog drifted from public.tool_def (or could not verify). Run 'pnpm catalog:tools:drift' for the diff. Reconcile, or force with MATRX_ALLOW_DRIFT=1."
+            fi
         fi
     else
-        warn "Skipping tl_def drift check — catalog regen failed."
+        fail "Catalog regen failed — cannot verify drift. Fix the regen error (see above) before releasing."
     fi
 
     # ── 4c. Regenerate docs/TOOLS.generated.md from the DB (NON-FATAL) ────────
@@ -401,6 +480,27 @@ else
         ok "docs/TOOLS.generated.md regenerated from tl_def"
     else
         WARNINGS+=("docs:tools regen FAILED (non-blocking). docs/TOOLS.generated.md may be stale.")
+    fi
+
+    # ── 4d. Migration ledger check (migrations/*.sql ↔ live DB): LOUD, NON-FATAL ─
+    #
+    # Supabase is the source of truth, NOT the .sql files in migrations/. A file on
+    # disk changed NOTHING until it's applied. This diffs migrations/ against the
+    # shared ledger public._schema_migrations (source='matrx-extend', same DB) and
+    # screams in a red box if any local migration was never recorded. Read-only —
+    # this repo can't apply DDL; apply from aidream:
+    #   python db/apply_migrations.py --source matrx-extend
+    # Strict: unapplied migrations block. The DB is the source of truth and a
+    # release whose code assumes un-applied DDL is broken on arrival. Same
+    # explicit escape hatch as drift.
+    if pnpm check:migrations:strict; then
+        ok "migration ledger in sync (verified)"
+    else
+        if [[ "${MATRX_ALLOW_DRIFT:-0}" == "1" ]]; then
+            WARNINGS+=("UNAPPLIED MIGRATIONS detected — RELEASE FORCED via MATRX_ALLOW_DRIFT=1. Apply from aidream with 'python db/apply_migrations.py --source matrx-extend'.")
+        else
+            fail "Unapplied migrations detected (or ledger unreachable). Run 'pnpm check:migrations' for the list; apply from aidream, or force with MATRX_ALLOW_DRIFT=1."
+        fi
     fi
 fi
 
@@ -507,10 +607,25 @@ ok "Tag $NEW_TAG created"
 
 if $NO_PUSH; then
     warn "--no-push set — skipping git push"
-else
-    git push "$REMOTE" "$BRANCH"
-    git push "$REMOTE" "$NEW_TAG"
+elif git push --atomic "$REMOTE" "$BRANCH" "$NEW_TAG" 2>/dev/null; then
+    # --atomic: branch + tag push together or not at all (never a half-push).
     ok "Pushed $BRANCH and $NEW_TAG to $REMOTE"
+else
+    warn "Push rejected — $REMOTE/$BRANCH moved during the build. Reconciling once..."
+    git fetch --quiet "$REMOTE" "$BRANCH" \
+        || fail "Push rejected and re-fetch failed. Tag $NEW_TAG exists locally; run: git pull --rebase $REMOTE $BRANCH && git tag -f $NEW_TAG HEAD && git push --atomic $REMOTE $BRANCH $NEW_TAG"
+    if git rebase "$REMOTE/$BRANCH" >/dev/null 2>&1; then
+        git tag -f "$NEW_TAG" HEAD >/dev/null  # rebase rewrote the commit; move the tag onto it
+        info "Rebased onto updated $REMOTE/$BRANCH and re-pointed $NEW_TAG. Retrying push..."
+        if git push --atomic "$REMOTE" "$BRANCH" "$NEW_TAG" 2>/dev/null; then
+            ok "Pushed $BRANCH and $NEW_TAG to $REMOTE"
+        else
+            fail "Rejected again after a clean rebase — $REMOTE/$BRANCH is moving rapidly. History is clean locally; push by hand: git push --atomic $REMOTE $BRANCH $NEW_TAG"
+        fi
+    else
+        git rebase --abort >/dev/null 2>&1 || true
+        fail "Push rejected and an automatic rebase conflicts. Tag $NEW_TAG exists locally; resolve: git rebase $REMOTE/$BRANCH && git tag -f $NEW_TAG HEAD && git push --atomic $REMOTE $BRANCH $NEW_TAG"
+    fi
 fi
 CURRENT_STEP="done"
 

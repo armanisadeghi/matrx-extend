@@ -53,7 +53,9 @@ const useInteractionAskStore = create<SubmittedState>((set) => ({
     set((s) => ({ byCallId: { ...s.byCallId, [callId]: answers } })),
 }));
 
-export function InteractionAskCard({ entry }: { entry: ToolTimelineEntry; kind: 'server' | 'client' }) {
+export function InteractionAskCard({
+  entry,
+}: { entry: ToolTimelineEntry; kind: 'server' | 'client' }) {
   const args = entry.args as AskArgs | undefined;
   const phase = entry.phase;
   const submittedAnswers = useInteractionAskStore((s) => s.byCallId[entry.callId]);
@@ -81,7 +83,7 @@ export function InteractionAskCard({ entry }: { entry: ToolTimelineEntry; kind: 
     const text = formatAnswerMessage(args, filled);
     void send(text, {
       agentId: selectedAgentId,
-      conversationId: conversationId ?? undefined,
+      ...(conversationId != null && { conversationId }),
     });
   };
 
@@ -180,7 +182,10 @@ function QuestionRow({
     );
   }
 
-  if (componentType === 'radio' || (Array.isArray(question.options) && question.options.length > 0)) {
+  if (
+    componentType === 'radio' ||
+    (Array.isArray(question.options) && question.options.length > 0)
+  ) {
     const selected = typeof value === 'string' ? value : null;
     const options = question.options ?? [];
     return (
@@ -233,8 +238,10 @@ function QuestionRow({
 function isAnswered(q: QuestionSpec, v: AnswerValue | undefined): boolean {
   const componentType = (q.component_type ?? '').toLowerCase();
   if (componentType === 'toggle' || componentType === 'switch') {
-    // A toggle is always "answered" — false is a valid choice.
-    return typeof v === 'boolean';
+    // A toggle is ALWAYS answered — an untouched switch is a valid "no"
+    // (defaultFor materializes false at submit). Requiring typeof boolean
+    // forced users to physically click every switch before Send unlocked.
+    return true;
   }
   if (componentType === 'radio' || (Array.isArray(q.options) && q.options.length > 0)) {
     return typeof v === 'string' && v.length > 0;
@@ -259,7 +266,13 @@ function formatAnswerMessage(args: AskArgs, answers: Record<string, AnswerValue>
   for (const q of args.questions) {
     const v = answers[q.id];
     const display =
-      typeof v === 'boolean' ? (v ? 'Yes' : 'No') : v == null || v === '' ? '(no answer)' : String(v);
+      typeof v === 'boolean'
+        ? v
+          ? 'Yes'
+          : 'No'
+        : v == null || v === ''
+          ? '(no answer)'
+          : String(v);
     lines.push(`- **${q.id}**: ${display}`);
   }
   lines.push('', '```json');

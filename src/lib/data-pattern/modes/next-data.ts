@@ -167,9 +167,7 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
         `(?:window\\.|self\\.|var\\s+|let\\s+|const\\s+)?${escName}\\s*=\\s*`,
         'g',
       );
-      const scripts = Array.from(
-        document.querySelectorAll<HTMLScriptElement>('script:not([src])'),
-      );
+      const scripts = Array.from(document.querySelectorAll<HTMLScriptElement>('script:not([src])'));
       for (const s of scripts) {
         const txt = s.textContent ?? '';
         if (!txt.includes(name)) continue;
@@ -245,9 +243,7 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
           }
           // Sanity check before eval.
           if (
-            /\b(?:function\s*[(*]|=>|eval\s*\(|new\s+Function|XMLHttpRequest|fetch\s*\()/.test(
-              blob,
-            )
+            /\b(?:function\s*[(*]|=>|eval\s*\(|new\s+Function|XMLHttpRequest|fetch\s*\()/.test(blob)
           ) {
             continue;
           }
@@ -316,8 +312,7 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
     }
 
     // Resolve which source the user wants (or first available).
-    const picked =
-      cfg.source != null ? sources.find((s) => s.id === cfg.source) : sources[0];
+    const picked = cfg.source != null ? sources.find((s) => s.id === cfg.source) : sources[0];
     if (!picked) return [];
 
     let target: unknown = picked.data;

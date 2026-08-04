@@ -14,7 +14,7 @@ export interface XmlBlockProps {
   attrs: Record<string, string>;
   inner: string;
   complete: boolean;
-  registry?: MarkdownRegistry;
+  registry?: MarkdownRegistry | undefined;
 }
 
 export function XmlBlock({ tag, attrs, inner, complete, registry }: XmlBlockProps) {

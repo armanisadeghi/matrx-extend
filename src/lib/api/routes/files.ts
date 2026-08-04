@@ -18,11 +18,10 @@ import { log } from '@/lib/debug/log';
 export interface FileUploadResponse {
   file_id: string;
   file_path: string;
-  storage_uri: string;
   version_number: number;
-  file_size: number | null;
+  size_bytes: number | null;
   checksum: string | null;
-  /** Always-fetchable URL (CDN if public, signed if private). May be null when neither is configured. */
+  /** Fetchable now: durable CDN for public files, expiring signed URL otherwise. */
   url: string | null;
   is_new: boolean;
   cdn_url: string | null;
@@ -30,19 +29,62 @@ export interface FileUploadResponse {
 
 /**
  * Anything the user did not explicitly choose a folder for lives under this
- * prefix. Reserves `system/` as the namespace the host (any Matrx surface)
- * owns; `system/matrx-extend/` is this extension's slice. Future user-picked
+ * prefix. `system-files/` is the canonical hidden namespace shared by every
+ * Matrx surface; `system-files/matrx-extend/` is this extension's slice. Future user-picked
  * folders should bypass this via `userSelected: true`.
  */
-export const SYSTEM_AUTO_PATH_PREFIX = 'system/matrx-extend/';
+export const SYSTEM_AUTO_PATH_PREFIX = 'system-files/matrx-extend/';
 
 export interface UploadFileOptions {
-  /** Logical path under the user's tree, e.g. "browser-agent/screenshots/foo.png". Defaults to "browser-agent/uploads/<filename>". Automatically prefixed with `system/matrx-extend/` unless `userSelected` is true. */
+  /** Logical path under the user's tree, e.g. "browser-agent/screenshots/foo.png". Defaults to "browser-agent/uploads/<filename>". Automatically prefixed with `system-files/matrx-extend/` unless `userSelected` is true. */
   path?: string;
-  /** Set to true when the path was explicitly chosen by the user via a folder picker — bypasses the `system/matrx-extend/` auto-prefix. */
+  /** Set to true when the path was explicitly chosen by the user via a folder picker — bypasses the `system-files/matrx-extend/` auto-prefix. */
   userSelected?: boolean;
-  visibility?: 'public' | 'private' | 'shared';
+  visibility?: 'public' | 'personal' | 'shared';
   metadata?: Record<string, unknown>;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+export function parseFileUploadResponse(value: unknown): FileUploadResponse {
+  if (!isRecord(value)) throw new Error('File upload returned an invalid response.');
+  const requiredString = (key: string): string => {
+    const field = value[key];
+    if (typeof field !== 'string' || !field) {
+      throw new Error(`File upload returned invalid ${key}.`);
+    }
+    return field;
+  };
+  const nullableString = (key: string): string | null => {
+    const field = value[key];
+    if (field === null || field === undefined) return null;
+    if (typeof field !== 'string') throw new Error(`File upload returned invalid ${key}.`);
+    return field;
+  };
+  if (typeof value.version_number !== 'number' || !Number.isInteger(value.version_number)) {
+    throw new Error('File upload returned invalid version_number.');
+  }
+  if (
+    value.size_bytes !== null &&
+    (typeof value.size_bytes !== 'number' || !Number.isFinite(value.size_bytes))
+  ) {
+    throw new Error('File upload returned invalid size_bytes.');
+  }
+  if (typeof value.is_new !== 'boolean') {
+    throw new Error('File upload returned invalid is_new.');
+  }
+  return {
+    file_id: requiredString('file_id'),
+    file_path: requiredString('file_path'),
+    version_number: value.version_number,
+    size_bytes: value.size_bytes,
+    checksum: nullableString('checksum'),
+    url: nullableString('url'),
+    is_new: value.is_new,
+    cdn_url: nullableString('cdn_url'),
+  };
 }
 
 /** Upload a Blob/File to cld_files. Returns the file_id the server expects in canonical tools. */
@@ -65,7 +107,7 @@ export async function uploadFile(
   const fd = new FormData();
   fd.append('file', blob, filename);
   fd.append('file_path', filePath);
-  fd.append('visibility', opts.visibility ?? 'private');
+  fd.append('visibility', opts.visibility ?? 'personal');
   if (opts.metadata) fd.append('metadata_json', JSON.stringify(opts.metadata));
 
   const url = `${baseUrl}/files/upload`;
@@ -86,7 +128,7 @@ export async function uploadFile(
     log.error('api', `✗ POST /files/upload ${res.status} (${ms}ms)`, text);
     throw new Error(`upload failed ${res.status}: ${text}`);
   }
-  const data = (await res.json()) as FileUploadResponse;
+  const data = parseFileUploadResponse(await res.json());
   log.success('api', `← /files/upload ${res.status} (${ms}ms)`, { file_id: data.file_id });
   return data;
 }
@@ -97,19 +139,24 @@ export async function uploadFile(
  * normally, but the *extension* surface needs to materialize bytes inside the
  * page sandbox (DataTransfer requires a real File object).
  */
-export async function downloadFileBytes(fileId: string): Promise<{ blob: Blob; filename: string; mimeType: string }> {
+export async function downloadFileBytes(
+  fileId: string,
+  signal?: AbortSignal,
+): Promise<{ blob: Blob; filename: string; mimeType: string }> {
   const baseUrl = await getBackendUrl();
   const token = await getAccessToken();
   const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
   const url = `${baseUrl}/files/${encodeURIComponent(fileId)}/download`;
-  let res = await fetch(url, { headers });
+  let res = await fetch(url, signal ? { headers, signal } : { headers });
   if (res.status === 401) {
     const refreshed = await refreshAccessToken();
     if (refreshed) {
       const t2 = await getAccessToken();
-      res = await fetch(url, {
-        headers: t2 ? { Authorization: `Bearer ${t2}` } : {},
-      });
+      const refreshedHeaders = t2 ? { Authorization: `Bearer ${t2}` } : {};
+      res = await fetch(
+        url,
+        signal ? { headers: refreshedHeaders, signal } : { headers: refreshedHeaders },
+      );
     }
   }
   if (!res.ok) {

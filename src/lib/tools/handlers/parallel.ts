@@ -28,24 +28,24 @@
  * load). Future work: lift to user-configurable.
  */
 
-import { newId } from '@/lib/id';
-import { getApiBaseUrl } from '@/lib/api/client';
-import { getAccessToken } from '@/lib/auth/flow';
-import { agentExecutePath } from '@/lib/api/routes/ai';
 import { DEFAULT_AGENDA_AGENT_ID } from '@/lib/agenda/constants';
+import { getApiBaseUrl } from '@/lib/api/client';
+import { agentExecutePath } from '@/lib/api/routes/ai';
+import { getAccessToken } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
+import { newId } from '@/lib/id';
 import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { ensureOffscreen } from '@/lib/stream/offscreen-proxy';
 import { recordAssignedTab } from '@/lib/tools/dispatch';
-import type { ToolHandler, ToolContext } from '@/lib/tools/types';
+import type { ToolContext, ToolHandler } from '@/lib/tools/types';
 import {
-  useParallelRunsStore,
   type ParallelSession,
   type ParallelSubRun,
   type ParallelSubRunStatus,
+  useParallelRunsStore,
 } from '@/state/parallel-runs';
-import { getPilotSessionSnapshot } from '@/state/pilot';
+import { getPilotSessionSnapshotAsync } from '@/state/pilot';
 import { useSettingsStore } from '@/state/settings';
 import { z } from 'zod';
 
@@ -82,10 +82,7 @@ const ParallelArgs = z.object({
    *                  array (best when the sub-prompt produces structured
    *                  output via `update_plan`-like data events)
    */
-  merge_strategy: z
-    .enum(['per_tab', 'concat', 'json_array'])
-    .optional()
-    .default('per_tab'),
+  merge_strategy: z.enum(['per_tab', 'concat', 'json_array']).optional().default('per_tab'),
 });
 
 type ParallelArgs = z.infer<typeof ParallelArgs>;
@@ -186,9 +183,7 @@ async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
     page_title: args.tab.title ?? null,
     page_lang: null,
     tab_status:
-      args.tab.status === 'loading' || args.tab.status === 'complete'
-        ? args.tab.status
-        : null,
+      args.tab.status === 'loading' || args.tab.status === 'complete' ? args.tab.status : null,
     surface: 'assistant' as const,
     is_admin: false, // sub-runs never claim admin — defense-in-depth
     permission_mode: args.parentCtx.permissionMode,
@@ -320,9 +315,7 @@ async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
         const content = String(payload.content ?? '');
         if (content) {
           collectedText += content;
-          useParallelRunsStore
-            .getState()
-            .appendSubRunText(args.parentCallId, subRunId, content);
+          useParallelRunsStore.getState().appendSubRunText(args.parentCallId, subRunId, content);
           emit({
             parentCallId: args.parentCallId,
             kind: 'subrun_text',
@@ -336,9 +329,7 @@ async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
           // The server emits `event: data` for any structured-data event the
           // sub-agent surfaces (update_plan results, json blocks, etc).
           dataEvents.push(data);
-          useParallelRunsStore
-            .getState()
-            .pushSubRunData(args.parentCallId, subRunId, data);
+          useParallelRunsStore.getState().pushSubRunData(args.parentCallId, subRunId, data);
           emit({
             parentCallId: args.parentCallId,
             kind: 'subrun_data',
@@ -380,13 +371,16 @@ async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
   });
 }
 
-async function validateTabs(tabIds: number[]): Promise<{
-  ok: true;
-  tabs: Map<number, chrome.tabs.Tab>;
-} | {
-  ok: false;
-  unknown: number[];
-}> {
+async function validateTabs(tabIds: number[]): Promise<
+  | {
+      ok: true;
+      tabs: Map<number, chrome.tabs.Tab>;
+    }
+  | {
+      ok: false;
+      unknown: number[];
+    }
+> {
   const tabs = new Map<number, chrome.tabs.Tab>();
   const unknown: number[] = [];
   await Promise.all(
@@ -432,12 +426,7 @@ function buildJsonArrayResult(outcomes: SubRunOutcome[]): unknown[] {
   return outcomes.map((o) => ({
     tab_id: o.tabId,
     ok: o.ok,
-    data:
-      o.dataEvents.length > 0
-        ? o.dataEvents
-        : o.ok
-          ? [{ text: o.text }]
-          : [],
+    data: o.dataEvents.length > 0 ? o.dataEvents : o.ok ? [{ text: o.text }] : [],
     error: o.ok ? undefined : o.error,
   }));
 }
@@ -468,7 +457,7 @@ export const parallel_for_each_tab: ToolHandler<ParallelArgs, unknown> = {
     //     its tab id, which the dispatcher's pilot gate would catch — but
     //     refusing up front avoids spawning N child agents only to have
     //     each one fail mid-call).
-    const pilot = getPilotSessionSnapshot();
+    const pilot = await getPilotSessionSnapshotAsync();
     if (pilot.active && pilot.groupId != null) {
       const outside: number[] = [];
       for (const id of args.tab_ids) {
@@ -487,9 +476,7 @@ export const parallel_for_each_tab: ToolHandler<ParallelArgs, unknown> = {
     //    agent, honor the user's Default Agent preference from settings;
     //    fall back to the system constant only if that's been cleared.
     const agentId =
-      args.agent_id ??
-      useSettingsStore.getState().defaultAgentId ??
-      DEFAULT_AGENDA_AGENT_ID;
+      args.agent_id ?? useSettingsStore.getState().defaultAgentId ?? DEFAULT_AGENDA_AGENT_ID;
     const baseUrl = await getApiBaseUrl();
     const token = await getAccessToken();
     const authHeader = token ? `Bearer ${token}` : null;

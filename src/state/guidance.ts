@@ -21,7 +21,13 @@ export type GuidanceFilter = 'all' | GuidanceKind;
  */
 export type RecordingState =
   | { kind: 'idle' }
-  | { kind: 'demo'; tab_id: number; recording_id: string; started_at: number; steps_captured: number }
+  | {
+      kind: 'demo';
+      tab_id: number;
+      recording_id: string;
+      started_at: number;
+      steps_captured: number;
+    }
   | { kind: 'gif'; tab_id: number; started_at: number };
 
 interface GuidanceUiState {

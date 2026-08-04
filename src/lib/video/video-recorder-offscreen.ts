@@ -176,7 +176,8 @@ async function startRecording(payload: VideoRunPayload): Promise<void> {
     emit({
       type: 'error',
       sessionId,
-      message: (e as unknown as { error?: { message?: string } })?.error?.message ?? 'recorder error',
+      message:
+        (e as unknown as { error?: { message?: string } })?.error?.message ?? 'recorder error',
       code: 'RECORDER_ERROR',
     });
   };

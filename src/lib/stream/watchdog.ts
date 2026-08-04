@@ -15,6 +15,19 @@
  * It is intentionally store-agnostic — the hook that owns the run wires `touch`
  * into its chunk listener and decides what `onStall` does (finalize, surface a
  * retry, attempt resume).
+ *
+ * ## Silence is not always death — {@link StreamWatchdog.hold}
+ *
+ * The server emits `provider_retry` when an upstream LLM provider fails and a
+ * retry is scheduled. The stream then goes DELIBERATELY silent for the backoff
+ * (`retry_delay`, which can far exceed `stallMs`) — no chunks, no heartbeat.
+ *
+ * A plain dead-man's switch cannot tell that apart from a hung stream, so it
+ * would kill a perfectly healthy run mid-backoff and show the user a bogus
+ * "connection lost". `hold(untilEpochMs)` is the fix: the run tells the watchdog
+ * "I know why it's quiet, and I know when it will speak again." The timer is
+ * pushed out to that deadline plus the normal grace, so a stall is still caught
+ * if the retry never actually lands.
  */
 
 export interface StreamWatchdogOptions {
@@ -29,6 +42,13 @@ export interface StreamWatchdog {
   start: () => void;
   /** Reset the timer — call on every sign of life. No-op once stalled/stopped. */
   touch: () => void;
+  /**
+   * Extend the deadline to `untilEpochMs` + the normal `stallMs` grace, for a
+   * silence we EXPECT (a scheduled provider retry). Never shortens the deadline —
+   * a hold that is already in the past degrades to a plain `touch()`. No-op once
+   * stalled/stopped, same as `touch`.
+   */
+  hold: (untilEpochMs: number) => void;
   /** Stop watching. Call on done / error / cancel. */
   stop: () => void;
 }
@@ -43,23 +63,34 @@ export function createStreamWatchdog(opts: StreamWatchdogOptions): StreamWatchdo
     timer = null;
   };
 
-  const arm = () => {
+  const arm = (delayMs: number) => {
     clear();
-    timer = setTimeout(() => {
-      if (!active) return;
-      active = false;
-      timer = null;
-      opts.onStall();
-    }, opts.stallMs);
+    timer = setTimeout(
+      () => {
+        if (!active) return;
+        active = false;
+        timer = null;
+        opts.onStall();
+      },
+      Math.max(0, delayMs),
+    );
   };
 
   return {
     start() {
       active = true;
-      arm();
+      arm(opts.stallMs);
     },
     touch() {
-      if (active) arm();
+      if (active) arm(opts.stallMs);
+    },
+    hold(untilEpochMs) {
+      if (!active) return;
+      // The retry is due at `untilEpochMs`; give it the normal stall grace on top
+      // to actually produce a chunk. Never shorten — a stale/past deadline just
+      // behaves like a touch.
+      const delay = untilEpochMs - Date.now() + opts.stallMs;
+      arm(Math.max(opts.stallMs, delay));
     },
     stop() {
       active = false;

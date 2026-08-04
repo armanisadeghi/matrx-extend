@@ -72,19 +72,11 @@ interface ParallelRunsState {
   /** Replace or insert a session. */
   upsertSession: (session: ParallelSession) => void;
   /** Mutate a sub-run by parentCallId + runId. */
-  patchSubRun: (
-    parentCallId: string,
-    runId: string,
-    patch: Partial<ParallelSubRun>,
-  ) => void;
+  patchSubRun: (parentCallId: string, runId: string, patch: Partial<ParallelSubRun>) => void;
   /** Append text to a sub-run's accumulated assistant output. */
   appendSubRunText: (parentCallId: string, runId: string, text: string) => void;
   /** Append a `data` event payload (for json_array merge). */
-  pushSubRunData: (
-    parentCallId: string,
-    runId: string,
-    payload: Record<string, unknown>,
-  ) => void;
+  pushSubRunData: (parentCallId: string, runId: string, payload: Record<string, unknown>) => void;
   /** Mark the whole session ended. */
   finishSession: (parentCallId: string) => void;
   /** Toggle the collapsed flag for the session. */
@@ -164,12 +156,23 @@ export const useParallelRunsStore = create<ParallelRunsState>((set) => ({
     set((s) => {
       const session = s.sessions[parentCallId];
       if (!session) return s;
-      return {
-        sessions: {
-          ...s.sessions,
-          [parentCallId]: { ...session, endedAt: Date.now() },
-        },
+      const next: Record<string, ParallelSession> = {
+        ...s.sessions,
+        [parentCallId]: { ...session, endedAt: Date.now() },
       };
+      // Auto-evict (audit P2-11): finished sessions used to accumulate
+      // forever unless the user clicked dismiss — each one pinning its
+      // sub-runs' full text + data events in memory, duplicated across the
+      // SW and sidepanel store copies. Keep the most recent few finished
+      // sessions for review; live ones are never evicted.
+      const MAX_FINISHED = 5;
+      const finished = Object.values(next)
+        .filter((x) => x.endedAt != null)
+        .sort((a, b) => (b.endedAt ?? 0) - (a.endedAt ?? 0));
+      for (const stale of finished.slice(MAX_FINISHED)) {
+        delete next[stale.parentCallId];
+      }
+      return { sessions: next };
     }),
 
   toggleCollapsed: (parentCallId) =>

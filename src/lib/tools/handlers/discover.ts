@@ -45,7 +45,7 @@ interface CategoryEntry {
   admin_only: boolean;
 }
 
-function ctxIsAdmin(ctx: ToolContext): boolean {
+function ctxIsAdmin(_ctx: ToolContext): boolean {
   // Agent context doesn't carry isAdmin yet. The dispatcher upstream filters
   // admin tools out of non-admin advertisement; here we err on the safe side
   // and assume non-admin unless we have signal otherwise. The Python server

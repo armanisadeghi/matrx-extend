@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { rowsToTsv, stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { findFirstMatch } from '@/lib/data-pattern/matcher';
-import { runPattern } from '@/lib/data-pattern/run-pattern';
+import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
@@ -16,17 +16,28 @@ import {
 import { useAutoExtractStore } from '@/state/auto-extract';
 import { useHighlightStore } from '@/state/highlights';
 import { Crosshair, Loader2, Play, Save, XCircle, Zap } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export function DataView() {
   const tab = useActiveTab();
   const [patterns, setPatterns] = useState<ExtractionPattern[] | null>(null);
   const [picking, setPicking] = useState(false);
+  const pickTabRef = useRef<number | null>(null);
   const [pickedFields, setPickedFields] = useState<{ name: string; selector: string }[]>([]);
   const [patternName, setPatternName] = useState('');
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
   const [running, setRunning] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [runNote, setRunNote] = useState<string | null>(null);
+
+  // Navigating the tab orphans any extracted rows on screen — they belonged
+  // to the previous page and rendered with zero indication of that.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: clear on URL change only
+  useEffect(() => {
+    setRows(null);
+    setRunNote(null);
+  }, [tab.url]);
 
   const host = (() => {
     try {
@@ -40,8 +51,12 @@ export function DataView() {
     if (!host) return;
     let cancelled = false;
     void (async () => {
-      const p = await fetchPatternsForDomain(host);
-      if (!cancelled) setPatterns(p);
+      try {
+        const p = await fetchPatternsForDomain(host);
+        if (!cancelled) setPatterns(p);
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : String(err));
+      }
     })();
     return () => {
       cancelled = true;
@@ -49,18 +64,29 @@ export function DataView() {
   }, [host]);
 
   useEffect(() => {
-    const offResult = on<{ fields?: { name: string; selector: string }[] }, { ack: true }>(
-      CHANNELS.DATA_PICKER_RESULT,
+    // STRICT: only the SW's stamped rebroadcast counts. The raw content-
+    // script delivery (tab_id absent) reaches every sidepanel directly —
+    // accepting it processed each pick TWICE and let window A's pick land
+    // in window B's builder.
+    const fromOurPick = (tabId: unknown) =>
+      typeof tabId === 'number' && tabId === pickTabRef.current;
+    const offResult = on<
+      { fields?: { name: string; selector: string }[]; tab_id?: number | null },
+      { ack: true }
+    >(CHANNELS.DATA_PICKER_RESULT, (payload) => {
+      if (!fromOurPick(payload?.tab_id)) return { ack: true };
+      setPicking(false);
+      setPickedFields(payload.fields ?? []);
+      return { ack: true };
+    });
+    const offExit = on<{ tab_id?: number | null }, { ack: true }>(
+      CHANNELS.DATA_PICKER_EXIT,
       (payload) => {
+        if (!fromOurPick(payload?.tab_id)) return { ack: true };
         setPicking(false);
-        setPickedFields(payload.fields ?? []);
         return { ack: true };
       },
     );
-    const offExit = on<unknown, { ack: true }>(CHANNELS.DATA_PICKER_EXIT, () => {
-      setPicking(false);
-      return { ack: true };
-    });
     return () => {
       offResult();
       offExit();
@@ -80,9 +106,10 @@ export function DataView() {
   }, [dataHandoff, setDataHandoff]);
 
   const enterPicker = async () => {
-    if (!tab.id) return;
+    if (!tab.id || picking) return;
     setPicking(true);
     setPickedFields([]);
+    pickTabRef.current = tab.id;
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
@@ -97,40 +124,57 @@ export function DataView() {
   const handleSavePattern = async () => {
     if (!host || pickedFields.length === 0) return;
     setSaving(true);
-    const r = await savePattern({
-      name: patternName || `${host} pattern`,
-      domain: host,
-      route_pattern: tab.url ? new URL(tab.url).pathname : null,
-      list_root_selector: null,
-      kind: 'manual_css',
-      config: {},
-      fields: pickedFields.map((f) => ({
-        name: f.name,
-        selector: f.selector,
-        is_list: false,
-      })),
-    });
-    setSaving(false);
-    if (r) {
+    setError(null);
+    try {
+      const r = await savePattern({
+        name: patternName || `${host} pattern`,
+        domain: host,
+        route_pattern: tab.url ? new URL(tab.url).pathname : null,
+        list_root_selector: null,
+        kind: 'manual_css',
+        config: {},
+        fields: pickedFields.map((f) => ({
+          name: f.name,
+          selector: f.selector,
+          is_list: false,
+        })),
+      });
+      if (!r) {
+        setError('Failed to save pattern. Check your connection and try again.');
+        return;
+      }
       setPatternName('');
       setPickedFields([]);
-      const refreshed = await fetchPatternsForDomain(host);
-      setPatterns(refreshed);
+      setPatterns(await fetchPatternsForDomain(host));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleRun = async (pattern: ExtractionPattern) => {
     if (!tab.id) return;
     setRunning(true);
+    setError(null);
+    // A failed run used to leave the PREVIOUS run's rows rendered under the
+    // error — clear up front so what's on screen always belongs to this run.
+    setRows(null);
+    setRunNote(null);
     try {
-      const data = await runPattern(pattern, tab.id);
+      const data = await runSavedPattern(pattern, tab.id, { onProgress: setRunNote });
       setRows(data);
       void bumpPatternRun(pattern.id, 'ok', data.length);
     } catch (err) {
-      console.warn('[matrx-extend] pattern run failed', err);
-      void bumpPatternRun(pattern.id, 'broken', 0);
+      if (err instanceof NetworkNoMatchError) {
+        setError(err.message);
+      } else {
+        setError(`"${pattern.name}" failed: ${err instanceof Error ? err.message : String(err)}`);
+        void bumpPatternRun(pattern.id, 'broken', 0);
+      }
     } finally {
       setRunning(false);
+      setRunNote(null);
     }
   };
 
@@ -146,9 +190,7 @@ export function DataView() {
     if (!url) return [];
     return Array.from(autoRecords.values()).filter((r) => r.url === url);
   }, [autoRecords, tab.url]);
-  const autoForMatched = matched
-    ? autoForUrl.find((r) => r.pattern.id === matched.id)
-    : undefined;
+  const autoForMatched = matched ? autoForUrl.find((r) => r.pattern.id === matched.id) : undefined;
 
   return (
     <div className="flex h-full flex-col">
@@ -159,6 +201,19 @@ export function DataView() {
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 px-3 pb-3">
+          {error && (
+            <div className="rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
+              {error}
+            </div>
+          )}
+
+          {running && runNote && (
+            <div className="flex items-center gap-1.5 rounded-xl bg-secondary/40 px-3 py-2 text-xs text-muted-foreground">
+              <Loader2 className="size-3 animate-spin" />
+              {runNote}
+            </div>
+          )}
+
           {matched && (
             <div className="flex items-center justify-between gap-2 rounded-xl bg-emerald-500/10 px-3 py-2.5">
               <div className="min-w-0 text-xs">
@@ -209,19 +264,15 @@ export function DataView() {
             </div>
           )}
 
-          {autoForMatched?.status === 'ok' &&
-            autoForMatched.rows.length > 0 &&
-            !rows && (
-              <Section
-                label={`Auto-extracted (${autoForMatched.rows.length} rows)`}
-              >
-                <pre className="max-h-[320px] overflow-auto whitespace-pre rounded-xl bg-secondary/40 p-3 text-[11px]">
-                  {JSON.stringify(autoForMatched.rows.slice(0, 50), null, 2)}
-                  {autoForMatched.rows.length > 50 &&
-                    `\n\n…(+${autoForMatched.rows.length - 50} more rows)`}
-                </pre>
-              </Section>
-            )}
+          {autoForMatched?.status === 'ok' && autoForMatched.rows.length > 0 && !rows && (
+            <Section label={`Auto-extracted (${autoForMatched.rows.length} rows)`}>
+              <pre className="max-h-[320px] overflow-auto whitespace-pre rounded-xl bg-secondary/40 p-3 text-[11px]">
+                {JSON.stringify(autoForMatched.rows.slice(0, 50), null, 2)}
+                {autoForMatched.rows.length > 50 &&
+                  `\n\n…(+${autoForMatched.rows.length - 50} more rows)`}
+              </pre>
+            </Section>
+          )}
 
           {hasFields && (
             <Section
@@ -278,8 +329,7 @@ export function DataView() {
                             ai: true,
                             getContent: () =>
                               wrapJsonForAgent(p, {
-                                description:
-                                  'a saved Matrx data-extraction pattern',
+                                description: 'a saved Matrx data-extraction pattern',
                                 source: { host: p.domain ?? null },
                                 meta: {
                                   patternName: p.name,
@@ -299,6 +349,7 @@ export function DataView() {
                         variant="ghost"
                         className="size-7"
                         onClick={() => void handleRun(p)}
+                        disabled={running}
                         title="Run pattern"
                       >
                         <Play className="size-3.5" />

@@ -15,19 +15,19 @@
  * the agent loop already knows how to consume.
  */
 
-export type ComputeTargetKind = "ec2" | "hosted" | "local-pc";
+export type ComputeTargetKind = 'ec2' | 'hosted' | 'local-pc';
 
 export type ComputeTargetStatus =
-  | "ready"
-  | "running"
-  | "starting"
-  | "creating"
-  | "shutting_down"
-  | "stopped"
-  | "failed"
-  | "expired"
-  | "online"
-  | "offline";
+  | 'ready'
+  | 'running'
+  | 'starting'
+  | 'creating'
+  | 'shutting_down'
+  | 'stopped'
+  | 'failed'
+  | 'expired'
+  | 'online'
+  | 'offline';
 
 export interface ComputeTarget {
   id: string;
@@ -39,7 +39,7 @@ export interface ComputeTarget {
 
   // Sandbox-only:
   sandbox_id: string | null;
-  tier: "ec2" | "hosted" | null;
+  tier: 'ec2' | 'hosted' | null;
   template: string | null;
   expires_at: string | null;
 

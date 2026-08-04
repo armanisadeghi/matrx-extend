@@ -6,30 +6,30 @@
  * when the user is offline or RLS rejects.
  */
 
-import { getSupabase } from '@/lib/supabase/client';
 import {
   type CreateNoteInput,
   type Note,
-  NoteFolderSchema,
   type NoteFolder,
+  NoteFolderSchema,
   type NoteListItem,
   NoteListItemSchema,
   NoteSchema,
   type UpdateNotePatch,
 } from '@/lib/notes/types';
+import { getSupabase } from '@/lib/supabase/client';
+import { workbenchDb } from '@/lib/supabase/schemas';
 
 const LIST_COLUMNS =
-  'id, user_id, label, folder_name, folder_id, tags, updated_at, position, is_public';
-const FULL_COLUMNS = `${LIST_COLUMNS}, content, metadata, is_deleted, version, created_at`;
+  'id, created_by, label, folder_name, folder_id, tags, updated_at, position, visibility';
+const FULL_COLUMNS = `${LIST_COLUMNS}, content, metadata, deleted_at, version, created_at`;
 
 // ─── Reads ──────────────────────────────────────────────────────────────────
 
 export async function listMyNotes(): Promise<NoteListItem[]> {
-  const c = getSupabase();
-  const { data, error } = await c
+  const { data, error } = await workbenchDb()
     .from('notes')
     .select(LIST_COLUMNS)
-    .eq('is_deleted', false)
+    .is('deleted_at', null)
     .order('updated_at', { ascending: false });
   if (error) {
     console.warn('[notes] listMyNotes error', error.message);
@@ -45,11 +45,10 @@ export async function listMyNotes(): Promise<NoteListItem[]> {
 }
 
 export async function listMyFolders(): Promise<NoteFolder[]> {
-  const c = getSupabase();
-  const { data, error } = await c
+  const { data, error } = await workbenchDb()
     .from('note_folders')
     .select('*')
-    .eq('is_deleted', false)
+    .is('deleted_at', null)
     .order('position', { ascending: true });
   if (error) {
     console.warn('[notes] listMyFolders error', error.message);
@@ -64,8 +63,7 @@ export async function listMyFolders(): Promise<NoteFolder[]> {
 }
 
 export async function getNote(id: string): Promise<Note | null> {
-  const c = getSupabase();
-  const { data, error } = await c
+  const { data, error } = await workbenchDb()
     .from('notes')
     .select(FULL_COLUMNS)
     .eq('id', id)
@@ -92,15 +90,21 @@ export async function createNote(input: CreateNoteInput): Promise<Note | null> {
     console.warn('[notes] createNote: no auth user');
     return null;
   }
+  // Owner (`created_by`) is stamped server-side by the platform _stamp_actor
+  // trigger from auth.uid(); we do NOT send it. The trigger is a
+  // COALESCE(NEW.created_by, uid), so a client-supplied value WINS over the
+  // DB's — and RLS `WITH CHECK (created_by = auth.uid())` then rejects the whole
+  // insert if the cached session id has drifted from the JWT. Sending it buys
+  // nothing and turns a token-refresh skew into a failed save.
+  // (`organization_id` is likewise stamped, by _stamp_org_default.)
+  // Same rule as createHighlight() — see src/lib/supabase/schemas.ts.
   const payload = {
-    user_id: userId,
     label: input.label?.trim() || 'Untitled',
     content: input.content ?? '',
     folder_name: input.folder_name ?? null,
     folder_id: input.folder_id ?? null,
-    is_deleted: false,
   };
-  const { data, error } = await c
+  const { data, error } = await workbenchDb()
     .from('notes')
     .insert(payload)
     .select(FULL_COLUMNS)
@@ -113,12 +117,8 @@ export async function createNote(input: CreateNoteInput): Promise<Note | null> {
   return parsed.success ? parsed.data : null;
 }
 
-export async function updateNote(
-  id: string,
-  patch: UpdateNotePatch,
-): Promise<Note | null> {
-  const c = getSupabase();
-  const { data, error } = await c
+export async function updateNote(id: string, patch: UpdateNotePatch): Promise<Note | null> {
+  const { data, error } = await workbenchDb()
     .from('notes')
     .update({ ...patch, updated_at: new Date().toISOString() })
     .eq('id', id)
@@ -133,10 +133,9 @@ export async function updateNote(
 }
 
 export async function softDeleteNote(id: string): Promise<boolean> {
-  const c = getSupabase();
-  const { error } = await c
+  const { error } = await workbenchDb()
     .from('notes')
-    .update({ is_deleted: true, updated_at: new Date().toISOString() })
+    .update({ deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .eq('id', id);
   if (error) {
     console.warn('[notes] softDeleteNote error', error.message);

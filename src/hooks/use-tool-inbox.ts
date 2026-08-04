@@ -19,13 +19,22 @@ import type {
   PendingAskUserRequest,
   PendingConfirmRequest,
 } from '@/lib/tools/types';
+import type { ToolProgressUpdate } from '@/lib/tools/types';
 import { type ToolPartCall, useChatStore } from '@/state/chat';
 import { useToolInbox } from '@/state/tool-inbox';
-import type { ToolProgressUpdate } from '@/lib/tools/types';
 import { useEffect } from 'react';
 
 interface TimelinePayload {
   callId: string;
+  /**
+   * Conversation that owns this call (the dispatcher's ctx.conversationId).
+   * Null for runs whose STREAM_OPENED hasn't resolved yet and for paths with
+   * no conversation (WebMCP). Non-null values are filtered against the
+   * selected conversation — without this, a run surviving a conversation
+   * switch attached its tool args/results to the LAST assistant message of
+   * whatever conversation the user switched TO (audit P1-11).
+   */
+  conversationId?: string | null;
   toolName: string;
   phase: 'started' | 'completed' | 'error';
   args?: unknown;
@@ -52,8 +61,24 @@ function activeAssistantMessageId(): string | null {
   return null;
 }
 
+/**
+ * Context-singleton guard. ChatView AND PilotView both call this hook and
+ * both are forceMounted — two live subscriptions meant every tool-progress
+ * entry appended twice (the other handlers are idempotent by callId, but
+ * appendToolProgress is a blind append). Refcounted so the listeners exist
+ * exactly once per JS context regardless of how many surfaces subscribe.
+ */
+let subscriberCount = 0;
+let unsubscribeAll: (() => void) | null = null;
+
 export function useToolInbox$Subscribe(): void {
   useEffect(() => {
+    subscriberCount += 1;
+    if (subscriberCount > 1) {
+      return () => {
+        subscriberCount -= 1;
+      };
+    }
     const offConfirm = on<PendingConfirmRequest, { ack: true }>(
       CHANNELS.TOOL_CONFIRM_REQUEST,
       (payload) => {
@@ -65,6 +90,15 @@ export function useToolInbox$Subscribe(): void {
         const conversationId =
           payload.conversationId ?? useChatStore.getState().selectedConversationId;
         useToolInbox.getState().addConfirm(payload, conversationId);
+        return { ack: true };
+      },
+    );
+    // The SW failed the call closed (timeout, or it expired across an SW
+    // restart) — drop the card so the user isn't left clicking into the void.
+    const offExpired = on<{ callId: string; reason?: string }, { ack: true }>(
+      CHANNELS.TOOL_CONFIRM_EXPIRED,
+      (payload) => {
+        useToolInbox.getState().removeConfirm(payload.callId);
         return { ack: true };
       },
     );
@@ -85,6 +119,23 @@ export function useToolInbox$Subscribe(): void {
     const offTimeline = on<TimelinePayload, { ack: true }>(
       CHANNELS.TOOL_TIMELINE_EVENT,
       (payload) => {
+        // Only DISPATCHER-originated events belong in the chat transcript —
+        // the dispatcher always stamps `conversationId` (null until
+        // STREAM_OPENED resolves; WebMCP stamps null too). Decorative
+        // broadcasts from manual surfaces (ScreenshotsView, ToolsView) omit
+        // the key entirely; now that broadcast() self-delivers, accepting
+        // them would attach stray tool rows to whatever assistant message
+        // is last in the chat.
+        if (payload.conversationId === undefined) return { ack: true };
+        // Conversation isolation: drop events for a conversation the user
+        // isn't looking at. Null conversationId (pre-STREAM_OPENED race,
+        // WebMCP) keeps the legacy attach-to-active behavior.
+        if (payload.conversationId != null) {
+          const selected = useChatStore.getState().selectedConversationId;
+          if (selected !== null && selected !== payload.conversationId) {
+            return { ack: true };
+          }
+        }
         const messageId = activeAssistantMessageId();
         if (!messageId) return { ack: true };
         // Incremental progress update — append to the part's progress log
@@ -92,12 +143,14 @@ export function useToolInbox$Subscribe(): void {
         // progress event never accidentally flips a completed row back to
         // 'started'.
         if (payload.progress) {
-          useChatStore.getState().appendToolProgress(
-            messageId,
-            payload.callId,
-            { at: Date.now(), ...payload.progress },
-            { toolName: payload.toolName, kind: 'client' },
-          );
+          useChatStore
+            .getState()
+            .appendToolProgress(
+              messageId,
+              payload.callId,
+              { at: Date.now(), ...payload.progress },
+              { toolName: payload.toolName, kind: 'client' },
+            );
           return { ack: true };
         }
         // Only set fields that are actually defined on this event. The SW
@@ -115,10 +168,18 @@ export function useToolInbox$Subscribe(): void {
         return { ack: true };
       },
     );
-    return () => {
+    unsubscribeAll = () => {
       offConfirm();
+      offExpired();
       offAsk();
       offTimeline();
+    };
+    return () => {
+      subscriberCount -= 1;
+      if (subscriberCount === 0) {
+        unsubscribeAll?.();
+        unsubscribeAll = null;
+      }
     };
   }, []);
 }
@@ -129,7 +190,11 @@ export function respondToConfirm(
   rememberFor?: 'session' | 'conversation',
 ): void {
   useToolInbox.getState().removeConfirm(callId);
-  const res: ConfirmResponse = { callId, decision, rememberFor };
+  const res: ConfirmResponse = {
+    callId,
+    decision,
+    ...(rememberFor !== undefined ? { rememberFor } : {}),
+  };
   broadcast(CHANNELS.TOOL_CONFIRM_RESPONSE, res);
 }
 

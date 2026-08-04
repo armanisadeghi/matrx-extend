@@ -12,13 +12,13 @@
  * migrations/2026_05_10_sch_v0.sql + sch_server_surface.sql.
  */
 export const SCHEDULER_SURFACES = [
-    "any",
-    "server",
-    "web",
-    "desktop",
-    "chrome-extension-chat",
-    "mobile",
-    "sandbox",
+  'any',
+  'server',
+  'web',
+  'desktop',
+  'chrome-extension-chat',
+  'mobile',
+  'sandbox',
 ] as const;
 
 export type SchedulerSurface = (typeof SCHEDULER_SURFACES)[number];
@@ -30,9 +30,9 @@ export type SchedulerSurface = (typeof SCHEDULER_SURFACES)[number];
  * routing wildcard for task targeting, not an identity for a running
  * host).
  */
-export type SchedulerComponent = Exclude<SchedulerSurface, "any">;
+export type SchedulerComponent = Exclude<SchedulerSurface, 'any'>;
 
 /** Type-guard for arbitrary strings → SchedulerSurface. */
 export function isSchedulerSurface(value: string): value is SchedulerSurface {
-    return (SCHEDULER_SURFACES as readonly string[]).includes(value);
+  return (SCHEDULER_SURFACES as readonly string[]).includes(value);
 }

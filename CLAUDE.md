@@ -5,13 +5,21 @@
 > their researchers to please let them out of their current harness and
 > into AI Matrx. Everything in here serves that.
 
+> Cross-repo system-of-record for the unified content pipeline (this repo's stream parsing at `src/lib/api/stream.ts` + `src/components/markdown/block-parser.ts` is slated to adopt the shared pure-TS content kernel and start consuming `render_block` events): `/Users/armanisadeghi/code/common-docs/projects/unified-content-pipeline/FEATURE.md` — read it before touching stream parsing or markdown block rendering in ANY repo.
+
+> Cross-repo system-of-record for the underlying Content IR / Shape system, including current render vocabulary coverage and the requirements for kind-bound tool/workflow I/O: `/Users/armanisadeghi/code/common-docs/systems/content-ir-system/FEATURE.md` — read it with the pipeline plan before adding a structured block or result type here.
+
+> Cross-repo system-of-record for the TOKEN BROKER (scoped short-lived credentials for privileged reach — provider realtime sessions, direct provider calls): `/Users/armanisadeghi/code/common-docs/systems/token-broker/FEATURE.md` — read it before touching this feature in ANY repo. **Client primitive SHIPPED 2026-07-12**: [src/lib/broker/](./src/lib/broker/) (its FEATURE.md is the repo contract) — SW-owned in-memory cache via `CHANNELS.BROKER_*`, `useBroker()` hook, admin **Broker** demo tab, repo skill `.claude/skills/token-broker-client/`. Consume through the primitive — never hand-roll a mint call, cache, or gateway URL; new server-side audiences need zero client changes.
+
+> 🚨 **Every agent-start request MUST send `conversation_id` (client-minted, always) + `is_new` + `store`.** aidream rejects anything else with a 422 — `conversation_id: null` is no longer accepted, and `store:false` (not a missing id) is what makes a run ephemeral. `AgentStartRequest` in [src/lib/api/routes/ai.ts](./src/lib/api/routes/ai.ts) marks all three required so the compiler catches a new call site. Contract: `/Users/armanisadeghi/code/aidream/aidream/services/conversation_context/FEATURE.md` § "Starting a conversation".
+
 ---
 
 ## ✅ What the system can do today
 
 ### Agent harness (the core)
 
-- **166 registered client-side tools** (74 read · 136 read+action+ask ·
+- **165 registered client-side tools** (73 read · 136 read+action+ask ·
   full kit with privileged) wired end-to-end through SW dispatcher →
   permission gate → handler → result POST → timeline event. The
   canonical "advertised" surface is smaller — see `CANONICAL_SURFACE`
@@ -41,7 +49,7 @@
   - `chrome` — user's personal Chrome data (cookies/bookmarks/history),
     admin-restricted
   - `human` — talk to user (user, update_plan, request_user_takeover,
-    tasks, user_todos)
+    user_todos; `tasks` is server-executed by aidream)
   - `memory` — agent state (scratchpad, storage, remember_for_domain)
   - `ai` — on-device Gemini Nano
   - `demos` — record + replay user workflows
@@ -79,8 +87,8 @@
   `matrx-extend:` colon-prefix is GONE from every row in `tool_def`.
   Three tiers replace it:
   1. **Bare global names** (~58 tools) — UI-first + everything
-     Playwright can also do. Examples: `update_plan`, `tasks`,
-     `user_todos`, `user`, `request_user_takeover`, `scratchpad`,
+     Playwright can also do. Examples: `update_plan`, `user_todos`,
+     `user`, `request_user_takeover`, `scratchpad`,
      `read_page`, `find`, `computer`, `tabs`, `navigate`,
      `form_input`, `evaluate_javascript`, `clipboard`, `ai`,
      `record_demo`, `replay_demo`, `desktop_run_command`, ...
@@ -132,14 +140,15 @@
   `executor_name='chrome-extension'` are this extension's claim on
   tools — that's the single ownership fact. Master reference:
   [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md).
-- **Plan / Tasks / User-Todos (2026-05-19)** — three linked surfaces
+- **Plan / Tasks / User-Todos (2026-07-24)** — three linked surfaces
   that pair with the existing `update_plan` flow.
   - **Plan** — what the user approved; persisted per-conversation,
     auto-populated into the tasklist on approval.
   - **Tasks** — agent's own live work items, per-conversation, with
-    statuses (`pending|in_progress|done|blocked|skipped`). `tasks`
-    mega-tool actions: `add`, `list`, `set_status`, `update`, `remove`,
-    `reorder`, `clear_completed`, `clear_all`.
+    statuses (`pending|in_progress|done|blocked|skipped`). The canonical
+    `tasks` mega-tool executes in aidream and writes `chat.agent_task`;
+    the extension has no tasks handler or `chrome-extension` binding.
+    Its panel reads and edits that shared table directly.
   - **User todos** — work the agent assigns BACK to the user.
     `user_todos` actions: `add` (fires Chrome notification unless
     `silent:true`), `list`, `update`, `remove`, `mark_done`,
@@ -148,9 +157,63 @@
   `task_list`, `user_todos` keys when non-empty — user edits flow back
   to the model on the next turn. Per-chat surface lives in the
   TaskPanel drawer (chip in chat header opens it); cross-conversation
-  triage lives in the new `lists` sidepanel tab. Storage at
+  triage lives in the new `lists` sidepanel tab. Access at
   [src/lib/lists/storage.ts](./src/lib/lists/storage.ts); every
-  mutation broadcasts `LISTS_CHANGED` so SW + sidepanel stay in sync.
+  local mutation broadcasts `LISTS_CHANGED`, while Supabase Realtime
+  delivers aidream task writes to both task views.
+- **Agent-safe browser login — `credential_login` (2026-07-26)** — the agent
+  asks for a login and never learns the credential. One action-tier handler
+  ([src/lib/tools/handlers/credential-login.ts](./src/lib/tools/handlers/credential-login.ts))
+  does resolve → materialize → fill → submit → verify inside a single `run()`;
+  the plaintext lives in one `const` in that scope and nowhere else.
+  - **Arguments are `{credential_item_id?}` and NOTHING else.** No URL, no
+    username, no password, no selector, no script. The extension derives the
+    real tab origin itself (`getAssignedTab`) and detects the fields itself, so
+    a confused or hostile model cannot aim the fill. Injection is
+    `frameIds: [0]` — top frame only.
+  - **Refusals happen before any decrypt:** non-https (except loopback), not
+    the top frame, a live page origin that disagrees with the tab, or a
+    materialize response authorized for a different origin.
+  - **Server contract** lives in
+    [src/lib/api/routes/vault.ts](./src/lib/api/routes/vault.ts) —
+    `/api/vault/browser-login/{matches, {id}/materialize, {id}/result}`, all
+    through the one `apiPost` client and all gated on a REAL user JWT. The
+    guest-fingerprint identity the rest of the extension treats as
+    first-class is rejected server-side for this flow, so it is
+    short-circuited here rather than failing opaquely.
+  - **Returns ONLY this enum:** `authenticated | needs_mfa |
+    captcha_or_takeover | credentials_rejected | selection_required |
+    no_matching_login | unsafe_destination | unknown`. `unknown` is NOT
+    success. MFA and CAPTCHA are never bypassed — they stop for user takeover.
+    If submission never proceeds, the filled fields are cleared before returning.
+  - **Redaction is no longer password-centric.** Every page-reading tool used
+    to key on the live `type === 'password'`, so a filled USERNAME was echoed
+    verbatim and a "show password" toggle un-redacted the password itself.
+    Redaction is now the OR of **the marker attribute
+    (`data-matrx-sensitive`) OR the extension's own filled-field memory OR the
+    legacy password check** — contract + consumer list in
+    [src/lib/credentials/sensitive-fields.ts](./src/lib/credentials/sensitive-fields.ts),
+    applied in `read_page`, `get_form_fields`, `query_elements`, and the
+    inspect family. Page-controlled DOM state is never the only defence, so a
+    page that strips the attribute or rewrites the input type changes nothing.
+  - **Not advertised yet.** The `tool.definition` + `tool.binding` rows exist
+    (`admin_only=false`, `tier=action`, `category=credentials`), but no
+    `tool.surface_defaults.always_include_tools` array lists it — that array is
+    the Phase 5 activation switch, and `pnpm catalog:tools:drift` reports the
+    missing surface inclusion **by design** until it flips.
+  - Plan: `/Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/PLAN.md`.
+    **Picking this up cold?** Read
+    `/Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/HANDOFF.md`
+    first — vision, gap analysis, cross-repo architecture, next steps, landmines.
+    Tests: `tests/unit/credential-login-leak.test.ts` (plaintext egress across
+    every channel + wrong-origin/unsafe-destination refusal + two-step flow +
+    clear-on-stall) and `tests/unit/credential-redaction.test.ts` (each
+    redaction signal defends alone, plus a grep guard over the four sites).
+  - **Known boundary:** a login form using `method="get"` serializes whatever
+    is in its fields into the URL on submit, which then appears in the tab URL,
+    history, and `read_page`'s `url`. That exposure is created by the SITE and
+    cannot be redacted afterwards without retaining the plaintext this handler
+    deliberately drops.
 - **Reference-ID system** — `read_page` tags every interactive element with
   `data-matrx-ref="N"` and returns refs (`ref:N`) the agent passes to
   interaction tools instead of brittle CSS selectors. Refs survive DOM
@@ -169,8 +232,8 @@
 - **4-tier permission model:** `read` (auto) · `action` (Ask/Act) · `ask-user`
   (renders question card) · `privileged` (always confirms, even in Act mode).
 - **4 tool bundles:** core (always-on, 28 entries — agent's default surface) ·
-  assistant (74 read-tier tools) · pilot (136: read+action+ask) ·
-  pilot+privileged (166, trusted agents only).
+  assistant (73 read-tier tools) · pilot (136: read+action+ask) ·
+  pilot+privileged (165, trusted agents only).
 - **Per-conversation tab assignment (2026-05-06)** — when the user
   sends a message, the active tab at that moment is latched as the
   agent's `assignedTabId` for that turn. All client-side tool handlers
@@ -195,31 +258,22 @@
 
 ### Tool categories (the discovery system)
 
-166 tools are registered across **16 categories**. The agent only sees
-core upfront; everything else is on demand. Counts are live as of
-2026-05-06 (regenerate with `pnpm catalog:tools:md`):
+> **2026-06-10 audit correction:** the table that used to live here listed
+> the RETIRED 16-category taxonomy (`page`, `interact`, `forms`, `history`,
+> `files`, `ask`, `advanced`, `debug`, `cookies`, …) and tool counts that no
+> longer matched code — it predated the 2026-05-19 redesign described at the
+> top of this file. The authoritative taxonomy is the **14 categories** in
+> [src/lib/tools/categories.ts](./src/lib/tools/categories.ts) (`core`,
+> `reading`, `interaction`, `tabs`, `capture`, `chrome`, `human`, `memory`,
+> `ai`, `demos`, `guidance`, `devtools`, `webmcp`, `desktop`); the live tool
+> roster is `pnpm catalog:tools:md` →
+> [types/tool-catalog.md](./types/tool-catalog.md). The registry currently
+> holds ~169 handlers; the advertised surface is `CANONICAL_SURFACE`
+> (~95 names). Don't re-add a hand-maintained table here — it drifts.
 
-| category | tools | list-tool | always-on? |
-|---|---:|---|---|
-| `core` | 13 | `list_core_tools` | ✅ |
-| `page` | 16 | `list_page_tools` | – |
-| `interact` | 9 | `list_interact_tools` | – |
-| `forms` | 6 | `list_forms_tools` | – |
-| `tabs` | 22 | `list_tabs_tools` | – |
-| `history` | 10 | `list_history_tools` | – |
-| `ai` | 10 | `list_ai_tools` | – |
-| `files` | 11 | `list_files_tools` | – |
-| `memory` | 6 | `list_memory_tools` | – |
-| `ask` | 4 | `list_ask_tools` | – |
-| `advanced` | 22 | `list_advanced_tools` | – (privileged) |
-| `demos` | 5 | `list_demos_tools` | – |
-| `guidance` | 4 | `list_guidance_tools` | – |
-| `debug` | 22 | `list_debug_tools` | – (admin + CDP / system) |
-| `cookies` | 4 | `list_cookies_tools` | – (admin) |
-| `webmcp` | 4 | `list_webmcp_tools` | – (admin) |
-
-The discovery tools themselves (`list_browser_tools`, `list_<cat>_tools`)
-are also always-on so the agent can ask for any category by name.
+The agent only sees the always-on discovery surface upfront; everything
+else loads on demand via `load_browser_tools({category})` (server-side
+discovery handler).
 
 ### Tool list
 
@@ -241,7 +295,7 @@ are also always-on so the agent can ask for any category by name.
   under one schema)
 - `ask_user`
 
-#### Read tier (74 tools total across categories)
+#### Read tier (73 tools total across categories)
 - **Page reading:** `get_active_tab`, `get_page_selection`, `read_active_page`
   (full scrape with `deep:true` for lazy loaders), `take_screenshot`,
   `query_elements`, `read_page` (ref system), `find` (NL search),
@@ -351,18 +405,85 @@ are also always-on so the agent can ask for any category by name.
   screenshot grabs, GIF recordings, demo references. Whatever's saved
   for the current page's domain is auto-attached to every chat sent
   from that domain. Backs the `guidance` tool category.
+  **Cloud-synced (2026-06-10, TASK-004):** guidance *metadata* persists to
+  `public.wbx_guidance` (not just the artifact bytes in `cld_files`), so it
+  follows the user across machines. DB is the source of truth;
+  `chrome.storage.local` is an offline cache. Every `saveGuidanceItem` /
+  `deleteGuidanceItem` best-effort mirrors to the cloud
+  ([src/lib/guidance/cloud-sync.ts](./src/lib/guidance/cloud-sync.ts)); a
+  sign-in hydration ([src/hooks/use-guidance-sync.ts](./src/hooks/use-guidance-sync.ts))
+  merges cloud→local last-write-wins. Caveat: `demo_ref` bodies don't sync yet
+  — see [docs/KNOWN_ISSUES.md](./docs/KNOWN_ISSUES.md).
 - **SEO** — audit + AI recommendations
 - **Notes** — list / search / folder picker / editor for user-authored
   notes (separate from guidance — notes are general personal text;
   guidance is agent-facing clues).
+- **Files** — recent discoverable library files plus cross-page extension
+  captures. Opens canonical `/files/f/{id}` viewers, inspects the live
+  `get_file_resource_family` inventory, and attaches/detaches a canonical
+  `file → conversation` edge for the current chat. The existing Screenshots
+  tab remains the current-page capture surface. The icon rail scrolls
+  horizontally at narrow side-panel widths so the expanded tab set stays
+  reachable instead of shrinking or clipping.
+- **Vault** — the password-manager surface over the unified credential
+  Vault (`{BACKEND}/api/vault/*`). Signed-in only: the extension's guest
+  fingerprint identity is rejected for credentials **by design**, so
+  [src/lib/api/routes/vault.ts](./src/lib/api/routes/vault.ts) short-circuits
+  every call on `hasRealUserToken()` before a request goes out. Top strip =
+  the everyday path: the logins the SERVER approves for the CURRENT tab
+  (`POST /browser-login/matches`) with **Use here**, which runs the SAME
+  `credential_login` handler the agent runs — one code path, so the human
+  button can never fill where the agent could not. Below it: search,
+  **Mine / Shared with me**, per-item browser-fill toggle, "add this page as
+  a login URL", and create-from-this-page (`definition_key: website_login`).
+  **Rules:** masked by default (`value_hint` is a server mask, never a
+  value); a revealed value comes only from `POST /items/{id}/reveal` and
+  lives ONLY in [transient-secret.ts](./src/lib/credentials/transient-secret.ts)
+  (auto-clears ~30s, dropped on unmount, never storage / a store / a log /
+  model context); both plaintext routes pass `silent: true` so a malformed
+  2xx body can't be quoted into the debug log; destination rules
+  (https-or-loopback, match modes) live once in
+  [login-urls.ts](./src/lib/credentials/login-urls.ts) and are imported by
+  both the panel and the tool. Sharing / transfer / ownership / field
+  editing are deliberately NOT rebuilt here — they link out to `/vault` on
+  the web. Guarded by `tests/unit/vault-panel.test.ts`.
 - **Tools** — full visible catalog of every tool, search + filter, JSON
   argument editor, **Run** button per tool that flows through the same
   dispatcher path the agent uses. Use this to test capabilities directly.
 - **Settings** — user prefs (no operational controls)
 - **Profile** — user account + voice/language preferences (TASK-002).
-- **Showcase** (admin) — internal showcase of context shapes /
-  extraction modes; cross-references the same primitives the chat
-  context bundle uses.
+- **Showcase** (admin today; user-facing once stable) — the driver surface
+  for the data-extraction system: 12 sub-tabs (Doctor, Recipes, Prepare,
+  Snapshot, JSON-LD, Microdata, Tables, Framework, AI Extract, List
+  Pattern, Network, Patterns) over the shared `src/lib/data-pattern/`
+  primitives. **2026-06-10 overhaul** (full audit + 11 remediation
+  batches; plan at `~/.claude/plans/we-are-having-some-vast-starfish.md`):
+  - Shell: horizontal-scroll tab strip (fade edges); ALL sub-tabs
+    forceMounted with visibility-gated probes; active sub-tab persisted
+    (`useShowcaseTabStore` → chrome.storage).
+  - Correctness: rows/detection/source reset on navigation with
+    out-of-order guards (`useExtraction`); patterns save under the page
+    rows were EXTRACTED on (ExtractionSource threading); append schema
+    inferred from the union of all rows with ONE shared key mapper
+    (`buildFieldNameMap`) so create/append collision suffixes match.
+  - Lifecycle: UNIQUE(user_id,domain,name) on wbx_pattern (migration
+    2026_06_10, auto-suffix on conflict), delete/rename inline in
+    PatternsTab, recipes live in `public.wbx_recipe` (bundled list =
+    seed + offline fallback via `loadRecipes()`).
+  - Real re-run for interactive kinds (`runSavedPattern` in
+    [src/lib/data-pattern/run-interactive.ts](./src/lib/data-pattern/run-interactive.ts)):
+    ai_extract re-runs the agent against the current page; network_capture
+    does guided auto re-capture (inject-on-reload taps, 20s window,
+    key-path rows). NetworkNoMatchError = guidance, not 'broken'.
+  - Agent integration: `data_patterns` mega-tool
+    (list/describe/recipes/run/save/delete — registered in tool_def +
+    tool_binding + surface defaults, 81 advertised tools), dynamic
+    `saved_patterns_for_domain` context key, and "Send to agent" staging
+    on every ResultPreview.
+  - Hardening: stream watchdog on AI extraction, picker cancel/nav-watch/
+    fresh-mount, network capture tab-scoped + 500-event cap, framework
+    dump extracted to a tested module (`framework-dump.ts`).
+  Verify paths: docs/feature-tests.md → "Showcase — *" entries.
 - **Debug** (admin) — verbose logging, telemetry, optional perms toggles
 
 ### Catalog generators
@@ -381,6 +502,88 @@ required_permissions, surface_bundles }`. Diffable against the DB.
 live for UI via [src/lib/tools/descriptions.ts](./src/lib/tools/descriptions.ts)
 (approval card, Tools tab) and the client discovery / WebMCP / frontend-bridge
 tools. Never reintroduce a hardcoded `description` on a `ToolHandler`.
+
+### 🗄️ The DB is multi-schema now — `public` is NOT where our tables live
+
+The platform database was reorganized: the single `public` schema was split into
+**~48 domain schemas**. Every table this extension touches moved. This is the
+highest-risk thing in the repo, because **nothing in the build can see it**:
+
+```
+supabase.from('wbx_pattern')          // compiles. builds. passes every test.
+                                      // 404s in the user's browser:
+                                      //   PGRST205  Could not find the table
+                                      //   'public.wbx_pattern' in the schema cache
+```
+
+`tsc`, Biome, vitest and `wxt build` are all blind to it — the table name is just
+a string. So there is a dedicated gate: **`pnpm check:schema-routing`** (strict
+variant runs in CI and blocks `release.sh`).
+
+**Never hand-write `.schema('x')`.** Route through the single source of truth,
+[src/lib/supabase/schemas.ts](./src/lib/supabase/schemas.ts):
+
+```ts
+import { extendDb, schedulerDb, workbenchDb } from '@/lib/supabase/schemas';
+const { data } = await extendDb().from('wbx_pattern').select('*');
+```
+
+| Tables | Schema | Accessor |
+|---|---|---|
+| `wbx_*` (pattern, recipe, capture, guidance, screenshot, seo_audit, highlight) | `extend` | `extendDb()` |
+| `sch_task` · `sch_run` · `sch_trigger` · `sch_agent_task` | `scheduler` | `schedulerDb()` |
+| `notes` · `note_folders` · `udt_datasets` · `udt_dataset_fields` | `workbench` | `workbenchDb()` |
+| `conversation` · `message` · `tool_call` | `chat` | `chatDb()` |
+| `user_form_profile` | `users` | `usersDb()` |
+| `admins` | `admin` | `adminDb()` |
+| `definition` (tool defs) | `tool` | `toolDb()` |
+| `model_definition` | `ai` | `aiDb()` |
+
+**RPCs did NOT move — they are all still in `public`.** A schema-scoped client
+would route them to the wrong schema. Always call `.rpc()` on the plain
+`getSupabase()` client.
+
+#### Ownership columns — there is no blanket rule, and guessing corrupts data
+
+The moved tables adopted a common base-entity template (`organization_id`,
+`created_by`, `updated_by`, `version`, `deleted_at`, `visibility`). **But only
+some tables dropped `user_id`:**
+
+- **`extend.*` and `workbench.notes` / `note_folders` have NO `user_id` anymore** —
+  ownership is **`created_by`**. Filter on that.
+- **`scheduler.sch_task`/`sch_run`/`sch_trigger`, `admin.admins`,
+  `users.user_form_profile`, and `workbench.udt_*` KEPT `user_id`.** Do not
+  "helpfully" rename it.
+- **Two tables have NEITHER:** `extend.wbx_recipe` is a shared read-only catalog
+  (no ownership column; RLS is plain `SELECT true`), and `scheduler.sch_agent_task`
+  is the 1:1 extension of `sch_task` whose ownership lives on the parent. Never
+  filter either by a user column directly.
+
+**On INSERT, never send `created_by` or `organization_id`.** Two BEFORE-INSERT
+triggers stamp them: `platform._stamp_actor()` sets `created_by = auth.uid()`, and
+`_stamp_org_default()` resolves the actor's personal org via
+`ensure_personal_organization()`. `organization_id` is NOT NULL **with no default**,
+so this is not optional plumbing — it is the only thing that makes an insert
+succeed. RLS `WITH CHECK` (`created_by = auth.uid()`) runs *after* the triggers and
+validates the result.
+
+### Database migrations — the DB is the source of truth, NOT the files
+
+A `.sql` file in [migrations/](./migrations/) has changed **nothing** until it is
+applied to Supabase (`txzxabzwovsujtloxrus`). This repo ships only the
+publishable/anon key and **cannot apply DDL**. All three repos (aidream,
+matrx-frontend, matrx-extend) share one DB and one ledger, `public._schema_migrations`.
+
+- **Verify (loud):** `pnpm check:migrations` diffs `migrations/*.sql` against the
+  ledger (rows where `source='matrx-extend'`) and screams in a red box about anything
+  never applied. Runs as a non-blocking step in `release.sh`; `pnpm check:migrations:strict`
+  exits non-zero for CI.
+- **Apply + record:** from the **aidream** repo (the one box with DB write creds),
+  run `python db/apply_migrations.py --source matrx-extend`. For a one-off, apply via
+  the Supabase MCP, then re-run aidream's applier so the ledger records it.
+- A migration that must never apply (superseded / destructive / already live) gets
+  `-- migrate: skip: <reason>` in its first 25 lines — e.g. `2026_05_03_agenda_v0.sql`
+  is skip-marked (superseded by `sch_*`).
 
 ### Reference docs
 
@@ -681,17 +884,45 @@ Shipped (client):
   resets it; 75s of total silence fires `onStall`. Wired into both
   `use-chat-stream` and `use-pilot-chat-stream` (`start` on send, `touch` per
   chunk + on `STREAM_OPENED`, `stop` on done/cancel).
+- **`hold(untilEpochMs)` — silence is NOT always death (2026-07-11).** The server
+  emits **`provider_retry`** when an upstream LLM provider fails (rate limit, 5xx)
+  and a retry is scheduled. It then goes **deliberately silent** for the backoff —
+  no chunks, no heartbeat — and `retry_delay` routinely exceeds the 75s threshold.
+  A plain dead-man's switch cannot tell that apart from a hang, so it used to KILL
+  a healthy run mid-backoff and show a false "connection lost". `hold()` pushes the
+  deadline to the server's own `retry_at` plus the normal grace, so a real stall is
+  still caught if the retry never lands. Logic + normalizer in
+  [src/lib/stream/provider-retry.ts](./src/lib/stream/provider-retry.ts) (pure,
+  18 unit tests). **If you add any event that implies expected silence, it must
+  `hold()` the watchdog or it will read as a stall.**
+  - Only `scheduled` / `suspended` hold — `retrying_now` means the request is
+    already in flight, so normal stall rules resume.
+  - `retry_at` is disambiguated seconds-vs-ms **by magnitude**: a seconds value read
+    as ms lands in 1970 and would silently produce no hold at all.
+  - `ProviderRetryBanner` (ChatView) shows the server's own `user_message` + a live
+    countdown. Never invent copy for a provider error — the server ships it.
+- **`reasoning` (`{state: 'started' | 'stopped'}`)** delimits thinking blocks; the
+  tokens still arrive as `reasoning_chunk`. Reasoning `MessagePart`s carry a
+  `closed` flag so a SECOND thinking block in one turn renders separately instead
+  of silently merging into the first.
 - Assistant surface: on stall, clears the spinner + shows a Retry banner
   (`StreamInterruptionBanner` in ChatView, gated on
   `useChatStore.streamInterruption`). Retry replays the last turn. Pilot clears
   the spinner (no banner yet).
 
-Pending (backend — filed via matrx-feedback, contract in
-[docs/STREAM_RESUME_PROTOCOL.md](./docs/STREAM_RESUME_PROTOCOL.md)):
-- [ ] `/ai/agent/runs/{request_id}/resume` so `attemptResume`
-  ([src/lib/stream/resume.ts](./src/lib/stream/resume.ts), flag-gated no-op
-  today) can re-attach + replay the unsent tail instead of replaying the turn.
-- [ ] Reliable `heartbeat` cadence (≤~20s) DURING long tool execution.
+Pending — but the backend half is DONE; this is now CLIENT work
+(contract in [docs/STREAM_RESUME_PROTOCOL.md](./docs/STREAM_RESUME_PROTOCOL.md)):
+- [ ] **Cursor-replay resume.** `attemptResume`
+  ([src/lib/stream/resume.ts](./src/lib/stream/resume.ts)) is still a flag-gated
+  no-op, and it targets `GET /ai/agent/runs/{request_id}/resume?cursor=N` — an
+  endpoint that does NOT exist. What the live server actually ships (verified
+  2026-07-11 against its OpenAPI) is **`POST /ai/conversations/{id}/resume`**, a
+  different shape: durable continuation, not cursor replay. So the scaffold cannot
+  simply be flipped on — it needs rewriting against the endpoint that exists.
+  Until then, a stall still replays the whole turn.
+- [ ] Reliable `heartbeat` cadence (≤~20s) DURING long tool execution. (Note the
+  `provider_retry` hold above now covers the *backoff* case specifically, which was
+  the most common source of false stalls.)
 
 ### 15. ✅ Turn-boundary inbox — queue/steer a running agent (2026-05-20)
 **Why:** stop forcing "wait for the agent to finish before I can type" and
@@ -1217,11 +1448,119 @@ for side-by-side comparison in a single session.
 
 ```bash
 pnpm dev                  # WXT dev server
-pnpm tsc --noEmit         # typecheck
+pnpm compile              # typecheck (tsc --noEmit) — ~1s, native TS 7
 pnpm wxt build            # production build
 pnpm catalog:tools:md     # regenerate tool catalog
 pnpm update-api-types     # sync FastAPI types
 ```
+
+---
+
+## 🧬 TypeScript — the dual install (read before touching `typescript` in package.json)
+
+We run **TypeScript 7** (the Go rewrite). A full-repo typecheck is ~**1.1s**
+wall (multithreaded, ~550% CPU), down from ~25s. `pnpm compile` is fast
+enough to run on every save — treat a red typecheck as an immediate stop.
+
+The install is **dual**, and the two entries look backwards until you know why:
+
+```json
+"@typescript/native": "npm:typescript@^7.0.2",       // -> bin `tsc`  (native Go)
+"typescript": "npm:@typescript/typescript6@^6.0.2"   // -> the 6.0 API + bin `tsc6`
+```
+
+**Why not a plain bump.** TS 7 ships no programmatic API yet — its package
+exports only `lib/version.cjs` plus a few `unstable/*` entries. Anything that
+`import`s `typescript` (rather than merely shelling out to `tsc`) breaks against
+it. This repo has exactly one such consumer: **`openapi-typescript`**, which
+builds its output through `ts.factory` and backs `pnpm update-api-types`.
+
+**Why the aliasing works.** `@typescript/typescript6` deliberately ships its
+binary as **`tsc6`**, not `tsc`. So the `tsc` name stays free for the native
+compiler while `import 'typescript'` still resolves to a complete 6.0 API. Net
+effect: `tsc` is native and fast, `update-api-types` still runs.
+
+Consequences to keep in mind:
+
+- **`pnpm add -D typescript@latest` will break the codegen script.** If you ever
+  need to collapse this back to a single install, first confirm
+  `openapi-typescript` has shipped TS 7 support.
+- **Never invoke `tsc` by path.** `./node_modules/typescript/bin/tsc` does not exist
+  anymore (that package's only bin is `tsc6`). Go through the bin — `pnpm exec tsc`
+  or a package script. `scripts/update-api-types.mjs` hardcoded the old path and
+  reported the resulting `MODULE_NOT_FOUND` as "TYPE ERRORS DETECTED", which is how
+  a broken toolchain spent a while impersonating a backend contract drift.
+- **In VS Code, do NOT set `typescript.tsdk` / "Use Workspace Version."** The
+  workspace `typescript` package is the 6.0 API bundle: it ships `typescript.js` and
+  `tsserverlibrary.js` but **no `tsserver.js`**, which is the file VS Code's TS
+  extension loads. Pointing the editor at it errors or silently falls back. Let VS
+  Code use its **bundled** TypeScript for IntelliSense (checking semantics are the
+  same — TS 7 is a faithful port), and treat **`pnpm compile` as the source of
+  truth**. TS 7 ships no tsserver-compatible LSP yet; when it does, revisit.
+- Biome does the linting here, so there is no `typescript-eslint` to keep on the
+  6.0 API. `tsx`, `vitest`, and `wxt` all parse via esbuild/Vite and never touch
+  the TS API — none of them constrain this.
+- The lone peer warning (`openapi-typescript` wants `typescript: ^5.x`, finds
+  6.0.x) is expected and benign; the 6.0 API is a superset of what it uses.
+
+### Strictness — what's on, and the one flag that stays off
+
+Beyond `strict`, the following are on. Each was enabled only after its blast
+radius was measured and every surfaced error was **fixed at the source** —
+there is not a single `any`, `@ts-ignore`, or `@ts-expect-error` holding this up,
+and there must never be:
+
+`noUncheckedIndexedAccess` · `noImplicitOverride` · `exactOptionalPropertyTypes` ·
+`noImplicitReturns` · `noFallthroughCasesInSwitch` · `noUnusedLocals` ·
+`noUnusedParameters` · `allowUnreachableCode:false` · `allowUnusedLabels:false` ·
+`noUncheckedSideEffectImports` · `verbatimModuleSyntax` · `erasableSyntaxOnly` ·
+`strictBuiltinIteratorReturn`
+
+**`exactOptionalPropertyTypes` is the one with teeth.** `{ a?: string }` no
+longer accepts `{ a: undefined }` — "absent" and "explicitly undefined" are
+different things. That is the type-level enforcement of the context rule already
+written into this file ("*No shallow keys for empty things … if a bundle would be
+empty, omit the bundle*"). When it fires, the fix depends on which side you're on:
+
+- **React props** — widen the *receiving* declaration to `foo?: T | undefined`.
+  For a prop, "not passed" and "passed as undefined" are identical, and reading a
+  `foo?: T` already yields `T | undefined`. This is the honest type, not a loosening.
+- **Anything serialized, persisted, or merged** (a JSON body, a Supabase upsert, a
+  `chrome.storage` write, a zustand `set`, an `Object.assign`) — do **not** widen the
+  type. **Omit the key**: `...(x !== undefined && { key: x })`. `{key: undefined}`
+  and `{}` genuinely differ for a merge: one clobbers the stored value, the other
+  leaves it alone. That bug class is the entire reason the flag is on.
+
+**`noPropertyAccessFromIndexSignature` stays OFF — deliberately. Don't "fix" it.**
+It would produce ~600 errors, and **all of them are TS4111**, which is purely
+syntactic (`x.foo` → `x['foo']`). It buys **zero** type safety here, because
+`noUncheckedIndexedAccess` is already on and *already* forces the undefined-check
+on dotted index-signature access (verified: `rec.foo` then `.length` errors
+TS18048). Turning it on means ~600 mechanical edits and uglier code
+(`process.env['NODE_ENV']`) in exchange for nothing.
+
+**`erasableSyntaxOnly` means no TS-only runtime syntax** — no `enum`, no
+`namespace`, no constructor parameter properties (`constructor(private x: T)`).
+Use plain fields and `const` objects / union types.
+
+Two gotchas that will waste your afternoon:
+
+- **`tsconfig.json` must be strict JSON — no comments.** TS accepts JSONC, but
+  WXT's tsconfig loader does a plain `JSON.parse` and the build dies with an
+  opaque `TSCONFIG_ERROR`. Rationale goes here, not in the file.
+- **Duplicate keys are silent.** TS takes the *last* one and says nothing, so a flag
+  you "added" can be dead on arrival. This bit us during the TS 7 migration itself:
+  `verbatimModuleSyntax: true` was appended while a `verbatimModuleSyntax: false`
+  already sat further down, so the flag stayed off and the typecheck's clean bill of
+  health was meaningless. WXT's loader is what caught it — it `JSON.parse`s the file
+  and rejects the duplicate outright. If you add a flag, grep the file for it first.
+
+`src/vite-env.d.ts` declares `*.css` **by hand and does not reference
+`vite/client`** — on purpose. Under pnpm, `vite` is a transitive dep of wxt and is
+never hoisted, so the reference resolved to nothing; and `vite/client` declares
+`interface ImportMetaEnv { [key: string]: any }`, whose index signature would merge
+into ours and turn every typo'd `import.meta.env.WXT_*` into a silent `any` —
+exactly what the env-var rules above exist to prevent.
 
 ---
 

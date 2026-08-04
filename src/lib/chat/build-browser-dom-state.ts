@@ -159,7 +159,10 @@ export async function buildBrowserDomState(
   const auth = useAuthStore.getState();
   const desktop = useDesktopStore.getState();
   // Use the caller-resolved tab when present; only fall back to our own
-  // query for legacy / one-off callers. The chat hooks always pass a tab.
+  // query for legacy callers that passed nothing at all. An EXPLICIT null
+  // means resolveActiveTab() found no tab — re-querying here (while
+  // buildChatContext independently re-queried too) is the cross-tab race
+  // the single-resolve convention prevents (audit P2-13).
   const tab = opts.activeTab
     ? {
         id: opts.activeTab.id ?? null,
@@ -168,7 +171,9 @@ export async function buildBrowserDomState(
         title: opts.activeTab.title ?? null,
         status: (opts.activeTab.status as 'loading' | 'complete' | undefined) ?? null,
       }
-    : await queryActiveTab();
+    : opts.activeTab === null
+      ? { id: null, windowId: null, url: null, title: null, status: null }
+      : await queryActiveTab();
   // Same story for page_lang — when context was already built, the chat
   // hook hands us `page_brief.lang` and we skip the extra executeScript.
   const langPromise =

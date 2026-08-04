@@ -11,8 +11,8 @@
  * insensitive). Anything not registered falls back to the default rendering.
  */
 
-import type { MarkdownRegistry, XmlBlockRendererProps } from '@/components/markdown';
 import { MarkdownView } from '@/components/MarkdownView';
+import type { MarkdownRegistry, XmlBlockRendererProps } from '@/components/markdown';
 import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { ShimmerText } from './BreathingOrb';

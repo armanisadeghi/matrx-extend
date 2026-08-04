@@ -4,15 +4,15 @@
  * place to triage everything in one go (bulk delete, clear done, jump
  * to a conversation).
  *
- * Reads via getAllConversationLists() on mount + on every LISTS_CHANGED
- * broadcast so the view stays live.
+ * Reads via getAllConversationLists() on mount, local LISTS_CHANGED
+ * broadcasts, and `chat.agent_task` Realtime events so server task writes
+ * repaint without polling.
  */
 
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CHANNELS } from '@/lib/messaging/schemas';
-import { on } from '@/lib/messaging/native';
 import {
   clearCompletedTasks,
   clearDoneUserTodos,
@@ -22,10 +22,12 @@ import {
   purgeConversation,
   removeTask,
   removeUserTodo,
-  updateTask,
   updateUserTodo,
 } from '@/lib/lists/storage';
 import type { ConversationListsSummary, Task, UserTodo } from '@/lib/lists/types';
+import { on } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
+import { getSupabase } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
@@ -55,39 +57,71 @@ export function ListsHubView(): React.JSX.Element {
     };
     void refresh();
 
-    const off = on<{ kind: 'plan' | 'tasks' | 'user_todos'; conversation_id: string }, { ack: true }>(
-      CHANNELS.LISTS_CHANGED,
-      () => {
-        void refresh();
-        return { ack: true };
-      },
-    );
+    const off = on<
+      { kind: 'plan' | 'tasks' | 'user_todos'; conversation_id: string },
+      { ack: true }
+    >(CHANNELS.LISTS_CHANGED, () => {
+      void refresh();
+      return { ack: true };
+    });
+    const supabase = getSupabase();
+    const taskChannel = supabase
+      .channel('lists-hub-agent-tasks')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'chat', table: 'agent_task' },
+        () => void refresh(),
+      )
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR') {
+          console.error('[lists] aggregate agent-task Realtime subscription failed');
+        }
+      });
     return () => {
       cancelled = true;
       off();
+      void supabase.removeChannel(taskChannel);
     };
   }, []);
 
+  const expandedConversationId = expanded?.conversationId ?? null;
+
   // When the expanded conversation's data changes, refresh that detail too.
   useEffect(() => {
-    if (!expanded) return;
+    if (!expandedConversationId) return;
     const refresh = async (): Promise<void> => {
       const [tasks, user_todos] = await Promise.all([
-        listTasks(expanded.conversationId),
-        listUserTodos(expanded.conversationId),
+        listTasks(expandedConversationId),
+        listUserTodos(expandedConversationId),
       ]);
-      setExpanded({ conversationId: expanded.conversationId, tasks, user_todos });
+      setExpanded({ conversationId: expandedConversationId, tasks, user_todos });
     };
     void refresh();
     const off = on<{ conversation_id: string }, { ack: true }>(
       CHANNELS.LISTS_CHANGED,
       (payload) => {
-        if (payload.conversation_id === expanded.conversationId) void refresh();
+        if (payload.conversation_id === expandedConversationId) void refresh();
         return { ack: true };
       },
     );
-    return () => off();
-  }, [expanded?.conversationId]);
+    const supabase = getSupabase();
+    const taskChannel = supabase
+      .channel(`lists-hub-detail:${expandedConversationId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'chat', table: 'agent_task' },
+        () => void refresh(),
+      )
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR') {
+          console.error('[lists] detail agent-task Realtime subscription failed');
+        }
+      });
+    return () => {
+      off();
+      void supabase.removeChannel(taskChannel);
+    };
+  }, [expandedConversationId]);
 
   if (loading) {
     return <div className="p-4 text-sm text-zinc-500">Loading…</div>;
@@ -174,7 +208,9 @@ function SummaryRow({
             </span>
           </div>
         </div>
-        <ChevronRight className={cn('ml-2 h-4 w-4 transition-transform', expanded ? 'rotate-90' : '')} />
+        <ChevronRight
+          className={cn('ml-2 h-4 w-4 transition-transform', expanded ? 'rotate-90' : '')}
+        />
       </button>
       {expanded && detail ? <ExpandedView detail={detail} summary={summary} /> : null}
     </li>
@@ -188,6 +224,9 @@ function ExpandedView({
   detail: ExpandedDetail;
   summary: ConversationListsSummary;
 }): React.JSX.Element {
+  // window.confirm can be suppressed in extension side panels — "Wipe all"
+  // would then be a silent no-op. Use the shared dialog like everywhere else.
+  const [wipeConfirmOpen, setWipeConfirmOpen] = useState(false);
   return (
     <div className="mt-2 space-y-3 rounded-md bg-zinc-50 p-3 text-xs dark:bg-zinc-900">
       <div className="flex items-center justify-between">
@@ -209,13 +248,22 @@ function ExpandedView({
             variant="ghost"
             size="sm"
             className="h-6 px-2 text-xs text-rose-600"
-            onClick={() => {
-              if (confirm('Wipe plan + tasks + todos for this conversation?'))
-                void purgeConversation(detail.conversationId);
-            }}
+            onClick={() => setWipeConfirmOpen(true)}
           >
             Wipe all
           </Button>
+          <ConfirmDialog
+            open={wipeConfirmOpen}
+            title="Wipe this conversation's lists?"
+            description="Plan, tasks, and todos for this conversation will be permanently removed."
+            confirmLabel="Wipe all"
+            destructive
+            onConfirm={() => {
+              setWipeConfirmOpen(false);
+              void purgeConversation(detail.conversationId);
+            }}
+            onClose={() => setWipeConfirmOpen(false)}
+          />
         </div>
         <p className="text-[10px] text-zinc-500">{summary.conversation_id.slice(0, 12)}…</p>
       </div>
@@ -223,7 +271,9 @@ function ExpandedView({
       {detail.tasks.length ? (
         <div>
           <div className="mb-1 flex items-center justify-between">
-            <h4 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Tasks</h4>
+            <h4 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
+              Tasks
+            </h4>
             <Button
               type="button"
               variant="ghost"

@@ -17,7 +17,7 @@
  *
  * 🧪 Tests: docs/feature-tests.md → "fetch_url_as_markdown"
  */
-import { runScrape, type SoupResult } from '@/lib/scrape/pipeline';
+import { type SoupResult, runScrape } from '@/lib/scrape/pipeline';
 
 export interface FetchAndParseRequest {
   url: string;
@@ -73,7 +73,7 @@ export async function fetchUrlAndParse(
     res = await fetch(url, {
       credentials: req.use_session ? 'include' : 'omit',
       redirect: req.follow_redirects === false ? 'manual' : 'follow',
-      headers: req.user_agent ? { 'User-Agent': req.user_agent } : undefined,
+      ...(req.user_agent && { headers: { 'User-Agent': req.user_agent } }),
     });
   } catch (err) {
     return { ok: false, reason: `fetch failed: ${(err as Error).message}` };
@@ -91,7 +91,11 @@ export async function fetchUrlAndParse(
     };
   }
 
-  if (contentType && !contentType.includes('text/html') && !contentType.includes('application/xhtml')) {
+  if (
+    contentType &&
+    !contentType.includes('text/html') &&
+    !contentType.includes('application/xhtml')
+  ) {
     return {
       ok: false,
       reason: `Non-HTML content-type: ${contentType}. Use the appropriate tool for this kind of resource (read_pdf for PDFs, the agent's standard fetch for JSON, etc.).`,

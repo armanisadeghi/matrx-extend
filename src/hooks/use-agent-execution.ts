@@ -14,11 +14,11 @@ import { useEffect, useState } from 'react';
 
 export interface AgentVariableDef {
   name: string;
-  defaultValue?: string;
-  label?: string;
-  description?: string;
-  required?: boolean;
-  type?: string;
+  defaultValue?: string | undefined;
+  label?: string | undefined;
+  description?: string | undefined;
+  required?: boolean | undefined;
+  type?: string | undefined;
 }
 
 interface State {

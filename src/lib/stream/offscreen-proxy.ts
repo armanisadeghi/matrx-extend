@@ -11,6 +11,7 @@ import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
 import { log } from '@/lib/debug/log';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { markStreamActive, markStreamInactive } from '@/lib/stream/active-runs';
 
 const OFFSCREEN_PATH = 'offscreen.html';
 
@@ -121,12 +122,19 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
   const payload: StreamRunPayload = {
     runId: args.runId,
     url,
-    body: args.body,
+    ...(args.body !== undefined ? { body: args.body } : {}),
     parser: args.parser,
     headers,
     agentName: args.agentName ?? null,
-    permissionMode: args.permissionMode,
+    ...(args.permissionMode !== undefined ? { permissionMode: args.permissionMode } : {}),
   };
+  // Mark the run live BEFORE handing it to the offscreen doc so a SW reap +
+  // rewake during the stream can't have boot close the document under it
+  // (see closeStaleOffscreenOnBoot). Cleared on the terminal done chunk by
+  // the dispatcher's STREAM_CHUNK listener, on explicit cancel below, and
+  // by age-out.
+  await markStreamActive(args.runId);
+
   // Use STREAM_RUN, not STREAM_START — distinct channel so this doesn't
   // recurse into the SW's own STREAM_START handler.
   await send(CHANNELS.STREAM_RUN, payload);
@@ -135,4 +143,5 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
 export async function cancelStream(runId: string): Promise<void> {
   log.info('stream', `cancel ${runId}`);
   await send(CHANNELS.STREAM_KILL, { runId });
+  void markStreamInactive(runId);
 }

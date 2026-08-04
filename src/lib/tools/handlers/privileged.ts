@@ -1,7 +1,6 @@
 /**
  * Tier: PRIVILEGED — always confirm, even in "Act without asking" mode.
  *
- *   execute_javascript  — run arbitrary JS in the active tab's main world.
  *   inject_stylesheet   — inject CSS into the page (no script execution).
  *   set_extension_storage — write to our own chrome.storage.local namespace
  *                          (lets agents persist agent-state between runs).
@@ -14,54 +13,6 @@
 import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
-
-const ExecuteJsArgs = z.object({
-  /**
-   * JavaScript expression OR statement body. The function is invoked with
-   * `arg` bound; return a value (sync or via Promise) and it's serialized
-   * back. Throwing surfaces as an error result.
-   */
-  code: z.string().min(1),
-  /** Optional argument passed in as `arg`. Must be JSON-serializable. */
-  arg: z.unknown().optional(),
-  /** Run in MAIN world (page's JS context) instead of ISOLATED. Default false. */
-  main_world: z.boolean().optional().default(false),
-  /** Tab to execute against; defaults to the active tab. */
-  tab_id: z.number().int().optional(),
-});
-type ExecuteJsArgs = z.infer<typeof ExecuteJsArgs>;
-
-export const execute_javascript: ToolHandler<ExecuteJsArgs, unknown> = {
-  name: 'execute_javascript',
-  tier: 'privileged',
-  argsSchema: ExecuteJsArgs,
-  run: async (args, ctx) => {
-    const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
-    if (tabId == null) return { ok: false, reason: 'No active tab' };
-    try {
-      const [first] = await chrome.scripting.executeScript({
-        target: { tabId },
-        world: args.main_world ? 'MAIN' : 'ISOLATED',
-        func: async (code: string, arg: unknown) => {
-          // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
-          const fn = new Function('arg', `return (async () => { ${code} })();`) as (
-            arg: unknown,
-          ) => Promise<unknown>;
-          try {
-            const out = await fn(arg);
-            return { ok: true, result: out };
-          } catch (err) {
-            return { ok: false, error: (err as Error).message };
-          }
-        },
-        args: [args.code, args.arg ?? null],
-      });
-      return first?.result ?? { ok: false, reason: 'no result' };
-    } catch (err) {
-      return { ok: false, reason: (err as Error).message };
-    }
-  },
-};
 
 const InjectStylesheetArgs = z.object({
   css: z.string().min(1),
@@ -237,7 +188,6 @@ export const desktop_run_command: ToolHandler<DesktopCommandArgs, unknown> = {
 };
 
 export const privileged_handlers = [
-  execute_javascript,
   inject_stylesheet,
   remove_stylesheet,
   set_extension_storage,

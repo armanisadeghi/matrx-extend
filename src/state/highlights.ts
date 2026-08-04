@@ -7,8 +7,8 @@
  * user clears them (sticky, like an attachment tray).
  */
 
-import { create } from 'zustand';
 import type { HighlightListItem, HighlightMode } from '@/lib/highlights/types';
+import { create } from 'zustand';
 
 interface HighlightState {
   /** Mirror of the user's highlights (most-recent first). */
@@ -76,7 +76,8 @@ export const useHighlightStore = create<HighlightState>((set) => ({
     })),
   setMode: (mode) => set({ mode }),
 
-  attach: (id) => set((s) => (s.attachedIds.includes(id) ? s : { attachedIds: [...s.attachedIds, id] })),
+  attach: (id) =>
+    set((s) => (s.attachedIds.includes(id) ? s : { attachedIds: [...s.attachedIds, id] })),
   attachMany: (ids) =>
     set((s) => ({ attachedIds: Array.from(new Set([...s.attachedIds, ...ids])) })),
   detach: (id) => set((s) => ({ attachedIds: s.attachedIds.filter((a) => a !== id) })),

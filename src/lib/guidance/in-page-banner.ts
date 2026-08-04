@@ -10,8 +10,8 @@
  * can react when the user clicks Stop in the page itself.
  */
 
-import { CHANNELS } from '@/lib/messaging/schemas';
 import { log } from '@/lib/debug/log';
+import { CHANNELS } from '@/lib/messaging/schemas';
 
 const BANNER_ID = '__matrx_guidance_recording_banner__';
 
@@ -33,10 +33,7 @@ export async function showRecordingBanner(
   }
 }
 
-export async function updateRecordingBanner(
-  tabId: number,
-  stepCount: number,
-): Promise<void> {
+export async function updateRecordingBanner(tabId: number, stepCount: number): Promise<void> {
   try {
     await chrome.scripting.executeScript({
       target: { tabId },
@@ -123,7 +120,11 @@ function inPageMount(
   } as Partial<CSSStyleDeclaration>);
   stop.addEventListener('click', () => {
     try {
-      chrome.runtime.sendMessage({ __matrx: true, kind: stopChannel, payload: { bannerKind: kind } });
+      chrome.runtime.sendMessage({
+        __matrx: true,
+        kind: stopChannel,
+        payload: { bannerKind: kind },
+      });
     } catch {
       /* SW may have died; the sidepanel still has its own stop button */
     }

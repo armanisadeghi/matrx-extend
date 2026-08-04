@@ -4,6 +4,9 @@ import { useState } from 'react';
 
 type NodeKind = 'string' | 'number' | 'boolean' | 'null' | 'array' | 'object';
 
+/** Children rendered per container node before the "show more" expander. */
+const CHILD_PAGE_SIZE = 100;
+
 const kindOf = (v: unknown): NodeKind => {
   if (v === null) return 'null';
   if (Array.isArray(v)) return 'array';
@@ -22,9 +25,9 @@ const previewValue = (v: unknown): string => {
 interface JsonTreeProps {
   data: unknown;
   /** Called with the dot-path the user clicked (empty string for root). */
-  onSelectPath?: (path: string) => void;
+  onSelectPath?: ((path: string) => void) | undefined;
   /** Highlight this path with a ring. */
-  selectedPath?: string;
+  selectedPath?: string | undefined;
   /** Initial expand depth. */
   defaultDepth?: number;
 }
@@ -61,10 +64,11 @@ function Node({
   path: string;
   depth: number;
   defaultDepth: number;
-  onSelectPath?: (path: string) => void;
-  selectedPath?: string;
+  onSelectPath?: ((path: string) => void) | undefined;
+  selectedPath?: string | undefined;
 }) {
   const [open, setOpen] = useState(depth < defaultDepth);
+  const [childLimit, setChildLimit] = useState(CHILD_PAGE_SIZE);
   const kind = kindOf(value);
   const isContainer = kind === 'object' || kind === 'array';
   const selected = selectedPath !== undefined && selectedPath === path;
@@ -97,6 +101,11 @@ function Node({
   const entries: [string, unknown][] = Array.isArray(value)
     ? (value as unknown[]).map((v, i) => [String(i), v])
     : Object.entries(value as Record<string, unknown>);
+  // Cap rendered children per node: multi-MB __NEXT_DATA__ dumps can have
+  // thousands of siblings, and rendering them all janks the panel. The
+  // "show more" expander reveals the rest in chunks.
+  const visibleEntries = entries.slice(0, childLimit);
+  const hiddenCount = entries.length - visibleEntries.length;
 
   return (
     <div>
@@ -122,7 +131,7 @@ function Node({
       </div>
       {open && (
         <div className="ml-3 border-l border-border/60 pl-2">
-          {entries.map(([key, child]) => {
+          {visibleEntries.map(([key, child]) => {
             const childPath = path ? `${path}.${key}` : key;
             return (
               <Node
@@ -136,6 +145,15 @@ function Node({
               />
             );
           })}
+          {hiddenCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setChildLimit((n) => n + CHILD_PAGE_SIZE)}
+              className="rounded px-1 py-px text-left text-muted-foreground hover:bg-secondary/70 hover:text-foreground"
+            >
+              + {Math.min(hiddenCount, CHILD_PAGE_SIZE)} more of {hiddenCount} hidden…
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -49,12 +49,12 @@ export async function detectPullRequest(
   const ghMatch = url.match(GITHUB_PR_RE);
   if (ghMatch) {
     const [, owner, repo, num] = ghMatch;
-    return scrapeGitHubPR(tabId, url, `${owner}/${repo}`, parseInt(num!, 10));
+    return scrapeGitHubPR(tabId, url, `${owner}/${repo}`, Number.parseInt(num!, 10));
   }
   const glMatch = url.match(GITLAB_MR_RE);
   if (glMatch) {
     const [, repoPath, num] = glMatch;
-    return scrapeGitLabMR(tabId, url, repoPath!, parseInt(num!, 10));
+    return scrapeGitLabMR(tabId, url, repoPath!, Number.parseInt(num!, 10));
   }
   return null;
 }
@@ -76,7 +76,7 @@ async function scrapeGitHubPR(
         const num = (s: string | null): number | null => {
           if (!s) return null;
           const m = s.replace(/[,]/g, '').match(/-?\d+/);
-          return m ? parseInt(m[0], 10) : null;
+          return m ? Number.parseInt(m[0], 10) : null;
         };
 
         // Title — both old and new GitHub layouts.
@@ -88,9 +88,7 @@ async function scrapeGitHubPR(
 
         // Author — header meta link with class `author`.
         const author =
-          text('.gh-header-meta a.author') ??
-          text('[data-testid="pr-meta-author"] a') ??
-          null;
+          text('.gh-header-meta a.author') ?? text('[data-testid="pr-meta-author"] a') ?? null;
 
         // State — `.State` element with State--{open|merged|closed} modifier.
         // Newer layout uses [data-testid="header-state"].
@@ -115,8 +113,12 @@ async function scrapeGitHubPR(
         const filesChanged = num(text('#files_tab_counter') ?? text('a[href$="/files"] .Counter'));
 
         // Additions / deletions — diffstat lives near the header.
-        const additions = num(text('.diffstat .color-fg-success') ?? text('[data-testid="pr-stats-additions"]'));
-        const deletions = num(text('.diffstat .color-fg-danger') ?? text('[data-testid="pr-stats-deletions"]'));
+        const additions = num(
+          text('.diffstat .color-fg-success') ?? text('[data-testid="pr-stats-additions"]'),
+        );
+        const deletions = num(
+          text('.diffstat .color-fg-danger') ?? text('[data-testid="pr-stats-deletions"]'),
+        );
 
         // On-files-tab detection.
         const onFilesTab = /\/files(?:[/?#]|$)/.test(location.pathname + location.search);
@@ -134,8 +136,9 @@ async function scrapeGitHubPR(
         }
         // Fall back to comment count from the timeline summary.
         const comments =
-          num(text('#conversation_tab_counter') ?? text('a[href$="#issue-comment-tabs"] .Counter')) ??
-          0;
+          num(
+            text('#conversation_tab_counter') ?? text('a[href$="#issue-comment-tabs"] .Counter'),
+          ) ?? 0;
 
         // Top files by churn — only when on the Files Changed tab.
         const topFiles: PullRequestBundle['top_files'] = [];
@@ -144,7 +147,8 @@ async function scrapeGitHubPR(
           for (const f of fileBlocks.slice(0, 15)) {
             const path = f.getAttribute('data-tagsearch-path') || '';
             const stats = f.querySelector('.file-info .diffstat');
-            const additions = stats?.querySelector('.color-fg-success')?.textContent?.trim() ?? null;
+            const additions =
+              stats?.querySelector('.color-fg-success')?.textContent?.trim() ?? null;
             const deletions = stats?.querySelector('.color-fg-danger')?.textContent?.trim() ?? null;
             topFiles.push({
               path,
@@ -155,7 +159,7 @@ async function scrapeGitHubPR(
           // Sort by churn desc.
           topFiles.sort(
             (a, b) =>
-              ((b.additions ?? 0) + (b.deletions ?? 0)) - ((a.additions ?? 0) + (a.deletions ?? 0)),
+              (b.additions ?? 0) + (b.deletions ?? 0) - ((a.additions ?? 0) + (a.deletions ?? 0)),
           );
         }
 
@@ -200,7 +204,7 @@ async function scrapeGitLabMR(
         const num = (s: string | null): number | null => {
           if (!s) return null;
           const m = s.replace(/[,]/g, '').match(/-?\d+/);
-          return m ? parseInt(m[0], 10) : null;
+          return m ? Number.parseInt(m[0], 10) : null;
         };
 
         const title = text('h1.title, .merge-request-title-text, [data-testid="title"] h2');

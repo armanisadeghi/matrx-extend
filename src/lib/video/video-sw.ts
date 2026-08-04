@@ -83,9 +83,7 @@ async function getTabCaptureStreamId(targetTabId: number): Promise<string> {
  * as `{ ok: false, reason }` so callers can return them as tool results
  * without try/catch boilerplate.
  */
-export async function runVideoCapture(
-  args: RunVideoCaptureArgs,
-): Promise<RunVideoCaptureResult> {
+export async function runVideoCapture(args: RunVideoCaptureArgs): Promise<RunVideoCaptureResult> {
   const sessionId = newSessionId();
   const source: VideoSource = args.source ?? 'tab';
 
@@ -165,7 +163,7 @@ export async function runVideoCapture(
       durationMs: args.durationMs,
       source,
       targetTabId: args.targetTabId,
-      streamId,
+      ...(streamId !== undefined && { streamId }),
     };
 
     // Use chrome.runtime.sendMessage directly so the offscreen recorder

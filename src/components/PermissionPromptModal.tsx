@@ -13,10 +13,7 @@
  */
 
 import { Button } from '@/components/ui/button';
-import {
-  type PermissionVerdict,
-  usePermissionPromptsStore,
-} from '@/state/permission-prompts';
+import { type PermissionVerdict, usePermissionPromptsStore } from '@/state/permission-prompts';
 import { Globe, Lock, ShieldCheck, Sparkles, X } from 'lucide-react';
 
 const VERDICT_DETAILS: Record<
@@ -26,29 +23,25 @@ const VERDICT_DETAILS: Record<
   deny: {
     label: 'Not now',
     sublabel: 'Skip this one time',
-    tone:
-      'border-border bg-muted text-foreground hover:bg-muted/80',
+    tone: 'border-border bg-muted text-foreground hover:bg-muted/80',
     Icon: Lock,
   },
   allow: {
     label: 'Allow this time',
     sublabel: 'Grant for now — ask me again next time',
-    tone:
-      'border-blue-500/40 bg-blue-500/10 text-blue-700 dark:text-blue-300 hover:bg-blue-500/20',
+    tone: 'border-blue-500/40 bg-blue-500/10 text-blue-700 dark:text-blue-300 hover:bg-blue-500/20',
     Icon: Globe,
   },
   always: {
     label: 'Allow always',
     sublabel: "Grant and don't ask about this again",
-    tone:
-      'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20',
+    tone: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20',
     Icon: ShieldCheck,
   },
   autonomous: {
     label: 'Full autonomous access',
     sublabel: 'Allow every advanced capability without asking',
-    tone:
-      'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20',
+    tone: 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20',
     Icon: Sparkles,
   },
 };
@@ -80,9 +73,7 @@ export function PermissionPromptModal() {
             <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
               Permission needed
             </div>
-            <div className="mt-0.5 text-base font-semibold leading-tight">
-              {active.feature}
-            </div>
+            <div className="mt-0.5 text-base font-semibold leading-tight">{active.feature}</div>
           </div>
           <button
             type="button"
@@ -95,9 +86,7 @@ export function PermissionPromptModal() {
         </div>
 
         <div className="space-y-3 px-4 py-3">
-          <p className="text-sm leading-relaxed text-foreground/90">
-            {active.reason}
-          </p>
+          <p className="text-sm leading-relaxed text-foreground/90">{active.reason}</p>
           <p className="text-xs text-muted-foreground">
             Chrome will ask you to confirm before any permission is granted.
           </p>
@@ -150,11 +139,7 @@ export function PermissionPreferencesSummary() {
     .map(([k]) => k);
 
   if (!autonomous && alwaysKeys.length === 0) {
-    return (
-      <div className="text-xs text-muted-foreground">
-        No remembered choices yet.
-      </div>
-    );
+    return <div className="text-xs text-muted-foreground">No remembered choices yet.</div>;
   }
 
   return (
@@ -162,8 +147,7 @@ export function PermissionPreferencesSummary() {
       {autonomous && (
         <div className="flex items-center justify-between gap-2 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1.5 text-amber-700 dark:text-amber-300">
           <span>
-            <Sparkles className="mr-1 inline size-3" /> Full autonomous access
-            is on
+            <Sparkles className="mr-1 inline size-3" /> Full autonomous access is on
           </span>
           <Button
             size="sm"
@@ -181,8 +165,7 @@ export function PermissionPreferencesSummary() {
           className="flex items-center justify-between gap-2 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1.5 text-emerald-700 dark:text-emerald-300"
         >
           <span>
-            <ShieldCheck className="mr-1 inline size-3" />
-            {' '}Always allow: {key}
+            <ShieldCheck className="mr-1 inline size-3" /> Always allow: {key}
           </span>
           <Button
             size="sm"

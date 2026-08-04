@@ -32,7 +32,7 @@ interface ActiveTabInfo {
 /** Pull the SW-evaluable fields out of a context-match trigger config. */
 function asContextMatch(
   config: Record<string, unknown> | TriggerConfig,
-): { hostname?: string; url_pattern?: string } | null {
+): { hostname?: string | undefined; url_pattern?: string | undefined } | null {
   const c = config as { type?: string; hostname?: unknown; url_pattern?: unknown };
   const hostname = typeof c.hostname === 'string' ? c.hostname : undefined;
   const url_pattern = typeof c.url_pattern === 'string' ? c.url_pattern : undefined;

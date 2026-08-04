@@ -13,11 +13,11 @@
  *     toasts (no toast wrapper in the extension yet).
  */
 
-import { CartesiaClient, WebPlayer } from '@cartesia/cartesia-js';
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { AUDIO_API_ROUTES } from '@/lib/audio/constants';
 import { getAccessToken } from '@/lib/auth/flow';
 import { useVoicePrefsStore } from '@/state/voice-prefs';
+import { CartesiaClient, WebPlayer } from '@cartesia/cartesia-js';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { parseMarkdownToText } from './parse-markdown-for-speech';
 
 export type SpeakerPhase =

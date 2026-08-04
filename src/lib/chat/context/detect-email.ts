@@ -169,9 +169,18 @@ async function scrapeGmail(tabId: number): Promise<EmailBundle | null> {
           const link = row.querySelector<HTMLAnchorElement>('a[href*="#"]');
           const threadId =
             row.getAttribute('data-legacy-thread-id') ??
-            (link?.href.match(/#[^/]+\/([A-Za-z0-9]+)/)?.[1] ?? null);
+            link?.href.match(/#[^/]+\/([A-Za-z0-9]+)/)?.[1] ??
+            null;
 
-          return { sender, subject, excerpt, time, unread, has_attachment: hasAttachment, thread_id: threadId };
+          return {
+            sender,
+            subject,
+            excerpt,
+            time,
+            unread,
+            has_attachment: hasAttachment,
+            thread_id: threadId,
+          };
         });
 
         const unreadCount = threads.filter((t) => t.unread).length;

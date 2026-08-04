@@ -15,23 +15,10 @@
  * sizing. Empty / loading / error states are first-class.
  */
 
-import {
-  Check,
-  Cpu,
-  Loader2,
-  Monitor,
-  Plus,
-  RefreshCw,
-  Server,
-  X,
-} from 'lucide-react';
+import { Check, Cpu, Loader2, Monitor, Plus, RefreshCw, Server, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useComputeTargets } from '@/lib/compute/use-compute-targets';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
@@ -61,9 +48,7 @@ function openInstallLocalFlow(): void {
   });
 }
 
-export function SandboxPickerChip({
-  disabled = false,
-}: SandboxPickerChipProps) {
+export function SandboxPickerChip({ disabled = false }: SandboxPickerChipProps) {
   const boundTarget = useChatStore((s) => s.boundComputeTarget);
   const setBoundTarget = useChatStore((s) => s.setBoundComputeTarget);
 
@@ -73,20 +58,12 @@ export function SandboxPickerChip({
   const fetchEnabled = !disabled;
   const { data, loading, error, refetch } = useComputeTargets(fetchEnabled);
 
-  const sandboxes = (data?.targets ?? []).filter(
-    (t) => t.kind === 'ec2' || t.kind === 'hosted',
-  );
+  const sandboxes = (data?.targets ?? []).filter((t) => t.kind === 'ec2' || t.kind === 'hosted');
   const computers = (data?.targets ?? []).filter((t) => t.kind === 'local-pc');
 
-  const atSandboxLimit = data
-    ? data.sandbox_count >= data.max_sandboxes
-    : false;
+  const atSandboxLimit = data ? data.sandbox_count >= data.max_sandboxes : false;
 
-  const TriggerIcon = boundTarget
-    ? boundTarget.kind === 'local-pc'
-      ? Monitor
-      : Server
-    : Cpu;
+  const TriggerIcon = boundTarget ? (boundTarget.kind === 'local-pc' ? Monitor : Server) : Cpu;
 
   const triggerLabel = boundTarget?.name ?? 'Compute';
   const tooltip = boundTarget
@@ -103,23 +80,17 @@ export function SandboxPickerChip({
           title={tooltip}
           className={cn(
             'h-7 gap-1.5 px-2 text-[11px] font-medium hover:bg-accent',
-            boundTarget
-              ? 'text-emerald-700 dark:text-emerald-400'
-              : 'text-muted-foreground',
+            boundTarget ? 'text-emerald-700 dark:text-emerald-400' : 'text-muted-foreground',
           )}
         >
           <TriggerIcon className="size-3.5" />
-          <span className="hidden max-w-[120px] truncate sm:inline">
-            {triggerLabel}
-          </span>
+          <span className="hidden max-w-[120px] truncate sm:inline">{triggerLabel}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
         <div className="flex items-center justify-between border-b px-3 py-2">
           <div>
-            <div className="text-xs font-semibold text-foreground">
-              Agent compute target
-            </div>
+            <div className="text-xs font-semibold text-foreground">Agent compute target</div>
             <div className="text-[10px] text-muted-foreground">
               Where shell &amp; file tools run for this chat.
             </div>
@@ -140,12 +111,8 @@ export function SandboxPickerChip({
           <div className="border-b bg-accent/40 px-3 py-2">
             <div className="flex items-center justify-between gap-2">
               <div className="min-w-0">
-                <div className="truncate text-[11px] font-semibold">
-                  {boundTarget.name}
-                </div>
-                <div className="text-[10px] text-muted-foreground">
-                  Currently bound
-                </div>
+                <div className="truncate text-[11px] font-semibold">{boundTarget.name}</div>
+                <div className="text-[10px] text-muted-foreground">Currently bound</div>
               </div>
               <Button
                 variant="ghost"
@@ -179,8 +146,7 @@ export function SandboxPickerChip({
             <SectionHeader>Your computers</SectionHeader>
             {computers.length === 0 && (
               <EmptyHint>
-                No matrx-local devices online. Install matrx-local on your
-                computer to bind it.
+                No matrx-local devices online. Install matrx-local on your computer to bind it.
                 <button
                   type="button"
                   onClick={openInstallLocalFlow}
@@ -194,10 +160,7 @@ export function SandboxPickerChip({
               <TargetRow
                 key={target.id}
                 target={target}
-                bound={
-                  boundTarget?.kind === target.kind &&
-                  boundTarget.id === target.id
-                }
+                bound={boundTarget?.kind === target.kind && boundTarget.id === target.id}
                 onSelect={() =>
                   setBoundTarget({
                     kind: target.kind,
@@ -211,18 +174,13 @@ export function SandboxPickerChip({
             {/* Sandboxes section */}
             <SectionHeader>Sandboxes</SectionHeader>
             {sandboxes.length === 0 && (
-              <EmptyHint>
-                No sandboxes yet. Your plan allows {data.max_sandboxes}.
-              </EmptyHint>
+              <EmptyHint>No sandboxes yet. Your plan allows {data.max_sandboxes}.</EmptyHint>
             )}
             {sandboxes.map((target) => (
               <TargetRow
                 key={target.id}
                 target={target}
-                bound={
-                  boundTarget?.kind === target.kind &&
-                  boundTarget.id === target.id
-                }
+                bound={boundTarget?.kind === target.kind && boundTarget.id === target.id}
                 onSelect={() =>
                   setBoundTarget({
                     kind: target.kind,
@@ -267,11 +225,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 }
 
 function EmptyHint({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="px-3 pb-2 text-[10px] text-muted-foreground">
-      {children}
-    </div>
-  );
+  return <div className="px-3 pb-2 text-[10px] text-muted-foreground">{children}</div>;
 }
 
 function TargetRow({
@@ -284,9 +238,7 @@ function TargetRow({
   onSelect: () => void;
 }) {
   const Icon = target.kind === 'local-pc' ? Monitor : Server;
-  const dotClass = target.is_online
-    ? 'bg-emerald-500'
-    : 'bg-muted-foreground/40';
+  const dotClass = target.is_online ? 'bg-emerald-500' : 'bg-muted-foreground/40';
   return (
     <button
       type="button"
@@ -300,10 +252,7 @@ function TargetRow({
       // surfaces the actual readiness at chat-send time.
     >
       <span
-        className={cn(
-          'inline-block size-1.5 shrink-0 rounded-full',
-          dotClass,
-        )}
+        className={cn('inline-block size-1.5 shrink-0 rounded-full', dotClass)}
         title={target.is_online ? 'Online' : 'Offline'}
       />
       <Icon className="size-3.5 shrink-0 text-muted-foreground" />

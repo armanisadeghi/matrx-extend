@@ -63,11 +63,7 @@ export function SleepCountdown({ entry }: { entry: ToolTimelineEntry; kind: 'ser
     <div className="group rounded py-0.5 pr-1 text-xs hover:bg-muted/40">
       <div className="flex w-full items-center gap-1.5">
         <Icon
-          className={cn(
-            'size-3.5 shrink-0',
-            colorClass,
-            phase === 'started' && 'animate-spin',
-          )}
+          className={cn('size-3.5 shrink-0', colorClass, phase === 'started' && 'animate-spin')}
         />
         <span className="truncate text-foreground">
           {phase === 'started' ? <ShimmerText>{label}</ShimmerText> : label}

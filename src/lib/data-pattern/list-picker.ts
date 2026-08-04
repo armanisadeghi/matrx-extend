@@ -35,7 +35,11 @@ let sampleItem: Element | null = null;
 const picked: PickedField[] = [];
 
 export function mountListPicker(): void {
-  if (host) return;
+  // Re-entry mounts FRESH: a previous overlay may be orphaned (sidepanel
+  // unmounted mid-pick) or mid-phase-2 — stale state must not leak into a
+  // new session. Also remove any DOM remnant from an older script context.
+  if (host) unmountListPicker();
+  document.getElementById(HOST_ID)?.remove();
   host = document.createElement('div');
   host.id = HOST_ID;
   host.style.cssText =
@@ -87,9 +91,15 @@ export function mountListPicker(): void {
   shadow.querySelector('#done')?.addEventListener('click', () => finish('done'));
   shadow.querySelector('#cancel')?.addEventListener('click', () => finish('cancel'));
   shadow.querySelector('#restart')?.addEventListener('click', restart);
+  // Sidepanel-driven cancel: the Showcase tab executes a tiny script that
+  // calls this hook (same ISOLATED world), so a stuck pick is recoverable
+  // without touching the page UI.
+  (window as { __matrxListPickerCancel?: () => void }).__matrxListPickerCancel = () =>
+    finish('cancel');
 }
 
 export function unmountListPicker(): void {
+  delete (window as { __matrxListPickerCancel?: () => void }).__matrxListPickerCancel;
   document.removeEventListener('mouseover', onHover, true);
   document.removeEventListener('click', onClick, true);
   clearSiblingHighlights();
@@ -224,9 +234,7 @@ function highlightSiblings() {
   try {
     const root = document.querySelector(listRootSel);
     if (!root) return;
-    nodes = Array.from(root.querySelectorAll(itemSel)).filter(
-      (n) => n.parentElement === root,
-    );
+    nodes = Array.from(root.querySelectorAll(itemSel)).filter((n) => n.parentElement === root);
   } catch {
     return;
   }

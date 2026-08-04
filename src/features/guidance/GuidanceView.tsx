@@ -20,14 +20,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { log } from '@/lib/debug/log';
 import { listAllGuidance } from '@/lib/guidance/storage';
 import type { GuidanceKind, GuidanceSummary } from '@/lib/guidance/types';
-import { useGuidanceStore, type GuidanceFilter } from '@/state/guidance';
+import { type GuidanceFilter, useGuidanceStore } from '@/state/guidance';
 import {
   BookOpen,
   Camera,
   Clapperboard,
   ImageIcon,
   Loader2,
-  PenLine,
   Play,
   Plus,
   StickyNote,
@@ -35,6 +34,8 @@ import {
   X,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { DemoSaveDialog } from './DemoSaveDialog';
+import { GuidancePreview } from './GuidancePreview';
 import {
   captureScreenshotAsGuidance,
   deleteGuidance,
@@ -46,8 +47,6 @@ import {
   stopDemoRecordingAndSave,
   stopGifRecordingAsGuidance,
 } from './actions';
-import { DemoSaveDialog } from './DemoSaveDialog';
-import { GuidancePreview } from './GuidancePreview';
 
 type AddMenu = 'closed' | 'note' | 'demo-stop' | 'gif-stop';
 
@@ -64,7 +63,9 @@ export function GuidanceView() {
   const removeSummary = useGuidanceStore((s) => s.removeSummary);
 
   const [addMenu, setAddMenu] = useState<AddMenu>('closed');
-  const [busy, setBusy] = useState<null | 'screenshot' | 'gif-start' | 'gif-stop' | 'demo-start' | 'demo-stop'>(null);
+  const [busy, setBusy] = useState<
+    null | 'screenshot' | 'gif-start' | 'gif-stop' | 'demo-start' | 'demo-stop'
+  >(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [activeDomain, setActiveDomain] = useState<string | null>(null);
 
@@ -198,7 +199,7 @@ export function GuidanceView() {
   }, [busy, recording.kind, setRecording]);
 
   const handleStopDemo = useCallback(
-    async (input: { name: string; description?: string }) => {
+    async (input: { name: string; description?: string | undefined }) => {
       if (recording.kind !== 'demo') return;
       setBusy('demo-stop');
       setErrorMsg(null);
@@ -234,23 +235,32 @@ export function GuidanceView() {
         setErrorMsg('Open a tab to attach this note to a domain.');
         return;
       }
-      const tab = await chrome.tabs.query({ active: true, currentWindow: true }).then(([t]) => t);
-      const item = await saveNoteAsGuidance({
-        domain: activeDomain,
-        text,
-        caption,
-        origin_url: tab?.url ?? undefined,
-      });
-      upsertSummary(toSummary(item));
-      setAddMenu('closed');
+      try {
+        const tab = await chrome.tabs.query({ active: true, currentWindow: true }).then(([t]) => t);
+        const item = await saveNoteAsGuidance({
+          domain: activeDomain,
+          text,
+          caption,
+          origin_url: tab?.url ?? undefined,
+        });
+        upsertSummary(toSummary(item));
+        setAddMenu('closed');
+      } catch (err) {
+        // An unhandled rejection here left the form open with zero feedback.
+        setErrorMsg(`Save failed: ${(err as Error).message}`);
+      }
     },
     [activeDomain, upsertSummary],
   );
 
   const handleDelete = useCallback(
     async (id: string) => {
-      await deleteGuidance(id);
-      removeSummary(id);
+      try {
+        await deleteGuidance(id);
+        removeSummary(id);
+      } catch (err) {
+        setErrorMsg(`Delete failed: ${(err as Error).message}`);
+      }
     },
     [removeSummary],
   );
@@ -271,11 +281,7 @@ export function GuidanceView() {
             size="sm"
             variant="secondary"
             className="h-7 gap-1 px-2 text-xs"
-            onClick={() => setAddMenu(addMenu === 'closed' ? 'closed' : 'closed') /* close any */}
-            onClickCapture={(e) => {
-              e.preventDefault();
-              setAddMenu(addMenu === 'closed' ? 'note' : 'closed');
-            }}
+            onClick={() => setAddMenu(addMenu === 'closed' ? 'note' : 'closed')}
           >
             <Plus className="size-3" />
             Add
@@ -288,7 +294,9 @@ export function GuidanceView() {
               recording.kind === 'demo'
                 ? setAddMenu('demo-stop')
                 : recording.kind === 'gif'
-                  ? handleStopGif()
+                  ? // Route through the caption bar like demos do — calling
+                    // handleStopGif() here saved instantly with no caption.
+                    setAddMenu('gif-stop')
                   : undefined
             }
           />
@@ -346,7 +354,12 @@ export function GuidanceView() {
         <FilterPill value="note" current={filter} count={counts.note} onSelect={setFilter}>
           Notes
         </FilterPill>
-        <FilterPill value="screenshot" current={filter} count={counts.screenshot} onSelect={setFilter}>
+        <FilterPill
+          value="screenshot"
+          current={filter}
+          count={counts.screenshot}
+          onSelect={setFilter}
+        >
           Screenshots
         </FilterPill>
         <FilterPill value="gif" current={filter} count={counts.gif} onSelect={setFilter}>
@@ -430,7 +443,7 @@ function RecordingChip({
   onStop,
 }: {
   kind: 'demo' | 'gif';
-  stepCount?: number;
+  stepCount?: number | undefined;
   onStop: () => void;
 }) {
   return (
@@ -444,7 +457,9 @@ function RecordingChip({
       }`}
     >
       <span className="inline-block size-1.5 animate-pulse rounded-full bg-white" />
-      {kind === 'demo' ? `Recording demo${stepCount != null ? ` · ${stepCount}` : ''}` : 'Recording GIF'}
+      {kind === 'demo'
+        ? `Recording demo${stepCount != null ? ` · ${stepCount}` : ''}`
+        : 'Recording GIF'}
       <span className="ml-1 opacity-80">stop</span>
     </button>
   );
@@ -478,7 +493,11 @@ function AddBar({
           onClick={onScreenshot}
           disabled={busy === 'screenshot'}
         >
-          {busy === 'screenshot' ? <Loader2 className="size-3 animate-spin" /> : <Camera className="size-3" />}
+          {busy === 'screenshot' ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : (
+            <Camera className="size-3" />
+          )}
           Screenshot
         </Button>
         <Button
@@ -488,7 +507,11 @@ function AddBar({
           onClick={onStartGif}
           disabled={busy === 'gif-start'}
         >
-          {busy === 'gif-start' ? <Loader2 className="size-3 animate-spin" /> : <ImageIcon className="size-3" />}
+          {busy === 'gif-start' ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : (
+            <ImageIcon className="size-3" />
+          )}
           GIF
         </Button>
         <Button
@@ -498,15 +521,14 @@ function AddBar({
           onClick={onStartDemo}
           disabled={busy === 'demo-start'}
         >
-          {busy === 'demo-start' ? <Loader2 className="size-3 animate-spin" /> : <Clapperboard className="size-3" />}
+          {busy === 'demo-start' ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : (
+            <Clapperboard className="size-3" />
+          )}
           Demo
         </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="ml-auto h-7 px-2 text-xs"
-          onClick={onClose}
-        >
+        <Button size="sm" variant="ghost" className="ml-auto h-7 px-2 text-xs" onClick={onClose}>
           <X className="size-3" />
         </Button>
       </div>
@@ -705,9 +727,9 @@ function toSummary(item: {
     id: item.id,
     kind: item.kind,
     domain: item.domain,
-    caption: item.caption,
+    ...(item.caption !== undefined && { caption: item.caption }),
     created_at: item.created_at,
     updated_at: item.updated_at,
-    demo_id: item.demo_id,
+    ...(item.demo_id !== undefined && { demo_id: item.demo_id }),
   };
 }

@@ -10,9 +10,10 @@
  *      action-tier tools when you're in Ask mode).
  *
  * The "Run" button calls the handler directly — no SSE round-trip. It
- * skips the permission gate (since it's user-initiated) but flows the
- * result through TOOL_TIMELINE_EVENT so the same UI you see during agent
- * runs renders here too.
+ * skips the permission gate (since it's user-initiated). Results render in
+ * the inline output section below the form; the chat transcript timeline is
+ * deliberately dispatcher-only (manual runs would otherwise attach stray
+ * tool rows to whatever assistant message happens to be last).
  */
 
 import { CopyButton } from '@/components/CopyMenu';
@@ -195,7 +196,9 @@ function CatalogPane({ handlers }: { handlers: AnyToolHandler[] }) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="canonical">Agent surface ({surfaceCounts.canonical})</SelectItem>
-              <SelectItem value="internal">Internal delegates ({surfaceCounts.internal})</SelectItem>
+              <SelectItem value="internal">
+                Internal delegates ({surfaceCounts.internal})
+              </SelectItem>
               <SelectItem value="all">All handlers ({surfaceCounts.all})</SelectItem>
             </SelectContent>
           </Select>
@@ -235,7 +238,7 @@ function ToolRow({
   description,
 }: {
   handler: AnyToolHandler;
-  description?: string;
+  description?: string | undefined;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -337,7 +340,7 @@ function ToolDetail({
   description,
 }: {
   handler: AnyToolHandler;
-  description?: string;
+  description?: string | undefined;
 }) {
   const schema = useMemo(
     () => zodToJsonSchema(handler.argsSchema, { $refStrategy: 'none', target: 'jsonSchema7' }),
@@ -470,10 +473,7 @@ function ToolDetail({
       </Section>
 
       {error && (
-        <Section
-          label="error"
-          trailing={<CopyButton text={error} title="Copy error" size="xs" />}
-        >
+        <Section label="error" trailing={<CopyButton text={error} title="Copy error" size="xs" />}>
           <pre className="max-h-40 overflow-auto rounded bg-red-50 p-1.5 text-[10px] leading-snug text-red-800 dark:bg-red-950/40 dark:text-red-300">
             {error}
           </pre>

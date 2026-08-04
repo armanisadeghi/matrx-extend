@@ -1,13 +1,13 @@
 # matrx-extend tools
 
-> **AUTO-GENERATED — do not edit.** Produced from `public.tool_def`
-> rows bound to `executor_name='chrome-extension'` via `public.tool_binding`,
+> **AUTO-GENERATED — do not edit.** Produced from `tool.definition`
+> rows bound to `executor_name='chrome-extension'` via `tool.binding`,
 > the source of truth. Tool names, descriptions, and argument
 > contracts live ONLY in the database (Rule 4,
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-05-27T23:10:04.147Z
+Generated: 2026-07-28T00:36:34.286Z
 Total tools: 80
 
 ## ai
@@ -74,7 +74,7 @@ Read the user's bookmarks. Actions: 'search' (free-text against title and URL; p
 
 ### `chrome_cookies`
 
-_privileged_
+_privileged · admin-only_
 
 Manage cookies for any domain. Actions: 'get' (read; pass `name` for a specific cookie or omit for all matching), 'set' (write; requires `name` + `value`; optional `domain`/`path`/`expires_in_seconds`/`same_site`/`http_only`/`secure`), 'delete' (requires `name`). Always pass `url` (or `domain` for 'get'). Admin-only.
 
@@ -113,6 +113,16 @@ _read_
 Index of every browser-tool category the extension exposes. Returns one entry per category: name, label, description, count of tools, name of the category-specific list tool. To get the full schemas for a category, call its `list_tool` (e.g. `list_page_tools`). Use this whenever the model needs more capabilities than its current toolset offers.
 
 **Parameters:** _No parameters._
+
+## credentials
+
+### `credential_login`
+
+_action_
+
+Sign in to the website in the current browser tab using a saved Matrx login. You never see or handle the username or password: the extension asks the server for them, fills the form, submits it, and reports only the outcome. Pass credential_item_id only when a previous call returned selection_required; otherwise omit it and the correct login is matched from the tab's own address. You cannot supply a URL, username, password, or selector. Returns one of: authenticated, needs_mfa, captcha_or_takeover, credentials_rejected, selection_required, no_matching_login, unsafe_destination, unknown. If MFA or a CAPTCHA appears, stop and hand control to the user — never try to work around it.
+
+**Parameters:** `credential_item_id` (string)
 
 ## demos
 
@@ -178,7 +188,7 @@ Dump the accessibility tree of the active tab via Accessibility.getFullAXTree. E
 
 ### `cdp_emulate`
 
-_privileged_
+_privileged · admin-only_
 
 Override viewport / device metrics on an attached CDP tab for responsive testing. Actions: 'set' (apply `width`+`height`+optional `device_scale_factor`/`mobile`/`user_agent`), 'clear' (revert overrides). Tab must be attached via cdp_session first.
 
@@ -258,7 +268,7 @@ Print a tab to PDF via Page.printToPDF. Returns base64 PDF data. Useful for arch
 
 ### `cdp_session`
 
-_privileged_
+_privileged · admin-only_
 
 Manage Chrome DevTools Protocol attachments. Actions: 'attach' (begin debugger session on `tab_id` — required before any other cdp_* tool), 'detach' (end session), 'list' (which tabs are currently attached). Admin + `debugger` permission.
 
@@ -332,14 +342,6 @@ Hand keyboard/mouse control to the user so they can perform an action the agent 
 
 **Parameters:** `reason` (string, required); `tab_id` (string); `instructions` (string); `expected_action` (string); `timeout_seconds` (integer)
 
-### `tasks`
-
-_action_
-
-Manage the agent's own tasklist for the current conversation. Actions: 'add' (one via `title` or many via `items`), 'list' (read current tasks), 'set_status' (`id` + `status`), 'update' (`id` + `title` and/or `note`; pass note=null to clear), 'remove' (`id`), 'reorder' (`ids` in desired order), 'clear_completed' (drop done + skipped), 'clear_all'. Statuses: pending, in_progress, done, blocked, skipped. The list and any user edits to it are surfaced to you in `task_list` context on every turn — set statuses as you work so the user can see live progress.
-
-**Parameters:** `id` (string); `ids` (array); `note` (any); `items` (array); `title` (string); `action` (string, required) = ["add","list","set_status","update","remove","reorder","clear_completed","clear_all"]; `status` (string) = ["pending","in_progress","done","blocked","skipped"]
-
 ### `update_plan`
 
 _ask-user_
@@ -389,14 +391,6 @@ _action_
 Synthesize a drag-and-drop of a single file onto a target element or coordinate. Use for drop zones that aren't backed by <input type='file'>. Provide ref OR coordinate. file_id is a MediaRef (e.g. from a prior screenshot or upload).
 
 **Parameters:** `ref` (string); `tab_id` (string, required); `file_id` (string, required); `filename` (string); `coordinate` (array)
-
-### `evaluate_javascript`
-
-_privileged_
-
-Evaluate JavaScript in the page context. Returns the value of the last expression — do NOT use 'return' at top level. Prefer DOM tools (read_page, find, computer, form_input) when possible — JS exec is XSS-equivalent and bypasses our safety nets.
-
-**Parameters:** `arg` (any); `text` (string, required); `tab_id` (string)
 
 ### `form_input`
 
@@ -481,6 +475,14 @@ Persistent agent-namespaced storage that survives across runs. Distinct from can
 **Parameters:** `key` (string); `value` (any); `action` (string, required) = ["get","set","list","delete"]
 
 ## reading
+
+### `data_patterns`
+
+_action_
+
+Manage and run the user's saved data-extraction patterns (the same system behind the extension's Showcase and Data tabs). Actions: 'list' — saved patterns for a domain (defaults to the current tab's host) with health badges; 'describe' — one pattern's full config and fields; 'recipes' — curated extraction recipes matching the current page (known-good configs for popular sites); 'run' — execute a saved pattern on the current tab and get rows back (DOM kinds run instantly; ai_extract re-runs the extraction agent against the page; network_capture reloads the tab and listens ~20s for the matching API request — tell the user before running it since the page will reload); 'save' — persist a new pattern (requires name + kind, mode-specific config, and fields for manual_css); 'delete' — remove a pattern. Run results are capped at rows_limit (default 100) with the true row_count reported. Prefer 'list' then 'run' over re-scraping a page the user has already built a pattern for.
+
+**Parameters:** `kind` (string) = ["manual_css","json_ld","og_meta","auto_table","next_data","ai_extract","list_pattern","microdata","network_capture"]; `name` (string); `action` (string, required) = ["list","describe","recipes","run","save","delete"]; `config` (object); `domain` (string); `fields` (array); `pattern_id` (string); `rows_limit` (integer)
 
 ### `extract_microdata`
 
@@ -672,7 +674,7 @@ Manage browser tabs. Actions: 'list' (all tabs in current window), 'create' (ope
 
 ### `chrome_webmcp`
 
-_action_
+_action · admin-only_
 
 Discover and invoke tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). Actions: 'check' (probe API + count tools), 'list' (enumerate page-registered tools), 'call' (invoke; pass `tool_name` and `arguments`). Admin-only experimental capability.
 

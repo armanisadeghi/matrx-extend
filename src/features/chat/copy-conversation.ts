@@ -104,10 +104,7 @@ function indent(s: string, n: number): string {
  * `<thinking>...</thinking>` when requested. Tool parts emit a `<tool>`
  * line — bare-named for users, with args/result for the everything view.
  */
-export function formatAssistantBody(
-  message: ChatMessage,
-  opts: MessageCopyOptions,
-): string {
+export function formatAssistantBody(message: ChatMessage, opts: MessageCopyOptions): string {
   const parts = message.parts;
   if (!parts || parts.length === 0) {
     // DB-hydrated history path — parts aren't reconstructed, so all we
@@ -156,10 +153,7 @@ export function formatConversation(
     if (m.role === 'user' && !opts.includeUserMessages) continue;
     if (m.role === 'assistant' && !opts.includeAssistantMessages) continue;
 
-    const body =
-      m.role === 'assistant'
-        ? formatAssistantBody(m, opts)
-        : m.content;
+    const body = m.role === 'assistant' ? formatAssistantBody(m, opts) : m.content;
     if (!body.trim()) continue;
 
     lines.push('');

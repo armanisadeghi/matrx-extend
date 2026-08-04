@@ -7,36 +7,32 @@
  * The DATABASE is the single source of truth. This reporter proves the ACTUAL
  * CODE matches it: it serializes the REAL Zod `argsSchema` of every live
  * handler — the exact object the dispatcher validates against at
- * src/lib/tools/dispatch.ts — and diffs it against `public.tool_def`. There
+ * src/lib/tools/dispatch.ts — and diffs it against `tool.definition`. There
  * is NO intermediate file: the schema we check is the schema that runs.
  *
- * Schema (post 2026-05-27 tool refactor — see
- * /Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md):
+ * Schema (post 2026-06 schema canonicalization — tables moved from `public`
+ * to the `tool` schema):
  *
- *   - `public.tool_def`              — name, description, parameters, tier,
- *                                       admin_only, category, is_active,
- *                                       source_kind. No more `source_app` or
- *                                       `function_path` columns; ownership
- *                                       lives on the binding row.
- *   - `public.tool_binding`          — pure (tool_id, executor_name, is_active)
- *                                       M2M. Replaces `tl_executor`. We claim
- *                                       a tool by binding it to the
- *                                       `chrome-extension` executor.
- *   - `public.tool_surface_defaults` — per-surface include/exclude arrays.
- *                                       Replaces `tl_def_surface`. We confirm
- *                                       every advertised tool appears in
- *                                       `always_include_tools` for at least
- *                                       one of `chrome-extension/{assistant,
- *                                       pilot}` so the resolver actually
- *                                       hands it to the model.
+ *   - `tool.definition`      — name, description, parameters, tier,
+ *                               admin_only, category, is_active, source_kind.
+ *                               No `source_app` / `function_path`; ownership
+ *                               lives on the binding row.
+ *   - `tool.binding`         — pure (tool_id, executor_name, is_active) M2M.
+ *                               We claim a tool by binding it to the
+ *                               `chrome-extension` executor.
+ *   - `tool.surface_defaults`— per-surface include/exclude arrays. We confirm
+ *                               every advertised tool appears in
+ *                               `always_include_tools` for at least one of
+ *                               `chrome-extension/{assistant,pilot}` so the
+ *                               resolver hands it to the model.
  *
  * What it checks per tool (the shared spec): identity (name), tier, admin_only,
  * category, and the argument set — for every field: presence, type,
  * required-ness, enum members (incl. one-sided), and default. Plus the
- * matrx-extend wiring: an active `tool_binding` row for
- * `executor_name='chrome-extension'` (this is the location/ownership proof in
- * the new model) and inclusion in `tool_surface_defaults.always_include_tools`
- * for at least one chrome-extension surface. Descriptions are NOT checked —
+ * matrx-extend wiring: an active `tool.binding` row for
+ * `executor_name='chrome-extension'` and inclusion in
+ * `tool.surface_defaults.always_include_tools` for at least one
+ * chrome-extension surface. Descriptions are NOT checked —
  * they are not code; they live only in the DB (Rule 4).
  *
  *   tsx scripts/check-tool-db-drift.ts   (pnpm catalog:tools:drift)
@@ -47,12 +43,12 @@
  * drift purely as a SIGNAL for those callers — none hard-gate on it. "Couldn't
  * run" (missing creds / DB unreachable) is NOT drift: it warns and exits 0.
  * When drift fires: the DB is the source of truth, so bring the handler's Zod
- * to match `tool_def`, or change the DB first (admin API / migration) then
- * match code. Never push code→DB silently (Rule 7).
+ * to match `tool.definition`, or change the DB first (admin API / migration)
+ * then match code. Never push code→DB silently (Rule 7).
  */
 import process from 'node:process';
-import { CANONICAL_SURFACE } from '../src/lib/tools/categories';
 import { buildToolCatalogManifest } from '../src/lib/tools/catalog';
+import { CANONICAL_SURFACE } from '../src/lib/tools/categories';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
 
 interface LocalTool {
@@ -62,7 +58,10 @@ interface LocalTool {
   admin_only?: boolean;
   input_schema: {
     type: 'object';
-    properties: Record<string, { type?: string | string[]; enum?: unknown[]; [k: string]: unknown }>;
+    properties: Record<
+      string,
+      { type?: string | string[]; enum?: unknown[]; [k: string]: unknown }
+    >;
     required?: string[];
   };
 }
@@ -71,7 +70,10 @@ interface DbToolRow {
   id: string;
   name: string;
   description: string;
-  parameters: Record<string, { type?: string | string[]; enum?: unknown[]; required?: boolean; [k: string]: unknown }> | null;
+  parameters: Record<
+    string,
+    { type?: string | string[]; enum?: unknown[]; required?: boolean; [k: string]: unknown }
+  > | null;
   tier: string | null;
   admin_only: boolean | null;
   is_active: boolean | null;
@@ -109,11 +111,16 @@ const PILOT_SURFACE = 'chrome-extension/pilot';
  * rows, not the parent `tool_def` rows, so we'd still pull every tool. A
  * two-step (bindings → ids → defs) is precise and small (~50 ids).
  */
-async function fetchOwnedTools(url: string, key: string): Promise<{ defs: DbToolRow[]; bindings: DbBindingRow[] }> {
+async function fetchOwnedTools(
+  url: string,
+  key: string,
+): Promise<{ defs: DbToolRow[]; bindings: DbBindingRow[] }> {
+  // Post 2026-06 canonicalization: tool_binding → tool.binding, tool_def → tool.definition
   const bindings = await fetchPublicJson<DbBindingRow[]>(
     url,
     key,
-    `tool_binding?or=(executor_name.eq.${EXECUTOR_NAME},executor_name.like.${EXECUTOR_NAME}.*)&select=tool_id,executor_name,is_active`,
+    `binding?or=(executor_name.eq.${EXECUTOR_NAME},executor_name.like.${EXECUTOR_NAME}.*)&select=tool_id,executor_name,is_active`,
+    'tool',
   );
   const ids = [...new Set(bindings.filter((b) => b.is_active).map((b) => b.tool_id))];
   if (ids.length === 0) return { defs: [], bindings };
@@ -121,7 +128,8 @@ async function fetchOwnedTools(url: string, key: string): Promise<{ defs: DbTool
   const defs = await fetchPublicJson<DbToolRow[]>(
     url,
     key,
-    `tool_def?id=in.${inList}&select=id,name,description,parameters,tier,admin_only,is_active,category,source_kind&order=name.asc`,
+    `definition?id=in.${inList}&select=id,name,description,parameters,tier,admin_only,is_active,category,source_kind&order=name.asc`,
+    'tool',
   );
   return { defs, bindings };
 }
@@ -133,10 +141,12 @@ async function fetchOwnedTools(url: string, key: string): Promise<{ defs: DbTool
  * surfaces the tool, even if there IS a binding.
  */
 async function fetchSurfaceDefaults(url: string, key: string): Promise<DbSurfaceDefaultsRow[]> {
+  // Post 2026-06 canonicalization: tool_surface_defaults → tool.surface_defaults
   return fetchPublicJson<DbSurfaceDefaultsRow[]>(
     url,
     key,
-    `tool_surface_defaults?or=(surface_name.eq.${encodeURIComponent(ASSISTANT_SURFACE)},surface_name.eq.${encodeURIComponent(PILOT_SURFACE)})&select=surface_name,always_include_tools,never_include_tools`,
+    `surface_defaults?or=(surface_name.eq.${encodeURIComponent(ASSISTANT_SURFACE)},surface_name.eq.${encodeURIComponent(PILOT_SURFACE)})&select=surface_name,always_include_tools,never_include_tools`,
+    'tool',
   );
 }
 
@@ -165,7 +175,10 @@ function setDiff<T>(a: Set<T>, b: Set<T>): { onlyA: T[]; onlyB: T[] } {
   return { onlyA, onlyB };
 }
 
-function compareEnums(localEnum: unknown[] | undefined, dbEnum: unknown[] | undefined): string | null {
+function compareEnums(
+  localEnum: unknown[] | undefined,
+  dbEnum: unknown[] | undefined,
+): string | null {
   if (!localEnum && !dbEnum) return null;
   if (!localEnum) return 'local has no enum, DB has one';
   if (!dbEnum) return 'DB has no enum, local has one';
@@ -263,11 +276,30 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
   return issues;
 }
 
+/**
+ * --strict: "cannot verify" becomes a FAILURE instead of a skip. The default
+ * mode deliberately exits 0 when creds are missing or the DB is unreachable
+ * ("couldn't run is not drift"), which is right for dev builds — but it also
+ * means a release pipeline without creds silently passes a drifted catalog.
+ * Release gates run `pnpm catalog:tools:drift:strict` so absence of
+ * verification is loud. Exit codes: 0 clean, 1 drift, 3 could-not-verify
+ * (strict only). See docs/AUDIT_2026_06_10.md P1-25.
+ */
+const STRICT = process.argv.includes('--strict');
+
 async function main(): Promise<void> {
   // No env var gates this (Rule 6). Missing creds is "cannot verify", NOT drift:
-  // warn loudly and exit 0 so it never blocks a build or boot.
+  // warn loudly and exit 0 so it never blocks a build or boot. (--strict
+  // flips that to a hard failure — releases must actually verify.)
   const env = loadSupabaseEnv();
   if (!env) {
+    if (STRICT) {
+      console.error(
+        'drift-check (--strict): Supabase creds not found — FAILING. A release ' +
+          'gate must actually verify against the DB; run with creds present.',
+      );
+      process.exit(3);
+    }
     console.warn(
       'drift-check: Supabase creds not found — SKIPPING (cannot verify without DB ' +
         'access). This is NOT drift; a build/CI with creds present runs the full check.',
@@ -288,7 +320,15 @@ async function main(): Promise<void> {
     dbBindings = owned.bindings;
     dbSurfaces = surfaces;
   } catch (err) {
-    // "Couldn't run" (DB unreachable / RLS / network) is NOT drift — never block.
+    // "Couldn't run" (DB unreachable / RLS / network) is NOT drift — never
+    // block a dev build. Strict (release) mode fails: an unverified release
+    // is exactly what the gate exists to prevent.
+    if (STRICT) {
+      console.error(
+        `drift-check (--strict): could not read the DB — FAILING. ${(err as Error).message}`,
+      );
+      process.exit(3);
+    }
     console.warn(
       `drift-check: could not read the DB — SKIPPING (this is NOT drift). ${(err as Error).message}`,
     );
@@ -392,14 +432,16 @@ async function main(): Promise<void> {
   const RESET = isTTY ? '\x1b[0m' : '';
 
   console.log(
-    `Tool-DB drift check v3 — local catalog ↔ public.{tool_def, tool_binding, tool_surface_defaults}`,
+    `Tool-DB drift check v3 — local catalog ↔ tool.{definition, binding, surface_defaults}`,
   );
   console.log(
     `  local catalog tools (advertised): ${totalLocal}  ${DIM}(${localAll.length} total; absorbed handlers excluded via CANONICAL_SURFACE)${RESET}`,
   );
-  console.log(`  DB tool_def rows owned by chrome-extension: ${totalDb}`);
-  console.log(`  DB tool_binding rows (active):              ${dbBindings.filter((b) => b.is_active).length}`);
-  console.log(`  DB tool_surface_defaults rows:              ${dbSurfaces.length}`);
+  console.log(`  DB tool.definition rows owned by chrome-extension: ${totalDb}`);
+  console.log(
+    `  DB tool.binding rows (active):              ${dbBindings.filter((b) => b.is_active).length}`,
+  );
+  console.log(`  DB tool.surface_defaults rows:              ${dbSurfaces.length}`);
   console.log('');
 
   if (totalProblems === 0) {
@@ -410,29 +452,47 @@ async function main(): Promise<void> {
   // ── BIG RED BANNER ───────────────────────────────────────────────────────
   const bar = '████████████████████████████████████████████████████████████████████';
   console.log(`${RED_BG}${bar}${RESET}`);
-  console.log(`${RED_BG}██${RESET}                                                                ${RED_BG}██${RESET}`);
-  console.log(`${RED_BG}██${RESET}   ${RED}⚠  TOOL-CATALOG / DB SCHEMA DRIFT DETECTED  ⚠${RESET}              ${RED_BG}██${RESET}`);
-  console.log(`${RED_BG}██${RESET}                                                                ${RED_BG}██${RESET}`);
-  console.log(`${RED_BG}██${RESET}   ${RED}${totalProblems} problem(s) found across ${drifts.length + localOnly.length} tool(s).${RESET}${' '.repeat(Math.max(0, 28 - String(totalProblems).length - String(drifts.length + localOnly.length).length))}${RED_BG}██${RESET}`);
-  console.log(`${RED_BG}██${RESET}   ${RED}The LLM sees one schema; the dispatcher accepts another.${RESET}      ${RED_BG}██${RESET}`);
-  console.log(`${RED_BG}██${RESET}                                                                ${RED_BG}██${RESET}`);
+  console.log(
+    `${RED_BG}██${RESET}                                                                ${RED_BG}██${RESET}`,
+  );
+  console.log(
+    `${RED_BG}██${RESET}   ${RED}⚠  TOOL-CATALOG / DB SCHEMA DRIFT DETECTED  ⚠${RESET}              ${RED_BG}██${RESET}`,
+  );
+  console.log(
+    `${RED_BG}██${RESET}                                                                ${RED_BG}██${RESET}`,
+  );
+  console.log(
+    `${RED_BG}██${RESET}   ${RED}${totalProblems} problem(s) found across ${drifts.length + localOnly.length} tool(s).${RESET}${' '.repeat(Math.max(0, 28 - String(totalProblems).length - String(drifts.length + localOnly.length).length))}${RED_BG}██${RESET}`,
+  );
+  console.log(
+    `${RED_BG}██${RESET}   ${RED}The LLM sees one schema; the dispatcher accepts another.${RESET}      ${RED_BG}██${RESET}`,
+  );
+  console.log(
+    `${RED_BG}██${RESET}                                                                ${RED_BG}██${RESET}`,
+  );
   console.log(`${RED_BG}${bar}${RESET}`);
   console.log('');
 
   if (localOnly.length) {
-    console.log(`${RED}✗ Local-only (${localOnly.length}) — exist in code but MISSING from tool_def (or not bound to chrome-extension):${RESET}`);
+    console.log(
+      `${RED}✗ Local-only (${localOnly.length}) — exist in code but MISSING from tool.definition (or not bound to chrome-extension):${RESET}`,
+    );
     for (const n of localOnly) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('');
   }
 
   if (dbOnly.length) {
-    console.log(`${RED}✗ DB-only (${dbOnly.length}) — bound to chrome-extension but no local handler exposes them:${RESET}`);
+    console.log(
+      `${RED}✗ DB-only (${dbOnly.length}) — bound to chrome-extension but no local handler exposes them:${RESET}`,
+    );
     for (const n of dbOnly) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('');
   }
 
   if (dbInactive.length) {
-    console.log(`${YELLOW}⚠ DB-inactive (${dbInactive.length}) — in tool_def but is_active=false:${RESET}`);
+    console.log(
+      `${YELLOW}⚠ DB-inactive (${dbInactive.length}) — in tool.definition but is_active=false:${RESET}`,
+    );
     for (const n of dbInactive) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('');
   }
@@ -447,41 +507,56 @@ async function main(): Promise<void> {
   }
 
   if (missingBinding.length) {
-    console.log(`${RED}✗ Missing executor binding (${missingBinding.length}) — advertised but no active tool_binding row for executor_name='chrome-extension':${RESET}`);
+    console.log(
+      `${RED}✗ Missing executor binding (${missingBinding.length}) — advertised but no active tool.binding row for executor_name='chrome-extension':${RESET}`,
+    );
     for (const n of missingBinding) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('  Server cannot route these calls — they will fail with "no executor".');
     console.log('');
   }
 
   if (missingSurface.length) {
-    console.log(`${RED}✗ Missing surface inclusion (${missingSurface.length}) — not in always_include_tools for either chrome-extension/{assistant,pilot}:${RESET}`);
+    console.log(
+      `${RED}✗ Missing surface inclusion (${missingSurface.length}) — not in always_include_tools for either chrome-extension/{assistant,pilot}:${RESET}`,
+    );
     for (const n of missingSurface) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('  Discovery handler will not surface these to the LLM on either chat path.');
     console.log('');
   }
 
   if (excludedSurface.length) {
-    console.log(`${YELLOW}⚠ Explicitly excluded on a surface (${excludedSurface.length}) — listed in never_include_tools:${RESET}`);
-    for (const e of excludedSurface) console.log(`    ${DIM}-${RESET} ${e.name} (on ${e.surfaces.join(', ')})`);
+    console.log(
+      `${YELLOW}⚠ Explicitly excluded on a surface (${excludedSurface.length}) — listed in never_include_tools:${RESET}`,
+    );
+    for (const e of excludedSurface)
+      console.log(`    ${DIM}-${RESET} ${e.name} (on ${e.surfaces.join(', ')})`);
     console.log('  The resolver will respect this; remove the entry if it was a mistake.');
     console.log('');
   }
 
   if (orphanBinding.length) {
-    console.log(`${YELLOW}⚠ Orphan bindings (${orphanBinding.length}) — bindings pointing at deleted/renamed tools (should be impossible w/ FK; deployment-state canary):${RESET}`);
+    console.log(
+      `${YELLOW}⚠ Orphan bindings (${orphanBinding.length}) — bindings pointing at deleted/renamed tools (should be impossible w/ FK; deployment-state canary):${RESET}`,
+    );
     for (const n of orphanBinding) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('');
   }
 
   // ── REPEAT THE BANNER SO IT'S THE LAST THING ─────────────────────────────
   console.log(`${RED_BG}${bar}${RESET}`);
-  console.log(`${RED_BG}██${RESET}   ${RED}DRIFT: ${totalProblems} problem(s). Fix tool_def or local handlers.${RESET}${' '.repeat(Math.max(0, 22 - String(totalProblems).length))}${RED_BG}██${RESET}`);
+  console.log(
+    `${RED_BG}██${RESET}   ${RED}DRIFT: ${totalProblems} problem(s). Fix tool.definition or local handlers.${RESET}${' '.repeat(Math.max(0, 22 - String(totalProblems).length))}${RED_BG}██${RESET}`,
+  );
   console.log(`${RED_BG}${bar}${RESET}`);
   console.log('');
   console.log(`${DIM}Fix path — the DATABASE is the source of truth:${RESET}`);
-  console.log(`${DIM}  - tool_def is the truth (what the LLM sees).${RESET}`);
-  console.log(`${DIM}  - Bring the handler's real Zod (src/lib/tools/handlers/*.ts) to match tool_def.${RESET}`);
-  console.log(`${DIM}  - If the DB itself is wrong, change it (admin API / migration), then match code.${RESET}`);
+  console.log(`${DIM}  - tool.definition is the truth (what the LLM sees).${RESET}`);
+  console.log(
+    `${DIM}  - Bring the handler's real Zod (src/lib/tools/handlers/*.ts) to match tool.definition.${RESET}`,
+  );
+  console.log(
+    `${DIM}  - If the DB itself is wrong, change it (admin API / migration), then match code.${RESET}`,
+  );
   process.exit(1);
 }
 

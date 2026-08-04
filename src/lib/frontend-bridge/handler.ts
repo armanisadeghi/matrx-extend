@@ -22,6 +22,7 @@
  *   - "callTool"     → run a registered tool through the same dispatch path WebMCP uses
  */
 
+import { readIsAdminFromStorage } from '@/lib/auth/is-admin';
 import { log } from '@/lib/debug/log';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
 import { readDefaultPermissionMode } from '@/lib/settings/persisted';
@@ -65,8 +66,8 @@ const CallToolPayloadSchema = z.object({
 // ─── Handler ────────────────────────────────────────────────────────────────
 
 interface SenderInfo {
-  url?: string;
-  origin?: string;
+  url?: string | undefined;
+  origin?: string | undefined;
 }
 
 /**
@@ -125,10 +126,7 @@ export async function handleFrontendRpc(
 
 // ─── Actions ────────────────────────────────────────────────────────────────
 
-async function actionPing(
-  payload: unknown,
-  requestId: string,
-): Promise<FrontendRpcResponse> {
+async function actionPing(payload: unknown, requestId: string): Promise<FrontendRpcResponse> {
   PingPayloadSchema.parse(payload);
   const version = chrome.runtime.getManifest().version;
   return {
@@ -146,8 +144,12 @@ async function actionCapabilities(
   // Public capability surface: read + action only. Privileged + ask-user
   // are intentionally excluded — privileged shouldn't be advertised to
   // any external surface, and ask-user requires the side panel UI.
+  // Admin-only tools are filtered for non-admins (the execution gate in
+  // handleWebmcpCall enforces this regardless; the filter just keeps the
+  // advertisement honest).
+  const isAdmin = await readIsAdminFromStorage();
   const handlers = listAllHandlers().filter(
-    (h) => h.tier === 'read' || h.tier === 'action',
+    (h) => (h.tier === 'read' || h.tier === 'action') && (isAdmin || !h.admin_only),
   );
   // Descriptions live ONLY in the DB (Rule 4) — read them live, never hardcoded.
   const descs = await ensureToolDescriptions();
@@ -167,10 +169,7 @@ async function actionCapabilities(
   };
 }
 
-async function actionOpenPanel(
-  payload: unknown,
-  requestId: string,
-): Promise<FrontendRpcResponse> {
+async function actionOpenPanel(payload: unknown, requestId: string): Promise<FrontendRpcResponse> {
   const parsed = OpenPanelPayloadSchema.safeParse(payload);
   if (!parsed.success) {
     return {
@@ -227,10 +226,7 @@ async function actionOpenPanel(
   };
 }
 
-async function actionCallTool(
-  payload: unknown,
-  requestId: string,
-): Promise<FrontendRpcResponse> {
+async function actionCallTool(payload: unknown, requestId: string): Promise<FrontendRpcResponse> {
   const parsed = CallToolPayloadSchema.safeParse(payload);
   if (!parsed.success) {
     return {
@@ -245,7 +241,7 @@ async function actionCallTool(
   const callId = `frontend-${requestId}`;
   const wrapped = await handleWebmcpCall(
     { callId, toolName, args },
-    { permissionMode },
+    { permissionMode, initiator: 'frontend' },
   );
 
   if (wrapped.ok) {
@@ -257,4 +253,3 @@ async function actionCallTool(
     requestId,
   };
 }
-

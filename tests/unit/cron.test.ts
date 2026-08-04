@@ -58,3 +58,25 @@ describe('cron parser', () => {
     expect(nextCronTime('not a cron', new Date())).toBeNull();
   });
 });
+
+describe('cron-parser-backed next fire (audit P2-14)', () => {
+  it('honors an IANA tz', () => {
+    const r = nextCronTime('0 9 * * *', new Date('2026-06-10T00:00:00Z'), 'Asia/Tokyo');
+    // 9am Tokyo = midnight UTC.
+    expect(r?.toISOString()).toBe('2026-06-11T00:00:00.000Z');
+  });
+
+  it('DST spring-forward: a job in the skipped hour fires the same day, not the next', () => {
+    // 2026-03-08 America/New_York: 2:30am does not exist. The hand-rolled
+    // parser silently skipped to the NEXT day; cron-parser fires right
+    // after the jump (3:30 EDT = 07:30Z).
+    const after = new Date('2026-03-08T06:00:00Z'); // 1:00am EST that day
+    const r = nextCronTime('30 2 * * *', after, 'America/New_York');
+    expect(r?.toISOString()).toBe('2026-03-08T07:30:00.000Z');
+  });
+
+  it('still rejects invalid expressions with null', () => {
+    expect(nextCronTime('99 99 * * *')).toBeNull();
+    expect(nextCronTime('not a cron')).toBeNull();
+  });
+});

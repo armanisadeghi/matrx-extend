@@ -20,10 +20,10 @@
  *      its image inline (Base64Image / Image component, or a CustomComponent).
  */
 
-import { describe, expect, it } from 'vitest';
-import { CANONICAL_SURFACE } from '@/lib/tools/categories';
 import { toolDisplayRegistry } from '@/features/chat/tool-display/registry';
 import type { ToolDisplayEntry } from '@/features/chat/tool-display/types';
+import { CANONICAL_SURFACE } from '@/lib/tools/categories';
+import { describe, expect, it } from 'vitest';
 
 /**
  * Registry keys that are intentionally NOT in CANONICAL_SURFACE. Two kinds:
@@ -51,6 +51,7 @@ const ALLOWED_NON_CANONICAL = new Set<string>([
   'list_browser_tools',
   'ctx_get',
   'interaction_ask',
+  'tasks',
   // granular handlers folded into mega-tools but still appearing in older
   // timelines / direct Tools-tab runs
   'click_element',
@@ -82,10 +83,7 @@ describe('tool-display registry drift guard', () => {
 
   it('image-producing canonical tools render their image inline', () => {
     for (const name of IMAGE_PRODUCING_CANONICAL) {
-      expect(
-        CANONICAL_SURFACE.has(name),
-        `${name} is expected to be a canonical tool`,
-      ).toBe(true);
+      expect(CANONICAL_SURFACE.has(name), `${name} is expected to be a canonical tool`).toBe(true);
       expect(
         rendersImage(toolDisplayRegistry[name]),
         `${name} must render its screenshot inline (Base64Image/Image or a ` +

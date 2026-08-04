@@ -16,32 +16,26 @@
  */
 
 import { uploadFile } from '@/lib/api/routes/files';
-import {
-  attachDemoAsGuidance,
-  deleteGuidanceItem,
-  makeGuidanceId,
-  saveGuidanceItem,
-} from '@/lib/guidance/storage';
-import type {
-  GuidanceGif,
-  GuidanceNote,
-  GuidanceScreenshot,
-} from '@/lib/guidance/types';
-import {
-  hideRecordingBanner,
-  showRecordingBanner,
-} from '@/lib/guidance/in-page-banner';
+import { log } from '@/lib/debug/log';
 import {
   discardRecording,
   getActiveRecording,
   startRecording,
   stopRecording,
 } from '@/lib/demos/recorder';
-import { saveDemo, makeDemoId } from '@/lib/demos/storage';
+import { makeDemoId, saveDemo } from '@/lib/demos/storage';
 import type { Demo, DemoParameter, DemoStep } from '@/lib/demos/types';
-import { record_gif } from '@/lib/tools/handlers/record';
+import { hideRecordingBanner, showRecordingBanner } from '@/lib/guidance/in-page-banner';
+import {
+  attachDemoAsGuidance,
+  deleteGuidanceItem,
+  getGuidanceItem,
+  makeGuidanceId,
+  saveGuidanceItem,
+} from '@/lib/guidance/storage';
+import type { GuidanceGif, GuidanceNote, GuidanceScreenshot } from '@/lib/guidance/types';
 import { take_screenshot } from '@/lib/tools/handlers/read';
-import { log } from '@/lib/debug/log';
+import { record_gif } from '@/lib/tools/handlers/record';
 
 interface ToolCtxStub {
   callId: string;
@@ -80,8 +74,8 @@ async function activeTab(): Promise<chrome.tabs.Tab | null> {
 export async function saveNoteAsGuidance(args: {
   domain: string;
   text: string;
-  caption?: string;
-  origin_url?: string;
+  caption?: string | undefined;
+  origin_url?: string | undefined;
 }): Promise<GuidanceNote> {
   const now = Date.now();
   const item: GuidanceNote = {
@@ -89,8 +83,8 @@ export async function saveNoteAsGuidance(args: {
     kind: 'note',
     domain: args.domain,
     text: args.text,
-    caption: args.caption,
-    origin_url: args.origin_url,
+    ...(args.caption !== undefined && { caption: args.caption }),
+    ...(args.origin_url !== undefined && { origin_url: args.origin_url }),
     created_at: now,
     updated_at: now,
   };
@@ -117,31 +111,43 @@ export async function captureScreenshotAsGuidance(opts?: {
     { profile: 'auto' } as never,
     UI_CTX as never,
   )) as unknown as Record<string, unknown>;
-  if (r.ok !== true || typeof r.image_base64 !== 'string') {
+  if (r.ok !== true) {
     throw new Error(`Screenshot capture failed: ${(r as { reason?: string }).reason ?? 'unknown'}`);
   }
 
   const mime = (r.media_type as string) ?? 'image/jpeg';
-  const ext = mime.includes('png') ? 'png' : 'jpg';
-  const filename = `guidance-${Date.now()}.${ext}`;
-  const bytes = Uint8Array.from(atob(r.image_base64 as string), (c) => c.charCodeAt(0));
-  const blob = new Blob([bytes], { type: mime });
-  const upload = await uploadFile(blob, filename, {
-    path: `browser-agent/guidance/screenshots/${filename}`,
-    metadata: { domain, kind: 'guidance_screenshot', origin_url: tab.url },
-  });
+  let fileId = typeof r.file_id === 'string' ? r.file_id : null;
+  let fileUrl =
+    typeof r.url === 'string' ? r.url : typeof r.file_url === 'string' ? r.file_url : null;
+  if (!fileId) {
+    if (typeof r.image_base64 !== 'string') {
+      throw new Error('Screenshot capture produced neither a cloud file nor inline recovery bytes');
+    }
+    const ext = mime.includes('png') ? 'png' : 'jpg';
+    const filename = `guidance-${Date.now()}.${ext}`;
+    const bytes = Uint8Array.from(atob(r.image_base64 as string), (c) => c.charCodeAt(0));
+    const blob = new Blob([bytes], { type: mime });
+    const upload = await uploadFile(blob, filename, {
+      path: `browser-agent/guidance/screenshots/${filename}`,
+      metadata: { domain, kind: 'guidance_screenshot', origin_url: tab.url },
+    });
+    fileId = upload.file_id;
+    fileUrl = upload.url ?? upload.cdn_url ?? null;
+  }
 
   const now = Date.now();
+  const width = r.width as number | undefined;
+  const height = r.height as number | undefined;
   const item: GuidanceScreenshot = {
     id: makeGuidanceId(),
     kind: 'screenshot',
     domain,
-    file_id: upload.file_id,
-    url: upload.url ?? upload.cdn_url ?? null,
-    width: r.width as number | undefined,
-    height: r.height as number | undefined,
-    caption: opts?.caption,
-    origin_url: tab.url ?? undefined,
+    file_id: fileId,
+    url: fileUrl,
+    ...(width !== undefined && { width }),
+    ...(height !== undefined && { height }),
+    ...(opts?.caption !== undefined && { caption: opts.caption }),
+    ...(tab.url !== undefined && { origin_url: tab.url }),
     created_at: now,
     updated_at: now,
   };
@@ -178,7 +184,7 @@ export async function startGifRecordingAsGuidance(): Promise<GifRecordingHandle>
 
 export async function stopGifRecordingAsGuidance(args: {
   tabId: number;
-  caption?: string;
+  caption?: string | undefined;
 }): Promise<GuidanceGif> {
   const tabIdStr = String(args.tabId);
   // 1. Stop frames.
@@ -211,16 +217,17 @@ export async function stopGifRecordingAsGuidance(args: {
   if (!domain) throw new Error('Could not derive domain from recording tab');
 
   const now = Date.now();
+  const durationMs = exp.duration_ms ?? stop.duration_ms;
   const item: GuidanceGif = {
     id: makeGuidanceId(),
     kind: 'gif',
     domain,
     file_id: exp.file_id,
     url: exp.file_url ?? null,
-    duration_ms: exp.duration_ms ?? stop.duration_ms,
-    frame_count: stop.frame_count,
-    caption: args.caption,
-    origin_url: tab?.url ?? undefined,
+    ...(durationMs !== undefined && { duration_ms: durationMs }),
+    ...(stop.frame_count !== undefined && { frame_count: stop.frame_count }),
+    ...(args.caption !== undefined && { caption: args.caption }),
+    ...(tab?.url !== undefined && { origin_url: tab.url }),
     created_at: now,
     updated_at: now,
   };
@@ -229,10 +236,7 @@ export async function stopGifRecordingAsGuidance(args: {
 }
 
 export async function discardGifRecording(tabId: number): Promise<void> {
-  await record_gif.run(
-    { action: 'clear', tab_id: String(tabId) } as never,
-    UI_CTX as never,
-  );
+  await record_gif.run({ action: 'clear', tab_id: String(tabId) } as never, UI_CTX as never);
   await hideRecordingBanner(tabId);
 }
 
@@ -260,7 +264,7 @@ export async function startDemoRecordingAsGuidance(): Promise<DemoRecordingHandl
 
 export interface DemoSaveInput {
   name: string;
-  description?: string;
+  description?: string | undefined;
   parameters?: DemoParameter[];
 }
 
@@ -284,8 +288,9 @@ export async function stopDemoRecordingAndSave(input: DemoSaveInput): Promise<{
     if (step.param_placeholder && !declaredNames.has(step.param_placeholder)) {
       auto.push({
         name: step.param_placeholder,
-        description: step.element_snapshot?.accessible_name ?? `Auto-derived from step ${step.index}`,
-        sensitive: step.is_sensitive,
+        description:
+          step.element_snapshot?.accessible_name ?? `Auto-derived from step ${step.index}`,
+        ...(step.is_sensitive !== undefined && { sensitive: step.is_sensitive }),
       });
       declaredNames.add(step.param_placeholder);
     }
@@ -339,5 +344,13 @@ export async function discardDemoRecording(): Promise<void> {
 // ────────────────────────────────────────────────────────────────────────
 
 export async function deleteGuidance(id: string): Promise<void> {
+  // Honor the contract in the comment above — the implementation never
+  // actually dropped the demo, leaving it listed by list_demos and
+  // replayable by the agent after the user "deleted" it here.
+  const item = await getGuidanceItem(id);
+  if (item?.kind === 'demo_ref' && item.demo_id) {
+    const { deleteDemo } = await import('@/lib/demos/storage');
+    await deleteDemo(item.demo_id).catch(() => undefined);
+  }
   await deleteGuidanceItem(id);
 }

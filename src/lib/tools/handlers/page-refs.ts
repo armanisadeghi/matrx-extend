@@ -28,6 +28,7 @@
  *     Lighter than `read_active_page` (which returns the full scrape).
  */
 
+import { SENSITIVE_ATTR, sensitiveSelectorsForTab } from '@/lib/credentials/sensitive-fields';
 import { quickPrompt } from '@/lib/onbox-ai/client';
 import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
@@ -187,10 +188,8 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
   argsSchema: ReadPageArgs,
   run: async (args, ctx) => {
     const tabId =
-      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ??
-      (await getAssignedTabId(ctx));
-    if (tabId == null || !Number.isFinite(tabId))
-      return { ok: false, reason: 'No active tab' };
+      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ?? (await getAssignedTabId(ctx));
+    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
     // Canonical 'filter' overrides interactive_only when present.
     const interactiveOnly =
       args.filter !== undefined ? args.filter === 'interactive' : args.interactive_only;
@@ -208,10 +207,7 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
               window.scrollBy({ top: step, behavior: 'instant' });
               await new Promise((r) => setTimeout(r, 250));
               const after = document.documentElement.scrollHeight;
-              if (
-                window.innerHeight + window.scrollY >= after - 4 &&
-                after === before
-              ) {
+              if (window.innerHeight + window.scrollY >= after - 4 && after === before) {
                 break;
               }
             }
@@ -232,7 +228,28 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
           maxNodes: number,
           includeText: boolean,
           includeBounds: boolean,
+          sensitiveSelectors: string[],
+          sensitiveAttr: string,
         ) => {
+          // Redaction is the OR of three signals — marker attribute, the
+          // extension's own filled-field memory, and the legacy live
+          // `type === 'password'` check. The first two survive a page that
+          // strips the marker or toggles the input type; page-controlled DOM
+          // state is never the only line of defence.
+          // See src/lib/credentials/sensitive-fields.ts.
+          const sensitiveEls = new Set<Element>();
+          for (const s of sensitiveSelectors) {
+            try {
+              for (const e of Array.from(document.querySelectorAll(s))) sensitiveEls.add(e);
+            } catch {
+              /* a selector that no longer parses simply matches nothing */
+            }
+          }
+          const isSensitive = (el: Element): boolean =>
+            el.hasAttribute(sensitiveAttr) ||
+            sensitiveEls.has(el) ||
+            (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password');
+
           const INTERACTIVE = [
             'a[href]',
             'button',
@@ -271,7 +288,7 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
             if (rect.width === 0 && rect.height === 0) return false;
             const style = window.getComputedStyle(el);
             if (style.visibility === 'hidden' || style.display === 'none') return false;
-            if (parseFloat(style.opacity || '1') === 0) return false;
+            if (Number.parseFloat(style.opacity || '1') === 0) return false;
             return true;
           }
           function implicitRole(el: Element): string {
@@ -317,7 +334,8 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
             const title = el.getAttribute('title');
             if (title) return title.trim();
             const placeholder = el.getAttribute('placeholder');
-            if (placeholder && (el as HTMLInputElement).tagName === 'INPUT') return placeholder.trim();
+            if (placeholder && (el as HTMLInputElement).tagName === 'INPUT')
+              return placeholder.trim();
             const alt = el.getAttribute('alt');
             if (alt) return alt.trim();
             const text = (el as HTMLElement).innerText?.trim();
@@ -388,8 +406,9 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
             if (el instanceof HTMLInputElement) {
               entry.type = el.type;
               // Never echo password/secret values back to the agent — the field
-              // may be autofilled. Surface presence + length only.
-              if (el.type === 'password') {
+              // may be autofilled or filled by credential_login. Surface
+              // presence + length only.
+              if (isSensitive(el)) {
                 if (el.value) {
                   entry.value = '***';
                   entry.value_length = el.value.length;
@@ -429,9 +448,14 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
           args.max_nodes,
           args.include_text,
           args.include_bounds,
+          sensitiveSelectorsForTab(tabId),
+          SENSITIVE_ATTR,
         ],
       });
-      const result = first?.result as CachedScrape['result'] | { ok: false; reason: string } | undefined;
+      const result = first?.result as
+        | CachedScrape['result']
+        | { ok: false; reason: string }
+        | undefined;
       if (result && 'ok' in result && result.ok) {
         rememberScrape({
           tabId,
@@ -678,10 +702,8 @@ export const get_page_text: ToolHandler<PageTextArgs, unknown> = {
   argsSchema: PageTextArgs,
   run: async (args, ctx) => {
     const tabId =
-      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ??
-      (await getAssignedTabId(ctx));
-    if (tabId == null || !Number.isFinite(tabId))
-      return { ok: false, reason: 'No active tab' };
+      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ?? (await getAssignedTabId(ctx));
+    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
     try {
       const [first] = await chrome.scripting.executeScript({
         target: { tabId },
@@ -713,9 +735,9 @@ export const get_page_text: ToolHandler<PageTextArgs, unknown> = {
           let text = gather(target);
           if (text.length > maxChars) text = `${text.slice(0, maxChars)}…`;
           const meta = (s: string) =>
-            document.querySelector(`meta[name="${s}"], meta[property="${s}"]`)?.getAttribute(
-              'content',
-            ) ?? null;
+            document
+              .querySelector(`meta[name="${s}"], meta[property="${s}"]`)
+              ?.getAttribute('content') ?? null;
           return {
             ok: true,
             url: location.href,

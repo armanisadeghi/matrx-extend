@@ -6,9 +6,11 @@ import { useMemo, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
 
-export function MicrodataTab() {
+export function MicrodataTab({ active = true }: { active?: boolean }) {
   const [filter, setFilter] = useState('');
-  const { detection, rows, running, error, run } = useExtraction('microdata');
+  const { detection, rows, running, error, source, run } = useExtraction('microdata', {
+    autoDetect: active,
+  });
 
   const types = useMemo(() => {
     const meta = detection?.meta as { types?: Record<string, number> } | undefined;
@@ -79,6 +81,7 @@ export function MicrodataTab() {
               kind="microdata"
               config={filter ? { itemtype: filter } : {}}
               rows={rows}
+              source={source}
               defaultName={filter ? `${filter} microdata` : 'Microdata items'}
             />
           </div>

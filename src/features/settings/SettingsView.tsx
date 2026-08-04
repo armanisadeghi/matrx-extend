@@ -9,43 +9,49 @@
  * extension at staging / dev / localhost from here.
  */
 
-import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapabilities';
-import { Button } from '@/components/ui/button';
-import { Collapsible } from '@/components/ui/collapsible';
-import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { Input } from '@/components/ui/input';
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { Button } from "@/components/ui/button";
+import { Collapsible } from "@/components/ui/collapsible";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { useAuth } from '@/hooks/use-auth';
-import { useDesktopBridge } from '@/hooks/use-desktop';
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { AdvancedAgentCapabilities } from "@/features/settings/AdvancedAgentCapabilities";
+import { useAuth } from "@/hooks/use-auth";
+import { useDesktopBridge } from "@/hooks/use-desktop";
 import {
   getEnginePortOverride,
   invalidateEnginePortCache,
   setEnginePortOverride,
-} from '@/lib/desktop/discovery';
-import { clearPairToken, setPairToken } from '@/lib/desktop/http';
-import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
-import { cn } from '@/lib/utils';
-import { useSettingsStore } from '@/state/settings';
-import { ChevronRight, LogOut, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+} from "@/lib/desktop/discovery";
+import { clearPairToken, setPairToken } from "@/lib/desktop/http";
+import {
+  desktopStatusTextClass,
+  engineHealthState,
+  formatDesktopConnectionLabel,
+} from "@/lib/desktop/types";
+import { type AgxAgent, fetchUserAgents } from "@/lib/supabase/queries";
+import { cn } from "@/lib/utils";
+import { useSettingsStore } from "@/state/settings";
+import { ChevronRight, LogOut, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
-const NONE = '__none__';
+const NONE = "__none__";
 
 export function SettingsView() {
   const { user, signOut, isAdmin } = useAuth();
   const desktop = useDesktopBridge();
   const settings = useSettingsStore();
-  const [pairTokenInput, setPairTokenInput] = useState('');
+  const [pairTokenInput, setPairTokenInput] = useState("");
   const [agents, setAgents] = useState<AgxAgent[]>([]);
-  const [enginePortInput, setEnginePortInput] = useState('');
+  const [enginePortInput, setEnginePortInput] = useState("");
   const [enginePortSaved, setEnginePortSaved] = useState<number | null>(null);
+  const [enginePortError, setEnginePortError] = useState<string | null>(null);
   const [clearLocalDataOpen, setClearLocalDataOpen] = useState(false);
 
   useEffect(() => {
@@ -67,7 +73,7 @@ export function SettingsView() {
       const p = await getEnginePortOverride();
       if (cancelled) return;
       setEnginePortSaved(p);
-      setEnginePortInput(p === null ? '' : String(p));
+      setEnginePortInput(p === null ? "" : String(p));
     })();
     return () => {
       cancelled = true;
@@ -76,14 +82,19 @@ export function SettingsView() {
 
   const handleSaveEnginePort = async () => {
     const trimmed = enginePortInput.trim();
-    if (trimmed === '') {
+    if (trimmed === "") {
       await setEnginePortOverride(null);
       await invalidateEnginePortCache();
       setEnginePortSaved(null);
       return;
     }
     const n = Number(trimmed);
-    if (!Number.isInteger(n) || n < 1 || n > 65535) return;
+    if (!Number.isInteger(n) || n < 1 || n > 65535) {
+      // Silent return left the input showing a value that was never applied.
+      setEnginePortError("Port must be 1–65535.");
+      return;
+    }
+    setEnginePortError(null);
     await setEnginePortOverride(n);
     await invalidateEnginePortCache();
     setEnginePortSaved(n);
@@ -96,12 +107,11 @@ export function SettingsView() {
     await signOut();
   };
 
-  const desktopColor =
-    desktop.transport === 'native'
-      ? 'text-emerald-600 dark:text-emerald-400'
-      : desktop.transport === 'http'
-        ? 'text-sky-600 dark:text-sky-400'
-        : 'text-muted-foreground';
+  const desktopColor = desktopStatusTextClass(
+    desktop.transport,
+    desktop.health,
+  );
+  const engineHealth = engineHealthState(desktop.health);
 
   return (
     <div className="flex h-full flex-col">
@@ -113,7 +123,7 @@ export function SettingsView() {
         <div className="space-y-3 px-3 pb-3">
           <Collapsible label="Account">
             <Card>
-              <Row label="Email" value={user?.email ?? '—'} mono />
+              <Row label="Email" value={user?.email ?? "—"} mono />
               {user?.full_name && <Row label="Name" value={user.full_name} />}
               {isAdmin && <Row label="Role" value={<Badge>admin</Badge>} />}
             </Card>
@@ -126,11 +136,13 @@ export function SettingsView() {
                 control={
                   <PillSelect
                     value={settings.theme}
-                    onChange={(v) => settings.setTheme(v as typeof settings.theme)}
+                    onChange={(v) =>
+                      settings.setTheme(v as typeof settings.theme)
+                    }
                     options={[
-                      { value: 'system', label: 'System' },
-                      { value: 'light', label: 'Light' },
-                      { value: 'dark', label: 'Dark' },
+                      { value: "system", label: "System" },
+                      { value: "light", label: "Light" },
+                      { value: "dark", label: "Dark" },
                     ]}
                   />
                 }
@@ -145,10 +157,12 @@ export function SettingsView() {
                 control={
                   <PillSelect
                     value={settings.defaultAgentId ?? NONE}
-                    onChange={(v) => settings.setDefaultAgentId(v === NONE ? null : v)}
+                    onChange={(v) =>
+                      settings.setDefaultAgentId(v === NONE ? null : v)
+                    }
                     placeholder="None"
                     options={[
-                      { value: NONE, label: 'None' },
+                      { value: NONE, label: "None" },
                       ...agents.map((a) => ({ value: a.id, label: a.name })),
                     ]}
                   />
@@ -160,11 +174,13 @@ export function SettingsView() {
                   <PillSelect
                     value={settings.defaultPermissionMode}
                     onChange={(v) =>
-                      settings.setDefaultPermissionMode(v as typeof settings.defaultPermissionMode)
+                      settings.setDefaultPermissionMode(
+                        v as typeof settings.defaultPermissionMode,
+                      )
                     }
                     options={[
-                      { value: 'ask', label: 'Ask before acting' },
-                      { value: 'act', label: 'Act without asking' },
+                      { value: "ask", label: "Ask before acting" },
+                      { value: "act", label: "Act without asking" },
                     ]}
                   />
                 }
@@ -176,12 +192,29 @@ export function SettingsView() {
                   <PillSelect
                     value={settings.defaultChatSpeed}
                     onChange={(v) =>
-                      settings.setDefaultChatSpeed(v as typeof settings.defaultChatSpeed)
+                      settings.setDefaultChatSpeed(
+                        v as typeof settings.defaultChatSpeed,
+                      )
                     }
                     options={[
-                      { value: 'fast', label: 'Fast' },
-                      { value: 'thinking', label: 'Thinking' },
+                      { value: "fast", label: "Fast" },
+                      { value: "thinking", label: "Thinking" },
                     ]}
+                  />
+                }
+              />
+            </Card>
+          </Collapsible>
+
+          <Collapsible label="Privacy">
+            <Card>
+              <ControlRow
+                label="Share page identity & email content"
+                hint="lets the agent see your visible username on sites and Gmail subjects/excerpts"
+                control={
+                  <Switch
+                    checked={settings.sharePageIdentity}
+                    onCheckedChange={settings.setSharePageIdentity}
                   />
                 }
               />
@@ -217,11 +250,13 @@ export function SettingsView() {
                   <PillSelect
                     value={settings.scrapeAutoMode}
                     onChange={(v) =>
-                      settings.setScrapeAutoMode(v as typeof settings.scrapeAutoMode)
+                      settings.setScrapeAutoMode(
+                        v as typeof settings.scrapeAutoMode,
+                      )
                     }
                     options={[
-                      { value: 'capture', label: 'Capture' },
-                      { value: 'scroll-capture', label: 'Scroll & capture' },
+                      { value: "capture", label: "Capture" },
+                      { value: "scroll-capture", label: "Scroll & capture" },
                     ]}
                   />
                 }
@@ -243,14 +278,55 @@ export function SettingsView() {
                 label="Status"
                 value={
                   <span className={desktopColor}>
-                    {desktop.transport === 'none' ? 'Not connected' : desktop.transport}
+                    {formatDesktopConnectionLabel(
+                      desktop.transport,
+                      desktop.health,
+                    )}
                   </span>
                 }
               />
-              {desktop.health?.version && (
-                <Row label="Version" value={`matrx-local v${desktop.health.version}`} mono />
+              {desktop.transport !== "none" && engineHealth !== "ok" && (
+                <Row
+                  label="Engine health"
+                  value={
+                    <span className={desktopColor}>
+                      {engineHealth === "degraded"
+                        ? "Degraded"
+                        : "Failed services"}
+                    </span>
+                  }
+                />
               )}
-              {desktop.transport !== 'native' && (
+              {desktop.health?.degraded?.length ? (
+                <Row
+                  label="Degraded"
+                  value={desktop.health.degraded.join(", ")}
+                  mono
+                />
+              ) : null}
+              {desktop.health?.failed?.length ? (
+                <Row
+                  label="Failed"
+                  value={desktop.health.failed.join(", ")}
+                  mono
+                />
+              ) : null}
+              {desktop.health?.version && (
+                <Row
+                  label="Version"
+                  value={`matrx-local v${desktop.health.version}`}
+                  mono
+                />
+              )}
+              {desktop.transport !== "native" && (
+                <p className="px-3.5 pt-2 text-xs text-muted-foreground">
+                  Pairing is automatic when the Matrx desktop app runs on
+                  this computer. The code below is only needed to pair with
+                  a desktop app on another machine — copy it from that
+                  app&apos;s Settings → Bridge Test → Extension pairing.
+                </p>
+              )}
+              {desktop.transport !== "native" && (
                 <div className="flex items-center gap-2 px-3.5 py-2">
                   <Input
                     value={pairTokenInput}
@@ -265,7 +341,7 @@ export function SettingsView() {
                     onClick={async () => {
                       if (pairTokenInput.trim()) {
                         await setPairToken(pairTokenInput.trim());
-                        setPairTokenInput('');
+                        setPairTokenInput("");
                       }
                     }}
                   >
@@ -273,8 +349,11 @@ export function SettingsView() {
                   </Button>
                 </div>
               )}
-              {desktop.transport === 'http' && (
-                <ActionRow label="Forget pair code" onClick={() => void clearPairToken()} />
+              {desktop.transport === "http" && (
+                <ActionRow
+                  label="Forget pair code"
+                  onClick={() => void clearPairToken()}
+                />
               )}
               <div className="flex items-center gap-2 px-3.5 py-2">
                 <span className="shrink-0 text-sm">Local engine port</span>
@@ -283,7 +362,7 @@ export function SettingsView() {
                   pattern="[0-9]*"
                   value={enginePortInput}
                   onChange={(e) =>
-                    setEnginePortInput(e.target.value.replace(/[^0-9]/g, ''))
+                    setEnginePortInput(e.target.value.replace(/[^0-9]/g, ""))
                   }
                   placeholder="auto"
                   className="h-7 w-20 rounded-full border-0 bg-secondary text-right focus-visible:ring-1"
@@ -293,7 +372,7 @@ export function SettingsView() {
                   className="h-7 rounded-full px-3"
                   onClick={() => void handleSaveEnginePort()}
                 >
-                  {enginePortSaved === null ? 'Set' : 'Save'}
+                  {enginePortSaved === null ? "Set" : "Save"}
                 </Button>
                 {enginePortSaved !== null && (
                   <span className="text-[10px] uppercase tracking-wider text-muted-foreground/70">
@@ -301,16 +380,24 @@ export function SettingsView() {
                   </span>
                 )}
               </div>
+              {enginePortError && (
+                <div className="px-3.5 pb-2 text-[11px] text-red-600 dark:text-red-400">
+                  {enginePortError}
+                </div>
+              )}
             </Card>
           </Collapsible>
 
           {isAdmin && (
-            <Collapsible label="Advanced agent capabilities" defaultOpen={false}>
+            <Collapsible
+              label="Advanced agent capabilities"
+              defaultOpen={false}
+            >
               <AdvancedAgentCapabilities />
             </Collapsible>
           )}
 
-          <Collapsible label="Privacy">
+          <Collapsible label="Data & reset">
             <Card>
               <ActionRow
                 label="Clear local data on this device"
@@ -325,7 +412,7 @@ export function SettingsView() {
             open={clearLocalDataOpen}
             title="Clear local data?"
             description={
-              'Clear all locally cached extension data on this device?\n\nYou will be signed out. Your chats, captures and patterns saved on the server are NOT affected.'
+              "Clear all locally cached extension data on this device?\n\nYou will be signed out. Your chats, captures and patterns saved on the server are NOT affected."
             }
             confirmLabel="Clear & sign out"
             destructive
@@ -335,7 +422,11 @@ export function SettingsView() {
 
           <Collapsible label="About" defaultOpen={false}>
             <Card>
-              <Row label="Version" value={chrome.runtime.getManifest().version} mono />
+              <Row
+                label="Version"
+                value={chrome.runtime.getManifest().version}
+                mono
+              />
               <Row label="Extension ID" value={chrome.runtime.id} mono />
             </Card>
           </Collapsible>
@@ -385,8 +476,8 @@ function Row({
       <span className="shrink-0 text-sm">{label}</span>
       <div
         className={cn(
-          'min-w-0 truncate text-right text-sm text-muted-foreground',
-          mono && 'font-mono text-xs',
+          "min-w-0 truncate text-right text-sm text-muted-foreground",
+          mono && "font-mono text-xs",
         )}
       >
         {value}
@@ -435,8 +526,8 @@ function ActionRow({
       type="button"
       onClick={onClick}
       className={cn(
-        'flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-sm transition-colors hover:bg-accent/40',
-        destructive && 'text-destructive',
+        "flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-sm transition-colors hover:bg-accent/40",
+        destructive && "text-destructive",
       )}
     >
       {icon}

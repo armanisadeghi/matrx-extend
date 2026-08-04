@@ -6,9 +6,9 @@
  *  - Task       — live work item the AGENT owns (N per conversation)
  *  - UserTodo   — task the AGENT assigns to the USER (N per conversation)
  *
- * All three are persisted in chrome.storage.local under a single
- * `matrx.lists.{plans|tasks|user_todos}` map keyed by conversationId.
- * The full UI surface lives in src/features/lists/.
+ * Tasks are persisted in shared `chat.agent_task`, where aidream's native
+ * `tasks` tool also writes. Plans and user todos remain in extension-local
+ * storage. The full UI surface lives in src/features/lists/.
  */
 
 export type TaskStatus = 'pending' | 'in_progress' | 'done' | 'blocked' | 'skipped';

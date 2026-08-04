@@ -26,13 +26,7 @@ import {
 import { ChevronDown, ChevronRight, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
 
-const MEMORY_SCOPES: MemoryScope[] = [
-  'user',
-  'project',
-  'organization',
-  'agent',
-  'conversation',
-];
+const MEMORY_SCOPES: MemoryScope[] = ['user', 'project', 'organization', 'agent', 'conversation'];
 
 export function AdminAgentFlagsPanel() {
   const state = useAdminFlagsStore();
@@ -65,9 +59,9 @@ export function AdminAgentFlagsPanel() {
       {open && (
         <div className="space-y-2 border-t border-amber-300/30 px-3 pt-2 pb-3 dark:border-amber-700/20">
           <p className="text-[10px] leading-snug text-muted-foreground">
-            These flags merge into every chat request. Each is unset by default —
-            toggling adds it to the next outgoing body. Cleared on browser restart
-            and stripped automatically for non-admin users.
+            These flags merge into every chat request. Each is unset by default — toggling adds it
+            to the next outgoing body. Cleared on browser restart and stripped automatically for
+            non-admin users.
           </p>
 
           <SectionHeader>Model</SectionHeader>

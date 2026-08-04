@@ -81,9 +81,7 @@ export function CopyConversationButton({
   disabled,
 }: CopyConversationButtonProps) {
   const [open, setOpen] = useState(false);
-  const [opts, setOpts] = useState<ConversationCopyOptions>(
-    DEFAULT_CONVERSATION_COPY_OPTIONS,
-  );
+  const [opts, setOpts] = useState<ConversationCopyOptions>(DEFAULT_CONVERSATION_COPY_OPTIONS);
   const [copied, setCopied] = useState(false);
 
   const previewLength = useMemo(() => {
@@ -140,9 +138,7 @@ export function CopyConversationButton({
                   className="mt-0.5 size-3.5 shrink-0 cursor-pointer accent-primary disabled:cursor-not-allowed"
                   checked={checked && !gated}
                   disabled={gated}
-                  onChange={(e) =>
-                    setOpts((prev) => ({ ...prev, [opt.key]: e.target.checked }))
-                  }
+                  onChange={(e) => setOpts((prev) => ({ ...prev, [opt.key]: e.target.checked }))}
                 />
                 <div className="min-w-0 flex-1">
                   <div className="leading-tight">{opt.label}</div>

@@ -43,7 +43,10 @@ export type OptionalPermission =
 //   'management'     — list and manage other installed extensions
 // ─────────────────────────────────────────────────────────────────────────
 
-export const OPTIONAL_PERMISSION_LABELS: Record<OptionalPermission, { title: string; desc: string }> = {
+export const OPTIONAL_PERMISSION_LABELS: Record<
+  OptionalPermission,
+  { title: string; desc: string }
+> = {
   debugger: {
     title: 'DevTools Protocol',
     desc: 'Enables CDP-powered tools: full-page screenshots, accessibility tree dumps, network capture, coordinate-based clicks. Chrome shows a "is being debugged" banner while attached.',

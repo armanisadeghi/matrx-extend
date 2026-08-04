@@ -1,14 +1,14 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-05-27T23:10:02.781Z
+Generated: 2026-07-28T00:36:32.358Z
 
-- **Total tools:** 169
-- **Assistant bundle:** 75 tools (read-only)
+- **Total tools:** 167
+- **Assistant bundle:** 74 tools (read-only)
 - **Pilot bundle:** 138 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 169 tools
+- **Pilot+privileged bundle:** 167 tools
 
 
-## Tier: read (75)
+## Tier: read (74)
 
 ### `list_browser_tools`
 
@@ -221,6 +221,21 @@ Generated: 2026-05-27T23:10:02.781Z
 ```
 
 ### `list_desktop_tools`
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_credentials_tools`
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1360,36 +1375,6 @@ Generated: 2026-05-27T23:10:02.781Z
 }
 ```
 
-### `get_system_info`
-
-- **Required permissions:** `system.cpu`, `system.memory`, `system.display`
-- **Surface bundles:** assistant, pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {},
-  "additionalProperties": false,
-  "default": {},
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `list_network_blocking_rules`
-
-- **Required permissions:** `declarativeNetRequestWithHostAccess`
-- **Surface bundles:** assistant, pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {},
-  "additionalProperties": false,
-  "default": {},
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
 ### `webmcp_check_availability`
 
 - **Required permissions:** `activeTab`, `scripting`
@@ -2041,7 +2026,7 @@ Generated: 2026-05-27T23:10:02.781Z
 }
 ```
 
-## Tier: action (60)
+## Tier: action (61)
 
 ### `navigate_active_tab`
 
@@ -3043,6 +3028,26 @@ Generated: 2026-05-27T23:10:02.781Z
 }
 ```
 
+### `credential_login`
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "credential_item_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
 ### `remember_for_domain`
 
 - **Required permissions:** (none)
@@ -3133,104 +3138,6 @@ Generated: 2026-05-27T23:10:02.781Z
   },
   "required": [
     "name"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `tasks`
-
-- **Required permissions:** (none)
-- **Surface bundles:** pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "action": {
-      "type": "string",
-      "enum": [
-        "add",
-        "list",
-        "set_status",
-        "update",
-        "remove",
-        "reorder",
-        "clear_completed",
-        "clear_all"
-      ]
-    },
-    "title": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 200
-    },
-    "items": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "pending",
-              "in_progress",
-              "done",
-              "blocked",
-              "skipped"
-            ]
-          },
-          "note": {
-            "type": "string",
-            "maxLength": 500
-          }
-        },
-        "required": [
-          "title"
-        ],
-        "additionalProperties": false
-      },
-      "maxItems": 40
-    },
-    "id": {
-      "type": "string"
-    },
-    "status": {
-      "type": "string",
-      "enum": [
-        "pending",
-        "in_progress",
-        "done",
-        "blocked",
-        "skipped"
-      ]
-    },
-    "note": {
-      "anyOf": [
-        {
-          "type": "string",
-          "maxLength": 500
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "ids": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    }
-  },
-  "required": [
-    "action"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -3661,6 +3568,98 @@ Generated: 2026-05-27T23:10:02.781Z
   },
   "additionalProperties": false,
   "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `data_patterns`
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "list",
+        "describe",
+        "recipes",
+        "run",
+        "save",
+        "delete"
+      ]
+    },
+    "pattern_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "manual_css",
+        "json_ld",
+        "og_meta",
+        "auto_table",
+        "next_data",
+        "ai_extract",
+        "list_pattern",
+        "microdata",
+        "network_capture"
+      ]
+    },
+    "config": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "fields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          },
+          "attr": {
+            "type": "string"
+          },
+          "is_list": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "selector"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 40
+    },
+    "rows_limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 500
+    }
+  },
+  "required": [
+    "action"
+  ],
+  "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
 ```
@@ -4397,7 +4396,7 @@ Generated: 2026-05-27T23:10:02.781Z
 }
 ```
 
-## Tier: privileged (31)
+## Tier: privileged (29)
 
 ### `set_cookie`
 
@@ -4965,36 +4964,6 @@ Generated: 2026-05-27T23:10:02.781Z
 }
 ```
 
-### `execute_javascript`
-
-- **Required permissions:** `activeTab`, `scripting`
-- **Surface bundles:** pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "code": {
-      "type": "string",
-      "minLength": 1
-    },
-    "arg": {},
-    "main_world": {
-      "type": "boolean",
-      "default": false
-    },
-    "tab_id": {
-      "type": "integer"
-    }
-  },
-  "required": [
-    "code"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
 ### `inject_stylesheet`
 
 - **Required permissions:** `activeTab`, `scripting`
@@ -5365,32 +5334,6 @@ Generated: 2026-05-27T23:10:02.781Z
   },
   "required": [
     "action"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `evaluate_javascript`
-
-- **Required permissions:** `activeTab`, `scripting`
-- **Surface bundles:** pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "text": {
-      "type": "string",
-      "minLength": 1
-    },
-    "tab_id": {
-      "type": "string"
-    },
-    "arg": {}
-  },
-  "required": [
-    "text"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

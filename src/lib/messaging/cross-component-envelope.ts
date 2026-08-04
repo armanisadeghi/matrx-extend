@@ -48,6 +48,12 @@ export type InstanceRef = z.infer<typeof InstanceRefSchema>;
  *  - `toInstance` → undefined (treated as broadcast to any instance)
  */
 export const CrossComponentEnvelopeSchema = z.object({
+  /**
+   * Envelope schema version. v1 publishers omit it (and every v2 field);
+   * v2 publishers stamp it explicitly. Bump ONLY on a breaking wire change
+   * and keep parse back-compat for at least one version.
+   */
+  v: z.number().int().default(2),
   kind: z.enum(['rpc', 'wake', 'presence']).default('rpc'),
   direction: z.string().min(1),
   action: z.string(),

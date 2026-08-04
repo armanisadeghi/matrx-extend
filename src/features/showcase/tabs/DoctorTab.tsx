@@ -2,18 +2,23 @@ import { CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
-import {
-  type PageDiagnostic,
-  pageDiagnosticInPage,
-} from '@/lib/data-pattern/page-diagnostic';
+import { type PageDiagnostic, pageDiagnosticInPage } from '@/lib/data-pattern/page-diagnostic';
 import { cn } from '@/lib/utils';
-import {
-  CheckCircle2,
-  Loader2,
-  Stethoscope,
-  XCircle,
-} from 'lucide-react';
+import { type ShowcaseSubTab, useShowcaseTabStore } from '@/state/showcase-tab';
+import { CheckCircle2, Loader2, Stethoscope, XCircle } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
+/** mode id → the Showcase sub-tab that drives it (for click-to-jump). */
+const MODE_TABS: Record<string, ShowcaseSubTab> = {
+  json_ld: 'json_ld',
+  microdata: 'microdata',
+  next_data: 'framework',
+  auto_table: 'tables',
+  list_pattern: 'list_pattern',
+  ai_extract: 'ai_extract',
+  network_capture: 'network',
+  og_meta: 'snapshot',
+};
 
 const MODE_LABELS: Record<string, string> = {
   json_ld: 'JSON-LD tab',
@@ -26,8 +31,9 @@ const MODE_LABELS: Record<string, string> = {
   og_meta: 'Snapshot tab',
 };
 
-export function DoctorTab() {
+export function DoctorTab({ active = true }: { active?: boolean }) {
   const tab = useActiveTab();
+  const setSubTab = useShowcaseTabStore((s) => s.setSubTab);
   const [diag, setDiag] = useState<PageDiagnostic | null>(null);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,9 +60,11 @@ export function DoctorTab() {
     }
   }, [tab.id]);
 
+  // `active` gates the auto-probe: with every sub-tab forceMounted, only the
+  // visible one should scan the page. Becoming active (re)probes.
   useEffect(() => {
-    if (tab.id) void run();
-  }, [run, tab.id, tab.url]);
+    if (active && tab.id) void run();
+  }, [active, run, tab.id, tab.url]);
 
   const copyOptions = useMemo(() => {
     if (!diag) return [];
@@ -92,9 +100,9 @@ export function DoctorTab() {
               Doctor
             </div>
             <div className="text-xs text-muted-foreground">
-              Probes the page for every structured-data signal we know how to read. Tells you
-              which tab is most likely to extract something useful — or hand the diagnostic to
-              an AI when nothing's working.
+              Probes the page for every structured-data signal we know how to read. Tells you which
+              tab is most likely to extract something useful — or hand the diagnostic to an AI when
+              nothing's working.
             </div>
           </div>
           <Button
@@ -104,7 +112,11 @@ export function DoctorTab() {
             variant="secondary"
             className="shrink-0 rounded-full"
           >
-            {running ? <Loader2 className="size-3.5 animate-spin" /> : <Stethoscope className="size-3.5" />}
+            {running ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Stethoscope className="size-3.5" />
+            )}
             {running ? 'Probing…' : 'Re-probe'}
           </Button>
         </div>
@@ -128,18 +140,25 @@ export function DoctorTab() {
                 <div className="text-muted-foreground">No recommendations.</div>
               ) : (
                 <div className="space-y-1">
-                  {diag.recommendations.map((r, i) => (
-                    <div
-                      // biome-ignore lint/suspicious/noArrayIndexKey: render-only.
-                      key={i}
-                      className="flex items-start gap-2 rounded-lg bg-background/60 px-2 py-1.5"
-                    >
-                      <span className="mt-0.5 shrink-0 whitespace-nowrap rounded-md bg-primary/15 px-1.5 py-px text-[9px] font-medium uppercase tracking-wider text-primary">
-                        {MODE_LABELS[r.mode] ?? r.mode}
-                      </span>
-                      <span className="text-[11px]">{r.reason}</span>
-                    </div>
-                  ))}
+                  {diag.recommendations.map((r, i) => {
+                    const target = MODE_TABS[r.mode];
+                    return (
+                      <button
+                        // biome-ignore lint/suspicious/noArrayIndexKey: render-only.
+                        key={i}
+                        type="button"
+                        onClick={() => target && setSubTab(target)}
+                        disabled={!target}
+                        title={target ? `Open the ${MODE_LABELS[r.mode] ?? r.mode}` : undefined}
+                        className="flex w-full items-start gap-2 rounded-lg bg-background/60 px-2 py-1.5 text-left transition-colors enabled:hover:bg-background enabled:hover:ring-1 enabled:hover:ring-primary/30"
+                      >
+                        <span className="mt-0.5 shrink-0 whitespace-nowrap rounded-md bg-primary/15 px-1.5 py-px text-[9px] font-medium uppercase tracking-wider text-primary">
+                          {MODE_LABELS[r.mode] ?? r.mode}
+                        </span>
+                        <span className="text-[11px]">{r.reason}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -150,8 +169,8 @@ export function DoctorTab() {
                   Repeating-card patterns
                 </div>
                 <div className="text-[10px] text-muted-foreground">
-                  Direct-child siblings under a common parent that share a structural
-                  fingerprint. The List Pattern tab can extract these.
+                  Direct-child siblings under a common parent that share a structural fingerprint.
+                  The List Pattern tab can extract these.
                 </div>
                 <div className="space-y-1">
                   {diag.sources.repeating_groups.map((g, i) => (
@@ -273,10 +292,7 @@ export function DoctorTab() {
               <KV label="Title" value={diag.title || '—'} />
               <KV label="Lang" value={diag.lang ?? '—'} />
               <KV label="Meta tags" value={String(diag.meta_count)} />
-              <KV
-                label="Body text"
-                value={`${(diag.body_total_bytes / 1024).toFixed(1)} KB`}
-              />
+              <KV label="Body text" value={`${(diag.body_total_bytes / 1024).toFixed(1)} KB`} />
             </div>
           </>
         )}

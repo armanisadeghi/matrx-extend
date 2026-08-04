@@ -24,6 +24,8 @@ export interface CapturedNetEvent {
   body_truncated: boolean;
   body_size: number;
   content_type?: string;
+  /** Stamped by the SW relay from sender.tab.id — null for non-tab senders. */
+  tab_id?: number | null;
 }
 
 /**
@@ -139,18 +141,15 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
     } as typeof xhr.open;
     xhr.addEventListener('load', () => {
       try {
-        const respText = xhr.responseType === '' || xhr.responseType === 'text'
-          ? xhr.responseText
-          : '';
+        const respText =
+          xhr.responseType === '' || xhr.responseType === 'text' ? xhr.responseText : '';
         const t = truncate(respText);
         const headersRaw = xhr.getAllResponseHeaders();
         const responseHeaders: Record<string, string> = {};
         for (const line of headersRaw.split('\r\n')) {
           const colon = line.indexOf(':');
           if (colon < 0) continue;
-          responseHeaders[line.slice(0, colon).trim().toLowerCase()] = line
-            .slice(colon + 1)
-            .trim();
+          responseHeaders[line.slice(0, colon).trim().toLowerCase()] = line.slice(colon + 1).trim();
         }
         post({
           ts_ms: t0,
@@ -200,8 +199,10 @@ export function networkRelayIsolated(): void {
           kind: 'net-capture:event',
           payload: data.event,
         });
-      } catch {
-        // sidepanel may be closed; that's OK, SW still buffers
+      } catch (err) {
+        // No one is buffering: if the SW/sidepanel isn't listening the event
+        // is gone. Surface it so a silently-dead capture is debuggable.
+        console.warn('[matrx-net-relay] sendMessage failed:', err);
       }
     },
     false,

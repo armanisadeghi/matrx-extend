@@ -2,8 +2,21 @@
  * Tier: READ — informational tools. Run automatically without approval.
  */
 
+import { SENSITIVE_ATTR, sensitiveSelectorsForTab } from '@/lib/credentials/sensitive-fields';
 import { log } from '@/lib/debug/log';
-import { resolveProfile, type ScreenshotProfile } from '@/lib/screenshot/profiles';
+// Static imports — these three were dynamic (`await import(...)`) inside
+// read_active_page. In an MV3 SW a dynamic import loads a SHARED Vite chunk,
+// and executing that chunk runs the top-level code of every co-bundled
+// module — if any of them touches `document`/`window` at module scope the
+// import itself throws ("document is not defined" — observed live on
+// 2026-06-09, conversation 417e64ce call 2f3cd152a). These modules are
+// SW-safe (all DOM access is inside executeScript funcs / handlers), so
+// importing them statically into the SW entry is deterministic and removes
+// the chunk-sharing hazard entirely.
+import { classifyTabUrl } from '@/lib/scrape/capture-error';
+import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
+import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
+import { type ScreenshotProfile, resolveProfile } from '@/lib/screenshot/profiles';
 import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
@@ -77,7 +90,6 @@ export const read_active_page: ToolHandler<ReadPageArgs, unknown> = {
     // Pre-flight URL check — same shared classifier the Scrape tab uses.
     // Saves a confusing Chrome error and an immediate retry loop when we
     // already know the page is on Chrome's hard-blocklist.
-    const { classifyTabUrl } = await import('@/lib/scrape/capture-error');
     const urlClass = classifyTabUrl(tab.url);
     if (urlClass.blocked) {
       return {
@@ -87,7 +99,6 @@ export const read_active_page: ToolHandler<ReadPageArgs, unknown> = {
       };
     }
     if (args.deep) {
-      const { scrollToLoadLazy } = await import('@/lib/scrape/page-ready');
       await scrollToLoadLazy(tab.id, { delayMs: 100, maxMs: 5000 });
     }
     // Reuse the in-tab scrape pipeline through the shared captureWithFallback
@@ -95,7 +106,6 @@ export const read_active_page: ToolHandler<ReadPageArgs, unknown> = {
     // hook's pre-send refresh use — it auto-injects the content script on a
     // "no receiver" failure (covers stale tabs after extension upgrade) and
     // returns structured reasons rather than letting raw chrome errors leak.
-    const { captureWithFallback } = await import('@/lib/scrape/capture-with-fallback');
     const cap = await captureWithFallback(tab.id, tab.url);
     if (cap.ok) return cap.soup;
 
@@ -283,7 +293,7 @@ async function processScreenshot(
 
   const out = await canvas.convertToBlob({
     type: format === 'jpeg' ? 'image/jpeg' : 'image/png',
-    quality: format === 'jpeg' ? quality / 100 : undefined,
+    ...(format === 'jpeg' && { quality: quality / 100 }),
   });
   // Blob → base64 without involving FileReader (which doesn't exist in SW).
   const buf = await out.arrayBuffer();
@@ -291,10 +301,7 @@ async function processScreenshot(
   let bin = '';
   const chunkSize = 0x8000;
   for (let i = 0; i < bytes.length; i += chunkSize) {
-    bin += String.fromCharCode.apply(
-      null,
-      Array.from(bytes.subarray(i, i + chunkSize)),
-    );
+    bin += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + chunkSize)));
   }
   const base64 = btoa(bin);
   return { base64, width: targetW, height: targetH, sourceWidth, sourceHeight, resized };
@@ -366,6 +373,35 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
         }
       }
 
+      if (fileId) {
+        const { cloudScreenshotRef } = await import('@/lib/screenshot/persist');
+        return {
+          ok: true,
+          ...cloudScreenshotRef({
+            persisted: { fileId, fileUrl, screenshotId },
+            mediaType,
+            width: processed.width,
+            height: processed.height,
+            sizeBytes: Math.floor((processed.base64.length * 3) / 4),
+            capture: {
+              mode,
+              format,
+              profile: profileName,
+              resized: processed.resized,
+              source_width: processed.sourceWidth,
+              source_height: processed.sourceHeight,
+              ...(tileCount !== undefined && { tile_count: tileCount }),
+              ...(truncated !== undefined && { truncated }),
+            },
+          }),
+          mode,
+          format,
+          width: processed.width,
+          height: processed.height,
+          profile: profileName,
+        } as ScreenshotResult;
+      }
+
       return {
         ok: true,
         mode,
@@ -379,12 +415,12 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
         byte_length: processed.base64.length,
         resized: processed.resized,
         profile: profileName,
-        est_tokens: profile.est_tokens,
+        ...(profile.est_tokens !== undefined && { est_tokens: profile.est_tokens }),
         file_id: fileId,
         file_url: fileUrl,
         screenshot_id: screenshotId,
-        tile_count: tileCount,
-        truncated,
+        ...(tileCount !== undefined && { tile_count: tileCount }),
+        ...(truncated !== undefined && { truncated }),
       };
     } catch (err) {
       return { ok: false, reason: (err as Error).message };
@@ -409,14 +445,35 @@ export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
     try {
       const [first] = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: (selector: string, attrs: string[] | null, limit: number) => {
+        func: (
+          selector: string,
+          attrs: string[] | null,
+          limit: number,
+          sensitiveSelectors: string[],
+          sensitiveAttr: string,
+        ) => {
+          // Redaction is the OR of three signals — marker attribute, the
+          // extension's own filled-field memory, and the legacy live
+          // `type === 'password'` check. The first two survive a page that
+          // strips the marker or toggles the input type.
+          // See src/lib/credentials/sensitive-fields.ts.
+          const sensitiveEls = new Set<Element>();
+          for (const s of sensitiveSelectors) {
+            try {
+              for (const e of Array.from(document.querySelectorAll(s))) sensitiveEls.add(e);
+            } catch {
+              /* a selector that no longer parses simply matches nothing */
+            }
+          }
           const out: Array<Record<string, unknown>> = [];
           const list = document.querySelectorAll(selector);
           const total = list.length;
           for (let i = 0; i < Math.min(list.length, limit); i++) {
             const el = list[i] as HTMLElement;
             const isPassword =
-              el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password';
+              el.hasAttribute(sensitiveAttr) ||
+              sensitiveEls.has(el) ||
+              (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password');
             const item: Record<string, unknown> = {
               index: i,
               tag: el.tagName.toLowerCase(),
@@ -443,7 +500,13 @@ export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
           }
           return { total, returned: out.length, items: out };
         },
-        args: [args.selector, args.attributes ?? null, args.limit],
+        args: [
+          args.selector,
+          args.attributes ?? null,
+          args.limit,
+          sensitiveSelectorsForTab(tab.id),
+          SENSITIVE_ATTR,
+        ],
       });
       return first?.result ?? { total: 0, returned: 0, items: [] };
     } catch (err) {

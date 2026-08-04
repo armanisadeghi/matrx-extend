@@ -17,11 +17,14 @@ export type SidepanelTab =
   | 'guidance'
   | 'seo'
   | 'notes'
+  | 'files'
   | 'screenshots'
+  | 'vault'
   | 'tools'
   | 'settings'
   | 'profile'
   | 'showcase'
+  | 'broker'
   | 'debug';
 
 interface SidepanelTabState {

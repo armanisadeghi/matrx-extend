@@ -64,21 +64,40 @@ export async function replayDemo(opts: ReplayOptions): Promise<ReplayResult> {
       await waitForLoad(tabId);
     }
   } catch (err) {
-    return finalize(opts.demo, stepResults, startedAt, false, 0, `Tab navigation failed: ${(err as Error).message}`);
+    return finalize(
+      opts.demo,
+      stepResults,
+      startedAt,
+      false,
+      0,
+      `Tab navigation failed: ${(err as Error).message}`,
+    );
   }
 
   for (const step of opts.demo.steps) {
     const stepStart = Date.now();
     if (step.kind === 'navigate' && step.index === 0) {
       // Already navigated above.
-      stepResults.push({ step_id: step.id, index: step.index, kind: step.kind, ok: true, elapsed_ms: 0 });
+      stepResults.push({
+        step_id: step.id,
+        index: step.index,
+        kind: step.kind,
+        ok: true,
+        elapsed_ms: 0,
+      });
       continue;
     }
 
     if (step.kind === 'navigate' && step.navigation_url) {
       try {
         await navigateAndWait(tabId, step.navigation_url);
-        stepResults.push({ step_id: step.id, index: step.index, kind: step.kind, ok: true, elapsed_ms: Date.now() - stepStart });
+        stepResults.push({
+          step_id: step.id,
+          index: step.index,
+          kind: step.kind,
+          ok: true,
+          elapsed_ms: Date.now() - stepStart,
+        });
       } catch (err) {
         stepResults.push({
           step_id: step.id,
@@ -88,7 +107,14 @@ export async function replayDemo(opts: ReplayOptions): Promise<ReplayResult> {
           error: (err as Error).message,
           elapsed_ms: Date.now() - stepStart,
         });
-        return finalize(opts.demo, stepResults, startedAt, false, step.index, (err as Error).message);
+        return finalize(
+          opts.demo,
+          stepResults,
+          startedAt,
+          false,
+          step.index,
+          (err as Error).message,
+        );
       }
       continue;
     }
@@ -100,7 +126,13 @@ export async function replayDemo(opts: ReplayOptions): Promise<ReplayResult> {
           func: (x: number, y: number) => window.scrollTo(x, y),
           args: [step.scroll_target?.x ?? 0, step.scroll_target?.y ?? 0],
         });
-        stepResults.push({ step_id: step.id, index: step.index, kind: step.kind, ok: true, elapsed_ms: Date.now() - stepStart });
+        stepResults.push({
+          step_id: step.id,
+          index: step.index,
+          kind: step.kind,
+          ok: true,
+          elapsed_ms: Date.now() - stepStart,
+        });
       } catch (err) {
         stepResults.push({
           step_id: step.id,
@@ -122,12 +154,19 @@ export async function replayDemo(opts: ReplayOptions): Promise<ReplayResult> {
       index: step.index,
       kind: step.kind,
       ok: result.ok,
-      resolved_via: result.resolved_via,
-      error: result.error,
+      ...(result.resolved_via !== undefined && { resolved_via: result.resolved_via }),
+      ...(result.error !== undefined && { error: result.error }),
       elapsed_ms: Date.now() - stepStart,
     });
     if (!result.ok) {
-      return finalize(opts.demo, stepResults, startedAt, false, step.index, result.error ?? 'step failed');
+      return finalize(
+        opts.demo,
+        stepResults,
+        startedAt,
+        false,
+        step.index,
+        result.error ?? 'step failed',
+      );
     }
     await sleep(SETTLE_MS);
   }
@@ -167,7 +206,12 @@ async function applyStep(
       func: applyStepInPage,
       args: [
         step.kind,
-        step.selector_chain as unknown as Array<{ kind: string; selector: string; match_text?: string; role?: string }>,
+        step.selector_chain as unknown as Array<{
+          kind: string;
+          selector: string;
+          match_text?: string;
+          role?: string;
+        }>,
         inputValue,
         step.checked ?? null,
         dryRun,
@@ -190,11 +234,20 @@ function applyStepInPage(
   checked: boolean | null,
   dryRun: boolean,
 ): { ok: boolean; resolved_via?: string; error?: string } {
-  function resolveOne(strat: { kind: string; selector: string; match_text?: string }): Element | null {
+  function resolveOne(strat: {
+    kind: string;
+    selector: string;
+    match_text?: string;
+  }): Element | null {
     if (strat.kind === 'aria') {
       const all = Array.from(document.querySelectorAll(strat.selector));
       const want = (strat.match_text ?? '').toLowerCase();
-      return all.find((el) => ((el.getAttribute('aria-label') ?? el.textContent) ?? '').trim().toLowerCase() === want) ?? null;
+      return (
+        all.find(
+          (el) =>
+            (el.getAttribute('aria-label') ?? el.textContent ?? '').trim().toLowerCase() === want,
+        ) ?? null
+      );
     }
     if (strat.kind === 'text') {
       const all = Array.from(document.querySelectorAll<HTMLElement>(strat.selector));
@@ -226,7 +279,8 @@ function applyStepInPage(
       break;
     }
   }
-  if (!target) return { ok: false, error: `Could not resolve element via any of ${chain.length} strategies` };
+  if (!target)
+    return { ok: false, error: `Could not resolve element via any of ${chain.length} strategies` };
 
   if (dryRun) return { ok: true, resolved_via: resolvedKind };
 
@@ -331,7 +385,7 @@ function finalize(
     step_results: stepResults,
     duration_ms: Date.now() - startedAt,
   };
-  if (!ok) {
+  if (!ok && failedAtIndex !== undefined) {
     result.failed_at_index = failedAtIndex;
   }
   if (!ok && reason) log.warn('sw', `demo replay failed: ${reason}`);

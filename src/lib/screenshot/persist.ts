@@ -19,7 +19,7 @@ import { uploadFile } from '@/lib/api/routes/files';
 import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { saveScreenshot, type ScreenshotSource } from '@/lib/supabase/queries';
+import { type ScreenshotSource, saveScreenshot } from '@/lib/supabase/queries';
 import { normalizeUrl } from '@/lib/url/match';
 
 interface PersistInput {
@@ -38,6 +38,34 @@ export interface PersistResult {
   fileId: string | null;
   fileUrl: string | null;
   screenshotId: string | null;
+}
+
+/** Canonical Content IR media value used once cloud publication succeeds. */
+export function cloudScreenshotRef(input: {
+  persisted: PersistResult;
+  mediaType: string;
+  width: number;
+  height: number;
+  sizeBytes: number;
+  capture: Record<string, unknown>;
+}): Record<string, unknown> | null {
+  const { persisted } = input;
+  if (!persisted.fileId) return null;
+  return {
+    kind: 'image_ref',
+    artifact_id: persisted.screenshotId ?? persisted.fileId,
+    availability: 'cloud_ready',
+    media_type: input.mediaType,
+    file_id: persisted.fileId,
+    media_ref: { file_id: persisted.fileId, vision_class: null },
+    ...(persisted.fileUrl ? { url: persisted.fileUrl, file_url: persisted.fileUrl } : {}),
+    source_width: input.width,
+    source_height: input.height,
+    size_bytes: input.sizeBytes,
+    screenshot_id: persisted.screenshotId,
+    capture_source: 'browser',
+    capture: input.capture,
+  };
 }
 
 /**

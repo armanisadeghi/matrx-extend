@@ -13,19 +13,11 @@
 
 import { Button } from '@/components/ui/button';
 import { useActiveTab } from '@/hooks/use-active-tab';
-import {
-  setHighlighterMode,
-  startHighlighter,
-  stopHighlighter,
-} from '@/lib/highlights/control';
-import {
-  deleteHighlight,
-  listHighlightsForUrl,
-  listMyHighlights,
-} from '@/lib/highlights/queries';
+import { setHighlighterMode, startHighlighter, stopHighlighter } from '@/lib/highlights/control';
+import { deleteHighlight, listHighlightsForUrl, listMyHighlights } from '@/lib/highlights/queries';
 import type { HighlightListItem, HighlightMode } from '@/lib/highlights/types';
-import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { useHighlightStore } from '@/state/highlights';
+import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import {
   Database,
   Highlighter,
@@ -133,7 +125,10 @@ export function HighlightView() {
   const sendToScrape = () => {
     const regions = visible
       .filter((h) => (h.text ?? '').trim().length > 0)
-      .map((h) => ({ title: h.mode === 'element' ? 'Element' : 'Passage', text: h.text as string }));
+      .map((h) => ({
+        title: h.mode === 'element' ? 'Element' : 'Passage',
+        text: h.text as string,
+      }));
     if (regions.length === 0) return;
     setScrapeHandoff(regions);
     setTab('scrape');

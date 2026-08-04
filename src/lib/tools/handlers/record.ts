@@ -1,3 +1,17 @@
+import { uploadFile } from '@/lib/api/routes/files';
+import {
+  DEFAULT_RENDER_OPTIONS,
+  type RenderOptions,
+  renderRecordingToGif,
+} from '@/lib/recording/render';
+import {
+  clearRecording,
+  getRecording,
+  isRecording,
+  startRecording,
+  stopRecording,
+} from '@/lib/recording/state';
+import type { ToolHandler, ToolTier } from '@/lib/tools/types';
 /**
  * Tier: ACTION (requires the `debugger` optional permission).
  *
@@ -23,20 +37,6 @@
  *    the GIF encoder — every gotcha there cost real time to find.)
  */
 import { z } from 'zod';
-import { uploadFile } from '@/lib/api/routes/files';
-import {
-  clearRecording,
-  getRecording,
-  isRecording,
-  startRecording,
-  stopRecording,
-} from '@/lib/recording/state';
-import {
-  DEFAULT_RENDER_OPTIONS,
-  renderRecordingToGif,
-  type RenderOptions,
-} from '@/lib/recording/render';
-import type { ToolHandler, ToolTier } from '@/lib/tools/types';
 
 const OptionsSchema = z
   .object({
@@ -79,7 +79,14 @@ async function activateTab(id: number): Promise<{ ok: boolean; reason?: string }
 }
 
 function resolveRenderOptions(input: RecordGifArgs['options']): RenderOptions {
-  return { ...DEFAULT_RENDER_OPTIONS, ...(input ?? {}) };
+  return {
+    showClickIndicators: input?.showClickIndicators ?? DEFAULT_RENDER_OPTIONS.showClickIndicators,
+    showDragPaths: input?.showDragPaths ?? DEFAULT_RENDER_OPTIONS.showDragPaths,
+    showActionLabels: input?.showActionLabels ?? DEFAULT_RENDER_OPTIONS.showActionLabels,
+    showProgressBar: input?.showProgressBar ?? DEFAULT_RENDER_OPTIONS.showProgressBar,
+    showWatermark: input?.showWatermark ?? DEFAULT_RENDER_OPTIONS.showWatermark,
+    quality: input?.quality ?? DEFAULT_RENDER_OPTIONS.quality,
+  };
 }
 
 async function dropFileOnTarget(
@@ -164,7 +171,10 @@ export const record_gif: ToolHandler<RecordGifArgs, unknown> = {
     // export
     const state = getRecording(tabId);
     if (!state) {
-      return { ok: false, reason: 'No recording buffered for this tab. Did you call stop_recording?' };
+      return {
+        ok: false,
+        reason: 'No recording buffered for this tab. Did you call stop_recording?',
+      };
     }
     if (state.frames.length === 0) {
       return { ok: false, reason: 'Recording has no frames to export.' };

@@ -1,10 +1,13 @@
 /**
  * OAuth 2.1 PKCE helpers.
  *
- * Mirrors matrx-local/desktop/src/lib/oauth.ts. Key difference: we don't
- * persist the verifier in storage — we encode it into the `state` parameter
- * (`<verifier>.<nonce>`) so it survives the cross-origin trip through
- * Supabase + aimatrx.com consent UI back to chromiumapp.org. Same trick.
+ * Mirrors matrx-local/desktop/src/lib/oauth.ts. The verifier is persisted in
+ * `chrome.storage.session` for the duration of the flow and only the random
+ * nonce travels as the `state` parameter. (An earlier design encoded the
+ * verifier INTO `state` — that round-trips it through every authorize /
+ * consent / callback URL, handing `code` + `verifier` to anyone who can
+ * observe either and structurally defeating PKCE's interception protection.
+ * Retired 2026-06-10, audit P3-7.)
  *
  * Why not openid? The Matrx Supabase project signs JWTs HS256. Requesting the
  * openid scope makes Supabase try to mint an ID token, which needs asymmetric
@@ -33,18 +36,4 @@ export async function generateCodeChallenge(verifier: string): Promise<string> {
 
 export function generateNonce(): string {
   return base64URLEncode(crypto.getRandomValues(new Uint8Array(16)));
-}
-
-/**
- * State format: `<verifier>.<nonce>`.
- * Split on the first dot only; base64url chars don't include dots.
- */
-export function encodeState(verifier: string, nonce: string): string {
-  return `${verifier}.${nonce}`;
-}
-
-export function extractVerifierFromState(state: string): string | null {
-  const dotIdx = state.indexOf('.');
-  if (dotIdx === -1) return null;
-  return state.slice(0, dotIdx) || null;
 }

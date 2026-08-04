@@ -16,9 +16,20 @@
  * `append_rows_to_user_table`) kept their pre-rename names by design — the
  * server-side migration only renamed tables, not RPC signatures. So the
  * function calls below still work post-rename.
+ *
+ * udt_v2_backbone (live on Matrx Main 2026-05-29): the server gained workbook
+ * grouping (`udt_workbooks`) and an append-only row-version audit log
+ * (`udt_dataset_row_versions`). Both are transparent to this file — our two
+ * RPCs are unchanged, and the new BEFORE-validate trigger defaults to
+ * 'permissive' (a passthrough). Every append we send now also logs a version
+ * row, attributed to the user's `auth.uid()` since we write with the user JWT.
+ * The four RPCs we do NOT use (batch_update_rows_in_user_table,
+ * remove_column_from_user_table, create_new_user_table, create_new_user_table_wrapper)
+ * are slated for removal — do not start calling them.
  */
 
 import { getSupabase } from '@/lib/supabase/client';
+import { workbenchDb } from '@/lib/supabase/schemas';
 import { z } from 'zod';
 
 /**
@@ -96,8 +107,7 @@ export const TableFieldSchema = z.object({
 export type TableField = z.infer<typeof TableFieldSchema>;
 
 export async function listUserTables(): Promise<UserTable[]> {
-  const c = getSupabase();
-  const { data, error } = await c
+  const { data, error } = await workbenchDb()
     .from('udt_datasets')
     .select(
       'id, table_name, description, user_id, is_public, version, organization_id, project_id, task_id, created_at, updated_at',
@@ -113,8 +123,7 @@ export async function listUserTables(): Promise<UserTable[]> {
 }
 
 export async function getUserTableSchema(tableId: string): Promise<TableField[]> {
-  const c = getSupabase();
-  const { data, error } = await c
+  const { data, error } = await workbenchDb()
     .from('udt_dataset_fields')
     .select('id, table_id, field_name, data_type, field_order, validation_rules')
     .eq('table_id', tableId)
@@ -177,13 +186,56 @@ export async function createUserTableFromSchema(
 }
 
 /**
+ * Union of row keys across ALL rows, in first-seen order. Schema inference
+ * and append mapping must both work from this — inferring from row 1 alone
+ * creates tables missing columns the preview showed (audit P0-3).
+ */
+export function unionRowKeys(rows: Record<string, unknown>[]): string[] {
+  const keys: string[] = [];
+  const seen = new Set<string>();
+  for (const r of rows) {
+    for (const k of Object.keys(r)) {
+      if (!seen.has(k)) {
+        seen.add(k);
+        keys.push(k);
+      }
+    }
+  }
+  return keys;
+}
+
+/**
+ * Deterministic raw-key → field_name mapping with collision suffixes
+ * ("Name" → name, "name" → name_2). THE single source of truth shared by
+ * schema inference (create) and row mapping (append): if the two ever
+ * slugify independently, rows with colliding keys silently overwrite each
+ * other (audit P0-3 / L1).
+ */
+export function buildFieldNameMap(rawKeys: Iterable<string>): Map<string, string> {
+  const used = new Set<string>();
+  const map = new Map<string, string>();
+  for (const rawKey of rawKeys) {
+    if (map.has(rawKey)) continue;
+    let field = toSnakeCaseFieldName(rawKey);
+    if (used.has(field)) {
+      let n = 2;
+      while (used.has(`${field}_${n}`)) n++;
+      field = `${field}_${n}`;
+    }
+    used.add(field);
+    map.set(rawKey, field);
+  }
+  return map;
+}
+
+/**
  * Append rows to a dataset via the `append_rows_to_user_table` RPC. The RPC
  * stamps user_id from auth.uid() and silently drops keys that don't match a
  * declared field_name on the target dataset. RPC name kept post-rename.
  *
- * We slugify keys client-side first so cosmetic keys (e.g. "Event Name")
- * land on the right field names ("event_name") before the server-side
- * schema check runs.
+ * Keys are mapped via ONE map built from the union of all rows' keys, so
+ * collision suffixes line up with what `inferSchemaFromRows` produced at
+ * table-creation time.
  */
 export async function appendRowsToUserTable(
   tableId: string,
@@ -191,10 +243,12 @@ export async function appendRowsToUserTable(
 ): Promise<{ inserted: number } | null> {
   if (rows.length === 0) return { inserted: 0 };
 
+  const keyMap = buildFieldNameMap(unionRowKeys(rows));
   const cleanedRows = rows.map((r) => {
     const out: Record<string, unknown> = {};
     for (const k of Object.keys(r)) {
-      out[toSnakeCaseFieldName(k)] = r[k];
+      const field = keyMap.get(k);
+      if (field) out[field] = r[k];
     }
     return out;
   });
@@ -243,29 +297,40 @@ export function inferDataType(value: unknown): UserTableDataType {
   return 'string';
 }
 
-export function inferSchemaFromRow(
-  row: Record<string, unknown>,
-): {
+export interface InferredField {
   field_name: string;
   display_name: string;
   data_type: UserTableDataType;
   field_order: number;
-}[] {
-  const seen = new Set<string>();
-  return Object.keys(row).map((rawKey, i) => {
-    let field_name = toSnakeCaseFieldName(rawKey);
-    // Avoid clashes if two raw keys slugify to the same name.
-    if (seen.has(field_name)) {
-      let n = 2;
-      while (seen.has(`${field_name}_${n}`)) n++;
-      field_name = `${field_name}_${n}`;
+}
+
+/**
+ * Schema from the UNION of all rows' keys (first-seen order), typed from the
+ * first non-null value per key. The preview table shows the union — the
+ * created table must match it, or later rows silently lose columns.
+ */
+export function inferSchemaFromRows(rows: Record<string, unknown>[]): InferredField[] {
+  const keys = unionRowKeys(rows);
+  const map = buildFieldNameMap(keys);
+  return keys.map((rawKey, i) => {
+    let sample: unknown;
+    for (const r of rows) {
+      const v = r[rawKey];
+      if (v !== null && v !== undefined) {
+        sample = v;
+        break;
+      }
     }
-    seen.add(field_name);
     return {
-      field_name,
+      field_name: map.get(rawKey) as string,
       display_name: rawKey,
-      data_type: inferDataType(row[rawKey]),
+      data_type: inferDataType(sample),
       field_order: i,
     };
   });
+}
+
+/** @deprecated Use inferSchemaFromRows — single-row inference misses columns. */
+export function inferSchemaFromRow(row: Record<string, unknown>): InferredField[] {
+  return inferSchemaFromRows([row]);
 }

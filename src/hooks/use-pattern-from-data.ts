@@ -1,8 +1,10 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { createStreamWatchdog } from '@/lib/stream/watchdog';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface StreamChunk {
@@ -128,29 +130,99 @@ function captureSampleHtmlInPage(): string[] {
 export function usePatternFromData() {
   const tab = useActiveTab();
   const [result, setResult] = useState<PatternFromDataResult | null>(null);
+  /** First-row values the generated config ACTUALLY produced on the page. */
+  const [liveProbe, setLiveProbe] = useState<Record<string, string | null> | null>(null);
   const [rawResponse, setRawResponse] = useState('');
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const runIdRef = useRef<string | null>(null);
   const accumRef = useRef('');
+  const tabIdRef = useRef<number | null>(null);
+  // Stall watchdog (mirrors useAiExtraction): without it, a stream dying
+  // with no terminal done/error chunk left "Generate pattern" spinning
+  // forever with no recovery affordance.
+  const watchdogRef = useRef<ReturnType<typeof createStreamWatchdog> | null>(null);
+  if (!watchdogRef.current) {
+    watchdogRef.current = createStreamWatchdog({
+      stallMs: 75_000,
+      onStall: () => {
+        if (!runIdRef.current) return;
+        runIdRef.current = null;
+        setError('Pattern generation stalled — no response from the server. Try again.');
+        setRunning(false);
+      },
+    });
+  }
+  useEffect(() => () => watchdogRef.current?.stop(), []);
+
+  // The agent writes selectors from sample HTML — they can look plausible
+  // and match NOTHING live (audit K3). Probe before declaring success.
+  const validateAndCommit = useCallback(async (parsed: PatternFromDataResult) => {
+    const tabId = tabIdRef.current;
+    if (!tabId) {
+      setResult(parsed); // can't validate without the tab — degrade gracefully
+      setRunning(false);
+      return;
+    }
+    try {
+      const r = await chrome.scripting.executeScript({
+        target: { tabId },
+        func: probeFirstRowInPage,
+        args: [parsed.config],
+      });
+      const probe = (r?.[0]?.result ?? null) as Record<string, string | null> | null;
+      if (!probe) {
+        setError(
+          'The generated selectors matched nothing on the live page. Try again with a clearer description, or build the pattern manually in the List Pattern tab.',
+        );
+        setRawResponse((prev) => prev); // keep raw for debugging
+        return;
+      }
+      const matchedFields = Object.values(probe).filter((v) => v != null).length;
+      if (matchedFields === 0) {
+        setError(
+          'The generated item selector matched, but none of its field selectors produced a value. Refine in the List Pattern tab.',
+        );
+        return;
+      }
+      setLiveProbe(probe);
+      setResult(parsed);
+    } catch (e) {
+      // Probe failure (restricted page, navigation) — surface, don't bless.
+      setError(
+        `Could not verify the pattern on the page: ${e instanceof Error ? e.message : String(e)}`,
+      );
+    } finally {
+      setRunning(false);
+    }
+  }, []);
 
   useEffect(() => {
     return on<StreamChunk, { ack: true }>(CHANNELS.STREAM_CHUNK, (chunk) => {
       if (chunk.runId !== runIdRef.current) return { ack: true };
+      watchdogRef.current?.touch();
       if (chunk.type === 'text' && chunk.payload.content) {
         accumRef.current += chunk.payload.content;
       } else if (chunk.type === 'error') {
+        watchdogRef.current?.stop();
         setError(chunk.payload.message ?? 'stream error');
         setRunning(false);
         runIdRef.current = null;
       } else if (chunk.type === 'done') {
+        watchdogRef.current?.stop();
         setRawResponse(accumRef.current);
         try {
           const parsed = parseAgentJson(accumRef.current) as PatternFromDataResult;
           if (!parsed?.config?.item_selector) {
             throw new Error('Agent response missing config.item_selector.');
           }
-          setResult(parsed);
+          if (!Array.isArray(parsed.config.field_paths) || parsed.config.field_paths.length === 0) {
+            throw new Error('Agent response has no field_paths.');
+          }
+          // setRunning(false) happens inside validateAndCommit.
+          void validateAndCommit(parsed);
+          runIdRef.current = null;
+          return { ack: true };
         } catch (e) {
           setError(`Could not parse agent response: ${e instanceof Error ? e.message : String(e)}`);
         }
@@ -159,7 +231,7 @@ export function usePatternFromData() {
       }
       return { ack: true };
     });
-  }, []);
+  }, [validateAndCommit]);
 
   const convert = useCallback(
     async (input: ConvertInput): Promise<void> => {
@@ -179,8 +251,10 @@ export function usePatternFromData() {
       setRunning(true);
       setError(null);
       setResult(null);
+      setLiveProbe(null);
       setRawResponse('');
       accumRef.current = '';
+      tabIdRef.current = tab.id;
 
       // Capture 1-3 sample HTML cards from the page.
       let sampleHtml: string[] = [];
@@ -198,10 +272,14 @@ export function usePatternFromData() {
 
       const runId = newId('pfd');
       runIdRef.current = runId;
+      watchdogRef.current?.start();
 
       const body: AgentStartRequest = {
         user_input: input.userInput,
-        conversation_id: null,
+        // Required on every start request; a one-shot run still mints an id
+        // (correlation) and stays ephemeral via store:false.
+        conversation_id: crypto.randomUUID(),
+        is_new: true,
         variables: {
           page_url: tab.url ?? '',
           page_metadata: input.pageMetadata ?? {},
@@ -239,11 +317,12 @@ export function usePatternFromData() {
 
   const reset = useCallback(() => {
     setResult(null);
+    setLiveProbe(null);
     setError(null);
     setRawResponse('');
   }, []);
 
-  return { result, running, error, rawResponse, convert, reset };
+  return { result, liveProbe, running, error, rawResponse, convert, reset };
 }
 
 /**

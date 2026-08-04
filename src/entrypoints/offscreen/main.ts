@@ -6,20 +6,20 @@
  * touch chrome.storage or the auth flow here.
  */
 
-import { handleMicRun } from '@/lib/audio/mic-recorder-offscreen';
-import type { MicRunPayload } from '@/lib/audio/mic-types';
-import { handleVideoRun } from '@/lib/video/video-recorder-offscreen';
-import type { VideoRunPayload } from '@/lib/video/video-types';
 import { streamFetch } from '@/lib/api/stream';
+import { handleMicRun, registerMicKeepalive } from '@/lib/audio/mic-recorder-offscreen';
+import type { MicRunPayload } from '@/lib/audio/mic-types';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import { startWsOffscreenRuntime } from '@/lib/desktop/ws-offscreen';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
-  fetchUrlAndParse,
   type FetchAndParseRequest,
   type FetchAndParseResult,
+  fetchUrlAndParse,
 } from '@/lib/scrape/fetch-and-parse';
+import { handleVideoRun } from '@/lib/video/video-recorder-offscreen';
+import type { VideoRunPayload } from '@/lib/video/video-types';
 
 startDebugRelay();
 log.info('sys', 'offscreen ready');
@@ -44,6 +44,9 @@ interface RunArgs {
   permissionMode?: 'ask' | 'act';
 }
 
+// Mic keepalive: auto-stop capture when no recording surface remains.
+registerMicKeepalive();
+
 on<RunArgs, { ok: true }>(CHANNELS.STREAM_RUN, async (args) => {
   log.info('stream', `offscreen run ${args.runId} → ${args.url}`);
   const ctrl = new AbortController();
@@ -54,7 +57,7 @@ on<RunArgs, { ok: true }>(CHANNELS.STREAM_RUN, async (args) => {
       url: args.url,
       headers: args.headers,
       body: args.body,
-      parser: args.parser,
+      ...(args.parser !== undefined && { parser: args.parser }),
       signal: ctrl.signal,
       onOpened: (info) => {
         log.info('stream', `opened ${args.runId}`, info);
@@ -72,7 +75,11 @@ on<RunArgs, { ok: true }>(CHANNELS.STREAM_RUN, async (args) => {
         if (e.type === 'text') payload = { content: e.content };
         else if (e.type === 'reasoning') payload = { content: e.content };
         else if (e.type === 'event') payload = { eventName: e.eventName, data: e.data };
-        else if (e.type === 'error') payload = { message: e.message };
+        else if (e.type === 'error')
+          payload =
+            e.status !== undefined
+              ? { message: e.message, status: e.status }
+              : { message: e.message };
         else payload = {};
         if (e.type === 'error') {
           // streamFetch already logged the upstream cause with full detail
@@ -112,7 +119,7 @@ on<FetchAndParseRequest & { include_extras?: boolean }, FetchAndParseResult>(
   async (payload) => {
     log.info('stream', `offscreen fetch-page ${payload.url}`);
     const { include_extras, ...req } = payload;
-    return fetchUrlAndParse(req, { include_extras });
+    return fetchUrlAndParse(req, include_extras !== undefined ? { include_extras } : {});
   },
 );
 

@@ -55,9 +55,19 @@ export const CHANNELS = {
   // Tool dispatch (agent-driven actions in the browser)
   TOOL_CONFIRM_REQUEST: 'tool:confirm-request', // SW → sidepanel: please render approval card
   TOOL_CONFIRM_RESPONSE: 'tool:confirm-response', // sidepanel → SW: user clicked allow / deny
+  // SW → sidepanel: a pending confirm is no longer answerable (5-min timeout
+  // fired, or it expired across an SW restart) — remove the card. Payload:
+  // { callId, reason }. Without this the card lingered after the dispatcher
+  // had already failed the call closed, and a late click went nowhere.
+  TOOL_CONFIRM_EXPIRED: 'tool:confirm-expired',
   TOOL_ASK_USER_REQUEST: 'tool:ask-user-request', // SW → sidepanel: agent asked the user a question
   TOOL_ASK_USER_RESPONSE: 'tool:ask-user-response', // sidepanel → SW: user's answer
   TOOL_TIMELINE_EVENT: 'tool:timeline-event', // SW → sidepanel: render in the chat (started / completed / error)
+  // sidepanel → SW: re-dispatch a persisted client-delegated call on conversation
+  // open (cold-resume). The conversation was left paused waiting on the call; the
+  // SW feeds it through the same handleCall path as a live tool_delegated event.
+  // Payload: { conversationId, userRequestId, callId, toolName, args, permissionMode, assignedTabId }.
+  COLD_RESUME_CALL: 'tool:cold-resume-call',
 
   // Scrape (sidepanel → content script via chrome.tabs.sendMessage)
   SCRAPE_CAPTURE: 'scrape:capture-page',
@@ -208,6 +218,16 @@ export const CHANNELS = {
   VIDEO_REQUEST: 'video:request',
   VIDEO_RUN: 'video:run',
   VIDEO_EVENT: 'video:event',
+
+  // Token broker (any surface → SW; request/response via send()).
+  // The SW owns the canonical in-memory credential cache — these channels
+  // let other contexts mint/consume through it so every context shares one
+  // cache and brokered tokens live primarily in SW memory. Payload shapes
+  // in src/lib/broker/index.ts. Tokens are NEVER persisted or logged.
+  BROKER_MINT: 'broker:mint', // → BrokerResult<BrokeredCredential>
+  BROKER_INVALIDATE: 'broker:invalidate', // → { ok: true }
+  BROKER_SNAPSHOT: 'broker:snapshot', // → BrokerCacheEntrySnapshot[] (token-free)
+  BROKER_PROXIED_JSON: 'broker:proxied-json', // SW-side gateway call → BrokerProxiedJsonResult
 } as const;
 
 export type ChannelName = (typeof CHANNELS)[keyof typeof CHANNELS];

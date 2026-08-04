@@ -28,6 +28,17 @@ fi
 COMMIT_MSG="$1"
 shift
 
+# Portable in-place sed. BSD (macOS) sed wants `-i ''`; GNU (Linux) sed
+# treats that '' as the script argument and silently misbehaves — the
+# original macOS-only form left the key-toggle broken on Linux boxes
+# (docs/AUDIT_2026_06_10.md P0-9). A backup suffix works on both; we
+# delete the backup immediately.
+_sed_inplace() {
+    local script="$1" file="$2"
+    sed -i.matrxbak -E "$script" "$file"
+    rm -f "${file}.matrxbak"
+}
+
 # Self-heal wxt.config.ts BEFORE staging. The Chrome Web Store flow requires
 # `key:` to be commented out for the upload zip, but the working tree must
 # always carry it ACTIVE so dev unpacked installs keep the stable extension
@@ -38,7 +49,7 @@ shift
 WXT_CONFIG="$ROOT/wxt.config.ts"
 if [[ -f "$WXT_CONFIG" ]] && grep -qE "^[[:space:]]*// key: '" "$WXT_CONFIG"; then
     echo "[ship] wxt.config.ts has key field commented out — restoring before commit." >&2
-    sed -i '' -E "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
+    _sed_inplace "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
     if ! grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG"; then
         echo "[ship] FATAL: could not auto-restore key field. Fix wxt.config.ts manually." >&2
         exit 1

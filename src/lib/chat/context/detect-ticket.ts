@@ -38,10 +38,7 @@ export function isTicketUrl(url: string): boolean {
   return GH_ISSUE_RE.test(url) || LINEAR_RE.test(url) || JIRA_BROWSE_RE.test(url);
 }
 
-export async function detectTicket(
-  tabId: number,
-  url: string,
-): Promise<TicketBundle | null> {
+export async function detectTicket(tabId: number, url: string): Promise<TicketBundle | null> {
   const ghMatch = url.match(GH_ISSUE_RE);
   if (ghMatch) {
     const [, owner, repo, num] = ghMatch;
@@ -72,7 +69,7 @@ async function scrapeGitHubIssue(
         const num = (s: string | null): number | null => {
           if (!s) return null;
           const m = s.replace(/[,]/g, '').match(/-?\d+/);
-          return m ? parseInt(m[0], 10) : null;
+          return m ? Number.parseInt(m[0], 10) : null;
         };
 
         const title =
@@ -85,7 +82,11 @@ async function scrapeGitHubIssue(
           document.querySelector('.gh-header-meta .State') ??
           document.querySelector('[data-testid="header-state"]');
         const stateRaw = stateEl?.textContent?.trim().toLowerCase() ?? '';
-        const state = stateRaw.includes('open') ? 'open' : stateRaw.includes('closed') ? 'closed' : stateRaw || null;
+        const state = stateRaw.includes('open')
+          ? 'open'
+          : stateRaw.includes('closed')
+            ? 'closed'
+            : stateRaw || null;
 
         const reporter = text('.gh-header-meta a.author');
         // GitHub Issues sidebar: assignees + labels + projects + milestones
@@ -98,9 +99,11 @@ async function scrapeGitHubIssue(
           .filter(Boolean);
 
         const description =
-          document.querySelector<HTMLElement>(
-            '.timeline-comment .comment-body, [data-testid="markdown-body"]',
-          )?.innerText?.trim() ?? null;
+          document
+            .querySelector<HTMLElement>(
+              '.timeline-comment .comment-body, [data-testid="markdown-body"]',
+            )
+            ?.innerText?.trim() ?? null;
         const description_excerpt = description ? description.slice(0, 600) : null;
 
         const comments_count =
@@ -146,11 +149,7 @@ async function scrapeGitHubIssue(
   }
 }
 
-async function scrapeLinear(
-  tabId: number,
-  url: string,
-  key: string,
-): Promise<TicketBundle | null> {
+async function scrapeLinear(tabId: number, url: string, key: string): Promise<TicketBundle | null> {
   try {
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -166,15 +165,18 @@ async function scrapeLinear(
           document.querySelector<HTMLElement>('[data-testid="status-button"]');
         const state = stateEl?.innerText?.trim() || stateEl?.getAttribute('aria-label') || null;
 
-        const priorityEl =
-          document.querySelector<HTMLElement>('button[aria-label*="priority" i]');
-        const priority = priorityEl?.innerText?.trim() || priorityEl?.getAttribute('aria-label') || null;
+        const priorityEl = document.querySelector<HTMLElement>('button[aria-label*="priority" i]');
+        const priority =
+          priorityEl?.innerText?.trim() || priorityEl?.getAttribute('aria-label') || null;
 
         const assigneeEl = document.querySelector<HTMLElement>('button[aria-label*="assignee" i]');
-        const assignee = assigneeEl?.getAttribute('aria-label')?.replace(/^assignee:?\s*/i, '') || null;
+        const assignee =
+          assigneeEl?.getAttribute('aria-label')?.replace(/^assignee:?\s*/i, '') || null;
 
         const labels = Array.from(
-          document.querySelectorAll<HTMLElement>('button[aria-label*="label" i] span, [data-testid*="label"]'),
+          document.querySelectorAll<HTMLElement>(
+            'button[aria-label*="label" i] span, [data-testid*="label"]',
+          ),
         )
           .map((el) => el.innerText?.trim() ?? '')
           .filter(Boolean)
@@ -182,7 +184,8 @@ async function scrapeLinear(
 
         // Linear has a description editor with role="textbox" — readonly text accessible.
         const desc =
-          document.querySelector<HTMLElement>('[contenteditable="true"][aria-label*="description" i]')
+          document
+            .querySelector<HTMLElement>('[contenteditable="true"][aria-label*="description" i]')
             ?.innerText?.trim() ?? null;
 
         return {
@@ -207,11 +210,7 @@ async function scrapeLinear(
   }
 }
 
-async function scrapeJira(
-  tabId: number,
-  url: string,
-  key: string,
-): Promise<TicketBundle | null> {
+async function scrapeJira(tabId: number, url: string, key: string): Promise<TicketBundle | null> {
   try {
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },

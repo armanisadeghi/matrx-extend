@@ -1,10 +1,10 @@
 import { AddToProjectButton } from '@/components/AddToProjectButton';
-import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { DiagnoseCard, DiagnoseLauncher } from '@/features/scrape/DiagnoseCard';
+import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { MarkdownView } from '@/components/MarkdownView';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DiagnoseCard, DiagnoseLauncher } from '@/features/scrape/DiagnoseCard';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { usePageRecognition } from '@/hooks/use-page-recognition';
 import { usePageScrollSync } from '@/hooks/use-page-scroll-sync';
@@ -33,10 +33,10 @@ import {
   ChevronsDown,
   Download,
   ImageIcon,
-  Link as LinkIcon,
-  Loader2,
   Link2,
   Link2Off,
+  Link as LinkIcon,
+  Loader2,
   Pencil,
   PlayCircle,
   Plus,
@@ -75,6 +75,11 @@ export function ScrapeView() {
   const tab = useActiveTab();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  // Retry must replay the mode the user actually picked — activeMode is
+  // cleared in the hook's finally, so the error card's fallback was ALWAYS
+  // 'fast' (a failed Scroll & capture silently retried without scrolling).
+  const lastModeRef = useRef<'fast' | 'deep' | null>(null);
   /**
    * Side-by-side scroll sync. Off by default — opt-in. Some pages can't
    * stream scroll events (chrome:// etc.), but the hook degrades silently.
@@ -117,6 +122,11 @@ export function ScrapeView() {
       return;
     }
     setEditingArticle(false);
+    lastModeRef.current = mode;
+    // A fresh capture is unsaved by definition — the Saved badge used to
+    // persist across re-captures of the same URL.
+    setSaved(false);
+    setSaveError(null);
     void captureActiveTab({ mode });
   };
 
@@ -125,6 +135,9 @@ export function ScrapeView() {
     setPendingCaptureMode(null);
     if (!mode) return;
     setEditingArticle(false);
+    lastModeRef.current = mode;
+    setSaved(false);
+    setSaveError(null);
     void captureActiveTab({ mode });
   };
 
@@ -147,9 +160,16 @@ export function ScrapeView() {
   const handleSave = async () => {
     setSaving(true);
     setSaved(false);
+    setSaveError(null);
     const r = await save();
     setSaving(false);
-    if (r) setSaved(true);
+    if (r) {
+      setSaved(true);
+    } else {
+      // null = insert failed (offline / signed-out hitting RLS / DB error) —
+      // the button silently returning to "Save" looked like success.
+      setSaveError('Save failed — check your connection and sign-in, then try again.');
+    }
   };
 
   return (
@@ -175,7 +195,9 @@ export function ScrapeView() {
             error={error}
             isAdmin={isAdmin}
             onReloadTab={() => void reloadActiveTab()}
-            onTryAgain={() => void captureActiveTab({ mode: activeMode ?? 'fast' })}
+            onTryAgain={() =>
+              void captureActiveTab({ mode: activeMode ?? lastModeRef.current ?? 'fast' })
+            }
             onDismiss={clearError}
           />
         )}
@@ -264,11 +286,7 @@ export function ScrapeView() {
                         placeholder="Article markdown — edit freely. Save persists to the in-memory capture; click Save below to write it to the server."
                       />
                       <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          onClick={commitArticleEdit}
-                          className="rounded-full"
-                        >
+                        <Button size="sm" onClick={commitArticleEdit} className="rounded-full">
                           <CheckCircle2 /> Apply
                         </Button>
                         <Button
@@ -383,10 +401,7 @@ export function ScrapeView() {
                       </a>
                       <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                         <CopyButton text={v.src} title="Copy video URL" size="xs" />
-                        <DeleteRowButton
-                          title="Remove video"
-                          onClick={() => removeVideo(v.src)}
-                        />
+                        <DeleteRowButton title="Remove video" onClick={() => removeVideo(v.src)} />
                       </div>
                     </div>
                   ))}
@@ -418,12 +433,7 @@ export function ScrapeView() {
                       className="group flex items-start gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-accent"
                     >
                       <LinkIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                      <a
-                        href={l.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="min-w-0 flex-1"
-                      >
+                      <a href={l.href} target="_blank" rel="noreferrer" className="min-w-0 flex-1">
                         <div className="truncate">{l.text || l.href}</div>
                         <div className="truncate text-xs text-muted-foreground">{l.href}</div>
                       </a>
@@ -445,7 +455,10 @@ export function ScrapeView() {
                   ]}
                   onAdd={(values) => {
                     if (!values.href) return false;
-                    addLink({ href: values.href, text: values.text });
+                    addLink({
+                      href: values.href,
+                      ...(values.text !== undefined && { text: values.text }),
+                    });
                     return true;
                   }}
                 />
@@ -541,6 +554,9 @@ export function ScrapeView() {
           </Button>
         )}
       </div>
+      {saveError && (
+        <div className="px-3 pb-1 text-[11px] text-red-600 dark:text-red-400">{saveError}</div>
+      )}
       <ConfirmDialog
         open={pendingCaptureMode !== null}
         title="Discard unsaved edits?"

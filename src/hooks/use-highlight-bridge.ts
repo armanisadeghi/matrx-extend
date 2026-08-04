@@ -11,20 +11,16 @@
  *   (any write) ──HIGHLIGHTS_CHANGED──▶ re-list so every surface refreshes
  */
 
-import { useEffect } from 'react';
+import { clearHighlightsForUrl, createHighlight, listMyHighlights } from '@/lib/highlights/queries';
+import type { CreateHighlightInput, HighlightListItem } from '@/lib/highlights/types';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import {
-  clearHighlightsForUrl,
-  createHighlight,
-  listMyHighlights,
-} from '@/lib/highlights/queries';
-import type { CreateHighlightInput, HighlightListItem } from '@/lib/highlights/types';
 import { useHighlightStore } from '@/state/highlights';
+import { useEffect } from 'react';
 
 function toListItem(h: {
   id: string;
-  user_id: string;
+  created_by: string | null;
   conversation_id: string | null;
   mode: 'text' | 'element';
   url: string;
@@ -38,7 +34,7 @@ function toListItem(h: {
 }): HighlightListItem {
   return {
     id: h.id,
-    user_id: h.user_id,
+    created_by: h.created_by,
     conversation_id: h.conversation_id,
     mode: h.mode,
     url: h.url,
@@ -106,4 +102,26 @@ export function useHighlightBridge(): void {
       offChanged();
     };
   }, [upsertItem, setItems, setOverlay, setMode]);
+
+  // The content-script overlay dies silently on navigation/reload — the
+  // panel kept showing "Stop highlighting" for a dead overlay and the first
+  // toggle click was eaten "stopping" it. Watch the overlay tab and reset.
+  const overlayTabId = useHighlightStore((s) => s.overlayTabId);
+  useEffect(() => {
+    if (overlayTabId == null) return;
+    const onUpdated = (tabId: number, change: chrome.tabs.TabChangeInfo) => {
+      if (tabId === overlayTabId && change.status === 'loading') {
+        setOverlay({ active: false, tabId: null, count: 0 });
+      }
+    };
+    const onRemoved = (tabId: number) => {
+      if (tabId === overlayTabId) setOverlay({ active: false, tabId: null, count: 0 });
+    };
+    chrome.tabs.onUpdated.addListener(onUpdated);
+    chrome.tabs.onRemoved.addListener(onRemoved);
+    return () => {
+      chrome.tabs.onUpdated.removeListener(onUpdated);
+      chrome.tabs.onRemoved.removeListener(onRemoved);
+    };
+  }, [overlayTabId, setOverlay]);
 }

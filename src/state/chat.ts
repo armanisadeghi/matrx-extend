@@ -1,9 +1,10 @@
-import { chromeLocalStorage } from "@/lib/storage/zustand-adapter";
-import type { ToolProgressUpdate } from "@/lib/tools/types";
-import { useToolInbox } from "@/state/tool-inbox";
-import type { ComputeTargetRef } from "@/types/compute-target";
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
+import type { ProviderRetryState } from '@/lib/stream/provider-retry';
+import type { ToolProgressUpdate } from '@/lib/tools/types';
+import { useToolInbox } from '@/state/tool-inbox';
+import type { ComputeTargetRef } from '@/types/compute-target';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 /** Max progress entries retained per tool call — bounds memory if a handler spams. */
 const MAX_PROGRESS_ENTRIES = 200;
@@ -21,7 +22,7 @@ export interface ToolProgressEntry extends ToolProgressUpdate {
  */
 export interface ToolPartCall {
   /** 'server' = ran in Python; 'client' = ran in our SW dispatcher. */
-  kind: "server" | "client";
+  kind: 'server' | 'client';
   callId: string;
   toolName: string;
   /** Friendly label the server occasionally sends ("Executing X" / "Done"). */
@@ -30,7 +31,7 @@ export interface ToolPartCall {
   args?: unknown;
   /** Output payload. Only present once `phase === 'completed'`. */
   result?: unknown;
-  phase: "started" | "completed" | "error";
+  phase: 'started' | 'completed' | 'error';
   startedAt: number;
   endedAt?: number;
   /**
@@ -50,13 +51,23 @@ export interface ToolPartCall {
  * to the last part (when types match) or pushes a new part.
  */
 export type MessagePart =
-  | { type: "text"; content: string }
-  | { type: "reasoning"; content: string }
-  | { type: "tool"; tool: ToolPartCall };
+  | { type: 'text'; content: string }
+  | {
+      type: 'reasoning';
+      content: string;
+      /**
+       * The model finished this thinking block (server sent `reasoning:stopped`).
+       * A closed part never accepts more chunks, so a SECOND thinking block later
+       * in the same turn renders as its own part instead of silently merging into
+       * the first. Absent on parts from before the server emitted boundaries.
+       */
+      closed?: boolean;
+    }
+  | { type: 'tool'; tool: ToolPartCall };
 
 export interface ChatMessage {
   id: string;
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   /**
    * Concatenated plain text — kept as a fast-access summary for things like
    * conversation list previews. New code paths populate via `parts` and
@@ -89,7 +100,7 @@ export type ServerToolCall = ToolPartCall;
  */
 export interface StreamInterruption {
   runId: string;
-  reason: "stalled" | "error";
+  reason: 'stalled' | 'error';
   /** For 'stalled': how long the stream was silent before we gave up. */
   silentMs?: number;
   /** The user input of the interrupted turn, so Retry can re-send it. */
@@ -97,7 +108,7 @@ export interface StreamInterruption {
   at: number;
 }
 
-export type PermissionMode = "ask" | "act";
+export type PermissionMode = 'ask' | 'act';
 
 interface ChatState {
   selectedAgentId: string | null;
@@ -107,6 +118,13 @@ interface ChatState {
   isStreaming: boolean;
   /** Set when a run stalled or errored abnormally; gates the Retry banner. */
   streamInterruption: StreamInterruption | null;
+  /**
+   * Live upstream-provider retry, when the server is backing off and re-trying an
+   * LLM call. Non-null means the stream is DELIBERATELY quiet — it is not stalled,
+   * and the spinner should stay up. Cleared on `recovered` / `cancelled` and at
+   * the end of the run.
+   */
+  providerRetry: ProviderRetryState | null;
   /**
    * Per-agent variable values, keyed by `<agentId>.<varName>`. Persisted
    * across reloads so users don't have to re-fill every time. Cleared per
@@ -169,6 +187,12 @@ interface ChatState {
    * so the UI can style / collapse independently from regular text.
    */
   appendAssistantReasoning: (id: string, chunk: string) => void;
+  /**
+   * Close the open reasoning part, on the server's `reasoning: stopped` boundary.
+   * Subsequent reasoning chunks then start a NEW part rather than merging into
+   * the block the model already finished.
+   */
+  closeReasoning: (id: string) => void;
   finalizeAssistant: (id: string) => void;
   /**
    * Upsert a tool call (server- or client-side) attached to an assistant
@@ -180,14 +204,10 @@ interface ChatState {
   upsertToolPart: (
     messageId: string,
     callId: string,
-    patch: Partial<ToolPartCall> & { kind?: "server" | "client" },
+    patch: Partial<ToolPartCall> & { kind?: 'server' | 'client' },
   ) => void;
   /** Backwards-compat — older callers used this for server tools only. */
-  upsertServerTool: (
-    messageId: string,
-    callId: string,
-    patch: Partial<ToolPartCall>,
-  ) => void;
+  upsertServerTool: (messageId: string, callId: string, patch: Partial<ToolPartCall>) => void;
   /**
    * Append an incremental progress update to a tool part (by callId). Creates
    * a `started` part if none exists yet. Never changes the part's phase — a
@@ -198,11 +218,13 @@ interface ChatState {
     messageId: string,
     callId: string,
     entry: ToolProgressEntry,
-    meta?: { toolName?: string; kind?: "server" | "client" },
+    meta?: { toolName?: string; kind?: 'server' | 'client' },
   ) => void;
   setStreaming: (b: boolean) => void;
   /** Set or clear the abnormal-end marker that drives the Retry banner. */
   setStreamInterruption: (i: StreamInterruption | null) => void;
+  /** Set or clear the live provider-retry banner. */
+  setProviderRetry: (r: ProviderRetryState | null) => void;
   setMessages: (ms: ChatMessage[]) => void;
   setVariable: (agentId: string, name: string, value: string) => void;
   getAgentVariables: (agentId: string) => Record<string, string>;
@@ -221,27 +243,31 @@ export const useChatStore = create<ChatState>()(
     (set, get) => ({
       selectedAgentId: null,
       selectedConversationId: null,
-      draft: "",
+      draft: '',
       messages: [],
       isStreaming: false,
       streamInterruption: null,
+      providerRetry: null,
       variableValues: {},
       permissionMode: {},
       boundComputeTarget: null,
       setAgent: (selectedAgentId) => set({ selectedAgentId }),
       setConversation: (selectedConversationId) => {
-        set({ selectedConversationId, messages: [], streamInterruption: null });
-        // Wipe any pending approval / ask cards from the previous
-        // conversation. They were tied to a different runId; the SW will
-        // time them out on its end. Keeping them visible here would just
-        // confuse the user since responding to them no longer reaches a
-        // listener that cares.
-        useToolInbox.getState().resetAll();
+        const leaving = get().selectedConversationId;
+        set({
+          selectedConversationId,
+          messages: [],
+          streamInterruption: null,
+          providerRetry: null,
+        });
+        // Drop the LEAVING conversation's approval / ask cards only — the
+        // inbox is shared with the Pilot surface, and resetAll() here used
+        // to vaporize a pending Pilot approval, hanging that run for the
+        // SW's full 5-minute timeout.
+        useToolInbox.getState().clearForConversation(leaving);
       },
       adoptConversationId: (id) =>
-        set((s) =>
-          s.selectedConversationId === id ? s : { selectedConversationId: id },
-        ),
+        set((s) => (s.selectedConversationId === id ? s : { selectedConversationId: id })),
       setDraft: (draft) => set({ draft }),
       pushMessage: (m) =>
         set((s) => ({
@@ -262,10 +288,17 @@ export const useChatStore = create<ChatState>()(
             ...m,
             conversationId: m.conversationId ?? s.selectedConversationId,
           };
-          const idx = beforeId
-            ? s.messages.findIndex((x) => x.id === beforeId)
-            : -1;
-          if (idx === -1) return { messages: [...s.messages, tagged] };
+          const idx = beforeId ? s.messages.findIndex((x) => x.id === beforeId) : -1;
+          if (idx === -1) {
+            // A non-null beforeId that we can't find means the target
+            // assistant bubble belongs to a conversation that's no longer
+            // loaded (the user switched mid-stream). Appending here used to
+            // leak the consumed inbox message into the WRONG conversation's
+            // transcript (audit P1-11). The message isn't lost — the server
+            // already persisted it into its real conversation's history.
+            if (beforeId) return s;
+            return { messages: [...s.messages, tagged] };
+          }
           const next = s.messages.slice();
           next.splice(idx, 0, tagged);
           return { messages: next };
@@ -275,73 +308,70 @@ export const useChatStore = create<ChatState>()(
           messages: s.messages.map((m) => {
             if (m.id !== messageId) return m;
             const parts = m.parts ?? [];
-            const idx = parts.findIndex(
-              (p) => p.type === "tool" && p.tool.callId === callId,
-            );
+            const idx = parts.findIndex((p) => p.type === 'tool' && p.tool.callId === callId);
             if (idx === -1) {
               // First time we see this callId — push a brand new `tool` part
               // at the END of the array. Crucial for ordering: any text/
               // reasoning that arrived before this lands BEFORE this part;
               // anything after lands AFTER (in fresh parts).
               const fresh: ToolPartCall = {
-                kind: patch.kind ?? "server",
+                kind: patch.kind ?? 'server',
                 callId,
-                toolName: patch.toolName ?? "(unknown)",
-                phase: patch.phase ?? "started",
+                toolName: patch.toolName ?? '(unknown)',
+                phase: patch.phase ?? 'started',
                 startedAt: Date.now(),
                 ...patch,
               };
-              return { ...m, parts: [...parts, { type: "tool", tool: fresh }] };
+              return { ...m, parts: [...parts, { type: 'tool', tool: fresh }] };
             }
             const existing = parts[idx];
-            if (!existing || existing.type !== "tool") return m;
+            if (!existing || existing.type !== 'tool') return m;
             // Defensive ordering: never let a stale `started` event downgrade
             // a part that's already reached `completed` or `error`. Two paths
             // emit started events for client tools (SSE `tool_delegated` +
             // SW `TOOL_TIMELINE_EVENT`); if the SW one races and arrives
             // AFTER tool_completed, the row would flicker back to spinning.
             const phaseLocked =
-              (existing.tool.phase === "completed" || existing.tool.phase === "error") &&
-              patch.phase === "started";
+              (existing.tool.phase === 'completed' || existing.tool.phase === 'error') &&
+              patch.phase === 'started';
+            const nextEndedAt =
+              patch.phase === 'completed' || patch.phase === 'error'
+                ? Date.now()
+                : existing.tool.endedAt;
             const merged: ToolPartCall = {
               ...existing.tool,
               ...patch,
               ...(phaseLocked ? { phase: existing.tool.phase } : {}),
-              endedAt:
-                patch.phase === "completed" || patch.phase === "error"
-                  ? Date.now()
-                  : existing.tool.endedAt,
+              ...(nextEndedAt !== undefined && { endedAt: nextEndedAt }),
             };
             const next = parts.slice();
-            next[idx] = { type: "tool", tool: merged };
+            next[idx] = { type: 'tool', tool: merged };
             return { ...m, parts: next };
           }),
         })),
       // Backwards-compat shim — older code paths called this for server tools.
       upsertServerTool: (messageId, callId, patch) =>
-        get().upsertToolPart(messageId, callId, { kind: "server", ...patch }),
+        get().upsertToolPart(messageId, callId, { kind: 'server', ...patch }),
       appendToolProgress: (messageId, callId, entry, meta) =>
         set((s) => ({
           messages: s.messages.map((m) => {
             if (m.id !== messageId) return m;
             const parts = m.parts ?? [];
-            const idx = parts.findIndex(
-              (p) => p.type === "tool" && p.tool.callId === callId,
-            );
+            const idx = parts.findIndex((p) => p.type === 'tool' && p.tool.callId === callId);
             // No part yet (progress raced ahead of tool_started) — seed one.
             if (idx === -1) {
               const fresh: ToolPartCall = {
-                kind: meta?.kind ?? "server",
+                kind: meta?.kind ?? 'server',
                 callId,
-                toolName: meta?.toolName ?? "(unknown)",
-                phase: "started",
+                toolName: meta?.toolName ?? '(unknown)',
+                phase: 'started',
                 startedAt: Date.now(),
                 progress: [entry],
               };
-              return { ...m, parts: [...parts, { type: "tool", tool: fresh }] };
+              return { ...m, parts: [...parts, { type: 'tool', tool: fresh }] };
             }
             const existing = parts[idx];
-            if (!existing || existing.type !== "tool") return m;
+            if (!existing || existing.type !== 'tool') return m;
             const prior = existing.tool.progress ?? [];
             const nextProgress = [...prior, entry];
             // FIFO cap — keep the most recent updates if a handler over-reports.
@@ -350,7 +380,7 @@ export const useChatStore = create<ChatState>()(
             }
             const next = parts.slice();
             next[idx] = {
-              type: "tool",
+              type: 'tool',
               tool: { ...existing.tool, progress: nextProgress },
             };
             return { ...m, parts: next };
@@ -367,13 +397,13 @@ export const useChatStore = create<ChatState>()(
             // new text part — that's what preserves "text → tool → text"
             // visual ordering.
             let nextParts: MessagePart[];
-            if (last && last.type === "text") {
+            if (last && last.type === 'text') {
               nextParts = parts.slice(0, -1).concat({
-                type: "text",
+                type: 'text',
                 content: last.content + chunk,
               });
             } else {
-              nextParts = parts.concat({ type: "text", content: chunk });
+              nextParts = parts.concat({ type: 'text', content: chunk });
             }
             return { ...m, parts: nextParts, content: m.content + chunk };
           }),
@@ -385,25 +415,40 @@ export const useChatStore = create<ChatState>()(
             const parts = m.parts ?? [];
             const last = parts[parts.length - 1];
             let nextParts: MessagePart[];
-            if (last && last.type === "reasoning") {
+            // Only extend the trailing reasoning part if it is still OPEN. Once the
+            // server has said `reasoning:stopped`, a later thinking block is a
+            // genuinely separate block and gets its own part.
+            if (last && last.type === 'reasoning' && last.closed !== true) {
               nextParts = parts.slice(0, -1).concat({
-                type: "reasoning",
+                type: 'reasoning',
                 content: last.content + chunk,
               });
             } else {
-              nextParts = parts.concat({ type: "reasoning", content: chunk });
+              nextParts = parts.concat({ type: 'reasoning', content: chunk });
             }
             return { ...m, parts: nextParts };
           }),
         })),
+      closeReasoning: (id) =>
+        set((s) => ({
+          messages: s.messages.map((m) => {
+            if (m.id !== id) return m;
+            const parts = m.parts ?? [];
+            const last = parts[parts.length - 1];
+            if (!last || last.type !== 'reasoning' || last.closed === true) return m;
+            return {
+              ...m,
+              parts: parts.slice(0, -1).concat({ ...last, closed: true }),
+            };
+          }),
+        })),
       finalizeAssistant: (id) =>
         set((s) => ({
-          messages: s.messages.map((m) =>
-            m.id === id ? { ...m, pending: false } : m,
-          ),
+          messages: s.messages.map((m) => (m.id === id ? { ...m, pending: false } : m)),
         })),
       setStreaming: (isStreaming) => set({ isStreaming }),
       setStreamInterruption: (streamInterruption) => set({ streamInterruption }),
+      setProviderRetry: (providerRetry) => set({ providerRetry }),
       setMessages: (messages) => set({ messages }),
       setVariable: (agentId, name, value) =>
         set((s) => ({
@@ -434,15 +479,14 @@ export const useChatStore = create<ChatState>()(
           permissionMode: { ...s.permissionMode, [agentId]: mode },
         })),
       getPermissionMode: (agentId) => {
-        if (!agentId) return "ask";
-        return get().permissionMode[agentId] ?? "ask";
+        if (!agentId) return 'ask';
+        return get().permissionMode[agentId] ?? 'ask';
       },
       setBoundComputeTarget: (boundComputeTarget) => set({ boundComputeTarget }),
-      reset: () =>
-        set({ messages: [], draft: "", isStreaming: false, streamInterruption: null }),
+      reset: () => set({ messages: [], draft: '', isStreaming: false, streamInterruption: null }),
     }),
     {
-      name: "matrx.chat.v1",
+      name: 'matrx.chat.v1',
       storage: createJSONStorage(() => chromeLocalStorage),
       // Intentionally NOT persisting `selectedConversationId` — opening
       // the side panel should always land on a fresh chat. Past
@@ -467,6 +511,26 @@ export const useChatStore = create<ChatState>()(
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<ChatState>;
         return { ...current, ...p, selectedConversationId: null, messages: [] };
+      },
+      // Versioned + validated rehydration (audit P2-10). The blind spread
+      // above keeps unknown keys, but each known key is type-checked here —
+      // an old release's shape (or hand-edited storage) silently
+      // overwriting typed defaults produced runtime TypeErrors far from
+      // the cause. Unknown versions fall back to defaults.
+      version: 1,
+      migrate: (persisted) => {
+        const p = (persisted ?? {}) as Record<string, unknown>;
+        const out: Record<string, unknown> = {};
+        if (typeof p.selectedAgentId === 'string' || p.selectedAgentId === null)
+          out.selectedAgentId = p.selectedAgentId;
+        if (typeof p.draft === 'string') out.draft = p.draft;
+        if (p.variableValues && typeof p.variableValues === 'object')
+          out.variableValues = p.variableValues;
+        if (p.permissionMode && typeof p.permissionMode === 'object')
+          out.permissionMode = p.permissionMode;
+        if (p.boundComputeTarget === null || typeof p.boundComputeTarget === 'object')
+          out.boundComputeTarget = p.boundComputeTarget;
+        return out as Partial<ChatState>;
       },
     },
   ),

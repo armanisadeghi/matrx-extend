@@ -3,21 +3,45 @@
  * the user's JWT (set via setSupabaseSession) gates rows server-side.
  *
  * Schema mirror — these tables already exist in the Matrx Supabase project:
- *   - agx_agent          (Agent definitions, replaces legacy `prompts`)
- *   - cx_conversation    (Chat conversations)
- *   - cx_message         (Chat messages — JSONB content[])
+ *   - agent.definition        (Agent definitions — was public.agx_agent)
+ *   - chat.conversation       (Chat conversations — was public.cx_conversation)
+ *   - chat.message            (Chat messages, JSONB content[] — was public.cx_message)
+ *   - chat.tool_call          (Tool call records — was public.cx_tool_call)
+ *   - ai.model_definition     (AI model registry — `ai.model` was SPLIT into
+ *                              model_definition/_public/_admin/_alias; only
+ *                              model_definition has our 3 columns AND is readable
+ *                              by the publishable key)
+ *   - tool.definition         (Tool definitions — was public.tool_def)
+ *   - admin.admins            (Admin allowlist — was public.admins)
  *
- * Tables this extension OWNS (created by ./migrations/*.sql):
- *   - wbx_capture        (Page captures from Scrape tab)
- *   - wbx_pattern        (Saved Data-tab patterns)
- *   - wbx_seo_audit      (SEO audits + AI recommendations)
+ * Table -> schema routing is centralized in `@/lib/supabase/schemas`. Use those
+ * accessors (adminDb(), aiDb(), …) rather than hand-writing `.schema('x')`:
+ * an unqualified `.from()` silently resolves against `public` and 404s at
+ * RUNTIME (PGRST205) — tsc and the build will not catch it.
+ *
+ * Tables this extension OWNS now live in the dedicated `extend` schema
+ * (moved out of public in the 2026-06-27 DB transition — reached via
+ * `.schema('extend')`, see EXTEND_SCHEMA below):
+ *   - extend.wbx_capture        (Page captures from Scrape tab)
+ *   - extend.wbx_pattern        (Saved Data-tab patterns)
+ *   - extend.wbx_seo_audit      (SEO audits + AI recommendations)
+ *   - extend.wbx_screenshot · extend.wbx_guidance · extend.wbx_highlight · extend.wbx_recipe
  */
 
 import { DEFAULT_AGENDA_AGENT_ID } from '@/lib/agenda/constants';
 import { log } from '@/lib/debug/log';
 import { getSupabase } from '@/lib/supabase/client';
+import { adminDb, aiDb } from '@/lib/supabase/schemas';
 import type { ChatMessage, MessagePart } from '@/state/chat';
 import { z } from 'zod';
+
+/**
+ * The wbx_* extension tables moved out of public into the dedicated `extend`
+ * schema (2026-06-27 DB transition). Every wbx_ call routes through it, the
+ * same way chat/ai/tool reads use `.schema(...)`. Owner is canonical
+ * `created_by` (stamped server-side) — there is no `user_id` column anymore.
+ */
+const EXTEND_SCHEMA = 'extend';
 
 /**
  * Per-row safeParse that survives malformed rows. Bad rows are dropped from
@@ -29,7 +53,9 @@ import { z } from 'zod';
  * gets a non-zero `badCount` to surface a UI banner.
  */
 function parseRowsSafe<T>(
-  schema: z.ZodType<T>,
+  // Wide input type so schemas with .default()/.transform() (input shape !=
+  // output shape) still infer T as the OUTPUT type.
+  schema: z.ZodType<T, z.ZodTypeDef, unknown>,
   rows: unknown[],
   context: string,
 ): { rows: T[]; badCount: number } {
@@ -44,7 +70,7 @@ function parseRowsSafe<T>(
       const raw = rows[i] as Record<string, unknown> | null;
       log.error('supabase', `${context}: row ${i} failed validation`, {
         issues: parsed.error.issues,
-        row_id: raw && typeof raw === 'object' ? raw.id ?? null : null,
+        row_id: raw && typeof raw === 'object' ? (raw.id ?? null) : null,
         raw,
       });
     }
@@ -63,8 +89,14 @@ function parseRowsSafe<T>(
  * is gated on this check.
  */
 export async function checkIsAdmin(userId: string): Promise<boolean> {
-  const c = getSupabase();
-  const { data, error } = await c.from('admins').select('user_id').eq('user_id', userId).limit(1);
+  // `admins` lives in the `admin` schema now, not `public`. It kept its
+  // `user_id` column (unlike the extend/* tables, which renamed it to
+  // `created_by`) — so only the routing changes here.
+  const { data, error } = await adminDb()
+    .from('admins')
+    .select('user_id')
+    .eq('user_id', userId)
+    .limit(1);
   if (error) {
     console.warn('[matrx-extend] checkIsAdmin error', error.message);
     return false;
@@ -146,7 +178,9 @@ export async function fetchAgentList(): Promise<AgxAgent[]> {
     return [FALLBACK_DEFAULT_AGENT];
   }
   // RLS + RPC body filter actives/non-archived already, but be defensive.
-  const all = z.array(AgxAgentSchema).parse(data ?? []);
+  // Per-row safeParse (audit P2-18): one malformed agent row used to reject
+  // the whole fetch and brick the chat surface (agents never loaded).
+  const all = parseRowsSafe(AgxAgentSchema, (data ?? []) as unknown[], 'fetchAgentList').rows;
   const visible = all
     .filter((a) => a.is_active !== false && a.is_archived !== true)
     .sort((a, b) => {
@@ -177,9 +211,14 @@ export type AiModel = z.infer<typeof AiModelSchema>;
  * so the extension never needs to touch model names.
  */
 export async function fetchActiveModels(): Promise<AiModel[]> {
-  const c = getSupabase();
-  const { data, error } = await c
-    .schema('ai')
+  // `ai.model` was SPLIT, not moved: it is now model_definition (base table) +
+  // model_public / model_admin / model_alias / model_config / model_offering.
+  // `model_definition` is the right target — it is the only one that carries all
+  // three columns we read AND is readable by this client. (`model_admin` has the
+  // columns but is `permission denied for view` to the publishable key; and
+  // `model_public` dropped `is_deprecated` entirely, so the filter below would
+  // 42703.) Verified against the live DB.
+  const { data, error } = await aiDb()
     .from('model_definition')
     .select('id, common_name, is_deprecated')
     .eq('is_deprecated', false)
@@ -227,12 +266,13 @@ export async function fetchAgentExecution(agentId: string): Promise<AgxAgentExec
   return rows.data[0] ?? null;
 }
 
-// ─── Conversations (cx_conversation) ────────────────────────────────────────
+// ─── Conversations (chat.conversation) ──────────────────────────────────────
+// NOTE: post-canonicalization the table moved to the `chat` schema.
+// `user_id` is now `created_by`; `status` column was removed from this table.
 export const ConversationSchema = z.object({
   id: z.string().uuid(),
-  user_id: z.string().uuid().nullable(),
+  created_by: z.string().uuid().nullable(),
   title: z.string().nullable(),
-  status: z.string().nullable(),
   last_model_id: z.string().uuid().nullable(),
   message_count: z.number().int().nullable(),
   created_at: z.string(),
@@ -245,22 +285,23 @@ export type Conversation = z.infer<typeof ConversationSchema>;
 export async function fetchConversationHistory(limit = 30): Promise<Conversation[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('cx_conversation')
+    .schema('chat')
+    .from('conversation')
     .select(
-      'id, user_id, title, status, last_model_id, message_count, created_at, updated_at, deleted_at, metadata',
+      'id, created_by, title, last_model_id, message_count, created_at, updated_at, deleted_at, metadata',
     )
     .is('deleted_at', null)
-    .eq('status', 'active')
     .order('updated_at', { ascending: false })
     .limit(limit);
   if (error) {
     console.warn('[matrx-extend] fetchConversationHistory error', error.message);
     return [];
   }
-  return z.array(ConversationSchema).parse(data ?? []);
+  return parseRowsSafe(ConversationSchema, (data ?? []) as unknown[], 'fetchConversationHistory')
+    .rows;
 }
 
-// ─── Messages (cx_message) ──────────────────────────────────────────────────
+// ─── Messages (chat.message) ─────────────────────────────────────────────────
 export const MessageSchema = z.object({
   id: z.string().uuid(),
   conversation_id: z.string().uuid(),
@@ -278,7 +319,8 @@ export async function fetchConversationMessages(
 ): Promise<{ rows: Message[]; badCount: number }> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('cx_message')
+    .schema('chat')
+    .from('message')
     .select('id, conversation_id, role, position, status, content, created_at, metadata')
     .eq('conversation_id', conversationId)
     .is('deleted_at', null)
@@ -294,16 +336,14 @@ export async function fetchConversationMessages(
   return parseRowsSafe(MessageSchema, (data ?? []) as unknown[], 'fetchConversationMessages');
 }
 
-// ─── Tool calls (cx_tool_call) ──────────────────────────────────────────────
+// ─── Tool calls (chat.tool_call) ─────────────────────────────────────────────
 /**
  * One tool execution row. Lives on the `role: 'tool'` message and carries
  * the actual output the matching `tool_call` block produced. The output
  * column is a JSON-encoded STRING — needs `JSON.parse` before it's usable
  * by the tool-display registry transforms.
  *
- * Table renamed from `cx_tl_call` → `cx_tool_call` in the 2026-05-27 tool
- * refactor (migration 0090). Columns are unchanged; the rename is purely
- * naming housekeeping in step with `tl_def → tool_def` and friends.
+ * Moved to `chat.tool_call` in the 2026-06 schema canonicalization.
  */
 export const ToolCallRowSchema = z.object({
   call_id: z.string(),
@@ -327,7 +367,8 @@ export async function fetchConversationToolCalls(
 ): Promise<{ rows: ToolCallRow[]; badCount: number }> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('cx_tool_call')
+    .schema('chat')
+    .from('tool_call')
     .select(
       'call_id, message_id, conversation_id, tool_name, tool_type, status, arguments, output, is_error, error_type, error_message, duration_ms, created_at',
     )
@@ -346,7 +387,7 @@ export async function fetchConversationToolCalls(
 }
 
 /**
- * `cx_tool_call.output` is stored as a JSON-encoded string. Parse it for the
+ * `chat.tool_call.output` is stored as a JSON-encoded string. Parse it for the
  * tool-display registry which expects an object. Non-string outputs pass
  * through. Malformed JSON falls back to the raw string so we don't lose
  * data — the user can still copy it from the expanded row.
@@ -367,13 +408,13 @@ function parseToolOutput(raw: unknown): unknown {
  * in-flight session — including the polished ConfigurableToolRow entries.
  *
  * DB layout (see `.research/db-conversation-shape.md` if it ever drifts):
- *   - cx_message.content is a JSONB array of blocks: text | thinking |
+ *   - chat.message.content is a JSONB array of blocks: text | thinking |
  *     tool_call (assistant) | tool_result (tool role).
- *   - cx_tool_call holds the actual output for each tool_call, attached to
+ *   - chat.tool_call holds the actual output for each tool_call, attached to
  *     the `role: 'tool'` message by call_id.
  *
  * Reconstruction:
- *   1. Index every cx_tool_call row by call_id for O(1) lookup.
+ *   1. Index every chat.tool_call row by call_id for O(1) lookup.
  *   2. Walk messages in position order:
  *      - user/assistant → emit text + reasoning + tool (phase: started) parts.
  *      - tool → don't push a new ChatMessage; instead find the preceding
@@ -398,7 +439,10 @@ export function dbMessagesToChatMessages(
       log.error('supabase', 'dbMessagesToChatMessages: row transform threw', {
         message_id: m.id,
         role: m.role,
-        error: err instanceof Error ? { name: err.name, message: err.message, stack: err.stack } : String(err),
+        error:
+          err instanceof Error
+            ? { name: err.name, message: err.message, stack: err.stack }
+            : String(err),
       });
     }
   }
@@ -421,15 +465,15 @@ export function dbMessagesToChatMessages(
         if (block.type !== 'tool_result') continue;
         const callId = String(block.call_id ?? block.tool_use_id ?? '');
         if (!callId) continue;
-        const part = last.parts.find(
-          (p) => p.type === 'tool' && p.tool.callId === callId,
-        );
+        const part = last.parts.find((p) => p.type === 'tool' && p.tool.callId === callId);
         if (!part || part.type !== 'tool') continue;
         const tc = byCallId.get(callId);
         const isError = Boolean(tc?.is_error ?? block.is_error);
         part.tool.phase = isError ? 'error' : 'completed';
         part.tool.result = parseToolOutput(tc?.output);
-        const errMsg = tc?.error_message ?? (typeof block.error_message === 'string' ? block.error_message : null);
+        const errMsg =
+          tc?.error_message ??
+          (typeof block.error_message === 'string' ? block.error_message : null);
         if (errMsg) part.tool.message = errMsg;
         else if (!isError) part.tool.message = 'Done';
         if (typeof tc?.duration_ms === 'number' && tc.duration_ms >= 0) {
@@ -465,7 +509,7 @@ export function dbMessagesToChatMessages(
         const callId = String(block.call_id ?? '');
         const toolName = String(block.name ?? '');
         if (!callId || !toolName) continue;
-        // tool_type may be discovered later via the cx_tool_call lookup;
+        // tool_type may be discovered later via the chat.tool_call lookup;
         // assume 'client' by default (the registry doesn't care about
         // kind for resolution — only the outer wrapper styling).
         const lookup = byCallId.get(callId);
@@ -507,6 +551,7 @@ export type CapturedPage = z.infer<typeof CapturedPageSchema>;
 export async function lookupCapturedByUrl(url: string): Promise<CapturedPage | null> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema(EXTEND_SCHEMA)
     .from('wbx_capture')
     .select('id, url, captured_at, title')
     .eq('url', url)
@@ -519,7 +564,12 @@ export async function lookupCapturedByUrl(url: string): Promise<CapturedPage | n
   }
   const row = (data ?? [])[0];
   if (!row) return null;
-  return CapturedPageSchema.parse(row);
+  const parsed = CapturedPageSchema.safeParse(row);
+  if (!parsed.success) {
+    log.error('supabase', 'lookupCapturedByUrl: row failed validation', parsed.error.issues);
+    return null;
+  }
+  return parsed.data;
 }
 
 export interface SaveCapturePayload {
@@ -538,6 +588,7 @@ export interface SaveCapturePayload {
 export async function saveCapture(p: SaveCapturePayload): Promise<{ id: string } | null> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema(EXTEND_SCHEMA)
     .from('wbx_capture')
     .insert({
       url: p.url,
@@ -599,7 +650,7 @@ export type ExtractionPatternField = z.infer<typeof ExtractionPatternFieldSchema
 
 export const ExtractionPatternSchema = z.object({
   id: z.string().uuid(),
-  user_id: z.string().uuid(),
+  created_by: z.string().uuid().nullable(),
   name: z.string(),
   domain: z.string(),
   route_pattern: z.string().nullable(),
@@ -619,16 +670,20 @@ export type ExtractionPattern = z.infer<typeof ExtractionPatternSchema>;
 export async function fetchPatternsForDomain(domain: string): Promise<ExtractionPattern[]> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema(EXTEND_SCHEMA)
     .from('wbx_pattern')
     .select('*')
     .eq('domain', domain)
     .order('last_used_at', { ascending: false, nullsFirst: false });
   if (error) {
+    // Pre-migration installs have no table — genuinely "no patterns".
     if (/relation .* does not exist/i.test(error.message)) return [];
-    console.warn('[matrx-extend] fetchPatternsForDomain error', error.message);
-    return [];
+    // Anything else (network, timeout, 5xx) must NOT masquerade as an empty
+    // list — callers render "no saved patterns" for []. Let them show an error.
+    throw new Error(`Could not load saved patterns: ${error.message}`);
   }
-  return z.array(ExtractionPatternSchema).parse(data ?? []);
+  return parseRowsSafe(ExtractionPatternSchema, (data ?? []) as unknown[], 'fetchPatternsForDomain')
+    .rows;
 }
 
 export type SavePatternInput = {
@@ -644,33 +699,65 @@ export type SavePatternInput = {
 
 export async function savePattern(p: SavePatternInput): Promise<{ id: string } | null> {
   const c = getSupabase();
-  const { data, error } = await c
-    .from('wbx_pattern')
-    .insert({
-      name: p.name,
-      domain: p.domain,
-      route_pattern: p.route_pattern,
-      list_root_selector: p.list_root_selector,
-      fields: p.fields,
-      kind: p.kind ?? 'manual_css',
-      config: p.config ?? {},
-      target_user_table_id: p.target_user_table_id ?? null,
-    })
-    .select('id')
-    .single();
-  if (error) {
-    console.warn('[matrx-extend] savePattern error', error.message);
-    return null;
+  // UNIQUE(created_by, domain, name) — on a name collision, auto-suffix
+  // "name (2)", "name (3)", … instead of failing the save (decision D3).
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const name = attempt === 0 ? p.name : `${p.name} (${attempt + 1})`;
+    const { data, error } = await c
+      .schema(EXTEND_SCHEMA)
+      .from('wbx_pattern')
+      .insert({
+        name,
+        domain: p.domain,
+        route_pattern: p.route_pattern,
+        list_root_selector: p.list_root_selector,
+        fields: p.fields,
+        kind: p.kind ?? 'manual_css',
+        config: p.config ?? {},
+        target_user_table_id: p.target_user_table_id ?? null,
+      })
+      .select('id')
+      .single();
+    if (!error) return data as { id: string };
+    if (error.code !== '23505') {
+      console.warn('[matrx-extend] savePattern error', error.message);
+      return null;
+    }
   }
-  return data as { id: string };
+  console.warn('[matrx-extend] savePattern: name collision persisted after 5 attempts');
+  return null;
 }
 
-export async function bumpPatternLastUsed(patternId: string): Promise<void> {
+/** Hard-delete a saved pattern. Returns false (with a console.warn) on failure. */
+export async function deletePattern(patternId: string): Promise<boolean> {
   const c = getSupabase();
-  await c
+  const { error } = await c.schema(EXTEND_SCHEMA).from('wbx_pattern').delete().eq('id', patternId);
+  if (error) {
+    console.warn('[matrx-extend] deletePattern error', error.message);
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Rename a saved pattern. Returns an error string suitable for inline display
+ * (e.g. on a name collision within the same domain), or null on success.
+ */
+export async function renamePattern(patternId: string, name: string): Promise<string | null> {
+  const trimmed = name.trim();
+  if (!trimmed) return 'Name cannot be empty.';
+  const c = getSupabase();
+  const { error } = await c
+    .schema(EXTEND_SCHEMA)
     .from('wbx_pattern')
-    .update({ last_used_at: new Date().toISOString() })
+    .update({ name: trimmed })
     .eq('id', patternId);
+  if (error) {
+    if (error.code === '23505') return 'A pattern with that name already exists for this site.';
+    console.warn('[matrx-extend] renamePattern error', error.message);
+    return `Rename failed: ${error.message}`;
+  }
+  return null;
 }
 
 /**
@@ -684,6 +771,7 @@ export async function bumpPatternRun(
 ): Promise<void> {
   const c = getSupabase();
   await c
+    .schema(EXTEND_SCHEMA)
     .from('wbx_pattern')
     .update({
       last_run_at: new Date().toISOString(),
@@ -718,6 +806,7 @@ export interface SaveSeoAuditPayload {
 export async function saveSeoAudit(p: SaveSeoAuditPayload): Promise<{ id: string } | null> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema(EXTEND_SCHEMA)
     .from('wbx_seo_audit')
     .insert({
       url: p.url,
@@ -738,6 +827,7 @@ export async function saveSeoAudit(p: SaveSeoAuditPayload): Promise<{ id: string
 export async function fetchLatestSeoAuditForUrl(url: string): Promise<SeoAuditRow | null> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema(EXTEND_SCHEMA)
     .from('wbx_seo_audit')
     .select('id, url, audited_at, signals, recommendations, flesch_reading_ease, word_count, notes')
     .eq('url', url)
@@ -749,7 +839,17 @@ export async function fetchLatestSeoAuditForUrl(url: string): Promise<SeoAuditRo
     return null;
   }
   const row = (data ?? [])[0];
-  return row ? SeoAuditRowSchema.parse(row) : null;
+  if (!row) return null;
+  const parsedSeo = SeoAuditRowSchema.safeParse(row);
+  if (!parsedSeo.success) {
+    log.error(
+      'supabase',
+      'fetchLatestSeoAuditForUrl: row failed validation',
+      parsedSeo.error.issues,
+    );
+    return null;
+  }
+  return parsedSeo.data;
 }
 
 export async function attachSeoRecommendations(
@@ -757,7 +857,11 @@ export async function attachSeoRecommendations(
   recommendations: unknown,
 ): Promise<void> {
   const c = getSupabase();
-  const { error } = await c.from('wbx_seo_audit').update({ recommendations }).eq('id', auditId);
+  const { error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_seo_audit')
+    .update({ recommendations })
+    .eq('id', auditId);
   if (error) console.warn('[matrx-extend] attachSeoRecommendations error', error.message);
 }
 
@@ -799,11 +903,10 @@ export interface SaveScreenshotPayload {
  * be in cld_files via uploadFile(); this function only stores the pointer
  * + per-page metadata so the Screenshots side-panel tab can list them.
  */
-export async function saveScreenshot(
-  p: SaveScreenshotPayload,
-): Promise<{ id: string } | null> {
+export async function saveScreenshot(p: SaveScreenshotPayload): Promise<{ id: string } | null> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema(EXTEND_SCHEMA)
     .from('wbx_screenshot')
     .insert({
       page_url_canonical: p.page_url_canonical,
@@ -833,6 +936,7 @@ export async function fetchScreenshotsForUrl(
 ): Promise<ScreenshotRow[]> {
   const c = getSupabase();
   const { data, error } = await c
+    .schema(EXTEND_SCHEMA)
     .from('wbx_screenshot')
     .select(
       'id, page_url_canonical, page_url_full, page_title, file_id, file_url, width, height, mime_type, byte_length, source, captured_at',
@@ -842,18 +946,140 @@ export async function fetchScreenshotsForUrl(
     .limit(limit);
   if (error) {
     if (/relation .* does not exist/i.test(error.message)) return [];
-    console.warn('[matrx-extend] fetchScreenshotsForUrl error', error.message);
-    return [];
+    throw new Error(`fetchScreenshotsForUrl: ${error.message}`);
   }
-  return z.array(ScreenshotRowSchema).parse(data ?? []);
+  return parseRowsSafe(ScreenshotRowSchema, (data ?? []) as unknown[], 'fetchScreenshotsForUrl')
+    .rows;
+}
+
+/** Cross-page screenshot history for the Files tab, newest first. */
+export async function fetchRecentScreenshots(limit = 100): Promise<ScreenshotRow[]> {
+  const c = getSupabase();
+  const { data, error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_screenshot')
+    .select(
+      'id, page_url_canonical, page_url_full, page_title, file_id, file_url, width, height, mime_type, byte_length, source, captured_at',
+    )
+    .order('captured_at', { ascending: false })
+    .limit(Math.min(Math.max(limit, 1), 200));
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return [];
+    throw new Error(`fetchRecentScreenshots: ${error.message}`);
+  }
+  return parseRowsSafe(ScreenshotRowSchema, (data ?? []) as unknown[], 'fetchRecentScreenshots')
+    .rows;
 }
 
 export async function deleteScreenshot(id: string): Promise<boolean> {
   const c = getSupabase();
-  const { error } = await c.from('wbx_screenshot').delete().eq('id', id);
+  const { error } = await c.schema(EXTEND_SCHEMA).from('wbx_screenshot').delete().eq('id', id);
   if (error) {
     console.warn('[matrx-extend] deleteScreenshot error', error.message);
     return false;
   }
   return true;
+}
+
+// ─── wbx_guidance (cloud-synced guidance metadata, TASK-004) ────────────────
+/**
+ * One guidance index row. The `id` is the CLIENT-generated guidance id
+ * (`gd_<ts>_<rand>`, a text PK — not a uuid) so the local chrome.storage.local
+ * cache and the cloud row map 1:1. Kind-specific fields live in the `data`
+ * jsonb so the GuidanceItem discriminated union survives the round-trip.
+ * Heavy bytes stay in cld_files; `data` only carries pointers.
+ */
+export const WbxGuidanceRowSchema = z.object({
+  id: z.string(),
+  domain: z.string(),
+  kind: z.string(),
+  caption: z.string().nullable(),
+  origin_url: z.string().nullable(),
+  data: z.unknown().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  /** Tombstone — deletes propagate as soft-deletes so other machines can apply them. */
+  is_deleted: z.boolean().default(false),
+});
+export type WbxGuidanceRow = z.infer<typeof WbxGuidanceRowSchema>;
+
+export interface SaveGuidanceRowPayload {
+  id: string;
+  domain: string;
+  kind: string;
+  caption?: string | null;
+  origin_url?: string | null;
+  data: unknown;
+  /** ISO timestamps (the client stores epoch-ms; the cloud-sync mapper converts). */
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Upsert one guidance row keyed by its client id. Ownership is set server-side
+ * (`created_by` is stamped from `auth.uid()` on insert and the RLS UPDATE policy
+ * pins existing rows to the owner), so a row can never change hands.
+ */
+export async function upsertGuidanceRow(p: SaveGuidanceRowPayload): Promise<boolean> {
+  const c = getSupabase();
+  const { error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_guidance')
+    .upsert(
+      {
+        id: p.id,
+        domain: p.domain,
+        kind: p.kind,
+        caption: p.caption ?? null,
+        origin_url: p.origin_url ?? null,
+        data: p.data ?? {},
+        created_at: p.created_at,
+        updated_at: p.updated_at,
+        // An intentional save revives a tombstoned row — the user actively
+        // edited it on this machine, which outranks an older delete.
+        is_deleted: false,
+      },
+      { onConflict: 'id' },
+    );
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return false;
+    console.warn('[matrx-extend] upsertGuidanceRow error', error.message);
+    return false;
+  }
+  return true;
+}
+
+export async function deleteGuidanceRow(id: string): Promise<boolean> {
+  const c = getSupabase();
+  // SOFT delete (tombstone) — a hard DELETE left nothing for other
+  // machines' hydrate to apply, so deletes never propagated and a later
+  // edit on a stale machine resurrected the item everywhere.
+  const { error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_guidance')
+    .update({ is_deleted: true, updated_at: new Date().toISOString() })
+    .eq('id', id);
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return false;
+    console.warn('[matrx-extend] deleteGuidanceRow error', error.message);
+    return false;
+  }
+  return true;
+}
+
+/** Fetch all of the signed-in user's guidance rows (RLS scopes to the owner). */
+export async function fetchAllGuidanceRows(): Promise<WbxGuidanceRow[]> {
+  const c = getSupabase();
+  const { data, error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_guidance')
+    .select('id, domain, kind, caption, origin_url, data, created_at, updated_at, is_deleted')
+    .order('updated_at', { ascending: false });
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return [];
+    console.warn('[matrx-extend] fetchAllGuidanceRows error', error.message);
+    return [];
+  }
+  return parseRowsSafe(WbxGuidanceRowSchema, (data ?? []) as unknown[], 'fetchAllGuidanceRows')
+    .rows;
 }

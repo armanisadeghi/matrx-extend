@@ -61,7 +61,8 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
     else setSelectedFolder(v);
   };
 
-  const folderValue = selectedFolder === null ? ALL_FOLDERS : selectedFolder === '' ? NO_FOLDER : selectedFolder;
+  const folderValue =
+    selectedFolder === null ? ALL_FOLDERS : selectedFolder === '' ? NO_FOLDER : selectedFolder;
 
   const onPickNote = (id: string) => setSelectedNoteId(id);
 
@@ -70,8 +71,7 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
     setCreating(true);
     try {
       const label = generateUniqueLabel(notes, 'Untitled');
-      const folderForCreate =
-        selectedFolder && selectedFolder !== '' ? selectedFolder : null;
+      const folderForCreate = selectedFolder && selectedFolder !== '' ? selectedFolder : null;
       const note = await createNote({ label, folder_name: folderForCreate });
       if (note) {
         await queryClient.invalidateQueries({ queryKey: ['notes', 'list'] });
@@ -136,7 +136,9 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
             }}
           >
             <SelectTrigger className="h-8 text-xs" disabled={folderFilteredNotes.length === 0}>
-              <SelectValue placeholder={`${folderFilteredNotes.length} note${folderFilteredNotes.length === 1 ? '' : 's'}`} />
+              <SelectValue
+                placeholder={`${folderFilteredNotes.length} note${folderFilteredNotes.length === 1 ? '' : 's'}`}
+              />
             </SelectTrigger>
             <SelectContent>
               {folderFilteredNotes.length === 0 ? (
@@ -161,9 +163,7 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
             No notes yet. Click <strong>New note</strong> to create your first one.
           </div>
         ) : visibleNotes.length === 0 ? (
-          <div className="px-3 py-8 text-center text-xs text-muted-foreground">
-            No matches.
-          </div>
+          <div className="px-3 py-8 text-center text-xs text-muted-foreground">No matches.</div>
         ) : (
           <ul className="divide-y divide-border/50">
             {visibleNotes.map((n) => (

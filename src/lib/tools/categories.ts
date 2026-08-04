@@ -42,7 +42,7 @@ import type { AnyToolHandler, ToolTier } from '@/lib/tools/types';
  *   - tabs         : "manage browser tabs / windows"
  *   - capture      : "save or capture something" (downloads, MHTML, GIFs, video)
  *   - chrome       : "the user's personal Chrome data" (cookies, bookmarks, history)
- *   - human        : "human in the loop" (ask user, plan, tasks, todos)
+ *   - human        : "human in the loop" (ask user, plan, user todos)
  *   - memory       : "agent state" (scratchpad, storage, domain memos)
  *   - ai           : on-device Chrome AI
  *   - demos        : record + replay user workflows
@@ -50,6 +50,7 @@ import type { AnyToolHandler, ToolTier } from '@/lib/tools/types';
  *   - devtools     : CDP-backed diagnostics + host (admin)
  *   - webmcp       : tools registered by the page via navigator.modelContext
  *   - desktop      : bridge to matrx-local
+ *   - credentials  : sign in to a site using a saved Matrx vault login
  */
 export type ToolCategory =
   | 'core'
@@ -65,7 +66,8 @@ export type ToolCategory =
   | 'guidance'
   | 'devtools'
   | 'webmcp'
-  | 'desktop';
+  | 'desktop'
+  | 'credentials';
 
 export interface CategoryMeta {
   category: ToolCategory;
@@ -127,7 +129,7 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'human',
     label: 'Talk to the user',
     description:
-      'Loop the human in. `user` (six modes: confirm/choice/choice_many/text/secret/notify), `update_plan` (propose a plan and wait for approval), `request_user_takeover` (hand control back so the user can do something the agent cannot), `tasks` (agent\'s live tasklist), `user_todos` (assign work to the user). Per-conversation state.',
+      'Loop the human in. `user` (six modes: confirm/choice/choice_many/text/secret/notify), `update_plan` (propose a plan and wait for approval), `request_user_takeover` (hand control back so the user can do something the agent cannot), and `user_todos` (assign work to the user). Per-conversation state.',
     list_tool_name: 'list_human_tools',
   },
   memory: {
@@ -155,7 +157,7 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'guidance',
     label: 'User-saved hints',
     description:
-      'Domain-scoped notes, screenshots, GIFs, and demo references the user has saved for the agent. Whenever the user opens a tab on a matching domain, the agent\'s context auto-includes the saved hints. Tools here let the agent add notes, browse what exists, and remove stale items.',
+      "Domain-scoped notes, screenshots, GIFs, and demo references the user has saved for the agent. Whenever the user opens a tab on a matching domain, the agent's context auto-includes the saved hints. Tools here let the agent add notes, browse what exists, and remove stale items.",
     list_tool_name: 'list_guidance_tools',
   },
   devtools: {
@@ -170,7 +172,7 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'webmcp',
     label: 'Page-registered tools',
     description:
-      'Discover and call tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). The `chrome_webmcp` mega-tool lets the agent enumerate the page\'s tool catalog and invoke specific tools. Admin-only experimental capability.',
+      "Discover and call tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). The `chrome_webmcp` mega-tool lets the agent enumerate the page's tool catalog and invoke specific tools. Admin-only experimental capability.",
     list_tool_name: 'list_webmcp_tools',
     admin_only: true,
   },
@@ -178,8 +180,15 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'desktop',
     label: 'Desktop bridge',
     description:
-      'Bridge to matrx-local — the desktop engine. `desktop_run_command` invokes commands matrx-local exposes (file ops, system info, window control, etc.). Fails fast when the bridge isn\'t connected.',
+      "Bridge to matrx-local — the desktop engine. `desktop_run_command` invokes commands matrx-local exposes (file ops, system info, window control, etc.). Fails fast when the bridge isn't connected.",
     list_tool_name: 'list_desktop_tools',
+  },
+  credentials: {
+    category: 'credentials',
+    label: 'Saved logins',
+    description:
+      "Sign in to the site in the current tab using a login saved in the user's Matrx vault. `credential_login` resolves, fills, submits, and verifies in one call and returns only an outcome status — the agent never receives, and cannot supply, a URL, username, password, or selector. MFA and CAPTCHA stop automation for user takeover rather than being worked around.",
+    list_tool_name: 'list_credentials_tools',
   },
 };
 
@@ -196,6 +205,7 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
 
   // ─── reading (canonical) ──────────────────────────────────────────────
   read_page: 'reading',
+  data_patterns: 'reading',
   find: 'reading',
   read_active_page: 'reading',
   read_pdf: 'reading',
@@ -225,7 +235,6 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   clipboard: 'interaction',
   upload_file: 'interaction',
   drop_file: 'interaction',
-  evaluate_javascript: 'interaction',
   stylesheet: 'interaction',
   // ─── interaction (absorbed granular handlers) ─────────────────────────
   navigate_active_tab: 'interaction',
@@ -243,7 +252,6 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   file_upload: 'interaction',
   set_clipboard: 'interaction',
   get_clipboard: 'interaction',
-  execute_javascript: 'interaction',
   inject_stylesheet: 'interaction',
   remove_stylesheet: 'interaction',
 
@@ -305,7 +313,6 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   user: 'human',
   update_plan: 'human',
   request_user_takeover: 'human',
-  tasks: 'human',
   user_todos: 'human',
 
   // ─── memory ───────────────────────────────────────────────────────────
@@ -359,8 +366,6 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   read_console_messages: 'devtools',
   read_network_requests: 'devtools',
   get_request_body: 'devtools',
-  get_system_info: 'devtools',
-  list_network_blocking_rules: 'devtools',
   // ─── devtools (absorbed granular handlers) ────────────────────────────
   cdp_attach: 'devtools',
   cdp_detach: 'devtools',
@@ -376,6 +381,11 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
 
   // ─── desktop (matrx-local bridge) ─────────────────────────────────────
   desktop_run_command: 'desktop',
+
+  // ─── credentials (vault browser login) ────────────────────────────────
+  // Category comes from the DB (`tool.definition.category = 'credentials'`),
+  // which is the source of truth — do not "tidy" this into `interaction`.
+  credential_login: 'credentials',
 };
 
 export function categoryOf(toolName: string): ToolCategory {
@@ -386,9 +396,9 @@ export function categoryOf(toolName: string): ToolCategory {
 }
 
 /**
- * The canonical surface — names that exist as active rows in `public.tool_def`
+ * The canonical surface — names that exist as active rows in `tool.definition`
  * (the DB the server uses to advertise tools to agents) and are bound to the
- * `chrome-extension` executor via `public.tool_binding`. Everything else
+ * `chrome-extension` executor via `tool.binding`. Everything else
  * the registry exports is either:
  *   - an internal delegate that a mega-tool router calls (`click_element`
  *     called by `computer.action='left_click'`, `take_screenshot` by
@@ -406,6 +416,7 @@ export function categoryOf(toolName: string): ToolCategory {
 export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   // ─── core (advertised on every chat) ────────────────────────────────────
   'list_browser_tools',
+  'data_patterns',
   'browser_batch',
   'read_page',
   'find',
@@ -431,7 +442,6 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'chrome_history',
   'chrome_recently_closed',
   'stylesheet',
-  'evaluate_javascript',
   'chrome_cookies',
   'chrome_webmcp',
   'cdp_session',
@@ -457,9 +467,8 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'chrome_tab_audio_inspect',
   // ─── ask ────────────────────────────────────────────────────────────────
   'request_user_takeover',
-  // ─── plan & tasks ───────────────────────────────────────────────────────
+  // ─── plan & user todos (tasks executes natively in aidream) ─────────────
   'update_plan',
-  'tasks',
   'user_todos',
   // ─── files / windows ────────────────────────────────────────────────────
   'chrome_save_page_as_mhtml',
@@ -493,6 +502,13 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'read_network_requests',
   'get_request_body',
   'desktop_run_command',
+  // ─── credentials (vault browser login) ──────────────────────────────────
+  // An active `tool.definition` row bound to the `chrome-extension` executor,
+  // so it belongs here by definition. Being listed here does NOT advertise it:
+  // agent advertisement is `tool.surface_defaults.always_include_tools`, and no
+  // surface includes `credential_login` yet (Phase 5 of the
+  // credential-sharing-browser-login plan is the activation switch).
+  'credential_login',
 ]);
 
 export function isCanonicalSurface(toolName: string): boolean {

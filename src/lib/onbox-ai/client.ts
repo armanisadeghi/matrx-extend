@@ -166,7 +166,7 @@ export async function quickPrompt(
      * the user exactly what the model received without reconstruction.
      * Pass-through when called as a fallback from summarize/translate/etc.
      */
-    onRequest?: OnboxOnRequest;
+    onRequest?: OnboxOnRequest | undefined;
     /**
      * Override the `task` field on the emitted onRequest event. Defaults to
      * 'languageModel.prompt'. Used by fallback callers to label the event
@@ -177,7 +177,11 @@ export async function quickPrompt(
 ): Promise<OnboxResult<string>> {
   const ai = getAi();
   if (!ai?.languageModel) {
-    return { ok: false, reason: 'languageModel API unavailable in this Chrome', availability: 'unavailable' };
+    return {
+      ok: false,
+      reason: 'languageModel API unavailable in this Chrome',
+      availability: 'unavailable',
+    };
   }
   const availability = (await checkAvailability('languageModel')) ?? 'unavailable';
   if (availability === 'unavailable') {
@@ -207,7 +211,7 @@ export async function quickPrompt(
       task: opts?.requestTask ?? 'languageModel.prompt',
       createOptions: createOpts,
       promptInput: input,
-      promptOptions: promptOpts,
+      ...(promptOpts !== undefined && { promptOptions: promptOpts }),
       firedAt: Date.now(),
     });
   } catch (cbErr) {
@@ -354,10 +358,12 @@ export async function proofread(
         firedAt: Date.now(),
       });
       const session = await ai.proofreader.create();
-      const out = (await session.prompt(text)) as unknown as {
-        correctedInput?: string;
-        corrections?: unknown;
-      } | string;
+      const out = (await session.prompt(text)) as unknown as
+        | {
+            correctedInput?: string;
+            corrections?: unknown;
+          }
+        | string;
       session.destroy?.();
       if (typeof out === 'string') return { ok: true, data: { correctedInput: out } };
       return {

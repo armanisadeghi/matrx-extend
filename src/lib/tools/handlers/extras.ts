@@ -1,3 +1,6 @@
+import { lastAudibleAt, lastMutedChangeAt } from '@/lib/audio/audible-log';
+import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
+import type { ToolHandler } from '@/lib/tools/types';
 /**
  * Small high-leverage utility tools.
  *
@@ -10,9 +13,6 @@
  *    .research/tools-roadmap.md
  */
 import { z } from 'zod';
-import { lastAudibleAt, lastMutedChangeAt } from '@/lib/audio/audible-log';
-import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
-import type { ToolHandler } from '@/lib/tools/types';
 
 // ─── get_clipboard ─────────────────────────────────────────────────────────
 const GetClipboardArgs = z
@@ -131,7 +131,11 @@ export const tab_audio_inspect: ToolHandler<TabAudioInspectArgs, TabAudioInspect
       };
       if (info.audible) audibleNow.push(info);
       if (info.muted) mutedTabs.push(info);
-      if (!info.audible && info.last_audible_at != null && now - info.last_audible_at <= RECENT_AUDIBLE_WINDOW_MS) {
+      if (
+        !info.audible &&
+        info.last_audible_at != null &&
+        now - info.last_audible_at <= RECENT_AUDIBLE_WINDOW_MS
+      ) {
         recentlyAudible.push(info);
       }
     }
@@ -153,14 +157,16 @@ void lastMutedChangeAt;
 const MUTATION_KIND_VALUES = ['text', 'attributes', 'children', 'visibility'] as const;
 type MutationKind = (typeof MUTATION_KIND_VALUES)[number];
 
-const MutationWatchArgs = z.object({
-  ref: z.string().optional(),
-  selector: z.string().optional(),
-  duration_ms: z.number().int().positive().max(30_000).default(3_000),
-  kinds: z.array(z.enum(MUTATION_KIND_VALUES)).optional(),
-  /** Cap on event count returned. Default 200. */
-  max_events: z.number().int().positive().max(2_000).optional().default(200),
-}).refine((a) => a.ref || a.selector, { message: 'one of `ref` or `selector` is required' });
+const MutationWatchArgs = z
+  .object({
+    ref: z.string().optional(),
+    selector: z.string().optional(),
+    duration_ms: z.number().int().positive().max(30_000).default(3_000),
+    kinds: z.array(z.enum(MUTATION_KIND_VALUES)).optional(),
+    /** Cap on event count returned. Default 200. */
+    max_events: z.number().int().positive().max(2_000).optional().default(200),
+  })
+  .refine((a) => a.ref || a.selector, { message: 'one of `ref` or `selector` is required' });
 type MutationWatchArgs = z.infer<typeof MutationWatchArgs>;
 
 interface MutationEvent {
@@ -201,7 +207,12 @@ export const mutation_watch: ToolHandler<MutationWatchArgs, MutationWatchResult>
         func: watchMutationsInPage,
         args: [refSelector, args.duration_ms, kinds as string[], args.max_events],
       });
-      return (first?.result as MutationWatchResult) ?? { ok: false, reason: 'no result from in-page watcher' };
+      return (
+        (first?.result as MutationWatchResult) ?? {
+          ok: false,
+          reason: 'no result from in-page watcher',
+        }
+      );
     } catch (err) {
       return { ok: false, reason: (err as Error).message };
     }
@@ -255,16 +266,25 @@ function watchMutationsInPage(
         if (m.type === 'characterData' && watchText) {
           const after = (target!.textContent ?? '').trim();
           if (after !== lastText) {
-            push({ ts_ms: ts, kind: 'text', before: lastText.slice(0, 200), after: after.slice(0, 200) });
+            push({
+              ts_ms: ts,
+              kind: 'text',
+              before: lastText.slice(0, 200),
+              after: after.slice(0, 200),
+            });
             lastText = after;
           }
         } else if (m.type === 'attributes' && watchAttrs) {
+          const afterAttr = (m.target as Element)
+            .getAttribute(m.attributeName ?? '')
+            ?.slice(0, 200);
+          const beforeAttr = m.oldValue?.slice(0, 200);
           push({
             ts_ms: ts,
             kind: 'attributes',
-            attribute: m.attributeName ?? undefined,
-            before: m.oldValue?.slice(0, 200),
-            after: (m.target as Element).getAttribute(m.attributeName ?? '')?.slice(0, 200),
+            ...(m.attributeName != null && { attribute: m.attributeName }),
+            ...(beforeAttr !== undefined && { before: beforeAttr }),
+            ...(afterAttr !== undefined && { after: afterAttr }),
           });
         } else if (m.type === 'childList') {
           if (watchChildren && (m.addedNodes.length || m.removedNodes.length)) {
@@ -279,7 +299,12 @@ function watchMutationsInPage(
           if (watchText) {
             const after = (target!.textContent ?? '').trim();
             if (after !== lastText) {
-              push({ ts_ms: ts, kind: 'text', before: lastText.slice(0, 200), after: after.slice(0, 200) });
+              push({
+                ts_ms: ts,
+                kind: 'text',
+                before: lastText.slice(0, 200),
+                after: after.slice(0, 200),
+              });
               lastText = after;
             }
           }

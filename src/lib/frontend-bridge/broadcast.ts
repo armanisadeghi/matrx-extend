@@ -27,13 +27,13 @@
  * `frontend->extension` reply.
  */
 
+import { getCurrentUser } from '@/lib/auth/flow';
 import { recordBridgeTraffic } from '@/lib/debug/bridge-traffic';
 import { log } from '@/lib/debug/log';
-import { getCurrentUser } from '@/lib/auth/flow';
 import {
   FRONTEND_RPC_CHANNEL,
-  FrontendRpcEnvelopeSchema,
   type FrontendRpcEnvelope,
+  FrontendRpcEnvelopeSchema,
   type FrontendRpcResponse,
   handleFrontendRpc,
 } from '@/lib/frontend-bridge/handler';
@@ -44,10 +44,7 @@ import { z } from 'zod';
 // ─── Wire format (CONTRACTUAL — must match frontend) ────────────────────────
 
 const BroadcastPayloadSchema = z.object({
-  direction: z.union([
-    z.literal('frontend->extension'),
-    z.literal('extension->frontend'),
-  ]),
+  direction: z.union([z.literal('frontend->extension'), z.literal('extension->frontend')]),
   action: z.string().min(1),
   requestId: z.string().min(1),
   payload: z.unknown().optional(),
@@ -55,7 +52,12 @@ const BroadcastPayloadSchema = z.object({
 });
 type BroadcastPayload = z.infer<typeof BroadcastPayloadSchema>;
 
-const BROADCAST_EVENT_NAME = 'rpc';
+// Supabase Broadcast filters delivery by the `event` field, so this MUST
+// byte-match the frontend's `BRIDGE_BROADCAST_EVENT`
+// (matrx-frontend: lib/types/bridge-envelope.ts). It previously read 'rpc',
+// which silently dropped every cross-machine envelope — both sides shared
+// the channel but listened on different events. Keep these in lockstep.
+const BROADCAST_EVENT_NAME = 'FRONTEND_RPC';
 const OUTBOUND_TIMEOUT_MS = 30_000;
 
 // ─── Module state ───────────────────────────────────────────────────────────
@@ -129,19 +131,12 @@ export async function connectBroadcast(): Promise<void> {
           if (err) reject(err);
           else resolve();
         };
-        const timer = setTimeout(
-          () => settle(new Error('subscribe timeout')),
-          10_000,
-        );
+        const timer = setTimeout(() => settle(new Error('subscribe timeout')), 10_000);
         channel.subscribe((status, error) => {
           if (status === 'SUBSCRIBED') {
             clearTimeout(timer);
             settle(null);
-          } else if (
-            status === 'CLOSED' ||
-            status === 'CHANNEL_ERROR' ||
-            status === 'TIMED_OUT'
-          ) {
+          } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
             clearTimeout(timer);
             settle(error ?? new Error(`subscribe failed: ${status}`));
           }
@@ -260,10 +255,7 @@ export async function publishToFrontend(
 
 // ─── Internal routing ───────────────────────────────────────────────────────
 
-async function routeBroadcastMessage(
-  msg: BroadcastPayload,
-  s: ConnectionState,
-): Promise<void> {
+async function routeBroadcastMessage(msg: BroadcastPayload, s: ConnectionState): Promise<void> {
   if (msg.direction === 'extension->frontend') {
     // This is our own outbound — Supabase shouldn't echo it (self:false),
     // but if it does, ignore it.
@@ -324,7 +316,7 @@ async function routeBroadcastMessage(
       payload: msg.payload,
       response,
       ok: response.ok,
-      error: response.ok ? undefined : response.error,
+      ...(!response.ok && { error: response.error }),
     });
 
     const reply: BroadcastPayload = {

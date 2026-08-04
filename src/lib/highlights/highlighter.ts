@@ -22,9 +22,9 @@
  * Idempotent: re-injection is a no-op (guarded by window.__matrxHighlighter).
  */
 
-import { CHANNELS } from '@/lib/messaging/schemas';
 import { elementPathSelector } from '@/lib/data-pattern/selector-resilience';
 import type { HighlightAnchor, HighlightMode } from '@/lib/highlights/types';
+import { CHANNELS } from '@/lib/messaging/schemas';
 
 // Inlined (not imported from types.ts) so this content-script bundle doesn't
 // pull zod into the page.
@@ -94,7 +94,7 @@ export function mountHighlighter(initialMode: HighlightMode = 'text'): void {
   host.id = HOST_ID;
   host.style.cssText =
     'all: initial; position: fixed; z-index: 2147483647; inset: 0; pointer-events: none;';
-  shadow = host.attachShadow({ mode: 'open' });
+  shadow = host.attachShadow({ mode: 'closed' }) /* closed: page can't reach in (audit P3-15) */;
   document.documentElement.appendChild(host);
 
   shadow.innerHTML = `
@@ -360,7 +360,9 @@ function queueRepaint() {
 }
 
 /** Paint a batch of previously-saved highlights (re-locate via anchor). */
-function paintExisting(items: Array<{ id: string; mode: HighlightMode; color: string; anchor: HighlightAnchor }>) {
+function paintExisting(
+  items: Array<{ id: string; mode: HighlightMode; color: string; anchor: HighlightAnchor }>,
+) {
   for (const saved of items) {
     // Idempotent: the side panel may send PAINT more than once to beat a slow
     // first injection — never double-paint the same saved highlight.

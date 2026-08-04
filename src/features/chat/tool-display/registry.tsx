@@ -414,6 +414,24 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
+  // Vault browser login. The row shows the OUTCOME STATUS and nothing else —
+  // no field names, no page text, no value. `args` can only ever be an
+  // optional `credential_item_id` (the tool accepts no URL / username /
+  // password / selector). See src/lib/tools/handlers/credential-login.ts.
+  credential_login: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'KeyRound', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Signing in with a saved login',
+        completed: 'Saved login',
+        error: 'Saved login failed',
+      },
+      name: { path: 'result.status', fallback: '' },
+      color: { started: 'primary', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
   submit_form: {
     inline: {
       icon: { started: 'Loader2', completed: 'SendHorizontal', error: 'AlertTriangle' },
@@ -433,8 +451,16 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
       icon: { started: 'Loader2', completed: 'Hourglass', error: 'AlertTriangle' },
       prefix: '',
       name: {
-        started: { path: 'args.condition', transform: 'waitForConditionPresent', fallback: 'Waiting' },
-        completed: { path: 'args.condition', transform: 'waitForConditionVerb', fallback: 'Waited' },
+        started: {
+          path: 'args.condition',
+          transform: 'waitForConditionPresent',
+          fallback: 'Waiting',
+        },
+        completed: {
+          path: 'args.condition',
+          transform: 'waitForConditionVerb',
+          fallback: 'Waited',
+        },
         error: 'Wait timed out',
       },
       info: { path: 'args.target', transform: 'truncate80' },
@@ -681,20 +707,6 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
       color: { started: 'primary', completed: 'violet', error: 'red' },
     },
     args: { displayType: 'key-value' },
-  },
-
-  evaluate_javascript: {
-    inline: {
-      icon: { started: 'Loader2', completed: 'Code2', error: 'AlertTriangle' },
-      prefix: {
-        started: 'Evaluating JavaScript',
-        completed: 'Evaluated JavaScript',
-        error: 'JavaScript failed',
-      },
-      name: '',
-      color: { started: 'primary', completed: 'red', error: 'red' },
-    },
-    args: { displayType: 'json' },
   },
 
   // ─── CDP / debug (admin) ─────────────────────────────────────────────
@@ -1188,6 +1200,21 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
       info: { completed: { path: 'output.events.length', fallback: '0' } },
       suffix: { completed: 'events' },
       color: { started: 'primary', completed: 'sky', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  data_patterns: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Table2', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Working with saved patterns',
+        completed: 'Saved patterns',
+        error: 'Pattern action failed',
+      },
+      name: '',
+      info: { path: 'args.action', fallback: '' },
+      color: { started: 'primary', completed: 'violet', error: 'red' },
     },
     args: { displayType: 'key-value' },
   },

@@ -32,8 +32,8 @@
  * wants kept parallel.
  */
 
-import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import { log } from '@/lib/debug/log';
+import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -103,9 +103,7 @@ const inactiveSession = (): PilotSession => ({
   startedAt: null,
 });
 
-async function resolveSeedTab(
-  seedTabId: number | undefined,
-): Promise<chrome.tabs.Tab | null> {
+async function resolveSeedTab(seedTabId: number | undefined): Promise<chrome.tabs.Tab | null> {
   if (seedTabId != null) {
     try {
       return await chrome.tabs.get(seedTabId);
@@ -202,8 +200,7 @@ export const usePilotStore = create<PilotStore>()(
           s.session.conversationId === id ? s : { session: { ...s.session, conversationId: id } },
         ),
 
-      setAgentId: (agentId) =>
-        set((s) => ({ session: { ...s.session, agentId } })),
+      setAgentId: (agentId) => set((s) => ({ session: { ...s.session, agentId } })),
 
       isTabInSession: async (tabId) => {
         const { session } = get();
@@ -237,6 +234,22 @@ export const usePilotStore = create<PilotStore>()(
       // the Pilot view to show the still-active session if Chrome wasn't
       // restarted in the meantime.
       partialize: (s) => ({ session: s.session }),
+      // Versioned + validated rehydration (audit P2-10): a malformed
+      // persisted session would otherwise flow straight into the SW's
+      // sandbox gate.
+      version: 1,
+      migrate: (persisted) => {
+        const p = (persisted ?? {}) as { session?: Record<string, unknown> };
+        const sess = p.session;
+        if (
+          !sess ||
+          typeof sess.active !== 'boolean' ||
+          (sess.groupId !== null && typeof sess.groupId !== 'number')
+        ) {
+          return { session: inactiveSession() };
+        }
+        return p;
+      },
     },
   ),
 );
@@ -245,7 +258,50 @@ export const usePilotStore = create<PilotStore>()(
  * Synchronous accessor for non-React callers (the SW dispatcher).
  * Exists so dispatch.ts doesn't need to import the React hook just to
  * read the latched group id.
+ *
+ * ⚠️ Staleness caveat (audit P1-12): each MV3 context has its own store
+ * instance, hydrated once at module init. The SW's copy does NOT see a
+ * sidepanel start/end until the cross-context re-sync below fires. Gates
+ * should prefer {@link getPilotSessionSnapshotAsync}.
  */
 export function getPilotSessionSnapshot(): PilotSession {
   return usePilotStore.getState().session;
+}
+
+/**
+ * Hydration-safe accessor for SW gates (audit P1-12). Two failure modes the
+ * sync accessor had:
+ *   1. Async-rehydration race: in the first ms after an SW wake the store
+ *      still holds the default inactive session — the Pilot sandbox gate
+ *      silently skipped.
+ *   2. Cross-context staleness: start/end clicks happen in the SIDEPANEL's
+ *      store instance; the SW copy only re-read storage on restart, so the
+ *      sandbox could be unenforced (or false-violating) for the whole
+ *      session. The storage.onChanged re-sync below closes the steady-state
+ *      gap; this accessor closes the wake-race gap.
+ */
+export async function getPilotSessionSnapshotAsync(): Promise<PilotSession> {
+  try {
+    if (!usePilotStore.persist.hasHydrated()) {
+      await usePilotStore.persist.rehydrate();
+    }
+  } catch {
+    /* fall back to whatever is in memory */
+  }
+  return usePilotStore.getState().session;
+}
+
+// Cross-context re-sync: when ANOTHER context (the sidepanel's start/end
+// buttons) writes the persisted session, re-hydrate this context's store so
+// SW gates see it without waiting for an SW restart. Guarded so importing
+// this module under plain tsx (catalog scripts) doesn't touch chrome.*.
+try {
+  if (typeof chrome !== 'undefined' && chrome.storage?.onChanged) {
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area !== 'local' || !changes.matrxPilotSession) return;
+      void usePilotStore.persist.rehydrate();
+    });
+  }
+} catch {
+  /* non-extension context */
 }

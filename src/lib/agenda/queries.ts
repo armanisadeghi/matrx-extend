@@ -19,8 +19,9 @@
  */
 
 import { getSupabase } from '@/lib/supabase/client';
-import { nextCronTime } from './cron';
+import { schedulerDb } from '@/lib/supabase/schemas';
 import { z } from 'zod';
+import { nextCronTime } from './cron';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -144,6 +145,38 @@ interface SchTaskJoinedRow {
 const SELECT_AGENDA_TASK =
   '*, agent:sch_agent_task!inner(agent_id, prompt, variables, persistent_conversation_id, auth_mode, max_runtime_seconds, max_concurrent), triggers:sch_trigger(type, config, enabled, next_due_at)';
 
+/**
+ * Variant with an INNER trigger join so PostgREST embedded-resource filters
+ * (`.eq('triggers.type', …)`) can both filter parents and constrain the
+ * embed. Used by `listContextMatchTasks` — `trigger_type` is NOT a column on
+ * `sch_task` (it lived on the dropped `agenda_task`), so the old top-level
+ * `.eq('trigger_type', …)` 42703'd on every scan and context-match triggers
+ * silently never fired. docs/AUDIT_2026_06_10.md P2-17.
+ */
+const SELECT_AGENDA_TASK_TRIGGER_INNER =
+  '*, agent:sch_agent_task!inner(agent_id, prompt, variables, persistent_conversation_id, auth_mode, max_runtime_seconds, max_concurrent), triggers:sch_trigger!inner(type, config, enabled, next_due_at)';
+
+/**
+ * Per-row-guarded mapping. `rowToAgendaTask` throws on a corrupt task (no
+ * agent extension row, no triggers, out-of-enum trigger type) — and one bad
+ * row inside a bare `.map()` used to reject the whole fetch: the Agenda tab
+ * bricked, and worse, the SW scanner aborted its ENTIRE pass every minute
+ * forever (the corrupt row sorts first by next_due_at and its date never
+ * advances). Skip + warn instead. docs/AUDIT_2026_06_10.md P1-16.
+ */
+function rowsToAgendaTasks(rows: unknown[]): AgendaTask[] {
+  const out: AgendaTask[] = [];
+  for (const row of rows) {
+    try {
+      out.push(rowToAgendaTask(row as SchTaskJoinedRow));
+    } catch (err) {
+      const id = (row as { id?: string })?.id ?? '(unknown id)';
+      console.warn(`[matrx-extend] skipping malformed sch_task ${id}: ${(err as Error).message}`);
+    }
+  }
+  return out;
+}
+
 function rowToAgendaTask(row: SchTaskJoinedRow): AgendaTask {
   if (!row.agent) {
     throw new Error(`sch_task ${row.id} (kind=${row.kind}) has no agent extension row`);
@@ -228,7 +261,7 @@ export async function listMyTasks(opts?: {
   enabled_only?: boolean;
   limit?: number;
 }): Promise<AgendaTask[]> {
-  const c = getSupabase();
+  const c = schedulerDb();
   let q = c
     .from('sch_task')
     .select(SELECT_AGENDA_TASK)
@@ -241,7 +274,7 @@ export async function listMyTasks(opts?: {
     console.warn('[matrx-extend] listMyTasks error', error.message);
     return [];
   }
-  return (data ?? []).map((row) => rowToAgendaTask(row as unknown as SchTaskJoinedRow));
+  return rowsToAgendaTasks(data ?? []);
 }
 
 /**
@@ -253,7 +286,7 @@ export async function listDueForSurface(
   surface: SurfaceTarget,
   opts?: { limit?: number },
 ): Promise<AgendaTask[]> {
-  const c = getSupabase();
+  const c = schedulerDb();
   const { data, error } = await c
     .from('sch_task')
     .select(SELECT_AGENDA_TASK)
@@ -267,7 +300,7 @@ export async function listDueForSurface(
     console.warn('[matrx-extend] listDueForSurface error', error.message);
     return [];
   }
-  return (data ?? []).map((row) => rowToAgendaTask(row as unknown as SchTaskJoinedRow));
+  return rowsToAgendaTasks(data ?? []);
 }
 
 /**
@@ -280,38 +313,45 @@ export async function listContextMatchTasks(
   surface: SurfaceTarget,
   opts?: { limit?: number },
 ): Promise<AgendaTask[]> {
-  const c = getSupabase();
+  const c = schedulerDb();
   const { data, error } = await c
     .from('sch_task')
-    .select(SELECT_AGENDA_TASK)
+    .select(SELECT_AGENDA_TASK_TRIGGER_INNER)
     .eq('kind', 'agent')
     .eq('enabled', true)
-    .eq('trigger_type', 'context-match')
+    // Embedded-resource filter on the trigger row — sch_task has no
+    // trigger_type column (see SELECT_AGENDA_TASK_TRIGGER_INNER docs).
+    .eq('triggers.type', 'context-match')
     .or(`surfaces.cs.{${surface}},surfaces.cs.{any}`)
     .limit(opts?.limit ?? 50);
   if (error) {
     console.warn('[matrx-extend] listContextMatchTasks error', error.message);
     return [];
   }
-  return (data ?? []).map((row) => rowToAgendaTask(row as unknown as SchTaskJoinedRow));
+  return rowsToAgendaTasks(data ?? []);
 }
 
 export async function getTask(id: string): Promise<AgendaTask | null> {
-  const c = getSupabase();
+  const c = schedulerDb();
   const { data, error } = await c
     .from('sch_task')
     .select(SELECT_AGENDA_TASK)
     .eq('id', id)
     .maybeSingle();
   if (error || !data) return null;
-  return rowToAgendaTask(data as unknown as SchTaskJoinedRow);
+  try {
+    return rowToAgendaTask(data as unknown as SchTaskJoinedRow);
+  } catch (err) {
+    console.warn(`[matrx-extend] getTask ${id} malformed: ${(err as Error).message}`);
+    return null;
+  }
 }
 
 export async function listRunsForTask(
   taskId: string,
   opts?: { limit?: number },
 ): Promise<AgendaRun[]> {
-  const c = getSupabase();
+  const c = schedulerDb();
   const { data, error } = await c
     .from('sch_run')
     .select('*')
@@ -343,21 +383,51 @@ export interface CreateTaskInput {
 }
 
 /**
- * Insert sch_task → sch_agent_task → sch_trigger as three sequential writes.
- *
- * Not transactional from the JS client. If a later step fails after sch_task
- * succeeds we clean up the orphan with an explicit DELETE — FK cascades
- * handle the rest. A future Postgres function (`create_agent_task` RPC)
- * could collapse this into one atomic call when we add the rest of the
- * scheduling kinds.
+ * Atomic path: the `create_agent_task` Postgres RPC (one transaction —
+ * migrations/2026_06_10_sch_create_agent_task_rpc.sql, audit P2-16) does
+ * all three inserts; a mid-sequence failure can no longer orphan a
+ * trigger-less sch_task. The legacy three-insert path below remains as a
+ * fallback for DBs where the function hasn't been applied yet (42883).
  */
 export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
+  // RPCs still live in `public` — must stay on the plain (unscoped) client.
   const c = getSupabase();
-  const nextDueAt =
-    input.next_due_at ?? computeFirstDue(input.trigger_type, input.trigger_config);
+  // Table fallback path below targets `scheduler.sch_*` — scoped client.
+  const sch = schedulerDb();
+  const nextDueAt = input.next_due_at ?? computeFirstDue(input.trigger_config);
+
+  const { data: rpcId, error: rpcErr } = await c.rpc('create_agent_task', {
+    p_title: input.title,
+    p_prompt: input.prompt,
+    p_trigger_type: input.trigger_type,
+    p_trigger_config: input.trigger_config,
+    p_description: input.description ?? null,
+    p_agent_id: input.agent_id ?? null,
+    p_variables: input.variables ?? {},
+    p_persistent_conversation_id: input.persistent_conversation_id ?? null,
+    p_auth_mode: input.auth_mode ?? 'ask',
+    p_max_runtime_seconds: input.max_runtime_seconds ?? 600,
+    p_max_concurrent: input.max_concurrent ?? 1,
+    p_surfaces: input.surfaces ?? ['any'],
+    p_tags: input.tags ?? [],
+    p_expires_at: input.expires_at ?? null,
+    p_next_due_at: nextDueAt,
+  });
+  if (!rpcErr && typeof rpcId === 'string') {
+    const created = await getTask(rpcId);
+    if (!created) throw new Error(`createTask: row vanished after RPC insert (${rpcId})`);
+    return created;
+  }
+  // 42883 = undefined_function — the RPC isn't applied on this DB (staging /
+  // fresh env). Anything else from the RPC is a real failure: surface it
+  // rather than retrying down the non-atomic path.
+  if (rpcErr && rpcErr.code !== '42883' && !/create_agent_task/.test(rpcErr.message ?? '')) {
+    throw new Error(`createTask (rpc): ${rpcErr.message}`);
+  }
+  console.warn('[matrx-extend] create_agent_task RPC unavailable — using legacy 3-insert path');
 
   // 1. sch_task
-  const { data: taskRow, error: taskErr } = await c
+  const { data: taskRow, error: taskErr } = await sch
     .from('sch_task')
     .insert({
       kind: 'agent',
@@ -376,7 +446,7 @@ export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
   const taskId = taskRow.id as string;
 
   // 2. sch_agent_task — cleanup parent if this fails.
-  const { error: agentErr } = await c.from('sch_agent_task').insert({
+  const { error: agentErr } = await sch.from('sch_agent_task').insert({
     id: taskId,
     agent_id: input.agent_id ?? null,
     prompt: input.prompt,
@@ -387,12 +457,12 @@ export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
     max_concurrent: input.max_concurrent ?? 1,
   });
   if (agentErr) {
-    await c.from('sch_task').delete().eq('id', taskId);
+    await sch.from('sch_task').delete().eq('id', taskId);
     throw new Error(`createTask (sch_agent_task): ${agentErr.message}`);
   }
 
   // 3. sch_trigger — cleanup parent if this fails.
-  const { error: trigErr } = await c.from('sch_trigger').insert({
+  const { error: trigErr } = await sch.from('sch_trigger').insert({
     task_id: taskId,
     type: input.trigger_type,
     config: input.trigger_config,
@@ -400,7 +470,7 @@ export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
     next_due_at: nextDueAt,
   });
   if (trigErr) {
-    await c.from('sch_task').delete().eq('id', taskId);
+    await sch.from('sch_task').delete().eq('id', taskId);
     throw new Error(`createTask (sch_trigger): ${trigErr.message}`);
   }
 
@@ -422,7 +492,7 @@ export async function updateTask(
   id: string,
   patch: Partial<CreateTaskInput> & { enabled?: boolean; last_run_at?: string },
 ): Promise<AgendaTask | null> {
-  const c = getSupabase();
+  const c = schedulerDb();
 
   // Split the patch by destination table.
   const taskPatch: Record<string, unknown> = {};
@@ -469,9 +539,92 @@ export async function updateTask(
   return getTask(id);
 }
 
+/**
+ * Atomically claim a due fire (docs/AUDIT_2026_06_10.md P0-7 / P2-15).
+ *
+ * The scanner used to notify/broadcast FIRST and advance `next_due_at`
+ * AFTER the dispatch settled — so a run outlasting the 1-minute alarm
+ * period re-fired on the next scan (the stale next_due_at was still <=
+ * now), the boot-scan raced the alarm-scan, and two devices on the same
+ * account both fired. This is a compare-and-set UPDATE: it only matches
+ * when the schedule field still holds the value THIS scanner observed, so
+ * exactly one concurrent scanner wins. Firing happens AFTER the claim —
+ * a crash between claim and notify is a missed fire (recoverable, the
+ * user re-enables / next cron window), never a duplicate run.
+ *
+ * Clock triggers CAS on `next_due_at`; context-match triggers have no
+ * schedule, so they CAS on `last_run_at` (the cooldown stamp).
+ */
+export async function claimDueFire(
+  task: AgendaTask,
+  patch: { next_due_at: string | null; last_run_at: string; enabled: boolean },
+): Promise<boolean> {
+  const c = schedulerDb();
+  let q = c
+    .from('sch_task')
+    .update({
+      next_due_at: patch.next_due_at,
+      last_run_at: patch.last_run_at,
+      enabled: patch.enabled,
+    })
+    .eq('id', task.id);
+  if (task.trigger_type === 'context-match') {
+    q =
+      task.last_run_at === null ? q.is('last_run_at', null) : q.eq('last_run_at', task.last_run_at);
+  } else {
+    q =
+      task.next_due_at === null ? q.is('next_due_at', null) : q.eq('next_due_at', task.next_due_at);
+  }
+  const { data, error } = await q.select('id');
+  if (error) {
+    console.warn('[matrx-extend] claimDueFire error', error.message);
+    return false;
+  }
+  const won = (data?.length ?? 0) > 0;
+  if (won) {
+    // Mirror onto the trigger row (best-effort, non-CAS — the task row is
+    // the authoritative schedule; this keeps the future multi-trigger
+    // scanner consistent, same as updateTask does).
+    await c
+      .from('sch_trigger')
+      .update({ next_due_at: patch.next_due_at, enabled: patch.enabled })
+      .eq('task_id', task.id);
+  }
+  return won;
+}
+
+/**
+ * Fail-close runs whose claim lease expired with no surface finishing them
+ * (docs/AUDIT_2026_06_10.md P1-16). `claim_expires_at` was written on every
+ * claim but READ nowhere — a sidepanel closed mid-run left the row
+ * 'claimed'/'running' forever, and the partial unique index
+ * `sch_run_unique_active_per_task` then blocked every future run of that
+ * task at the DB level. Runs as part of the minute scan; RLS scopes the
+ * sweep to this user's rows.
+ */
+export async function reapExpiredRuns(): Promise<number> {
+  const c = schedulerDb();
+  const now = new Date().toISOString();
+  const { data, error } = await c
+    .from('sch_run')
+    .update({
+      status: 'failed',
+      error_message: 'lease expired — no surface finished this run (reaped)',
+      finished_at: now,
+    })
+    .in('status', ['queued', 'claimed', 'running'])
+    .lt('claim_expires_at', now)
+    .select('id');
+  if (error) {
+    console.warn('[matrx-extend] reapExpiredRuns error', error.message);
+    return 0;
+  }
+  return data?.length ?? 0;
+}
+
 export async function deleteTask(id: string): Promise<boolean> {
   // FK cascades drop sch_agent_task, sch_trigger, sch_run rows automatically.
-  const c = getSupabase();
+  const c = schedulerDb();
   const { error } = await c.from('sch_task').delete().eq('id', id);
   return !error;
 }
@@ -494,11 +647,9 @@ export async function claimRun(
   surface: SurfaceTarget,
   opts: { lease_seconds?: number } = {},
 ): Promise<AgendaRun | null> {
-  const c = getSupabase();
+  const c = schedulerDb();
   const claimToken = crypto.randomUUID();
-  const claimExpiresAt = new Date(
-    Date.now() + (opts.lease_seconds ?? 600) * 1000,
-  ).toISOString();
+  const claimExpiresAt = new Date(Date.now() + (opts.lease_seconds ?? 600) * 1000).toISOString();
   const now = new Date().toISOString();
 
   const { data, error } = await c
@@ -522,18 +673,28 @@ export async function claimRun(
   return rowToAgendaRun(data as unknown as SchRunRow);
 }
 
+/**
+ * Terminal/start transitions are gated on still being in an ACTIVE state
+ * (audit P2-15). Unconditional `.eq('id')` updates let a late finisher —
+ * e.g. a run the reaper already failed for an expired lease — overwrite the
+ * terminal row (`success` stomping `failed`, or re-nulling a fresh claim's
+ * token). The scheduler-client twins gate on claim_token; the agenda façade
+ * gates on status, which is the equivalent invariant the reaper maintains.
+ * Errors are logged (they used to be silently ignored — a failed write left
+ * the row stuck while the UI believed it finished).
+ */
 export async function markRunStarted(runId: string, conversationId?: string): Promise<void> {
-  const c = getSupabase();
-  await c
+  const c = schedulerDb();
+  const { error } = await c
     .from('sch_run')
     .update({
       status: 'running',
       started_at: new Date().toISOString(),
-      output_ref: conversationId
-        ? { kind: 'conversation', id: conversationId }
-        : null,
+      output_ref: conversationId ? { kind: 'conversation', id: conversationId } : null,
     })
-    .eq('id', runId);
+    .eq('id', runId)
+    .in('status', ['queued', 'claimed']);
+  if (error) console.warn('[matrx-extend] markRunStarted error', error.message);
 }
 
 export async function finishRun(
@@ -541,8 +702,8 @@ export async function finishRun(
   outcome: 'success' | 'failed' | 'cancelled',
   details?: { result_summary?: string; error_message?: string; result_metadata?: object },
 ): Promise<void> {
-  const c = getSupabase();
-  await c
+  const c = schedulerDb();
+  const { error } = await c
     .from('sch_run')
     .update({
       status: outcome,
@@ -553,7 +714,9 @@ export async function finishRun(
       error_message: details?.error_message ?? null,
       result_metadata: details?.result_metadata ?? null,
     })
-    .eq('id', runId);
+    .eq('id', runId)
+    .in('status', ['queued', 'claimed', 'running']);
+  if (error) console.warn('[matrx-extend] finishRun error', error.message);
 }
 
 // ─── Time math helpers ──────────────────────────────────────────────────────
@@ -565,7 +728,7 @@ export async function finishRun(
  * Cron is computed via the local cron parser (src/lib/agenda/cron.ts),
  * evaluated in the host's local timezone.
  */
-export function computeFirstDue(type: TriggerType, config: TriggerConfig): string | null {
+export function computeFirstDue(config: TriggerConfig): string | null {
   switch (config.type) {
     case 'one-shot':
       return config.at;
@@ -575,22 +738,17 @@ export function computeFirstDue(type: TriggerType, config: TriggerConfig): strin
     case 'context-match':
       return null; // fires on a page-context match, not on a schedule
     case 'cron': {
-      const next = nextCronTime(config.expression);
+      const next = nextCronTime(config.expression, new Date(), config.tz);
       return next ? next.toISOString() : null;
     }
   }
-  // Fallback for unrecognized types.
-  return null;
 }
 
 /**
  * Compute the next-due timestamp after a successful run. Used by the
  * scanner to advance `last_run_at` and `next_due_at` for recurring tasks.
  */
-export function computeNextDueAfterRun(
-  trigger_type: TriggerType,
-  trigger_config: TriggerConfig,
-): string | null {
+export function computeNextDueAfterRun(trigger_config: TriggerConfig): string | null {
   switch (trigger_config.type) {
     case 'interval':
     case 'heartbeat':
@@ -600,9 +758,8 @@ export function computeNextDueAfterRun(
     case 'context-match':
       return null; // re-fires on next page-context match, not on a schedule
     case 'cron': {
-      const next = nextCronTime(trigger_config.expression);
+      const next = nextCronTime(trigger_config.expression, new Date(), trigger_config.tz);
       return next ? next.toISOString() : null;
     }
   }
-  return null;
 }

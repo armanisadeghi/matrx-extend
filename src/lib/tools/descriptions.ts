@@ -9,12 +9,12 @@
  * snapshot — refreshed each SW / sidepanel lifecycle, so the truth is never
  * served stale.
  *
- * Channel: direct Supabase REST `GET public.tool_def?select=name,description`,
- * gated by RLS on the publishable key. Replaces the retired
- * `GET /ai-tools/app/matrx-extend` endpoint (deleted in the 2026-05-27 tool
- * refactor — the new aidream router no longer filters by `source_app`).
+ * Channel: direct Supabase query `tool.definition?select=name,description`
+ * via `.schema('tool').from('definition')`, gated by RLS on the publishable
+ * key. Post 2026-06 canonicalization: moved from `public.tool_def` to
+ * `tool.definition`.
  *
- * Tool names are globally unique (`tool_def.name` UNIQUE constraint — see
+ * Tool names are globally unique (`tool.definition.name` UNIQUE constraint — see
  * docs/official/tool_system_rules.md "Tool" definition), so caching every
  * active row's description is safe: there's no risk of name collision
  * between our handlers and another executor's tools sharing a name.
@@ -27,7 +27,7 @@ let inflight: Promise<Map<string, string>> | null = null;
 
 /**
  * Fetch (once per session) the name → description map for every active tool
- * in `public.tool_def`. Cached in memory; concurrent callers share the
+ * in `tool.definition`. Cached in memory; concurrent callers share the
  * in-flight promise. Failures are NOT cached (so a later call retries) and
  * resolve to an empty map so callers degrade gracefully — UI shows name +
  * args, never a stale string.
@@ -39,7 +39,8 @@ export async function ensureToolDescriptions(): Promise<Map<string, string>> {
     try {
       const c = getSupabase();
       const { data, error } = await c
-        .from('tool_def')
+        .schema('tool')
+        .from('definition')
         .select('name, description')
         .eq('is_active', true);
       if (error) {
@@ -47,7 +48,10 @@ export async function ensureToolDescriptions(): Promise<Map<string, string>> {
         return new Map<string, string>();
       }
       const map = new Map<string, string>();
-      for (const row of (data ?? []) as Array<{ name: string | null; description: string | null }>) {
+      for (const row of (data ?? []) as Array<{
+        name: string | null;
+        description: string | null;
+      }>) {
         if (row?.name && typeof row.description === 'string' && row.description) {
           map.set(row.name, row.description);
         }

@@ -2,34 +2,28 @@ import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useActiveTab } from '@/hooks/use-active-tab';
-import { stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
-import {
-  type CandidateField,
-  inspectCardInPage,
-} from '@/lib/data-pattern/card-inspector';
+import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
+import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
+import { type CandidateField, inspectCardInPage } from '@/lib/data-pattern/card-inspector';
 import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { runMode } from '@/lib/data-pattern/run-pattern';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { cn } from '@/lib/utils';
-import {
-  ChevronDown,
-  ChevronRight,
-  Crosshair,
-  Loader2,
-  PlayCircle,
-  Plus,
-  X,
-} from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ChevronDown, ChevronRight, Crosshair, Loader2, PlayCircle, Plus, X } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
 
 interface FieldPath {
   name: string;
   rel_selector: string;
-  attr?: string;
-  transform?: { kind: 'regex'; expr: string };
+  // Explicit `undefined` is a valid write here (not merely "absent") — the
+  // Attribute input clears back to innerText via `updateField(i, { attr:
+  // undefined })`, and that must overwrite a previously-set attr through the
+  // `{ ...f, ...patch }` merge in `updateField`.
+  attr?: string | undefined;
+  transform?: { kind: 'regex'; expr: string } | undefined;
 }
 
 interface ListPickerResult {
@@ -51,6 +45,8 @@ const KIND_LABELS: Record<CandidateField['kind'], string> = {
 export function ListPatternTab() {
   const tab = useActiveTab();
   const [picking, setPicking] = useState(false);
+  /** Tab the current pick session targets — events from other tabs are ignored. */
+  const pickTabRef = useRef<number | null>(null);
   const [config, setConfig] = useState<ListPickerResult | null>(null);
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
   const [running, setRunning] = useState(false);
@@ -61,11 +57,19 @@ export function ListPatternTab() {
   const [expandedFieldIdx, setExpandedFieldIdx] = useState<number | null>(null);
   /** Live per-field sample values, probed using the SAME logic as the runner. */
   const [sampleValues, setSampleValues] = useState<Record<string, string | null>>({});
+  const [source, setSource] = useState<ExtractionSource | null>(null);
 
   useEffect(() => {
-    const offResult = on<ListPickerResult, { ack: true }>(
+    // STRICT: only the SW's stamped rebroadcast counts. The raw content-
+    // script delivery (tab_id absent) reaches every sidepanel directly —
+    // accepting it processed each pick TWICE and let window A's pick land
+    // in window B's builder.
+    const fromOurPick = (tabId: unknown) =>
+      typeof tabId === 'number' && tabId === pickTabRef.current;
+    const offResult = on<ListPickerResult & { tab_id?: number | null }, { ack: true }>(
       CHANNELS.LIST_PICKER_RESULT,
       (payload) => {
+        if (!fromOurPick(payload?.tab_id)) return { ack: true };
         setPicking(false);
         if (payload?.list_root && payload.item_selector) {
           // Merge any newly-picked field_paths into existing config (so "Pick more
@@ -95,6 +99,7 @@ export function ListPatternTab() {
       { ack: true }
     >(CHANNELS.LIST_PICKER_ITEM_DETECTED, (payload) => {
       if (!payload?.list_root || !payload.item_selector) return { ack: true };
+      if (!fromOurPick((payload as { tab_id?: number | null }).tab_id)) return { ack: true };
       setConfig((prev) =>
         prev && prev.list_root === payload.list_root && prev.item_selector === payload.item_selector
           ? prev
@@ -108,10 +113,14 @@ export function ListPatternTab() {
       setError(null);
       return { ack: true };
     });
-    const offExit = on<unknown, { ack: true }>(CHANNELS.LIST_PICKER_EXIT, () => {
-      setPicking(false);
-      return { ack: true };
-    });
+    const offExit = on<{ tab_id?: number | null }, { ack: true }>(
+      CHANNELS.LIST_PICKER_EXIT,
+      (payload) => {
+        if (!fromOurPick(payload?.tab_id)) return { ack: true };
+        setPicking(false);
+        return { ack: true };
+      },
+    );
     return () => {
       offResult();
       offDetected();
@@ -176,10 +185,36 @@ export function ListPatternTab() {
     return () => clearTimeout(handle);
   }, [tab.id, config]);
 
+  // The content-script picker dies silently when the page navigates or the
+  // tab closes — without this watcher, picking stays true forever (audit F1).
+  useEffect(() => {
+    if (!picking) return;
+    const pickTab = pickTabRef.current;
+    const onUpdated = (tabId: number, info: chrome.tabs.TabChangeInfo) => {
+      if (tabId !== pickTab) return;
+      if (info.status === 'loading' || info.url) {
+        setPicking(false);
+        setError('The page navigated while picking — the picker closed. Pick again to continue.');
+      }
+    };
+    const onRemoved = (tabId: number) => {
+      if (tabId !== pickTab) return;
+      setPicking(false);
+      setError('The tab closed while picking.');
+    };
+    chrome.tabs.onUpdated.addListener(onUpdated);
+    chrome.tabs.onRemoved.addListener(onRemoved);
+    return () => {
+      chrome.tabs.onUpdated.removeListener(onUpdated);
+      chrome.tabs.onRemoved.removeListener(onRemoved);
+    };
+  }, [picking]);
+
   const enterPicker = async () => {
-    if (!tab.id) return;
+    if (!tab.id || picking) return;
     setPicking(true);
     setError(null);
+    pickTabRef.current = tab.id;
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
@@ -187,7 +222,24 @@ export function ListPatternTab() {
       });
     } catch (err) {
       setPicking(false);
-      setError(err instanceof Error ? err.message : String(err));
+      setError(friendlyPickError(err));
+    }
+  };
+
+  /** Sidepanel-side cancel — recovers a stuck pick without touching the page UI. */
+  const cancelPicker = async () => {
+    const tabId = pickTabRef.current;
+    setPicking(false);
+    if (!tabId) return;
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId },
+        func: () => {
+          (window as { __matrxListPickerCancel?: () => void }).__matrxListPickerCancel?.();
+        },
+      });
+    } catch {
+      // Page may be gone — local state is already cleared.
     }
   };
 
@@ -203,7 +255,9 @@ export function ListPatternTab() {
           // Cap each sample to ~3KB so we don't blow out a clipboard paste.
           return items.map((it) => {
             const html = (it as HTMLElement).outerHTML ?? '';
-            return html.length > 3000 ? `${html.slice(0, 3000)}\n…(+${html.length - 3000} chars truncated)` : html;
+            return html.length > 3000
+              ? `${html.slice(0, 3000)}\n…(+${html.length - 3000} chars truncated)`
+              : html;
           });
         },
         args: [{ list_root: config.list_root, item_selector: config.item_selector }],
@@ -218,9 +272,11 @@ export function ListPatternTab() {
     if (!tab.id || !config) return;
     setRunning(true);
     setError(null);
+    const sourceAtRun = sourceFromUrl(tab.url);
     try {
       const data = await runMode('list_pattern', tab.id, config);
       setRows(data);
+      setSource(sourceAtRun);
       // Snapshot 1-2 cards' HTML for later AI-paste.
       const samples = await captureSampleHtml();
       setSampleHtml(samples);
@@ -272,9 +328,7 @@ export function ListPatternTab() {
 
   const unusedCandidates = useMemo(() => {
     if (!candidates) return [];
-    return candidates.filter(
-      (c) => !usedSelectors.has(`${c.rel_selector}|${c.attr ?? 'text'}`),
-    );
+    return candidates.filter((c) => !usedSelectors.has(`${c.rel_selector}|${c.attr ?? 'text'}`));
   }, [candidates, usedSelectors]);
 
   // ── Copy options for the pattern config + samples + rows ────────────────
@@ -337,12 +391,21 @@ export function ListPatternTab() {
             format: 'markdown',
             content: sections.join('\n'),
             followUp:
-              "Help me improve this pattern: (1) suggest better/more-stable selectors for any fragile fields, (2) recommend additional fields worth extracting based on the sample HTML, (3) call out any fields whose extracted value looks wrong vs what the HTML actually contains.",
+              'Help me improve this pattern: (1) suggest better/more-stable selectors for any fragile fields, (2) recommend additional fields worth extracting based on the sample HTML, (3) call out any fields whose extracted value looks wrong vs what the HTML actually contains.',
           });
         },
       },
     ];
-  }, [config, sampleHtml, rows, candidates, unusedCandidates, tab.url, tab.title, captureSampleHtml]);
+  }, [
+    config,
+    sampleHtml,
+    rows,
+    candidates,
+    unusedCandidates,
+    tab.url,
+    tab.title,
+    captureSampleHtml,
+  ]);
 
   return (
     <div className="h-full overflow-y-auto">
@@ -352,20 +415,36 @@ export function ListPatternTab() {
             List Pattern
           </div>
           <div className="text-xs text-muted-foreground">
-            Click one example item — we find every similar sibling. Then pick fields inside, OR
-            use the suggested-fields panel below for one-click adds.
+            Click one example item — we find every similar sibling. Then pick fields inside, OR use
+            the suggested-fields panel below for one-click adds.
           </div>
         </div>
 
         {!config ? (
-          <Button
-            onClick={() => void enterPicker()}
-            disabled={picking || !tab.id}
-            className="w-full rounded-full"
-          >
-            {picking ? <Loader2 className="animate-spin" /> : <Crosshair />}
-            {picking ? 'Picking on page…' : 'Pick an example item'}
-          </Button>
+          picking ? (
+            <div className="flex gap-2">
+              <Button disabled className="flex-1 rounded-full">
+                <Loader2 className="animate-spin" />
+                Picking on page…
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => void cancelPicker()}
+                className="rounded-full"
+              >
+                Cancel
+              </Button>
+            </div>
+          ) : (
+            <Button
+              onClick={() => void enterPicker()}
+              disabled={!tab.id}
+              className="w-full rounded-full"
+            >
+              <Crosshair />
+              Pick an example item
+            </Button>
+          )
         ) : (
           <div className="space-y-3">
             {/* Pattern header with copy menu */}
@@ -403,7 +482,11 @@ export function ListPatternTab() {
                           className="text-muted-foreground hover:text-foreground"
                           title={expanded ? 'Collapse' : 'Expand to view/edit selector'}
                         >
-                          {expanded ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
+                          {expanded ? (
+                            <ChevronDown className="size-3" />
+                          ) : (
+                            <ChevronRight className="size-3" />
+                          )}
                         </button>
                         <Input
                           value={f.name}
@@ -554,6 +637,7 @@ export function ListPatternTab() {
               kind="list_pattern"
               config={config}
               rows={rows}
+              source={source}
               defaultName={`List on ${(() => {
                 try {
                   return tab.url ? new URL(tab.url).host : 'page';
@@ -633,9 +717,7 @@ function CandidatesPanel({
                 >
                   <Plus className="size-3 shrink-0 text-violet-500" />
                   <span className="w-24 shrink-0 truncate font-mono">{c.name}</span>
-                  <span className="min-w-0 flex-1 truncate text-muted-foreground">
-                    {c.label}
-                  </span>
+                  <span className="min-w-0 flex-1 truncate text-muted-foreground">{c.label}</span>
                   <span className="shrink-0 truncate font-mono text-[10px] opacity-60">
                     {c.sample_value}
                   </span>
@@ -647,4 +729,18 @@ function CandidatesPanel({
       )}
     </div>
   );
+}
+
+/**
+ * Chrome's injection errors are raw and unhelpful ("Cannot access a
+ * chrome:// URL"). Translate the common ones into guidance.
+ */
+function friendlyPickError(err: unknown): string {
+  const msg = err instanceof Error ? err.message : String(err);
+  if (
+    /cannot access|cannot be scripted|chrome:\/\/|extensions gallery|chrome web store/i.test(msg)
+  ) {
+    return "This page type doesn't allow picking (browser-internal pages, the Web Store, and PDFs are off-limits). Open a regular website and try again.";
+  }
+  return msg;
 }

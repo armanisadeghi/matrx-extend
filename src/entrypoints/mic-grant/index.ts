@@ -71,10 +71,8 @@ async function requestMicPermission(): Promise<void> {
     stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   } catch (err) {
     const e = err as DOMException;
-    const denied =
-      e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError';
-    const noDevice =
-      e.name === 'NotFoundError' || e.name === 'DevicesNotFoundError';
+    const denied = e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError';
+    const noDevice = e.name === 'NotFoundError' || e.name === 'DevicesNotFoundError';
     const reasonHuman = denied
       ? 'Permission denied. Click the mic icon in the address bar to change this, then close and retry.'
       : noDevice

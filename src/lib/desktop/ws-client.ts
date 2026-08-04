@@ -34,7 +34,7 @@
 
 import { log } from '@/lib/debug/log';
 import { getEngineBaseUrl } from '@/lib/desktop/discovery';
-import { getPairToken } from '@/lib/desktop/http';
+import { ensurePairToken } from '@/lib/desktop/http';
 import { broadcast, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { ensureOffscreen } from '@/lib/stream/offscreen-proxy';
@@ -97,17 +97,16 @@ export async function connectWs(): Promise<WsControlResult> {
     }
     // Browsers don't allow custom headers on WebSocket — engine reads the
     // bearer from a `?token=` query param instead of an Authorization header.
-    const token = await getPairToken();
+    const token = await ensurePairToken(baseUrl);
     if (!token) {
       return {
         ok: false,
-        error: 'desktop not paired — open Settings → Pair desktop',
+        error:
+          'desktop not paired — auto-pairing failed (engine offline or pre-pairing version); or paste the pair code in Settings → Desktop Bridge',
         stage: 'auth',
       };
     }
-    wsUrl =
-      baseUrl.replace(/^http/, 'ws') +
-      `/extension/ws?token=${encodeURIComponent(token)}`;
+    wsUrl = baseUrl.replace(/^http/, 'ws') + `/extension/ws?token=${encodeURIComponent(token)}`;
   } catch (err) {
     const error = (err as Error).message;
     log.warn('desktop', 'ws connectWs discovery failed', error);
@@ -121,10 +120,25 @@ export async function connectWs(): Promise<WsControlResult> {
     return { ok: false, error, stage: 'ensure-offscreen' };
   }
   try {
-    const r = await send<{ wsUrl: string }, { ok: boolean; error?: string }>(
-      CHANNELS.WS_START,
-      { wsUrl },
-    );
+    // Build identity is resolved HERE, in the SW, because an offscreen
+    // document has messaging but not the rest of `chrome.runtime` —
+    // `getManifest()` is undefined there. Same reason `wsUrl` is passed in
+    // rather than re-resolved offscreen.
+    const manifest = chrome.runtime.getManifest();
+    const r = await send<
+      {
+        wsUrl: string;
+        identity: { extensionId: string; version: string; name: string };
+      },
+      { ok: boolean; error?: string }
+    >(CHANNELS.WS_START, {
+      wsUrl,
+      identity: {
+        extensionId: chrome.runtime.id,
+        version: manifest.version,
+        name: manifest.name,
+      },
+    });
     if (r && r.ok === false) {
       const error = r.error ?? 'unknown error';
       log.warn('desktop', 'ws connectWs offscreen returned error', error);
