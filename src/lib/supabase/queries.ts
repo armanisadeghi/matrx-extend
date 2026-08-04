@@ -162,7 +162,7 @@ export async function fetchAgentList(): Promise<AgxAgent[]> {
 /** Backwards-compat shim — older callers reference `fetchUserAgents`. */
 export const fetchUserAgents = (_userId?: string): Promise<AgxAgent[]> => fetchAgentList();
 
-// ─── ai_model (admin model picker) ──────────────────────────────────────────
+// ─── ai.model_definition (admin model picker) ───────────────────────────────
 export const AiModelSchema = z.object({
   id: z.string().uuid(),
   common_name: z.string(),
@@ -179,7 +179,8 @@ export type AiModel = z.infer<typeof AiModelSchema>;
 export async function fetchActiveModels(): Promise<AiModel[]> {
   const c = getSupabase();
   const { data, error } = await c
-    .from('ai_model')
+    .schema('ai')
+    .from('model_definition')
     .select('id, common_name, is_deprecated')
     .eq('is_deprecated', false)
     .order('common_name', { ascending: true });
