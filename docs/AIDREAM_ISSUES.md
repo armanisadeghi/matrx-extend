@@ -4,7 +4,7 @@
 > pre-refactor table names (`tl_def`, `tl_executor`, `tl_def_surface`,
 > `tl_bundle*`, `source_app`). aidream's clean-break refactor renamed all
 > of them — see
-> [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md).
+> [/Users/armanisadeghi/code/aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md).
 > Map: `tl_def` → `tool_def`; `tl_executor` → `tool_binding`
 > (`executor_name`, not `surface`); `tl_def_surface` → DROPPED →
 > `tool_surface_defaults.always_include_tools`; `tl_bundle*` →

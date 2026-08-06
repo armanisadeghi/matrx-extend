@@ -4,7 +4,7 @@
 > pre-refactor schema. aidream's clean-break refactor renamed every
 > `tl_*` table — the *concepts* below (executor binding, surface gates,
 > drift check) are unchanged but the **names and shapes moved**. See
-> [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md)
+> [/Users/armanisadeghi/code/aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md)
 > for the authoritative current schema. Key translations:
 > - `public.tl_executor` → `public.tool_binding` (pure
 >   `(tool_id, executor_name, is_active)` — no more `function_path`,

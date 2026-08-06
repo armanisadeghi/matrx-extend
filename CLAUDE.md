@@ -11,7 +11,9 @@
 
 > Cross-repo system-of-record for the TOKEN BROKER (scoped short-lived credentials for privileged reach — provider realtime sessions, direct provider calls): `/Users/armanisadeghi/code/common-docs/systems/token-broker/FEATURE.md` — read it before touching this feature in ANY repo. **Client primitive SHIPPED 2026-07-12**: [src/lib/broker/](./src/lib/broker/) (its FEATURE.md is the repo contract) — SW-owned in-memory cache via `CHANNELS.BROKER_*`, `useBroker()` hook, admin **Broker** demo tab, repo skill `.claude/skills/token-broker-client/`. Consume through the primitive — never hand-roll a mint call, cache, or gateway URL; new server-side audiences need zero client changes.
 
-> 🚨 **Every agent-start request MUST send `conversation_id` (client-minted, always) + `is_new` + `store`.** aidream rejects anything else with a 422 — `conversation_id: null` is no longer accepted, and `store:false` (not a missing id) is what makes a run ephemeral. `AgentStartRequest` in [src/lib/api/routes/ai.ts](./src/lib/api/routes/ai.ts) marks all three required so the compiler catches a new call site. Contract: `/Users/armanisadeghi/code/aidream/aidream/services/conversation_context/FEATURE.md` § "Starting a conversation".
+> 🚨 **Every agent-start request MUST send `conversation_id` (client-minted, always) + `is_new` + `store`.** aidream rejects anything else with a 422 — `conversation_id: null` is no longer accepted, and `store:false` (not a missing id) is what makes a run ephemeral. `AgentStartRequest` in [src/lib/api/routes/ai.ts](./src/lib/api/routes/ai.ts) marks all three required so the compiler catches a new call site. Contract: `/Users/armanisadeghi/code/aidream/aidream/services/conversation_context/FEATURE.md` § "Starting a conversation"; cross-repo system-of-record: `/Users/armanisadeghi/code/common-docs/systems/conversation-start-contract/FEATURE.md`.
+
+> Cross-repo system-of-record for the EXTENSION INTEGRATION CHANNEL MAP (which channel connects this extension to aidream / matrx-local / matrx-frontend, and each one's live status): `/Users/armanisadeghi/code/common-docs/systems/matrx-extend-integration/FEATURE.md` — the pairwise deep docs stay in their owning repos; this is the map. Cross-repo system-of-record for the TOOL REGISTRY schema (`tool_def`/`tool_binding`/`tool_executor`/`tool_surface_defaults`) this repo's drift script checks against: `/Users/armanisadeghi/code/common-docs/systems/tool-registry/FEATURE.md`.
 
 ---
 
@@ -66,7 +68,7 @@
   [`scripts/check-tool-db-drift.ts`](./scripts/check-tool-db-drift.ts)
   was rewritten against the post-tool-refactor schema (see the master
   reference at
-  [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md)).
+  [/Users/armanisadeghi/code/aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md](../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md)).
   It now checks three DB tables:
   1. `tool_def` — name + description + tier + admin_only + parameters +
      category. Replaces `tl_def`; `source_app` and `function_path`
@@ -139,7 +141,7 @@
   the new tables. The 48 active `tool_binding` rows for
   `executor_name='chrome-extension'` are this extension's claim on
   tools — that's the single ownership fact. Master reference:
-  [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md).
+  [/Users/armanisadeghi/code/aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md](../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md).
 - **Plan / Tasks / User-Todos (2026-07-24)** — three linked surfaces
   that pair with the existing `update_plan` flow.
   - **Plan** — what the user approved; persisted per-conversation,
@@ -812,11 +814,14 @@ Shipped:
       preemptive). **2026-05-08: wired to real consumers** so the CWS
       reviewer's "declared but unused" rule isn't tripped — the same
       rule that flagged `contextMenus` on the v0.1.4 published build.
-      `chrome.system.cpu/memory/display` are exercised by the new
+      `chrome.system.cpu/memory/display` were exercised by the
       admin-only `get_system_info` diagnostic tool; the DNR permission
-      is exercised by `list_network_blocking_rules`. Both live in the
-      `debug` category, read-tier, no side effects. Handlers in
-      [src/lib/tools/handlers/system-info.ts](./src/lib/tools/handlers/system-info.ts).
+      was exercised by `list_network_blocking_rules`. **Both tools (and
+      `src/lib/tools/handlers/system-info.ts`) were removed 2026-07-11
+      for the Chrome Web Store submission** — being admin-only, they
+      made these four permissions reviewer-unreachable ("declared but
+      unused"). See [docs/REMOVED_FOR_CWS_SUBMISSION.md §2](./docs/REMOVED_FOR_CWS_SUBMISSION.md) for what
+      was removed and how to bring it back.
 
 Reverted (UX regression):
 - [ ] Move `<all_urls>` to `optional_host_permissions` — REVERTED
@@ -926,8 +931,8 @@ Pending — but the backend half is DONE; this is now CLIENT work
 
 ### 15. ✅ Turn-boundary inbox — queue/steer a running agent (2026-05-20)
 **Why:** stop forcing "wait for the agent to finish before I can type" and
-"cancel the whole run just to add a note." Server contract:
-[docs/TURN_BOUNDARY_INBOX.md](./docs/TURN_BOUNDARY_INBOX.md).
+"cancel the whole run just to add a note." Server contract (aidream repo):
+[../aidream/docs/cx_chat/TURN_BOUNDARY_INBOX.md](../aidream/docs/cx_chat/TURN_BOUNDARY_INBOX.md).
 
 Shipped (client, Assistant Chat only):
 - [x] While streaming, the composer's send button becomes a distinct
@@ -1076,9 +1081,11 @@ extension changes needed when it lands.
   118 tools landed via the 0022 seed migration; ongoing changes go
   through admin API or SQL seed PRs against aidream.
 - **Local handlers:** `src/lib/tools/handlers/*.ts` (unchanged).
-- **Wire-format aliasing:** [`src/lib/tools/aliases.ts`](./src/lib/tools/aliases.ts)
-  strips `matrx-extend__` and bundle prefixes, plus a small map for
-  legacy `browser_*` names.
+- **Wire-format aliasing:** `src/lib/tools/aliases.ts` stripped the
+  `matrx-extend__` prefix and legacy `browser_*` names; retired along with
+  the `matrx-extend:` colon namespace itself in the 2026-05-19 global
+  tool namespace redesign (see below) — bare/`chrome_*`/`cdp_*` names no
+  longer need aliasing.
 - **Migration guide:** [docs/MATRX_EXTEND_MIGRATION_GUIDE.md](./docs/MATRX_EXTEND_MIGRATION_GUIDE.md)
   has the full PR-by-PR playbook.
 - **Retired:** `types/server-handoff/browser-dom-capability.json` and

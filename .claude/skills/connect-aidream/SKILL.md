@@ -106,7 +106,7 @@ feature (keyed by `request_id` + a cursor of events seen; triggered by
 the watchdog on a stall). It points at `GET /ai/agent/runs/{request_id}/resume?cursor=`
 which the backend has not built. Do not conflate. The canonical doc that
 covers both, with the differences laid out, is
-[`matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md`](../../../../../matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md).
+[`matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md`](../../../../matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md).
 
 ### Wire shape
 
