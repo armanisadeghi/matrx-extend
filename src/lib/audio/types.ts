@@ -30,7 +30,6 @@ export interface TranscriptionSegment {
 
 export interface TranscriptionOptions {
   language?: string; // ISO-639-1 language code (e.g., 'en', 'es')
-  prompt?: string; // Provide context or guide spelling
 }
 
 export interface AudioRecordingState {

@@ -556,7 +556,8 @@ Every entry follows this shape:
 - **What it does:** Click the mic icon in the chat composer to dictate; Groq Whisper transcribes in ~2s chunks and the running transcript is written into the textarea live. Click again to stop.
 - **Where to test:** Side panel → Chat tab → composer (bottom).
 - **Prereq:**
-  - Signed in (Bearer token used to call `https://aimatrx.com/api/audio/transcribe`).
+  - Signed in (Bearer token used to call the active aidream backend's
+    `/audio/transcribe` route).
   - Chrome microphone permission granted to the side panel origin (you'll be prompted on first click).
 - **Steps:**
   1. Open Chat, click the mic icon next to the send button.

@@ -836,9 +836,10 @@ agent operation.
 
 Engineering complete; perceptual QA outstanding.
 
-- [x] **TASK-002a** — STT/TTS endpoints (Cartesia + Groq) wired through
-      `https://aimatrx.com/api/cartesia` and `/api/audio/transcribe[-url]`
-      with Supabase Bearer auth.
+- [x] **TASK-002a** — Cartesia TTS token wired through
+      `https://aimatrx.com/api/cartesia`; STT calls aidream's catalog-routed
+      `/audio/transcribe` directly with Supabase Bearer auth. The retired
+      matrx-frontend `/api/audio/transcribe[-url]` proxies must not be used.
 - [x] **TASK-002b** — Translation via on-device Gemini Nano
       (`ai_translate`) with server-side fallback if Nano unavailable;
       mic button in `ChatView` Composer wired to `useRecordAndTranscribe`

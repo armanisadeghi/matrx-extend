@@ -4,9 +4,9 @@
  * Single source of truth for audio recording / transcription limits.
  * Ported from matrx-frontend/features/audio/constants.ts.
  *
- * Difference from the source: API routes are absolute URLs, built lazily
- * from ENV.FRONTEND_URL — the extension hits the matrx-frontend Next.js
- * routes directly with a Bearer token.
+ * Speech-to-text is served by aidream. The extension resolves the active
+ * backend at request time so prod/staging/dev/local follow the same setting
+ * as every other API call. Browser-only proxy routes remain on the frontend.
  */
 
 import { ENV } from '@/config/env';
@@ -53,16 +53,12 @@ export const RETRY_CONFIG = {
   RETRYABLE_STATUS_CODES: [429, 500, 502, 503, 504] as readonly number[],
 } as const;
 
-// ── API routes (absolute URLs to matrx-frontend) ────────────────────────────
-// Lazy getters so module load doesn't crash if FRONTEND_URL is somehow
-// unavailable at import time (e.g. tsx catalog script).
+// ── API routes ──────────────────────────────────────────────────────────────
 export const AUDIO_API_ROUTES = {
-  get TRANSCRIBE() {
-    return `${ENV.FRONTEND_URL}/api/audio/transcribe`;
-  },
-  get TRANSCRIBE_URL() {
-    return `${ENV.FRONTEND_URL}/api/audio/transcribe-url`;
-  },
+  // Backend paths. Do not point these at the retired matrx-frontend
+  // `/api/audio/*` proxies.
+  TRANSCRIBE: '/audio/transcribe',
+  TRANSCRIBE_URL: '/audio/transcribe-url',
   get LOG_ERROR() {
     return `${ENV.FRONTEND_URL}/api/audio/log-error`;
   },

@@ -10,8 +10,8 @@
  *     and forwards as MIC_RUN to the offscreen recorder)
  *   - subscribes to MIC_EVENT broadcasts for chunks, audio levels, lifecycle,
  *     and errors
- *   - transcribes each chunk via the matrx-frontend route
- *     (`https://aimatrx.com/api/audio/transcribe`) with a Bearer token
+ *   - transcribes each chunk via aidream `/audio/transcribe` with a Bearer
+ *     token
  *   - persists chunks + accumulated text to IndexedDB so a crash doesn't
  *     lose audio
  */
@@ -22,8 +22,9 @@ import { base64ToBlob } from '@/lib/messaging/binary-transport';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { audioSafetyStore } from './audioSafetyStore';
-import { AUDIO_API_ROUTES, AUDIO_LIMITS, RETRY_CONFIG, VERCEL_LIMITS } from './constants';
+import { AUDIO_API_ROUTES, AUDIO_LIMITS, GROQ_LIMITS, RETRY_CONFIG } from './constants';
 import type { MicEvent, MicRequestPayload } from './mic-types';
+import { postTranscriptionForm, transcriptionErrorMessage } from './transcription-api';
 import type { TranscriptionOptions, TranscriptionResult } from './types';
 
 export interface ChunkCompleteInfo {
@@ -171,18 +172,14 @@ export function useChunkedRecordAndTranscribe({
 
   /**
    * Fallback transcription path. Concatenates all captured chunk blobs and
-   * POSTs the full audio to `/api/audio/transcribe`. Used when one or more
+   * POSTs the full audio to aidream `/audio/transcribe`. Used when one or more
    * streaming chunks failed mid-recording so the visible transcript is
    * incomplete; succeeding here restores the full text.
    *
-   * Adapted from matrx-frontend's `audioFallbackUpload.ts`. The frontend
-   * uploads through canonical Files and uses `/transcribe-url` to avoid
-   * Vercel's 4.5MB function body limit. The extension has no equivalent
-   * upload helper, so we fall back to direct POST and only attempt when
-   * the concatenated blob fits under the Vercel cap (~4.7 minutes of
-   * 16kHz webm/opus). Anything larger short-circuits and the user keeps
-   * whatever partial transcript was assembled — the IndexedDB safety net
-   * still preserves the audio for manual recovery.
+   * The direct backend route is not behind Vercel, so the old 4.5MB proxy
+   * limit no longer applies. We retain the provider's direct-upload ceiling;
+   * anything larger short-circuits and the user keeps the partial transcript.
+   * The IndexedDB safety net still preserves the audio for manual recovery.
    */
   const runFallbackTranscription = useCallback(async (): Promise<TranscriptionResult | null> => {
     if (allChunkBlobsRef.current.length === 0) return null;
@@ -190,10 +187,10 @@ export function useChunkedRecordAndTranscribe({
     const mimeType = allChunkBlobsRef.current[0]?.type || 'audio/webm';
     const fullBlob = new Blob(allChunkBlobsRef.current, { type: mimeType });
     if (fullBlob.size < AUDIO_LIMITS.MIN_CHUNK_BYTES) return null;
-    if (fullBlob.size > VERCEL_LIMITS.MAX_BODY_BYTES) {
-      log.warn('audio', 'fallback skipped: full blob exceeds Vercel direct-upload limit', {
+    if (fullBlob.size > GROQ_LIMITS.MAX_DIRECT_UPLOAD_BYTES) {
+      log.warn('audio', 'fallback skipped: full blob exceeds STT direct-upload limit', {
         bytes: fullBlob.size,
-        cap: VERCEL_LIMITS.MAX_BODY_BYTES,
+        cap: GROQ_LIMITS.MAX_DIRECT_UPLOAD_BYTES,
       });
       return { success: false, text: '', error: 'Recording too large for fallback upload' };
     }
@@ -204,30 +201,21 @@ export function useChunkedRecordAndTranscribe({
       const form = new FormData();
       form.append('file', new File([fullBlob], `full.${ext}`, { type: mimeType }));
       if (opts?.language) form.append('language', opts.language);
-      if (opts?.prompt) form.append('prompt', opts.prompt);
-
-      const token = await getAccessToken();
-      if (!token) throw new Error('Not signed in');
 
       log.info('audio', 'fallback: full-blob transcribe POST', {
         bytes: fullBlob.size,
-        url: AUDIO_API_ROUTES.TRANSCRIBE,
+        route: AUDIO_API_ROUTES.TRANSCRIBE,
       });
-      const res = await fetch(AUDIO_API_ROUTES.TRANSCRIBE, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: form,
-      });
-      const data = await res.json();
+      const { response: res, body: data } = await postTranscriptionForm(form);
       if (!res.ok || !data.success) {
-        const msg = data?.error || data?.details || `HTTP ${res.status}`;
+        const msg = transcriptionErrorMessage(data, res.status);
         log.error('audio', 'fallback: transcribe POST failed', { status: res.status, body: data });
         return { success: false, text: '', error: msg };
       }
       log.success('audio', 'fallback: transcribe POST done', {
         textLen: typeof data?.text === 'string' ? data.text.length : 0,
       });
-      return { success: true, text: data.text || '' };
+      return { success: true, text: typeof data.text === 'string' ? data.text : '' };
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Fallback transcription failed';
       log.error('audio', 'fallback: failed', { msg, err });
@@ -294,30 +282,25 @@ export function useChunkedRecordAndTranscribe({
         const form = new FormData();
         form.append('file', new File([blobToSend], `chunk.${ext}`, { type: blobToSend.type }));
         if (opts?.language) form.append('language', opts.language);
-        if (opts?.prompt) form.append('prompt', opts.prompt);
-
-        const token = await getAccessToken();
-        if (!token) throw new Error('Not signed in. Please sign in to use voice input.');
 
         log.info('audio', 'hook: transcribe POST start', {
           chunkIndex: idx,
           bytes: blobToSend.size,
           isCombo,
-          url: AUDIO_API_ROUTES.TRANSCRIBE,
+          route: AUDIO_API_ROUTES.TRANSCRIBE,
         });
         // Bounded retry on transient failures (audit P2-19): RETRY_CONFIG
         // existed but was never used — a single 429 (Groq free tier is 20
         // RPM) permanently lost that chunk's text unless the end-of-
-        // recording full-blob fallback happened to fit Vercel's body cap.
+        // recording full-blob fallback succeeded.
         let res: Response;
+        let data: Record<string, unknown>;
         let attempt = 0;
         for (;;) {
           attempt += 1;
-          res = await fetch(AUDIO_API_ROUTES.TRANSCRIBE, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${token}` },
-            body: form,
-          });
+          const result = await postTranscriptionForm(form);
+          res = result.response;
+          data = result.body;
           const retryable = RETRY_CONFIG.RETRYABLE_STATUS_CODES.includes(res.status);
           if (res.ok || !retryable || attempt >= RETRY_CONFIG.MAX_ATTEMPTS) break;
           const delay = Math.min(
@@ -330,7 +313,6 @@ export function useChunkedRecordAndTranscribe({
           });
           await new Promise((r) => setTimeout(r, delay));
         }
-        const data = await res.json();
         const textLen = typeof data?.text === 'string' ? data.text.length : 0;
         if (res.ok) {
           log.success('audio', 'hook: transcribe POST done', {
@@ -345,10 +327,10 @@ export function useChunkedRecordAndTranscribe({
             body: data,
           });
         }
-        if (!res.ok) throw new Error(data.error || data.details || `HTTP ${res.status}`);
+        if (!res.ok) throw new Error(transcriptionErrorMessage(data, res.status));
 
-        if (data.success && data.text?.trim()) {
-          const snippet = (data.text as string).trim();
+        if (data.success === true && typeof data.text === 'string' && data.text.trim()) {
+          const snippet = data.text.trim();
 
           if (isCombo) {
             transcriptsMapRef.current.set(0, '');
