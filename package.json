@@ -33,7 +33,9 @@
     "ui:add": "pnpm dlx shadcn@latest add",
     "prepare": "wxt prepare && husky || true",
     "check:schema-routing": "tsx scripts/check-schema-routing.ts",
-    "check:schema-routing:strict": "tsx scripts/check-schema-routing.ts --strict"
+    "check:schema-routing:strict": "tsx scripts/check-schema-routing.ts --strict",
+    "check:docs-pointers": "tsx scripts/check-docs-pointers.ts",
+    "check:docs-pointers:strict": "tsx scripts/check-docs-pointers.ts --strict"
   },
   "dependencies": {
     "@cartesia/cartesia-js": "^2.2.9",

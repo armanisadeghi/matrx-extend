@@ -4,7 +4,7 @@
 >
 > Authoritative reference for the current schema:
 > [docs/official/tool_system_rules.md](./official/tool_system_rules.md) and
-> [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md).
+> [/Users/armanisadeghi/code/aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md).
 > The "Companion docs" line that used to live here pointed at files
 > (`TOOL_REGISTRY_REDESIGN.md`, `CLIENT_REGISTRATION_GUIDE.md`,
 > `FRONTEND_TOOL_INJECTION_NOTES.md`) that never landed in this repo —
@@ -21,7 +21,7 @@ the tool catalog from JSON files into `public.tools` / `tl_def`. On
 the `source_app` / `function_path` columns entirely. The authoritative
 write-up is:
 
-  • [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md)
+  • [/Users/armanisadeghi/code/aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md)
 
 Quick translation table for anything you read in the body below:
 
@@ -102,7 +102,7 @@ You will need three small PRs in matrx-extend (detailed below). The aidream back
 - matrx-extend's [`pnpm catalog:tools`](file:///Users/armanisadeghi/code/matrx-extend/scripts/dump-tool-catalog.ts) script generated two JSON files:
   - `types/tool-catalog.json` (agent-facing manifest)
   - `types/server-handoff/browser-dom-capability.json` (server routing manifest)
-- aidream consumed those JSONs at startup via [`packages/matrx-ai/matrx_ai/capabilities/browser_dom.py`](packages/matrx-ai/matrx_ai/capabilities/browser_dom.py).
+- aidream consumed those JSONs at startup via [`packages/matrx-ai/matrx_ai/capabilities/browser_dom.py`](../../aidream/packages/matrx-ai/matrx_ai/capabilities/browser_dom.py).
 - The 118 tools were registered in-memory at startup by a hook (`register_browser_dom_tools_in_registry`).
 - Every restart re-read the JSONs.
 - Tool names traveled the wire as bare local names (`take_screenshot`, `click_element`).
@@ -115,7 +115,7 @@ You will need three small PRs in matrx-extend (detailed below). The aidream back
 - Tool names traveled the wire as `<namespace>__<local>` (the `:` becomes `__` for provider compatibility — Anthropic/OpenAI/Gemini reject `:` in tool names).
 - Bundles can rebrand a tool at load time: when the agent calls `load_browser_tools(category="forms")`, those tools may arrive on your side as `forms__fill_form` instead of `matrx-extend__fill_form` — the dispatch layer must alias-map back to the local handler.
 
-The aidream redesign is documented in full in [TOOL_REGISTRY_REDESIGN.md](TOOL_REGISTRY_REDESIGN.md). Read §4 (naming conventions, three name layers) and §9 (MCP — same lister mechanism) for context. You don't need to read the rest unless you want to.
+The aidream redesign was documented in full in `TOOL_REGISTRY_REDESIGN.md` (§4 naming conventions, three name layers; §9 MCP — same lister mechanism) — that doc never landed in either repo (see the note at the top of this file) and this whole document is superseded by [CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md) below anyway.
 
 ---
 
@@ -196,16 +196,16 @@ The `pnpm catalog:tools` script's two JSON outputs are **deprecated as runtime s
 **When you add, remove, or rename a tool**, the aidream DB must be updated. Three options:
 
 1. **Admin API** (preferred when available): the matrx-frontend admin UI exposes `POST /admin/tools/<canonical-name>` for create/update/delete. Use this for individual changes.
-2. **SQL seed PR**: open a PR against the aidream repo with an additive seed in `db/migrations/_seed_<num>_<feature>.py`. Mirrors the pattern in [`_seed_0022_browser_dom.py`](db/migrations/_seed_0022_browser_dom.py).
+2. **SQL seed PR**: open a PR against the aidream repo with an additive seed in `db/migrations/_seed_<num>_<feature>.py`. Mirrors the pattern in [`_seed_0022_browser_dom.py`](../../aidream/db/migrations/_seed_0022_browser_dom.py).
 3. **Bulk re-import**: a one-shot rebuild from your source-of-truth — kept as an emergency reset path. The 0022 seed is the example.
 
 **Don't re-run `pnpm catalog:tools` and expect aidream to pick up changes.** It won't.
 
 ### 4. Single-`_` separator anywhere is gone
 
-Today's [`packages/matrx-ai/matrx_ai/tools/external_mcp.py`](packages/matrx-ai/matrx_ai/tools/external_mcp.py) had a `_strip_namespace` that split on first `_` (legacy MCP convention). After Step 4 of the redesign, that's gone. **Any place in matrx-extend code that uses single-`_` for namespacing should be updated to `__`.**
+Today's [`packages/matrx-ai/matrx_ai/tools/external_mcp.py`](../../aidream/packages/matrx-ai/matrx_ai/tools/external_mcp.py) had a `_strip_namespace` that split on first `_` (legacy MCP convention). After Step 4 of the redesign, that's gone. **Any place in matrx-extend code that uses single-`_` for namespacing should be updated to `__`.**
 
-The current alias map in [`aliases.ts`](file:///Users/armanisadeghi/code/matrx-extend/src/lib/tools/aliases.ts) handles legacy renames — preserve those, just add the new `__` rule.
+The alias map that used to live in `src/lib/tools/aliases.ts` handled legacy renames — that file was retired along with the `matrx-extend:` colon namespace in the 2026-05-19 global tool namespace redesign; there is no longer a `__` rule to preserve.
 
 ---
 
@@ -295,7 +295,7 @@ The matrx-ai live-DB invariant tests (`test_browser_tools_db_invariants.py`) cat
 
 ## Surface registration
 
-You're already registered: the 0022 seed inserted `chrome-extension` (client) + `chrome-extension/assistant` and `chrome-extension/pilot` (surfaces). If matrx-extend later adds a new surface (e.g. a tab-strip widget), follow [CLIENT_REGISTRATION_GUIDE.md](CLIENT_REGISTRATION_GUIDE.md) Option A to seed it in.
+You're already registered: the 0022 seed inserted `chrome-extension` (client) + `chrome-extension/assistant` and `chrome-extension/pilot` (surfaces). If matrx-extend later adds a new surface (e.g. a tab-strip widget), follow `CLIENT_REGISTRATION_GUIDE.md` Option A to seed it in — that doc never landed in either repo (see the note at the top of this file); ask the aidream team for the current seed procedure.
 
 ---
 
@@ -340,4 +340,4 @@ No. Your handler files in `src/lib/tools/handlers/` still define the local names
 **"What if my handler signature drifts from the DB row's `parameters`?"**
 The model sends args validated against the DB row's schema. Your local handler validates against its own Zod schema. If they drift, dispatch fails — your Zod validation rejects the args. The fix is to update the DB row to match the new Zod shape (Admin API or SQL seed PR). There's no automatic sync; this is intentional friction so renames are deliberate.
 
-For anything not covered here, the [TOOL_REGISTRY_REDESIGN.md](TOOL_REGISTRY_REDESIGN.md) decision log answers most questions, and the implementation in [`packages/matrx-ai/matrx_ai/tools/`](packages/matrx-ai/matrx_ai/tools/) shows the contract on the aidream side.
+For anything not covered here, the `TOOL_REGISTRY_REDESIGN.md` decision log (never landed in either repo — see the note at the top of this file) would have answered most questions; the implementation in [`packages/matrx-ai/matrx_ai/tools/`](../../aidream/packages/matrx-ai/matrx_ai/tools/) shows the contract on the aidream side.

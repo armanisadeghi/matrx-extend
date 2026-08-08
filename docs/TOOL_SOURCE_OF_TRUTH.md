@@ -10,7 +10,7 @@
 
 _Last updated: 2026-05-27 — the table names were renamed by aidream's
 clean-break tool-system refactor; see
-[/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md)
+[/Users/armanisadeghi/code/aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md)
 for the authoritative shape. This document was updated in place — the
 rules are unchanged; only the table names moved._
 

@@ -1,8 +1,8 @@
 # Turn-boundary inbox — server requests (status)
 
 > **Context:** the extension implements the client side of the turn-boundary
-> inbox ([TURN_BOUNDARY_INBOX.md](./TURN_BOUNDARY_INBOX.md)): while a run is
-> streaming, the user can keep typing and "send" — we POST to
+> inbox ([aidream docs/cx_chat/TURN_BOUNDARY_INBOX.md](../../aidream/docs/cx_chat/TURN_BOUNDARY_INBOX.md)):
+> while a run is streaming, the user can keep typing and "send" — we POST to
 > `/ai/conversations/{id}/inbox`, float a "waiting its turn" card above the
 > composer, and on `injection_consumed` slot the message into the transcript.
 >
@@ -12,7 +12,7 @@
 > "stop & send" affordance. #2's defensive casts were dropped once the deployed
 > schema caught up (`pnpm update-api-types`, 2026-05-22 — `ConsumedInjection`
 > now carries `text` + `is_visible_to_user`). Canonical server contract:
-> aidream `docs/TURN_BOUNDARY_INBOX.md`.
+> aidream `docs/cx_chat/TURN_BOUNDARY_INBOX.md`.
 
 | # | Ask | Status | Client wiring |
 |---|---|---|---|

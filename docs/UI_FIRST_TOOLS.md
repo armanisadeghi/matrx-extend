@@ -7,7 +7,7 @@
 > `executor_name='chrome-extension'` for this extension). Same tools,
 > shared `tool_def` rows — multiple `tool_binding` rows is how
 > cross-surface sharing works. See
-> [/Users/armanisadeghi/code/aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/CROSS_TEAM_TOOL_REFACTOR.md).
+> [/Users/armanisadeghi/code/aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md).
 
 > **Who this is for:** React/Next.js developers building the aimatrx.com
 > chat surface (and any future Matrx Surface — SMS, mobile, sandbox).
