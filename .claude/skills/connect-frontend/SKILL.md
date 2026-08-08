@@ -6,10 +6,8 @@ description: Use when the matrx-extend Chrome extension needs to coordinate with
 # connect-frontend — outbound calls into the aimatrx.com admin app
 
 The matrx-frontend Next.js 16 app at aimatrx.com is the third leg of the
-Matrx client triangle. Channel C between this extension and the frontend
-is **0% built today, with traps**. This skill exists so future work
-starts from the correct primitives and avoids the dead scaffolding
-already in the repos.
+Matrx client triangle. Channel C is live over direct external messaging and
+Supabase Broadcast, sharing the `FRONTEND_RPC` action surface.
 
 ## When to use
 
@@ -62,10 +60,9 @@ The frontend's window-panels parser opens that overlay on page load.
 **Same-machine call from the extension to a tab:**
 
 ```ts
-// pseudocode — depends on externally_connectable manifest entry
-chrome.tabs.sendMessage(tabId, {
-  direction: "extension->page",
-  action: "open_panel",
+chrome.runtime.sendMessage(extensionId, {
+  channel: "FRONTEND_RPC",
+  action: "openPanel",
   requestId: crypto.randomUUID(),
   payload: { typeKey: "chat", instanceId: "abc-123" },
   timestamp: Date.now(),
@@ -80,7 +77,7 @@ const channel = supabase.channel(`matrx-extension-bridge:${userId}`);
 await channel.subscribe();
 await channel.send({
   type: "broadcast",
-  event: "message",
+  event: "FRONTEND_RPC",
   payload: {
     direction: "extension->frontend",
     action: "open_panel",
@@ -117,8 +114,10 @@ will silently fail. Adding a new origin = manifest change + reload.
 
 | File | Role |
 |---|---|
-| `src/lib/webmcp/register.ts` | WebMCP scaffolding — `registerToolsOnActiveTab()` is built but unused; no page-side dispatcher exists yet |
-| (manifest) | `externally_connectable` block needs to be added; not present today |
+| `src/lib/frontend-bridge/handler.ts` | Shared ping/capabilities/openPanel/callTool action surface |
+| `src/lib/frontend-bridge/broadcast.ts` | Cross-machine request/reply adapter |
+| `src/lib/background/bootstrap.ts` | External-message listener + lifecycle wiring |
+| `wxt.config.ts` | Live `externally_connectable` manifest allowlist |
 
 ## Frontend-side reference (read-only from this repo)
 
@@ -127,10 +126,9 @@ will silently fail. Adding a new origin = manifest change + reload.
 - The window-panels deep-link parser — handles
   `?panels=<typeKey>:<instanceId>`; stable contract.
 
-There is **no conversation-message-append API** on the frontend today.
-Do not assume one exists. If your task needs the agent to drop a
-message into a frontend conversation, that's a frontend feature
-request, not an extension one.
+The frontend exposes `POST /api/extension/append-message`. Headless extension
+calls use the user's Supabase Bearer token; every database operation stays on
+that caller-scoped client so RLS remains authoritative.
 
 ## Failure modes
 
@@ -143,9 +141,9 @@ request, not an extension one.
   Supabase Broadcast does not retain messages.
 - **Loud: deep-link 404.** The route exists but `?panels=` is malformed.
   The parser expects `<typeKey>:<instanceId>`; both halves required.
-- **Trap: existing fake-bridge scaffolding.** Both repos contain
-  partial bridge code that was never finished. Do not copy from it
-  blindly — verify against this skill's primitives and the file index.
+- **Authorization trap:** a topic containing the user UUID is not itself an
+  auth boundary. Cross-machine channels require `private: true` on both sides
+  plus `realtime.messages` RLS policies.
 
 ## Pointer
 

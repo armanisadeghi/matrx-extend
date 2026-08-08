@@ -10,16 +10,12 @@ extension at `/extension/rpc`, plus a WebSocket for reverse-push events.
 This skill is the entry point when you're working in this repo and need
 to drive the desktop engine from extension code.
 
-**Status reality check:** Channel B is partially verified.
-`desktop_run_command` exists in
-`src/lib/tools/handlers/privileged.ts:212-226` but has zero callsites.
-Port discovery is now wired: `src/lib/desktop/discovery.ts` probes
-22140–22159 in parallel via the engine's public `GET /health` and
-caches the winner in `chrome.storage.local` (30 min TTL); the build-time
-`ENV.DESKTOP_LOCAL_URL` is the last-resort fallback. `POST /extension/rpc`
-is reserved for authenticated calls — every probe must keep using the
-auth-free `/health` path, otherwise each cache-miss alarm tick fires a
-"missing bearer token" warning in the engine log.
+**Status reality check:** Channel B is active and live-E2E verified.
+Local discovery probes 22140–22159 through public `GET /health`; remote
+discovery reads the signed-in owner's freshest active
+`app_instances.tunnel_url` under RLS. HTTP RPC and the offscreen WS use the
+same engine-issued pair token. Two simultaneous packaged Chrome profiles and
+independent reverse `read_page` calls were verified on 2026-08-08.
 
 ## When to use
 
@@ -42,12 +38,11 @@ auth-free `/health` path, otherwise each cache-miss alarm tick fires a
 
 ```
 extension src/lib/desktop/http.ts
-   │  POST http://127.0.0.1:<port>/extension/rpc
-   │  body: { method, params, requestId }
+   │  POST <local-or-tunnel-base>/extension/rpc
+   │  body: { command, args }
    ▼
 matrx-local app/api/extension_routes.py
-   │  (today: only "health" is wired)
-   │  (target: hand off to)
+   │  extension_handlers.HANDLERS
    ▼
 app/tools/dispatcher.py::dispatch
    │
@@ -56,21 +51,19 @@ app/tools/dispatcher.py::dispatch
    └─→ progress pushed over WebSocket
         app/websocket_manager.py::broadcast / broadcast_notification
 
-port = read ~/.matrx/local.json (engine writes on startup, 22140–22159 scan)
+base = live port probe, then owner-RLS app_instances tunnel discovery
 ```
 
 ## Quick start
 
-When you need to call a desktop method from extension code (current
-state, before the discovery fix):
+When you need to call a desktop command from extension code:
 
 ```ts
-// pseudocode — current state hardcodes port; replace with probe-and-cache
-import { desktopRpc } from "@/lib/desktop/http";
+import { desktopRpc } from "@/lib/desktop/bridge";
 
 const result = await desktopRpc({
-  method: "run_command",
-  params: { argv: ["pnpm", "build"], cwd: "/path/to/project" },
+  command: "tool",
+  args: { tool_name: "SystemInfo", tool_input: {} },
 });
 ```
 
@@ -87,14 +80,16 @@ Discovery in place today (see `src/lib/desktop/discovery.ts`):
    That endpoint is auth-walled by `AuthMiddleware` and rejects with
    401 — both a useless probe response *and* a warning per tick in the
    engine log. Health checks stay on `GET /health` (public).
-4. Surface "desktop bridge offline" loudly — privileged tools that
+4. If local discovery fails, query the owner's active `app_instances` rows
+   for the freshest HTTPS `tunnel_url`; refresh this short cache on failures.
+5. Surface "desktop bridge offline" loudly — privileged tools that
    need it should fail with a clear message, not hang.
 
 ## File index (extension side)
 
 | File | Role |
 |---|---|
-| `src/lib/desktop/discovery.ts` | Port discovery — `getEngineBaseUrl()`, parallel `GET /health` probe across 22140–22159, 30-min cache |
+| `src/lib/desktop/discovery.ts` | Local port probing + owner-RLS remote tunnel discovery |
 | `src/lib/desktop/http.ts` | HTTP client; calls `getEngineBaseUrl()` for every `probeHttp` / `rpcHttp` |
 | `src/lib/desktop/ws-client.ts` | WS reverse-channel client; resolves base URL the same way |
 | `src/lib/desktop/types.ts` | RPC envelope and `DesktopHealthSchema` (the probe fingerprint) |
@@ -103,13 +98,10 @@ Discovery in place today (see `src/lib/desktop/discovery.ts`):
 
 ## Engine-side reference (read-only from this repo)
 
-- `app/api/extension_routes.py` — the `/extension/rpc` route. Today
-  only `{method: "health"}` round-trips; everything else returns 400.
-- `app/tools/dispatcher.py::dispatch` — the eventual handoff target;
-  wired but not yet routed from `/extension/rpc` for non-health methods.
-- `app/websocket_manager.py` — `broadcast()` and
-  `broadcast_notification()` for reverse-push. The extension does not
-  yet subscribe to this WS; doing so is part of the channel buildout.
+- `app/api/extension_routes.py` + `extension_handlers.py` — HTTP command
+  dispatch and the persistent WS route.
+- `app/api/extension_invoke.py` + `extension_ws_manager.py` — engine-driven
+  reverse invocation and per-profile session correlation.
 
 ## Failure modes
 
@@ -125,15 +117,12 @@ Discovery in place today (see `src/lib/desktop/discovery.ts`):
   `discovery.ts` should be on `GET /health`, not `POST /extension/rpc`.
   Anything that wants to call `/extension/rpc` must go through
   `rpcHttp` which attaches the bearer.
-- **Silent: method returns 400 with `unsupported method`.** The route
-  in `app/api/extension_routes.py` only knows about `health`. Adding a
-  new method requires a server-side change (sibling repo).
-- **Silent: WebSocket events ignored.** No subscriber on the extension
-  side yet. Building the subscriber is its own track of work.
-- **Cross-machine pitfall:** the extension and the engine may be on
-  different machines (e.g. extension on a remote desktop). Hardcoding
-  `127.0.0.1` makes that case fail silently. Future work: a routing
-  flag the user confirms; out of scope today.
+- **Remote 401 with a valid pair code.** Confirm the installed matrx-local
+  includes the scoped outer-auth fix and that the active `app_instances`
+  tunnel belongs to the machine that issued the pasted code.
+- **Remote discovery empty.** The extension must be signed in, its Supabase
+  session restored, and matrx-local must report `tunnel_active=true` with a
+  fresh HTTPS `tunnel_url`.
 
 ## Pointer
 

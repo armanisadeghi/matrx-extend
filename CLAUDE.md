@@ -1577,7 +1577,7 @@ exactly what the env-var rules above exist to prevent.
 This extension connects to three sibling systems. The master integration map is at [docs/CROSS_REPO_INTEGRATION.md](./docs/CROSS_REPO_INTEGRATION.md). When working on outbound calls to a sibling, invoke the matching skill:
 
 - **AI Dream backend** (already production, ~85% shipped) — see `.claude/skills/connect-aidream/SKILL.md`
-- **Matrx Local desktop engine** (currently 0% functional — bug fixes in flight) — see `.claude/skills/connect-local/SKILL.md`
-- **Matrx Frontend (aimatrx.com)** (no channel today — being built) — see `.claude/skills/connect-frontend/SKILL.md`
+- **Matrx Local desktop engine** (active bidirectional HTTP + WS bridge; local and tunnel discovery) — see `.claude/skills/connect-local/SKILL.md`
+- **Matrx Frontend (aimatrx.com)** (active direct + Supabase Broadcast bridge) — see `.claude/skills/connect-frontend/SKILL.md`
 
 Sibling repos each have a `MATRX_EXTEND_CONNECTION.md` and a `connect-matrx-extend` skill. See the master doc for the full topology.

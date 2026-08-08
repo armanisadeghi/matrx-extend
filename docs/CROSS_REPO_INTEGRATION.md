@@ -24,7 +24,7 @@ they reference back here for the full topology.
                                           │ externally_connectable +
                                           │ Supabase Broadcast +
                                           │ ?panels deep-link
-                                          │ (0% — being built)
+                                          │ (ACTIVE; live E2E verified)
                                           │
    ┌──────────────────────┐  Channel A    │
    │  aidream             │ ──────────────┤  ┌──────────────────────┐
@@ -76,10 +76,10 @@ component. Reusable JWTs cross every boundary.
 
 | Field | Value |
 |---|---|
-| Status | **FULLY ACTIVE (2026-07-10), engine-side verified.** Both directions ship: extension→engine RPC over HTTP, engine→extension tool invocations over the WS reverse channel, and a Supabase-Broadcast rpc fallback dispatching into the SAME engine command registry. Round trips pinned by matrx-local `tests/smoke/test_extension_channel.py` (real engine, WS client simulating this extension) and this repo's `tests/unit/ws-invoke.test.ts`. Remaining gap: a human-driven in-browser E2E (steps in matrx-local `docs/MATRX_EXTEND_CONNECTION.md` § Verification status). |
+| Status | **FULLY ACTIVE (live E2E 2026-08-08).** Installed matrx-local v1.4.14 completed extension→engine RPC, two simultaneous packaged Chrome-profile WS sessions, and independent engine→extension `read_page` reverse invokes. Local zero-touch pairing works. Cross-machine discovery now reads the owner's freshest active `app_instances.tunnel_url`; the engine accepts the pair token only on `/extension/*` over that tunnel. Tests: matrx-local real-engine smoke + this repo's desktop-discovery/ws-invoke suites. |
 | Direction | Bidirectional. Extension calls `POST /extension/rpc` (`health` / `version` / `capabilities` / `tool` → the full ~80-tool dispatcher); engine pushes `extension.invoke` frames over `/extension/ws`, serviced by `src/lib/desktop/ws-invoke.ts` through `handleWebmcpCall` (initiator `'desktop'`, uniform permission gating) and answered with `extension.result` by `callId`. |
 | Substrates | HTTP POST `/extension/rpc` + WebSocket `/extension/ws` (offscreen-document client, `ws-offscreen.ts`; ping/pong carries `tool_catalog_hash` for drift detection) + Supabase Broadcast channel `matrx-local-bridge:<userId>` (v2 CrossComponentEnvelope, `v: 2` — `src/lib/messaging/cross-component-envelope.ts`; engine dispatcher: matrx-local `app/api/cross_component_router.py`). |
-| Port discovery | Engine listens on the first free port in 22140–22159 and writes it to `~/.matrx/local.json`. The extension probes `GET /health` across the range in parallel and caches the winner 30 min (`src/lib/desktop/discovery.ts`); auth is the ENGINE-ISSUED pairing token — auto-fetched from `POST /extension/pair` (loopback-only) with zero user action, self-healing on 401, manual paste only for remote machines — never the raw Supabase access token. |
+| Discovery | Local: probe `GET /health` across 22140–22159 and cache the winner. Remote: after the Supabase session is restored, select the owner's freshest active `app_instances.tunnel_url` directly under RLS and cache it for 30 seconds. Auth is the engine-issued pair token—auto-fetched only over loopback, manual paste remotely—never the user's Supabase token. |
 | Tools called | `desktop_run_command` (privileged tier, `src/lib/tools/handlers/privileged.ts`) is registered + advertised (category `desktop`, `list_desktop_tools` discovery, canonical surface) — trusted agents invoke ANY engine command through it; `{"command":"tool","args":{"tool_name":…,"tool_input":…}}` is the generic passthrough to the engine's whole dispatcher catalog. |
 | Reverse-invoke consumer | `src/lib/background/bootstrap.ts` step 7 → `registerWsReverseInvocationHandler()` in `src/lib/desktop/ws-invoke.ts`. Engine-side callers use `invoke_extension_tool` (matrx-local `app/api/extension_invoke.py`); `POST /extension/invoke` is the HTTP test driver. |
 | Extension-side reference files | `src/lib/desktop/discovery.ts`, `http.ts`, `ws-client.ts`, `ws-offscreen.ts`, `ws-invoke.ts`, `src/lib/tools/handlers/privileged.ts`, `src/lib/messaging/cross-component-envelope.ts` |
@@ -89,14 +89,14 @@ component. Reusable JWTs cross every boundary.
 
 | Field | Value |
 |---|---|
-| Status | 0% with traps. Extension manifest has no `externally_connectable` block. Both sides ship fake-bridge scaffolding. WebMCP scaffolding (`src/lib/webmcp/register.ts`) is incomplete: no page-side dispatcher, no callsites for `registerToolsOnActiveTab()`. |
+| Status | **ACTIVE; production E2E verified 2026-08-08.** Direct and Broadcast `ping`, `capabilities`, and permission-gated `callTool` pass between `demos.aimatrx.com` and installed matrx-extend. The append-message cookie route returns the expected authenticated 404 probe; Supabase-Bearer headless auth is covered by frontend route tests. |
 | Direction | Bidirectional. Same-machine: page → extension via `chrome.runtime.sendMessage` on the whitelisted origin. Cross-machine: Supabase Broadcast on channel `matrx-extension-bridge:<userId>`. |
 | Substrates | (a) `externally_connectable` direct messaging, (b) Supabase Realtime Broadcast, (c) URL deep-link `?panels=<typeKey>:<instanceId>` to trigger UI overlays. |
 | `externally_connectable` whitelist | `https://*-armani-sadeghis-projects.vercel.app/*`, `https://*.aimatrx.com/*`, `https://*.mymatrx.com/*`, `http://localhost/*`, `http://127.0.0.1/*` |
 | Broadcast payload shape | `{ direction, action, requestId, payload, timestamp }` |
-| Conversation-message-append API | None on frontend today. |
-| Extension-side reference files | `src/lib/webmcp/register.ts` (incomplete — no page-side dispatcher) |
-| Frontend-side reference files | `lib/supabase/messaging.ts` (production-ready), the window-panels deep-link parser |
+| Conversation-message-append API | `POST /api/extension/append-message`: cookie or caller Supabase Bearer, RLS-scoped, shared Zod contract. |
+| Extension-side reference files | `wxt.config.ts`; `src/lib/background/bootstrap.ts`; `src/lib/frontend-bridge/{handler,broadcast}.ts`; `tests/unit/frontend-bridge-*.test.ts` |
+| Frontend-side reference files | `lib/types/bridge-envelope.ts`; `lib/supabase/messaging.ts`; `hooks/useExtensionBridgeChannel.ts`; `lib/extension-bridge/*`; `app/api/extension/append-message/route.ts`; production demo `/demos/tests/extension-bridge` |
 
 ### Channel D — matrx-local ↔ matrx-frontend
 
@@ -135,9 +135,11 @@ first when investigating cross-repo behavior.
 - `src/lib/tools/registry.ts` — central tool registry / `lookup(name)`
 - `src/lib/tools/dispatch.ts` — SW dispatcher
 - `src/lib/tools/handlers/privileged.ts` (lines 212–226 are `desktop_run_command`)
-- `src/lib/desktop/http.ts` — desktop bridge HTTP client (currently hardcoded port — bug)
+- `src/lib/desktop/discovery.ts` — local port probing plus owner-RLS remote tunnel discovery
+- `src/lib/desktop/http.ts` — paired desktop bridge HTTP client
 - `src/lib/desktop/types.ts` — desktop RPC shapes
-- `src/lib/webmcp/register.ts` — WebMCP scaffolding (incomplete)
+- `src/lib/frontend-bridge/handler.ts` — direct + Broadcast action surface
+- `src/lib/frontend-bridge/broadcast.ts` — cross-machine adapter/correlation
 - `src/lib/chat/context/v2-bundled.ts` — canonical context shape
 - `src/lib/agenda/queries.ts` — `sch_*` scheduling façade (Channel E)
 - `docs/SCHEDULING.md` — FE-facing scheduling UI guide (Channel E)
@@ -149,13 +151,14 @@ first when investigating cross-repo behavior.
 - `packages/matrx-ai/matrx_ai/tools/implementations/browser_discovery.py` — `load_browser_tools` server-side handler
 
 **matrx-local:**
-- `app/api/extension_routes.py` — `/extension/rpc` route (currently `health`-only)
+- `app/api/extension_routes.py` — full `/extension/rpc` command route + WS
 - `app/tools/dispatcher.py::dispatch` — dispatcher entry point (wired but unrouted)
 - `app/websocket_manager.py` — `broadcast()`, `broadcast_notification()`
 
 **matrx-frontend:**
-- `lib/supabase/messaging.ts` — Broadcast bridge (production-ready)
-- The window-panels deep-link parser (handles `?panels=<typeKey>:<instanceId>`)
+- `lib/supabase/messaging.ts` — live Broadcast bridge
+- `hooks/useExtensionBridgeChannel.ts` + `lib/extension-bridge/*` — request/reply and panel routing
+- `app/api/extension/append-message/route.ts` — RLS-scoped inbound append API
 
 ---
 

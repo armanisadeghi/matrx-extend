@@ -39,7 +39,10 @@ import {
 import { desktopHealthSnapshotKey } from "@/lib/desktop/types";
 import { connectWs } from "@/lib/desktop/ws-client";
 import { registerWsReverseInvocationHandler } from "@/lib/desktop/ws-invoke";
-import { connectBroadcast } from "@/lib/frontend-bridge/broadcast";
+import {
+  connectBroadcast,
+  disconnectBroadcast,
+} from "@/lib/frontend-bridge/broadcast";
 import {
   FRONTEND_RPC_CHANNEL,
   FrontendRpcEnvelopeSchema,
@@ -130,9 +133,13 @@ export function bootstrapBackground(): void {
   startAgendaScanner();
   registerAgendaNotificationClicks();
 
-  // ── 3. Async housekeeping: rehydrate Supabase session, probe desktop.
-  void rehydrateSupabaseSession();
-  void probeDesktop().then((state) => {
+  // ── 3. Async housekeeping: restore the Supabase identity BEFORE any
+  //       RLS-backed discovery or Realtime subscription. Starting these in
+  //       parallel made cold service-worker boots race as anonymous users:
+  //       remote app_instances discovery returned no rows and private
+  //       Broadcast channels could fail their first subscribe.
+  void rehydrateSupabaseSession().then(async () => {
+    const state = await probeDesktop();
     lastDesktopTransport = state.transport;
     lastDesktopHealthKey = desktopHealthSnapshotKey(state.health);
     broadcast(CHANNELS.DESKTOP_AVAILABILITY, {
@@ -146,6 +153,9 @@ export function bootstrapBackground(): void {
     if (state.transport === "http") {
       void connectWs();
     }
+    // Supabase Broadcast is RLS-backed and therefore belongs after session
+    // restoration too. It remains best-effort: failures log, never throw.
+    void connectBroadcast();
   });
 
   // ── 4. WebMCP page-side bridge: when an allowlisted page finishes
@@ -160,9 +170,8 @@ export function bootstrapBackground(): void {
   registerFrontendRpcExternalListener();
 
   // ── 6. Phase 2 C1.c — Supabase Broadcast subscriber for the same
-  //       FRONTEND_RPC envelope shape (per-user channel). Best-effort:
-  //       failures log warnings, don't throw.
-  void connectBroadcast();
+  //       FRONTEND_RPC envelope shape (per-user channel). Its connection is
+  //       started by step 3 after the Supabase session is restored.
 
   // ── 6b. Phase 3c.1 — scheduler host. Subscribes to sch_task changes for the
   //        signed-in user and runs any task that targets this surface
@@ -914,8 +923,17 @@ function registerSchedulerHostUserWatcher(): void {
     const next = change.newValue as UserProfile | undefined;
     if (next?.id) {
       void startSchedulerHost(next.id);
+      // Sign-in occurs in the sidepanel, while the long-lived bridge clients
+      // live here in the SW. Rehydrate this context before reconnecting
+      // Broadcast or querying owner-RLS app_instances for a remote desktop.
+      void rehydrateSupabaseSession().then(async () => {
+        await connectBroadcast();
+        const desktop = await probeDesktop();
+        if (desktop.transport === "http") void connectWs();
+      });
     } else {
       void stopSchedulerHost();
+      void disconnectBroadcast();
       // Brokered grants belong to the user who minted them — drop the
       // in-memory credential cache the moment the profile clears.
       clearBrokerCacheOnSignOut();

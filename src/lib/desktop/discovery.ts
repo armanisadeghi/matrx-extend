@@ -14,7 +14,10 @@
  *      expired. TTL is 30 minutes.
  *   3. Parallel `health` probe across ports 22140-22159. First success wins,
  *      gets cached, and is returned.
- *   4. Build-time `ENV.DESKTOP_LOCAL_URL` as a last-resort fallback. This
+ *   4. The signed-in user's freshest active `app_instances.tunnel_url` row
+ *      from Supabase. This is the cross-machine path; the tunnel URL is
+ *      refreshed by matrx-local and protected by owner-only RLS.
+ *   5. Build-time `ENV.DESKTOP_LOCAL_URL` as a last-resort fallback. This
  *      mirrors how the bridge behaved before discovery shipped, so callers
  *      that depended on the old hardcoded port still work in environments
  *      where the engine doesn't respond to probes (e.g. native messaging
@@ -25,7 +28,9 @@
  */
 
 import { ENV } from '@/config/env';
+import { log } from '@/lib/debug/log';
 import { DesktopHealthSchema } from '@/lib/desktop/types';
+import { getSupabase } from '@/lib/supabase/client';
 
 const STORAGE_KEY_CACHE = 'matrxLocalEnginePort';
 const STORAGE_KEY_OVERRIDE = 'matrxLocalEnginePortOverride';
@@ -34,6 +39,7 @@ const PROBE_PORT_RANGE_START = 22140;
 const PROBE_PORT_RANGE_END = 22159;
 const PROBE_TIMEOUT_MS = 250;
 const CACHE_TTL_MS = 30 * 60 * 1000;
+const REMOTE_CACHE_TTL_MS = 30 * 1000;
 
 interface CachedEntry {
   port: number;
@@ -47,6 +53,7 @@ const isCachedEntry = (v: unknown): v is CachedEntry =>
   typeof (v as CachedEntry).expiresAt === 'number';
 
 let inFlight: Promise<string | null> | null = null;
+let remoteCache: { baseUrl: string; expiresAt: number } | null = null;
 
 export async function getEngineBaseUrl(): Promise<string | null> {
   const override = await getEnginePortOverride();
@@ -57,6 +64,9 @@ export async function getEngineBaseUrl(): Promise<string | null> {
   const cached = await readCachedEntry();
   if (cached && cached.expiresAt > Date.now()) {
     return `http://127.0.0.1:${cached.port}`;
+  }
+  if (remoteCache && remoteCache.expiresAt > Date.now()) {
+    return remoteCache.baseUrl;
   }
 
   if (inFlight) return inFlight;
@@ -70,6 +80,8 @@ export async function getEngineBaseUrl(): Promise<string | null> {
       // Probe failed: invalidate the cache so the next call re-probes
       // immediately rather than waiting for TTL.
       await invalidateEnginePortCache();
+      const remote = await discoverRemoteEngineBaseUrl();
+      if (remote) return remote;
       const fallback = parsePortFromUrl(ENV.DESKTOP_LOCAL_URL);
       if (fallback !== null) {
         return `http://127.0.0.1:${fallback}`;
@@ -83,7 +95,61 @@ export async function getEngineBaseUrl(): Promise<string | null> {
 }
 
 export async function invalidateEnginePortCache(): Promise<void> {
+  remoteCache = null;
   await chrome.storage.local.remove([STORAGE_KEY_CACHE]);
+}
+
+interface RemoteEngineRow {
+  instance_id: string;
+  instance_name: string;
+  tunnel_url: string;
+  last_seen: string;
+}
+
+async function discoverRemoteEngineBaseUrl(): Promise<string | null> {
+  if (remoteCache && remoteCache.expiresAt > Date.now()) {
+    return remoteCache.baseUrl;
+  }
+
+  try {
+    const { data, error } = await getSupabase()
+      .from('app_instances')
+      .select('instance_id,instance_name,tunnel_url,last_seen')
+      .eq('is_active', true)
+      .eq('tunnel_active', true)
+      .is('deleted_at', null)
+      .not('tunnel_url', 'is', null)
+      .order('last_seen', { ascending: false })
+      .limit(1);
+
+    if (error) {
+      log.warn('desktop', 'remote engine discovery failed', error.message);
+      return null;
+    }
+    const row = (data?.[0] ?? null) as RemoteEngineRow | null;
+    if (!row) return null;
+
+    const parsed = new URL(row.tunnel_url);
+    if (parsed.protocol !== 'https:' || parsed.username || parsed.password) {
+      log.warn('desktop', 'remote engine discovery rejected unsafe tunnel URL', {
+        instanceId: row.instance_id,
+        protocol: parsed.protocol,
+      });
+      return null;
+    }
+
+    const baseUrl = parsed.origin;
+    remoteCache = { baseUrl, expiresAt: Date.now() + REMOTE_CACHE_TTL_MS };
+    log.info('desktop', 'remote engine discovered from app_instances', {
+      instanceId: row.instance_id,
+      instanceName: row.instance_name,
+      lastSeen: row.last_seen,
+    });
+    return baseUrl;
+  } catch (err) {
+    log.warn('desktop', 'remote engine discovery crashed', (err as Error).message);
+    return null;
+  }
 }
 
 export async function setEnginePortOverride(port: number | null): Promise<void> {

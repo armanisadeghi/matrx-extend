@@ -162,12 +162,12 @@ export async function disconnectBroadcast(): Promise<void> {
   const s = state;
   state = null;
   if (!s) return;
-  for (const [, p] of s.pending) {
+  for (const [requestId, p] of s.pending) {
     clearTimeout(p.timer);
     p.resolve({
       ok: false,
       error: 'broadcast disconnected',
-      requestId: '',
+      requestId,
     });
   }
   s.pending.clear();
