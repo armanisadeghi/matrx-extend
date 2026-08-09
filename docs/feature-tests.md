@@ -1712,6 +1712,92 @@ Every entry follows this shape:
   pages still refuse with the restricted-URL message.
 - **Automated:** `tests/unit/seo-audit-parity.test.ts` pins every rule above.
 
+### SEO audit — diff vs last saved + history (2026-08-09)
+- **What it does:** the SEO tab used to render one thing from the previous saved
+  audit — its timestamp. It now states the VERDICT ("3 fewer images missing alt
+  text"), lists only what changed, and lets you open every saved audit for the URL.
+- **Where to test:** SEO tab. Requires sign-in (rows are RLS-scoped by `created_by`).
+- **Steps:**
+  1. Open any page you can edit (a local dev page is easiest) → SEO tab → **Save**.
+  2. Change something measurable on the page: edit the `<title>`, add an `alt=""`
+     to an image that lacked one, add a paragraph, add an `<h2>`.
+  3. Reload the page, then **Re-audit** in the SEO tab.
+  4. Read the "Since your last saved audit" card at the top of the results.
+  5. Click the **history chip** (clock icon + count) next to the "SEO audit" title.
+  6. Click a saved row → the body switches to that snapshot; click **Live** to return.
+- **Expected:**
+  - The card names each change as a sentence with both numbers, e.g.
+    "3 fewer images missing alt text (5 → 2)", "412 more words (1,200 → 1,612)",
+    "Headings: 1 added, 0 removed (7 → 8)", "Title rewritten (42 → 51 chars)".
+  - Fixing all alt text reads "Every image now has alt text (was 5 missing)" and
+    is green (▲); a regression is amber (▼); ambiguous changes are grey.
+  - Fields that did NOT change never get their own row — they collapse into the
+    single "Unchanged: Title · Canonical · …" line at the bottom.
+  - Re-audit with NO page change → "Nothing changed — this page is identical to
+    the saved audit."
+  - Each history row shows its own verdict count ("3 changes" / "First saved
+    audit"); opening one shows its diff against the audit saved before it.
+  - Saving again immediately makes the new row the baseline (the diff resets to
+    "Nothing changed").
+- **Edge cases worth poking:**
+  - Narrow the side panel to ~360px: long titles/canonicals wrap, nothing scrolls
+    horizontally.
+  - A saved row written by an older build that lacks `links`/`schema_types`: those
+    fields are silently skipped — they appear neither as a change nor as
+    "Unchanged" (we never claim a field is unchanged when one side never had it).
+  - A URL with no saved audits: no history chip, no diff card, unchanged behavior.
+- **Automated:** `tests/unit/seo-diff.test.ts` pins every verdict string, the
+  unchanged-collapse rule, the multiset heading comparison, and defensive parsing
+  of a stored `signals` blob.
+
+### SEO audit — AI recommendations (2026-08-09)
+- **What it does:** the "AI recommendations" section used to render the developer
+  TODO "Wire this up to /ai/agent/execute with an SEO prompt." It now sends the
+  WHOLE audit object to an agent as one `page_seo_audit` context key and streams
+  real, paste-ready recommendations into the panel. The run is ephemeral
+  (`store: false`) — it never appears in your chat history.
+- **Where to test:** SEO tab, on a live audit (not a saved snapshot).
+- **Prereq:** signed in, with a default agent set (Settings → Default agent; a
+  fresh install already points at the Matrx Browser Agent).
+- **Steps:**
+  1. Open any content page → SEO tab → wait for the audit to auto-run.
+  2. Scroll to **AI recommendations** → click **Get recommendations**.
+  3. Watch the section while it runs.
+  4. When it finishes, click **Regenerate**, then the copy icon in the section header.
+  5. Click the **by \<agent name\>** line in the footer.
+  6. Navigate the tab to a different page and return to the SEO tab.
+- **Expected:**
+  - On click: a spinner with "Reading your audit…", then "Writing…" once the first
+    text lands; markdown renders incrementally as it streams, and a **Stop** button
+    sits beside the spinner.
+  - The advice cites the real audit numbers (title length, missing-alt count,
+    heading structure, word count) and gives replacement text you can paste.
+  - On completion: the spinner is replaced by a footer naming the agent, plus
+    **Regenerate**. The header copy button copies the markdown.
+  - Clicking the agent name opens `aimatrx.com/agents/<id>` in a NEW tab — the
+    audit and its recommendations are still there when you come back.
+  - After navigating, the section is back to its idle "Get recommendations" state.
+    Recommendations for the previous page are never shown next to a new audit.
+  - Viewing a **saved snapshot** from history hides the section entirely — the
+    agent is only ever asked about the live page.
+- **Failure behavior (check this — it is the point of the feature):**
+  - Kill your network, then click **Get recommendations**: within ~75s the section
+    shows a red "The agent stopped responding. Try again." and a **Try again**
+    button. It never spins forever and never silently shows an empty panel.
+  - A server-side error renders the server's message in red with **Try again**.
+  - A run that completes with no output reports "The agent returned nothing. Try
+    again." rather than an empty section.
+  - Click **Stop** mid-stream: the spinner clears and whatever streamed so far
+    stays on screen with **Regenerate** available.
+- **Edge cases worth poking:**
+  - Narrow the side panel to ~360px — markdown wraps, code/tables scroll inside
+    their own container, nothing scrolls the page horizontally.
+  - Re-audit the same URL: the section resets to idle (the audit's `fetched_at`
+    keys the component).
+- **Automated:** `tests/unit/seo-recommendations-request.test.ts` pins the three
+  fields aidream requires on a start request (`conversation_id` / `is_new` /
+  `store: false`) and that the audit ships whole and untrimmed.
+
 ### Stream — provider retry (no false "connection lost")
 - **What it does:** when the upstream LLM provider rate-limits or 5xx's, the server
   backs off and retries. The stream goes silent for the backoff. The extension must
