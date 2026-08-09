@@ -5,6 +5,8 @@
 > their researchers to please let them out of their current harness and
 > into AI Matrx. Everything in here serves that.
 
+> **WHO THE USER IS:** a brilliant, absolutely non-technical Subject Matter Expert turning world-best knowledge into AI systems — never a developer or AI expert; never assume the person in a topic UI is an expert in that topic. Canonical (Arman's words): `/Users/armanisadeghi/code/common-docs/systems/ai-dream-platform/USER.md`.
+
 > Cross-repo system-of-record for the unified content pipeline (this repo's stream parsing at `src/lib/api/stream.ts` + `src/components/markdown/block-parser.ts` is slated to adopt the shared pure-TS content kernel and start consuming `render_block` events): `/Users/armanisadeghi/code/common-docs/projects/unified-content-pipeline/FEATURE.md` — read it before touching stream parsing or markdown block rendering in ANY repo.
 
 > Cross-repo system-of-record for the underlying Content IR / Shape system, including current render vocabulary coverage and the requirements for kind-bound tool/workflow I/O: `/Users/armanisadeghi/code/common-docs/systems/content-ir-system/FEATURE.md` — read it with the pipeline plan before adding a structured block or result type here.
