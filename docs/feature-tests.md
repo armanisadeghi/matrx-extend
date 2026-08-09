@@ -1625,6 +1625,34 @@ Every entry follows this shape:
   cards with a countdown disappear at 0; streamed code blocks no longer
   flash between plain and highlighted.
 
+### SEO audit — parity with the server auditor (2026-08-09)
+- **What it does:** the SEO tab audits the LIVE DOM in-browser (the server's
+  `POST /seo/public/page-audit` re-fetches the URL, so it can't see an SPA, a
+  signed-in page, or `localhost`). Its counting rules are a deliberate mirror of
+  `matrx_scraper/seo_audit.py` and had drifted.
+- **Where to test:** SEO tab, plus Tools tab → `fetch_url_as_markdown`.
+- **Steps:**
+  1. SEO tab on any article page → Audit. Note **Words** and the heading count.
+  2. Compare against the same URL run through the server's page-audit.
+  3. Open a page whose nav uses `javascript:void(0)` or `mailto:` links, or one
+     with blank `<h2>` wrappers in a card grid (most marketing sites). Audit.
+  4. Tools tab → `fetch_url_as_markdown` with `include_extras: true` on any
+     article URL. Inspect the `seo` block in the result.
+- **Expected:**
+  - Heading list contains no blank entries, and the count matches the server's.
+  - `javascript:`/`mailto:`/`tel:`/`#frag` links are counted in NEITHER
+    internal nor external (they used to inflate external).
+  - `flesch_reading_ease` matches the server's score for the same text, and a
+    genuine score of `0` is reported as `0` (it used to become `null`).
+  - In the `fetch_url_as_markdown` result: `seo.url` is the FETCHED page's URL
+    (was `""`), `seo.word_count` is non-zero (was always 0), and
+    `seo.links.internal` is non-zero on a page with same-host links (every link
+    used to count as external because the parsed Document has no location).
+- **Edge cases:** a subdomain link (`blog.example.com` from `example.com`) counts
+  as **external** — that matches the Python and is intentional. `chrome://`
+  pages still refuse with the restricted-URL message.
+- **Automated:** `tests/unit/seo-audit-parity.test.ts` pins every rule above.
+
 ### Stream — provider retry (no false "connection lost")
 - **What it does:** when the upstream LLM provider rate-limits or 5xx's, the server
   backs off and retries. The stream goes silent for the backoff. The extension must

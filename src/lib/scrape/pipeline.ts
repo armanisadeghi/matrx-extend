@@ -65,6 +65,13 @@ export interface ScrapeOptions {
   includeAudio: boolean;
   includeLinks: boolean;
   includeStructured: boolean;
+  /**
+   * The page's resolved final URL. REQUIRED when `doc` came from DOMParser —
+   * such a Document has `location === null` in Chrome, so without this the
+   * result's `url` was '' and the SEO audit judged every link external.
+   * A content script scraping the live document can omit it.
+   */
+  baseUrl?: string;
 }
 
 const DEFAULT_OPTS: ScrapeOptions = {
@@ -97,8 +104,10 @@ export async function runScrape(
   const metadata = collectMetadata(doc);
   const article = await extractArticle(doc, o.preferDefuddle);
 
+  const url = o.baseUrl ?? doc.location?.href ?? '';
+
   return {
-    url: doc.location?.href ?? '',
+    url,
     capturedAt: Date.now(),
     metadata,
     article,
@@ -108,7 +117,7 @@ export async function runScrape(
     audio: o.includeAudio ? collectAudio(doc) : [],
     links: o.includeLinks ? collectLinks(doc) : [],
     ld_json: o.includeStructured ? collectJsonLd(doc) : [],
-    seo: runAudit(doc),
+    seo: runAudit(doc, url || undefined),
     raw_html_size: doc.documentElement.outerHTML.length,
   };
 }

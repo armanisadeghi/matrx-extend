@@ -184,9 +184,12 @@ export interface ExtensionImagePayload {
 /**
  * Media + structured data the live DOM has but the server's HTML scan can't see
  * — JS-injected `<video>`/`<audio>`/iframe players and clean OpenGraph/JSON-LD
- * (RESEARCH_ENRICHMENT.md §4). Additive: the server ignores unknown body fields
- * today (ExtensionContentSubmit has no `extra='forbid'`), so sending these is a
- * harmless no-op until the server consumes them.
+ * (RESEARCH_ENRICHMENT.md §4).
+ *
+ * These are LIVE on the server as of 2026-08-09 — `process_extension_content`
+ * takes `media=` and `structured=` and merges them into the same media/resource
+ * writer the HTML parse feeds. (This comment previously said they were "a
+ * harmless no-op until the server consumes them"; that stopped being true.)
  */
 export interface ExtensionMediaPayload {
   videos: { src: string; poster: string | null; duration: number | null }[];

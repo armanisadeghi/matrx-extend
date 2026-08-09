@@ -26,6 +26,21 @@ short and actionable; delete an entry when it's fixed (git history keeps the rec
   `replay_demo` fails until demo bodies sync too. Next step: a `wbx_demo` table
   (or fold demos into guidance `data`) so demos travel with their refs.
 
+## Research capture
+
+- **The extension never sends `published_time` / `modified_time`.** The server's
+  `_structured_dates` (`research/multisource.py`) documents the extension as its
+  PRIMARY source for a source's publish/modify dates —
+  "the extension already resolved OG `article:published_time` etc. into these" —
+  and only falls back to JSON-LD `datePublished`/`dateModified`. It doesn't:
+  `CollectedMetadata` (`src/lib/scrape/collectors.ts`) keeps only `property`
+  values starting with `og:`, and `article:published_time` does not, so it is
+  dropped before the payload is built. Every extension capture therefore takes
+  the fallback path, and a page with OG article dates but no JSON-LD dates
+  stores no dates at all. Fix: collect the `article:*` meta properties into
+  `CollectedMetadata` and map them into `ExtensionStructuredPayload.metadata`.
+  Found 2026-08-09 while verifying the capture-media overlay.
+
 ## Context bundle optimization (backlog)
 
 From [context-bloat-findings.md](./context-bloat-findings.md), items #1–8 documented

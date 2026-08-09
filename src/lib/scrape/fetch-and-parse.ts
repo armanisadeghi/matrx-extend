@@ -1,6 +1,23 @@
 /**
  * Fetch an arbitrary URL → DOMParser → existing scrape pipeline.
  *
+ * ─────────────────────────────────────────────────────────────────────────────
+ * ⚠️ DELIBERATELY CLIENT-SIDE — do NOT "fix" this by routing it to the server's
+ * `/scraper/quick-scrape`. That would silently make the tool weaker.
+ * ─────────────────────────────────────────────────────────────────────────────
+ * This fetch runs from the USER'S BROWSER, and that is the entire point:
+ *   - **Their session.** `use_session: true` sends the user's own cookies, so a
+ *     logged-in dashboard, a paywalled article they subscribe to, or an
+ *     internal wiki returns the content THEY see. The server has no such
+ *     session and gets the logged-out page or a 403.
+ *   - **Their IP + their network.** `localhost`, `192.168.*`, corporate
+ *     intranet, and geo/IP-fenced pages are reachable from here and from
+ *     nowhere else. A server fetch cannot resolve them at all.
+ *   - **No egress.** The page bytes never leave the machine.
+ * The server-side scraper remains correct for anonymous public pages at crawl
+ * scale (rendering pool, rate limiting, caching, retries) — it is not a
+ * substitute for this one, and this one is not a substitute for it.
+ *
  * Runs in the **offscreen document** because:
  *   - Service workers lack `DOMParser` and many DOM APIs.
  *   - The existing `runScrape` pipeline (defuddle / readability / turndown
@@ -136,6 +153,9 @@ export async function fetchUrlAndParse(
   let soup: SoupResult;
   try {
     soup = await runScrape(doc, {
+      // A DOMParser Document has no location — without this the result's `url`
+      // was '' and the SEO audit counted every link on the page as external.
+      baseUrl: finalUrl,
       preferDefuddle: true,
       includeImages: !!options.include_extras,
       includeVideos: !!options.include_extras,

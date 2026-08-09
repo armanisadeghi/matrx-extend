@@ -16,6 +16,25 @@
  *   - structured — clean OpenGraph/Twitter metadata + parsed JSON-LD blocks.
  * See docs/RESEARCH_ENRICHMENT.md §4.
  *
+ * Verified against the live server 2026-08-09 (`research/multisource.py`
+ * `process_extension_content`) — this is still an OVERLAY, not a second parse:
+ *   - `images` → `apply_measured_dimensions(extracted_images, measured_images)`
+ *     merges width/height onto the server's own HTML-parsed images BY EXACT
+ *     `src`. Ours never replaces the server's list.
+ *   - `videos`/`audio` → appended to `extracted_videos`/`extracted_audios` and
+ *     run through the same `classify_resource_url` + `collect_page_resources`
+ *     writer as the HTML-parsed media. Additive only.
+ *   - `structured` → consumed narrowly for `published_at`/`modified_at` and the
+ *     source title/description. The server re-parses JSON-LD from the same HTML
+ *     regardless, so our `jsonLd` is redundant for a static page — it is kept
+ *     because the live DOM is the ONLY place a JS-injected `<script
+ *     type="application/ld+json">` (Next.js/Nuxt hydration) exists at all, which
+ *     is exactly the "what the DOM uniquely knows" case. It is not re-derivation.
+ * Known gap: `_structured_dates` prefers `metadata.published_time` /
+ * `metadata.modified_time` and only falls back to JSON-LD. We send neither —
+ * `article:published_time` is a `property=` meta that does not start with `og:`,
+ * so the filter below drops it. Tracked in docs/KNOWN_ISSUES.md § Research capture.
+ *
  * This INLINES the logic from collectors.ts (collectImages/Videos/Audio/Metadata/
  * JsonLd) into a single `chrome.scripting.executeScript` injection — one
  * round-trip for everything. The inline copy is unavoidable: the injected `func`

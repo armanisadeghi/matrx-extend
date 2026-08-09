@@ -9,6 +9,11 @@ import type { ToolHandler } from '@/lib/tools/types';
  * the same scrape-pipeline output shape the user-facing **Scrape** tab
  * already produces.
  *
+ * The fetch is client-side ON PURPOSE (user's session, user's IP, no egress) —
+ * the full rationale, and why routing this to the server's
+ * `/scraper/quick-scrape` would be a downgrade, is in the header of
+ * `src/lib/scrape/fetch-and-parse.ts`. Read it before changing this.
+ *
  * Cross-working: the actual fetch + parse runs in the offscreen
  * document (SW lacks DOMParser) and reuses
  * `src/lib/scrape/pipeline.ts` — defuddle / readability / turndown /
