@@ -5,6 +5,7 @@ import { MarkdownView } from '@/components/MarkdownView';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DiagnoseCard, DiagnoseLauncher } from '@/features/scrape/DiagnoseCard';
+import { SeoDetails } from '@/features/seo/SeoDetails';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { usePageRecognition } from '@/hooks/use-page-recognition';
 import { usePageScrollSync } from '@/hooks/use-page-scroll-sync';
@@ -22,6 +23,7 @@ import {
 } from '@/lib/scrape/copy-options';
 import { articleToMarkdown } from '@/lib/scrape/to-markdown';
 import type { SeoAudit } from '@/lib/seo/audit';
+import { toStoredSignals } from '@/lib/seo/diff';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/state/auth';
 import { useHighlightStore } from '@/state/highlights';
@@ -881,189 +883,18 @@ function ScrapeTab({
   );
 }
 
+/**
+ * The Scrape tab's SEO panel. Renders through the SHARED `SeoDetails` — this
+ * file used to carry its own near-identical copy (SeoSection / SeoRow /
+ * SeoMetaRow / SeoStat), and the two renderers had already drifted: this one
+ * showed hreflang and og/twitter, the SEO tab showed neither, and NEITHER put a
+ * door on any of the URLs it printed. One component now, so an improvement to
+ * either surface lands on both.
+ */
 function SeoPanel({ seo }: { seo: SeoAudit }) {
   return (
-    <div className="space-y-4 px-3 pb-3">
-      <SeoSection label="Title & description">
-        <SeoRow label="Title" value={seo.title.value || '—'} hint={`${seo.title.length} chars`} />
-        <SeoRow
-          label="Description"
-          value={seo.description.value ?? '—'}
-          hint={`${seo.description.length} chars`}
-        />
-        <SeoRow label="Canonical" value={seo.canonical ?? '—'} mono />
-        <SeoRow label="Robots" value={seo.robots ?? '—'} />
-      </SeoSection>
-
-      {seo.hreflang.length > 0 && (
-        <SeoSection label="Hreflang" hint={String(seo.hreflang.length)}>
-          <div className="space-y-1 text-xs">
-            {seo.hreflang.map((h, i) => (
-              <div key={`${h.lang}-${i}`} className="flex gap-2">
-                <span className="w-12 shrink-0 text-muted-foreground">{h.lang}</span>
-                <span className="truncate font-mono">{h.href}</span>
-              </div>
-            ))}
-          </div>
-        </SeoSection>
-      )}
-
-      <SeoSection label="Open Graph & Twitter">
-        {Object.keys(seo.og).length === 0 && Object.keys(seo.twitter).length === 0 ? (
-          <div className="text-xs text-muted-foreground">No social meta tags.</div>
-        ) : (
-          <div className="space-y-1 text-xs">
-            {Object.entries(seo.og).map(([k, v]) => (
-              <SeoMetaRow key={k} k={k} v={v} />
-            ))}
-            {Object.entries(seo.twitter).map(([k, v]) => (
-              <SeoMetaRow key={k} k={k} v={v} />
-            ))}
-          </div>
-        )}
-      </SeoSection>
-
-      {seo.schema_types.length > 0 && (
-        <SeoSection label="Schema types" hint={String(seo.schema_types.length)}>
-          <div className="flex flex-wrap gap-1">
-            {seo.schema_types.map((t) => (
-              <span
-                key={t}
-                className="rounded-full bg-secondary/40 px-2 py-0.5 text-[10px] font-mono"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        </SeoSection>
-      )}
-
-      <SeoSection label="Headings" hint={String(seo.headings.length)}>
-        <div className="space-y-1 text-xs">
-          {seo.headings.slice(0, 50).map((h, i) => (
-            <div key={`${h.level}-${i}`} className="truncate">
-              <span className="mr-1.5 text-muted-foreground">H{h.level}</span>
-              {h.text}
-            </div>
-          ))}
-          {seo.headings.length > 50 && (
-            <div className="text-[10px] text-muted-foreground">
-              + {seo.headings.length - 50} more
-            </div>
-          )}
-        </div>
-      </SeoSection>
-
-      <SeoSection label="Page stats">
-        <div className="grid grid-cols-3 gap-2">
-          <SeoStat label="Images" value={seo.images.total} />
-          <SeoStat
-            label="Missing alt"
-            value={seo.images.missing_alt}
-            tone={seo.images.missing_alt > 0 ? 'warn' : 'ok'}
-          />
-          <SeoStat label="Words" value={seo.word_count} />
-          <SeoStat label="Internal links" value={seo.links.internal} />
-          <SeoStat label="External links" value={seo.links.external} />
-          <SeoStat label="Flesch" value={seo.flesch_reading_ease ?? '—'} hint="reading ease" />
-        </div>
-      </SeoSection>
-
-      {seo.performance.duration_ms !== null && (
-        <SeoSection label="Performance">
-          <SeoRow
-            label="Load duration"
-            value={seo.performance.duration_ms !== null ? `${seo.performance.duration_ms} ms` : '—'}
-          />
-          {seo.performance.transfer_size_bytes !== null && (
-            <SeoRow
-              label="Transfer size"
-              value={`${Math.round(seo.performance.transfer_size_bytes / 1024)} KB`}
-            />
-          )}
-        </SeoSection>
-      )}
-    </div>
-  );
-}
-
-function SeoSection({
-  label,
-  hint,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <div className="flex items-baseline justify-between px-1">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          {label}
-        </span>
-        {hint && <span className="text-[10px] tabular-nums text-muted-foreground/70">{hint}</span>}
-      </div>
-      <div className="overflow-hidden rounded-xl border bg-card">
-        <div className="divide-y divide-border/60 px-3 py-2 text-sm">{children}</div>
-      </div>
-    </div>
-  );
-}
-
-function SeoRow({
-  label,
-  value,
-  hint,
-  mono = false,
-}: {
-  label: string;
-  value: string;
-  hint?: string;
-  mono?: boolean;
-}) {
-  return (
-    <div className="flex items-baseline justify-between gap-3 py-1">
-      <span className="shrink-0 text-xs text-muted-foreground">{label}</span>
-      <div className="flex min-w-0 items-baseline gap-2">
-        {hint && <span className="shrink-0 text-[10px] text-muted-foreground/70">{hint}</span>}
-        <span className={cn('truncate text-right', mono && 'font-mono text-xs')}>{value}</span>
-      </div>
-    </div>
-  );
-}
-
-function SeoMetaRow({ k, v }: { k: string; v: string }) {
-  return (
-    <div className="flex gap-2">
-      <span className="w-32 shrink-0 truncate font-mono text-muted-foreground">{k}</span>
-      <span className="truncate">{v}</span>
-    </div>
-  );
-}
-
-function SeoStat({
-  label,
-  value,
-  hint,
-  tone = 'neutral',
-}: {
-  label: string;
-  value: number | string;
-  hint?: string;
-  tone?: 'neutral' | 'ok' | 'warn';
-}) {
-  const toneClass =
-    tone === 'warn'
-      ? 'text-amber-600 dark:text-amber-400'
-      : tone === 'ok'
-        ? 'text-emerald-600 dark:text-emerald-400'
-        : '';
-  return (
-    <div className="rounded-lg bg-secondary/40 px-2.5 py-1.5">
-      <div className={cn('text-base font-semibold tabular-nums', toneClass)}>{value}</div>
-      <div className="text-[10px] text-muted-foreground">{label}</div>
-      {hint && <div className="text-[9px] text-muted-foreground/70">{hint}</div>}
+    <div className="px-3 pb-3">
+      <SeoDetails signals={toStoredSignals(seo)} />
     </div>
   );
 }

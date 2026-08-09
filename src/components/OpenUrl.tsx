@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils';
 import { isOpenableUrl } from '@/lib/url/openable';
+import { cn } from '@/lib/utils';
 import { ExternalLink } from 'lucide-react';
 
 /**

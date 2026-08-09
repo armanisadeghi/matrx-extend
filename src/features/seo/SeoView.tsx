@@ -2,6 +2,7 @@ import { CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
 import { AiRecommendations } from '@/features/seo/AiRecommendations';
 import { SeoDetails } from '@/features/seo/SeoDetails';
+import { SeoVerdict } from '@/features/seo/SeoVerdict';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
@@ -17,7 +18,6 @@ import {
 } from '@/lib/seo/diff';
 import { evaluateSeoAudit } from '@/lib/seo/evaluators/from-audit';
 import { seoAuditToText } from '@/lib/seo/to-text';
-import { SeoVerdict } from '@/features/seo/SeoVerdict';
 import { type SeoAuditRow, fetchSeoAuditHistoryForUrl, saveSeoAudit } from '@/lib/supabase/queries';
 import {
   ArrowLeft,

@@ -56,7 +56,7 @@ export function SeoDetails({ signals }: { signals: StoredAuditSignals }) {
 
   const hasSocial = Object.keys(og).length > 0 || Object.keys(twitter).length > 0;
   const hasIntl = Boolean(signals.lang) || hreflang.length > 0;
-  const hasLinks = Boolean(links) && (links!.internal > 0 || links!.external > 0);
+  const hasLinks = links !== null && (links.internal > 0 || links.external > 0);
   const hasReadability =
     (signals.word_count ?? 0) > 0 ||
     (signals.sentence_count ?? 0) > 0 ||
@@ -211,10 +211,7 @@ function SocialPreviewGroup({
   const image = og['og:image'] ?? twitter['twitter:image'];
   const title = og['og:title'] ?? twitter['twitter:title'] ?? signals.title?.value ?? '';
   const description =
-    og['og:description'] ??
-    twitter['twitter:description'] ??
-    signals.description?.value ??
-    '';
+    og['og:description'] ?? twitter['twitter:description'] ?? signals.description?.value ?? '';
   const siteName = og['og:site_name'] ?? twitter['twitter:site'] ?? hostOf(signals.url);
   const target = og['og:url'] ?? signals.url ?? undefined;
 
@@ -337,7 +334,9 @@ function SchemaTypeChip({ type }: { type: string }) {
   const shown = type.replace(/^https?:\/\/(?:www\.)?schema\.org\//i, '');
   if (!href) {
     return (
-      <span className="rounded-full bg-secondary/40 px-2 py-0.5 font-mono text-[10px]">{shown}</span>
+      <span className="rounded-full bg-secondary/40 px-2 py-0.5 font-mono text-[10px]">
+        {shown}
+      </span>
     );
   }
   return (

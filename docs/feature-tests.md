@@ -1811,9 +1811,11 @@ Every entry follows this shape:
   - Step 7: **Open** opens the canonical URL in a NEW tab (middle-click and
     right-click → "Open in new tab" also work — it is a real anchor). The side
     panel never navigates away.
-  - Step 8: a saved snapshot shows the raw sections with NO verdict block. This is
-    deliberate — stored rows never carried og/twitter tags or the HTTP status, so
-    the evaluators would report "no og:title" for a page that has one.
+  - Step 8: a saved snapshot shows every raw section (including social preview and
+    performance — a saved row has always persisted the whole audit) but NO verdict
+    block. That is deliberate: `evaluateSeoAudit` takes a full `SeoAudit`, and a
+    stored row parses to the narrower `StoredAuditSignals`, so it would be judging
+    partial inputs.
 - **Edge cases worth poking:**
   - A page with zero problems: the block collapses to one green "No problems
     found" line and the **Fix all** button is absent.
@@ -1879,6 +1881,66 @@ Every entry follows this shape:
 - **Automated:** `tests/unit/seo-recommendations-request.test.ts` pins the three
   fields aidream requires on a start request (`conversation_id` / `is_new` /
   `store: false`) and that the audit ships whole and untrimmed.
+
+### SEO audit — every collected field is visible (2026-08-09)
+- **What it does:** `runAudit` collects hreflang, `<html lang>`, og + twitter tags,
+  schema.org types, internal/external link counts, sentence count, Flesch reading
+  ease, and navigation timing. All of it was persisted to `extend.wbx_seo_audit`
+  and shipped into agent context, and NONE of it was on screen — the link counts
+  were computed and then thrown away at the render layer. The SEO tab now renders
+  every field, grouped by question rather than by struct, and Copy carries them
+  too. The Scrape tab's SEO panel renders through the same component.
+- **Where to test:** SEO tab (and Scrape tab → **SEO** sub-tab, which must look
+  identical).
+- **Steps — use these specific pages, each one exercises a different group:**
+  1. **Hreflang + lang** → `https://www.airbnb.com/` (ships ~60 `hreflang`
+     alternates) or `https://www.wikipedia.org/`. Look for **International**.
+  2. **Structured data** → `https://www.allrecipes.com/` (any recipe page — JSON-LD
+     `Recipe`, `BreadcrumbList`, `NewsArticle`). Look for **Structured data**.
+  3. **Social preview** → `https://github.com/` or any BBC/Guardian article
+     (`og:title`, `og:image`, `twitter:card`). Look for **Social preview**.
+  4. **Links + readability** → any long article, e.g. `https://en.wikipedia.org/wiki/SEO`.
+  5. **No social tags** → `https://example.com/` (bare page, no og/twitter/schema).
+  6. Click **Copy audit → Summary (text)** on page 1 and on page 5.
+  7. Narrow the side panel to ~360px on page 1.
+- **Expected:**
+  - **International**: the `<html lang>` value, then one row per alternate —
+    `fr`, `x-default`, … — each href a real link that opens in a NEW tab.
+  - **Structured data**: one chip per type. Clicking `Recipe` opens
+    `https://schema.org/Recipe`. A microdata `itemtype` (already a full URL) shows
+    the short name but links to the full value.
+  - **Social preview**: an actual share card — image, site name, title,
+    description, and the `og:url` as a link — followed by the raw tag list, where
+    every URL-valued tag (`og:image`, `og:url`) is clickable.
+  - **Links**: **Internal** and **External** counts. This is the one that was
+    computed and never shown at all.
+  - **Readability**: the Flesch number AND its plain-English band, e.g.
+    `64.2` + "Plain English — 8th–9th grade" (standard Flesch bands), plus word
+    and sentence counts.
+  - **Performance**: HTTP status, navigation type, redirect hops, load duration,
+    transfer size — whichever the browser exposed.
+  - Page 5: the International / Social preview / Structured data sections are
+    **absent entirely** — not present-and-empty, not rows of `—` or `0`.
+  - Step 6: the copied text contains `Page language:`, each `fr: https://…`,
+    `og:title:`, `Structured data (N):`, `Internal links:`, `Sentences:`, and
+    `Flesch reading ease: 64.2 (Plain English — 8th–9th grade)`. On page 5 those
+    headings are absent rather than empty.
+  - Step 7: nothing scrolls horizontally. Long URLs wrap mid-string, the share
+    card image scales to the panel, chips wrap to new rows.
+- **Edge cases worth poking:**
+  - A page whose `og:image` is hotlink-blocked or 404s (common on staging): the
+    card shows a labelled "Preview image failed to load" placeholder, never a
+    broken-image glyph — and it still tells you the tag EXISTS.
+  - A page with `javascript:void(0)` or a relative path in a meta tag: it renders
+    as plain text, NOT as a link that goes nowhere.
+  - Open a **saved snapshot** from the history chip: it shows the same groups. Rows
+    saved before a field existed simply omit that group.
+  - Scrape tab → SEO sub-tab on the same page: byte-for-byte the same sections.
+    They are one component; if they differ, the duplicate has been reintroduced.
+- **Automated:** `tests/unit/seo-display-fields.test.ts` pins the standard Flesch
+  bands (including the inclusive-low boundaries and the out-of-0-100 tails), the
+  openable-URL / schema.org door rules, and that `seoAuditToText` emits every field
+  and omits empty groups.
 
 ### Stream — provider retry (no false "connection lost")
 - **What it does:** when the upstream LLM provider rate-limits or 5xx's, the server
