@@ -679,7 +679,29 @@ Every entry follows this shape:
 - **Edge cases worth poking:**
   - Offline / signed-out: local save still works; cloud push silently no-ops and the item stays local (best-effort, never blocks the UI).
   - Last-write-wins: edit the same item on two machines — the newer `updated_at` wins on next hydrate; local-only (not-yet-pushed) items are never deleted by a hydrate.
-  - `demo_ref`: the pointer syncs but the recorded demo body does NOT yet — on a fresh machine the demo lists but `replay_demo` fails until demo bodies sync (tracked in docs/KNOWN_ISSUES.md).
+  - `demo_ref`: the pointer AND the recorded body both sync now — see the next entry for the cross-machine replay test.
+
+---
+
+### Demo body cloud sync (TASK-004 follow-up)
+- **What it does:** The recorded demo itself (full step list + selector chains + parameters) syncs through `extend.wbx_demo`, not just the guidance `demo_ref` pointer. Before this, a synced ref listed on a fresh machine and then `replay_demo` failed — a saved workflow that did not exist. Same pattern as guidance: mirror-on-save, tombstone-on-delete, hydrate cloud→local last-write-wins on sign-in, plus an on-miss repair that pulls one demo when a ref is opened before the hydrate ran.
+- **Where to test:** Side panel → **Guidance** tab, and the **Tools** tab (`replay_demo`). Genuinely cross-machine — this is the whole point.
+- **Prereq:** `migrations/2026_08_09_wbx_demo.sql` applied to `txzxabzwovsujtloxrus` (`pnpm check:migrations` is quiet).
+- **Steps:**
+  1. **Machine A**, signed in: Guidance tab → Add → record a demo on any site (a few clicks + a type). Save it with a name.
+  2. Confirm the cloud write — SW console logs `demo synced to cloud id=demo_… steps=N`.
+  3. **Machine B**, same account, signed in: open the side panel and let it hydrate. SW console logs `demos hydrated from cloud — merged N demo(s)`.
+  4. Guidance tab on machine B: the demo appears with its step count and a **Replay…** button (no "steps aren't on this machine" notice).
+  5. Click **Replay… → Run replay** on the recorded site. Also run `replay_demo({demo_id})` from the Tools tab.
+- **Expected:**
+  - Replay actually RUNS on machine B and reports `steps_succeeded/steps_attempted` — it does not fail with "no demo with id=…".
+  - `describe_demo` on machine B returns the full step list.
+  - Deleting the demo on either machine tombstones the row; the other machine drops it on next hydrate.
+- **Edge cases worth poking:**
+  - **Signed out / offline on machine B:** the ref may be present with no body. The Guidance preview must say *"The recorded steps for this demo aren't on this machine…"* instead of offering Replay, and `replay_demo` must return `{ok:false, error:'demo_body_unavailable'}` — distinct from `{error:'demo_not_found'}` for a genuinely bogus id. Verify both codes.
+  - **Ref before body:** delete only the local `matrx.demos.<id>` key (keep the guidance ref), reload, open the item → it repairs itself from the cloud (`demo body repaired from cloud id=…`).
+  - **Last-write-wins:** re-record/rename the same demo id on machine A; machine B picks up the newer copy on next hydrate. A locally newer demo is never clobbered by an older cloud copy.
+  - **Agent-recorded demos** (`record_demo` with no guidance ref) sync too — the hook is at the storage layer.
 
 ---
 

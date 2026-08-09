@@ -9,8 +9,8 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { getDemoOrHydrate } from '@/lib/demos/cloud-sync';
 import { replayDemo } from '@/lib/demos/replayer';
-import { getDemo } from '@/lib/demos/storage';
 import type { Demo } from '@/lib/demos/types';
 import { getGuidanceItem, saveGuidanceItem } from '@/lib/guidance/storage';
 import type { GuidanceItem } from '@/lib/guidance/types';
@@ -227,12 +227,26 @@ function GifPreview({ item }: { item: Extract<GuidanceItem, { kind: 'gif' }> }) 
 
 function DemoPreview({ item }: { item: Extract<GuidanceItem, { kind: 'demo_ref' }> }) {
   const [demo, setDemo] = useState<Demo | null>(null);
+  // A demo_ref is a POINTER. Its body syncs through extend.wbx_demo, but a
+  // machine that just signed in (or is signed out) can hold the ref without
+  // the body. Say so plainly rather than offering a Replay button that fails.
+  const [bodyMissing, setBodyMissing] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<string | null>(null);
 
   useEffect(() => {
-    void getDemo(item.demo_id).then(setDemo);
+    let cancelled = false;
+    setBodyMissing(false);
+    setDemo(null);
+    void getDemoOrHydrate(item.demo_id).then((d) => {
+      if (cancelled) return;
+      setDemo(d);
+      setBodyMissing(d === null);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [item.demo_id]);
 
   const handleReplay = useCallback(async () => {
@@ -264,7 +278,12 @@ function DemoPreview({ item }: { item: Extract<GuidanceItem, { kind: 'demo_ref' 
           {item.parameter_names.length > 0 && <> · params: {item.parameter_names.join(', ')}</>}
         </div>
       </div>
-      {confirming ? (
+      {bodyMissing ? (
+        <div className="rounded border border-amber-600/40 bg-amber-50/40 p-2 text-[11px] dark:bg-amber-900/10">
+          The recorded steps for this demo aren't on this machine. Sign in to sync demos across
+          machines, or re-record it here. Replay is unavailable until then.
+        </div>
+      ) : confirming ? (
         <div className="rounded border border-amber-600/40 bg-amber-50/40 p-2 text-[11px] dark:bg-amber-900/10">
           <p className="mb-1.5">
             Replaying will execute every step against the active tab. The demo can click, type, and

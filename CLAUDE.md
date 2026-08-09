@@ -416,8 +416,14 @@ discovery handler).
   `deleteGuidanceItem` best-effort mirrors to the cloud
   ([src/lib/guidance/cloud-sync.ts](./src/lib/guidance/cloud-sync.ts)); a
   sign-in hydration ([src/hooks/use-guidance-sync.ts](./src/hooks/use-guidance-sync.ts))
-  merges cloud→local last-write-wins. Caveat: `demo_ref` bodies don't sync yet
-  — see [docs/KNOWN_ISSUES.md](./docs/KNOWN_ISSUES.md).
+  merges cloud→local last-write-wins. **Demo bodies sync too (2026-08-09):** a
+  `demo_ref` is only a pointer, so the recorded demo itself travels through
+  `extend.wbx_demo` ([src/lib/demos/cloud-sync.ts](./src/lib/demos/cloud-sync.ts))
+  and hydrates in the same sign-in pass — plus an on-miss repair so a ref opened
+  before the hydrate pulls its own body. When a body genuinely isn't reachable
+  (signed out), the Guidance preview says so and `replay_demo` returns
+  `error: 'demo_body_unavailable'` (distinct from `demo_not_found`), never a
+  silent failure.
 - **SEO** — audit + AI recommendations
 - **Notes** — list / search / folder picker / editor for user-authored
   notes (separate from guidance — notes are general personal text;

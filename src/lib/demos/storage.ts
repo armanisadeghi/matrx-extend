@@ -9,6 +9,14 @@
  * JSON blob) while big demos with hundreds of steps don't bloat every
  * read.
  *
+ * Every mutation also best-effort mirrors to `extend.wbx_demo` so demo BODIES
+ * follow the user across machines — a synced guidance `demo_ref` whose body
+ * stayed on one laptop used to list fine and then fail to replay. See
+ * src/lib/demos/cloud-sync.ts. The cloud call is fire-and-forget; connectivity
+ * loss never blocks the local write. Pass `{ sync: false }` to write the local
+ * cache only (the cloud→local hydration uses this so a merge doesn't echo
+ * straight back to the cloud).
+ *
  * 📝 Notes:
  *    .research/demo-system-design-notes.md
  */
@@ -35,7 +43,7 @@ export async function getDemo(id: string): Promise<Demo | null> {
   return demo ? (demo as Demo) : null;
 }
 
-export async function saveDemo(demo: Demo): Promise<void> {
+export async function saveDemo(demo: Demo, opts?: { sync?: boolean }): Promise<void> {
   const summary: DemoSummary = {
     id: demo.id,
     name: demo.name,
@@ -54,11 +62,20 @@ export async function saveDemo(demo: Demo): Promise<void> {
     [LIST_KEY]: list,
     [demoKey(demo.id)]: demo,
   });
+  if (opts?.sync !== false) {
+    void import('@/lib/demos/cloud-sync').then((m) => m.pushDemoToCloud(demo));
+  }
 }
 
-export async function deleteDemo(id: string): Promise<boolean> {
+export async function deleteDemo(id: string, opts?: { sync?: boolean }): Promise<boolean> {
   const list = await listDemos();
   const next = list.filter((d) => d.id !== id);
+  // Tombstone the cloud row even when the local index has already forgotten
+  // this demo — otherwise a delete on the machine that hydrated it second
+  // would never propagate.
+  if (opts?.sync !== false) {
+    void import('@/lib/demos/cloud-sync').then((m) => m.removeDemoFromCloud(id));
+  }
   if (next.length === list.length) return false;
   await chrome.storage.local.set({ [LIST_KEY]: next });
   await chrome.storage.local.remove([demoKey(id)]);

@@ -62,6 +62,7 @@ export const TABLE_SCHEMA = {
   wbx_recipe: 'extend',
   wbx_capture: 'extend',
   wbx_guidance: 'extend',
+  wbx_demo: 'extend',
   wbx_screenshot: 'extend',
   wbx_seo_audit: 'extend',
   wbx_highlight: 'extend',

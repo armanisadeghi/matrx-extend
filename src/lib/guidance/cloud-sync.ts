@@ -16,10 +16,10 @@
  * the storage layer are dynamic so this module stays cheap for callers that
  * only need the pure mappers.
  *
- * Known limitation: `demo_ref` items sync their POINTER, but the underlying
- * recorded demo (chrome.storage.local `matrx.demos.{id}`) is not yet
- * cloud-synced — on a fresh machine a demo_ref will list but replay will fail
- * until demo bodies sync too. Tracked in docs/KNOWN_ISSUES.md.
+ * A `demo_ref` item syncs only the POINTER — the recorded demo BODY travels
+ * separately through `extend.wbx_demo` (src/lib/demos/cloud-sync.ts), which
+ * hydrates in the same sign-in pass. Keep them paired: a ref without its body
+ * is a listed workflow that cannot replay.
  */
 
 import { log } from '@/lib/debug/log';

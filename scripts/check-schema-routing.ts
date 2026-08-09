@@ -37,6 +37,7 @@ const MOVED_TABLES: Record<string, string> = {
   wbx_recipe: 'extend',
   wbx_capture: 'extend',
   wbx_guidance: 'extend',
+  wbx_demo: 'extend',
   wbx_screenshot: 'extend',
   wbx_seo_audit: 'extend',
   wbx_highlight: 'extend',

@@ -5,8 +5,8 @@ import {
   stopRecording,
 } from '@/lib/demos/recorder';
 import { replayDemo } from '@/lib/demos/replayer';
+import { getDemoOrHydrate } from '@/lib/demos/cloud-sync';
 import {
-  getDemo,
   listDemos,
   makeDemoId,
   saveDemo,
@@ -31,11 +31,54 @@ import type { ToolHandler, ToolTier } from '@/lib/tools/types';
  *     (clicks, types, submits, navigations) automatically; this can
  *     trigger purchases, sends, deletes. Always confirm.
  *
+ * Body lookups go through `getDemoOrHydrate`, never `getDemo`: demo bodies sync
+ * through `extend.wbx_demo`, and a body can be absent locally on a machine that
+ * has the guidance `demo_ref` but hasn't hydrated yet. That path repairs from
+ * the cloud first and only then reports `demo_body_unavailable` — a distinct
+ * code from `demo_not_found`, so the agent can tell "this demo lives on another
+ * machine and you're signed out" from "no such demo".
+ *
  * 📝 Notes:
  *    .research/proposed-tools-and-features.md (item #1)
  *    .research/demo-system-design-notes.md
  */
 import { z } from 'zod';
+
+/**
+ * Structured "couldn't load the body" envelope. Two distinct codes because they
+ * mean different things to the agent: `demo_not_found` is a bad id;
+ * `demo_body_unavailable` means the demo genuinely exists (a guidance
+ * `demo_ref` or the local index points at it) but its body isn't here and
+ * couldn't be pulled — sign in, or open the machine that recorded it.
+ */
+async function demoMissingResult(demoId: string): Promise<{
+  ok: false;
+  error: 'demo_not_found' | 'demo_body_unavailable';
+  demo_id: string;
+  reason: string;
+}> {
+  const [{ listAllGuidance }, summaries] = await Promise.all([
+    import('@/lib/guidance/storage'),
+    listDemos(),
+  ]);
+  const known =
+    summaries.some((d) => d.id === demoId) ||
+    (await listAllGuidance()).some((g) => g.demo_id === demoId);
+  return known
+    ? {
+        ok: false,
+        error: 'demo_body_unavailable',
+        demo_id: demoId,
+        reason:
+          'This demo is referenced here but its recorded steps are not on this machine and could not be fetched. Sign in to sync demos, or re-record it on this machine.',
+      }
+    : {
+        ok: false,
+        error: 'demo_not_found',
+        demo_id: demoId,
+        reason: `No demo with id=${demoId}`,
+      };
+}
 
 // ─── record_demo ───────────────────────────────────────────────────────────
 const ParameterDefSchema = z.object({
@@ -174,8 +217,8 @@ export const describe_demo: ToolHandler<DescribeDemoArgs, unknown> = {
   tier: 'read',
   argsSchema: DescribeDemoArgs,
   run: async (args) => {
-    const demo = await getDemo(args.demo_id);
-    if (!demo) return { ok: false, reason: `No demo with id=${args.demo_id}` };
+    const demo = await getDemoOrHydrate(args.demo_id);
+    if (!demo) return demoMissingResult(args.demo_id);
     // Strip any non-sensitive `input_text` to readable previews; keep
     // sensitive ones empty (they should always be parameterised at replay).
     const safeSteps = demo.steps.map((s) => ({
@@ -203,8 +246,8 @@ export const replay_demo: ToolHandler<ReplayDemoArgs, unknown> = {
   tier: 'privileged',
   argsSchema: ReplayDemoArgs,
   run: async (args) => {
-    const demo = await getDemo(args.demo_id);
-    if (!demo) return { ok: false, reason: `No demo with id=${args.demo_id}` };
+    const demo = await getDemoOrHydrate(args.demo_id);
+    if (!demo) return demoMissingResult(args.demo_id);
     const result = await replayDemo({
       demo,
       ...(args.tab_id !== undefined && { tabId: args.tab_id }),

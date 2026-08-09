@@ -9,15 +9,6 @@ short and actionable; delete an entry when it's fixed (git history keeps the rec
 
 ---
 
-## Cloud sync
-
-- **Guidance `demo_ref` bodies don't sync (TASK-004 follow-up).** `wbx_guidance`
-  syncs guidance metadata across machines, but a `demo_ref` only carries the
-  POINTER — the recorded demo itself lives local-only in `chrome.storage.local`
-  (`matrx.demos.{id}`). On a fresh machine a synced `demo_ref` will list but
-  `replay_demo` fails until demo bodies sync too. Next step: a `wbx_demo` table
-  (or fold demos into guidance `data`) so demos travel with their refs.
-
 ## Context bundle optimization (backlog)
 
 From [context-bloat-findings.md](./context-bloat-findings.md), items #1–8 documented
