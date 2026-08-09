@@ -1,28 +1,16 @@
 # Surface integration — to-do list for matrx-frontend and matrx-local
 
-> **Schema rename note (2026-05-27).** This doc was written against the
-> pre-refactor schema. aidream's clean-break refactor renamed every
-> `tl_*` table — the *concepts* below (executor binding, surface gates,
-> drift check) are unchanged but the **names and shapes moved**. See
-> [/Users/armanisadeghi/code/aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md)
-> for the authoritative current schema. Key translations:
-> - `public.tl_executor` → `public.tool_binding` (pure
->   `(tool_id, executor_name, is_active)` — no more `function_path`,
->   `source_app`, `delegated`, `priority`, `auto_load`).
-> - `public.tl_def_surface` → DROPPED, replaced by per-surface
->   `tool_surface_defaults.always_include_tools` / `never_include_tools`
->   string arrays on a `ui_surface`-keyed row.
-> - `surface='server:matrx_ai'` / `surface='matrx-extend.browser'` →
->   `executor_name='matrx-ai-core'` / `executor_name='chrome-extension'`.
-> - `source_app` column is gone — claim a tool by inserting a
->   `tool_binding` row, not by setting a column on `tool_def`.
-> - The "concretizer" / "executor binding" language matches the new
->   shape exactly: `tool_binding` IS the binding.
->
-> The SQL templates in the body need to be rewritten to the new tables
-> before re-use; the conceptual checklist is still valid.
+> **Every SQL statement in this doc was executed against the live database
+> (Supabase project `txzxabzwovsujtloxrus`, Matrx Main) on 2026-08-09.**
+> Reads were run as-is; writes were run inside a rolled-back transaction so
+> they proved out against the real constraints, triggers, and foreign keys
+> without persisting. Row counts quoted in the prose are from that same run —
+> re-run the inventory queries before acting, they move.
 
-> Per [TOOL_ROUTING_RULES.md](https://github.com/) the DB is canonical. Each
+> Per aidream's authoritative
+> [tool_system_rules.md](../../aidream/docs/official/tool_system_rules.md)
+> (referred to elsewhere in this repo as "TOOL_ROUTING_RULES.md" — there is no
+> such file; that is the doc) the DB is canonical. Each
 > surface declares its tool set + executor bindings in the DB, then
 > validates its local code against that declaration on every release.
 > matrx-extend completed its migration in May 2026. The other two
@@ -39,78 +27,253 @@
 > - [REQUEST_PAYLOAD_CONTRACT.md](./REQUEST_PAYLOAD_CONTRACT.md) — wire shape
 >   for every chat send.
 > - [CROSS_REPO_INTEGRATION.md](./CROSS_REPO_INTEGRATION.md) — repo topology.
+> - Cross-repo system-of-record for the registry schema:
+>   `/Users/armanisadeghi/code/common-docs/systems/tool-registry/FEATURE.md`.
+>   Master reference (aidream owns the schema):
+>   [CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md).
 
 ---
 
 ## 0. Shared invariants (both surfaces read this first)
 
+### 0.1 — The four tables, and where they actually live
+
+The registry went through **two** renames. Both are already applied; there is
+no shim for either, and a reference to any retired name fails immediately —
+`PGRST205` from PostgREST, `relation does not exist` from SQL.
+
+| What you may have read | What it is now |
+|---|---|
+| `public.tl_def` → `public.tool_def` | **`tool.definition`** |
+| `public.tl_executor` (M2M) → `public.tool_binding` | **`tool.binding`** |
+| `public.tl_executor_kind` → `public.tool_executor` | **`tool.executor`** |
+| `public.tl_def_surface` (dropped) → `public.tool_surface_defaults` | **`tool.surface_defaults`** |
+| `public.surfaces` | **`ui.ui_surface`** |
+
+Two moves happened: the 2026-05-27 clean-break refactor renamed `tl_*` → `tool_*`,
+and the 2026-06 schema split moved them out of `public` into the `tool` schema and
+dropped the now-redundant `tool_` prefix from each table name. Only the second
+column of that table is real today.
+
+Also gone as concepts, not just as names: **`source_app` is not a column on
+anything.** Ownership of a tool by a surface is a row in `tool.binding`, nothing
+else. So are `function_path`, `delegated`, `priority`, and `auto_load` — the
+binding is a pure `(tool_id, executor_name, is_active)` join with no flags.
+
+**Direct SQL callers** (migrations, `psql`, the Supabase SQL editor) write the
+schema-qualified name: `tool.definition`, `tool.binding`, `tool.surface_defaults`,
+`ui.ui_surface`. Every statement in this doc is written that way.
+
+**Client callers** (supabase-js / PostgREST) must select the schema explicitly —
+PostgREST resolves an unqualified `.from('x')` against `public` only, and the
+failure is a runtime `PGRST205` that no typecheck or build can see. In this repo
+that goes through the one accessor map,
+[`src/lib/supabase/schemas.ts`](../src/lib/supabase/schemas.ts) — never a
+hand-written `.schema('tool')`:
+
+```ts
+import { toolDb } from '@/lib/supabase/schemas';
+
+const { data } = await toolDb()
+  .from('binding')                       // → tool.binding
+  .select('tool_id, executor_name, is_active')
+  .eq('executor_name', 'chrome-extension');
+```
+
+Over raw REST the equivalent is the `Accept-Profile: tool` header against
+`/rest/v1/binding` — which is what
+[`scripts/check-tool-db-drift.ts`](../scripts/check-tool-db-drift.ts) does. The
+anon/publishable key can **read** all four tables (verified: HTTP 200 on
+`definition`, `binding`, `surface_defaults`, and `ui_surface`); it cannot write
+them. Registry writes are DDL/DML from a repo with real DB credentials.
+
+### 0.2 — Executor names are a closed, canonical set
+
+`tool.binding.executor_name` is a foreign key to `tool.executor.name`. You cannot
+invent one in an INSERT; you register the executor first. The non-MCP executors
+today are:
+
+`matrx-ai-core` · `aidream` · `chrome-extension` · `matrx-local` · `matrx-user`
+(plus one `mcp.<slug>` per connected MCP server)
+
+Sub-executors use dot notation (`chrome-extension.pilot`) and inherit the
+parent's bindings — which is why every query below matches
+`= 'x' OR LIKE 'x.%'` rather than a bare equality.
+
+**There is no `matrx-frontend` executor and there will not be one.** The Next.js
+client is `matrx-user`. See §1.
+
+### 0.3 — Everything else
+
 - **The DB tool registry is the source of truth.** You don't tell the server
-  what tools you have on every request — you declare them in
-  `public.tl_def` + `public.tl_executor` once, and the server caches the
-  manifest from there. Amendments (per-request overrides) are an escape
-  hatch logged loudly, not a maintenance pattern.
+  what tools you have on every request — you declare them in `tool.definition`
+  + `tool.binding` once, and the server caches the manifest from there.
+  Amendments (per-request overrides) are an escape hatch logged loudly, not a
+  maintenance pattern.
 - **One name → one definition, forever.** If a capability exists under a
   canonical name (e.g. `clipboard`, `navigate`, `read_page`), you bind your
   executor to that name. You don't make up `myapp_clipboard`.
+- **Two independent gates.** A binding says *you can run it*;
+  `tool.surface_defaults.always_include_tools` says *the model gets offered it
+  on this surface*. Both are required. A tool with a binding but no surface
+  inclusion is silently invisible — that is the single most common integration
+  failure, and §1.6 has the query that catches it.
 - **Categories are pure UX.** They affect Tools-tab grouping and discovery
-  helpers, never routing. The current 14 categories are: `core`, `reading`,
+  helpers, never routing. matrx-extend's 14 categories are: `core`, `reading`,
   `interaction`, `tabs`, `capture`, `chrome`, `human`, `memory`, `ai`,
   `demos`, `guidance`, `devtools`, `webmcp`, `desktop`.
+- **Retire, don't delete.** Flip `tool.binding.is_active = false`. The 115
+  retired matrx-local bindings (§2) are exactly this — history the registry
+  keeps.
 - **A drift-check script is mandatory.** Every surface team maintains a
-  script that compares local code against `tl_def` + `tl_executor` +
-  `tl_def_surface` and fails the release on divergence. matrx-extend's lives
-  at [`scripts/check-tool-db-drift.ts`](../scripts/check-tool-db-drift.ts) —
+  script that compares local code against `tool.definition` + `tool.binding` +
+  `tool.surface_defaults` and reports divergence loudly on release.
+  matrx-extend's lives at
+  [`scripts/check-tool-db-drift.ts`](../scripts/check-tool-db-drift.ts) —
   copy the pattern.
 
 ---
 
-## 1. matrx-frontend (Next.js admin UI)
+## 1. matrx-frontend (Next.js) — executor `matrx-user`
 
-Status today: **no rows in `public.surfaces`, no rows in `public.tl_executor`,
-no handlers in code.** Starting from zero. The capabilities to bring online
-are the **UI-first tools** — they're surface-agnostic and run as React state +
-Supabase reads/writes.
+**Status is no longer zero.** The Next.js client registered as the `matrx-user`
+executor: **132 rows** in `ui.ui_surface` with `client_name = 'matrx-user'`,
+**6 active bindings**, and a populated `matrx-user/chat` surface-defaults row.
+The remaining work is per-surface coverage and a drift script, not bootstrap.
 
-### 1.1 — Register the surface
-
-One row in `public.surfaces` (or whatever the canonical surface registry is —
-in practice the surface name is what `tl_executor.surface` references):
-
-| field | value |
-|---|---|
-| `surface` (in tl_executor.surface) | `matrx-frontend.web` |
-| `source_app` | `matrx-frontend` |
-
-### 1.2 — Add executor bindings for the UI-first tools
-
-Six tools to claim. Insert one row per tool in `public.tl_executor`:
-
-| tool name | tier | auto_load | delegated | notes |
-|---|---|---|---|---|
-| `user` | ask-user | true | true | The six-mode ask card (confirm/choice/choice_many/text/secret/notify). |
-| `update_plan` | ask-user | true | true | Plan-propose-and-approve. |
-| `request_user_takeover` | ask-user | false | true | Hand control to the user. Lower auto_load — niche. |
-| `tasks` | action | true | true | Agent's per-conversation tasklist. |
-| `user_todos` | action | true | true | Items agent assigns to the user. |
-| `scratchpad` | read | true | true | Session-scoped kv. |
-
-SQL skeleton:
+Confirm the live state before planning anything:
 
 ```sql
-INSERT INTO public.tl_executor
-  (tool_id, surface, function_path, source_app, delegated, priority, is_active, auto_load)
-SELECT d.id, 'matrx-frontend.web', '', 'matrx-frontend', true, 50, true,
-       CASE WHEN d.name IN ('user','update_plan','tasks','user_todos','scratchpad') THEN true ELSE false END
-FROM public.tl_def d
-WHERE d.name IN ('user','update_plan','request_user_takeover','tasks','user_todos','scratchpad');
+-- Which surfaces this client owns, and which have a tool-defaults row.
+SELECT s.name AS surface_name,
+       s.executor_name,
+       s.parent_surface_name,
+       s.execution_mode,
+       (sd.surface_name IS NOT NULL) AS has_tool_defaults
+FROM ui.ui_surface s
+LEFT JOIN tool.surface_defaults sd ON sd.surface_name = s.name
+WHERE s.client_name = 'matrx-user'
+ORDER BY s.name;
 ```
 
-### 1.3 — Add surface gates
+Only **2 of those 132 surfaces** have a `tool.surface_defaults` row today
+(`matrx-user/chat`, `matrx-user/transcript-scribe`). Surfaces with no row of
+their own inherit down the `parent_surface_name` chain — which is the intended
+design, not a gap. Add a row only for a surface that needs to differ from its
+parent.
 
-If matrx-frontend has a sub-surface concept like matrx-extend's
-`chrome-extension/assistant` vs `chrome-extension/pilot`, register the gates
-in `public.tl_def_surface`. If matrx-frontend is one surface, skip this
-step (gates default to "available").
+### 1.1 — Register a surface
+
+`tool.surface_defaults.surface_name` is a foreign key to `ui.ui_surface.name`,
+so the surface row must exist first. Existing rows use the
+`<client>/<panel>` naming convention and parent to `matrx-default/default`:
+
+```sql
+INSERT INTO ui.ui_surface
+  (name, client_name, executor_name, parent_surface_name, execution_mode, description)
+VALUES
+  ('matrx-user/example-panel', 'matrx-user', 'matrx-user',
+   'matrx-default/default', 'python-stream', 'Example panel')
+ON CONFLICT (name) DO NOTHING;
+
+INSERT INTO tool.surface_defaults (surface_name, always_include_tools)
+VALUES ('matrx-user/example-panel', ARRAY['user','update_plan'])
+ON CONFLICT (surface_name) DO NOTHING;
+```
+
+### 1.2 — Executor bindings for the UI-first tools
+
+These six are **already bound and active** for `matrx-user`:
+
+| tool name | tier | category | notes |
+|---|---|---|---|
+| `user` | ask-user | human | The six-mode ask card (confirm/choice/choice_many/text/secret/notify). |
+| `update_plan` | ask-user | human | Plan-propose-and-approve. |
+| `request_user_takeover` | ask-user | human | Hand control to the user. |
+| `user_todos` | action | human | Items the agent assigns to the user. |
+| `scratchpad` | read | memory | Session-scoped kv. |
+| `storage` | privileged | memory | Persistent kv. |
+
+`tasks` and `memory` are advertised on `matrx-user/chat` but deliberately have
+**no** `matrx-user` binding — both execute server-side on `matrx-ai-core`
+(`tasks` writes `chat.agent_task`). That is correct, and §1.6's query is written
+to expect it.
+
+Verify:
+
+```sql
+SELECT d.name, d.tier, d.category, d.admin_only, b.executor_name, b.is_active
+FROM tool.binding b
+JOIN tool.definition d ON d.id = b.tool_id
+WHERE b.executor_name = 'matrx-user'
+   OR b.executor_name LIKE 'matrx-user.%'
+ORDER BY d.name;
+```
+
+Claiming further tools is an insert against the pure join — no `surface`, no
+`source_app`, no `function_path`, no `priority`, no `auto_load`. The primary key
+is `(tool_id, executor_name)`, so the upsert is re-runnable and doubles as an
+un-retire:
+
+```sql
+INSERT INTO tool.binding (tool_id, executor_name, is_active)
+SELECT d.id, 'matrx-user', true
+FROM tool.definition d
+WHERE d.name IN ('user','update_plan','request_user_takeover',
+                 'tasks','user_todos','scratchpad')
+ON CONFLICT (tool_id, executor_name)
+DO UPDATE SET is_active = true, updated_at = now();
+```
+
+Retiring one is a flag flip, never a `DELETE`:
+
+```sql
+UPDATE tool.binding b
+SET is_active = false, updated_at = now()
+FROM tool.definition d
+WHERE d.id = b.tool_id
+  AND b.executor_name = 'matrx-user'
+  AND d.name = 'scratchpad';
+```
+
+### 1.3 — Surface inclusion (the second gate)
+
+A binding alone advertises nothing. The discovery handler reads
+`always_include_tools`:
+
+```sql
+SELECT surface_name, always_include_tools, always_include_bundles, never_include_tools
+FROM tool.surface_defaults
+WHERE surface_name = 'matrx-user/chat';
+```
+
+Live today: `{memory, request_user_takeover, scratchpad, storage, tasks,
+update_plan, user, user_todos}`.
+
+Add to it idempotently (the sort keeps diffs readable and the `DISTINCT` makes
+re-runs harmless):
+
+```sql
+UPDATE tool.surface_defaults
+SET always_include_tools = ARRAY(
+      SELECT DISTINCT unnest(always_include_tools || ARRAY['user','update_plan'])
+      ORDER BY 1
+    ),
+    updated_at = now()
+WHERE surface_name = 'matrx-user/chat';
+```
+
+Remove one:
+
+```sql
+UPDATE tool.surface_defaults
+SET always_include_tools = array_remove(always_include_tools, 'storage'),
+    updated_at = now()
+WHERE surface_name = 'matrx-user/chat';
+```
+
+`never_include_tools` is the subtractive counterpart, used to suppress something
+a parent surface includes.
 
 ### 1.4 — Code: implement the handlers
 
@@ -124,9 +287,10 @@ Each tool needs:
   `update_plan` / `user` / `request_user_takeover` it builds a pending-card
   request and awaits a user click; for `tasks` / `user_todos` / `scratchpad`
   it's a CRUD call against Supabase (recommended) or React state.
-- **Storage layer** — Supabase table per concept (suggested):
+- **Storage layer** — `tasks` already has a canonical home in `chat.agent_task`
+  (written server-side by the `tasks` mega-tool); read and edit that table
+  rather than inventing a parallel one. For the rest, a table per concept:
   - `cx_plan(conversation_id PK, title, steps[], reasoning, domains[], status, created_at, updated_at)`
-  - `cx_task(id PK, conversation_id, title, status, note, order, created_by, created_at, updated_at)`
   - `cx_user_todo(id PK, conversation_id, title, context, due, done, done_at, created_at)`
   - `scratchpad` is session-scoped → `sessionStorage` or React context, no DB.
 - **Pending-request inbox** — zustand store with `pendingAsks[]`, filtered
@@ -142,8 +306,8 @@ Each tool needs:
 
 ### 1.5 — Context injection
 
-Every chat send POSTs `client.state['matrx-frontend.web']` (or whatever
-namespace you adopt). Mirror matrx-extend's
+Every chat send POSTs `client.state[...]` under the surface's own namespace.
+Mirror matrx-extend's
 [`src/lib/chat/context/v2-bundled.ts`](../src/lib/chat/context/v2-bundled.ts)
 for the three per-conversation slices when populated:
 
@@ -152,23 +316,65 @@ for the three per-conversation slices when populated:
 - `task_list` — `[{id, title, status, note}]` when ≥1 task.
 - `user_todos` — `{open: [...], recent_done: [up to 5]}` when ≥1 todo.
 
-These ride the request payload, not the tl_def manifest. The model sees
-them every turn alongside whatever else the surface ships.
+These ride the request payload, not the registry. The model sees them every turn
+alongside whatever else the surface ships.
 
 ### 1.6 — Drift check script
 
 Mirror [`scripts/check-tool-db-drift.ts`](../scripts/check-tool-db-drift.ts).
-On every release, fail loudly if:
+On every release, report loudly if:
 
-- A canonical name in your local registry has no row in `tl_def`
-- A canonical name in `tl_def` for `surface='matrx-frontend.web'` has no
-  handler in code
-- A handler's Zod schema diverges from `tl_def.parameters` (description,
-  type, enum, required)
-- A tool has no `tl_executor` row for your surface
-- (When applicable) a gate is missing or orphaned
+- A canonical name in your local registry has no row in `tool.definition`
+- A tool advertised by one of your surfaces has no handler in code
+- A handler's Zod schema diverges from `tool.definition.parameters` (fields,
+  types, `required`, enum members, defaults)
+- A tool you implement has no active `tool.binding` row for your executor
+- A tool you implement is in no surface's `always_include_tools`
 
-Wire it into your release pipeline. Treat warnings as bugs.
+The last two are the ones the SQL can answer directly. **Advertised but not
+runnable** — the failure that looks like a permissions bug:
+
+```sql
+SELECT t AS tool_name
+FROM tool.surface_defaults sd
+CROSS JOIN LATERAL unnest(sd.always_include_tools) AS t
+WHERE sd.surface_name = 'matrx-user/chat'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM tool.definition d
+    JOIN tool.binding b ON b.tool_id = d.id
+    WHERE d.name = t
+      AND d.is_active
+      AND b.is_active
+      AND (b.executor_name = 'matrx-user' OR b.executor_name LIKE 'matrx-user.%')
+  )
+ORDER BY 1;
+```
+
+Returns `memory` and `tasks` today — both expected (server-executed on
+`matrx-ai-core`). Allow-list those two; anything else is a real defect.
+
+**Runnable but never offered** — the silently-dead tool:
+
+```sql
+SELECT d.name
+FROM tool.binding b
+JOIN tool.definition d ON d.id = b.tool_id
+WHERE b.is_active
+  AND d.is_active
+  AND (b.executor_name = 'matrx-user' OR b.executor_name LIKE 'matrx-user.%')
+  AND NOT EXISTS (
+    SELECT 1 FROM tool.surface_defaults sd
+    WHERE sd.is_active
+      AND sd.surface_name LIKE 'matrx-user/%'
+      AND d.name = ANY(sd.always_include_tools)
+  )
+ORDER BY 1;
+```
+
+Returns zero rows today. Keep it that way.
+
+Wire both into your release pipeline. Treat warnings as bugs.
 
 ### 1.7 — The `user` tool card — exact layout to implement
 
@@ -207,157 +413,175 @@ The handler then maps that to the wire envelope `{answer, selected, confirmed, a
 ### 1.8 — Verification
 
 End-to-end test: send a chat message that triggers `update_plan`. Expect:
-1. Server delegates the call (visible in SSE `tool_event: tool_delegated`).
+1. Server routes the call to the `matrx-user` executor (visible in the SSE
+   `tool_event` stream).
 2. Your dispatcher validates args with Zod.
 3. Handler renders the plan card inline in the chat.
 4. User clicks Approve.
 5. Handler POSTs the result back.
-6. Auto-populate hook creates one task per plan step in `cx_task`.
+6. Auto-populate hook creates one task per plan step in `chat.agent_task`.
 7. Next agent turn shows `task_list` in context.
 
 If all seven steps fire, the integration is complete.
 
 ---
 
-## 2. matrx-local (Tauri desktop engine)
+## 2. matrx-local (Tauri desktop engine) — executor `matrx-local`
 
-Status today: **62 active executor bindings** in `tl_executor` for
-`surface='server:matrx_local'`. 14 browser-duplicate tools were dropped on
-2026-05-19 (see "Convergence with the canonical namespace" below). The
-remaining work is **(a) drop more duplicates** and **(b) bind to canonical
-names instead of inventing `local_*` variants**.
+**Status: consolidated, not sprawling.** The `local_*` surface collapsed from
+~130 granular tools into **19 active mega-tools**. `tool.binding` holds **134**
+rows for this executor: 19 active, **115 retired** (`is_active = false`, kept as
+history — the roster below is the whole live surface, not an excerpt).
 
-### 2.1 — What was already dropped (2026-05-19)
+```sql
+SELECT count(*) FILTER (WHERE b.is_active)     AS active,
+       count(*) FILTER (WHERE NOT b.is_active) AS retired,
+       count(*)                                AS total
+FROM tool.binding b
+WHERE b.executor_name = 'matrx-local'
+   OR b.executor_name LIKE 'matrx-local.%';
+```
 
-These 14 `local_*` tools were deleted from `tl_def`, `tl_executor`,
-`tl_def_surface`, and `tl_bundle_member`:
+### 2.1 — The live roster (19 tools)
 
-`local_browser_click`, `local_browser_eval`, `local_browser_extract`,
-`local_browser_navigate`, `local_browser_screenshot`, `local_browser_tabs`,
-`local_browser_type`, `local_clipboard_read`, `local_clipboard_write`,
-`local_fetch_with_browser`, `local_scrape`, `local_search`, `local_research`,
-`record_gif` (the matrx_local copy; matrx-extend keeps `chrome_record_gif`)
+```sql
+SELECT d.name, d.category, d.is_active AS def_active
+FROM tool.binding b
+JOIN tool.definition d ON d.id = b.tool_id
+WHERE (b.executor_name = 'matrx-local' OR b.executor_name LIKE 'matrx-local.%')
+  AND b.is_active
+ORDER BY d.name;
+```
 
-### 2.2 — What stays with the `local_*` prefix (genuinely desktop-only)
+| category | tools |
+|---|---|
+| `desktop` | `local_audio`, `local_clipboard`, `local_documents`, `local_file`, `local_input`, `local_mac_apps`, `local_media`, `local_monitor`, `local_ner`, `local_process`, `local_schedule`, `local_screen`, `local_shell`, `local_system`, `local_window`, `local_windows_ps` |
+| `desktop-web` | `local_browser`, `local_net`, `local_web` |
 
-Per the rule "if Playwright can do it, no one owns it" — anything that's
-truly OS-level keeps the `local_*` prefix because no other surface can
-implement it:
+The old one-verb-per-tool names this doc used to enumerate — `local_bash`,
+`local_read_file`, `local_screenshot`, `local_notify`, `local_open_url`,
+`local_fetch_url`, `local_pdf_extract`, `local_list_processes`, and the rest —
+are all **retired**: `tool.definition.is_active = false` and their bindings
+inactive. They are subsumed by the mega-tools above (`local_shell`,
+`local_file`, `local_screen`, `local_process`, …). Do not resurrect a name from
+that list; add an action to the mega-tool that owns the domain.
 
-**Shell / scripting:** `local_bash`, `local_bash_output`, `local_powershell`,
-`local_applescript`, `local_task_stop`
+The consolidation also resolved the old "should we drop the duplicates?" and
+"should we bind to canonical names instead?" open questions, which is why those
+sections are gone. The remaining rule is unchanged and still governs new work:
 
-**Filesystem (user's real disk):** `local_read_file`, `local_write_file`,
-`local_edit_file`, `local_list_directory`, `local_glob`, `local_grep`,
-`local_archive_create`, `local_archive_extract`
+> **If Playwright can do it, we don't own the name.** Anything genuinely OS-level
+> — real shell, real disk, real screen, real window manager — keeps the
+> `local_*` prefix, because no other surface can implement it. Anything a
+> browser can do binds to the canonical name (`computer`, `navigate`,
+> `read_page`, `clipboard`) instead of getting a `local_` twin.
 
-**Documents (~/.matrx/documents/):** `local_list_documents`,
-`local_list_document_folders`, `local_read_document`, `local_write_document`,
-`local_search_documents`
+The `desktop-web` category is where that line gets interesting: `local_browser`,
+`local_net`, and `local_web` reach the web *from the user's machine and network
+context*, which is materially different from a browser tab or a server-side
+fetch. That distinction is the justification for those three, and it's the test
+to apply to any fourth.
 
-**Process / window control:** `local_focus_app`, `local_focus_window`,
-`local_get_installed_apps`, `local_kill_process`, `local_launch_app`,
-`local_list_processes`, `local_list_ports`, `local_list_windows`,
-`local_minimize_window`, `local_move_window`, `local_top_processes`
+### 2.2 — Surface defaults
 
-**Input simulation:** `local_hotkey`, `local_mouse_click`, `local_mouse_move`,
-`local_type_text`
+`matrx-local/desktop` advertises just three names:
 
-**Network (user's network context):** `local_network_info`,
-`local_network_scan`, `local_mdns_discover`, `local_port_scan`,
-`local_fetch_url` (raw HTTP from user's machine)
+```sql
+SELECT surface_name, always_include_tools
+FROM tool.surface_defaults
+WHERE surface_name = 'matrx-local/desktop';
+```
 
-**Media (OS-level):** `local_screenshot` (desktop screen, NOT browser),
-`local_image_ocr`, `local_image_resize`, `local_pdf_extract` (local file path)
+→ `{load_desktop_tools, local_file, local_shell}`
 
-**System info:** `local_battery_status`, `local_disk_usage`,
-`local_system_info`, `local_system_resources`
+`load_desktop_tools` is the discovery root (executed by `matrx-ai-core`) — the
+same on-demand pattern matrx-extend uses with `load_browser_tools`. The other 17
+tools are pulled in mid-turn by that call, not advertised upfront. When you add a
+mega-tool, add its binding **and** make sure the discovery handler routes to it;
+only add it to `always_include_tools` if it truly belongs in every turn.
 
-**Convenience:** `local_notify`, `local_open_path`, `local_open_url`
-
-### 2.3 — Suggested next deletions (matrx-local team decides)
-
-These look like further candidates if matrx-local wants to consolidate, but
-the matrx-local team should validate against actual usage:
-
-| matrx_local | possible canonical | reasoning |
-|---|---|---|
-| `local_fetch_url` | `fetch_url_as_markdown` (or a new `fetch_url` canonical) | If a server-side equivalent exists, bind to it instead. Keep only if "fetches from user's network context" is materially different. |
-| `local_screenshot` | (none — keep) | Captures the user's full screen, including non-browser apps. matrx-extend can't do this. **Stays distinct.** |
-| `local_open_url` | (none — keep) | Launches user's default browser app (could be Safari, Chrome, Firefox). Different from `navigate` which navigates a Playwright-controlled tab. **Stays distinct.** |
-| `local_pdf_extract` | `read_pdf`? | `read_pdf` takes a tab_id or cld_files file_id. `local_pdf_extract` takes a local filesystem path. Different shape — could converge by adding a `local_path` argument to canonical `read_pdf` and binding matrx-local to that, but it's a Zod-schema change. **Defer unless cross-surface value is high.** |
-
-### 2.4 — Cross-surface canonical binding (the bigger move)
-
-Some matrx-local tools have the SAME shape as canonical tools but currently
-live under their own name. Per TOOL_ROUTING_RULES.md §4, they should share
-the canonical name with an additional executor binding. **Per name, one
-definition; multiple executors allowed.**
-
-| matrx_local current | shape compatible with canonical | recommended |
-|---|---|---|
-| `local_notify` | `user(type='notify')` mostly | Add a tl_executor binding for matrx_local on `user`. Drop `local_notify`. |
-| `local_list_processes`, `local_list_ports`, `local_top_processes`, `local_battery_status`, `local_disk_usage`, `local_system_info`, `local_system_resources` | (no canonical exists today) | Keep `local_*`. No canonical to bind to. |
-| `local_mouse_click`, `local_mouse_move`, `local_type_text`, `local_hotkey` | `computer(action=…)` — but works at OS level, not in a browser | **Keep `local_*`.** Same shape, different target (OS screen vs browser tab). Two separate canonicals: `computer` for browser, `local_*` for OS. |
-| Filesystem (`local_read_file`, `local_write_file`, `local_edit_file`, `local_list_directory`, …) | matrx_ai's `fs_*` family | These already exist on matrx_ai server-side. matrx-local could **bind to the same names** (`fs_read`, `fs_write`, `fs_list`, …) as additional executors. The difference: matrx_ai's `fs_*` works against the server's workspace; matrx-local's works against the user's machine. The active surface's binding wins per §6 of the routing rules. |
-
-This last row is the biggest leverage point. If matrx-local binds to
-`fs_read` / `fs_write` / `fs_list` / `fs_search` / `fs_patch` / `fs_mkdir`
-instead of `local_read_file` / etc., the model uses one set of names
-regardless of which surface is active. Cost: ~12 deletions + ~12 new
-executor bindings.
-
-### 2.5 — Drift check script for matrx-local
+### 2.3 — Drift check script for matrx-local
 
 Same template as matrx-extend's. Comparator goals:
 
-- Every name in matrx-local's local registry must exist in `tl_def`.
-- Every `tl_executor` row with `surface='server:matrx_local'` must point at
-  a name the local registry implements.
-- Zod schemas (or matrx-local's equivalent) match `tl_def.parameters`.
-- Categories match (UX-only but worth flagging).
+- Every name in matrx-local's local dispatcher must exist in `tool.definition`.
+- Every active `tool.binding` row for `executor_name = 'matrx-local'` must point
+  at a name the local dispatcher implements.
+- Arg schemas match `tool.definition.parameters`.
+- Categories match (UX-only, but worth flagging).
 
-### 2.6 — Verification
+Both §1.6 queries work here verbatim — swap `'matrx-user'` for `'matrx-local'`
+and `'matrx-user/chat'` for `'matrx-local/desktop'`.
+
+> Note for anyone reading the cross-repo system-of-record: it currently lists
+> matrx-local as "not a consumer of this registry." That was true of the old
+> `desktop_run_command`-only bridge; the 19 active bindings and the
+> `matrx-local/desktop` surface row say otherwise now. Both routes are live —
+> see §3.
+
+### 2.4 — Verification
 
 End-to-end test: from a matrx-extend chat session, ask the agent something
 that requires the desktop bridge. Expect:
 
-1. Agent calls `desktop_run_command({command: 'list_processes'})` from
-   matrx-extend. Or, post-§2.4, the agent calls
-   `local_list_processes` directly (matrx-local routes it).
-2. matrx-local executes, returns result via the bridge / SSE.
-3. The next agent turn quotes the process list.
+1. Agent calls `desktop_run_command` from matrx-extend (the bridge route), or
+   the model calls `load_desktop_tools` and then a `local_*` mega-tool directly
+   (the registry route).
+2. matrx-local executes, returns the result via the bridge / SSE.
+3. The next agent turn quotes the output.
 
 ---
 
 ## 3. Cross-surface ownership map
 
-When you find yourself unsure who owns a name, use this table:
+When you're unsure who owns a name, **ask the database** rather than this table —
+it is a snapshot and this one is dated 2026-08-09:
 
-| Capability | Canonical name | Owners (executor bindings) |
+```sql
+SELECT d.name,
+       d.tier,
+       d.category,
+       d.is_active AS def_active,
+       coalesce(
+         string_agg(b.executor_name, ', ' ORDER BY b.executor_name)
+           FILTER (WHERE b.is_active),
+         '(no active binding)'
+       ) AS executors
+FROM tool.definition d
+LEFT JOIN tool.binding b ON b.tool_id = d.id
+WHERE d.name IN ('read_page','computer','navigate','clipboard',
+                 'fs_read','local_shell','memory','desktop_run_command')
+GROUP BY d.name, d.tier, d.category, d.is_active
+ORDER BY d.name;
+```
+
+| Capability | Canonical name | Active executor bindings |
 |---|---|---|
-| Read DOM | `read_page` | matrx-extend, matrx-frontend (when implemented), eventually server playwright |
-| Click / type / screenshot | `computer` | matrx-extend, matrx-frontend, eventually server playwright |
-| Navigate to URL | `navigate` | matrx-extend, matrx-frontend, server |
-| Tabs | `tabs` | matrx-extend (only — Playwright contexts are different) |
-| Form input | `form_input`, `submit_form` | matrx-extend, matrx-frontend |
-| Clipboard | `clipboard` | matrx-extend, matrx-frontend (browser-clipboard API) |
-| Files (server workspace) | `fs_read`, `fs_write`, … | matrx_ai (server), matrx-local |
-| Files (user's real disk) | `local_*` | matrx-local |
-| Cookies (user's real) | `chrome_cookies` | matrx-extend |
-| Cookies (Playwright session) | `chrome_cookies`? or new canonical | TBD |
-| Bookmarks / history | `chrome_*` | matrx-extend |
-| Screen capture (browser) | `screenshot_region` | matrx-extend, matrx-frontend (Playwright fallback) |
-| Screen capture (desktop full) | `local_screenshot` | matrx-local |
-| Plan / tasks / todos / user | `update_plan`, `tasks`, `user_todos`, `user` | matrx-extend, matrx-frontend |
-| Scratchpad | `scratchpad` | matrx-extend, matrx-frontend |
-| Memory (persistent) | `memory` | matrx_ai (server) |
-| Shell exec | `shell_execute`, `shell_python` | matrx_ai (server sandbox), matrx-local (real shell) |
-| Web search | `web` (matrx_ai mega-tool), `research_web` | matrx_ai |
-| Run from desktop | `desktop_run_command` | matrx-extend (bridge) |
-| CDP | `cdp_*` | matrx-extend only |
-| WebMCP | `chrome_webmcp` | matrx-extend only |
-| RAG | `rag_*` | aidream |
+| Read DOM | `read_page` | `chrome-extension` |
+| Click / type / screenshot | `computer` | `chrome-extension` |
+| Navigate to URL | `navigate` | `chrome-extension` |
+| Tabs | `tabs` | `chrome-extension` |
+| Form input | `form_input`, `submit_form` | `chrome-extension` |
+| Clipboard (browser) | `clipboard` | `chrome-extension` |
+| Screen capture (browser) | `screenshot_region` | `chrome-extension` |
+| Cookies / bookmarks / history | `chrome_*` | `chrome-extension` |
+| CDP | `cdp_*` (12 tools) | `chrome-extension` |
+| WebMCP | `chrome_webmcp` | `chrome-extension` |
+| Run from desktop (bridge) | `desktop_run_command` | `chrome-extension` |
+| Files (server workspace) | `fs_read`, `fs_write`, `fs_list`, `fs_edit`, `fs_patch`, `fs_search`, `fs_mkdir` | `matrx-ai-core` |
+| Shell exec (server sandbox) | `shell_execute`, `shell_python` | `matrx-ai-core` |
+| Web search | `research_web` | `matrx-ai-core` |
+| Desktop / real disk / real screen | `local_*` (19 mega-tools) | `matrx-local` |
+| Plan / todos / ask-user / scratchpad | `update_plan`, `user_todos`, `user`, `request_user_takeover`, `scratchpad`, `storage` | `matrx-user` |
+| Tasks | `tasks` | server-executed on `matrx-ai-core`; no client binding |
+| Memory (persistent) | `memory` | server-executed; **no binding row at all** |
+| RAG | `rag_*` | `aidream` — all four bindings currently **inactive** |
+
+Two rows there are worth internalizing: **`memory` has no `tool.binding` row and
+still works**, and `tasks` is advertised on a surface whose executor cannot run
+it. Server-native tools are resolved by the orchestrator, not by a binding. So
+"no binding" is not automatically a defect — but "no binding *and* you expected
+your executor to run it" always is.
 
 If the capability isn't in the table, it's either (a) not implemented anywhere
 yet, or (b) you should add it to the table when you build it.
@@ -366,36 +590,38 @@ yet, or (b) you should add it to the table when you build it.
 
 ## 4. Checklist (cut + paste into your issue tracker)
 
-### matrx-frontend
+### matrx-frontend (executor `matrx-user`)
 
-- [ ] Decide surface name (suggest `matrx-frontend.web`).
-- [ ] Insert `tl_executor` rows binding the six UI-first tools to your
-      surface.
-- [ ] Implement Zod schemas + handlers for `user`, `update_plan`,
-      `request_user_takeover`, `tasks`, `user_todos`, `scratchpad`.
-- [ ] Implement Supabase tables (`cx_plan`, `cx_task`, `cx_user_todo`).
+- [ ] Run the §1 inventory query; confirm which of your 132 surfaces genuinely
+      need their own `tool.surface_defaults` row versus inheriting from a parent.
+- [ ] Implement Zod schemas + handlers for the six bound tools: `user`,
+      `update_plan`, `request_user_takeover`, `user_todos`, `scratchpad`,
+      `storage`.
+- [ ] Read/write `tasks` against `chat.agent_task`; do not create a parallel table.
+- [ ] Implement the remaining storage (`cx_plan`, `cx_user_todo`).
 - [ ] Implement the pending-request inbox (zustand + cards).
-- [ ] Implement context injection (`current_plan`, `task_list`,
-      `user_todos`).
+- [ ] Implement context injection (`current_plan`, `task_list`, `user_todos`).
 - [ ] Implement the `POST /tool_results` helper.
-- [ ] Write the drift-check script.
+- [ ] Write the drift-check script; wire both §1.6 queries into it, with
+      `memory` + `tasks` allow-listed on the first.
 - [ ] Verify end-to-end with a real chat session.
 
-### matrx-local
+### matrx-local (executor `matrx-local`)
 
-- [ ] Confirm the 14-tool delete pass on 2026-05-19 didn't break
-      anything in the desktop client.
-- [ ] Decide on the further-consolidation items in §2.3 (`local_fetch_url`,
-      etc.).
-- [ ] Decide on the canonical-binding moves in §2.4 (`fs_*` instead of
-      `local_read_file` family).
-- [ ] Drop the `tl_def` rows + `tl_executor` rows for any newly-converged
-      tools.
-- [ ] Add `tl_executor` rows for any canonical names matrx-local now binds
-      to (e.g. `fs_read` with `surface='server:matrx_local'`).
-- [ ] Write the drift-check script for matrx-local.
-- [ ] Verify end-to-end via a matrx-extend chat that triggers a
-      desktop-bridge call.
+- [ ] Confirm the desktop client implements all 19 active mega-tools and nothing
+      that maps to a retired name.
+- [ ] Confirm no code path still calls a retired `local_*` name.
+- [ ] Decide whether any of the 17 non-advertised mega-tools belong in
+      `matrx-local/desktop.always_include_tools` versus on-demand discovery.
+- [ ] Write the drift-check script (§1.6 queries with the executor/surface
+      swapped).
+- [ ] Verify end-to-end via a matrx-extend chat that triggers a desktop call.
+
+### Both
+
+- [ ] Grep your repo for `tl_def`, `tl_executor`, `tl_def_surface`, `tool_def`,
+      `tool_binding`, `tool_surface_defaults`, `source_app`, and
+      `public.surfaces`. Every hit is a runtime failure waiting to happen.
 
 ---
 
@@ -403,9 +629,8 @@ yet, or (b) you should add it to the table when you build it.
 
 | Row | Owner |
 |---|---|
-| §1.1–1.7 (matrx-frontend) | matrx-frontend team |
-| §2.1 (already done) | matrx-extend team |
-| §2.2 (keep `local_*`) | matrx-local team |
-| §2.3–2.6 (further consolidation) | matrx-local team (matrx-extend can help map) |
+| §0 (schema invariants) | aidream backend team owns the schema |
+| §1 (matrx-frontend / `matrx-user`) | matrx-frontend team |
+| §2 (matrx-local) | matrx-local team (matrx-extend can help map) |
 | §3 (canonical names) | aidream backend team owns the registry; surface teams add bindings |
 | §4 (checklists) | each surface team owns their section |

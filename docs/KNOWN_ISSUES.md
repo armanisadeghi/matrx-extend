@@ -9,14 +9,6 @@ short and actionable; delete an entry when it's fixed (git history keeps the rec
 
 ---
 
-## Documentation / source-of-truth
-
-- **`docs/SURFACE_INTEGRATION_TODO.md` inline SQL is pre-refactor.** The header warns
-  that the `tl_*` table names moved (2026-05-27), but the SQL templates in §1–2 still
-  use `tl_executor` / `tl_def_surface` / `source_app`. Rewrite the SQL to
-  `tool_binding` / `tool_surface_defaults` before matrx-frontend or matrx-local
-  consume it as an integration spec.
-
 ## Cloud sync
 
 - **Guidance `demo_ref` bodies don't sync (TASK-004 follow-up).** `wbx_guidance`
