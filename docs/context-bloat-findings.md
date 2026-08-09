@@ -117,7 +117,7 @@ The extension sends `capabilities: ["browser-dom"]` only
 The actual "what tools does the model see on turn 1" decision lives in
 **aidream**:
 - the `browser-dom` capability handler
-- `public.tools` DB rows + `category_routing` config
+- `public.tools` DB rows + `category_routing` config  [now `tool.definition`]
 
 Local artifacts in this repo are documentation only:
 - `CATEGORY_BY_TOOL` in [categories.ts:198](../src/lib/tools/categories.ts#L198)
@@ -198,7 +198,7 @@ tag-implied-by-role, empty fields, `expanded:false` were removed.
 > **Note (2026-06-10):** this section originally referenced a
 > `proposed_browser_tools.json` "canonical" file. That file was orphaned
 > (no consumer) and has been deleted — the single source of truth is now
-> the DB (`public.tool_def` + `tool_surface_defaults`); see
+> the DB (`tool.definition` + `tool.surface_defaults`); see
 > [TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md). The `core`-group
 > analysis below is preserved as the original May-2026 finding.
 

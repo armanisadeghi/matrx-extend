@@ -1,16 +1,29 @@
 # Open issues on the aidream side
 
-> **Schema rename note (2026-05-27).** This doc references the
-> pre-refactor table names (`tl_def`, `tl_executor`, `tl_def_surface`,
-> `tl_bundle*`, `source_app`). aidream's clean-break refactor renamed all
-> of them — see
-> [/Users/armanisadeghi/code/aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md).
-> Map: `tl_def` → `tool_def`; `tl_executor` → `tool_binding`
-> (`executor_name`, not `surface`); `tl_def_surface` → DROPPED →
-> `tool_surface_defaults.always_include_tools`; `tl_bundle*` →
-> `tool_bundle*`; `source_app='matrx-extend'` →
-> `tool_binding.executor_name='chrome-extension'`. Bug 1 was already
-> fixed at the time; the doc remains as historical context.
+> **Schema rename note — the names moved TWICE.** This doc was written against
+> the pre-refactor tables (`tl_def`, `tl_executor`, `tl_def_surface`,
+> `tl_bundle*`, `source_app`). The 2026-05-27 clean break renamed them, and the
+> 2026-06 schema split moved them out of `public` and dropped the prefix. Verified
+> against the live DB 2026-08-09:
+>
+> | In this doc | 2026-05-27 | **LIVE** |
+> |---|---|---|
+> | `tl_def` | `tool_def` | **`tool.definition`** |
+> | `tl_executor` | `tool_binding` (`executor_name`, not `surface`) | **`tool.binding`** |
+> | `tl_def_surface` | dropped → `tool_surface_defaults.always_include_tools` | **`tool.surface_defaults`** |
+> | `tl_bundle` | `tool_bundle` | **`tool.bundle`** |
+> | `tl_bundle_member` | `tool_bundle_member` | **gone** — see Bug 1 |
+> | `source_app='matrx-extend'` | — | **`tool.binding.executor_name='chrome-extension'`** |
+>
+> Only the last column exists. Client callers must select the schema (`toolDb()`
+> or `Accept-Profile: tool`). Canonical vocabulary and rules:
+> [aidream/docs/official/tool_system_rules.md](../../aidream/docs/official/tool_system_rules.md);
+> refactor write-up:
+> [CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md).
+>
+> Bug 1 was fixed on our end at the time and has since been resolved
+> structurally — see its updated "Long-term fix" note. The doc remains as
+> historical context.
 
 > Two bugs surfaced from a live agent test on 2026-05-19. One was on
 > our DB (fixed). The other(s) sit in aidream and need their team.
@@ -30,11 +43,12 @@ and just described what the tools would do instead of using them.
 
 aidream's `load_browser_tools` discovery handler resolves a category
 by reading `public.tl_bundle` (matched by `name`) + `public.tl_bundle_member`
-(matched by `bundle_id`). matrx-extend's bundle rows were stale:
+(matched by `bundle_id`). [Today: `tool.bundle` with a `lister_tool_id`; the
+member table is gone.] matrx-extend's bundle rows were stale:
 
 - 9 bundles named for OLD categories (`advanced`, `ask`, `cookies`,
   `debug`, `files`, `forms`, `history`, `interact`, `page`) — no longer
-  match any tool's `tl_def.category` value after the 2026-05-19 category
+  match any tool's `tool.definition.category` value after the 2026-05-19 category
   redesign.
 - 5 bundles whose names overlap new categories (`core`, `ai`, `memory`,
   `tabs`, `webmcp`) had 0 or stale members.
@@ -43,6 +57,10 @@ by reading `public.tl_bundle` (matched by `name`) + `public.tl_bundle_member`
   at all.
 
 ### Fix applied (2026-05-19, ~22:55 UTC)
+
+> **Historical record — do NOT run this.** Every table below (`tl_bundle_member`,
+> `tl_def`, `tl_bundle`) was renamed and then removed or restructured. This is
+> what executed on 2026-05-19, preserved so the counts make sense.
 
 In one transaction:
 1. `DELETE` the 9 obsolete matrx-extend bundles and their members.
@@ -80,26 +98,42 @@ Result: every category now resolves to a real tool list. Counts:
 | `webmcp` | 1 |
 | **total** | **79** |
 
-### Long-term fix (aidream side)
+### Long-term fix — ✅ RESOLVED by the schema split (verified 2026-08-09)
 
-Per aidream's [`tool_system_rules.md`](../../aidream/docs/official/tool_system_rules.md) §2 ("DB is canonical") + §11 (amendments),
-the discovery handler should derive the per-category tool list from
-`tl_def.category` directly — not from a parallel `tl_bundle` table that
-has to be kept in sync manually. Two options for aidream:
+**Option B shipped.** The manual-sync problem is gone because the membership
+table is gone: `tool_bundle_member` did not survive the 2026-06 split — its 88
+rows now sit in `graveyard.bundle_member`, and `tool.bundle` carries a
+`lister_tool_id` instead. All 14 category bundles (`ai`, `capture`, `chrome`,
+`core`, `demos`, `desktop`, `devtools`, `guidance`, `human`, `interaction`,
+`memory`, `reading`, `tabs`, `webmcp`) point at `load_browser_tools` as their
+lister, so the handler derives each category's tool list itself rather than
+reading a parallel table someone has to keep in sync.
 
-**Option A — keep `tl_bundle`, add a maintenance script.** Each surface
-team's drift-check script populates `tl_bundle_member` from
-`tl_def.category` on every release. Our `check-tool-db-drift.ts` can do
-this now; we just need the policy.
+Nothing for a drift script to maintain here. Verify with:
 
-**Option B — change the discovery handler to query `tl_def` directly.**
-`SELECT name, description, parameters, tier, admin_only FROM tl_def
-WHERE category = $1 AND is_active = true AND <surface_gate>`. Drops
-`tl_bundle` for the matrx-extend discovery path. Other listers (MCP
-marketplace) keep using `tl_bundle` for their own purposes.
+```sql
+SELECT b.name AS bundle, b.is_system, ld.name AS lister_tool
+FROM tool.bundle b
+LEFT JOIN tool.definition ld ON ld.id = b.lister_tool_id
+WHERE b.is_active
+ORDER BY b.name;
+```
 
-Option B is cleaner. Option A unblocks today and trades a maintenance
-script for the simplification.
+The two options below are kept only to show what was considered; neither needs
+action.
+
+<details>
+<summary>Original Option A / Option B (superseded)</summary>
+
+**Option A — keep the bundle table, add a maintenance script.** Each surface
+team's drift-check script repopulates bundle membership from the tool category
+on every release.
+
+**Option B — change the discovery handler to query the definitions directly**,
+dropping the bundle table from the matrx-extend discovery path while other
+listers (MCP marketplace) keep using it. *This is effectively what happened.*
+
+</details>
 
 ---
 
@@ -113,7 +147,7 @@ From the agent's reasoning trace in the live test:
 > `notify_user`, `update_plan`"
 
 The agent believed `ask_user` and `notify_user` were separate tools.
-Neither exists in `tl_def`. They were absorbed into the single `user`
+Neither exists in `tool.definition`. They were absorbed into the single `user`
 mega-tool's `type` discriminator months ago:
 
 - `ask_user(question, options)` → `user(type='choice', question, options)`
@@ -126,7 +160,7 @@ dispatcher rejects it as unknown.
 
 aidream's system-prompt assembly is using a cached / static list of
 tool names. The list still includes the consolidated-away
-`ask_user` / `notify_user` names. The actual `tl_def` only has `user`.
+`ask_user` / `notify_user` names. The actual `tool.definition` only has `user`.
 
 ### What aidream needs to do
 
@@ -135,12 +169,13 @@ Two checks:
 1. **Audit the prompt assembly.** Grep aidream's prompt-building code
    for hardcoded references to `ask_user`, `notify_user`. Replace with
    `user` + a one-line explanation of the `type` discriminator.
-2. **Source the prompt from live `tl_def`.** Per aidream's [`tool_system_rules.md`](../../aidream/docs/official/tool_system_rules.md)
-   §16 ("Definitions are immutable per name") + §3 (cache invalidates
-   on the admin cache-bust API), the system prompt's tool descriptions
-   should come from `tl_def.description` at session-resolution time, not
+2. **Source the prompt from live `tool.definition`.** Per aidream's [`tool_system_rules.md`](../../aidream/docs/official/tool_system_rules.md)
+   S8 ("Tool names are stable, tool UUIDs are immutable") and rule 4 of
+   matrx-extend's [TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)
+   (descriptions live only in the DB), the system prompt's tool descriptions
+   should come from `tool.definition.description` at session-resolution time, not
    from a hand-maintained tool-list constant. If the prompt is read from
-   `tl_def.description`, it cannot mention non-existent tools.
+   `tool.definition.description`, it cannot mention non-existent tools.
 
 If the prompt is correct in code but the agent still saw the old
 names, the cache may need bursting.
@@ -154,35 +189,39 @@ names, the cache may need bursting.
 Not directly proven by the live test, but worth flagging while we're
 here.
 
-- `tl_executor.surface` for matrx-extend is `matrx-extend.browser` (75
-  rows + 4 new = 79 active bindings).
-- `tl_def_surface.surface_name` for matrx-extend is
-  `chrome-extension/assistant` (45 rows) + `chrome-extension/pilot`
-  (74 rows) = 119 gates.
+At the time, `tl_executor.surface` said `matrx-extend.browser` while
+`tl_def_surface.surface_name` said `chrome-extension/assistant` — two different
+naming conventions for what looked like the same thing, so any join between them
+would have returned zero rows.
 
-These use different surface-name conventions. If aidream's discovery
-handler joins them (e.g., "load tools for the active surface, filtered
-by surface gating"), the join will return zero matches.
+### ✅ RESOLVED — they were never the same thing (verified 2026-08-09)
 
-### What aidream needs to clarify
+The refactor answered this by separating the two concepts, and the answer is now
+a hard rule:
 
-What is the canonical surface-name format? Pick one of:
-- Dotted: `matrx-extend.browser`, `matrx-frontend.web`, `matrx-local.desktop`
-- Slashed: `chrome-extension/assistant`, `chrome-extension/pilot`,
-  `matrx-frontend/admin`
+- **Executor names** are single-segment kebab-case, with dots reserved for
+  sub-executors: `chrome-extension`, `matrx-user`, `matrx-local`, `mcp.<slug>`.
+  Enforced by a CHECK constraint on the regex in
+  [tool_system_rules.md](../../aidream/docs/official/tool_system_rules.md) R7.
+  The old `matrx-extend.browser` form is explicitly dead per R11.
+- **Surface names** are `client/panel`: `chrome-extension/assistant`,
+  `chrome-extension/pilot`, `matrx-user/chat`, `matrx-local/desktop`.
 
-When the answer's clear, we'll migrate the gates accordingly. Until
-then, this asymmetry is a potential foot-gun. Worth checking whether
-the discovery handler actually uses `tl_def_surface` at all — if it
-ignores it and only uses `tl_executor`, the inconsistency doesn't bite.
+There is no join between them to get wrong: `tool.binding.executor_name` →
+`tool.executor.name`, and `tool.surface_defaults.surface_name` → `ui.ui_surface.name`.
+The link is `ui.ui_surface.executor_name`, a real FK. Live state for this
+extension: 80 active bindings on `chrome-extension`, and two surfaces advertising
+81 tools each.
 
 ---
 
 ## What to do with this doc
 
-Hand this file to the aidream team. They own Bug 2 and Bug 3
-definitively. Bug 1's data fix is in place; the long-term-fix question
-(Option A vs B) is theirs to decide.
+**Only Bug 2 is still open.** Bugs 1 and 3 were resolved structurally by the
+2026-06 schema split (see each section) — re-verified against the live DB on
+2026-08-09. Hand this file to the aidream team for Bug 2: the system prompt
+advertising `ask_user` / `notify_user`, which have not existed since they were
+folded into the `user` mega-tool's `type` discriminator.
 
 When they fix Bug 2, re-test from a real chat session:
 1. New conversation, ask "use the `user` tool to ask me yes/no."
@@ -199,9 +238,9 @@ If the agent calls `ask_user` instead of `user`, Bug 2 is still live.
 ### 1. RLS disabled on shared platform tables the extension touches with the anon key — P1
 Runtime-verified via Supabase security advisors on `txzxabzwovsujtloxrus`:
 
-- `tool_def`, `tool_binding`, `tool_executor`, `tool_surface_defaults`,
-  `tool_bundle`, `tool_bundle_member` — **RLS disabled**. The extension reads
-  `tool_def` live with the publishable key (committed in its `.env` files),
+- `tool.definition`, `tool.binding`, `tool.executor`, `tool.surface_defaults`,
+  `tool.bundle`, `tool_bundle_member` — **RLS disabled**. The extension reads
+  `tool.definition` live with the publishable key (committed in its `.env` files),
   so the tool registry is anon-readable — and unless write GRANTs are revoked
   for `anon`, anon-WRITABLE. Tool descriptions/tiers shown to users on
   approval cards come from here.

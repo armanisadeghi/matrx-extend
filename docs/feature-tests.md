@@ -356,7 +356,7 @@ Every entry follows this shape:
 - **What it does:** `storage` supports a `delete` action (remove an
   agent-namespaced KV key); `request_user_takeover` accepts an optional
   `timeout_seconds` (1–900) bounding how long the agent waits for the user.
-  Both fields are part of the unified `tool_def` contract shared with matrx-frontend.
+  Both fields are part of the unified `tool.definition` contract shared with matrx-frontend.
 - **Where to test:** Tools tab → Run `storage` / `request_user_takeover`, or via chat.
 - **Steps:**
   1. Run `storage` `{"action":"set","key":"t","value":1}` → `{ok:true}`.
@@ -417,15 +417,15 @@ Every entry follows this shape:
 - **Expected:** Same result the agent would receive when calling the
   tool through chat.
 - **Edge cases:** Each tool's **description** is read LIVE from the DB
-  (`public.tool_def` via Supabase REST — the `/ai-tools/app/matrx-extend`
+  (`tool.definition` via Supabase REST — the `/ai-tools/app/matrx-extend`
   aidream endpoint was retired in the 2026-05-27 refactor), not hardcoded.
-  With the network available, every canonical tool shows its `tool_def`
+  With the network available, every canonical tool shows its `tool.definition`
   description; offline (or before the fetch resolves) it shows `—`, never
   a stale string.
 
 ### Tool descriptions read live from the DB (Rule 4)
 - **What it does:** No tool descriptions live in the extension's code — they
-  live only in `public.tool_def` and are read live via
+  live only in `tool.definition` and are read live via
   `src/lib/tools/descriptions.ts` (direct Supabase REST query). Consumers:
   Tools-tab catalog, the permission-approval card, the client discovery tools
   (`list_<category>_tools`), WebMCP registration, and the frontend bridge.
@@ -438,7 +438,7 @@ Every entry follows this shape:
   3. Code audit: `grep -rn "description:" src/lib/tools/handlers/` returns only
      non-tool keys (Zod fields, ask-user option labels) — zero `ToolHandler`
      descriptions.
-- **Expected:** Descriptions match `tool_def` exactly (regenerate
+- **Expected:** Descriptions match `tool.definition` exactly (regenerate
   `docs/TOOLS.generated.md` with `pnpm docs:tools` to compare). `pnpm
   catalog:tools:drift` is green.
 - **Edge cases:** Offline → approval card omits the description (shows name +

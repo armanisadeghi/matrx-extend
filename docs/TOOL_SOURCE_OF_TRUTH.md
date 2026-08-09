@@ -126,7 +126,7 @@ entirely (violates Rule 3).
 - **Fix (APPROVED):** register the **per-action** arg models (`WebSearchArgs`,
   `DbQueryArgs`, …) so the executor validates against the model the code truly runs
   AND the engine diffs that model against the DB. Requires a DB modeling decision:
-  one `tool_def` row per action, or per-action sub-schemas under one row.
+  one `tool.definition` row per action, or per-action sub-schemas under one row.
 
 ### GAP 2 — Descriptions are still hardcoded in code  🔴 MUST REMOVE (Rule 4)
 - **matrx-extend:** ✅ FIXED. The 166 hardcoded `description` strings were removed
@@ -134,7 +134,7 @@ entirely (violates Rule 3).
   `ToolHandler` / `ToolCatalogEntry` / `PendingConfirmRequest`. (The earlier
   framing — "the permission-confirm card must read the description from the DB at
   runtime" — was imprecise: the extension never feeds descriptions to a model;
-  aidream injects `tool_def` descriptions server-side. The only consumers were
+  aidream injects `tool.definition` descriptions server-side. The only consumers were
   human-facing UI (approval card, Tools tab) and the client discovery / WebMCP /
   frontend-bridge tools.) Those now read descriptions **LIVE from the DB** via
   a direct Supabase REST query on `tool.definition` (via `Accept-Profile: tool`)
@@ -174,7 +174,7 @@ server:matrx_ai. (The detailed GAP-4 coordination doc was completed and pruned o
   semantic tool. matrx-frontend now defines `scratchpadArgsSchema`; final DB +
   matrx-extend alignment (matrx-extend already ships `scratchpad`) tracked separately.
 - **`storage`. ✅ FIXED.** `storage` now exposes **`get/set/list/delete`** on every
-  surface. `delete` was added to `tool_def.parameters.action.enum` (aidream migration
+  surface. `delete` was added to `tool.definition.parameters.action.enum` (aidream migration
   `0062_gap4_storage_delete_takeover_timeout.sql`, applied), to matrx-extend
   (`StorageArgs` + a new `delete_extension_storage` handler), and to matrx-frontend's
   `storageArgsSchema`. All three drift checks green.
@@ -195,7 +195,7 @@ and **never blocks** a build or boot.
 ## Definition of done
 
 - Every tool-with-arguments, on every surface, validates incoming calls against a
-  hand-owned model/schema that the engine proves equals `tool_def` (GAP 1 closed).
+  hand-owned model/schema that the engine proves equals `tool.definition` (GAP 1 closed).
 - Zero hand-written descriptions in code; `docs/TOOLS.generated.md` is the only copy
   (GAP 2 closed).
 - One shared comparison spec + loud reporter used by all three surfaces (GAP 3 closed).

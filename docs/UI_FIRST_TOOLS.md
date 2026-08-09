@@ -1,13 +1,21 @@
 # UI-First Tools — porting guide for the Next.js frontend
 
-> **Schema rename note (2026-05-27).** Wherever this doc says `tl_def`,
-> read `tool_def`. Wherever it implies ownership via `source_app`, the
-> current ownership is `tool_binding.executor_name` (e.g.
-> `executor_name='matrx-user'` for the Next.js frontend,
-> `executor_name='chrome-extension'` for this extension). Same tools,
-> shared `tool_def` rows — multiple `tool_binding` rows is how
-> cross-surface sharing works. See
-> [/Users/armanisadeghi/code/aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md).
+> **Schema rename note — the names moved TWICE.** Wherever this doc says
+> `tl_def`, read **`tool.definition`** (it was `tool_def` only between the
+> 2026-05-27 refactor and the 2026-06 schema split; `public.tool_def` is as dead
+> as `tl_def` today). Likewise `tl_executor` → **`tool.binding`** and
+> `tl_def_surface` → **`tool.surface_defaults`**.
+>
+> Wherever this doc implies ownership via `source_app`: that column does not
+> exist. Ownership is a row in **`tool.binding`** — `executor_name='matrx-user'`
+> for the Next.js frontend, `executor_name='chrome-extension'` for this
+> extension. Same tools, one shared `tool.definition` row, multiple
+> `tool.binding` rows — that is how cross-surface sharing works.
+>
+> Canonical vocabulary:
+> [aidream/docs/official/tool_system_rules.md](../../aidream/docs/official/tool_system_rules.md).
+> Refactor write-up:
+> [CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md).
 
 > **Who this is for:** React/Next.js developers building the aimatrx.com
 > chat surface (and any future Matrx Surface — SMS, mobile, sandbox).
@@ -26,12 +34,12 @@
 
 ## Namespace model (2026-05-19)
 
-`tl_def.name` is a GLOBAL unique identifier (the `tools_name_key` constraint
+`tool.definition.name` is a GLOBAL unique identifier (the `tools_name_key` constraint
 is on `name` alone — same name = same tool, no matter which surface runs it).
 The `matrx-extend:` colon-prefix is gone. Three tiers replace it:
 
 - **Bare global names** — UI-first + everything Playwright can also do.
-  These are the SAME `tl_def` row across surfaces. A Next.js frontend
+  These are the SAME `tool.definition` row across surfaces. A Next.js frontend
   that registers a handler for `read_page` shares the row the Chrome
   extension already populates. Examples: `update_plan`, `tasks`,
   `user_todos`, `user`, `request_user_takeover`, `scratchpad`, `read_page`,
@@ -49,10 +57,10 @@ The `matrx-extend:` colon-prefix is gone. Three tiers replace it:
   `cdp_input_*`, `cdp_perf_metrics`, `cdp_print_pdf`, `cdp_network_*`.
 
 The rule that drove the split: **if Playwright can do it, we don't own
-the name.** Other source_apps follow the same shape — `matrx_local` uses
-`local_*` for its desktop-engine tools, `matrx_ai` uses category-style
+the name.** Other executors follow the same shape — `matrx-local` uses
+`local_*` for its desktop-engine tools, `matrx-ai-core` uses category-style
 bare prefixes (`rag_*`, `fs_*`, `widget_*`). All three patterns coexist
-in `tl_def` without colons.
+in `tool.definition` without colons.
 
 `scratchpad` replaces what was previously `matrx-extend:memory`. The
 canonical `memory` tool is owned by matrx_ai (persistent, multi-scope
@@ -344,7 +352,7 @@ they need:
 - [ ] **Per-conversation storage** for `tasks`, `user_todos`, `plan` — Supabase row or localStorage
 - [ ] **Live store + subscriber** that re-reads when data changes (server-side change = Realtime; same-tab = setState)
 - [ ] **Result POST helper** ([`tool-results.ts`](../src/lib/api/routes/tool-results.ts) is the reference)
-- [ ] **Drift check** equivalent — keep your client tool registry in lockstep with `tl_def` (steal [`scripts/check-tool-db-drift.ts`](../scripts/check-tool-db-drift.ts))
+- [ ] **Drift check** equivalent — keep your client tool registry in lockstep with `tool.definition` (steal [`scripts/check-tool-db-drift.ts`](../scripts/check-tool-db-drift.ts))
 
 Once these are wired, every tool in the green section of the
 portability ladder above ships in one PR — they all ride the same five
@@ -596,7 +604,7 @@ restart (session boundary).
 
 **Next.js port:** map to `sessionStorage` for a per-tab scope, or a
 React context for a per-page scope. Same API surface — bare name
-`scratchpad` means the same tl_def row is shared with the extension.
+`scratchpad` means the same `tool.definition` row is shared with the extension.
 
 ---
 

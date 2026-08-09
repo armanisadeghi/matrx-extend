@@ -38,7 +38,7 @@ POST /ai/agent/{agent_id}
   // Stream + accounting
   "stream":         true,
   "store":          true,
-  "source_app":     "matrx-extend",
+  "source_app":     "matrx-extend",   // wire field, NOT the dropped tl_def.source_app column
   "source_feature": "chat" | "tasks" | ...,
 
   // Admin-only / opt-in:
