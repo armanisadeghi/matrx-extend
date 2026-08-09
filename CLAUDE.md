@@ -1083,14 +1083,43 @@ cheap (server-side lookup, no LLM round-trip), so re-running per turn is
 acceptable. Cross-request persistence is on the server-team's roadmap; no
 extension changes needed when it lands.
 
-**Where tool definitions live (May 2026 redesign):**
+**Where tool definitions live:**
 
-- **Canonical source of truth:** `public.tool_def` rows in the aidream
-  DB (renamed from `public.tools` / `public.tl_def` in the 2026-05-27
-  refactor), with ownership on `public.tool_binding`
-  (`executor_name='chrome-extension'`) — not on a column. The original
-  118 tools landed via the 0022 seed migration; ongoing changes go
-  through admin API or SQL seed PRs against aidream.
+> 🚨 **CANONICAL VOCABULARY — memorize before touching tools anywhere.**
+> Normative source:
+> [aidream/docs/official/tool_system_rules.md](../aidream/docs/official/tool_system_rules.md)
+> Part 2. Copy it verbatim; do not paraphrase.
+>
+> **Tool** (a contract) · **Registered tool** (has a `tool.definition` row) ·
+> **Inline tool** (declared on the request, no DB row) · **Executor** (a runtime
+> that dispatches — `tool.executor`) · **Binding** (this executor CAN run this
+> tool — `tool.binding`; the word is reserved and means nothing else) ·
+> **Client** (the app hosting surfaces) · **Surface** (a page/panel —
+> `ui.ui_surface`) · **Surface defaults** (`tool.surface_defaults`) ·
+> **Arming** (turning a tool on for ONE conversation at runtime, from the
+> component holding the state it needs — wire field `client_tools`) ·
+> **Bundle** · **Gate**.
+>
+> **Two paths to existence, both permanent.** Registered (durable) and inline
+> (authored at runtime — this is how agents and users create tools on the fly,
+> and it is never going away). **The database is NOT the only source of truth
+> for tools** — that claim is false and caused durable tools to be built inline
+> to dodge a registry that felt mandatory. The rule is durability: *did this
+> tool exist before the request arrived?* No → inline. Yes → register it.
+>
+> **Three questions about reach, never conflated.** *Where can the code run?* →
+> Executor. *Where is it offered by default?* → Surface. *Is it live for this
+> conversation right now?* → Arming. A page needing different tools is Surface
+> defaults or Arming — **never** a sub-executor.
+
+- **Canonical source of truth for registered tools:** `tool.definition` rows in
+  the aidream DB, with ownership on `tool.binding`
+  (`executor_name='chrome-extension'`) — not on a column. Note these tables
+  moved TWICE: `tl_def` → `tool_def` → **`tool.definition`**; `tl_executor` →
+  `tool_binding` → **`tool.binding`**. Only the last name in each chain exists.
+  Client access goes through `toolDb()` in
+  [src/lib/supabase/schemas.ts](./src/lib/supabase/schemas.ts). Ongoing changes
+  go through admin API or SQL seed PRs against aidream.
 - **Local handlers:** `src/lib/tools/handlers/*.ts` (unchanged).
 - **Wire-format aliasing:** `src/lib/tools/aliases.ts` stripped the
   `matrx-extend__` prefix and legacy `browser_*` names; retired along with

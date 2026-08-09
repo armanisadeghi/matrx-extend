@@ -1,37 +1,60 @@
-# Tools: The Database Is the Source of Truth — Rules & Open Gaps
+# Registered Tools: The Database Is the Source of Truth — Rules & Open Gaps
 
 > **Why this exists.** A review found that some UI surfaces had created their own
 > duplicate definitions for tools — their own descriptions, their own argument
 > shapes — that drifted from the database. The model was being shown one contract
 > while a client validated a different one, silently breaking tool calls. This
-> document is the single, authoritative statement of how tools are defined in this
-> platform. It leaves nothing to interpretation. If code disagrees with this
-> document, the code is wrong.
+> document is the single, authoritative statement of how **registered** tools are
+> defined in this platform. It leaves nothing to interpretation. If code disagrees
+> with this document, the code is wrong.
 
-_Last updated: 2026-05-27 — the table names were renamed by aidream's
-clean-break tool-system refactor; see
-[/Users/armanisadeghi/code/aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md)
-for the authoritative shape. This document was updated in place — the
-rules are unchanged; only the table names moved._
+> 🚨 **SCOPE — read before quoting anything below.** This document governs
+> **registered tools** (tools with a `tool.definition` row). It does **NOT** say
+> the database is the only way a tool can exist. It is not, and that claim — which
+> this document used to make in its title and in Rules 1 and 2 — is **false**.
+>
+> There are **two permanent, first-class paths**: a **registered tool** (durable,
+> in the DB) and an **inline tool** (declared on the request, no DB row). Inline
+> tools are how agents and users author tools **on the fly**; that capability is
+> never going away. The rule that decides between them is **durability**: *did this
+> tool exist before the request arrived?* No → inline is correct. Yes → register it.
+>
+> Getting this backwards caused real harm — treating registration as mandatory made
+> it feel heavy, and durable tools ended up on the inline path to avoid it.
+> Canonical vocabulary and the full doctrine:
+> [aidream/docs/official/tool_system_rules.md](../../aidream/docs/official/tool_system_rules.md)
+> Part 1 and its one-screen vocabulary block.
+
+_Last updated: 2026-08-09 — scope corrected to registered tools, and table names
+brought to the live schema. The tables moved **twice**: `tl_def` → `tool_def` →
+**`tool.definition`**, `tl_executor` → `tool_binding` → **`tool.binding`**,
+`tl_def_surface` → `tool_surface_defaults` → **`tool.surface_defaults`**. Only the
+last name in each chain exists; `public.tool_def` fails exactly as hard as
+`tl_def`._
 
 ---
 
-## The Rules (non-negotiable)
+## The Rules (non-negotiable, for registered tools)
 
-1. **The database is the source of truth. The `public.tool_def` table.** Every
-   tool's name, description, parameters (arguments), tier, category, and
-   per-surface availability live in the database. Nothing in the codebase is
-   authoritative.
+1. **For a registered tool, the database is the source of truth — `tool.definition`.**
+   Its name, description, parameters (arguments), tier, and category live in the
+   database. Nothing in the codebase is authoritative for those. (An **inline**
+   tool carries its own contract on the request; these rules do not apply to it.)
 
-2. **A tool's name and its availability in any UI/surface come from the database.**
-   `tool_def` (the definition) + `tool_binding` (which executor runs it —
-   ownership) + `tool_surface_defaults.always_include_tools` (which surface
-   is allowed to see it). A surface MUST NOT invent, rename, re-scope, or
-   hide a tool in code. If it isn't in the database for that surface, it
-   does not exist for that surface.
+2. **A registered tool's name and its availability come from the database.**
+   `tool.definition` (the contract) + `tool.binding` (which executor can run it) +
+   `tool.surface_defaults.always_include_tools` (which surface is offered it).
+   A surface MUST NOT invent, rename, re-scope, or hide a **registered** tool in
+   code. Adding a genuinely new inline tool at runtime is not a violation of this
+   rule — it is the other path, working as designed.
+
+   Note the three are different questions and must not be conflated: a **binding**
+   says the executor *can* run it; **surface defaults** say it is *offered* there;
+   **arming** (`client_tools` on the request) says it is *live for this
+   conversation right now*. See the canonical doc's three-questions table.
 
 3. **A tool's arguments in code must be exactly verifiable against the database.**
-   Code may declare ONLY arguments that match `tool_def.parameters` — same
+   Code may declare ONLY arguments that match `tool.definition.parameters` — same
    names, types, required-ness, defaults, and enum values.
    - **Python** → a **Pydantic model** (a `ToolArgs` subclass) registered with
      `@tool(args=...)` in `matrx_ai.tools.declared`, **and the executor validates
@@ -69,9 +92,9 @@ rules are unchanged; only the table names moved._
 ### What "match" means (exactly what the engine checks)
 
 For every tool the code claims to run: **identity** (name), **ownership**
-(an active row in `tool_binding` for `executor_name='chrome-extension'`),
+(an active row in `tool.binding` for `executor_name='chrome-extension'`),
 **surface inclusion** (the tool name listed in
-`tool_surface_defaults.always_include_tools` for at least one of
+`tool.surface_defaults.always_include_tools` for at least one of
 `chrome-extension/{assistant,pilot}`), and the **argument set** — for every
 field: name, type, required-ness, default, and enum values. Descriptions
 are NOT checked (they are not code). Note: `function_path` and `source_app`
@@ -114,7 +137,7 @@ entirely (violates Rule 3).
   aidream injects `tool_def` descriptions server-side. The only consumers were
   human-facing UI (approval card, Tools tab) and the client discovery / WebMCP /
   frontend-bridge tools.) Those now read descriptions **LIVE from the DB** via
-  a direct Supabase REST query on `public.tool_def`
+  a direct Supabase REST query on `tool.definition` (via `Accept-Profile: tool`)
   ([src/lib/tools/descriptions.ts](../src/lib/tools/descriptions.ts)) — no stale
   local copy. The older aidream `GET /ai-tools/app/matrx-extend` endpoint was
   retired in the 2026-05-27 refactor since `source_app` is no longer a column.
@@ -145,7 +168,7 @@ server:matrx_ai. (The detailed GAP-4 coordination doc was completed and pruned o
 - **`memory` (name collision).** 🟡 IN PROGRESS. The web app registered a client-side,
   single-session **scratchpad** (`get/set/list/delete` on `cx_agent_memory`) under the
   name `memory`, colliding with the server's persistent **semantic memory** tool
-  (`tool_binding.executor_name='matrx-ai-core'`: `recall/search/store/update/forget`).
+  (`tool.binding.executor_name='matrx-ai-core'`: `recall/search/store/update/forget`).
   **DECISION:** rename the ephemeral client tool to **`scratchpad`** (short-lived,
   one session) everywhere; **`memory`** is reserved exclusively for the persistent
   semantic tool. matrx-frontend now defines `scratchpadArgsSchema`; final DB +
