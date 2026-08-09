@@ -30,6 +30,33 @@
  * numbers for the same page and both get persisted (this file's output is
  * saved to `extend.wbx_seo_audit` and copied into agent context).
  *
+ * THE RULE IS MECHANICALLY ENFORCED. `tests/unit/seo-audit-fixture-parity.test.ts`
+ * replays `tests/fixtures/seo-audit-parity.json` — HTML fixtures and the answers
+ * the PYTHON produced for them — through `runAudit` and demands identical output.
+ * A red test means one side changed without the other. Fix BOTH, then regenerate:
+ *
+ *   cd /Users/armanisadeghi/code/aidream
+ *   .venv/bin/python packages/matrx-scraper/scripts/generate_seo_audit_parity_fixture.py
+ *
+ * (That generator writes the fixture into BOTH repos. Add a case there, not here,
+ * when you add a counting rule.) The sibling `tests/unit/seo-audit-parity.test.ts`
+ * pins the same rules in prose — it explains, this one proves; keep both.
+ *
+ * KNOWN, DELIBERATE DIFFERENCES the fixture does not paper over:
+ *   - Text metrics (`word_count`, `sentence_count`, `flesch_reading_ease`)
+ *     against a LIVE tab read `body.innerText` — rendered text, which honours
+ *     `display:none` and CSS-generated content. The server reads the parsed
+ *     text of the HTML it fetched. On a hidden-nav page or an SPA these
+ *     legitimately differ; that difference is why this file exists. The fixture
+ *     compares the COUNTING RULES on parsed text, which is what can drift.
+ *   - `canonical` and `hreflang[].href` are read via the DOM `.href` property,
+ *     which RESOLVES against the document base; the Python returns the RAW
+ *     `href` attribute. A relative `<link rel="canonical" href="/other">` is
+ *     therefore `https://…/other` here and `/other` there. Fixtures use
+ *     absolute hrefs. This one is a genuine open divergence, not a design
+ *     choice — resolving is the more useful value, and the server's raw string
+ *     also reaches `evaluate_indexability`'s declared-vs-final comparison.
+ *
  * Fields are named for the extension's own display shape rather than the
  * server's flat one. The mapping is 1:1:
  *   title.value/length   ← title / title_length
@@ -90,7 +117,11 @@ export interface SeoAudit {
 export function runAudit(doc: Document = document, baseUrl?: string): SeoAudit {
   const url = baseUrl ?? doc.location?.href ?? doc.baseURI ?? '';
   const titleEl = doc.querySelector<HTMLTitleElement>('title');
-  const titleText = titleEl?.textContent ?? doc.title ?? '';
+  // Mirror of `title_node.text(...).strip()`. Untrimmed, a title indented in
+  // the source (`<title>\n  Page\n</title>`) reported a length several
+  // characters longer than the server's for the same page — and title_length
+  // is exactly what the SERP-truncation checks read.
+  const titleText = (titleEl?.textContent ?? doc.title ?? '').trim();
   const description =
     doc.querySelector<HTMLMetaElement>('meta[name="description"]')?.content ?? null;
   const canonical = doc.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href ?? null;

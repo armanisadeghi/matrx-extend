@@ -1,0 +1,1267 @@
+{
+  "_readme": "GENERATED — do not hand-edit. Source of truth: matrx_scraper/seo_audit.py::audit_html. Regenerate with .venv/bin/python packages/matrx-scraper/scripts/generate_seo_audit_parity_fixture.py from the aidream repo root. If matrx-extend's seo-audit-fixture-parity test fails, one side changed without the other — fix BOTH in the same unit of work.",
+  "source": "packages/matrx-scraper/matrx_scraper/seo_audit.py::audit_html",
+  "generator": "packages/matrx-scraper/scripts/generate_seo_audit_parity_fixture.py",
+  "compared_fields": [
+    "url",
+    "title",
+    "title_length",
+    "meta_description",
+    "meta_description_length",
+    "canonical",
+    "robots",
+    "lang",
+    "hreflang",
+    "og",
+    "twitter",
+    "schema_types",
+    "headings",
+    "internal_links",
+    "external_links",
+    "images_total",
+    "images_missing_alt",
+    "word_count",
+    "sentence_count",
+    "flesch_reading_ease"
+  ],
+  "cases": [
+    {
+      "name": "sentences_no_trailing_whitespace",
+      "why": "The final sentence has no whitespace after its terminator. Counting DELIMITERS instead of split-pieces is off by one on every page and feeds the Flesch denominator directly. This is drift #1.",
+      "base_url": "https://example.com/page",
+      "html": "<!doctype html><html lang=\"en\"><head>\n<title>Cat</title>\n</head>\n<body>\n<p>The cat sat.</p>\n</body></html>",
+      "expected": {
+        "url": "https://example.com/page",
+        "title": "Cat",
+        "title_length": 3,
+        "meta_description": null,
+        "meta_description_length": 0,
+        "canonical": null,
+        "robots": null,
+        "lang": "en",
+        "hreflang": [],
+        "og": {},
+        "twitter": {},
+        "schema_types": [],
+        "headings": [],
+        "internal_links": 0,
+        "external_links": 0,
+        "images_total": 0,
+        "images_missing_alt": 0,
+        "word_count": 3,
+        "sentence_count": 1,
+        "flesch_reading_ease": 119.19
+      }
+    },
+    {
+      "name": "sentences_multiple",
+      "why": "re.split(r\"[.!?]+\\s+\", \"One. Two. Three.\") -> 3 pieces, not 2.",
+      "base_url": "https://example.com/page",
+      "html": "<!doctype html><html lang=\"en\"><head>\n<title>Three</title>\n</head>\n<body>\n<p>One. Two. Three.</p>\n</body></html>",
+      "expected": {
+        "url": "https://example.com/page",
+        "title": "Three",
+        "title_length": 5,
+        "meta_description": null,
+        "meta_description_length": 0,
+        "canonical": null,
+        "robots": null,
+        "lang": "en",
+        "hreflang": [],
+        "og": {},
+        "twitter": {},
+        "schema_types": [],
+        "headings": [],
+        "internal_links": 0,
+        "external_links": 0,
+        "images_total": 0,
+        "images_missing_alt": 0,
+        "word_count": 3,
+        "sentence_count": 3,
+        "flesch_reading_ease": 93.02
+      }
+    },
+    {
+      "name": "sentences_abbreviations",
+      "why": "Neither side does linguistic sentence detection — 'Dr. ' and 'D.C. ' each split. Pinned so a well-meaning 'improvement' on one side alone is caught.",
+      "base_url": "https://example.com/page",
+      "html": "<!doctype html><html lang=\"en\"><head>\n<title>Abbrev</title>\n</head>\n<body>\n<p>Dr. Smith went to Washington D.C. yesterday. He left at 5 p.m. today!</p>\n</body></html>",
+      "expected": {
+        "url": "https://example.com/page",
+        "title": "Abbrev",
+        "title_length": 6,
+        "meta_description": null,
+        "meta_description_length": 0,
+        "canonical": null,
+        "robots": null,
+        "lang": "en",
+        "hreflang": [],
+        "og": {},
+        "twitter": {},
+        "schema_types": [],
+        "headings": [],
+        "internal_links": 0,
+        "external_links": 0,
+        "images_total": 0,
+        "images_missing_alt": 0,
+        "word_count": 13,
+        "sentence_count": 5,
+        "flesch_reading_ease": 93.57
+      }
+    },
+    {
+      "name": "sentences_terminator_runs",
+      "why": "[.!?]+ collapses runs: '!!!' and '?!' are one delimiter, not three.",
+      "base_url": "https://example.com/page",
+      "html": "<!doctype html><html lang=\"en\"><head>\n<title>Runs</title>\n</head>\n<body>\n<p>Really?! Yes!!! Absolutely... maybe.</p>\n</body></html>",
+      "expected": {
+        "url": "https://example.com/page",
+        "title": "Runs",
+        "title_length": 4,
+        "meta_description": null,
+        "meta_description_length": 0,
+        "canonical": null,
+        "robots": null,
+        "lang": "en",
+        "hreflang": [],
+        "og": {},
+        "twitter": {},
+        "schema_types": [],
+        "headings": [],
+        "internal_links": 0,
+        "external_links": 0,
+        "images_total": 0,
+        "images_missing_alt": 0,
+        "word_count": 4,
+        "sentence_count": 4,
+        "flesch_reading_ease": -5.68
+      }
+    },
+    {
+      "name": "headings_empty_and_duplicate",
+      "why": "Empty headings are skipped BEFORE the cap, and duplicates are kept (dedup is a cross-page job, not this one). Drift #2.",
+      "base_url": "https://example.com/page",
+      "html": "<!doctype html><html lang=\"en\"><head>\n<title>Headings</title>\n</head>\n<body>\n<h1>Real</h1>\n<h2></h2>\n<h2>   </h2>\n<h2>Duplicate</h2>\n<h2>Duplicate</h2>\n<h3>Also real</h3>\n<h6>Deep</h6>\n</body></html>",
+      "expected": {
+        "url": "https://example.com/page",
+        "title": "Headings",
+        "title_length": 8,
+        "meta_description": null,
+        "meta_description_length": 0,
+        "canonical": null,
+        "robots": null,
+        "lang": "en",
+        "hreflang": [],
+        "og": {},
+        "twitter": {},
+        "schema_types": [],
+        "headings": [
+          {
+            "level": 1,
+            "text": "Real"
+          },
+          {
+            "level": 2,
+            "text": "Duplicate"
+          },
+          {
+            "level": 2,
+            "text": "Duplicate"
+          },
+          {
+            "level": 3,
+            "text": "Also real"
+          },
+          {
+            "level": 6,
+            "text": "Deep"
+          }
+        ],
+        "internal_links": 0,
+        "external_links": 0,
+        "images_total": 0,
+        "images_missing_alt": 0,
+        "word_count": 6,
+        "sentence_count": 1,
+        "flesch_reading_ease": 17.45
+      }
+    },
+    {
+      "name": "headings_cap_200_after_empty_skip",
+      "why": "The 200 cap counts KEPT headings. Capping before the empty-skip lets blank <h_> wrappers (card grids) eat the slots and inflate the count.",
+      "base_url": "https://example.com/page",
+      "html": "<!doctype html><html lang=\"en\"><head>\n<title>Cap</title>\n</head>\n<body>\n<h2></h2>\n<h2>H0</h2>\n<h2></h2>\n<h2>H1</h2>\n<h2></h2>\n<h2>H2</h2>\n<h2></h2>\n<h2>H3</h2>\n<h2></h2>\n<h2>H4</h2>\n<h2></h2>\n<h2>H5</h2>\n<h2></h2>\n<h2>H6</h2>\n<h2></h2>\n<h2>H7</h2>\n<h2></h2>\n<h2>H8</h2>\n<h2></h2>\n<h2>H9</h2>\n<h2></h2>\n<h2>H10</h2>\n<h2></h2>\n<h2>H11</h2>\n<h2></h2>\n<h2>H12</h2>\n<h2></h2>\n<h2>H13</h2>\n<h2></h2>\n<h2>H14</h2>\n<h2></h2>\n<h2>H15</h2>\n<h2></h2>\n<h2>H16</h2>\n<h2></h2>\n<h2>H17</h2>\n<h2></h2>\n<h2>H18</h2>\n<h2></h2>\n<h2>H19</h2>\n<h2></h2>\n<h2>H20</h2>\n<h2></h2>\n<h2>H21</h2>\n<h2></h2>\n<h2>H22</h2>\n<h2></h2>\n<h2>H23</h2>\n<h2></h2>\n<h2>H24</h2>\n<h2></h2>\n<h2>H25</h2>\n<h2></h2>\n<h2>H26</h2>\n<h2></h2>\n<h2>H27</h2>\n<h2></h2>\n<h2>H28</h2>\n<h2></h2>\n<h2>H29</h2>\n<h2></h2>\n<h2>H30</h2>\n<h2></h2>\n<h2>H31</h2>\n<h2></h2>\n<h2>H32</h2>\n<h2></h2>\n<h2>H33</h2>\n<h2></h2>\n<h2>H34</h2>\n<h2></h2>\n<h2>H35</h2>\n<h2></h2>\n<h2>H36</h2>\n<h2></h2>\n<h2>H37</h2>\n<h2></h2>\n<h2>H38</h2>\n<h2></h2>\n<h2>H39</h2>\n<h2></h2>\n<h2>H40</h2>\n<h2></h2>\n<h2>H41</h2>\n<h2></h2>\n<h2>H42</h2>\n<h2></h2>\n<h2>H43</h2>\n<h2></h2>\n<h2>H44</h2>\n<h2></h2>\n<h2>H45</h2>\n<h2></h2>\n<h2>H46</h2>\n<h2></h2>\n<h2>H47</h2>\n<h2></h2>\n<h2>H48</h2>\n<h2></h2>\n<h2>H49</h2>\n<h2></h2>\n<h2>H50</h2>\n<h2></h2>\n<h2>H51</h2>\n<h2></h2>\n<h2>H52</h2>\n<h2></h2>\n<h2>H53</h2>\n<h2></h2>\n<h2>H54</h2>\n<h2></h2>\n<h2>H55</h2>\n<h2></h2>\n<h2>H56</h2>\n<h2></h2>\n<h2>H57</h2>\n<h2></h2>\n<h2>H58</h2>\n<h2></h2>\n<h2>H59</h2>\n<h2></h2>\n<h2>H60</h2>\n<h2></h2>\n<h2>H61</h2>\n<h2></h2>\n<h2>H62</h2>\n<h2></h2>\n<h2>H63</h2>\n<h2></h2>\n<h2>H64</h2>\n<h2></h2>\n<h2>H65</h2>\n<h2></h2>\n<h2>H66</h2>\n<h2></h2>\n<h2>H67</h2>\n<h2></h2>\n<h2>H68</h2>\n<h2></h2>\n<h2>H69</h2>\n<h2></h2>\n<h2>H70</h2>\n<h2></h2>\n<h2>H71</h2>\n<h2></h2>\n<h2>H72</h2>\n<h2></h2>\n<h2>H73</h2>\n<h2></h2>\n<h2>H74</h2>\n<h2></h2>\n<h2>H75</h2>\n<h2></h2>\n<h2>H76</h2>\n<h2></h2>\n<h2>H77</h2>\n<h2></h2>\n<h2>H78</h2>\n<h2></h2>\n<h2>H79</h2>\n<h2></h2>\n<h2>H80</h2>\n<h2></h2>\n<h2>H81</h2>\n<h2></h2>\n<h2>H82</h2>\n<h2></h2>\n<h2>H83</h2>\n<h2></h2>\n<h2>H84</h2>\n<h2></h2>\n<h2>H85</h2>\n<h2></h2>\n<h2>H86</h2>\n<h2></h2>\n<h2>H87</h2>\n<h2></h2>\n<h2>H88</h2>\n<h2></h2>\n<h2>H89</h2>\n<h2></h2>\n<h2>H90</h2>\n<h2></h2>\n<h2>H91</h2>\n<h2></h2>\n<h2>H92</h2>\n<h2></h2>\n<h2>H93</h2>\n<h2></h2>\n<h2>H94</h2>\n<h2></h2>\n<h2>H95</h2>\n<h2></h2>\n<h2>H96</h2>\n<h2></h2>\n<h2>H97</h2>\n<h2></h2>\n<h2>H98</h2>\n<h2></h2>\n<h2>H99</h2>\n<h2></h2>\n<h2>H100</h2>\n<h2></h2>\n<h2>H101</h2>\n<h2></h2>\n<h2>H102</h2>\n<h2></h2>\n<h2>H103</h2>\n<h2></h2>\n<h2>H104</h2>\n<h2></h2>\n<h2>H105</h2>\n<h2></h2>\n<h2>H106</h2>\n<h2></h2>\n<h2>H107</h2>\n<h2></h2>\n<h2>H108</h2>\n<h2></h2>\n<h2>H109</h2>\n<h2></h2>\n<h2>H110</h2>\n<h2></h2>\n<h2>H111</h2>\n<h2></h2>\n<h2>H112</h2>\n<h2></h2>\n<h2>H113</h2>\n<h2></h2>\n<h2>H114</h2>\n<h2></h2>\n<h2>H115</h2>\n<h2></h2>\n<h2>H116</h2>\n<h2></h2>\n<h2>H117</h2>\n<h2></h2>\n<h2>H118</h2>\n<h2></h2>\n<h2>H119</h2>\n<h2></h2>\n<h2>H120</h2>\n<h2></h2>\n<h2>H121</h2>\n<h2></h2>\n<h2>H122</h2>\n<h2></h2>\n<h2>H123</h2>\n<h2></h2>\n<h2>H124</h2>\n<h2></h2>\n<h2>H125</h2>\n<h2></h2>\n<h2>H126</h2>\n<h2></h2>\n<h2>H127</h2>\n<h2></h2>\n<h2>H128</h2>\n<h2></h2>\n<h2>H129</h2>\n<h2></h2>\n<h2>H130</h2>\n<h2></h2>\n<h2>H131</h2>\n<h2></h2>\n<h2>H132</h2>\n<h2></h2>\n<h2>H133</h2>\n<h2></h2>\n<h2>H134</h2>\n<h2></h2>\n<h2>H135</h2>\n<h2></h2>\n<h2>H136</h2>\n<h2></h2>\n<h2>H137</h2>\n<h2></h2>\n<h2>H138</h2>\n<h2></h2>\n<h2>H139</h2>\n<h2></h2>\n<h2>H140</h2>\n<h2></h2>\n<h2>H141</h2>\n<h2></h2>\n<h2>H142</h2>\n<h2></h2>\n<h2>H143</h2>\n<h2></h2>\n<h2>H144</h2>\n<h2></h2>\n<h2>H145</h2>\n<h2></h2>\n<h2>H146</h2>\n<h2></h2>\n<h2>H147</h2>\n<h2></h2>\n<h2>H148</h2>\n<h2></h2>\n<h2>H149</h2>\n<h2></h2>\n<h2>H150</h2>\n<h2></h2>\n<h2>H151</h2>\n<h2></h2>\n<h2>H152</h2>\n<h2></h2>\n<h2>H153</h2>\n<h2></h2>\n<h2>H154</h2>\n<h2></h2>\n<h2>H155</h2>\n<h2></h2>\n<h2>H156</h2>\n<h2></h2>\n<h2>H157</h2>\n<h2></h2>\n<h2>H158</h2>\n<h2></h2>\n<h2>H159</h2>\n<h2></h2>\n<h2>H160</h2>\n<h2></h2>\n<h2>H161</h2>\n<h2></h2>\n<h2>H162</h2>\n<h2></h2>\n<h2>H163</h2>\n<h2></h2>\n<h2>H164</h2>\n<h2></h2>\n<h2>H165</h2>\n<h2></h2>\n<h2>H166</h2>\n<h2></h2>\n<h2>H167</h2>\n<h2></h2>\n<h2>H168</h2>\n<h2></h2>\n<h2>H169</h2>\n<h2></h2>\n<h2>H170</h2>\n<h2></h2>\n<h2>H171</h2>\n<h2></h2>\n<h2>H172</h2>\n<h2></h2>\n<h2>H173</h2>\n<h2></h2>\n<h2>H174</h2>\n<h2></h2>\n<h2>H175</h2>\n<h2></h2>\n<h2>H176</h2>\n<h2></h2>\n<h2>H177</h2>\n<h2></h2>\n<h2>H178</h2>\n<h2></h2>\n<h2>H179</h2>\n<h2></h2>\n<h2>H180</h2>\n<h2></h2>\n<h2>H181</h2>\n<h2></h2>\n<h2>H182</h2>\n<h2></h2>\n<h2>H183</h2>\n<h2></h2>\n<h2>H184</h2>\n<h2></h2>\n<h2>H185</h2>\n<h2></h2>\n<h2>H186</h2>\n<h2></h2>\n<h2>H187</h2>\n<h2></h2>\n<h2>H188</h2>\n<h2></h2>\n<h2>H189</h2>\n<h2></h2>\n<h2>H190</h2>\n<h2></h2>\n<h2>H191</h2>\n<h2></h2>\n<h2>H192</h2>\n<h2></h2>\n<h2>H193</h2>\n<h2></h2>\n<h2>H194</h2>\n<h2></h2>\n<h2>H195</h2>\n<h2></h2>\n<h2>H196</h2>\n<h2></h2>\n<h2>H197</h2>\n<h2></h2>\n<h2>H198</h2>\n<h2></h2>\n<h2>H199</h2>\n<h2></h2>\n<h2>H200</h2>\n<h2></h2>\n<h2>H201</h2>\n<h2></h2>\n<h2>H202</h2>\n<h2></h2>\n<h2>H203</h2>\n<h2></h2>\n<h2>H204</h2>\n</body></html>",
+      "expected": {
+        "url": "https://example.com/page",
+        "title": "Cap",
+        "title_length": 3,
+        "meta_description": null,
+        "meta_description_length": 0,
+        "canonical": null,
+        "robots": null,
+        "lang": "en",
+        "hreflang": [],
+        "og": {},
+        "twitter": {},
+        "schema_types": [],
+        "headings": [
+          {
+            "level": 2,
+            "text": "H0"
+          },
+          {
+            "level": 2,
+            "text": "H1"
+          },
+          {
+            "level": 2,
+            "text": "H2"
+          },
+          {
+            "level": 2,
+            "text": "H3"
+          },
+          {
+            "level": 2,
+            "text": "H4"
+          },
+          {
+            "level": 2,
+            "text": "H5"
+          },
+          {
+            "level": 2,
+            "text": "H6"
+          },
+          {
+            "level": 2,
+            "text": "H7"
+          },
+          {
+            "level": 2,
+            "text": "H8"
+          },
+          {
+            "level": 2,
+            "text": "H9"
+          },
+          {
+            "level": 2,
+            "text": "H10"
+          },
+          {
+            "level": 2,
+            "text": "H11"
+          },
+          {
+            "level": 2,
+            "text": "H12"
+          },
+          {
+            "level": 2,
+            "text": "H13"
+          },
+          {
+            "level": 2,
+            "text": "H14"
+          },
+          {
+            "level": 2,
+            "text": "H15"
+          },
+          {
+            "level": 2,
+            "text": "H16"
+          },
+          {
+            "level": 2,
+            "text": "H17"
+          },
+          {
+            "level": 2,
+            "text": "H18"
+          },
+          {
+            "level": 2,
+            "text": "H19"
+          },
+          {
+            "level": 2,
+            "text": "H20"
+          },
+          {
+            "level": 2,
+            "text": "H21"
+          },
+          {
+            "level": 2,
+            "text": "H22"
+          },
+          {
+            "level": 2,
+            "text": "H23"
+          },
+          {
+            "level": 2,
+            "text": "H24"
+          },
+          {
+            "level": 2,
+            "text": "H25"
+          },
+          {
+            "level": 2,
+            "text": "H26"
+          },
+          {
+            "level": 2,
+            "text": "H27"
+          },
+          {
+            "level": 2,
+            "text": "H28"
+          },
+          {
+            "level": 2,
+            "text": "H29"
+          },
+          {
+            "level": 2,
+            "text": "H30"
+          },
+          {
+            "level": 2,
+            "text": "H31"
+          },
+          {
+            "level": 2,
+            "text": "H32"
+          },
+          {
+            "level": 2,
+            "text": "H33"
+          },
+          {
+            "level": 2,
+            "text": "H34"
+          },
+          {
+            "level": 2,
+            "text": "H35"
+          },
+          {
+            "level": 2,
+            "text": "H36"
+          },
+          {
+            "level": 2,
+            "text": "H37"
+          },
+          {
+            "level": 2,
+            "text": "H38"
+          },
+          {
+            "level": 2,
+            "text": "H39"
+          },
+          {
+            "level": 2,
+            "text": "H40"
+          },
+          {
+            "level": 2,
+            "text": "H41"
+          },
+          {
+            "level": 2,
+            "text": "H42"
+          },
+          {
+            "level": 2,
+            "text": "H43"
+          },
+          {
+            "level": 2,
+            "text": "H44"
+          },
+          {
+            "level": 2,
+            "text": "H45"
+          },
+          {
+            "level": 2,
+            "text": "H46"
+          },
+          {
+            "level": 2,
+            "text": "H47"
+          },
+          {
+            "level": 2,
+            "text": "H48"
+          },
+          {
+            "level": 2,
+            "text": "H49"
+          },
+          {
+            "level": 2,
+            "text": "H50"
+          },
+          {
+            "level": 2,
+            "text": "H51"
+          },
+          {
+            "level": 2,
+            "text": "H52"
+          },
+          {
+            "level": 2,
+            "text": "H53"
+          },
+          {
+            "level": 2,
+            "text": "H54"
+          },
+          {
+            "level": 2,
+            "text": "H55"
+          },
+          {
+            "level": 2,
+            "text": "H56"
+          },
+          {
+            "level": 2,
+            "text": "H57"
+          },
+          {
+            "level": 2,
+            "text": "H58"
+          },
+          {
+            "level": 2,
+            "text": "H59"
+          },
+          {
+            "level": 2,
+            "text": "H60"
+          },
+          {
+            "level": 2,
+            "text": "H61"
+          },
+          {
+            "level": 2,
+            "text": "H62"
+          },
+          {
+            "level": 2,
+            "text": "H63"
+          },
+          {
+            "level": 2,
+            "text": "H64"
+          },
+          {
+            "level": 2,
+            "text": "H65"
+          },
+          {
+            "level": 2,
+            "text": "H66"
+          },
+          {
+            "level": 2,
+            "text": "H67"
+          },
+          {
+            "level": 2,
+            "text": "H68"
+          },
+          {
+            "level": 2,
+            "text": "H69"
+          },
+          {
+            "level": 2,
+            "text": "H70"
+          },
+          {
+            "level": 2,
+            "text": "H71"
+          },
+          {
+            "level": 2,
+            "text": "H72"
+          },
+          {
+            "level": 2,
+            "text": "H73"
+          },
+          {
+            "level": 2,
+            "text": "H74"
+          },
+          {
+            "level": 2,
+            "text": "H75"
+          },
+          {
+            "level": 2,
+            "text": "H76"
+          },
+          {
+            "level": 2,
+            "text": "H77"
+          },
+          {
+            "level": 2,
+            "text": "H78"
+          },
+          {
+            "level": 2,
+            "text": "H79"
+          },
+          {
+            "level": 2,
+            "text": "H80"
+          },
+          {
+            "level": 2,
+            "text": "H81"
+          },
+          {
+            "level": 2,
+            "text": "H82"
+          },
+          {
+            "level": 2,
+            "text": "H83"
+          },
+          {
+            "level": 2,
+            "text": "H84"
+          },
+          {
+            "level": 2,
+            "text": "H85"
+          },
+          {
+            "level": 2,
+            "text": "H86"
+          },
+          {
+            "level": 2,
+            "text": "H87"
+          },
+          {
+            "level": 2,
+            "text": "H88"
+          },
+          {
+            "level": 2,
+            "text": "H89"
+          },
+          {
+            "level": 2,
+            "text": "H90"
+          },
+          {
+            "level": 2,
+            "text": "H91"
+          },
+          {
+            "level": 2,
+            "text": "H92"
+          },
+          {
+            "level": 2,
+            "text": "H93"
+          },
+          {
+            "level": 2,
+            "text": "H94"
+          },
+          {
+            "level": 2,
+            "text": "H95"
+          },
+          {
+            "level": 2,
+            "text": "H96"
+          },
+          {
+            "level": 2,
+            "text": "H97"
+          },
+          {
+            "level": 2,
+            "text": "H98"
+          },
+          {
+            "level": 2,
+            "text": "H99"
+          },
+          {
+            "level": 2,
+            "text": "H100"
+          },
+          {
+            "level": 2,
+            "text": "H101"
+          },
+          {
+            "level": 2,
+            "text": "H102"
+          },
+          {
+            "level": 2,
+            "text": "H103"
+          },
+          {
+            "level": 2,
+            "text": "H104"
+          },
+          {
+            "level": 2,
+            "text": "H105"
+          },
+          {
+            "level": 2,
+            "text": "H106"
+          },
+          {
+            "level": 2,
+            "text": "H107"
+          },
+          {
+            "level": 2,
+            "text": "H108"
+          },
+          {
+            "level": 2,
+            "text": "H109"
+          },
+          {
+            "level": 2,
+            "text": "H110"
+          },
+          {
+            "level": 2,
+            "text": "H111"
+          },
+          {
+            "level": 2,
+            "text": "H112"
+          },
+          {
+            "level": 2,
+            "text": "H113"
+          },
+          {
+            "level": 2,
+            "text": "H114"
+          },
+          {
+            "level": 2,
+            "text": "H115"
+          },
+          {
+            "level": 2,
+            "text": "H116"
+          },
+          {
+            "level": 2,
+            "text": "H117"
+          },
+          {
+            "level": 2,
+            "text": "H118"
+          },
+          {
+            "level": 2,
+            "text": "H119"
+          },
+          {
+            "level": 2,
+            "text": "H120"
+          },
+          {
+            "level": 2,
+            "text": "H121"
+          },
+          {
+            "level": 2,
+            "text": "H122"
+          },
+          {
+            "level": 2,
+            "text": "H123"
+          },
+          {
+            "level": 2,
+            "text": "H124"
+          },
+          {
+            "level": 2,
+            "text": "H125"
+          },
+          {
+            "level": 2,
+            "text": "H126"
+          },
+          {
+            "level": 2,
+            "text": "H127"
+          },
+          {
+            "level": 2,
+            "text": "H128"
+          },
+          {
+            "level": 2,
+            "text": "H129"
+          },
+          {
+            "level": 2,
+            "text": "H130"
+          },
+          {
+            "level": 2,
+            "text": "H131"
+          },
+          {
+            "level": 2,
+            "text": "H132"
+          },
+          {
+            "level": 2,
+            "text": "H133"
+          },
+          {
+            "level": 2,
+            "text": "H134"
+          },
+          {
+            "level": 2,
+            "text": "H135"
+          },
+          {
+            "level": 2,
+            "text": "H136"
+          },
+          {
+            "level": 2,
+            "text": "H137"
+          },
+          {
+            "level": 2,
+            "text": "H138"
+          },
+          {
+            "level": 2,
+            "text": "H139"
+          },
+          {
+            "level": 2,
+            "text": "H140"
+          },
+          {
+            "level": 2,
+            "text": "H141"
+          },
+          {
+            "level": 2,
+            "text": "H142"
+          },
+          {
+            "level": 2,
+            "text": "H143"
+          },
+          {
+            "level": 2,
+            "text": "H144"
+          },
+          {
+            "level": 2,
+            "text": "H145"
+          },
+          {
+            "level": 2,
+            "text": "H146"
+          },
+          {
+            "level": 2,
+            "text": "H147"
+          },
+          {
+            "level": 2,
+            "text": "H148"
+          },
+          {
+            "level": 2,
+            "text": "H149"
+          },
+          {
+            "level": 2,
+            "text": "H150"
+          },
+          {
+            "level": 2,
+            "text": "H151"
+          },
+          {
+            "level": 2,
+            "text": "H152"
+          },
+          {
+            "level": 2,
+            "text": "H153"
+          },
+          {
+            "level": 2,
+            "text": "H154"
+          },
+          {
+            "level": 2,
+            "text": "H155"
+          },
+          {
+            "level": 2,
+            "text": "H156"
+          },
+          {
+            "level": 2,
+            "text": "H157"
+          },
+          {
+            "level": 2,
+            "text": "H158"
+          },
+          {
+            "level": 2,
+            "text": "H159"
+          },
+          {
+            "level": 2,
+            "text": "H160"
+          },
+          {
+            "level": 2,
+            "text": "H161"
+          },
+          {
+            "level": 2,
+            "text": "H162"
+          },
+          {
+            "level": 2,
+            "text": "H163"
+          },
+          {
+            "level": 2,
+            "text": "H164"
+          },
+          {
+            "level": 2,
+            "text": "H165"
+          },
+          {
+            "level": 2,
+            "text": "H166"
+          },
+          {
+            "level": 2,
+            "text": "H167"
+          },
+          {
+            "level": 2,
+            "text": "H168"
+          },
+          {
+            "level": 2,
+            "text": "H169"
+          },
+          {
+            "level": 2,
+            "text": "H170"
+          },
+          {
+            "level": 2,
+            "text": "H171"
+          },
+          {
+            "level": 2,
+            "text": "H172"
+          },
+          {
+            "level": 2,
+            "text": "H173"
+          },
+          {
+            "level": 2,
+            "text": "H174"
+          },
+          {
+            "level": 2,
+            "text": "H175"
+          },
+          {
+            "level": 2,
+            "text": "H176"
+          },
+          {
+            "level": 2,
+            "text": "H177"
+          },
+          {
+            "level": 2,
+            "text": "H178"
+          },
+          {
+            "level": 2,
+            "text": "H179"
+          },
+          {
+            "level": 2,
+            "text": "H180"
+          },
+          {
+            "level": 2,
+            "text": "H181"
+          },
+          {
+            "level": 2,
+            "text": "H182"
+          },
+          {
+            "level": 2,
+            "text": "H183"
+          },
+          {
+            "level": 2,
+            "text": "H184"
+          },
+          {
+            "level": 2,
+            "text": "H185"
+          },
+          {
+            "level": 2,
+            "text": "H186"
+          },
+          {
+            "level": 2,
+            "text": "H187"
+          },
+          {
+            "level": 2,
+            "text": "H188"
+          },
+          {
+            "level": 2,
+            "text": "H189"
+          },
+          {
+            "level": 2,
+            "text": "H190"
+          },
+          {
+            "level": 2,
+            "text": "H191"
+          },
+          {
+            "level": 2,
+            "text": "H192"
+          },
+          {
+            "level": 2,
+            "text": "H193"
+          },
+          {
+            "level": 2,
+            "text": "H194"
+          },
+          {
+            "level": 2,
+            "text": "H195"
+          },
+          {
+            "level": 2,
+            "text": "H196"
+          },
+          {
+            "level": 2,
+            "text": "H197"
+          },
+          {
+            "level": 2,
+            "text": "H198"
+          },
+          {
+            "level": 2,
+            "text": "H199"
+          }
+        ],
+        "internal_links": 0,
+        "external_links": 0,
+        "images_total": 0,
+        "images_missing_alt": 0,
+        "word_count": 205,
+        "sentence_count": 1,
+        "flesch_reading_ease": -85.84
+      }
+    },
+    {
+      "name": "links_non_http_schemes",
+      "why": "javascript:/mailto:/tel:/#fragment must be counted as NEITHER. `new URL('javascript:void(0)')` parses fine with an empty host, so an exception-only guard counted them as external. Drift #3.",
+      "base_url": "https://example.com/page",
+      "html": "<!doctype html><html lang=\"en\"><head>\n<title>Links</title>\n</head>\n<body>\n<a href=\"/about\">internal rel</a>\n<a href=\"https://example.com/deep\">internal abs</a>\n<a href=\"https://other.test/x\">external</a>\n<a href=\"javascript:void(0)\">js</a>\n<a href=\"mailto:a@b.c\">mail</a>\n<a href=\"tel:+15551234\">tel</a>\n<a href=\"#frag\">fragment</a>\n<a href=\"ftp://files.test/x\">ftp</a>\n<a>no href at all</a>\n</body></html>",
+      "expected": {
+        "url": "https://example.com/page",
+        "title": "Links",
+        "title_length": 5,
+        "meta_description": null,
+        "meta_description_length": 0,
+        "canonical": null,
+        "robots": null,
+        "lang": "en",
+        "hreflang": [],
+        "og": {},
+        "twitter": {},
+        "schema_types": [],
+        "headings": [],
+        "internal_links": 3,
+        "external_links": 1,
+        "images_total": 0,
+        "images_missing_alt": 0,
+        "word_count": 14,
+        "sentence_count": 1,
+        "flesch_reading_ease": 65.73
+      }
+    },
+    {
+      "name": "links_subdomain_vs_same_host",
+      "why": "A subdomain counts as EXTERNAL on both sides. The Python tags it link_type=\"subdomain\" for the link graph but still does `external += 1`.",
+      "base_url": "https://example.com/page",
+      "html": "<!doctype html><html lang=\"en\"><head>\n<title>Hosts</title>\n</head>\n<body>\n<a href=\"https://example.com/same\">same host</a>\n<a href=\"https://blog.example.com/p\">subdomain</a>\n<a href=\"https://www.example.com/p\">www is also a subdomain</a>\n<a href=\"http://example.com/scheme\">same host, other scheme</a>\n<a href=\"https://notexample.com/p\">different registrable</a>\n</body></html>",
+      "expected": {
+        "url": "https://example.com/page",
+        "title": "Hosts",
+        "title_length": 5,
+        "meta_description": null,
+        "meta_description_length": 0,
+        "canonical": null,
+        "robots": null,
+        "lang": "en",
+        "hreflang": [],
+        "og": {},
+        "twitter": {},
+        "schema_types": [],
+        "headings": [],
+        "internal_links": 2,
+        "external_links": 3,
+        "images_total": 0,
+        "images_missing_alt": 0,
+        "word_count": 14,
+        "sentence_count": 1,
+        "flesch_reading_ease": 23.43
+      }
+    },
+    {
+      "name": "zero_text_page",
+      "why": "No text -> word_count 0, sentence_count 0, flesch null. A `score ? ...` null-guard also turns a legitimate 0 into null; only 'no text' may.",
+      "base_url": "https://example.com/page",
+      "html": "<!doctype html><html lang=\"en\"><head>\n<title>Empty</title>\n</head>\n<body>\n<div></div>\n</body></html>",
+      "expected": {
+        "url": "https://example.com/page",
+        "title": "Empty",
+        "title_length": 5,
+        "meta_description": null,
+        "meta_description_length": 0,
+        "canonical": null,
+        "robots": null,
+        "lang": "en",
+        "hreflang": [],
+        "og": {},
+        "twitter": {},
+        "schema_types": [],
+        "headings": [],
+        "internal_links": 0,
+        "external_links": 0,
+        "images_total": 0,
+        "images_missing_alt": 0,
+        "word_count": 0,
+        "sentence_count": 0,
+        "flesch_reading_ease": null
+      }
+    },
+    {
+      "name": "flesch_clamp_single_sentence",
+      "why": "400 long words in ONE sentence drives raw Flesch far past the DB column's range. The ±999.99 clamp is part of the contract on both write paths. Drift #4.",
+      "base_url": "https://example.com/page",
+      "html": "<!doctype html><html lang=\"en\"><head>\n<title>Clamp</title>\n</head>\n<body>\n<p>extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily extraordinarily.</p>\n</body></html>",
+      "expected": {
+        "url": "https://example.com/page",
+        "title": "Clamp",
+        "title_length": 5,
+        "meta_description": null,
+        "meta_description_length": 0,
+        "canonical": null,
+        "robots": null,
+        "lang": "en",
+        "hreflang": [],
+        "og": {},
+        "twitter": {},
+        "schema_types": [],
+        "headings": [],
+        "internal_links": 0,
+        "external_links": 0,
+        "images_total": 0,
+        "images_missing_alt": 0,
+        "word_count": 400,
+        "sentence_count": 1,
+        "flesch_reading_ease": -706.76
+      }
+    },
+    {
+      "name": "flesch_ordinary_prose",
+      "why": "A normal score — pins the rounding (round(score*100)/100), not just the clamp.",
+      "base_url": "https://example.com/page",
+      "html": "<!doctype html><html lang=\"en\"><head>\n<title>Prose</title>\n</head>\n<body>\n<p>The cat sat on the mat. The dog ran fast. Birds sing in the morning light. It was a good day for a walk.</p>\n</body></html>",
+      "expected": {
+        "url": "https://example.com/page",
+        "title": "Prose",
+        "title_length": 5,
+        "meta_description": null,
+        "meta_description_length": 0,
+        "canonical": null,
+        "robots": null,
+        "lang": "en",
+        "hreflang": [],
+        "og": {},
+        "twitter": {},
+        "schema_types": [],
+        "headings": [],
+        "internal_links": 0,
+        "external_links": 0,
+        "images_total": 0,
+        "images_missing_alt": 0,
+        "word_count": 24,
+        "sentence_count": 4,
+        "flesch_reading_ease": 112.62
+      }
+    },
+    {
+      "name": "missing_title_description_canonical",
+      "why": "Absent != empty. title '' / length 0; description and canonical null.",
+      "base_url": "https://example.com/page",
+      "html": "<!doctype html><html lang=\"\"><head>\n\n</head>\n<body>\n<p>Body only.</p>\n</body></html>",
+      "expected": {
+        "url": "https://example.com/page",
+        "title": "",
+        "title_length": 0,
+        "meta_description": null,
+        "meta_description_length": 0,
+        "canonical": null,
+        "robots": null,
+        "lang": null,
+        "hreflang": [],
+        "og": {},
+        "twitter": {},
+        "schema_types": [],
+        "headings": [],
+        "internal_links": 0,
+        "external_links": 0,
+        "images_total": 0,
+        "images_missing_alt": 0,
+        "word_count": 2,
+        "sentence_count": 1,
+        "flesch_reading_ease": 35.61
+      }
+    },
+    {
+      "name": "title_and_description_whitespace",
+      "why": "The Python STRIPS the title before measuring length; the description content attribute is taken raw. Both lengths are persisted.",
+      "base_url": "https://example.com/page",
+      "html": "<!doctype html><html lang=\"en\"><head>\n<title>   Padded Title   </title>\n<meta name=\"description\" content=\"A description.\">\n</head>\n<body>\n<p>Body.</p>\n</body></html>",
+      "expected": {
+        "url": "https://example.com/page",
+        "title": "Padded Title",
+        "title_length": 12,
+        "meta_description": "A description.",
+        "meta_description_length": 14,
+        "canonical": null,
+        "robots": null,
+        "lang": "en",
+        "hreflang": [],
+        "og": {},
+        "twitter": {},
+        "schema_types": [],
+        "headings": [],
+        "internal_links": 0,
+        "external_links": 0,
+        "images_total": 0,
+        "images_missing_alt": 0,
+        "word_count": 1,
+        "sentence_count": 1,
+        "flesch_reading_ease": 36.62
+      }
+    },
+    {
+      "name": "kitchen_sink_metadata",
+      "why": "og/twitter/canonical/robots/hreflang/images/schema all at once. Absolute hrefs on purpose — see the relative-URL note in the test.",
+      "base_url": "https://example.com/page",
+      "html": "<!doctype html><html lang=\"en\"><head>\n<title>Kitchen Sink</title>\n<meta name=\"description\" content=\"Everything, all at once.\">\n<meta name=\"robots\" content=\"index, follow\">\n<link rel=\"canonical\" href=\"https://example.com/page\">\n<link rel=\"alternate\" hreflang=\"es\" href=\"https://example.com/es/page\">\n<link rel=\"alternate\" hreflang=\"fr\" href=\"https://example.com/fr/page\">\n<meta property=\"og:title\" content=\"OG Title\">\n<meta property=\"og:description\" content=\"OG Description\">\n<meta property=\"og:image\" content=\"https://cdn.example.com/i.png\">\n<meta name=\"twitter:card\" content=\"summary_large_image\">\n<meta name=\"twitter:title\" content=\"TW Title\">\n<meta name=\"ignored\" content=\"not og, not twitter\">\n<meta property=\"og:empty\" content=\"\">\n<script type=\"application/ld+json\">{\"@context\":\"https://schema.org\",\"@type\":\"Article\",\"author\":{\"@type\":\"Person\",\"name\":\"A\"}}</script>\n</head>\n<body>\n<h1>Kitchen Sink</h1>\n<img src=\"https://cdn.example.com/a.png\" alt=\"described\">\n<img src=\"https://cdn.example.com/b.png\" alt=\"\">\n<img src=\"https://cdn.example.com/c.png\" alt=\"   \">\n<img src=\"https://cdn.example.com/d.png\">\n<p>A short article body. It has two sentences.</p>\n</body></html>",
+      "expected": {
+        "url": "https://example.com/page",
+        "title": "Kitchen Sink",
+        "title_length": 12,
+        "meta_description": "Everything, all at once.",
+        "meta_description_length": 24,
+        "canonical": "https://example.com/page",
+        "robots": "index, follow",
+        "lang": "en",
+        "hreflang": [
+          {
+            "lang": "es",
+            "href": "https://example.com/es/page"
+          },
+          {
+            "lang": "fr",
+            "href": "https://example.com/fr/page"
+          }
+        ],
+        "og": {
+          "og:title": "OG Title",
+          "og:description": "OG Description",
+          "og:image": "https://cdn.example.com/i.png"
+        },
+        "twitter": {
+          "twitter:card": "summary_large_image",
+          "twitter:title": "TW Title"
+        },
+        "schema_types": [
+          "Article",
+          "Person"
+        ],
+        "headings": [
+          {
+            "level": 1,
+            "text": "Kitchen Sink"
+          }
+        ],
+        "internal_links": 0,
+        "external_links": 0,
+        "images_total": 4,
+        "images_missing_alt": 3,
+        "word_count": 10,
+        "sentence_count": 2,
+        "flesch_reading_ease": 66.4
+      }
+    }
+  ]
+}
