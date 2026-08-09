@@ -205,6 +205,18 @@ export interface ExtensionStructuredPayload {
     og: Record<string, string>;
     twitter: Record<string, string>;
     schemaTypes: string[];
+    /**
+     * Publish / last-modified timestamps. The key names are load-bearing: the
+     * server's `_structured_dates` (aidream `research/multisource.py`) reads
+     * `metadata.published_time` / `metadata.modified_time` and treats the
+     * extension as its PRIMARY source, falling back to JSON-LD
+     * `datePublished` / `dateModified` only when these are absent or invalid.
+     * Values are strict ISO-8601 or null — the server runs them through
+     * `_valid_iso` into a timestamptz column, so a raw unparsed page string
+     * must never be sent (collectors.ts drops anything non-ISO).
+     */
+    published_time: string | null;
+    modified_time: string | null;
   } | null;
   jsonLd: unknown[];
 }

@@ -1308,6 +1308,32 @@ Every entry follows this shape:
   `structured` absent, body identical to the old shape. Injection failure →
   empty data, capture still proceeds off the HTML.
 
+### Research capture — publish / modify dates
+- **What it does:** A capture now sends
+  `structured.metadata.published_time` / `.modified_time`, read from the page's
+  `article:published_time` / `article:modified_time` meta tags (plus the
+  `itemprop=datePublished` / `og:updated_time` / `name=date` aliases). These are
+  the FIRST thing the server's `_structured_dates` looks at — JSON-LD
+  `datePublished`/`dateModified` is only its fallback — so an OG-only article
+  used to store no date at all.
+- **Where to test:** Tasks tab → run a capture on a news article; DevTools
+  Network panel; then the source's content row in the research UI.
+- **Steps:**
+  1. Find an article page whose `<head>` has `article:published_time` and NO
+     `datePublished` JSON-LD (view-source and grep to confirm).
+  2. Add it to a topic and run a capture (any level) from the Tasks tab.
+  3. In the Network panel read the `POST …/extension-content` body:
+     `structured.metadata.published_time` must be the ISO string from the page.
+  4. Check the stored content row — `published_at` matches that value.
+- **Expected:** The date reaches the payload verbatim (original offset kept) and
+  lands on the content row. A page with neither meta nor JSON-LD sends `null`.
+- **Edge cases worth poking:** A page whose date is locale-formatted
+  ("August 9, 2026") or `08/09/2026` → both fields `null`, NOT a guessed date
+  (a wrong date is worse than none). A page with both OG and JSON-LD dates →
+  the OG value wins. `<time datetime>` counts only when it carries
+  `itemprop="datePublished"`/`"dateModified"` — a bare `<time>` in an article is
+  ignored because it's usually a related-post or comment timestamp.
+
 ### Research queue — domain-policy categories (§5)
 - **What it does:** The scrape queue now renders the server's per-source policy
   category: `gated_login` sources appear under a **"Sign in to capture"** section

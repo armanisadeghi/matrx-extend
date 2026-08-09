@@ -30,10 +30,9 @@
  *     because the live DOM is the ONLY place a JS-injected `<script
  *     type="application/ld+json">` (Next.js/Nuxt hydration) exists at all, which
  *     is exactly the "what the DOM uniquely knows" case. It is not re-derivation.
- * Known gap: `_structured_dates` prefers `metadata.published_time` /
- * `metadata.modified_time` and only falls back to JSON-LD. We send neither —
- * `article:published_time` is a `property=` meta that does not start with `og:`,
- * so the filter below drops it. Tracked in docs/KNOWN_ISSUES.md § Research capture.
+ *     `published_time` / `modified_time` are what `_structured_dates` reads
+ *     FIRST (JSON-LD is only its fallback), so they are collected below under
+ *     the same strict-ISO rule as collectors.ts.
  *
  * This INLINES the logic from collectors.ts (collectImages/Videos/Audio/Metadata/
  * JsonLd) into a single `chrome.scripting.executeScript` injection — one
@@ -95,12 +94,20 @@ export async function getCapturePageData(tabId: number): Promise<CapturePageData
  * anything outside its own body (no imports, no closures). Mirrors collectors.ts.
  */
 function collectPageDataInPage(): CapturePageData {
+  // Mirrors `absMedia` in collectors.ts — and, like it, does NOT treat "parses"
+  // as "valid". `new URL('javascript:void(0)')` succeeds (empty host), so a bare
+  // try/catch would ship pseudo-scheme junk to the server as a media source.
+  // The gate is wide on purpose: this file only collects media, and `data:` /
+  // `blob:` are real image/video sources. Only never-fetchable schemes are cut.
+  const NON_FETCHABLE = new Set(['javascript:', 'mailto:', 'tel:', 'sms:', 'about:']);
   const abs = (raw: string): string | null => {
+    let u: URL;
     try {
-      return new URL(raw, document.baseURI).toString();
+      u = new URL(raw, document.baseURI);
     } catch {
       return null;
     }
+    return NON_FETCHABLE.has(u.protocol) ? null : u.toString();
   };
   const dedupeBy = <T>(arr: T[], keyFn: (x: T) => string): T[] => {
     const seen = new Set<string>();
@@ -207,6 +214,40 @@ function collectPageDataInPage(): CapturePageData {
     if (property.startsWith('og:')) og[property] = content;
     if (name.startsWith('twitter:')) twitter[name] = content;
   });
+  // ── publish / modify dates ───────────────────────────────────────────────
+  // MIRROR of collectors.ts `normalizeIsoDate` + the two selector lists. Strict
+  // ISO only — the server writes these into a timestamptz column, and a wrong
+  // date is worse than none. Every selector is an EXPLICIT publish/modify
+  // marker; no generic `article time` (it matches related posts and comments).
+  const isoDateRe =
+    /^\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})?)?$/;
+  const firstIsoDate = (selectors: [string, string][]): string | null => {
+    for (const [selector, attr] of selectors) {
+      for (const el of Array.from(document.querySelectorAll(selector))) {
+        const text = (el.getAttribute(attr) ?? '').trim();
+        if (!text || !isoDateRe.test(text)) continue;
+        if (!Number.isNaN(Date.parse(text))) return text;
+      }
+    }
+    return null;
+  };
+  const publishedTime = firstIsoDate([
+    ['meta[property="article:published_time"]', 'content'],
+    ['meta[property="og:article:published_time"]', 'content'],
+    ['meta[itemprop="datePublished"]', 'content'],
+    ['meta[name="datePublished"]', 'content'],
+    ['meta[name="date"]', 'content'],
+    ['time[itemprop="datePublished"][datetime]', 'datetime'],
+  ]);
+  const modifiedTime = firstIsoDate([
+    ['meta[property="article:modified_time"]', 'content'],
+    ['meta[property="og:updated_time"]', 'content'],
+    ['meta[itemprop="dateModified"]', 'content'],
+    ['meta[name="dateModified"]', 'content'],
+    ['meta[name="last-modified"]', 'content'],
+    ['time[itemprop="dateModified"][datetime]', 'datetime'],
+  ]);
+
   const metadata: CollectedMetadata = {
     title: document.title,
     description:
@@ -216,6 +257,8 @@ function collectPageDataInPage(): CapturePageData {
     og,
     twitter,
     schemaTypes: Array.from(schemaTypeSet),
+    published_time: publishedTime,
+    modified_time: modifiedTime,
   };
 
   return {
