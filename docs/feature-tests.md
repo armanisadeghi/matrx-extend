@@ -1750,6 +1750,66 @@ Every entry follows this shape:
   unchanged-collapse rule, the multiset heading comparison, and defensive parsing
   of a stored `signals` blob.
 
+### SEO audit — verdicts + one-click fixes (2026-08-09)
+- **What it does:** the SEO tab used to render raw facts only ("Title: 78 chars")
+  and never said whether any of it was GOOD or BAD. A verdict block now sits
+  ABOVE the raw sections: four deterministic evaluators (indexing, social share
+  card, page structure, URL) grade the page, rank every problem error-first, and
+  ship each one with its fix. The evaluators are a byte-parity mirror of the
+  canonical Python (`matrx_scraper/audit_metrics.py`) and of matrx-frontend's
+  copy, so the extension, the web app, and the crawler give the same page the
+  same verdict and the same wording.
+- **Where to test:** SEO tab, on a live audit (not a saved snapshot).
+- **Steps:**
+  1. Open a page with no Open Graph tags (most docs/blog pages) → SEO tab → wait
+     for the audit to auto-run.
+  2. Read the pill at the top of the verdict block, then the grouped findings.
+  3. Hover a finding → click the small robot icon.
+  4. Go back to the SEO tab and click **Fix all** in the verdict header.
+  5. Hover the **Social share card** heading → click the copy icon.
+  6. Open a page with `<meta name="robots" content="noindex">` (any staging site,
+     or a local page you can edit).
+  7. Open a page whose `<link rel="canonical">` points at a DIFFERENT URL → click
+     **Open** on that finding.
+  8. Save the audit, then open it from the history chip.
+- **Expected:**
+  - The pill reads **Blocked from Google** / **N problems to fix** / **N things to
+    improve** / **Looks good**, colored red / red / amber / emerald.
+  - Findings are grouped under Indexing → Social share card → Page structure →
+    URL, errors (octagon icon, red) before warnings (triangle, amber). A clean
+    section shows a green line instead ("Google can index this page.").
+  - The robot icon stages a message in the chat composer naming that one problem
+    plus the page title and URL, and switches to the Chat tab. Existing draft text
+    is preserved, not overwritten.
+  - **Fix all** does the same with every finding listed, severity-tagged.
+  - The copy icon copies the exact `<meta>` lines the page is missing, pre-filled
+    from the page's own title / description / canonical — paste-ready for `<head>`.
+  - Step 6: the pill says **Blocked from Google** and the finding reads "Meta
+    robots contains noindex — Google is told not to index this page".
+  - Step 7: **Open** opens the canonical URL in a NEW tab (middle-click and
+    right-click → "Open in new tab" also work — it is a real anchor). The side
+    panel never navigates away.
+  - Step 8: a saved snapshot shows the raw sections with NO verdict block. This is
+    deliberate — stored rows never carried og/twitter tags or the HTTP status, so
+    the evaluators would report "no og:title" for a page that has one.
+- **Edge cases worth poking:**
+  - A page with zero problems: the block collapses to one green "No problems
+    found" line and the **Fix all** button is absent.
+  - A page reached via a redirect: expect "URL redirects through N hop(s)".
+    Cross-origin redirects without `Timing-Allow-Origin` report 0 hops — the
+    browser hides the count, so this under-reports rather than inventing one.
+  - `file://` or a page where Chrome hides the response status: expect the warning
+    "HTTP status was not captured" rather than a fabricated 200.
+  - A page with a blank `<h2>`: the "empty heading(s)" warning will NOT fire here.
+    The collector drops empty headings before the evaluator sees them (mirroring
+    the Python collector); the server-side crawl audit does report them.
+  - Narrow the side panel to ~360px — messages wrap, the action icons stay
+    reachable, nothing scrolls horizontally.
+- **Automated:** `tests/unit/seo-evaluator-parity.test.ts` asserts all four
+  evaluators produce output identical to the Python-generated fixture
+  (`tests/unit/__fixtures__/audit-parity.json`, copied verbatim from
+  matrx-frontend — never regenerate it here).
+
 ### SEO audit — AI recommendations (2026-08-09)
 - **What it does:** the "AI recommendations" section used to render the developer
   TODO "Wire this up to /ai/agent/execute with an SEO prompt." It now sends the

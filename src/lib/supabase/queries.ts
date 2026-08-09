@@ -25,13 +25,13 @@
  *   - extend.wbx_capture        (Page captures from Scrape tab)
  *   - extend.wbx_pattern        (Saved Data-tab patterns)
  *   - extend.wbx_seo_audit      (SEO audits + AI recommendations)
- *   - extend.wbx_screenshot · extend.wbx_guidance · extend.wbx_highlight · extend.wbx_recipe
+ *   - extend.wbx_screenshot · extend.wbx_guidance · extend.wbx_demo · extend.wbx_highlight · extend.wbx_recipe
  */
 
 import { DEFAULT_AGENDA_AGENT_ID } from '@/lib/agenda/constants';
 import { log } from '@/lib/debug/log';
 import { getSupabase } from '@/lib/supabase/client';
-import { adminDb, aiDb } from '@/lib/supabase/schemas';
+import { adminDb, aiDb, extendDb } from '@/lib/supabase/schemas';
 import type { ChatMessage, MessagePart } from '@/state/chat';
 import { z } from 'zod';
 
@@ -852,6 +852,31 @@ export async function fetchLatestSeoAuditForUrl(url: string): Promise<SeoAuditRo
   return parsedSeo.data;
 }
 
+/**
+ * The saved audit history for a URL, most recent first. Sibling of
+ * `fetchLatestSeoAuditForUrl` (which is just this with limit 1) — the SEO tab
+ * needs the previous row to DIFF against and the older rows to browse, and
+ * accumulating rows nobody can read again is the defect this closes.
+ *
+ * `extend` is reached via `extendDb()`; ownership on wbx_* is `created_by`
+ * (stamped by a trigger), so RLS scopes these rows to the signed-in user with
+ * no client-side filter.
+ */
+export async function fetchSeoAuditHistoryForUrl(url: string, limit = 25): Promise<SeoAuditRow[]> {
+  const { data, error } = await extendDb()
+    .from('wbx_seo_audit')
+    .select('id, url, audited_at, signals, recommendations, flesch_reading_ease, word_count, notes')
+    .eq('url', url)
+    .order('audited_at', { ascending: false })
+    .limit(limit);
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return [];
+    console.warn('[matrx-extend] fetchSeoAuditHistoryForUrl error', error.message);
+    return [];
+  }
+  return parseRowsSafe(SeoAuditRowSchema, data ?? [], 'fetchSeoAuditHistoryForUrl').rows;
+}
+
 export async function attachSeoRecommendations(
   auditId: string,
   recommendations: unknown,
@@ -1082,4 +1107,133 @@ export async function fetchAllGuidanceRows(): Promise<WbxGuidanceRow[]> {
   }
   return parseRowsSafe(WbxGuidanceRowSchema, (data ?? []) as unknown[], 'fetchAllGuidanceRows')
     .rows;
+}
+
+// ─── wbx_demo (cloud-synced recorded demo BODIES) ───────────────────────────
+/**
+ * One recorded-demo row. `id` is the CLIENT-generated demo id (`demo_<uuid>`,
+ * a text PK — not a uuid) so a guidance `demo_ref` pointer stays valid across
+ * machines with no id-translation layer.
+ *
+ * The full Demo record lives in `body`; the summary columns are denormalised so
+ * a list query never has to pull it. The client's own epoch-ms timestamps live
+ * INSIDE `body` — the platform `_100_touch_row` trigger overwrites the
+ * `updated_at` column with now() on every write, so that column is server
+ * bookkeeping and cannot drive cross-machine last-write-wins.
+ */
+export const WbxDemoRowSchema = z.object({
+  id: z.string(),
+  name: z.string().nullable().default(null),
+  description: z.string().nullable().default(null),
+  start_url: z.string().nullable().default(null),
+  step_count: z.number().nullable().default(null),
+  parameter_names: z.array(z.string()).nullable().default(null),
+  body: z.unknown().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  /** Tombstone — deletes propagate as soft-deletes so other machines can apply them. */
+  is_deleted: z.boolean().default(false),
+});
+export type WbxDemoRow = z.infer<typeof WbxDemoRowSchema>;
+
+export interface SaveDemoRowPayload {
+  id: string;
+  name: string;
+  description: string;
+  start_url: string;
+  step_count: number;
+  parameter_names: string[];
+  /** The full Demo record, including its client epoch-ms timestamps. */
+  body: unknown;
+}
+
+const DEMO_ROW_COLUMNS =
+  'id, name, description, start_url, step_count, parameter_names, body, created_at, updated_at, is_deleted';
+
+/**
+ * Upsert one demo row keyed by its client id. Ownership is set server-side
+ * (`created_by` stamped from `auth.uid()`, `organization_id` resolved by the
+ * org-default trigger), so neither column is ever sent from here.
+ */
+export async function upsertDemoRow(p: SaveDemoRowPayload): Promise<boolean> {
+  const c = getSupabase();
+  const { error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_demo')
+    .upsert(
+      {
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        start_url: p.start_url,
+        step_count: p.step_count,
+        parameter_names: p.parameter_names,
+        body: p.body ?? {},
+        // An intentional save revives a tombstoned row — the user actively
+        // re-recorded/edited it here, which outranks an older delete.
+        is_deleted: false,
+      },
+      { onConflict: 'id' },
+    );
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return false;
+    console.warn('[matrx-extend] upsertDemoRow error', error.message);
+    return false;
+  }
+  return true;
+}
+
+/** Soft-delete (tombstone) one demo row so other machines' hydrate can apply it. */
+export async function deleteDemoRow(id: string): Promise<boolean> {
+  const c = getSupabase();
+  const { error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_demo')
+    .update({ is_deleted: true })
+    .eq('id', id);
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return false;
+    console.warn('[matrx-extend] deleteDemoRow error', error.message);
+    return false;
+  }
+  return true;
+}
+
+/** Fetch all of the signed-in user's demo rows (RLS scopes to the owner). */
+export async function fetchAllDemoRows(): Promise<WbxDemoRow[]> {
+  const c = getSupabase();
+  const { data, error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_demo')
+    .select(DEMO_ROW_COLUMNS)
+    .order('updated_at', { ascending: false });
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return [];
+    console.warn('[matrx-extend] fetchAllDemoRows error', error.message);
+    return [];
+  }
+  return parseRowsSafe(WbxDemoRowSchema, (data ?? []) as unknown[], 'fetchAllDemoRows').rows;
+}
+
+/**
+ * Fetch ONE demo row by client id. Used for the on-miss repair path: a
+ * `demo_ref` synced ahead of its body (or a machine that never ran the sign-in
+ * hydrate) pulls just the one demo it needs instead of failing the replay.
+ */
+export async function fetchDemoRow(id: string): Promise<WbxDemoRow | null> {
+  const c = getSupabase();
+  const { data, error } = await c
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_demo')
+    .select(DEMO_ROW_COLUMNS)
+    .eq('id', id)
+    .maybeSingle();
+  if (error) {
+    if (/relation .* does not exist/i.test(error.message)) return null;
+    console.warn('[matrx-extend] fetchDemoRow error', error.message);
+    return null;
+  }
+  if (!data) return null;
+  const parsed = WbxDemoRowSchema.safeParse(data);
+  return parsed.success ? parsed.data : null;
 }

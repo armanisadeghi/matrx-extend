@@ -66,6 +66,32 @@
  * Everything else shares the server's name. We deliberately do NOT compute the
  * server's crawl-only fields (link graph, resources, mixed content, content
  * fingerprint, page identity) — those need a crawl, not a tab.
+ *
+ * ─────────────────────────────────────────────────────────────────────────────
+ * COLLECTED FOR THE DETERMINISTIC EVALUATORS (2026-08-09)
+ * ─────────────────────────────────────────────────────────────────────────────
+ * `src/lib/seo/evaluators/` is a byte-parity mirror of
+ * `matrx_scraper/audit_metrics.py`. `evaluate_indexability` needs two inputs
+ * this file did not collect, so they were ADDED here rather than faked at the
+ * mapping layer (`evaluators/from-audit.ts`):
+ *   performance.http_status    ← the server's `http_status`. Read from
+ *     `PerformanceNavigationTiming.responseStatus`. `0`/absent means the
+ *     browser did not expose it (cross-origin without Timing-Allow-Origin,
+ *     same-document navigation, older Chrome) and is normalized to `null`,
+ *     which the evaluator reports as "HTTP status was not captured". We never
+ *     invent a 200.
+ *   performance.redirect_count ← the hop count behind the server's
+ *     `redirect_chain`. Read from `PerformanceNavigationTiming.redirectCount`.
+ *     The browser exposes the COUNT but not the intermediate URLs, and it
+ *     reports 0 for cross-origin redirects without Timing-Allow-Origin — so
+ *     this under-reports rather than over-reports, and never invents a hop.
+ *
+ * Both live under `performance` because both come from navigation timing, and
+ * that whole block is now gated on `doc === globalThis.document`. Reading the
+ * ambient `performance` while auditing a DOMParser-parsed Document (the
+ * fetch-and-parse path) describes the OFFSCREEN page, not the audited URL —
+ * harmless noise for `nav_type`/`duration_ms`, but it would have made
+ * `http_status` assert a verdict about the wrong document.
  */
 
 /**
@@ -103,6 +129,10 @@ export interface SeoAudit {
     nav_type: string | null;
     duration_ms: number | null;
     transfer_size_bytes: number | null;
+    /** Server field `http_status`. null = the browser did not expose it. */
+    http_status: number | null;
+    /** Hop count behind the server's `redirect_chain`. null = not exposed. */
+    redirect_count: number | null;
   };
 }
 
@@ -202,9 +232,7 @@ export function runAudit(doc: Document = document, baseUrl?: string): SeoAudit {
   const sentence_count = text ? text.split(/[.!?]+\s+/).filter((s) => s.trim()).length : 0;
   const flesch = fleschReadingEase(text, word_count, sentence_count);
 
-  const nav = performance.getEntriesByType('navigation')[0] as
-    | PerformanceNavigationTiming
-    | undefined;
+  const nav = navigationTimingFor(doc);
   return {
     url,
     fetched_at: Date.now(),
@@ -227,8 +255,32 @@ export function runAudit(doc: Document = document, baseUrl?: string): SeoAudit {
       nav_type: nav?.type ?? null,
       duration_ms: nav?.duration ? Math.round(nav.duration) : null,
       transfer_size_bytes: nav?.transferSize ?? null,
+      // `0` is the spec's "not available" value for both, not a real status /
+      // a real hop count — normalize it to null so the evaluator says
+      // "not captured" instead of asserting a wrong verdict.
+      http_status: nav?.responseStatus ? nav.responseStatus : null,
+      redirect_count: typeof nav?.redirectCount === 'number' ? nav.redirectCount : null,
     },
   };
+}
+
+/**
+ * Navigation timing for the audited document — ONLY when `doc` is this
+ * context's own live document. See the header: the ambient `performance`
+ * describes the offscreen page in the fetch-and-parse path, which would make
+ * `http_status` a verdict about the wrong URL.
+ *
+ * `responseStatus` is Chrome 109+; the DOM lib in this repo does not declare
+ * it yet, so it is narrowed here rather than asserted at the read site.
+ */
+function navigationTimingFor(
+  doc: Document,
+): (PerformanceNavigationTiming & { responseStatus?: number }) | undefined {
+  if (typeof globalThis.document === 'undefined' || doc !== globalThis.document) return undefined;
+  if (typeof performance === 'undefined') return undefined;
+  return performance.getEntriesByType('navigation')[0] as
+    | (PerformanceNavigationTiming & { responseStatus?: number })
+    | undefined;
 }
 
 function collectSchemaTypes(doc: Document): string[] {
