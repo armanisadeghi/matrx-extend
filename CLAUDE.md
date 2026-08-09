@@ -526,7 +526,7 @@ tools. Never reintroduce a hardcoded `description` on a `ToolHandler`.
 ### 🚨 ONE connection, ONE variable name
 
 Read before touching any DB/config/env resolution:
-[`/Users/armanisadeghi/code/common-docs/policies/package-vs-implementation.md`](/Users/armanisadeghi/code/common-docs/policies/package-vs-implementation.md).
+`/Users/armanisadeghi/code/common-docs/policies/package-vs-implementation.md`.
 Every `matrx-*` package must stay fully independent — owns its schemas, ships its
 migrations, runs installed alone; never delete that capability to "simplify".
 Our implementation is one company, one server, ONE database — every instance points
