@@ -18,14 +18,15 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
  * the repo's `.env*` files. Returns null when neither is available — callers
  * decide whether that is a loud skip (it never throws here). No on/off flag
  * gates this (Rule 6); missing credentials simply mean "cannot read the DB".
+ *
+ * ONE name per value — `WXT_SUPABASE_URL` / `WXT_SUPABASE_PUBLISHABLE_KEY`.
+ * Never add a second candidate or a fallback chain; pointing this at another
+ * database is a change of VALUES. See
+ * /Users/armanisadeghi/code/common-docs/policies/package-vs-implementation.md
  */
 export function loadSupabaseEnv(): { url: string; key: string } | null {
-  let url = process.env.SUPABASE_URL ?? process.env.WXT_SUPABASE_URL ?? '';
-  let key =
-    process.env.SUPABASE_PUBLISHABLE_KEY ??
-    process.env.WXT_SUPABASE_PUBLISHABLE_KEY ??
-    process.env.SUPABASE_ANON_KEY ??
-    '';
+  let url = process.env.WXT_SUPABASE_URL ?? '';
+  let key = process.env.WXT_SUPABASE_PUBLISHABLE_KEY ?? '';
 
   if (!url || !key) {
     for (const f of [
@@ -42,14 +43,8 @@ export function loadSupabaseEnv(): { url: string; key: string } | null {
         if (!m) continue;
         const [, k, raw] = m;
         const v = (raw ?? '').replace(/^['"]|['"]$/g, '');
-        if (!url && (k === 'WXT_SUPABASE_URL' || k === 'SUPABASE_URL')) url = v;
-        if (
-          !key &&
-          (k === 'WXT_SUPABASE_PUBLISHABLE_KEY' ||
-            k === 'SUPABASE_PUBLISHABLE_KEY' ||
-            k === 'SUPABASE_ANON_KEY')
-        )
-          key = v;
+        if (!url && k === 'WXT_SUPABASE_URL') url = v;
+        if (!key && k === 'WXT_SUPABASE_PUBLISHABLE_KEY') key = v;
       }
       if (url && key) break;
     }

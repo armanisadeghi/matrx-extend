@@ -523,6 +523,20 @@ live for UI via [src/lib/tools/descriptions.ts](./src/lib/tools/descriptions.ts)
 (approval card, Tools tab) and the client discovery / WebMCP / frontend-bridge
 tools. Never reintroduce a hardcoded `description` on a `ToolHandler`.
 
+### 🚨 ONE connection, ONE variable name
+
+Read before touching any DB/config/env resolution:
+[`/Users/armanisadeghi/code/common-docs/policies/package-vs-implementation.md`](/Users/armanisadeghi/code/common-docs/policies/package-vs-implementation.md).
+Every `matrx-*` package must stay fully independent — owns its schemas, ships its
+migrations, runs installed alone; never delete that capability to "simplify".
+Our implementation is one company, one server, ONE database — every instance points
+at Matrx Main (`txzxabzwovsujtloxrus`), a deployment CHOICE, not a package limit.
+The banned thing is a **second candidate for the same connection**: `WXT_SUPABASE_URL`
+/ `WXT_SUPABASE_PUBLISHABLE_KEY` are the only names, required, throw if absent — no
+`?? process.env.SUPABASE_URL` chain anywhere (runtime *or* scripts), no bare
+`SUPABASE_URL` in a `.env`. Pointing this at another database is a change of VALUES,
+never a new variable name.
+
 ### 🗄️ The DB is multi-schema now — `public` is NOT where our tables live
 
 The platform database was reorganized: the single `public` schema was split into

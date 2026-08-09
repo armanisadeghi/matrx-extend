@@ -40,13 +40,11 @@ const EXECUTOR_NAME = 'chrome-extension';
 
 // ─── env loader (mirrors check-tool-db-drift.ts) ────────────────────────────
 
+// ONE name per value — no second candidate, no fallback chain.
+// See /Users/armanisadeghi/code/common-docs/policies/package-vs-implementation.md
 function loadEnv() {
-  let url = process.env.SUPABASE_URL ?? process.env.WXT_SUPABASE_URL ?? '';
-  let key =
-    process.env.SUPABASE_PUBLISHABLE_KEY ??
-    process.env.WXT_SUPABASE_PUBLISHABLE_KEY ??
-    process.env.SUPABASE_ANON_KEY ??
-    '';
+  let url = process.env.WXT_SUPABASE_URL ?? '';
+  let key = process.env.WXT_SUPABASE_PUBLISHABLE_KEY ?? '';
   if (!url || !key) {
     for (const f of [
       '.env.production.local',
@@ -63,20 +61,14 @@ function loadEnv() {
         if (!m) continue;
         const [, k, raw] = m;
         const v = (raw ?? '').replace(/^['"]|['"]$/g, '');
-        if (!url && (k === 'WXT_SUPABASE_URL' || k === 'SUPABASE_URL')) url = v;
-        if (
-          !key &&
-          (k === 'WXT_SUPABASE_PUBLISHABLE_KEY' ||
-            k === 'SUPABASE_PUBLISHABLE_KEY' ||
-            k === 'SUPABASE_ANON_KEY')
-        )
-          key = v;
+        if (!url && k === 'WXT_SUPABASE_URL') url = v;
+        if (!key && k === 'WXT_SUPABASE_PUBLISHABLE_KEY') key = v;
       }
       if (url && key) break;
     }
   }
   if (!url || !key) {
-    console.error('SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY not found in env or .env files');
+    console.error('WXT_SUPABASE_URL / WXT_SUPABASE_PUBLISHABLE_KEY not found in env or .env files');
     process.exit(2);
   }
   return { url, key };
