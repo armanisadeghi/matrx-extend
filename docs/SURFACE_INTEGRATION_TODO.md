@@ -87,7 +87,34 @@ anon/publishable key can **read** all four tables (verified: HTTP 200 on
 `definition`, `binding`, `surface_defaults`, and `ui_surface`); it cannot write
 them. Registry writes are DDL/DML from a repo with real DB credentials.
 
-### 0.2 — Executor names are a closed, canonical set
+### 0.2 — A tool is the CODE. An executor is WHERE that code lives. A surface is WHO can reach it.
+
+Keep these three apart and the registry is obvious; collapse any two and every
+question about it gets confusing.
+
+- **The tool** is the thing that actually runs and does something. That is what
+  `tool.definition` describes: name, arg contract, tier, policy. It knows nothing
+  about who runs it or who is allowed to ask.
+- **The executor** is where that code physically lives — a process, a package, a
+  browser context. Two UI panels that call the *same* functions through the *same*
+  dispatcher are **one executor**, not two. Separate executors mean separate
+  implementations, not separate front doors. `tool.binding` records this and
+  nothing else.
+- **The surface** is a front door: who can see and reach the tool from where.
+  That is `ui.ui_surface` + `tool.surface_defaults`.
+
+Worked example, because it is the one people get wrong: matrx-extend ships an
+Assistant panel and a Pilot panel. They look like two things. They share one
+dispatcher (`src/lib/tools/dispatch.ts`) and one handler registry — the same
+function object runs either way. So they are **one executor** (`chrome-extension`,
+80 bindings) with **two surfaces** (`chrome-extension/{assistant,pilot}`). Any
+difference between what the two panels can do is an access decision expressed in
+surface defaults, never a second binding and never a second executor.
+
+Ask "is there a second copy of the code?" If no, you do not need a second executor
+— you need a surface.
+
+### 0.3 — Executor names are a closed, canonical set
 
 `tool.binding.executor_name` is a foreign key to `tool.executor.name`. You cannot
 invent one in an INSERT; you register the executor first. The non-MCP executors
@@ -103,7 +130,7 @@ parent's bindings — which is why every query below matches
 **There is no `matrx-frontend` executor and there will not be one.** The Next.js
 client is `matrx-user`. See §1.
 
-### 0.3 — Everything else
+### 0.4 — Everything else
 
 - **The DB tool registry is the source of truth.** You don't tell the server
   what tools you have on every request — you declare them in `tool.definition`
