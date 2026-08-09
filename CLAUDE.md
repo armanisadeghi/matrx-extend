@@ -62,8 +62,10 @@
   - `webmcp` — page-registered tools (admin)
   - `desktop` — matrx-local bridge
   The "advanced" junk drawer and the 1-tool categories (cookies, webmcp,
-  ai-as-1-tool, interact-as-sleep-only) are gone. Per
-  TOOL_ROUTING_RULES.md §16, categories are pure UX — they affect
+  ai-as-1-tool, interact-as-sleep-only) are gone. Per aidream's
+  [tool_system_rules.md](../aidream/docs/official/tool_system_rules.md)
+  (there is no "TOOL_ROUTING_RULES.md" — that name is a phantom),
+  categories are pure UX — they affect
   Tools-tab grouping and discovery helpers, NEVER routing. The LLM only
   sees (name, description, schema).
 - **Drift script v3 (2026-05-27)** —

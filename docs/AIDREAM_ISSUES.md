@@ -82,7 +82,7 @@ Result: every category now resolves to a real tool list. Counts:
 
 ### Long-term fix (aidream side)
 
-Per `TOOL_ROUTING_RULES.md` §2 ("DB is canonical") + §11 (amendments),
+Per aidream's [`tool_system_rules.md`](../../aidream/docs/official/tool_system_rules.md) §2 ("DB is canonical") + §11 (amendments),
 the discovery handler should derive the per-category tool list from
 `tl_def.category` directly — not from a parallel `tl_bundle` table that
 has to be kept in sync manually. Two options for aidream:
@@ -135,7 +135,7 @@ Two checks:
 1. **Audit the prompt assembly.** Grep aidream's prompt-building code
    for hardcoded references to `ask_user`, `notify_user`. Replace with
    `user` + a one-line explanation of the `type` discriminator.
-2. **Source the prompt from live `tl_def`.** Per `TOOL_ROUTING_RULES.md`
+2. **Source the prompt from live `tl_def`.** Per aidream's [`tool_system_rules.md`](../../aidream/docs/official/tool_system_rules.md)
    §16 ("Definitions are immutable per name") + §3 (cache invalidates
    on the admin cache-bust API), the system prompt's tool descriptions
    should come from `tl_def.description` at session-resolution time, not
