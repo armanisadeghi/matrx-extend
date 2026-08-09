@@ -1334,6 +1334,39 @@ Every entry follows this shape:
   `itemprop="datePublished"`/`"dateModified"` — a bare `<time>` in an article is
   ignored because it's usually a related-post or comment timestamp.
 
+### Scrape — link scheme filtering (`collectLinks`)
+- **What it does:** The page-link collector keeps only links an agent could
+  actually navigate to — `http:`/`https:` with a real host. `javascript:`,
+  `mailto:`, `tel:`, `blob:` and `data:` hrefs are dropped. (They all *parse*
+  as URLs — they just have no host — so the old parse-or-throw check let every
+  one of them through.) Mirrors the canonical server rule in
+  `matrx_scraper/seo_audit.py`. Affects the `page_links` context key the agent
+  gets every turn and `SoupResult.links` → the capture sink's `extracted_links`.
+  A same-page `#fragment` anchor still survives — it resolves to a real http(s)
+  target.
+- **Where to test:** Side panel → **Tools** tab → run `get_page_links`, and
+  side panel → **Scrape** tab → Capture.
+- **Steps:**
+  1. Open a page with JS-driven nav — an old-style site whose menu uses
+     `<a href="javascript:void(0)">`, plus a footer `mailto:` and `tel:` link
+     (Inspect the DOM to confirm the hrefs before testing).
+  2. Tools tab → `get_page_links` → **Run**, with no arguments.
+  3. Scrape tab → **Capture**, then read the captured `links` array.
+- **Expected:** The Scrape capture's `links` contains no `javascript:`,
+  `mailto:`, `tel:`, `blob:` or `data:` entry — only http(s) URLs; in-page
+  anchor links appear as the page URL plus `#fragment`. Note `get_page_links`
+  is a *separate* implementation (`handlers/inspect.ts`) that has always
+  skipped `javascript:` and deliberately still returns `mailto:`/`tel:` so the
+  agent can read contact details on request — comparing the two is the point of
+  running both.
+- **Edge cases worth poking:** A protocol-relative `//cdn.example.com/x` link
+  → survives, resolved to the page's own scheme. A page whose images are inline
+  `data:` URIs or canvas `blob:` URLs → those still appear in the capture's
+  `images`/`videos` (the media collectors keep them on purpose; only the link
+  collector is host-and-http-only).
+
+---
+
 ### Research queue — domain-policy categories (§5)
 - **What it does:** The scrape queue now renders the server's per-source policy
   category: `gated_login` sources appear under a **"Sign in to capture"** section

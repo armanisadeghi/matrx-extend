@@ -782,6 +782,11 @@ function formatLinksForContext(links: ContextLink[], pageUrl: string | null): Fo
     // the scrape collector tag each link's nearest landmark.
     const lower = link.href.toLowerCase();
     let kind: FormattedLink['kind'];
+    // Belt-and-braces: `collectLinks` (scrape/collectors.ts) now drops every
+    // non-http(s) href upstream — mirroring the server's link rule — so this
+    // branch should no longer fire for links that arrived via the scrape
+    // pipeline. Kept because the classification is still correct for any other
+    // ContextLink source.
     if (lower.startsWith('tel:') || lower.startsWith('mailto:')) {
       kind = 'contact';
     } else if (SOCIAL_HOSTS.test(link.href)) {
