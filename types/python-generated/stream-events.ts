@@ -400,7 +400,7 @@ export interface AudioStreamChunkData {
   seq: number;
   audio_base64: string;
   mime_type?: string;
-  encoding?: "pcm_s16le";
+  encoding?: "pcm_s16le" | "mp3";
   sample_rate?: number;
   bits_per_sample?: number;
   channels?: number;
@@ -671,6 +671,21 @@ export interface ImageEditCompleteData {
   op: string;
   file_id?: string | null;
   asset?: Record<string, unknown>;
+}
+
+export interface GeneratedImageFileItem {
+  cloud_file_id: string;
+  public_url?: string | null;
+  mime?: string | null;
+  width?: number | null;
+  height?: number | null;
+}
+
+export interface ImageGenerateCompleteData {
+  type?: "image_generate_complete";
+  prompt?: string;
+  model?: string | null;
+  files?: GeneratedImageFileItem[];
 }
 
 export interface ImageOpStageData {
@@ -1440,6 +1455,7 @@ export type TypedDataPayload =
   | FunctionResultData
   | ImageDocumentDetectedData
   | ImageEditCompleteData
+  | ImageGenerateCompleteData
   | ImageOpStageData
   | ImageOutputData
   | ImageStudioCommitCompleteData
