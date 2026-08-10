@@ -182,6 +182,9 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
       });
       const mediaType =
         format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png';
+      // Provider image limits apply to decoded bytes, not the base64 text.
+      const padding = result.data.endsWith('==') ? 2 : result.data.endsWith('=') ? 1 : 0;
+      const decodedBytes = Math.floor((result.data.length * 3) / 4) - padding;
       // Captured image dimensions (best-effort, in image-pixels). Full-page
       // applies captureScale via the clip; viewport capture does not.
       const scale = args.full_page ? captureScale : 1;
@@ -230,7 +233,7 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
             mediaType,
             width,
             height,
-            sizeBytes: Math.floor((result.data.length * 3) / 4),
+            sizeBytes: decodedBytes,
             capture: {
               full_page: args.full_page,
               format,
@@ -257,7 +260,7 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
         profile: profileName,
         est_tokens: profile.est_tokens,
         image_base64: result.data,
-        byte_length: result.data.length,
+        byte_length: decodedBytes,
         file_id: fileId,
         file_url: fileUrl,
         screenshot_id: screenshotId,

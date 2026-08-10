@@ -214,7 +214,9 @@ interface ScreenshotResult {
   source_height?: number;
   /** Base64-encoded image data WITHOUT the `data:image/...;base64,` prefix. */
   image_base64?: string;
-  /** Length of the base64 string (chars). Useful for budgeting. */
+  /** Decoded (binary) byte size of the image. Use this to compare against
+   * provider per-image caps (Anthropic 5 MB/img API, Gemini 100 MB inline,
+   * OpenAI 512 MB/total). The base64 string itself is ~1.33× larger. */
   byte_length?: number;
   /** True if we resized the image to fit `max_dimension`. */
   resized?: boolean;
@@ -262,6 +264,7 @@ async function processScreenshot(
   sourceWidth: number;
   sourceHeight: number;
   resized: boolean;
+  byteLength: number;
 }> {
   // captureVisibleTab returns a data URL; cheapest way to get pixels is fetch().
   const blob = await fetch(dataUrl).then((r) => r.blob());
@@ -288,6 +291,12 @@ async function processScreenshot(
     bitmap.close();
     throw new Error('OffscreenCanvas 2d context unavailable');
   }
+  // Default smoothingQuality is 'low' — blurry on downscale, which softens
+  // text edges. 'high' uses a higher-order kernel (closer to Lanczos) so the
+  // master JPEG keeps text crisp through the resize. Critical for OCR / hi-res
+  // profiles; harmless when no resize happens.
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(bitmap, 0, 0, targetW, targetH);
   bitmap.close();
 
@@ -304,7 +313,15 @@ async function processScreenshot(
     bin += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + chunkSize)));
   }
   const base64 = btoa(bin);
-  return { base64, width: targetW, height: targetH, sourceWidth, sourceHeight, resized };
+  return {
+    base64,
+    width: targetW,
+    height: targetH,
+    sourceWidth,
+    sourceHeight,
+    resized,
+    byteLength: bytes.length,
+  };
 }
 
 export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
@@ -412,7 +429,7 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
         source_width: processed.sourceWidth,
         source_height: processed.sourceHeight,
         image_base64: processed.base64,
-        byte_length: processed.base64.length,
+        byte_length: processed.byteLength,
         resized: processed.resized,
         profile: profileName,
         ...(profile.est_tokens !== undefined && { est_tokens: profile.est_tokens }),
