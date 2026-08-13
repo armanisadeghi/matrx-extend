@@ -588,20 +588,6 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
-  storage: {
-    inline: {
-      icon: { started: 'Loader2', completed: 'HardDrive', error: 'AlertTriangle' },
-      prefix: '',
-      name: {
-        started: { path: 'args.action', transform: 'storageActionPresent' },
-        completed: { path: 'args.action', transform: 'storageActionVerb' },
-        error: { path: 'args.action', transform: 'storageActionPresent', fallback: 'Storage' },
-      },
-      info: { path: 'args.key', fallback: '' },
-      color: { started: 'primary', completed: 'slate', error: 'red' },
-    },
-    args: { displayType: 'key-value' },
-  },
 
   remember_for_domain: {
     inline: {
@@ -1241,16 +1227,6 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
-  scratchpad: {
-    inline: {
-      icon: { started: 'Loader2', completed: 'NotebookPen', error: 'AlertTriangle' },
-      prefix: { started: 'Scratchpad', completed: 'Scratchpad', error: 'Scratchpad failed' },
-      name: '',
-      info: { path: 'args.action', fallback: '' },
-      color: { started: 'primary', completed: 'slate', error: 'red' },
-    },
-    args: { displayType: 'key-value' },
-  },
 
   desktop_run_command: {
     inline: {

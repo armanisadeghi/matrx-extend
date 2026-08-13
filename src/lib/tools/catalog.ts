@@ -140,9 +140,6 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   // privileged
   inject_stylesheet: ['activeTab', 'scripting'],
   remove_stylesheet: ['activeTab', 'scripting'],
-  set_extension_storage: ['storage'],
-  get_extension_storage: ['storage'],
-  list_extension_storage: ['storage'],
   desktop_run_command: ['nativeMessaging'],
 
   // on-device AI (no chrome perms — uses globalThis.LanguageModel et al.)
@@ -251,7 +248,6 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   ai: [],
   cookies: [],
   webmcp: ['activeTab', 'scripting'],
-  storage: ['storage'],
   tab_groups: ['tabs', 'tabGroups'],
   bookmarks: ['bookmarks'],
   history: ['history'],

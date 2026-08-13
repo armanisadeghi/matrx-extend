@@ -49,8 +49,6 @@ export type TransformName =
   | 'aiActionVerb'
   | 'aiActionPresent'
   | 'aiActionIcon'
-  | 'storageActionVerb'
-  | 'storageActionPresent'
   | 'memoryActionVerb'
   | 'memoryActionPresent'
   | 'cookiesActionVerb'

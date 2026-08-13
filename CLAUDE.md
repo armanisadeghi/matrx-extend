@@ -59,7 +59,9 @@ Arman plus dozens of concurrent agents (across two machines) edit these repos si
     admin-restricted
   - `human` — talk to user (user, update_plan, request_user_takeover,
     user_todos; `tasks` is server-executed by aidream)
-  - `memory` — agent state (scratchpad, storage, remember_for_domain)
+  - `memory` — agent state (`remember_for_domain`). Durable memory for a
+    user / project / organization is the server-side `memory` tool; there is
+    no client-side KV here (see the retirement note below).
   - `ai` — on-device Gemini Nano
   - `demos` — record + replay user workflows
   - `guidance` — user-saved hints for the agent
@@ -103,7 +105,7 @@ Arman plus dozens of concurrent agents (across two machines) edit these repos si
   Three tiers replace it:
   1. **Bare global names** (~58 tools) — UI-first + everything
      Playwright can also do. Examples: `update_plan`, `user_todos`,
-     `user`, `request_user_takeover`, `scratchpad`,
+     `user`, `request_user_takeover`,
      `read_page`, `find`, `computer`, `tabs`, `navigate`,
      `form_input`, `evaluate_javascript`, `clipboard`, `ai`,
      `record_demo`, `replay_demo`, `desktop_run_command`, ...
@@ -123,8 +125,22 @@ Arman plus dozens of concurrent agents (across two machines) edit these repos si
   `tools_name_key` UNIQUE constraint is on `name` alone — that's
   load-bearing for "same name = same tool" cross-surface.
   Retired: `matrx-extend:memory` (mega-tool). Use the matrx_ai
-  canonical `memory` for persistent memory; the new bare-name
-  `scratchpad` for ephemeral in-session kv.
+  canonical `memory` for persistent memory.
+
+  **Also retired — `scratchpad` and `storage` (2026-08-12, Arman's ruling).**
+  Neither filled a gap and both are now deactivated in `tool.definition` with
+  their bindings dropped, here and on every other client. `storage` was a
+  per-user persistent KV — that is the canonical `memory` tool, rebuilt worse.
+  `scratchpad` was an agent-writable in-service-worker `Map` that squatted on
+  the name of `user_scratchpad`, the USER's own per-conversation document that
+  the agent may read and must never write; an agent holding both was told two
+  contradictory things about what a scratchpad is. An in-memory store is also
+  the wrong shape on its own terms: it evaporates on a service-worker restart,
+  so the agent "remembers" right up until the moment remembering would matter.
+  The four `*_extension_storage` handlers died with the merged tool (nothing
+  else used them). **Do not reintroduce either, and do not reuse the name
+  "scratchpad" for agent state.** Per-conversation agent memory that survives a
+  context reset is a real, still-unfilled gap and gets its own tool.
 - **Tool registry refactor (2026-05-27, server-side)** — aidream rolled
   out a clean break of the registry schema. **NOTE: a SECOND rename
   followed in 2026-06** (the schema split moved these out of `public`
@@ -325,7 +341,6 @@ discovery handler).
 - **Personal data:** `search_bookmarks`, `list_bookmark_tree`, `search_history`,
   `list_recent_history`, `list_downloads`
 - **Forms:** `get_form_fields`
-- **Memory:** `get_extension_storage`, `list_extension_storage`
 - **On-device AI** (free, on-device, no network — Gemini Nano + siblings):
   `ai_check_availability`, `ai_summarize`, `ai_classify`, `ai_extract_json`,
   `ai_translate`, `ai_detect_language`, `ai_proofread`, `ai_describe_image`
@@ -362,7 +377,7 @@ discovery handler).
 
 #### Privileged tier (~30 tools, action variants of admin/CDP categories)
 - **Page-level (general):** `execute_javascript`, `inject_stylesheet`,
-  `remove_stylesheet`, `set_extension_storage`, `desktop_run_command`
+  `remove_stylesheet`, `desktop_run_command`
 - **Cookies write** (admin + `cookies` optional perm): `set_cookie`,
   `delete_cookie`
 - **Demos:** `replay_demo` (action; can click / type / submit so always

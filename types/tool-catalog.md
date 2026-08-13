@@ -1,14 +1,14 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-08-13T02:08:53.771Z
+Generated: 2026-08-13T04:02:12.386Z
 
-- **Total tools:** 167
-- **Assistant bundle:** 74 tools (read-only)
-- **Pilot bundle:** 138 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 167 tools
+- **Total tools:** 161
+- **Assistant bundle:** 71 tools (read-only)
+- **Pilot bundle:** 135 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 161 tools
 
 
-## Tier: read (74)
+## Tier: read (71)
 
 ### `list_browser_tools`
 
@@ -984,63 +984,6 @@ Generated: 2026-08-13T02:08:53.771Z
 }
 ```
 
-### `get_extension_storage`
-
-- **Required permissions:** `storage`
-- **Surface bundles:** assistant, pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "key": {
-      "type": "string",
-      "minLength": 1
-    },
-    "area": {
-      "type": "string",
-      "enum": [
-        "local",
-        "session"
-      ],
-      "default": "local"
-    }
-  },
-  "required": [
-    "key"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `list_extension_storage`
-
-- **Required permissions:** `storage`
-- **Surface bundles:** assistant, pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "area": {
-      "type": "string",
-      "enum": [
-        "local",
-        "session"
-      ],
-      "default": "local"
-    },
-    "prefix": {
-      "type": "string"
-    }
-  },
-  "additionalProperties": false,
-  "default": {},
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
 ### `ai_check_availability`
 
 - **Required permissions:** (none)
@@ -1769,39 +1712,6 @@ Generated: 2026-08-13T02:08:53.771Z
   },
   "required": [
     "url"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `scratchpad`
-
-- **Required permissions:** (none)
-- **Surface bundles:** assistant, pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "action": {
-      "type": "string",
-      "enum": [
-        "set",
-        "get",
-        "list",
-        "delete"
-      ]
-    },
-    "key": {
-      "type": "string"
-    },
-    "value": {
-      "type": "string"
-    }
-  },
-  "required": [
-    "action"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
@@ -4396,7 +4306,7 @@ Generated: 2026-08-13T02:08:53.771Z
 }
 ```
 
-## Tier: privileged (29)
+## Tier: privileged (26)
 
 ### `set_cookie`
 
@@ -5018,67 +4928,6 @@ Generated: 2026-08-13T02:08:53.771Z
 }
 ```
 
-### `set_extension_storage`
-
-- **Required permissions:** `storage`
-- **Surface bundles:** pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "key": {
-      "type": "string",
-      "minLength": 1
-    },
-    "value": {},
-    "area": {
-      "type": "string",
-      "enum": [
-        "local",
-        "session"
-      ],
-      "default": "local"
-    }
-  },
-  "required": [
-    "key"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `delete_extension_storage`
-
-- **Required permissions:** (none)
-- **Surface bundles:** pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "key": {
-      "type": "string",
-      "minLength": 1
-    },
-    "area": {
-      "type": "string",
-      "enum": [
-        "local",
-        "session"
-      ],
-      "default": "local"
-    }
-  },
-  "required": [
-    "key"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
 ### `desktop_run_command`
 
 - **Required permissions:** `nativeMessaging`
@@ -5192,37 +5041,6 @@ Generated: 2026-08-13T02:08:53.771Z
   "required": [
     "action",
     "url"
-  ],
-  "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `storage`
-
-- **Required permissions:** `storage`
-- **Surface bundles:** pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "action": {
-      "type": "string",
-      "enum": [
-        "get",
-        "set",
-        "list",
-        "delete"
-      ]
-    },
-    "key": {
-      "type": "string"
-    },
-    "value": {}
-  },
-  "required": [
-    "action"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

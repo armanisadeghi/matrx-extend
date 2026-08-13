@@ -43,7 +43,7 @@ import type { AnyToolHandler, ToolTier } from '@/lib/tools/types';
  *   - capture      : "save or capture something" (downloads, MHTML, GIFs, video)
  *   - chrome       : "the user's personal Chrome data" (cookies, bookmarks, history)
  *   - human        : "human in the loop" (ask user, plan, user todos)
- *   - memory       : "agent state" (scratchpad, storage, domain memos)
+ *   - memory       : "agent state" (domain memos)
  *   - ai           : on-device Chrome AI
  *   - demos        : record + replay user workflows
  *   - guidance     : user-saved hints for the agent
@@ -136,7 +136,7 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'memory',
     label: 'Agent memory',
     description:
-      'Agent state that persists across turns. `scratchpad` is session-scoped (cleared on SW restart). `storage` is persistent agent-namespaced KV. `remember_for_domain` writes a domain memo that auto-surfaces in context when the user opens a tab on that domain.',
+      '`remember_for_domain` writes a domain memo that auto-surfaces in context when the user opens a tab on that domain. Durable memory for a user / project / organization is the server-side `memory` tool.',
     list_tool_name: 'list_memory_tools',
   },
   ai: {
@@ -316,13 +316,9 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   user_todos: 'human',
 
   // ─── memory ───────────────────────────────────────────────────────────
-  scratchpad: 'memory',
   storage: 'memory',
   remember_for_domain: 'memory',
   // ─── memory (absorbed granular handlers) ──────────────────────────────
-  set_extension_storage: 'memory',
-  get_extension_storage: 'memory',
-  list_extension_storage: 'memory',
 
   // ─── ai (on-device Gemini Nano) ───────────────────────────────────────
   ai: 'ai',
@@ -432,8 +428,6 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'sleep',
   'clipboard',
   'downloads',
-  'scratchpad',
-  'storage',
   'upload_file',
   'drop_file',
   'read_pdf',

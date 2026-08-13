@@ -79,9 +79,6 @@ export const transforms: Record<TransformName, (v: unknown) => unknown> = {
   aiActionVerb: (v) => (typeof v === 'string' ? (AI_VERBS_PAST[v] ?? 'Ran AI') : v),
   aiActionPresent: (v) => (typeof v === 'string' ? (AI_VERBS_PRESENT[v] ?? 'Running AI') : v),
   aiActionIcon: (v) => (typeof v === 'string' ? (AI_ICONS[v] ?? 'Sparkles') : v),
-  storageActionVerb: (v) => (typeof v === 'string' ? (STORAGE_VERBS_PAST[v] ?? 'Storage') : v),
-  storageActionPresent: (v) =>
-    typeof v === 'string' ? (STORAGE_VERBS_PRESENT[v] ?? 'Storage') : v,
   memoryActionVerb: (v) => (typeof v === 'string' ? (MEMORY_VERBS_PAST[v] ?? 'Memory') : v),
   memoryActionPresent: (v) => (typeof v === 'string' ? (MEMORY_VERBS_PRESENT[v] ?? 'Memory') : v),
   cookiesActionVerb: (v) => (typeof v === 'string' ? (COOKIES_VERBS_PAST[v] ?? 'Cookies') : v),
@@ -324,17 +321,6 @@ const AI_ICONS: Record<string, string> = {
   proofread: 'SpellCheck',
   describe_image: 'ImageIcon',
   check_prompt_injection: 'ShieldAlert',
-};
-
-const STORAGE_VERBS_PAST: Record<string, string> = {
-  get: 'Read storage',
-  set: 'Wrote storage',
-  delete: 'Deleted storage key',
-};
-const STORAGE_VERBS_PRESENT: Record<string, string> = {
-  get: 'Reading storage',
-  set: 'Writing storage',
-  delete: 'Deleting storage key',
 };
 
 const MEMORY_VERBS_PAST: Record<string, string> = {

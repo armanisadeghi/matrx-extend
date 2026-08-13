@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-13T02:08:53.771Z",
+  "generated_at": "2026-08-13T04:02:12.386Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -19,7 +19,6 @@
     "list_desktop_tools",
     "list_credentials_tools",
     "browser_batch",
-    "delete_extension_storage",
     "parallel_for_each_tab"
   ],
   "assistant_bundle": [
@@ -63,8 +62,6 @@
     "list_recent_history",
     "list_downloads",
     "get_form_fields",
-    "get_extension_storage",
-    "list_extension_storage",
     "ai_check_availability",
     "ai_summarize",
     "ai_classify",
@@ -91,7 +88,6 @@
     "mutation_watch",
     "extract_microdata",
     "fetch_url_as_markdown",
-    "scratchpad",
     "wait_for",
     "read_pdf",
     "ai",
@@ -139,8 +135,6 @@
     "list_recent_history",
     "list_downloads",
     "get_form_fields",
-    "get_extension_storage",
-    "list_extension_storage",
     "ai_check_availability",
     "ai_summarize",
     "ai_classify",
@@ -225,7 +219,6 @@
     "navigate",
     "tabs",
     "downloads",
-    "scratchpad",
     "clipboard",
     "wait_for",
     "upload_file",
@@ -279,8 +272,6 @@
     "list_recent_history",
     "list_downloads",
     "get_form_fields",
-    "get_extension_storage",
-    "list_extension_storage",
     "ai_check_availability",
     "ai_summarize",
     "ai_classify",
@@ -360,8 +351,6 @@
     "user_todos",
     "inject_stylesheet",
     "remove_stylesheet",
-    "set_extension_storage",
-    "delete_extension_storage",
     "desktop_run_command",
     "parallel_for_each_tab",
     "chrome_record_gif",
@@ -389,7 +378,6 @@
     "navigate",
     "tabs",
     "downloads",
-    "scratchpad",
     "clipboard",
     "wait_for",
     "upload_file",
@@ -398,7 +386,6 @@
     "ai",
     "chrome_cookies",
     "chrome_webmcp",
-    "storage",
     "tab_groups",
     "chrome_bookmarks",
     "chrome_history",
@@ -432,7 +419,6 @@
         "list_desktop_tools",
         "list_credentials_tools",
         "browser_batch",
-        "delete_extension_storage",
         "parallel_for_each_tab"
       ]
     },
@@ -590,16 +576,11 @@
     {
       "category": "memory",
       "label": "Agent memory",
-      "description": "Agent state that persists across turns. `scratchpad` is session-scoped (cleared on SW restart). `storage` is persistent agent-namespaced KV. `remember_for_domain` writes a domain memo that auto-surfaces in context when the user opens a tab on that domain.",
+      "description": "`remember_for_domain` writes a domain memo that auto-surfaces in context when the user opens a tab on that domain. Durable memory for a user / project / organization is the server-side `memory` tool.",
       "list_tool": "list_memory_tools",
       "admin_only": false,
       "tool_names": [
-        "get_extension_storage",
-        "list_extension_storage",
-        "remember_for_domain",
-        "set_extension_storage",
-        "scratchpad",
-        "storage"
+        "remember_for_domain"
       ]
     },
     {
@@ -2127,87 +2108,6 @@
       "required_permissions": [
         "activeTab",
         "scripting"
-      ],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
-        "assistant",
-        "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
-      "name": "get_extension_storage",
-      "tier": "read",
-      "category": "memory",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string",
-            "minLength": 1
-          },
-          "area": {
-            "type": "string",
-            "enum": [
-              "local",
-              "session"
-            ],
-            "default": "local"
-          }
-        },
-        "required": [
-          "key"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [
-        "storage"
-      ],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
-        "assistant",
-        "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
-      "name": "list_extension_storage",
-      "tier": "read",
-      "category": "memory",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "area": {
-            "type": "string",
-            "enum": [
-              "local",
-              "session"
-            ],
-            "default": "local"
-          },
-          "prefix": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": false,
-        "default": {},
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [
-        "storage"
       ],
       "required_optional_permissions": [],
       "admin_only": false,
@@ -5495,85 +5395,6 @@
       ]
     },
     {
-      "name": "set_extension_storage",
-      "tier": "privileged",
-      "category": "memory",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string",
-            "minLength": 1
-          },
-          "value": {},
-          "area": {
-            "type": "string",
-            "enum": [
-              "local",
-              "session"
-            ],
-            "default": "local"
-          }
-        },
-        "required": [
-          "key"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [
-        "storage"
-      ],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
-      "name": "delete_extension_storage",
-      "tier": "privileged",
-      "category": "core",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string",
-            "minLength": 1
-          },
-          "area": {
-            "type": "string",
-            "enum": [
-              "local",
-              "session"
-            ],
-            "default": "local"
-          }
-        },
-        "required": [
-          "key"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
       "name": "desktop_run_command",
       "tier": "privileged",
       "category": "desktop",
@@ -6992,49 +6813,6 @@
       ]
     },
     {
-      "name": "scratchpad",
-      "tier": "read",
-      "category": "memory",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "action": {
-            "type": "string",
-            "enum": [
-              "set",
-              "get",
-              "list",
-              "delete"
-            ]
-          },
-          "key": {
-            "type": "string"
-          },
-          "value": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "action"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
-        "assistant",
-        "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
       "name": "clipboard",
       "tier": "action",
       "category": "interaction",
@@ -7432,47 +7210,6 @@
       "admin_only": true,
       "surface_bundles": [
         "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
-      "name": "storage",
-      "tier": "privileged",
-      "category": "memory",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "action": {
-            "type": "string",
-            "enum": [
-              "get",
-              "set",
-              "list",
-              "delete"
-            ]
-          },
-          "key": {
-            "type": "string"
-          },
-          "value": {}
-        },
-        "required": [
-          "action"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [
-        "storage"
-      ],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
         "pilot+privileged"
       ],
       "supported_browsers": [

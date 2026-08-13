@@ -7,8 +7,8 @@
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-08-13T02:08:56.096Z
-Total tools: 80
+Generated: 2026-08-13T04:02:13.974Z
+Total tools: 78
 
 ## ai
 
@@ -457,22 +457,6 @@ _action_
 Remember something about a domain so it shows up in `domain_memo` context on every future visit. Use for site-specific lessons: "the PO submit button is the third primary", "DOB format is MM/DD/YYYY here", "this site requires SSO via Okta". Notes are free-form prose; hints are structured key/value pairs you can look up by name. Memos on a parent domain (e.g., atlassian.net) automatically apply to subdomains. Returns the updated memo so you can see what is remembered now.
 
 **Parameters:** `note` (string); `hints` (object); `domain` (string, required)
-
-### `scratchpad`
-
-_read_
-
-Session-scoped, in-process scratchpad for stashing structured notes across turns without burning context tokens. Distinct from the canonical `memory` tool which is the persistent long-term memory system. Use scratchpad for ephemeral state inside a single run; use `memory` for things the agent should remember about the user across sessions. Actions: 'set' (write a value to a key), 'get' (read by key), 'list' (all keys), 'delete' (remove a key). Values are stringified — stringify objects before passing. Caps: 8 KB per value, 100 keys per session. Cleared at session end.
-
-**Parameters:** `key` (string); `value` (string); `action` (string, required) = ["set","get","list","delete"]
-
-### `storage`
-
-_privileged_
-
-Persistent agent-namespaced storage that survives across runs. Distinct from canonical `memory` which is session-scoped (cleared on SW restart). Actions: 'get' (returns value at key), 'set' (writes any JSON-serializable value), 'list' (returns all keys). Use for user preferences, scratchpads, progress markers between conversations.
-
-**Parameters:** `key` (string); `value` (any); `action` (string, required) = ["get","set","list","delete"]
 
 ## reading
 

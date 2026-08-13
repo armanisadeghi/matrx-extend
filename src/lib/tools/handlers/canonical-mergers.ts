@@ -11,7 +11,6 @@
  *   ai              — 9 ai_* on-device Gemini tools
  *   cookies         — get_cookies, set_cookie, delete_cookie
  *   webmcp          — webmcp_check_availability, _list_page_tools, _call_page_tool
- *   storage         — get/set/list_extension_storage (persistent, distinct from canonical `memory`)
  *   tab_groups      — get/create/add/remove/update group ops
  *   bookmarks       — search_bookmarks, list_bookmark_tree
  *   history         — search_history, list_recent_history
@@ -60,12 +59,8 @@ import {
   set_cookie,
 } from '@/lib/tools/handlers/optional-perms';
 import {
-  delete_extension_storage,
-  get_extension_storage,
   inject_stylesheet,
-  list_extension_storage,
   remove_stylesheet,
-  set_extension_storage,
 } from '@/lib/tools/handlers/privileged';
 import {
   add_tabs_to_group,
@@ -281,44 +276,6 @@ export const webmcp: ToolHandler<WebmcpArgs, unknown> = {
       );
     }
     return { ok: false, reason: `Unknown webmcp action: ${args.action as string}` };
-  },
-};
-
-// ────────────────────────────────────────────────────────────────────────────
-// storage — persistent extension storage (distinct from session-scoped `memory`)
-// (3 → 1)
-// ────────────────────────────────────────────────────────────────────────────
-
-const StorageArgs = z.object({
-  action: z.enum(['get', 'set', 'list', 'delete']),
-  key: z.string().optional(),
-  value: z.unknown().optional(),
-});
-type StorageArgs = z.infer<typeof StorageArgs>;
-
-export const storage: ToolHandler<StorageArgs, unknown> = {
-  name: 'storage',
-  tier: 'privileged',
-  tierFor: (args): ToolTier =>
-    args.action === 'get' || args.action === 'list' ? 'read' : 'privileged',
-  argsSchema: StorageArgs,
-  run: async (args, ctx) => {
-    if (args.action === 'get') {
-      if (!args.key) return { ok: false, reason: "'key' required for get" };
-      return delegate(get_extension_storage, { key: args.key }, ctx);
-    }
-    if (args.action === 'list') {
-      return delegate(list_extension_storage, {}, ctx);
-    }
-    if (args.action === 'set') {
-      if (!args.key) return { ok: false, reason: "'key' required for set" };
-      return delegate(set_extension_storage, { key: args.key, value: args.value }, ctx);
-    }
-    if (args.action === 'delete') {
-      if (!args.key) return { ok: false, reason: "'key' required for delete" };
-      return delegate(delete_extension_storage, { key: args.key }, ctx);
-    }
-    return { ok: false, reason: `Unknown storage action: ${args.action as string}` };
   },
 };
 
@@ -612,7 +569,6 @@ export const canonical_merger_handlers = [
   ai,
   cookies,
   webmcp,
-  storage,
   tab_groups,
   bookmarks,
   history,
