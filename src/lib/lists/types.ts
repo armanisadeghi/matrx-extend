@@ -33,7 +33,12 @@ export interface Task {
   status: TaskStatus;
   note?: string;
   order: number;
-  created_by: 'agent' | 'user';
+  /**
+   * Who authored the task — NOT an owner. Backed by
+   * `chat.agent_task.creator_kind`; the identically-named `created_by` on that
+   * table is the canonical owner uuid and must never be read for this.
+   */
+  creator_kind: 'agent' | 'user';
   created_at: number;
   updated_at: number;
 }

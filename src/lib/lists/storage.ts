@@ -18,7 +18,6 @@
  * sidepanel store + any open tabs refresh without polling.
  */
 
-import { getCurrentUser } from '@/lib/auth/flow';
 import type {
   ConversationListsSummary,
   Plan,
@@ -44,13 +43,13 @@ interface AgentTaskRow {
   status: TaskStatus;
   note: string | null;
   position: number;
-  created_by: 'agent' | 'user';
+  creator_kind: 'agent' | 'user';
   created_at: string;
   updated_at: string;
 }
 
 const AGENT_TASK_COLUMNS =
-  'id,conversation_id,title,status,note,position,created_by,created_at,updated_at';
+  'id,conversation_id,title,status,note,position,creator_kind,created_at,updated_at';
 
 // ─── core map I/O ───────────────────────────────────────────────────────────
 
@@ -132,7 +131,7 @@ function taskFromRow(row: AgentTaskRow): Task {
     status: row.status,
     ...(row.note !== null && { note: row.note }),
     order: row.position,
-    created_by: row.created_by,
+    creator_kind: row.creator_kind,
     created_at: Date.parse(row.created_at),
     updated_at: Date.parse(row.updated_at),
   };
@@ -155,21 +154,20 @@ export async function listTasks(conversationId: string): Promise<Task[]> {
 export async function addTasks(
   conversationId: string,
   items: Array<{ title: string; status?: TaskStatus; note?: string | null }>,
-  createdBy: 'agent' | 'user' = 'agent',
+  creatorKind: 'agent' | 'user' = 'agent',
 ): Promise<Task[]> {
   if (!items.length) return [];
-  const user = await getCurrentUser();
-  if (!user) throw new Error('Cannot add agent tasks without an authenticated user');
   const existing = await listTasks(conversationId);
   let nextPosition = existing.reduce((max, task) => Math.max(max, task.order), -1) + 1;
+  // No owner column is sent: `chat.agent_task` defers RLS to its conversation
+  // and the cloud stamps ownership itself. Sending one would be a legacy write.
   const rows = items.map((item) => ({
     conversation_id: conversationId,
-    user_id: user.id,
     title: item.title,
     status: item.status ?? 'pending',
     note: item.note ?? null,
     position: nextPosition++,
-    created_by: createdBy,
+    creator_kind: creatorKind,
   }));
   const { data, error } = await chatDb().from('agent_task').insert(rows).select(AGENT_TASK_COLUMNS);
   if (error) throw new Error(`Failed to add agent tasks: ${error.message}`);
