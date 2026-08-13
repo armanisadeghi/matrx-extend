@@ -5,7 +5,7 @@
  *
  * The "Take screenshot" button calls the same `take_screenshot` tool
  * handler the agent uses (cross-working principle) — both flows go
- * through `persistScreenshot()` which uploads to cld_files and indexes
+ * through `persistScreenshot()` which uploads to `files.files` and indexes
  * into `wbx_screenshot`. Listing the tab is a simple Supabase select on
  * `wbx_screenshot.page_url_canonical`.
  *

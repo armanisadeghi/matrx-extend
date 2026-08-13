@@ -337,7 +337,7 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     },
     args: { displayType: 'key-value' },
     results: {
-      // The screenshot sub-action persists to cld_files and returns
+      // The screenshot sub-action persists to `files.files` and returns
       // { file_id, file_url, width, height, mime_type }. Render that image
       // inline — `computer` is the canonical surface the agent actually
       // calls now, so the image MUST render here (the old `take_screenshot`

@@ -231,7 +231,7 @@ export function RecorderPane() {
                   </>
                 )}
                 {!isRecording && status === 'uploading' && (
-                  <span className="text-[11px] text-muted-foreground">Uploading to cld_files…</span>
+                  <span className="text-[11px] text-muted-foreground">Uploading to your files…</span>
                 )}
                 {!isRecording && status === 'idle' && lastDurationMs != null && (
                   <span className="text-[11px] text-muted-foreground">
@@ -378,7 +378,7 @@ function RecordingRow({
         size="sm"
         onClick={onRemove}
         className="size-6 p-0 text-muted-foreground hover:text-destructive"
-        title="Remove from list (does not delete from cld_files)"
+        title="Remove from list (does not delete the file)"
       >
         <Trash2 className="size-3" />
       </Button>
