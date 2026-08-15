@@ -1,20 +1,11 @@
 // src/lib/scheduler-client/subscribe.ts
 //
-// Realtime subscription helper. Wraps supabase.channel(...).on('postgres_changes')
-// for sch_task so callers (scanners + UIs) can react to schedule changes
-// without polling.
-//
-// The subscription is filtered server-side by user_id. The
-// `surfaces` filter has to be applied client-side because PostgREST
-// realtime doesn't support array-contains in postgres_changes filters
-// (https://supabase.com/docs/guides/realtime/postgres-changes#available-filters).
+// Private per-user scheduler Broadcast subscription. Durable task state is
+// still fetched through table RLS; Broadcast is only the low-cost change hint.
 
-import type {
-  RealtimeChannel,
-  RealtimePostgresChangesPayload,
-  SupabaseClient,
-} from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { subscribeSchedulerBroadcast, type SchedulerBroadcastPayload } from './realtime';
 import type { SchedulerSurface } from './surfaces';
 import type { SchTaskRow } from './types';
 
@@ -29,7 +20,7 @@ export interface TaskEvent {
 export type TaskEventHandler = (event: TaskEvent) => void;
 
 export interface SubscribeOptions {
-  /** RLS filter: only sch_task rows for this user are delivered. */
+  /** Private Broadcast authorization only permits this user's topic. */
   userId: string;
   /**
    * Surface filter applied client-side. Events whose task.surfaces[]
@@ -38,12 +29,10 @@ export interface SubscribeOptions {
    */
   surface: SchedulerSurface | string;
   onTask: TaskEventHandler;
-  /** Optional override for the channel name (defaults to `sch_task:${userId}`). */
-  channelName?: string;
 }
 
 /**
- * Subscribe to sch_task postgres_changes for `userId`. Returns a
+ * Subscribe to private sch_task Broadcast events for `userId`. Returns a
  * teardown function — call it from useEffect cleanup / shutdown hooks
  * to remove the channel.
  */
@@ -51,12 +40,7 @@ export function subscribeToTasks(
   supabase: SupabaseClient,
   opts: SubscribeOptions,
 ): () => Promise<void> {
-  const channelName = opts.channelName ?? `sch_task:${opts.userId}`;
-
-  const deliver = (
-    eventType: TaskEventType,
-    payload: RealtimePostgresChangesPayload<Record<string, unknown>>,
-  ) => {
+  const deliver = (eventType: TaskEventType, payload: SchedulerBroadcastPayload) => {
     // On DELETE, Supabase Realtime ships `payload.old` (PK-only by default,
     // or full row if REPLICA IDENTITY FULL is set) and `payload.new` as
     // an EMPTY object `{}` — not null. So nullish-coalesce against
@@ -68,7 +52,7 @@ export function subscribeToTasks(
         : payload.new && Object.keys(payload.new as object).length > 0
           ? payload.new
           : payload.old;
-    const row = candidate as SchTaskRow | undefined;
+    const row = candidate as unknown as SchTaskRow | undefined;
     if (!row || typeof row !== 'object') return;
     // DELETE with default REPLICA IDENTITY only carries PK columns; the
     // surface filter would always fail. Deliver the DELETE through
@@ -83,44 +67,8 @@ export function subscribeToTasks(
     opts.onTask({ type: eventType, task: row });
   };
 
-  const channel: RealtimeChannel = supabase
-    .channel(channelName)
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'scheduler',
-        table: 'sch_task',
-        filter: `user_id=eq.${opts.userId}`,
-      },
-      (payload) =>
-        deliver('INSERT', payload as RealtimePostgresChangesPayload<Record<string, unknown>>),
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: 'UPDATE',
-        schema: 'scheduler',
-        table: 'sch_task',
-        filter: `user_id=eq.${opts.userId}`,
-      },
-      (payload) =>
-        deliver('UPDATE', payload as RealtimePostgresChangesPayload<Record<string, unknown>>),
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: 'DELETE',
-        schema: 'scheduler',
-        table: 'sch_task',
-        filter: `user_id=eq.${opts.userId}`,
-      },
-      (payload) =>
-        deliver('DELETE', payload as RealtimePostgresChangesPayload<Record<string, unknown>>),
-    )
-    .subscribe();
-
-  return async () => {
-    await supabase.removeChannel(channel);
-  };
+  return subscribeSchedulerBroadcast(supabase, opts.userId, (event, payload) => {
+    if (payload.schema !== 'scheduler' || payload.table !== 'sch_task') return;
+    deliver(event, payload);
+  });
 }

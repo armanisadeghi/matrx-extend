@@ -13,9 +13,8 @@
  *  - `stopSchedulerHost()` — tears down (idempotent).
  *
  * Wake-up: this host is REACTIVE to postgres_changes — the SW must already be
- * alive when an event arrives. Phase 4 will add Broadcast wake hints from
- * aidream so the SW comes alive on a wake envelope (chrome.alarms wakes the
- * SW; the SW reconnects this subscriber on boot via bootstrap.ts).
+ * alive when an event arrives. Database Broadcast avoids the WAL/RLS cost of
+ * postgres_changes; chrome.alarms still wakes the SW so it can reconnect.
  *
  * Handler registry: task handlers are keyed by `kind` (a small string today —
  * the DB CHECK currently only allows 'agent'). Subsequent phases will widen

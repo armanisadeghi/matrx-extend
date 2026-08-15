@@ -10,7 +10,7 @@ The Python `matrx-scheduler` is the authoritative scanner — it runs in aidream
 
 But the Chrome extension can't host a Python process. matrx-extend's SW needs to:
 
-- Subscribe to `sch_task` changes for the signed-in user so it knows when work targeted at the extension arrives.
+- Subscribe to the signed-in user's private scheduler Broadcast topic so it knows when work targeted at the extension arrives without `postgres_changes` WAL/RLS cost.
 - Atomically claim those tasks the same way the Python scanner does (INSERT into `sch_run` gated by the partial unique index `sch_run_unique_active_per_task`).
 - Report results via the same lease-token-gated UPDATE path.
 
@@ -112,7 +112,7 @@ The DB has a partial unique index `sch_run_unique_active_per_task` on `(task_id)
 - `index.ts` — public re-exports (the only file external callers should import from).
 - `client.ts` — `createSchedulerClient` factory.
 - `claim.ts` — `claimTask`, `markRunRunning`, `completeRun`, `failRun`.
-- `subscribe.ts` — `subscribeToTasks` (Realtime postgres_changes).
+- `subscribe.ts` + `realtime.ts` — ref-counted private per-user database Broadcast subscription; durable task reads and claims still use table RLS.
 - `next-due.ts` — TS twin of Python `next_due.py`. Uses `cron-parser` for cron expressions.
 - `surfaces.ts` — `SCHEDULER_SURFACES` whitelist + `SchedulerSurface` type.
 - `types.ts` — **hand-written row shapes** mirroring `database.types.ts` (see above).
