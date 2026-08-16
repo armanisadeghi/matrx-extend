@@ -198,6 +198,27 @@ Arman plus dozens of concurrent agents (across two machines) edit these repos si
   [src/lib/lists/storage.ts](./src/lib/lists/storage.ts); every
   local mutation broadcasts `LISTS_CHANGED`, while Supabase Realtime
   delivers aidream task writes to both task views.
+- **Prospect capture — `capture_prospect` (2026-08-16, IC-10)** — the agent (or
+  the user, via the "Save this site as a prospect" page context-menu item) adds
+  the current page's WEBSITE to their AI Matrx prospect list.
+  - 🚨 **It is not a second way to create a prospect and must never become one.**
+    The handler ([src/lib/tools/handlers/prospects.ts](./src/lib/tools/handlers/prospects.ts))
+    posts to aidream's `POST /api/seo/prospect-capture[/preview]`
+    ([routes/prospects.ts](./src/lib/api/routes/prospects.ts)), which is the
+    platform's ONE prospect-import path with a single entry — so the user's
+    blocklist (enforced at ingestion), the party resolver's domain
+    normalization, and de-duplication against their triage list all apply
+    unchanged. This module reaches no database and carries no domain normalizer;
+    both are grep-guarded in `tests/unit/prospect-capture.test.ts`.
+  - **`action: 'preview'` is the default and is READ-tier** (writes nothing);
+    `'capture'` is action-tier via `tierFor`. Preview reports the verdict, which
+    of the user's websites it would land in, and whether the company is ALREADY
+    a relationship (previous messages, campaigns, confirmed wins, do-not-contact).
+  - **Never guesses the site.** With several websites the server answers 409 and
+    the tool asks the user; `site_id` comes back on the next call.
+  - **Captures a COMPANY, never a person.** Contact capture is a separate,
+    unbuilt tool owned by the enrichment work package.
+  - Cross-repo contract: `/Users/armanisadeghi/code/common-docs/projects/outreach-system/INTEGRATION_MAP.md` (IC-10) · server contract: `/Users/armanisadeghi/code/aidream/aidream/services/seo/FEATURE.md` § Browser prospect capture.
 - **Agent-safe browser login — `credential_login` (2026-07-26)** — the agent
   asks for a login and never learns the credential. One action-tier handler
   ([src/lib/tools/handlers/credential-login.ts](./src/lib/tools/handlers/credential-login.ts))
