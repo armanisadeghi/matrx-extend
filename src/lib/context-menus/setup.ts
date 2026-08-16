@@ -9,7 +9,14 @@
  *      immediately. The chat view drains the storage key on mount as a
  *      cold-open fallback (broadcast is racey when the sidepanel hasn't
  *      mounted listeners yet).
- *   2. "Open Matrx side panel" — page-context fallback for users who
+ *   2. "Save this site as a prospect" — the HUMAN half of IC-10. It does not
+ *      capture anything itself: it opens the side panel with a drafted
+ *      instruction, so the agent runs `capture_prospect` and reports the
+ *      preview (verdict + who we already know at this domain) in chat before
+ *      anything is written. A menu item that wrote straight to the CRM would
+ *      be a capture with no preview, which is the one thing the contract says
+ *      a capture must never be.
+ *   3. "Open Matrx side panel" — page-context fallback for users who
  *      haven't pinned the action button.
  *
  * Why we ship a context menu at all: the `contextMenus` permission lives
@@ -24,6 +31,17 @@ import { CHANNELS } from '@/lib/messaging/schemas';
 
 const MENU_ID_ASK_SELECTION = 'matrx.menu.ask-selection';
 const MENU_ID_OPEN_PANEL = 'matrx.menu.open-panel';
+const MENU_ID_CAPTURE_PROSPECT = 'matrx.menu.capture-prospect';
+
+/**
+ * The drafted instruction behind "Save this site as a prospect". Deliberately
+ * asks for the CHECK first — the agent's own tool defaults to `preview`, and
+ * the sentence has to agree with it or a user reading the chat sees the agent
+ * do something they did not ask for.
+ */
+const CAPTURE_PROSPECT_DRAFT =
+  'Check whether this site is worth adding to my prospect list, and tell me if ' +
+  'we already know them, before you save it.';
 
 export const PENDING_DRAFT_STORAGE_KEY = 'matrx.chat.pending_draft';
 
@@ -49,6 +67,12 @@ export function setupContextMenus(): void {
       broadcast(CHANNELS.CHAT_DRAFT_FROM_SELECTION, { text });
       return;
     }
+    if (info.menuItemId === MENU_ID_CAPTURE_PROSPECT) {
+      await stashDraft(CAPTURE_PROSPECT_DRAFT);
+      await openSidepanel(tab?.windowId);
+      broadcast(CHANNELS.CHAT_DRAFT_FROM_SELECTION, { text: CAPTURE_PROSPECT_DRAFT });
+      return;
+    }
     if (info.menuItemId === MENU_ID_OPEN_PANEL) {
       await openSidepanel(tab?.windowId);
     }
@@ -63,6 +87,11 @@ function registerMenus(): void {
       id: MENU_ID_ASK_SELECTION,
       title: 'Ask Matrx about "%s"',
       contexts: ['selection'],
+    });
+    chrome.contextMenus.create({
+      id: MENU_ID_CAPTURE_PROSPECT,
+      title: 'Save this site as a prospect',
+      contexts: ['page'],
     });
     chrome.contextMenus.create({
       id: MENU_ID_OPEN_PANEL,

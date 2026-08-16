@@ -53,6 +53,7 @@ import {
 import { page_ref_handlers } from '@/lib/tools/handlers/page-refs';
 import { parallel_handlers } from '@/lib/tools/handlers/parallel';
 import { privileged_handlers, privileged_read_handlers } from '@/lib/tools/handlers/privileged';
+import { prospect_handlers } from '@/lib/tools/handlers/prospects';
 import { read_handlers } from '@/lib/tools/handlers/read';
 import { record_handlers } from '@/lib/tools/handlers/record';
 import { tab_action_handlers, tab_read_handlers } from '@/lib/tools/handlers/tabs';
@@ -89,6 +90,8 @@ const ALL: AnyToolHandler[] = [
   ...download_handlers,
   // ─── vault browser login (agent never sees the credential) ─────────────
   ...credential_handlers,
+  // ─── crm capture (IC-10 — the one prospect import path) ────────────────
+  ...prospect_handlers,
   // ─── memory ────────────────────────────────────────────────────────────
   ...memory_handlers,
   // ─── optional-permission tools ─────────────────────────────────────────

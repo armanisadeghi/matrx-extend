@@ -7,8 +7,8 @@
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-08-13T04:02:13.974Z
-Total tools: 78
+Generated: 2026-08-16T18:03:40.881Z
+Total tools: 79
 
 ## ai
 
@@ -123,6 +123,16 @@ _action_
 Sign in to the website in the current browser tab using a saved Matrx login. You never see or handle the username or password: the extension asks the server for them, fills the form, submits it, and reports only the outcome. Pass credential_item_id only when a previous call returned selection_required; otherwise omit it and the correct login is matched from the tab's own address. You cannot supply a URL, username, password, or selector. Returns one of: authenticated, needs_mfa, captcha_or_takeover, credentials_rejected, selection_required, no_matching_login, unsafe_destination, unknown. If MFA or a CAPTCHA appears, stop and hand control to the user — never try to work around it.
 
 **Parameters:** `credential_item_id` (string)
+
+## crm
+
+### `capture_prospect`
+
+_action_
+
+Add the website of the page you are on to the user's AI Matrx prospect list. ALWAYS call with action='preview' first: it writes nothing and tells you the verdict (new, already a prospect, blocked by the user's blocklist, or not a usable web address), which of their websites it would be filed under, and — most importantly — whether this company is ALREADY someone they know, with the number of previous messages, the campaigns they are in, how many confirmed wins they have given, and whether they are marked do-not-contact. Report that before capturing: treating a warm or forbidden contact as a cold prospect is the mistake this prevents. Then call action='capture' to save it. The capture goes through the platform's one prospect-import path, so the user's blocklist, de-duplication and authority scoring all apply exactly as they do to a prospect found by search. Defaults to the page you are assigned to; pass `url` only to capture a different address. If the user has several websites the call comes back asking which one — ask them, then pass `site_id`. This tool captures a COMPANY, never a person; it never sends anything to anyone.
+
+**Parameters:** `url` (string); `action` (string) = ["preview","capture"]; `site_id` (string)
 
 ## demos
 

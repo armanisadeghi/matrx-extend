@@ -1,14 +1,14 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-08-13T04:02:12.386Z
+Generated: 2026-08-16T18:03:39.666Z
 
-- **Total tools:** 161
-- **Assistant bundle:** 71 tools (read-only)
-- **Pilot bundle:** 135 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 161 tools
+- **Total tools:** 163
+- **Assistant bundle:** 72 tools (read-only)
+- **Pilot bundle:** 137 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 163 tools
 
 
-## Tier: read (71)
+## Tier: read (72)
 
 ### `list_browser_tools`
 
@@ -236,6 +236,21 @@ Generated: 2026-08-13T04:02:12.386Z
 ```
 
 ### `list_credentials_tools`
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_crm_tools`
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1936,7 +1951,7 @@ Generated: 2026-08-13T04:02:12.386Z
 }
 ```
 
-## Tier: action (61)
+## Tier: action (62)
 
 ### `navigate_active_tab`
 
@@ -2954,6 +2969,38 @@ Generated: 2026-08-13T04:02:12.386Z
   },
   "additionalProperties": false,
   "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `capture_prospect`
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "preview",
+        "capture"
+      ],
+      "default": "preview"
+    },
+    "url": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 2048
+    },
+    "site_id": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
 ```

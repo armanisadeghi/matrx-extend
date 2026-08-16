@@ -432,6 +432,23 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
+  // Prospect capture (IC-10). The row names the DOMAIN, because that is the
+  // unit the user is deciding about — a row saying "Checked prospect" with no
+  // domain makes a preview and a commit look identical in the timeline.
+  capture_prospect: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Building2', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Checking prospect',
+        completed: 'Prospect',
+        error: 'Prospect capture failed',
+      },
+      name: { path: 'result.domain', fallback: '' },
+      color: { started: 'primary', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
   submit_form: {
     inline: {
       icon: { started: 'Loader2', completed: 'SendHorizontal', error: 'AlertTriangle' },
@@ -587,7 +604,6 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     },
     args: { displayType: 'key-value' },
   },
-
 
   remember_for_domain: {
     inline: {
@@ -1226,7 +1242,6 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     },
     args: { displayType: 'key-value' },
   },
-
 
   desktop_run_command: {
     inline: {

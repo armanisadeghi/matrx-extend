@@ -51,6 +51,7 @@ import type { AnyToolHandler, ToolTier } from '@/lib/tools/types';
  *   - webmcp       : tools registered by the page via navigator.modelContext
  *   - desktop      : bridge to matrx-local
  *   - credentials  : sign in to a site using a saved Matrx vault login
+ *   - crm          : put what you are looking at into the user's AI Matrx CRM
  */
 export type ToolCategory =
   | 'core'
@@ -67,7 +68,8 @@ export type ToolCategory =
   | 'devtools'
   | 'webmcp'
   | 'desktop'
-  | 'credentials';
+  | 'credentials'
+  | 'crm';
 
 export interface CategoryMeta {
   category: ToolCategory;
@@ -189,6 +191,13 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     description:
       "Sign in to the site in the current tab using a login saved in the user's Matrx vault. `credential_login` resolves, fills, submits, and verifies in one call and returns only an outcome status — the agent never receives, and cannot supply, a URL, username, password, or selector. MFA and CAPTCHA stop automation for user takeover rather than being worked around.",
     list_tool_name: 'list_credentials_tools',
+  },
+  crm: {
+    category: 'crm',
+    label: 'Save to AI Matrx',
+    description:
+      "Put what you are looking at into the user's AI Matrx CRM. `capture_prospect` adds the current page's website to their prospect list through the platform's one import path — so the same blocklist, deduplication and scoring apply as to a searched or imported prospect. Always `preview` first: it writes nothing and reports whether this company is ALREADY someone they know (previous messages, campaigns, wins, or a do-not-contact flag), which is what stops a warm contact being treated as a cold one.",
+    list_tool_name: 'list_crm_tools',
   },
 };
 
@@ -382,6 +391,9 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   // Category comes from the DB (`tool.definition.category = 'credentials'`),
   // which is the source of truth — do not "tidy" this into `interaction`.
   credential_login: 'credentials',
+
+  // ─── crm (prospect capture — IC-10) ───────────────────────────────────
+  capture_prospect: 'crm',
 };
 
 export function categoryOf(toolName: string): ToolCategory {
@@ -503,6 +515,8 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   // surface includes `credential_login` yet (Phase 5 of the
   // credential-sharing-browser-login plan is the activation switch).
   'credential_login',
+  // ─── crm (prospect capture — IC-10) ─────────────────────────────────────
+  'capture_prospect',
 ]);
 
 export function isCanonicalSurface(toolName: string): boolean {
