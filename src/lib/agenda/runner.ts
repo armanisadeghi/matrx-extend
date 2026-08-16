@@ -5,7 +5,9 @@
  *   1. Claim a run row (lease pattern; another surface won't double-fire).
  *   2. Switch the sidepanel to the chat tab so the user can see it.
  *   3. Set the chat's selected agent + selected conversation:
- *        - agent_id: task.agent_id ?? DEFAULT_AGENDA_AGENT_ID
+ *        - agent_id: task.agent_id ?? settings.defaultAgentId ??
+ *                    DEFAULT_AGENDA_AGENT_ID (a hardcoded client constant;
+ *                    see the 🚨 KNOWN GAP note at the resolution site below)
  *        - conversation_id: task.persistent_conversation_id (heartbeats)
  *                           or null (ephemeral runs)
  *   4. Send the task's prompt as a normal chat message — the existing
@@ -84,9 +86,16 @@ export async function runTask(task: AgendaTask, send: SendFn): Promise<AgendaRun
   // Tab-switch + chat-store priming so the user sees the run in the chat tab.
   useSidepanelTabStore.getState().setTab('chat');
   const chat = useChatStore.getState();
-  // Honor the task's explicit pick, then fall back to the user's Default
-  // Agent preference, then the hardcoded constant as last resort. Same
-  // resolution order as the chat surface.
+  // Honor the task's explicit pick, then the user's Default Agent setting,
+  // then the hardcoded client constant as last resort. This matches what the
+  // other surfaces in this extension do.
+  // 🚨 KNOWN GAP — it is NOT the platform's canonical ladder. Canonically the
+  // code names a `slot_key` and the DB resolves it lowest to highest: system
+  // default (agent.slot_definition) → org binding → user binding → run-scope
+  // argument, with org/user bindings in agent.slot_binding. matrx-extend has
+  // zero slot coverage; tracked as rows E1/E2 in
+  // common-docs/systems/agent-slots/ROLLOUT.md (FEATURE.md beside it is the
+  // system of record).
   const agentId =
     task.agent_id ?? useSettingsStore.getState().defaultAgentId ?? DEFAULT_AGENDA_AGENT_ID;
   chat.setAgent(agentId);

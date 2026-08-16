@@ -61,10 +61,17 @@ const ParallelArgs = z.object({
   /** Prompt sent to every sub-run as the user message. */
   sub_prompt: z.string().min(1),
   /**
-   * Agent id for sub-runs. Defaults to the system's default agenda agent —
-   * a safe, capable agent the platform admin has pre-cleared for autonomous
-   * use. Override only when the parent agent knows it needs a specialized
-   * sub-agent (e.g. a vision-only model for screenshot comparison).
+   * Agent id for sub-runs. When omitted, falls back to the user's Default
+   * Agent setting and then to DEFAULT_AGENDA_AGENT_ID, a UUID hardcoded in
+   * this client. Pass it only when the parent agent knows it needs a
+   * specialized sub-agent (e.g. a vision-only model for screenshot
+   * comparison).
+   *
+   * 🚨 KNOWN GAP — canonically this argument is the run-scope layer of the
+   * Agent Slots ladder (system default → org binding → user binding →
+   * run-scope), and the omitted case would resolve a `slot_key` in the DB
+   * rather than a bundled constant. matrx-extend has zero slot coverage;
+   * tracked as rows E1/E2 in common-docs/systems/agent-slots/ROLLOUT.md.
    */
   agent_id: z.string().optional(),
   /**
@@ -472,9 +479,12 @@ export const parallel_for_each_tab: ToolHandler<ParallelArgs, unknown> = {
       }
     }
 
-    // 2. Resolve agent id + auth. When the caller doesn't pin a child
-    //    agent, honor the user's Default Agent preference from settings;
-    //    fall back to the system constant only if that's been cleared.
+    // 2. Resolve agent id + auth. An explicit `agent_id` argument is the
+    //    run-scope choice; otherwise honor the user's Default Agent setting,
+    //    then the hardcoded client constant.
+    //    🚨 KNOWN GAP — the canonical resolver is the Agent Slots ladder in
+    //    the DB (system default → org binding → user binding → run-scope).
+    //    See common-docs/systems/agent-slots/ROLLOUT.md rows E1/E2.
     const agentId =
       args.agent_id ?? useSettingsStore.getState().defaultAgentId ?? DEFAULT_AGENDA_AGENT_ID;
     const baseUrl = await getApiBaseUrl();

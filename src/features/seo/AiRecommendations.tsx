@@ -11,8 +11,17 @@
  *
  * Reused rather than rebuilt: `useAgentTextRun` (the ephemeral-run primitive),
  * `Markdown` (the chat renderer), `CopyButton`, the settings store's
- * `defaultAgentId` (the platform's single answer to "which agent"), and the
- * agent list query. Newly built: the primitive itself + the request builder.
+ * `defaultAgentId` (this repo's current, hardcoded-fallback answer to "which
+ * agent" — see below), and the agent list query. Newly built: the primitive
+ * itself + the request builder.
+ *
+ * 🚨 KNOWN GAP — `defaultAgentId` is a client Zustand setting over a bundled
+ * UUID, not the platform's canonical agent selection. Canonically this panel
+ * would name a `slot_key` and let the DB resolve it (system default → org
+ * binding → user binding → run-scope). matrx-extend has zero slot coverage;
+ * conversion is tracked as rows E1/E2 in
+ * common-docs/systems/agent-slots/ROLLOUT.md (system of record: that dir's
+ * FEATURE.md).
  *
  * Door Law: the agent that wrote the recommendations is named AND opens — the
  * footer links to its canonical `/agents/{id}` route in a new tab, so reading
@@ -37,8 +46,10 @@ import { ExternalLink, Loader2, RotateCw, Sparkles, Square } from 'lucide-react'
 import { useEffect, useState } from 'react';
 
 export function AiRecommendations({ audit }: { audit: SeoAudit }) {
-  // NEVER hardcode the agent UUID at a call site — settings is the single
-  // source of truth, and DEFAULT_AGENDA_AGENT_ID is the floor if it's cleared.
+  // NEVER hardcode an agent UUID at a call site. Today that means reading the
+  // settings store, with DEFAULT_AGENDA_AGENT_ID as the bundled fallback if
+  // it's cleared. 🚨 Both are a client-side stopgap for an Agent Slot that
+  // this repo does not resolve yet (ROLLOUT.md rows E1/E2).
   const defaultAgentId = useSettingsStore((s) => s.defaultAgentId);
   const agentId = defaultAgentId ?? DEFAULT_AGENDA_AGENT_ID;
   const [agentName, setAgentName] = useState<string | null>(null);

@@ -144,8 +144,10 @@ export type AgxAgent = z.infer<typeof AgxAgentSchema>;
  * user (or a Web Store reviewer) with no owned or shared agents yet.
  * Without this, the empty-state suggestion chips (including the
  * Chrome-flagged "Analyze the current page") were silent no-ops because
- * their submit path needs an agent id. ID matches the platform's default
- * routing agent and is also referenced from agenda/constants.ts.
+ * their submit path needs an agent id. The ID is DEFAULT_AGENDA_AGENT_ID, a
+ * UUID hardcoded in agenda/constants.ts — 🚨 not a platform-resolved default.
+ * Canonically it would come from an Agent Slot resolved in the DB; see
+ * common-docs/systems/agent-slots/ROLLOUT.md rows E1/E2.
  */
 const FALLBACK_DEFAULT_AGENT: AgxAgent = {
   id: DEFAULT_AGENDA_AGENT_ID,

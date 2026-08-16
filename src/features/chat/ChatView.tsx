@@ -203,8 +203,12 @@ export function ChatView() {
       setConversations(c);
       setAgentsLoading(false);
 
-      // Auto-select the user's saved default agent — that's the single
-      // source of truth. Fresh installs start with `defaultAgentId` set
+      // Auto-select the user's saved default agent — the setting this client
+      // currently reads for "which agent opens". 🚨 KNOWN GAP: the platform's
+      // canonical answer is an Agent Slot resolved in the DB (system default
+      // → org binding → user binding → run-scope); this repo has no slot
+      // coverage yet (common-docs/systems/agent-slots/ROLLOUT.md rows E1/E2).
+      // Fresh installs start with `defaultAgentId` set
       // to the Matrx Browser Agent (see useSettingsStore initial state),
       // so guests and never-configured signed-in users still land on a
       // working agent. If the saved id isn't in the fetched list (e.g.

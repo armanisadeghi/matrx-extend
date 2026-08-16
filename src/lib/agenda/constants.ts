@@ -1,7 +1,22 @@
 /**
- * The system's default agent for Agenda runs when the user hasn't picked
- * an override. Set in Supabase by platform admin; mirrored here so the
- * client doesn't have to fetch it on every run.
+ * Hardcoded client-side fallback agent for Agenda runs when the user hasn't
+ * picked an override.
+ *
+ * 🚨 KNOWN GAP — this is NOT the platform's canonical answer to "which agent
+ * runs". The canonical system is Agent Slots: code names a `slot_key` and the
+ * DATABASE decides, resolved lowest-to-highest as system default
+ * (agent.slot_definition) → org binding → user binding → run-scope argument,
+ * with org/user bindings in agent.slot_binding. A constant baked into the
+ * extension bundle can see none of those layers: an admin repin, an org
+ * binding, or a user binding all go unnoticed until the extension ships again.
+ *
+ * matrx-extend currently has ZERO slot coverage. Converting this constant (and
+ * the settings-store default that shadows it) to a resolved slot is tracked as
+ * rows E1/E2 in the rollout worklist. Do not treat this pattern as a model to
+ * copy into new code.
+ *
+ * System of record: common-docs/systems/agent-slots/FEATURE.md
+ * Worklist:         common-docs/systems/agent-slots/ROLLOUT.md (rows E1/E2)
  */
 export const DEFAULT_AGENDA_AGENT_ID = '443dd7ff-e7cc-47b8-907a-0a14834caa48';
 

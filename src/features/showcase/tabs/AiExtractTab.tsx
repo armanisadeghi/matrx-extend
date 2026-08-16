@@ -15,12 +15,23 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 type FieldType = 'string' | 'number' | 'date' | 'url' | 'boolean' | 'array';
 const FIELD_TYPES: FieldType[] = ['string', 'number', 'date', 'url', 'boolean', 'array'];
 
-// Built-in extractor agent ID — provisioned in the Matrx project as a public
-// system agent. Used as the default unless the user has their own extractor.
+// 🚨 KNOWN GAP — the two constants below hardcode "which agent runs" into the
+// extension bundle. The platform's canonical answer is Agent Slots: name a
+// `slot_key` and let the DB resolve it, lowest to highest, as system default
+// (agent.slot_definition) → org binding → user binding → run-scope argument
+// (org/user bindings live in agent.slot_binding). Picking a constant and then
+// letting the user override it hand-reimplements two rungs of that ladder and
+// cannot see the rest. matrx-extend has zero slot coverage; converting these
+// two is ROLLOUT.md row E2.
+// System of record: common-docs/systems/agent-slots/FEATURE.md
+// Worklist:         common-docs/systems/agent-slots/ROLLOUT.md (row E2)
+
+// Structured-extraction agent, provisioned in the Matrx project as a public
+// system agent. Hardcoded fallback; the user may pick their own extractor.
 const STRUCTURED_EXTRACTOR_AGENT_ID = 'c99595d6-7508-4f0d-b7d3-5218a3c69399';
 
-// Built-in "Pattern from Extracted Data" agent — converts AI-extracted rows
-// into a reusable list_pattern config so future runs need no AI.
+// "Pattern from Extracted Data" agent — converts AI-extracted rows into a
+// reusable list_pattern config so future runs need no AI. Hardcoded.
 const PATTERN_FROM_DATA_AGENT_ID = 'd5a6c513-d62f-4e09-b026-b869d8e3fcb1';
 
 interface SchemaField {

@@ -27,14 +27,26 @@ interface SettingsState {
 
   // ─── Chat defaults ──────────────────────────────────────────────────────
   /**
-   * Auto-selected when the chat tab loads with no agent chosen yet. The
-   * single source of truth for "which agent should open by default" across
-   * Chat, Pilot, Agenda fallbacks, and parallel_for_each_tab fan-out.
-   * Initial value is the Matrx Browser Agent so fresh installs and guests
-   * land on a working agent immediately; users override it via
-   * Settings → Default agent. NEVER hardcode the UUID in callers — read
-   * this and fall back to DEFAULT_AGENDA_AGENT_ID only when the setting
-   * itself is somehow cleared.
+   * Auto-selected when the chat tab loads with no agent chosen yet. Today it
+   * is what Chat, Pilot, Agenda fallbacks, and parallel_for_each_tab fan-out
+   * read. Initial value is the Matrx Browser Agent so fresh installs and
+   * guests land on a working agent immediately; users override it via
+   * Settings → Default agent.
+   *
+   * NEVER hardcode an agent UUID at a call site — read this setting instead.
+   *
+   * 🚨 KNOWN GAP — this client setting is NOT the platform's answer to "which
+   * agent". The canonical system is Agent Slots: code names a `slot_key` and
+   * the DATABASE decides, resolved lowest-to-highest as system default
+   * (agent.slot_definition) → org binding → user binding → run-scope argument,
+   * with org/user bindings in agent.slot_binding. A Zustand setting plus a
+   * bundled constant is a client-side re-implementation of the bottom two
+   * rungs and cannot see the others. matrx-extend has zero slot coverage;
+   * converting these call sites is tracked as rows E1/E2 in the rollout
+   * worklist.
+   *
+   * System of record: common-docs/systems/agent-slots/FEATURE.md
+   * Worklist:         common-docs/systems/agent-slots/ROLLOUT.md (rows E1/E2)
    */
   defaultAgentId: string | null;
   /** Fallback for the per-agent ask/act mode when an agent has no override. */
@@ -149,6 +161,11 @@ export const useSettingsStore = create<SettingsState>()(
       //     have a working agent without each caller re-implementing a
       //     fallback. Users who installed before v2 have null persisted;
       //     migrate replaces it.
+      //     🚨 That constant is a hardcoded client-side stopgap, not a
+      //     platform floor — the canonical answer is an Agent Slot resolved
+      //     in the DB (system default → org binding → user binding →
+      //     run-scope). See ROLLOUT.md rows E1/E2 in
+      //     common-docs/systems/agent-slots/.
       version: 2,
       migrate: (persisted, fromVersion) => {
         const state = (persisted ?? {}) as Partial<SettingsState>;
