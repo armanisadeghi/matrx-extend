@@ -12,7 +12,7 @@ AI Matrx is that harness. Our goal is to be the harness the models themselves pr
 
 The system runs in three stages, each with surfaces purpose-built for its audience.
 
-**Build.** *Agent Builder* is the forge. Engineers define an agent's identity — instructions, models, tools, variables, and context slots. Every save is versioned; internal instructions stay server-side.
+**Build.** *Agent Builder* is the forge. Engineers define an agent's identity — instructions, models, tools, variables, and Context Policies. Every save is versioned; internal instructions stay server-side.
 
 **Test.** *Agent Runner* is the test track. Same runtime as production, with deep observability — traces, costs, version pinning, scenario replays.
 
@@ -22,7 +22,7 @@ The system runs in three stages, each with surfaces purpose-built for its audien
 - **Shortcuts** — invocation wrappers that map ambient UI state to agent variables. A click is the prompt.
 - **Apps** — purpose-built experiences with custom artifacts, often composing multiple agents and shortcuts. The AI may be entirely invisible.
 
-Two inputs feed every agent: **Variables** (mandatory, supplied by the caller) and **Context Slots** (optional, filled from ambient state). Slots are where the harness starts to feel like magic — and they're powered by the context system.
+Two inputs feed every agent: **Variables** (mandatory, supplied by the caller) and **Context Policies** (optional, filled from ambient state). They are where the harness starts to feel like magic — and they're powered by the context system.
 
 ---
 
@@ -33,7 +33,7 @@ Context is what the agent knows about its world before it thinks. Get this right
 ### Four parties, one chain
 
 - **The Surface** decides what's *available*. A Surface is any environment an agent operates within — a Chrome extension, a chat UI, a phone over SMS, a sandbox the agent itself lives in, an inbound webhook. The Surface owns its catalog of context keys and is the sole authority on what state about itself exists. If the Surface doesn't expose it, no one downstream can ask for it.
-- **The Agent Engineer** decides what the agent is *forced to see* — selecting which of the Surface's keys pre-load into every turn (the agent's *context slots*). Anything not pre-loaded stays reachable; it just isn't automatic.
+- **The Agent Engineer** decides what the agent is *forced to see* — selecting which of the Surface's keys pre-load into every turn (the agent's *Context Policies*). Anything not pre-loaded stays reachable; it just isn't automatic.
 - **The Agent** decides what it *wants* that the engineer didn't pre-load. Every advertised key is retrievable by name on demand.
 - **The User** decides what they *want done* — and the layers above exist precisely so they never have to know any of this. No catalog to scan, no slots to configure. A symphony where the user hears only the music.
 

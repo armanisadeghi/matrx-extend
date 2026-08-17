@@ -69,7 +69,7 @@ const ParallelArgs = z.object({
    *
    * 🚨 KNOWN GAP — canonically this argument is the run-scope layer of the
    * Mandates ladder (system default → org binding → user binding →
-   * run-scope), and the omitted case would resolve a `slot_key` in the DB
+   * run-scope), and the omitted case would resolve a `mandate_key` in the DB
    * rather than a bundled constant. matrx-extend has zero Mandate coverage;
    * tracked as rows E1/E2 in common-docs/systems/mandates/ROLLOUT.md.
    */

@@ -36,10 +36,10 @@ interface SettingsState {
    * NEVER hardcode an agent UUID at a call site — read this setting instead.
    *
    * 🚨 KNOWN GAP — this client setting is NOT the platform's answer to "which
-   * agent". The canonical system is Mandates: code names a `slot_key` and
+   * agent". The canonical system is Mandates: code names a `mandate_key` and
    * the DATABASE decides, resolved lowest-to-highest as system default
-   * (agent.slot_definition) → org binding → user binding → run-scope argument,
-   * with org/user bindings in agent.slot_binding. A Zustand setting plus a
+   * (agent.mandate) → org binding → user binding → run-scope argument,
+   * with org/user bindings in agent.mandate_binding. A Zustand setting plus a
    * bundled constant is a client-side re-implementation of the bottom two
    * rungs and cannot see the others. matrx-extend has zero Mandate coverage;
    * converting these call sites is tracked as rows E1/E2 in the rollout

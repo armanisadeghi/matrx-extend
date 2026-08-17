@@ -17,9 +17,9 @@ const FIELD_TYPES: FieldType[] = ['string', 'number', 'date', 'url', 'boolean', 
 
 // 🚨 KNOWN GAP — the two constants below hardcode "which agent runs" into the
 // extension bundle. The platform's canonical answer is Mandates: name a
-// `slot_key` and let the DB resolve it, lowest to highest, as system default
-// (agent.slot_definition) → org binding → user binding → run-scope argument
-// (org/user bindings live in agent.slot_binding). Picking a constant and then
+// `mandate_key` and let the DB resolve it, lowest to highest, as system default
+// (agent.mandate) → org binding → user binding → run-scope argument
+// (org/user bindings live in agent.mandate_binding). Picking a constant and then
 // letting the user override it hand-reimplements two rungs of that ladder and
 // cannot see the rest. matrx-extend has zero Mandate coverage; converting these
 // two is ROLLOUT.md row E2.

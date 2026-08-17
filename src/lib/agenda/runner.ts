@@ -90,9 +90,9 @@ export async function runTask(task: AgendaTask, send: SendFn): Promise<AgendaRun
   // then the hardcoded client constant as last resort. This matches what the
   // other surfaces in this extension do.
   // 🚨 KNOWN GAP — it is NOT the platform's canonical ladder. Canonically the
-  // code names a `slot_key` and the DB resolves it lowest to highest: system
-  // default (agent.slot_definition) → org binding → user binding → run-scope
-  // argument, with org/user bindings in agent.slot_binding. matrx-extend has
+  // code names a `mandate_key` and the DB resolves it lowest to highest: system
+  // default (agent.mandate) → org binding → user binding → run-scope
+  // argument, with org/user bindings in agent.mandate_binding. matrx-extend has
   // zero Mandate coverage; tracked as rows E1/E2 in
   // common-docs/systems/mandates/ROLLOUT.md (FEATURE.md beside it is the
   // system of record).

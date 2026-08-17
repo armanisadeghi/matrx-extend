@@ -3,10 +3,10 @@
  * picked an override.
  *
  * 🚨 KNOWN GAP — this is NOT the platform's canonical answer to "which agent
- * runs". The canonical system is Mandates: code names a `slot_key` and the
+ * runs". The canonical system is Mandates: code names a `mandate_key` and the
  * DATABASE decides, resolved lowest-to-highest as system default
- * (agent.slot_definition) → org binding → user binding → run-scope argument,
- * with org/user bindings in agent.slot_binding. A constant baked into the
+ * (agent.mandate) → org binding → user binding → run-scope argument,
+ * with org/user bindings in agent.mandate_binding. A constant baked into the
  * extension bundle can see none of those layers: an admin repin, an org
  * binding, or a user binding all go unnoticed until the extension ships again.
  *

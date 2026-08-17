@@ -17,7 +17,7 @@
  *
  * 🚨 KNOWN GAP — `defaultAgentId` is a client Zustand setting over a bundled
  * UUID, not the platform's canonical agent selection. Canonically this panel
- * would name a `slot_key` and let the DB resolve it (system default → org
+ * would name a `mandate_key` and let the DB resolve it (system default → org
  * binding → user binding → run-scope). matrx-extend has zero Mandate coverage;
  * conversion is tracked as rows E1/E2 in
  * common-docs/systems/mandates/ROLLOUT.md (system of record: that dir's

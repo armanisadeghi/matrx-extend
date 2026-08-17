@@ -52,7 +52,7 @@ The two payloads do different jobs and are read by different code paths
 server-side:
 
 - **`context`** — big, rich, model-facing. Aidream matches keys against
-  Mandates / context_slots and surfaces the rest to the model as a
+  Mandates / Context Policies (`context_slots` in code today) and surfaces the rest to the model as a
   tool-callable hint. No truncation on our side — that's the server's
   job.
 - **`client.state["browser-dom"]`** — small, structured, orchestration-
