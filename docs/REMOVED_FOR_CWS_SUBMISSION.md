@@ -98,6 +98,6 @@ rejection cause. The same rule flagged `contextMenus` on the published v0.1.4 bu
 - **Privacy policy** — a working URL must be in the dashboard's designated field.
 - **`debugger` permission** — highest-scrutiny permission there is; keep only with a clear
   justification in reviewer notes, or drop CDP from the public build.
-- **`new Function` on PAGE DATA** in `data-pattern/framework-dump.ts` + `modes/next-data.ts`
-  — not remote code (it parses a `__NEXT_DATA__` blob from the page), but a reviewer
-  grepping for `new Function` will flag it. Replace with a real parser to remove the argument.
+- **Page-data string execution is removed.** `data-pattern/framework-dump.ts` and
+  `modes/next-data.ts` now accept strict JSON only. JavaScript object literals are skipped,
+  leaving no `new Function` or `eval` path for a reviewer to flag.

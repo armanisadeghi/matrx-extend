@@ -64,6 +64,8 @@ export interface AgentClientEnvelope {
  * `isAdmin === false`.
  */
 export interface AgentStartRequest {
+  /** REQUIRED. Resolved from GET /auth/whoami for this bearer/fingerprint identity. */
+  organization_id: string;
   user_input?: string;
   variables?: Record<string, unknown> | null;
   /**

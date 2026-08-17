@@ -1,8 +1,8 @@
 /**
  * Framework-state dump: reads embedded hydration JSON out of the page —
  * __NEXT_DATA__ / __NUXT_DATA__ / Apollo script tags, LinkedIn bpr-guid
- * blocks, and inline `window.* = {...}` assignments (paren-balanced scan
- * with a safe-eval fallback for JS object literals).
+ * blocks, and inline `window.* = {...}` assignments whose values are strict
+ * JSON. JavaScript object literals are intentionally skipped.
  *
  * Extracted from FrameworkTab so the scanner is unit-testable (audit P1-5 —
  * it was a 140-line inline closure whose failures were invisible).
@@ -49,8 +49,8 @@ export const frameworkDumpInPage = (): FrameworkDumpSource[] => {
   }
 
   // Inline window.* state (Indeed _initialData, Redux preloaded, etc.).
-  // Paren-balanced scan + JSON.parse with safe-eval fallback for sites
-  // that ship JS object literals (unquoted keys).
+  // The paren-balanced scan finds the candidate value; JSON.parse is the
+  // only accepted parser. JavaScript object literals are skipped.
   const WINDOW_NAMES = [
     '_initialData',
     '__INITIAL_STATE__',
@@ -113,18 +113,10 @@ export const frameworkDumpInPage = (): FrameworkDumpSource[] => {
         try {
           return JSON.parse(blob);
         } catch {
-          // fall through
-        }
-        if (
-          /\b(?:function\s*[(*]|=>|eval\s*\(|new\s+Function|XMLHttpRequest|fetch\s*\()/.test(blob)
-        ) {
+          // Window assignments may contain arbitrary JavaScript. Keep the
+          // extension CSP-safe and deterministic: accept JSON only and try
+          // the next assignment when this blob is a JavaScript object literal.
           continue;
-        }
-        if (blob.length > 5_000_000) continue;
-        try {
-          return new Function(`"use strict";return (${blob});`)();
-        } catch {
-          // try next match
         }
       }
     }

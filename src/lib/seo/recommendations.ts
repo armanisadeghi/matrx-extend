@@ -53,7 +53,7 @@ export const SEO_RECOMMENDATIONS_PROMPT = [
 export function buildSeoRecommendationsRequest(
   audit: SeoAudit,
   conversationId: string = crypto.randomUUID(),
-): AgentStartRequest {
+): Omit<AgentStartRequest, 'organization_id'> {
   return {
     user_input: SEO_RECOMMENDATIONS_PROMPT,
     // All three are REQUIRED by the server on every start request.

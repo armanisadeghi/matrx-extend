@@ -54,11 +54,9 @@ describe('frameworkDumpInPage', () => {
     expect(out[0]?.data).toEqual({ text: 'a } tricky { string', n: 1 });
   });
 
-  it('falls back to safe-eval for JS object literals (unquoted keys)', () => {
+  it('refuses JavaScript object literals instead of evaluating page code', () => {
     addScript("window._initialData = {jobs: [{title: 'Engineer'}], total: 1};");
-    const out = frameworkDumpInPage();
-    expect(out).toHaveLength(1);
-    expect(out[0]?.data).toEqual({ jobs: [{ title: 'Engineer' }], total: 1 });
+    expect(frameworkDumpInPage()).toEqual([]);
   });
 
   it('refuses blobs containing function/fetch/eval markers', () => {

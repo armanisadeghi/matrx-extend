@@ -1,4 +1,5 @@
 import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
@@ -702,6 +703,28 @@ export function useChatStream() {
       pendingContinueRef.current = null;
       watchdogRef.current?.start();
 
+      // A new conversation must name its organization explicitly. The same
+      // bootstrap works for bearer users and fingerprint guests; the server is
+      // the authority because a guest's personal organization is not visible
+      // through this client's anonymous Supabase session.
+      let organizationId: string;
+      try {
+        organizationId = await resolveConversationOrganizationId();
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        log.error('stream', 'conversation organization bootstrap failed', err);
+        watchdogRef.current?.stop();
+        useChatStore
+          .getState()
+          .appendAssistantText(assistantMsg.id, `\n\n_Error:_ ${message} Please try again.`);
+        useChatStore.getState().finalizeAssistant(assistantMsg.id);
+        useChatStore.getState().setStreaming(false);
+        runIdRef.current = null;
+        targetIdRef.current = null;
+        opts.onStartFailed?.(err instanceof Error ? err : new Error(message));
+        return null;
+      }
+
       // Pre-send page-context refresh. This is what makes the difference
       // between "agent is staring at last load's content" and "agent has
       // exactly what's on screen RIGHT NOW". Decides between no-op / fast
@@ -858,6 +881,7 @@ export function useChatStream() {
       }
 
       const body: AgentStartRequest = {
+        organization_id: organizationId,
         user_input: text,
         conversation_id: conversationId,
         is_new: isNewConversation,

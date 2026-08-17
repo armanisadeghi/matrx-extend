@@ -157,9 +157,9 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
     };
 
     /**
-     * Extract a window-bound state blob from inline scripts. Tries JSON.parse
-     * first; falls back to safe-eval (no `function`, `=>`, `eval`, etc.) for
-     * sites that ship plain JS object literals (unquoted keys / single quotes).
+     * Extract a window-bound state blob from inline scripts. The balanced scan
+     * locates the value, but only strict JSON is accepted. JavaScript object
+     * literals are intentionally skipped rather than executed.
      */
     const extractWindow = (name: string): unknown | undefined => {
       const escName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -239,19 +239,10 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
           try {
             return JSON.parse(blob);
           } catch {
-            // fall through
-          }
-          // Sanity check before eval.
-          if (
-            /\b(?:function\s*[(*]|=>|eval\s*\(|new\s+Function|XMLHttpRequest|fetch\s*\()/.test(blob)
-          ) {
+            // Window assignments may contain arbitrary JavaScript. Keep the
+            // extension CSP-safe and deterministic: accept JSON only and try
+            // the next assignment when this blob is a JavaScript object literal.
             continue;
-          }
-          if (blob.length > 5_000_000) continue;
-          try {
-            return new Function(`"use strict";return (${blob});`)();
-          } catch {
-            // try next match
           }
         }
       }

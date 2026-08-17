@@ -62,7 +62,7 @@ export const RECIPES: Recipe[] = [
     id: 'indeed-initial-data',
     label: 'Indeed — window._initialData',
     description:
-      'Indeed exposes page state on window._initialData (an inline JS object literal, not JSON). The Framework tab uses paren-balanced scan + safe-eval to read it. Pick the right key path from the tree.',
+      'Reads window._initialData only when the page publishes it as strict JSON. JavaScript object literals are intentionally skipped; use the JobPosting JSON-LD recipe when this source is unavailable.',
     hosts: ['indeed.com'],
     kind: 'next_data',
     config: { source: 'window._initialData', key_path: '' },

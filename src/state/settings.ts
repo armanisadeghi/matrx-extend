@@ -90,7 +90,11 @@ interface SettingsState {
   sharePageIdentity: boolean;
 
   // ─── Scrape auto-capture ───────────────────────────────────────────────
-  /** Auto-run a scrape on every page load (background). Gates useAutoScrape. */
+  /**
+   * Auto-run a scrape on every page load (background). Gates useAutoScrape.
+   * Off by default: a fresh install must not collect page content until the
+   * user chooses a capture or explicitly enables background capture.
+   */
   scrapeAutoOnLoad: boolean;
   /**
    * Background auto-capture style: `capture` = fast visible-DOM grab,
@@ -125,7 +129,7 @@ export const useSettingsStore = create<SettingsState>()(
       autoFullScrollOnFirstSubmit: false,
       modelOverrideId: null,
       sharePageIdentity: true,
-      scrapeAutoOnLoad: true,
+      scrapeAutoOnLoad: false,
       scrapeAutoMode: 'capture',
       setTheme: (theme) => set({ theme }),
       setScrapeDeepClean: (scrapeDeepClean) => set({ scrapeDeepClean }),

@@ -22,6 +22,7 @@
  */
 
 import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
@@ -47,7 +48,7 @@ export interface AgentTextRunInput {
   /** Agent to run. Resolved by the caller (surface default / user pick). */
   agentId: string;
   /** Body for the start request, minus the transport bits this hook owns. */
-  body: Omit<AgentStartRequest, 'stream'>;
+  body: Omit<AgentStartRequest, 'stream' | 'organization_id'>;
   /** Prefix for the generated runId — shows up in stream logs. */
   runIdPrefix?: string;
 }
@@ -143,10 +144,15 @@ export function useAgentTextRun(): AgentTextRun {
       runIdRef.current = runId;
 
       try {
+        const organizationId = await resolveConversationOrganizationId();
         await send(CHANNELS.STREAM_START, {
           runId,
           endpoint: agentExecutePath(input.agentId),
-          body: { ...input.body, stream: true } satisfies AgentStartRequest,
+          body: {
+            ...input.body,
+            organization_id: organizationId,
+            stream: true,
+          } satisfies AgentStartRequest,
           parser: 'rich-events' as const,
           agentName: null,
           permissionMode: 'auto',

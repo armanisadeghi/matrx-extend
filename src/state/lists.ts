@@ -130,29 +130,10 @@ export function useListsSubscriber(conversationId: string | null, enabled = true
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*',
           schema: 'chat',
           table: 'agent_task',
           filter: `conversation_id=eq.${conversationId}`,
-        },
-        refreshTasks,
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'chat',
-          table: 'agent_task',
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        refreshTasks,
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
-          schema: 'chat',
-          table: 'agent_task',
         },
         refreshTasks,
       )

@@ -15,6 +15,7 @@
  */
 
 import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -110,7 +111,9 @@ export async function runAiExtractPattern(
   if (!captured) throw new Error('Page capture returned nothing.');
 
   const runId = newId('extract');
+  const organizationId = await resolveConversationOrganizationId();
   const body: AgentStartRequest = {
+    organization_id: organizationId,
     user_input: description,
     // Required on every start request; a one-shot run still mints an id
     // (correlation) and stays ephemeral via store:false.

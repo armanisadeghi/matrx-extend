@@ -1,222 +1,207 @@
-# Chrome Web Store dashboard — copy/paste sheet
+# Chrome Web Store submission sheet
 
-Each heading below is one field in the dashboard. The text UNDER each heading is exactly
-what to paste — it contains no formatting characters, so paste it as-is.
+This is the canonical copy for the public Matrx Extend item:
 
-Anything you should NOT paste is kept out of the way, in the "Notes for you" section at the
-very bottom.
+- **Item ID:** `hnfolienncfklkgmdjjmhhegglimlamg`
+- **Do not submit:** duplicate draft `pifjakncjcpnkjbdlijgddhiipdlfbde`
+- **Release version:** `0.1.70`
+- **Last reconciled:** 2026-08-17 against the release source and live dashboard
 
-Verified against the built manifest on 2026-07-12.
+Paste only the text inside each quoted block into the matching dashboard field.
 
-===============================================================================
-STORE LISTING TAB
-===============================================================================
+## Store listing
 
-## Item name
+### Item name
 
-Matrx — AI Assistant for Your Browser
+> Matrx Extend
 
+### Summary
 
-## Summary (short description)
+> AI assistant for understanding and working with the page open in your browser.
 
-An AI assistant in your side panel. Ask about the page you're on, pull out details you need, and let it act on the page for you.
+### Detailed description
 
+> Matrx Extend is an AI assistant in the Chrome side panel for understanding and working with the page you have open.
+>
+> Without creating an account, you can capture readable page content, inspect page structure, run an SEO audit, and ask the assistant questions about the current page.
+>
+> The extension reads page content when you invoke one of these features. Automatic capture is optional, off on a fresh installation, and can be enabled in Settings.
+>
+> Browser actions run only when you request them. The default mode asks before an action changes a page, and privileged actions always require confirmation.
+>
+> Learn exactly what the extension accesses and how it is used in the Matrx Extend privacy policy: https://www.aimatrx.com/privacy-policy/extension
 
-## Detailed description
+### Category
 
-Matrx is an AI assistant that works inside your browser.
+> Productivity
 
-Open the side panel on any page and Matrx can see what you are looking at, answer questions about it, and — when you ask it to — take actions for you on that page.
+### Language
 
-WHAT IT HELPS YOU DO
+> English
 
-Ask questions about the page you're on, and get answers based on what is actually there rather than a guess.
+### Official URL
 
-Pull information out of a page — a table, a list, a set of product details — into a clean, usable form.
+> https://www.aimatrx.com/
 
-Fill in and submit forms, click through steps, and navigate, when you ask it to.
+### Homepage URL
 
-Capture and keep what matters: a screenshot, a note, a saved pattern you can re-run on similar pages later.
+> https://www.aimatrx.com/
 
-HOW IT WORKS
+### Support URL
 
-Matrx reads the content of the page you choose to use it on and sends it to the Matrx AI service, which generates a response using an AI model.
+> https://www.aimatrx.com/contact
 
-It only reads a page when you engage it on that page. It never runs in the background on sites you are not using it on.
+## Privacy
 
-YOU ARE IN CONTROL
+### Single purpose
 
-Nothing happens on a page unless you start it.
+> Matrx Extend is an AI side-panel assistant that helps the user understand and work with the web page they are currently viewing.
 
-Any action that would change a page asks for your confirmation first.
+### Privacy policy URL
 
-You can use Matrx as a guest, without creating an account.
+> https://www.aimatrx.com/privacy-policy/extension
 
-PRIVACY
+### Remote code
 
-We explain exactly what the extension reads, where it goes, and what we never do with it, in our extension privacy policy: https://www.aimatrx.com/privacy-policy/extension
+> No, I am not using remote code.
 
+The submitted source contains no `eval`, `new Function`, `Runtime.evaluate`, `Runtime.callFunctionOn`, or `Runtime.compileScript`. Server responses choose compiled tool names and validated data arguments; they never supply executable logic.
 
-===============================================================================
-PRIVACY TAB
-===============================================================================
+### Data-use disclosures
 
-## Single purpose description
+Check these categories:
 
-Matrx Extend is an AI assistant that helps the user understand and act on the web page they are currently viewing, from the browser side panel. Everything it does serves that one purpose: answering questions about the current page, extracting information from it, and performing actions on it at the user's request.
+- Personally identifiable information
+- Authentication information
+- Personal communications
+- Web history
+- User activity
+- Website content
 
+Check all three Limited Use certifications. The extension does not sell user data, use it outside the disclosed single purpose, or use it for lending or creditworthiness.
 
-## Privacy policy URL
+## Permission justifications
 
-https://www.aimatrx.com/privacy-policy/extension
+### `storage`
 
+> Stores the user's settings, preferences, guest identifier, and locally saved notes and extraction patterns so they persist between sessions.
 
-## Are you using remote code?
+### `sidePanel`
 
-No, I am not using remote code
+> The assistant interface is displayed in Chrome's side panel.
 
+### `activeTab`
 
-===============================================================================
-PRIVACY TAB — PERMISSION JUSTIFICATIONS
-===============================================================================
+> Identifies the tab the user is actively working with when they invoke the assistant.
 
-## storage
+### `tabs`
 
-Stores the user's settings, preferences, and locally saved notes and patterns so they persist between sessions.
+> Lets the assistant identify the active tab and perform tab operations such as open, switch, reload, or close only when the user requests them.
 
-## sidePanel
+### `tabGroups`
 
-The entire assistant interface lives in the browser side panel. This is the extension's only UI.
+> Lets the user ask the assistant to organize open tabs into Chrome tab groups.
 
-## activeTab
+### `scripting`
 
-Lets the assistant read and act on the tab the user has open when they engage it, without needing access to any other tab.
+> Reads the page the user selected and performs requested page interactions using code packaged with the extension.
 
-## tabs
+### `identity`
 
-The assistant operates on the tab the user is working in, and can open, switch, reload, or close tabs when the user asks it to.
+> Supports optional sign-in to the user's AI Matrx account through an OAuth flow. Guest use does not require sign-in.
 
-## tabGroups
+### `offscreen`
 
-Lets the user ask the assistant to organize their tabs into groups, and keeps multi-tab tasks contained in their own group.
+> Maintains the user-started streaming assistant connection when Chrome suspends the Manifest V3 service worker.
 
-## scripting
+### `nativeMessaging`
 
-Required to read the content of the page the user has engaged the assistant on, and to perform the actions they request on that page, such as clicking a button or filling in a form.
+> Connects only to the optional Matrx desktop companion when the user has installed it and requests a desktop capability. The extension works without the companion.
 
-## identity
+### `alarms`
 
-Used to sign the user in to their Matrx account through Google's OAuth flow. It is not used to read any other identity information.
+> Runs a task at the time the user scheduled it.
 
-## offscreen
+### `contextMenus`
 
-The assistant's responses are streamed from our server over a long-lived connection. An offscreen document holds that connection, because a Manifest V3 service worker is terminated too early to keep it open.
+> Adds a right-click action that sends user-selected page text or an image to the assistant.
 
-## nativeMessaging
+### `clipboardWrite`
 
-Used only to connect to the optional Matrx desktop companion application, if the user has chosen to install it. If it is not installed, this is never used.
+> Copies a result such as captured text or extracted rows to the clipboard when the user clicks a copy command.
 
-## alarms
+### `downloads`
 
-Used to run tasks the user has scheduled themselves, at the time they asked for.
+> Saves a file such as a screenshot, extracted data, PDF, or archived page only when the user requests it.
 
-## contextMenus
+### `webNavigation`
 
-Adds a right-click menu item so the user can send selected text or an image on the page straight to the assistant.
+> Detects completion of a user-initiated navigation so an active multi-step task or an explicitly enabled saved workflow can continue on the new page.
 
-## clipboardWrite
+### `history`
 
-Lets the assistant copy a result to the user's clipboard when they ask for it, for example an extracted table or a generated summary.
+> Reads browsing history only when the user explicitly asks the assistant to find a previously visited page.
 
-## downloads
+### `bookmarks`
 
-Lets the assistant save a file for the user when they ask, such as a screenshot, an extracted table, or a page saved as a PDF.
+> Reads or changes bookmarks only when the user explicitly asks the assistant to find, create, move, or remove a bookmark.
 
-## webNavigation
+### `notifications`
 
-Used to detect when a page finishes loading so the assistant can resume a multi-step task the user started, and so a saved workflow can continue across a page navigation.
+> Notifies the user when a task they started finishes or needs their input.
 
-## history
+### `sessions`
 
-Used only when the user explicitly asks the assistant to find something in their browsing history, for example "find the article I read yesterday about X". It is not read at any other time.
+> Reopens a recently closed tab only when the user asks.
 
-## bookmarks
+### `debugger`
 
-Used only when the user explicitly asks the assistant to find or organize something in their bookmarks. It is not read at any other time.
+> Provides Chrome capabilities unavailable through narrower APIs: workflow screencasting, page network inspection, full-page screenshots, PDF export, accessibility-tree inspection, difficult page interaction, and viewport emulation. It is never used to execute code. The source contains no Runtime.evaluate, Runtime.callFunctionOn, or Runtime.compileScript calls. Chrome does not permit debugger as an optional permission.
 
-## notifications
+### Optional `cookies`
 
-Notifies the user when a task they started finishes, or when the assistant needs their input to continue.
+> Requested at runtime only when the user enables advanced page tools and asks to inspect or change a cookie for the current site.
 
-## sessions
+### Optional `pageCapture`
 
-Lets the user ask the assistant to find and reopen a tab they recently closed.
+> Requested at runtime only when the user asks to save an archived copy of the current page.
 
-## debugger
+### Optional `clipboardRead`
 
-Used solely to provide capabilities Chrome offers no other API for: recording a short screen recording of the user's own workflow so they can save and replay it, showing the user the network requests their page is making, capturing a screenshot of a full page beyond the visible area, saving a page as a PDF, and reading the page's accessibility tree for users who need it.
+> Requested at runtime only when the user asks the assistant to use clipboard content.
 
-We do not use this permission to execute code. The extension makes no Runtime.evaluate, Runtime.callFunctionOn, or Runtime.compileScript calls anywhere in its source.
+### Optional `tabCapture`
 
-This cannot be requested as an optional permission, because Chrome does not permit "debugger" in optional_permissions.
+> Requested at runtime only when the user asks to record their own browser tab.
 
-## cookies (optional)
+### Host access (`<all_urls>`)
 
-Requested at runtime, only when the user turns on the advanced page-tools setting. It lets the assistant read or clear a cookie on the site the user is currently on, at their request.
+> The assistant's single purpose applies to whichever page the user chooses, so the extension cannot know the site in advance. A lightweight packaged bridge is available on web pages, but page content is captured or transmitted only after the user invokes a page-aware feature or explicitly enables automatic capture. Fresh installations have automatic capture off.
 
-## pageCapture (optional)
+## Reviewer test instructions
 
-Requested at runtime, only when the user asks to save a complete archived copy of the current page.
+The dashboard limit is 500 characters. Paste this exact instruction:
 
-## clipboardRead (optional)
+> No account is required. Open https://www.aimatrx.com/matrx-extend-demo and click the Matrx Extend toolbar icon to open the side panel. In Capture, click Capture and confirm the article appears. Open SEO and confirm the audit appears. Open Chat, ask "What are the three workflow stages on this page?" and confirm the answer says Capture, Understand, and Use. Automatic page capture is off by default.
 
-Requested at runtime, only when the user asks the assistant to use what they have copied to their clipboard.
+Leave reviewer username and password blank.
 
-## tabCapture (optional)
+## Screenshot set
 
-Requested at runtime, only when the user asks to record a video of their own tab.
+Upload current 1280 × 800 screenshots from the exact store build, in this order:
 
-## Host permission justification (all_urls)
+1. Guest Chat answering the three-stage question on `/matrx-extend-demo`.
+2. Capture showing the demo article and its extracted content.
+3. SEO showing the live audit for the demo page.
+4. Data showing selected or extracted rows from the workflow table.
+5. Settings showing automatic capture off on a fresh installation.
 
-Matrx is an assistant for whatever page the user is currently on, so it cannot know in advance which sites the user will want help with. It needs to be able to read and act on the active tab regardless of which site it is.
+Do not upload old signed-in, admin, task, or unrelated product screenshots.
 
-It reads a page only when the user opens the side panel and engages the assistant on that page. It does not read, monitor, or collect data from pages in the background, and it does not run on sites the user is not actively using it on.
+## Submission facts that stay internal
 
-
-===============================================================================
-NOTES FOR YOU — DO NOT PASTE ANY OF THIS
-===============================================================================
-
-1. "Are you using remote code?" is now answerable as NO. That changed on 2026-07-11 when we
-   removed execute_javascript / evaluate_javascript (which ran new Function on a string sent
-   by the server). Before that, the honest answer was YES, and that alone is a hard rejection.
-   Do not answer YES out of caution — it is now genuinely No, and answering Yes invites a
-   review we do not need.
-
-2. Privacy policy URL: I pointed it at the EXTENSION-specific policy
-   (/privacy-policy/extension) rather than the general site one, because it names the
-   extension and enumerates the permissions. If the dashboard already has the general
-   /privacy-policy URL, either is acceptable, but the extension one is stronger.
-
-3. Data-usage disclosures (checkboxes on the Privacy tab). Based on what the extension
-   actually does, you should be checking:
-     - Personally identifiable information  (email, on sign-in)
-     - Authentication information            (OAuth tokens)
-     - Website content                       (page text/HTML — this is the big one)
-     - Web history                           (only if we keep the history permission)
-     - User activity                         (the user's prompts)
-   And you must certify all three statements (no selling, no unrelated use, no
-   creditworthiness/lending use). Those are all true for us.
-
-4. contextMenus was flagged as "declared but unused" on the published v0.1.4. It IS used now
-   (2 files). If it gets flagged again, the fix is to make the right-click item obviously
-   visible to a reviewer, not to remove it.
-
-5. clipboardWrite is the one permission I am least sure we still need — the code only calls
-   navigator.clipboard.writeText, which works on a focused extension page without it. If a
-   reviewer challenges it, we can likely drop it with no loss. Not worth pre-emptively
-   removing.
-
-6. The screenshots and the description must match what a reviewer actually sees when they
-   install the zip. Guest mode means they CAN test it without an account — make sure the
-   first screenshot shows the side panel answering a question about a page, not an admin tab.
+- Previous rejection (2026-05-16), reference **Red Potassium**, said advertised functionality was not working or reproducible.
+- The rejected submission had no reviewer credentials and no reviewer instructions.
+- Version `0.1.70` provides a deterministic public test page and exact account-free steps.
+- Literal Chrome Guest mode cannot load extensions. The correct reviewer simulation is a new local Chrome profile with only the submitted package installed and no AI Matrx login.
+- A clean-profile pass and exact screenshot paths must be recorded in `docs/CHROME_WEB_STORE_REVIEW.md` before submission.

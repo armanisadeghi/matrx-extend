@@ -39,6 +39,26 @@ Every entry follows this shape:
 
 ---
 
+## Store-review guest path
+
+### Fresh-install guest conversation organization
+- **What it does:** Resolves the fingerprint guest's server-side personal
+  organization before starting a persisted AI conversation.
+- **Where to test:** A fresh Chrome profile with the exact Store build loaded
+  and no AI Matrx sign-in.
+- **Steps:**
+  1. Open `https://www.aimatrx.com/matrx-extend-demo`.
+  2. Open Matrx Extend → Chat.
+  3. Ask `What are the three workflow stages on this page?`.
+- **Expected:** `GET /auth/whoami` returns an `organization_id`; the subsequent
+  agent request includes it and answers with Capture, Understand, and Use.
+  There is no 422 `body.organization_id` error and no stuck pending bubble.
+- **Edge cases worth poking:** If bootstrap fails or returns no organization,
+  the pending run ends immediately with a visible retryable error. The client
+  never guesses or hardcodes a fallback organization.
+
+---
+
 ## Agent tools
 
 ### get_clipboard
@@ -726,6 +746,10 @@ Every entry follows this shape:
   Language / Permission / Copy / New-chat / History controls. Clicking it
   opens the Plan & tasks drawer.
 - **Where to test:** Chat tab.
+- **Realtime ownership:** Start a fresh guest conversation, send the first
+  message, and confirm the panel does not render an error about adding
+  `postgres_changes` callbacks after `subscribe()`. Chat and Pilot each own one
+  subscriber; the chip and drawer are state-only renderers.
 - **Steps:**
   1. Start a conversation where the agent proposes a plan or adds tasks
      (or add a task manually via the drawer).
@@ -831,7 +855,9 @@ Every entry follows this shape:
 - **Expected:** Huge dumps render incrementally ("+N more…" expanders, 100
   children per node). Restricted pages show "Could not read framework data".
   When BOTH an apollo script tag and window.__APOLLO_STATE__ exist, both
-  appear in the source picker.
+  appear in the source picker. `window.*` assignments are accepted only when
+  their value is strict JSON; JavaScript object literals are skipped rather
+  than evaluated as extension code.
 
 ### Showcase — AI Extract tab
 - **What it does:** Describe what you want; the extractor agent reads the
@@ -1299,7 +1325,8 @@ Every entry follows this shape:
 ### Auto-scrape mode — Scroll & capture
 - **What it does:** Settings → Scrape → "Auto-scrape mode" = *Scroll & capture*
   makes the background on-load capture scroll top→bottom first (loading lazy
-  content) before capturing, instead of a fast visible-DOM grab.
+  content) before capturing, instead of a fast visible-DOM grab. Auto-scrape
+  is OFF on a fresh install and begins only after the user enables it.
 - **Where to test:** Settings → Scrape section ("Auto-scrape on load" ON +
   "Auto-scrape mode" = Scroll & capture).
 - **Steps:**

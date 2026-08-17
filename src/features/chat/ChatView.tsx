@@ -49,6 +49,7 @@ import {
 } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
 import { type ChatMessage, type MessagePart, useChatStore } from '@/state/chat';
+import { useListsSubscriber } from '@/state/lists';
 import { useSettingsStore } from '@/state/settings';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { useToolInbox } from '@/state/tool-inbox';
@@ -174,6 +175,7 @@ export function ChatView() {
   const [agentsRefreshing, setAgentsRefreshing] = useState(false);
   const [taskPanelOpen, setTaskPanelOpen] = useState(false);
   const sidepanelTab = useSidepanelTabStore((s) => s.tab);
+  useListsSubscriber(selectedConversationId, sidepanelTab === 'chat');
 
   useEffect(() => {
     // Guests get the builtin-agents list (anon role can read agx_agent rows
@@ -505,7 +507,6 @@ export function ChatView() {
         conversationId={selectedConversationId}
         open={taskPanelOpen}
         onClose={() => setTaskPanelOpen(false)}
-        enabled={sidepanelTab === 'chat'}
       />
       <ChatHeader
         agents={agents}
@@ -925,9 +926,6 @@ function ChatHeader({
   getMessages: () => ChatMessage[];
   getAgent: () => { id: string; name: string } | null;
 }) {
-  // The lists store is a context singleton shared with Pilot — only the
-  // visible surface may claim it (see useListsSubscriber).
-  const chipEnabled = useSidepanelTabStore((s) => s.tab) === 'chat';
   return (
     <div className="flex h-9 shrink-0 items-center px-2">
       {agentsLoading ? (
@@ -952,11 +950,7 @@ function ChatHeader({
         </>
       )}
       <div className="ml-auto flex items-center gap-1">
-        <TaskPanelChip
-          conversationId={selectedConversationId}
-          onClick={onToggleTaskPanel}
-          enabled={chipEnabled}
-        />
+        <TaskPanelChip conversationId={selectedConversationId} onClick={onToggleTaskPanel} />
         <LanguagePicker />
         <SandboxPickerChip />
         <PermissionModeChip

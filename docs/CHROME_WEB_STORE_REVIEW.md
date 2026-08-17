@@ -1,286 +1,135 @@
-# Chrome Web Store — why we keep getting rejected, and what to do
+# Matrx Extend Chrome Web Store review record
 
-> Audited 2026-07-11 against the CURRENT published policies (links at the bottom).
-> Read this BEFORE the next resubmission. Shipping again without addressing §1 and
-> §2 will very likely be rejected again — those are policy violations, not bugs, and
-> no amount of code quality fixes them.
+## Current decision
 
-**There is a hard deadline.** Chrome's updated privacy policies begin **enforcement
-on 1 August 2026**. Extensions non-compliant after that date "may face enforcement
-action." That is weeks away, and it applies to the *published* item as well as new
-submissions.
+Prepare and submit version `0.1.70` to the existing public item `hnfolienncfklkgmdjjmhhegglimlamg`. Do not use the duplicate draft item `pifjakncjcpnkjbdlijgddhiipdlfbde`.
 
----
+Submission is not ready until every unchecked gate below is complete. Dashboard text is canonical in `docs/CWS_LISTING_DRAFT.md`.
 
-## 1. 🔴 BLOCKER — We execute remote code. This is explicitly prohibited.
+## Why the previous submission failed
 
-This is almost certainly the main reason we keep getting rejected, and it is the one
-thing that cannot be argued around.
+The live dashboard records this rejection:
 
-`src/lib/tools/handlers/privileged.ts` (`execute_javascript`) does:
+- **Date:** 2026-05-16
+- **Type:** Content Policies
+- **Reference:** Red Potassium
+- **Finding:** functionality described in the listing was not working or reproducible during review
 
-```js
-const fn = new Function('arg', `return (async () => { ${code} })();`);
-```
+The rejected version advertised several workflows but supplied no reviewer username, password, or additional instructions. A reviewer had no deterministic page, path, or expected result. The new submission fixes that directly with guest access, a stable public demo page, exact steps, and current screenshots.
 
-`code` is a **JavaScript string authored by an LLM on our server** and delivered over
-the SSE stream. `evaluate_javascript` (`canonical-mergers.ts`) is the same capability
-under the canonical mega-tool name.
+## Release changes made for review
 
-The Manifest V3 policy is unambiguous. Prohibited:
+- The manifest and package summary now state one purpose: an AI assistant for understanding and working with the page open in the browser.
+- Automatic page capture is off on fresh installations. Users may opt in through Settings.
+- Page data is parsed as strict JSON. The two remaining `new Function` fallbacks were removed.
+- The extension-specific privacy policy now matches the real default, host access, content-script bridge, optional automation, and confirmation behavior.
+- `/matrx-extend-demo` provides stable public article, table, link, metadata, and JSON-LD content without detecting or treating reviewers differently.
+- Reviewer instructions require no account and state exact expected results.
+- Every agent-start path now resolves the bearer/fingerprint identity's
+  effective organization through `/auth/whoami`; a clean-install guest never
+  guesses or hardcodes conversation ownership.
 
-- *"Using `eval()` or similar mechanisms to execute a string fetched from a remote source"*
-- *"Building systems to run complex commands fetched from a remote source, **even if
-  those commands are fetched as data**"*
-- The requirement: *"the full functionality of an extension must be easily discernible
-  from its submitted code."*
+## Policy posture
 
-There are exactly **two** sanctioned exceptions: the **Debugger API** and the
-**User Scripts API**.
+### Remote code
 
-### What is and is not a problem here
+The public build must contain no executable string path. Verify source and emitted JavaScript contain none of:
 
-**The tool dispatcher itself is defensible.** The server sends a tool *name* plus
-Zod-validated *arguments*; every handler is compiled into the package. External input
-supplies **data**, never **logic** — which is precisely the line the policy draws
-("external resources can provide data but never logic"). We should say this plainly in
-the reviewer notes rather than hope nobody asks.
+- `eval(`
+- `new Function`
+- `Runtime.evaluate`
+- `Runtime.callFunctionOn`
+- `Runtime.compileScript`
 
-**`execute_javascript` / `evaluate_javascript` are NOT defensible.** They take logic
-from the network and run it. There is no reading of the policy under which
-`new Function(remoteString)` is permitted.
+The agent tool dispatcher remains compliant: the server selects a compiled handler name and supplies validated data arguments. Executable logic is packaged in the submitted extension.
 
-### The three ways out (this is a product decision — see OPEN QUESTIONS)
+### Single purpose
 
-1. **Drop the tools from the shipped build.** Cleanest, fastest, guaranteed to pass.
-   Costs the agent an escape hatch it uses for long-tail pages.
-2. **Move them to the `chrome.userScripts` API** — the *sanctioned* exception, and the
-   manifest already reserves the `userScripts` permission for exactly this. Cost: the
-   user must flip a per-extension "Allow User Scripts" toggle in `chrome://extensions`,
-   so it cannot be silently on by default.
-3. **Route them through the Debugger API** (`Runtime.evaluate`) — also sanctioned, and
-   we already ship `debugger` + a full CDP client. Cost: the "is being debugged" banner
-   on every tab it touches.
+The single purpose is:
 
-Note that (2) and (3) are exceptions to the *remote-code* rule specifically; they do
-not exempt us from the single-purpose or data-use rules below.
+> Matrx Extend is an AI side-panel assistant that helps the user understand and work with the web page they are currently viewing.
 
-Note: injecting via `chrome.scripting.executeScript` does **not** save us. The tool
-runs `new Function(code)` inside the page (ISOLATED or MAIN world), but the policy is
-about where the **logic came from** — the network — not which JS realm evaluates it.
-The line already carries an `eslint-disable ... no-new-func`, so this was known.
+Capture, page-aware chat, structured extraction, SEO inspection, and requested page actions all support that purpose. Reviewer-facing copy must not present them as unrelated products.
 
-### Lower priority: `new Function` on page data (defensible, but it will cost a review cycle)
+### Page access and automation
 
-`src/lib/data-pattern/framework-dump.ts:125` and `src/lib/data-pattern/modes/next-data.ts:252`
-use `new Function` to parse a `__NEXT_DATA__`-style JS object literal **out of the
-current page**. That is page *data*, not remote code, and it is genuinely defensible.
-But a reviewer grepping for `new Function` cannot tell the two apart at a glance, and we
-will burn a rejection cycle explaining the difference. Replacing them with a real parser
-(JSON5, or a restricted literal parser) removes the argument entirely for very little work.
-Do this **after** §1 — it is not itself a violation.
+- A lightweight content-script bridge is present on ordinary web pages.
+- Fresh installations do not automatically capture or transmit page content.
+- Page content is captured when a user invokes a page-aware feature.
+- Automatic capture is a separate, disclosed opt-in setting.
+- The default action mode asks before state-changing actions; privileged actions always ask.
+- Never claim that every action always asks or that no code is present on pages before invocation.
 
----
+### `debugger`
 
-## 2. 🔴 BLOCKER — Single purpose. We are, on paper, a Swiss army knife.
+Keep `debugger` for this submission because it powers real user-facing screencasting, network inspection, full-page screenshot, PDF, accessibility-tree, difficult-interaction, and emulation functions and Chrome forbids it as an optional permission.
 
-Policy: an extension must have **one** narrow, well-defined purpose. Multi-function
-extensions are routinely rejected. Explicit violations include "combining unrelated
-functionalities" and "multiple entry points for disparate features."
+The extension must never use `Runtime.evaluate`, `Runtime.callFunctionOn`, or `Runtime.compileScript`. If Google rejects specifically because of `debugger`, prepare a separate public build without its dependent capabilities rather than arguing indefinitely.
 
-Our own manifest description reads:
+## Submission gates
 
-> "Agentic browser companion — **chat, tasks, scraping, structured data extraction,
-> and SEO**."
+### Source and package
 
-That is five purposes in one sentence, written by us, in the field the reviewer reads
-first. And the side panel ships ~17 tabs (Chat, Tasks, Agenda, Scrape, Data, Highlight,
-Guidance, SEO, Notes, Screenshots, Lists, Tools, Settings, Profile, + admin-only Pilot /
-Showcase / Debug).
+- [x] Version is higher than rejected `0.1.63` and published `0.1.4`.
+- [x] Fresh-install automatic capture defaults off.
+- [x] No source `eval` or `new Function` remains.
+- [x] Full compile and test suite pass after final edits.
+- [x] `pnpm zip:store` builds the store zip without the development manifest key.
+- [x] Zip manifest version, summary, permissions, and CSP are inspected.
+- [x] Emitted JavaScript passes the remote-code string audit.
 
-**This is fixable without cutting features, because the features genuinely DO serve one
-purpose.** The purpose is: *an AI agent that operates your browser for you.* Scraping,
-extraction, SEO audit, notes, and screenshots are not five products — they are things
-the agent does, and things the user does to *feed* the agent. The listing has to say
-that, and the UI has to look like that.
+### Public disclosure
 
-Required changes:
-- **Rewrite the description** around the single purpose. Lead with the agent. Do not
-  enumerate co-equal features.
-- **Consider hiding the non-core tabs behind the agent** for the public build (they are
-  already tab-gated; admin-only tabs are already invisible to a reviewer).
-- The store listing (title, description, screenshots) must match the actual behavior
-  exactly — reviewers check this and "deceptive metadata" is its own rejection class.
+- [x] Listing copy is narrowed to one purpose.
+- [x] Reviewer steps are deterministic and under 500 characters.
+- [x] Extension-specific privacy source matches behavior.
+- [x] Stable public demo-page source exists.
+- [ ] Public demo page and extension privacy policy resolve successfully from an anonymous browser.
 
----
+### Clean-profile test
 
-## 3. 🟢 MOSTLY DONE — Privacy policy exists and is extension-specific (one gap)
+Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacked store build installed.
 
-**Correction to an earlier version of this doc:** it said there was no privacy policy.
-That was wrong — it checked the repo, not the website. The policy exists, resolves 200,
-and is **written specifically for this extension**:
+- [ ] Side panel opens from the toolbar icon.
+- [x] Guest banner appears and no account is required.
+- [x] Settings shows automatic capture off before any change.
+- [x] Capture produces the demo article, links, and schema.
+- [x] SEO produces an audit for the demo page.
+- [ ] Data can select or extract fields from the workflow table without a dead end.
+- [ ] Chat answers the three-stage question with Capture, Understand, and Use.
+- [ ] No uncaught side-panel or service-worker error affects these paths.
 
-**`https://www.aimatrx.com/privacy-policy`**
+### Dashboard
 
-Verified 2026-07-11 that it already covers, by name: "the Matrx Extend Chrome extension,"
-the page content it reads ("visible text or rendered HTML/markdown, the accessibility
-tree, headings, links, page metadata"), sending that to the backend + LLM providers
-("forwards your message and any included page context to whichever provider…"), browsing
-**history**, **bookmarks**, and **cookies**, and a deletion path (email support@aimatrx.com).
-That is a strong policy and directly addresses the data-handling rejection class.
+- [ ] Primary item `hnfolienncfklkgmdjjmhhegglimlamg` receives the new zip.
+- [ ] Listing fields exactly match `docs/CWS_LISTING_DRAFT.md`.
+- [ ] Privacy policy URL is `/privacy-policy/extension`.
+- [ ] Data disclosures and Limited Use certifications match this record.
+- [ ] Permission justifications exactly match this release.
+- [ ] Reviewer username and password remain blank; additional instructions are filled.
+- [ ] Five current 1280 × 800 screenshots are uploaded in the documented order.
+- [ ] Distribution settings are checked without using the duplicate item.
+- [ ] Arman explicitly confirms the final Submit for review action.
 
-**Two things still to do:**
-1. **Confirm the URL is in the dashboard's Privacy → "Privacy policy URL" field.** A great
-   policy the reviewer can't find still fails. (I can't see the dashboard, so this is
-   unverified — check it.)
-2. **Add a short guest/anonymous-usage paragraph.** The policy currently reads as
-   account-required, but the extension has **guest mode** (2026-05-16), which mints an
-   anonymous `auth.users` row server-side via the install fingerprint. The 2026 disclosure
-   rules require disclosing that collection. Suggested addition:
-   > *"You can use the extension as a guest without creating an account. When you do, we
-   > create an anonymous account tied to a randomly-generated identifier for your install,
-   > so we can provide the service and apply usage limits. Guest data is handled the same
-   > way as account data; email support@aimatrx.com to request deletion."*
+## Evidence log
 
-Under the **2026 Limited Use update**, collected data must be *"strictly necessary to the
-disclosed single purpose."* This links back to §2: once the single purpose is declared,
-every permission and every byte must visibly serve it — the policy already frames it that
-way ("pages you choose to give it").
-
----
-
-## 4. 🟠 HIGH — Permissions. Several are hard to justify, one is redundant.
-
-Reviewers reject on "excessive permissions" and on permissions that do not serve the
-declared single purpose. Current state, audited against real code usage:
-
-| Permission | Used in code? | Risk |
-|---|---|---|
-| `debugger` | yes (CDP client, 5 files) | 🟠 Highest-scrutiny permission that exists, and cannot be made optional (Chrome forbids `debugger` in `optional_permissions`). **But we have a genuinely strong justification — see §4b.** |
-| `<all_urls>` host access | yes | 🟠 Broad host access triggers "excessive permissions" unless *genuinely necessary for core functionality*. For a browse-anywhere agent it IS necessary — but we must say why, explicitly. |
-| `history`, `bookmarks`, `sessions` | 1–2 files each | 🟠 Very sensitive. Each must visibly serve the single purpose or be cut. |
-| `nativeMessaging` | yes (`connectNative('com.matrx.local')`) | 🟠 Legitimate in code, but the native host does not exist on a reviewer's machine. Justify or drop. |
-| `system.cpu` / `system.memory` / `system.display` | 1 file (admin-only tool) | 🟠 The manifest itself says these were added **"preemptively"** for a roadmap item. They are reachable only from an **admin-gated** tool, so a reviewer can never trigger them. This is the definition of a permission that does not serve the user-facing purpose. **Recommend removing.** |
-| `declarativeNetRequestWithHostAccess` | 1 file (admin-only tool) | 🟠 Same as above. **Recommend removing.** |
-| `activeTab` | **no** | 🟢 Not a problem. Redundant next to `<all_urls>`, but reviewers *prefer* `activeTab` — it is the narrow one. Leave it; if we ever narrow host access it becomes load-bearing. |
-| `clipboardWrite` | only `navigator.clipboard.writeText` | 🟡 Likely unnecessary (that call works on a focused extension page without it). Verify, then drop. |
-| `contextMenus` | yes (2 files) | 🟡 **Was already flagged "declared but unused" on the published v0.1.4 build.** It is genuinely used now — but confirm the reviewer can see it being used. |
-
-**Do not ship permissions "preemptively."** The manifest ~~currently admits~~ *(fixed
-2026-07-11)* used to admit, in a comment, that four permissions were added for features that
-did not exist yet. That is exactly what the "minimum permissions" rule prohibits, and it was
-written down in our own source. Those four are gone.
-
----
-
-## 4b. The `debugger` decision — exactly what it costs, and the justification
-
-**The strongest fact in our favour: we never use CDP to execute code.** Verified — the repo
-contains **zero** calls to `Runtime.evaluate`, `Runtime.callFunctionOn`, or
-`Runtime.compileScript`. The entire CDP surface we use is:
-
-| Domain | What we call it for |
+| Time (America/Los_Angeles) | Evidence |
 |---|---|
-| `Page.startScreencast` / `screencastFrame` | GIF recording of a user workflow |
-| `Page.captureScreenshot` / `getLayoutMetrics` | Full-page (beyond-the-fold) screenshot |
-| `Page.printToPDF` | Save the page as a PDF |
-| `Network.*` (enable, requestWillBeSent, getResponseBody…) | Show the user the page's network calls |
-| `Accessibility.getFullAXTree` | Read the page's accessibility tree |
-| `Input.dispatchMouseEvent` / `insertText` | Click/type on pages where normal injection fails (shadow DOM, cross-origin iframes) |
-| `Emulation.*` | Device/viewport emulation |
+| 2026-08-17 | Live dashboard confirmed primary draft `0.1.63` rejected and published `0.1.4`; duplicate item `pifjakncjcpnkjbdlijgddhiipdlfbde` remains an unused draft. |
+| 2026-08-17 | Live rejection detail and the completely blank reviewer-instructions section were recorded. |
+| 2026-08-17 | `pnpm compile`, `pnpm test` (398 tests), schema-routing check, and docs-pointer check passed before final copy/default edits. |
+| 2026-08-17 | Focused strict-JSON parser test passed after removing both page-data execution fallbacks. |
+| 2026-08-17 03:45 PDT | Final `pnpm compile`, `pnpm test` (400 tests), strict schema-routing, strict docs-pointer, tool-DB drift, and `pnpm zip:store` passed. |
+| 2026-08-17 03:45 PDT | Store artifact `.output/matrx-extend-0.1.70-chrome.zip` SHA-256 `c21cc1b43ac3e835cce6d0126f66d1e9bbe37d5f7f133c6bef70c970c6539237`; manifest has version `0.1.70`, the narrow summary, no `key`, inspected permissions, and MV3 default CSP. Emitted JavaScript string audit found no remote script, `importScripts(http…)`, `new Function`, or `eval` path. |
+| 2026-08-17 03:45 PDT | Exact clean Store build in a fresh Chrome-for-Testing profile, with no AI Matrx login: guest banner shown; auto-capture off; explicit Capture returned the 130-word demo article, 10 links, and schema; SEO returned a full audit; no runtime exception on either path. |
+| 2026-08-17 03:45 PDT | Guest Chat found a live contract regression before submission: agent start returned 422 because `organization_id` was absent. The server bootstrap and every extension agent-start path were fixed, typed, tested, built, committed, and pushed; the clean live chat rerun remains required before checking the Chat gate. |
 
-That matters enormously, because `debugger` is one of MV3's two sanctioned **remote-code**
-exceptions — so a reviewer's first assumption will be that we are using it to run code. We
-are not. State this explicitly in the reviewer notes.
+Add exact zip path, SHA-256, clean-profile results, screenshot paths, and dashboard save time here as they are produced.
 
-### What we actually LOSE if we remove it
+## Official policy references
 
-21 tools depend on it. **14 are NOT admin-only** — real users lose these, not just us.
-
-**Gone entirely (no fallback exists):**
-- **GIF recording** (`chrome_record_gif`) — the Guidance tab's record-a-workflow feature.
-  CDP screencast is the only viable path; `captureVisibleTab` is throttled to ~2 frames/sec,
-  which is useless for a GIF.
-- **Network capture** (6 tools) — the Showcase **Network** tab and the `network_capture`
-  data-pattern extraction mode. There is no non-CDP way to see a page's XHR/fetch traffic.
-- **Console reading** (`read_console_messages`) — page errors/exceptions.
-- **Print-to-PDF**, **performance metrics**.
-
-**Degraded but survives:**
-- **Full-page screenshot** — falls back to `src/lib/screenshot/full-page.ts` (scroll-and-stitch
-  via `captureVisibleTab`). Slower and rate-limited, but it works.
-- **CDP input** — normal `click_element` / `type_into_element` (via `chrome.scripting`) handle
-  the overwhelming majority of pages. We only lose the fallback for genuinely hard pages
-  (closed shadow roots, cross-origin iframes, canvas apps).
-- **Accessibility tree** — `read_page` builds its own tree via scripting; `cdp_a11y_tree` is
-  the higher-fidelity version.
-
-**Costs us NO user data:** verified against the live DB — **zero** saved patterns
-(`extend.wbx_pattern`) use the `network_capture` kind. Removing it strands nothing.
-
-### Recommendation
-**Keep it for this submission.** The thing that was almost certainly killing us (the
-`new Function(remoteCode)` RCE) is now gone. `debugger` powers real, user-facing features,
-and we have a clean, honest, verifiable justification (no code execution). If the reviewer
-rejects specifically on `debugger`, we remove it then — and we now know precisely what that
-costs, so it's a 30-minute change, not a discovery exercise.
-
-### Reviewer-note text (paste this)
-> The `debugger` permission is used solely to provide features Chrome offers no other API for:
-> recording a GIF of the user's workflow (`Page.startScreencast`), showing the user their
-> page's network requests, capturing a full-page screenshot, saving the page as a PDF, and
-> reading the accessibility tree. **We do not use it to execute code** — the extension makes
-> no `Runtime.evaluate`, `Runtime.callFunctionOn`, or `Runtime.compileScript` calls anywhere.
-> It cannot be an optional permission because Chrome does not permit `debugger` in
-> `optional_permissions`.
-
----
-
-## 5. 🟠 HIGH (new, 2026) — AI safeguards clause
-
-New for 2026: extensions "designed to circumvent safety guardrails, usage restrictions,
-or other protective measures implemented by AI-powered services" are prohibited.
-
-We are an AI agent that automates other websites. We should be careful that nothing in
-the listing or the tool set reads as **defeating** another service's protections — e.g.
-anything framed as bypassing bot detection, CAPTCHA solving, rate-limit evasion, or
-scraping behind a login. Our `page_dismissibles` / CAPTCHA handling and the scraping
-tools should be described as *convenience for the user on pages they are already
-authorized to view*, never as circumvention.
-
----
-
-## 6. 🟡 MEDIUM — Reviewer must be able to actually USE it
-
-Reviewers reject "non-functional" extensions and they test the **exact submitted zip**,
-on poor connectivity. Good news: **guest mode** (2026-05-16) means a reviewer can open
-the side panel and chat without signing up — that was an excellent call and directly
-addresses this class of rejection. Verify it still works in the store zip:
-
-- Install the *store* zip (not the local/dev one) in a clean profile.
-- Do not sign in. Confirm chat works end-to-end.
-- Confirm nothing dead-ends into a sign-in wall or an admin-only surface.
-
----
-
-## The order I would fix these in
-
-1. **Decide the `execute_javascript` question** (§1) — this is the blocker, and it is a
-   product call, not an engineering one.
-2. **Rewrite the description + listing around ONE purpose** (§2). Costs nothing, removes
-   the second blocker.
-3. **Write the privacy policy, register it in the dashboard** (§3). Hard deadline: 1 Aug 2026.
-4. **Strip the preemptive permissions** (§4): `system.*`, `declarativeNetRequestWithHostAccess`,
-   `activeTab`, probably `clipboardWrite`.
-5. Replace `new Function` in the data-pattern parsers (§1, tail) — cheap, removes an argument.
-6. Write **reviewer notes** for the dashboard explaining, in plain language: why the tool
-   dispatcher is data-not-logic; why an agent needs `<all_urls>`; what `debugger` is for.
-
----
-
-## Sources
-
-- [Manifest V3 requirements — remotely hosted code](https://developer.chrome.com/docs/webstore/program-policies/mv3-requirements)
-- [Troubleshooting Chrome Web Store violations](https://developer.chrome.com/docs/webstore/troubleshooting)
-- [Chrome Web Store policy updates 2026 (Aug 1 enforcement)](https://developer.chrome.com/blog/cws-policy-updates-2026)
-- [Program policies](https://developer.chrome.com/docs/webstore/program-policies)
+- [Chrome Web Store program policies](https://developer.chrome.com/docs/webstore/program-policies/policies)
+- [Privacy dashboard guidance](https://developer.chrome.com/docs/webstore/cws-dashboard-privacy/)
+- [Store listing guidance](https://developer.chrome.com/docs/webstore/cws-dashboard-listing/)
+- [Image requirements](https://developer.chrome.com/docs/webstore/images)
+- [Review process](https://developer.chrome.com/docs/webstore/review-process)

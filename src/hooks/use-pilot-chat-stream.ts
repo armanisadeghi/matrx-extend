@@ -16,6 +16,7 @@
  */
 
 import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
@@ -361,6 +362,23 @@ export function usePilotChatStream() {
       requestIdRef.current = null;
       watchdogRef.current?.start();
 
+      let organizationId: string;
+      try {
+        organizationId = await resolveConversationOrganizationId();
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        log.error('pilot-stream', 'conversation organization bootstrap failed', err);
+        watchdogRef.current?.stop();
+        usePilotChatStore
+          .getState()
+          .appendAssistantText(assistantMsg.id, `\n\n_Error:_ ${message} Please try again.`);
+        usePilotChatStore.getState().finalizeAssistant(assistantMsg.id);
+        usePilotChatStore.getState().setStreaming(false);
+        runIdRef.current = null;
+        targetIdRef.current = null;
+        return null;
+      }
+
       // Pre-send page-context refresh — same path as the assistant. Pilot
       // also benefits from "agent has exactly what's on screen RIGHT NOW",
       // since its first move is usually a screenshot or read_page.
@@ -442,6 +460,7 @@ export function usePilotChatStream() {
       }
 
       const body: AgentStartRequest = {
+        organization_id: organizationId,
         user_input: text,
         conversation_id: conversationId,
         is_new: isNewConversation,

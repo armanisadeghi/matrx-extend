@@ -52,6 +52,7 @@ import { cn } from '@/lib/utils';
 import type { ChatMessage, MessagePart } from '@/state/chat';
 import { usePilotStore } from '@/state/pilot';
 import { usePilotChatStore } from '@/state/pilot-chat';
+import { useListsSubscriber } from '@/state/lists';
 import { useSettingsStore } from '@/state/settings';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { useToolInbox } from '@/state/tool-inbox';
@@ -120,6 +121,7 @@ export function PilotView() {
   // Cards from a stale assistant chat or a previous pilot session must
   // not bleed into the active pilot turn.
   const pilotConversationId = session.conversationId;
+  useListsSubscriber(pilotConversationId, pilotTabActive);
   const pendingConfirms = useMemo(
     () => allPendingConfirms.filter((c) => c.conversationId === pilotConversationId),
     [allPendingConfirms, pilotConversationId],
@@ -356,13 +358,11 @@ export function PilotView() {
       )}
       <div className="absolute right-2 top-1 z-30">
         <TaskPanelChip
-          enabled={pilotTabActive}
           conversationId={pilotConversationId}
           onClick={() => setTaskPanelOpen((v) => !v)}
         />
       </div>
       <TaskPanel
-        enabled={pilotTabActive}
         conversationId={pilotConversationId}
         open={taskPanelOpen}
         onClose={() => setTaskPanelOpen(false)}
