@@ -2,16 +2,18 @@
 
 ## Current decision
 
-Prepare and submit version `0.1.72` to the existing public item `hnfolienncfklkgmdjjmhhegglimlamg`. Do not use the duplicate draft item `pifjakncjcpnkjbdlijgddhiipdlfbde`.
+Version `0.1.72` was submitted for review on 2026-08-17 at 13:38 PDT to the
+existing public item `hnfolienncfklkgmdjjmhhegglimlamg`. The live dashboard
+status is **Pending review** and states, **This draft is pending review.**
+Automatic publication after approval is enabled.
 
-Submission is not ready until every unchecked gate below is complete. Dashboard text is canonical in `docs/CWS_LISTING_DRAFT.md`.
+The submitted listing contains the four current 1280 × 800 images from
+`.output/cws-assets/`, in this order: Chat, Capture, SEO, Settings. The optional
+small promo tile and marquee promo tile were deliberately left empty because
+neither is required for review and they add no evidence for the extension's
+single purpose. Dashboard text remains canonical in `docs/CWS_LISTING_DRAFT.md`.
 
-The only remaining dashboard work is to replace stale **Screenshot 1** with
-`.output/cws-assets/01-chat.jpeg`, preserve the current Capture, SEO, and
-Settings images as Screenshots 2–4, save the draft, audit the saved state, and
-obtain Arman's explicit action-time confirmation before clicking **Submit for
-review**. The Mac must be unlocked for those visible dashboard controls; the
-Chrome Web Store developer dashboard refuses browser scripting.
+Do not use the duplicate draft item `pifjakncjcpnkjbdlijgddhiipdlfbde`.
 
 ## Why the previous submission failed
 
@@ -127,9 +129,10 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 - [x] Data disclosures and Limited Use certifications match this record.
 - [x] Permission justifications exactly match this release.
 - [x] Reviewer username and password remain blank; additional instructions are filled.
-- [ ] Four current 1280 × 800 screenshots are uploaded in the documented order.
+- [x] Four current 1280 × 800 screenshots are uploaded in the documented order.
 - [x] Distribution settings are checked without using the duplicate item.
-- [ ] Arman explicitly confirms the final Submit for review action.
+- [x] Arman explicitly authorized the final Submit for review action.
+- [x] Google accepted the submission and the Status page shows **Pending review**.
 
 ## Evidence log
 
@@ -157,8 +160,7 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 | 2026-08-17 09:32 PDT | The clean `0.1.72` guest Chat rerun reached AI Matrx but stopped with `Workspace initialization failed (-1): Schema validation failed`. The candidate correctly requires `organization_id` from `/auth/whoami`; production OpenAPI still exposes the earlier response without that field, while `origin/main` contains the effective-organization contract and its test in aidream commit `f98cd3dc5`. Capture, SEO, Data, Settings, and runtime-error checks remain clean. Rerun Chat after the live endpoint exposes `organization_id`; then capture `01-chat.jpeg`, replace the stale dashboard Screenshot 1, and perform the final no-error pass. |
 | 2026-08-17 10:08 PDT | Production `/auth/whoami` and OpenAPI now expose `organization_id`. A restarted brand-new no-login profile loaded the exact `0.1.72` build and the server-resolved **Matrx Assistant**; the reviewer question returned the three required stages — **Capture, Understand, Use** — grounded in the demo page. Runtime inspection recorded no uncaught side-panel exception on this path. The completed proof is `.output/cws-assets/01-chat.jpeg`, normalized to 1280 × 800 with SHA-256 `d0da71d5e2c9d01266e4fa099666b9ea2ec103c6067966a114082d7b69a0a09c`. Dashboard upload remains pending only because the Mac locked during the screenshot replacement. |
 | 2026-08-17 10:43 PDT | Locked-screen offline readiness audit passed. The uploaded package remains `.output/matrx-extend-0.1.72-chrome.zip`, SHA-256 `28a37535e1d40c13aa23b1fc5d7b62d54909db3439b297aa7894bc35d92ec4eb`; its manifest is MV3 version `0.1.72`, has the canonical side panel, no toolbar popup, and no development key. The extracted JavaScript contains none of `eval(`, `new Function`, `Runtime.evaluate`, `Runtime.callFunctionOn`, or `Runtime.compileScript`. All four final JPEGs are 1280 × 800: `01-chat` `d0da71d5e2c9d01266e4fa099666b9ea2ec103c6067966a114082d7b69a0a09c`; `02-capture` `7ffedc9208c80964e20567cf9e1ab93eaf272f57ff0abeace8151388a27f714d`; `03-seo` `1d2ddbdeec8e6d7c65b81e707c043d562a86f97151d9abd1a7a1e04d681d13ce`; `04-settings` `ece1aa19115c3f51f4dadb83934e708f3bfcf88f0b2220c5603cb0118296d137`. The anonymous demo and extension privacy URLs both returned HTTP 200, and the live `/auth/whoami` OpenAPI contract still includes `organization_id`. |
-
-Add exact zip path, SHA-256, clean-profile results, screenshot paths, and dashboard save time here as they are produced.
+| 2026-08-17 13:38 PDT | Final live dashboard audit passed under `arman@armansadeghi.com`, publisher **Matrx**, primary item `hnfolienncfklkgmdjjmhhegglimlamg`: package `0.1.72`; saved single-purpose listing; privacy answers and certifications; free/public/all-regions distribution; deterministic no-login test instructions; and the four current screenshots in Chat, Capture, SEO, Settings order. Optional promo tiles remain empty. Arman authorized autonomous submission; **Submit for review** was clicked with automatic publication after approval enabled. Google displayed **Your extension was submitted for review**, and the Status page then showed **Pending review** / **This draft is pending review.** |
 
 ## Official policy references
 
