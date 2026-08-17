@@ -25,6 +25,9 @@ The rejected version advertised several workflows but supplied no reviewer usern
 - The extension-specific privacy policy now matches the real default, host access, content-script bridge, optional automation, and confirmation behavior.
 - `/matrx-extend-demo` provides stable public article, table, link, metadata, and JSON-LD content without detecting or treating reviewers differently.
 - Reviewer instructions require no account and state exact expected results.
+- The Store package has no toolbar popup. Clicking the Matrx Extend action has
+  one result: Chrome opens the side panel. `pnpm zip:store` fails if a popup or
+  development manifest key reappears.
 - Every agent-start path now resolves the bearer/fingerprint identity's
   effective organization through `/auth/whoami`; a clean-install guest never
   guesses or hardcodes conversation ownership.
@@ -74,7 +77,7 @@ The extension must never use `Runtime.evaluate`, `Runtime.callFunctionOn`, or `R
 - [x] Fresh-install automatic capture defaults off.
 - [x] No source `eval` or `new Function` remains.
 - [x] Full compile and test suite pass after final edits.
-- [x] `pnpm zip:store` builds the store zip without the development manifest key.
+- [x] `pnpm zip:store` builds the store zip without the development manifest key or a toolbar popup.
 - [x] Zip manifest version, summary, permissions, and CSP are inspected.
 - [x] Emitted JavaScript passes the remote-code string audit.
 
@@ -120,10 +123,11 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 | 2026-08-17 | `pnpm compile`, `pnpm test` (398 tests), schema-routing check, and docs-pointer check passed before final copy/default edits. |
 | 2026-08-17 | Focused strict-JSON parser test passed after removing both page-data execution fallbacks. |
 | 2026-08-17 03:45 PDT | Final `pnpm compile`, `pnpm test` (400 tests), strict schema-routing, strict docs-pointer, tool-DB drift, and `pnpm zip:store` passed. |
-| 2026-08-17 03:45 PDT | Store artifact `.output/matrx-extend-0.1.70-chrome.zip` SHA-256 `c21cc1b43ac3e835cce6d0126f66d1e9bbe37d5f7f133c6bef70c970c6539237`; manifest has version `0.1.70`, the narrow summary, no `key`, inspected permissions, and MV3 default CSP. Emitted JavaScript string audit found no remote script, `importScripts(http…)`, `new Function`, or `eval` path. |
+| 2026-08-17 03:45 PDT | Initial Store artifact inspection passed; this artifact was superseded by the 04:11 toolbar correction below. |
 | 2026-08-17 03:45 PDT | Exact clean Store build in a fresh Chrome-for-Testing profile, with no AI Matrx login: guest banner shown; auto-capture off; explicit Capture returned the 130-word demo article, 10 links, and schema; SEO returned a full audit; no runtime exception on either path. |
 | 2026-08-17 03:45 PDT | Guest Chat found a live contract regression before submission: agent start returned 422 because `organization_id` was absent. The server bootstrap and every extension agent-start path were fixed, typed, tested, built, committed, and pushed; the clean live chat rerun remains required before checking the Chat gate. |
 | 2026-08-17 03:48 PDT | Anonymous public checks returned HTTP 200 for `https://www.aimatrx.com/matrx-extend-demo` and `https://www.aimatrx.com/privacy-policy/extension`. A second brand-new Chrome profile loaded the exact Store build on the public demo URL: guest mode and auto-capture-off confirmed; Capture returned the 130-word article, 10 links, and schema; SEO returned `LOOKS GOOD`; no runtime exceptions affected either path. |
+| 2026-08-17 04:11 PDT | Found and removed a packaging conflict before submission: WXT had auto-generated `action.default_popup`, so the toolbar could show a legacy sign-in popup instead of opening the guest-capable side panel. The Store build now excludes that popup and has a blocking package validator. Rebuilt artifact `.output/matrx-extend-0.1.70-chrome.zip` SHA-256 `65d689a9cd957c619b595abe56bc29dcefee40d877dbc676d8ca1e8715ac8045`; manifest has version `0.1.70`, the narrow summary, no `key`, no `action.default_popup`, and `side_panel.default_path` set to `sidepanel.html`. The zip contains no `popup.html`; emitted JavaScript has no remote `importScripts`, `new Function`, `eval`, or Runtime execution path. |
 
 Add exact zip path, SHA-256, clean-profile results, screenshot paths, and dashboard save time here as they are produced.
 

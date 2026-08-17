@@ -5,11 +5,29 @@ import { defineConfig } from 'wxt';
 const devExtensionKey =
   'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1+MJD71hyTGZT40a/vRzeM9dz80VyHsiTm7zq8Yz0NxqVcl9nBx8GELq+FS0GUo1fUQBjqm17zPYtD/w4Y7TAzRY+AFu2wEzaP78b49gir3FEPw9liAhowraluj13Pg5tNPKTH1znL6rAsMi9VTrYm+WDJtj+nKI5CoKKKq0rQTUf/ChGn4Db1CrCnv7H33v9czYHZOBkksvni65uczSnDkx3x0+xH9ApJjiL5ADa2a9IUFwfBWML4AW+Q7jM7ZcegIBxsDtyzStgL7PR67cniI34An6Xsm+VVSyfP2uBP9eZr8FWfdehAmFo4v9WmxuVXAukJ+TuRAczbExT59FpQIDAQAB';
 const isChromeWebStoreBuild = process.env.MATRX_CWS_BUILD === '1';
+const chromeWebStoreEntrypoints = [
+  'background',
+  'content',
+  'data-picker',
+  'diagnose-picker',
+  'highlighter',
+  'list-picker',
+  'mic-grant',
+  'offscreen',
+  'options',
+  'sidepanel',
+  'webmcp-bridge',
+];
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   srcDir: 'src',
+  // Chrome's action click has exactly one job in the Store build: open the
+  // side panel. WXT automatically turns any `popup` entrypoint into
+  // action.default_popup, which takes precedence over the action click and
+  // hides the reviewer-ready guest experience behind the legacy popup.
+  ...(isChromeWebStoreBuild ? { filterEntrypoints: chromeWebStoreEntrypoints } : {}),
   manifest: ({ mode }) => ({
     name: 'Matrx Extend',
     short_name: 'Matrx',

@@ -13,7 +13,7 @@
     "build:firefox": "wxt build -b firefox",
     "prezip": "tsc --noEmit && (tsx scripts/check-tool-db-drift.ts || true)",
     "zip": "wxt zip",
-    "zip:store": "pnpm prezip && MATRX_CWS_BUILD=1 wxt zip",
+    "zip:store": "pnpm prezip && MATRX_CWS_BUILD=1 wxt zip && node scripts/check-store-package.mjs",
     "zip:firefox": "wxt zip -b firefox",
     "compile": "tsc --noEmit",
     "lint": "biome check .",
