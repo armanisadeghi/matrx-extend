@@ -182,7 +182,7 @@ Check all three Limited Use certifications. The extension does not sell user dat
 
 The dashboard limit is 500 characters. Paste this exact instruction:
 
-> No account is required. Open https://www.aimatrx.com/matrx-extend-demo and click the Matrx Extend toolbar icon to open the side panel. In Capture, click Capture and confirm the article appears. Open SEO and confirm the audit appears. Open Chat, ask "What are the three workflow stages on this page?" and confirm the answer says Capture, Understand, and Use. Automatic page capture is off by default.
+> No account is required. Open https://www.aimatrx.com/matrx-extend-demo and click the Matrx Extend toolbar icon to open the side panel. Open Scrape, click Capture, and confirm the article appears. Open SEO and confirm the audit appears. Open Chat, ask "What are the three workflow stages on this page?" and confirm the answer says Capture, Understand, and Use. Automatic page capture is off by default.
 
 Leave reviewer username and password blank.
 

@@ -84,7 +84,7 @@ The extension must never use `Runtime.evaluate`, `Runtime.callFunctionOn`, or `R
 - [x] Reviewer steps are deterministic and under 500 characters.
 - [x] Extension-specific privacy source matches behavior.
 - [x] Stable public demo-page source exists.
-- [ ] Public demo page and extension privacy policy resolve successfully from an anonymous browser.
+- [x] Public demo page and extension privacy policy resolve successfully from an anonymous browser.
 
 ### Clean-profile test
 
@@ -123,6 +123,7 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 | 2026-08-17 03:45 PDT | Store artifact `.output/matrx-extend-0.1.70-chrome.zip` SHA-256 `c21cc1b43ac3e835cce6d0126f66d1e9bbe37d5f7f133c6bef70c970c6539237`; manifest has version `0.1.70`, the narrow summary, no `key`, inspected permissions, and MV3 default CSP. Emitted JavaScript string audit found no remote script, `importScripts(http…)`, `new Function`, or `eval` path. |
 | 2026-08-17 03:45 PDT | Exact clean Store build in a fresh Chrome-for-Testing profile, with no AI Matrx login: guest banner shown; auto-capture off; explicit Capture returned the 130-word demo article, 10 links, and schema; SEO returned a full audit; no runtime exception on either path. |
 | 2026-08-17 03:45 PDT | Guest Chat found a live contract regression before submission: agent start returned 422 because `organization_id` was absent. The server bootstrap and every extension agent-start path were fixed, typed, tested, built, committed, and pushed; the clean live chat rerun remains required before checking the Chat gate. |
+| 2026-08-17 03:48 PDT | Anonymous public checks returned HTTP 200 for `https://www.aimatrx.com/matrx-extend-demo` and `https://www.aimatrx.com/privacy-policy/extension`. A second brand-new Chrome profile loaded the exact Store build on the public demo URL: guest mode and auto-capture-off confirmed; Capture returned the 130-word article, 10 links, and schema; SEO returned `LOOKS GOOD`; no runtime exceptions affected either path. |
 
 Add exact zip path, SHA-256, clean-profile results, screenshot paths, and dashboard save time here as they are produced.
 
