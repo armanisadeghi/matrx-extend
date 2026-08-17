@@ -72,6 +72,19 @@ async function refreshAll(conversationId: string): Promise<void> {
 }
 
 /**
+ * Supabase Realtime reuses an existing channel when the topic matches. React
+ * StrictMode intentionally mounts, cleans up, and remounts effects before the
+ * asynchronous channel removal finishes, so a conversation-only topic can
+ * hand the remount an already-subscribed channel and make `.on()` throw.
+ *
+ * A subscriber-instance suffix keeps each mount independent while the row
+ * filter still scopes events to the active conversation.
+ */
+export function createTaskChannelTopic(conversationId: string): string {
+  return `chat-agent-task:${conversationId}:${crypto.randomUUID()}`;
+}
+
+/**
  * Mount once at the top of ChatView + PilotView. Subscribes to
  * LISTS_CHANGED broadcasts and refreshes the visible slice whenever the
  * active conversation's data changes from elsewhere (SW tool handler,
@@ -126,7 +139,7 @@ export function useListsSubscriber(conversationId: string | null, enabled = true
     };
     const supabase = getSupabase();
     const taskChannel = supabase
-      .channel(`chat-agent-task:${conversationId}`)
+      .channel(createTaskChannelTopic(conversationId))
       .on(
         'postgres_changes',
         {

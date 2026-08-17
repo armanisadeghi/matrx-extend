@@ -2,7 +2,7 @@
 
 ## Current decision
 
-Prepare and submit version `0.1.70` to the existing public item `hnfolienncfklkgmdjjmhhegglimlamg`. Do not use the duplicate draft item `pifjakncjcpnkjbdlijgddhiipdlfbde`.
+Prepare and submit version `0.1.71` to the existing public item `hnfolienncfklkgmdjjmhhegglimlamg`. Do not use the duplicate draft item `pifjakncjcpnkjbdlijgddhiipdlfbde`.
 
 Submission is not ready until every unchecked gate below is complete. Dashboard text is canonical in `docs/CWS_LISTING_DRAFT.md`.
 
@@ -134,6 +134,8 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 | 2026-08-17 04:11 PDT | Found and removed a packaging conflict before submission: WXT had auto-generated `action.default_popup`, so the toolbar could show a legacy sign-in popup instead of opening the guest-capable side panel. The Store build now excludes that popup and has a blocking package validator. This intermediate artifact was superseded by the final guest-boundary corrections below. |
 | 2026-08-17 04:32 PDT | Final source validation passed: compile, all 400 tests, tool-DB drift, Store packaging guard, and emitted JavaScript execution-string audit. Artifact `.output/matrx-extend-0.1.70-chrome.zip` SHA-256 `828d3560bb62607b9b69bc295f3bcb534f08b3181852cc6422e7bb9f3675f192`; manifest version `0.1.70`, no development key, no popup, canonical side panel, and action behavior `openPanelOnActionClick: true`. |
 | 2026-08-17 04:32 PDT | Brand-new no-login profile loaded that exact package. Guest banner and Settings sign-in state were truthful; auto-capture was off; Capture returned the 130-word article, 10 links, and schema; SEO returned `LOOKS GOOD`; Data selected two workflow-table fields and offered `Sign in to save` with no false connection error. Runtime monitoring recorded no side-panel or service-worker exception during these paths. |
+| 2026-08-17 07:44 PDT | The real toolbar-open path exposed a React StrictMode race before submission: the remount could reuse a Supabase Realtime channel while asynchronous cleanup was still pending, causing the side panel error boundary to report that `postgres_changes` callbacks could not be added after subscription. Each effect mount now uses an independent channel topic; version `0.1.70` is superseded and must not be uploaded. |
+| 2026-08-17 07:51 PDT | Version `0.1.71` passed TypeScript compile, all 401 tests, tool-DB drift, Store packaging guard, manifest inspection, and the emitted-JavaScript execution-string audit. Candidate artifact `.output/matrx-extend-0.1.71-chrome.zip` SHA-256 `58ef3926b31d54c0706d72a0aea3b5a7555e399704f0519635698b3086da09b0`; manifest has no development key or popup and retains the canonical side panel. |
 
 Add exact zip path, SHA-256, clean-profile results, screenshot paths, and dashboard save time here as they are produced.
 
