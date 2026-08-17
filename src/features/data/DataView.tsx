@@ -2,6 +2,7 @@ import { CopyMenu } from '@/components/CopyMenu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { useAuth } from '@/hooks/use-auth';
 import { rowsToTsv, stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { findFirstMatch } from '@/lib/data-pattern/matcher';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
@@ -15,10 +16,11 @@ import {
 } from '@/lib/supabase/queries';
 import { useAutoExtractStore } from '@/state/auto-extract';
 import { useHighlightStore } from '@/state/highlights';
-import { Crosshair, Loader2, Play, Save, XCircle, Zap } from 'lucide-react';
+import { Crosshair, Loader2, LogIn, Play, Save, XCircle, Zap } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 export function DataView() {
+  const { user, status: authStatus, signIn } = useAuth();
   const tab = useActiveTab();
   const [patterns, setPatterns] = useState<ExtractionPattern[] | null>(null);
   const [picking, setPicking] = useState(false);
@@ -288,12 +290,18 @@ export function DataView() {
                   </div>
                 ))}
               </div>
-              <Input
-                value={patternName}
-                onChange={(e) => setPatternName(e.target.value)}
-                placeholder="Pattern name…"
-                className="rounded-full border-0 bg-secondary/40 focus-visible:ring-1"
-              />
+              {user ? (
+                <Input
+                  value={patternName}
+                  onChange={(e) => setPatternName(e.target.value)}
+                  placeholder="Pattern name…"
+                  className="rounded-full border-0 bg-secondary/40 focus-visible:ring-1"
+                />
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Field selection works as a guest. Sign in to save and reuse this pattern.
+                </p>
+              )}
             </Section>
           )}
 
@@ -425,14 +433,25 @@ export function DataView() {
             >
               Cancel
             </Button>
-            <Button
-              onClick={() => void handleSavePattern()}
-              disabled={saving}
-              className="flex-1 rounded-full"
-            >
-              {saving ? <Loader2 className="animate-spin" /> : <Save />}
-              Save pattern
-            </Button>
+            {user ? (
+              <Button
+                onClick={() => void handleSavePattern()}
+                disabled={saving}
+                className="flex-1 rounded-full"
+              >
+                {saving ? <Loader2 className="animate-spin" /> : <Save />}
+                Save pattern
+              </Button>
+            ) : (
+              <Button
+                onClick={() => void signIn()}
+                disabled={authStatus === 'signing-in'}
+                className="flex-1 rounded-full"
+              >
+                {authStatus === 'signing-in' ? <Loader2 className="animate-spin" /> : <LogIn />}
+                Sign in to save
+              </Button>
+            )}
           </>
         ) : (
           <Button

@@ -28,6 +28,10 @@ The rejected version advertised several workflows but supplied no reviewer usern
 - The Store package has no toolbar popup. Clicking the Matrx Extend action has
   one result: Chrome opens the side panel. `pnpm zip:store` fails if a popup or
   development manifest key reappears.
+- Guest field selection now stops at an explicit account boundary: selectors
+  remain usable without an account, while saving offers the real sign-in action
+  instead of a guaranteed-failure request. Guest Settings likewise says **Sign
+  in**, never **Sign out**.
 - Every agent-start path now resolves the bearer/fingerprint identity's
   effective organization through `/auth/whoami`; a clean-install guest never
   guesses or hardcodes conversation ownership.
@@ -98,7 +102,7 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 - [x] Settings shows automatic capture off before any change.
 - [x] Capture produces the demo article, links, and schema.
 - [x] SEO produces an audit for the demo page.
-- [ ] Data can select or extract fields from the workflow table without a dead end.
+- [x] Data can select or extract fields from the workflow table without a dead end.
 - [ ] Chat answers the three-stage question with Capture, Understand, and Use.
 - [ ] No uncaught side-panel or service-worker error affects these paths.
 
@@ -127,7 +131,9 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 | 2026-08-17 03:45 PDT | Exact clean Store build in a fresh Chrome-for-Testing profile, with no AI Matrx login: guest banner shown; auto-capture off; explicit Capture returned the 130-word demo article, 10 links, and schema; SEO returned a full audit; no runtime exception on either path. |
 | 2026-08-17 03:45 PDT | Guest Chat found a live contract regression before submission: agent start returned 422 because `organization_id` was absent. The server bootstrap and every extension agent-start path were fixed, typed, tested, built, committed, and pushed; the clean live chat rerun remains required before checking the Chat gate. |
 | 2026-08-17 03:48 PDT | Anonymous public checks returned HTTP 200 for `https://www.aimatrx.com/matrx-extend-demo` and `https://www.aimatrx.com/privacy-policy/extension`. A second brand-new Chrome profile loaded the exact Store build on the public demo URL: guest mode and auto-capture-off confirmed; Capture returned the 130-word article, 10 links, and schema; SEO returned `LOOKS GOOD`; no runtime exceptions affected either path. |
-| 2026-08-17 04:11 PDT | Found and removed a packaging conflict before submission: WXT had auto-generated `action.default_popup`, so the toolbar could show a legacy sign-in popup instead of opening the guest-capable side panel. The Store build now excludes that popup and has a blocking package validator. Rebuilt artifact `.output/matrx-extend-0.1.70-chrome.zip` SHA-256 `65d689a9cd957c619b595abe56bc29dcefee40d877dbc676d8ca1e8715ac8045`; manifest has version `0.1.70`, the narrow summary, no `key`, no `action.default_popup`, and `side_panel.default_path` set to `sidepanel.html`. The zip contains no `popup.html`; emitted JavaScript has no remote `importScripts`, `new Function`, `eval`, or Runtime execution path. |
+| 2026-08-17 04:11 PDT | Found and removed a packaging conflict before submission: WXT had auto-generated `action.default_popup`, so the toolbar could show a legacy sign-in popup instead of opening the guest-capable side panel. The Store build now excludes that popup and has a blocking package validator. This intermediate artifact was superseded by the final guest-boundary corrections below. |
+| 2026-08-17 04:32 PDT | Final source validation passed: compile, all 400 tests, tool-DB drift, Store packaging guard, and emitted JavaScript execution-string audit. Artifact `.output/matrx-extend-0.1.70-chrome.zip` SHA-256 `828d3560bb62607b9b69bc295f3bcb534f08b3181852cc6422e7bb9f3675f192`; manifest version `0.1.70`, no development key, no popup, canonical side panel, and action behavior `openPanelOnActionClick: true`. |
+| 2026-08-17 04:32 PDT | Brand-new no-login profile loaded that exact package. Guest banner and Settings sign-in state were truthful; auto-capture was off; Capture returned the 130-word article, 10 links, and schema; SEO returned `LOOKS GOOD`; Data selected two workflow-table fields and offered `Sign in to save` with no false connection error. Runtime monitoring recorded no side-panel or service-worker exception during these paths. |
 
 Add exact zip path, SHA-256, clean-profile results, screenshot paths, and dashboard save time here as they are produced.
 

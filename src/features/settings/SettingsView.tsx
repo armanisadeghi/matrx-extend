@@ -38,13 +38,13 @@ import {
 import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '@/state/settings';
-import { ChevronRight, LogOut, Trash2 } from 'lucide-react';
+import { ChevronRight, LogIn, LogOut, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const NONE = '__none__';
 
 export function SettingsView() {
-  const { user, signOut, isAdmin } = useAuth();
+  const { user, signIn, signOut, isAdmin } = useAuth();
   const desktop = useDesktopBridge();
   const settings = useSettingsStore();
   const [pairTokenInput, setPairTokenInput] = useState('');
@@ -391,13 +391,19 @@ export function SettingsView() {
       </div>
 
       <div className="shrink-0 px-3 pb-3 pt-1">
-        <Button
-          variant="ghost"
-          onClick={signOut}
-          className="w-full rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive"
-        >
-          <LogOut className="size-3.5" /> Sign out
-        </Button>
+        {user ? (
+          <Button
+            variant="ghost"
+            onClick={signOut}
+            className="w-full rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive"
+          >
+            <LogOut className="size-3.5" /> Sign out
+          </Button>
+        ) : (
+          <Button onClick={() => void signIn()} className="w-full rounded-full">
+            <LogIn className="size-3.5" /> Sign in
+          </Button>
+        )}
       </div>
     </div>
   );
