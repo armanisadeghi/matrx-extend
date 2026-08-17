@@ -115,13 +115,13 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 ### Dashboard
 
 - [x] Primary item `hnfolienncfklkgmdjjmhhegglimlamg` receives the new zip.
-- [ ] Listing fields exactly match `docs/CWS_LISTING_DRAFT.md`.
-- [ ] Privacy policy URL is `/privacy-policy/extension`.
-- [ ] Data disclosures and Limited Use certifications match this record.
-- [ ] Permission justifications exactly match this release.
-- [ ] Reviewer username and password remain blank; additional instructions are filled.
+- [x] Listing fields exactly match `docs/CWS_LISTING_DRAFT.md`.
+- [x] Privacy policy URL is `/privacy-policy/extension`.
+- [x] Data disclosures and Limited Use certifications match this record.
+- [x] Permission justifications exactly match this release.
+- [x] Reviewer username and password remain blank; additional instructions are filled.
 - [ ] Four current 1280 × 800 screenshots are uploaded in the documented order.
-- [ ] Distribution settings are checked without using the duplicate item.
+- [x] Distribution settings are checked without using the duplicate item.
 - [ ] Arman explicitly confirms the final Submit for review action.
 
 ## Evidence log
@@ -146,6 +146,8 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 | 2026-08-17 08:47 PDT | Version `0.1.72` passed TypeScript compile, all 404 tests, tool-DB drift, schema-routing, docs-pointer, Store packaging guard, manifest inspection, and the emitted-JavaScript execution-string audit. Candidate artifact `.output/matrx-extend-0.1.72-chrome.zip` SHA-256 `28a37535e1d40c13aa23b1fc5d7b62d54909db3439b297aa7894bc35d92ec4eb`; manifest has no development key or popup and retains the canonical side panel. All clean-profile gates were reset pending a brand-new exact-build pass. |
 | 2026-08-17 08:50 PDT | Brand-new no-login Chrome profile loaded the exact `0.1.72` build. The real toolbar path opened the side panel; the guest banner appeared; Settings showed version `0.1.72` and automatic capture off; Capture returned the 130-word article, 10 links, and schema; SEO returned `LOOKS GOOD`; Data selected two workflow-table fields and offered `Sign in to save` without a dead end. |
 | 2026-08-17 08:56 PDT | Uploaded `.output/matrx-extend-0.1.72-chrome.zip` to the primary item `hnfolienncfklkgmdjjmhhegglimlamg`; the dashboard immediately reflected the new package summary. No action was taken on duplicate draft `pifjakncjcpnkjbdlijgddhiipdlfbde`. Current exact-build screenshots saved as `.output/cws-assets/02-capture.jpeg`, `03-seo.jpeg`, and `04-settings.jpeg`, each normalized to 1280 × 800; Chat remains pending. |
+| 2026-08-17 09:24 PDT | Reconciled and saved the live primary-item dashboard: narrow Store description; current valid **Tools** category; extension-specific privacy-policy URL; exact single-purpose and permission explanations; remote-code answer; all six data categories; all three Limited Use certifications; blank reviewer credentials; deterministic 401-character no-login reviewer instructions; and free/public/all-regions distribution. The dashboard already holds four screenshots, but Screenshot 1 is not accepted as current exact-build evidence and must be replaced by the clean guest Chat proof. |
+| 2026-08-17 09:32 PDT | The clean `0.1.72` guest Chat rerun reached AI Matrx but stopped with `Workspace initialization failed (-1): Schema validation failed`. The candidate correctly requires `organization_id` from `/auth/whoami`; production OpenAPI still exposes the earlier response without that field, while `origin/main` contains the effective-organization contract and its test in aidream commit `f98cd3dc5`. Capture, SEO, Data, Settings, and runtime-error checks remain clean. Rerun Chat after the live endpoint exposes `organization_id`; then capture `01-chat.jpeg`, replace the stale dashboard Screenshot 1, and perform the final no-error pass. |
 
 Add exact zip path, SHA-256, clean-profile results, screenshot paths, and dashboard save time here as they are produced.
 

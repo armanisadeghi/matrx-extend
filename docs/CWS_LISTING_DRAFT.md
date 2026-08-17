@@ -33,7 +33,11 @@ Paste only the text inside each quoted block into the matching dashboard field.
 
 ### Category
 
-> Productivity
+> Tools
+
+The current dashboard groups categories under a **Productivity** heading but
+does not offer a generic Productivity choice. **Tools** is the selected valid
+category and matches the extension's page-aware assistant purpose.
 
 ### Language
 
