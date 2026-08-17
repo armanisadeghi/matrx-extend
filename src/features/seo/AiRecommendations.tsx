@@ -18,9 +18,9 @@
  * 🚨 KNOWN GAP — `defaultAgentId` is a client Zustand setting over a bundled
  * UUID, not the platform's canonical agent selection. Canonically this panel
  * would name a `slot_key` and let the DB resolve it (system default → org
- * binding → user binding → run-scope). matrx-extend has zero slot coverage;
+ * binding → user binding → run-scope). matrx-extend has zero Mandate coverage;
  * conversion is tracked as rows E1/E2 in
- * common-docs/systems/agent-slots/ROLLOUT.md (system of record: that dir's
+ * common-docs/systems/mandates/ROLLOUT.md (system of record: that dir's
  * FEATURE.md).
  *
  * Door Law: the agent that wrote the recommendations is named AND opens — the
@@ -48,7 +48,7 @@ import { useEffect, useState } from 'react';
 export function AiRecommendations({ audit }: { audit: SeoAudit }) {
   // NEVER hardcode an agent UUID at a call site. Today that means reading the
   // settings store, with DEFAULT_AGENDA_AGENT_ID as the bundled fallback if
-  // it's cleared. 🚨 Both are a client-side stopgap for an Agent Slot that
+  // it's cleared. 🚨 Both are a client-side stopgap for a Mandate that
   // this repo does not resolve yet (ROLLOUT.md rows E1/E2).
   const defaultAgentId = useSettingsStore((s) => s.defaultAgentId);
   const agentId = defaultAgentId ?? DEFAULT_AGENDA_AGENT_ID;

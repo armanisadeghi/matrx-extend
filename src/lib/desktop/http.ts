@@ -63,11 +63,7 @@ export async function clearPairToken(): Promise<void> {
  */
 export async function autoPair(baseUrl: string): Promise<string | null> {
   try {
-    const res = await timedFetch(
-      `${baseUrl}/extension/pair`,
-      { method: 'POST' },
-      PAIR_TIMEOUT_MS,
-    );
+    const res = await timedFetch(`${baseUrl}/extension/pair`, { method: 'POST' }, PAIR_TIMEOUT_MS);
     if (!res.ok) return null;
     const parsed = DesktopPairResponseSchema.safeParse(await res.json());
     if (!parsed.success) return null;

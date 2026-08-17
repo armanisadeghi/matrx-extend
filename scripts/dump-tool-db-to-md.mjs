@@ -87,7 +87,9 @@ async function fetchAll(url, key, table, select, extraQuery = '', schema = 'tool
     },
   });
   if (!res.ok) {
-    console.error(`Supabase fetch failed (${res.status}) on ${schema}.${table}: ${await res.text()}`);
+    console.error(
+      `Supabase fetch failed (${res.status}) on ${schema}.${table}: ${await res.text()}`,
+    );
     process.exit(2);
   }
   return res.json();
@@ -348,7 +350,9 @@ async function main() {
   const ourNames = new Set(ours.map((t) => t.name));
   const csOnly = [...canonicalSurface].filter((n) => !ourNames.has(n));
   const dbOnly = [...ourNames].filter((n) => !canonicalSurface.has(n));
-  lines.push('### 4a. `CANONICAL_SURFACE` (local) ↔ `tool.definition` (DB, bound to `chrome-extension`)');
+  lines.push(
+    '### 4a. `CANONICAL_SURFACE` (local) ↔ `tool.definition` (DB, bound to `chrome-extension`)',
+  );
   lines.push('');
   lines.push(`- Local CANONICAL_SURFACE entries: **${canonicalSurface.size}**`);
   lines.push(`- DB tools bound to chrome-extension: **${ours.length}**`);

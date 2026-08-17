@@ -1244,10 +1244,7 @@
           "twitter:card": "summary_large_image",
           "twitter:title": "TW Title"
         },
-        "schema_types": [
-          "Article",
-          "Person"
-        ],
+        "schema_types": ["Article", "Person"],
         "headings": [
           {
             "level": 1,

@@ -93,8 +93,8 @@ export async function runTask(task: AgendaTask, send: SendFn): Promise<AgendaRun
   // code names a `slot_key` and the DB resolves it lowest to highest: system
   // default (agent.slot_definition) → org binding → user binding → run-scope
   // argument, with org/user bindings in agent.slot_binding. matrx-extend has
-  // zero slot coverage; tracked as rows E1/E2 in
-  // common-docs/systems/agent-slots/ROLLOUT.md (FEATURE.md beside it is the
+  // zero Mandate coverage; tracked as rows E1/E2 in
+  // common-docs/systems/mandates/ROLLOUT.md (FEATURE.md beside it is the
   // system of record).
   const agentId =
     task.agent_id ?? useSettingsStore.getState().defaultAgentId ?? DEFAULT_AGENDA_AGENT_ID;

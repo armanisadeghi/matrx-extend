@@ -14,77 +14,60 @@
  * works fine there and avoids the lazy-message-handler race.
  */
 
-import { ALARMS, STORAGE_KEYS } from "@/config/env";
+import { ALARMS, STORAGE_KEYS } from '@/config/env';
 import {
   registerAgendaNotificationClicks,
   scanAndNotify,
   startAgendaScanner,
-} from "@/lib/agenda/scanner";
-import { startAudibleLog } from "@/lib/audio/audible-log";
-import { refreshAccessToken } from "@/lib/auth/flow";
-import { logExtensionIdentityOnce } from "@/lib/auth/identity";
-import { reconcileOnBoot as reconcileCdpOnBoot } from "@/lib/cdp/client";
-import {
-  hydrateBridgeTrafficEnabled,
-  recordBridgeTraffic,
-} from "@/lib/debug/bridge-traffic";
-import { log, startDebugRelay } from "@/lib/debug/log";
-import type { CapturedEvent } from "@/lib/demos/event-capture";
-import { onCapturedEvent } from "@/lib/demos/recorder";
-import {
-  desktopRpc,
-  probeDesktop,
-  startDesktopProbeAlarm,
-} from "@/lib/desktop/bridge";
-import { desktopHealthSnapshotKey } from "@/lib/desktop/types";
-import { connectWs } from "@/lib/desktop/ws-client";
-import { registerWsReverseInvocationHandler } from "@/lib/desktop/ws-invoke";
-import {
-  connectBroadcast,
-  disconnectBroadcast,
-} from "@/lib/frontend-bridge/broadcast";
+} from '@/lib/agenda/scanner';
+import { startAudibleLog } from '@/lib/audio/audible-log';
+import { refreshAccessToken } from '@/lib/auth/flow';
+import { logExtensionIdentityOnce } from '@/lib/auth/identity';
+import { reconcileOnBoot as reconcileCdpOnBoot } from '@/lib/cdp/client';
+import { hydrateBridgeTrafficEnabled, recordBridgeTraffic } from '@/lib/debug/bridge-traffic';
+import { log, startDebugRelay } from '@/lib/debug/log';
+import type { CapturedEvent } from '@/lib/demos/event-capture';
+import { onCapturedEvent } from '@/lib/demos/recorder';
+import { desktopRpc, probeDesktop, startDesktopProbeAlarm } from '@/lib/desktop/bridge';
+import { desktopHealthSnapshotKey } from '@/lib/desktop/types';
+import { connectWs } from '@/lib/desktop/ws-client';
+import { registerWsReverseInvocationHandler } from '@/lib/desktop/ws-invoke';
+import { connectBroadcast, disconnectBroadcast } from '@/lib/frontend-bridge/broadcast';
 import {
   FRONTEND_RPC_CHANNEL,
   FrontendRpcEnvelopeSchema,
   type FrontendRpcResponse,
   handleFrontendRpc,
-} from "@/lib/frontend-bridge/handler";
-import { startSchedulerHost, stopSchedulerHost } from "@/lib/scheduler-host";
+} from '@/lib/frontend-bridge/handler';
+import { startSchedulerHost, stopSchedulerHost } from '@/lib/scheduler-host';
 // Side-effect import: registers the example 'ping' task handler at SW boot.
 // Subsequent phases add more handlers via the same pattern.
-import "@/lib/scheduler-host/handlers/ping";
-import type { MicRequestPayload, MicRunPayload } from "@/lib/audio/mic-types";
-import type { UserProfile } from "@/lib/auth/types";
-import {
-  clearBrokerCacheOnSignOut,
-  registerBrokerHandlers,
-} from "@/lib/broker/sw-host";
-import { setupContextMenus } from "@/lib/context-menus/setup";
-import { broadcast, on } from "@/lib/messaging/native";
-import { CHANNELS } from "@/lib/messaging/schemas";
-import { matchesAllowedOrigin } from "@/lib/origin-allowlist";
-import { readDefaultPermissionMode } from "@/lib/settings/persisted";
-import { hasRecentActiveStream } from "@/lib/stream/active-runs";
+import '@/lib/scheduler-host/handlers/ping';
+import type { MicRequestPayload, MicRunPayload } from '@/lib/audio/mic-types';
+import type { UserProfile } from '@/lib/auth/types';
+import { clearBrokerCacheOnSignOut, registerBrokerHandlers } from '@/lib/broker/sw-host';
+import { setupContextMenus } from '@/lib/context-menus/setup';
+import { broadcast, on } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
+import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
+import { readDefaultPermissionMode } from '@/lib/settings/persisted';
+import { hasRecentActiveStream } from '@/lib/stream/active-runs';
 import {
   type StartStreamArgs,
   cancelStream,
   ensureOffscreen,
   startStream,
-} from "@/lib/stream/offscreen-proxy";
-import { setSupabaseSession } from "@/lib/supabase/client";
-import { lookupCapturedByUrl } from "@/lib/supabase/queries";
-import {
-  handleWebmcpCall,
-  recordAssignedTab,
-  startToolDispatcher,
-} from "@/lib/tools/dispatch";
+} from '@/lib/stream/offscreen-proxy';
+import { setSupabaseSession } from '@/lib/supabase/client';
+import { lookupCapturedByUrl } from '@/lib/supabase/queries';
+import { handleWebmcpCall, recordAssignedTab, startToolDispatcher } from '@/lib/tools/dispatch';
 import type {
   VideoErrorEvent,
   VideoRequestPayload,
   VideoRunPayload,
-} from "@/lib/video/video-types";
-import { registerToolsOnActiveTab } from "@/lib/webmcp/register";
-import { getPilotSessionSnapshotAsync, usePilotStore } from "@/state/pilot";
+} from '@/lib/video/video-types';
+import { registerToolsOnActiveTab } from '@/lib/webmcp/register';
+import { getPilotSessionSnapshotAsync, usePilotStore } from '@/state/pilot';
 
 let bootstrapped = false;
 
@@ -94,7 +77,7 @@ export function bootstrapBackground(): void {
   startDebugRelay();
   // Restore the Debug → Bridges traffic-buffer flag (off by default; persisted).
   void hydrateBridgeTrafficEnabled();
-  log.info("sw", "background bootstrap (sync)");
+  log.info('sw', 'background bootstrap (sync)');
   // Emit the runtime identity bundle (extension id, redirect URI, OAuth
   // client id) so any future ID drift is visible in the user's debug log
   // before sign-in is ever attempted. See .research/v0.1.4-auth-incident.md.
@@ -121,7 +104,7 @@ export function bootstrapBackground(): void {
   // ── 2. Tool dispatcher subscribes to STREAM_OPENED + STREAM_CHUNK.
   //       Per-run permission mode is latched from the chat hook; this default
   //       only kicks in if the sidepanel forgot to pass one.
-  startToolDispatcher({ defaultPermissionMode: () => "ask" });
+  startToolDispatcher({ defaultPermissionMode: () => 'ask' });
 
   // ── 2a. Audio log: track when each tab last produced sound so
   //        `tab_audio_inspect` can answer "recently audible" queries.
@@ -150,7 +133,7 @@ export function bootstrapBackground(): void {
     // Phase 2 C2.a — open the persistent WS only when HTTP transport is
     // active. Native messaging IS already a long-lived bidirectional
     // channel; doubling up would waste resources.
-    if (state.transport === "http") {
+    if (state.transport === 'http') {
       void connectWs();
     }
     // Supabase Broadcast is RLS-backed and therefore belongs after session
@@ -223,25 +206,22 @@ export function bootstrapBackground(): void {
       if (!session.active) return;
       const valid = await usePilotStore.getState().isGroupValid();
       if (!valid) {
-        log.info(
-          "pilot",
-          "boot sweep: persisted session group no longer exists — resetting",
-        );
+        log.info('pilot', 'boot sweep: persisted session group no longer exists — resetting');
         usePilotStore.getState().resetLocal();
       }
     } catch (err) {
-      log.warn("pilot", "boot session validation failed", err);
+      log.warn('pilot', 'boot session validation failed', err);
     }
   })();
 }
 
-let lastDesktopTransport: "native" | "http" | "none" | null = null;
-let lastDesktopHealthKey = "";
+let lastDesktopTransport: 'native' | 'http' | 'none' | null = null;
+let lastDesktopHealthKey = '';
 
 function setupAlarms(): void {
   chrome.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name === ALARMS.TOKEN_REFRESH) {
-      console.log("[matrx-extend] alarm: token refresh");
+      console.log('[matrx-extend] alarm: token refresh');
       try {
         const refreshed = await refreshAccessToken();
         if (!refreshed) {
@@ -251,18 +231,13 @@ function setupAlarms(): void {
           // rest of the session (audit P2: TOKEN_REFRESH not re-armed).
           // Only retry while a refresh token actually exists; a signed-out
           // / signed-out-by-failure state must not loop a dead alarm.
-          const stored = await chrome.storage.local.get([
-            STORAGE_KEYS.REFRESH_TOKEN_ENC,
-          ]);
+          const stored = await chrome.storage.local.get([STORAGE_KEYS.REFRESH_TOKEN_ENC]);
           if (stored[STORAGE_KEYS.REFRESH_TOKEN_ENC]) {
             chrome.alarms.create(ALARMS.TOKEN_REFRESH, { delayInMinutes: 5 });
           }
         }
       } catch (err) {
-        console.warn(
-          "[matrx-extend] token refresh alarm failed — retrying in 5min",
-          err,
-        );
+        console.warn('[matrx-extend] token refresh alarm failed — retrying in 5min', err);
         chrome.alarms.create(ALARMS.TOKEN_REFRESH, { delayInMinutes: 5 });
       }
       await rehydrateSupabaseSession();
@@ -270,20 +245,14 @@ function setupAlarms(): void {
       const state = await probeDesktop();
       const healthKey = desktopHealthSnapshotKey(state.health);
       // Broadcast when transport or managed-service health changes.
-      if (
-        state.transport !== lastDesktopTransport ||
-        healthKey !== lastDesktopHealthKey
-      ) {
+      if (state.transport !== lastDesktopTransport || healthKey !== lastDesktopHealthKey) {
         const prev = lastDesktopTransport;
         lastDesktopTransport = state.transport;
         lastDesktopHealthKey = healthKey;
         if (state.transport !== prev) {
-          log.info("desktop", `transport changed → ${state.transport}`);
+          log.info('desktop', `transport changed → ${state.transport}`);
         } else {
-          log.info(
-            "desktop",
-            `health changed → ${state.health?.health ?? "ok"}`,
-          );
+          log.info('desktop', `health changed → ${state.health?.health ?? 'ok'}`);
         }
         broadcast(CHANNELS.DESKTOP_AVAILABILITY, {
           transport: state.transport,
@@ -292,7 +261,7 @@ function setupAlarms(): void {
         });
         // Phase 2 C2 — open WS when HTTP transport just became active
         // (and we weren't on HTTP before).
-        if (state.transport === "http" && prev !== "http") {
+        if (state.transport === 'http' && prev !== 'http') {
           void connectWs();
         }
       }
@@ -303,34 +272,28 @@ function setupAlarms(): void {
 }
 
 function registerHandlers(): void {
-  on<StartStreamArgs, { ok: boolean }>(
-    CHANNELS.STREAM_START,
-    async (payload) => {
-      // Latch run metadata BEFORE forwarding to offscreen so the dispatcher
-      // has everything ready by the time the first tool_event lands.
-      // Seeding `permissionMode` here (not only from STREAM_OPENED) is
-      // race-proof against a fast tool_delegated arriving before
-      // STREAM_OPENED is processed — see recordAssignedTab's docstring.
-      if (payload.runId) {
-        recordAssignedTab(payload.runId, payload.assignedTabId ?? null, {
-          ...(payload.permissionMode !== undefined && {
-            permissionMode: payload.permissionMode,
-          }),
-          agentName: payload.agentName ?? null,
-        });
-      }
-      await startStream(payload);
-      return { ok: true };
-    },
-  );
+  on<StartStreamArgs, { ok: boolean }>(CHANNELS.STREAM_START, async (payload) => {
+    // Latch run metadata BEFORE forwarding to offscreen so the dispatcher
+    // has everything ready by the time the first tool_event lands.
+    // Seeding `permissionMode` here (not only from STREAM_OPENED) is
+    // race-proof against a fast tool_delegated arriving before
+    // STREAM_OPENED is processed — see recordAssignedTab's docstring.
+    if (payload.runId) {
+      recordAssignedTab(payload.runId, payload.assignedTabId ?? null, {
+        ...(payload.permissionMode !== undefined && {
+          permissionMode: payload.permissionMode,
+        }),
+        agentName: payload.agentName ?? null,
+      });
+    }
+    await startStream(payload);
+    return { ok: true };
+  });
 
-  on<{ runId: string }, { ok: boolean }>(
-    CHANNELS.STREAM_CANCEL,
-    async (payload) => {
-      await cancelStream(payload.runId);
-      return { ok: true };
-    },
-  );
+  on<{ runId: string }, { ok: boolean }>(CHANNELS.STREAM_CANCEL, async (payload) => {
+    await cancelStream(payload.runId);
+    return { ok: true };
+  });
 
   // Mic capture (TASK-002): sidepanel asks the SW to run a mic action;
   // SW ensures offscreen is up, then forwards via MIC_RUN. The actual
@@ -343,144 +306,133 @@ function registerHandlers(): void {
   // listening for mic events sees the failure too). Silent failures here
   // are forbidden — the user's mic button would otherwise hang in the
   // pre-start state with no signal.
-  on<MicRequestPayload, { ok: boolean }>(
-    CHANNELS.MIC_REQUEST,
-    async (payload) => {
-      log.info("audio", "sw: MIC_REQUEST received", {
-        action: payload.action,
-        payload,
+  on<MicRequestPayload, { ok: boolean }>(CHANNELS.MIC_REQUEST, async (payload) => {
+    log.info('audio', 'sw: MIC_REQUEST received', {
+      action: payload.action,
+      payload,
+    });
+    try {
+      await ensureOffscreen();
+    } catch (err) {
+      const message = (err as Error).message ?? 'Failed to open offscreen document';
+      log.error('audio', 'sw: ensureOffscreen failed', err);
+      broadcast(CHANNELS.MIC_EVENT, {
+        type: 'error',
+        message: `Couldn't start the microphone backend: ${message}`,
+        code: 'OFFSCREEN_UNAVAILABLE',
       });
-      try {
-        await ensureOffscreen();
-      } catch (err) {
-        const message =
-          (err as Error).message ?? "Failed to open offscreen document";
-        log.error("audio", "sw: ensureOffscreen failed", err);
-        broadcast(CHANNELS.MIC_EVENT, {
-          type: "error",
-          message: `Couldn't start the microphone backend: ${message}`,
-          code: "OFFSCREEN_UNAVAILABLE",
-        });
-        throw new Error(message);
-      }
-      const runPayload: MicRunPayload = payload;
-      let res: { __error?: string } | { ok?: true } | null = null;
-      try {
-        log.info("audio", "sw: MIC_RUN forward to offscreen", { runPayload });
-        res = (await chrome.runtime.sendMessage({
-          __matrx: true,
-          kind: CHANNELS.MIC_RUN,
-          payload: runPayload,
-        })) as { __error?: string } | { ok?: true } | null;
-        log.info("audio", "sw: MIC_RUN reply", { res });
-      } catch (err) {
-        const message = (err as Error).message ?? "Mic forwarding failed";
-        log.error("audio", "sw: MIC_RUN forward failed", err);
-        broadcast(CHANNELS.MIC_EVENT, {
-          type: "error",
-          message: `Couldn't reach the mic backend: ${message}`,
-          code: "FORWARD_FAILED",
-        });
-        throw new Error(message);
-      }
-      if (res && typeof res === "object" && "__error" in res && res.__error) {
-        const message = res.__error;
-        log.error("audio", "sw: MIC_RUN handler returned error", { message });
-        broadcast(CHANNELS.MIC_EVENT, {
-          type: "error",
-          message: `Mic backend error: ${message}`,
-          code: "MIC_RUN_FAILED",
-        });
-        throw new Error(message);
-      }
-      return { ok: true };
-    },
-  );
+      throw new Error(message);
+    }
+    const runPayload: MicRunPayload = payload;
+    let res: { __error?: string } | { ok?: true } | null = null;
+    try {
+      log.info('audio', 'sw: MIC_RUN forward to offscreen', { runPayload });
+      res = (await chrome.runtime.sendMessage({
+        __matrx: true,
+        kind: CHANNELS.MIC_RUN,
+        payload: runPayload,
+      })) as { __error?: string } | { ok?: true } | null;
+      log.info('audio', 'sw: MIC_RUN reply', { res });
+    } catch (err) {
+      const message = (err as Error).message ?? 'Mic forwarding failed';
+      log.error('audio', 'sw: MIC_RUN forward failed', err);
+      broadcast(CHANNELS.MIC_EVENT, {
+        type: 'error',
+        message: `Couldn't reach the mic backend: ${message}`,
+        code: 'FORWARD_FAILED',
+      });
+      throw new Error(message);
+    }
+    if (res && typeof res === 'object' && '__error' in res && res.__error) {
+      const message = res.__error;
+      log.error('audio', 'sw: MIC_RUN handler returned error', { message });
+      broadcast(CHANNELS.MIC_EVENT, {
+        type: 'error',
+        message: `Mic backend error: ${message}`,
+        code: 'MIC_RUN_FAILED',
+      });
+      throw new Error(message);
+    }
+    return { ok: true };
+  });
 
   // Video capture (TASK-003): sidepanel asks the SW to run a tab/display
   // recording. Same offscreen pattern as mic, plus a tab-capture stream id
   // resolution step here in the SW (chrome.tabCapture lives only in the SW
   // context). On 'start' for source==='tab' we resolve the streamId and
   // forward; on 'stop' we just forward the action.
-  on<VideoRequestPayload, { ok: boolean }>(
-    CHANNELS.VIDEO_REQUEST,
-    async (payload) => {
-      if (payload.action === "start" && (payload.source ?? "tab") === "tab") {
-        if (payload.targetTabId == null) {
-          broadcast(CHANNELS.VIDEO_EVENT, {
-            type: "error",
-            sessionId: payload.sessionId,
-            message: "targetTabId is required for tab capture",
-            code: "NO_TARGET_TAB",
-          } satisfies VideoErrorEvent);
-          return { ok: false };
-        }
-        if (!chrome.tabCapture?.getMediaStreamId) {
-          broadcast(CHANNELS.VIDEO_EVENT, {
-            type: "error",
-            sessionId: payload.sessionId,
-            message:
-              "Tab video capture not granted. Enable it from the Recorder pane in the Tools tab.",
-            code: "API_UNAVAILABLE",
-          } satisfies VideoErrorEvent);
-          return { ok: false };
-        }
-        let streamId: string;
-        try {
-          streamId = await new Promise<string>((resolve, reject) => {
-            chrome.tabCapture.getMediaStreamId(
-              { targetTabId: payload.targetTabId! },
-              (id) => {
-                const err = chrome.runtime.lastError;
-                if (err)
-                  reject(new Error(err.message ?? "getMediaStreamId failed"));
-                else if (!id) reject(new Error("empty streamId"));
-                else resolve(id);
-              },
-            );
-          });
-        } catch (err) {
-          broadcast(CHANNELS.VIDEO_EVENT, {
-            type: "error",
-            sessionId: payload.sessionId,
-            message: `tab capture stream id failed: ${(err as Error).message}`,
-            code: "STREAM_ID_FAILED",
-          } satisfies VideoErrorEvent);
-          return { ok: false };
-        }
-        await ensureOffscreen();
-        const runPayload: VideoRunPayload = { ...payload, streamId };
-        await chrome.runtime
-          .sendMessage({
-            __matrx: true,
-            kind: CHANNELS.VIDEO_RUN,
-            payload: runPayload,
-          })
-          .catch((err) => {
-            log.error("sys", "video forward failed", err);
-            broadcast(CHANNELS.VIDEO_EVENT, {
-              type: "error",
-              sessionId: payload.sessionId,
-              message: `forward to offscreen failed: ${(err as Error).message}`,
-              code: "FORWARD_FAILED",
-            } satisfies VideoErrorEvent);
-          });
-        return { ok: true };
+  on<VideoRequestPayload, { ok: boolean }>(CHANNELS.VIDEO_REQUEST, async (payload) => {
+    if (payload.action === 'start' && (payload.source ?? 'tab') === 'tab') {
+      if (payload.targetTabId == null) {
+        broadcast(CHANNELS.VIDEO_EVENT, {
+          type: 'error',
+          sessionId: payload.sessionId,
+          message: 'targetTabId is required for tab capture',
+          code: 'NO_TARGET_TAB',
+        } satisfies VideoErrorEvent);
+        return { ok: false };
       }
-      // 'stop' action or non-tab source — pass through. getDisplayMedia runs
-      // inside the offscreen document where the picker is permitted.
+      if (!chrome.tabCapture?.getMediaStreamId) {
+        broadcast(CHANNELS.VIDEO_EVENT, {
+          type: 'error',
+          sessionId: payload.sessionId,
+          message:
+            'Tab video capture not granted. Enable it from the Recorder pane in the Tools tab.',
+          code: 'API_UNAVAILABLE',
+        } satisfies VideoErrorEvent);
+        return { ok: false };
+      }
+      let streamId: string;
+      try {
+        streamId = await new Promise<string>((resolve, reject) => {
+          chrome.tabCapture.getMediaStreamId({ targetTabId: payload.targetTabId! }, (id) => {
+            const err = chrome.runtime.lastError;
+            if (err) reject(new Error(err.message ?? 'getMediaStreamId failed'));
+            else if (!id) reject(new Error('empty streamId'));
+            else resolve(id);
+          });
+        });
+      } catch (err) {
+        broadcast(CHANNELS.VIDEO_EVENT, {
+          type: 'error',
+          sessionId: payload.sessionId,
+          message: `tab capture stream id failed: ${(err as Error).message}`,
+          code: 'STREAM_ID_FAILED',
+        } satisfies VideoErrorEvent);
+        return { ok: false };
+      }
       await ensureOffscreen();
-      const runPayload: VideoRunPayload = { ...payload };
+      const runPayload: VideoRunPayload = { ...payload, streamId };
       await chrome.runtime
         .sendMessage({
           __matrx: true,
           kind: CHANNELS.VIDEO_RUN,
           payload: runPayload,
         })
-        .catch((err) => log.error("sys", "video forward failed", err));
+        .catch((err) => {
+          log.error('sys', 'video forward failed', err);
+          broadcast(CHANNELS.VIDEO_EVENT, {
+            type: 'error',
+            sessionId: payload.sessionId,
+            message: `forward to offscreen failed: ${(err as Error).message}`,
+            code: 'FORWARD_FAILED',
+          } satisfies VideoErrorEvent);
+        });
       return { ok: true };
-    },
-  );
+    }
+    // 'stop' action or non-tab source — pass through. getDisplayMedia runs
+    // inside the offscreen document where the picker is permitted.
+    await ensureOffscreen();
+    const runPayload: VideoRunPayload = { ...payload };
+    await chrome.runtime
+      .sendMessage({
+        __matrx: true,
+        kind: CHANNELS.VIDEO_RUN,
+        payload: runPayload,
+      })
+      .catch((err) => log.error('sys', 'video forward failed', err));
+    return { ok: true };
+  });
 
   // STREAM_CHUNK is broadcast by offscreen. The sidepanel listens directly;
   // the SW doesn't need to do anything. No handler registered to keep the
@@ -493,21 +445,18 @@ function registerHandlers(): void {
 
   // Legacy: content scripts use chrome.runtime.sendMessage directly with a
   // {__matrx, kind: PAGE_NAVIGATED, payload} envelope (see src/lib/content/bridge.ts).
-  on<{ url: string }, { ack: true }>(
-    CHANNELS.PAGE_NAVIGATED,
-    async (payload) => {
-      if (!payload?.url) return { ack: true };
-      const captured = await lookupCapturedByUrl(payload.url);
-      if (captured) {
-        broadcast(CHANNELS.PAGE_ALREADY_CAPTURED, {
-          url: payload.url,
-          capturedAt: captured.captured_at,
-          id: captured.id,
-        });
-      }
-      return { ack: true };
-    },
-  );
+  on<{ url: string }, { ack: true }>(CHANNELS.PAGE_NAVIGATED, async (payload) => {
+    if (!payload?.url) return { ack: true };
+    const captured = await lookupCapturedByUrl(payload.url);
+    if (captured) {
+      broadcast(CHANNELS.PAGE_ALREADY_CAPTURED, {
+        url: payload.url,
+        capturedAt: captured.captured_at,
+        id: captured.id,
+      });
+    }
+    return { ack: true };
+  });
 
   // tab_id stamped for the same two-window scoping as the list picker.
   on<{ fields: { name: string; selector: string }[] }, { ack: true }>(
@@ -534,17 +483,14 @@ function registerHandlers(): void {
   // Picker relays carry the sender tab id so a sidepanel only consumes
   // results from the tab IT started picking on — with two windows open,
   // window A's pick must not land in window B's builder (audit M1).
-  on<Record<string, unknown>, { ack: true }>(
-    CHANNELS.LIST_PICKER_RESULT,
-    (payload, sender) => {
-      if (!sender.tab) return { ack: true }; // loop guard (broadcast self-delivery)
-      broadcast(CHANNELS.LIST_PICKER_RESULT, {
-        ...payload,
-        tab_id: sender.tab.id ?? null,
-      });
-      return { ack: true };
-    },
-  );
+  on<Record<string, unknown>, { ack: true }>(CHANNELS.LIST_PICKER_RESULT, (payload, sender) => {
+    if (!sender.tab) return { ack: true }; // loop guard (broadcast self-delivery)
+    broadcast(CHANNELS.LIST_PICKER_RESULT, {
+      ...payload,
+      tab_id: sender.tab.id ?? null,
+    });
+    return { ack: true };
+  });
 
   on<unknown, { ack: true }>(CHANNELS.LIST_PICKER_EXIT, (_payload, sender) => {
     if (!sender.tab) return { ack: true }; // loop guard (broadcast self-delivery)
@@ -577,17 +523,14 @@ function registerHandlers(): void {
   // rebroadcasting — the sidepanel filters on it so a previously-tapped tab
   // can't pollute another tab's capture session (audit I1). There is NO
   // buffering here: if no sidepanel is listening, the event is dropped.
-  on<Record<string, unknown>, { ack: true }>(
-    CHANNELS.NET_CAPTURE_EVENT,
-    (payload, sender) => {
-      if (!sender.tab) return { ack: true }; // loop guard (broadcast self-delivery)
-      broadcast(CHANNELS.NET_CAPTURE_EVENT, {
-        ...payload,
-        tab_id: sender.tab.id ?? null,
-      });
-      return { ack: true };
-    },
-  );
+  on<Record<string, unknown>, { ack: true }>(CHANNELS.NET_CAPTURE_EVENT, (payload, sender) => {
+    if (!sender.tab) return { ack: true }; // loop guard (broadcast self-delivery)
+    broadcast(CHANNELS.NET_CAPTURE_EVENT, {
+      ...payload,
+      tab_id: sender.tab.id ?? null,
+    });
+    return { ack: true };
+  });
 
   // WebMCP: pages on the allowlist (see src/lib/origin-allowlist.ts) can
   // call our registered tools through `navigator.modelContext.callTool`.
@@ -597,35 +540,35 @@ function registerHandlers(): void {
     { callId: string; toolName: string; args: unknown },
     { ok: boolean; result?: unknown; error?: string }
   >(CHANNELS.WEBMCP_CALL, async (payload, sender) => {
-    const senderUrl = sender.tab?.url ?? sender.url ?? "";
+    const senderUrl = sender.tab?.url ?? sender.url ?? '';
     if (!senderUrl || !matchesAllowedOrigin(senderUrl)) {
-      return { ok: false, error: "webmcp: origin not allowed" };
+      return { ok: false, error: 'webmcp: origin not allowed' };
     }
     const mode = await readDefaultPermissionMode();
     return handleWebmcpCall(payload, {
       permissionMode: mode,
-      initiator: "page",
+      initiator: 'page',
     });
   });
 }
 
 function registerWebmcpTabUpdateGate(): void {
   chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-    if (changeInfo.status !== "complete") return;
+    if (changeInfo.status !== 'complete') return;
     const url = tab.url;
     if (!url || !matchesAllowedOrigin(url)) return;
     try {
       const isAdmin = await readIsAdmin();
       const result = await registerToolsOnActiveTab({ isAdmin, tabId });
       if (result.ok) {
-        log.info("sw", `registered ${result.count ?? 0} tools on ${url}`);
-      } else if (result.reason && result.reason !== "WebMCP unavailable") {
+        log.info('sw', `registered ${result.count ?? 0} tools on ${url}`);
+      } else if (result.reason && result.reason !== 'WebMCP unavailable') {
         // Don't log "WebMCP unavailable" — it's the expected state on
         // any Chrome older than 146.
-        log.info("sw", `register skipped: ${result.reason}`, { url });
+        log.info('sw', `register skipped: ${result.reason}`, { url });
       }
     } catch (err) {
-      log.warn("sw", `webmcp register failed`, err);
+      log.warn('sw', `webmcp register failed`, err);
     }
   });
 }
@@ -648,10 +591,7 @@ async function readIsAdmin(): Promise<boolean> {
  */
 function registerFrontendRpcExternalListener(): void {
   if (!chrome.runtime.onMessageExternal) {
-    log.warn(
-      "sw",
-      "chrome.runtime.onMessageExternal unavailable — frontend bridge disabled",
-    );
+    log.warn('sw', 'chrome.runtime.onMessageExternal unavailable — frontend bridge disabled');
     return;
   }
   chrome.runtime.onMessageExternal.addListener((msg, sender, sendResponse) => {
@@ -659,7 +599,7 @@ function registerFrontendRpcExternalListener(): void {
     // messages from other extensions / contexts.
     if (
       !msg ||
-      typeof msg !== "object" ||
+      typeof msg !== 'object' ||
       (msg as { channel?: unknown }).channel !== FRONTEND_RPC_CHANNEL
     ) {
       // Not for us; let other listeners (if any) handle it.
@@ -670,28 +610,28 @@ function registerFrontendRpcExternalListener(): void {
     // ORIGIN at the platform layer, but we double-check defensively
     // because Chrome's ID-based externally_connectable (NOT used here)
     // bypasses host matching.
-    const senderUrl = sender.url ?? sender.origin ?? "";
+    const senderUrl = sender.url ?? sender.origin ?? '';
     if (!senderUrl || !matchesAllowedOrigin(senderUrl)) {
       const requestId =
-        typeof (msg as { requestId?: unknown }).requestId === "string"
+        typeof (msg as { requestId?: unknown }).requestId === 'string'
           ? (msg as { requestId: string }).requestId
-          : "";
+          : '';
       const reply: FrontendRpcResponse = {
         ok: false,
-        error: "origin not allowed",
+        error: 'origin not allowed',
         requestId,
       };
       sendResponse(reply);
-      log.warn("sw", `frontend-rpc rejected from ${senderUrl}`);
+      log.warn('sw', `frontend-rpc rejected from ${senderUrl}`);
       return false;
     }
 
     const parsed = FrontendRpcEnvelopeSchema.safeParse(msg);
     if (!parsed.success) {
       const requestId =
-        typeof (msg as { requestId?: unknown }).requestId === "string"
+        typeof (msg as { requestId?: unknown }).requestId === 'string'
           ? (msg as { requestId: string }).requestId
-          : "";
+          : '';
       const reply: FrontendRpcResponse = {
         ok: false,
         error: `invalid envelope: ${JSON.stringify(parsed.error.format())}`,
@@ -705,8 +645,8 @@ function registerFrontendRpcExternalListener(): void {
       .then((response) => {
         // Optional Debug-tab buffer (no-op when disabled).
         recordBridgeTraffic({
-          stream: "frontend-rpc",
-          direction: "in",
+          stream: 'frontend-rpc',
+          direction: 'in',
           action: parsed.data.action,
           requestId: parsed.data.requestId,
           sender: senderUrl,
@@ -724,12 +664,12 @@ function registerFrontendRpcExternalListener(): void {
       .catch((err) => {
         const reply: FrontendRpcResponse = {
           ok: false,
-          error: (err as Error)?.message ?? "handler crashed",
+          error: (err as Error)?.message ?? 'handler crashed',
           requestId: parsed.data.requestId,
         };
         recordBridgeTraffic({
-          stream: "frontend-rpc",
-          direction: "in",
+          stream: 'frontend-rpc',
+          direction: 'in',
           action: parsed.data.action,
           requestId: parsed.data.requestId,
           sender: senderUrl,
@@ -746,7 +686,7 @@ function registerFrontendRpcExternalListener(): void {
       });
     return true; // keep the message channel open for async sendResponse
   });
-  log.info("sw", "frontend-rpc external listener installed");
+  log.info('sw', 'frontend-rpc external listener installed');
 }
 
 // The WS reverse-channel consumer (engine→extension `extension.invoke`
@@ -780,17 +720,14 @@ function registerPilotLifecycleListeners(): void {
     chrome.tabGroups.onRemoved.addListener((group) => {
       const session = usePilotStore.getState().session;
       if (session.active && session.groupId === group.id) {
-        log.info(
-          "pilot",
-          `tabGroups.onRemoved → resetting session group=${group.id}`,
-        );
+        log.info('pilot', `tabGroups.onRemoved → resetting session group=${group.id}`);
         usePilotStore.getState().resetLocal();
       }
     });
   } else {
     log.warn(
-      "pilot",
-      "chrome.tabGroups.onRemoved unavailable — cannot watch for external group dissolution",
+      'pilot',
+      'chrome.tabGroups.onRemoved unavailable — cannot watch for external group dissolution',
     );
   }
   if (chrome.tabs?.onRemoved) {
@@ -804,7 +741,7 @@ function registerPilotLifecycleListeners(): void {
       try {
         const survivors = await chrome.tabs.query({ groupId: session.groupId });
         if (survivors.length === 0) {
-          log.info("pilot", "tabs.onRemoved → group empty, resetting session");
+          log.info('pilot', 'tabs.onRemoved → group empty, resetting session');
           usePilotStore.getState().resetLocal();
         }
       } catch {
@@ -839,43 +776,38 @@ async function closeStaleOffscreenOnBoot(): Promise<void> {
     // 30-minute age-out keeps crash debris from pinning a genuinely stale
     // document forever.
     if (await hasRecentActiveStream(30 * 60_000)) {
-      log.info(
-        "sw",
-        "offscreen has a live stream — skipping stale-close on boot",
-      );
+      log.info('sw', 'offscreen has a live stream — skipping stale-close on boot');
       return;
     }
     let exists = false;
     if (chrome.runtime.getContexts) {
       try {
         const contexts = await chrome.runtime.getContexts({
-          contextTypes: ["OFFSCREEN_DOCUMENT" as chrome.runtime.ContextType],
+          contextTypes: ['OFFSCREEN_DOCUMENT' as chrome.runtime.ContextType],
         });
         exists = contexts.length > 0;
       } catch {
         /* fall through to hasDocument */
       }
     }
-    if (!exists && "hasDocument" in chrome.offscreen) {
+    if (!exists && 'hasDocument' in chrome.offscreen) {
       try {
-        exists = await (
-          chrome.offscreen as { hasDocument: () => Promise<boolean> }
-        ).hasDocument();
+        exists = await (chrome.offscreen as { hasDocument: () => Promise<boolean> }).hasDocument();
       } catch {
         /* fall through */
       }
     }
     if (!exists) {
-      log.info("sw", "no stale offscreen to close");
+      log.info('sw', 'no stale offscreen to close');
       return;
     }
     await chrome.offscreen.closeDocument();
-    log.info("sw", "closed stale offscreen document on boot");
+    log.info('sw', 'closed stale offscreen document on boot');
   } catch (err) {
     // Don't crash bootstrap — worst case the user runs into the original
     // stale-offscreen symptom and we surface it via the defensive base64
     // decoder guard instead.
-    log.warn("sw", "closeStaleOffscreenOnBoot failed", (err as Error)?.message);
+    log.warn('sw', 'closeStaleOffscreenOnBoot failed', (err as Error)?.message);
   }
 }
 
@@ -896,13 +828,10 @@ async function startSchedulerHostIfSignedIn(): Promise<void> {
     if (profile?.id) {
       await startSchedulerHost(profile.id);
     } else {
-      log.info("sys", "scheduler-host: no signed-in user — not starting");
+      log.info('sys', 'scheduler-host: no signed-in user — not starting');
     }
   } catch (err) {
-    log.warn(
-      "sys",
-      `scheduler-host: bootstrap probe failed: ${(err as Error).message}`,
-    );
+    log.warn('sys', `scheduler-host: bootstrap probe failed: ${(err as Error).message}`);
   }
 }
 
@@ -917,7 +846,7 @@ async function startSchedulerHostIfSignedIn(): Promise<void> {
 function registerSchedulerHostUserWatcher(): void {
   if (!chrome.storage?.onChanged) return;
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area !== "local") return;
+    if (area !== 'local') return;
     const change = changes[STORAGE_KEYS.USER_PROFILE];
     if (!change) return;
     const next = change.newValue as UserProfile | undefined;
@@ -929,7 +858,7 @@ function registerSchedulerHostUserWatcher(): void {
       void rehydrateSupabaseSession().then(async () => {
         await connectBroadcast();
         const desktop = await probeDesktop();
-        if (desktop.transport === "http") void connectWs();
+        if (desktop.transport === 'http') void connectWs();
       });
     } else {
       void stopSchedulerHost();
@@ -949,7 +878,7 @@ async function rehydrateSupabaseSession(): Promise<void> {
   ]);
   const access = stored[STORAGE_KEYS.ACCESS_TOKEN] as string | undefined;
   if (!access) return;
-  const { decryptString } = await import("@/lib/auth/crypto");
+  const { decryptString } = await import('@/lib/auth/crypto');
   const ct = stored[STORAGE_KEYS.REFRESH_TOKEN_ENC] as string | undefined;
   const iv = stored[STORAGE_KEYS.REFRESH_TOKEN_IV] as string | undefined;
   if (!ct || !iv) return;
@@ -957,6 +886,6 @@ async function rehydrateSupabaseSession(): Promise<void> {
     const refresh = await decryptString({ ct, iv });
     await setSupabaseSession(access, refresh);
   } catch (err) {
-    console.warn("[matrx-extend] rehydrate failed", err);
+    console.warn('[matrx-extend] rehydrate failed', err);
   }
 }

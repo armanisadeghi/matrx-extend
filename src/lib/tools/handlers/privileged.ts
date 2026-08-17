@@ -95,10 +95,6 @@ export const desktop_run_command: ToolHandler<DesktopCommandArgs, unknown> = {
   },
 };
 
-export const privileged_handlers = [
-  inject_stylesheet,
-  remove_stylesheet,
-  desktop_run_command,
-];
+export const privileged_handlers = [inject_stylesheet, remove_stylesheet, desktop_run_command];
 
 export const privileged_read_handlers: ToolHandler<never, unknown>[] = [];

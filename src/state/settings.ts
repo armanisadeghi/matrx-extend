@@ -36,17 +36,17 @@ interface SettingsState {
    * NEVER hardcode an agent UUID at a call site — read this setting instead.
    *
    * 🚨 KNOWN GAP — this client setting is NOT the platform's answer to "which
-   * agent". The canonical system is Agent Slots: code names a `slot_key` and
+   * agent". The canonical system is Mandates: code names a `slot_key` and
    * the DATABASE decides, resolved lowest-to-highest as system default
    * (agent.slot_definition) → org binding → user binding → run-scope argument,
    * with org/user bindings in agent.slot_binding. A Zustand setting plus a
    * bundled constant is a client-side re-implementation of the bottom two
-   * rungs and cannot see the others. matrx-extend has zero slot coverage;
+   * rungs and cannot see the others. matrx-extend has zero Mandate coverage;
    * converting these call sites is tracked as rows E1/E2 in the rollout
    * worklist.
    *
-   * System of record: common-docs/systems/agent-slots/FEATURE.md
-   * Worklist:         common-docs/systems/agent-slots/ROLLOUT.md (rows E1/E2)
+   * System of record: common-docs/systems/mandates/RUNTIME.md
+   * Worklist:         common-docs/systems/mandates/ROLLOUT.md (rows E1/E2)
    */
   defaultAgentId: string | null;
   /** Fallback for the per-agent ask/act mode when an agent has no override. */
@@ -162,10 +162,10 @@ export const useSettingsStore = create<SettingsState>()(
       //     fallback. Users who installed before v2 have null persisted;
       //     migrate replaces it.
       //     🚨 That constant is a hardcoded client-side stopgap, not a
-      //     platform floor — the canonical answer is an Agent Slot resolved
+      //     platform floor — the canonical answer is a Mandate resolved
       //     in the DB (system default → org binding → user binding →
       //     run-scope). See ROLLOUT.md rows E1/E2 in
-      //     common-docs/systems/agent-slots/.
+      //     common-docs/systems/mandates/.
       version: 2,
       migrate: (persisted, fromVersion) => {
         const state = (persisted ?? {}) as Partial<SettingsState>;

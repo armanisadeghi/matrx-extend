@@ -231,7 +231,9 @@ export function RecorderPane() {
                   </>
                 )}
                 {!isRecording && status === 'uploading' && (
-                  <span className="text-[11px] text-muted-foreground">Uploading to your files…</span>
+                  <span className="text-[11px] text-muted-foreground">
+                    Uploading to your files…
+                  </span>
                 )}
                 {!isRecording && status === 'idle' && lastDurationMs != null && (
                   <span className="text-[11px] text-muted-foreground">

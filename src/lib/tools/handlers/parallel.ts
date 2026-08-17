@@ -68,10 +68,10 @@ const ParallelArgs = z.object({
    * comparison).
    *
    * 🚨 KNOWN GAP — canonically this argument is the run-scope layer of the
-   * Agent Slots ladder (system default → org binding → user binding →
+   * Mandates ladder (system default → org binding → user binding →
    * run-scope), and the omitted case would resolve a `slot_key` in the DB
-   * rather than a bundled constant. matrx-extend has zero slot coverage;
-   * tracked as rows E1/E2 in common-docs/systems/agent-slots/ROLLOUT.md.
+   * rather than a bundled constant. matrx-extend has zero Mandate coverage;
+   * tracked as rows E1/E2 in common-docs/systems/mandates/ROLLOUT.md.
    */
   agent_id: z.string().optional(),
   /**
@@ -482,9 +482,9 @@ export const parallel_for_each_tab: ToolHandler<ParallelArgs, unknown> = {
     // 2. Resolve agent id + auth. An explicit `agent_id` argument is the
     //    run-scope choice; otherwise honor the user's Default Agent setting,
     //    then the hardcoded client constant.
-    //    🚨 KNOWN GAP — the canonical resolver is the Agent Slots ladder in
+    //    🚨 KNOWN GAP — the canonical resolver is the Mandates ladder in
     //    the DB (system default → org binding → user binding → run-scope).
-    //    See common-docs/systems/agent-slots/ROLLOUT.md rows E1/E2.
+    //    See common-docs/systems/mandates/ROLLOUT.md rows E1/E2.
     const agentId =
       args.agent_id ?? useSettingsStore.getState().defaultAgentId ?? DEFAULT_AGENDA_AGENT_ID;
     const baseUrl = await getApiBaseUrl();

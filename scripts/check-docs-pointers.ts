@@ -31,28 +31,22 @@
  *   pnpm check:docs-pointers --strict
  */
 
-import { execSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { execSync } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 
 const ROOT = process.cwd();
-const STRICT = process.argv.includes("--strict");
+const STRICT = process.argv.includes('--strict');
 
 // Only scan the doc-y parts of the repo — not node_modules, .output, archives.
 const SCAN_INCLUDE = /^(docs\/|\.claude\/skills\/|[^/]+\.md$)/;
 const SCAN_EXCLUDE = /^(docs\/archive\/|\.matrx\/|\.arman\/|\.cursor\/)/;
 
-const COMMON_DOCS_ALLOWED_DIRS = new Set([
-  "systems",
-  "projects",
-  "policies",
-  "meta",
-  "skills",
-]);
+const COMMON_DOCS_ALLOWED_DIRS = new Set(['systems', 'projects', 'policies', 'meta', 'skills']);
 
 function trackedMd(): string[] {
-  return execSync("git ls-files -z -- '*.md'", { encoding: "utf8" })
-    .split("\0")
+  return execSync("git ls-files -z -- '*.md'", { encoding: 'utf8' })
+    .split('\0')
     .filter((f) => f && SCAN_INCLUDE.test(f) && !SCAN_EXCLUDE.test(f));
 }
 
@@ -65,7 +59,7 @@ interface BrokenLink {
 interface BadPointer {
   file: string;
   line: number;
-  kind: "shape" | "spelling";
+  kind: 'shape' | 'spelling';
   text: string;
 }
 
@@ -76,17 +70,15 @@ const badPointers: BadPointer[] = [];
 const MD_LINK = /\[[^\]]*\]\(([^)]+)\)/g;
 
 // Cross-repo pointer patterns.
-const REPO_ABS_POINTER =
-  /\/Users\/armanisadeghi\/code\/([A-Za-z0-9._-]+)\/([A-Za-z0-9._/-]+)/g;
+const REPO_ABS_POINTER = /\/Users\/armanisadeghi\/code\/([A-Za-z0-9._-]+)\/([A-Za-z0-9._/-]+)/g;
 const COMMON_DOCS_RELATIVE = /(?<![\w/])common-docs\/([A-Za-z0-9._-]+)\//g;
-const BAD_SPELLING =
-  /\/Volumes\/Samsung2TB\/code\/common-docs|matrx-common-docs\//;
+const BAD_SPELLING = /\/Volumes\/Samsung2TB\/code\/common-docs|matrx-common-docs\//;
 
 function isRelativeLinkTarget(target: string): boolean {
   if (/^[a-z][a-z0-9+.-]*:/i.test(target)) return false; // scheme:// URL
-  if (target.startsWith("#")) return false; // pure anchor
-  if (target.startsWith("/Users/")) return false; // absolute cross-repo, handled separately
-  if (target.startsWith("mailto:")) return false;
+  if (target.startsWith('#')) return false; // pure anchor
+  if (target.startsWith('/Users/')) return false; // absolute cross-repo, handled separately
+  if (target.startsWith('mailto:')) return false;
   return true;
 }
 
@@ -94,7 +86,7 @@ for (const file of trackedMd()) {
   const filePath = join(ROOT, file);
   let lines: string[];
   try {
-    lines = readFileSync(filePath, "utf8").split("\n");
+    lines = readFileSync(filePath, 'utf8').split('\n');
   } catch {
     continue;
   }
@@ -108,7 +100,7 @@ for (const file of trackedMd()) {
       const raw = m[1]?.trim();
       if (!raw) continue;
       if (!isRelativeLinkTarget(raw)) continue;
-      const withoutAnchor = raw.split("#")[0]?.trim();
+      const withoutAnchor = raw.split('#')[0]?.trim();
       if (!withoutAnchor) continue; // was just an anchor
       const resolvedFromDoc = resolve(fileDir, withoutAnchor);
       // Some docs (esp. .claude/skills/) write bare relative paths meant as
@@ -122,9 +114,7 @@ for (const file of trackedMd()) {
       if (!resolvedFromDoc.startsWith(ROOT) && !resolvedFromRoot.startsWith(ROOT)) {
         const parentOfRoot = dirname(ROOT);
         const siblingRoot = resolve(parentOfRoot, withoutAnchor);
-        const firstSegment = siblingRoot
-          .slice(parentOfRoot.length + 1)
-          .split("/")[0];
+        const firstSegment = siblingRoot.slice(parentOfRoot.length + 1).split('/')[0];
         const siblingRepoDir = firstSegment ? join(parentOfRoot, firstSegment) : null;
         if (siblingRepoDir && !existsSync(siblingRepoDir)) {
           continue; // sibling repo not checked out here — unverifiable, not broken
@@ -139,13 +129,13 @@ for (const file of trackedMd()) {
     for (const m of text.matchAll(REPO_ABS_POINTER)) {
       const repo = m[1];
       const subpath = m[2];
-      if (repo === "common-docs" && subpath) {
-        const topDir = subpath.split("/")[0];
+      if (repo === 'common-docs' && subpath) {
+        const topDir = subpath.split('/')[0];
         if (topDir && !COMMON_DOCS_ALLOWED_DIRS.has(topDir)) {
           badPointers.push({
             file,
             line: lineNo,
-            kind: "shape",
+            kind: 'shape',
             text: text.trim().slice(0, 160),
           });
         }
@@ -159,7 +149,7 @@ for (const file of trackedMd()) {
         badPointers.push({
           file,
           line: lineNo,
-          kind: "shape",
+          kind: 'shape',
           text: text.trim().slice(0, 160),
         });
       }
@@ -170,7 +160,7 @@ for (const file of trackedMd()) {
       badPointers.push({
         file,
         line: lineNo,
-        kind: "spelling",
+        kind: 'spelling',
         text: text.trim().slice(0, 160),
       });
     }
@@ -190,18 +180,18 @@ const total = brokenLinks.length + dedupedPointers.length;
 
 if (total === 0) {
   console.log(
-    "check-docs-pointers: OK — no broken relative links or malformed cross-repo pointers.",
+    'check-docs-pointers: OK — no broken relative links or malformed cross-repo pointers.',
   );
   process.exit(0);
 }
 
-console.log("");
-console.log("============================================================");
-console.log("  [FAIL] DOCS POINTER GUARD — broken/malformed doc pointers");
-console.log("============================================================");
+console.log('');
+console.log('============================================================');
+console.log('  [FAIL] DOCS POINTER GUARD — broken/malformed doc pointers');
+console.log('============================================================');
 
 if (brokenLinks.length) {
-  console.log("");
+  console.log('');
   console.log(`-- Broken relative in-repo links (${brokenLinks.length}) --`);
   for (const b of brokenLinks) {
     console.log(`   ${b.file}:${b.line}  -> ${b.target}`);
@@ -209,32 +199,26 @@ if (brokenLinks.length) {
 }
 
 if (dedupedPointers.length) {
-  console.log("");
+  console.log('');
+  console.log(`-- Malformed cross-repo pointers (${dedupedPointers.length}) --`);
   console.log(
-    `-- Malformed cross-repo pointers (${dedupedPointers.length}) --`,
+    '   common-docs paths must start with systems/, projects/, policies/, meta/, or skills/',
   );
   console.log(
-    "   common-docs paths must start with systems/, projects/, policies/, meta/, or skills/",
+    '   (the 2026-07-22 restructure broke flat pointers like common-docs/foo-system/FEATURE.md).',
   );
+  console.log('   Canonical spelling: /Users/armanisadeghi/code/common-docs/<dir>/...');
   console.log(
-    "   (the 2026-07-22 restructure broke flat pointers like common-docs/foo-system/FEATURE.md).",
+    '   NOTE: this guard checks SHAPE only for cross-repo pointers — it cannot verify the',
   );
-  console.log(
-    "   Canonical spelling: /Users/armanisadeghi/code/common-docs/<dir>/...",
-  );
-  console.log(
-    "   NOTE: this guard checks SHAPE only for cross-repo pointers — it cannot verify the",
-  );
-  console.log(
-    "   target file exists on this machine, since sibling repos may not be checked out.",
-  );
+  console.log('   target file exists on this machine, since sibling repos may not be checked out.');
   for (const p of dedupedPointers) {
     console.log(`   [${p.kind}] ${p.file}:${p.line}  ${p.text}`);
   }
 }
 
-console.log("");
+console.log('');
 console.log(
-  `${total} error(s). ${STRICT ? "Strict mode — failing." : "Advisory — fix at will; re-run with --strict to gate CI."}`,
+  `${total} error(s). ${STRICT ? 'Strict mode — failing.' : 'Advisory — fix at will; re-run with --strict to gate CI.'}`,
 );
 process.exit(STRICT ? 1 : 0);

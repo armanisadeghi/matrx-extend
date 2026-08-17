@@ -58,10 +58,7 @@ import {
   restore_recently_closed,
   set_cookie,
 } from '@/lib/tools/handlers/optional-perms';
-import {
-  inject_stylesheet,
-  remove_stylesheet,
-} from '@/lib/tools/handlers/privileged';
+import { inject_stylesheet, remove_stylesheet } from '@/lib/tools/handlers/privileged';
 import {
   add_tabs_to_group,
   create_tab_group,

@@ -1,15 +1,15 @@
-import { on, send } from "@/lib/messaging/native";
-import { CHANNELS } from "@/lib/messaging/schemas";
-import type { DesktopHealth } from "@/lib/desktop/types";
-import { useDesktopStore } from "@/state/desktop";
-import { useEffect } from "react";
+import { on, send } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
+import type { DesktopHealth } from '@/lib/desktop/types';
+import { useDesktopStore } from '@/state/desktop';
+import { useEffect } from 'react';
 
 export function useDesktopBridge() {
   const state = useDesktopStore();
   useEffect(() => {
     return on<
       {
-        transport: "native" | "http" | "none";
+        transport: 'native' | 'http' | 'none';
         health: DesktopHealth | null;
         lastChecked: number;
       },
