@@ -103,18 +103,18 @@ The extension must never use `Runtime.evaluate`, `Runtime.callFunctionOn`, or `R
 
 Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacked store build installed.
 
-- [ ] Side panel opens from the toolbar icon.
-- [ ] Guest banner appears and no account is required.
-- [ ] Settings shows automatic capture off before any change.
-- [ ] Capture produces the demo article, links, and schema.
-- [ ] SEO produces an audit for the demo page.
-- [ ] Data can select or extract fields from the workflow table without a dead end.
+- [x] Side panel opens from the toolbar icon.
+- [x] Guest banner appears and no account is required.
+- [x] Settings shows automatic capture off before any change.
+- [x] Capture produces the demo article, links, and schema.
+- [x] SEO produces an audit for the demo page.
+- [x] Data can select or extract fields from the workflow table without a dead end.
 - [ ] Chat answers the three-stage question with Capture, Understand, and Use.
 - [ ] No uncaught side-panel or service-worker error affects these paths.
 
 ### Dashboard
 
-- [ ] Primary item `hnfolienncfklkgmdjjmhhegglimlamg` receives the new zip.
+- [x] Primary item `hnfolienncfklkgmdjjmhhegglimlamg` receives the new zip.
 - [ ] Listing fields exactly match `docs/CWS_LISTING_DRAFT.md`.
 - [ ] Privacy policy URL is `/privacy-policy/extension`.
 - [ ] Data disclosures and Limited Use certifications match this record.
@@ -144,6 +144,8 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 | 2026-08-17 07:51 PDT | Version `0.1.71` passed TypeScript compile, all 401 tests, tool-DB drift, Store packaging guard, manifest inspection, and the emitted-JavaScript execution-string audit. Candidate artifact `.output/matrx-extend-0.1.71-chrome.zip` SHA-256 `58ef3926b31d54c0706d72a0aea3b5a7555e399704f0519635698b3086da09b0`; manifest has no development key or popup and retains the canonical side panel. |
 | 2026-08-17 08:23 PDT | Clean guest Chat exposed two pre-submission contract defects: the extension rejected every live `agx_get_list_full()` row because it still required retired ownership fields, then used a hardcoded fallback Agent. The RPC schema now uses canonical `created_by`, and fresh Chat uses the server-resolved `chat.default_new_chat` Mandate. Version `0.1.71` is superseded and must not be uploaded. |
 | 2026-08-17 08:47 PDT | Version `0.1.72` passed TypeScript compile, all 404 tests, tool-DB drift, schema-routing, docs-pointer, Store packaging guard, manifest inspection, and the emitted-JavaScript execution-string audit. Candidate artifact `.output/matrx-extend-0.1.72-chrome.zip` SHA-256 `28a37535e1d40c13aa23b1fc5d7b62d54909db3439b297aa7894bc35d92ec4eb`; manifest has no development key or popup and retains the canonical side panel. All clean-profile gates were reset pending a brand-new exact-build pass. |
+| 2026-08-17 08:50 PDT | Brand-new no-login Chrome profile loaded the exact `0.1.72` build. The real toolbar path opened the side panel; the guest banner appeared; Settings showed version `0.1.72` and automatic capture off; Capture returned the 130-word article, 10 links, and schema; SEO returned `LOOKS GOOD`; Data selected two workflow-table fields and offered `Sign in to save` without a dead end. |
+| 2026-08-17 08:56 PDT | Uploaded `.output/matrx-extend-0.1.72-chrome.zip` to the primary item `hnfolienncfklkgmdjjmhhegglimlamg`; the dashboard immediately reflected the new package summary. No action was taken on duplicate draft `pifjakncjcpnkjbdlijgddhiipdlfbde`. Current exact-build screenshots saved as `.output/cws-assets/02-capture.jpeg`, `03-seo.jpeg`, and `04-settings.jpeg`, each normalized to 1280 × 800; Chat remains pending. |
 
 Add exact zip path, SHA-256, clean-profile results, screenshot paths, and dashboard save time here as they are produced.
 
