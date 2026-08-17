@@ -28,7 +28,7 @@
  *   - extend.wbx_screenshot · extend.wbx_guidance · extend.wbx_demo · extend.wbx_highlight · extend.wbx_recipe
  */
 
-import { DEFAULT_AGENDA_AGENT_ID } from '@/lib/agenda/constants';
+import { DEFAULT_CHAT_MANDATE_KEY, DEFAULT_CHAT_MANDATE_REF } from '@/lib/agents/mandates';
 import { log } from '@/lib/debug/log';
 import { getSupabase } from '@/lib/supabase/client';
 import { adminDb, aiDb, extendDb } from '@/lib/supabase/schemas';
@@ -129,28 +129,23 @@ export const AgxAgentSchema = z.object({
   access_level: z.string().nullable(),
   shared_by_email: z.string().nullable(),
   source_agent_id: z.string().uuid().nullable(),
-  user_id: z.string().uuid().nullable(),
+  created_by: z.string().uuid().nullable(),
   organization_id: z.string().uuid().nullable(),
-  project_id: z.string().uuid().nullable(),
   task_id: z.string().uuid().nullable(),
   created_at: z.string().nullable(),
   updated_at: z.string().nullable(),
+  mandate_key: z.string().optional(),
 });
 export type AgxAgent = z.infer<typeof AgxAgentSchema>;
 
 /**
- * Synthetic fallback agent. Injected only when `agx_get_list_full()`
- * returns an empty list — the canonical situation is a freshly-signed-up
- * user (or a Web Store reviewer) with no owned or shared agents yet.
- * Without this, the empty-state suggestion chips (including the
- * Chrome-flagged "Analyze the current page") were silent no-ops because
- * their submit path needs an agent id. The ID is DEFAULT_AGENDA_AGENT_ID, a
- * UUID hardcoded in agenda/constants.ts — 🚨 not a platform-resolved default.
- * Canonically it would come from a Mandate resolved in the DB; see
- * common-docs/systems/mandates/ROLLOUT.md rows E1/E2.
+ * Synthetic UI entry for the canonical default-chat Mandate. It is always
+ * present so a guest or a user with no visible agents has a working choice.
+ * The synthetic id is UI state only; execution sends `mandate_key` to aidream
+ * and the server resolves the Holder for the current principal at run time.
  */
-const FALLBACK_DEFAULT_AGENT: AgxAgent = {
-  id: DEFAULT_AGENDA_AGENT_ID,
+const DEFAULT_CHAT_AGENT: AgxAgent = {
+  id: DEFAULT_CHAT_MANDATE_REF,
   name: 'Matrx Assistant',
   description: 'Default Matrx agent. Try any of the suggestions below.',
   agent_type: null,
@@ -164,12 +159,12 @@ const FALLBACK_DEFAULT_AGENT: AgxAgent = {
   access_level: 'public',
   shared_by_email: null,
   source_agent_id: null,
-  user_id: null,
+  created_by: null,
   organization_id: null,
-  project_id: null,
   task_id: null,
   created_at: null,
   updated_at: null,
+  mandate_key: DEFAULT_CHAT_MANDATE_KEY,
 };
 
 export async function fetchAgentList(): Promise<AgxAgent[]> {
@@ -177,7 +172,7 @@ export async function fetchAgentList(): Promise<AgxAgent[]> {
   const { data, error } = await c.rpc('agx_get_list_full');
   if (error) {
     console.warn('[matrx-extend] fetchAgentList error', error.message);
-    return [FALLBACK_DEFAULT_AGENT];
+    return [DEFAULT_CHAT_AGENT];
   }
   // RLS + RPC body filter actives/non-archived already, but be defensive.
   // Per-row safeParse (audit P2-18): one malformed agent row used to reject
@@ -192,7 +187,7 @@ export async function fetchAgentList(): Promise<AgxAgent[]> {
       if (fa !== fb) return fb - fa;
       return a.name.localeCompare(b.name);
     });
-  return visible.length > 0 ? visible : [FALLBACK_DEFAULT_AGENT];
+  return [DEFAULT_CHAT_AGENT, ...visible];
 }
 
 /** Backwards-compat shim — older callers reference `fetchUserAgents`. */

@@ -22,6 +22,7 @@
  * `./tool-results.ts` stays hardcoded to `/ai/...` deliberately.
  */
 
+import { mandateKeyFromAgentRef } from '@/lib/agents/mandates';
 import { apiDelete, apiGet, apiPatch, apiPost } from '@/lib/api/client';
 
 /**
@@ -35,6 +36,16 @@ const API_VERSION = 'v2' as const;
 /** POST /{API_VERSION}/ai/agent/{agent_id} — start agent stream. agent_id is in the URL. */
 export const agentExecutePath = (agentId: string): string =>
   `/${API_VERSION}/ai/agent/${encodeURIComponent(agentId)}`;
+
+/** POST /{API_VERSION}/ai/mandates/{mandate_key} — resolve and start the Holder server-side. */
+export const mandateExecutePath = (mandateKey: string): string =>
+  `/${API_VERSION}/ai/mandates/${encodeURIComponent(mandateKey)}`;
+
+/** Route a concrete Agent id or a local `mandate:*` UI reference correctly. */
+export const agentTargetExecutePath = (target: string): string => {
+  const mandateKey = mandateKeyFromAgentRef(target);
+  return mandateKey ? mandateExecutePath(mandateKey) : agentExecutePath(target);
+};
 
 /**
  * Capability-based client envelope. Replaces the old `client_tools: string[]`

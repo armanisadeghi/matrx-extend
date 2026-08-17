@@ -5,9 +5,8 @@
  *   1. Claim a run row (lease pattern; another surface won't double-fire).
  *   2. Switch the sidepanel to the chat tab so the user can see it.
  *   3. Set the chat's selected agent + selected conversation:
- *        - agent_id: task.agent_id ?? settings.defaultAgentId ??
- *                    DEFAULT_AGENDA_AGENT_ID (a hardcoded client constant;
- *                    see the 🚨 KNOWN GAP note at the resolution site below)
+ *        - agent_id: task.agent_id ?? settings.defaultAgentId ?? the canonical
+ *                    default-chat Mandate UI reference
  *        - conversation_id: task.persistent_conversation_id (heartbeats)
  *                           or null (ephemeral runs)
  *   4. Send the task's prompt as a normal chat message — the existing
@@ -20,13 +19,14 @@
  * SW-side code never imports from here; runner is sidepanel-context only.
  */
 
+import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/agents/mandates';
 import { log } from '@/lib/debug/log';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { useChatStore } from '@/state/chat';
 import { useSettingsStore } from '@/state/settings';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
-import { AGENDA_SURFACE_ID, DEFAULT_AGENDA_AGENT_ID } from './constants';
+import { AGENDA_SURFACE_ID } from './constants';
 import {
   type AgendaRun,
   type AgendaTask,
@@ -86,18 +86,10 @@ export async function runTask(task: AgendaTask, send: SendFn): Promise<AgendaRun
   // Tab-switch + chat-store priming so the user sees the run in the chat tab.
   useSidepanelTabStore.getState().setTab('chat');
   const chat = useChatStore.getState();
-  // Honor the task's explicit pick, then the user's Default Agent setting,
-  // then the hardcoded client constant as last resort. This matches what the
-  // other surfaces in this extension do.
-  // 🚨 KNOWN GAP — it is NOT the platform's canonical ladder. Canonically the
-  // code names a `mandate_key` and the DB resolves it lowest to highest: system
-  // default (agent.mandate) → org binding → user binding → run-scope
-  // argument, with org/user bindings in agent.mandate_binding. matrx-extend has
-  // zero Mandate coverage; tracked as rows E1/E2 in
-  // common-docs/systems/mandates/ROLLOUT.md (FEATURE.md beside it is the
-  // system of record).
+  // Honor the task's explicit run-scope pick, then the user's explicit saved
+  // preference, then the server-resolved default-chat Mandate.
   const agentId =
-    task.agent_id ?? useSettingsStore.getState().defaultAgentId ?? DEFAULT_AGENDA_AGENT_ID;
+    task.agent_id ?? useSettingsStore.getState().defaultAgentId ?? DEFAULT_CHAT_MANDATE_REF;
   chat.setAgent(agentId);
   if (task.persistent_conversation_id) {
     chat.setConversation(task.persistent_conversation_id);

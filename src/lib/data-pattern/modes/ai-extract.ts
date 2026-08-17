@@ -1,11 +1,16 @@
 import { z } from 'zod';
 import type { ExtractionMode } from '../types';
 
-export const aiExtractConfigSchema = z.object({
-  description: z.string(),
-  output_schema: z.unknown(),
-  agent_id: z.string(),
-});
+export const aiExtractConfigSchema = z
+  .object({
+    description: z.string(),
+    output_schema: z.unknown(),
+    agent_id: z.string().optional(),
+    mandate_key: z.string().optional(),
+  })
+  .refine((value) => Boolean(value.agent_id || value.mandate_key), {
+    message: 'AI Extract requires an agent_id or mandate_key',
+  });
 export type AiExtractConfig = z.infer<typeof aiExtractConfigSchema>;
 
 /**
@@ -23,7 +28,11 @@ export const aiExtractMode: ExtractionMode<AiExtractConfig> = {
   label: 'AI Extract',
   description: 'Describe what you want; an extractor agent returns structured rows.',
   configSchema: aiExtractConfigSchema,
-  defaultConfig: () => ({ description: '', output_schema: {}, agent_id: '' }),
+  defaultConfig: () => ({
+    description: '',
+    output_schema: {},
+    mandate_key: 'extend.structured_extractor',
+  }),
 
   detectInPage: () => ({ available: true, summary: 'AI extraction is always available' }),
 

@@ -21,7 +21,7 @@
  * missing conversation id does not, and is rejected.
  */
 
-import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { type AgentStartRequest, agentTargetExecutePath } from '@/lib/api/routes/ai';
 import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
@@ -147,7 +147,7 @@ export function useAgentTextRun(): AgentTextRun {
         const organizationId = await resolveConversationOrganizationId();
         await send(CHANNELS.STREAM_START, {
           runId,
-          endpoint: agentExecutePath(input.agentId),
+          endpoint: agentTargetExecutePath(input.agentId),
           body: {
             ...input.body,
             organization_id: organizationId,

@@ -19,3 +19,16 @@ extension's anonymous Supabase session.
 A missing or malformed organization is a loud pre-stream failure. The chat UI
 must end its pending state and show a retryable error; it must never send a
 conversation against an arbitrary fallback organization.
+
+## Mandate-backed starts
+
+`routes/ai.ts#mandateExecutePath` targets
+`POST /v2/ai/mandates/{mandate_key}`. A Mandate-backed UI choice keeps a stable
+`mandate:*` reference only for local selection and permission preferences; that
+reference is never passed as an Agent id. The stream sends the Mandate key and
+aidream resolves the Holder for the same bearer/fingerprint principal used by
+the request.
+
+Fresh Chat uses `chat.default_new_chat`. Explicit user-selected Agents still
+use `agentExecutePath`; a deliberate Agent choice is a run target, not a client
+reimplementation of the platform default.

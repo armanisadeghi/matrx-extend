@@ -11,17 +11,8 @@
  *
  * Reused rather than rebuilt: `useAgentTextRun` (the ephemeral-run primitive),
  * `Markdown` (the chat renderer), `CopyButton`, the settings store's
- * `defaultAgentId` (this repo's current, hardcoded-fallback answer to "which
- * agent" — see below), and the agent list query. Newly built: the primitive
+ * `defaultAgentId` and the agent list query. Newly built: the primitive
  * itself + the request builder.
- *
- * 🚨 KNOWN GAP — `defaultAgentId` is a client Zustand setting over a bundled
- * UUID, not the platform's canonical agent selection. Canonically this panel
- * would name a `mandate_key` and let the DB resolve it (system default → org
- * binding → user binding → run-scope). matrx-extend has zero Mandate coverage;
- * conversion is tracked as rows E1/E2 in
- * common-docs/systems/mandates/ROLLOUT.md (system of record: that dir's
- * FEATURE.md).
  *
  * Door Law: the agent that wrote the recommendations is named AND opens — the
  * footer links to its canonical `/agents/{id}` route in a new tab, so reading
@@ -37,7 +28,7 @@ import { Markdown } from '@/components/markdown';
 import { Button } from '@/components/ui/button';
 import { ENV } from '@/config/env';
 import { useAgentTextRun } from '@/hooks/use-agent-text-run';
-import { DEFAULT_AGENDA_AGENT_ID } from '@/lib/agenda/constants';
+import { DEFAULT_CHAT_MANDATE_REF, mandateKeyFromAgentRef } from '@/lib/agents/mandates';
 import type { SeoAudit } from '@/lib/seo/audit';
 import { buildSeoRecommendationsRequest } from '@/lib/seo/recommendations';
 import { fetchAgentList } from '@/lib/supabase/queries';
@@ -46,12 +37,11 @@ import { ExternalLink, Loader2, RotateCw, Sparkles, Square } from 'lucide-react'
 import { useEffect, useState } from 'react';
 
 export function AiRecommendations({ audit }: { audit: SeoAudit }) {
-  // NEVER hardcode an agent UUID at a call site. Today that means reading the
-  // settings store, with DEFAULT_AGENDA_AGENT_ID as the bundled fallback if
-  // it's cleared. 🚨 Both are a client-side stopgap for a Mandate that
-  // this repo does not resolve yet (ROLLOUT.md rows E1/E2).
+  // An explicit saved Agent is a run-scope choice. With none, the server
+  // resolves the canonical default-chat Mandate for this principal.
   const defaultAgentId = useSettingsStore((s) => s.defaultAgentId);
-  const agentId = defaultAgentId ?? DEFAULT_AGENDA_AGENT_ID;
+  const agentId = defaultAgentId ?? DEFAULT_CHAT_MANDATE_REF;
+  const mandateKey = mandateKeyFromAgentRef(agentId);
   const [agentName, setAgentName] = useState<string | null>(null);
   const { text, running, error, run, cancel } = useAgentTextRun();
 
@@ -146,10 +136,14 @@ export function AiRecommendations({ audit }: { audit: SeoAudit }) {
           <button
             type="button"
             className="inline-flex min-w-0 items-center gap-1 truncate rounded px-1 py-0.5 hover:bg-secondary/60 hover:text-foreground"
-            title="Open this agent on aimatrx.com"
+            title={
+              mandateKey ? 'Open this Mandate on aimatrx.com' : 'Open this agent on aimatrx.com'
+            }
             onClick={() =>
               void chrome.tabs.create({
-                url: `${ENV.FRONTEND_URL}/agents/${encodeURIComponent(agentId)}`,
+                url: mandateKey
+                  ? `${ENV.FRONTEND_URL}/administration/agents/mandates?mandate=${encodeURIComponent(mandateKey)}`
+                  : `${ENV.FRONTEND_URL}/agents/${encodeURIComponent(agentId)}`,
               })
             }
           >

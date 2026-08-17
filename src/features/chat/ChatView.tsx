@@ -205,15 +205,9 @@ export function ChatView() {
       setConversations(c);
       setAgentsLoading(false);
 
-      // Auto-select the user's saved default agent — the setting this client
-      // currently reads for "which agent opens". 🚨 KNOWN GAP: the platform's
-      // canonical answer is a Mandate resolved in the DB (system default
-      // → org binding → user binding → run-scope); this repo has no Mandate
-      // coverage yet (common-docs/systems/mandates/ROLLOUT.md rows E1/E2).
-      // Fresh installs start with `defaultAgentId` set
-      // to the Matrx Browser Agent (see useSettingsStore initial state),
-      // so guests and never-configured signed-in users still land on a
-      // working agent. If the saved id isn't in the fetched list (e.g.
+      // Auto-select the user's saved default target. Fresh installs use the
+      // server-resolved default-chat Mandate; a concrete saved Agent remains
+      // an explicit user choice. If the saved id isn't in the fetched list (e.g.
       // an agent was deleted / unshared), leave the picker empty so the
       // user can pick something that exists.
       const chat = useChatStore.getState();
@@ -420,7 +414,7 @@ export function ChatView() {
   // Shared by the normal send and the "stop & send" interrupt. Returns null
   // when no agent is available. Has the side effect of latching the agent +
   // re-engaging auto-scroll, matching the prior inline behavior.
-  const buildFreshRunArgs = (): { agentId: string; opts: Parameters<typeof send>[1] } | null => {
+  const buildFreshRunArgs = (): { opts: Parameters<typeof send>[1] } | null => {
     const agentId = selectedAgentId ?? agents[0]?.id;
     if (!agentId) return null;
     if (!selectedAgentId && agentId) setAgent(agentId);
@@ -430,11 +424,12 @@ export function ChatView() {
     for (const [k, v] of Object.entries(rawVars)) {
       if (v && v.trim().length > 0) variables[k] = v;
     }
-    const agentName = agents.find((a) => a.id === agentId)?.name;
+    const agent = agents.find((a) => a.id === agentId);
+    const agentName = agent?.name;
     return {
-      agentId,
       opts: {
         agentId,
+        ...(agent?.mandate_key !== undefined && { mandateKey: agent.mandate_key }),
         ...(agentName !== undefined && { agentName }),
         ...(selectedConversationId != null && { conversationId: selectedConversationId }),
         ...(Object.keys(variables).length > 0 && { variables }),

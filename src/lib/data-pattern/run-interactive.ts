@@ -14,7 +14,7 @@
  * of `runPattern` — DOM kinds route straight through to runPattern.
  */
 
-import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { type AgentStartRequest, agentExecutePath, mandateExecutePath } from '@/lib/api/routes/ai';
 import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
@@ -88,6 +88,7 @@ export function parseAgentResponse(raw: string): AiExtractionEnvelope {
 /** Saved ai_extract pattern.config shape (modes/ai-extract.ts schema). */
 interface SavedAiConfig {
   agent_id?: string;
+  mandate_key?: string;
   description?: string;
   output_schema?: unknown;
 }
@@ -97,9 +98,17 @@ export async function runAiExtractPattern(
   tabId: number,
   opts: InteractiveRunOptions = {},
 ): Promise<ExtractedRow[]> {
-  const { agent_id, description, output_schema } = (config ?? {}) as SavedAiConfig;
-  if (!agent_id || !description) {
+  const { agent_id, mandate_key, description, output_schema } = (config ?? {}) as SavedAiConfig;
+  if ((!agent_id && !mandate_key) || !description) {
     throw new Error('This AI pattern is missing its agent or description — re-save it.');
+  }
+  const endpoint = mandate_key
+    ? mandateExecutePath(mandate_key)
+    : agent_id
+      ? agentExecutePath(agent_id)
+      : null;
+  if (!endpoint) {
+    throw new Error('This AI pattern has no executable target — re-save it.');
   }
 
   opts.onProgress?.('Reading page…');
@@ -188,7 +197,7 @@ export async function runAiExtractPattern(
     armStall();
     const startArgs = {
       runId,
-      endpoint: agentExecutePath(agent_id),
+      endpoint,
       body,
       parser: 'rich-events' as const,
       agentName: null,

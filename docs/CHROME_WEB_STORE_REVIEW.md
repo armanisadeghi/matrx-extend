@@ -2,7 +2,7 @@
 
 ## Current decision
 
-Prepare and submit version `0.1.71` to the existing public item `hnfolienncfklkgmdjjmhhegglimlamg`. Do not use the duplicate draft item `pifjakncjcpnkjbdlijgddhiipdlfbde`.
+Prepare and submit version `0.1.72` to the existing public item `hnfolienncfklkgmdjjmhhegglimlamg`. Do not use the duplicate draft item `pifjakncjcpnkjbdlijgddhiipdlfbde`.
 
 Submission is not ready until every unchecked gate below is complete. Dashboard text is canonical in `docs/CWS_LISTING_DRAFT.md`.
 
@@ -35,6 +35,12 @@ The rejected version advertised several workflows but supplied no reviewer usern
 - Every agent-start path now resolves the bearer/fingerprint identity's
   effective organization through `/auth/whoami`; a clean-install guest never
   guesses or hardcodes conversation ownership.
+- Fresh Chat now names `chat.default_new_chat`; aidream resolves its Holder for
+  the guest/user at request time. The extension no longer ships a default
+  Agent UUID.
+- The agent-list validator now matches the live `agx_get_list_full()` contract
+  (`created_by`, no retired `user_id`/`project_id`) instead of rejecting every
+  valid row and silently masking the failure with a synthetic Agent.
 
 ## Policy posture
 
@@ -98,11 +104,11 @@ The extension must never use `Runtime.evaluate`, `Runtime.callFunctionOn`, or `R
 Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacked store build installed.
 
 - [ ] Side panel opens from the toolbar icon.
-- [x] Guest banner appears and no account is required.
-- [x] Settings shows automatic capture off before any change.
-- [x] Capture produces the demo article, links, and schema.
-- [x] SEO produces an audit for the demo page.
-- [x] Data can select or extract fields from the workflow table without a dead end.
+- [ ] Guest banner appears and no account is required.
+- [ ] Settings shows automatic capture off before any change.
+- [ ] Capture produces the demo article, links, and schema.
+- [ ] SEO produces an audit for the demo page.
+- [ ] Data can select or extract fields from the workflow table without a dead end.
 - [ ] Chat answers the three-stage question with Capture, Understand, and Use.
 - [ ] No uncaught side-panel or service-worker error affects these paths.
 
@@ -136,6 +142,8 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 | 2026-08-17 04:32 PDT | Brand-new no-login profile loaded that exact package. Guest banner and Settings sign-in state were truthful; auto-capture was off; Capture returned the 130-word article, 10 links, and schema; SEO returned `LOOKS GOOD`; Data selected two workflow-table fields and offered `Sign in to save` with no false connection error. Runtime monitoring recorded no side-panel or service-worker exception during these paths. |
 | 2026-08-17 07:44 PDT | The real toolbar-open path exposed a React StrictMode race before submission: the remount could reuse a Supabase Realtime channel while asynchronous cleanup was still pending, causing the side panel error boundary to report that `postgres_changes` callbacks could not be added after subscription. Each effect mount now uses an independent channel topic; version `0.1.70` is superseded and must not be uploaded. |
 | 2026-08-17 07:51 PDT | Version `0.1.71` passed TypeScript compile, all 401 tests, tool-DB drift, Store packaging guard, manifest inspection, and the emitted-JavaScript execution-string audit. Candidate artifact `.output/matrx-extend-0.1.71-chrome.zip` SHA-256 `58ef3926b31d54c0706d72a0aea3b5a7555e399704f0519635698b3086da09b0`; manifest has no development key or popup and retains the canonical side panel. |
+| 2026-08-17 08:23 PDT | Clean guest Chat exposed two pre-submission contract defects: the extension rejected every live `agx_get_list_full()` row because it still required retired ownership fields, then used a hardcoded fallback Agent. The RPC schema now uses canonical `created_by`, and fresh Chat uses the server-resolved `chat.default_new_chat` Mandate. Version `0.1.71` is superseded and must not be uploaded. |
+| 2026-08-17 08:47 PDT | Version `0.1.72` passed TypeScript compile, all 404 tests, tool-DB drift, schema-routing, docs-pointer, Store packaging guard, manifest inspection, and the emitted-JavaScript execution-string audit. Candidate artifact `.output/matrx-extend-0.1.72-chrome.zip` SHA-256 `28a37535e1d40c13aa23b1fc5d7b62d54909db3439b297aa7894bc35d92ec4eb`; manifest has no development key or popup and retains the canonical side panel. All clean-profile gates were reset pending a brand-new exact-build pass. |
 
 Add exact zip path, SHA-256, clean-profile results, screenshot paths, and dashboard save time here as they are produced.
 

@@ -1,5 +1,5 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
-import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { type AgentStartRequest, mandateExecutePath } from '@/lib/api/routes/ai';
 import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
 import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { newId } from '@/lib/id';
@@ -37,7 +37,7 @@ export interface PatternFromDataResult {
 }
 
 interface ConvertInput {
-  agentId: string;
+  mandateKey: string;
   userInput: string;
   extractedRows: Record<string, unknown>[];
   pageMetadata?: Record<string, unknown>;
@@ -240,8 +240,8 @@ export function usePatternFromData() {
         setError('No active tab.');
         return;
       }
-      if (!input.agentId) {
-        setError('No agent selected.');
+      if (!input.mandateKey) {
+        setError('No Mandate selected.');
         return;
       }
       if (!input.extractedRows.length) {
@@ -313,7 +313,7 @@ export function usePatternFromData() {
       try {
         await send(CHANNELS.STREAM_START, {
           runId,
-          endpoint: agentExecutePath(input.agentId),
+          endpoint: mandateExecutePath(input.mandateKey),
           body,
           parser: 'rich-events' as const,
           agentName: null,

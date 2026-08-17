@@ -28,9 +28,9 @@
  * load). Future work: lift to user-configurable.
  */
 
-import { DEFAULT_AGENDA_AGENT_ID } from '@/lib/agenda/constants';
+import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/agents/mandates';
 import { getApiBaseUrl } from '@/lib/api/client';
-import { agentExecutePath } from '@/lib/api/routes/ai';
+import { agentTargetExecutePath } from '@/lib/api/routes/ai';
 import { getAccessToken } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
@@ -62,16 +62,12 @@ const ParallelArgs = z.object({
   sub_prompt: z.string().min(1),
   /**
    * Agent id for sub-runs. When omitted, falls back to the user's Default
-   * Agent setting and then to DEFAULT_AGENDA_AGENT_ID, a UUID hardcoded in
-   * this client. Pass it only when the parent agent knows it needs a
+   * Agent setting and then to the default-chat Mandate. Pass it only when the parent agent knows it needs a
    * specialized sub-agent (e.g. a vision-only model for screenshot
    * comparison).
    *
-   * 🚨 KNOWN GAP — canonically this argument is the run-scope layer of the
-   * Mandates ladder (system default → org binding → user binding →
-   * run-scope), and the omitted case would resolve a `mandate_key` in the DB
-   * rather than a bundled constant. matrx-extend has zero Mandate coverage;
-   * tracked as rows E1/E2 in common-docs/systems/mandates/ROLLOUT.md.
+   * An explicit id is the run-scope layer; the omitted case resolves the
+   * Mandate inside aidream.
    */
   agent_id: z.string().optional(),
   /**
@@ -360,7 +356,7 @@ async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
 
     // Send STREAM_RUN. The offscreen doc accepts parallel runs natively
     // (keyed by runId in its inflight Map).
-    const url = `${args.baseUrl}${agentExecutePath(args.agentId)}`;
+    const url = `${args.baseUrl}${agentTargetExecutePath(args.agentId)}`;
     const runPayload = {
       runId: subRunId,
       url,
@@ -481,12 +477,9 @@ export const parallel_for_each_tab: ToolHandler<ParallelArgs, unknown> = {
 
     // 2. Resolve agent id + auth. An explicit `agent_id` argument is the
     //    run-scope choice; otherwise honor the user's Default Agent setting,
-    //    then the hardcoded client constant.
-    //    🚨 KNOWN GAP — the canonical resolver is the Mandates ladder in
-    //    the DB (system default → org binding → user binding → run-scope).
-    //    See common-docs/systems/mandates/ROLLOUT.md rows E1/E2.
+    //    then the server-resolved default-chat Mandate.
     const agentId =
-      args.agent_id ?? useSettingsStore.getState().defaultAgentId ?? DEFAULT_AGENDA_AGENT_ID;
+      args.agent_id ?? useSettingsStore.getState().defaultAgentId ?? DEFAULT_CHAT_MANDATE_REF;
     const baseUrl = await getApiBaseUrl();
     const token = await getAccessToken();
     const authHeader = token ? `Bearer ${token}` : null;

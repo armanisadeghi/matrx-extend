@@ -1,4 +1,8 @@
-import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import {
+  type AgentStartRequest,
+  agentTargetExecutePath,
+  mandateExecutePath,
+} from '@/lib/api/routes/ai';
 import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
@@ -73,6 +77,8 @@ async function resolveAttachedHighlights(): Promise<AttachedHighlight[] | null> 
 
 interface SendOptions {
   agentId?: string;
+  /** When present, aidream resolves this Mandate instead of treating agentId as a UUID. */
+  mandateKey?: string;
   agentName?: string;
   conversationId?: string;
   variables?: Record<string, unknown>;
@@ -934,7 +940,9 @@ export function useChatStream() {
       //      that case used to leave a 75s stuck spinner (audit follow-up).
       void send(CHANNELS.STREAM_START, {
         runId,
-        endpoint: agentExecutePath(opts.agentId),
+        endpoint: opts.mandateKey
+          ? mandateExecutePath(opts.mandateKey)
+          : agentTargetExecutePath(opts.agentId),
         body,
         parser: 'rich-events' as const,
         agentName: opts.agentName ?? null,

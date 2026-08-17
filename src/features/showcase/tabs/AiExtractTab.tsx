@@ -5,6 +5,11 @@ import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAiExtraction } from '@/hooks/use-ai-extraction';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { usePatternFromData } from '@/hooks/use-pattern-from-data';
+import {
+  PATTERN_FROM_DATA_MANDATE_KEY,
+  STRUCTURED_EXTRACTOR_MANDATE_KEY,
+  STRUCTURED_EXTRACTOR_MANDATE_REF,
+} from '@/lib/agents/mandates';
 import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
 import { useAuthStore } from '@/state/auth';
 import { CheckCircle2, Loader2, Plus, Sparkles, Wand2, X } from 'lucide-react';
@@ -14,25 +19,6 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 
 type FieldType = 'string' | 'number' | 'date' | 'url' | 'boolean' | 'array';
 const FIELD_TYPES: FieldType[] = ['string', 'number', 'date', 'url', 'boolean', 'array'];
-
-// 🚨 KNOWN GAP — the two constants below hardcode "which agent runs" into the
-// extension bundle. The platform's canonical answer is Mandates: name a
-// `mandate_key` and let the DB resolve it, lowest to highest, as system default
-// (agent.mandate) → org binding → user binding → run-scope argument
-// (org/user bindings live in agent.mandate_binding). Picking a constant and then
-// letting the user override it hand-reimplements two rungs of that ladder and
-// cannot see the rest. matrx-extend has zero Mandate coverage; converting these
-// two is ROLLOUT.md row E2.
-// System of record: common-docs/systems/mandates/RUNTIME.md
-// Worklist:         common-docs/systems/mandates/ROLLOUT.md (row E2)
-
-// Structured-extraction agent, provisioned in the Matrx project as a public
-// system agent. Hardcoded fallback; the user may pick their own extractor.
-const STRUCTURED_EXTRACTOR_AGENT_ID = 'c99595d6-7508-4f0d-b7d3-5218a3c69399';
-
-// "Pattern from Extracted Data" agent — converts AI-extracted rows into a
-// reusable list_pattern config so future runs need no AI. Hardcoded.
-const PATTERN_FROM_DATA_AGENT_ID = 'd5a6c513-d62f-4e09-b026-b869d8e3fcb1';
 
 interface SchemaField {
   name: string;
@@ -84,12 +70,35 @@ export function AiExtractTab() {
       const list = await fetchUserAgents(userId);
       if (cancelled) return;
       setAgentsLoading(false);
-      setAgents(list);
+      const structuredOption: AgxAgent = {
+        id: STRUCTURED_EXTRACTOR_MANDATE_REF,
+        name: 'Structured Extractor',
+        description: 'Canonical page-to-rows extraction Mandate.',
+        agent_type: 'system',
+        category: 'Extraction',
+        tags: ['extract'],
+        model_id: null,
+        is_active: true,
+        is_archived: false,
+        is_favorite: false,
+        is_owner: false,
+        access_level: 'public',
+        shared_by_email: null,
+        source_agent_id: null,
+        created_by: null,
+        organization_id: null,
+        task_id: null,
+        created_at: null,
+        updated_at: null,
+        mandate_key: STRUCTURED_EXTRACTOR_MANDATE_KEY,
+      };
+      const options = [structuredOption, ...list];
+      setAgents(options);
       const preferred =
-        list.find((a) => a.id === STRUCTURED_EXTRACTOR_AGENT_ID) ??
-        list.find((a) => a.name?.toLowerCase().includes('structured extractor')) ??
-        list.find((a) => a.name?.toLowerCase().includes('extract')) ??
-        list[0];
+        options.find((a) => a.id === STRUCTURED_EXTRACTOR_MANDATE_REF) ??
+        options.find((a) => a.name?.toLowerCase().includes('structured extractor')) ??
+        options.find((a) => a.name?.toLowerCase().includes('extract')) ??
+        options[0];
       if (preferred) setAgentId(preferred.id);
     })();
     return () => {
@@ -124,7 +133,13 @@ export function AiExtractTab() {
   const handleRun = () => {
     if (!agentId || !description.trim()) return;
     setSource(sourceFromUrl(tab.url));
-    void extract({ agentId, description, outputSchema });
+    const agent = agents.find((candidate) => candidate.id === agentId);
+    void extract({
+      agentId,
+      ...(agent?.mandate_key !== undefined && { mandateKey: agent.mandate_key }),
+      description,
+      outputSchema,
+    });
   };
 
   const canRun = agentId && description.trim().length > 0 && !running && !schemaProblem;
@@ -349,7 +364,7 @@ export function AiExtractTab() {
                     size="sm"
                     onClick={() =>
                       void convertToPattern({
-                        agentId: PATTERN_FROM_DATA_AGENT_ID,
+                        mandateKey: PATTERN_FROM_DATA_MANDATE_KEY,
                         userInput: description,
                         extractedRows: rows,
                       })
@@ -370,7 +385,16 @@ export function AiExtractTab() {
             <div className="flex justify-end">
               <SaveAsPattern
                 kind="ai_extract"
-                config={{ description, output_schema: outputSchema, agent_id: agentId }}
+                config={{
+                  description,
+                  output_schema: outputSchema,
+                  ...(agents.find((candidate) => candidate.id === agentId)?.mandate_key
+                    ? {
+                        mandate_key: agents.find((candidate) => candidate.id === agentId)
+                          ?.mandate_key,
+                      }
+                    : { agent_id: agentId }),
+                }}
                 rows={rows}
                 source={source}
                 defaultName={description.slice(0, 40) || 'AI extraction'}

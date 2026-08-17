@@ -1,5 +1,5 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
-import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import { type AgentStartRequest, agentExecutePath, mandateExecutePath } from '@/lib/api/routes/ai';
 import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
 import { aiExtractCapturePage } from '@/lib/data-pattern/modes/ai-extract';
 import { parseAgentResponse } from '@/lib/data-pattern/run-interactive';
@@ -26,6 +26,7 @@ interface StreamChunk {
 
 interface ExtractInput {
   agentId: string;
+  mandateKey?: string;
   description: string;
   outputSchema: object;
 }
@@ -175,7 +176,9 @@ export function useAiExtraction() {
       try {
         await send(CHANNELS.STREAM_START, {
           runId,
-          endpoint: agentExecutePath(input.agentId),
+          endpoint: input.mandateKey
+            ? mandateExecutePath(input.mandateKey)
+            : agentExecutePath(input.agentId),
           body,
           parser: 'rich-events' as const,
           agentName: null,

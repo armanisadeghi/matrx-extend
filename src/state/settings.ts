@@ -1,4 +1,4 @@
-import { DEFAULT_AGENDA_AGENT_ID } from '@/lib/agenda/constants';
+import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/agents/mandates';
 import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -27,26 +27,16 @@ interface SettingsState {
 
   // ─── Chat defaults ──────────────────────────────────────────────────────
   /**
-   * Auto-selected when the chat tab loads with no agent chosen yet. Today it
-   * is what Chat, Pilot, Agenda fallbacks, and parallel_for_each_tab fan-out
-   * read. Initial value is the Matrx Browser Agent so fresh installs and
-   * guests land on a working agent immediately; users override it via
-   * Settings → Default agent.
+   * Auto-selected when the chat tab loads with no target chosen yet. Chat,
+   * Pilot, Agenda, SEO recommendations, and parallel fan-out read it. Fresh
+   * installs use the default-chat Mandate; users may explicitly pick an Agent
+   * through Settings → Default agent.
    *
    * NEVER hardcode an agent UUID at a call site — read this setting instead.
    *
-   * 🚨 KNOWN GAP — this client setting is NOT the platform's answer to "which
-   * agent". The canonical system is Mandates: code names a `mandate_key` and
-   * the DATABASE decides, resolved lowest-to-highest as system default
-   * (agent.mandate) → org binding → user binding → run-scope argument,
-   * with org/user bindings in agent.mandate_binding. A Zustand setting plus a
-   * bundled constant is a client-side re-implementation of the bottom two
-   * rungs and cannot see the others. matrx-extend has zero Mandate coverage;
-   * converting these call sites is tracked as rows E1/E2 in the rollout
-   * worklist.
-   *
-   * System of record: common-docs/systems/mandates/RUNTIME.md
-   * Worklist:         common-docs/systems/mandates/ROLLOUT.md (rows E1/E2)
+   * A concrete id here is an explicit user run target. The fresh-install
+   * `mandate:*` reference is UI state only; aidream resolves its Holder
+   * through the system/org/user Binding ladder at run time.
    */
   defaultAgentId: string | null;
   /** Fallback for the per-agent ask/act mode when an agent has no override. */
@@ -122,7 +112,7 @@ export const useSettingsStore = create<SettingsState>()(
     (set) => ({
       theme: 'system',
       scrapeDeepClean: false,
-      defaultAgentId: DEFAULT_AGENDA_AGENT_ID,
+      defaultAgentId: DEFAULT_CHAT_MANDATE_REF,
       defaultPermissionMode: 'ask',
       defaultChatSpeed: 'fast',
       agentScopes: ['mine'],
@@ -160,24 +150,17 @@ export const useSettingsStore = create<SettingsState>()(
       storage: createJSONStorage(() => chromeLocalStorage),
       // Bump when the schema changes in a way that needs rewriting old
       // persisted state.
-      //   v1 → v2 (2026-05-19): defaultAgentId default flipped from null
-      //     to DEFAULT_AGENDA_AGENT_ID so chat / agenda / parallel all
-      //     have a working agent without each caller re-implementing a
-      //     fallback. Users who installed before v2 have null persisted;
-      //     migrate replaces it.
-      //     🚨 That constant is a hardcoded client-side stopgap, not a
-      //     platform floor — the canonical answer is a Mandate resolved
-      //     in the DB (system default → org binding → user binding →
-      //     run-scope). See ROLLOUT.md rows E1/E2 in
-      //     common-docs/systems/mandates/.
-      version: 2,
+      //   v2 → v3 (2026-08-17): fresh installs use the server-resolved
+      //     `chat.default_new_chat` Mandate instead of a bundled agent UUID.
+      //     Existing users keep an explicit saved agent selection.
+      version: 3,
       migrate: (persisted, fromVersion) => {
         const state = (persisted ?? {}) as Partial<SettingsState>;
         if (
           fromVersion < 2 &&
           (state.defaultAgentId === null || state.defaultAgentId === undefined)
         ) {
-          state.defaultAgentId = DEFAULT_AGENDA_AGENT_ID;
+          state.defaultAgentId = DEFAULT_CHAT_MANDATE_REF;
         }
         return state as SettingsState;
       },

@@ -9,6 +9,7 @@
  * fields, so this is the second step.
  */
 
+import { isMandateAgentRef } from '@/lib/agents/mandates';
 import { type AgxAgentExecution, fetchAgentExecution } from '@/lib/supabase/queries';
 import { useEffect, useState } from 'react';
 
@@ -35,7 +36,7 @@ export function useAgentExecution(agentId: string | null): State & {
   const [state, setState] = useState<State>(INITIAL);
 
   useEffect(() => {
-    if (!agentId) {
+    if (!agentId || isMandateAgentRef(agentId)) {
       setState(INITIAL);
       return;
     }
