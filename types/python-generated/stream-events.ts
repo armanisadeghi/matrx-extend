@@ -519,25 +519,6 @@ export interface ConversationLabeledData {
   keywords?: string[];
 }
 
-export interface DeskCompileCompleteData {
-  type?: "desk_compile_complete";
-  workflow_id: string;
-  name: string;
-  desk_kind: string;
-  pack_id: string;
-  pack_slug: string;
-  pack_version: number;
-  agent_ids?: string[];
-}
-
-export interface DeskCompileProgressData {
-  type?: "desk_compile_progress";
-  step: string;
-  message: string;
-  agent_id?: string | null;
-  agent_name?: string | null;
-}
-
 export interface DictionaryPublishCompleteData {
   type?: "dictionary_publish_complete";
   status: string;
@@ -565,25 +546,6 @@ export interface QuestionnaireDisplayData {
   type?: "display_questionnaire";
   introduction: string;
   questions?: QuestionnaireQuestion[];
-}
-
-export interface ExpertiseIngestCompleteData {
-  type?: "expertise_ingest_complete";
-  pack_id: string;
-  pack_version: number;
-  added?: number;
-  duplicates_skipped?: number;
-  quotes_verified?: number;
-  quotes_unverified?: number;
-}
-
-export interface ExpertiseIngestProgressData {
-  type?: "expertise_ingest_progress";
-  step: string;
-  message: string;
-  chunk_index?: number | null;
-  total_chunks?: number | null;
-  rules_found?: number | null;
 }
 
 export interface ExtractionIndexCompleteData {
@@ -844,6 +806,88 @@ export interface LegalSyncEventData {
   per_resource_rows?: Record<string, number> | null;
   per_resource_errors?: Record<string, string> | null;
   error?: string | null;
+}
+
+export interface AuditionRuleFinding {
+  rule_id: string;
+  winner: string;
+  note?: string;
+}
+
+export interface MasterworkAuditionVerdictData {
+  type?: "masterwork_audition_verdict";
+  rulebook_id: string;
+  verdict: string;
+  summary: string;
+  findings?: AuditionRuleFinding[];
+  gaps?: string[];
+  gaps_captured?: number;
+  rulebook_version?: number | null;
+}
+
+export interface MasterworkBuildCompleteData {
+  type?: "masterwork_build_complete";
+  workflow_id: string;
+  name: string;
+  masterwork_kind: string;
+  rulebook_id: string;
+  rulebook_slug: string;
+  rulebook_version: number;
+  agent_ids?: string[];
+}
+
+export interface MasterworkBuildProgressData {
+  type?: "masterwork_build_progress";
+  step: string;
+  message: string;
+  agent_id?: string | null;
+  agent_name?: string | null;
+}
+
+export interface MasterworkIngestCompleteData {
+  type?: "masterwork_ingest_complete";
+  rulebook_id: string;
+  rulebook_version: number;
+  added?: number;
+  duplicates_skipped?: number;
+  quotes_verified?: number;
+  quotes_unverified?: number;
+}
+
+export interface MasterworkIngestProgressData {
+  type?: "masterwork_ingest_progress";
+  step: string;
+  message: string;
+  chunk_index?: number | null;
+  total_chunks?: number | null;
+  rules_found?: number | null;
+}
+
+export interface MasterworkRunData {
+  type?: "masterwork_run";
+  run_id: string;
+  rulebook_id: string;
+  operation: string;
+  label?: string | null;
+}
+
+export interface MasterworkRunFailedData {
+  type?: "masterwork_run_failed";
+  run_id: string;
+  error?: Record<string, unknown> | null;
+}
+
+export interface MasterworkRunSnapshotData {
+  type?: "masterwork_run_snapshot";
+  run_id: string;
+  rulebook_id: string;
+  operation: string;
+  label?: string | null;
+  status: string;
+  live?: boolean;
+  error?: Record<string, unknown> | null;
+  result?: Record<string, unknown> | null;
+  completed_at?: string | null;
 }
 
 export interface AudioBlock {
@@ -1295,6 +1339,16 @@ export interface PlanGenStartedData {
   keyword_count?: number;
 }
 
+export interface PlanPageStepResultData {
+  type?: "plan_page_step_result";
+  node_id: string;
+  step: string;
+  route?: string;
+  artifact_id?: string;
+  run_id?: string;
+  summary?: string;
+}
+
 export interface PlanSetupAgentResultData {
   type?: "plan_setup_agent_result";
   site_id: string;
@@ -1355,6 +1409,7 @@ export interface PodcastCompleteEvent {
   video_urls?: string[];
   official_video_url?: string;
   official_video_error?: string;
+  run_mode?: string;
   host_count?: number;
   speakers?: Record<string, unknown>[];
   error?: string | null;
@@ -1523,11 +1578,7 @@ export type TypedDataPayload =
   | ContextPersistedData
   | ConversationIdData
   | ConversationLabeledData
-  | DeskCompileCompleteData
-  | DeskCompileProgressData
   | DictionaryPublishCompleteData
-  | ExpertiseIngestCompleteData
-  | ExpertiseIngestProgressData
   | ExtractionIndexCompleteData
   | ExtractionIndexProgressData
   | FetchResultsData
@@ -1548,6 +1599,14 @@ export type TypedDataPayload =
   | ImageStudioProcessCompleteData
   | ImageStudioVariantData
   | LegalSyncEventData
+  | MasterworkAuditionVerdictData
+  | MasterworkBuildCompleteData
+  | MasterworkBuildProgressData
+  | MasterworkIngestCompleteData
+  | MasterworkIngestProgressData
+  | MasterworkRunData
+  | MasterworkRunFailedData
+  | MasterworkRunSnapshotData
   | MediaBlockData
   | MediaNoticeData
   | MemoryBufferSpawnedData
@@ -1579,6 +1638,7 @@ export type TypedDataPayload =
   | PlanGenCandidateData
   | PlanGenMergedData
   | PlanGenStartedData
+  | PlanPageStepResultData
   | PlanSetupAgentResultData
   | PodcastAssetEvent
   | PodcastAssetGenStartedEvent
@@ -1654,6 +1714,7 @@ export function isContextGroomedEvent(value: unknown): value is ContextGroomedEv
 // --- SEO Streamed Result Models (kind-discriminated data events) ---
 
 export interface KeywordClassifyResult {
+  result_kind?: "keywords.classify";
   eligible?: number;
   batches?: number;
   updated?: number;
@@ -1680,6 +1741,12 @@ export interface KeywordResearchList {
   keywords?: string[];
 }
 
+export interface KeywordVolumeBatchFailure {
+  batch_index: number;
+  keyword_count: number;
+  error: string;
+}
+
 export interface KeywordVolumeBatchReceipt {
   run_id: string;
   keyword_count: number;
@@ -1695,6 +1762,7 @@ export interface KeywordVolumeRefreshResult {
   fetched_phrases?: number;
   rejected_phrases?: KeywordVolumeRejectedPhrase[];
   batches?: KeywordVolumeBatchReceipt[];
+  failed_batches?: KeywordVolumeBatchFailure[];
 }
 
 export interface KeywordVolumeRejectedPhrase {
