@@ -188,14 +188,15 @@ Leave reviewer username and password blank.
 
 ## Screenshot set
 
-Upload current 1280 × 800 screenshots from the exact store build, in this order:
+Upload four current 1280 × 800 screenshots from the exact store build, in this order:
 
 1. Guest Chat answering the three-stage question on `/matrx-extend-demo`.
 2. Capture showing the demo article and its extracted content.
 3. SEO showing the live audit for the demo page.
-4. Data showing selected or extracted rows from the workflow table.
-5. Settings showing automatic capture off on a fresh installation.
+4. Settings showing automatic capture off on a fresh installation.
 
+Do not add a Data/picker screenshot merely to fill the fifth slot. The four
+screenshots above mirror the exact reviewer path and default-disclosure check.
 Do not upload old signed-in, admin, task, or unrelated product screenshots.
 
 ## Submission facts that stay internal

@@ -107,7 +107,7 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 - [ ] Data disclosures and Limited Use certifications match this record.
 - [ ] Permission justifications exactly match this release.
 - [ ] Reviewer username and password remain blank; additional instructions are filled.
-- [ ] Five current 1280 × 800 screenshots are uploaded in the documented order.
+- [ ] Four current 1280 × 800 screenshots are uploaded in the documented order.
 - [ ] Distribution settings are checked without using the duplicate item.
 - [ ] Arman explicitly confirms the final Submit for review action.
 
