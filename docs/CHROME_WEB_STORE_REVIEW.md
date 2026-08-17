@@ -109,8 +109,8 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 - [x] Capture produces the demo article, links, and schema.
 - [x] SEO produces an audit for the demo page.
 - [x] Data can select or extract fields from the workflow table without a dead end.
-- [ ] Chat answers the three-stage question with Capture, Understand, and Use.
-- [ ] No uncaught side-panel or service-worker error affects these paths.
+- [x] Chat answers the three-stage question with Capture, Understand, and Use.
+- [x] No uncaught side-panel or service-worker error affects these paths.
 
 ### Dashboard
 
@@ -148,6 +148,7 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 | 2026-08-17 08:56 PDT | Uploaded `.output/matrx-extend-0.1.72-chrome.zip` to the primary item `hnfolienncfklkgmdjjmhhegglimlamg`; the dashboard immediately reflected the new package summary. No action was taken on duplicate draft `pifjakncjcpnkjbdlijgddhiipdlfbde`. Current exact-build screenshots saved as `.output/cws-assets/02-capture.jpeg`, `03-seo.jpeg`, and `04-settings.jpeg`, each normalized to 1280 × 800; Chat remains pending. |
 | 2026-08-17 09:24 PDT | Reconciled and saved the live primary-item dashboard: narrow Store description; current valid **Tools** category; extension-specific privacy-policy URL; exact single-purpose and permission explanations; remote-code answer; all six data categories; all three Limited Use certifications; blank reviewer credentials; deterministic 401-character no-login reviewer instructions; and free/public/all-regions distribution. The dashboard already holds four screenshots, but Screenshot 1 is not accepted as current exact-build evidence and must be replaced by the clean guest Chat proof. |
 | 2026-08-17 09:32 PDT | The clean `0.1.72` guest Chat rerun reached AI Matrx but stopped with `Workspace initialization failed (-1): Schema validation failed`. The candidate correctly requires `organization_id` from `/auth/whoami`; production OpenAPI still exposes the earlier response without that field, while `origin/main` contains the effective-organization contract and its test in aidream commit `f98cd3dc5`. Capture, SEO, Data, Settings, and runtime-error checks remain clean. Rerun Chat after the live endpoint exposes `organization_id`; then capture `01-chat.jpeg`, replace the stale dashboard Screenshot 1, and perform the final no-error pass. |
+| 2026-08-17 10:08 PDT | Production `/auth/whoami` and OpenAPI now expose `organization_id`. A restarted brand-new no-login profile loaded the exact `0.1.72` build and the server-resolved **Matrx Assistant**; the reviewer question returned the three required stages — **Capture, Understand, Use** — grounded in the demo page. Runtime inspection recorded no uncaught side-panel exception on this path. The completed proof is `.output/cws-assets/01-chat.jpeg`, normalized to 1280 × 800 with SHA-256 `d0da71d5e2c9d01266e4fa099666b9ea2ec103c6067966a114082d7b69a0a09c`. Dashboard upload remains pending only because the Mac locked during the screenshot replacement. |
 
 Add exact zip path, SHA-256, clean-profile results, screenshot paths, and dashboard save time here as they are produced.
 
