@@ -7,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Skeleton } from '@/components/ui/skeleton';
 import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
+import { AgentCaptureCredentialCard } from '@/features/chat/AgentCaptureCredentialCard';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
 import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
 import { HighlightAttachmentChip } from '@/features/chat/HighlightAttachmentChip';
@@ -170,6 +171,11 @@ export function ChatView() {
   const pendingAsks = useMemo(
     () => allPendingAsks.filter((c) => c.conversationId === selectedConversationId),
     [allPendingAsks, selectedConversationId],
+  );
+  const allPendingCaptures = useToolInbox((s) => s.pendingCaptures);
+  const pendingCaptures = useMemo(
+    () => allPendingCaptures.filter((c) => c.conversationId === selectedConversationId),
+    [allPendingCaptures, selectedConversationId],
   );
 
   const [agentsRefreshing, setAgentsRefreshing] = useState(false);
@@ -585,6 +591,10 @@ export function ChatView() {
 
             {pendingAsks.map((req) => (
               <AgentAskUserCard key={req.callId} req={req} />
+            ))}
+
+            {pendingCaptures.map((req) => (
+              <AgentCaptureCredentialCard key={req.callId} req={req} />
             ))}
           </div>
         )}

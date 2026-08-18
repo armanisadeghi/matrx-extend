@@ -2071,6 +2071,30 @@ Every entry follows this shape:
   - Sign out with the panel open → the next action reports
     "Sign in to Matrx to use the Vault".
 
+### On-the-fly credential capture (`capture_credential` — D-11)
+- **What it does:** the agent hits a login it has NO saved credential for and, instead
+  of asking you to log in where it would see the password, asks the tool to CAPTURE one.
+  A username/password box appears in chat; you type; the value is written to your Vault
+  with the agent's metadata (site name, description, url, field map). **The agent never
+  sees the value.** Known site → the agent gets the saved recipe; unknown site → the
+  agent is asked to document a proposed recipe (a human activates it later).
+- **Where to test:** chat (ask the agent to sign in to a site you have NO Vault item for),
+  once the `tool.definition` / `tool.binding` rows + a surface inclusion are seeded (like
+  `credential_login`, it is not advertised until then). Signed in only.
+- **Steps:**
+  1. On an https login page with nothing saved, have the agent call `capture_credential`.
+  2. A "Save a login for &lt;host&gt;" card appears with the fields the agent named.
+  3. Type the username + password → **Save & continue**.
+  4. The agent receives `{status:'captured', credential_item_id, proceed:true}` and signs in.
+  5. Open the Vault tab → the new item is in Mine with browser fill on and the login URL set.
+- **Expected:** the value is masked in the box, never appears in the chat transcript, the
+  tool result, or the Debug log (only `→ POST vault/browser-login/capture` with no value
+  echoed); the receipt the agent shows carries the item id + field KEYS only. An unknown
+  site's receipt asks the agent to propose a recipe.
+- **Edge cases worth poking:** http (non-loopback) page → `unsafe_destination`, no card
+  shown; Cancel on the card → the agent gets `cancelled`, nothing written; the agent
+  cannot supply a value (the schema has no value field).
+
 ### Capture study set (`capture_study_set` — education, IC-11)
 - **What it does:** one-click import of the study set on the current page (a Quizlet set, a
   definition list, or a two-column table) into a native AI Matrx flashcard deck through the

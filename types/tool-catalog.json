@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T20:32:08.734Z",
+  "generated_at": "2026-08-19T01:17:55.705Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -189,6 +189,7 @@
     "download_url",
     "cancel_download",
     "credential_login",
+    "capture_credential",
     "capture_prospect",
     "capture_study_set",
     "google_email_send",
@@ -332,6 +333,7 @@
     "download_url",
     "cancel_download",
     "credential_login",
+    "capture_credential",
     "capture_prospect",
     "capture_study_set",
     "google_email_send",
@@ -709,7 +711,8 @@
       "list_tool": "list_credentials_tools",
       "admin_only": false,
       "tool_names": [
-        "credential_login"
+        "credential_login",
+        "capture_credential"
       ]
     },
     {
@@ -4000,6 +4003,244 @@
         },
         "additionalProperties": false,
         "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome"
+      ]
+    },
+    {
+      "name": "capture_credential",
+      "tier": "action",
+      "category": "credentials",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "capture",
+              "propose_recipe"
+            ],
+            "default": "capture"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "provider_key": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field_key": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "selector": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "label": {
+                  "type": "string"
+                },
+                "secret": {
+                  "type": "boolean"
+                },
+                "step": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "field_key",
+                "selector"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "submit_selector": {
+            "type": "string"
+          },
+          "field_map": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "step": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "selector": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "field_key": {
+                  "type": "string"
+                },
+                "literal_key": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "selector"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "submit": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "success_signals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "selector_present",
+                    "selector_absent",
+                    "url_prefix",
+                    "cookie_present",
+                    "text_present"
+                  ]
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "direction": {
+                  "type": "string",
+                  "enum": [
+                    "authenticated",
+                    "challenged",
+                    "rejected"
+                  ]
+                },
+                "weight": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "kind",
+                "value",
+                "direction"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "failure_signals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "selector_present",
+                    "selector_absent",
+                    "url_prefix",
+                    "cookie_present",
+                    "text_present"
+                  ]
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "direction": {
+                  "type": "string",
+                  "enum": [
+                    "authenticated",
+                    "challenged",
+                    "rejected"
+                  ]
+                },
+                "weight": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "kind",
+                "value",
+                "direction"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "challenge_signals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "selector_present",
+                    "selector_absent",
+                    "url_prefix",
+                    "cookie_present",
+                    "text_present"
+                  ]
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "direction": {
+                  "type": "string",
+                  "enum": [
+                    "authenticated",
+                    "challenged",
+                    "rejected"
+                  ]
+                },
+                "weight": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "kind",
+                "value",
+                "direction"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },
       "required_permissions": [],
