@@ -60,7 +60,13 @@ const CaptureFieldArg = z.object({
 });
 
 const SignalArg = z.object({
-  kind: z.enum(['selector_present', 'selector_absent', 'url_prefix', 'cookie_present', 'text_present']),
+  kind: z.enum([
+    'selector_present',
+    'selector_absent',
+    'url_prefix',
+    'cookie_present',
+    'text_present',
+  ]),
   value: z.string().min(1),
   direction: z.enum(['authenticated', 'challenged', 'rejected']),
   weight: z.number().min(0).max(1).optional(),
@@ -169,7 +175,13 @@ export interface CaptureCredentialRequest {
   uri_match_mode: 'host' | 'exact' | 'never';
   branch: 'known' | 'unknown';
   guidance: string;
-  fields: Array<{ field_key: string; selector: string; label: string; secret: boolean; step: number }>;
+  fields: Array<{
+    field_key: string;
+    selector: string;
+    label: string;
+    secret: boolean;
+    step: number;
+  }>;
 }
 
 /**
@@ -241,8 +253,7 @@ export const capture_credential: ToolHandler<CaptureCredentialArgs, CaptureCrede
     if (!(await hasRealUserToken())) {
       return {
         status: 'sign_in_required',
-        message:
-          'Sign in to Matrx in the extension side panel before capturing a credential.',
+        message: 'Sign in to Matrx in the extension side panel before capturing a credential.',
       };
     }
 
