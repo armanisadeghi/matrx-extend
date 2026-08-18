@@ -53,6 +53,8 @@ import type { AnyToolHandler, ToolTier } from '@/lib/tools/types';
  *   - credentials  : sign in to a site using a saved Matrx vault login
  *   - crm          : put what you are looking at into the user's AI Matrx CRM
  *   - education    : capture the study set on the page into a Matrx flashcard deck
+ *   - productivity : the user's connected Google Workspace (Docs, Sheets, and
+ *                    the reviewed Gmail send)
  */
 export type ToolCategory =
   | 'core'
@@ -71,7 +73,8 @@ export type ToolCategory =
   | 'desktop'
   | 'credentials'
   | 'crm'
-  | 'education';
+  | 'education'
+  | 'productivity';
 
 export interface CategoryMeta {
   category: ToolCategory;
@@ -207,6 +210,13 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     description:
       "Turn the page the user is looking at into study material in their AI Matrx education workspace. `capture_study_set` extracts the term/definition pairs on the current page (a Quizlet set's framework data, a definition list, or a two-column table) and lands them as a native flashcard deck through the platform's ONE import door — same writer, same dedupe, same membership edges as the web app's importer. Always `preview` first: it writes nothing and shows the deck name, card count and a sample so the user confirms what would be captured.",
     list_tool_name: 'list_education_tools',
+  },
+  productivity: {
+    category: 'productivity',
+    label: 'Google Workspace',
+    description:
+      "Work with the user's own connected Google account. `google_email_send` proposes ONE email and stops: the user sees the sender, recipient, subject and body, edits anything they like, and the message is sent only when they press Send — there is no way for you to send without that click, and no argument that stands in for it. Reading and writing the user's picked Docs and Sheets is the separate server-side `google_workspace` tool.",
+    list_tool_name: 'list_productivity_tools',
   },
 };
 
@@ -405,6 +415,10 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   capture_prospect: 'crm',
   // ─── education (study-set capture — IC-11) ────────────────────────────
   capture_study_set: 'education',
+  // ─── productivity (Google Workspace) ──────────────────────────────────
+  // Matches `tool.definition.category` for the google bundle; `google_workspace`
+  // itself is server-executed (executor `aidream`) so it has no handler here.
+  google_email_send: 'productivity',
 };
 
 export function categoryOf(toolName: string): ToolCategory {
@@ -530,6 +544,8 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'capture_prospect',
   // ─── education (study-set capture — IC-11) ──────────────────────────────
   'capture_study_set',
+  // ─── productivity (the reviewed Gmail send — no server executor exists) ──
+  'google_email_send',
 ]);
 
 export function isCanonicalSurface(toolName: string): boolean {

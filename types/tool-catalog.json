@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T05:58:55.127Z",
+  "generated_at": "2026-08-18T20:32:08.734Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -20,6 +20,7 @@
     "list_credentials_tools",
     "list_crm_tools",
     "list_education_tools",
+    "list_productivity_tools",
     "browser_batch",
     "parallel_for_each_tab"
   ],
@@ -42,6 +43,7 @@
     "list_credentials_tools",
     "list_crm_tools",
     "list_education_tools",
+    "list_productivity_tools",
     "browser_batch",
     "read_page",
     "find",
@@ -117,6 +119,7 @@
     "list_credentials_tools",
     "list_crm_tools",
     "list_education_tools",
+    "list_productivity_tools",
     "browser_batch",
     "read_page",
     "find",
@@ -188,6 +191,7 @@
     "credential_login",
     "capture_prospect",
     "capture_study_set",
+    "google_email_send",
     "remember_for_domain",
     "list_recently_closed",
     "restore_recently_closed",
@@ -258,6 +262,7 @@
     "list_credentials_tools",
     "list_crm_tools",
     "list_education_tools",
+    "list_productivity_tools",
     "browser_batch",
     "read_page",
     "find",
@@ -329,6 +334,7 @@
     "credential_login",
     "capture_prospect",
     "capture_study_set",
+    "google_email_send",
     "remember_for_domain",
     "list_recently_closed",
     "restore_recently_closed",
@@ -432,6 +438,7 @@
         "list_credentials_tools",
         "list_crm_tools",
         "list_education_tools",
+        "list_productivity_tools",
         "browser_batch",
         "parallel_for_each_tab"
       ]
@@ -723,6 +730,16 @@
       "admin_only": false,
       "tool_names": [
         "capture_study_set"
+      ]
+    },
+    {
+      "category": "productivity",
+      "label": "Google Workspace",
+      "description": "Work with the user's own connected Google account. `google_email_send` proposes ONE email and stops: the user sees the sender, recipient, subject and body, edits anything they like, and the message is sent only when they press Send — there is no way for you to send without that click, and no argument that stands in for it. Reading and writing the user's picked Docs and Sheets is the separate server-side `google_workspace` tool.",
+      "list_tool": "list_productivity_tools",
+      "admin_only": false,
+      "tool_names": [
+        "google_email_send"
       ]
     }
   ],
@@ -1154,6 +1171,31 @@
     },
     {
       "name": "list_education_tools",
+      "tier": "read",
+      "category": "core",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
+      ]
+    },
+    {
+      "name": "list_productivity_tools",
       "tier": "read",
       "category": "core",
       "input_schema": {
@@ -4033,6 +4075,57 @@
             "maxLength": 200
           }
         },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
+      ]
+    },
+    {
+      "name": "google_email_send",
+      "tier": "ask-user",
+      "category": "productivity",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "to": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 320
+          },
+          "cc": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20
+          },
+          "subject": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 998
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100000
+          }
+        },
+        "required": [
+          "to",
+          "subject",
+          "body"
+        ],
         "additionalProperties": false,
         "$schema": "http://json-schema.org/draft-07/schema#"
       },

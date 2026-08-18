@@ -82,6 +82,12 @@ export const TABLE_SCHEMA = {
   agent_task: 'chat',
   // misc
   user_form_profile: 'users',
+  // users.integration_connections — safe Google connection metadata only. The
+  // refresh token is NOT here; `credential_item_id` / `vault_secret_key` are
+  // vault REFERENCES. Ownership is `owner_type` + `owner_user_id` /
+  // `organization_id` (NOT `created_by` — this table predates that template);
+  // RLS scopes the read, so no ownership filter belongs in the query.
+  integration_connections: 'users',
   admins: 'admin',
   definition: 'tool',
   model_definition: 'ai',

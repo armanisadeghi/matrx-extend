@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { GmailReviewCard } from '@/features/chat/GmailReviewCard';
 import { respondToAsk } from '@/hooks/use-tool-inbox';
 import type { AskUserResponse, PendingAskUserRequest, UserAskOption } from '@/lib/tools/types';
 import { useToolInbox } from '@/state/tool-inbox';
@@ -26,6 +27,18 @@ import { useEffect, useMemo, useState } from 'react';
 const OTHER_SENTINEL = '__matrx_other__';
 
 export function AgentAskUserCard({ req }: { req: PendingAskUserRequest }) {
+  // `email_review` is not one of the `user` tool's question types — it is the
+  // reviewed-Gmail consent surface raised by `google_email_send`, which rides
+  // this same request/response channel (and its conversation routing, expiry
+  // and cancel semantics) rather than growing a second inbox. Route it out
+  // before any of the question machinery below runs.
+  if (req.kind === 'email_review') {
+    return <GmailReviewCard req={req} />;
+  }
+  return <AgentQuestionCard req={req} />;
+}
+
+function AgentQuestionCard({ req }: { req: PendingAskUserRequest }) {
   const [text, setText] = useState('');
   const [choice, setChoice] = useState<string | null>(null);
   const [multi, setMulti] = useState<Set<string>>(() => new Set());

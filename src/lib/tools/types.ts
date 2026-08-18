@@ -249,6 +249,33 @@ export interface UserAskOption {
   preview?: string | undefined;
 }
 
+/**
+ * A message the agent composed and the user has NOT approved. Carried on an
+ * `email_review` ask so `<GmailReviewCard>` can render every field editable.
+ *
+ * Nothing here is authorization — it is a proposal. The card is the boundary:
+ * the send posts what is on screen when the user clicks, not these values.
+ */
+export interface EmailReviewDraft {
+  /** The connected Google account the message would be sent FROM. */
+  connectionId: string;
+  /** Display-only; the server resolves the real sender from the connection. */
+  fromEmail: string | null;
+  to: string;
+  cc: string[];
+  subject: string;
+  body: string;
+}
+
+/**
+ * Kinds a pending card can be. `email_review` is NOT one of the `user` ask
+ * tool's types — it is the reviewed-Gmail consent surface raised by
+ * `google_email_send`, which reuses this request/response channel (and its
+ * conversation routing, expiry and cancel semantics) rather than growing a
+ * second inbox.
+ */
+export type PendingAskKind = UserAskKind | 'email_review';
+
 export interface PendingAskUserRequest {
   callId: string;
   /**
@@ -261,7 +288,9 @@ export interface PendingAskUserRequest {
    * hanging the call until timeout.
    */
   conversationId?: string | null;
-  kind: UserAskKind;
+  kind: PendingAskKind;
+  /** Required for kind 'email_review' — the message awaiting review. */
+  email?: EmailReviewDraft | undefined;
   /** Required for confirm / choice / choice_many / text / secret. */
   question?: string | undefined;
   /**
@@ -321,8 +350,25 @@ export interface PendingAskUserRequest {
  * cancelled, timed_out }` shape the wire contract spells out) from this.
  * Fields that don't apply to a kind are left undefined / null.
  */
+/**
+ * Proof of what actually left the mailbox. Set ONLY by `<GmailReviewCard>`,
+ * ONLY after aidream accepted the send, and describes the fields as the user
+ * left them — which is why the tool result echoes these and not the agent's
+ * original arguments.
+ */
+export interface SentEmailReceipt {
+  message_id: string;
+  to: string;
+  cc: string[];
+  subject: string;
+  /** True when the user changed any field before sending. */
+  edited: boolean;
+}
+
 export interface AskUserResponse {
   callId: string;
+  /** kind 'email_review' only — present iff a message was really sent. */
+  sent_email?: SentEmailReceipt;
   /** text / secret types — user's freeform text. */
   answer?: string | null;
   /** choice / choice_many — selected option labels. */

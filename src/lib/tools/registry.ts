@@ -33,10 +33,12 @@ import { data_pattern_handlers } from '@/lib/tools/handlers/data-patterns';
 import { demo_handlers } from '@/lib/tools/handlers/demos';
 import { discover_handlers } from '@/lib/tools/handlers/discover';
 import { download_handlers } from '@/lib/tools/handlers/downloads';
+import { education_handlers } from '@/lib/tools/handlers/education';
 import { extract_handlers } from '@/lib/tools/handlers/extract';
 import { extras_handlers } from '@/lib/tools/handlers/extras';
 import { fetch_handlers } from '@/lib/tools/handlers/fetch';
 import { form_action_handlers, form_read_handlers } from '@/lib/tools/handlers/forms';
+import { google_handlers } from '@/lib/tools/handlers/google-email-send';
 import { guidance_handlers } from '@/lib/tools/handlers/guidance';
 import { highlight_handlers } from '@/lib/tools/handlers/highlights';
 import { inspect_handlers } from '@/lib/tools/handlers/inspect';
@@ -53,7 +55,6 @@ import {
 import { page_ref_handlers } from '@/lib/tools/handlers/page-refs';
 import { parallel_handlers } from '@/lib/tools/handlers/parallel';
 import { privileged_handlers, privileged_read_handlers } from '@/lib/tools/handlers/privileged';
-import { education_handlers } from '@/lib/tools/handlers/education';
 import { prospect_handlers } from '@/lib/tools/handlers/prospects';
 import { read_handlers } from '@/lib/tools/handlers/read';
 import { record_handlers } from '@/lib/tools/handlers/record';
@@ -95,6 +96,8 @@ const ALL: AnyToolHandler[] = [
   ...prospect_handlers,
   // ─── education capture (IC-11 — the one deck import door) ──────────────
   ...education_handlers,
+  // ─── google workspace (the reviewed Gmail send — client-only BY DESIGN) ─
+  ...google_handlers,
   // ─── memory ────────────────────────────────────────────────────────────
   ...memory_handlers,
   // ─── optional-permission tools ─────────────────────────────────────────

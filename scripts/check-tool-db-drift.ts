@@ -90,6 +90,15 @@ interface DbBindingRow {
 interface DbSurfaceDefaultsRow {
   surface_name: string;
   always_include_tools: string[] | null;
+  /**
+   * Bundles the surface pulls in wholesale. The server resolves membership from
+   * `platform.associations` (source_id = tool id, target_id = bundle id), which
+   * the publishable key CANNOT read — so this script can see THAT a bundle is
+   * declared but not WHAT is in it. See `bundleSuppliedNote` below: rather than
+   * guess in either direction, a tool missing from `always_include_tools` while
+   * a bundle is declared is reported as UNVERIFIED, never as absent.
+   */
+  always_include_bundles: string[] | null;
   never_include_tools: string[] | null;
 }
 
@@ -145,7 +154,7 @@ async function fetchSurfaceDefaults(url: string, key: string): Promise<DbSurface
   return fetchPublicJson<DbSurfaceDefaultsRow[]>(
     url,
     key,
-    `surface_defaults?or=(surface_name.eq.${encodeURIComponent(ASSISTANT_SURFACE)},surface_name.eq.${encodeURIComponent(PILOT_SURFACE)})&select=surface_name,always_include_tools,never_include_tools`,
+    `surface_defaults?or=(surface_name.eq.${encodeURIComponent(ASSISTANT_SURFACE)},surface_name.eq.${encodeURIComponent(PILOT_SURFACE)})&select=surface_name,always_include_tools,always_include_bundles,never_include_tools`,
     'tool',
   );
 }
@@ -354,8 +363,10 @@ async function main(): Promise<void> {
   // surfaced to the model.
   const surfaceIncluded = new Set<string>();
   const surfaceExcluded = new Map<string, Set<string>>();
+  const declaredBundles = new Set<string>();
   for (const s of dbSurfaces) {
     for (const n of s.always_include_tools ?? []) surfaceIncluded.add(n);
+    for (const b of s.always_include_bundles ?? []) declaredBundles.add(b);
     if (s.never_include_tools?.length) {
       surfaceExcluded.set(s.surface_name, new Set(s.never_include_tools));
     }
@@ -367,6 +378,7 @@ async function main(): Promise<void> {
   const dbInactive: string[] = [];
   const missingBinding: string[] = [];
   const missingSurface: string[] = [];
+  const unverifiedSurface: string[] = [];
   const excludedSurface: Array<{ name: string; surfaces: string[] }> = [];
 
   for (const [name, l] of localByName) {
@@ -388,7 +400,11 @@ async function main(): Promise<void> {
     // `tool_surface_defaults.always_include_tools` for at least one
     // chrome-extension/* surface, else the discovery handler never
     // shows it to the LLM.
-    if (!surfaceIncluded.has(name)) missingSurface.push(name);
+    if (!surfaceIncluded.has(name)) {
+      // A declared bundle may well supply it — we just cannot prove it here.
+      if (declaredBundles.size) unverifiedSurface.push(name);
+      else missingSurface.push(name);
+    }
 
     // Defensive: if a surface explicitly EXCLUDES the tool, that's a
     // misconfig the resolver will respect — flag it loudly.
@@ -521,6 +537,17 @@ async function main(): Promise<void> {
     );
     for (const n of missingSurface) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log('  Discovery handler will not surface these to the LLM on either chat path.');
+    console.log('');
+  }
+
+  if (unverifiedSurface.length) {
+    console.log(
+      `${YELLOW}⚠ Surface inclusion UNVERIFIED (${unverifiedSurface.length}) — not in always_include_tools, but chrome-extension/{assistant,pilot} declare bundle(s) [${[...declaredBundles].join(', ')}] whose membership the publishable key cannot read:${RESET}`,
+    );
+    for (const n of unverifiedSurface) console.log(`    ${DIM}-${RESET} ${n}`);
+    console.log(
+      '  Confirm the tool really is a member of one of those bundles (tool.bundle + platform.associations).',
+    );
     console.log('');
   }
 

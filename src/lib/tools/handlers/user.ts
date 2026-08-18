@@ -506,7 +506,7 @@ export const user_handlers = [user, request_user_takeover, update_plan];
  * resolves to the response otherwise. Cancellation comes through as a
  * normal response with `cancelled: true`.
  */
-function awaitUserResponse(
+export function awaitUserResponse(
   request: PendingAskUserRequest,
   timeoutMs: number | null,
 ): Promise<AskUserResponse | 'timed_out'> {

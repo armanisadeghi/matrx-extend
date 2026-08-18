@@ -464,6 +464,53 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
+  // ─── Google Workspace ─────────────────────────────────────────────────
+  // Server-executed (executor `aidream`); the extension has no handler for it,
+  // only this row config. The action is what matters — "Google Workspace" alone
+  // says nothing about whether a doc was read or a sheet overwritten.
+  google_workspace: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'FileText', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Google Workspace',
+        completed: 'Google Workspace',
+        error: 'Google Workspace failed',
+      },
+      name: { path: 'args.action', transform: 'snakeToTitle' },
+      color: { started: 'primary', completed: 'blue', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
+  // The reviewed Gmail send. The consent surface is <GmailReviewCard>, which
+  // renders as a pending ask; this row is the AFTER record, so it must never
+  // read as "sent" when it wasn't — declined and cancelled are normal results.
+  google_email_send: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Mail', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Waiting for you to review an email to',
+        completed: 'Email to',
+        error: 'Email not sent —',
+      },
+      name: { path: 'args.to', fallback: '' },
+      info: { completed: { path: 'result.subject', fallback: '' } },
+      color: { started: 'amber', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+    results: {
+      displayType: 'custom',
+      keysInfo: [
+        { key: 'sent', component: 'BoldLabel' },
+        { key: 'declined', component: 'BoldLabel' },
+        { key: 'cancelled', component: 'BoldLabel' },
+        { key: 'edited', component: 'BoldLabel' },
+        { key: 'from_email', component: 'BoldLabel' },
+        { key: 'error', component: 'BoldLabel', className: 'text-red-600 dark:text-red-400' },
+      ],
+    },
+  },
+
   submit_form: {
     inline: {
       icon: { started: 'Loader2', completed: 'SendHorizontal', error: 'AlertTriangle' },

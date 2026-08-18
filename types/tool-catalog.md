@@ -1,14 +1,14 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-08-18T05:58:55.127Z
+Generated: 2026-08-18T20:32:08.734Z
 
-- **Total tools:** 165
-- **Assistant bundle:** 73 tools (read-only)
-- **Pilot bundle:** 139 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 165 tools
+- **Total tools:** 167
+- **Assistant bundle:** 74 tools (read-only)
+- **Pilot bundle:** 141 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 167 tools
 
 
-## Tier: read (73)
+## Tier: read (74)
 
 ### `list_browser_tools`
 
@@ -266,6 +266,21 @@ Generated: 2026-08-18T05:58:55.127Z
 ```
 
 ### `list_education_tools`
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_productivity_tools`
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -4118,7 +4133,49 @@ Generated: 2026-08-18T05:58:55.127Z
 }
 ```
 
-## Tier: ask-user (3)
+## Tier: ask-user (4)
+
+### `google_email_send`
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "to": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 320
+    },
+    "cc": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 998
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100000
+    }
+  },
+  "required": [
+    "to",
+    "subject",
+    "body"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
 
 ### `user`
 

@@ -52,6 +52,12 @@ const ALLOWED_NON_CANONICAL = new Set<string>([
   'ctx_get',
   'interaction_ask',
   'tasks',
+  // google_workspace runs on the SERVER (executor `aidream`), so there is no
+  // handler here and it is not in CANONICAL_SURFACE — but it is advertised on
+  // the extension surfaces via the `google` bundle, so its calls do appear in
+  // this timeline and need a row config. (Its sibling `google_email_send` IS
+  // canonical: that one is client-only by design.)
+  'google_workspace',
   // granular handlers folded into mega-tools but still appearing in older
   // timelines / direct Tools-tab runs
   'click_element',
