@@ -253,10 +253,24 @@ Arman plus dozens of concurrent agents (across two machines) edit these repos si
   - **Scope boundary (approved, do not exceed):** `drive.file` (only files the user picks or
     that AI Matrx creates), `gmail.send` (one reviewed message), `webmasters.readonly`,
     identity. Never Drive browsing, never Gmail reading, never a new scope.
+  - **How it reaches the agent** — and this is worth knowing before you edit any surface
+    row: the extension's always-on set is **every tool with an active `chrome-extension`
+    binding**. `_build_auto_load_specs` in aidream's `matrx_ai/capabilities/browser_dom.py`
+    says so explicitly ("No surface-defaults lookup is needed") and never reads
+    `tool.surface_defaults`. So the `tool.binding` row IS the advertisement here — it takes
+    effect on the next `POST /admin/tool-routing/cache-bust` (or server restart), because
+    that spec list is process-cached.
   - Its sibling **`google_workspace`** (Docs/Sheets + `prepare_email`) is **server-executed**
-    (executor `aidream`) — the extension has no handler for it, only a chat row config. Both
-    reach the extension surfaces through the `google` bundle in
-    `tool.surface_defaults.always_include_bundles`.
+    (executor `aidream`) — the extension has no handler for it, only a chat row config, and
+    it is **not reachable from extension conversations today**. The `google` bundle was added
+    to `chrome-extension/{assistant,pilot}`'s `always_include_bundles`, but that array is only
+    read by `resolve_surface_manifest`, which runs only when a request declares
+    `client.surface` — and this extension declares `capabilities: ['browser-dom']` with the
+    surface nested in `client.state['browser-dom'].surface` instead. **Open work:** have the
+    extension declare `client.surface: 'chrome-extension/{assistant,pilot}'` (both
+    `ui.ui_surface` rows exist and point at the `chrome-extension` executor) so bundles and
+    surface defaults apply here the way they do on `matrx-user/chat`. Until then, adding a
+    tool to a bundle does nothing for this client — add the binding.
   - Cross-repo contract:
     `/Users/armanisadeghi/code/common-docs/projects/google-oauth-verification/PRODUCTION-ROLLOUT.md`
     · web-app twin: matrx-frontend `features/google-workspace/`. Tests:
