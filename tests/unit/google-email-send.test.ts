@@ -29,6 +29,11 @@ let connection: {
   accountName: string | null;
 } | null = { connectionId: 'conn-1', accountEmail: 'me@example.com', accountName: 'Me' };
 
+let signedIn = true;
+vi.mock('@/lib/auth/flow', () => ({
+  getAccessToken: async () => (signedIn ? 'jwt-token' : null),
+}));
+
 vi.mock('@/lib/google/connection', () => ({
   GMAIL_SEND_SCOPE: 'https://www.googleapis.com/auth/gmail.send',
   GOOGLE_WORKSPACE_SETTINGS_URL: 'https://aimatrx.com/user-settings/integrations/google-workspace',
@@ -71,6 +76,7 @@ async function run(args: Record<string, unknown> = ARGS) {
 
 beforeEach(() => {
   raised.length = 0;
+  signedIn = true;
   connection = { connectionId: 'conn-1', accountEmail: 'me@example.com', accountName: 'Me' };
   reply = { callId: 'call-1', cancelled: true };
 });
@@ -97,6 +103,14 @@ describe('the handler proposes; it never sends', () => {
     // A dynamic tier would mean some argument combination could route around
     // the card. There must not be one.
     expect(google_email_send.tierFor).toBeUndefined();
+  });
+
+  it('tells a signed-out user to sign in — the connection is not even readable', async () => {
+    signedIn = false;
+    const result = await run();
+    expect(raised).toHaveLength(0);
+    expect(result.sent).toBe(false);
+    expect(String(result.error)).toContain('Sign in');
   });
 
   it('refuses before raising anything when no mailbox is connected', async () => {

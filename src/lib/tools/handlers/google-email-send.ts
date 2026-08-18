@@ -25,6 +25,7 @@
  * tool name, same result shape, same refusals. Two surfaces, one contract.
  */
 
+import { getAccessToken } from '@/lib/auth/flow';
 import { resolveGmailSendConnection } from '@/lib/google/connection';
 import { awaitUserResponse } from '@/lib/tools/handlers/user';
 import type { PendingAskUserRequest, ToolHandler } from '@/lib/tools/types';
@@ -71,6 +72,18 @@ export const google_email_send: ToolHandler<GoogleEmailSendArgs, GoogleEmailSend
   tier: 'ask-user',
   argsSchema: GoogleEmailSendArgs,
   run: async (args, ctx) => {
+    // The extension treats a guest fingerprint identity as first-class almost
+    // everywhere; Google connections are one of the places it is NOT. The RLS
+    // policy on users.integration_connections excludes anonymous JWTs outright,
+    // so a guest would otherwise get the "connect an account" refusal and be
+    // sent to connect one they cannot see. Say the true thing instead.
+    if ((await getAccessToken()) === null) {
+      return {
+        sent: false,
+        error: 'Sign in to AI Matrx to send from your connected Google account.',
+      };
+    }
+
     const mailbox = await resolveGmailSendConnection();
     if (!mailbox) {
       // A refusal the user can act on — never a silent failure, and never a send.

@@ -7,8 +7,8 @@
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-08-18T05:58:56.229Z
-Total tools: 80
+Generated: 2026-08-18T20:41:43.044Z
+Total tools: 81
 
 ## ai
 
@@ -477,6 +477,16 @@ _action_
 Remember something about a domain so it shows up in `domain_memo` context on every future visit. Use for site-specific lessons: "the PO submit button is the third primary", "DOB format is MM/DD/YYYY here", "this site requires SSO via Okta". Notes are free-form prose; hints are structured key/value pairs you can look up by name. Memos on a parent domain (e.g., atlassian.net) automatically apply to subdomains. Returns the updated memo so you can see what is remembered now.
 
 **Parameters:** `note` (string); `hints` (object); `domain` (string, required)
+
+## productivity
+
+### `google_email_send`
+
+_read_
+
+Show the user one Gmail message and let THEM send it. Pass the exact recipient, subject and body you want sent (use google_workspace prepare_email first to compose it). AI Matrx renders that message to the user, who may edit any field and must explicitly confirm before anything is sent from their Gmail account. You cannot confirm on their behalf and there is no argument that skips the review. Returns {sent:true, message_id, to, subject, edited} once the user sends, or {sent:false, declined:true} if they decline — treat a decline as a normal outcome and ask what to change.
+
+**Parameters:** `cc` (array); `to` (string, required); `body` (string, required); `subject` (string, required)
 
 ## reading
 

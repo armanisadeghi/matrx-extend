@@ -2095,6 +2095,40 @@ Every entry follows this shape:
   - A Quizlet page whose hydration shape changed → DOM fallback may still find pairs; if
     not, the error names both strategies.
 
+### Reviewed Gmail send (`google_email_send` — productivity)
+- **What it does:** the agent composes ONE email and stops. A review card shows the sender
+  account, To, Cc, Subject and Message — all editable — and the message is sent only when the
+  user presses Send, with the fields as they stand at that moment. The tool has no server
+  executor anywhere in the platform: this card is the only way a message can leave the mailbox.
+- **Where to test:** chat. Ask "email jane@example.com asking to reschedule Thursday".
+- **Prereq:** signed in, with a Google account connected that has `gmail.send`
+  (aimatrx.com → Settings → Integrations → Google Workspace).
+- **Steps:**
+  1. Ask the agent to email someone. Expect a **Review before sending** card with the subject
+     as its title and "From <your account>" beneath it. Nothing has been sent.
+  2. Edit the body (and/or To / Cc / Subject). Press **Send**. Expect the card to disappear and
+     the chat row to read "Email to <recipient>" — and the message to be in Gmail's Sent
+     folder with YOUR edits, not the agent's original wording.
+  3. Ask again, then press **Don't send**. Expect the agent to be told you declined and to
+     carry on normally — this is not an error.
+- **Expected:** no send without a click; no "always send" / "remember this" affordance
+  anywhere on the card; the tool result reports `edited: true` when you changed anything.
+- **Edge cases worth poking:**
+  - Signed out → "Sign in to AI Matrx to send from your connected Google account", no card.
+  - Signed in with no Google account connected (or one without `gmail.send`) → a refusal
+    naming Settings → Integrations → Google Workspace, no card.
+  - **Make the send fail** (disconnect the account in another tab, then press Send) → the card
+    STAYS OPEN, shows the error plus "Nothing was sent", and the agent is not told it sent.
+  - Dismiss the card → the agent sees `cancelled`, not a decline and not a send.
+  - Leave the card for 15 minutes → it disappears and the run reports `cancelled`.
+
+### Google Workspace (`google_workspace` — server-executed)
+- **What it does:** Docs/Sheets work on files the user picked or AI Matrx created. It runs on
+  aidream, not in the extension — only its chat row is defined here.
+- **Where to test:** chat. "Make me a Google Doc called Notes with today's summary."
+- **Expected:** the row reads "Google Workspace — Create Document" (the ACTION, not a generic
+  label) and the result renders as fields, not raw JSON. Nothing in the extension executes it.
+
 ## Template (copy when adding a new entry)
 
 ```markdown

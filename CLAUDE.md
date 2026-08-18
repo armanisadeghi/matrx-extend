@@ -16,7 +16,7 @@ Arman plus dozens of concurrent agents (across two machines) edit these repos si
 
 > Cross-repo system-of-record for the underlying Content IR / Shape system, including current render vocabulary coverage and the requirements for kind-bound tool/workflow I/O: `/Users/armanisadeghi/code/common-docs/systems/content-ir-system/FEATURE.md` — read it with the pipeline plan before adding a structured block or result type here.
 
-> 🚨 **THE CLIENT LAW + Mandates — read before writing any code that decides WHICH agent runs.** Which agent (and which version, and which model) is a **DATABASE** answer resolved at run time, never a constant in this repo. This extension currently has **ZERO Mandate coverage** and holds hardcoded agent UUIDs (`AiExtractTab.tsx`, `lib/agenda/constants.ts`), and a client setting was documented as "the platform's single answer to which agent" — it is not. Ask BY NAME (`mandate_key`) and let the platform resolve; a client-side ladder ending in a hardcoded constant is a private reimplementation that silently ignores admin repins and every org/user binding. Canon: `/Users/armanisadeghi/code/common-docs/systems/mandates/RUNTIME.md` (THE UNIVERSAL LAW + the exception policy — exactly one exception exists platform-wide and nothing here qualifies) · why clients specifically keep drifting, and the structural fix: `/Users/armanisadeghi/code/common-docs/policies/clients-consume-never-reimplement.md` · this repo's open rows E1/E2: `/Users/armanisadeghi/code/common-docs/systems/mandates/ROLLOUT.md`.
+> 🚨 **THE CLIENT LAW + Mandates — read before writing any code that decides WHICH agent runs.** Which agent (and which version, and which model) is a **DATABASE** answer resolved at run time, never a constant in this repo. This extension currently has **ZERO Mandate coverage** and holds hardcoded agent UUIDs (`AiExtractTab.tsx`, `lib/agenda/constants.ts`), and a client setting was documented as "the platform's single answer to which agent" — it is not. Ask BY NAME (`mandate_key`) and let the platform resolve; a client-side ladder ending in a hardcoded constant is a private reimplementation that silently ignores admin rebinds and every org/user binding. Canon: `/Users/armanisadeghi/code/common-docs/systems/mandates/RUNTIME.md` (THE UNIVERSAL LAW + the exception policy — exactly one exception exists platform-wide and nothing here qualifies) · why clients specifically keep drifting, and the structural fix: `/Users/armanisadeghi/code/common-docs/policies/clients-consume-never-reimplement.md` · this repo's open rows E1/E2: `/Users/armanisadeghi/code/common-docs/systems/mandates/ROLLOUT.md`.
 
 > Cross-repo system-of-record for the TOKEN BROKER (scoped short-lived credentials for privileged reach — provider realtime sessions, direct provider calls): `/Users/armanisadeghi/code/common-docs/systems/token-broker/FEATURE.md` — read it before touching this feature in ANY repo. **Client primitive SHIPPED 2026-07-12**: [src/lib/broker/](./src/lib/broker/) (its FEATURE.md is the repo contract) — SW-owned in-memory cache via `CHANNELS.BROKER_*`, `useBroker()` hook, admin **Broker** demo tab, repo skill `.claude/skills/token-broker-client/`. Consume through the primitive — never hand-roll a mint call, cache, or gateway URL; new server-side audiences need zero client changes.
 
@@ -219,6 +219,48 @@ Arman plus dozens of concurrent agents (across two machines) edit these repos si
   - **Captures a COMPANY, never a person.** Contact capture is a separate,
     unbuilt tool owned by the enrichment work package.
   - Cross-repo contract: `/Users/armanisadeghi/code/common-docs/projects/outreach-system/INTEGRATION_MAP.md` (IC-10) · server contract: `/Users/armanisadeghi/code/aidream/aidream/services/seo/FEATURE.md` § Browser prospect capture.
+- **Reviewed Gmail send — `google_email_send` (2026-08-18)** — the agent composes ONE
+  email and stops; the user sends it.
+  - 🚨 **The card IS the authorization.** This tool has **no server executor anywhere in
+    the platform** — its only `tool.binding` rows are CLIENT runtimes (`matrx-user` for the
+    web app, `chrome-extension` for this one). That absence is the Gmail boundary, not an
+    oversight: there is no server path an agent could take to send mail, and no argument it
+    can set that stands in for consent. **Never add a server binding, and never add a
+    `user_confirmed`-style argument** — the agent must have no vocabulary for consent.
+  - [GmailReviewCard.tsx](./src/features/chat/GmailReviewCard.tsx) shows the sender account,
+    To, Cc, Subject and Message with **every field editable**, and its Send button posts
+    exactly what is on screen at that moment — never the agent's arguments once the user has
+    edited them. There is deliberately **no "always send", no remembered domain, and no path
+    that sends without a click** (note the contrast with action-tier tools, where "allow +
+    remember for this conversation" is offered — that must never exist for sending mail).
+    Approval covers ONE message. A failed send leaves the card OPEN saying nothing was sent.
+  - [handlers/google-email-send.ts](./src/lib/tools/handlers/google-email-send.ts) is
+    `ask-user` tier: it resolves the mailbox, raises an `email_review` pending ask on the
+    normal `TOOL_ASK_USER_REQUEST` channel, and reports the outcome. **It sends nothing** —
+    grep-guarded. Declining is a normal outcome (`{sent:false, declined:true}`), dismissal
+    and expiry are `cancelled`, and a `confirmed` with no send receipt is reported as a
+    FAILURE — a send we cannot evidence is never reported as success.
+  - The ONE door is `POST /api/google-workspace/gmail/send-reviewed`
+    ([routes/google-workspace.ts](./src/lib/api/routes/google-workspace.ts)), real user JWT
+    only. `user_confirmed: true` is a literal at that single call site, reached only from
+    the Send button (test: exactly one occurrence, never in the handler or the card).
+  - **No new OAuth client and no new token store.** The mailbox comes from
+    [lib/google/connection.ts](./src/lib/google/connection.ts), which reads SAFE metadata
+    from `users.integration_connections` (status + credential reference + `gmail.send`
+    scope) — the refresh token stays in aidream's vault. RLS on that table excludes
+    anonymous JWTs, so a guest is told to sign in rather than to connect an account they
+    could not see.
+  - **Scope boundary (approved, do not exceed):** `drive.file` (only files the user picks or
+    that AI Matrx creates), `gmail.send` (one reviewed message), `webmasters.readonly`,
+    identity. Never Drive browsing, never Gmail reading, never a new scope.
+  - Its sibling **`google_workspace`** (Docs/Sheets + `prepare_email`) is **server-executed**
+    (executor `aidream`) — the extension has no handler for it, only a chat row config. Both
+    reach the extension surfaces through the `google` bundle in
+    `tool.surface_defaults.always_include_bundles`.
+  - Cross-repo contract:
+    `/Users/armanisadeghi/code/common-docs/projects/google-oauth-verification/PRODUCTION-ROLLOUT.md`
+    · web-app twin: matrx-frontend `features/google-workspace/`. Tests:
+    `tests/unit/google-email-send.test.ts`.
 - **Agent-safe browser login — `credential_login` (2026-07-26)** — the agent
   asks for a login and never learns the credential. One action-tier handler
   ([src/lib/tools/handlers/credential-login.ts](./src/lib/tools/handlers/credential-login.ts))
