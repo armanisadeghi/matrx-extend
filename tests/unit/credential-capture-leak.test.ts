@@ -52,7 +52,12 @@ vi.mock('@/lib/debug/log', () => {
       logCalls.push({ level, source, message, detail, tag });
     };
   return {
-    log: { info: record('info'), success: record('success'), warn: record('warn'), error: record('error') },
+    log: {
+      info: record('info'),
+      success: record('success'),
+      warn: record('warn'),
+      error: record('error'),
+    },
     captureError: (e: unknown) => ({ message: String(e) }),
   };
 });
@@ -156,7 +161,16 @@ describe('capture_credential — the SW handler never sees a value', () => {
     const { cap } = await importFresh();
     postImpl = async (path) => {
       if (path.endsWith('/capture-context')) {
-        return { ok: true, status: 200, data: { branch: 'unknown', normalized_origin: PAGE_ORIGIN, recipe: null, guidance: 'document it' } };
+        return {
+          ok: true,
+          status: 200,
+          data: {
+            branch: 'unknown',
+            normalized_origin: PAGE_ORIGIN,
+            recipe: null,
+            guidance: 'document it',
+          },
+        };
       }
       return { ok: false, status: 404, error: 'unmocked' };
     };
@@ -188,6 +202,13 @@ describe('capture_credential — the SW handler never sees a value', () => {
     const req = broadcasts.find((b) => b.kind === 'tool:capture-credential-request');
     expect(req).toBeTruthy();
     expect(JSON.stringify(req?.payload)).not.toContain('value');
+
+    // The request carries a future expiry — the card refuses a late Save past it
+    // (the tool returns `timed_out` to the agent at that moment), so a stale card
+    // can never write a credential after the agent moved on.
+    const expiresAt = (req?.payload as { expires_at_ms?: number }).expires_at_ms;
+    expect(typeof expiresAt).toBe('number');
+    expect(expiresAt).toBeGreaterThan(Date.now());
   });
 
   it('arguments schema has no value field on any variant', async () => {
@@ -214,7 +235,11 @@ describe('capture_credential — the SW handler never sees a value', () => {
       onRemoved: { addListener: () => {} },
     };
     const result = await cap.capture_credential.run(
-      { action: 'capture', display_name: 'x', fields: [{ field_key: 'password', selector: '#p' }] } as never,
+      {
+        action: 'capture',
+        display_name: 'x',
+        fields: [{ field_key: 'password', selector: '#p' }],
+      } as never,
       ctx,
     );
     expect(result.status).toBe('unsafe_destination');
@@ -226,17 +251,34 @@ describe('capture_credential — the SW handler never sees a value', () => {
     const { cap } = await importFresh();
     postImpl = async (path) =>
       path.endsWith('/capture-context')
-        ? { ok: true, status: 200, data: { branch: 'unknown', normalized_origin: PAGE_ORIGIN, recipe: null, guidance: 'x' } }
+        ? {
+            ok: true,
+            status: 200,
+            data: {
+              branch: 'unknown',
+              normalized_origin: PAGE_ORIGIN,
+              recipe: null,
+              guidance: 'x',
+            },
+          }
         : { ok: false, status: 404, error: 'unmocked' };
     // Disable the auto-success responder; we will cancel manually.
     autoRespond = false;
     const runP = cap.capture_credential.run(
-      { action: 'capture', display_name: 'x', fields: [{ field_key: 'password', selector: '#p' }] } as never,
+      {
+        action: 'capture',
+        display_name: 'x',
+        fields: [{ field_key: 'password', selector: '#p' }],
+      } as never,
       ctx,
     );
     // Wait until the handler has broadcast its capture request + registered
     // its listener, then answer with a cancel.
-    for (let i = 0; i < 100 && !broadcasts.some((b) => b.kind === 'tool:capture-credential-request'); i++) {
+    for (
+      let i = 0;
+      i < 100 && !broadcasts.some((b) => b.kind === 'tool:capture-credential-request');
+      i++
+    ) {
       await new Promise((r) => setTimeout(r, 5));
     }
     captureResponder?.({ callId: ctx.callId, cancelled: true });
@@ -298,7 +340,17 @@ describe('captureCredential vault route — value goes to the write body only', 
     const { vault } = await importFresh();
     postImpl = async (path) =>
       path.endsWith('/recipe-proposal')
-        ? { ok: true, status: 200, data: { status: 'proposed', recipe_id: null, normalized_origin: PAGE_ORIGIN, provenance: 'human', recipe: {} } }
+        ? {
+            ok: true,
+            status: 200,
+            data: {
+              status: 'proposed',
+              recipe_id: null,
+              normalized_origin: PAGE_ORIGIN,
+              provenance: 'human',
+              recipe: {},
+            },
+          }
         : { ok: false, status: 404, error: 'unmocked' };
     const result = await vault.proposeLoginRecipe({
       normalized_origin: PAGE_ORIGIN,
