@@ -25,7 +25,7 @@ import { respondToCapture } from '@/hooks/use-tool-inbox';
 import { captureCredential } from '@/lib/api/routes/vault';
 import type { CaptureCredentialRequest } from '@/lib/tools/handlers/credential-capture';
 import { KeyRound, Loader2, ShieldCheck } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export function AgentCaptureCredentialCard({ req }: { req: CaptureCredentialRequest }) {
   // The user-typed values. Local component state ONLY — never persisted, never
@@ -34,6 +34,9 @@ export function AgentCaptureCredentialCard({ req }: { req: CaptureCredentialRequ
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expired, setExpired] = useState(false);
+  // Live mirror of `busy` for the expiry timer, whose closure would otherwise
+  // read a stale value. A write already in flight must OWN the SW response.
+  const busyRef = useRef(false);
 
   // Drop the typed values when the card unmounts (thread switch, submit, cancel).
   useEffect(() => {
@@ -53,6 +56,11 @@ export function AgentCaptureCredentialCard({ req }: { req: CaptureCredentialRequ
     }
     const t = setTimeout(() => {
       setExpired(true);
+      // A write already in flight OWNS the response — do not send a competing
+      // `cancelled` (that would resolve the SW as cancelled while the vault POST
+      // still lands, orphaning a website_login the agent never receives). The
+      // in-flight onSave resolves the outcome; here we only mark the UI expired.
+      if (busyRef.current) return;
       setValues({});
       respondToCapture(req.callId, { cancelled: true, reason: 'expired' });
     }, ms);
@@ -79,6 +87,7 @@ export function AgentCaptureCredentialCard({ req }: { req: CaptureCredentialRequ
       setValues({});
       return;
     }
+    busyRef.current = true;
     setBusy(true);
     setError(null);
     // Build the write payload. `field_values` is the only place the plaintext
@@ -104,16 +113,23 @@ export function AgentCaptureCredentialCard({ req }: { req: CaptureCredentialRequ
     // Drop the plaintext the instant the request returns, success or failure.
     setValues({});
     if (!result.ok) {
+      busyRef.current = false;
       setBusy(false);
       setError('Could not save the credential. Please try again or cancel.');
       return;
     }
     const receipt = result.data;
     if (receipt.status !== 'captured') {
+      busyRef.current = false;
       setBusy(false);
       setError(receipt.detail ?? 'The credential could not be saved.');
       return;
     }
+    // The write committed — this response OWNS the outcome. `respondToCapture`
+    // funnels through awaitCapture's idempotent `finish`, so if the tool already
+    // timed out this is a harmless no-op; the credential is saved and the next
+    // login attempt discovers it via matches. Never a competing `cancelled`.
+    busyRef.current = false;
     respondToCapture(req.callId, {
       ok: true,
       credential_item_id: receipt.credential_item_id ?? null,
