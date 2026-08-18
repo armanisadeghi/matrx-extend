@@ -219,6 +219,160 @@ export async function reportBrowserLoginResult(
   }
 }
 
+// ── On-the-fly credential CAPTURE (D-11) ────────────────────────────────────
+//
+// The agent hit a login it has NO stored credential for. Instead of asking the
+// human to log in (and seeing the password), the tool shows the USER a box; the
+// user types; the value is written to the vault with the agent's metadata. The
+// agent never sees it.
+//
+// 🚨 The user-typed VALUES ride on `field_values` here, sent DIRECTLY from the
+// capture card's transient state to the server — they never pass through the
+// service worker, a tool argument, a tool result, or model context. This route
+// is `silent` because its request body carries plaintext.
+
+/** One field the agent identified. NAMES + selectors only — no value. */
+export interface CaptureFieldSpec {
+  field_key: string;
+  selector: string;
+  label?: string;
+  secret?: boolean;
+  step?: number;
+  clear_first?: boolean;
+}
+
+/** The known/unknown branch answer. Carries a recipe on `known`, never a value. */
+export interface CaptureContext {
+  branch: 'known' | 'unknown';
+  normalized_origin: string;
+  recipe: unknown | null;
+  guidance: string;
+}
+
+/** The receipt after a capture write. Field KEYS only — never a value. */
+export interface CaptureReceipt {
+  status: string;
+  credential_item_id?: string | null;
+  branch?: 'known' | 'unknown' | null;
+  field_keys: string[];
+  proceed: boolean;
+  recipe_id?: string | null;
+  recipe_version?: number | null;
+  login_attempt_id?: string | null;
+  propose_recipe: boolean;
+  guidance?: string | null;
+  detail?: string | null;
+}
+
+/** The metadata + user-typed values for a capture write. */
+export interface CaptureCredentialInput {
+  display_name: string;
+  login_url: string;
+  description?: string;
+  provider_key?: string;
+  fields: CaptureFieldSpec[];
+  submit_selector?: string;
+  uri_match_mode?: 'host' | 'exact' | 'never';
+  notes?: string;
+  /** field_key → the value the USER typed. Server-request memory only. */
+  field_values: Record<string, string>;
+}
+
+/**
+ * The known/unknown branch — does a login recipe exist for the CURRENT tab?
+ * Decrypts nothing; the origin is derived server-side from the real page URL.
+ */
+export async function fetchCaptureContext(pageUrl: string): Promise<VaultResult<CaptureContext>> {
+  log.info('api', '→ POST vault/browser-login/capture-context');
+  const r = await vaultPost<CaptureContext>(`${BASE}/capture-context`, { page_url: pageUrl });
+  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
+  const data = r.data;
+  if (!data || (data.branch !== 'known' && data.branch !== 'unknown')) {
+    return { ok: false, failure: { kind: 'server_error', status: 200 } };
+  }
+  return { ok: true, data };
+}
+
+/**
+ * Write a user-typed credential as a NEW vault item with the agent's metadata.
+ * `input.field_values` is plaintext travelling OUT to the server exactly once,
+ * from the capture card's local state; this module never retains it and never
+ * logs the body. Returns a value-free receipt.
+ */
+export async function captureCredential(
+  input: CaptureCredentialInput,
+): Promise<VaultResult<CaptureReceipt>> {
+  log.info('api', '→ POST vault/browser-login/capture');
+  const body = {
+    display_name: input.display_name,
+    login_url: input.login_url,
+    ...(input.description !== undefined ? { description: input.description } : {}),
+    ...(input.provider_key !== undefined ? { provider_key: input.provider_key } : {}),
+    fields: input.fields.map((f) => ({
+      field_key: f.field_key,
+      selector: f.selector,
+      ...(f.label !== undefined ? { label: f.label } : {}),
+      secret: f.secret ?? true,
+      step: f.step ?? 0,
+      clear_first: f.clear_first ?? true,
+    })),
+    ...(input.submit_selector !== undefined ? { submit_selector: input.submit_selector } : {}),
+    uri_match_mode: input.uri_match_mode ?? 'host',
+    ...(input.notes !== undefined ? { notes: input.notes } : {}),
+    field_values: input.field_values,
+  };
+  // Plaintext body: silent so a malformed 2xx cannot be quoted into the log.
+  const r = await vaultPost<CaptureReceipt>(`${BASE}/capture`, body, { silent: true });
+  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
+  const data = r.data;
+  if (!data || typeof data.status !== 'string') {
+    return { ok: false, failure: { kind: 'server_error', status: 200 } };
+  }
+  log.info('api', `← vault capture ${data.status}`);
+  return { ok: true, data };
+}
+
+/** A documented UNKNOWN login → a PROPOSED recipe. Selectors + signals only. */
+export interface LoginRecipeProposalInput {
+  normalized_origin: string;
+  match_pattern?: string;
+  provider_key?: string;
+  field_map: Array<{
+    step?: number;
+    selector: string;
+    field_key?: string;
+    literal_key?: string;
+    clear_first?: boolean;
+  }>;
+  submit?: Record<string, unknown>;
+  success_signals?: unknown[];
+  failure_signals?: unknown[];
+  challenge_signals?: unknown[];
+  notes?: string;
+}
+
+export interface LoginRecipeProposalResult {
+  status: string;
+  recipe_id?: string | null;
+  normalized_origin: string;
+  provenance: string;
+  recipe: unknown;
+}
+
+/** Propose a login recipe from the agent's documented experience of a site. */
+export async function proposeLoginRecipe(
+  input: LoginRecipeProposalInput,
+): Promise<VaultResult<LoginRecipeProposalResult>> {
+  log.info('api', '→ POST vault/browser-login/recipe-proposal');
+  const r = await vaultPost<LoginRecipeProposalResult>(`${BASE}/recipe-proposal`, input);
+  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
+  const data = r.data;
+  if (!data || typeof data.status !== 'string') {
+    return { ok: false, failure: { kind: 'server_error', status: 200 } };
+  }
+  return { ok: true, data };
+}
+
 // ── Item management (the Vault side panel) ──────────────────────────────────
 //
 // Everything below is MASKED. `VaultFieldSummary.value_hint` is a server-built

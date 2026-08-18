@@ -19,6 +19,7 @@
  * conversation switch as a hard reset.
  */
 
+import type { CaptureCredentialRequest } from '@/lib/tools/handlers/credential-capture';
 import type { PendingAskUserRequest, PendingConfirmRequest } from '@/lib/tools/types';
 import { create } from 'zustand';
 
@@ -31,14 +32,25 @@ export interface PendingAskInbox extends PendingAskUserRequest {
   conversationId: string | null;
 }
 
+/**
+ * A live credential-capture card. The user types into it; the card writes the
+ * value straight to the vault (never through the SW/model) and answers the SW.
+ */
+export interface PendingCaptureInbox extends CaptureCredentialRequest {
+  conversationId: string | null;
+}
+
 interface ToolInboxState {
   pendingConfirms: PendingConfirmInbox[];
   pendingAsks: PendingAskInbox[];
+  pendingCaptures: PendingCaptureInbox[];
 
   addConfirm: (req: PendingConfirmRequest, conversationId: string | null) => void;
   removeConfirm: (callId: string) => void;
   addAsk: (req: PendingAskUserRequest, conversationId: string | null) => void;
   removeAsk: (callId: string) => void;
+  addCapture: (req: CaptureCredentialRequest, conversationId: string | null) => void;
+  removeCapture: (callId: string) => void;
   /** Wipe everything (used on conversation switch / sign-out). */
   resetAll: () => void;
   /**
@@ -54,6 +66,7 @@ interface ToolInboxState {
 export const useToolInbox = create<ToolInboxState>((set) => ({
   pendingConfirms: [],
   pendingAsks: [],
+  pendingCaptures: [],
 
   addConfirm: (req, conversationId) =>
     set((s) => {
@@ -77,11 +90,22 @@ export const useToolInbox = create<ToolInboxState>((set) => ({
       pendingAsks: s.pendingAsks.filter((r) => r.callId !== callId),
     })),
 
-  resetAll: () => set({ pendingConfirms: [], pendingAsks: [] }),
+  addCapture: (req, conversationId) =>
+    set((s) => {
+      if (s.pendingCaptures.some((r) => r.callId === req.callId)) return s;
+      return { pendingCaptures: [...s.pendingCaptures, { ...req, conversationId }] };
+    }),
+  removeCapture: (callId) =>
+    set((s) => ({
+      pendingCaptures: s.pendingCaptures.filter((r) => r.callId !== callId),
+    })),
+
+  resetAll: () => set({ pendingConfirms: [], pendingAsks: [], pendingCaptures: [] }),
 
   clearForConversation: (conversationId) =>
     set((s) => ({
       pendingConfirms: s.pendingConfirms.filter((r) => r.conversationId !== conversationId),
       pendingAsks: s.pendingAsks.filter((r) => r.conversationId !== conversationId),
+      pendingCaptures: s.pendingCaptures.filter((r) => r.conversationId !== conversationId),
     })),
 }));

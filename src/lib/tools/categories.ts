@@ -400,6 +400,10 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   // Category comes from the DB (`tool.definition.category = 'credentials'`),
   // which is the source of truth — do not "tidy" this into `interaction`.
   credential_login: 'credentials',
+  // On-the-fly credential CAPTURE (D-11): the agent hit a login it has no stored
+  // credential for; the USER types into a box and the value is written to the
+  // vault with the agent's metadata. Category from the DB — do not re-classify.
+  capture_credential: 'credentials',
 
   // ─── crm (prospect capture — IC-10) ───────────────────────────────────
   capture_prospect: 'crm',

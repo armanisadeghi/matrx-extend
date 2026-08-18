@@ -14,6 +14,10 @@
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import type {
+  CaptureCredentialRequest,
+  CaptureCredentialResponse,
+} from '@/lib/tools/handlers/credential-capture';
+import type {
   AskUserResponse,
   ConfirmResponse,
   PendingAskUserRequest,
@@ -111,6 +115,18 @@ export function useToolInbox$Subscribe(): void {
         return { ack: true };
       },
     );
+    // On-the-fly credential CAPTURE (D-11): render a username/password box for
+    // the user. The card writes the typed value straight to the vault; the SW
+    // only ever learns the outcome.
+    const offCapture = on<CaptureCredentialRequest, { ack: true }>(
+      CHANNELS.TOOL_CAPTURE_CREDENTIAL_REQUEST,
+      (payload) => {
+        const conversationId =
+          payload.conversationId ?? useChatStore.getState().selectedConversationId;
+        useToolInbox.getState().addCapture(payload, conversationId);
+        return { ack: true };
+      },
+    );
     // Tool started/completed/error events route into the active assistant
     // message's parts array — that's what gets ordering right (tool entries
     // appear inline at the point they fired) AND conversation isolation
@@ -172,6 +188,7 @@ export function useToolInbox$Subscribe(): void {
       offConfirm();
       offExpired();
       offAsk();
+      offCapture();
       offTimeline();
     };
     return () => {
@@ -208,4 +225,18 @@ export function respondToAsk(callId: string, reply: Omit<AskUserResponse, 'callI
   useToolInbox.getState().removeAsk(callId);
   const res: AskUserResponse = { callId, ...reply };
   broadcast(CHANNELS.TOOL_ASK_USER_RESPONSE, res);
+}
+
+/**
+ * Answer a credential-capture card. The card has ALREADY written the credential
+ * (values went card → server directly); this only reports the outcome to the SW.
+ * NEVER carries a value.
+ */
+export function respondToCapture(
+  callId: string,
+  reply: Omit<CaptureCredentialResponse, 'callId'>,
+): void {
+  useToolInbox.getState().removeCapture(callId);
+  const res: CaptureCredentialResponse = { callId, ...reply };
+  broadcast(CHANNELS.TOOL_CAPTURE_CREDENTIAL_RESPONSE, res);
 }

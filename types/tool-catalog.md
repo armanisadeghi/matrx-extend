@@ -1,11 +1,11 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-08-18T05:58:55.127Z
+Generated: 2026-08-18T18:25:37.916Z
 
-- **Total tools:** 165
+- **Total tools:** 166
 - **Assistant bundle:** 73 tools (read-only)
-- **Pilot bundle:** 139 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 165 tools
+- **Pilot bundle:** 140 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 166 tools
 
 
 ## Tier: read (73)
@@ -1966,7 +1966,7 @@ Generated: 2026-08-18T05:58:55.127Z
 }
 ```
 
-## Tier: action (63)
+## Tier: action (64)
 
 ### `navigate_active_tab`
 
@@ -2984,6 +2984,237 @@ Generated: 2026-08-18T05:58:55.127Z
   },
   "additionalProperties": false,
   "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `capture_credential`
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "capture",
+        "propose_recipe"
+      ],
+      "default": "capture"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "provider_key": {
+      "type": "string"
+    },
+    "fields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field_key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "boolean"
+          },
+          "step": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "field_key",
+          "selector"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "submit_selector": {
+      "type": "string"
+    },
+    "field_map": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "selector": {
+            "type": "string",
+            "minLength": 1
+          },
+          "field_key": {
+            "type": "string"
+          },
+          "literal_key": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "selector"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "submit": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "success_signals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "selector_present",
+              "selector_absent",
+              "url_prefix",
+              "cookie_present",
+              "text_present"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "authenticated",
+              "challenged",
+              "rejected"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "value",
+          "direction"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "failure_signals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "selector_present",
+              "selector_absent",
+              "url_prefix",
+              "cookie_present",
+              "text_present"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "authenticated",
+              "challenged",
+              "rejected"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "value",
+          "direction"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "challenge_signals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "selector_present",
+              "selector_absent",
+              "url_prefix",
+              "cookie_present",
+              "text_present"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "authenticated",
+              "challenged",
+              "rejected"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "value",
+          "direction"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
 ```

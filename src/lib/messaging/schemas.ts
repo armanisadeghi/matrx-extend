@@ -62,6 +62,14 @@ export const CHANNELS = {
   TOOL_CONFIRM_EXPIRED: 'tool:confirm-expired',
   TOOL_ASK_USER_REQUEST: 'tool:ask-user-request', // SW → sidepanel: agent asked the user a question
   TOOL_ASK_USER_RESPONSE: 'tool:ask-user-response', // sidepanel → SW: user's answer
+  // On-the-fly credential CAPTURE (D-11): the agent hit a login with no stored
+  // credential. SW → sidepanel: render a username/password box for the USER.
+  // The user types; the CARD writes the values straight to the vault (they never
+  // return to the SW/model) and posts back only { callId, item_id, branch,
+  // propose_recipe, cancelled }. Payload out carries agent metadata + fields
+  // (NAMES/selectors only) + the known/unknown branch — never a value.
+  TOOL_CAPTURE_CREDENTIAL_REQUEST: 'tool:capture-credential-request',
+  TOOL_CAPTURE_CREDENTIAL_RESPONSE: 'tool:capture-credential-response',
   TOOL_TIMELINE_EVENT: 'tool:timeline-event', // SW → sidepanel: render in the chat (started / completed / error)
   // sidepanel → SW: re-dispatch a persisted client-delegated call on conversation
   // open (cold-resume). The conversation was left paused waiting on the call; the
