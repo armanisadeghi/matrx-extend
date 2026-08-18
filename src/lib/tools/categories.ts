@@ -52,6 +52,7 @@ import type { AnyToolHandler, ToolTier } from '@/lib/tools/types';
  *   - desktop      : bridge to matrx-local
  *   - credentials  : sign in to a site using a saved Matrx vault login
  *   - crm          : put what you are looking at into the user's AI Matrx CRM
+ *   - education    : capture the study set on the page into a Matrx flashcard deck
  */
 export type ToolCategory =
   | 'core'
@@ -69,7 +70,8 @@ export type ToolCategory =
   | 'webmcp'
   | 'desktop'
   | 'credentials'
-  | 'crm';
+  | 'crm'
+  | 'education';
 
 export interface CategoryMeta {
   category: ToolCategory;
@@ -198,6 +200,13 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     description:
       "Put what you are looking at into the user's AI Matrx CRM. `capture_prospect` adds the current page's website to their prospect list through the platform's one import path — so the same blocklist, deduplication and scoring apply as to a searched or imported prospect. Always `preview` first: it writes nothing and reports whether this company is ALREADY someone they know (previous messages, campaigns, wins, or a do-not-contact flag), which is what stops a warm contact being treated as a cold one.",
     list_tool_name: 'list_crm_tools',
+  },
+  education: {
+    category: 'education',
+    label: 'Study capture',
+    description:
+      "Turn the page the user is looking at into study material in their AI Matrx education workspace. `capture_study_set` extracts the term/definition pairs on the current page (a Quizlet set's framework data, a definition list, or a two-column table) and lands them as a native flashcard deck through the platform's ONE import door — same writer, same dedupe, same membership edges as the web app's importer. Always `preview` first: it writes nothing and shows the deck name, card count and a sample so the user confirms what would be captured.",
+    list_tool_name: 'list_education_tools',
   },
 };
 
@@ -394,6 +403,8 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
 
   // ─── crm (prospect capture — IC-10) ───────────────────────────────────
   capture_prospect: 'crm',
+  // ─── education (study-set capture — IC-11) ────────────────────────────
+  capture_study_set: 'education',
 };
 
 export function categoryOf(toolName: string): ToolCategory {
@@ -517,6 +528,8 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'credential_login',
   // ─── crm (prospect capture — IC-10) ─────────────────────────────────────
   'capture_prospect',
+  // ─── education (study-set capture — IC-11) ──────────────────────────────
+  'capture_study_set',
 ]);
 
 export function isCanonicalSurface(toolName: string): boolean {

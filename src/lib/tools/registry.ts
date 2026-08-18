@@ -53,6 +53,7 @@ import {
 import { page_ref_handlers } from '@/lib/tools/handlers/page-refs';
 import { parallel_handlers } from '@/lib/tools/handlers/parallel';
 import { privileged_handlers, privileged_read_handlers } from '@/lib/tools/handlers/privileged';
+import { education_handlers } from '@/lib/tools/handlers/education';
 import { prospect_handlers } from '@/lib/tools/handlers/prospects';
 import { read_handlers } from '@/lib/tools/handlers/read';
 import { record_handlers } from '@/lib/tools/handlers/record';
@@ -92,6 +93,8 @@ const ALL: AnyToolHandler[] = [
   ...credential_handlers,
   // ─── crm capture (IC-10 — the one prospect import path) ────────────────
   ...prospect_handlers,
+  // ─── education capture (IC-11 — the one deck import door) ──────────────
+  ...education_handlers,
   // ─── memory ────────────────────────────────────────────────────────────
   ...memory_handlers,
   // ─── optional-permission tools ─────────────────────────────────────────

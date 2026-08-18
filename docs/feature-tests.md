@@ -2069,6 +2069,32 @@ Every entry follows this shape:
   - Sign out with the panel open → the next action reports
     "Sign in to Matrx to use the Vault".
 
+### Capture study set (`capture_study_set` — education, IC-11)
+- **What it does:** one-click import of the study set on the current page (a Quizlet set, a
+  definition list, or a two-column table) into a native AI Matrx flashcard deck through the
+  platform's one import door (`edu_import_deck` RPC).
+- **Where to test:** chat (ask the agent), or right-click on a quizlet.com page →
+  "Save this study set to Matrx".
+- **Prereq:** signed in to commit (preview works signed out... it extracts locally).
+- **Steps:**
+  1. Open any public Quizlet set. Right-click → **Save this study set to Matrx** — the side
+     panel opens with a drafted preview-first instruction.
+  2. Send it. The agent runs `preview`: expect deck name, card count, and a 5-card sample —
+     nothing written yet.
+  3. Confirm. The agent runs `capture`: expect the new deck's name + open link
+     (`aimatrx.com/education/flashcards/<id>`), and the deck appears in the web app with the
+     cards in order.
+  4. On a page with a plain `<dl>` or 2-column table (e.g. a glossary), ask "save this page
+     as a study set" in chat — same flow via the DOM fallback.
+- **Expected:** preview writes nothing (tier `read`); capture asks for approval (tier
+  `action`); the chat row names the deck; the deck lands with membership edges intact (cards
+  render in the web app immediately).
+- **Edge cases worth poking:**
+  - Signed out + capture → "Sign in to AI Matrx to save this study set", nothing written.
+  - A page with no term data → `nothing_found` with an honest reason.
+  - A Quizlet page whose hydration shape changed → DOM fallback may still find pairs; if
+    not, the error names both strategies.
+
 ## Template (copy when adding a new entry)
 
 ```markdown

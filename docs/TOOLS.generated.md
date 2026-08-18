@@ -7,8 +7,8 @@
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-08-16T18:03:40.881Z
-Total tools: 79
+Generated: 2026-08-18T05:58:56.229Z
+Total tools: 80
 
 ## ai
 
@@ -307,6 +307,16 @@ _privileged_
 Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cross-domain navigation. Filter with url_pattern to keep output manageable. Response bodies are NOT included by default — use get_request_body to fetch a specific body. The buffer is per-tab and bounded; old entries fall off the back.
 
 **Parameters:** `clear` (boolean); `limit` (integer); `tab_id` (string); `auto_start` (boolean); `url_pattern` (string); `include_body` (boolean)
+
+## education
+
+### `capture_study_set`
+
+_action_
+
+Capture the study set on the current page into a native AI Matrx flashcard deck. Extracts term/definition pairs (a Quizlet set's framework data, a definition list, or a two-column table) and lands them through the platform's one import door — the same writer, dedupe and membership edges as the web app's importer. Always 'preview' first: it writes nothing and returns the deck name, card count and a 5-card sample so the user confirms what would be captured. 'capture' commits and returns the new deck's id and open link. Requires sign-in to commit.
+
+**Parameters:** `action` (string) = ["preview","capture"]; `deck_name` (string)
 
 ## guidance
 

@@ -449,6 +449,21 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
+  // The row must name the DECK — preview and capture look identical otherwise.
+  capture_study_set: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Layers', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Reading study set',
+        completed: 'Study set',
+        error: 'Study-set capture failed',
+      },
+      name: { path: 'result.deck_name', fallback: '' },
+      color: { started: 'primary', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
   submit_form: {
     inline: {
       icon: { started: 'Loader2', completed: 'SendHorizontal', error: 'AlertTriangle' },

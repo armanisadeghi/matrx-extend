@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16T18:03:39.666Z",
+  "generated_at": "2026-08-18T05:58:55.127Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -19,6 +19,7 @@
     "list_desktop_tools",
     "list_credentials_tools",
     "list_crm_tools",
+    "list_education_tools",
     "browser_batch",
     "parallel_for_each_tab"
   ],
@@ -40,6 +41,7 @@
     "list_desktop_tools",
     "list_credentials_tools",
     "list_crm_tools",
+    "list_education_tools",
     "browser_batch",
     "read_page",
     "find",
@@ -114,6 +116,7 @@
     "list_desktop_tools",
     "list_credentials_tools",
     "list_crm_tools",
+    "list_education_tools",
     "browser_batch",
     "read_page",
     "find",
@@ -184,6 +187,7 @@
     "cancel_download",
     "credential_login",
     "capture_prospect",
+    "capture_study_set",
     "remember_for_domain",
     "list_recently_closed",
     "restore_recently_closed",
@@ -253,6 +257,7 @@
     "list_desktop_tools",
     "list_credentials_tools",
     "list_crm_tools",
+    "list_education_tools",
     "browser_batch",
     "read_page",
     "find",
@@ -323,6 +328,7 @@
     "cancel_download",
     "credential_login",
     "capture_prospect",
+    "capture_study_set",
     "remember_for_domain",
     "list_recently_closed",
     "restore_recently_closed",
@@ -425,6 +431,7 @@
         "list_desktop_tools",
         "list_credentials_tools",
         "list_crm_tools",
+        "list_education_tools",
         "browser_batch",
         "parallel_for_each_tab"
       ]
@@ -706,6 +713,16 @@
       "admin_only": false,
       "tool_names": [
         "capture_prospect"
+      ]
+    },
+    {
+      "category": "education",
+      "label": "Study capture",
+      "description": "Turn the page the user is looking at into study material in their AI Matrx education workspace. `capture_study_set` extracts the term/definition pairs on the current page (a Quizlet set's framework data, a definition list, or a two-column table) and lands them as a native flashcard deck through the platform's ONE import door — same writer, same dedupe, same membership edges as the web app's importer. Always `preview` first: it writes nothing and shows the deck name, card count and a sample so the user confirms what would be captured.",
+      "list_tool": "list_education_tools",
+      "admin_only": false,
+      "tool_names": [
+        "capture_study_set"
       ]
     }
   ],
@@ -1112,6 +1129,31 @@
     },
     {
       "name": "list_crm_tools",
+      "tier": "read",
+      "category": "core",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
+      ]
+    },
+    {
+      "name": "list_education_tools",
       "tier": "read",
       "category": "core",
       "input_schema": {
@@ -3952,6 +3994,43 @@
           "site_id": {
             "type": "string",
             "format": "uuid"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
+      ]
+    },
+    {
+      "name": "capture_study_set",
+      "tier": "action",
+      "category": "education",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "preview",
+              "capture"
+            ],
+            "default": "preview"
+          },
+          "deck_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
           }
         },
         "additionalProperties": false,

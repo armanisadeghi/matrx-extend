@@ -32,6 +32,7 @@ import { CHANNELS } from '@/lib/messaging/schemas';
 const MENU_ID_ASK_SELECTION = 'matrx.menu.ask-selection';
 const MENU_ID_OPEN_PANEL = 'matrx.menu.open-panel';
 const MENU_ID_CAPTURE_PROSPECT = 'matrx.menu.capture-prospect';
+const MENU_ID_CAPTURE_STUDY_SET = 'matrx.menu.capture-study-set';
 
 /**
  * The drafted instruction behind "Save this site as a prospect". Deliberately
@@ -42,6 +43,13 @@ const MENU_ID_CAPTURE_PROSPECT = 'matrx.menu.capture-prospect';
 const CAPTURE_PROSPECT_DRAFT =
   'Check whether this site is worth adding to my prospect list, and tell me if ' +
   'we already know them, before you save it.';
+
+/** The drafted instruction behind "Save this study set to Matrx" (IC-11's
+ * human half). Preview-first for the same reason as the prospect draft: the
+ * tool defaults to `preview`, and the sentence must agree with it. */
+const CAPTURE_STUDY_SET_DRAFT =
+  'Preview the study set on this page — show me the deck name, how many cards ' +
+  'you found, and a sample — then save it as a flashcard deck if it looks right.';
 
 export const PENDING_DRAFT_STORAGE_KEY = 'matrx.chat.pending_draft';
 
@@ -73,6 +81,12 @@ export function setupContextMenus(): void {
       broadcast(CHANNELS.CHAT_DRAFT_FROM_SELECTION, { text: CAPTURE_PROSPECT_DRAFT });
       return;
     }
+    if (info.menuItemId === MENU_ID_CAPTURE_STUDY_SET) {
+      await stashDraft(CAPTURE_STUDY_SET_DRAFT);
+      await openSidepanel(tab?.windowId);
+      broadcast(CHANNELS.CHAT_DRAFT_FROM_SELECTION, { text: CAPTURE_STUDY_SET_DRAFT });
+      return;
+    }
     if (info.menuItemId === MENU_ID_OPEN_PANEL) {
       await openSidepanel(tab?.windowId);
     }
@@ -92,6 +106,18 @@ function registerMenus(): void {
       id: MENU_ID_CAPTURE_PROSPECT,
       title: 'Save this site as a prospect',
       contexts: ['page'],
+    });
+    chrome.contextMenus.create({
+      id: MENU_ID_CAPTURE_STUDY_SET,
+      title: 'Save this study set to Matrx',
+      contexts: ['page'],
+      // Only where it applies — the flashcard incumbents. Any other page still
+      // captures via chat ("save this page as a study set").
+      documentUrlPatterns: [
+        '*://*.quizlet.com/*',
+        '*://*.knowt.com/*',
+        '*://*.cram.com/*',
+      ],
     });
     chrome.contextMenus.create({
       id: MENU_ID_OPEN_PANEL,
