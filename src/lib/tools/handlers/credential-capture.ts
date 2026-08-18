@@ -175,6 +175,12 @@ export interface CaptureCredentialRequest {
   uri_match_mode: 'host' | 'exact' | 'never';
   branch: 'known' | 'unknown';
   guidance: string;
+  /**
+   * Epoch ms after which this request is dead. The tool returns `timed_out` to
+   * the agent at this moment, so the card MUST NOT write a vault item past it —
+   * otherwise a late Save lands a credential after the agent has moved on.
+   */
+  expires_at_ms: number;
   fields: Array<{
     field_key: string;
     selector: string;
@@ -332,6 +338,7 @@ export const capture_credential: ToolHandler<CaptureCredentialArgs, CaptureCrede
       uri_match_mode: 'host',
       branch: branchContext.branch,
       guidance: branchContext.guidance,
+      expires_at_ms: Date.now() + CAPTURE_TIMEOUT_MS,
       fields,
     };
 

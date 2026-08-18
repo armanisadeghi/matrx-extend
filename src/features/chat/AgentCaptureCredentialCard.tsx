@@ -33,11 +33,31 @@ export function AgentCaptureCredentialCard({ req }: { req: CaptureCredentialRequ
   const [values, setValues] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [expired, setExpired] = useState(false);
 
   // Drop the typed values when the card unmounts (thread switch, submit, cancel).
   useEffect(() => {
     return () => setValues({});
   }, []);
+
+  // The tool returns `timed_out` to the agent at `expires_at_ms`. Past that
+  // moment a Save would write a credential the agent has already given up on —
+  // so expire the card: drop the typed values, disable the write, and answer
+  // the (already-closed) SW channel so the inbox dismisses this row.
+  useEffect(() => {
+    const ms = req.expires_at_ms - Date.now();
+    if (ms <= 0) {
+      setExpired(true);
+      setValues({});
+      return;
+    }
+    const t = setTimeout(() => {
+      setExpired(true);
+      setValues({});
+      respondToCapture(req.callId, { cancelled: true, reason: 'expired' });
+    }, ms);
+    return () => clearTimeout(t);
+  }, [req.callId, req.expires_at_ms]);
 
   const setField = useCallback((key: string, value: string) => {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -52,6 +72,13 @@ export function AgentCaptureCredentialCard({ req }: { req: CaptureCredentialRequ
 
   const onSave = useCallback(async () => {
     if (busy) return;
+    // Hard guard: never write a vault item after the request expired, even if a
+    // timer was throttled and the button was still enabled for a moment.
+    if (expired || Date.now() >= req.expires_at_ms) {
+      setExpired(true);
+      setValues({});
+      return;
+    }
     setBusy(true);
     setError(null);
     // Build the write payload. `field_values` is the only place the plaintext
@@ -93,7 +120,7 @@ export function AgentCaptureCredentialCard({ req }: { req: CaptureCredentialRequ
       branch: receipt.branch ?? null,
       propose_recipe: receipt.propose_recipe,
     });
-  }, [busy, req, values]);
+  }, [busy, expired, req, values]);
 
   return (
     <div className="rounded-lg border border-border bg-card p-3 text-sm shadow-sm">
@@ -120,7 +147,7 @@ export function AgentCaptureCredentialCard({ req }: { req: CaptureCredentialRequ
               type={f.secret ? 'password' : 'text'}
               autoComplete={f.secret ? 'new-password' : 'off'}
               value={values[f.field_key] ?? ''}
-              disabled={busy}
+              disabled={busy || expired}
               onChange={(e) => setField(f.field_key, e.target.value)}
               // 16px+ so iOS does not zoom; also the app-wide rule.
               className="text-base"
@@ -129,13 +156,18 @@ export function AgentCaptureCredentialCard({ req }: { req: CaptureCredentialRequ
         ))}
       </div>
 
+      {expired ? (
+        <p className="mt-2 text-xs text-muted-foreground">
+          This request expired and the agent has moved on. Ask it to try the login again.
+        </p>
+      ) : null}
       {error ? <p className="mt-2 text-xs text-destructive">{error}</p> : null}
 
       <div className="mt-3 flex items-center justify-end gap-2">
         <Button variant="ghost" size="sm" onClick={onCancel} disabled={busy}>
-          Cancel
+          {expired ? 'Dismiss' : 'Cancel'}
         </Button>
-        <Button size="sm" onClick={onSave} disabled={busy || !allFilled}>
+        <Button size="sm" onClick={onSave} disabled={busy || expired || !allFilled}>
           {busy ? <Loader2 className="mr-1 size-3 animate-spin" /> : null}
           Save &amp; continue
         </Button>
