@@ -112,16 +112,29 @@ export function AgentCaptureCredentialCard({ req }: { req: CaptureCredentialRequ
     });
     // Drop the plaintext the instant the request returns, success or failure.
     setValues({});
+    busyRef.current = false;
+    // The expiry timer deferred to us while the write was in flight (busyRef).
+    // If the deadline has since passed and the write did NOT commit a usable
+    // credential, WE now own the dismissal the timer skipped — otherwise the row
+    // stays stuck (expired, Save disabled) with no way out. Answer the SW so the
+    // inbox removes it; the agent already has its `timed_out`.
+    const pastDeadline = Date.now() >= req.expires_at_ms;
     if (!result.ok) {
-      busyRef.current = false;
       setBusy(false);
+      if (pastDeadline) {
+        respondToCapture(req.callId, { cancelled: true, reason: 'expired' });
+        return;
+      }
       setError('Could not save the credential. Please try again or cancel.');
       return;
     }
     const receipt = result.data;
     if (receipt.status !== 'captured') {
-      busyRef.current = false;
       setBusy(false);
+      if (pastDeadline) {
+        respondToCapture(req.callId, { cancelled: true, reason: 'expired' });
+        return;
+      }
       setError(receipt.detail ?? 'The credential could not be saved.');
       return;
     }
@@ -129,7 +142,6 @@ export function AgentCaptureCredentialCard({ req }: { req: CaptureCredentialRequ
     // funnels through awaitCapture's idempotent `finish`, so if the tool already
     // timed out this is a harmless no-op; the credential is saved and the next
     // login attempt discovers it via matches. Never a competing `cancelled`.
-    busyRef.current = false;
     respondToCapture(req.callId, {
       ok: true,
       credential_item_id: receipt.credential_item_id ?? null,
