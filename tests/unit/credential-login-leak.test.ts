@@ -354,6 +354,29 @@ describe('credential_login — unsafe destinations cannot be filled', () => {
     expect(posts).toHaveLength(0);
   });
 
+  it.each([
+    ['an explicit GET form', 'get'],
+    ['a form with the browser-default GET method', null],
+  ])('refuses %s before any vault call or fill', async (_label, method) => {
+    document.body.innerHTML = `
+      <form id="loginform" ${method ? `method="${method}"` : ''} action="/session">
+        <input id="username" name="username" type="text" autocomplete="username" />
+        <input id="password" name="password" type="password" />
+        <button id="submit" type="submit">Sign in</button>
+      </form>
+    `;
+    sizeEverything();
+
+    const { credential_login } = await import('@/lib/tools/handlers/credential-login');
+    const result = await credential_login.run({}, ctx);
+
+    expect(result.status).toBe('unsafe_destination');
+    expect(result.reason).toBe('unsafe_get_form');
+    expect(posts).toHaveLength(0);
+    expect((document.getElementById('username') as HTMLInputElement).value).toBe('');
+    expect((document.getElementById('password') as HTMLInputElement).value).toBe('');
+  });
+
   it('refuses a materialized item whose authorized origin is not this page', async () => {
     postImpl = async (path: string) => {
       if (path.endsWith('/matches')) {

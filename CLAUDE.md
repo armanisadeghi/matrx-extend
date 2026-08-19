@@ -323,11 +323,10 @@ Arman plus dozens of concurrent agents (across two machines) edit these repos si
     every channel + wrong-origin/unsafe-destination refusal + two-step flow +
     clear-on-stall) and `tests/unit/credential-redaction.test.ts` (each
     redaction signal defends alone, plus a grep guard over the four sites).
-  - **Known boundary:** a login form using `method="get"` serializes whatever
-    is in its fields into the URL on submit, which then appears in the tab URL,
-    history, and `read_page`'s `url`. That exposure is created by the SITE and
-    cannot be redacted afterwards without retaining the plaintext this handler
-    deliberately drops.
+  - **GET forms are refused before decrypt/fill.** The probe reads the owning
+    form's normalized method (`get` is also the browser default when omitted),
+    and the submit primitive independently refuses GET again. Credentials never
+    enter a URL, history entry, Referer header, or page-inspection result.
 - **Reference-ID system** — `read_page` tags every interactive element with
   `data-matrx-ref="N"` and returns refs (`ref:N`) the agent passes to
   interaction tools instead of brittle CSS selectors. Refs survive DOM

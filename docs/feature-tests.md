@@ -2066,6 +2066,8 @@ Every entry follows this shape:
   - A sealed field → no eye/copy buttons and a "can never be shown" note.
   - Two matching logins on one page → both listed, each with its own **Use here**
     (the agent path returns `selection_required` in the same situation).
+  - A login form with `method="get"`, or no method at all →
+    `unsafe_destination / unsafe_get_form` before any Vault materialization or fill.
   - Sign out with the panel open → the next action reports
     "Sign in to Matrx to use the Vault".
 

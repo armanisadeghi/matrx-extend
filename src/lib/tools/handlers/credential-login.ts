@@ -117,6 +117,7 @@ interface LoginFormProbe {
   username_selector: string | null;
   password_selector: string | null;
   submit_selector: string | null;
+  form_method: string | null;
 }
 
 interface PageStateProbe {
@@ -238,6 +239,7 @@ function probeLoginFormSource(): LoginFormProbe {
     username_selector: username ? uniqueSelector(username) : null,
     password_selector: password ? uniqueSelector(password) : null,
     submit_selector: submit ? uniqueSelector(submit) : null,
+    form_method: form?.method.toLowerCase() ?? null,
   };
 }
 
@@ -273,6 +275,10 @@ function submitLoginSource(selector: string | null): { ok: boolean; mode: string
   if (selector) {
     const btn = document.querySelector(selector) as HTMLElement | null;
     if (btn) {
+      const buttonForm = btn.closest('form');
+      if (buttonForm?.method.toLowerCase() === 'get') {
+        return { ok: false, mode: 'unsafe_get' };
+      }
       btn.click();
       return { ok: true, mode: 'click' };
     }
@@ -280,6 +286,7 @@ function submitLoginSource(selector: string | null): { ok: boolean; mode: string
   const pw = document.querySelector('input[type="password"]') as HTMLInputElement | null;
   const form = (pw ?? document.querySelector('input'))?.closest('form') ?? null;
   if (form) {
+    if (form.method.toLowerCase() === 'get') return { ok: false, mode: 'unsafe_get' };
     if (typeof form.requestSubmit === 'function') form.requestSubmit();
     else form.submit();
     return { ok: true, mode: 'form' };
@@ -502,6 +509,13 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
         message: 'No username or password field was found in the top frame of this page.',
       });
     }
+    if (probe.form_method === 'get') {
+      return safeResult('unsafe_destination', {
+        reason: 'unsafe_get_form',
+        message:
+          'This page would put the username or password in its URL. Browser login refused before accessing the credential.',
+      });
+    }
 
     const normalizedPageUrl = `${pageUrl.origin}${pageUrl.pathname}`;
 
@@ -612,9 +626,12 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
           [probe.submit_selector],
         );
         if (!advanced?.ok) {
-          return await finish('unknown', {
-            reason: 'two_step_advance_failed',
-            message: 'No password field and no way to advance past the username step.',
+          const unsafeGet = advanced?.mode === 'unsafe_get';
+          return await finish(unsafeGet ? 'unsafe_destination' : 'unknown', {
+            reason: unsafeGet ? 'unsafe_get_form' : 'two_step_advance_failed',
+            message: unsafeGet
+              ? 'This page would put the username in its URL, so the filled field was cleared.'
+              : 'No password field and no way to advance past the username step.',
             clear: true,
           });
         }
@@ -666,16 +683,27 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
       );
       const beforeHref = before?.href ?? probe.href;
 
+      if (probe.form_method === 'get') {
+        return await finish('unsafe_destination', {
+          reason: 'unsafe_get_form',
+          message:
+            'This page would put the username or password in its URL, so the filled fields were cleared.',
+          clear: true,
+        });
+      }
+
       const submitted = await injectTopFrame<{ ok: boolean; mode: string }>(
         tabId,
         submitLoginSource,
         [probe.submit_selector],
       ).catch(() => null);
       if (!submitted?.ok) {
-        return await finish('unknown', {
-          reason: 'no_submit_affordance',
-          message:
-            'The credential was entered but no submit control could be found; it was cleared.',
+        const unsafeGet = submitted?.mode === 'unsafe_get';
+        return await finish(unsafeGet ? 'unsafe_destination' : 'unknown', {
+          reason: unsafeGet ? 'unsafe_get_form' : 'no_submit_affordance',
+          message: unsafeGet
+            ? 'This page would put the username or password in its URL, so the filled fields were cleared.'
+            : 'The credential was entered but no submit control could be found; it was cleared.',
           clear: true,
         });
       }
