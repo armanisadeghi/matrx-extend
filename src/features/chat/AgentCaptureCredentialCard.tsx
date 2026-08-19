@@ -168,20 +168,24 @@ export function AgentCaptureCredentialCard({ req }: { req: CaptureCredentialRequ
       </p>
 
       <div className="space-y-2">
-        {req.fields.map((f) => (
-          <label key={f.field_key} className="block">
-            <span className="mb-1 block text-xs text-muted-foreground">{f.label}</span>
-            <Input
-              type={f.secret ? 'password' : 'text'}
-              autoComplete={f.secret ? 'new-password' : 'off'}
-              value={values[f.field_key] ?? ''}
-              disabled={busy || expired}
-              onChange={(e) => setField(f.field_key, e.target.value)}
-              // 16px+ so iOS does not zoom; also the app-wide rule.
-              className="text-base"
-            />
-          </label>
-        ))}
+        {req.fields.map((f) => {
+          const inputId = `capture-${req.callId}-${f.field_key}`;
+          return (
+            <label key={f.field_key} htmlFor={inputId} className="block">
+              <span className="mb-1 block text-xs text-muted-foreground">{f.label}</span>
+              <Input
+                id={inputId}
+                type={f.secret ? 'password' : 'text'}
+                autoComplete={f.secret ? 'new-password' : 'off'}
+                value={values[f.field_key] ?? ''}
+                disabled={busy || expired}
+                onChange={(e) => setField(f.field_key, e.target.value)}
+                // 16px+ so iOS does not zoom; also the app-wide rule.
+                className="text-base"
+              />
+            </label>
+          );
+        })}
       </div>
 
       {expired ? (
