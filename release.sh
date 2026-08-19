@@ -10,20 +10,16 @@
 #   6.  Regen tool catalog     (pnpm catalog:tools:md), DB drift check,
 #         and docs/TOOLS.generated.md from the DB (pnpm docs:tools)
 #   7.  Commit version bump + regenerated catalog
-#   8.  Comment out the `key` field in wxt.config.ts
-#   9.  Build STORE zip without the dev key
+#   8.  Build STORE zip with MATRX_CWS_BUILD=1 (the manifest omits the dev key)
 #         → .output/matrx-extend-<ver>-store.zip
 #         (this is the file you upload to the Chrome Web Store dashboard)
-#   10. Restore the `key` field in wxt.config.ts
-#         (also enforced by an EXIT trap — never leaves the working tree
-#          in a state that breaks dev OAuth)
-#   11. Build LOCAL zip with the dev `key` intact
+#   9.  Build LOCAL zip with the dev `key` intact
 #         → .output/matrx-extend-<ver>-local.zip
 #         (also leaves .output/chrome-mv3/ as the keyed dev build, so
 #          "Load unpacked" → stable ID cihdmkcdjjckfhjpgoedmgfpoljebaml,
 #          OAuth redirect works, dev experience unbroken)
-#   12. Push branch + tag to origin
-#   13. Print final upload instructions
+#   10. Push branch + tag to origin
+#   11. Print final upload instructions
 #
 # Usage:
 #   ./release.sh                         # patch bump (default)
@@ -134,9 +130,6 @@ _on_error() {
             ;;
     esac
     echo "" >&2
-    if $KEY_WAS_COMMENTED; then
-        echo -e "${RED}  ⤷  wxt.config.ts key was toggled off; EXIT trap will restore it.${NC}" >&2
-    fi
     if $VERSION_BUMPED && ! $VERSION_COMMITTED; then
         echo -e "${RED}  ⤷  package.json was bumped to ${NEW_VERSION} but not committed —${NC}" >&2
         echo -e "${RED}     reverting now (git checkout -- package.json).${NC}" >&2
@@ -146,7 +139,7 @@ _on_error() {
 }
 trap _on_error ERR
 
-# ── Key-field toggle (the Web Store gotcha) ─────────────────────────────────
+# ── Store/local build state ──────────────────────────────────────────────────
 #
 # Local dev needs `key:` in the manifest so Chrome assigns the stable ID
 # cihdmkcdjjckfhjpgoedmgfpoljebaml (Supabase OAuth redirect is registered
@@ -155,8 +148,8 @@ trap _on_error ERR
 # publish (Store-assigned ID: hnfolienncfklkgmdjjmhhegglimlamg).
 # Full incident: .research/v0.1.4-auth-incident.md.
 #
-# So: build local-zip with key, comment-out key, build store-zip, restore key.
-KEY_WAS_COMMENTED=false
+# Store builds set MATRX_CWS_BUILD=1; wxt.config.ts then omits the key without
+# mutating source. Local builds leave the variable unset and retain the key.
 VERSION_BUMPED=false
 VERSION_COMMITTED=false
 NEW_VERSION=""
@@ -164,51 +157,6 @@ CURRENT_STEP=""
 CATALOG_OK=true
 WARNINGS=()
 DRIFT_DETECTED=false
-
-# Portable in-place sed. BSD (macOS) sed wants `-i ''`; GNU (Linux) sed
-# treats that '' as the script argument and silently misbehaves — the
-# original macOS-only form left the key-toggle broken on Linux boxes
-# (docs/AUDIT_2026_06_10.md P0-9). A backup suffix works on both; we
-# delete the backup immediately.
-_sed_inplace() {
-    local script="$1" file="$2"
-    sed -i.matrxbak -E "$script" "$file"
-    rm -f "${file}.matrxbak"
-}
-
-_key_comment_out() {
-    # Idempotent — bails if already commented.
-    if grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG"; then
-        _sed_inplace "s|^([[:space:]]*)(key: ')|\1// \2|" "$WXT_CONFIG"
-        # Verify the swap actually happened.
-        grep -qE "^[[:space:]]*// key: '" "$WXT_CONFIG" \
-            || fail "Could not comment out key field in $WXT_CONFIG"
-        KEY_WAS_COMMENTED=true
-        ok "Commented out key field in $WXT_CONFIG"
-    elif grep -qE "^[[:space:]]*// key: '" "$WXT_CONFIG"; then
-        warn "key field is already commented out — leaving as-is"
-    else
-        fail "Could not find key field in $WXT_CONFIG. Aborting."
-    fi
-}
-
-_key_restore() {
-    # Idempotent — only acts if we did the commenting in this run.
-    if $KEY_WAS_COMMENTED; then
-        if grep -qE "^[[:space:]]*// key: '" "$WXT_CONFIG"; then
-            _sed_inplace "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
-            grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG" \
-                || fail "Could not restore key field in $WXT_CONFIG — RESTORE MANUALLY before next dev install."
-            ok "Restored key field in $WXT_CONFIG"
-            KEY_WAS_COMMENTED=false
-        else
-            warn "Expected commented key field for restore but didn't find one"
-        fi
-    fi
-}
-
-# Ensure key is restored on any exit path.
-trap '_key_restore' EXIT
 
 # ── Pre-flight checks ───────────────────────────────────────────────────────
 step "Pre-flight checks"
@@ -223,27 +171,12 @@ CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 [[ "$CURRENT_BRANCH" == "$BRANCH" ]] \
     || fail "Not on '$BRANCH' (currently on '$CURRENT_BRANCH'). Switch first."
 
-# Self-heal the key field. If a prior run / manual edit left it commented,
-# restore it now and stage the fix as its own commit. This is the most common
-# way the working tree drifts into a bad state, and we'd rather repair than
-# refuse to run.
-KEY_HEALED=false
-if grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG"; then
-    : # already correct
-elif grep -qE "^[[:space:]]*// key: '" "$WXT_CONFIG"; then
-    warn "wxt.config.ts has key field commented out — restoring before release."
-    if ! $DRY_RUN; then
-        _sed_inplace "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
-        grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG" \
-            || fail "Could not auto-restore key field — fix manually."
-        KEY_HEALED=true
-        ok "Restored key field automatically"
-    fi
-else
-    fail "$WXT_CONFIG has no recognizable 'key:' line (active or commented). Manual fix required."
-fi
+grep -q "isChromeWebStoreBuild" "$WXT_CONFIG" \
+    || fail "$WXT_CONFIG does not declare the MATRX_CWS_BUILD key boundary."
+grep -q "key: devExtensionKey" "$WXT_CONFIG" \
+    || fail "$WXT_CONFIG does not include the dev key through the guarded manifest branch."
 
-ok "On branch $BRANCH, key field active, tooling available"
+ok "On branch $BRANCH, environment-gated key boundary and tooling available"
 
 # ── Auto-stage uncommitted work ─────────────────────────────────────────────
 step "Sync working tree"
@@ -255,11 +188,7 @@ if [[ -n "$(git status --porcelain)" ]]; then
         preview "Would: git add -A && git commit -m '...'"
     else
         git add -A
-        if $KEY_HEALED; then
-            local_msg="fix: restore wxt.config.ts key field for dev install"
-        else
-            local_msg="${CUSTOM_MESSAGE:-chore: pre-release sync}"
-        fi
+        local_msg="${CUSTOM_MESSAGE:-chore: pre-release sync}"
         git commit -m "$local_msg"
         ok "Committed pre-release changes: $local_msg"
     fi
@@ -524,7 +453,7 @@ else
     VERSION_COMMITTED=true  # nothing to roll back either
 fi
 
-# ── 6. Build STORE zip (key commented out) ──────────────────────────────────
+# ── 6. Build STORE zip (environment-gated key omission) ─────────────────────
 #
 # IMPORTANT: store goes FIRST, local goes SECOND. `pnpm zip` rebuilds
 # .output/chrome-mv3/ in place each time, so whichever build runs last
@@ -563,8 +492,7 @@ if [[ "$STALE_ZIPS" -gt 0 ]]; then
 fi
 
 rm -f "$WXT_ZIP_OUT" "$LOCAL_ZIP" "$STORE_ZIP"
-_key_comment_out
-pnpm zip
+pnpm zip:store
 [[ -f "$WXT_ZIP_OUT" ]] || fail "Expected $WXT_ZIP_OUT but it was not produced"
 
 # Sanity check: the store manifest must NOT contain a "key" field.
@@ -573,8 +501,6 @@ if unzip -p "$WXT_ZIP_OUT" manifest.json | grep -q '"key"'; then
 fi
 mv "$WXT_ZIP_OUT" "$STORE_ZIP"
 ok "Store zip → $STORE_ZIP"
-
-_key_restore  # restore eagerly (the EXIT trap will also catch any miss)
 
 # ── 7. Build LOCAL zip (dev key intact) — leaves chrome-mv3/ usable ─────────
 CURRENT_STEP="build-local"
