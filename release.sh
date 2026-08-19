@@ -61,7 +61,10 @@ CYAN='\033[0;36m'; BOLD='\033[1m'; DIM='\033[2m'; NC='\033[0m'
 info()    { echo -e "${CYAN}[INFO]${NC}  $*"; }
 ok()      { echo -e "${GREEN}[OK]${NC}    $*"; }
 warn()    { echo -e "${YELLOW}[WARN]${NC}  $*"; }
-fail()    { echo -e "${RED}[FAIL]${NC}  $*" >&2; exit 1; }
+# Return non-zero instead of exiting inside the function so `set -e` invokes
+# the ERR trap. A direct `exit 1` bypassed the trap and left a failed release's
+# version bump in the working tree, causing the next run to skip a version.
+fail()    { echo -e "${RED}[FAIL]${NC}  $*" >&2; return 1; }
 preview() { echo -e "${YELLOW}[DRY]${NC}   $*"; }
 step()    { echo ""; echo -e "${BOLD}── $* ──${NC}"; }
 
