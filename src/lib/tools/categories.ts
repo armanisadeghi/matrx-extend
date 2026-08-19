@@ -537,13 +537,11 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'read_network_requests',
   'get_request_body',
   'desktop_run_command',
-  // ─── credentials (vault browser login) ──────────────────────────────────
-  // An active `tool.definition` row bound to the `chrome-extension` executor,
-  // so it belongs here by definition. Being listed here does NOT advertise it:
-  // agent advertisement is `tool.surface_defaults.always_include_tools`, and no
-  // surface includes `credential_login` yet (Phase 5 of the
-  // credential-sharing-browser-login plan is the activation switch).
+  // ─── credentials (Vault login + private capture card) ───────────────────
+  // Both have active `tool.definition` + chrome-extension binding rows and are
+  // advertised through the two extension surface defaults.
   'credential_login',
+  'capture_credential',
   // ─── crm (prospect capture — IC-10) ─────────────────────────────────────
   'capture_prospect',
   // ─── education (study-set capture — IC-11) ──────────────────────────────
