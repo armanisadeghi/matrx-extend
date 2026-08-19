@@ -808,6 +808,12 @@ export interface LegalSyncEventData {
   error?: string | null;
 }
 
+export interface MasterworkAuditionProgressData {
+  type?: "masterwork_audition_progress";
+  step: string;
+  message: string;
+}
+
 export interface AuditionRuleFinding {
   rule_id: string;
   winner: string;
@@ -823,6 +829,19 @@ export interface MasterworkAuditionVerdictData {
   gaps?: string[];
   gaps_captured?: number;
   rulebook_version?: number | null;
+  quality_score?: number | null;
+  judge_confidence?: number | null;
+  vanilla_compared?: boolean;
+  vanilla_score?: number | null;
+  vanilla_verdict?: string | null;
+  vanilla_findings?: AuditionRuleFinding[];
+  vanilla_text?: string | null;
+  vanilla_model?: string | null;
+  vanilla_error?: string | null;
+  beat_vanilla_rules?: number | null;
+  lost_to_vanilla_rules?: number | null;
+  vanilla_rules_compared?: number | null;
+  verdict_sentence?: string | null;
 }
 
 export interface MasterworkBuildCompleteData {
@@ -844,6 +863,110 @@ export interface MasterworkBuildProgressData {
   agent_name?: string | null;
 }
 
+export interface CheckupFinding {
+  id: string;
+  kind: string;
+  target_rule_id?: string | null;
+  proposed?: Record<string, unknown> | null;
+  alternatives?: Record<string, unknown>[];
+  reason?: string;
+  evidence?: string;
+  evidence_ref?: Record<string, unknown>;
+  confidence?: number;
+  source?: string;
+  content_ir?: Record<string, unknown> | null;
+}
+
+export interface MasterworkCheckupCompleteData {
+  type?: "masterwork_checkup_complete";
+  rulebook_id: string;
+  rulebook_version: number;
+  findings?: CheckupFinding[];
+  producers_run?: string[];
+  producers_failed?: string[];
+  evidence_rejected?: number;
+  already_dismissed?: number;
+  corpus_segments?: number;
+  corpus_chars?: number;
+  corpus_cleaned?: boolean;
+  notes?: string[];
+}
+
+export interface MasterworkCheckupFindingData {
+  type?: "masterwork_checkup_finding";
+  rulebook_id: string;
+  finding: CheckupFinding;
+  content_ir?: Record<string, unknown> | null;
+}
+
+export interface MasterworkCheckupProgressData {
+  type?: "masterwork_checkup_progress";
+  step: string;
+  message: string;
+  producer?: string | null;
+  findings_found?: number | null;
+  findings_dropped?: number | null;
+}
+
+export interface MasterworkCorpusCleanedData {
+  type?: "masterwork_corpus_cleaned";
+  rulebook_id: string;
+  rulebook_version: number;
+  segments?: number;
+  cleaned?: number;
+  reused?: number;
+  failed?: number;
+  total_chars?: number;
+  text?: string;
+}
+
+export interface MasterworkCorpusProgressData {
+  type?: "masterwork_corpus_progress";
+  step: string;
+  message: string;
+  segment_label?: string | null;
+  segment_index?: number | null;
+  total_segments?: number | null;
+}
+
+export interface MasterworkDumpResourceOutcome {
+  kind: string;
+  token?: string | null;
+  id?: string | null;
+  url?: string | null;
+  title?: string | null;
+  status: string;
+  rules_added?: number;
+  duplicates?: number;
+  error?: string | null;
+}
+
+export interface MasterworkDumpCompleteData {
+  type?: "masterwork_dump_complete";
+  rulebook_id: string;
+  rulebook_version: number;
+  added?: number;
+  duplicates_skipped?: number;
+  quotes_verified?: number;
+  quotes_unverified?: number;
+  resources?: MasterworkDumpResourceOutcome[];
+}
+
+export interface MasterworkDumpProgressData {
+  type?: "masterwork_dump_progress";
+  step: string;
+  message: string;
+  resource_index: number;
+  resource_count: number;
+  kind?: string | null;
+  token?: string | null;
+  id?: string | null;
+  url?: string | null;
+  title?: string | null;
+  rules_added?: number | null;
+  rules_added_total?: number;
+}
+
 export interface MasterworkIngestCompleteData {
   type?: "masterwork_ingest_complete";
   rulebook_id: string;
@@ -852,6 +975,7 @@ export interface MasterworkIngestCompleteData {
   duplicates_skipped?: number;
   quotes_verified?: number;
   quotes_unverified?: number;
+  followup_seed?: string | null;
 }
 
 export interface MasterworkIngestProgressData {
@@ -888,6 +1012,17 @@ export interface MasterworkRunSnapshotData {
   error?: Record<string, unknown> | null;
   result?: Record<string, unknown> | null;
   completed_at?: string | null;
+}
+
+export interface MasterworkShortlistItem {
+  key: string;
+  reason?: string;
+}
+
+export interface MasterworkShortlistData {
+  type?: "masterwork_shortlist";
+  selected?: MasterworkShortlistItem[];
+  considered?: number;
 }
 
 export interface AudioBlock {
@@ -1407,6 +1542,10 @@ export interface PodcastCompleteEvent {
   description?: string;
   image_urls?: string[];
   video_urls?: string[];
+  audio_file_id?: string;
+  image_file_ids?: string[];
+  video_file_ids?: string[];
+  official_video_file_id?: string;
   official_video_url?: string;
   official_video_error?: string;
   run_mode?: string;
@@ -1599,14 +1738,23 @@ export type TypedDataPayload =
   | ImageStudioProcessCompleteData
   | ImageStudioVariantData
   | LegalSyncEventData
+  | MasterworkAuditionProgressData
   | MasterworkAuditionVerdictData
   | MasterworkBuildCompleteData
   | MasterworkBuildProgressData
+  | MasterworkCheckupCompleteData
+  | MasterworkCheckupFindingData
+  | MasterworkCheckupProgressData
+  | MasterworkCorpusCleanedData
+  | MasterworkCorpusProgressData
+  | MasterworkDumpCompleteData
+  | MasterworkDumpProgressData
   | MasterworkIngestCompleteData
   | MasterworkIngestProgressData
   | MasterworkRunData
   | MasterworkRunFailedData
   | MasterworkRunSnapshotData
+  | MasterworkShortlistData
   | MediaBlockData
   | MediaNoticeData
   | MemoryBufferSpawnedData

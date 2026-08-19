@@ -7,8 +7,8 @@
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-08-18T20:41:43.044Z
-Total tools: 81
+Generated: 2026-08-19T01:41:02.166Z
+Total tools: 82
 
 ## ai
 
@@ -115,6 +115,14 @@ Index of every browser-tool category the extension exposes. Returns one entry pe
 **Parameters:** _No parameters._
 
 ## credentials
+
+### `capture_credential`
+
+_action_
+
+Securely capture a website login when no saved credential exists. You provide only destination metadata, field names, and selectors; the extension shows the user a private credential card and writes what they type directly to Vault. Username/password values never enter your arguments, results, logs, or model context. The result contains only a credential item id and whether the site recipe is known. For an unknown site, follow the returned guidance with action=propose_recipe to document selectors and success/failure/challenge signals for human review.
+
+**Parameters:** `notes` (string); `action` (string) = ["capture","propose_recipe"]; `fields` (array); `submit` (object); `field_map` (array); `description` (string); `display_name` (string); `provider_key` (string); `failure_signals` (array); `submit_selector` (string); `success_signals` (array); `challenge_signals` (array)
 
 ### `credential_login`
 
@@ -482,7 +490,7 @@ Remember something about a domain so it shows up in `domain_memo` context on eve
 
 ### `google_email_send`
 
-_read_
+_ask-user_
 
 Show the user one Gmail message and let THEM send it. Pass the exact recipient, subject and body you want sent (use google_workspace prepare_email first to compose it). AI Matrx renders that message to the user, who may edit any field and must explicitly confirm before anything is sent from their Gmail account. You cannot confirm on their behalf and there is no argument that skips the review. Returns {sent:true, message_id, to, subject, edited} once the user sends, or {sent:false, declined:true} if they decline — treat a decline as a normal outcome and ask what to change.
 
