@@ -414,6 +414,21 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
+  // Credential capture is deliberately header-only: field values never enter
+  // the tool timeline, logs, service worker, or agent-visible result.
+  capture_credential: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'KeyRound', error: 'AlertTriangle' },
+      prefix: {
+        started: 'Waiting for login details',
+        completed: 'Saved login details',
+        error: 'Could not save login details',
+      },
+      name: { literal: '' },
+      color: { started: 'primary', completed: 'emerald', error: 'red' },
+    },
+  },
+
   // Vault browser login. The row shows the OUTCOME STATUS and nothing else —
   // no field names, no page text, no value. `args` can only ever be an
   // optional `credential_item_id` (the tool accepts no URL / username /
