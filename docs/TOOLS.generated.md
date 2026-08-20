@@ -7,7 +7,7 @@
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-08-20T19:03:38.522Z
+Generated: 2026-08-20T19:29:13.458Z
 Total tools: 82
 
 ## ai
@@ -128,7 +128,7 @@ Securely capture a website login when no saved credential exists. You provide on
 
 _action_
 
-Sign in to the website in the current browser tab using a saved Matrx login. You never see or handle the username or password: the extension asks the server for them, fills the form, submits it, and reports only the outcome. Pass credential_item_id only when a previous call returned selection_required; otherwise omit it and the correct login is matched from the tab's own address. You cannot supply a URL, username, password, or selector. Returns one of: authenticated, needs_mfa, captcha_or_takeover, credentials_rejected, selection_required, no_matching_login, unsafe_destination, unknown. If MFA or a CAPTCHA appears, stop and hand control to the user — never try to work around it.
+Sign in to the website in the current browser tab using a saved Matrx login. You never see or handle the username or password: the extension asks the server for them, fills the form, submits it, and reports only the outcome. Pass credential_item_id only when a previous call returned selection_required; otherwise omit it and the correct login is matched from the tab own address. You cannot supply a URL, username, password, or selector. Returns one of: authenticated, needs_mfa, captcha_or_takeover, credentials_rejected, selection_required, no_matching_login, unsafe_destination, unknown. If MFA or a CAPTCHA appears, stop and hand control to the user — never try to work around it.
 
 **Parameters:** `credential_item_id` (string)
 
