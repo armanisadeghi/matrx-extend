@@ -4,8 +4,8 @@ This is the canonical copy for the public Matrx Extend item:
 
 - **Item ID:** `hnfolienncfklkgmdjjmhhegglimlamg`
 - **Do not submit:** duplicate draft `pifjakncjcpnkjbdlijgddhiipdlfbde`
-- **Release version:** `0.1.72`
-- **Last reconciled:** 2026-08-17 against the release source and live dashboard
+- **Release version:** `0.2.0`
+- **Last reconciled:** 2026-08-20 against the published `0.1.72` policy surface and the exact `0.2.0` Store package
 
 Paste only the text inside each quoted block into the matching dashboard field.
 
@@ -207,6 +207,6 @@ Do not upload old signed-in, admin, task, or unrelated product screenshots.
 
 - Previous rejection (2026-05-16), reference **Red Potassium**, said advertised functionality was not working or reproducible.
 - The rejected submission had no reviewer credentials and no reviewer instructions.
-- Version `0.1.72` provides a deterministic public test page and exact account-free steps.
+- Version `0.2.0` preserves the deterministic public test page and exact account-free steps introduced in `0.1.72`.
 - Literal Chrome Guest mode cannot load extensions. The correct reviewer simulation is a new local Chrome profile with only the submitted package installed and no AI Matrx login.
 - A clean-profile pass and exact screenshot paths must be recorded in `docs/CHROME_WEB_STORE_REVIEW.md` before submission.

@@ -3,13 +3,11 @@
 ## Current decision
 
 Version `0.1.72` was successfully published on 2026-08-19 to the existing
-public item `hnfolienncfklkgmdjjmhhegglimlamg`. Version `0.1.74` is superseded
-and must not be uploaded. Version `0.1.75` is the current
-validated Store candidate at `.output/matrx-extend-0.1.75-store.zip` (SHA-256
-`d7ba4937b8dec4f04e0330dee480814fbdd11636163a772aae9216f5abc1f651`). It has
-not yet been uploaded: Chrome refuses all extension-driven scripting on its own
-Web Store dashboard, so the upload and submission require an interactive UI
-session. Never upload the sibling `-local.zip` artifact.
+public item `hnfolienncfklkgmdjjmhhegglimlamg`. Versions `0.1.74`–`0.1.76` are
+superseded and must not be uploaded. Version `0.2.0` is the current validated
+Store candidate at `.output/matrx-extend-0.2.0-store.zip` (SHA-256
+`7a1bbd7ca47c5ba248146b44064b8b9ba40fdc0513b61b653200703b06a6f442`). It has
+not yet been uploaded. Never upload the sibling `-local.zip` artifact.
 
 The submitted listing contains the four current 1280 × 800 images from
 `.output/cws-assets/`, in this order: Chat, Capture, SEO, Settings. The optional
@@ -196,6 +194,7 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 | 2026-08-20 12:05 PDT | Version `0.1.75` passed TypeScript, all 437 tests, strict schema routing, the private migration-ledger check (15 applied / 0 pending / 0 drifted), Store package validation, separate local packaging, version tagging, and atomic push. Store artifact SHA-256 `d7ba4937b8dec4f04e0330dee480814fbdd11636163a772aae9216f5abc1f651`; local artifact SHA-256 `1374c3da96abfdb34cc4a175fc2f3bb75c15250b23aabfaecb5503688f686326`. The Store manifest is version `0.1.75`, has no development key or toolbar popup, and retains the canonical side panel. Live API-type regeneration was deliberately skipped to avoid absorbing unrelated concurrent generated-type work. Tool drift remains intentionally held on the old `credential_login` contract until the API, Store build, and East DB contract cut over together. The zip was validated but not uploaded. |
 | 2026-08-20 12:08 PDT | Rechecked the live Chrome Web Store dashboard under `arman@armansadeghi.com`, publisher **Matrx**. Primary item `hnfolienncfklkgmdjjmhhegglimlamg` reports **Status: Published - public**. The Draft tab states **This draft is unpublished**, confirming there is no pending draft submission. The approval email independently records **Item successfully published** at 2026-08-19 02:41 PDT. Version `0.1.75` remains a validated local Store candidate and has not been uploaded. |
 | 2026-08-20 12:31 PDT | Version `0.1.76` was prepared from an isolated clean worktree and passed TypeScript, strict schema routing, all **438** tests, the private migration-ledger check (15 applied / 0 pending / 0 drifted), Store package validation, and separate local packaging. Store artifact SHA-256 `21d7a3e3bcb19b6e6db11a44c345bd3179ddc5e46f655e47e4187110fb5fbcd2`; local artifact SHA-256 `5fca5e4eb1bf8131bc70d923f3b147b4b037a2b1fd5a63e8b6b6bab825916e58`. The Store manifest is `0.1.76`, has no development key or toolbar popup, and retains the canonical side panel. The known `credential_login` schema drift is intentional and release-forced: East remains on the public `0.1.72` contract until `0.1.76` is actually published, then East cuts over last so the old public extension is never advertised unexecutable actions. |
+| 2026-08-20 14:01 PDT | Version `0.2.0` became the first post-approval public-testing candidate, superseding `0.1.74`–`0.1.76`. TypeScript, all **438** tests, strict schema routing, migration ledger (15 applied / 0 pending / 0 drifted), Store package validation, and the new Chrome Web Store approval-risk gate passed. The emitted manifest exactly matches Google's published `0.1.72` policy surface and contains no forbidden runtime-code path, so this is classified as a **routine update**: no new permission, host, content-script reach, Store purpose, data category, or reviewer path. Authentication information was already disclosed in the published data-use form, and the credential-login work remains within the existing user-requested browser-action purpose. Store artifact `.output/matrx-extend-0.2.0-store.zip` SHA-256 `7a1bbd7ca47c5ba248146b44064b8b9ba40fdc0513b61b653200703b06a6f442`; local artifact SHA-256 `2cf27e774053f037208a23c399dadc187f46ff9064e2c2c2579fe9cbc2830a86`. The known `credential_login` tool-schema cutover remains intentionally deferred until this Store version is published, so the currently public `0.1.72` client is never advertised a contract it cannot execute. |
 
 ## Official policy references
 
