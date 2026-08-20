@@ -424,7 +424,7 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
         completed: 'Saved login details',
         error: 'Could not save login details',
       },
-      name: { literal: '' },
+      name: '',
       color: { started: 'primary', completed: 'emerald', error: 'red' },
     },
   },
