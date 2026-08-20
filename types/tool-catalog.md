@@ -1,6 +1,6 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-08-20T16:09:44.290Z
+Generated: 2026-08-20T18:52:17.926Z
 
 - **Total tools:** 168
 - **Assistant bundle:** 74 tools (read-only)
@@ -2990,15 +2990,307 @@ Generated: 2026-08-20T16:09:44.290Z
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "credential_item_id": {
-      "type": "string",
-      "minLength": 1
+  "anyOf": [
+    {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "const": "discover"
+            },
+            "credential_item_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "const": "attempt"
+            },
+            "credential_item_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "selector": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "field_key": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "literal": {
+                    "type": "string"
+                  },
+                  "clear_first": {
+                    "type": "boolean",
+                    "default": true
+                  }
+                },
+                "required": [
+                  "selector"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            },
+            "submit": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "click"
+                    },
+                    "selector": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "selector"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "press_enter"
+                    },
+                    "selector": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "selector"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "none"
+                    }
+                  },
+                  "required": [
+                    "kind"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "fields": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minItems": 1
+                  },
+                  "submit": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "click"
+                          },
+                          "selector": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "selector"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "press_enter"
+                          },
+                          "selector": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "selector"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "none"
+                          }
+                        },
+                        "required": [
+                          "kind"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "wait_for": {
+                    "type": "object",
+                    "properties": {
+                      "selector": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "timeout_ms": {
+                        "type": "integer",
+                        "minimum": 250,
+                        "maximum": 60000,
+                        "default": 15000
+                      }
+                    },
+                    "required": [
+                      "selector"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "fields",
+                  "submit"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            },
+            "expect": {
+              "type": "object",
+              "properties": {
+                "success_url_prefix": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "success_selector": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "failure_selector": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "challenge_selector": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "timeout_ms": {
+                  "type": "integer",
+                  "minimum": 1000,
+                  "maximum": 60000,
+                  "default": 30000
+                }
+              },
+              "additionalProperties": false,
+              "default": {
+                "timeout_ms": 30000
+              }
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          },
+          "required": [
+            "action",
+            "fields"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "const": "report"
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "secret_exposed",
+                "wrong_verdict",
+                "recipe_wrong",
+                "other"
+              ]
+            },
+            "where": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "attempt_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            }
+          },
+          "required": [
+            "action",
+            "kind",
+            "where"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "credential_item_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false,
+      "default": {}
     }
-  },
-  "additionalProperties": false,
-  "default": {},
+  ],
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
 ```

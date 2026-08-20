@@ -176,6 +176,9 @@ export interface CredentialLoginOutcome {
  * content or server text — both can echo a credential back.
  */
 const STATUS_COPY: Record<CredentialLoginStatus, string> = {
+  discovery_ready: 'Saved login fields are ready.',
+  report_received: 'Report received.',
+  spec_incomplete: 'The login plan was incomplete, so nothing was entered.',
   authenticated: 'Signed in.',
   needs_mfa: 'Signed in — finish the verification step on the page.',
   captcha_or_takeover: 'The site is showing a challenge. Finish it yourself, then try again.',

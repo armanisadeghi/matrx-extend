@@ -194,7 +194,7 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'credentials',
     label: 'Saved logins',
     description:
-      "Sign in to the site in the current tab using a login saved in the user's Matrx vault. `credential_login` resolves, fills, submits, and verifies in one call and returns only an outcome status — the agent never receives, and cannot supply, a URL, username, password, or selector. MFA and CAPTCHA stop automation for user takeover rather than being worked around.",
+      "Sign in to the current tab with a login saved in the user's Matrx vault. Discover safe field names, submit one complete field-map attempt, or report a leak/wrong verdict. The agent may provide selectors and explicitly non-secret literals, but never receives or supplies a destination URL, credential value, TOTP seed/code, or script. Results contain only a verdict, bounded confidence, named signals, sanitized evidence metadata, and feedback instructions. MFA and CAPTCHA stop for user takeover.",
     list_tool_name: 'list_credentials_tools',
   },
   crm: {

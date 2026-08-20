@@ -247,6 +247,34 @@ export async function reportBrowserLoginResult(
   }
 }
 
+export interface BrowserLoginReportInput {
+  kind: 'secret_exposed' | 'wrong_verdict' | 'recipe_wrong' | 'other';
+  where: string;
+  attempt_id?: string;
+  description?: string;
+}
+
+export interface BrowserLoginReportReceipt {
+  id: string;
+  status: string;
+}
+
+/** File a value-free login problem through the platform's ONE feedback path. */
+export async function submitBrowserLoginReport(
+  input: BrowserLoginReportInput,
+): Promise<VaultResult<BrowserLoginReportReceipt>> {
+  log.info('api', '→ POST vault/browser-login/report');
+  const r = await vaultPost<BrowserLoginReportReceipt>(`${BASE}/report`, input, {
+    // User-authored text: never let a malformed response quote request context.
+    silent: true,
+  });
+  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
+  if (!r.data || typeof r.data.id !== 'string' || typeof r.data.status !== 'string') {
+    return { ok: false, failure: { kind: 'server_error', status: 200 } };
+  }
+  return { ok: true, data: r.data };
+}
+
 // ── On-the-fly credential CAPTURE (D-11) ────────────────────────────────────
 //
 // The agent hit a login it has NO stored credential for. Instead of asking the

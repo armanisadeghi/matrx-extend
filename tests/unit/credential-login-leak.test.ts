@@ -86,7 +86,7 @@ vi.mock('@/lib/api/client', () => ({
   apiDelete: async () => ({ ok: false, status: 404, error: 'unmocked' }),
 }));
 
-const happyLoginServer = async (path: string): Promise<unknown> => {
+const happyLoginServer = async (path: string, body?: unknown): Promise<unknown> => {
   if (path.endsWith('/matches')) {
     return {
       ok: true,
@@ -104,6 +104,19 @@ const happyLoginServer = async (path: string): Promise<unknown> => {
     };
   }
   if (path.endsWith('/materialize')) {
+    const requested = (body as { field_keys?: string[] } | undefined)?.field_keys;
+    if (requested) {
+      return {
+        ok: true,
+        data: {
+          item_id: ITEM_ID,
+          origin: PAGE_ORIGIN,
+          fields: Object.fromEntries(
+            requested.map((key) => [key, key === 'username' ? SENTINEL_USER : SENTINEL_PASSWORD]),
+          ),
+        },
+      };
+    }
     return {
       ok: true,
       data: {
@@ -249,8 +262,11 @@ describe('credential_login — plaintext never leaves the handler', () => {
     const result = await credential_login.run({}, ctx);
 
     expect(result.status).toBe('authenticated');
-    // The envelope carries the enum and nothing else that could hold a value.
-    expect(Object.keys(result)).toEqual(['status']);
+    // The richer envelope carries only bounded evidence/signals/instructions.
+    expect(Object.keys(result).sort()).toEqual(
+      ['confidence', 'feedback', 'signals', 'status', 'verdict'].sort(),
+    );
+    expect(result.feedback.how_to_report).not.toContain(SENTINEL_PASSWORD);
 
     // The fill actually happened — otherwise this test proves nothing.
     const username = document.getElementById('username') as HTMLInputElement;
@@ -324,6 +340,138 @@ describe('credential_login — plaintext never leaves the handler', () => {
     );
     expectNoSentinels(JSON.stringify(inspections), 'page-inspection results');
   }, 30_000);
+});
+
+describe('credential_login — complete attempt contract', () => {
+  beforeEach(resetRecorders);
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  it('discovers field NAMES and non-secret values without materializing anything', async () => {
+    postImpl = async (path, body) => {
+      if (path.endsWith('/matches')) {
+        expect(body).toMatchObject({ include_field_inventory: true });
+        return {
+          ok: true,
+          data: {
+            matches: [
+              {
+                item_id: ITEM_ID,
+                display_name: 'Example account',
+                definition_key: 'website_login',
+                host: 'accounts.example.com',
+                available_fields: [
+                  { field_key: 'username', label: 'Email', fillable: true },
+                  { field_key: 'password', label: 'Password', fillable: true },
+                  {
+                    field_key: 'totp_seed',
+                    label: 'Authenticator',
+                    fillable: false,
+                    reason: 'sealed',
+                  },
+                ],
+                non_secret_fields: [{ key: 'account_alias', label: 'Alias', value: 'matrx' }],
+              },
+            ],
+            count: 1,
+          },
+        };
+      }
+      throw new Error('discovery must never materialize');
+    };
+    const { credential_login } = await import('@/lib/tools/handlers/credential-login');
+    const result = await credential_login.run({ action: 'discover' }, ctx);
+    expect(result.status).toBe('discovery_ready');
+    expect(result.available_fields?.map((field) => field.field_key)).toEqual([
+      'username',
+      'password',
+      'totp_seed',
+    ]);
+    expect(posts.some((post) => post.path.endsWith('/materialize'))).toBe(false);
+    expectNoSentinels(await egressBlob(result), 'discovery result');
+  });
+
+  it('fills a declared multi-field attempt atomically and returns sanitized evidence', async () => {
+    const { credential_login } = await import('@/lib/tools/handlers/credential-login');
+    const result = await credential_login.run(
+      {
+        action: 'attempt',
+        credential_item_id: ITEM_ID,
+        fields: [
+          { selector: '#username', field_key: 'username', clear_first: true },
+          { selector: '#password', field_key: 'password', clear_first: true },
+        ],
+        submit: { kind: 'click', selector: '#submit' },
+        expect: { success_selector: 'a[href="/logout"]', timeout_ms: 2_000 },
+        reason: 'Test the declared attempt contract.',
+      },
+      ctx,
+    );
+
+    expect(result.status).toBe('authenticated');
+    expect(result.confidence).toBeGreaterThanOrEqual(0.75);
+    expect(result.evidence?.before.url).toBe(PAGE_URL);
+    expect(result.evidence?.after?.url).toBe(`${PAGE_ORIGIN}/session`);
+    expect(result.signals?.some((item) => item.kind === 'success_selector')).toBe(true);
+    const materialize = posts.find((post) => post.path.endsWith('/materialize'));
+    expect(materialize?.body).toMatchObject({ field_keys: ['username', 'password'] });
+    expectNoSentinels(await egressBlob(result), 'complete attempt egress');
+  }, 30_000);
+
+  it('refuses an incomplete specification at schema validation', async () => {
+    const { credential_login } = await import('@/lib/tools/handlers/credential-login');
+    const parsed = credential_login.argsSchema.safeParse({
+      action: 'attempt',
+      fields: [{ selector: '#password', field_key: 'password', literal: 'not-allowed' }],
+      submit: { kind: 'click', selector: '#submit' },
+    });
+    expect(parsed.success).toBe(false);
+  });
+
+  it('refuses a missing first-step selector before materializing Vault fields', async () => {
+    const { credential_login } = await import('@/lib/tools/handlers/credential-login');
+    const result = await credential_login.run(
+      {
+        action: 'attempt',
+        credential_item_id: ITEM_ID,
+        fields: [{ selector: '#not-on-this-page', field_key: 'password', clear_first: true }],
+        submit: { kind: 'click', selector: '#submit' },
+      },
+      ctx,
+    );
+    expect(result.status).toBe('spec_incomplete');
+    expect(result.reason).toBe('selector_not_found');
+    expect(posts.some((post) => post.path.endsWith('/materialize'))).toBe(false);
+  });
+
+  it('files a value-free report through the canonical feedback route', async () => {
+    postImpl = async (path, body) => {
+      if (path.endsWith('/report')) {
+        expect(body).toEqual({
+          kind: 'wrong_verdict',
+          where: 'the final login result',
+          attempt_id: 'attempt-1',
+          description: 'The page was still signed out.',
+        });
+        return { ok: true, status: 200, data: { id: 'feedback-1', status: 'pending' } };
+      }
+      throw new Error('report must use only the feedback route');
+    };
+    const { credential_login } = await import('@/lib/tools/handlers/credential-login');
+    const result = await credential_login.run(
+      {
+        action: 'report',
+        kind: 'wrong_verdict',
+        where: 'the final login result',
+        attempt_id: 'attempt-1',
+        description: 'The page was still signed out.',
+      },
+      ctx,
+    );
+    expect(result.status).toBe('report_received');
+    expectNoSentinels(await egressBlob(result), 'report result');
+  });
 });
 
 describe('credential_login — unsafe destinations cannot be filled', () => {

@@ -429,10 +429,10 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     },
   },
 
-  // Vault browser login. The row shows the OUTCOME STATUS and nothing else —
-  // no field names, no page text, no value. `args` can only ever be an
-  // optional `credential_item_id` (the tool accepts no URL / username /
-  // password / selector). See src/lib/tools/handlers/credential-login.ts.
+  // Vault browser login. The row shows only the safe outcome envelope — never
+  // page text or credential values. Agent-authored attempt args may contain
+  // field names, selectors, and explicitly non-secret literals, but never a
+  // URL, credential value, TOTP material, or script. See the handler contract.
   credential_login: {
     inline: {
       icon: { started: 'Loader2', completed: 'KeyRound', error: 'AlertTriangle' },

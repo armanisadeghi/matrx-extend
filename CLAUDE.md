@@ -280,26 +280,34 @@ Arman plus dozens of concurrent agents (across two machines) edit these repos si
   ([src/lib/tools/handlers/credential-login.ts](./src/lib/tools/handlers/credential-login.ts))
   does resolve → materialize → fill → submit → verify inside a single `run()`;
   the plaintext lives in one `const` in that scope and nowhere else.
-  - **Arguments are `{credential_item_id?}` and NOTHING else.** No URL, no
-    username, no password, no selector, no script. The extension derives the
-    real tab origin itself (`getAssignedTab`) and detects the fields itself, so
-    a confused or hostile model cannot aim the fill. Injection is
-    `frameIds: [0]` — top frame only.
+  - **The current contract is `discover | attempt | report`.** `discover`
+    returns field names and non-secret preset values only. `attempt` accepts a
+    complete field map (Vault `field_key` or an explicitly non-secret literal),
+    selectors, an explicit submit method, and optional non-secret expectations
+    (including a post-submit success URL prefix).
+    `report` records a leak or wrong-verdict report. There is no agent-supplied
+    destination URL, username, password, TOTP seed/code, or arbitrary script
+    argument. A strict legacy
+    `{credential_item_id?}` arm remains only for the Vault panel's one-click
+    automatic fill. The extension derives the real tab origin itself
+    (`getAssignedTab`), and injection is `frameIds: [0]` — top frame only.
   - **Refusals happen before any decrypt:** non-https (except loopback), not
     the top frame, a live page origin that disagrees with the tab, or a
     materialize response authorized for a different origin.
   - **Server contract** lives in
     [src/lib/api/routes/vault.ts](./src/lib/api/routes/vault.ts) —
-    `/api/vault/browser-login/{matches, {id}/materialize, {id}/result}`, all
+    `/api/vault/browser-login/{matches, {id}/materialize, {id}/result, report}`, all
     through the one `apiPost` client and all gated on a REAL user JWT. The
     guest-fingerprint identity the rest of the extension treats as
     first-class is rejected server-side for this flow, so it is
     short-circuited here rather than failing opaquely.
-  - **Returns ONLY this enum:** `authenticated | needs_mfa |
-    captcha_or_takeover | credentials_rejected | selection_required |
-    no_matching_login | unsafe_destination | unknown`. `unknown` is NOT
-    success. MFA and CAPTCHA are never bypassed — they stop for user takeover.
-    If submission never proceeds, the filled fields are cleared before returning.
+  - **Returns a fixed status plus safe evidence, never page or credential
+    content.** Attempt results include `verdict`, bounded `confidence`, named
+    boolean `signals`, sanitized before/after origin+path metadata, elapsed
+    time, and a machine-readable `feedback.how_to_report` contract. Statuses
+    also include `discovery_ready`, `report_received`, and `spec_incomplete`;
+    `unknown` is NOT success. MFA and CAPTCHA are never bypassed — they stop for
+    user takeover. If submission never proceeds, filled fields are cleared.
   - **Redaction is no longer password-centric.** Every page-reading tool used
     to key on the live `type === 'password'`, so a filled USERNAME was echoed
     verbatim and a "show password" toggle un-redacted the password itself.
@@ -310,11 +318,11 @@ Arman plus dozens of concurrent agents (across two machines) edit these repos si
     applied in `read_page`, `get_form_fields`, `query_elements`, and the
     inspect family. Page-controlled DOM state is never the only defence, so a
     page that strips the attribute or rewrites the input type changes nothing.
-  - **Not advertised yet.** The `tool.definition` + `tool.binding` rows exist
-    (`admin_only=false`, `tier=action`, `category=credentials`), but no
-    `tool.surface_defaults.always_include_tools` array lists it — that array is
-    the Phase 5 activation switch, and `pnpm catalog:tools:drift` reports the
-    missing surface inclusion **by design** until it flips.
+  - **Advertised on the live Chrome-extension binding.** The
+    `tool.definition` + `tool.binding` rows are the runtime source of truth
+    (`admin_only=false`, `tier=action`, `category=credentials`). Keep the DB
+    input schema synchronized with this handler via the strict catalog drift
+    check whenever the union changes.
   - Plan: `/Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/PLAN.md`.
     **Picking this up cold?** Read
     `/Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/HANDOFF.md`
@@ -327,6 +335,13 @@ Arman plus dozens of concurrent agents (across two machines) edit these repos si
     form's normalized method (`get` is also the browser default when omitted),
     and the submit primitive independently refuses GET again. Credentials never
     enter a URL, history entry, Referer header, or page-inspection result.
+  - **Two intentionally open boundaries:** local-Chrome delegated TOTP cannot
+    be completed until aidream has a server-to-local command channel that can
+    type the code without returning it over HTTP; the seed and generated code
+    must remain inside aidream. Full screenshot/HTML artifact custody also
+    waits for a canonical local-browser run/artifact store. The current result
+    therefore carries sanitized metadata only; do not add a code-return API or
+    ad-hoc artifact store to work around either boundary.
 - **Reference-ID system** — `read_page` tags every interactive element with
   `data-matrx-ref="N"` and returns refs (`ref:N`) the agent passes to
   interaction tools instead of brittle CSS selectors. Refs survive DOM

@@ -2071,6 +2071,27 @@ Every entry follows this shape:
   - Sign out with the panel open → the next action reports
     "Sign in to Matrx to use the Vault".
 
+### Agent-directed saved login (`credential_login`)
+- **Where to test:** sidepanel → Tools → search `credential_login`, with an https login
+  page assigned to the conversation and a matching Vault item. Signed in only.
+- **Steps:**
+  1. Run `discover` → exactly one candidate returns its safe field inventory (names,
+     labels, fillability, and non-secret preset values), never any secret value.
+  2. Run one `attempt` containing the complete field map, selectors, explicit submit
+     action, and optional non-secret expectations. Use `field_key` for every Vault value.
+  3. Confirm the result has a fixed status, verdict, bounded confidence, named boolean
+     signals, sanitized before/after origin+path metadata, elapsed time, and
+     `feedback.how_to_report`; it must contain no page text or field value.
+  4. Run `report` with `kind: wrong_verdict`, a precise `where`, and the attempt id when
+     present → `report_received` without any credential data in the request/result.
+- **Expected:** malformed or partial attempts return `spec_incomplete` before filling;
+  GET forms and unsafe destinations are refused; later-step fields may be filled after
+  navigation, but all requested Vault fields are materialized atomically once.
+- **Current boundary:** a local-Chrome TOTP/MFA step returns `needs_mfa` for human
+  takeover. Delegated TOTP must wait for the server-to-local command channel so neither
+  seed nor generated code is ever returned to the extension. Evidence is sanitized
+  metadata only until local browser runs have a canonical artifact store.
+
 ### On-the-fly credential capture (`capture_credential` — D-11)
 - **What it does:** the agent hits a login it has NO saved credential for and, instead
   of asking you to log in where it would see the password, asks the tool to CAPTURE one.
@@ -2078,9 +2099,8 @@ Every entry follows this shape:
   with the agent's metadata (site name, description, url, field map). **The agent never
   sees the value.** Known site → the agent gets the saved recipe; unknown site → the
   agent is asked to document a proposed recipe (a human activates it later).
-- **Where to test:** chat (ask the agent to sign in to a site you have NO Vault item for),
-  once the `tool.definition` / `tool.binding` rows + a surface inclusion are seeded (like
-  `credential_login`, it is not advertised until then). Signed in only.
+- **Where to test:** chat (ask the agent to sign in to a site you have NO Vault item for)
+  on the live Chrome-extension surface. Signed in only.
 - **Steps:**
   1. On an https login page with nothing saved, have the agent call `capture_credential`.
   2. A "Save a login for &lt;host&gt;" card appears with the fields the agent named.

@@ -9,8 +9,10 @@
  *
  * The current contract is a discriminated union: discover safe field names,
  * submit one complete field-map attempt, or report a leak/wrong verdict. There
- * is deliberately no URL or credential value argument. The extension derives
- * the real tab origin itself and the server resolves field NAMES just in time.
+ * is deliberately no agent-supplied destination URL or credential value. The
+ * extension derives the real tab origin itself; an optional success URL prefix
+ * is only a post-submit expectation. The server resolves field NAMES just in
+ * time.
  *
  * The whole resolve → materialize → fill → submit → verify cycle happens
  * inside ONE `run()` call. The plaintext lives in a `const` in that scope and
@@ -31,6 +33,7 @@ import {
   hasRealUserToken,
   materializeBrowserLogin,
   reportBrowserLoginResult,
+  submitBrowserLoginReport,
 } from '@/lib/api/routes/vault';
 import { checkAuthState } from '@/lib/chat/context/check-auth-state';
 import { isSafeDestination } from '@/lib/credentials/login-urls';
@@ -50,6 +53,9 @@ import { z } from 'zod';
  * state could not be established".
  */
 export type CredentialLoginStatus =
+  | 'discovery_ready'
+  | 'report_received'
+  | 'spec_incomplete'
   | 'authenticated'
   | 'needs_mfa'
   | 'captcha_or_takeover'
@@ -146,6 +152,13 @@ const AttemptArgs = z
     reason: z.string().min(1).max(1_000).optional(),
   })
   .superRefine((value, ctx) => {
+    if (!value.fields.some((field) => field.field_key !== undefined)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'an attempt must name at least one vault field',
+        path: ['fields'],
+      });
+    }
     if (value.steps && value.submit) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -174,7 +187,7 @@ const AttemptArgs = z
 const ReportArgs = z.object({
   action: z.literal('report'),
   kind: z.enum(['secret_exposed', 'wrong_verdict', 'recipe_wrong', 'other']),
-  where: z.string().min(1).max(1_000).optional(),
+  where: z.string().min(1).max(500),
   attempt_id: z.string().min(1).optional(),
   description: z.string().min(1).max(4_000).optional(),
 });
@@ -183,9 +196,13 @@ const CredentialLoginArgs = z.union([DiscoverArgs, AttemptArgs, ReportArgs]).or(
   // Compatibility for the published pre-convergence client and the Vault
   // panel. It executes the existing safe heuristic path; agents receive the
   // discriminated schema after the live definition is updated.
-  z.object({ credential_item_id: z.string().min(1).optional() }).default({}),
+  z
+    .object({ credential_item_id: z.string().min(1).optional() })
+    .strict()
+    .default({}),
 );
 type CredentialLoginArgs = z.infer<typeof CredentialLoginArgs>;
+type CompleteAttemptArgs = z.infer<typeof AttemptArgs>;
 
 interface LoginSignal {
   kind: string;
@@ -379,7 +396,7 @@ function fillFieldSource(
   const el = document.querySelector(selector) as HTMLInputElement | null;
   if (!el) return { ok: false, reason: 'field_not_found' };
   // Mark BEFORE writing so a mid-fill failure still leaves the field redacted.
-  el.setAttribute(sensitiveAttr, '');
+  if (sensitiveAttr) el.setAttribute(sensitiveAttr, '');
   el.scrollIntoView({ block: 'center', behavior: 'instant' });
   el.focus();
   // React/Vue track the value setter — bypass with the native one, then
@@ -600,7 +617,12 @@ function safeResult(
         ? 'challenged'
         : status === 'credentials_rejected'
           ? 'rejected'
-          : ['selection_required', 'no_matching_login', 'unsafe_destination'].includes(status)
+          : [
+                'selection_required',
+                'no_matching_login',
+                'unsafe_destination',
+                'spec_incomplete',
+              ].includes(status)
             ? 'refused'
             : 'unknown';
   const out: CredentialLoginResult = {
@@ -612,6 +634,133 @@ function safeResult(
   };
   Object.assign(out, extra);
   return out;
+}
+
+function signal(
+  kind: string,
+  direction: LoginSignal['direction'],
+  weight: number,
+  source: LoginSignal['source'] = 'generic',
+): LoginSignal {
+  return { kind, direction, weight, source };
+}
+
+async function waitForSelector(
+  tabId: number,
+  selector: string,
+  timeoutMs: number,
+): Promise<boolean> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const found = await injectTopFrame<boolean>(
+      tabId,
+      ((sel: string) => {
+        try {
+          return document.querySelector(sel) !== null;
+        } catch {
+          return false;
+        }
+      }) as (...args: never[]) => boolean,
+      [selector],
+    ).catch(() => false);
+    if (found) return true;
+    await sleep(POLL_INTERVAL_MS);
+  }
+  return false;
+}
+
+async function classifyExplicitAttempt(
+  tabId: number,
+  pageUrl: URL,
+  expect: z.infer<typeof ExpectSpec>,
+  before: PageStateProbe,
+  startedAt: number,
+): Promise<Pick<CredentialLoginResult, 'status' | 'confidence' | 'signals' | 'evidence'>> {
+  const deadline = Date.now() + expect.timeout_ms;
+  let after: PageStateProbe | null = null;
+  while (Date.now() < deadline) {
+    await sleep(POLL_INTERVAL_MS);
+    after = await injectTopFrame<PageStateProbe>(tabId, pageStateSource, []).catch(() => null);
+    if (!after) continue;
+    if (
+      after.href !== before.href ||
+      after.has_password_field !== before.has_password_field ||
+      after.mfa ||
+      after.captcha ||
+      after.error_kind !== null
+    ) {
+      break;
+    }
+  }
+  after ??= before;
+  const signals: LoginSignal[] = [];
+  if (after.captcha) signals.push(signal('captcha_marker_present', 'challenged', 1));
+  if (after.mfa) signals.push(signal('mfa_marker_present', 'challenged', 0.95));
+  if (after.error_kind === 'credentials') {
+    signals.push(signal('credential_error_present', 'rejected', 0.95));
+  }
+  if (!after.has_password_field && before.has_password_field) {
+    signals.push(signal('login_form_gone', 'authenticated', 0.4));
+  }
+  if (expect.success_url_prefix && after.href.startsWith(expect.success_url_prefix)) {
+    signals.push(signal('expected_success_url', 'authenticated', 0.85, 'agent_expectation'));
+  }
+  const expectationSelectors = [
+    ['success_selector', expect.success_selector, 'authenticated', 0.8],
+    ['failure_selector', expect.failure_selector, 'rejected', 0.9],
+    ['challenge_selector', expect.challenge_selector, 'challenged', 0.9],
+  ] as const;
+  for (const [kind, selector, direction, weight] of expectationSelectors) {
+    if (!selector) continue;
+    const present = await waitForSelector(tabId, selector, 250);
+    if (present) signals.push(signal(kind, direction, weight, 'agent_expectation'));
+  }
+  const currentTab = await chrome.tabs.get(tabId).catch(() => null);
+  const currentUrl = currentTab?.url ?? after.href ?? pageUrl.href;
+  const auth = await checkAuthState(tabId, currentUrl);
+  if (auth?.signed_in === 'yes') signals.push(signal('auth_state_yes', 'authenticated', 0.8));
+  if (auth?.signed_in === 'likely') {
+    signals.push(signal('auth_state_likely', 'authenticated', 0.55));
+  }
+
+  const strongest = (direction: LoginSignal['direction']): number =>
+    Math.min(
+      1,
+      signals
+        .filter((item) => item.direction === direction)
+        .reduce((total, item) => total + item.weight, 0),
+    );
+  const challenged = strongest('challenged');
+  const rejected = strongest('rejected');
+  const authenticated = strongest('authenticated');
+  const status: CredentialLoginStatus =
+    challenged > 0
+      ? after.captcha
+        ? 'captcha_or_takeover'
+        : 'needs_mfa'
+      : rejected > 0
+        ? 'credentials_rejected'
+        : authenticated >= 0.75
+          ? 'authenticated'
+          : 'unknown';
+  const confidence =
+    status === 'needs_mfa' || status === 'captcha_or_takeover'
+      ? challenged
+      : status === 'credentials_rejected'
+        ? rejected
+        : status === 'authenticated'
+          ? authenticated
+          : Math.max(authenticated, rejected, challenged);
+  return {
+    status,
+    confidence,
+    signals,
+    evidence: {
+      before: snapshot(before),
+      after: snapshot(after),
+      elapsed_ms: Date.now() - startedAt,
+    },
+  };
 }
 
 function snapshot(state: PageStateProbe): EvidenceSnapshot {
@@ -664,6 +813,233 @@ async function injectTopFrame<T>(
   return (first?.result as T | undefined) ?? null;
 }
 
+async function runCompleteAttempt(
+  args: CompleteAttemptArgs,
+  ctx: Parameters<typeof getAssignedTab>[0],
+  tabId: number,
+  pageUrl: URL,
+  normalizedPageUrl: string,
+): Promise<CredentialLoginResult> {
+  let itemId = args.credential_item_id ?? null;
+  if (!itemId) {
+    const matches = await fetchBrowserLoginMatches(normalizedPageUrl, {
+      includeFieldInventory: true,
+    });
+    if (!matches.ok) return failureResult(matches.failure, 'matches');
+    if (matches.data.matches.length === 0) {
+      return safeResult('no_matching_login', {
+        message: 'No saved login is enabled for browser fill on this destination.',
+      });
+    }
+    if (matches.data.matches.length > 1) {
+      return safeResult('selection_required', {
+        message: 'Several saved logins match this destination. Select one before attempting.',
+        choices: matches.data.matches.map((match) => ({
+          credential_item_id: match.item_id,
+          display_name: match.display_name,
+        })),
+      });
+    }
+    itemId = matches.data.matches[0]?.item_id ?? null;
+  }
+  if (!itemId) return safeResult('no_matching_login');
+
+  const fieldBySelector = new Map(args.fields.map((field) => [field.selector, field]));
+  const fieldKeys = Array.from(
+    new Set(args.fields.flatMap((field) => (field.field_key ? [field.field_key] : []))),
+  );
+  const steps = args.steps ?? [
+    {
+      fields: args.fields.map((field) => field.selector),
+      submit: args.submit as z.infer<typeof SubmitSpec>,
+    },
+  ];
+  const startedAt = Date.now();
+
+  // Refuse a malformed first step before asking the Vault to decrypt anything.
+  // Later-step selectors may legitimately appear only after the first submit,
+  // so they are checked immediately before their own step below.
+  const firstStep = steps[0];
+  if (!firstStep) {
+    return safeResult('spec_incomplete', { reason: 'attempt_has_no_steps' });
+  }
+  const firstControl = firstStep.submit.kind === 'none' ? null : firstStep.submit.selector;
+  const firstProbe = await injectTopFrame<SpecProbe>(tabId, probeAttemptSpecSource, [
+    firstStep.fields,
+    firstControl ? [firstControl] : [],
+  ]).catch(() => null);
+  if (!firstProbe || !firstProbe.is_top_frame || firstProbe.origin !== pageUrl.origin) {
+    return safeResult('unsafe_destination', { reason: 'origin_changed_before_attempt' });
+  }
+  const firstMissing = firstStep.fields.filter((selector) => !firstProbe.fields[selector]?.exists);
+  if (firstControl && !firstProbe.controls[firstControl]) firstMissing.push(firstControl);
+  if (firstMissing.length > 0) {
+    return safeResult('spec_incomplete', {
+      reason: 'selector_not_found',
+      message: `The first step could not be found (${firstMissing.length} selector${firstMissing.length === 1 ? '' : 's'} missing). Nothing was decrypted or typed.`,
+    });
+  }
+  if (firstStep.fields.some((selector) => firstProbe.fields[selector]?.form_method === 'get')) {
+    return safeResult('unsafe_destination', { reason: 'unsafe_get_form' });
+  }
+
+  // Resolve every named field as one atomic authorization request BEFORE any
+  // page mutation. A missing/inactive/sealed field refuses the whole attempt.
+  const materialized = await materializeBrowserLogin(itemId, {
+    pageUrl: normalizedPageUrl,
+    toolInvocationId: ctx.callId,
+    clientBuild: chrome.runtime.getManifest().version,
+    fieldKeys,
+  });
+  if (!materialized.ok) {
+    const failed = failureResult(materialized.failure, 'materialize');
+    return safeResult('spec_incomplete', {
+      reason: failed.reason ?? 'field_materialization_refused',
+      message: 'The complete field set could not be authorized. Nothing was typed.',
+    });
+  }
+  const credential = materialized.data;
+  if (credential.origin !== pageUrl.origin || !credential.fields) {
+    return safeResult('unsafe_destination', { reason: 'origin_or_field_map_mismatch' });
+  }
+
+  const before = await injectTopFrame<PageStateProbe>(tabId, pageStateSource, []).catch(() => null);
+  if (!before) return safeResult('unknown', { reason: 'before_evidence_failed' });
+  const filledSelectors: string[] = [];
+  const finish = async (
+    result: CredentialLoginResult,
+    clear = false,
+  ): Promise<CredentialLoginResult> => {
+    if (clear && filledSelectors.length > 0) {
+      await injectTopFrame(tabId, clearSensitiveSource, [filledSelectors, SENSITIVE_ATTR]).catch(
+        () => null,
+      );
+      forgetSensitiveFields(tabId);
+    }
+    const auditableStatus: BrowserLoginResultStatus = [
+      'authenticated',
+      'needs_mfa',
+      'captcha_or_takeover',
+      'credentials_rejected',
+      'selection_required',
+      'no_matching_login',
+      'unsafe_destination',
+      'unknown',
+    ].includes(result.status)
+      ? (result.status as BrowserLoginResultStatus)
+      : 'unknown';
+    await reportBrowserLoginResult(itemId, {
+      status: auditableStatus,
+      pageUrl: normalizedPageUrl,
+      toolInvocationId: ctx.callId,
+    });
+    return result;
+  };
+
+  for (const [stepIndex, step] of steps.entries()) {
+    const specs = step.fields.map((selector) => fieldBySelector.get(selector));
+    if (specs.some((entry) => !entry)) {
+      return await finish(
+        safeResult('spec_incomplete', {
+          reason: 'step_references_undeclared_field',
+          message: 'A step referenced a field that was not declared. Nothing else was typed.',
+        }),
+        true,
+      );
+    }
+    const controlSelector = step.submit.kind === 'none' ? null : step.submit.selector;
+    const probe = await injectTopFrame<SpecProbe>(tabId, probeAttemptSpecSource, [
+      step.fields,
+      controlSelector ? [controlSelector] : [],
+    ]).catch(() => null);
+    if (!probe || !probe.is_top_frame || probe.origin !== pageUrl.origin) {
+      return await finish(
+        safeResult('unsafe_destination', { reason: 'origin_changed_during_attempt' }),
+        true,
+      );
+    }
+    const missing = step.fields.filter((selector) => !probe.fields[selector]?.exists);
+    if (controlSelector && !probe.controls[controlSelector]) missing.push(controlSelector);
+    if (missing.length > 0) {
+      return await finish(
+        safeResult('spec_incomplete', {
+          reason: 'selector_not_found',
+          message: `The complete step could not be found (${missing.length} selector${missing.length === 1 ? '' : 's'} missing).`,
+        }),
+        true,
+      );
+    }
+    if (step.fields.some((selector) => probe.fields[selector]?.form_method === 'get')) {
+      return await finish(safeResult('unsafe_destination', { reason: 'unsafe_get_form' }), true);
+    }
+
+    for (const spec of specs) {
+      if (!spec) continue;
+      const value = spec.field_key ? credential.fields[spec.field_key] : spec.literal;
+      if (typeof value !== 'string') {
+        return await finish(
+          safeResult('spec_incomplete', {
+            reason: 'materialized_field_missing',
+            message: 'The server did not return every authorized field. Nothing else was typed.',
+          }),
+          true,
+        );
+      }
+      if (spec.field_key) {
+        rememberSensitiveFields(tabId, [spec.selector]);
+        filledSelectors.push(spec.selector);
+      }
+      const filled = await injectTopFrame<{ ok: boolean }>(tabId, fillFieldSource, [
+        spec.selector,
+        value,
+        spec.field_key ? SENSITIVE_ATTR : '',
+      ]).catch(() => null);
+      if (!filled?.ok) {
+        return await finish(
+          safeResult('unknown', { reason: `step_${stepIndex}_fill_failed` }),
+          true,
+        );
+      }
+    }
+
+    const submitted = await injectTopFrame<{ ok: boolean; mode: string }>(
+      tabId,
+      explicitSubmitSource,
+      [step.submit.kind, controlSelector],
+    ).catch(() => null);
+    if (!submitted?.ok) {
+      return await finish(
+        safeResult(submitted?.mode === 'unsafe_get' ? 'unsafe_destination' : 'unknown', {
+          reason: submitted?.mode === 'unsafe_get' ? 'unsafe_get_form' : 'submit_failed',
+        }),
+        true,
+      );
+    }
+    if (step.wait_for) {
+      const appeared = await waitForSelector(
+        tabId,
+        step.wait_for.selector,
+        step.wait_for.timeout_ms,
+      );
+      if (!appeared) {
+        return await finish(
+          safeResult('unknown', { reason: `step_${stepIndex}_wait_timed_out` }),
+          true,
+        );
+      }
+    }
+  }
+
+  const classified = await classifyExplicitAttempt(tabId, pageUrl, args.expect, before, startedAt);
+  return await finish(
+    safeResult(classified.status, {
+      ...(classified.confidence !== undefined ? { confidence: classified.confidence } : {}),
+      ...(classified.signals !== undefined ? { signals: classified.signals } : {}),
+      ...(classified.evidence !== undefined ? { evidence: classified.evidence } : {}),
+    }),
+  );
+}
+
 export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginResult> = {
   name: 'credential_login',
   tier: 'action',
@@ -672,9 +1048,8 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
   // NOTE: no `admin_only`. The DB is the source of truth (Rule 7,
   // docs/TOOL_SOURCE_OF_TRUTH.md) and `tool.definition.credential_login` says
   // `admin_only = false`, `tier = 'action'`, `category = 'credentials'`.
-  // Agent advertisement is gated by `tool.surface_defaults.always_include_tools`
-  // — no surface lists this tool yet, which is the Phase 5 activation switch.
-  // Do not re-add a code-side gate; change the DB instead.
+  // The live `chrome-extension` binding advertises this tool to Assistant and
+  // Pilot. Do not re-add a code-side gate; change the DB binding instead.
   run: async (args, ctx) => {
     // ── 1. A real signed-in user, or nothing ───────────────────────────────
     if (!(await hasRealUserToken())) {
@@ -682,6 +1057,20 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
         reason: 'matrx_sign_in_required',
         message:
           'Sign in to Matrx in the extension side panel before using credential_login. The vault does not accept anonymous identities.',
+      });
+    }
+
+    if ('action' in args && args.action === 'report') {
+      const reported = await submitBrowserLoginReport({
+        kind: args.kind,
+        where: args.where,
+        ...(args.attempt_id !== undefined ? { attempt_id: args.attempt_id } : {}),
+        ...(args.description !== undefined ? { description: args.description } : {}),
+      });
+      if (!reported.ok) return failureResult(reported.failure, 'report');
+      return safeResult('report_received', {
+        reason: 'feedback_recorded',
+        message: 'The credential-login report was recorded without including a secret value.',
       });
     }
 
@@ -702,6 +1091,41 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
         reason: 'insecure_scheme',
         message: 'Browser login requires https (or an explicit localhost destination).',
       });
+    }
+
+    const normalizedPageUrl = `${pageUrl.origin}${pageUrl.pathname}`;
+
+    if ('action' in args && args.action === 'discover') {
+      const matches = await fetchBrowserLoginMatches(normalizedPageUrl, {
+        includeFieldInventory: true,
+      });
+      if (!matches.ok) return failureResult(matches.failure, 'matches');
+      const candidates = args.credential_item_id
+        ? matches.data.matches.filter((match) => match.item_id === args.credential_item_id)
+        : matches.data.matches;
+      if (candidates.length === 0) return safeResult('no_matching_login');
+      if (candidates.length > 1) {
+        return safeResult('selection_required', {
+          choices: candidates.map((match) => ({
+            credential_item_id: match.item_id,
+            display_name: match.display_name,
+          })),
+          message: 'Several saved logins match this destination. Select one before attempting.',
+        });
+      }
+      const candidate = candidates[0];
+      if (!candidate) return safeResult('no_matching_login');
+      return safeResult('discovery_ready', {
+        reason: 'safe_field_inventory',
+        choices: [{ credential_item_id: candidate.item_id, display_name: candidate.display_name }],
+        available_fields: candidate.available_fields ?? [],
+        non_secret_fields: candidate.non_secret_fields ?? [],
+        message: 'Build one complete attempt using field names only; never request their values.',
+      });
+    }
+
+    if ('action' in args && args.action === 'attempt') {
+      return await runCompleteAttempt(args, ctx, tabId, pageUrl, normalizedPageUrl);
     }
 
     // ── 3. Detect the login fields (top frame only, values never read) ─────
@@ -733,10 +1157,8 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
       });
     }
 
-    const normalizedPageUrl = `${pageUrl.origin}${pageUrl.pathname}`;
-
     // ── 4. Resolve which item to use ───────────────────────────────────────
-    let itemId = args.credential_item_id ?? null;
+    let itemId = ('credential_item_id' in args ? args.credential_item_id : undefined) ?? null;
     if (!itemId) {
       const matches = await fetchBrowserLoginMatches(normalizedPageUrl);
       if (!matches.ok) return failureResult(matches.failure, 'matches');
