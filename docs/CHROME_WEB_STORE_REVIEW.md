@@ -3,9 +3,10 @@
 ## Current decision
 
 Version `0.1.72` was successfully published on 2026-08-19 to the existing
-public item `hnfolienncfklkgmdjjmhhegglimlamg`. Version `0.1.74` is the current
-validated Store candidate at `.output/matrx-extend-0.1.74-store.zip` (SHA-256
-`539483af16d233c9c12e67744ffe78e16902ea5cd170cacfc240a056ee71cb10`). It has
+public item `hnfolienncfklkgmdjjmhhegglimlamg`. Version `0.1.74` is superseded
+and must not be uploaded. Version `0.1.75` is the current
+validated Store candidate at `.output/matrx-extend-0.1.75-store.zip` (SHA-256
+`d7ba4937b8dec4f04e0330dee480814fbdd11636163a772aae9216f5abc1f651`). It has
 not yet been uploaded: Chrome refuses all extension-driven scripting on its own
 Web Store dashboard, so the upload and submission require an interactive UI
 session. Never upload the sibling `-local.zip` artifact.
@@ -166,6 +167,7 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 | 2026-08-17 13:38 PDT | Final live dashboard audit passed under `arman@armansadeghi.com`, publisher **Matrx**, primary item `hnfolienncfklkgmdjjmhhegglimlamg`: package `0.1.72`; saved single-purpose listing; privacy answers and certifications; free/public/all-regions distribution; deterministic no-login test instructions; and the four current screenshots in Chat, Capture, SEO, Settings order. Optional promo tiles remain empty. Arman authorized autonomous submission; **Submit for review** was clicked with automatic publication after approval enabled. Google displayed **Your extension was submitted for review**, and the Status page then showed **Pending review** / **This draft is pending review.** |
 | 2026-08-19 02:41 PDT | Chrome Web Store notification confirmed: **Item successfully published** for the submitted extension. No dashboard or package changes were made during the pending review window. |
 | 2026-08-20 09:10 PDT | Version `0.1.74` passed live OpenAPI sync, TypeScript, strict schema routing, 82/82 tool-registry drift verification, the private migration-ledger check (15 applied / 0 pending / 0 drifted), Store packaging validation, separate local packaging, version tagging, and push. Store artifact SHA-256 `539483af16d233c9c12e67744ffe78e16902ea5cd170cacfc240a056ee71cb10`; manifest version `0.1.74`, no development key, no toolbar popup, canonical side panel. Chrome blocks extension automation on Web Store pages, so upload/submission remains an interactive-dashboard action. |
+| 2026-08-20 12:05 PDT | Version `0.1.75` passed TypeScript, all 437 tests, strict schema routing, the private migration-ledger check (15 applied / 0 pending / 0 drifted), Store package validation, separate local packaging, version tagging, and atomic push. Store artifact SHA-256 `d7ba4937b8dec4f04e0330dee480814fbdd11636163a772aae9216f5abc1f651`; local artifact SHA-256 `1374c3da96abfdb34cc4a175fc2f3bb75c15250b23aabfaecb5503688f686326`. The Store manifest is version `0.1.75`, has no development key or toolbar popup, and retains the canonical side panel. Live API-type regeneration was deliberately skipped to avoid absorbing unrelated concurrent generated-type work. Tool drift remains intentionally held on the old `credential_login` contract until the API, Store build, and East DB contract cut over together. The zip was validated but not uploaded. |
 
 ## Official policy references
 
