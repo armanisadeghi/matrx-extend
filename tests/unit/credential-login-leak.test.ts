@@ -31,6 +31,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 // Distinctive enough that a substring search cannot produce a false negative.
 const SENTINEL_USER = 'ZZUSERNAMESENTINELZZ';
 const SENTINEL_PASSWORD = 'ZZPASSWORDSENTINELZZ';
+const SENTINEL_TOTP = '847261';
 const ITEM_ID = '11111111-2222-3333-4444-555555555555';
 const TAB_ID = 4242;
 const PAGE_ORIGIN = 'https://accounts.example.com';
@@ -163,7 +164,7 @@ function installChrome(): void {
       onUpdated: { addListener: () => undefined },
       onRemoved: { addListener: () => undefined },
     },
-    runtime: { getManifest: () => ({ version: '0.0.0-test' }) },
+    runtime: { id: 'cihdmkcdjjckfhjpgoedmgfpoljebaml', getManifest: () => ({ version: '0.0.0-test' }) },
   };
 }
 
@@ -207,6 +208,24 @@ function renderOneStepLoginPage(): void {
   const btn = document.getElementById('submit') as HTMLButtonElement;
   btn.addEventListener('click', () => {
     document.getElementById('password')?.remove();
+    const header = document.querySelector('header');
+    if (header) header.innerHTML = '<a href="/logout">Sign out</a>';
+    sizeEverything();
+  });
+  sizeEverything();
+}
+
+function renderAuthenticatorPage(): void {
+  document.body.innerHTML = `
+    <header><a href="/home">Home</a></header>
+    <form id="mfa" method="post" action="/session">
+      <label for="otp">Authenticator code</label>
+      <input id="otp" name="otp" inputmode="numeric" autocomplete="one-time-code" />
+      <button id="verify" type="submit">Verify</button>
+    </form>
+  `;
+  document.getElementById('verify')?.addEventListener('click', () => {
+    document.getElementById('mfa')?.remove();
     const header = document.querySelector('header');
     if (header) header.innerHTML = '<a href="/logout">Sign out</a>';
     sizeEverything();
@@ -427,6 +446,57 @@ describe('credential_login — complete attempt contract', () => {
       submit: { kind: 'click', selector: '#submit' },
     });
     expect(parsed.success).toBe(false);
+  });
+
+  it('keeps delegated authenticator material out of args, results, logs, storage, and audit', async () => {
+    renderAuthenticatorPage();
+    postImpl = async (path, body) => {
+      if (path.endsWith('/authenticator-materialize')) {
+        expect(body).toMatchObject({
+          conversation_id: ctx.conversationId,
+          tool_invocation_id: ctx.callId,
+          page_url: PAGE_URL,
+          code_selector: '#otp',
+          submit: { kind: 'click', selector: '#verify' },
+          extension_instance_id: 'cihdmkcdjjckfhjpgoedmgfpoljebaml',
+        });
+        return {
+          ok: true,
+          data: {
+            injection_id: 'injection-1',
+            origin: PAGE_ORIGIN,
+            code: SENTINEL_TOTP,
+            expires_at: new Date(Date.now() + 30_000).toISOString(),
+          },
+        };
+      }
+      if (path.endsWith('/result')) return { ok: true, data: undefined };
+      return { ok: false, status: 404, error: 'unmocked' };
+    };
+
+    const { credential_login } = await import('@/lib/tools/handlers/credential-login');
+    const args = {
+      action: 'authenticator' as const,
+      credential_item_id: ITEM_ID,
+      code_selector: '#otp',
+      submit: { kind: 'click' as const, selector: '#verify' },
+      expect: { success_selector: 'a[href="/logout"]', timeout_ms: 2_000 },
+    };
+    expect(credential_login.tierFor?.(credential_login.argsSchema.parse(args))).toBe('privileged');
+    const result = await credential_login.run(credential_login.argsSchema.parse(args), ctx);
+
+    expect(result.status).toBe('authenticated');
+    expect(JSON.stringify(args)).not.toContain(SENTINEL_TOTP);
+    const audit = posts.find((post) => post.path.endsWith('/result'));
+    expect(JSON.stringify(audit)).not.toContain(SENTINEL_TOTP);
+    const nonMaterializePosts = posts.filter(
+      (post) => !post.path.endsWith('/authenticator-materialize'),
+    );
+    const storage = await chrome.storage.local.get(null).catch(() => ({}));
+    const session = await chrome.storage.session.get(null).catch(() => ({}));
+    expect(
+      JSON.stringify({ result, logCalls, nonMaterializePosts, storage, session }),
+    ).not.toContain(SENTINEL_TOTP);
   });
 
   it('refuses a missing first-step selector before materializing Vault fields', async () => {

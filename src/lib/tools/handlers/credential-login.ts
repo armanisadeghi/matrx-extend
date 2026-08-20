@@ -32,6 +32,7 @@ import {
   type VaultCallFailure,
   fetchBrowserLoginMatches,
   hasRealUserToken,
+  materializeBrowserAuthenticator,
   materializeBrowserLogin,
   reportBrowserLoginResult,
   submitBrowserLoginReport,
@@ -195,6 +196,16 @@ const AttemptArgs = z
     }
   });
 
+const AuthenticatorArgs = z
+  .object({
+    action: z.literal('authenticator'),
+    credential_item_id: z.string().min(1),
+    code_selector: z.string().min(1),
+    submit: SubmitSpec,
+    expect: ExpectSpec,
+  })
+  .strict();
+
 const ReportArgs = z
   .object({
     action: z.literal('report'),
@@ -212,12 +223,13 @@ const ReportArgs = z
  */
 const CredentialLoginArgs = z
   .object({
-    action: z.enum(['auto', 'discover', 'attempt', 'report']),
+    action: z.enum(['auto', 'discover', 'attempt', 'authenticator', 'report']),
     credential_item_id: z.string().min(1).optional(),
     fields: z.array(FieldSpec).min(1).optional(),
     submit: SubmitSpec.optional(),
     steps: z.array(AttemptStep).min(1).optional(),
     expect: ExpectSpec.optional(),
+    code_selector: z.string().min(1).optional(),
     reason: z.string().min(1).max(1_000).optional(),
     kind: z.enum(['secret_exposed', 'wrong_verdict', 'recipe_wrong', 'other']).optional(),
     where: z.string().min(1).max(500).optional(),
@@ -233,7 +245,9 @@ const CredentialLoginArgs = z
           ? DiscoverArgs
           : value.action === 'attempt'
             ? AttemptArgs
-            : ReportArgs;
+            : value.action === 'authenticator'
+              ? AuthenticatorArgs
+              : ReportArgs;
     const parsed = schema.safeParse(value);
     if (parsed.success) return;
     for (const issue of parsed.error.issues) ctx.addIssue(issue);
@@ -1077,10 +1091,122 @@ async function runCompleteAttempt(
   );
 }
 
+async function runAuthenticatorAttempt(
+  args: z.infer<typeof AuthenticatorArgs>,
+  ctx: Parameters<typeof getAssignedTab>[0],
+  tabId: number,
+  pageUrl: URL,
+  normalizedPageUrl: string,
+): Promise<CredentialLoginResult> {
+  if (!ctx.conversationId) {
+    return safeResult('unknown', { reason: 'conversation_binding_missing' });
+  }
+  const controlSelector = args.submit.kind === 'none' ? null : args.submit.selector;
+  const probe = await injectTopFrame<SpecProbe>(tabId, probeAttemptSpecSource, [
+    [args.code_selector],
+    controlSelector ? [controlSelector] : [],
+  ]).catch(() => null);
+  if (!probe || !probe.is_top_frame || probe.origin !== pageUrl.origin) {
+    return safeResult('unsafe_destination', { reason: 'origin_changed_before_authenticator' });
+  }
+  if (
+    !probe.fields[args.code_selector]?.exists ||
+    (controlSelector && !probe.controls[controlSelector])
+  ) {
+    return safeResult('spec_incomplete', {
+      reason: 'authenticator_selector_not_found',
+      message: 'The verification field or submit control was not found. No code was generated.',
+    });
+  }
+  if (probe.fields[args.code_selector]?.form_method === 'get') {
+    return safeResult('unsafe_destination', { reason: 'unsafe_get_form' });
+  }
+
+  const before = await injectTopFrame<PageStateProbe>(tabId, pageStateSource, []).catch(() => null);
+  if (!before) return safeResult('unknown', { reason: 'before_evidence_failed' });
+
+  const materialized = await materializeBrowserAuthenticator(args.credential_item_id, {
+    conversationId: ctx.conversationId,
+    toolInvocationId: ctx.callId,
+    pageUrl: normalizedPageUrl,
+    codeSelector: args.code_selector,
+    submit: args.submit,
+    extensionInstanceId: chrome.runtime.id,
+    clientBuild: chrome.runtime.getManifest().version,
+  });
+  if (!materialized.ok) return failureResult(materialized.failure, 'authenticator');
+  const transient = materialized.data;
+  if (transient.origin !== pageUrl.origin || Date.parse(transient.expires_at) <= Date.now()) {
+    return safeResult('unsafe_destination', { reason: 'authenticator_origin_or_expiry_mismatch' });
+  }
+
+  rememberSensitiveFields(tabId, [args.code_selector]);
+  let clear = true;
+  try {
+    const filled = await injectTopFrame<{ ok: boolean }>(tabId, fillFieldSource, [
+      args.code_selector,
+      transient.code,
+      SENSITIVE_ATTR,
+    ]).catch(() => null);
+    // The only local reference to the code becomes unreachable after this
+    // block. It is never included in any return/log/receipt/capture.
+    if (!filled?.ok) return safeResult('unknown', { reason: 'authenticator_fill_failed' });
+
+    const submitted = await injectTopFrame<{ ok: boolean; mode: string }>(
+      tabId,
+      explicitSubmitSource,
+      [args.submit.kind, controlSelector],
+    ).catch(() => null);
+    if (!submitted?.ok) {
+      return safeResult(submitted?.mode === 'unsafe_get' ? 'unsafe_destination' : 'unknown', {
+        reason:
+          submitted?.mode === 'unsafe_get' ? 'unsafe_get_form' : 'authenticator_submit_failed',
+      });
+    }
+
+    const classified = await classifyExplicitAttempt(
+      tabId,
+      pageUrl,
+      args.expect,
+      before,
+      Date.now(),
+    );
+    clear = classified.status !== 'authenticated';
+    const result = safeResult(classified.status, {
+      ...(classified.confidence !== undefined ? { confidence: classified.confidence } : {}),
+      ...(classified.signals !== undefined ? { signals: classified.signals } : {}),
+      ...(classified.evidence !== undefined ? { evidence: classified.evidence } : {}),
+    });
+    await reportBrowserLoginResult(args.credential_item_id, {
+      status:
+        result.status === 'authenticated'
+          ? 'authenticated'
+          : result.status === 'unsafe_destination'
+            ? 'unsafe_destination'
+            : 'needs_mfa',
+      pageUrl: normalizedPageUrl,
+      toolInvocationId: ctx.callId,
+    });
+    return result;
+  } finally {
+    if (clear) {
+      await injectTopFrame(tabId, clearSensitiveSource, [
+        [args.code_selector],
+        SENSITIVE_ATTR,
+      ]).catch(() => null);
+      forgetSensitiveFields(tabId);
+    }
+  }
+}
+
 export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginResult> = {
   name: 'credential_login',
   tier: 'action',
   argsSchema: CredentialLoginArgs,
+  // Authenticator use always requires a fresh action-time click, even when
+  // ordinary browser actions run in "act" mode. The agent sees only the
+  // account/selector/submit spec; never a seed or code.
+  tierFor: (args) => (args.action === 'authenticator' ? 'privileged' : 'action'),
   supportedBrowsers: ['chrome'],
   // NOTE: no `admin_only`. The DB is the source of truth (Rule 7,
   // docs/TOOL_SOURCE_OF_TRUTH.md) and `tool.definition.credential_login` says
@@ -1166,6 +1292,16 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
     if (args.action === 'attempt') {
       return await runCompleteAttempt(
         AttemptArgs.parse(args),
+        ctx,
+        tabId,
+        pageUrl,
+        normalizedPageUrl,
+      );
+    }
+
+    if (args.action === 'authenticator') {
+      return await runAuthenticatorAttempt(
+        AuthenticatorArgs.parse(args),
         ctx,
         tabId,
         pageUrl,

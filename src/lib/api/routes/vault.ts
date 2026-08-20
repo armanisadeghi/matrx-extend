@@ -91,6 +91,18 @@ export interface BrowserLoginMaterialized {
   fields?: Record<string, string>;
 }
 
+/**
+ * The one transient value-bearing response reserved for the trusted
+ * credential_login executor. It is never logged, stored, surfaced to UI, or
+ * posted as a tool result; the handler drops ``code`` immediately after fill.
+ */
+export interface BrowserAuthenticatorMaterialized {
+  injection_id: string;
+  origin: string;
+  code: string;
+  expires_at: string;
+}
+
 /** Terminal outcome reported back for auditing. Mirrors the tool's status enum. */
 export type BrowserLoginResultStatus =
   | 'authenticated'
@@ -223,6 +235,51 @@ export async function materializeBrowserLogin(
     return { ok: false, failure: { kind: 'server_error', status: 200 } };
   }
   log.info('api', '← vault materialize ok');
+  return { ok: true, data };
+}
+
+/** Claim one delegated authenticator call and receive its current code. */
+export async function materializeBrowserAuthenticator(
+  itemId: string,
+  params: {
+    conversationId: string;
+    toolInvocationId: string;
+    pageUrl: string;
+    codeSelector: string;
+    submit: { kind: 'click' | 'press_enter' | 'none'; selector?: string };
+    extensionInstanceId: string;
+    clientBuild: string;
+  },
+): Promise<VaultResult<BrowserAuthenticatorMaterialized>> {
+  log.info('api', '→ POST vault/browser-login/{item}/authenticator-materialize');
+  const r = await vaultPost<BrowserAuthenticatorMaterialized>(
+    `${BASE}/${encodeURIComponent(itemId)}/authenticator-materialize`,
+    {
+      conversation_id: params.conversationId,
+      tool_invocation_id: params.toolInvocationId,
+      page_url: params.pageUrl,
+      code_selector: params.codeSelector,
+      submit: params.submit,
+      extension_instance_id: params.extensionInstanceId,
+      client_build: params.clientBuild,
+    },
+    // TOTP body: a malformed response must never be quoted into debug logs.
+    { silent: true },
+  );
+  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
+  const data = r.data;
+  if (
+    !data ||
+    typeof data.injection_id !== 'string' ||
+    typeof data.origin !== 'string' ||
+    typeof data.code !== 'string' ||
+    !/^\d{6,8}$/.test(data.code) ||
+    typeof data.expires_at !== 'string'
+  ) {
+    // Deliberately do not log the body: it may contain a valid code.
+    return { ok: false, failure: { kind: 'server_error', status: 200 } };
+  }
+  log.info('api', '← vault authenticator materialize ok');
   return { ok: true, data };
 }
 
