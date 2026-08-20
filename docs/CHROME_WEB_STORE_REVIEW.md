@@ -2,10 +2,13 @@
 
 ## Current decision
 
-Version `0.1.72` was submitted for review on 2026-08-17 at 13:38 PDT to the
-existing public item `hnfolienncfklkgmdjjmhhegglimlamg`. The live dashboard
-status is **Pending review** and states, **This draft is pending review.**
-Automatic publication after approval is enabled.
+Version `0.1.72` was successfully published on 2026-08-19 to the existing
+public item `hnfolienncfklkgmdjjmhhegglimlamg`. Version `0.1.74` is the current
+validated Store candidate at `.output/matrx-extend-0.1.74-store.zip` (SHA-256
+`539483af16d233c9c12e67744ffe78e16902ea5cd170cacfc240a056ee71cb10`). It has
+not yet been uploaded: Chrome refuses all extension-driven scripting on its own
+Web Store dashboard, so the upload and submission require an interactive UI
+session. Never upload the sibling `-local.zip` artifact.
 
 The submitted listing contains the four current 1280 × 800 images from
 `.output/cws-assets/`, in this order: Chat, Capture, SEO, Settings. The optional
@@ -161,6 +164,8 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 | 2026-08-17 10:08 PDT | Production `/auth/whoami` and OpenAPI now expose `organization_id`. A restarted brand-new no-login profile loaded the exact `0.1.72` build and the server-resolved **Matrx Assistant**; the reviewer question returned the three required stages — **Capture, Understand, Use** — grounded in the demo page. Runtime inspection recorded no uncaught side-panel exception on this path. The completed proof is `.output/cws-assets/01-chat.jpeg`, normalized to 1280 × 800 with SHA-256 `d0da71d5e2c9d01266e4fa099666b9ea2ec103c6067966a114082d7b69a0a09c`. Dashboard upload remains pending only because the Mac locked during the screenshot replacement. |
 | 2026-08-17 10:43 PDT | Locked-screen offline readiness audit passed. The uploaded package remains `.output/matrx-extend-0.1.72-chrome.zip`, SHA-256 `28a37535e1d40c13aa23b1fc5d7b62d54909db3439b297aa7894bc35d92ec4eb`; its manifest is MV3 version `0.1.72`, has the canonical side panel, no toolbar popup, and no development key. The extracted JavaScript contains none of `eval(`, `new Function`, `Runtime.evaluate`, `Runtime.callFunctionOn`, or `Runtime.compileScript`. All four final JPEGs are 1280 × 800: `01-chat` `d0da71d5e2c9d01266e4fa099666b9ea2ec103c6067966a114082d7b69a0a09c`; `02-capture` `7ffedc9208c80964e20567cf9e1ab93eaf272f57ff0abeace8151388a27f714d`; `03-seo` `1d2ddbdeec8e6d7c65b81e707c043d562a86f97151d9abd1a7a1e04d681d13ce`; `04-settings` `ece1aa19115c3f51f4dadb83934e708f3bfcf88f0b2220c5603cb0118296d137`. The anonymous demo and extension privacy URLs both returned HTTP 200, and the live `/auth/whoami` OpenAPI contract still includes `organization_id`. |
 | 2026-08-17 13:38 PDT | Final live dashboard audit passed under `arman@armansadeghi.com`, publisher **Matrx**, primary item `hnfolienncfklkgmdjjmhhegglimlamg`: package `0.1.72`; saved single-purpose listing; privacy answers and certifications; free/public/all-regions distribution; deterministic no-login test instructions; and the four current screenshots in Chat, Capture, SEO, Settings order. Optional promo tiles remain empty. Arman authorized autonomous submission; **Submit for review** was clicked with automatic publication after approval enabled. Google displayed **Your extension was submitted for review**, and the Status page then showed **Pending review** / **This draft is pending review.** |
+| 2026-08-19 02:41 PDT | Chrome Web Store notification confirmed: **Item successfully published** for the submitted extension. No dashboard or package changes were made during the pending review window. |
+| 2026-08-20 09:10 PDT | Version `0.1.74` passed live OpenAPI sync, TypeScript, strict schema routing, 82/82 tool-registry drift verification, the private migration-ledger check (15 applied / 0 pending / 0 drifted), Store packaging validation, separate local packaging, version tagging, and push. Store artifact SHA-256 `539483af16d233c9c12e67744ffe78e16902ea5cd170cacfc240a056ee71cb10`; manifest version `0.1.74`, no development key, no toolbar popup, canonical side panel. Chrome blocks extension automation on Web Store pages, so upload/submission remains an interactive-dashboard action. |
 
 ## Official policy references
 
