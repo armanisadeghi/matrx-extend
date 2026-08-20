@@ -51,7 +51,7 @@ they reference back here for the full topology.
 ```
 
 All three Matrx clients (extension, frontend, desktop) share Supabase
-project `txzxabzwovsujtloxrus`. That gives any pair a free Realtime
+project `brsgrqvjdzwihsvnfqkf` in `us-east-1`. That gives any pair a free Realtime
 substrate (Broadcast, Presence, Postgres Changes) without a new server
 component. Reusable JWTs cross every boundary.
 
@@ -101,7 +101,7 @@ component. Reusable JWTs cross every boundary.
 ### Channel D — matrx-local ↔ matrx-frontend
 
 Out of primary scope for this map. Documented for completeness only: when
-this channel is built, the shared Supabase project (`txzxabzwovsujtloxrus`)
+this channel is built, the shared Supabase project (`brsgrqvjdzwihsvnfqkf`)
 will be the natural substrate — Broadcast for control-plane chatter and
 Postgres Changes for state sync. No work in this repo depends on it.
 
@@ -111,7 +111,7 @@ Postgres Changes for state sync. No work in this repo depends on it.
 |---|---|
 | Status | v0 live in production (2026-05-10). Today only the Chrome extension creates AND executes. Other surfaces can create tasks, but no execution path yet outside the extension. |
 | Direction | All surfaces ↔ Supabase Postgres directly. RLS owner-only (`user_id = auth.uid()`); no server-side broker. |
-| Substrate | Supabase Postgres in project `txzxabzwovsujtloxrus`. Tables: `sch_task`, `sch_agent_task` (kind extension), `sch_trigger`, `sch_run`. |
+| Substrate | Supabase Postgres in project `brsgrqvjdzwihsvnfqkf` (`us-east-1`). Tables: `sch_task`, `sch_agent_task` (kind extension), `sch_trigger`, `sch_run`. |
 | Pickup model | Lease-based: any surface inserts a `sch_run` row with `claim_token` + `claim_expires_at`. Expired leases let another surface re-claim. Surfaces self-filter via `sch_task.surfaces text[]` (`'any'` opts in by default). |
 | FE-facing UI doc | [SCHEDULING.md](./SCHEDULING.md) — full screen-by-screen guide for the matrx-frontend team. |
 | Schema migration | [`migrations/2026_05_10_sch_v0.sql`](../migrations/2026_05_10_sch_v0.sql) — header comment is the canon for naming conventions on future `sch_*` tables. |
@@ -175,7 +175,7 @@ The four small things every cross-repo task touches:
   which tools to advertise to the LLM.
 - **`externally_connectable` whitelist** — see Channel C above. Manifest
   v3 does not accept port wildcards; whitelist explicit hosts only.
-- **Shared Supabase project ref** — `txzxabzwovsujtloxrus`. All three
+- **Shared Supabase project ref** — `brsgrqvjdzwihsvnfqkf` (`us-east-1`). All three
   Matrx clients authenticate against this project; JWTs are reusable across
   boundaries; Broadcast/Realtime is a free cross-machine substrate.
 

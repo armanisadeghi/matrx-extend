@@ -52,7 +52,7 @@ import { getSupabase } from '@/lib/supabase/client';
 
 /**
  * Where each table the extension uses actually lives. Verified against the live
- * DB (project txzxabzwovsujtloxrus). Keep this in sync when a table moves —
+ * DB (project brsgrqvjdzwihsvnfqkf, us-east-1). Keep this in sync when a table moves —
  * a wrong entry here is a runtime PGRST205, not a compile error.
  */
 export const TABLE_SCHEMA = {
