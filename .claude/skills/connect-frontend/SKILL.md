@@ -72,7 +72,7 @@ chrome.runtime.sendMessage(extensionId, {
 **Cross-machine relay via Supabase Broadcast:**
 
 ```ts
-// pseudocode — uses the shared Supabase project txzxabzwovsujtloxrus
+// pseudocode — uses the shared Supabase project brsgrqvjdzwihsvnfqkf
 const channel = supabase.channel(`matrx-extension-bridge:${userId}`);
 await channel.subscribe();
 await channel.send({

@@ -628,7 +628,7 @@ Read before touching any DB/config/env resolution:
 Every `matrx-*` package must stay fully independent — owns its schemas, ships its
 migrations, runs installed alone; never delete that capability to "simplify".
 Our implementation is one company, one server, ONE database — every instance points
-at Matrx Main (`txzxabzwovsujtloxrus`), a deployment CHOICE, not a package limit.
+at Matrx Main (`brsgrqvjdzwihsvnfqkf`), a deployment CHOICE, not a package limit.
 The banned thing is a **second candidate for the same connection**: `WXT_SUPABASE_URL`
 / `WXT_SUPABASE_PUBLISHABLE_KEY` are the only names, required, throw if absent — no
 `?? process.env.SUPABASE_URL` chain anywhere (runtime *or* scripts), no bare
@@ -702,7 +702,7 @@ validates the result.
 ### Database migrations — the DB is the source of truth, NOT the files
 
 A `.sql` file in [migrations/](./migrations/) has changed **nothing** until it is
-applied to Supabase (`txzxabzwovsujtloxrus`). This repo ships only the
+applied to Supabase (`brsgrqvjdzwihsvnfqkf`). This repo ships only the
 publishable/anon key and **cannot apply DDL**. All three repos (aidream,
 matrx-frontend, matrx-extend) share one DB and one ledger, `public._schema_migrations`.
 

@@ -67,7 +67,7 @@ These are the facts that took three weeks of debugging to nail down. **Internali
    TanStack Router's `useSearch()` is reactive. After `window.history.replaceState()` strips the token from the URL (which we do for security), `useSearch()` re-reads and returns `access_token=undefined`, re-firing the effect into the "No access token received" branch even though we just successfully signed in. **Pattern**: read params once from `window.location.search` inside `useEffect`, depend only on `navigate`. See `dashboard/src/routes/oauth.callback.tsx` and `workflow-studio/src/routes/oauth.callback.tsx`.
 
 5. **The repo's `.gitignore` has a Python `lib/` rule that swallows TS source.**
-   Anything new under `dashboard/src/lib/`, `workflow-studio/src/lib/`, etc. is silently dropped from git unless explicitly allow-listed. Symptom: every Coolify build fails with `Cannot find module '@/lib/...'`, but no one notices because the previously-built image keeps serving traffic. **Always run `git check-ignore -v <new-lib-file>` after creating one** — a hit against `.gitignore:28:lib/` means add an explicit `!path/**` rule next to the existing dashboard/studio entries.
+   Anything new under `dashboard/src/lib/`, `workflow-studio/src/lib/`, etc. is silently dropped from git unless explicitly allow-listed. Symptom: the GitHub/ECR build fails with `Cannot find module '@/lib/...'`, while ECS continues serving the previous healthy image. **Always run `git check-ignore -v <new-lib-file>` after creating one** — a hit against `.gitignore:28:lib/` means add an explicit `!path/**` rule next to the existing dashboard/studio entries.
 
 ## Happy path, step by step
 
@@ -213,17 +213,17 @@ Open `gotchas.md` next to this file when any of these symptoms shows up. Each en
 | Symptom | Likely cause |
 |---|---|
 | "Sign in failed: Token exchange failed: unknown error" in the SPA | Supabase returned 400 with a JSON shape we didn't recognize. Tail FastAPI logs for `[auth/callback] token exchange failed: status=... detail=... body=...` and act on the body. |
-| Login flashes back to /login with no error message | Old SPA build is running. Coolify deploy probably failed silently — check `application_deployment_queues` table or Coolify UI. |
+| Login flashes back to /login with no error message | Old SPA build is running. Check the GitHub release run, ECR image SHA, ECS service deployment, and `/health/version`; dashboard/Studio are no longer Coolify-owned. |
 | Build fails with `Cannot find module '@/lib/...'` | `lib/` rule in `.gitignore` swallowed your file. Add an allow-rule. |
 | Token exchange returns 400 immediately after deploying a refactor | Re-introduced `client_secret` or `scope=openid`. Compare against `auth.py`. |
 | /oauth/callback shows "No access token received" but the redirect URL had `?access_token=...` | Re-introduced reactive `useSearch()` in the callback. Read `window.location.search` once instead. |
 | "OAuth state missing or expired" | FastAPI restarted between authorize and callback (in-memory state), or it's been > 10 minutes. Retry. |
 | Admin user sees /access-denied | Their Supabase `sub` isn't in `public.admins`. Add it. |
-| Studio works but dashboard shows old UI / stale features | Same root cause as above — failed Coolify build. The lib/ gitignore is by far the most common silent killer. |
+| Studio works but dashboard shows old UI / stale features | Same root cause as above — one ECS service is still on an older image. The `lib/` gitignore is by far the most common build killer. |
 
 ## Environment variables
 
-Required on the FastAPI server (Coolify env for `ai-dream-server`):
+Required on the FastAPI server (AWS Secrets Manager payload consumed by the ECS `ai-dream-server` task):
 
 - `AIMATRX_OAUTH_CLIENT_ID` — public OAuth client UUID registered with the Matrx Supabase project. Currently `867ea8ad-7eaa-4614-b866-ecaf72c52e14` for the aidream→aimatrx flow.
 - `AIMATRX_AIDREAM_REDIRECT_URI` — base URL of the FastAPI server (e.g. `https://server.app.matrxserver.com`). The `/auth/callback` suffix is appended in code; do NOT include it in the env var. Only consulted when the incoming `/auth/aimatrx` request's hostname is **not** localhost — for localhost dev, the redirect URI is derived from the request itself (see the architecture section).
