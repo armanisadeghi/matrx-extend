@@ -4,9 +4,9 @@
 
 Version `0.1.72` was successfully published on 2026-08-19 to the existing
 public item `hnfolienncfklkgmdjjmhhegglimlamg`. Versions `0.1.74`–`0.1.76` are
-superseded and must not be uploaded. Version `0.2.0` is the current validated
-Store candidate at `.output/matrx-extend-0.2.0-store.zip` (SHA-256
-`7a1bbd7ca47c5ba248146b44064b8b9ba40fdc0513b61b653200703b06a6f442`). It has
+superseded and must not be uploaded. Version `0.2.1` is the current validated
+Store candidate at `.output/matrx-extend-0.2.1-store.zip` (SHA-256
+`ef21fa457b022bf009fe75132013c37c0438eae399b340353166b5bb2d570f0b`). It has
 not yet been uploaded. Never upload the sibling `-local.zip` artifact.
 
 The submitted listing contains the four current 1280 × 800 images from
@@ -36,11 +36,11 @@ with an unchanged policy surface require no separate communication to Google;
 Store-material changes require the affected listing/privacy/reviewer evidence
 to be reconciled before submission.
 
-Versioning is three-part SemVer. `0.2.0` is the first post-approval public
+Versioning is three-part SemVer. `0.2.x` is the first post-approval public
 testing line. Patch releases are compatible fixes, minor releases are
 meaningful compatible feature batches, and `1.0.0` is reserved for the
 intentional general-availability launch after public testing and a focused
-Store-marketing refresh. Use `0.2.0`, never `0.2.00`.
+Store-marketing refresh. Use three-part SemVer, never forms such as `0.2.00`.
 
 ## Why the previous submission failed
 
@@ -195,6 +195,7 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 | 2026-08-20 12:08 PDT | Rechecked the live Chrome Web Store dashboard under `arman@armansadeghi.com`, publisher **Matrx**. Primary item `hnfolienncfklkgmdjjmhhegglimlamg` reports **Status: Published - public**. The Draft tab states **This draft is unpublished**, confirming there is no pending draft submission. The approval email independently records **Item successfully published** at 2026-08-19 02:41 PDT. Version `0.1.75` remains a validated local Store candidate and has not been uploaded. |
 | 2026-08-20 12:31 PDT | Version `0.1.76` was prepared from an isolated clean worktree and passed TypeScript, strict schema routing, all **438** tests, the private migration-ledger check (15 applied / 0 pending / 0 drifted), Store package validation, and separate local packaging. Store artifact SHA-256 `21d7a3e3bcb19b6e6db11a44c345bd3179ddc5e46f655e47e4187110fb5fbcd2`; local artifact SHA-256 `5fca5e4eb1bf8131bc70d923f3b147b4b037a2b1fd5a63e8b6b6bab825916e58`. The Store manifest is `0.1.76`, has no development key or toolbar popup, and retains the canonical side panel. The known `credential_login` schema drift is intentional and release-forced: East remains on the public `0.1.72` contract until `0.1.76` is actually published, then East cuts over last so the old public extension is never advertised unexecutable actions. |
 | 2026-08-20 14:01 PDT | Version `0.2.0` became the first post-approval public-testing candidate, superseding `0.1.74`–`0.1.76`. TypeScript, all **438** tests, strict schema routing, migration ledger (15 applied / 0 pending / 0 drifted), Store package validation, and the new Chrome Web Store approval-risk gate passed. The emitted manifest exactly matches Google's published `0.1.72` policy surface and contains no forbidden runtime-code path, so this is classified as a **routine update**: no new permission, host, content-script reach, Store purpose, data category, or reviewer path. Authentication information was already disclosed in the published data-use form, and the credential-login work remains within the existing user-requested browser-action purpose. Store artifact `.output/matrx-extend-0.2.0-store.zip` SHA-256 `7a1bbd7ca47c5ba248146b44064b8b9ba40fdc0513b61b653200703b06a6f442`; local artifact SHA-256 `2cf27e774053f037208a23c399dadc187f46ff9064e2c2c2579fe9cbc2830a86`. The known `credential_login` tool-schema cutover remains intentionally deferred until this Store version is published, so the currently public `0.1.72` client is never advertised a contract it cannot execute. |
+| 2026-08-20 16:31 PDT | Version `0.2.1` superseded the unsubmitted `0.2.0` candidate. A typed `everyone` / `signed-in` / `admin` sidepanel switchboard now gates both navigation and feature content and safely redirects a restored inaccessible tab. Guest visibility remains exactly Chat, Scrape, Data, SEO, and Settings; non-admin and admin behavior is covered by five focused tests. TypeScript, all **443** tests, strict schema routing, migration ledger (15 applied / 0 pending / 0 drifted), Store package validation, and the Chrome Web Store approval-risk gate passed. The manifest still exactly matches Google's published `0.1.72` policy surface and emitted code contains no forbidden runtime-code path, so this remains a **routine update**. Store artifact `.output/matrx-extend-0.2.1-store.zip` SHA-256 `ef21fa457b022bf009fe75132013c37c0438eae399b340353166b5bb2d570f0b`; local artifact SHA-256 `55ce65f8f8a3c7520df0b53cceef2232d542fc5141d08d87eeef36edeab0f36e`. It has not been uploaded. |
 
 ## Official policy references
 
