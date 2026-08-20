@@ -57,6 +57,17 @@ export interface BrowserLoginMatch {
   display_name: string;
   definition_key: string;
   host: string;
+  /** Safe names only. Present when the caller requests attempt planning data. */
+  available_fields?: BrowserLoginAvailableField[];
+  /** Explicitly non-secret values the agent may legitimately type. */
+  non_secret_fields?: Array<{ key: string; label: string; value: string }>;
+}
+
+export interface BrowserLoginAvailableField {
+  field_key: string;
+  label: string;
+  fillable: boolean;
+  reason?: string;
 }
 
 export interface BrowserLoginMatchesResponse {
@@ -75,7 +86,9 @@ export interface BrowserLoginMaterialized {
   item_id: string;
   origin: string;
   username?: string;
-  password: string;
+  password?: string;
+  /** Multi-field attempt payload. Plaintext; local handler scope only. */
+  fields?: Record<string, string>;
 }
 
 /** Terminal outcome reported back for auditing. Mirrors the tool's status enum. */
@@ -157,9 +170,13 @@ async function vaultPatch<T>(path: string, body: unknown): Promise<ApiResult<T>>
 /** Ask the server which permitted login items match the CURRENT tab URL. */
 export async function fetchBrowserLoginMatches(
   pageUrl: string,
+  options?: { includeFieldInventory?: boolean },
 ): Promise<VaultResult<BrowserLoginMatchesResponse>> {
   log.info('api', '→ POST vault/browser-login/matches');
-  const r = await vaultPost<BrowserLoginMatchesResponse>(`${BASE}/matches`, { page_url: pageUrl });
+  const r = await vaultPost<BrowserLoginMatchesResponse>(`${BASE}/matches`, {
+    page_url: pageUrl,
+    ...(options?.includeFieldInventory ? { include_field_inventory: true } : {}),
+  });
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   const data = r.data;
   if (!data || !Array.isArray(data.matches)) {
@@ -175,7 +192,12 @@ export async function fetchBrowserLoginMatches(
  */
 export async function materializeBrowserLogin(
   itemId: string,
-  params: { pageUrl: string; toolInvocationId: string; clientBuild: string },
+  params: {
+    pageUrl: string;
+    toolInvocationId: string;
+    clientBuild: string;
+    fieldKeys?: string[];
+  },
 ): Promise<VaultResult<BrowserLoginMaterialized>> {
   log.info('api', '→ POST vault/browser-login/{item}/materialize');
   const r = await vaultPost<BrowserLoginMaterialized>(
@@ -184,13 +206,19 @@ export async function materializeBrowserLogin(
       page_url: params.pageUrl,
       tool_invocation_id: params.toolInvocationId,
       client_build: params.clientBuild,
+      ...(params.fieldKeys ? { field_keys: params.fieldKeys } : {}),
     },
     // Plaintext body: a malformed 2xx must not be quoted into the debug log.
     { silent: true },
   );
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   const data = r.data;
-  if (!data || typeof data.password !== 'string' || typeof data.origin !== 'string') {
+  const hasLegacyPassword = typeof data?.password === 'string';
+  const hasFieldMap =
+    !!data?.fields &&
+    typeof data.fields === 'object' &&
+    Object.values(data.fields).every((value) => typeof value === 'string');
+  if (!data || typeof data.origin !== 'string' || (!hasLegacyPassword && !hasFieldMap)) {
     // Deliberately does NOT log the body — it may hold a partial credential.
     return { ok: false, failure: { kind: 'server_error', status: 200 } };
   }

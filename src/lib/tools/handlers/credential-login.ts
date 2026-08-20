@@ -7,13 +7,10 @@
  * /Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/PLAN.md
  * § "Agent-safe browser login" + Phase 4):
  *
- *   arguments: { credential_item_id?: string }   ← and NOTHING else
- *
- * There is deliberately no `url`, `username`, `password`, `selector`, or
- * `script` argument. The extension derives the real tab origin itself
- * (`getAssignedTab`) and detects the login fields itself, so a compromised or
- * confused model cannot point the fill at a destination of its choosing, and
- * cannot smuggle a value in or out through the tool envelope.
+ * The current contract is a discriminated union: discover safe field names,
+ * submit one complete field-map attempt, or report a leak/wrong verdict. There
+ * is deliberately no URL or credential value argument. The extension derives
+ * the real tab origin itself and the server resolves field NAMES just in time.
  *
  * The whole resolve → materialize → fill → submit → verify cycle happens
  * inside ONE `run()` call. The plaintext lives in a `const` in that scope and
@@ -76,18 +73,145 @@ interface CredentialLoginResult {
   message?: string;
   /** Only populated for `selection_required`. */
   choices?: SafeChoice[];
+  available_fields?: Array<{
+    field_key: string;
+    label: string;
+    fillable: boolean;
+    reason?: string;
+  }>;
+  non_secret_fields?: Array<{ key: string; label: string; value: string }>;
+  verdict?: 'authenticated' | 'challenged' | 'rejected' | 'unknown' | 'refused';
+  confidence?: number;
+  signals?: LoginSignal[];
+  evidence?: LoginEvidence;
+  feedback: { how_to_report: string };
 }
 
-const CredentialLoginArgs = z
+const FieldSpec = z
   .object({
-    /**
-     * Which vault item to use. Omit to let the server match the CURRENT tab
-     * origin. This is the ONLY argument — see the file header.
-     */
-    credential_item_id: z.string().min(1).optional(),
+    selector: z.string().min(1),
+    field_key: z.string().min(1).optional(),
+    literal: z.string().optional(),
+    clear_first: z.boolean().default(true),
   })
-  .default({});
+  .superRefine((value, ctx) => {
+    if ((value.field_key === undefined) === (value.literal === undefined)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'exactly one of field_key or literal is required',
+      });
+    }
+  });
+
+const SubmitSpec = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('click'), selector: z.string().min(1) }),
+  z.object({ kind: z.literal('press_enter'), selector: z.string().min(1) }),
+  z.object({ kind: z.literal('none') }),
+]);
+
+const ExpectSpec = z
+  .object({
+    success_url_prefix: z.string().url().optional(),
+    success_selector: z.string().min(1).optional(),
+    failure_selector: z.string().min(1).optional(),
+    challenge_selector: z.string().min(1).optional(),
+    timeout_ms: z.number().int().min(1_000).max(60_000).default(30_000),
+  })
+  .default({ timeout_ms: 30_000 });
+
+const AttemptStep = z.object({
+  fields: z.array(z.string().min(1)).min(1),
+  submit: SubmitSpec,
+  wait_for: z
+    .object({
+      selector: z.string().min(1),
+      timeout_ms: z.number().int().min(250).max(60_000).default(15_000),
+    })
+    .optional(),
+});
+
+const DiscoverArgs = z.object({
+  action: z.literal('discover'),
+  credential_item_id: z.string().min(1).optional(),
+});
+
+const AttemptArgs = z
+  .object({
+    action: z.literal('attempt'),
+    credential_item_id: z.string().min(1).optional(),
+    fields: z.array(FieldSpec).min(1),
+    submit: SubmitSpec.optional(),
+    steps: z.array(AttemptStep).min(1).optional(),
+    expect: ExpectSpec,
+    reason: z.string().min(1).max(1_000).optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.steps && value.submit) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'steps and top-level submit are mutually exclusive',
+      });
+    }
+    if (!value.steps && !value.submit) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'submit is required' });
+    }
+    if (value.steps) {
+      const selectors = new Set(value.fields.map((field) => field.selector));
+      for (const [index, step] of value.steps.entries()) {
+        for (const selector of step.fields) {
+          if (!selectors.has(selector)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `step references undeclared field selector ${selector}`,
+              path: ['steps', index, 'fields'],
+            });
+          }
+        }
+      }
+    }
+  });
+
+const ReportArgs = z.object({
+  action: z.literal('report'),
+  kind: z.enum(['secret_exposed', 'wrong_verdict', 'recipe_wrong', 'other']),
+  where: z.string().min(1).max(1_000).optional(),
+  attempt_id: z.string().min(1).optional(),
+  description: z.string().min(1).max(4_000).optional(),
+});
+
+const CredentialLoginArgs = z.union([DiscoverArgs, AttemptArgs, ReportArgs]).or(
+  // Compatibility for the published pre-convergence client and the Vault
+  // panel. It executes the existing safe heuristic path; agents receive the
+  // discriminated schema after the live definition is updated.
+  z.object({ credential_item_id: z.string().min(1).optional() }).default({}),
+);
 type CredentialLoginArgs = z.infer<typeof CredentialLoginArgs>;
+
+interface LoginSignal {
+  kind: string;
+  direction: 'authenticated' | 'challenged' | 'rejected' | 'unknown';
+  weight: number;
+  source: 'generic' | 'agent_expectation';
+}
+
+interface EvidenceSnapshot {
+  url: string;
+  has_password_field: boolean;
+  mfa: boolean;
+  captcha: boolean;
+  error_kind: 'credentials' | 'generic' | null;
+}
+
+interface LoginEvidence {
+  before: EvidenceSnapshot;
+  after?: EvidenceSnapshot;
+  elapsed_ms: number;
+}
+
+const FEEDBACK = {
+  how_to_report:
+    "If you saw a password, token, or code in page content, a screenshot, or a tool result during this login — or the verdict was wrong — report it with credential_login({action:'report', ...}). Do not repeat the value; name where you saw it.",
+} as const;
 
 // ── Timing ──────────────────────────────────────────────────────────────────
 const POLL_INTERVAL_MS = 400;
@@ -398,6 +522,67 @@ function clearSensitiveSource(selectors: string[], sensitiveAttr: string): { cle
   return { cleared };
 }
 
+interface SpecProbe {
+  is_top_frame: boolean;
+  origin: string;
+  fields: Record<string, { exists: boolean; form_method: string | null }>;
+  controls: Record<string, boolean>;
+}
+
+/** Validate the ENTIRE declared attempt before requesting any secret. */
+function probeAttemptSpecSource(fieldSelectors: string[], controlSelectors: string[]): SpecProbe {
+  const fields: SpecProbe['fields'] = {};
+  const controls: SpecProbe['controls'] = {};
+  for (const selector of fieldSelectors) {
+    let element: Element | null = null;
+    try {
+      element = document.querySelector(selector);
+    } catch {
+      element = null;
+    }
+    fields[selector] = {
+      exists: element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement,
+      form_method: element?.closest('form')?.method.toLowerCase() ?? null,
+    };
+  }
+  for (const selector of controlSelectors) {
+    try {
+      controls[selector] = document.querySelector(selector) instanceof HTMLElement;
+    } catch {
+      controls[selector] = false;
+    }
+  }
+  return { is_top_frame: window.top === window.self, origin: location.origin, fields, controls };
+}
+
+function explicitSubmitSource(
+  kind: 'click' | 'press_enter' | 'none',
+  selector: string | null,
+): { ok: boolean; mode: string } {
+  if (kind === 'none') return { ok: true, mode: 'none' };
+  if (!selector) return { ok: false, mode: 'missing_selector' };
+  const element = document.querySelector(selector) as HTMLElement | null;
+  if (!element) return { ok: false, mode: 'not_found' };
+  const form = element.closest('form');
+  if (form?.method.toLowerCase() === 'get') return { ok: false, mode: 'unsafe_get' };
+  if (kind === 'click') {
+    element.click();
+    return { ok: true, mode: 'click' };
+  }
+  element.focus();
+  element.dispatchEvent(
+    new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', bubbles: true, cancelable: true }),
+  );
+  element.dispatchEvent(
+    new KeyboardEvent('keyup', { key: 'Enter', code: 'Enter', bubbles: true, cancelable: true }),
+  );
+  if (form) {
+    if (typeof form.requestSubmit === 'function') form.requestSubmit();
+    else form.submit();
+  }
+  return { ok: true, mode: 'press_enter' };
+}
+
 // ── Handler ─────────────────────────────────────────────────────────────────
 
 /**
@@ -406,13 +591,44 @@ function clearSensitiveSource(selectors: string[], sensitiveAttr: string): { cle
  */
 function safeResult(
   status: CredentialLoginStatus,
-  extra: { reason?: string; message?: string; choices?: SafeChoice[] } = {},
+  extra: Omit<Partial<CredentialLoginResult>, 'status' | 'feedback'> = {},
 ): CredentialLoginResult {
-  const out: CredentialLoginResult = { status };
-  if (extra.reason) out.reason = extra.reason;
-  if (extra.message) out.message = extra.message;
-  if (extra.choices) out.choices = extra.choices;
+  const defaultVerdict: NonNullable<CredentialLoginResult['verdict']> =
+    status === 'authenticated'
+      ? 'authenticated'
+      : status === 'needs_mfa' || status === 'captcha_or_takeover'
+        ? 'challenged'
+        : status === 'credentials_rejected'
+          ? 'rejected'
+          : ['selection_required', 'no_matching_login', 'unsafe_destination'].includes(status)
+            ? 'refused'
+            : 'unknown';
+  const out: CredentialLoginResult = {
+    status,
+    verdict: extra.verdict ?? defaultVerdict,
+    confidence: extra.confidence ?? (defaultVerdict === 'refused' ? 1 : 0),
+    signals: extra.signals ?? [],
+    feedback: FEEDBACK,
+  };
+  Object.assign(out, extra);
   return out;
+}
+
+function snapshot(state: PageStateProbe): EvidenceSnapshot {
+  let url = state.href;
+  try {
+    const parsed = new URL(state.href);
+    url = `${parsed.origin}${parsed.pathname}`;
+  } catch {
+    url = '(unparseable)';
+  }
+  return {
+    url,
+    has_password_field: state.has_password_field,
+    mfa: state.mfa,
+    captcha: state.captcha,
+    error_kind: state.error_kind,
+  };
 }
 
 function failureResult(failure: VaultCallFailure, op: string): CredentialLoginResult {
