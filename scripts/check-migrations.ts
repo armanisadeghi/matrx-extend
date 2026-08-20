@@ -1,9 +1,10 @@
 #!/usr/bin/env tsx
+import { execFileSync } from 'node:child_process';
 /**
  * Migration ledger check — the matrx-extend half of the cross-repo migration
  * durability system. See the "Database migrations" note in CLAUDE.md.
  *
- * Supabase (`txzxabzwovsujtloxrus`) is the source of truth for the database — NOT
+ * Supabase (`brsgrqvjdzwihsvnfqkf`) is the source of truth for the database — NOT
  * the .sql files in `migrations/`. A migration file on disk has changed NOTHING
  * until it is applied. This script makes a forgotten one LOUD: it reads the shared
  * ledger `public._schema_migrations` (rows where source='matrx-extend' — the same
@@ -11,9 +12,10 @@
  * against the local `migrations/*.sql`. Anything the ledger has never seen, or whose
  * checksum drifted, is screamed in a big red box.
  *
- * READ-ONLY. This repo ships only the publishable/anon key and cannot apply DDL or
- * write the ledger. Recording is the applier's job. To apply + record a pending
- * migration, from the aidream repo run:
+ * READ-ONLY. This repo ships only the publishable key and cannot apply DDL or
+ * write the ledger. The private ledger is read through the authenticated Supabase
+ * CLI Management API when the browser-safe role cannot select it. Recording is
+ * the applier's job. To apply + record a pending migration, from aidream run:
  *     python db/apply_migrations.py --source matrx-extend
  *
  *   pnpm check:migrations            # loud, non-blocking (exit 0)
@@ -23,8 +25,9 @@
  * live) is exempted with `-- migrate: skip: <reason>` in its first 25 lines.
  */
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
@@ -66,6 +69,70 @@ function listSql(dir: string): string[] {
 interface LedgerRow {
   filename: string;
   checksum: string;
+}
+
+function loadProjectRef(): string | null {
+  let projectRef = process.env.MATRX_SUPABASE_PROJECT_REF ?? '';
+  if (projectRef) return projectRef;
+
+  for (const f of [
+    '.env.production.local',
+    '.env.production',
+    '.env.development.local',
+    '.env.development',
+    '.env',
+  ]) {
+    const path = resolve(ROOT, f);
+    if (!existsSync(path)) continue;
+    for (const line of readFileSync(path, 'utf8').split('\n')) {
+      const match = line.match(/^\s*MATRX_SUPABASE_PROJECT_REF\s*=\s*(.+?)\s*$/);
+      if (!match) continue;
+      projectRef = (match[1] ?? '').replace(/^['"]|['"]$/g, '');
+      if (projectRef) return projectRef;
+    }
+  }
+  return null;
+}
+
+function fetchLedgerViaManagementApi(projectRef: string): LedgerRow[] {
+  const sql = `select filename, checksum from public._schema_migrations where source = '${SOURCE}' order by filename`;
+  const workdir = mkdtempSync(join(tmpdir(), 'matrx-extend-migration-check-'));
+  let output: string;
+  try {
+    output = execFileSync(
+      'supabase',
+      [
+        'db',
+        'query',
+        '--linked',
+        '--project-ref',
+        projectRef,
+        '--output',
+        'json',
+        '--workdir',
+        workdir,
+        sql,
+      ],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
+    );
+  } finally {
+    rmSync(workdir, { recursive: true, force: true });
+  }
+  const payload = JSON.parse(output) as { rows?: unknown };
+  if (!Array.isArray(payload.rows)) {
+    throw new Error('Supabase Management API returned no rows array');
+  }
+  return payload.rows.map((row) => {
+    if (
+      typeof row !== 'object' ||
+      row === null ||
+      typeof (row as Record<string, unknown>).filename !== 'string' ||
+      typeof (row as Record<string, unknown>).checksum !== 'string'
+    ) {
+      throw new Error('Supabase Management API returned an invalid ledger row');
+    }
+    return row as LedgerRow;
+  });
 }
 
 function loudBox(title: string): void {
@@ -112,10 +179,25 @@ async function main(): Promise<number> {
       env.key,
       `_schema_migrations?source=eq.${encodeURIComponent(SOURCE)}&select=filename,checksum`,
     );
-  } catch (err) {
-    // DB unreachable / RLS-blocked is NOT migration drift — never block on it.
-    console.error(`${C.yellow}check:migrations — could not read ledger: ${String(err)}${C.reset}`);
-    return strict ? 2 : 0;
+  } catch (publicError) {
+    const projectRef = loadProjectRef();
+    try {
+      if (!projectRef) throw new Error('MATRX_SUPABASE_PROJECT_REF is absent');
+      ledgerRows = fetchLedgerViaManagementApi(projectRef);
+      console.log(
+        `${C.dim}check:migrations — private ledger verified through Supabase Management API${C.reset}`,
+      );
+    } catch (managementError) {
+      // An unreachable ledger is not migration drift, but strict verification
+      // must fail closed because a release cannot prove that its SQL is live.
+      console.error(
+        `${C.yellow}check:migrations — publishable read failed: ${String(publicError)}${C.reset}`,
+      );
+      console.error(
+        `${C.yellow}check:migrations — Management API read failed: ${String(managementError)}${C.reset}`,
+      );
+      return strict ? 2 : 0;
+    }
   }
 
   const ledger = new Map(ledgerRows.map((r) => [r.filename, r.checksum]));

@@ -708,8 +708,11 @@ matrx-frontend, matrx-extend) share one DB and one ledger, `public._schema_migra
 
 - **Verify (loud):** `pnpm check:migrations` diffs `migrations/*.sql` against the
   ledger (rows where `source='matrx-extend'`) and screams in a red box about anything
-  never applied. Runs as a non-blocking step in `release.sh`; `pnpm check:migrations:strict`
-  exits non-zero for CI.
+  never applied. The ledger stays private to browser roles: the checker first tries
+  the browser-safe read, then uses the authenticated Supabase CLI Management API with
+  `MATRX_SUPABASE_PROJECT_REF` when RLS correctly refuses it. No service key enters the
+  extension. `release.sh` runs `pnpm check:migrations:strict` and blocks when the ledger
+  is unreachable or differs from disk.
 - **Apply + record:** from the **aidream** repo (the one box with DB write creds),
   run `python db/apply_migrations.py --source matrx-extend`. For a one-off, apply via
   the Supabase MCP, then re-run aidream's applier so the ledger records it.

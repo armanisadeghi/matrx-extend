@@ -169,6 +169,7 @@ step "Pre-flight checks"
 command -v pnpm >/dev/null || fail "pnpm not found in PATH"
 command -v node >/dev/null || fail "node not found in PATH"
 command -v git  >/dev/null || fail "git not found in PATH"
+command -v supabase >/dev/null || fail "supabase CLI not found in PATH"
 
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 [[ "$CURRENT_BRANCH" == "$BRANCH" ]] \
