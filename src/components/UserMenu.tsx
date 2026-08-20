@@ -1,4 +1,5 @@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { canAccessSidepanelTab } from '@/config/sidepanel-visibility';
 import { useAuth } from '@/hooks/use-auth';
 import { useDesktopBridge } from '@/hooks/use-desktop';
 import { desktopStatusDotClass, formatDesktopConnectionLabel } from '@/lib/desktop/types';
@@ -17,7 +18,7 @@ import { useState } from 'react';
  * itself so it stays visible whether the menu is open or closed.
  */
 export function UserMenu() {
-  const { user, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const desktop = useDesktopBridge();
   const setTab = useSidepanelTabStore((s) => s.setTab);
   const [open, setOpen] = useState(false);
@@ -81,12 +82,16 @@ export function UserMenu() {
         </div>
 
         <div className="mt-1 space-y-0.5">
-          <MenuItem icon={<User className="size-4" />} onClick={() => goto('profile')}>
-            Profile
-          </MenuItem>
-          <MenuItem icon={<Settings className="size-4" />} onClick={() => goto('settings')}>
-            Preferences
-          </MenuItem>
+          {canAccessSidepanelTab('profile', { signedIn: user !== null, isAdmin }) && (
+            <MenuItem icon={<User className="size-4" />} onClick={() => goto('profile')}>
+              Profile
+            </MenuItem>
+          )}
+          {canAccessSidepanelTab('settings', { signedIn: user !== null, isAdmin }) && (
+            <MenuItem icon={<Settings className="size-4" />} onClick={() => goto('settings')}>
+              Preferences
+            </MenuItem>
+          )}
         </div>
 
         <div className="my-1 h-px bg-border/60" />

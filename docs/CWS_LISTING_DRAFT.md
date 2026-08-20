@@ -203,6 +203,30 @@ Do not add a Data/picker screenshot merely to fill the fifth slot. The four
 screenshots above mirror the exact reviewer path and default-disclosure check.
 Do not upload old signed-in, admin, task, or unrelated product screenshots.
 
+### `1.0.0` marketing refresh
+
+Do this after the final public visibility choices are set in
+`src/config/sidepanel-visibility.ts` and before declaring `1.0.0`:
+
+1. Run the exact Store build in a clean local Chrome profile with no AI Matrx
+   session. Confirm only `everyone` tabs appear and complete the guest path.
+2. Sign in with a non-admin test account. Confirm only `everyone` and
+   `signed-in` tabs appear and complete every workflow we intend to market.
+3. Capture screenshots from those two audiences only. Never use an admin
+   session, even if the screenshot happens not to show an admin tab.
+4. Lead with Chat working from the current page. Follow with page Capture and
+   SEO outcomes. Use the fourth slot for the strongest stable signed-in outcome
+   only if it is part of the `1.0.0` promise; otherwise retain Settings showing
+   automatic capture off.
+5. Create a 440 × 280 small promotional tile from the same visual system. A
+   marquee tile remains optional and should be added only with campaign-quality
+   artwork.
+
+Screenshot capture comes after visibility and stability decisions because a
+hidden, renamed, or visibly changed feature makes earlier assets stale. The
+clean-profile reviewer screenshots remain valid for approval until that final
+marketing pass.
+
 ## Submission facts that stay internal
 
 - Previous rejection (2026-05-16), reference **Red Potassium**, said advertised functionality was not working or reproducible.

@@ -18,6 +18,8 @@ Read these before acting:
 - `docs/CWS_LISTING_DRAFT.md` — canonical dashboard copy.
 - `config/chrome-web-store-approved-baseline.json` — the exact policy surface
   Google most recently published.
+- `src/config/sidepanel-visibility.ts` — the single public/member/admin feature
+  switchboard for the candidate.
 
 ## Decide whether the update is routine or Store-material
 
@@ -31,6 +33,12 @@ diff only fixes bugs, improves performance or UI, refactors internals, or
 extends behavior already truthfully covered by the listing and disclosures.
 Submit routine updates with concise release notes. Google still reviews the
 package; no separate email is necessary.
+
+Before packaging, inspect `SIDEPANEL_TAB_AUDIENCE`. Features marked `admin`
+may remain available for internal testing but must not appear in public Store
+copy, screenshots, or reviewer steps. Do not scatter one-off visibility checks
+through components; change the typed switchboard so navigation and content are
+gated together.
 
 A change is **Store-material** when it changes or introduces any of these:
 
@@ -81,6 +89,9 @@ Never reuse or decrease a version. Do not write `0.2.00`; canonical SemVer is
 3. Run the full relevant tests. A Store release must include TypeScript, unit
    tests, strict schema routing, tool-registry drift, migration ledger, Store
    package validation, and the Chrome Web Store risk gate.
+   Test the visible `everyone` surface signed out and the `signed-in` surface
+   with a non-admin account. An admin session is never acceptable screenshot
+   or reviewer-path evidence.
 4. Use `./release.sh --patch|--minor|--major` when a new package is needed.
    Upload only `.output/matrx-extend-<version>-store.zip`; never the local zip.
 5. In the existing publisher **Matrx**, update only the primary item
