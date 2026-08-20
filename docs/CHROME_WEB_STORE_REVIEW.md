@@ -136,7 +136,8 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 - [x] Four current 1280 × 800 screenshots are uploaded in the documented order.
 - [x] Distribution settings are checked without using the duplicate item.
 - [x] Arman explicitly authorized the final Submit for review action.
-- [x] Google accepted the submission and the Status page shows **Pending review**.
+- [x] Google approved and published version `0.1.72`; the live item status is
+  **Published - public**.
 
 ## Evidence log
 
@@ -168,6 +169,7 @@ Use a brand-new Chrome profile with no AI Matrx login and only the exact unpacke
 | 2026-08-19 02:41 PDT | Chrome Web Store notification confirmed: **Item successfully published** for the submitted extension. No dashboard or package changes were made during the pending review window. |
 | 2026-08-20 09:10 PDT | Version `0.1.74` passed live OpenAPI sync, TypeScript, strict schema routing, 82/82 tool-registry drift verification, the private migration-ledger check (15 applied / 0 pending / 0 drifted), Store packaging validation, separate local packaging, version tagging, and push. Store artifact SHA-256 `539483af16d233c9c12e67744ffe78e16902ea5cd170cacfc240a056ee71cb10`; manifest version `0.1.74`, no development key, no toolbar popup, canonical side panel. Chrome blocks extension automation on Web Store pages, so upload/submission remains an interactive-dashboard action. |
 | 2026-08-20 12:05 PDT | Version `0.1.75` passed TypeScript, all 437 tests, strict schema routing, the private migration-ledger check (15 applied / 0 pending / 0 drifted), Store package validation, separate local packaging, version tagging, and atomic push. Store artifact SHA-256 `d7ba4937b8dec4f04e0330dee480814fbdd11636163a772aae9216f5abc1f651`; local artifact SHA-256 `1374c3da96abfdb34cc4a175fc2f3bb75c15250b23aabfaecb5503688f686326`. The Store manifest is version `0.1.75`, has no development key or toolbar popup, and retains the canonical side panel. Live API-type regeneration was deliberately skipped to avoid absorbing unrelated concurrent generated-type work. Tool drift remains intentionally held on the old `credential_login` contract until the API, Store build, and East DB contract cut over together. The zip was validated but not uploaded. |
+| 2026-08-20 12:08 PDT | Rechecked the live Chrome Web Store dashboard under `arman@armansadeghi.com`, publisher **Matrx**. Primary item `hnfolienncfklkgmdjjmhhegglimlamg` reports **Status: Published - public**. The Draft tab states **This draft is unpublished**, confirming there is no pending draft submission. The approval email independently records **Item successfully published** at 2026-08-19 02:41 PDT. Version `0.1.75` remains a validated local Store candidate and has not been uploaded. |
 
 ## Official policy references
 
