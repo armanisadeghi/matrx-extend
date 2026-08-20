@@ -1124,6 +1124,7 @@ async function runAuthenticatorAttempt(
 
   const before = await injectTopFrame<PageStateProbe>(tabId, pageStateSource, []).catch(() => null);
   if (!before) return safeResult('unknown', { reason: 'before_evidence_failed' });
+  const startedAt = Date.now();
 
   const materialized = await materializeBrowserAuthenticator(args.credential_item_id, {
     conversationId: ctx.conversationId,
@@ -1142,14 +1143,18 @@ async function runAuthenticatorAttempt(
 
   rememberSensitiveFields(tabId, [args.code_selector]);
   let clear = true;
+  let code = transient.code;
+  transient.code = '';
   try {
     const filled = await injectTopFrame<{ ok: boolean }>(tabId, fillFieldSource, [
       args.code_selector,
-      transient.code,
+      code,
       SENSITIVE_ATTR,
     ]).catch(() => null);
-    // The only local reference to the code becomes unreachable after this
-    // block. It is never included in any return/log/receipt/capture.
+    code = '';
+    // The transient response and the only local code reference are cleared
+    // before submission/classification. Neither can reach a result, log,
+    // receipt, capture, or persistent store.
     if (!filled?.ok) return safeResult('unknown', { reason: 'authenticator_fill_failed' });
 
     const submitted = await injectTopFrame<{ ok: boolean; mode: string }>(
@@ -1169,7 +1174,7 @@ async function runAuthenticatorAttempt(
       pageUrl,
       args.expect,
       before,
-      Date.now(),
+      startedAt,
     );
     clear = classified.status !== 'authenticated';
     const result = safeResult(classified.status, {
@@ -1183,12 +1188,16 @@ async function runAuthenticatorAttempt(
           ? 'authenticated'
           : result.status === 'unsafe_destination'
             ? 'unsafe_destination'
-            : 'needs_mfa',
+            : result.status === 'credentials_rejected'
+              ? 'credentials_rejected'
+              : 'needs_mfa',
       pageUrl: normalizedPageUrl,
       toolInvocationId: ctx.callId,
     });
     return result;
   } finally {
+    code = '';
+    transient.code = '';
     if (clear) {
       await injectTopFrame(tabId, clearSensitiveSource, [
         [args.code_selector],

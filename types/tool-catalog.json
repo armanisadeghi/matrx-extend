@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-20T19:03:35.771Z",
+  "generated_at": "2026-08-20T19:22:01.292Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_browser_tools",
@@ -4002,6 +4002,7 @@
               "auto",
               "discover",
               "attempt",
+              "authenticator",
               "report"
             ]
           },
@@ -4214,6 +4215,10 @@
             "default": {
               "timeout_ms": 30000
             }
+          },
+          "code_selector": {
+            "type": "string",
+            "minLength": 1
           },
           "reason": {
             "type": "string",

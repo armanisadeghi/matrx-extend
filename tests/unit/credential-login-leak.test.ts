@@ -164,7 +164,10 @@ function installChrome(): void {
       onUpdated: { addListener: () => undefined },
       onRemoved: { addListener: () => undefined },
     },
-    runtime: { id: 'cihdmkcdjjckfhjpgoedmgfpoljebaml', getManifest: () => ({ version: '0.0.0-test' }) },
+    runtime: {
+      id: 'cihdmkcdjjckfhjpgoedmgfpoljebaml',
+      getManifest: () => ({ version: '0.0.0-test' }),
+    },
   };
 }
 
