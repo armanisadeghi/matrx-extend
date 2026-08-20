@@ -227,7 +227,7 @@ export function useCredentialLogin(): {
       setOutcome(null);
       try {
         const result = await credential_login.run(
-          { credential_item_id: itemId },
+          { action: 'auto', credential_item_id: itemId },
           {
             conversationId: null,
             runId: 'vault-panel',

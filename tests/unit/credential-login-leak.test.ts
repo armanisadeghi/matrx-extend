@@ -259,7 +259,7 @@ describe('credential_login — plaintext never leaves the handler', () => {
 
   it('fills, submits, verifies, and returns only a safe status', async () => {
     const { credential_login } = await import('@/lib/tools/handlers/credential-login');
-    const result = await credential_login.run({}, ctx);
+    const result = await credential_login.run({ action: 'auto' }, ctx);
 
     expect(result.status).toBe('authenticated');
     // The richer envelope carries only bounded evidence/signals/instructions.
@@ -278,7 +278,7 @@ describe('credential_login — plaintext never leaves the handler', () => {
 
   it('injects into the TOP FRAME only', async () => {
     const { credential_login } = await import('@/lib/tools/handlers/credential-login');
-    await credential_login.run({}, ctx);
+    await credential_login.run({ action: 'auto' }, ctx);
     // Every injection the handler makes itself must be frame-pinned.
     // `checkAuthState` is a pre-existing shared primitive that targets the tab
     // and carries no plaintext; it is the only unpinned injection.
@@ -290,7 +290,7 @@ describe('credential_login — plaintext never leaves the handler', () => {
 
   it('reports the outcome to the vault audit endpoint without any value', async () => {
     const { credential_login } = await import('@/lib/tools/handlers/credential-login');
-    await credential_login.run({}, ctx);
+    await credential_login.run({ action: 'auto' }, ctx);
     const audit = posts.find((p) => p.path.endsWith('/result'));
     expect(audit).toBeDefined();
     expect(audit?.body).toMatchObject({ status: 'authenticated' });
@@ -299,7 +299,7 @@ describe('credential_login — plaintext never leaves the handler', () => {
 
   it('never echoes the filled values back through any page-inspection tool', async () => {
     const { credential_login } = await import('@/lib/tools/handlers/credential-login');
-    await credential_login.run({}, ctx);
+    await credential_login.run({ action: 'auto' }, ctx);
 
     // A hostile page strips our marker — the extension's own filled-field
     // memory must still redact.
@@ -483,7 +483,7 @@ describe('credential_login — unsafe destinations cannot be filled', () => {
   it('refuses plain http on a real host before any vault call', async () => {
     tabUrl = 'http://accounts.example.com/login';
     const { credential_login } = await import('@/lib/tools/handlers/credential-login');
-    const result = await credential_login.run({}, ctx);
+    const result = await credential_login.run({ action: 'auto' }, ctx);
     expect(result.status).toBe('unsafe_destination');
     expect(result.reason).toBe('insecure_scheme');
     // Nothing was decrypted, nothing was typed.
@@ -496,7 +496,7 @@ describe('credential_login — unsafe destinations cannot be filled', () => {
     // tab navigated between the URL read and the injection.
     tabUrl = 'https://evil.example.net/login';
     const { credential_login } = await import('@/lib/tools/handlers/credential-login');
-    const result = await credential_login.run({}, ctx);
+    const result = await credential_login.run({ action: 'auto' }, ctx);
     expect(result.status).toBe('unsafe_destination');
     expect(result.reason).toBe('origin_changed_during_probe');
     expect(posts).toHaveLength(0);
@@ -516,7 +516,7 @@ describe('credential_login — unsafe destinations cannot be filled', () => {
     sizeEverything();
 
     const { credential_login } = await import('@/lib/tools/handlers/credential-login');
-    const result = await credential_login.run({}, ctx);
+    const result = await credential_login.run({ action: 'auto' }, ctx);
 
     expect(result.status).toBe('unsafe_destination');
     expect(result.reason).toBe('unsafe_get_form');
@@ -559,7 +559,7 @@ describe('credential_login — unsafe destinations cannot be filled', () => {
     };
 
     const { credential_login } = await import('@/lib/tools/handlers/credential-login');
-    const result = await credential_login.run({}, ctx);
+    const result = await credential_login.run({ action: 'auto' }, ctx);
 
     expect(result.status).toBe('unsafe_destination');
     expect(result.reason).toBe('origin_mismatch');
@@ -572,7 +572,7 @@ describe('credential_login — unsafe destinations cannot be filled', () => {
   it('refuses to run at all without a real user session', async () => {
     const { credential_login } = await import('@/lib/tools/handlers/credential-login');
     accessToken = null;
-    const result = await credential_login.run({}, ctx);
+    const result = await credential_login.run({ action: 'auto' }, ctx);
     expect(result.status).toBe('unknown');
     expect(result.reason).toBe('matrx_sign_in_required');
     expect(posts).toHaveLength(0);
@@ -605,7 +605,7 @@ describe('credential_login — unsafe destinations cannot be filled', () => {
       throw new Error('materialize must never be called on a multi-match');
     };
     const { credential_login } = await import('@/lib/tools/handlers/credential-login');
-    const result = await credential_login.run({}, ctx);
+    const result = await credential_login.run({ action: 'auto' }, ctx);
     expect(result.status).toBe('selection_required');
     expect(result.choices).toEqual([
       { credential_item_id: 'a', display_name: 'Work account' },
@@ -621,7 +621,7 @@ describe('credential_login — unsafe destinations cannot be filled', () => {
       throw new Error('materialize must never be called on a zero-match');
     };
     const { credential_login } = await import('@/lib/tools/handlers/credential-login');
-    const result = await credential_login.run({}, ctx);
+    const result = await credential_login.run({ action: 'auto' }, ctx);
     expect(result.status).toBe('no_matching_login');
     expect(posts.some((p) => p.path.endsWith('/materialize'))).toBe(false);
   });
@@ -664,7 +664,7 @@ describe('credential_login — flow variants', () => {
     sizeEverything();
 
     const { credential_login } = await import('@/lib/tools/handlers/credential-login');
-    const result = await credential_login.run({}, ctx);
+    const result = await credential_login.run({ action: 'auto' }, ctx);
 
     expect(result.status).toBe('authenticated');
     expect(stage).toBe(2);
@@ -695,7 +695,7 @@ describe('credential_login — flow variants', () => {
     });
 
     const { credential_login } = await import('@/lib/tools/handlers/credential-login');
-    const result = await credential_login.run({}, ctx);
+    const result = await credential_login.run({ action: 'auto' }, ctx);
     nowSpy.mockRestore();
 
     expect(result.status).toBe('unknown');

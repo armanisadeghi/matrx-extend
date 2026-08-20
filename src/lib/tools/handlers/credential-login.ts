@@ -7,8 +7,9 @@
  * /Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/PLAN.md
  * § "Agent-safe browser login" + Phase 4):
  *
- * The current contract is a discriminated union: discover safe field names,
- * submit one complete field-map attempt, or report a leak/wrong verdict. There
+ * The current contract has four strict actions: automatically use the saved
+ * recipe, discover safe field names, submit one complete field-map attempt,
+ * or report a leak/wrong verdict. There
  * is deliberately no agent-supplied destination URL or credential value. The
  * extension derives the real tab origin itself; an optional success URL prefix
  * is only a post-submit expectation. The server resolves field NAMES just in
@@ -136,10 +137,19 @@ const AttemptStep = z.object({
     .optional(),
 });
 
-const DiscoverArgs = z.object({
-  action: z.literal('discover'),
-  credential_item_id: z.string().min(1).optional(),
-});
+const DiscoverArgs = z
+  .object({
+    action: z.literal('discover'),
+    credential_item_id: z.string().min(1).optional(),
+  })
+  .strict();
+
+const AutoArgs = z
+  .object({
+    action: z.literal('auto'),
+    credential_item_id: z.string().min(1).optional(),
+  })
+  .strict();
 
 const AttemptArgs = z
   .object({
@@ -151,6 +161,7 @@ const AttemptArgs = z
     expect: ExpectSpec,
     reason: z.string().min(1).max(1_000).optional(),
   })
+  .strict()
   .superRefine((value, ctx) => {
     if (!value.fields.some((field) => field.field_key !== undefined)) {
       ctx.addIssue({
@@ -184,23 +195,49 @@ const AttemptArgs = z
     }
   });
 
-const ReportArgs = z.object({
-  action: z.literal('report'),
-  kind: z.enum(['secret_exposed', 'wrong_verdict', 'recipe_wrong', 'other']),
-  where: z.string().min(1).max(500),
-  attempt_id: z.string().min(1).optional(),
-  description: z.string().min(1).max(4_000).optional(),
-});
+const ReportArgs = z
+  .object({
+    action: z.literal('report'),
+    kind: z.enum(['secret_exposed', 'wrong_verdict', 'recipe_wrong', 'other']),
+    where: z.string().min(1).max(500),
+    attempt_id: z.string().min(1).optional(),
+    description: z.string().min(1).max(4_000).optional(),
+  })
+  .strict();
 
-const CredentialLoginArgs = z.union([DiscoverArgs, AttemptArgs, ReportArgs]).or(
-  // Compatibility for the published pre-convergence client and the Vault
-  // panel. It executes the existing safe heuristic path; agents receive the
-  // discriminated schema after the live definition is updated.
-  z
-    .object({ credential_item_id: z.string().min(1).optional() })
-    .strict()
-    .default({}),
-);
+/**
+ * Provider-facing schemas are a flat parameter map in `tool.definition`, not
+ * a top-level JSON-Schema `anyOf`. Keep that canonical flat shape here, then
+ * enforce the exact per-action arms with strict schemas at parse time.
+ */
+const CredentialLoginArgs = z
+  .object({
+    action: z.enum(['auto', 'discover', 'attempt', 'report']),
+    credential_item_id: z.string().min(1).optional(),
+    fields: z.array(FieldSpec).min(1).optional(),
+    submit: SubmitSpec.optional(),
+    steps: z.array(AttemptStep).min(1).optional(),
+    expect: ExpectSpec.optional(),
+    reason: z.string().min(1).max(1_000).optional(),
+    kind: z.enum(['secret_exposed', 'wrong_verdict', 'recipe_wrong', 'other']).optional(),
+    where: z.string().min(1).max(500).optional(),
+    attempt_id: z.string().min(1).optional(),
+    description: z.string().min(1).max(4_000).optional(),
+  })
+  .strict()
+  .superRefine((value, ctx) => {
+    const schema =
+      value.action === 'auto'
+        ? AutoArgs
+        : value.action === 'discover'
+          ? DiscoverArgs
+          : value.action === 'attempt'
+            ? AttemptArgs
+            : ReportArgs;
+    const parsed = schema.safeParse(value);
+    if (parsed.success) return;
+    for (const issue of parsed.error.issues) ctx.addIssue(issue);
+  });
 type CredentialLoginArgs = z.infer<typeof CredentialLoginArgs>;
 type CompleteAttemptArgs = z.infer<typeof AttemptArgs>;
 
@@ -1060,12 +1097,13 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
       });
     }
 
-    if ('action' in args && args.action === 'report') {
+    if (args.action === 'report') {
+      const report = ReportArgs.parse(args);
       const reported = await submitBrowserLoginReport({
-        kind: args.kind,
-        where: args.where,
-        ...(args.attempt_id !== undefined ? { attempt_id: args.attempt_id } : {}),
-        ...(args.description !== undefined ? { description: args.description } : {}),
+        kind: report.kind,
+        where: report.where,
+        ...(report.attempt_id !== undefined ? { attempt_id: report.attempt_id } : {}),
+        ...(report.description !== undefined ? { description: report.description } : {}),
       });
       if (!reported.ok) return failureResult(reported.failure, 'report');
       return safeResult('report_received', {
@@ -1095,13 +1133,14 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
 
     const normalizedPageUrl = `${pageUrl.origin}${pageUrl.pathname}`;
 
-    if ('action' in args && args.action === 'discover') {
+    if (args.action === 'discover') {
+      const discover = DiscoverArgs.parse(args);
       const matches = await fetchBrowserLoginMatches(normalizedPageUrl, {
         includeFieldInventory: true,
       });
       if (!matches.ok) return failureResult(matches.failure, 'matches');
-      const candidates = args.credential_item_id
-        ? matches.data.matches.filter((match) => match.item_id === args.credential_item_id)
+      const candidates = discover.credential_item_id
+        ? matches.data.matches.filter((match) => match.item_id === discover.credential_item_id)
         : matches.data.matches;
       if (candidates.length === 0) return safeResult('no_matching_login');
       if (candidates.length > 1) {
@@ -1124,8 +1163,14 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
       });
     }
 
-    if ('action' in args && args.action === 'attempt') {
-      return await runCompleteAttempt(args, ctx, tabId, pageUrl, normalizedPageUrl);
+    if (args.action === 'attempt') {
+      return await runCompleteAttempt(
+        AttemptArgs.parse(args),
+        ctx,
+        tabId,
+        pageUrl,
+        normalizedPageUrl,
+      );
     }
 
     // ── 3. Detect the login fields (top frame only, values never read) ─────
@@ -1158,7 +1203,8 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
     }
 
     // ── 4. Resolve which item to use ───────────────────────────────────────
-    let itemId = ('credential_item_id' in args ? args.credential_item_id : undefined) ?? null;
+    const automatic = AutoArgs.parse(args);
+    let itemId = automatic.credential_item_id ?? null;
     if (!itemId) {
       const matches = await fetchBrowserLoginMatches(normalizedPageUrl);
       if (!matches.ok) return failureResult(matches.failure, 'matches');

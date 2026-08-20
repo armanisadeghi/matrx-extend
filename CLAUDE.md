@@ -280,16 +280,16 @@ Arman plus dozens of concurrent agents (across two machines) edit these repos si
   ([src/lib/tools/handlers/credential-login.ts](./src/lib/tools/handlers/credential-login.ts))
   does resolve → materialize → fill → submit → verify inside a single `run()`;
   the plaintext lives in one `const` in that scope and nowhere else.
-  - **The current contract is `discover | attempt | report`.** `discover`
+  - **The current contract is `auto | discover | attempt | report`.** `auto`
+    runs the safe one-click recipe used by the Vault panel. `discover`
     returns field names and non-secret preset values only. `attempt` accepts a
     complete field map (Vault `field_key` or an explicitly non-secret literal),
     selectors, an explicit submit method, and optional non-secret expectations
     (including a post-submit success URL prefix).
     `report` records a leak or wrong-verdict report. There is no agent-supplied
     destination URL, username, password, TOTP seed/code, or arbitrary script
-    argument. A strict legacy
-    `{credential_item_id?}` arm remains only for the Vault panel's one-click
-    automatic fill. The extension derives the real tab origin itself
+    argument. Every call names its action; there is no hidden legacy arm. The
+    extension derives the real tab origin itself
     (`getAssignedTab`), and injection is `frameIds: [0]` — top frame only.
   - **Refusals happen before any decrypt:** non-https (except loopback), not
     the top frame, a live page origin that disagrees with the tab, or a
