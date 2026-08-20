@@ -1,0 +1,95 @@
+{
+  "publishedVersion": "0.1.72",
+  "publishedSourceCommit": "e0753b1fbc8600339f9898eff58c7f9119b5810a",
+  "itemId": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "policySurface": {
+    "name": "Matrx Extend",
+    "short_name": "Matrx",
+    "description": "AI assistant for understanding and working with the page open in your browser.",
+    "permissions": [
+      "storage",
+      "sidePanel",
+      "activeTab",
+      "tabs",
+      "tabGroups",
+      "scripting",
+      "identity",
+      "offscreen",
+      "nativeMessaging",
+      "alarms",
+      "contextMenus",
+      "clipboardWrite",
+      "downloads",
+      "webNavigation",
+      "history",
+      "bookmarks",
+      "notifications",
+      "sessions",
+      "debugger"
+    ],
+    "optional_permissions": [
+      "cookies",
+      "pageCapture",
+      "clipboardRead",
+      "tabCapture"
+    ],
+    "host_permissions": [
+      "<all_urls>",
+      "https://server.app.matrxserver.com/*",
+      "https://staging.server.app.matrxserver.com/*",
+      "https://dev.server.app.matrxserver.com/*",
+      "http://localhost:8000/*",
+      "https://aimatrx.com/*",
+      "https://*.aimatrx.com/*",
+      "https://db.matrxserver.com/*",
+      "http://127.0.0.1:22180/*"
+    ],
+    "side_panel": {
+      "default_path": "sidepanel.html"
+    },
+    "background": {
+      "type": "module",
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_title": "Matrx Extend"
+    },
+    "externally_connectable": {
+      "matches": [
+        "https://*.vercel.app/*",
+        "https://*.aimatrx.com/*",
+        "https://*.mymatrx.com/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ]
+    },
+    "web_accessible_resources": [
+      {
+        "resources": ["data-picker.css", "icon/*"],
+        "matches": ["<all_urls>"]
+      }
+    ],
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "all_frames": false,
+        "run_at": "document_idle",
+        "js": ["content-scripts/content.js"]
+      },
+      {
+        "matches": [
+          "http://127.0.0.1/*",
+          "http://localhost/*",
+          "https://*.aimatrx.com/*",
+          "https://*.mymatrx.com/*",
+          "https://*.vercel.app/*",
+          "https://aimatrx.com/*",
+          "https://mymatrx.com/*"
+        ],
+        "all_frames": false,
+        "run_at": "document_start",
+        "js": ["content-scripts/webmcp-bridge.js"]
+      }
+    ]
+  }
+}

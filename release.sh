@@ -11,6 +11,7 @@
 #         and docs/TOOLS.generated.md from the DB (pnpm docs:tools)
 #   7.  Commit version bump + regenerated catalog
 #   8.  Build STORE zip with MATRX_CWS_BUILD=1 (the manifest omits the dev key)
+#         and block policy-surface drift from the last Google-approved release
 #         → .output/matrx-extend-<ver>-store.zip
 #         (this is the file you upload to the Chrome Web Store dashboard)
 #   9.  Build LOCAL zip with the dev `key` intact
@@ -326,6 +327,12 @@ else
     pnpm compile
     ok "Typecheck passed"
 fi
+
+# Unit tests are part of the Store boundary. A package that builds but breaks
+# the guest reviewer path or a privileged handler is not releasable.
+CURRENT_STEP="unit-tests"
+pnpm test
+ok "Unit tests passed"
 
 # Supabase table routing — BLOCKING, and deliberately not covered by
 # --skip-typecheck. The DB split `public` into ~48 domain schemas; an

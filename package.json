@@ -13,7 +13,7 @@
     "build:firefox": "wxt build -b firefox",
     "prezip": "tsc --noEmit && (tsx scripts/check-tool-db-drift.ts || true)",
     "zip": "wxt zip",
-    "zip:store": "pnpm prezip && MATRX_CWS_BUILD=1 wxt zip && node scripts/check-store-package.mjs",
+    "zip:store": "pnpm prezip && MATRX_CWS_BUILD=1 wxt zip && node scripts/check-store-package.mjs && node scripts/check-cws-release-risk.mjs",
     "zip:firefox": "wxt zip -b firefox",
     "compile": "tsc --noEmit",
     "lint": "biome check .",
@@ -36,7 +36,8 @@
     "check:schema-routing": "tsx scripts/check-schema-routing.ts",
     "check:schema-routing:strict": "tsx scripts/check-schema-routing.ts --strict",
     "check:docs-pointers": "tsx scripts/check-docs-pointers.ts",
-    "check:docs-pointers:strict": "tsx scripts/check-docs-pointers.ts --strict"
+    "check:docs-pointers:strict": "tsx scripts/check-docs-pointers.ts --strict",
+    "check:cws-risk": "node scripts/check-cws-release-risk.mjs"
   },
   "dependencies": {
     "@cartesia/cartesia-js": "^2.2.9",

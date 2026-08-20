@@ -1,0 +1,4 @@
+interface:
+  display_name: "Chrome Web Store Release"
+  short_description: "Audit, package, publish, and track Matrx Extend updates"
+  default_prompt: "Use $chrome-web-store-release to publish the current Matrx Extend update safely and autonomously."

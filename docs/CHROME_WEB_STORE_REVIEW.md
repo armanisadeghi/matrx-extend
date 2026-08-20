@@ -19,6 +19,31 @@ single purpose. Dashboard text remains canonical in `docs/CWS_LISTING_DRAFT.md`.
 
 Do not use the duplicate draft item `pifjakncjcpnkjbdlijgddhiipdlfbde`.
 
+## Ongoing release system
+
+Every Store package now runs `scripts/check-cws-release-risk.mjs` through
+`pnpm zip:store`. The gate blocks any drift from the policy surface Google
+published for `0.1.72`: name/summary, required and optional permissions, host
+access, side-panel/action behavior, externally connectable origins, and content
+scripts. It also scans emitted JavaScript for forbidden runtime-code paths.
+The approved surface is recorded in
+`config/chrome-web-store-approved-baseline.json` and is updated only after
+Google publishes a changed surface.
+
+Code cannot determine whether every new feature changes the truth of the Store
+listing or privacy disclosures. The repository skill
+`.claude/skills/chrome-web-store-release/SKILL.md` owns that semantic review,
+dashboard submission, status monitoring, and evidence update. Routine updates
+with an unchanged policy surface require no separate communication to Google;
+Store-material changes require the affected listing/privacy/reviewer evidence
+to be reconciled before submission.
+
+Versioning is three-part SemVer. `0.2.0` is the first post-approval public
+testing line. Patch releases are compatible fixes, minor releases are
+meaningful compatible feature batches, and `1.0.0` is reserved for the
+intentional general-availability launch after public testing and a focused
+Store-marketing refresh. Use `0.2.0`, never `0.2.00`.
+
 ## Why the previous submission failed
 
 The live dashboard records this rejection:
