@@ -1,8 +1,11 @@
 /**
- * `capture_credential` — on-the-fly credential capture (D-11).
+ * `credential_login` actions `capture` / `propose_recipe` — on-the-fly
+ * credential capture (D-11). Formerly the standalone `capture_credential`
+ * tool; merged into `credential_login` in the 2026-08-21 credential
+ * consolidation (one credential tool, actions built in).
  *
- * Sibling to `credential_login`. Where `credential_login` USES a credential we
- * already hold, `capture_credential` handles the case where the agent hits a
+ * Where the login actions USE a credential we
+ * already hold, `capture` handles the case where the agent hits a
  * login it has NO stored credential for. Instead of the agent asking the human
  * to log in — and seeing the password — this tool:
  *
@@ -73,23 +76,29 @@ const SignalArg = z.object({
   label: z.string().optional(),
 });
 
-const CaptureCredentialArgs = z
+/** action='capture' — save a NEW login via the sidepanel capture card. */
+export const CaptureArgs = z
   .object({
-    action: z.enum(['capture', 'propose_recipe']).default('capture'),
-
-    // ── action: 'capture' ──────────────────────────────────────────────
-    /** Human name for the credential (e.g. "Acme Admin — personal"). */
-    display_name: z.string().optional(),
+    action: z.literal('capture'),
+    /** Human name for the credential (e.g. "Acme Admin — personal"). Required. */
+    display_name: z.string().min(1),
+    /** The fields the agent identified on the login form (NAMES + selectors). Required. */
+    fields: z.array(CaptureFieldArg).min(1),
+    /** Cloud Browser session (server executor only). The extension derives its tab. */
+    session_id: z.string().min(1).optional(),
     /** One-line description of the site, for the vault item. */
     description: z.string().optional(),
     /** Provider key, if the agent recognises the site. */
     provider_key: z.string().optional(),
-    /** The fields the agent identified on the login form (NAMES + selectors). */
-    fields: z.array(CaptureFieldArg).optional(),
     /** The submit control selector the agent identified. */
     submit_selector: z.string().optional(),
+  })
+  .strict();
 
-    // ── action: 'propose_recipe' ───────────────────────────────────────
+/** action='propose_recipe' — document an UNKNOWN site's login after a capture. */
+export const ProposeRecipeArgs = z
+  .object({
+    action: z.literal('propose_recipe'),
     field_map: z
       .array(
         z.object({
@@ -99,40 +108,19 @@ const CaptureCredentialArgs = z
           literal_key: z.string().optional(),
         }),
       )
-      .optional(),
+      .min(1),
+    session_id: z.string().min(1).optional(),
+    provider_key: z.string().optional(),
     submit: z.record(z.string(), z.unknown()).optional(),
+    submit_selector: z.string().optional(),
     success_signals: z.array(SignalArg).optional(),
     failure_signals: z.array(SignalArg).optional(),
     challenge_signals: z.array(SignalArg).optional(),
     notes: z.string().optional(),
   })
-  .superRefine((v, ctx) => {
-    if (v.action === 'capture') {
-      if (!v.display_name?.trim()) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'display_name is required to name the captured credential',
-          path: ['display_name'],
-        });
-      }
-      if (!v.fields || v.fields.length === 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'fields[] is required — name each login field and its selector',
-          path: ['fields'],
-        });
-      }
-    } else {
-      if (!v.field_map || v.field_map.length === 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'field_map[] is required to propose a recipe',
-          path: ['field_map'],
-        });
-      }
-    }
-  });
-type CaptureCredentialArgs = z.infer<typeof CaptureCredentialArgs>;
+  .strict();
+
+export type CaptureCredentialArgs = z.infer<typeof CaptureArgs> | z.infer<typeof ProposeRecipeArgs>;
 
 // The complete set of statuses this tool may return. No value ever rides here.
 export type CaptureCredentialStatus =
@@ -146,7 +134,7 @@ export type CaptureCredentialStatus =
   | 'vault_error'
   | 'unknown';
 
-interface CaptureCredentialResult {
+export interface CaptureCredentialResult {
   status: CaptureCredentialStatus;
   reason?: string;
   message?: string;
@@ -248,14 +236,12 @@ function awaitCapture(
 /** How long the user has to type before the capture card expires. */
 const CAPTURE_TIMEOUT_MS = 5 * 60 * 1000;
 
-export const capture_credential: ToolHandler<CaptureCredentialArgs, CaptureCredentialResult> = {
-  name: 'capture_credential',
-  tier: 'action',
-  argsSchema: CaptureCredentialArgs,
-  supportedBrowsers: ['chrome'],
-  // No `admin_only` in code — the DB is the source of truth (Rule 7). Surface
-  // activation is via tool.surface_defaults.always_include_tools.
-  run: async (args, ctx): Promise<CaptureCredentialResult> => {
+/** The capture/propose_recipe implementation, dispatched from the
+ * `credential_login` handler after its sign-in gate. */
+export const runCredentialCapture: (
+  args: CaptureCredentialArgs,
+  ctx: Parameters<ToolHandler<CaptureCredentialArgs, CaptureCredentialResult>['run']>[1],
+) => Promise<CaptureCredentialResult> = async (args, ctx): Promise<CaptureCredentialResult> => {
     if (!(await hasRealUserToken())) {
       return {
         status: 'sign_in_required',
@@ -286,7 +272,7 @@ export const capture_credential: ToolHandler<CaptureCredentialArgs, CaptureCrede
         ...(args.notes !== undefined ? { notes: args.notes } : {}),
       });
       if (!proposal.ok) return failureResult(proposal.failure);
-      log.info('sw', `capture_credential → recipe_proposed (${proposal.data.status})`);
+      log.info('sw', `credential_login capture → recipe_proposed (${proposal.data.status})`);
       return {
         status: 'recipe_proposed',
         recipe_id: proposal.data.recipe_id ?? null,
@@ -355,7 +341,7 @@ export const capture_credential: ToolHandler<CaptureCredentialArgs, CaptureCrede
     }
 
     // Status + names only — the value never reached this handler.
-    log.info('sw', `capture_credential → captured (branch=${branchContext.branch})`);
+    log.info('sw', `credential_login capture → captured (branch=${branchContext.branch})`);
     const result: CaptureCredentialResult = {
       status: 'captured',
       proceed: true,
@@ -370,7 +356,6 @@ export const capture_credential: ToolHandler<CaptureCredentialArgs, CaptureCrede
       result.propose_recipe = true;
     }
     return result;
-  },
 };
 
 /** origin only, or null — never throws, never carries a path/query. */
@@ -382,4 +367,3 @@ function safeOrigin(raw: string): string | null {
   }
 }
 
-export const credential_capture_handlers = [capture_credential];

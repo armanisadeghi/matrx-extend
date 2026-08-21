@@ -414,21 +414,6 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
-  // Credential capture is deliberately header-only: field values never enter
-  // the tool timeline, logs, service worker, or agent-visible result.
-  capture_credential: {
-    inline: {
-      icon: { started: 'Loader2', completed: 'KeyRound', error: 'AlertTriangle' },
-      prefix: {
-        started: 'Waiting for login details',
-        completed: 'Saved login details',
-        error: 'Could not save login details',
-      },
-      name: '',
-      color: { started: 'primary', completed: 'emerald', error: 'red' },
-    },
-  },
-
   // Vault browser login. The row shows only the safe outcome envelope — never
   // page text or credential values. Agent-authored attempt args may contain
   // field names, selectors, and explicitly non-secret literals, but never a

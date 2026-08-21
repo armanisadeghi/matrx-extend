@@ -28,7 +28,6 @@ import { browser_data_handlers } from '@/lib/tools/handlers/browser-data';
 import { canonical_handlers } from '@/lib/tools/handlers/canonical';
 import { canonical_merger_handlers } from '@/lib/tools/handlers/canonical-mergers';
 import { cdp_handlers } from '@/lib/tools/handlers/cdp';
-import { credential_capture_handlers } from '@/lib/tools/handlers/credential-capture';
 import { credential_handlers } from '@/lib/tools/handlers/credential-login';
 import { data_pattern_handlers } from '@/lib/tools/handlers/data-patterns';
 import { demo_handlers } from '@/lib/tools/handlers/demos';
@@ -91,9 +90,8 @@ const ALL: AnyToolHandler[] = [
   // ─── browser-level actions ─────────────────────────────────────────────
   ...tab_action_handlers,
   ...download_handlers,
-  // ─── vault browser login (agent never sees the credential) ─────────────
+  // ─── vault credentials (agent never sees a value; capture card included) ──
   ...credential_handlers,
-  ...credential_capture_handlers,
   // ─── crm capture (IC-10 — the one prospect import path) ────────────────
   ...prospect_handlers,
   // ─── education capture (IC-11 — the one deck import door) ──────────────

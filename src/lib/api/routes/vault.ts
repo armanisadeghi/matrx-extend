@@ -198,6 +198,22 @@ export async function fetchBrowserLoginMatches(
   return { ok: true, data };
 }
 
+/** Every saved login the actor may use, destination-independent — metadata only,
+ * never a value. Backs `credential_login action='list'` (both executors). */
+export async function fetchBrowserLoginInventory(): Promise<
+  VaultResult<{ items: unknown[]; count: number }>
+> {
+  log.info('api', '→ GET vault/browser-login/inventory');
+  const r = await vaultGet<{ items: unknown[]; count: number }>(`${BASE}/inventory`);
+  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
+  const data = r.data;
+  if (!data || !Array.isArray(data.items)) {
+    return { ok: false, failure: { kind: 'server_error', status: 200 } };
+  }
+  log.info('api', `← vault inventory count=${data.items.length}`);
+  return { ok: true, data };
+}
+
 /**
  * Authorize + decrypt one item for THIS origin. The response is plaintext —
  * the caller must keep it in local scope and drop the reference when done.

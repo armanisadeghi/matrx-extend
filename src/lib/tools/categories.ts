@@ -409,11 +409,9 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   // ─── credentials (vault browser login) ────────────────────────────────
   // Category comes from the DB (`tool.definition.category = 'credentials'`),
   // which is the source of truth — do not "tidy" this into `interaction`.
+  // credential_login is the ONE credential tool (2026-08-21): saved-login use,
+  // authenticator, D-11 private-card capture, and recipe proposals are its actions.
   credential_login: 'credentials',
-  // On-the-fly credential CAPTURE (D-11): the agent hit a login it has no stored
-  // credential for; the USER types into a box and the value is written to the
-  // vault with the agent's metadata. Category from the DB — do not re-classify.
-  capture_credential: 'credentials',
 
   // ─── crm (prospect capture — IC-10) ───────────────────────────────────
   capture_prospect: 'crm',
@@ -537,11 +535,8 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'read_network_requests',
   'get_request_body',
   'desktop_run_command',
-  // ─── credentials (Vault login + private capture card) ───────────────────
-  // Both have active `tool.definition` + chrome-extension binding rows and are
-  // advertised through the two extension surface defaults.
+  // ─── credentials (Vault login + private capture card, one tool) ─────────
   'credential_login',
-  'capture_credential',
   // ─── crm (prospect capture — IC-10) ─────────────────────────────────────
   'capture_prospect',
   // ─── education (study-set capture — IC-11) ──────────────────────────────

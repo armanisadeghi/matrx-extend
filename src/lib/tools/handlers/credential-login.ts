@@ -7,9 +7,12 @@
  * /Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/PLAN.md
  * § "Agent-safe browser login" + Phase 4):
  *
- * The current contract has four strict actions: automatically use the saved
- * recipe, discover safe field names, submit one complete field-map attempt,
- * or report a leak/wrong verdict. There
+ * Since the 2026-08-21 credential consolidation this is the ONE credential
+ * tool: list saved-login metadata, automatically use the saved recipe,
+ * discover safe field names, submit one complete field-map attempt, complete
+ * an authenticator challenge, capture a NEW login via the private card
+ * (./credential-capture.ts), propose a login recipe for an unknown site, or
+ * report a leak/wrong verdict. There
  * is deliberately no agent-supplied destination URL or credential value. The
  * extension derives the real tab origin itself; an optional success URL prefix
  * is only a post-submit expectation. The server resolves field NAMES just in
@@ -30,6 +33,7 @@
 import {
   type BrowserLoginResultStatus,
   type VaultCallFailure,
+  fetchBrowserLoginInventory,
   fetchBrowserLoginMatches,
   hasRealUserToken,
   materializeBrowserAuthenticator,
@@ -46,6 +50,12 @@ import {
 } from '@/lib/credentials/sensitive-fields';
 import { log } from '@/lib/debug/log';
 import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
+import {
+  CaptureArgs,
+  type CaptureCredentialResult,
+  ProposeRecipeArgs,
+  runCredentialCapture,
+} from '@/lib/tools/handlers/credential-capture';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
 
@@ -55,7 +65,14 @@ import { z } from 'zod';
  * state could not be established".
  */
 export type CredentialLoginStatus =
+  | 'inventory_ready'
   | 'discovery_ready'
+  | 'captured'
+  | 'cancelled'
+  | 'recipe_proposed'
+  | 'no_active_tab'
+  | 'sign_in_required'
+  | 'vault_error'
   | 'report_received'
   | 'spec_incomplete'
   | 'authenticated'
@@ -81,6 +98,16 @@ interface CredentialLoginResult {
   message?: string;
   /** Only populated for `selection_required`. */
   choices?: SafeChoice[];
+  /** Only populated for `inventory_ready` (action=list) — metadata, never values. */
+  items?: unknown[];
+  /** Capture family (action=capture/propose_recipe) — ids/flags only, never a value. */
+  credential_item_id?: string;
+  branch?: 'known' | 'unknown';
+  recipe?: unknown;
+  propose_recipe?: boolean;
+  recipe_id?: string | null;
+  guidance?: string;
+  proceed?: boolean;
   available_fields?: Array<{
     field_key: string;
     label: string;
@@ -137,6 +164,14 @@ const AttemptStep = z.object({
     })
     .optional(),
 });
+
+const ListArgs = z
+  .object({
+    action: z.literal('list'),
+    /** Server-owned Playwright target. Matrx Extend ignores this (no session needed). */
+    session_id: z.string().min(1).optional(),
+  })
+  .strict();
 
 const DiscoverArgs = z
   .object({
@@ -229,11 +264,22 @@ const ReportArgs = z
  */
 const CredentialLoginArgs = z
   .object({
-    action: z.enum(['auto', 'discover', 'attempt', 'authenticator', 'report']),
+    action: z.enum([
+      'list',
+      'auto',
+      'discover',
+      'attempt',
+      'authenticator',
+      'report',
+      'capture',
+      'propose_recipe',
+    ]),
     session_id: z.string().min(1).optional(),
     credential_item_id: z.string().min(1).optional(),
-    fields: z.array(FieldSpec).min(1).optional(),
-    submit: SubmitSpec.optional(),
+    // Item shape differs per action (attempt field-map vs capture field spec);
+    // the per-action arm below re-validates strictly.
+    fields: z.array(z.record(z.string(), z.unknown())).min(1).optional(),
+    submit: z.union([SubmitSpec, z.record(z.string(), z.unknown())]).optional(),
     steps: z.array(AttemptStep).min(1).optional(),
     expect: ExpectSpec.optional(),
     code_selector: z.string().min(1).optional(),
@@ -242,19 +288,33 @@ const CredentialLoginArgs = z
     where: z.string().min(1).max(500).optional(),
     attempt_id: z.string().min(1).optional(),
     description: z.string().min(1).max(4_000).optional(),
+    display_name: z.string().min(1).optional(),
+    provider_key: z.string().optional(),
+    submit_selector: z.string().optional(),
+    field_map: z.array(z.record(z.string(), z.unknown())).min(1).optional(),
+    success_signals: z.array(z.record(z.string(), z.unknown())).optional(),
+    failure_signals: z.array(z.record(z.string(), z.unknown())).optional(),
+    challenge_signals: z.array(z.record(z.string(), z.unknown())).optional(),
+    notes: z.string().optional(),
   })
   .strict()
   .superRefine((value, ctx) => {
     const schema =
-      value.action === 'auto'
-        ? AutoArgs
-        : value.action === 'discover'
-          ? DiscoverArgs
-          : value.action === 'attempt'
-            ? AttemptArgs
-            : value.action === 'authenticator'
-              ? AuthenticatorArgs
-              : ReportArgs;
+      value.action === 'list'
+        ? ListArgs
+        : value.action === 'auto'
+          ? AutoArgs
+          : value.action === 'discover'
+            ? DiscoverArgs
+            : value.action === 'attempt'
+              ? AttemptArgs
+              : value.action === 'authenticator'
+                ? AuthenticatorArgs
+                : value.action === 'capture'
+                  ? CaptureArgs
+                  : value.action === 'propose_recipe'
+                    ? ProposeRecipeArgs
+                    : ReportArgs;
     const parsed = schema.safeParse(value);
     if (parsed.success) return;
     for (const issue of parsed.error.issues) ctx.addIssue(issue);
@@ -1236,6 +1296,29 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
         reason: 'matrx_sign_in_required',
         message:
           'Sign in to Matrx in the extension side panel before using credential_login. The vault does not accept anonymous identities.',
+      });
+    }
+
+    // ── capture family — the private-card implementation module. The result
+    // rides the same envelope (fixed status enum + feedback) as every other
+    // action; a value has no field it could ride in on.
+    if (args.action === 'capture' || args.action === 'propose_recipe') {
+      const parsed =
+        args.action === 'capture' ? CaptureArgs.parse(args) : ProposeRecipeArgs.parse(args);
+      const captured: CaptureCredentialResult = await runCredentialCapture(parsed, ctx);
+      return { ...captured, feedback: FEEDBACK };
+    }
+
+    if (args.action === 'list') {
+      const inventory = await fetchBrowserLoginInventory();
+      if (!inventory.ok) return failureResult(inventory.failure, 'inventory');
+      return safeResult('inventory_ready', {
+        reason: 'safe_metadata_only',
+        items: inventory.data.items,
+        message:
+          'Metadata only — no values. An item fills a page only when browser_fill_enabled ' +
+          'is true and one of its login_urls matches the page under its uri_match_mode ' +
+          "('domain' covers sibling hosts like accounts.google.com for mail.google.com).",
       });
     }
 

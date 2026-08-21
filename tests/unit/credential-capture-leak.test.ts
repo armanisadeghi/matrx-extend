@@ -1,5 +1,6 @@
 /**
- * Plaintext-leak + flow test for `capture_credential` (D-11 on-the-fly capture).
+ * Plaintext-leak + flow test for `credential_login` actions capture/propose_recipe
+ * (D-11 on-the-fly capture; formerly the standalone `capture_credential` tool).
  *
  * The whole point: the agent hits a login it has NO stored credential for, the
  * USER types the credential into a box, and THE AGENT NEVER SEES IT. The value
@@ -7,7 +8,7 @@
  * argument, a tool result, a log line, or the SW↔card broadcast.
  *
  * This suite proves it two ways:
- *   1. The SW handler (`capture_credential`) never receives, holds, or emits a
+ *   1. The SW implementation (`runCredentialCapture`) never receives, holds, or emits a
  *      value — the "card" is simulated by answering the capture broadcast with
  *      an item_id only, and every egress channel is searched for the sentinel.
  *   2. The vault route (`captureCredential`) sends the user-typed values to the
@@ -156,7 +157,7 @@ function allEgress(result: unknown): string {
   return JSON.stringify({ result, broadcasts, logCalls });
 }
 
-describe('capture_credential — the SW handler never sees a value', () => {
+describe('credential_login capture — the SW implementation never sees a value', () => {
   it('captures via the card and the value never reaches the handler, result, log, or broadcast', async () => {
     const { cap } = await importFresh();
     postImpl = async (path) => {
@@ -175,7 +176,7 @@ describe('capture_credential — the SW handler never sees a value', () => {
       return { ok: false, status: 404, error: 'unmocked' };
     };
 
-    const result = await cap.capture_credential.run(
+    const result = await cap.runCredentialCapture(
       {
         action: 'capture',
         display_name: 'Example Admin',
@@ -214,7 +215,7 @@ describe('capture_credential — the SW handler never sees a value', () => {
   it('arguments schema has no value field on any variant', async () => {
     const { cap } = await importFresh();
     // A value key on a field arg must be rejected by the schema.
-    const parsed = cap.capture_credential.argsSchema.safeParse({
+    const parsed = cap.CaptureArgs.safeParse({
       action: 'capture',
       display_name: 'x',
       fields: [{ field_key: 'password', selector: '#p', value: SENTINEL_PASSWORD }],
@@ -234,7 +235,7 @@ describe('capture_credential — the SW handler never sees a value', () => {
       get: async () => ({ id: TAB_ID, url: 'http://admin.example.com/login' }),
       onRemoved: { addListener: () => {} },
     };
-    const result = await cap.capture_credential.run(
+    const result = await cap.runCredentialCapture(
       {
         action: 'capture',
         display_name: 'x',
@@ -264,7 +265,7 @@ describe('capture_credential — the SW handler never sees a value', () => {
         : { ok: false, status: 404, error: 'unmocked' };
     // Disable the auto-success responder; we will cancel manually.
     autoRespond = false;
-    const runP = cap.capture_credential.run(
+    const runP = cap.runCredentialCapture(
       {
         action: 'capture',
         display_name: 'x',

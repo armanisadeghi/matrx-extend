@@ -176,7 +176,14 @@ export interface CredentialLoginOutcome {
  * content or server text — both can echo a credential back.
  */
 const STATUS_COPY: Record<CredentialLoginStatus, string> = {
+  inventory_ready: 'Saved logins listed.',
   discovery_ready: 'Saved login fields are ready.',
+  captured: 'Login saved to your Vault.',
+  cancelled: 'Capture cancelled — nothing was saved.',
+  recipe_proposed: 'Login recipe proposed for review.',
+  no_active_tab: 'No page is assigned to capture from.',
+  sign_in_required: 'Sign in to Matrx first.',
+  vault_error: 'The Vault could not complete that.',
   report_received: 'Report received.',
   spec_incomplete: 'The login plan was incomplete, so nothing was entered.',
   authenticated: 'Signed in.',
@@ -240,7 +247,9 @@ export function useCredentialLogin(): {
             assignedTabId: null,
           },
         );
-        setOutcome({ status: result.status, message: STATUS_COPY[result.status] });
+        const status: CredentialLoginStatus =
+          result.status in STATUS_COPY ? (result.status as CredentialLoginStatus) : 'unknown';
+        setOutcome({ status, message: STATUS_COPY[status] });
       } catch {
         // Never surface a thrown error: an exception raised inside a fill can
         // carry the value in its message on some engines.
