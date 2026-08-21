@@ -29,6 +29,6 @@ reference is never passed as an Agent id. The stream sends the Mandate key and
 aidream resolves the Holder for the same bearer/fingerprint principal used by
 the request.
 
-Fresh Chat uses `chat.default_new_chat`. Explicit user-selected Agents still
+Fresh Chat uses `extend.browser_chat`. Explicit user-selected Agents still
 use `agentExecutePath`; a deliberate Agent choice is a run target, not a client
 reimplementation of the platform default.

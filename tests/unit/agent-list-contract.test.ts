@@ -40,9 +40,9 @@ describe('agent list contract', () => {
 
 describe('default chat Mandate route', () => {
   it('uses a UI-only reference and a server-resolved execution path', () => {
-    expect(DEFAULT_CHAT_MANDATE_REF).toBe('mandate:chat.default_new_chat');
+    expect(DEFAULT_CHAT_MANDATE_REF).toBe('mandate:extend.browser_chat');
     expect(mandateExecutePath(DEFAULT_CHAT_MANDATE_KEY)).toBe(
-      '/v2/ai/mandates/chat.default_new_chat',
+      '/v2/ai/mandates/extend.browser_chat',
     );
   });
 });

@@ -1,5 +1,5 @@
 /** Canonical server-resolved target for a brand-new extension chat. */
-export const DEFAULT_CHAT_MANDATE_KEY = 'chat.default_new_chat' as const;
+export const DEFAULT_CHAT_MANDATE_KEY = 'extend.browser_chat' as const;
 
 /**
  * Stable UI identity for a Mandate-backed choice. This is not an agent id and

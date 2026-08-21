@@ -11,6 +11,6 @@ Changing a privacy default requires updating the Chrome Web Store disclosures, t
 ## Default Chat target
 
 A fresh install persists the UI reference
-`mandate:chat.default_new_chat`, never an Agent UUID. Execution routes the
+`mandate:extend.browser_chat`, never an Agent UUID. Execution routes the
 corresponding Mandate key to aidream for principal-aware Holder resolution.
 An existing user's explicit saved Agent selection remains valid.

@@ -12,7 +12,7 @@ defect even when TypeScript compiles.
 fault-tolerant, but a schema mismatch is logged and tested with a live-shaped
 fixture.
 
-The locally synthesized **Matrx Assistant** entry is a Mandate-backed UI
+The locally synthesized **Matrx Browser Agent** entry is a Mandate-backed UI
 choice, not an Agent row. Its `mandate_key` routes execution through aidream;
 its `mandate:*` id never reaches an Agent-id endpoint.
 
@@ -21,3 +21,5 @@ its `mandate:*` id never reaches an Agent-id endpoint.
 - 2026-08-17 — Aligned the agent-list validator with the canonical RPC and
   replaced the hardcoded default-Agent fallback with
   `chat.default_new_chat`.
+- 2026-08-20 — Scoped the extension default to `extend.browser_chat`, whose
+  system seed is the system-owned Matrx Browser Agent.
