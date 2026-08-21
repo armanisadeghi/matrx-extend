@@ -28,7 +28,7 @@
 >   for every chat send.
 > - [CROSS_REPO_INTEGRATION.md](./CROSS_REPO_INTEGRATION.md) — repo topology.
 > - Cross-repo system-of-record for the registry schema:
->   `/Users/armanisadeghi/code/common-docs/systems/tool-registry/FEATURE.md`.
+>   `/Users/armanisadeghi/code/common-docs/systems/agents/agent-tools/FEATURE.md`.
 >   Master reference (aidream owns the schema):
 >   [CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md).
 
