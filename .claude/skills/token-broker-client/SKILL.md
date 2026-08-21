@@ -7,7 +7,7 @@ description: Consume scoped short-lived credentials (token broker) in matrx-exte
 
 The primitive lives at [src/lib/broker/](../../../src/lib/broker/) (read its
 FEATURE.md). Cross-repo contract:
-`/Users/armanisadeghi/code/common-docs/systems/token-broker/FEATURE.md`.
+`/Users/armanisadeghi/code/common-docs/systems/platform/token-broker/FEATURE.md`.
 
 ## Rule 0 — does the server support the audience?
 
