@@ -59,7 +59,7 @@ Auth runs in the **sidepanel context**, not the SW. `chrome.identity` works ther
 
 The Supabase JS client is created with `persistSession: false` and `autoRefreshToken: false` because supabase-js's auto-refresh is unsafe in any context where the runtime might be killed mid-flight (the SW). We drive refresh ourselves via `chrome.alarms`. After sign-in **or** on app start, `restoreSupabaseSession()` reads the stored tokens and calls `supabase.auth.setSession()` so RLS sees `auth.uid()`.
 
-### Five hard-won facts (from matrx-oauth/SKILL.md)
+### Five hard-won facts (from .claude/skills/matrx-oauth/SKILL.md)
 
 1. **Public PKCE client. Never send `client_secret`** — Supabase rejects with 400.
 2. **Drop `openid` scope** — HS256 can't mint ID tokens.
@@ -229,4 +229,4 @@ See also:
 - [docs/AUTH.md](AUTH.md) — OAuth + admin gating in depth
 - [docs/STREAMING.md](STREAMING.md) — NDJSON parser + offscreen orchestration
 - [docs/DEBUG.md](DEBUG.md) — using the Debug tab for triage
-- [matrx-oauth/SKILL.md](../matrx-oauth/SKILL.md) — full OAuth playbook + gotchas
+- [matrx-oauth/SKILL.md](../.claude/skills/matrx-oauth/SKILL.md) — full OAuth playbook + gotchas

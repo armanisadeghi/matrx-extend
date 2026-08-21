@@ -117,7 +117,7 @@ The 7th tab in the side panel is **Debug** — visible only to users with a row 
 ```
 matrx-extend/
 ├── docs/                            # ← you are here
-├── matrx-oauth/                     # OAuth skill (architecture + gotchas + debugging)
+├── .claude/skills/matrx-oauth/       # OAuth skill (synced from common-docs)
 ├── migrations/                      # SQL — run by hand against Supabase
 ├── public/icon/                     # 16/32/48/128 PNGs
 ├── scripts/
@@ -164,7 +164,7 @@ matrx-extend/
 
 | Symptom | Likely cause |
 |---|---|
-| "Authorization page could not be loaded" on sign-in | Redirect URI in Supabase doesn't exactly match `https://<EXTENSION_ID>.chromiumapp.org/` (note the trailing slash) — see matrx-oauth/SKILL.md gotcha #1 |
+| "Authorization page could not be loaded" on sign-in | Redirect URI in Supabase doesn't exactly match `https://<EXTENSION_ID>.chromiumapp.org/` (note the trailing slash) — see .claude/skills/matrx-oauth/SKILL.md gotcha #1 |
 | Only public agents in the picker | Sidepanel's Supabase client doesn't have the JWT — `restoreSupabaseSession()` not called on mount, or admin/user check failed silently |
 | Chat hangs at "…" forever | Wire format mismatch (NDJSON vs SSE) or runId mismatch in `useChatStream`. Open Debug tab and look for `raw event #N` lines |
 | Health check returns 0 | Network — extension can't reach the backend. Check the resolved URL in Debug tab top bar |

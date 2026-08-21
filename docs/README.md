@@ -10,7 +10,5 @@ Read in this order:
 
 Other docs scattered around:
 
-- **[../matrx-oauth/SKILL.md](../matrx-oauth/SKILL.md)** — OAuth skill / playbook (the original "five hard-won facts")
-- **[../matrx-oauth/architecture.md](../matrx-oauth/architecture.md)** — why we run our own OAuth provider
-- **[../matrx-oauth/gotchas.md](../matrx-oauth/gotchas.md)** — symptom → root cause → fix
+- **[../.claude/skills/matrx-oauth/SKILL.md](../.claude/skills/matrx-oauth/SKILL.md)** — OAuth skill / playbook (the original "five hard-won facts"; architecture.md/gotchas.md folded into SKILL.md)
 - **[../migrations/README.md](../migrations/README.md)** — SQL migration apply order

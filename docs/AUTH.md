@@ -129,4 +129,4 @@ The flag is cached in `chrome.storage.local['matrx.user.isAdmin']` so it's avail
 - [src/lib/supabase/queries.ts](../src/lib/supabase/queries.ts) — `checkIsAdmin`, `fetchUserAgents`, etc.
 - [src/state/auth.ts](../src/state/auth.ts) — Zustand auth store with `isAdmin`
 - [src/hooks/use-auth.ts](../src/hooks/use-auth.ts) — sidepanel-side hook that ties it all together
-- [matrx-oauth/SKILL.md](../matrx-oauth/SKILL.md) — full OAuth debugging playbook
+- [matrx-oauth/SKILL.md](../.claude/skills/matrx-oauth/SKILL.md) — full OAuth debugging playbook
