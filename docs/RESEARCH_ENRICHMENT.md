@@ -14,10 +14,12 @@ real browser — keep a manual checklist with each capability (docs/feature-test
 | **§3 enrich task kind** | ✅ built + unit-tested, **dormant** — fulfils a directive via existing capture primitives | ❌ no generator; asset-upload endpoint is `501` | Lights up the instant the server tags items `task_kind:'enrich'`. Capture-family goals work; artifact goals (screenshot/download/xhr_json/transcript) need the server sink — they return an honest "not available yet". |
 
 Server-side follow-ups (the enrich-task generator + `enrich_goal` routing,
-`media`/`structured` consumption, and the `/sources/upload` endpoint) are written
-up with exact contracts in
-[SERVER_NEEDS_research_enrichment.md](./SERVER_NEEDS_research_enrichment.md). The
-extension degrades gracefully against every gap.
+`media`/`structured` consumption, and the `/sources/upload` endpoint) shipped in
+aidream on 2026-06-17 — `SERVER_NEEDS_research_enrichment.md` (this doc's
+companion) was the ask-list and is deleted now that all three landed
+(`task_kind`/`enrich_goal` on `research/models.py`, the `/sources/upload`
+endpoint no longer 501s). The status table above predates that ship and is
+stale on the "Server" column; the extension side has not changed since.
 
 ---
 
