@@ -1,3 +1,4 @@
+import { getDemoOrHydrate } from '@/lib/demos/cloud-sync';
 import {
   discardRecording,
   getActiveRecording,
@@ -5,7 +6,6 @@ import {
   stopRecording,
 } from '@/lib/demos/recorder';
 import { replayDemo } from '@/lib/demos/replayer';
-import { getDemoOrHydrate } from '@/lib/demos/cloud-sync';
 import {
   listDemos,
   makeDemoId,

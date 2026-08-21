@@ -7,7 +7,6 @@
  */
 
 import { describe, expect, it, vi } from 'vitest';
-import type { ProviderRetryPayload } from '../../types/python-generated/stream-events';
 import {
   deadlineFor,
   isTerminal,
@@ -15,6 +14,7 @@ import {
   toRetryState,
 } from '../../src/lib/stream/provider-retry';
 import { createStreamWatchdog } from '../../src/lib/stream/watchdog';
+import type { ProviderRetryPayload } from '../../types/python-generated/stream-events';
 
 const NOW = 1_800_000_000_000; // fixed epoch ms
 

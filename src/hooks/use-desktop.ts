@@ -1,6 +1,6 @@
+import type { DesktopHealth } from '@/lib/desktop/types';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import type { DesktopHealth } from '@/lib/desktop/types';
 import { useDesktopStore } from '@/state/desktop';
 import { useEffect } from 'react';
 

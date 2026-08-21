@@ -986,8 +986,7 @@ async function postResult(
 
   // Track the not_found responses too — partial success returns 200 but the
   // call_id we just posted didn't land. Surface it.
-  const callNotFound =
-    Array.isArray(r.data.not_found) && r.data.not_found.includes(ctx.callId);
+  const callNotFound = Array.isArray(r.data.not_found) && r.data.not_found.includes(ctx.callId);
   if (callNotFound) {
     log.warn(
       'sw',

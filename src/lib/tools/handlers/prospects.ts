@@ -102,9 +102,7 @@ export const capture_prospect: ToolHandler<CaptureProspectArgs, unknown> = {
     };
 
     const result =
-      args.action === 'capture'
-        ? await captureProspect(body)
-        : await previewProspectCapture(body);
+      args.action === 'capture' ? await captureProspect(body) : await previewProspectCapture(body);
 
     if (!result.ok) {
       if (result.status === 401) {

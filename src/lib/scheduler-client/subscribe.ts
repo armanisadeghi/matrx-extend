@@ -5,7 +5,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { subscribeSchedulerBroadcast, type SchedulerBroadcastPayload } from './realtime';
+import { type SchedulerBroadcastPayload, subscribeSchedulerBroadcast } from './realtime';
 import type { SchedulerSurface } from './surfaces';
 import type { SchTaskRow } from './types';
 

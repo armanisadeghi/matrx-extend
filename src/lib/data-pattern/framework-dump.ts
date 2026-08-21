@@ -114,9 +114,8 @@ export const frameworkDumpInPage = (): FrameworkDumpSource[] => {
           return JSON.parse(blob);
         } catch {
           // Window assignments may contain arbitrary JavaScript. Keep the
-          // extension CSP-safe and deterministic: accept JSON only and try
-          // the next assignment when this blob is a JavaScript object literal.
-          continue;
+          // extension CSP-safe and deterministic: accept JSON only; the loop
+          // naturally tries the next assignment after this block.
         }
       }
     }

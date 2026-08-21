@@ -35,7 +35,8 @@ if (expected !== actual) {
 }
 
 if (manifest.key != null) failures.push('The Store manifest contains a development key.');
-if (manifest.action?.default_popup != null) failures.push('The Store manifest adds a toolbar popup.');
+if (manifest.action?.default_popup != null)
+  failures.push('The Store manifest adds a toolbar popup.');
 
 const forbiddenRuntimeTokens = [
   'eval(',

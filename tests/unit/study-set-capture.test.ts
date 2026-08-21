@@ -40,7 +40,7 @@ vi.mock('@/lib/supabase/client', () => ({
   }),
 }));
 
-let tab: { id: number; url?: string; title?: string } | null = {
+const tab: { id: number; url?: string; title?: string } | null = {
   id: 7,
   url: 'https://quizlet.com/123/spanish-101',
   title: 'Spanish 101 | Quizlet',
@@ -136,10 +136,7 @@ describe('capture', () => {
 
 describe('no side door (grep guard)', () => {
   it('the handler never touches education tables or association edges itself', () => {
-    const src = readFileSync(
-      join(process.cwd(), 'src/lib/tools/handlers/education.ts'),
-      'utf8',
-    );
+    const src = readFileSync(join(process.cwd(), 'src/lib/tools/handlers/education.ts'), 'utf8');
     // Supabase table access (`.from('...')` / `.schema(`), not Array.from.
     expect(src).not.toMatch(/\.from\(['"`]/);
     expect(src).not.toMatch(/\.schema\(/);

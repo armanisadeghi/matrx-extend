@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { mandateExecutePath } from '@/lib/api/routes/ai';
 import { DEFAULT_CHAT_MANDATE_KEY, DEFAULT_CHAT_MANDATE_REF } from '@/lib/agents/mandates';
+import { mandateExecutePath } from '@/lib/api/routes/ai';
 import { AgxAgentSchema } from '@/lib/supabase/queries';
 
 const LIVE_AGENT_ROW = {

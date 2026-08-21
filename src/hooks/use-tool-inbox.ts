@@ -113,10 +113,7 @@ function findStartedFallback(payload: TimelinePayload): TimelineOwner | null {
     selectedConversationId: string | null,
     messages: ChatMessage[],
   ) => {
-    if (
-      payload.conversationId != null &&
-      selectedConversationId !== payload.conversationId
-    ) {
+    if (payload.conversationId != null && selectedConversationId !== payload.conversationId) {
       return;
     }
     const message = activeAssistantMessage(messages);

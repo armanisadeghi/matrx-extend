@@ -65,7 +65,10 @@ function extractStudySetInPage(): ExtractedSet {
   const clean = (s: string): string => s.replace(/\s+/g, ' ').trim();
 
   // ── 1. Framework hydration state (Quizlet is Next.js) ──────────────────
-  const cardsFromState = (): { title: string | null; cards: { front: string; back: string }[] } | null => {
+  const cardsFromState = (): {
+    title: string | null;
+    cards: { front: string; back: string }[];
+  } | null => {
     const node = document.getElementById('__NEXT_DATA__');
     if (!node?.textContent) return null;
     let root: unknown;
@@ -96,7 +99,8 @@ function extractStudySetInPage(): ExtractedSet {
       }
       if (typeof v !== 'object') return;
       const o = v as Record<string, unknown>;
-      const front = typeof o.word === 'string' ? o.word : typeof o.term === 'string' ? o.term : null;
+      const front =
+        typeof o.word === 'string' ? o.word : typeof o.term === 'string' ? o.term : null;
       const back = typeof o.definition === 'string' ? o.definition : null;
       if (front && back && clean(front) && clean(back)) {
         const key = `${clean(front)} ${clean(back)}`;
@@ -139,7 +143,10 @@ function extractStudySetInPage(): ExtractedSet {
       return {
         ok: true,
         source: 'quizlet_dom',
-        title: document.title.replace(/\s*(\|\s*Quizlet)?\s*$/i, '').replace(/ Flashcards$/i, '').trim(),
+        title: document.title
+          .replace(/\s*(\|\s*Quizlet)?\s*$/i, '')
+          .replace(/ Flashcards$/i, '')
+          .trim(),
         cards: pairCards,
       };
     }

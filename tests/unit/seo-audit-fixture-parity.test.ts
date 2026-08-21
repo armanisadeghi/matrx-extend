@@ -17,7 +17,7 @@
  *
  * Same recipe as matrx-frontend's `features/marketing/seo/audit/audit.parity.test.ts`.
  */
-import { runAudit, type SeoAudit } from '@/lib/seo/audit';
+import { type SeoAudit, runAudit } from '@/lib/seo/audit';
 import { describe, expect, it } from 'vitest';
 import fixture from '../fixtures/seo-audit-parity.json';
 

@@ -113,11 +113,7 @@ function registerMenus(): void {
       contexts: ['page'],
       // Only where it applies — the flashcard incumbents. Any other page still
       // captures via chat ("save this page as a study set").
-      documentUrlPatterns: [
-        '*://*.quizlet.com/*',
-        '*://*.knowt.com/*',
-        '*://*.cram.com/*',
-      ],
+      documentUrlPatterns: ['*://*.quizlet.com/*', '*://*.knowt.com/*', '*://*.cram.com/*'],
     });
     chrome.contextMenus.create({
       id: MENU_ID_OPEN_PANEL,

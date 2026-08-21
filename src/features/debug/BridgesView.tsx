@@ -34,7 +34,6 @@ import {
 } from '@/lib/debug/bridge-traffic';
 import { type DebugEvent, log, useDebugStore } from '@/lib/debug/log';
 import { getDesktopState, probeDesktop } from '@/lib/desktop/bridge';
-import { engineHealthState, formatDesktopConnectionLabel } from '@/lib/desktop/types';
 import {
   getEngineBaseUrl,
   getEnginePortOverride,
@@ -42,6 +41,7 @@ import {
   setEnginePortOverride,
 } from '@/lib/desktop/discovery';
 import { autoPair, clearPairToken, getPairToken, rpcHttp } from '@/lib/desktop/http';
+import { engineHealthState, formatDesktopConnectionLabel } from '@/lib/desktop/types';
 import {
   type WsControlResult,
   connectWs,

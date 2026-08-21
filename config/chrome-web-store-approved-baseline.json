@@ -27,12 +27,7 @@
       "sessions",
       "debugger"
     ],
-    "optional_permissions": [
-      "cookies",
-      "pageCapture",
-      "clipboardRead",
-      "tabCapture"
-    ],
+    "optional_permissions": ["cookies", "pageCapture", "clipboardRead", "tabCapture"],
     "host_permissions": [
       "<all_urls>",
       "https://server.app.matrxserver.com/*",

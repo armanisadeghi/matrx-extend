@@ -42,7 +42,16 @@ const STRICT = process.argv.includes('--strict');
 const SCAN_INCLUDE = /^(docs\/|\.claude\/skills\/|[^/]+\.md$)/;
 const SCAN_EXCLUDE = /^(docs\/archive\/|\.matrx\/|\.arman\/|\.cursor\/)/;
 
-const COMMON_DOCS_ALLOWED_DIRS = new Set(['systems', 'projects', 'policies', 'meta', 'skills', 'operations', 'inbox', 'workspace-root']);
+const COMMON_DOCS_ALLOWED_DIRS = new Set([
+  'systems',
+  'projects',
+  'policies',
+  'meta',
+  'skills',
+  'operations',
+  'inbox',
+  'workspace-root',
+]);
 
 function trackedMd(): string[] {
   return execSync("git ls-files -z -- '*.md'", { encoding: 'utf8' })
