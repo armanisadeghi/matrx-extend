@@ -141,6 +141,8 @@ const AttemptStep = z.object({
 const DiscoverArgs = z
   .object({
     action: z.literal('discover'),
+    /** Server-owned Playwright target. Matrx Extend derives its assigned tab and ignores this. */
+    session_id: z.string().min(1).optional(),
     credential_item_id: z.string().min(1).optional(),
   })
   .strict();
@@ -148,6 +150,7 @@ const DiscoverArgs = z
 const AutoArgs = z
   .object({
     action: z.literal('auto'),
+    session_id: z.string().min(1).optional(),
     credential_item_id: z.string().min(1).optional(),
   })
   .strict();
@@ -155,6 +158,7 @@ const AutoArgs = z
 const AttemptArgs = z
   .object({
     action: z.literal('attempt'),
+    session_id: z.string().min(1).optional(),
     credential_item_id: z.string().min(1).optional(),
     fields: z.array(FieldSpec).min(1),
     submit: SubmitSpec.optional(),
@@ -199,6 +203,7 @@ const AttemptArgs = z
 const AuthenticatorArgs = z
   .object({
     action: z.literal('authenticator'),
+    session_id: z.string().min(1).optional(),
     credential_item_id: z.string().min(1),
     code_selector: z.string().min(1),
     submit: SubmitSpec,
@@ -209,6 +214,7 @@ const AuthenticatorArgs = z
 const ReportArgs = z
   .object({
     action: z.literal('report'),
+    session_id: z.string().min(1).optional(),
     kind: z.enum(['secret_exposed', 'wrong_verdict', 'recipe_wrong', 'other']),
     where: z.string().min(1).max(500),
     attempt_id: z.string().min(1).optional(),
@@ -224,6 +230,7 @@ const ReportArgs = z
 const CredentialLoginArgs = z
   .object({
     action: z.enum(['auto', 'discover', 'attempt', 'authenticator', 'report']),
+    session_id: z.string().min(1).optional(),
     credential_item_id: z.string().min(1).optional(),
     fields: z.array(FieldSpec).min(1).optional(),
     submit: SubmitSpec.optional(),
