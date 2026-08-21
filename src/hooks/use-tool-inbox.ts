@@ -24,11 +24,12 @@ import type {
   PendingConfirmRequest,
 } from '@/lib/tools/types';
 import type { ToolProgressUpdate } from '@/lib/tools/types';
-import { type ToolPartCall, useChatStore } from '@/state/chat';
+import { type ChatMessage, type ToolPartCall, useChatStore } from '@/state/chat';
+import { usePilotChatStore } from '@/state/pilot-chat';
 import { useToolInbox } from '@/state/tool-inbox';
 import { useEffect } from 'react';
 
-interface TimelinePayload {
+export interface TimelinePayload {
   callId: string;
   /**
    * Conversation that owns this call (the dispatcher's ctx.conversationId).
@@ -56,13 +57,111 @@ interface TimelinePayload {
  * Find the most recent assistant message in the current conversation. That's
  * where new tool parts attach — same place text and reasoning chunks land.
  */
-function activeAssistantMessageId(): string | null {
-  const messages = useChatStore.getState().messages;
+function activeAssistantMessage(messages: ChatMessage[]): ChatMessage | null {
   for (let i = messages.length - 1; i >= 0; i--) {
     const m = messages[i];
-    if (m && m.role === 'assistant') return m.id;
+    if (m && m.role === 'assistant') return m;
   }
   return null;
+}
+
+type TimelineStore = 'assistant' | 'pilot';
+
+interface TimelineOwner {
+  store: TimelineStore;
+  messageId: string;
+}
+
+/**
+ * Resolve an update to the message that already owns this call. A call id is
+ * the durable identity; conversationId prevents the (very unlikely) case of
+ * the same provider call id being reused in two loaded conversations.
+ */
+function findExistingOwner(
+  store: TimelineStore,
+  messages: ChatMessage[],
+  payload: TimelinePayload,
+): TimelineOwner | null {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const message = messages[i];
+    if (!message || message.role !== 'assistant') continue;
+    if (
+      payload.conversationId != null &&
+      message.conversationId != null &&
+      message.conversationId !== payload.conversationId
+    ) {
+      continue;
+    }
+    if (message.parts?.some((p) => p.type === 'tool' && p.tool.callId === payload.callId)) {
+      return { store, messageId: message.id };
+    }
+  }
+  return null;
+}
+
+/**
+ * Pick the surface for a brand-new `started` event. Terminal/progress events
+ * never use this fallback: attaching a completion to "the latest bubble" is
+ * exactly how approval/resume races left the original row spinning forever.
+ */
+function findStartedFallback(payload: TimelinePayload): TimelineOwner | null {
+  const chat = useChatStore.getState();
+  const pilot = usePilotChatStore.getState();
+  const candidates: Array<{ owner: TimelineOwner; message: ChatMessage }> = [];
+  const addCandidate = (
+    store: TimelineStore,
+    selectedConversationId: string | null,
+    messages: ChatMessage[],
+  ) => {
+    if (
+      payload.conversationId != null &&
+      selectedConversationId !== payload.conversationId
+    ) {
+      return;
+    }
+    const message = activeAssistantMessage(messages);
+    if (message) candidates.push({ owner: { store, messageId: message.id }, message });
+  };
+  addCandidate('assistant', chat.selectedConversationId, chat.messages);
+  addCandidate('pilot', pilot.selectedConversationId, pilot.messages);
+  candidates.sort((a, b) => b.message.timestamp - a.message.timestamp);
+  return candidates[0]?.owner ?? null;
+}
+
+/** Exported for focused regression tests; the subscription delegates here. */
+export function routeToolTimelineEvent(payload: TimelinePayload): void {
+  // Decorative broadcasts from manual surfaces omit conversationId. They are
+  // not dispatcher transcript events and must not create chat rows.
+  if (payload.conversationId === undefined) return;
+
+  const chat = useChatStore.getState();
+  const pilot = usePilotChatStore.getState();
+  const owner =
+    findExistingOwner('assistant', chat.messages, payload) ??
+    findExistingOwner('pilot', pilot.messages, payload) ??
+    (payload.phase === 'started' && !payload.progress ? findStartedFallback(payload) : null);
+  if (!owner) return;
+
+  const target = owner.store === 'pilot' ? usePilotChatStore.getState() : useChatStore.getState();
+  if (payload.progress) {
+    target.appendToolProgress(
+      owner.messageId,
+      payload.callId,
+      { at: Date.now(), ...payload.progress },
+      { toolName: payload.toolName, kind: 'client' },
+    );
+    return;
+  }
+
+  const patch: Partial<ToolPartCall> & { kind: 'client' } = {
+    kind: 'client',
+    toolName: payload.toolName,
+    phase: payload.phase,
+  };
+  if (payload.args !== undefined) patch.args = payload.args;
+  if (payload.output !== undefined) patch.result = payload.output;
+  if (payload.message !== undefined) patch.message = payload.message;
+  target.upsertToolPart(owner.messageId, payload.callId, patch);
 }
 
 /**
@@ -135,52 +234,7 @@ export function useToolInbox$Subscribe(): void {
     const offTimeline = on<TimelinePayload, { ack: true }>(
       CHANNELS.TOOL_TIMELINE_EVENT,
       (payload) => {
-        // Only DISPATCHER-originated events belong in the chat transcript —
-        // the dispatcher always stamps `conversationId` (null until
-        // STREAM_OPENED resolves; WebMCP stamps null too). Decorative
-        // broadcasts from manual surfaces (ScreenshotsView, ToolsView) omit
-        // the key entirely; now that broadcast() self-delivers, accepting
-        // them would attach stray tool rows to whatever assistant message
-        // is last in the chat.
-        if (payload.conversationId === undefined) return { ack: true };
-        // Conversation isolation: drop events for a conversation the user
-        // isn't looking at. Null conversationId (pre-STREAM_OPENED race,
-        // WebMCP) keeps the legacy attach-to-active behavior.
-        if (payload.conversationId != null) {
-          const selected = useChatStore.getState().selectedConversationId;
-          if (selected !== null && selected !== payload.conversationId) {
-            return { ack: true };
-          }
-        }
-        const messageId = activeAssistantMessageId();
-        if (!messageId) return { ack: true };
-        // Incremental progress update — append to the part's progress log
-        // without touching its phase. Routed here (not upsertToolPart) so a
-        // progress event never accidentally flips a completed row back to
-        // 'started'.
-        if (payload.progress) {
-          useChatStore
-            .getState()
-            .appendToolProgress(
-              messageId,
-              payload.callId,
-              { at: Date.now(), ...payload.progress },
-              { toolName: payload.toolName, kind: 'client' },
-            );
-          return { ack: true };
-        }
-        // Only set fields that are actually defined on this event. The SW
-        // sends `args` only on `started` and `output` only on `completed`,
-        // so spreading undefined would wipe the args we captured at start.
-        const patch: Partial<ToolPartCall> & { kind: 'client' } = {
-          kind: 'client',
-          toolName: payload.toolName,
-          phase: payload.phase,
-        };
-        if (payload.args !== undefined) patch.args = payload.args;
-        if (payload.output !== undefined) patch.result = payload.output;
-        if (payload.message !== undefined) patch.message = payload.message;
-        useChatStore.getState().upsertToolPart(messageId, payload.callId, patch);
+        routeToolTimelineEvent(payload);
         return { ack: true };
       },
     );

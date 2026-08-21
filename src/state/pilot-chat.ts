@@ -133,6 +133,12 @@ export const usePilotChatStore = create<PilotChatState>()(
             }
             const existing = parts[idx];
             if (!existing || existing.type !== 'tool') return m;
+            // A delayed delegated/started event must never reopen a terminal
+            // row. Assistant has the same guard; Pilot needs it too because
+            // both surfaces receive the shared dispatcher broadcast stream.
+            const phaseLocked =
+              (existing.tool.phase === 'completed' || existing.tool.phase === 'error') &&
+              patch.phase === 'started';
             const nextEndedAt =
               patch.phase === 'completed' || patch.phase === 'error'
                 ? Date.now()
@@ -140,6 +146,7 @@ export const usePilotChatStore = create<PilotChatState>()(
             const merged: ToolPartCall = {
               ...existing.tool,
               ...patch,
+              ...(phaseLocked ? { phase: existing.tool.phase } : {}),
               ...(nextEndedAt !== undefined && { endedAt: nextEndedAt }),
             };
             const next = parts.slice();

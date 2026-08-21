@@ -393,7 +393,23 @@ export function startToolDispatcher(opts: DispatchOptions): void {
         const message = (err as Error)?.message ?? String(err);
         log.error('sw', `tool dispatch crashed for ${resolvedName}`, err);
         try {
-          await postResult(handler, ctx, null, true, `Tool dispatch crashed: ${message}`);
+          const delivery = await postResult(
+            handler,
+            ctx,
+            null,
+            true,
+            `Tool dispatch crashed: ${message}`,
+          );
+          if (delivery.delivered) {
+            broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+              callId: ctx.callId,
+              conversationId: ctx.conversationId,
+              toolName: handler.name,
+              phase: 'error',
+              message: `Tool dispatch crashed: ${message}`,
+            });
+          }
+          broadcastContinuation(delivery.continuation);
         } catch (postErr) {
           log.error(
             'sw',
@@ -401,12 +417,6 @@ export function startToolDispatcher(opts: DispatchOptions): void {
             postErr,
           );
         }
-        broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
-          callId: ctx.callId,
-          toolName: handler.name,
-          phase: 'error',
-          message: `Tool dispatch crashed: ${message}`,
-        });
       });
       return { ack: true };
     },
@@ -472,16 +482,26 @@ export function startToolDispatcher(opts: DispatchOptions): void {
       const message = (err as Error)?.message ?? String(err);
       log.error('sw', `cold-resume dispatch crashed for ${wireName}`, err);
       try {
-        await postResult(handler, ctx, null, true, `Tool dispatch crashed: ${message}`);
+        const delivery = await postResult(
+          handler,
+          ctx,
+          null,
+          true,
+          `Tool dispatch crashed: ${message}`,
+        );
+        if (delivery.delivered) {
+          broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+            callId: ctx.callId,
+            conversationId: ctx.conversationId,
+            toolName: handler.name,
+            phase: 'error',
+            message: `Tool dispatch crashed: ${message}`,
+          });
+        }
+        broadcastContinuation(delivery.continuation);
       } catch (postErr) {
         log.error('sw', `failed to surface cold-resume crash for ${wireName}`, postErr);
       }
-      broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
-        callId: ctx.callId,
-        toolName: handler.name,
-        phase: 'error',
-        message: `Tool dispatch crashed: ${message}`,
-      });
     });
     return { ack: true };
   });
@@ -805,7 +825,15 @@ async function handleCall(
     return fail((err as Error)?.message ?? String(err));
   }
 
-  await postResult(handler, ctx, result, false, null, Date.now() - startedAt);
+  const delivery = await postResult(handler, ctx, result, false, null, Date.now() - startedAt);
+  // postResult emits a terminal delivery error itself. Never overwrite that
+  // with `completed`: doing so both lies to the user and can resume the model
+  // while the original row is still spinning in another assistant bubble.
+  if (!delivery.delivered) {
+    void emitCompletedReceipt(handler.name, rawArgs, result, false, ctx, startedAt, origin);
+    broadcastContinuation(delivery.continuation);
+    return;
+  }
   broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
     callId: ctx.callId,
     conversationId: ctx.conversationId,
@@ -816,6 +844,10 @@ async function handleCall(
   // Roadmap item #8 — completed receipt. Fire-and-forget; signing
   // problems get logged but never block the response.
   void emitCompletedReceipt(handler.name, rawArgs, result, true, ctx, startedAt, origin);
+  // The terminal UI event must be delivered locally before the sidepanel is
+  // told to allocate the continuation bubble. broadcast() self-delivers
+  // synchronously, so this ordering closes the approval/resume race.
+  broadcastContinuation(delivery.continuation);
 }
 
 async function finishWithError(
@@ -827,7 +859,7 @@ async function finishWithError(
   origin?: ReceiptOrigin,
 ): Promise<void> {
   log.error('sw', `tool ${handler.name} error`, message);
-  await postResult(
+  const delivery = await postResult(
     handler,
     ctx,
     null,
@@ -841,13 +873,28 @@ async function finishWithError(
   if (startedAt !== undefined) {
     void emitCompletedReceipt(handler.name, rawArgs, null, false, ctx, startedAt, origin);
   }
-  broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
-    callId: ctx.callId,
-    conversationId: ctx.conversationId,
-    toolName: handler.name,
-    phase: 'error',
-    message,
-  });
+  if (delivery.delivered) {
+    broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+      callId: ctx.callId,
+      conversationId: ctx.conversationId,
+      toolName: handler.name,
+      phase: 'error',
+      message,
+    });
+  }
+  broadcastContinuation(delivery.continuation);
+}
+
+interface ContinuationSignal {
+  conversationId: string;
+  userRequestId: string | null;
+}
+
+interface PostResultOutcome {
+  /** True only when the server accepted (or had already accepted) this call id. */
+  delivered: boolean;
+  /** Deferred so the caller can broadcast its terminal timeline event first. */
+  continuation: ContinuationSignal | null;
 }
 
 async function postResult(
@@ -857,7 +904,7 @@ async function postResult(
   isError = false,
   errorMessage: string | null = null,
   durationMs: number | null = null,
-): Promise<void> {
+): Promise<PostResultOutcome> {
   // The agent has been working hard — the absolute worst outcome here is
   // dropping the result. If STREAM_OPENED hasn't registered the run yet
   // (it raced with the tool_delegated event), give it a beat before we
@@ -878,7 +925,7 @@ async function postResult(
       phase: 'error',
       message: `The agent's loop could not be reached. Your tool result wasn't delivered. Try sending another message to recover.`,
     });
-    return;
+    return { delivered: false, continuation: null };
   }
   const r = await postToolResults(conversationId, [
     {
@@ -934,12 +981,14 @@ async function postResult(
       phase: 'error',
       message: hint,
     });
-    return;
+    return { delivered: false, continuation: null };
   }
 
   // Track the not_found responses too — partial success returns 200 but the
   // call_id we just posted didn't land. Surface it.
-  if (Array.isArray(r.data.not_found) && r.data.not_found.includes(ctx.callId)) {
+  const callNotFound =
+    Array.isArray(r.data.not_found) && r.data.not_found.includes(ctx.callId);
+  if (callNotFound) {
     log.warn(
       'sw',
       `tool_results 200 but call_id ${ctx.callId} was not_found — server doesn't know this call`,
@@ -953,8 +1002,8 @@ async function postResult(
       message:
         'The server did not recognize this tool call. The conversation may be out of sync — try sending another message.',
     });
-    // Don't return — we still need to evaluate continuation_needed; the
-    // server may have other resolved calls that warrant a resume.
+    // Continue evaluating continuation_needed: other parallel calls may have
+    // resolved even though this one did not.
   }
 
   // Continuation handshake. aidream's _suspend_for_delegation HARD-SUSPENDS
@@ -983,17 +1032,24 @@ async function postResult(
         'sw',
         `continuation_needed duplicate suppressed for ${conversationId} (key ${suppressKey} already broadcast ${Date.now() - prev}ms ago)`,
       );
-      return;
+      return { delivered: !callNotFound, continuation: null };
     }
     recentContinueBroadcasts.set(suppressKey, Date.now());
-    log.info('sw', `continuation_needed → broadcast STREAM_CONTINUE for ${conversationId}`, {
-      userRequestId,
-    });
-    broadcast(CHANNELS.STREAM_CONTINUE, {
-      conversationId,
-      userRequestId,
-    });
+    return {
+      delivered: !callNotFound,
+      continuation: { conversationId, userRequestId },
+    };
   }
+  return { delivered: !callNotFound, continuation: null };
+}
+
+/** Broadcast a continuation only after the caller has emitted its terminal row. */
+function broadcastContinuation(signal: ContinuationSignal | null): void {
+  if (!signal) return;
+  log.info('sw', `continuation_needed → broadcast STREAM_CONTINUE for ${signal.conversationId}`, {
+    userRequestId: signal.userRequestId,
+  });
+  broadcast(CHANNELS.STREAM_CONTINUE, signal);
 }
 
 interface ConfirmResult {
