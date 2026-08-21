@@ -1,4 +1,5 @@
 import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/agents/mandates';
+import { SETTINGS_PERSIST_VERSION, migrateDefaultBrowserAgent } from '@/lib/settings/migrate';
 import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -45,8 +46,8 @@ interface SettingsState {
   defaultChatSpeed: ChatSpeed;
   /**
    * Which agent-scope buckets the chat dropdown shows. Multi-select; defaults
-   * to ['mine'] only — users opt into seeing shared / system agents. Persisted
-   * across reloads.
+   * to ['system'] so the browser Mandate's system-owned agent is visible.
+   * Users may opt into their own or shared agents. Persisted across reloads.
    */
   agentScopes: AgentScope[];
   /**
@@ -115,7 +116,7 @@ export const useSettingsStore = create<SettingsState>()(
       defaultAgentId: DEFAULT_CHAT_MANDATE_REF,
       defaultPermissionMode: 'ask',
       defaultChatSpeed: 'fast',
-      agentScopes: ['mine'],
+      agentScopes: ['system'],
       autoFullScrollOnFirstSubmit: false,
       modelOverrideId: null,
       sharePageIdentity: true,
@@ -128,15 +129,15 @@ export const useSettingsStore = create<SettingsState>()(
       setDefaultChatSpeed: (defaultChatSpeed) => set({ defaultChatSpeed }),
       setAgentScopes: (agentScopes) => {
         // Always keep at least one scope selected — empty = nothing visible
-        // and the user gets stuck. Snap back to ['mine'] in that case.
-        set({ agentScopes: agentScopes.length === 0 ? ['mine'] : agentScopes });
+        // and the user gets stuck. Keep the default browser agent visible.
+        set({ agentScopes: agentScopes.length === 0 ? ['system'] : agentScopes });
       },
       toggleAgentScope: (scope) =>
         set((s) => {
           const next = s.agentScopes.includes(scope)
             ? s.agentScopes.filter((x) => x !== scope)
             : [...s.agentScopes, scope];
-          return { agentScopes: next.length === 0 ? ['mine'] : next };
+          return { agentScopes: next.length === 0 ? ['system'] : next };
         }),
       setAutoFullScrollOnFirstSubmit: (autoFullScrollOnFirstSubmit) =>
         set({ autoFullScrollOnFirstSubmit }),
@@ -153,16 +154,12 @@ export const useSettingsStore = create<SettingsState>()(
       //   v2 → v3 (2026-08-17): fresh installs use the server-resolved
       //     `chat.default_new_chat` Mandate instead of a bundled agent UUID.
       //     Existing users keep an explicit saved agent selection.
-      version: 3,
+      //   v3 → v4 (2026-08-20): untouched installs move to the browser-only
+      //     `extend.browser_chat` Mandate and show the System agent scope.
+      version: SETTINGS_PERSIST_VERSION,
       migrate: (persisted, fromVersion) => {
         const state = (persisted ?? {}) as Partial<SettingsState>;
-        if (
-          fromVersion < 2 &&
-          (state.defaultAgentId === null || state.defaultAgentId === undefined)
-        ) {
-          state.defaultAgentId = DEFAULT_CHAT_MANDATE_REF;
-        }
-        return state as SettingsState;
+        return migrateDefaultBrowserAgent(state, fromVersion) as SettingsState;
       },
     },
   ),

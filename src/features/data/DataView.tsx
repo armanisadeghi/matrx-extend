@@ -23,6 +23,9 @@ export function DataView() {
   const { user, status: authStatus, signIn } = useAuth();
   const tab = useActiveTab();
   const [patterns, setPatterns] = useState<ExtractionPattern[] | null>(null);
+  const [patternsLoading, setPatternsLoading] = useState(false);
+  const [patternLoadError, setPatternLoadError] = useState<string | null>(null);
+  const [patternLoadAttempt, setPatternLoadAttempt] = useState(0);
   const [picking, setPicking] = useState(false);
   const pickTabRef = useRef<number | null>(null);
   const [pickedFields, setPickedFields] = useState<{ name: string; selector: string }[]>([]);
@@ -50,20 +53,39 @@ export function DataView() {
   })();
 
   useEffect(() => {
-    if (!host) return;
+    void patternLoadAttempt;
+    setPatterns(null);
+    setPatternLoadError(null);
+    if (!host) {
+      setPatterns([]);
+      setPatternsLoading(false);
+      return;
+    }
     let cancelled = false;
+    setPatternsLoading(true);
     void (async () => {
       try {
         const p = await fetchPatternsForDomain(host);
-        if (!cancelled) setPatterns(p);
+        if (!cancelled) {
+          setPatterns(p);
+          setPatternLoadError(null);
+        }
       } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : String(err));
+        if (!cancelled) {
+          console.warn('[matrx-extend] structured-data pattern load failed', {
+            host,
+            error: err instanceof Error ? err.message : String(err),
+          });
+          setPatternLoadError(err instanceof Error ? err.message : String(err));
+        }
+      } finally {
+        if (!cancelled) setPatternsLoading(false);
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [host]);
+  }, [host, patternLoadAttempt]);
 
   useEffect(() => {
     // STRICT: only the SW's stamped rebroadcast counts. The raw content-
@@ -147,7 +169,9 @@ export function DataView() {
       }
       setPatternName('');
       setPickedFields([]);
-      setPatterns(await fetchPatternsForDomain(host));
+      const refreshed = await fetchPatternsForDomain(host);
+      setPatterns(refreshed);
+      setPatternLoadError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -203,6 +227,29 @@ export function DataView() {
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 px-3 pb-3">
+          {patternsLoading && (
+            <div className="flex items-center gap-1.5 rounded-xl bg-secondary/40 px-3 py-2 text-xs text-muted-foreground">
+              <Loader2 className="size-3 animate-spin" />
+              Loading saved patterns for this site…
+            </div>
+          )}
+
+          {patternLoadError && (
+            <div className="flex items-center justify-between gap-2 rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
+              <span className="min-w-0">
+                Saved patterns could not be loaded. Page extraction is still available.
+              </span>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 shrink-0 rounded-full px-2 text-[11px]"
+                onClick={() => setPatternLoadAttempt((attempt) => attempt + 1)}
+              >
+                Retry
+              </Button>
+            </div>
+          )}
+
           {error && (
             <div className="rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
               {error}
@@ -415,7 +462,7 @@ export function DataView() {
             </Section>
           )}
 
-          {!matched && !hasFields && !patterns?.length && (
+          {!patternsLoading && !patternLoadError && !matched && !hasFields && !patterns?.length && (
             <div className="grid place-items-center px-4 py-16 text-center text-sm text-muted-foreground">
               Pick fields on this page to build a saveable extraction pattern.
             </div>

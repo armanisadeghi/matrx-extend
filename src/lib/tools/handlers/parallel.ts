@@ -31,6 +31,7 @@
 import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/agents/mandates';
 import { getApiBaseUrl } from '@/lib/api/client';
 import { agentTargetExecutePath } from '@/lib/api/routes/ai';
+import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
 import { getAccessToken } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
@@ -38,6 +39,7 @@ import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { ensureOffscreen } from '@/lib/stream/offscreen-proxy';
 import { recordAssignedTab } from '@/lib/tools/dispatch';
+import { buildParallelStartContract } from '@/lib/tools/handlers/parallel-start-contract';
 import type { ToolContext, ToolHandler } from '@/lib/tools/types';
 import {
   type ParallelSession,
@@ -133,6 +135,7 @@ interface RunChildArgs {
   timeoutMs: number;
   baseUrl: string;
   authHeader: string | null;
+  organizationId: string;
 }
 
 async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
@@ -203,12 +206,11 @@ async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
   };
 
   const body: Record<string, unknown> = {
+    ...buildParallelStartContract(args.organizationId),
     user_input: args.subPrompt,
-    conversation_id: null,
     variables: null,
     context: {},
     stream: true,
-    store: true,
     source_app: 'matrx-extend',
     source_feature: 'parallel-tab',
     client: {
@@ -489,6 +491,17 @@ export const parallel_for_each_tab: ToolHandler<ParallelArgs, unknown> = {
         error: 'parallel_for_each_tab requires the user to be signed in (no access token).',
       };
     }
+    let organizationId: string;
+    try {
+      organizationId = await resolveConversationOrganizationId();
+    } catch (err) {
+      return {
+        ok: false,
+        error: `parallel_for_each_tab could not initialize the workspace: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+      };
+    }
 
     // 3. Seed the panel state. The sub-runs map gets filled as each child
     //    starts.
@@ -541,6 +554,7 @@ export const parallel_for_each_tab: ToolHandler<ParallelArgs, unknown> = {
           timeoutMs: args.timeout_ms,
           baseUrl,
           authHeader,
+          organizationId,
         });
       }),
     );
