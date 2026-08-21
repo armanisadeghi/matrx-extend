@@ -146,8 +146,8 @@ export type AgxAgent = z.infer<typeof AgxAgentSchema>;
  */
 const DEFAULT_CHAT_AGENT: AgxAgent = {
   id: DEFAULT_CHAT_MANDATE_REF,
-  name: 'Matrx Assistant',
-  description: 'Default Matrx agent. Try any of the suggestions below.',
+  name: 'Matrx Browser Agent',
+  description: 'Default Matrx agent for working in your Chrome browser.',
   agent_type: null,
   category: null,
   tags: null,
@@ -291,8 +291,11 @@ export async function fetchConversationHistory(limit = 30): Promise<Conversation
     .order('updated_at', { ascending: false })
     .limit(limit);
   if (error) {
-    console.warn('[matrx-extend] fetchConversationHistory error', error.message);
-    return [];
+    log.error('supabase', 'fetchConversationHistory: supabase error', {
+      message: error.message,
+      code: (error as { code?: string }).code,
+    });
+    throw new Error(`Could not load conversation history: ${error.message}`);
   }
   return parseRowsSafe(ConversationSchema, (data ?? []) as unknown[], 'fetchConversationHistory')
     .rows;
@@ -328,7 +331,7 @@ export async function fetchConversationMessages(
       message: error.message,
       code: (error as { code?: string }).code,
     });
-    return { rows: [], badCount: 0 };
+    throw new Error(`Could not load conversation messages: ${error.message}`);
   }
   return parseRowsSafe(MessageSchema, (data ?? []) as unknown[], 'fetchConversationMessages');
 }
@@ -344,7 +347,10 @@ export async function fetchConversationMessages(
  */
 export const ToolCallRowSchema = z.object({
   call_id: z.string(),
-  message_id: z.string().uuid(),
+  // Delegated and interrupted calls can exist before the server creates the
+  // role=tool message that eventually owns the result. Dropping those rows
+  // made a persisted terminal call hydrate as a permanent spinner.
+  message_id: z.string().uuid().nullable(),
   conversation_id: z.string().uuid().nullable(),
   tool_name: z.string(),
   tool_type: z.string().nullable(),
@@ -372,13 +378,12 @@ export async function fetchConversationToolCalls(
     .eq('conversation_id', conversationId)
     .order('created_at', { ascending: true });
   if (error) {
-    if (/relation .* does not exist/i.test(error.message)) return { rows: [], badCount: 0 };
     log.error('supabase', 'fetchConversationToolCalls: supabase error', {
       conversation_id: conversationId,
       message: error.message,
       code: (error as { code?: string }).code,
     });
-    return { rows: [], badCount: 0 };
+    throw new Error(`Could not load conversation tool calls: ${error.message}`);
   }
   return parseRowsSafe(ToolCallRowSchema, (data ?? []) as unknown[], 'fetchConversationToolCalls');
 }
@@ -396,6 +401,57 @@ function parseToolOutput(raw: unknown): unknown {
     return JSON.parse(raw);
   } catch {
     return raw;
+  }
+}
+
+const TERMINAL_SUCCESS_STATUSES = new Set([
+  'complete',
+  'completed',
+  'done',
+  'success',
+  'succeeded',
+]);
+const TERMINAL_ERROR_STATUSES = new Set([
+  'cancelled',
+  'canceled',
+  'error',
+  'expired',
+  'failed',
+  'rejected',
+]);
+
+/**
+ * Project the durable `chat.tool_call` state into the timeline state. The row
+ * is authoritative even when `message_id` is still null or the role=tool
+ * message was never written (for example, a delivery failure after execution).
+ */
+function applyPersistedToolState(
+  tool: Extract<MessagePart, { type: 'tool' }>['tool'],
+  row: ToolCallRow,
+): void {
+  const status = row.status?.trim().toLowerCase() ?? '';
+  const isError = row.is_error === true || TERMINAL_ERROR_STATUSES.has(status);
+  const isComplete =
+    !isError &&
+    (TERMINAL_SUCCESS_STATUSES.has(status) ||
+      // A non-null result or explicit non-error verdict is durable evidence
+      // that execution ended even if an older server omitted its status.
+      row.output != null ||
+      (row.is_error === false && status === ''));
+
+  if (!isError && !isComplete) return;
+
+  tool.phase = isError ? 'error' : 'completed';
+  tool.result = parseToolOutput(row.output);
+  if (row.error_message) tool.message = row.error_message;
+  else if (isError && row.error_type) tool.message = row.error_type;
+  else if (!isError) tool.message = 'Done';
+
+  if (typeof row.duration_ms === 'number' && row.duration_ms >= 0) {
+    tool.endedAt = tool.startedAt + row.duration_ms;
+  } else {
+    const endedAt = new Date(row.created_at).getTime();
+    if (Number.isFinite(endedAt)) tool.endedAt = endedAt;
   }
 }
 
@@ -456,18 +512,33 @@ export function dbMessagesToChatMessages(
       // Merge into the most recent assistant message — DB stores tool
       // results as their own row, but in the rendered timeline they
       // belong inline with the assistant turn that called them.
-      const last = out[out.length - 1];
-      if (last?.role !== 'assistant' || !last.parts) return;
       for (const block of blocks) {
         if (block.type !== 'tool_result') continue;
         const callId = String(block.call_id ?? block.tool_use_id ?? '');
         if (!callId) continue;
-        const part = last.parts.find((p) => p.type === 'tool' && p.tool.callId === callId);
+        // A tool result need not immediately follow the assistant row that
+        // started it. Search backwards so interleaved/parallel calls hydrate
+        // their owning bubble instead of being silently ignored.
+        const owner = [...out]
+          .reverse()
+          .find(
+            (candidate) =>
+              candidate.role === 'assistant' &&
+              candidate.parts?.some((p) => p.type === 'tool' && p.tool.callId === callId),
+          );
+        const part = owner?.parts?.find((p) => p.type === 'tool' && p.tool.callId === callId);
         if (!part || part.type !== 'tool') continue;
         const tc = byCallId.get(callId);
+        if (tc) {
+          applyPersistedToolState(part.tool, tc);
+        }
+        // The persisted tool-result message is itself terminal evidence. It
+        // remains a fallback for legacy rows absent from chat.tool_call.
         const isError = Boolean(tc?.is_error ?? block.is_error);
-        part.tool.phase = isError ? 'error' : 'completed';
-        part.tool.result = parseToolOutput(tc?.output);
+        if (part.tool.phase === 'started') {
+          part.tool.phase = isError ? 'error' : 'completed';
+          part.tool.result = parseToolOutput(tc?.output ?? block.output ?? block.content);
+        }
         const errMsg =
           tc?.error_message ??
           (typeof block.error_message === 'string' ? block.error_message : null);
@@ -511,16 +582,18 @@ export function dbMessagesToChatMessages(
         // kind for resolution — only the outer wrapper styling).
         const lookup = byCallId.get(callId);
         const kind: 'server' | 'client' = lookup?.tool_type === 'local' ? 'client' : 'server';
+        const tool = {
+          kind,
+          callId,
+          toolName,
+          args: block.arguments,
+          phase: 'started' as const,
+          startedAt: createdAt,
+        };
+        if (lookup) applyPersistedToolState(tool, lookup);
         parts.push({
           type: 'tool',
-          tool: {
-            kind,
-            callId,
-            toolName,
-            args: block.arguments,
-            phase: 'started',
-            startedAt: createdAt,
-          },
+          tool,
         });
       }
     }

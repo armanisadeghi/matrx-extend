@@ -34,6 +34,7 @@ import {
 import { enqueueInboxMessage } from '@/lib/api/routes/ai';
 import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
 import { triggerColdResume } from '@/lib/chat/cold-resume';
+import { isOptimisticNewConversation } from '@/lib/chat/history';
 import { wrapForAgent } from '@/lib/clipboard/copy';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
@@ -77,7 +78,7 @@ import {
   Square,
   Zap,
 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BreathingOrb } from './BreathingOrb';
 import { chatMarkdownRegistry } from './markdown-registry';
 
@@ -144,6 +145,9 @@ export function ChatView() {
   const [agents, setAgents] = useState<AgxAgent[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [agentsLoading, setAgentsLoading] = useState(true);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+  const historyRequestRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   // Auto-scroll follows the stream only while the user is pinned to the
   // bottom of the scroll container. ANY scroll away — wheel, touch,
@@ -183,6 +187,29 @@ export function ChatView() {
   const sidepanelTab = useSidepanelTabStore((s) => s.tab);
   useListsSubscriber(selectedConversationId, sidepanelTab === 'chat');
 
+  const refreshHistory = useCallback(async () => {
+    const request = ++historyRequestRef.current;
+    if (!user) {
+      setConversations([]);
+      setHistoryError(null);
+      setHistoryLoading(false);
+      return;
+    }
+    setHistoryLoading(true);
+    setHistoryError(null);
+    try {
+      const next = await fetchConversationHistory(50);
+      if (historyRequestRef.current === request) setConversations(next);
+    } catch (err) {
+      log.error('supabase', 'conversation history refresh failed', err);
+      if (historyRequestRef.current === request) {
+        setHistoryError('Could not load recent chats. Try again.');
+      }
+    } finally {
+      if (historyRequestRef.current === request) setHistoryLoading(false);
+    }
+  }, [user]);
+
   useEffect(() => {
     // Guests get the builtin-agents list (anon role can read agx_agent rows
     // where agent_type='builtin' AND is_active=true via the
@@ -197,18 +224,13 @@ export function ChatView() {
       // agentsLoading stuck true FOREVER — the whole chat surface bricked
       // with no error (audit P2-18). Fail into the empty state instead.
       let a: Awaited<ReturnType<typeof fetchUserAgents>> = [];
-      let c: Conversation[] = [];
       try {
-        [a, c] = await Promise.all([
-          fetchUserAgents(user?.id),
-          user ? fetchConversationHistory(50) : Promise.resolve([] as Conversation[]),
-        ]);
+        a = await fetchUserAgents(user?.id);
       } catch (err) {
-        log.error('sys', 'chat mount fetch failed', err);
+        log.error('sys', 'agent list fetch failed', err);
       }
       if (cancelled) return;
       setAgents(a);
-      setConversations(c);
       setAgentsLoading(false);
 
       // Auto-select the user's saved default target. Fresh installs use the
@@ -222,10 +244,11 @@ export function ChatView() {
         chat.setAgent(savedDefaultId);
       }
     })();
+    void refreshHistory();
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [user, refreshHistory]);
 
   // Pick up brand-new conversations mid-session. The server assigns an id
   // on the first message of a fresh chat (returned via X-Conversation-ID,
@@ -241,15 +264,13 @@ export function ChatView() {
     if (conversations.some((c) => c.id === selectedConversationId)) return;
     let cancelled = false;
     const t = setTimeout(async () => {
-      const c = await fetchConversationHistory(50);
-      if (cancelled) return;
-      setConversations(c);
+      if (!cancelled) await refreshHistory();
     }, 400);
     return () => {
       cancelled = true;
       clearTimeout(t);
     };
-  }, [selectedConversationId, conversations, user]);
+  }, [selectedConversationId, conversations, user, refreshHistory]);
 
   // Manual refresh — engineers iterating on an agent in the dashboard want
   // a way to pull the latest version (system prompt, tools, model, vars)
@@ -275,10 +296,13 @@ export function ChatView() {
   const [loadError, setLoadError] = useState<{ kind: 'fatal' | 'partial'; text: string } | null>(
     null,
   );
+  const [conversationLoading, setConversationLoading] = useState(false);
+  const [loadAttempt, setLoadAttempt] = useState(0);
 
   useEffect(() => {
     // Clear any previous conversation's load error when switching threads.
     setLoadError(null);
+    setConversationLoading(false);
   }, [selectedConversationId]);
 
   useEffect(() => {
@@ -292,13 +316,15 @@ export function ChatView() {
     // The id can flip null → real mid-stream when the server returns
     // X-Conversation-ID for a brand-new conversation. In that case the
     // messages array already holds the in-flight user turn + pending
-    // assistant — don't refetch and clobber them. Just record that this id
-    // is now considered "loaded".
+    // assistant — don't refetch and clobber them. Do not mark this as a DB
+    // load, either: returning to the conversation later must still hydrate.
     const existing = useChatStore.getState().messages;
-    if (existing.length > 0) {
-      loadedConversationIdRef.current = selectedConversationId;
+    if (isOptimisticNewConversation(existing)) {
       return;
     }
+    let cancelled = false;
+    setConversationLoading(true);
+    setLoadError(null);
     void (async () => {
       // Tool outputs live in a separate table (chat.tool_call) joined by call_id —
       // fetch both in parallel so tool rows render with their actual results
@@ -310,10 +336,12 @@ export function ChatView() {
           fetchConversationMessages(selectedConversationId),
           fetchConversationToolCalls(selectedConversationId),
         ]);
-        if (useChatStore.getState().selectedConversationId !== selectedConversationId) return;
+        if (cancelled || useChatStore.getState().selectedConversationId !== selectedConversationId)
+          return;
         const transformed = dbMessagesToChatMessages(msgResult.rows, toolResult.rows);
         setMessages(transformed.messages);
         loadedConversationIdRef.current = selectedConversationId;
+        setConversationLoading(false);
         // Cold-resume: if the server left this conversation paused waiting on a
         // client-delegated tool the user never answered (closed the tab
         // mid-prompt), re-surface the prompt(s) so they can answer now and
@@ -343,16 +371,22 @@ export function ChatView() {
               ? { name: err.name, message: err.message, stack: err.stack }
               : String(err),
         });
-        if (useChatStore.getState().selectedConversationId === selectedConversationId) {
+        if (
+          !cancelled &&
+          useChatStore.getState().selectedConversationId === selectedConversationId
+        ) {
           setLoadError({
             kind: 'fatal',
-            text: 'This conversation failed to load. Check the Debug tab for details.',
+            text: 'This conversation failed to load. You can retry without leaving this chat.',
           });
-          loadedConversationIdRef.current = selectedConversationId;
+          setConversationLoading(false);
         }
       }
     })();
-  }, [selectedConversationId, setMessages]);
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedConversationId, setMessages, loadAttempt]);
 
   // Track distance-from-bottom on every scroll event. Method-agnostic — works
   // for wheel, touch, scrollbar drag, keyboard, and find-in-page alike.
@@ -514,6 +548,9 @@ export function ChatView() {
         agentsLoading={agentsLoading}
         agentsRefreshing={agentsRefreshing}
         onRefreshAgents={() => void refreshAgents()}
+        historyLoading={historyLoading}
+        historyError={historyError}
+        onRefreshHistory={() => void refreshHistory()}
         selectedAgentId={selectedAgentId}
         selectedConversationId={selectedConversationId}
         conversations={conversations}
@@ -565,9 +602,30 @@ export function ChatView() {
               </span>
               <span className="mt-0.5 block opacity-90">{loadError.text}</span>
             </div>
+            {loadError.kind === 'fatal' && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-6 shrink-0 px-2 text-[10px]"
+                onClick={() => setLoadAttempt((attempt) => attempt + 1)}
+                disabled={conversationLoading}
+              >
+                {conversationLoading ? (
+                  <Loader2 className="mr-1 size-3 animate-spin" />
+                ) : (
+                  <RefreshCw className="mr-1 size-3" />
+                )}
+                Retry
+              </Button>
+            )}
           </div>
         )}
-        {messages.length === 0 && loadError?.kind !== 'fatal' ? (
+        {conversationLoading && messages.length === 0 ? (
+          <div className="flex items-center justify-center gap-2 px-4 py-12 text-xs text-muted-foreground">
+            <Loader2 className="size-4 animate-spin" />
+            Loading conversation…
+          </div>
+        ) : messages.length === 0 && loadError?.kind !== 'fatal' ? (
           <EmptyState
             firstName={firstName}
             onSuggestion={(text) => submitMessage(text)}
@@ -901,6 +959,9 @@ function ChatHeader({
   agentsLoading,
   agentsRefreshing,
   onRefreshAgents,
+  historyLoading,
+  historyError,
+  onRefreshHistory,
   selectedAgentId,
   selectedConversationId,
   conversations,
@@ -918,6 +979,9 @@ function ChatHeader({
   agentsLoading: boolean;
   agentsRefreshing: boolean;
   onRefreshAgents: () => void;
+  historyLoading: boolean;
+  historyError: string | null;
+  onRefreshHistory: () => void;
   selectedAgentId: string | null;
   selectedConversationId: string | null;
   conversations: Conversation[];
@@ -981,6 +1045,9 @@ function ChatHeader({
           conversations={conversations}
           selectedId={selectedConversationId}
           onPick={onPickConversation}
+          loading={historyLoading}
+          error={historyError}
+          onRefresh={onRefreshHistory}
         />
       </div>
     </div>
@@ -1073,14 +1140,26 @@ function HistoryMenu({
   conversations,
   selectedId,
   onPick,
+  loading,
+  error,
+  onRefresh,
 }: {
   conversations: Conversation[];
   selectedId: string | null;
   onPick: (id: string) => void;
+  loading: boolean;
+  error: string | null;
+  onRefresh: () => void;
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        if (nextOpen) onRefresh();
+      }}
+    >
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
@@ -1096,10 +1175,26 @@ function HistoryMenu({
           <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
             Recent chats
           </span>
-          <span className="text-[10px] text-muted-foreground">{conversations.length}</span>
+          <div className="flex items-center gap-1.5">
+            {loading && <Loader2 className="size-3 animate-spin text-muted-foreground" />}
+            <span className="text-[10px] text-muted-foreground">{conversations.length}</span>
+          </div>
         </div>
         <div className="max-h-80 overflow-y-auto p-1">
-          {conversations.length === 0 ? (
+          {error ? (
+            <div className="flex flex-col items-center gap-2 px-3 py-6 text-center text-xs text-muted-foreground">
+              <span>{error}</span>
+              <Button variant="outline" size="sm" className="h-7 text-xs" onClick={onRefresh}>
+                <RefreshCw className="mr-1 size-3" />
+                Retry
+              </Button>
+            </div>
+          ) : conversations.length === 0 && loading ? (
+            <div className="flex items-center justify-center gap-2 px-3 py-8 text-xs text-muted-foreground">
+              <Loader2 className="size-3.5 animate-spin" />
+              Loading recent chats…
+            </div>
+          ) : conversations.length === 0 ? (
             <div className="px-3 py-8 text-center text-xs text-muted-foreground">
               No conversations yet.
             </div>
