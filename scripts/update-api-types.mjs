@@ -85,7 +85,7 @@ if (skipTypeCheck) {
   // above still has a 6.0 programmatic API to import; the native TS 7 compiler is
   // installed as @typescript/native and owns the `tsc` bin. Hardcoding the old path
   // made this step die with MODULE_NOT_FOUND — which the catch below then reported
-  // as "TYPE ERRORS DETECTED", a flatly false message. See CLAUDE.md.
+  // as "TYPE ERRORS DETECTED", a flatly false message. See docs/DEVELOPMENT.md (TypeScript dual install).
   //
   // The old `node --max-old-space-size=8192` prefix is gone with it: `tsc` is now a
   // Go binary, not a Node script, so a V8 heap flag is meaningless to it (and it

@@ -42,7 +42,7 @@ const STRICT = process.argv.includes('--strict');
 const SCAN_INCLUDE = /^(docs\/|\.claude\/skills\/|[^/]+\.md$)/;
 const SCAN_EXCLUDE = /^(docs\/archive\/|\.matrx\/|\.arman\/|\.cursor\/)/;
 
-const COMMON_DOCS_ALLOWED_DIRS = new Set(['systems', 'projects', 'policies', 'meta', 'skills']);
+const COMMON_DOCS_ALLOWED_DIRS = new Set(['systems', 'projects', 'policies', 'meta', 'skills', 'operations']);
 
 function trackedMd(): string[] {
   return execSync("git ls-files -z -- '*.md'", { encoding: 'utf8' })
@@ -202,7 +202,7 @@ if (dedupedPointers.length) {
   console.log('');
   console.log(`-- Malformed cross-repo pointers (${dedupedPointers.length}) --`);
   console.log(
-    '   common-docs paths must start with systems/, projects/, policies/, meta/, or skills/',
+    '   common-docs paths must start with systems/, projects/, policies/, meta/, skills/, or operations/',
   );
   console.log(
     '   (the 2026-07-22 restructure broke flat pointers like common-docs/foo-system/FEATURE.md).',

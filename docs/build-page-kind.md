@@ -145,9 +145,9 @@ Only if your detector is a new `kind` for `page_brief.kind`:
 If your detector is just a dynamic bundle, **don't touch `kind`**. The
 bundle itself signals presence.
 
-### Step 5 — Update CLAUDE.md catalog
+### Step 5 — Update the key catalog in REQUEST_PAYLOAD_CONTRACT.md
 
-In CLAUDE.md, find the "v2 key catalog" under "🧱 Context shape" and add
+In docs/REQUEST_PAYLOAD_CONTRACT.md §2, find the conditional-keys table and add
 your key under the right section:
 
 - "Always-attached" if every page gets it
@@ -281,4 +281,4 @@ Reply with:
 - The new file path(s)
 - The key name(s) attached to context
 - A link to the roadmap entry you flipped to ✅
-- Whether you updated CLAUDE.md
+- Whether you updated docs/REQUEST_PAYLOAD_CONTRACT.md

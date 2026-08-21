@@ -2,7 +2,7 @@
 import { execFileSync } from 'node:child_process';
 /**
  * Migration ledger check — the matrx-extend half of the cross-repo migration
- * durability system. See the "Database migrations" note in CLAUDE.md.
+ * durability system. See docs/DATABASE.md § Database migrations.
  *
  * Supabase (`brsgrqvjdzwihsvnfqkf`) is the source of truth for the database — NOT
  * the .sql files in `migrations/`. A migration file on disk has changed NOTHING

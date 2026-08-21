@@ -5,7 +5,7 @@
 //   2. vite/client declares `interface ImportMetaEnv { [key: string]: any }`.
 //      That index signature would merge into ours and make every typo'd
 //      `import.meta.env.WXT_*` read an `any` instead of a compile error —
-//      the exact failure mode the env-var rules in CLAUDE.md exist to prevent.
+//      the exact failure mode the env-var rules in docs/DEVELOPMENT.md exist to prevent.
 // The only thing we actually needed from it was the asset module shapes,
 // declared explicitly below.
 

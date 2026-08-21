@@ -162,7 +162,7 @@ Every chat turn POSTs `/ai/agent/{agent_id}` with this shape (matches
 **(a) `context` — what the model reads.** Big rich object full of "menu"
 keys the model can template into prompts (`{{user.name}}`,
 `{{current_page.title}}`, etc.). Pre-loaded once per turn. No
-deferred-load cost — see CLAUDE.md "Context shape" for the convention.
+deferred-load cost — see docs/REQUEST_PAYLOAD_CONTRACT.md §2 for the convention.
 In a Next.js surface this is your chance to ship the things only your
 app knows: current route, signed-in user, theme, active workspace,
 recent actions, whatever powers the chat.

@@ -982,7 +982,7 @@ Every entry follows this shape:
     tools render the inline approval card before each call (privileged
     tools always confirm).
 
-### Cryptographic run receipts (CLAUDE.md #8)
+### Cryptographic run receipts (docs/SYSTEM_STATE.md roadmap #8)
 - **What it does:** every tool call gets signed with a device-bound
   Ed25519 key, appended to a local audit log, and exposed via a
   Shield-icon "Show receipt" button on every timeline row.

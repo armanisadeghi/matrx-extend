@@ -1,5 +1,5 @@
 /**
- * Audit-key card (CLAUDE.md roadmap item #8). Lives inside the admin-only
+ * Audit-key card (docs/SYSTEM_STATE.md roadmap item #8). Lives inside the admin-only
  * Advanced agent capabilities section. Four sections:
  *
  *   1. Display the active publicKeyId + creation time + a count of

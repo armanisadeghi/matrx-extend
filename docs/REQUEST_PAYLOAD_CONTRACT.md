@@ -112,7 +112,14 @@ Where tab id appears on the wire (every one of these references the
 
 Source: [src/lib/chat/context/v2-bundled.ts](../src/lib/chat/context/v2-bundled.ts).
 The legacy v1-flat shape is admin-toggleable for A/B; v2 is the only
-shape that should be used.
+shape that should be used. Switch via Admin → Debug tab → "context"
+dropdown, or `chrome.storage.local.set({ "matrx.context.shape":
+"v2-bundled" | "v1-flat" })` — per-extension-install. Dispatcher:
+[src/lib/chat/context/index.ts](../src/lib/chat/context/index.ts);
+flag accessor: `shape-config.ts`; shared page probe: `probe.ts`.
+The four-parties framing behind this contract (Surface owns the key
+catalog · Engineer pre-loads · Agent retrieves by name · User sees only
+the music) is canonical in [docs/ABOUT-MATRX.md](./ABOUT-MATRX.md).
 
 ### Always attached
 
@@ -219,7 +226,7 @@ exposes them by name automatically when present.
 | `prior_capture`           | URL has been captured before (Supabase row exists).             |
 | `saved_patterns_for_domain` | The user has saved extraction patterns (`wbx_pattern`) for this host. Compact list (≤20): `{id, name, kind, route_pattern, last_status, last_run_count}`. The agent runs one via `data_patterns({action:'run', pattern_id})` instead of re-scraping. |
 
-### Rules (locked in CLAUDE.md)
+### Rules (canonical here — CLAUDE.md links to this section)
 
 - **Menu cost, not payload cost.** Each key costs ~one line in the
   model's advertised-keys list. Big rich values are FREE.
@@ -335,7 +342,7 @@ The relevant files to keep in lockstep:
 - [src/lib/chat/context/v2-bundled.ts](../src/lib/chat/context/v2-bundled.ts) — context builder.
 - [src/lib/chat/build-browser-dom-state.ts](../src/lib/chat/build-browser-dom-state.ts) — browser-dom state builder.
 - [src/hooks/use-chat-stream.ts](../src/hooks/use-chat-stream.ts) — request assembly.
-- [CLAUDE.md](../CLAUDE.md) — high-level summary; the inline `context shape` section there must agree with this file.
+- [CLAUDE.md](../CLAUDE.md) — links here as the canonical context contract (the old inline "context shape" section moved into this file, 2026-08-20).
 
 ---
 
