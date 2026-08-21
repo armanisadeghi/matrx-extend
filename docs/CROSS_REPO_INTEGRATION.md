@@ -67,8 +67,8 @@ component. Reusable JWTs cross every boundary.
 | Direction | Bidirectional. Extension streams chat to aidream; aidream injects tool descriptors into the LLM and emits `tool_started` / `tool_result` events back over SSE. |
 | Substrates | HTTPS POST + SSE stream over `https://server.app.matrxserver.com/ai/agent/{agent_id}` |
 | Wire format | Capability envelope: `client.capabilities=["browser-dom"]` plus `client.state["browser-dom"]={current_url, is_admin, permission_mode, optional_permissions_granted, ...}` |
-| Discovery | Always-on tool `load_browser_tools(category)` returns category-scoped tool descriptors via `ctx.queue_tool_changes(add=[...], remove=["load_browser_tools"])` |
-| Cross-turn persistence | Deferred upstream — aidream's `cx_conversation.dynamic_tool_state` is Phase D-persist in `TOOL_INJECTION_REFACTOR.md`. Each user message currently restarts with `[load_browser_tools]`. |
+| Discovery | Always-on tool `load_chrome_tools(category)` returns category-scoped tool descriptors via `ctx.queue_tool_changes(add=[...], remove=["load_chrome_tools"])` |
+| Cross-turn persistence | Deferred upstream — aidream's `cx_conversation.dynamic_tool_state` is Phase D-persist in `TOOL_INJECTION_REFACTOR.md`. Each user message currently restarts with `[load_chrome_tools]`. |
 | Extension-side reference files | `src/lib/tools/aliases.ts`, `src/lib/tools/registry.ts`, `src/lib/tools/dispatch.ts`, `src/lib/tools/handlers/*.ts`, `src/lib/chat/context/v2-bundled.ts` |
 | aidream-side reference files | `aidream/api/utils/tool_merge.py::apply_unified_tools`, `packages/matrx-ai/matrx_ai/capabilities/browser_dom.py` (+ JSON metadata), `packages/matrx-ai/matrx_ai/tools/implementations/browser_discovery.py` |
 
@@ -148,7 +148,7 @@ first when investigating cross-repo behavior.
 **aidream:**
 - `aidream/api/utils/tool_merge.py::apply_unified_tools` — capability-envelope unified tool merge
 - `packages/matrx-ai/matrx_ai/capabilities/browser_dom.py` — capability definition + metadata JSON
-- `packages/matrx-ai/matrx_ai/tools/implementations/browser_discovery.py` — `load_browser_tools` server-side handler
+- `packages/matrx-ai/matrx_ai/tools/implementations/browser_discovery.py` — `load_chrome_tools` server-side handler
 
 **matrx-local:**
 - `app/api/extension_routes.py` — full `/extension/rpc` command route + WS

@@ -102,7 +102,7 @@ The aidream backend now stores the **tool catalog in a database**, not in JSON f
 - **Tool definitions** (name, description, parameters, gating, surface assignments) live in `public.tools` in the aidream DB. [Now `tool.definition`; surface assignment moved to `tool.surface_defaults`.]
 - **Tool handlers** (the actual code that runs when a browser tool fires) live in matrx-extend at [`src/lib/tools/handlers/`](file:///Users/armanisadeghi/code/matrx-extend/src/lib/tools/handlers/) — **unchanged**.
 - The wire format for tool names is changing from bare local names to a namespaced form (`matrx-extend:<local>` canonical, `matrx-extend__<local>` on the wire).
-- Bundles (loaded via discovery tools like `load_browser_tools`) may re-namespace tools at runtime, e.g. `forms__fill_form` instead of `matrx-extend__fill_form`.
+- Bundles (loaded via discovery tools like `load_chrome_tools`) may re-namespace tools at runtime, e.g. `forms__fill_form` instead of `matrx-extend__fill_form`.
 
 You will need three small PRs in matrx-extend (detailed below). The aidream backend handles every other change.
 
@@ -126,7 +126,7 @@ You will need three small PRs in matrx-extend (detailed below). The aidream back
 - Tools are loaded into `ToolRegistryV2` from the DB at startup via `load_from_database()`.
 - The 0022 seed script ingested today's catalog once and the in-memory registration hook is retired.
 - Tool names traveled the wire as `<namespace>__<local>` (the `:` becomes `__` for provider compatibility — Anthropic/OpenAI/Gemini reject `:` in tool names).
-- Bundles can rebrand a tool at load time: when the agent calls `load_browser_tools(category="forms")`, those tools may arrive on your side as `forms__fill_form` instead of `matrx-extend__fill_form` — the dispatch layer must alias-map back to the local handler.
+- Bundles can rebrand a tool at load time: when the agent calls `load_chrome_tools(category="forms")`, those tools may arrive on your side as `forms__fill_form` instead of `matrx-extend__fill_form` — the dispatch layer must alias-map back to the local handler.
 
 The aidream redesign was documented in full in `TOOL_REGISTRY_REDESIGN.md` (§4 naming conventions, three name layers; §9 MCP — same lister mechanism) — that doc never landed in either repo (see the note at the top of this file) and this whole document is superseded by [CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md) below anyway.
 
@@ -335,7 +335,7 @@ WHERE sd.surface_name LIKE 'chrome-extension/%'
 ORDER BY sd.surface_name, t;
 
 -- Bundles. NOTE: there is no membership join table anymore -- a bundle points at
--- a "lister" tool that enumerates it (ours is `load_browser_tools`).
+-- a "lister" tool that enumerates it (ours is `load_chrome_tools`).
 SELECT b.name AS bundle, b.is_system, ld.name AS lister_tool
 FROM tool.bundle b
 LEFT JOIN tool.definition ld ON ld.id = b.lister_tool_id

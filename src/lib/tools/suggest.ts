@@ -3,7 +3,7 @@
  *
  * When the model emits a tool name the dispatcher can't resolve (typo,
  * hallucination, or a category the agent forgot to load via
- * `list_browser_tools`), we feed back a short list of similar known names
+ * `list_chrome_categories`), we feed back a short list of similar known names
  * so the next turn has a useful signal. This is pure UX — it has nothing
  * to do with namespace resolution. (Per the 2026-05-27 refactor, tool
  * names are bare and the dispatcher does a direct registry lookup — no

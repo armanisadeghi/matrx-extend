@@ -154,7 +154,7 @@ function handleDiscoveryToolEvent(
   if (!data) return;
   const subEvent = String(data.event ?? '');
   if (subEvent !== 'tool_completed') return;
-  if (String(data.tool_name ?? '') !== 'load_browser_tools') return;
+  if (String(data.tool_name ?? '') !== 'load_chrome_tools') return;
   // Try common shapes — the server may surface the category in args, output, or data.
   const inner = (data.data ?? {}) as Record<string, unknown>;
   const argsCategory =
@@ -515,7 +515,7 @@ function ensureStreamListeners(): void {
         chunk.payload.eventName === 'RESOURCE_CHANGED'
       ) {
         // Live tool-set updates. Used by the Tools tab UI to show what the
-        // agent currently has available after each load_browser_tools call.
+        // agent currently has available after each load_chrome_tools call.
         handleResourceChangedEvent(chunk.payload.data);
       } else if (chunk.payload.eventName === 'injection_consumed') {
         // Turn-boundary inbox: queued message(s) drained by the running
@@ -900,7 +900,7 @@ export function useChatStream() {
         ...adminOverrides,
         ...(configOverrides ? { config_overrides: configOverrides } : {}),
         // New capability envelope. Replaces the old `client_tools` field.
-        // The server's `browser-dom` capability brings `load_browser_tools`
+        // The server's `browser-dom` capability brings `load_chrome_tools`
         // online; the model calls it with a category to pull the matching
         // tool schemas in via `ctx.queue_tool_changes(...)`. Smaller surface
         // every turn, full coverage on demand.

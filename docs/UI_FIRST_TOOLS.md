@@ -169,7 +169,7 @@ recent actions, whatever powers the chat.
 
 **(b) `client.capabilities` — what the model can ASK you for.** A list of
 capability names you support. Each capability brings a single always-on
-discovery tool online (e.g. `load_browser_tools` for browser-dom). The
+discovery tool online (e.g. `load_chrome_tools` for browser-dom). The
 model calls the discovery tool, the server-side capability handler
 reads `state[<capability>]` to decide which sub-tools to inject, and
 those tools become available mid-turn.

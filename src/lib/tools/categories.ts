@@ -9,8 +9,8 @@
  *
  * Architecture (server-coordinated):
  *   1. Extension advertises `coreToolNames()` on every chat: ~10 always-on
- *      tools + the master `list_browser_tools` discovery tool.
- *   2. Agent calls `list_browser_tools` → receives the category index
+ *      tools + the master `list_chrome_categories` discovery tool.
+ *   2. Agent calls `list_chrome_categories` → receives the category index
  *      (name, description, tool count, name of the category's list-tool).
  *   3. Agent calls `list_<category>_tools` for the category it needs. The
  *      response is full tool schemas. The Python server side observes that
@@ -80,7 +80,7 @@ export interface CategoryMeta {
   category: ToolCategory;
   /** Human-readable label for the discovery tool description. */
   label: string;
-  /** One-paragraph description shown to the agent in `list_browser_tools`. */
+  /** One-paragraph description shown to the agent in `list_chrome_categories`. */
   description: string;
   /** Name of the list_*_tools discovery tool that returns this category's schemas. */
   list_tool_name: string;
@@ -93,7 +93,7 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'core',
     label: 'Core',
     description:
-      'Always-on discovery + batching utilities. Includes `list_browser_tools` (the category index) and `browser_batch` (run multiple read-tier calls in one round trip). Use the category index to load tools on demand.',
+      'Always-on discovery + batching utilities. Includes `list_chrome_categories` (the category index) and `chrome_batch` (run multiple read-tier calls in one round trip). Use the category index to load tools on demand.',
     list_tool_name: 'list_core_tools',
   },
   reading: {
@@ -226,9 +226,9 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
  */
 export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   // ─── core ──────────────────────────────────────────────────────────────
-  list_browser_tools: 'core',
+  list_chrome_categories: 'core',
   list_core_tools: 'core',
-  browser_batch: 'core',
+  chrome_batch: 'core',
   parallel_for_each_tab: 'core',
 
   // ─── reading (canonical) ──────────────────────────────────────────────
@@ -452,9 +452,9 @@ export function categoryOf(toolName: string): ToolCategory {
  */
 export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   // ─── core (advertised on every chat) ────────────────────────────────────
-  'list_browser_tools',
+  'list_chrome_categories',
   'data_patterns',
-  'browser_batch',
+  'chrome_batch',
   'read_page',
   'find',
   'user',

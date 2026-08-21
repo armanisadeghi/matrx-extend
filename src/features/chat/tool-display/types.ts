@@ -101,7 +101,7 @@ export interface InlineConfig {
   /**
    * Default: titleCase(toolName). Pass `''` to suppress, a literal string to
    * override, or an `InfoSpec` to pull the name from args/output (e.g. the
-   * category passed into `load_browser_tools`, or the title of the active tab).
+   * category passed into `load_chrome_tools`, or the title of the active tab).
    */
   name?: PhaseAware<string | InfoSpec>;
   suffix?: PhaseAware<string>;

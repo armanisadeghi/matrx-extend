@@ -1,5 +1,5 @@
 /**
- * Custom row for `browser_batch` — the meta-tool that bundles N read-tier
+ * Custom row for `chrome_batch` — the meta-tool that bundles N read-tier
  * tool calls into a single SSE round trip. Showing it as one opaque entry
  * hides what's actually happening; instead we render each sub-call as its
  * own native tool row, complete with the full tool-display registry styling

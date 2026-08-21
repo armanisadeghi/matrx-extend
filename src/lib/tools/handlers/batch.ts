@@ -1,10 +1,10 @@
 /**
- * `browser_batch` — execute a sequence of read-tier tool calls in one round
+ * `chrome_batch` — execute a sequence of read-tier tool calls in one round
  * trip.
  *
  * The agent benefits when it knows it'll need several reads back-to-back
  * (e.g. read_page → take_screenshot → list_open_tabs). Instead of N
- * separate tool turns, it calls browser_batch once with N entries and gets
+ * separate tool turns, it calls chrome_batch once with N entries and gets
  * N results.
  *
  * SAFETY: only `read`-tier tools are allowed inside a batch in v1. That
@@ -35,8 +35,8 @@ const BatchArgs = z.object({
 });
 type BatchArgs = z.infer<typeof BatchArgs>;
 
-export const browser_batch: ToolHandler<BatchArgs, unknown> = {
-  name: 'browser_batch',
+export const chrome_batch: ToolHandler<BatchArgs, unknown> = {
+  name: 'chrome_batch',
   tier: 'read',
   argsSchema: BatchArgs,
   run: async (args, ctx: ToolContext) => {
@@ -93,4 +93,4 @@ export const browser_batch: ToolHandler<BatchArgs, unknown> = {
   },
 };
 
-export const batch_handlers = [browser_batch];
+export const batch_handlers = [chrome_batch];

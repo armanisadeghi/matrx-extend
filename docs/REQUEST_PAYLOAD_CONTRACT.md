@@ -56,7 +56,7 @@ server-side:
   tool-callable hint. No truncation on our side — that's the server's
   job.
 - **`client.state["browser-dom"]`** — small, structured, orchestration-
-  facing. The server's `browser-dom` capability + `load_browser_tools`
+  facing. The server's `browser-dom` capability + `load_chrome_tools`
   discovery handler reads this to decide which tool category to
   register for the current turn (admin? guest? perms granted? desktop
   bridge? what's already loaded?).
@@ -247,7 +247,7 @@ exposes them by name automatically when present.
 ## 3. The `client.state["browser-dom"]` payload (orchestration)
 
 Source: [src/lib/chat/build-browser-dom-state.ts](../src/lib/chat/build-browser-dom-state.ts).
-Sixteen keys. Small on purpose — the server's `load_browser_tools`
+Sixteen keys. Small on purpose — the server's `load_chrome_tools`
 discovery handler reads it field-by-field to decide which tool
 category to register.
 
@@ -313,7 +313,7 @@ interface BrowserDomState {
 ## 4. Cross-turn lifecycle
 
 - **Tool mutations are per-request only.** Each new user message
-  restarts with `[load_browser_tools]` as the only always-on tool in
+  restarts with `[load_chrome_tools]` as the only always-on tool in
   the `browser-dom` capability. The agent re-discovers what it needs
   for the current turn. Server-side persistence is on aidream's
   roadmap; no extension change is needed when it lands.

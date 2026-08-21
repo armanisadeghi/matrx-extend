@@ -178,7 +178,7 @@ async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
   recordAssignedTab(subRunId, tabId);
 
   // Build child-request body. We deliberately keep `context` empty — the
-  // server's load_browser_tools discovery handler is what drives this
+  // server's load_chrome_tools discovery handler is what drives this
   // sub-run's tool surface, and `client.state["browser-dom"]` carries the
   // assigned tab. Sending the full parent context would be misleading
   // (it's about the parent's tab, not this sub-run's).

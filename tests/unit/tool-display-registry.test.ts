@@ -47,8 +47,8 @@ const ALLOWED_NON_CANONICAL = new Set<string>([
   'take_screenshot',
   'memory',
   // internal / discovery / server-side rows
-  'load_browser_tools',
-  'list_browser_tools',
+  'load_chrome_tools',
+  'list_chrome_categories',
   'ctx_get',
   'interaction_ask',
   'tasks',

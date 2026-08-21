@@ -1,6 +1,6 @@
 /**
  * Build the `client.state["browser-dom"]` payload the server-side
- * `browser-dom` capability + `load_browser_tools` discovery handler needs
+ * `browser-dom` capability + `load_chrome_tools` discovery handler needs
  * to route which tools to register for this turn.
  *
  * Distinct from `buildChatContext`:

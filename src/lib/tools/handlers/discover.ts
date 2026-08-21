@@ -5,7 +5,7 @@
  * do, the noise hurts decision quality. We ship the agent a tiny core set
  * + the names of category list-tools. When the agent needs more, it asks.
  *
- *   list_browser_tools           — root index. Returns every category with
+ *   list_chrome_categories           — root index. Returns every category with
  *                                 description + count + the name of its
  *                                 list-tool.
  *   list_<category>_tools        — one per category. Returns the full tool
@@ -53,8 +53,8 @@ function ctxIsAdmin(_ctx: ToolContext): boolean {
   return false;
 }
 
-export const list_browser_tools: ToolHandler<NoArgs, unknown> = {
-  name: 'list_browser_tools',
+export const list_chrome_categories: ToolHandler<NoArgs, unknown> = {
+  name: 'list_chrome_categories',
   tier: 'read',
   argsSchema: NoArgs,
   run: async (_args, ctx) => {
@@ -127,6 +127,6 @@ const category_list_tools: AnyToolHandler[] = ALL_CATEGORIES.map(
 );
 
 export const discover_handlers: AnyToolHandler[] = [
-  list_browser_tools as AnyToolHandler,
+  list_chrome_categories as AnyToolHandler,
   ...category_list_tools,
 ];

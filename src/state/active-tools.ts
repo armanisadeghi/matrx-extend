@@ -4,7 +4,7 @@
  * kind=active_tools event.
  *
  * Why per-conversation: tool mutations are server-side per-request today,
- * so each new turn restarts with `[load_browser_tools]`. The hint
+ * so each new turn restarts with `[load_chrome_tools]`. The hint
  * `loaded_categories` survives turn boundaries on the client and is sent
  * back so the server can detect re-discovery patterns (or, once cross-
  * request persistence ships, short-circuit them).

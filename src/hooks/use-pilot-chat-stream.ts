@@ -88,7 +88,7 @@ function handleDiscoveryToolEvent(
   if (!data) return;
   const subEvent = String(data.event ?? '');
   if (subEvent !== 'tool_completed') return;
-  if (String(data.tool_name ?? '') !== 'load_browser_tools') return;
+  if (String(data.tool_name ?? '') !== 'load_chrome_tools') return;
   const inner = (data.data ?? {}) as Record<string, unknown>;
   const argsCategory =
     typeof inner.arguments === 'object' && inner.arguments !== null

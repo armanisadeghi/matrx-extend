@@ -186,7 +186,7 @@ function visible(t: AnyToolHandler, opts: BundleOptions): boolean {
 /**
  * The minimum set we advertise to every agent on every chat. Tiny enough to
  * fit comfortably in any model's context: a handful of always-on
- * essentials + the master `list_browser_tools` discovery tool + every
+ * essentials + the master `list_chrome_categories` discovery tool + every
  * `list_<category>_tools` so the agent can pull more capabilities on
  * demand.
  */

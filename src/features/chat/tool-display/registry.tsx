@@ -69,7 +69,7 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     },
   },
 
-  load_browser_tools: {
+  load_chrome_tools: {
     inline: {
       // Per-category icon: the category arg goes through `browserCategoryIcon`
       // which maps "core" → "Wrench", "forms" → "FormInput", etc. Started
@@ -276,12 +276,12 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
-  // browser_batch is a meta-tool — instead of rendering it as one opaque
+  // chrome_batch is a meta-tool — instead of rendering it as one opaque
   // entry, fan out each sub-call as its own native tool row using the same
   // registry styling. Lets the user see exactly which URLs / refs are being
   // touched, with the same Base64Image / TabCard / Markdown / etc. that an
   // individual call would have rendered with.
-  browser_batch: {
+  chrome_batch: {
     CustomComponent: BatchToolDisplay,
   },
 
@@ -1187,7 +1187,7 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
   // bare default row. Most are header-only (icon + phase verb + a relevant
   // arg/output chip); action-routed tools surface `args.action` as the chip.
 
-  list_browser_tools: {
+  list_chrome_categories: {
     inline: {
       icon: { started: 'Loader2', completed: 'Wrench', error: 'AlertTriangle' },
       prefix: { started: 'Loading tools', completed: 'Loaded tools', error: 'Tool load failed' },

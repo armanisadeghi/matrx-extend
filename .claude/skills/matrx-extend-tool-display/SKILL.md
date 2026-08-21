@@ -381,7 +381,7 @@ Two patterns where this matters:
 **Mid-sentence values** (the dynamic word lives between static prefix/suffix):
 
 ```ts
-// load_browser_tools — header: "Loading my core browser tools"
+// load_chrome_tools — header: "Loading my core browser tools"
 inline: {
   prefix: { started: 'Loading my', completed: 'Loaded my', error: 'Failed to load my' },
   name: { path: 'args.category' },  // resolves "core" / "page" / "interact" / …
@@ -486,8 +486,8 @@ While running: spinning Search icon + shimmering "Searching for the sign-in butt
 ### Per-category dynamic icon
 
 ```ts
-// `load_browser_tools` — category in args drives the icon
-load_browser_tools: {
+// `load_chrome_tools` — category in args drives the icon
+load_chrome_tools: {
   inline: {
     icon: {
       started: 'Loader2',

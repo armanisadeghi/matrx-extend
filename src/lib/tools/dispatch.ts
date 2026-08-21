@@ -372,8 +372,8 @@ export function startToolDispatcher(opts: DispatchOptions): void {
         // synthesize "Browser session not found", which the agent can't act on.
         const suggestions = suggestSimilar(wireName, allToolNames({ isAdmin: true }));
         const hint = suggestions.length
-          ? ` Did you mean: ${suggestions.join(', ')}? Or call list_browser_tools to see what's available.`
-          : ' Call list_browser_tools to see what is available.';
+          ? ` Did you mean: ${suggestions.join(', ')}? Or call list_chrome_categories to see what's available.`
+          : ' Call list_chrome_categories to see what is available.';
         log.warn('sw', `tool '${wireName}' not in registry`, { suggestions });
         void postUnknownToolError(ctx, wireName, hint).catch((err) =>
           log.error('sw', `failed to post unknown-tool error for ${wireName}`, err),
@@ -469,8 +469,8 @@ export function startToolDispatcher(opts: DispatchOptions): void {
     if (!handler) {
       const suggestions = suggestSimilar(wireName, allToolNames({ isAdmin: true }));
       const hint = suggestions.length
-        ? ` Did you mean: ${suggestions.join(', ')}? Or call list_browser_tools to see what's available.`
-        : ' Call list_browser_tools to see what is available.';
+        ? ` Did you mean: ${suggestions.join(', ')}? Or call list_chrome_categories to see what's available.`
+        : ' Call list_chrome_categories to see what is available.';
       log.warn('sw', `cold-resume tool '${wireName}' not in registry`, { suggestions });
       void postUnknownToolError(ctx, wireName, hint).catch((err) =>
         log.error('sw', `failed to post cold-resume unknown-tool error for ${wireName}`, err),

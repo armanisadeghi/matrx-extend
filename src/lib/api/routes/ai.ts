@@ -50,7 +50,7 @@ export const agentTargetExecutePath = (target: string): string => {
 /**
  * Capability-based client envelope. Replaces the old `client_tools: string[]`
  * field. The server registers a `browser-dom` capability whose discovery
- * tool (`load_browser_tools`) reads `state["browser-dom"]` to decide which
+ * tool (`load_chrome_tools`) reads `state["browser-dom"]` to decide which
  * tools to register for this turn.
  *
  * Source of truth for the per-capability state shape: aidream's capability
@@ -92,7 +92,7 @@ export interface AgentStartRequest {
   stream?: boolean;
   /**
    * Capability declaration + per-capability state. The capability brings
-   * `load_browser_tools` (the discovery tool) online; everything else loads
+   * `load_chrome_tools` (the discovery tool) online; everything else loads
    * on demand. Replaces the old `client_tools` field.
    */
   client?: AgentClientEnvelope;

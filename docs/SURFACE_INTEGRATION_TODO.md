@@ -522,7 +522,7 @@ WHERE surface_name = 'matrx-local/desktop';
 → `{load_desktop_tools, local_file, local_shell}`
 
 `load_desktop_tools` is the discovery root (executed by `matrx-ai-core`) — the
-same on-demand pattern matrx-extend uses with `load_browser_tools`. The other 17
+same on-demand pattern matrx-extend uses with `load_chrome_tools`. The other 17
 tools are pulled in mid-turn by that call, not advertised upfront. When you add a
 mega-tool, add its binding **and** make sure the discovery handler routes to it;
 only add it to `always_include_tools` if it truly belongs in every turn.

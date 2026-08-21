@@ -15,7 +15,7 @@ extend or debug what flows out to aidream.
 
 - Adding a new key to `client.state["browser-dom"]` (e.g. a new flag the
   server needs to gate tool advertisement on).
-- Wiring a new tool category that the model can call `load_browser_tools`
+- Wiring a new tool category that the model can call `load_chrome_tools`
   with (extension side: handler + alias; server side: routing).
 - Debugging "the model never sees my tool" — usually a discovery / merge
   bug, not a handler bug.
@@ -42,9 +42,9 @@ extension → POST /ai/agent/{agent_id} ─┐
                                 aidream apply_unified_tools
                                   (tool_merge.py)
                                        │
-                                advertises load_browser_tools to LLM
+                                advertises load_chrome_tools to LLM
                                        │
-                              LLM calls load_browser_tools(category="forms")
+                              LLM calls load_chrome_tools(category="forms")
                                        │
                                 browser_discovery.py reads state,
                                 queues tool changes (add/remove)
@@ -66,7 +66,7 @@ When you need the server to gate a tool category on a new flag:
 2. **Server side** — extend `browser_discovery.py` to read the new flag
    and filter the category-routing table. (This is server work; switch
    repos to do it.)
-3. **Verify** — admin → Tools tab → trigger `load_browser_tools` for the
+3. **Verify** — admin → Tools tab → trigger `load_chrome_tools` for the
    gated category; confirm the tools appear iff the flag is true.
 
 The server-to-extension event you watch for is
@@ -153,14 +153,14 @@ the tool result in the resume body.
 - `packages/matrx-ai/matrx_ai/capabilities/browser_dom.py` — capability
   definition; the JSON metadata sibling lists every always-on tool.
 - `packages/matrx-ai/matrx_ai/tools/implementations/browser_discovery.py`
-  — server-side handler for `load_browser_tools`; reads
+  — server-side handler for `load_chrome_tools`; reads
   `client.state["browser-dom"]` and decides the add/remove list.
 
 ## Extending an existing capability vs. injecting inline
 
 - **Extend the existing `browser-dom` capability** when the new tool
   belongs to a category and follows the discovery loop (cheap; reuses
-  the always-on `load_browser_tools`).
+  the always-on `load_chrome_tools`).
 - **Inject inline via the unified tool merge** (`apply_unified_tools`)
   only when the tool is request-specific or shouldn't be discoverable
   by category. Inline tools cost the full schema in the prompt every
@@ -169,7 +169,7 @@ the tool result in the resume body.
 ## Cross-turn limitation (current state, May 2026)
 
 Tool mutations are per-request only. Each new user message restarts with
-`[load_browser_tools]` — discovery re-runs. Discovery is cheap
+`[load_chrome_tools]` — discovery re-runs. Discovery is cheap
 (server-side lookup, no LLM round-trip), so this is acceptable.
 Cross-request persistence (`cx_conversation.dynamic_tool_state`) is the
 Phase D-persist roadmap item in aidream's `TOOL_INJECTION_REFACTOR.md`.

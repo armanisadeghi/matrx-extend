@@ -218,7 +218,7 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
 
   // ─── new (2026-05-01) ────────────────────────────────────────────────
   // discovery tools
-  list_browser_tools: [],
+  list_chrome_categories: [],
   list_core_tools: [],
   list_tabs_tools: [],
   list_ai_tools: [],
@@ -227,7 +227,7 @@ const PERMISSIONS_BY_TOOL: Record<string, string[]> = {
   list_webmcp_tools: [],
 
   // batching
-  browser_batch: [],
+  chrome_batch: [],
 
   // ref-based page understanding
   read_page: ['activeTab', 'scripting'],

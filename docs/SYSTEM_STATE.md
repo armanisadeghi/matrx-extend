@@ -20,8 +20,8 @@
   the names the server actually shows agents (mega-tool routers like
   `computer`, `tabs`, `form_input` collapse many granular handlers).
 - **Capability-based discovery (2026-05-01)** — every chat ships a single
-  capability `browser-dom` whose only always-on tool is `load_browser_tools`.
-  The model calls `load_browser_tools({category})` to pull in the matching
+  capability `browser-dom` whose only always-on tool is `load_chrome_tools`.
+  The model calls `load_chrome_tools({category})` to pull in the matching
   category's tools mid-turn. Server-side discovery handler reads
   `client.state["browser-dom"]` (admin? perms? desktop bridge?) and routes
   via DB rows in `tool.definition` (joined with `tool.binding`
@@ -335,7 +335,7 @@
 - **`find` (NL element search)** — natural-language description in,
   matching refs out. Uses on-device Gemini Nano with a JSON-Schema
   constraint when available; falls back to text similarity.
-- **`browser_batch`** — execute up to 20 read-tier tool calls in one round
+- **`chrome_batch`** — execute up to 20 read-tier tool calls in one round
   trip. Action / privileged tools require their normal individual approval.
 - **`update_plan`** — agent proposes a step-by-step plan; user approves /
   rejects with optional note before execution begins.
@@ -382,7 +382,7 @@
 > (~95 names). Don't re-add a hand-maintained table here — it drifts.
 
 The agent only sees the always-on discovery surface upfront; everything
-else loads on demand via `load_browser_tools({category})` (server-side
+else loads on demand via `load_chrome_tools({category})` (server-side
 discovery handler).
 
 ### Tool list
@@ -393,9 +393,9 @@ discovery handler).
 > worth knowing about; don't treat them as exhaustive.**
 
 #### Core (always advertised; 13 tools + 15 discovery tools = 28-entry surface)
-- `list_browser_tools` — discovery root (returns category index)
+- `list_chrome_categories` — discovery root (returns category index)
 - `list_core_tools` — what's in core itself
-- `browser_batch` — N read-tier calls in one round trip
+- `chrome_batch` — N read-tier calls in one round trip
 - `get_active_tab`, `take_screenshot`
 - `read_page` — accessibility tree + ref system
 - `find` — natural-language element search returning refs
@@ -1087,11 +1087,11 @@ POST /ai/agent/{agent_id}
 **Discovery loop:**
 
 1. Server registers `browser-dom` capability with one always-on tool:
-   `load_browser_tools`.
-2. Model calls `load_browser_tools({ category: "page" | "interact" | … })`.
+   `load_chrome_tools`.
+2. Model calls `load_chrome_tools({ category: "page" | "interact" | … })`.
 3. Server-side handler reads `state["browser-dom"]` (admin? perms granted?
    desktop bridge?), looks up `category_routing[category]` from the handoff
-   manifest, filters, and calls `ctx.queue_tool_changes(add=[...], remove=["load_browser_tools"])`.
+   manifest, filters, and calls `ctx.queue_tool_changes(add=[...], remove=["load_chrome_tools"])`.
 4. Orchestrator drains the mutation; next iteration the model has the new
    tools loaded.
 5. Server emits `RESOURCE_CHANGED kind=active_tools`; extension listens and
@@ -1099,7 +1099,7 @@ POST /ai/agent/{agent_id}
    `useActiveToolsStore` so the next request can hint `loaded_categories`.
 
 **Cross-turn limitation (current):** tool mutations are per-request only.
-Each new user message restarts with `[load_browser_tools]`. Discovery is
+Each new user message restarts with `[load_chrome_tools]`. Discovery is
 cheap (server-side lookup, no LLM round-trip), so re-running per turn is
 acceptable. Cross-request persistence is on the server-team's roadmap; no
 extension changes needed when it lands.
