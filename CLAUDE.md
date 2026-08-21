@@ -18,7 +18,7 @@ is a brilliant, absolutely non-technical Subject Matter Expert — canonical:
 `/Users/armanisadeghi/code/common-docs/systems/ai-dream-platform/USER.md`.
 
 - Integration channel map (extension ↔ aidream / matrx-local / matrx-frontend):
-  `/Users/armanisadeghi/code/common-docs/systems/matrx-extend-integration/FEATURE.md`
+  `/Users/armanisadeghi/code/common-docs/systems/clients/extension/FEATURE.md`
 - Outbound work to a sibling → invoke the matching repo skill:
   `connect-aidream` · `connect-local` · `connect-frontend`
   (master doc: [docs/CROSS_REPO_INTEGRATION.md](./docs/CROSS_REPO_INTEGRATION.md)).
@@ -36,14 +36,14 @@ workspace root [`../CLAUDE.md`](../CLAUDE.md) § Shared checkout.
   answer resolved at run time by `mandate_key` — never a constant. This repo has ZERO
   Mandate coverage and known hardcoded agent UUIDs (`AiExtractTab.tsx`,
   `lib/agenda/constants.ts`; rollout rows E1/E2). Law:
-  `/Users/armanisadeghi/code/common-docs/systems/mandates/RUNTIME.md` · why clients
+  `/Users/armanisadeghi/code/common-docs/systems/agents/mandates/RUNTIME.md` · why clients
   drift: `/Users/armanisadeghi/code/common-docs/policies/clients-consume-never-reimplement.md`
 - **No unapproved schedules.** Every scheduled task exists only with Arman's approval
   by name and interval, registered + claimed via `schedule_claim`:
   `/Users/armanisadeghi/code/common-docs/operations/scheduled-tasks.md`
 - **THE USER-INPUT LAW.** Structured information is never passed as user text — it
   becomes named variables or context:
-  `/Users/armanisadeghi/code/common-docs/systems/agent-variable-binding/FEATURE.md`
+  `/Users/armanisadeghi/code/common-docs/systems/agents/agent-variable-binding/FEATURE.md`
 - **Limits are knobs, agents set them.** Never hardcode a cap/timeout/quota as a
   constant: `/Users/armanisadeghi/code/common-docs/policies/limits-are-knobs-agents-set-them.md`
 - **No legacy.** No shims, no compatibility layers, no dead code left behind:
@@ -57,13 +57,13 @@ workspace root [`../CLAUDE.md`](../CLAUDE.md) § Shared checkout.
 (client-minted, always) + `is_new` + `store`; aidream 422s anything else.
 `AgentStartRequest` in [src/lib/api/routes/ai.ts](./src/lib/api/routes/ai.ts) marks all
 three required. Contract:
-`/Users/armanisadeghi/code/common-docs/systems/conversation-start-contract/FEATURE.md`.
+`/Users/armanisadeghi/code/common-docs/systems/agents/conversation-start-contract/FEATURE.md`.
 
 **Tool system.**
 - Canonical vocabulary (Tool / Registered / Inline / Executor / Binding / Surface /
   Arming / Bundle / Gate) — copy verbatim, never paraphrase:
   [../aidream/docs/official/tool_system_rules.md](../aidream/docs/official/tool_system_rules.md)
-  · registry schema: `/Users/armanisadeghi/code/common-docs/systems/tool-registry/FEATURE.md`.
+  · registry schema: `/Users/armanisadeghi/code/common-docs/systems/agents/agent-tools/FEATURE.md`.
 - Registered tools live in `tool.definition` + `tool.binding`
   (`executor_name='chrome-extension'`) + `tool.surface_defaults`. These tables were
   renamed TWICE (`tl_*` → `tool_*` → `tool.*` schema); only the last names exist.
@@ -150,7 +150,7 @@ as a hang and kills a healthy run.
   `/Users/armanisadeghi/code/common-docs/projects/outreach-system/INTEGRATION_MAP.md` (IC-10).
 - Token broker: consume [src/lib/broker/](./src/lib/broker/) (its FEATURE.md is the
   contract) — never hand-roll a mint call, cache, or gateway URL. System:
-  `/Users/armanisadeghi/code/common-docs/systems/token-broker/FEATURE.md`.
+  `/Users/armanisadeghi/code/common-docs/systems/platform/token-broker/FEATURE.md`.
 
 ## Conventions
 
