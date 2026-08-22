@@ -426,7 +426,6 @@ describe('credential_login — complete attempt contract', () => {
         ],
         submit: { kind: 'click', selector: '#submit' },
         expect: { success_selector: 'a[href="/logout"]', timeout_ms: 2_000 },
-        reason: 'Test the declared attempt contract.',
       },
       ctx,
     );

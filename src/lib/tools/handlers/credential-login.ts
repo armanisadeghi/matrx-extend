@@ -144,15 +144,15 @@ const SubmitSpec = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('none') }),
 ]);
 
-const ExpectSpec = z
-  .object({
-    success_url_prefix: z.string().url().optional(),
-    success_selector: z.string().min(1).optional(),
-    failure_selector: z.string().min(1).optional(),
-    challenge_selector: z.string().min(1).optional(),
-    timeout_ms: z.number().int().min(1_000).max(60_000).default(30_000),
-  })
-  .default({ timeout_ms: 30_000 });
+const ExpectSpec = z.object({
+  success_url_prefix: z.string().url().optional(),
+  success_selector: z.string().min(1).optional(),
+  failure_selector: z.string().min(1).optional(),
+  challenge_selector: z.string().min(1).optional(),
+  timeout_ms: z.number().int().min(1_000).max(60_000).default(30_000),
+});
+
+const DEFAULT_EXPECT: z.infer<typeof ExpectSpec> = { timeout_ms: 30_000 };
 
 const AttemptStep = z.object({
   fields: z.array(z.string().min(1)).min(1),
@@ -198,8 +198,7 @@ const AttemptArgs = z
     fields: z.array(FieldSpec).min(1),
     submit: SubmitSpec.optional(),
     steps: z.array(AttemptStep).min(1).optional(),
-    expect: ExpectSpec,
-    reason: z.string().min(1).max(1_000).optional(),
+    expect: ExpectSpec.optional(),
   })
   .strict()
   .superRefine((value, ctx) => {
@@ -242,7 +241,7 @@ const AuthenticatorArgs = z
     credential_item_id: z.string().min(1),
     code_selector: z.string().min(1),
     submit: SubmitSpec,
-    expect: ExpectSpec,
+    expect: ExpectSpec.optional(),
   })
   .strict();
 
@@ -283,7 +282,6 @@ const CredentialLoginArgs = z
     steps: z.array(AttemptStep).min(1).optional(),
     expect: ExpectSpec.optional(),
     code_selector: z.string().min(1).optional(),
-    reason: z.string().min(1).max(1_000).optional(),
     kind: z.enum(['secret_exposed', 'wrong_verdict', 'recipe_wrong', 'other']).optional(),
     where: z.string().min(1).max(500).optional(),
     attempt_id: z.string().min(1).optional(),
@@ -1148,7 +1146,13 @@ async function runCompleteAttempt(
     }
   }
 
-  const classified = await classifyExplicitAttempt(tabId, pageUrl, args.expect, before, startedAt);
+  const classified = await classifyExplicitAttempt(
+    tabId,
+    pageUrl,
+    args.expect ?? DEFAULT_EXPECT,
+    before,
+    startedAt,
+  );
   return await finish(
     safeResult(classified.status, {
       ...(classified.confidence !== undefined ? { confidence: classified.confidence } : {}),
@@ -1239,7 +1243,7 @@ async function runAuthenticatorAttempt(
     const classified = await classifyExplicitAttempt(
       tabId,
       pageUrl,
-      args.expect,
+      args.expect ?? DEFAULT_EXPECT,
       before,
       startedAt,
     );
