@@ -7,8 +7,8 @@
 > [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-08-21T01:39:58.419Z
-Total tools: 82
+Generated: 2026-08-22T17:43:37.657Z
+Total tools: 81
 
 ## ai
 
@@ -98,39 +98,31 @@ Recently-closed tabs and windows. Actions: 'list' (returns sessions with id/url/
 
 ## core
 
-### `browser_batch`
+### `chrome_batch`
 
 _read_
 
-Execute up to 20 read-tier tool calls in one round trip. Pass `calls: [{ name, arguments }]`. Returns `results: [{ name, ok, output | error }]` in order. Action / ask-user / privileged tools are NOT permitted inside a batch — call them individually so the user can approve. Use this for predictable multi-step reads (read_page + take_screenshot + list_open_tabs) where each call is independent.
+Execute up to 20 read-tier Chrome-extension tool calls in one round trip (runs in the user's browser via the Matrx extension). Pass `calls: [{ name, arguments }]`. Returns `results: [{ name, ok, output | error }]` in order. Action / ask-user / privileged tools are NOT permitted inside a batch — call them individually so the user can approve. Use this for predictable multi-step reads (read_page + take_screenshot + list_open_tabs) where each call is independent.
 
 **Parameters:** `calls` (array, required); `stop_on_error` (boolean)
 
-### `list_browser_tools`
+### `list_chrome_categories`
 
 _read_
 
-Index of every browser-tool category the extension exposes. Returns one entry per category: name, label, description, count of tools, name of the category-specific list tool. To get the full schemas for a category, call its `list_tool` (e.g. `list_page_tools`). Use this whenever the model needs more capabilities than its current toolset offers.
+Index of every tool category the Matrx Chrome extension exposes (client-side tools that run in the user's own browser). Returns one entry per category: name, label, description, count of tools, name of the category-specific list tool. To get the full schemas for a category, call its `list_tool` (e.g. `list_reading_tools`). Use this whenever the model needs more Chrome-extension capabilities than its current toolset offers.
 
 **Parameters:** _No parameters._
 
 ## credentials
 
-### `capture_credential`
-
-_action_
-
-Securely capture a website login when no saved credential exists. You provide only destination metadata, field names, and selectors; the extension shows the user a private credential card and writes what they type directly to Vault. Username/password values never enter your arguments, results, logs, or model context. The result contains only a credential item id and whether the site recipe is known. For an unknown site, follow the returned guidance with action=propose_recipe to document selectors and success/failure/challenge signals for human review.
-
-**Parameters:** `notes` (string); `action` (string) = ["capture","propose_recipe"]; `fields` (array); `submit` (object); `field_map` (array); `description` (string); `display_name` (string); `provider_key` (string); `failure_signals` (array); `submit_selector` (string); `success_signals` (array); `challenge_signals` (array)
-
 ### `credential_login`
 
 _action_
 
-Use a saved Matrx login to sign in on the current browser tab without exposing credentials. Choose action='auto' for the saved safe recipe, 'discover' to list safe field names, 'attempt' to fill and submit a complete field map, 'authenticator' to complete a supported one-time-code challenge, or 'report' to report a leak or wrong verdict. The extension derives the destination from the assigned tab; never provide a URL, username, password, token, or code. MFA or CAPTCHA that cannot be completed safely requires user takeover.
+The ONE credential tool: use, acquire, and document website logins without ever seeing a value. action=list shows every saved login's metadata (no session needed); auto = safe automatic fill; discover = safe field names for the current page; attempt = fill and submit one complete field map; authenticator = complete a supported one-time-code challenge; capture = securely save a NEW login (the person types into a private card — values never enter your arguments or results; served by Matrx Extend today, guidance-only on the server browser); propose_recipe = document an unknown site's selectors and outcome signals for human review after a capture; report = report a leak or wrong verdict. In server-owned Playwright pass the cloud-browser session_id; Matrx Extend derives its assigned tab. Never provide a URL, username, password, token, seed, or code. MFA or CAPTCHA that cannot be completed safely requires user takeover.
 
-**Parameters:** `kind` (string) = ["secret_exposed","wrong_verdict","recipe_wrong","other"]; `steps` (array); `where` (string); `action` (string, required) = ["auto","discover","attempt","authenticator","report"]; `expect` (object); `fields` (array); `reason` (string); `submit` (any); `attempt_id` (string); `description` (string); `code_selector` (string); `credential_item_id` (string)
+**Parameters:** `kind` (string) = ["secret_exposed","wrong_verdict","recipe_wrong","other"]; `notes` (string); `steps` (array); `where` (string); `action` (string, required) = ["list","auto","discover","attempt","authenticator","report","capture","propose_recipe"]; `expect` (object); `fields` (array); `submit` (any); `$variants` (any); `field_map` (array); `attempt_id` (string); `session_id` (string); `description` (string); `display_name` (string); `provider_key` (string); `code_selector` (string); `failure_signals` (array); `submit_selector` (string); `success_signals` (array); `challenge_signals` (array); `credential_item_id` (string)
 
 ## crm
 

@@ -1,6 +1,6 @@
 {
   "name": "matrx-extend",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "private": true,
   "type": "module",
   "description": "AI assistant for understanding and working with the page open in your browser.",
@@ -107,6 +107,10 @@
     "*.{ts,tsx,js,jsx,json,css}": "biome check --write --no-errors-on-unmatched"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "spawn-sync"]
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "esbuild",
+      "spawn-sync"
+    ]
   }
 }
