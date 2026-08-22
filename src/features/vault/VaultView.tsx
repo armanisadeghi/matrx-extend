@@ -15,8 +15,12 @@
  *     never written to storage, a store, a log, or model context.
  *   - "Use here" runs the SAME `credential_login` handler the agent runs, so
  *     the human button cannot fill anywhere the agent could not.
- *   - Heavy management (sharing, transfer, ownership, field editing, rotation)
- *     is deliberately NOT rebuilt here — it links out to the web vault.
+ *   - Everyday management lives here: rename, login URLs / match rule / notes,
+ *     change or add or remove a field value, delete the login. A typed value
+ *     is plaintext travelling OUT once from component-local state (dropped
+ *     the moment the request resolves) — the same rule as create.
+ *   - Sharing, transfer, ownership, and file attachments are deliberately NOT
+ *     rebuilt here — they link out to the web vault.
  */
 
 import { Badge } from '@/components/ui/badge';
@@ -24,10 +28,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 import { ENV } from '@/config/env';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAuth } from '@/hooks/use-auth';
-import type { VaultFieldSummary, VaultItemSummary } from '@/lib/api/routes/vault';
+import type {
+  VaultFieldInput,
+  VaultFieldSummary,
+  VaultItemMetadataPatch,
+  VaultItemSummary,
+} from '@/lib/api/routes/vault';
 import { WEBSITE_LOGIN_DEFINITION_KEY } from '@/lib/api/routes/vault';
 import { copyToClipboard } from '@/lib/clipboard/copy';
 import {
@@ -55,14 +65,16 @@ import {
   Globe,
   Loader2,
   LogIn,
+  Pencil,
   Plus,
   RefreshCw,
   Search,
   ShieldCheck,
+  Trash2,
   Vault as VaultIcon,
   X,
 } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useId, useMemo, useState } from 'react';
 import { useCredentialLogin, useVault } from './useVault';
 
 const WEB_VAULT_URL = `${ENV.FRONTEND_URL}/vault`;
@@ -215,13 +227,17 @@ export function VaultView() {
                 item={item}
                 pageUrl={pageUrl}
                 onPatch={(patch) => vault.patchItem(item.id, patch)}
+                onChangeValue={(fieldId, value) => vault.changeFieldValue(item.id, fieldId, value)}
+                onAddField={(field) => vault.addField(item.id, field)}
+                onRemoveField={(fieldId) => vault.removeField(item.id, fieldId)}
+                onRemove={() => vault.removeItem(item.id)}
               />
             ))}
           </ul>
         )}
 
         <p className="px-3 pb-4 text-[11px] leading-relaxed text-muted-foreground">
-          Sharing, transfer, ownership, and field editing live in the full vault on the web.
+          Sharing, transfer, ownership, and file attachments live in the full vault on the web.
         </p>
       </div>
     </div>
@@ -362,36 +378,57 @@ function SiteSection(props: SiteSectionProps) {
 interface ItemRowProps {
   item: VaultItemSummary;
   pageUrl: string | null;
-  onPatch: (patch: {
-    login_urls?: string[];
-    browser_fill_enabled?: boolean;
-    uri_match_mode?: UriMatchMode;
-  }) => Promise<string | null>;
+  onPatch: (patch: VaultItemMetadataPatch) => Promise<string | null>;
+  onChangeValue: (fieldId: string, value: string) => Promise<string | null>;
+  onAddField: (field: VaultFieldInput) => Promise<string | null>;
+  onRemoveField: (fieldId: string) => Promise<string | null>;
+  onRemove: () => Promise<string | null>;
 }
 
-function ItemRow({ item, pageUrl, onPatch }: ItemRowProps) {
+function ItemRow({
+  item,
+  pageUrl,
+  onPatch,
+  onChangeValue,
+  onAddField,
+  onRemoveField,
+  onRemove,
+}: ItemRowProps) {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [addingField, setAddingField] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const mode = asUriMatchMode(item.uri_match_mode);
   const host = primaryHost(item.login_urls);
   const normalizedPage = normalizeLoginUrl(pageUrl);
   const alreadyCovers = coversPage(item.login_urls, mode, pageUrl);
+  const canEdit = item.capabilities.can_edit;
+  const canManage = item.capabilities.can_manage;
   const canAddPage =
-    item.capabilities.can_edit &&
-    normalizedPage !== null &&
-    isFillablePageUrl(pageUrl) &&
-    !alreadyCovers;
+    canEdit && normalizedPage !== null && isFillablePageUrl(pageUrl) && !alreadyCovers;
 
   const run = useCallback(
-    async (patch: Parameters<ItemRowProps['onPatch']>[0]) => {
+    async (patch: VaultItemMetadataPatch) => {
       setBusy(true);
       setError(await onPatch(patch));
       setBusy(false);
     },
     [onPatch],
   );
+
+  const remove = useCallback(async () => {
+    setBusy(true);
+    const failure = await onRemove();
+    // On success this row unmounts — only touch state on failure.
+    if (failure) {
+      setError(failure);
+      setConfirmDelete(false);
+      setBusy(false);
+    }
+  }, [onRemove]);
 
   return (
     <li className="rounded-md border bg-card">
@@ -424,82 +461,370 @@ function ItemRow({ item, pageUrl, onPatch }: ItemRowProps) {
 
       {open && (
         <div className="space-y-2 border-t px-2 py-2">
-          {item.fields.length === 0 ? (
-            <p className="text-[11px] text-muted-foreground">This item has no fields.</p>
-          ) : (
-            <ul className="space-y-1">
-              {item.fields
-                .filter((field) => field.is_active)
-                .map((field) => (
-                  <FieldRow
-                    key={field.id || field.field_key}
-                    itemId={item.id}
-                    field={field}
-                    canReveal={item.capabilities.can_reveal}
-                  />
-                ))}
-            </ul>
-          )}
-
-          <div className="flex items-center justify-between gap-2 rounded-md bg-muted/40 px-2 py-1">
-            <span className="text-[11px]">Browser fill</span>
-            <Switch
-              checked={item.browser_fill_enabled}
-              disabled={busy || !item.capabilities.can_edit}
-              onCheckedChange={(checked) => void run({ browser_fill_enabled: checked })}
+          {editing ? (
+            <EditDetailsForm
+              item={item}
+              busy={busy}
+              onCancel={() => setEditing(false)}
+              onSave={async (patch) => {
+                setBusy(true);
+                const failure = await onPatch(patch);
+                setBusy(false);
+                setError(failure);
+                if (!failure) setEditing(false);
+              }}
             />
-          </div>
+          ) : (
+            <>
+              {item.fields.length === 0 ? (
+                <p className="text-[11px] text-muted-foreground">This item has no fields.</p>
+              ) : (
+                <ul className="space-y-1">
+                  {item.fields
+                    .filter((field) => field.is_active)
+                    .map((field) => (
+                      <FieldRow
+                        key={field.id || field.field_key}
+                        itemId={item.id}
+                        field={field}
+                        canReveal={item.capabilities.can_reveal}
+                        canEdit={canEdit}
+                        onChangeValue={(value) => onChangeValue(field.id, value)}
+                        onRemove={() => onRemoveField(field.id)}
+                      />
+                    ))}
+                </ul>
+              )}
 
-          {item.login_urls.length > 0 && (
-            <ul className="space-y-0.5">
-              {item.login_urls.map((url) => (
-                <li key={url} className="truncate text-[11px] text-muted-foreground">
-                  {loginUrlLabel(url)}
-                </li>
-              ))}
-            </ul>
-          )}
+              {addingField ? (
+                <AddFieldForm
+                  existingKeys={item.fields.map((f) => f.field_key)}
+                  onCancel={() => setAddingField(false)}
+                  onAdd={async (field) => {
+                    const failure = await onAddField(field);
+                    if (!failure) setAddingField(false);
+                    return failure;
+                  }}
+                />
+              ) : (
+                canEdit && (
+                  <button
+                    type="button"
+                    className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
+                    onClick={() => setAddingField(true)}
+                  >
+                    <Plus className="size-3" /> Add a field
+                  </button>
+                )
+              )}
 
-          {canAddPage && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-6 w-full gap-1 px-2 text-[11px]"
-              disabled={busy}
-              onClick={() =>
-                void run({
-                  login_urls: withPageAdded(item.login_urls, pageUrl),
-                  browser_fill_enabled: true,
-                })
-              }
-            >
-              {busy ? <Loader2 className="size-3 animate-spin" /> : <Plus className="size-3" />}
-              Use this login on {safeParseUrl(pageUrl)?.host ?? 'this page'}
-            </Button>
-          )}
+              <div className="flex items-center justify-between gap-2 rounded-md bg-muted/40 px-2 py-1">
+                <span className="text-[11px]">Browser fill</span>
+                <Switch
+                  checked={item.browser_fill_enabled}
+                  disabled={busy || !canEdit}
+                  onCheckedChange={(checked) => void run({ browser_fill_enabled: checked })}
+                />
+              </div>
 
-          {alreadyCovers && (
-            <p className="text-[11px] text-muted-foreground">
-              This page is already covered ({mode === 'exact' ? 'exact URL' : 'whole site'}).
-            </p>
+              {item.login_urls.length > 0 && (
+                <ul className="space-y-0.5">
+                  {item.login_urls.map((url) => (
+                    <li key={url} className="truncate text-[11px] text-muted-foreground">
+                      {loginUrlLabel(url)}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {item.notes && (
+                <p className="whitespace-pre-wrap break-words text-[11px] text-muted-foreground">
+                  {item.notes}
+                </p>
+              )}
+
+              {canAddPage && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-6 w-full gap-1 px-2 text-[11px]"
+                  disabled={busy}
+                  onClick={() =>
+                    void run({
+                      login_urls: withPageAdded(item.login_urls, pageUrl),
+                      browser_fill_enabled: true,
+                    })
+                  }
+                >
+                  {busy ? <Loader2 className="size-3 animate-spin" /> : <Plus className="size-3" />}
+                  Use this login on {safeParseUrl(pageUrl)?.host ?? 'this page'}
+                </Button>
+              )}
+
+              {alreadyCovers && (
+                <p className="text-[11px] text-muted-foreground">
+                  This page is already covered ({mode === 'exact' ? 'exact URL' : 'whole site'}).
+                </p>
+              )}
+            </>
           )}
 
           {error && <p className="text-[11px] text-amber-600 dark:text-amber-400">{error}</p>}
 
-          <button
-            type="button"
-            className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
-            onClick={() =>
-              void chrome.tabs.create({
-                url: `${WEB_VAULT_URL}?item=${encodeURIComponent(item.id)}`,
-              })
-            }
-          >
-            <ExternalLink className="size-3" /> Manage in the web vault
-          </button>
+          {!editing && (
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              {canEdit && (
+                <button
+                  type="button"
+                  className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
+                  onClick={() => setEditing(true)}
+                >
+                  <Pencil className="size-3" /> Edit details
+                </button>
+              )}
+              {canManage &&
+                (confirmDelete ? (
+                  <span className="flex items-center gap-1 text-[11px]">
+                    <span className="text-muted-foreground">Delete this login?</span>
+                    <button
+                      type="button"
+                      className="font-medium text-destructive hover:underline disabled:opacity-50"
+                      disabled={busy}
+                      onClick={() => void remove()}
+                    >
+                      {busy ? 'Deleting…' : 'Yes, delete'}
+                    </button>
+                    <button
+                      type="button"
+                      className="text-muted-foreground hover:text-foreground"
+                      disabled={busy}
+                      onClick={() => setConfirmDelete(false)}
+                    >
+                      Keep
+                    </button>
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-destructive"
+                    onClick={() => setConfirmDelete(true)}
+                  >
+                    <Trash2 className="size-3" /> Delete
+                  </button>
+                ))}
+              <button
+                type="button"
+                className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
+                onClick={() =>
+                  void chrome.tabs.create({
+                    url: `${WEB_VAULT_URL}?item=${encodeURIComponent(item.id)}`,
+                  })
+                }
+              >
+                <ExternalLink className="size-3" /> Share &amp; more on the web
+              </button>
+            </div>
+          )}
         </div>
       )}
     </li>
+  );
+}
+
+// ── Edit name / site URLs / match mode / notes ──────────────────────────────
+
+const MATCH_MODE_LABEL: Record<UriMatchMode, string> = {
+  host: 'Whole site',
+  exact: 'Exact URL only',
+  never: 'Never match',
+};
+
+function EditDetailsForm({
+  item,
+  busy,
+  onCancel,
+  onSave,
+}: {
+  item: VaultItemSummary;
+  busy: boolean;
+  onCancel: () => void;
+  onSave: (patch: VaultItemMetadataPatch) => Promise<void>;
+}) {
+  const [name, setName] = useState(item.display_name);
+  const [urlsText, setUrlsText] = useState(item.login_urls.join('\n'));
+  const [mode, setMode] = useState<UriMatchMode>(asUriMatchMode(item.uri_match_mode));
+  const [notes, setNotes] = useState(item.notes ?? '');
+  const [urlError, setUrlError] = useState<string | null>(null);
+  const ids = useId();
+
+  const submit = useCallback(async () => {
+    const urls: string[] = [];
+    for (const line of urlsText.split('\n')) {
+      const raw = line.trim();
+      if (!raw) continue;
+      const normalized = normalizeLoginUrl(raw);
+      // Same rule as the tool: https anywhere, http only on loopback.
+      if (!normalized || !isFillablePageUrl(raw)) {
+        setUrlError(`"${raw}" is not an https address, so it cannot be a login URL.`);
+        return;
+      }
+      if (!urls.includes(normalized)) urls.push(normalized);
+    }
+    setUrlError(null);
+    const patch: VaultItemMetadataPatch = {
+      display_name: name.trim() || item.display_name,
+      login_urls: urls,
+      uri_match_mode: mode,
+      notes,
+    };
+    // Fill cannot stay on with nowhere to fill.
+    if (urls.length === 0 && item.browser_fill_enabled) patch.browser_fill_enabled = false;
+    await onSave(patch);
+  }, [item.browser_fill_enabled, item.display_name, mode, name, notes, onSave, urlsText]);
+
+  return (
+    <div className="space-y-1.5">
+      <label htmlFor={`${ids}-name`} className="block text-[11px] text-muted-foreground">
+        Name
+        <Input
+          id={`${ids}-name`}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="mt-0.5 h-7 text-xs"
+        />
+      </label>
+      <label htmlFor={`${ids}-urls`} className="block text-[11px] text-muted-foreground">
+        Login URLs (one per line, https only)
+        <Textarea
+          id={`${ids}-urls`}
+          value={urlsText}
+          onChange={(e) => setUrlsText(e.target.value)}
+          rows={2}
+          className="mt-0.5 min-h-0 px-2 py-1 font-mono text-[11px]"
+          placeholder="https://example.com/login"
+        />
+      </label>
+      <label htmlFor={`${ids}-mode`} className="block text-[11px] text-muted-foreground">
+        Match rule
+        <select
+          id={`${ids}-mode`}
+          value={mode}
+          onChange={(e) => setMode(asUriMatchMode(e.target.value))}
+          className="mt-0.5 h-7 w-full rounded-md border border-input bg-transparent px-2 text-xs"
+        >
+          {(Object.keys(MATCH_MODE_LABEL) as UriMatchMode[]).map((m) => (
+            <option key={m} value={m}>
+              {MATCH_MODE_LABEL[m]}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label htmlFor={`${ids}-notes`} className="block text-[11px] text-muted-foreground">
+        Notes — not encrypted. Never put a password or code here.
+        <Textarea
+          id={`${ids}-notes`}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          rows={2}
+          className="mt-0.5 min-h-0 px-2 py-1 text-[11px]"
+        />
+      </label>
+      {urlError && <p className="text-[11px] text-amber-600 dark:text-amber-400">{urlError}</p>}
+      <div className="flex gap-1.5">
+        <Button
+          size="sm"
+          className="h-7 flex-1 text-xs"
+          disabled={busy}
+          onClick={() => void submit()}
+        >
+          {busy ? <Loader2 className="size-3 animate-spin" /> : 'Save'}
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-7 px-2 text-xs"
+          disabled={busy}
+          onClick={onCancel}
+        >
+          Cancel
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ── Add one encrypted field ─────────────────────────────────────────────────
+
+const FIELD_KEY_RE = /^[a-z][a-z0-9_]*$/;
+
+function AddFieldForm({
+  existingKeys,
+  onCancel,
+  onAdd,
+}: {
+  existingKeys: string[];
+  onCancel: () => void;
+  onAdd: (field: VaultFieldInput) => Promise<string | null>;
+}) {
+  const [key, setKey] = useState('');
+  const [value, setValue] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const normalizedKey = key
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, '_');
+  const keyOk = FIELD_KEY_RE.test(normalizedKey) && !existingKeys.includes(normalizedKey);
+
+  const submit = useCallback(async () => {
+    setBusy(true);
+    setError(null);
+    const failure = await onAdd({ field_key: normalizedKey, value, handling: 'revealable' });
+    // Drop the plaintext the moment the request resolves, whatever the outcome.
+    setValue('');
+    setBusy(false);
+    if (failure) setError(failure);
+  }, [normalizedKey, onAdd, value]);
+
+  return (
+    <div className="space-y-1.5 rounded-md bg-muted/40 p-2">
+      <Input
+        value={key}
+        onChange={(e) => setKey(e.target.value)}
+        placeholder="Field name (e.g. security_answer)"
+        className="h-7 text-xs"
+      />
+      <Input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Value"
+        type="password"
+        autoComplete="new-password"
+        className="h-7 text-xs"
+      />
+      {key && !keyOk && (
+        <p className="text-[11px] text-muted-foreground">
+          {existingKeys.includes(normalizedKey)
+            ? 'That field already exists on this login.'
+            : 'Use letters, numbers, and underscores, starting with a letter.'}
+        </p>
+      )}
+      {error && <p className="text-[11px] text-amber-600 dark:text-amber-400">{error}</p>}
+      <div className="flex gap-1.5">
+        <Button
+          size="sm"
+          className="h-7 flex-1 text-xs"
+          disabled={!keyOk || value.length === 0 || busy}
+          onClick={() => void submit()}
+        >
+          {busy ? <Loader2 className="size-3 animate-spin" /> : 'Add field'}
+        </Button>
+        <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
+    </div>
   );
 }
 
@@ -509,18 +834,30 @@ function FieldRow({
   itemId,
   field,
   canReveal,
+  canEdit,
+  onChangeValue,
+  onRemove,
 }: {
   itemId: string;
   field: VaultFieldSummary;
   canReveal: boolean;
+  canEdit: boolean;
+  onChangeValue: (value: string) => Promise<string | null>;
+  onRemove: () => Promise<string | null>;
 }) {
   const secret = useTransientSecret();
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [changing, setChanging] = useState(false);
+  const [draft, setDraft] = useState('');
+  const [confirmRemove, setConfirmRemove] = useState(false);
 
   const sealed = field.handling === 'sealed';
   const revealable = canReveal && !sealed;
+  // Any authorized editor may replace a value, sealed included — replacing is
+  // the ONLY way to change a sealed value, since it can never be shown.
+  const editable = canEdit && field.id.length > 0;
 
   const reveal = useCallback(async () => {
     if (secret.value !== null) {
@@ -559,39 +896,155 @@ function FieldRow({
     setTimeout(() => setCopied(false), 2000);
   }, [field.field_key, itemId]);
 
+  const saveNewValue = useCallback(async () => {
+    setBusy(true);
+    setError(null);
+    secret.clear();
+    const failure = await onChangeValue(draft);
+    // Drop the plaintext the moment the request resolves, whatever the outcome.
+    setDraft('');
+    setBusy(false);
+    if (failure) {
+      setError(failure);
+      return;
+    }
+    setChanging(false);
+  }, [draft, onChangeValue, secret]);
+
+  const remove = useCallback(async () => {
+    setBusy(true);
+    const failure = await onRemove();
+    // On success this row unmounts — only touch state on failure.
+    if (failure) {
+      setError(failure);
+      setConfirmRemove(false);
+      setBusy(false);
+    }
+  }, [onRemove]);
+
   return (
     <li className="rounded-md bg-muted/40 px-2 py-1">
       <div className="flex items-center gap-1.5">
         <span className="w-20 shrink-0 truncate text-[11px] text-muted-foreground">
           {field.field_key}
         </span>
-        <span className="min-w-0 flex-1 truncate font-mono text-[11px]">
-          {secret.value ?? field.value_hint ?? '••••••'}
-        </span>
-        {revealable && (
+        {changing ? (
+          <Input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="New value"
+            type="password"
+            autoComplete="new-password"
+            autoFocus
+            disabled={busy}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && draft.length > 0) void saveNewValue();
+              if (e.key === 'Escape') {
+                setDraft('');
+                setChanging(false);
+              }
+            }}
+            className="h-6 min-w-0 flex-1 font-mono text-[11px]"
+          />
+        ) : (
+          <span className="min-w-0 flex-1 truncate font-mono text-[11px]">
+            {secret.value ?? field.value_hint ?? '••••••'}
+          </span>
+        )}
+        {changing ? (
           <>
             <IconButton
-              title={secret.value ? 'Hide' : 'Reveal'}
-              onClick={() => void reveal()}
+              title="Save new value"
+              onClick={() => void saveNewValue()}
+              disabled={busy || draft.length === 0}
+            >
+              {busy ? <Loader2 className="size-3 animate-spin" /> : <Check className="size-3" />}
+            </IconButton>
+            <IconButton
+              title="Cancel"
+              onClick={() => {
+                setDraft('');
+                setChanging(false);
+              }}
               disabled={busy}
             >
-              {busy ? (
-                <Loader2 className="size-3 animate-spin" />
-              ) : secret.value ? (
-                <EyeOff className="size-3" />
-              ) : (
-                <Eye className="size-3" />
-              )}
+              <X className="size-3" />
             </IconButton>
-            <IconButton title="Copy" onClick={() => void copy()} disabled={busy}>
-              {copied ? <Check className="size-3 text-emerald-500" /> : <Copy className="size-3" />}
-            </IconButton>
+          </>
+        ) : (
+          <>
+            {revealable && (
+              <>
+                <IconButton
+                  title={secret.value ? 'Hide' : 'Reveal'}
+                  onClick={() => void reveal()}
+                  disabled={busy}
+                >
+                  {busy ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : secret.value ? (
+                    <EyeOff className="size-3" />
+                  ) : (
+                    <Eye className="size-3" />
+                  )}
+                </IconButton>
+                <IconButton title="Copy" onClick={() => void copy()} disabled={busy}>
+                  {copied ? (
+                    <Check className="size-3 text-emerald-500" />
+                  ) : (
+                    <Copy className="size-3" />
+                  )}
+                </IconButton>
+              </>
+            )}
+            {editable && (
+              <>
+                <IconButton
+                  title="Change value"
+                  onClick={() => {
+                    setConfirmRemove(false);
+                    setChanging(true);
+                  }}
+                  disabled={busy}
+                >
+                  <Pencil className="size-3" />
+                </IconButton>
+                <IconButton
+                  title="Remove field"
+                  onClick={() => setConfirmRemove((v) => !v)}
+                  disabled={busy}
+                >
+                  <Trash2 className="size-3" />
+                </IconButton>
+              </>
+            )}
           </>
         )}
       </div>
-      {sealed && (
+      {confirmRemove && (
+        <p className="flex items-center gap-1 text-[10px]">
+          <span className="text-muted-foreground">Remove “{field.field_key}”?</span>
+          <button
+            type="button"
+            className="font-medium text-destructive hover:underline disabled:opacity-50"
+            disabled={busy}
+            onClick={() => void remove()}
+          >
+            {busy ? 'Removing…' : 'Yes, remove'}
+          </button>
+          <button
+            type="button"
+            className="text-muted-foreground hover:text-foreground"
+            disabled={busy}
+            onClick={() => setConfirmRemove(false)}
+          >
+            Keep
+          </button>
+        </p>
+      )}
+      {sealed && !changing && (
         <p className="text-[10px] text-muted-foreground">
-          Sealed — this value can never be shown, only used.
+          Sealed — this value can never be shown, only used or replaced.
         </p>
       )}
       {secret.value !== null && (

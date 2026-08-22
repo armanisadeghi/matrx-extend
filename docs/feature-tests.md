@@ -2035,7 +2035,9 @@ Every entry follows this shape:
   the logins the SERVER approves for the current tab with a one-click **Use here**,
   reveals/copies a field on explicit request (auto-hides after 30s), toggles browser
   fill, adds the current page as a login URL, and creates a login from the page.
-  Sharing / transfer / ownership deliberately live on the web (`/vault`).
+  Everyday management is here too: **Edit details** (name, login URLs, match rule,
+  notes), **change** / **add** / **remove** a field value, and **Delete** the login.
+  Sharing / transfer / ownership / attachments deliberately live on the web (`/vault`).
 - **Where to test:** sidepanel → Vault tab (vault icon, between Screenshots and Tools).
   Signed in — the tab is hidden for guests and the panel refuses guest identity.
 - **Prereq:** at least one `website_login` item in the Vault with `browser_fill_enabled`
@@ -2056,10 +2058,24 @@ Every entry follows this shape:
   7. On a login page with nothing saved → **Save this site** → fill name / username /
      password → **Save to Vault** → the new item appears in Mine and in the top strip.
   8. **Shared** tab → items others granted you; a shared item you cannot edit shows
-     its fill switch disabled.
+     its fill switch disabled and no Edit / pencil / trash controls.
+  9. Expand an item you own → pencil beside a field → type a new value → ✓ (or Enter)
+     → the mask hint updates; reveal shows the NEW value; the old one is gone.
+     Esc / ✕ discards the draft.
+  10. **Add a field** → name `security_answer`, a value → **Add field** → a new masked
+      row appears; a duplicate name is refused before any request.
+  11. Trash beside a field → "Remove “…”? Yes, remove" → the row disappears.
+  12. **Edit details** → change the name, add a second URL line, pick *Exact URL only*,
+      write a note → **Save** → the row re-renders with the new name/URLs/note and the
+      top strip re-resolves for the current page. An `http://` line is refused inline.
+      Clearing every URL turns browser fill off.
+  13. **Delete** → "Delete this login? Yes, delete" → the item leaves Mine and the
+      top strip; reload confirms it is gone server-side.
 - **Expected:** every value is masked until an explicit reveal; nothing you reveal
   survives a tab switch (leaving the Vault tab unmounts it); the Debug tab shows
-  `→ POST vault/items/{item}/reveal` and `← vault reveal ok` but never a value.
+  `→ POST vault/items/{item}/reveal` and `← vault reveal ok` but never a value; a
+  changed/added value shows only `→ PUT vault/items/{item}/fields/{field}/value` /
+  `→ POST vault/items/{item}/fields` with no body.
 - **Edge cases worth poking:**
   - An http (non-loopback) page → "Browser login only runs on https pages", no matches
     fetched, and creating from that page attaches no site.

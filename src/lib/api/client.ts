@@ -219,8 +219,15 @@ export async function apiPut<T>(
   path: string,
   body: unknown,
   signal?: AbortSignal,
+  opts?: { silent?: boolean },
 ): Promise<ApiResult<T>> {
-  return rawRequest<T>({ method: 'PUT', path, body, ...(signal !== undefined ? { signal } : {}) });
+  return rawRequest<T>({
+    method: 'PUT',
+    path,
+    body,
+    ...(signal !== undefined ? { signal } : {}),
+    ...(opts?.silent !== undefined ? { silent: opts.silent } : {}),
+  });
 }
 
 export async function apiDelete<T>(path: string, signal?: AbortSignal): Promise<ApiResult<T>> {

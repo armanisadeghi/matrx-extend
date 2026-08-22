@@ -559,9 +559,15 @@ discovery handler).
   2xx body can't be quoted into the debug log; destination rules
   (https-or-loopback, match modes) live once in
   [login-urls.ts](../src/lib/credentials/login-urls.ts) and are imported by
-  both the panel and the tool. Sharing / transfer / ownership / field
-  editing are deliberately NOT rebuilt here — they link out to `/vault` on
-  the web. Guarded by `tests/unit/vault-panel.test.ts`.
+  both the panel and the tool. **Management (2026-08-22):** rename / login
+  URLs / match rule / notes (`PATCH /items/{id}`), change a field value
+  (`PUT /items/{id}/fields/{fid}/value`), add / remove a field, delete the
+  item — every typed value is plaintext OUT once from component-local state
+  over a `silent:true` call, dropped on resolve, then the item is refetched
+  so the list only ever holds the server mask. Controls are gated on the
+  server's `capabilities.can_edit` / `can_manage`. Sharing / transfer /
+  ownership / attachments are deliberately NOT rebuilt here — they link out
+  to `/vault` on the web. Guarded by `tests/unit/vault-panel.test.ts`.
 - **Tools** — full visible catalog of every tool, search + filter, JSON
   argument editor, **Run** button per tool that flows through the same
   dispatcher path the agent uses. Use this to test capabilities directly.

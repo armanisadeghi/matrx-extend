@@ -93,6 +93,16 @@ vi.mock('@/lib/api/client', () => ({
     calls.push(call);
     return respond(call);
   },
+  apiPut: async (path: string, body: unknown, _signal?: unknown, opts?: { silent?: boolean }) => {
+    const call: Call = { method: 'PUT', path, body, opts };
+    calls.push(call);
+    return respond(call);
+  },
+  apiDelete: async (path: string) => {
+    const call: Call = { method: 'DELETE', path };
+    calls.push(call);
+    return respond(call);
+  },
 }));
 
 beforeEach(() => {
@@ -116,6 +126,10 @@ describe('vault routes — a real user JWT or nothing', () => {
       vault.createVaultItem({ display_name: 'x', fields: [{ field_key: 'password', value: 'x' }] }),
       vault.revealVaultField(ITEM_ID, 'password'),
       vault.fetchBrowserLoginMatches('https://example.com/login'),
+      vault.updateVaultFieldValue(ITEM_ID, 'field-1', 'x'),
+      vault.addVaultField(ITEM_ID, { field_key: 'pin', value: 'x' }),
+      vault.deleteVaultField(ITEM_ID, 'field-1'),
+      vault.deleteVaultItem(ITEM_ID),
     ]);
 
     for (const result of results) {
@@ -177,6 +191,36 @@ describe('reveal', () => {
       fields: [{ field_key: 'password', value: SENTINEL }],
     });
     expect(calls[0]?.opts?.silent).toBe(true);
+
+    calls.length = 0;
+    respond = () => ({ ok: true, status: 200, data: { id: 'field-1' } });
+    await vault.updateVaultFieldValue(ITEM_ID, 'field-1', SENTINEL);
+    expect(calls[0]?.method).toBe('PUT');
+    expect(calls[0]?.path).toBe(`/api/vault/items/${ITEM_ID}/fields/field-1/value`);
+    expect(calls[0]?.opts?.silent).toBe(true);
+
+    calls.length = 0;
+    respond = () => ({ ok: true, status: 201, data: { id: 'field-2' } });
+    await vault.addVaultField(ITEM_ID, { field_key: 'pin', value: SENTINEL });
+    expect(calls[0]?.method).toBe('POST');
+    expect(calls[0]?.path).toBe(`/api/vault/items/${ITEM_ID}/fields`);
+    expect(calls[0]?.opts?.silent).toBe(true);
+
+    // Nothing on the management path ever quotes the value into the log.
+    expect(JSON.stringify(logCalls)).not.toContain(SENTINEL);
+  });
+
+  it('management routes hit the item/field paths and return no body to keep', async () => {
+    const vault = await import('@/lib/api/routes/vault');
+    respond = () => ({ ok: true, status: 204 });
+    const removedField = await vault.deleteVaultField(ITEM_ID, 'field-1');
+    const removedItem = await vault.deleteVaultItem(ITEM_ID);
+    expect(removedField).toEqual({ ok: true, data: undefined });
+    expect(removedItem).toEqual({ ok: true, data: undefined });
+    expect(calls.map((c) => `${c.method} ${c.path}`)).toEqual([
+      `DELETE /api/vault/items/${ITEM_ID}/fields/field-1`,
+      `DELETE /api/vault/items/${ITEM_ID}`,
+    ]);
   });
 
   it('refuses a non-string value instead of handing back a partial body', async () => {
@@ -347,5 +391,16 @@ describe('no-persistence guard', () => {
     // component and its result goes straight into the transient holder.
     const hook = readFileSync(join(process.cwd(), 'src/features/vault/useVault.ts'), 'utf8');
     expect(hook).not.toContain('revealVaultField');
+  });
+
+  it('every typed-value input in the panel is masked and never autofilled', () => {
+    const view = readFileSync(join(process.cwd(), 'src/features/vault/VaultView.tsx'), 'utf8');
+    // New-login password, change-value draft, add-field value: all password-typed.
+    const masked = view.match(/type="password"/g) ?? [];
+    expect(masked.length).toBeGreaterThanOrEqual(3);
+    // Each masked box opts out of the browser's own password manager so the
+    // value does not get offered back to a page later.
+    const optOut = view.match(/autoComplete="new-password"/g) ?? [];
+    expect(optOut.length).toBe(masked.length);
   });
 });

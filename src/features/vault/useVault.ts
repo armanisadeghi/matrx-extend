@@ -13,15 +13,21 @@
 
 import {
   type BrowserLoginMatch,
+  type VaultFieldInput,
   type VaultItemCreateInput,
   type VaultItemMetadataPatch,
   type VaultItemSummary,
+  addVaultField,
   createVaultItem,
+  deleteVaultField,
+  deleteVaultItem,
   describeVaultFailure,
   fetchBrowserLoginMatches,
   fetchMyVaultItems,
+  fetchVaultItem,
   fetchVaultItemsSharedWithMe,
   hasRealUserToken,
+  updateVaultFieldValue,
   updateVaultItemMetadata,
 } from '@/lib/api/routes/vault';
 import { isBrowserSupported } from '@/lib/browser/detect';
@@ -44,6 +50,15 @@ export interface VaultData {
   reload: () => Promise<void>;
   patchItem: (itemId: string, patch: VaultItemMetadataPatch) => Promise<string | null>;
   createItem: (input: VaultItemCreateInput) => Promise<string | null>;
+  /**
+   * Value-bearing edits. `value` is plaintext travelling OUT once from the
+   * calling component's local state — this hook never keeps it, and after the
+   * write it refetches the item so the list only ever holds the server mask.
+   */
+  changeFieldValue: (itemId: string, fieldId: string, value: string) => Promise<string | null>;
+  addField: (itemId: string, field: VaultFieldInput) => Promise<string | null>;
+  removeField: (itemId: string, fieldId: string) => Promise<string | null>;
+  removeItem: (itemId: string) => Promise<string | null>;
 }
 
 /**
@@ -152,6 +167,55 @@ export function useVault(pageUrl: string | null): VaultData {
     [reload],
   );
 
+  /** Swap one item for its freshly-masked server copy in whichever list has it. */
+  const refreshItem = useCallback(async (itemId: string): Promise<string | null> => {
+    const result = await fetchVaultItem(itemId);
+    if (!result.ok) return describeVaultFailure(result.failure);
+    const updated = result.data;
+    const replace = (list: VaultItemSummary[]) =>
+      list.map((item) => (item.id === updated.id ? updated : item));
+    setMine(replace);
+    setShared(replace);
+    return null;
+  }, []);
+
+  const changeFieldValue = useCallback(
+    async (itemId: string, fieldId: string, value: string): Promise<string | null> => {
+      const result = await updateVaultFieldValue(itemId, fieldId, value);
+      if (!result.ok) return describeVaultFailure(result.failure);
+      return refreshItem(itemId);
+    },
+    [refreshItem],
+  );
+
+  const addField = useCallback(
+    async (itemId: string, field: VaultFieldInput): Promise<string | null> => {
+      const result = await addVaultField(itemId, field);
+      if (!result.ok) return describeVaultFailure(result.failure);
+      return refreshItem(itemId);
+    },
+    [refreshItem],
+  );
+
+  const removeField = useCallback(
+    async (itemId: string, fieldId: string): Promise<string | null> => {
+      const result = await deleteVaultField(itemId, fieldId);
+      if (!result.ok) return describeVaultFailure(result.failure);
+      return refreshItem(itemId);
+    },
+    [refreshItem],
+  );
+
+  const removeItem = useCallback(async (itemId: string): Promise<string | null> => {
+    const result = await deleteVaultItem(itemId);
+    if (!result.ok) return describeVaultFailure(result.failure);
+    const drop = (list: VaultItemSummary[]) => list.filter((item) => item.id !== itemId);
+    setMine(drop);
+    setShared(drop);
+    setMatches((list) => list.filter((m) => m.item_id !== itemId));
+    return null;
+  }, []);
+
   return {
     auth,
     loading,
@@ -163,6 +227,10 @@ export function useVault(pageUrl: string | null): VaultData {
     reload,
     patchItem,
     createItem,
+    changeFieldValue,
+    addField,
+    removeField,
+    removeItem,
   };
 }
 

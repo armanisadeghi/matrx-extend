@@ -13,6 +13,10 @@
  *     GET   /api/vault/items/{item_id}
  *     POST  /api/vault/items
  *     PATCH /api/vault/items/{item_id}
+ *     DELETE /api/vault/items/{item_id}
+ *     POST  /api/vault/items/{item_id}/fields
+ *     PUT   /api/vault/items/{item_id}/fields/{field_id}/value
+ *     DELETE /api/vault/items/{item_id}/fields/{field_id}
  *     POST  /api/vault/items/{item_id}/reveal
  *
  * Four rules this module exists to enforce:
@@ -44,7 +48,7 @@
  * they consume — same convention as every other file in this folder.
  */
 
-import { type ApiResult, apiGet, apiPatch, apiPost } from '@/lib/api/client';
+import { type ApiResult, apiDelete, apiGet, apiPatch, apiPost, apiPut } from '@/lib/api/client';
 import { getAccessToken } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 
@@ -177,6 +181,20 @@ async function vaultPost<T>(
 async function vaultPatch<T>(path: string, body: unknown): Promise<ApiResult<T>> {
   if (!(await hasRealUserToken())) return SIGN_IN_REQUIRED;
   return apiPatch<T>(path, body);
+}
+
+async function vaultPut<T>(
+  path: string,
+  body: unknown,
+  opts?: { silent?: boolean },
+): Promise<ApiResult<T>> {
+  if (!(await hasRealUserToken())) return SIGN_IN_REQUIRED;
+  return apiPut<T>(path, body, undefined, opts);
+}
+
+async function vaultDelete<T>(path: string): Promise<ApiResult<T>> {
+  if (!(await hasRealUserToken())) return SIGN_IN_REQUIRED;
+  return apiDelete<T>(path);
 }
 
 /** Ask the server which permitted login items match the CURRENT tab URL. */
@@ -712,6 +730,70 @@ export async function createVaultItem(
   const item = normalizeItem(r.data);
   if (!item) return { ok: false, failure: { kind: 'server_error', status: 200 } };
   return { ok: true, data: item };
+}
+
+function itemPath(itemId: string): string {
+  return `${ITEMS}/${encodeURIComponent(itemId)}`;
+}
+
+function fieldPath(itemId: string, fieldId: string): string {
+  return `${itemPath(itemId)}/fields/${encodeURIComponent(fieldId)}`;
+}
+
+/**
+ * Replace ONE field's value (a new password, a rotated key). `value` is
+ * plaintext travelling OUT exactly once from the caller's local state; the
+ * server bumps `value_version` and audits the change. Silent so a malformed
+ * 2xx body cannot be quoted into the debug log. Returns nothing the caller
+ * should keep — refetch the item for a fresh mask.
+ */
+export async function updateVaultFieldValue(
+  itemId: string,
+  fieldId: string,
+  value: string,
+): Promise<VaultResult<void>> {
+  log.info('api', '→ PUT vault/items/{item}/fields/{field}/value');
+  const r = await vaultPut<unknown>(
+    `${fieldPath(itemId, fieldId)}/value`,
+    { value },
+    { silent: true },
+  );
+  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
+  return { ok: true, data: undefined };
+}
+
+/** Add ONE encrypted field to an existing item. Same plaintext-out-once rule. */
+export async function addVaultField(
+  itemId: string,
+  field: VaultFieldInput,
+): Promise<VaultResult<void>> {
+  log.info('api', '→ POST vault/items/{item}/fields');
+  const r = await vaultPost<unknown>(
+    `${itemPath(itemId)}/fields`,
+    { field_key: field.field_key, value: field.value, handling: field.handling ?? 'revealable' },
+    { silent: true },
+  );
+  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
+  return { ok: true, data: undefined };
+}
+
+/** Remove ONE field from an item. Requires `can_edit`. */
+export async function deleteVaultField(
+  itemId: string,
+  fieldId: string,
+): Promise<VaultResult<void>> {
+  log.info('api', '→ DELETE vault/items/{item}/fields/{field}');
+  const r = await vaultDelete<unknown>(fieldPath(itemId, fieldId));
+  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
+  return { ok: true, data: undefined };
+}
+
+/** Delete a whole item. Requires `can_manage`; the server audits the removal. */
+export async function deleteVaultItem(itemId: string): Promise<VaultResult<void>> {
+  log.info('api', '→ DELETE vault/items/{item}');
+  const r = await vaultDelete<unknown>(itemPath(itemId));
+  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
+  return { ok: true, data: undefined };
 }
 
 /**
