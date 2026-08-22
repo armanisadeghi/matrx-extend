@@ -103,6 +103,15 @@ export function mountContentBridge(_ctx: ContentCtx): void {
 
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     if (!isEnvelope(msg)) return false;
+    if (msg.kind === CHANNELS.CREDENTIAL_CAPTURE_PROMPT) {
+      // Metadata only (host / username / existing login names) — the SW never
+      // sends a value back to a page. Lazy so the toast code loads on demand.
+      void import('@/lib/credentials/capture-prompt').then(({ showCapturePrompt }) => {
+        showCapturePrompt(msg.payload as Parameters<typeof showCapturePrompt>[0]);
+        sendResponse({ ok: true });
+      });
+      return true;
+    }
     if (msg.kind === CHANNELS.PAGE_SCROLL_SUBSCRIBE) {
       enableScrollEmit();
       sendResponse({ ok: true });
@@ -126,6 +135,31 @@ export function mountContentBridge(_ctx: ContentCtx): void {
     })();
     return true; // keeps the channel open for the async response
   });
+
+  // "Save this login?" detector — only where a password box can exist. Top
+  // frame only (this script is allFrames:false). Loaded lazily and only once
+  // a password input shows up, so ordinary pages never pay for it.
+  let detectorMounted = false;
+  const mountDetector = () => {
+    if (detectorMounted) return;
+    detectorMounted = true;
+    void import('@/lib/credentials/capture-detector').then(({ mountCaptureDetector }) =>
+      mountCaptureDetector(),
+    );
+  };
+  if (document.querySelector('input[type="password"]')) {
+    mountDetector();
+  } else {
+    // Mount on the first focus into a password field — covers SPA logins that
+    // render the form later, without observing the whole DOM.
+    document.addEventListener(
+      'focusin',
+      (e) => {
+        if (e.target instanceof HTMLInputElement && e.target.type === 'password') mountDetector();
+      },
+      true,
+    );
+  }
 
   // SPA navigation hint — fire-and-forget envelope.
   let lastUrl = location.href;

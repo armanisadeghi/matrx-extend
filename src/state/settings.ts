@@ -79,6 +79,15 @@ interface SettingsState {
    * useful on those pages; this toggle makes the trade visible + reversible.
    */
   sharePageIdentity: boolean;
+  /**
+   * Offer to save a login to the Vault when the user submits a password form
+   * in a normal tab (src/lib/credentials/capture-detector.ts). The prompt is
+   * always explicit — nothing is saved without a click. Signed-in users only:
+   * the Vault rejects the guest identity, so the SW drops candidates when no
+   * real user token exists. Default ON: this is the everyday password-manager
+   * path; the toggle (and per-site "Never") make it reversible.
+   */
+  captureLoginsEnabled: boolean;
 
   // ─── Scrape auto-capture ───────────────────────────────────────────────
   /**
@@ -104,6 +113,7 @@ interface SettingsState {
   setAutoFullScrollOnFirstSubmit: (b: boolean) => void;
   setModelOverrideId: (id: string | null) => void;
   setSharePageIdentity: (b: boolean) => void;
+  setCaptureLoginsEnabled: (b: boolean) => void;
   setScrapeAutoOnLoad: (b: boolean) => void;
   setScrapeAutoMode: (m: ScrapeAutoMode) => void;
 }
@@ -120,6 +130,7 @@ export const useSettingsStore = create<SettingsState>()(
       autoFullScrollOnFirstSubmit: false,
       modelOverrideId: null,
       sharePageIdentity: true,
+      captureLoginsEnabled: true,
       scrapeAutoOnLoad: false,
       scrapeAutoMode: 'capture',
       setTheme: (theme) => set({ theme }),
@@ -143,6 +154,7 @@ export const useSettingsStore = create<SettingsState>()(
         set({ autoFullScrollOnFirstSubmit }),
       setModelOverrideId: (modelOverrideId) => set({ modelOverrideId }),
       setSharePageIdentity: (sharePageIdentity) => set({ sharePageIdentity }),
+      setCaptureLoginsEnabled: (captureLoginsEnabled) => set({ captureLoginsEnabled }),
       setScrapeAutoOnLoad: (scrapeAutoOnLoad) => set({ scrapeAutoOnLoad }),
       setScrapeAutoMode: (scrapeAutoMode) => set({ scrapeAutoMode }),
     }),

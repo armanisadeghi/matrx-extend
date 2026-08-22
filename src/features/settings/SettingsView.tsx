@@ -39,7 +39,7 @@ import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '@/state/settings';
 import { ChevronRight, LogIn, LogOut, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const NONE = '__none__';
 
@@ -207,6 +207,17 @@ export function SettingsView() {
                   />
                 }
               />
+              <ControlRow
+                label="Offer to save logins to the Vault"
+                hint="after you sign in to a site, ask whether to save that login — nothing is saved without your click"
+                control={
+                  <Switch
+                    checked={settings.captureLoginsEnabled}
+                    onCheckedChange={settings.setCaptureLoginsEnabled}
+                  />
+                }
+              />
+              <NeverCaptureSites />
             </Card>
           </Collapsible>
 
@@ -532,5 +543,42 @@ function Badge({ children }: { children: React.ReactNode }) {
     <span className="inline-flex items-center rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-400">
       {children}
     </span>
+  );
+}
+
+/** Sites the user answered "Never for this site" on the save-login prompt. */
+function NeverCaptureSites() {
+  const [origins, setOrigins] = useState<string[] | null>(null);
+  const load = useCallback(async () => {
+    const { readNeverCaptureOrigins } = await import('@/lib/credentials/capture-settings');
+    setOrigins(await readNeverCaptureOrigins());
+  }, []);
+  useEffect(() => {
+    void load();
+  }, [load]);
+  if (!origins || origins.length === 0) return null;
+  return (
+    <div className="px-3 pb-2">
+      <p className="mb-1 text-[11px] text-muted-foreground">Never ask on these sites</p>
+      <ul className="space-y-0.5">
+        {origins.map((origin) => (
+          <li key={origin} className="flex items-center gap-2 text-[11px]">
+            <span className="min-w-0 flex-1 truncate">{origin.replace(/^https?:\/\//, '')}</span>
+            <button
+              type="button"
+              className="text-muted-foreground hover:text-foreground"
+              onClick={() =>
+                void import('@/lib/credentials/capture-settings').then(async (m) => {
+                  await m.removeNeverCaptureOrigin(origin);
+                  await load();
+                })
+              }
+            >
+              Ask again
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

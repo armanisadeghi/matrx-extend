@@ -568,6 +568,31 @@ discovery handler).
   server's `capabilities.can_edit` / `can_manage`. Sharing / transfer /
   ownership / attachments are deliberately NOT rebuilt here — they link out
   to `/vault` on the web. Guarded by `tests/unit/vault-panel.test.ts`.
+- **Save this login? — page-driven Vault capture (2026-08-22)** — the
+  password-manager save prompt, no agent involved. Content bridge
+  ([src/lib/content/bridge.ts](../src/lib/content/bridge.ts)) lazily mounts
+  [capture-detector.ts](../src/lib/credentials/capture-detector.ts) once a
+  password box exists; on submit / Enter / submit-click it snapshots
+  `{loginUrl, username, password}` (refusing GET forms, change-password
+  forms, OTP boxes) and posts ONE raw envelope
+  (`CREDENTIAL_CAPTURE_CANDIDATE`) to the SW host
+  [capture-candidates.ts](../src/lib/credentials/capture-candidates.ts) — raw
+  because `on()`/`send()` log payloads. The host gates (Settings flag
+  `captureLoginsEnabled`, real JWT, per-origin "never" list in
+  [capture-settings.ts](../src/lib/credentials/capture-settings.ts), the
+  SAME https rule as the fill tool), holds the value in SW memory only (3-min
+  TTL, dropped on decision / tab close), resolves existing logins via
+  `/browser-login/matches`, and prompts the tab after its load completes
+  (1.5 s fallback for SPA logins) with METADATA only: the on-page closed
+  Shadow-DOM toast ([capture-prompt.ts](../src/lib/credentials/capture-prompt.ts))
+  and the Vault-tab twin
+  ([PendingCaptureCard.tsx](../src/features/vault/PendingCaptureCard.tsx)).
+  Decisions: save → `createVaultItem` (website_login, fill on); update → PUT
+  the matched item's password field (or add one); never → origin list;
+  dismiss. Settings → Privacy toggle + "Never ask on these sites". No new
+  manifest permission; CWS risk gate stays green. Guarded by
+  `tests/unit/credential-capture-prompt.test.ts` (detector cases, host
+  lifecycle, plaintext-egress greps).
 - **Tools** — full visible catalog of every tool, search + filter, JSON
   argument editor, **Run** button per tool that flows through the same
   dispatcher path the agent uses. Use this to test capabilities directly.

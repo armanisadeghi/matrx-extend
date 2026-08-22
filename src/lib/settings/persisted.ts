@@ -25,6 +25,7 @@ const SETTINGS_PERSIST_KEY = 'matrx.settings.v1';
 interface PersistedSettingsBlob {
   state?: {
     defaultPermissionMode?: PermissionMode;
+    captureLoginsEnabled?: boolean;
     [k: string]: unknown;
   };
   version?: number;
@@ -55,4 +56,13 @@ async function readPersistedSettingsState(): Promise<PersistedSettingsBlob['stat
 export async function readDefaultPermissionMode(): Promise<PermissionMode> {
   const state = await readPersistedSettingsState();
   return state?.defaultPermissionMode === 'act' ? 'act' : 'ask';
+}
+
+/**
+ * Whether the "Save this login?" prompt is on. Absent (fresh install, or a
+ * store written before the flag existed) means ON — it is the default.
+ */
+export async function readCaptureLoginsEnabled(): Promise<boolean> {
+  const state = await readPersistedSettingsState();
+  return state?.captureLoginsEnabled !== false;
 }

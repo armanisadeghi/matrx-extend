@@ -2131,6 +2131,44 @@ Every entry follows this shape:
   shown; Cancel on the card → the agent gets `cancelled`, nothing written; the agent
   cannot supply a value (the schema has no value field).
 
+### Save this login? — page-driven Vault capture (no agent)
+- **What it does:** when you sign in to a site yourself (submit a form with a password,
+  press Enter in a password box, or click its Sign-in button), the extension offers to
+  save that login to your Vault — like a password manager. A small card appears on the
+  page (top-right) AND at the top of the Vault tab: **Save** (new login), **Update
+  &lt;name&gt;** (a saved login already covers this site), **Not now**, **Never for this
+  site**. Nothing is saved without a click. Signed in only; the prompt is on by default
+  and can be turned off in Settings → Privacy → "Offer to save logins to the Vault".
+- **Where to test:** any https login page (a test account on a site you own, or a
+  synthetic credential) with the extension signed in.
+- **Steps:**
+  1. Go to an https login page with NO saved login for that site. Sign in normally.
+  2. After the page settles, the on-page card says "Save this login to your Matrx
+     Vault?" with the host and the username you typed. Click **Save** → "Saved to your
+     Vault." → open the Vault tab → the item is in Mine, fill on, login URL set.
+  3. Sign out of the site and sign in again with a DIFFERENT password → the card now
+     offers **Update &lt;item name&gt;** and **Save as new**. Click Update → reveal the
+     password field in the Vault tab → it is the new value.
+  4. Dismiss the on-page card (**Not now**) → nothing saved; the Vault-tab card is
+     gone too. Sign in again, this time open the side panel first → the same offer sits
+     at the top of the Vault tab; Save from there works identically.
+  5. **Never for this site** → no more prompts on that origin; Settings → Privacy lists
+     it under "Never ask on these sites" with **Ask again**.
+  6. Turn the Privacy toggle off → sign in anywhere → no card anywhere.
+  7. Sign out of Matrx → sign in to a site → no card (the Vault rejects guests).
+- **Expected:** the Debug tab shows `← receive credential-capture:decision` /
+  `credential-capture:status` / `↗ broadcast credential-capture:changed` with host /
+  username / item names only, and `→ POST vault/items` / `→ PUT vault/items/{item}/
+  fields/{field}/value` with no body — the password NEVER appears in the Debug log, a
+  broadcast, chrome.storage, or the side panel. Do nothing for 3 minutes → the offer
+  expires ("no longer available to save").
+- **Edge cases worth poking:** an `http://` login (non-loopback) → no card ever; a
+  form that submits with GET → no card; a change-password form (two different password
+  values) → no card; a sign-up form (password + matching confirm) → card; a one-time
+  code box → no card; a two-step login (username on the previous screen) → card with
+  host only (or the hidden identifier if the site keeps one). The on-page card hides
+  itself after ~25s but the Vault-tab offer stays until the 3-minute expiry.
+
 ### Capture study set (`capture_study_set` — education, IC-11)
 - **What it does:** one-click import of the study set on the current page (a Quizlet set, a
   definition list, or a two-column table) into a native AI Matrx flashcard deck through the

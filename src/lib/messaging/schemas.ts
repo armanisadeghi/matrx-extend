@@ -70,6 +70,16 @@ export const CHANNELS = {
   // (NAMES/selectors only) + the known/unknown branch — never a value.
   TOOL_CAPTURE_CREDENTIAL_REQUEST: 'tool:capture-credential-request',
   TOOL_CAPTURE_CREDENTIAL_RESPONSE: 'tool:capture-credential-response',
+  // Page-driven login capture (the "Save this login?" prompt, no agent involved).
+  // CANDIDATE is the ONE value-bearing envelope in the extension: content script
+  // → SW, raw `chrome.runtime.sendMessage`, received by a dedicated raw listener
+  // in src/lib/credentials/capture-candidates.ts — NEVER through `on()`/`send()`
+  // (both log their payload). Every other kind here is metadata only.
+  CREDENTIAL_CAPTURE_CANDIDATE: 'credential-capture:candidate', // content → SW (raw, value-bearing)
+  CREDENTIAL_CAPTURE_PROMPT: 'credential-capture:prompt', // SW → that tab's content script: show the toast
+  CREDENTIAL_CAPTURE_DECISION: 'credential-capture:decision', // content / sidepanel → SW: save | update | dismiss | never
+  CREDENTIAL_CAPTURE_STATUS: 'credential-capture:status', // sidepanel → SW: pending candidate for a tab (metadata)
+  CREDENTIAL_CAPTURE_CHANGED: 'credential-capture:changed', // SW → all: { tabId } — a candidate appeared / resolved
   TOOL_TIMELINE_EVENT: 'tool:timeline-event', // SW → sidepanel: render in the chat (started / completed / error)
   // sidepanel → SW: re-dispatch a persisted client-delegated call on conversation
   // open (cold-resume). The conversation was left paused waiting on the call; the

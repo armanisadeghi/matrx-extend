@@ -29,6 +29,8 @@ Paste only the text inside each quoted block into the matching dashboard field.
 >
 > Browser actions run only when you request them. The default mode asks before an action changes a page, and privileged actions always require confirmation.
 >
+> Signed-in users get a Vault tab for their saved website logins: fill a saved login on the matching site, and — after you sign in to a site yourself — an optional prompt to save that login to your Vault. Nothing is saved without your click; the prompt can be turned off in Settings and silenced per site.
+>
 > Learn exactly what the extension accesses and how it is used in the Matrx Extend privacy policy: https://www.aimatrx.com/privacy-policy/extension
 
 ### Category
@@ -72,6 +74,8 @@ category and matches the extension's page-aware assistant purpose.
 The submitted source contains no `eval`, `new Function`, `Runtime.evaluate`, `Runtime.callFunctionOn`, or `Runtime.compileScript`. Server responses choose compiled tool names and validated data arguments; they never supply executable logic.
 
 ### Data-use disclosures
+
+Authentication information covers both paths that carry a credential: the agent-safe fill (the value goes from the Vault to the page, never to the model) and the user-approved "Save this login?" prompt (the value goes from the page to the user's own Vault, only after an explicit click). No new category is needed for the save prompt; the privacy policy page (`matrx-frontend` `app/(public)/privacy-policy/extension`) must describe it before the release that ships it is uploaded.
 
 Check these categories:
 

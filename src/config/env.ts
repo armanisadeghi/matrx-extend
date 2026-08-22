@@ -105,6 +105,9 @@ export const STORAGE_KEYS = {
   GUEST_SIGNATURE: 'matrx.guest.signature',
   GUEST_NONCE: 'matrx.guest.nonce',
   GUEST_CREATED_AT: 'matrx.guest.createdAt',
+  // Origins the user told the login-capture prompt to never ask about again.
+  // Origins only — never a credential, never a username.
+  CAPTURE_NEVER_ORIGINS: 'matrx.credentials.captureNeverOrigins',
 } as const;
 
 export const ALARMS = {

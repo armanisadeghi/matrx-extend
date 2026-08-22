@@ -75,6 +75,7 @@ import {
   X,
 } from 'lucide-react';
 import { useCallback, useId, useMemo, useState } from 'react';
+import { PendingCaptureCard } from './PendingCaptureCard';
 import { useCredentialLogin, useVault } from './useVault';
 
 const WEB_VAULT_URL = `${ENV.FRONTEND_URL}/vault`;
@@ -139,6 +140,7 @@ export function VaultView() {
       </div>
 
       <div className="flex-1 overflow-y-auto">
+        <PendingCaptureCard tabId={tab.id} onSaved={() => void vault.reload()} />
         <SiteSection
           host={host}
           blockedReason={
