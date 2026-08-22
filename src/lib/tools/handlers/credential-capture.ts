@@ -242,120 +242,120 @@ export const runCredentialCapture: (
   args: CaptureCredentialArgs,
   ctx: Parameters<ToolHandler<CaptureCredentialArgs, CaptureCredentialResult>['run']>[1],
 ) => Promise<CaptureCredentialResult> = async (args, ctx): Promise<CaptureCredentialResult> => {
-    if (!(await hasRealUserToken())) {
-      return {
-        status: 'sign_in_required',
-        message: 'Sign in to Matrx in the extension side panel before capturing a credential.',
-      };
-    }
+  if (!(await hasRealUserToken())) {
+    return {
+      status: 'sign_in_required',
+      message: 'Sign in to Matrx in the extension side panel before capturing a credential.',
+    };
+  }
 
-    // ── action: propose_recipe — document an UNKNOWN login ────────────────
-    if (args.action === 'propose_recipe') {
-      const tab = await getAssignedTab(ctx);
-      const origin = tab?.url ? safeOrigin(tab.url) : null;
-      if (!origin) return { status: 'no_active_tab', reason: 'origin_unresolved' };
-      const proposal = await proposeLoginRecipe({
-        normalized_origin: origin,
-        ...(args.provider_key !== undefined ? { provider_key: args.provider_key } : {}),
-        field_map: (args.field_map ?? []).map((m) => ({
-          ...(m.step !== undefined ? { step: m.step } : {}),
-          selector: m.selector,
-          ...(m.field_key !== undefined ? { field_key: m.field_key } : {}),
-          ...(m.literal_key !== undefined ? { literal_key: m.literal_key } : {}),
-        })),
-        ...(args.submit !== undefined ? { submit: args.submit } : {}),
-        ...(args.success_signals !== undefined ? { success_signals: args.success_signals } : {}),
-        ...(args.failure_signals !== undefined ? { failure_signals: args.failure_signals } : {}),
-        ...(args.challenge_signals !== undefined
-          ? { challenge_signals: args.challenge_signals }
-          : {}),
-        ...(args.notes !== undefined ? { notes: args.notes } : {}),
-      });
-      if (!proposal.ok) return failureResult(proposal.failure);
-      log.info('sw', `credential_login capture → recipe_proposed (${proposal.data.status})`);
-      return {
-        status: 'recipe_proposed',
-        recipe_id: proposal.data.recipe_id ?? null,
-        message:
-          'Proposed a login recipe for this site. A human activates it before it is used; it will make this login reliable next time.',
-      };
-    }
-
-    // ── action: capture ───────────────────────────────────────────────────
+  // ── action: propose_recipe — document an UNKNOWN login ────────────────
+  if (args.action === 'propose_recipe') {
     const tab = await getAssignedTab(ctx);
-    if (!tab?.id || !tab.url) return { status: 'no_active_tab' };
-    let pageUrl: URL;
-    try {
-      pageUrl = new URL(tab.url);
-    } catch {
-      return { status: 'unsafe_destination', reason: 'unparsable_url' };
-    }
-    if (!isSafeDestination(pageUrl)) {
-      return {
-        status: 'unsafe_destination',
-        reason: 'insecure_scheme',
-        message: 'Credential capture requires https (or an explicit localhost destination).',
-      };
-    }
-    const loginUrl = normalizeLoginUrl(tab.url) ?? `${pageUrl.origin}${pageUrl.pathname}`;
-
-    // Known/unknown branch — origin derived server-side from the real tab URL.
-    const contextResult = await fetchCaptureContext(loginUrl);
-    if (!contextResult.ok) return failureResult(contextResult.failure);
-    const branchContext: CaptureContext = contextResult.data;
-
-    const fields = (args.fields ?? []).map((f) => ({
-      field_key: f.field_key,
-      selector: f.selector,
-      label: f.label ?? f.field_key,
-      secret: f.secret ?? f.field_key !== 'username',
-      step: f.step ?? 0,
-    }));
-
-    const request: CaptureCredentialRequest = {
-      callId: ctx.callId,
-      conversationId: ctx.conversationId,
-      display_name: args.display_name ?? pageUrl.host,
-      description: args.description ?? null,
-      provider_key: args.provider_key ?? null,
-      login_url: loginUrl,
-      host: pageUrl.host,
-      submit_selector: args.submit_selector ?? null,
-      uri_match_mode: 'host',
-      branch: branchContext.branch,
-      guidance: branchContext.guidance,
-      expires_at_ms: Date.now() + CAPTURE_TIMEOUT_MS,
-      fields,
+    const origin = tab?.url ? safeOrigin(tab.url) : null;
+    if (!origin) return { status: 'no_active_tab', reason: 'origin_unresolved' };
+    const proposal = await proposeLoginRecipe({
+      normalized_origin: origin,
+      ...(args.provider_key !== undefined ? { provider_key: args.provider_key } : {}),
+      field_map: (args.field_map ?? []).map((m) => ({
+        ...(m.step !== undefined ? { step: m.step } : {}),
+        selector: m.selector,
+        ...(m.field_key !== undefined ? { field_key: m.field_key } : {}),
+        ...(m.literal_key !== undefined ? { literal_key: m.literal_key } : {}),
+      })),
+      ...(args.submit !== undefined ? { submit: args.submit } : {}),
+      ...(args.success_signals !== undefined ? { success_signals: args.success_signals } : {}),
+      ...(args.failure_signals !== undefined ? { failure_signals: args.failure_signals } : {}),
+      ...(args.challenge_signals !== undefined
+        ? { challenge_signals: args.challenge_signals }
+        : {}),
+      ...(args.notes !== undefined ? { notes: args.notes } : {}),
+    });
+    if (!proposal.ok) return failureResult(proposal.failure);
+    log.info('sw', `credential_login capture → recipe_proposed (${proposal.data.status})`);
+    return {
+      status: 'recipe_proposed',
+      recipe_id: proposal.data.recipe_id ?? null,
+      message:
+        'Proposed a login recipe for this site. A human activates it before it is used; it will make this login reliable next time.',
     };
+  }
 
-    const outcome = await awaitCapture(request, CAPTURE_TIMEOUT_MS);
-    if (outcome === 'timed_out') {
-      return { status: 'cancelled', reason: 'timed_out', message: 'The user did not respond.' };
-    }
-    if (outcome.cancelled || !outcome.ok) {
-      return {
-        status: 'cancelled',
-        reason: outcome.reason ?? 'user_cancelled',
-        message: 'The user did not enter a credential.',
-      };
-    }
-
-    // Status + names only — the value never reached this handler.
-    log.info('sw', `credential_login capture → captured (branch=${branchContext.branch})`);
-    const result: CaptureCredentialResult = {
-      status: 'captured',
-      proceed: true,
-      branch: branchContext.branch,
-      guidance: branchContext.guidance,
+  // ── action: capture ───────────────────────────────────────────────────
+  const tab = await getAssignedTab(ctx);
+  if (!tab?.id || !tab.url) return { status: 'no_active_tab' };
+  let pageUrl: URL;
+  try {
+    pageUrl = new URL(tab.url);
+  } catch {
+    return { status: 'unsafe_destination', reason: 'unparsable_url' };
+  }
+  if (!isSafeDestination(pageUrl)) {
+    return {
+      status: 'unsafe_destination',
+      reason: 'insecure_scheme',
+      message: 'Credential capture requires https (or an explicit localhost destination).',
     };
-    if (outcome.credential_item_id) result.credential_item_id = outcome.credential_item_id;
-    if (branchContext.branch === 'known' && branchContext.recipe) {
-      result.recipe = branchContext.recipe;
-    }
-    if (branchContext.branch === 'unknown') {
-      result.propose_recipe = true;
-    }
-    return result;
+  }
+  const loginUrl = normalizeLoginUrl(tab.url) ?? `${pageUrl.origin}${pageUrl.pathname}`;
+
+  // Known/unknown branch — origin derived server-side from the real tab URL.
+  const contextResult = await fetchCaptureContext(loginUrl);
+  if (!contextResult.ok) return failureResult(contextResult.failure);
+  const branchContext: CaptureContext = contextResult.data;
+
+  const fields = (args.fields ?? []).map((f) => ({
+    field_key: f.field_key,
+    selector: f.selector,
+    label: f.label ?? f.field_key,
+    secret: f.secret ?? f.field_key !== 'username',
+    step: f.step ?? 0,
+  }));
+
+  const request: CaptureCredentialRequest = {
+    callId: ctx.callId,
+    conversationId: ctx.conversationId,
+    display_name: args.display_name ?? pageUrl.host,
+    description: args.description ?? null,
+    provider_key: args.provider_key ?? null,
+    login_url: loginUrl,
+    host: pageUrl.host,
+    submit_selector: args.submit_selector ?? null,
+    uri_match_mode: 'host',
+    branch: branchContext.branch,
+    guidance: branchContext.guidance,
+    expires_at_ms: Date.now() + CAPTURE_TIMEOUT_MS,
+    fields,
+  };
+
+  const outcome = await awaitCapture(request, CAPTURE_TIMEOUT_MS);
+  if (outcome === 'timed_out') {
+    return { status: 'cancelled', reason: 'timed_out', message: 'The user did not respond.' };
+  }
+  if (outcome.cancelled || !outcome.ok) {
+    return {
+      status: 'cancelled',
+      reason: outcome.reason ?? 'user_cancelled',
+      message: 'The user did not enter a credential.',
+    };
+  }
+
+  // Status + names only — the value never reached this handler.
+  log.info('sw', `credential_login capture → captured (branch=${branchContext.branch})`);
+  const result: CaptureCredentialResult = {
+    status: 'captured',
+    proceed: true,
+    branch: branchContext.branch,
+    guidance: branchContext.guidance,
+  };
+  if (outcome.credential_item_id) result.credential_item_id = outcome.credential_item_id;
+  if (branchContext.branch === 'known' && branchContext.recipe) {
+    result.recipe = branchContext.recipe;
+  }
+  if (branchContext.branch === 'unknown') {
+    result.propose_recipe = true;
+  }
+  return result;
 };
 
 /** origin only, or null — never throws, never carries a path/query. */
@@ -366,4 +366,3 @@ function safeOrigin(raw: string): string | null {
     return null;
   }
 }
-
