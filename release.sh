@@ -355,6 +355,10 @@ const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 pkg.version = '${NEW_VERSION}';
 fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
 "
+# Keep the machine-written version bump in the repository's canonical format.
+# Without this, a successful release can immediately create a red CI run on
+# package.json even though all release checks and artifacts passed.
+pnpm exec biome format --write package.json
 VERSION_BUMPED=true
 ok "package.json → ${NEW_VERSION}"
 
