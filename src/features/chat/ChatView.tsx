@@ -81,6 +81,8 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BreathingOrb } from './BreathingOrb';
 import { chatMarkdownRegistry } from './markdown-registry';
+import { RenderBlockView } from '@/components/kinds/RenderBlockView';
+import { warmContentIr } from '@/lib/content-ir/route-env';
 
 const SUGGESTIONS = [
   { icon: Pencil, label: 'Help me with my writing' },
@@ -119,6 +121,10 @@ function formatMicErrorForUser(message: string, code?: string): string {
 }
 
 export function ChatView() {
+  // One warm load per session for the Content IR registries (which kinds
+  // exist, and what draws them on chrome-extension). Here rather than at
+  // module load: an unauthenticated panel has no session to read with.
+  useEffect(() => warmContentIr(), []);
   const { user } = useAuth();
   const {
     selectedAgentId,
@@ -1357,6 +1363,10 @@ function MessagePartView({ part }: { part: MessagePart }) {
         {part.content}
       </div>
     ) : null;
+  }
+  if (part.type === 'block') {
+    // Server-built structured content — routed through the SHARED kind route.
+    return <RenderBlockView block={part.block} />;
   }
   // part.type === 'tool'
   const t = part.tool;

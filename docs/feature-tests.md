@@ -2229,6 +2229,33 @@ Every entry follows this shape:
 - **Expected:** the row reads "Google Workspace — Create Document" (the ACTION, not a generic
   label) and the result renders as fields, not raw JSON. Nothing in the extension executes it.
 
+### Structured content rendering (Content IR kinds)
+- **What it does:** renders server-built `render_block` envelopes through the shared
+  Content IR components instead of discarding them. Registered kinds draw as real
+  components; everything else lands on the generic structured floor.
+- **Where to test:** Side panel → Chat tab.
+- **Prereq:** signed in (the registries read `content_ir` with the user's session).
+- **Steps:**
+  1. Pick an agent that produces structured output and ask for something that
+     yields a registered kind — e.g. "make me 5 flashcards about photosynthesis"
+     (`flashcard_set`) or "search the web for X" (`web_search_results`).
+  2. Watch the reply as it streams.
+- **Expected:** the deck renders as a list of cards you can click to reveal the
+  answer (not a JSON fence, not raw text); a search renders as a compact list of
+  titled links with domains. A quiz renders as answerable choices with the correct
+  answer hidden until you pick.
+- **Edge cases worth poking:**
+  - Ask for a kind with NO extension component (e.g. a research report). It must
+    render as a readable document with a muted "no custom view yet" footer and a
+    collapsed "Raw data" escape hatch — never an error, never a blank block.
+  - Nothing should render twice: if the answer appears both as a component AND as
+    a raw JSON fence, block-mode chunk suppression has regressed
+    (`appendAssistantText` in `src/state/chat.ts`).
+  - Open the Debug tab and filter source `ui`: a malformed envelope must appear as
+    a `[content-ir]` scream, never silence.
+  - Copy the reply ("With everything"): a structured block copies as
+    `<kind name="…">` with its zero-loss JSON, `__kind` included.
+
 ## Template (copy when adding a new entry)
 
 ```markdown

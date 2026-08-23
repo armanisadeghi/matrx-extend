@@ -91,6 +91,10 @@ export const TABLE_SCHEMA = {
   admins: 'admin',
   definition: 'tool',
   model_definition: 'ai',
+  // content_ir — the Shape System registry. READ-ONLY from this client: which
+  // kinds exist, and which component draws one on `platform='chrome-extension'`.
+  kind_definition: 'content_ir',
+  kind_component: 'content_ir',
 } as const;
 
 export type ExtensionTable = keyof typeof TABLE_SCHEMA;
@@ -122,3 +126,13 @@ export const toolDb = () => getSupabase().schema('tool');
 
 /** `ai` — model registry. NOTE: `ai.model` was split; use `model_definition`. */
 export const aiDb = () => getSupabase().schema('ai');
+
+/**
+ * `content_ir` — the Shape System registry (kind_definition / kind_component).
+ * READ-ONLY here: which kinds exist and what draws them on this platform is
+ * DATA, and this client never writes a registry row. Rows are owned by the
+ * Matrx System org and are globally readable, so no ownership filter belongs
+ * in a query. Consumed through `src/lib/content-ir/registry.ts` — never query
+ * these tables directly from a feature.
+ */
+export const contentIrDb = () => getSupabase().schema('content_ir');

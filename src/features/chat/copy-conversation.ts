@@ -6,6 +6,8 @@
  * single messages produce diff-compatible output.
  */
 
+import { readEnvelope, reconstructRegionValue } from '@ai-matrx/content-ir';
+import type { InboundRenderBlock } from '@/lib/content-ir/inbound';
 import { stringifyJson } from '@/lib/clipboard/copy';
 import type { ChatMessage, MessagePart, ToolPartCall } from '@/state/chat';
 
@@ -119,12 +121,36 @@ export function formatAssistantBody(message: ChatMessage, opts: MessageCopyOptio
   return out.join('\n\n');
 }
 
+/**
+ * A server-built render block, as copyable text.
+ *
+ * Prose blocks copy as prose. A block carrying a Content-IR envelope copies as
+ * its ZERO-LOSS value — the reconstructed object, `__kind` included. The
+ * discriminator is part of the data and is never stripped on the way out; it
+ * is also exactly what makes the copied text useful to an AI on the receiving
+ * end, which can then say what the payload IS.
+ */
+function formatRenderBlock(block: InboundRenderBlock): string {
+  const envelope = readEnvelope(block.metadata);
+  const kind = envelope?.root.kind;
+  if (envelope && kind) {
+    const value = reconstructRegionValue(envelope);
+    return `<kind name="${escapeAttr(kind)}">\n\`\`\`json\n${JSON.stringify(
+      value,
+      null,
+      2,
+    )}\n\`\`\`\n</kind>`;
+  }
+  return (block.content ?? '').trim();
+}
+
 function renderPart(part: MessagePart, opts: MessageCopyOptions): string {
   if (part.type === 'text') return part.content.trim();
   if (part.type === 'reasoning') {
     if (!opts.includeThinking || !part.content) return '';
     return `<thinking>\n${part.content.trim()}\n</thinking>`;
   }
+  if (part.type === 'block') return formatRenderBlock(part.block);
   // tool
   if (!opts.includeToolCalls) return '';
   return formatToolCall(part.tool, opts.includeFullToolResults);

@@ -1,34 +1,30 @@
 # matrx-extend — CLAUDE.md
 
-**Purpose of this file (charter: `/Users/armanisadeghi/code/common-docs/policies/claude-md-charter.md`):
-you are here to do CHROME-EXTENSION work.** This file carries the extension-specific
-rules that prevent this repo's common mistakes, plus pointers to the shared systems it
-consumes. It does NOT carry feature narratives, shipped-work history, rule bodies that
-have a canonical doc, or platform-wide doctrine — those live at the links. Feature
-state lives in [docs/SYSTEM_STATE.md](./docs/SYSTEM_STATE.md) (update THAT, not this,
-when you ship). Budget: ≤200 lines; over budget = relocate, don't append.
+**You are here to do CHROME-EXTENSION work** (charter: `/Users/armanisadeghi/code/common-docs/policies/claude-md-charter.md`).
+This file carries the extension-specific rules that prevent this repo's mistakes, plus pointers
+to the shared systems it consumes — never feature narratives, shipped-work history, rule bodies
+with a canonical doc, or platform doctrine. Feature state lives in
+[docs/SYSTEM_STATE.md](./docs/SYSTEM_STATE.md) (update THAT, not this, when you ship).
+Budget: ≤200 lines; over budget = relocate, don't append.
 
 ## What this repo is
 
 Chrome extension (WXT, MV3, React sidepanel) — the browser-agent harness for AI Matrx.
-It is a **streaming client of the aidream server** (SSE chat runs, tool dispatch); all
-**data goes direct to Supabase** like every client (never through the Python server);
-**tool definitions and descriptions live in the shared DB**, not in this repo. The user
-is a brilliant, absolutely non-technical Subject Matter Expert — canonical:
-`/Users/armanisadeghi/code/common-docs/systems/ai-dream-platform/USER.md`.
+A **streaming client of the aidream server** (SSE chat runs, tool dispatch); all **data goes
+direct to Supabase** (never through the Python server); **tool definitions and descriptions
+live in the shared DB**, not here. The user is a brilliant, absolutely non-technical Subject
+Matter Expert: `/Users/armanisadeghi/code/common-docs/systems/ai-dream-platform/USER.md`.
 
 - Integration channel map (extension ↔ aidream / matrx-local / matrx-frontend):
   `/Users/armanisadeghi/code/common-docs/systems/clients/extension/FEATURE.md`
-- Outbound work to a sibling → invoke the matching repo skill:
-  `connect-aidream` · `connect-local` · `connect-frontend`
-  (master doc: [docs/CROSS_REPO_INTEGRATION.md](./docs/CROSS_REPO_INTEGRATION.md)).
+- Outbound work to a sibling → invoke `connect-aidream` · `connect-local` ·
+  `connect-frontend` (master: [docs/CROSS_REPO_INTEGRATION.md](./docs/CROSS_REPO_INTEGRATION.md)).
 
 ## Shared checkout — many concurrent writers is NORMAL
 
-Arman plus dozens of agents edit this checkout simultaneously; `origin/main` is the only
-sync point. Commit and push as you go; never run tree-wide destructive git; never
-complain about other agents or request your own branch/worktree. Full ruling:
-workspace root [`../CLAUDE.md`](../CLAUDE.md) § Shared checkout.
+Arman plus dozens of agents edit this checkout simultaneously; `origin/main` is the only sync
+point. Commit and push as you go; never run tree-wide destructive git; never request your own
+branch/worktree. Full ruling: workspace root [`../CLAUDE.md`](../CLAUDE.md) § Shared checkout.
 
 ## Platform laws (one-liners — the rule bodies live at the links)
 
@@ -53,10 +49,9 @@ workspace root [`../CLAUDE.md`](../CLAUDE.md) § Shared checkout.
 
 ## Hard rules for this repo
 
-**Agent-start contract.** Every agent-start request sends `conversation_id`
-(client-minted, always) + `is_new` + `store`; aidream 422s anything else.
-`AgentStartRequest` in [src/lib/api/routes/ai.ts](./src/lib/api/routes/ai.ts) marks all
-three required. Contract:
+**Agent-start contract.** Every agent-start request sends `conversation_id` (client-minted,
+always) + `is_new` + `store`; aidream 422s anything else. `AgentStartRequest` in
+[src/lib/api/routes/ai.ts](./src/lib/api/routes/ai.ts) marks all three required. Contract:
 `/Users/armanisadeghi/code/common-docs/systems/agents/conversation-start-contract/FEATURE.md`.
 
 **Tool system.**
@@ -68,14 +63,13 @@ three required. Contract:
   (`executor_name='chrome-extension'`) + `tool.surface_defaults`. These tables were
   renamed TWICE (`tl_*` → `tool_*` → `tool.*` schema); only the last names exist.
 - **Descriptions live ONLY in the DB** ([docs/TOOL_SOURCE_OF_TRUTH.md](./docs/TOOL_SOURCE_OF_TRUTH.md)):
-  never add a `description` to a `ToolHandler` or `.describe()` to its Zod args. UI
-  reads them live via [src/lib/tools/descriptions.ts](./src/lib/tools/descriptions.ts).
-  To change a tool: change `tool.definition` first, then align the Zod until
-  `pnpm catalog:tools:drift` is quiet.
-- Categories ([src/lib/tools/categories.ts](./src/lib/tools/categories.ts)) are pure
-  UX — grouping + discovery, NEVER routing. The advertised surface is
-  `CANONICAL_SURFACE`; the live roster is `pnpm catalog:tools:md` →
-  [types/tool-catalog.md](./types/tool-catalog.md). Don't hand-maintain tool tables.
+  never add a `description` to a `ToolHandler` or `.describe()` to its Zod args. UI reads them live
+  via [src/lib/tools/descriptions.ts](./src/lib/tools/descriptions.ts). To change a tool: change
+  `tool.definition` first, then align the Zod until `pnpm catalog:tools:drift` is quiet.
+- Categories ([src/lib/tools/categories.ts](./src/lib/tools/categories.ts)) are pure UX —
+  grouping + discovery, NEVER routing. The advertised surface is `CANONICAL_SURFACE`; the live
+  roster is `pnpm catalog:tools:md` → [types/tool-catalog.md](./types/tool-catalog.md). Don't
+  hand-maintain tool tables.
 - After any handler change: `pnpm catalog:tools:md` + `pnpm docs:tools`, commit the
   regenerated files. DB drift gate: `scripts/check-tool-db-drift.ts` (in `release.sh`).
 
@@ -112,12 +106,18 @@ one source of truth per fact, no shallow empty keys, confidence gating):
 [docs/REQUEST_PAYLOAD_CONTRACT.md §2](./docs/REQUEST_PAYLOAD_CONTRACT.md) — update it
 in the same commit as any key change.
 
-**Stream parsing / markdown blocks** ([src/lib/api/stream.ts](./src/lib/api/stream.ts),
-[src/components/markdown/block-parser.ts](./src/components/markdown/block-parser.ts))
-are slated to adopt the shared content kernel — read
-`/Users/armanisadeghi/code/common-docs/projects/unified-content-pipeline/FEATURE.md`
-(+ `/Users/armanisadeghi/code/common-docs/systems/content-ir-system/FEATURE.md`) before
-touching them. Stream-silence rule: any event that implies expected silence (like
+**Structured content: NEVER parse a stream here.** `render_block` envelopes render through the
+SHARED packages (`@ai-matrx/content-ir` + `@ai-matrx/content-ir-react`) — wiring
+[src/lib/content-ir/](./src/lib/content-ir/), components + dispatch
+[src/components/kinds/](./src/components/kinds/). Detection is SERVER-SIDE for thin clients by
+design; a client-side kind parser is the banned "bespoke stream renderer". A kind draws as a real
+component only when a `content_ir.kind_component` row (`platform='chrome-extension'`) names a key
+in `dispatch.tsx` — two explicit halves, no silent fallback; anything else gets the generic floor.
+content-ir-react comes from [vendor/](./vendor/README.md) until its npm publish. SoR:
+`common-docs/systems/content-ir-twin/FEATURE.md`. Raw stream / markdown parsing
+([src/lib/api/stream.ts](./src/lib/api/stream.ts),
+[src/components/markdown/block-parser.ts](./src/components/markdown/block-parser.ts)) is next to
+adopt the kernel — read `common-docs/projects/unified-content-pipeline/FEATURE.md` first. Stream-silence rule: any event that implies expected silence (like
 `provider_retry` backoff) must `hold()` the stall watchdog
 ([src/lib/stream/provider-retry.ts](./src/lib/stream/provider-retry.ts)) or it reads
 as a hang and kills a healthy run.
@@ -159,8 +159,7 @@ as a hang and kills a healthy run.
 - Feature-detect every API; return `{ ok: false, reason: 'unavailable' }`, never
   throw. Privileged tier always prompts — even in Act mode; no silent writes.
 - Reuse existing primitives (`src/lib/scrape/`, `src/lib/data-pattern/`, `src/lib/chat/context/`) before building a new extractor/collector/parser.
-- Every user-visible change updates [docs/feature-tests.md](./docs/feature-tests.md)
-  (what it does → where to test → steps → expected) before commit.
+- Every user-visible change updates [docs/feature-tests.md](./docs/feature-tests.md) (what it does → where to test → steps → expected) before commit.
 - Web Store identity: dev and Store builds have different extension IDs;
   `EXPECTED_EXTENSION_IDS` in [src/config/identity.ts](./src/config/identity.ts) and
   the Supabase redirect-URL allowlist are the same set — new build channel = update

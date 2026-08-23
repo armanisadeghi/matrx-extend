@@ -75,6 +75,8 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BreathingOrb } from './BreathingOrb';
 import { chatMarkdownRegistry } from './markdown-registry';
+import { RenderBlockView } from '@/components/kinds/RenderBlockView';
+import { warmContentIr } from '@/lib/content-ir/route-env';
 
 const PILOT_SUGGESTIONS = [
   { icon: Crosshair, label: 'Open three competitor sites and summarize each' },
@@ -83,6 +85,8 @@ const PILOT_SUGGESTIONS = [
 ];
 
 export function PilotView() {
+  // One warm load per session for the Content IR registries — see ChatView.
+  useEffect(() => warmContentIr(), []);
   const { user, isAdmin } = useAuth();
   const { selectedAgentId, draft, messages, isStreaming, setAgent, setDraft, setMessages } =
     usePilotChatStore();
@@ -913,6 +917,10 @@ function MessagePartView({ part }: { part: MessagePart }) {
         {part.content}
       </div>
     ) : null;
+  }
+  if (part.type === 'block') {
+    // Server-built structured content — routed through the SHARED kind route.
+    return <RenderBlockView block={part.block} />;
   }
   const t = part.tool;
   if (t.kind === 'server') {

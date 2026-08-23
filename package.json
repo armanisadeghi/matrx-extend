@@ -40,6 +40,8 @@
     "check:cws-risk": "node scripts/check-cws-release-risk.mjs"
   },
   "dependencies": {
+    "@ai-matrx/content-ir": "0.2.0",
+    "@ai-matrx/content-ir-react": "file:vendor/ai-matrx-content-ir-react-0.1.0.tgz",
     "@cartesia/cartesia-js": "^2.2.9",
     "@hookform/resolvers": "^3.10.0",
     "@joplin/turndown-plugin-gfm": "^1.0.61",
@@ -107,6 +109,10 @@
     "*.{ts,tsx,js,jsx,json,css}": "biome check --write --no-errors-on-unmatched"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "spawn-sync"]
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "esbuild",
+      "spawn-sync"
+    ]
   }
 }

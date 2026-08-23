@@ -365,6 +365,29 @@
   textarea otherwise), `ToolTimelineRow` for completed/failed calls.
 - **Full type safety** — every tool has a Zod schema, dispatcher validates args
   before run, schema failures surface as structured errors.
+- **Structured content renders through the SHARED Content IR components
+  (2026-08-23)** — inbound `render_block` events used to be logged and thrown
+  away, so a flashcard deck, a quiz or a search result set arrived as raw text
+  or not at all. The extension now consumes `@ai-matrx/content-ir` (the kernel)
+  and `@ai-matrx/content-ir-react` (the render layer) and routes every server
+  envelope through the SAME `applyIrKindRoute` matrx-frontend uses.
+  - **Detection stays server-side.** This client never parses a raw chunk — the
+    server detects, validates against the registered schema, and sends the
+    envelope on `metadata.__ir`. That is the designed division of labour for a
+    thin client; a client-side parser is the banned "bespoke stream renderer".
+  - **Registration is explicit, in the DB.** `content_ir.kind_component` rows
+    with `platform='chrome-extension'` name a component key; the dispatch table
+    in [src/components/kinds/dispatch.tsx](../src/components/kinds/dispatch.tsx)
+    maps it. Registered today: `markdown` · `web_search_results` /
+    `google_search_results` / `news_search_results` · `flashcard_set` ·
+    `quiz_set`. Everything else lands on the generic structured floor, which
+    says so in a muted footer — never a silent lookalike.
+  - **Panel-sized components, same kinds.** `kind_component.platform` exists so
+    a 400px side panel draws a kind differently from a 1200px page; cards flip,
+    quizzes are answerable, results are a compact link list.
+  - **Block mode wins.** A message that receives any render block stops
+    accepting chunk text (aidream replaces chunks with blocks; the workflow
+    channel marks the duplicate `block_shadowed`), so nothing renders twice.
 
 ### Tool categories (the discovery system)
 

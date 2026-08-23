@@ -11,6 +11,7 @@ import { buildChatContext } from '@/lib/chat/build-context';
 import type { AttachedHighlight } from '@/lib/chat/context/types';
 import { refreshPageContextBeforeSend } from '@/lib/chat/refresh-page-context';
 import { progressFromWire } from '@/lib/chat/tool-progress';
+import { readInboundRenderBlock } from '@/lib/content-ir/inbound';
 import { log } from '@/lib/debug/log';
 import { getHighlightsByIds } from '@/lib/highlights/queries';
 import { newId } from '@/lib/id';
@@ -565,8 +566,30 @@ function ensureStreamListeners(): void {
         const state = (chunk.payload.data as { state?: unknown } | undefined)?.state;
         if (state === 'stopped') useChatStore.getState().closeReasoning(target);
         log.info('stream', `reasoning: ${String(state)}`, chunk.payload.data);
+      } else if (chunk.payload.eventName === 'render_block') {
+        // THE SERVER ALREADY DID THE WORK. A render block carries a validated
+        // Content-IR envelope on `metadata.__ir`: the region was detected,
+        // parsed and checked against its registered schema server-side, which
+        // is the whole division of labour for a thin client. Until 2026-08-23
+        // this branch LOGGED the envelope and threw it away, so every
+        // structured answer arrived as raw text or not at all.
+        //
+        // `readInboundRenderBlock` is the wire gate (the kernel's pure
+        // envelope validator); rendering happens through the SHARED kind route
+        // in `components/kinds/RenderBlockView.tsx`. Nothing here parses.
+        const block = readInboundRenderBlock(chunk.payload.data);
+        if (block) {
+          useChatStore.getState().upsertRenderBlock(target, block);
+        } else {
+          log.warn(
+            'stream',
+            'render_block event had no usable blockId — dropped',
+            chunk.payload.data,
+            chunk.payload.eventName,
+          );
+        }
       } else {
-        // Other events: phase, completion, render_block, etc. — log only.
+        // Other events: phase, completion, etc. — log only.
         log.info(
           'stream',
           `event: ${chunk.payload.eventName}`,

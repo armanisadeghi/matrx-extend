@@ -1,4 +1,5 @@
 import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
+import type { InboundRenderBlock } from '@/lib/content-ir/inbound';
 import type { ProviderRetryState } from '@/lib/stream/provider-retry';
 import type { ToolProgressUpdate } from '@/lib/tools/types';
 import { useToolInbox } from '@/state/tool-inbox';
@@ -63,7 +64,19 @@ export type MessagePart =
        */
       closed?: boolean;
     }
-  | { type: 'tool'; tool: ToolPartCall };
+  | { type: 'tool'; tool: ToolPartCall }
+  /**
+   * One server-built render block, at its arrival position.
+   *
+   * This is how STRUCTURED content reaches this client: the server detects and
+   * validates a region and sends a `render_block` carrying a Content-IR
+   * envelope on `metadata.__ir`. The block is stored verbatim (envelope
+   * included — never stripped) and rendered through the shared kind route.
+   *
+   * Reconciled by `blockId`: the server re-sends the same id as a block grows
+   * from `streaming` to `complete`.
+   */
+  | { type: 'block'; block: InboundRenderBlock };
 
 export interface ChatMessage {
   id: string;
@@ -209,6 +222,21 @@ interface ChatState {
   /** Backwards-compat — older callers used this for server tools only. */
   upsertServerTool: (messageId: string, callId: string, patch: Partial<ToolPartCall>) => void;
   /**
+   * Upsert one server-built render block onto an assistant message, keyed by
+   * `blockId`.
+   *
+   * 🚨 A message that receives ANY render block is in BLOCK MODE: the server
+   * has replaced raw `chunk` events with blocks (aidream
+   * `ai_task_blocks.py` — "blocks are the only wire shape"), or, on the
+   * workflow node channel, still forwards the text marked `block_shadowed`
+   * so a consumer "renders the blocks and never re-parses the text". Either
+   * way the blocks are authoritative, so `appendAssistantText` DROPS chunk
+   * text for that message from here on. Without that, a structured region
+   * would render twice — once as its real component and once as the raw JSON
+   * fence the chunks spell out.
+   */
+  upsertRenderBlock: (messageId: string, block: InboundRenderBlock) => void;
+  /**
    * Append an incremental progress update to a tool part (by callId). Creates
    * a `started` part if none exists yet. Never changes the part's phase — a
    * progress update is orthogonal to started/completed/error. Bounded to the
@@ -352,6 +380,29 @@ export const useChatStore = create<ChatState>()(
       // Backwards-compat shim — older code paths called this for server tools.
       upsertServerTool: (messageId, callId, patch) =>
         get().upsertToolPart(messageId, callId, { kind: 'server', ...patch }),
+      upsertRenderBlock: (messageId, block) =>
+        set((s) => ({
+          messages: s.messages.map((m) => {
+            if (m.id !== messageId) return m;
+            const parts = m.parts ?? [];
+            const idx = parts.findIndex(
+              (p) => p.type === 'block' && p.block.blockId === block.blockId,
+            );
+            if (idx === -1) {
+              // First sighting of this blockId — push at the END so anything
+              // that arrived before it stays before it, exactly like tool parts.
+              return { ...m, parts: [...parts, { type: 'block', block }] };
+            }
+            const existing = parts[idx];
+            if (!existing || existing.type !== 'block') return m;
+            // Never let a replayed `streaming` frame downgrade a block the
+            // server already closed — reconnects re-send earlier frames.
+            if (existing.block.status === 'complete' && block.status !== 'complete') return m;
+            const next = parts.slice();
+            next[idx] = { type: 'block', block };
+            return { ...m, parts: next };
+          }),
+        })),
       appendToolProgress: (messageId, callId, entry, meta) =>
         set((s) => ({
           messages: s.messages.map((m) => {
@@ -391,6 +442,11 @@ export const useChatStore = create<ChatState>()(
           messages: s.messages.map((m) => {
             if (m.id !== id) return m;
             const parts = m.parts ?? [];
+            // BLOCK MODE WINS. Once the server has sent a render block for this
+            // message, the blocks carry the answer and any chunk text is either
+            // absent or an explicitly shadowed duplicate. Rendering both shows
+            // every structured region twice.
+            if (parts.some((p) => p.type === 'block')) return m;
             const last = parts[parts.length - 1];
             // Coalesce into the trailing text part when possible. If the
             // last part is something else (a tool, or reasoning), push a
