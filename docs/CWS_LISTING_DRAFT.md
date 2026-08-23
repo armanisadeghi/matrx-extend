@@ -75,7 +75,7 @@ The submitted source contains no `eval`, `new Function`, `Runtime.evaluate`, `Ru
 
 ### Data-use disclosures
 
-Authentication information covers both paths that carry a credential: the agent-safe fill (the value goes from the Vault to the page, never to the model) and the user-approved "Save this login?" prompt (the value goes from the page to the user's own Vault, only after an explicit click). No new category is needed for the save prompt; the privacy policy page (`matrx-frontend` `app/(public)/privacy-policy/extension`) must describe it before the release that ships it is uploaded.
+Authentication information covers both paths that carry a credential: the agent-safe fill (the value goes from the Vault to the page, never to the model) and the user-approved "Save this login?" prompt (the value goes from the page to the user's own Vault, only after an explicit click). No new category is needed for the save prompt. The privacy policy page (`matrx-frontend` `app/(public)/privacy-policy/extension`) was updated 2026-08-22 to describe the Vault and the save prompt; it goes live with the next frontend release — confirm it is live before the Store build that ships the prompt is uploaded.
 
 Check these categories:
 
