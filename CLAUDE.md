@@ -92,8 +92,8 @@ three required. Contract:
   `pnpm check:schema-routing` (strict in CI + `release.sh`).
 - Ownership columns differ per table (some `created_by`, some kept `user_id`, two have
   neither) — check [docs/DATABASE.md](./docs/DATABASE.md) before filtering; guessing
-  corrupts data. On INSERT never send `created_by` / `organization_id` (triggers stamp
-  them).
+  corrupts data. Every org-scoped INSERT sends an explicit `organization_id`; database
+  assignment is forbidden. Emergency: `../common-docs/projects/no-db-assigned-org/PLAN.md`.
 - A `.sql` file in `migrations/` changes nothing until applied from aidream
   (`python db/apply_migrations.py --source matrx-extend`). Verify: `pnpm check:migrations`.
 
