@@ -1,7 +1,8 @@
-import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import type { InboundRenderBlock } from '@/lib/content-ir/inbound';
+import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import type { ProviderRetryState } from '@/lib/stream/provider-retry';
 import type { ToolProgressUpdate } from '@/lib/tools/types';
+import { useGoogleFilesStore } from '@/state/google-files';
 import { useToolInbox } from '@/state/tool-inbox';
 import type { ComputeTargetRef } from '@/types/compute-target';
 import { create } from 'zustand';
@@ -293,6 +294,12 @@ export const useChatStore = create<ChatState>()(
         // to vaporize a pending Pilot approval, hanging that run for the
         // SW's full 5-minute timeout.
         useToolInbox.getState().clearForConversation(leaving);
+        // Attachments belong to the conversation you attached them in. Without
+        // this, a Google file attached in conversation A rides `__google_files`
+        // into conversation B on the next send — and silently turns on the
+        // google_workspace tool there. An attachment tray that follows the user
+        // across conversations is a leak, not a convenience.
+        useGoogleFilesStore.getState().clearAttached();
       },
       adoptConversationId: (id) =>
         set((s) => (s.selectedConversationId === id ? s : { selectedConversationId: id })),

@@ -16,11 +16,15 @@
  * connections this user owns or reaches through an organization, which is the
  * same reach rule the server applies.
  *
- * Returns `[]` rather than throwing: "no Google account connected" and "nothing
- * picked yet" are normal states with a one-click fix, not errors. The composer
- * chip turns either into an offer to connect.
+ * Never throws, and never flattens two different truths into one. "No Google
+ * account connected" and "nothing picked yet" are normal states with a
+ * one-click fix, so they come back as `{ok: true, files: []}` and the composer
+ * chip turns them into an offer to connect. A read that FAILED comes back as
+ * `{ok: false}` and is logged, because showing that user the connect pitch
+ * would be telling them their files are gone when they are not.
  */
 
+import { log } from '@/lib/debug/log';
 import { DRIVE_FILE_SCOPE, listHealthyGoogleConnections } from '@/lib/google/connection';
 import { usersDb } from '@/lib/supabase/schemas';
 
@@ -42,12 +46,26 @@ interface ResourceRow {
   resource_type: string;
 }
 
-export async function listRegisteredGoogleFiles(): Promise<RegisteredGoogleFile[]> {
+/**
+ * "Here is your list" vs "we could not look."
+ *
+ * Kept distinct all the way to the UI on purpose: rendering a failed read as
+ * an empty account tells a user with ten registered files that AI Matrx lost
+ * them, and sends them to re-pick files that were never gone.
+ */
+export type RegisteredGoogleFilesResult =
+  | { ok: true; files: RegisteredGoogleFile[] }
+  | { ok: false; reason: 'unavailable' };
+
+export async function listRegisteredGoogleFiles(): Promise<RegisteredGoogleFilesResult> {
   const connections = await listHealthyGoogleConnections(DRIVE_FILE_SCOPE);
-  if (connections.length === 0) return [];
+  // A failed connection read is already logged by the health rule; propagate
+  // the distinction rather than flattening it into "no files".
+  if (!connections.ok) return connections;
+  if (connections.connections.length === 0) return { ok: true, files: [] };
 
   const emailByConnection = new Map(
-    connections.map((c) => [c.connectionId, c.accountEmail] as const),
+    connections.connections.map((c) => [c.connectionId, c.accountEmail] as const),
   );
 
   const { data, error } = await usersDb()
@@ -56,9 +74,12 @@ export async function listRegisteredGoogleFiles(): Promise<RegisteredGoogleFile[
     .in('connection_id', [...emailByConnection.keys()])
     .in('resource_type', [...ATTACHABLE_RESOURCE_TYPES])
     .is('deleted_at', null);
-  if (error || !data) return [];
+  if (error || !data) {
+    log.error('supabase', 'could not read registered Google files', { error });
+    return { ok: false, reason: 'unavailable' };
+  }
 
-  return (data as ResourceRow[])
+  const files = (data as ResourceRow[])
     .map((row) => ({
       fileId: row.resource_ref,
       name: row.display_name?.trim() || 'Untitled',
@@ -70,4 +91,5 @@ export async function listRegisteredGoogleFiles(): Promise<RegisteredGoogleFile[
         Number(a.isSheet) - Number(b.isSheet) ||
         a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
     );
+  return { ok: true, files };
 }

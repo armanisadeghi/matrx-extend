@@ -19,6 +19,7 @@
  * mailbox is usable, or the same user sees a different answer in each.
  */
 
+import { log } from '@/lib/debug/log';
 import { usersDb } from '@/lib/supabase/schemas';
 
 /**
@@ -60,6 +61,20 @@ interface ConnectionRow {
 }
 
 /**
+ * "We asked and got an answer" vs "we could not ask."
+ *
+ * These are NOT the same state and must never render the same. An empty list
+ * means the user has no qualifying Google account — a real fact with a
+ * one-click fix. A failed read means we do not know, and telling that user
+ * "nothing is connected" is a lie that sends them to re-connect an account
+ * that was fine all along. Callers discriminate on `ok`; the repo convention
+ * for an unavailable dependency is `{ ok: false, reason: 'unavailable' }`.
+ */
+export type GoogleConnectionsResult =
+  | { ok: true; connections: GoogleConnectionRef[] }
+  | { ok: false; reason: 'unavailable' };
+
+/**
  * Every Google connection this user may actually use, for the ONE scope the
  * caller needs — most-recently-updated first.
  *
@@ -71,16 +86,21 @@ interface ConnectionRow {
  * `users.integration_connections` already answers it, so the rows that come
  * back are exactly the ones the server would consider reachable.
  */
-export async function listHealthyGoogleConnections(scope: string): Promise<GoogleConnectionRef[]> {
+export async function listHealthyGoogleConnections(
+  scope: string,
+): Promise<GoogleConnectionsResult> {
   const { data, error } = await usersDb()
     .from('integration_connections')
     .select('id, account_email, account_name, scopes, status, credential_item_id, vault_secret_key')
     .eq('provider', 'google')
     .is('deleted_at', null)
     .order('updated_at', { ascending: false });
-  if (error || !data) return [];
+  if (error || !data) {
+    log.error('supabase', 'could not read Google connections', { scope, error });
+    return { ok: false, reason: 'unavailable' };
+  }
 
-  return (data as ConnectionRow[])
+  const connections = (data as ConnectionRow[])
     .filter(
       (row) =>
         row.status === 'connected' &&
@@ -92,13 +112,18 @@ export async function listHealthyGoogleConnections(scope: string): Promise<Googl
       accountEmail: row.account_email,
       accountName: row.account_name,
     }));
+  return { ok: true, connections };
 }
 
 /**
  * The mailbox a reviewed message would be sent from, or null when there isn't
- * one.
+ * one. Deliberately collapses "none" and "couldn't check" into null: every
+ * caller is a refusal path that offers to connect, and a reviewed send must
+ * never proceed on an unverified connection. The failure is not silent — it is
+ * logged in `listHealthyGoogleConnections`.
  */
 export async function resolveGmailSendConnection(): Promise<GoogleConnectionRef | null> {
-  const usable = await listHealthyGoogleConnections(GMAIL_SEND_SCOPE);
-  return usable[0] ?? null;
+  const result = await listHealthyGoogleConnections(GMAIL_SEND_SCOPE);
+  if (!result.ok) return null;
+  return result.connections[0] ?? null;
 }

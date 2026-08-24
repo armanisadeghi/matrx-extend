@@ -18,15 +18,22 @@ import { create } from 'zustand';
 interface GoogleFilesState {
   /** Mirror of the user's registered Docs / Sheets (Docs first, then Sheets). */
   items: RegisteredGoogleFile[];
-  /** True once a load has completed, so the chip can tell "empty" from "unknown". */
+  /** True once a load has SUCCEEDED, so the chip can tell "empty" from "unknown". */
   loaded: boolean;
   /** A load is in flight. */
   loading: boolean;
+  /**
+   * The last load failed. Distinct from `items: []` on purpose — an empty
+   * account and an unreadable database must never render the same, or we tell
+   * a user with ten registered files that they have none.
+   */
+  loadFailed: boolean;
   /** Drive file ids attached to the chat (sticky until cleared). */
   attachedIds: string[];
 
   setItems: (items: RegisteredGoogleFile[]) => void;
   setLoading: (loading: boolean) => void;
+  setLoadFailed: () => void;
 
   attach: (fileId: string) => void;
   detach: (fileId: string) => void;
@@ -38,10 +45,13 @@ export const useGoogleFilesStore = create<GoogleFilesState>((set) => ({
   items: [],
   loaded: false,
   loading: false,
+  loadFailed: false,
   attachedIds: [],
 
   // A file the user un-picked on the web app can no longer be attached: drop it
   // from the tray rather than sending an id the server would silently discard.
+  // Pruning happens ONLY on a successful read — a failed read must never be
+  // allowed to quietly empty the user's tray.
   setItems: (items) =>
     set((s) => {
       const known = new Set(items.map((i) => i.fileId));
@@ -49,10 +59,12 @@ export const useGoogleFilesStore = create<GoogleFilesState>((set) => ({
         items,
         loaded: true,
         loading: false,
+        loadFailed: false,
         attachedIds: s.attachedIds.filter((id) => known.has(id)),
       };
     }),
   setLoading: (loading) => set({ loading }),
+  setLoadFailed: () => set({ loading: false, loadFailed: true }),
 
   attach: (fileId) =>
     set((s) => (s.attachedIds.includes(fileId) ? s : { attachedIds: [...s.attachedIds, fileId] })),

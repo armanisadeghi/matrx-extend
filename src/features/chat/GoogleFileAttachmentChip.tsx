@@ -23,13 +23,22 @@ import { GOOGLE_WORKSPACE_SETTINGS_URL } from '@/lib/google/connection';
 import { listRegisteredGoogleFiles } from '@/lib/google/files';
 import { cn } from '@/lib/utils';
 import { useGoogleFilesStore } from '@/state/google-files';
-import { Check, ExternalLink, FileText, Loader2, Sheet } from 'lucide-react';
+import {
+  AlertTriangle,
+  Check,
+  ExternalLink,
+  FileText,
+  Loader2,
+  RefreshCw,
+  Sheet,
+} from 'lucide-react';
 import { useCallback, useState } from 'react';
 
 export function GoogleFileAttachmentChip() {
   const items = useGoogleFilesStore((s) => s.items);
   const loaded = useGoogleFilesStore((s) => s.loaded);
   const loading = useGoogleFilesStore((s) => s.loading);
+  const loadFailed = useGoogleFilesStore((s) => s.loadFailed);
   const attachedIds = useGoogleFilesStore((s) => s.attachedIds);
   const toggle = useGoogleFilesStore((s) => s.toggle);
   const clearAttached = useGoogleFilesStore((s) => s.clearAttached);
@@ -37,14 +46,18 @@ export function GoogleFileAttachmentChip() {
 
   // Re-read on every open: the user may have picked a file on the web app
   // seconds ago, and a stale list would read as "AI Matrx lost my file".
+  // A failed read is kept distinct from an empty one all the way to the
+  // rendered state — see the store's `loadFailed`.
   const refresh = useCallback(async () => {
     const store = useGoogleFilesStore.getState();
     store.setLoading(true);
     try {
-      store.setItems(await listRegisteredGoogleFiles());
+      const result = await listRegisteredGoogleFiles();
+      if (result.ok) store.setItems(result.files);
+      else store.setLoadFailed();
     } catch (err) {
-      log.warn('supabase', 'could not read registered Google files', err);
-      store.setLoading(false);
+      log.error('supabase', 'registered Google files read threw', err);
+      store.setLoadFailed();
     }
   }, []);
 
@@ -137,6 +150,28 @@ export function GoogleFileAttachmentChip() {
               Attached files are named for the agent, which can then read and edit them for you.
             </p>
           </>
+        ) : loadFailed ? (
+          // NOT the connect pitch. We don't know whether this user has files,
+          // and telling them to go pick some would be telling them their files
+          // are gone when they may be fine.
+          <div className="px-2 pb-2 pt-1">
+            <p className="flex items-start gap-1.5 text-[11px] leading-snug text-muted-foreground">
+              <AlertTriangle className="mt-px size-3 shrink-0 text-amber-600 dark:text-amber-400" />
+              <span>
+                Couldn’t load your Google files just now. This doesn’t affect any files you’ve
+                already shared with AI Matrx.
+              </span>
+            </p>
+            <button
+              type="button"
+              onClick={() => void refresh()}
+              disabled={loading}
+              className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline disabled:opacity-50"
+            >
+              <RefreshCw className={cn('size-3', loading && 'animate-spin')} />
+              Try again
+            </button>
+          </div>
         ) : (
           <div className="px-2 pb-2 pt-1">
             <p className="text-[11px] leading-snug text-muted-foreground">

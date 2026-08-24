@@ -447,11 +447,24 @@ Every entry follows this shape:
      strings (not an object, not content blocks).
 - **Expected:** The agent names the attached file and can read/edit it,
   without the extension declaring `google_workspace` anywhere.
-- **Edge cases worth poking:** Attach a file, then un-pick it on the web app
-  and reopen the chip — it drops out of the tray rather than being sent.
-  **Detach all** clears the tray. The tray is sticky across sends and resets
-  when the side panel is closed and reopened (session-scoped, like
-  highlights).
+- **Edge cases worth poking:**
+  - **Conversation switch must not leak the tray.** Attach a file in
+    conversation A, then start a new chat (or open a different one from
+    history) and send a message. The Files chip must read **Files** (empty),
+    and the Debug tab's context log for that send must have **no**
+    `__google_files` key. A stale attachment riding into another conversation
+    would also silently turn on `google_workspace` there.
+  - Attach a file, then un-pick it on the web app and reopen the chip — it
+    drops out of the tray rather than being sent.
+  - **Failed load is not "nothing connected."** Go offline (or block the
+    Supabase host in DevTools) and open the chip: expect the amber
+    "Couldn't load your Google files just now" message with a **Try again**
+    button — **not** the "Choose files in AI Matrx" pitch. Restore the network
+    and click Try again; the list appears. A `supabase` error is in the Debug
+    tab either way, and the attached tray is NOT emptied by the failure.
+  - **Detach all** clears the tray. The tray is sticky across sends within one
+    conversation and resets when the side panel is closed and reopened
+    (session-scoped, like highlights).
 
 ### Side panel — Tools tab
 - **What it does:** Visible catalog of every registered tool with

@@ -279,8 +279,16 @@
     health rule is the single one in
     [src/lib/google/connection.ts](../src/lib/google/connection.ts) —
     `listHealthyGoogleConnections(scope)`, which `resolveGmailSendConnection()` now also uses.
-  - **The tray is sticky per session** ([src/state/google-files.ts](../src/state/google-files.ts)),
-    same semantics as the highlight tray, and resolved once per send in `use-chat-stream`.
+  - **The tray is sticky within ONE conversation** ([src/state/google-files.ts](../src/state/google-files.ts)),
+    resolved once per send in `use-chat-stream`, and cleared by `setConversation`
+    in [src/state/chat.ts](../src/state/chat.ts) on every conversation switch —
+    an attachment that followed the user into the next conversation would also
+    silently arm `google_workspace` there.
+  - **A failed read never renders as an empty account.** `listHealthyGoogleConnections` /
+    `listRegisteredGoogleFiles` return a discriminated `{ok:true,…} | {ok:false,
+    reason:'unavailable'}`, log the Supabase error, and the chip shows a
+    "couldn't load — try again" state instead of the connect pitch. Flattening
+    the two would tell a user with ten registered files that they have none.
   - **On the wire:** the reserved context key `__google_files`, a **plain array of Drive file
     id strings** — never an object wrapper, never content blocks. The server resolves the ids
     against the user's registered resources, names the files for the agent, **and injects the
