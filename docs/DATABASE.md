@@ -75,13 +75,13 @@ some tables dropped `user_id`:**
   is the 1:1 extension of `sch_task` whose ownership lives on the parent. Never
   filter either by a user column directly.
 
-**On INSERT, never send `created_by` or `organization_id`.** Two BEFORE-INSERT
-triggers stamp them: `platform._stamp_actor()` sets `created_by = auth.uid()`, and
-`_stamp_org_default()` resolves the actor's personal org via
-`ensure_personal_organization()`. `organization_id` is NOT NULL **with no default**,
-so this is not optional plumbing — it is the only thing that makes an insert
-succeed. RLS `WITH CHECK` (`created_by = auth.uid()`) runs *after* the triggers and
-validates the result.
+**On INSERT, never send `created_by`; always send `organization_id`.**
+`platform._stamp_actor()` owns actor attribution. Organization identity comes
+from the initiating request or an authoritatively loaded parent and is present
+before Supabase is called. A missing organization refuses client-side; a
+personal/system/active/default resolver and every database assignment trigger
+are defects. Emergency register:
+`/Users/armanisadeghi/code/common-docs/projects/no-db-assigned-org/PLAN.md`.
 
 ### Database migrations — the DB is the source of truth, NOT the files
 
@@ -103,4 +103,3 @@ matrx-frontend, matrx-extend) share one DB and one ledger, `public._schema_migra
 - A migration that must never apply (superseded / destructive / already live) gets
   `-- migrate: skip: <reason>` in its first 25 lines — e.g. `2026_05_03_agenda_v0.sql`
   is skip-marked (superseded by `sch_*`).
-

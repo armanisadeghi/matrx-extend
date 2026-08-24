@@ -68,9 +68,9 @@ The rejected version advertised several workflows but supplied no reviewer usern
   remain usable without an account, while saving offers the real sign-in action
   instead of a guaranteed-failure request. Guest Settings likewise says **Sign
   in**, never **Sign out**.
-- Every agent-start path now resolves the bearer/fingerprint identity's
-  effective organization through `/auth/whoami`; a clean-install guest never
-  guesses or hardcodes conversation ownership.
+- Every agent-start path now requires the bearer/fingerprint request's existing
+  organization through `/auth/whoami`; neither client nor server guesses,
+  creates, or defaults conversation ownership.
 - Fresh Chat now names `extend.browser_chat`; aidream resolves its Holder for
   the guest/user at request time. The extension no longer ships a default
   Agent UUID.

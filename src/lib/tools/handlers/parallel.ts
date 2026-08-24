@@ -31,7 +31,7 @@
 import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/agents/mandates';
 import { getApiBaseUrl } from '@/lib/api/client';
 import { agentTargetExecutePath } from '@/lib/api/routes/ai';
-import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
+import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { getAccessToken } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
@@ -493,7 +493,7 @@ export const parallel_for_each_tab: ToolHandler<ParallelArgs, unknown> = {
     }
     let organizationId: string;
     try {
-      organizationId = await resolveConversationOrganizationId();
+      organizationId = await requireRequestOrganizationId();
     } catch (err) {
       return {
         ok: false,

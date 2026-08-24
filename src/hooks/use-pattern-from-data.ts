@@ -1,6 +1,6 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { type AgentStartRequest, mandateExecutePath } from '@/lib/api/routes/ai';
-import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
+import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
@@ -277,7 +277,7 @@ export function usePatternFromData() {
 
       let organizationId: string;
       try {
-        organizationId = await resolveConversationOrganizationId();
+        organizationId = await requireRequestOrganizationId();
       } catch (e) {
         setError(`Could not initialize workspace: ${e instanceof Error ? e.message : String(e)}`);
         setRunning(false);

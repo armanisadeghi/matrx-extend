@@ -22,7 +22,7 @@
  */
 
 import { type AgentStartRequest, agentTargetExecutePath } from '@/lib/api/routes/ai';
-import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
+import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
@@ -144,7 +144,7 @@ export function useAgentTextRun(): AgentTextRun {
       runIdRef.current = runId;
 
       try {
-        const organizationId = await resolveConversationOrganizationId();
+        const organizationId = await requireRequestOrganizationId();
         await send(CHANNELS.STREAM_START, {
           runId,
           endpoint: agentTargetExecutePath(input.agentId),

@@ -1,6 +1,6 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { type AgentStartRequest, agentExecutePath, mandateExecutePath } from '@/lib/api/routes/ai';
-import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
+import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { aiExtractCapturePage } from '@/lib/data-pattern/modes/ai-extract';
 import { parseAgentResponse } from '@/lib/data-pattern/run-interactive';
 import type { ExtractedRow } from '@/lib/data-pattern/types';
@@ -142,7 +142,7 @@ export function useAiExtraction() {
 
       let organizationId: string;
       try {
-        organizationId = await resolveConversationOrganizationId();
+        organizationId = await requireRequestOrganizationId();
       } catch (e) {
         setError(`Could not initialize workspace: ${e instanceof Error ? e.message : String(e)}`);
         setRunning(false);

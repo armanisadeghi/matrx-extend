@@ -3,7 +3,7 @@ import {
   agentTargetExecutePath,
   mandateExecutePath,
 } from '@/lib/api/routes/ai';
-import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
+import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
@@ -738,7 +738,7 @@ export function useChatStream() {
       // through this client's anonymous Supabase session.
       let organizationId: string;
       try {
-        organizationId = await resolveConversationOrganizationId();
+        organizationId = await requireRequestOrganizationId();
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         log.error('stream', 'conversation organization bootstrap failed', err);

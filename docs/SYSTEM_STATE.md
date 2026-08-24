@@ -167,7 +167,10 @@
     statuses (`pending|in_progress|done|blocked|skipped`). The canonical
     `tasks` mega-tool executes in aidream and writes `chat.agent_task`;
     the extension has no tasks handler or `chrome-extension` binding.
-    Its panel reads and edits that shared table directly.
+    Its panel reads and edits that shared table directly. Before any extension
+    insert, `storage.ts` loads the named `chat.conversation`, requires its
+    `organization_id`, and copies that exact value into every `agent_task` row;
+    a missing/malformed parent organization refuses before insert.
   - **User todos** — work the agent assigns BACK to the user.
     `user_todos` actions: `add` (fires Chrome notification unless
     `silent:true`), `list`, `update`, `remove`, `mark_done`,
@@ -555,7 +558,9 @@ discovery handler).
 - **SEO** — audit + AI recommendations
 - **Notes** — list / search / folder picker / editor for user-authored
   notes (separate from guidance — notes are general personal text;
-  guidance is agent-facing clues).
+  guidance is agent-facing clues). Creates require the organization already
+  carried by the authenticated request and include it explicitly; a missing
+  request organization fails before Supabase.
 - **Files** — recent discoverable library files plus cross-page extension
   captures. Opens canonical `/files/f/{id}` viewers, inspects the live
   `get_file_resource_family` inventory, and attaches/detaches a canonical
@@ -1322,4 +1327,3 @@ near-instant error "Authorization page could not be loaded".
   channel ships to users.
 
 Full incident write-up: [`.research/v0.1.4-auth-incident.md`](../.research/v0.1.4-auth-incident.md).
-

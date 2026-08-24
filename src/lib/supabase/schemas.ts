@@ -39,13 +39,10 @@
  *                                   Ownership lives on the parent; never filter
  *                                   this table by a user column directly.
  *
- * 2. NEVER send `created_by` or `organization_id` on an INSERT. Two BEFORE-INSERT
- *    triggers stamp them: `platform._stamp_actor()` sets `created_by = auth.uid()`,
- *    and `_stamp_org_default()` resolves the actor's personal org via
- *    `ensure_personal_organization()`. `organization_id` is NOT NULL with no
- *    default, so sending your own value is how you get a constraint violation or
- *    a mis-attributed row. Let the DB stamp it; RLS `WITH CHECK` (which runs
- *    AFTER the triggers) then validates the result.
+ * 2. NEVER send `created_by`; `platform._stamp_actor()` owns actor attribution.
+ *    ALWAYS send `organization_id` from request context or an authoritatively
+ *    loaded parent. A database organization assignment trigger is an emergency
+ *    defect, never a writer contract. See common-docs/no-db-assigned-org.
  */
 
 import { getSupabase } from '@/lib/supabase/client';
@@ -110,8 +107,9 @@ export const workbenchDb = () => getSupabase().schema('workbench');
 
 /**
  * `chat` — ownership is `created_by` everywhere, stamped by the cloud; never
- * send it. `agent_task.creator_kind` ('agent' | 'user') is AUTHORSHIP, not
- * ownership — do not confuse it with `created_by`.
+ * send it. Organization identity is explicit. `agent_task.creator_kind`
+ * ('agent' | 'user') is AUTHORSHIP, not ownership — do not confuse it with
+ * `created_by`.
  */
 export const chatDb = () => getSupabase().schema('chat');
 

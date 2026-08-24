@@ -1,5 +1,5 @@
 import { apiGet } from '@/lib/api/client';
-import { resolveConversationOrganizationId } from '@/lib/api/routes/auth';
+import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/lib/api/client', async (importOriginal) => {
@@ -9,18 +9,18 @@ vi.mock('@/lib/api/client', async (importOriginal) => {
 
 const apiGetMock = vi.mocked(apiGet);
 
-describe('resolveConversationOrganizationId', () => {
+describe('requireRequestOrganizationId', () => {
   beforeEach(() => {
     apiGetMock.mockReset();
   });
 
-  it('returns the server-resolved organization for a guest or bearer identity', async () => {
+  it('returns the organization carried by the authenticated request', async () => {
     apiGetMock.mockResolvedValue({
       ok: true,
       data: { organization_id: '22222222-2222-4222-8222-222222222222' },
     });
 
-    await expect(resolveConversationOrganizationId()).resolves.toBe(
+    await expect(requireRequestOrganizationId()).resolves.toBe(
       '22222222-2222-4222-8222-222222222222',
     );
     expect(apiGetMock).toHaveBeenCalledWith('/auth/whoami');
@@ -29,8 +29,8 @@ describe('resolveConversationOrganizationId', () => {
   it('refuses to guess when the server returns no organization', async () => {
     apiGetMock.mockResolvedValue({ ok: true, data: { organization_id: null } });
 
-    await expect(resolveConversationOrganizationId()).rejects.toThrow(
-      'the server returned no organization',
+    await expect(requireRequestOrganizationId()).rejects.toThrow(
+      'the request carried no organization',
     );
   });
 });

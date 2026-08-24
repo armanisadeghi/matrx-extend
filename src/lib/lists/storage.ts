@@ -29,6 +29,7 @@ import type {
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { chatDb } from '@/lib/supabase/schemas';
+import { z } from 'zod';
 
 const PLAN_KEY = 'matrx.lists.plans';
 const TODOS_KEY = 'matrx.lists.user_todos';
@@ -50,6 +51,28 @@ interface AgentTaskRow {
 
 const AGENT_TASK_COLUMNS =
   'id,conversation_id,title,status,note,position,creator_kind,created_at,updated_at';
+
+const ConversationOrganizationSchema = z.object({
+  organization_id: z.string().uuid(),
+});
+
+async function requireConversationOrganizationId(conversationId: string): Promise<string> {
+  const { data, error } = await chatDb()
+    .from('conversation')
+    .select('organization_id')
+    .eq('id', conversationId)
+    .maybeSingle();
+  if (error) {
+    throw new Error(`Failed to load conversation organization: ${error.message}`);
+  }
+  const parsed = ConversationOrganizationSchema.safeParse(data);
+  if (!parsed.success) {
+    throw new Error(
+      `Refusing to write agent tasks: conversation '${conversationId}' has no valid organization_id.`,
+    );
+  }
+  return parsed.data.organization_id;
+}
 
 // ─── core map I/O ───────────────────────────────────────────────────────────
 
@@ -157,11 +180,11 @@ export async function addTasks(
   creatorKind: 'agent' | 'user' = 'agent',
 ): Promise<Task[]> {
   if (!items.length) return [];
+  const organizationId = await requireConversationOrganizationId(conversationId);
   const existing = await listTasks(conversationId);
   let nextPosition = existing.reduce((max, task) => Math.max(max, task.order), -1) + 1;
-  // No owner column is sent: `chat.agent_task` defers RLS to its conversation
-  // and the cloud stamps ownership itself. Sending one would be a legacy write.
   const rows = items.map((item) => ({
+    organization_id: organizationId,
     conversation_id: conversationId,
     title: item.title,
     status: item.status ?? 'pending',

@@ -6,6 +6,7 @@
  * when the user is offline or RLS rejects.
  */
 
+import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import {
   type CreateNoteInput,
   type Note,
@@ -16,7 +17,6 @@ import {
   NoteSchema,
   type UpdateNotePatch,
 } from '@/lib/notes/types';
-import { getSupabase } from '@/lib/supabase/client';
 import { workbenchDb } from '@/lib/supabase/schemas';
 
 const LIST_COLUMNS =
@@ -83,22 +83,15 @@ export async function getNote(id: string): Promise<Note | null> {
 // ─── Writes ─────────────────────────────────────────────────────────────────
 
 export async function createNote(input: CreateNoteInput): Promise<Note | null> {
-  const c = getSupabase();
-  const { data: userRes } = await c.auth.getUser();
-  const userId = userRes?.user?.id;
-  if (!userId) {
-    console.warn('[notes] createNote: no auth user');
-    return null;
-  }
+  const organizationId = await requireRequestOrganizationId();
   // Owner (`created_by`) is stamped server-side by the platform _stamp_actor
   // trigger from auth.uid(); we do NOT send it. The trigger is a
   // COALESCE(NEW.created_by, uid), so a client-supplied value WINS over the
   // DB's — and RLS `WITH CHECK (created_by = auth.uid())` then rejects the whole
   // insert if the cached session id has drifted from the JWT. Sending it buys
   // nothing and turns a token-refresh skew into a failed save.
-  // (`organization_id` is likewise stamped, by _stamp_org_default.)
-  // Same rule as createHighlight() — see src/lib/supabase/schemas.ts.
   const payload = {
+    organization_id: organizationId,
     label: input.label?.trim() || 'Untitled',
     content: input.content ?? '',
     folder_name: input.folder_name ?? null,
