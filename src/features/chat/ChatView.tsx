@@ -1,5 +1,6 @@
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { GuestBanner } from '@/components/GuestBanner';
+import { RenderBlockView } from '@/components/kinds/RenderBlockView';
 import { Markdown } from '@/components/markdown';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,7 @@ import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentCaptureCredentialCard } from '@/features/chat/AgentCaptureCredentialCard';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
 import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
+import { GoogleFileAttachmentChip } from '@/features/chat/GoogleFileAttachmentChip';
 import { HighlightAttachmentChip } from '@/features/chat/HighlightAttachmentChip';
 import { LanguagePicker } from '@/features/chat/LanguagePicker';
 import { QueuedMessageStack } from '@/features/chat/QueuedMessageCard';
@@ -36,6 +38,7 @@ import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
 import { triggerColdResume } from '@/lib/chat/cold-resume';
 import { isOptimisticNewConversation } from '@/lib/chat/history';
 import { wrapForAgent } from '@/lib/clipboard/copy';
+import { warmContentIr } from '@/lib/content-ir/route-env';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -81,8 +84,6 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BreathingOrb } from './BreathingOrb';
 import { chatMarkdownRegistry } from './markdown-registry';
-import { RenderBlockView } from '@/components/kinds/RenderBlockView';
-import { warmContentIr } from '@/lib/content-ir/route-env';
 
 const SUGGESTIONS = [
   { icon: Pencil, label: 'Help me with my writing' },
@@ -1675,6 +1676,7 @@ function Composer({
         />
         <div className="flex items-center gap-1 px-2 pb-2 pt-1">
           <ComposerSettingsChip />
+          <GoogleFileAttachmentChip />
 
           <div className="ml-auto flex items-center gap-1">
             <button

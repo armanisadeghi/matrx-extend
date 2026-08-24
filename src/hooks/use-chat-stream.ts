@@ -32,6 +32,7 @@ import { useAuthStore } from '@/state/auth';
 import { useAutoScrapeStore } from '@/state/auto-scrape';
 import { type ChatMessage, type ToolPartCall, useChatStore } from '@/state/chat';
 import { useDesktopStore } from '@/state/desktop';
+import { useGoogleFilesStore } from '@/state/google-files';
 import { useHighlightStore } from '@/state/highlights';
 import { useScrapeStore } from '@/state/scrape';
 import { useSettingsStore } from '@/state/settings';
@@ -74,6 +75,18 @@ async function resolveAttachedHighlights(): Promise<AttachedHighlight[] | null> 
       ...(h.anchor.tag !== undefined ? { tag: h.anchor.tag } : {}),
     },
   }));
+}
+
+/**
+ * The Google Drive file ids the user attached via the composer's Files chip.
+ * Returns null when the tray is empty so the context builder omits the
+ * reserved `__google_files` key entirely. Read from the store rather than
+ * re-queried: the chip refreshes the registry every time it opens, and the
+ * server drops any id that is no longer a registered resource.
+ */
+function resolveAttachedGoogleFileIds(): string[] | null {
+  const ids = useGoogleFilesStore.getState().attachedIds;
+  return ids.length > 0 ? ids : null;
 }
 
 interface SendOptions {
@@ -790,6 +803,9 @@ export function useChatStream() {
       // clear the tray). Fetched once per send so the agent sees the exact
       // captured text + references. Skipped entirely when none are attached.
       const attachedHighlights = await resolveAttachedHighlights();
+      // Google Docs / Sheets the user attached via the composer's Files chip
+      // (sticky until they detach). Resolved once per send, like highlights.
+      const attachedGoogleFileIds = resolveAttachedGoogleFileIds();
       let context: Record<string, unknown> = {};
       try {
         context = await buildChatContext({
@@ -806,6 +822,7 @@ export function useChatStream() {
           activeTab,
           conversationId: useChatStore.getState().selectedConversationId,
           highlights: attachedHighlights,
+          googleFileIds: attachedGoogleFileIds,
         });
         log.info('stream', `built context (${Object.keys(context).length} keys)`, {
           keys: Object.keys(context).sort(),

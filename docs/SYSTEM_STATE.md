@@ -246,8 +246,13 @@
     effect on the next `POST /admin/tool-routing/cache-bust` (or server restart), because
     that spec list is process-cached.
   - Its sibling **`google_workspace`** (Docs/Sheets + `prepare_email`) is **server-executed**
-    (executor `aidream`) — the extension has no handler for it, only a chat row config, and
-    it is **not reachable from extension conversations today**. The `google` bundle was added
+    (executor `aidream`) — the extension has no handler for it, only a chat row config.
+    **Corrected 2026-08-24:** it IS reachable from extension conversations on an
+    **attached-file turn** — when the user attaches a registered Doc/Sheet, the server's
+    `__google_files` handling injects `google_workspace` for that turn regardless of this
+    surface's manifest (see the Google file attach entry below). What remains true, and is
+    still open, is the **general** case: on a turn with no attached file, the tool is not
+    advertised here. The `google` bundle was added
     to `chrome-extension/{assistant,pilot}`'s `always_include_bundles`, but that array is only
     read by `resolve_surface_manifest`, which runs only when a request declares
     `client.surface` — and this extension declares `capabilities: ['browser-dom']` with the
@@ -260,6 +265,29 @@
     `/Users/armanisadeghi/code/common-docs/projects/google-oauth-verification/PRODUCTION-ROLLOUT.md`
     · web-app twin: matrx-frontend `features/google-workspace/`. Tests:
     `tests/unit/google-email-send.test.ts`.
+- **Google file attach — `__google_files` (2026-08-24)** — the user attaches a Google Doc
+  or Sheet to a chat turn from the composer, and the agent can read and edit that one file.
+  - **Files chip** in the composer toolbar, beside the settings chip and **always present** —
+    a user with nothing connected still finds the affordance, and the popover explains the
+    feature and links to `https://aimatrx.com/user-settings/integrations/google-workspace`.
+    [src/features/chat/GoogleFileAttachmentChip.tsx](../src/features/chat/GoogleFileAttachmentChip.tsx).
+  - **The list is registered resources only** — `users.integration_connection_resources` rows
+    for the user's healthy `drive.file` connections, read direct from Supabase under RLS
+    ([src/lib/google/files.ts](../src/lib/google/files.ts)). **Not a Drive browse**, and there
+    is no Drive browse anywhere in the platform: a row exists only because the user picked
+    that file with the Google Picker on the web app (or AI Matrx created it). The connection
+    health rule is the single one in
+    [src/lib/google/connection.ts](../src/lib/google/connection.ts) —
+    `listHealthyGoogleConnections(scope)`, which `resolveGmailSendConnection()` now also uses.
+  - **The tray is sticky per session** ([src/state/google-files.ts](../src/state/google-files.ts)),
+    same semantics as the highlight tray, and resolved once per send in `use-chat-stream`.
+  - **On the wire:** the reserved context key `__google_files`, a **plain array of Drive file
+    id strings** — never an object wrapper, never content blocks. The server resolves the ids
+    against the user's registered resources, names the files for the agent, **and injects the
+    `google_workspace` tool for that turn**, which is why this works with no server change and
+    no surface-declaration change. Server side: aidream
+    `services/google_workspace/attachments.py`. Contract:
+    [docs/REQUEST_PAYLOAD_CONTRACT.md §2.2](./REQUEST_PAYLOAD_CONTRACT.md).
 - **Agent-safe browser login — `credential_login` (2026-07-26)** — the agent
   asks for a login and never learns the credential. One action-tier handler
   ([src/lib/tools/handlers/credential-login.ts](../src/lib/tools/handlers/credential-login.ts))

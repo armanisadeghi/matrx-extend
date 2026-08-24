@@ -225,6 +225,47 @@ exposes them by name automatically when present.
 | `guidance`                | User-saved clues for the current domain.                        |
 | `prior_capture`           | URL has been captured before (Supabase row exists).             |
 | `saved_patterns_for_domain` | The user has saved extraction patterns (`wbx_pattern`) for this host. Compact list (≤20): `{id, name, kind, route_pattern, last_status, last_run_count}`. The agent runs one via `data_patterns({action:'run', pattern_id})` instead of re-scraping. |
+| `highlights` | User attached highlights via the Highlight tab. `{count, items[]}`; each item carries the captured text plus a re-locatable `ref`. Sticky until the tray is cleared. |
+| `__google_files` | User attached Google Docs / Sheets via the composer's Files chip. **Reserved key — see 2.2.** |
+
+### 2.2 `__google_files` — the reserved Google attachment key
+
+The one key in this payload that is NOT ours to shape. It is a **reserved
+server key**, and its value is a **plain array of Google Drive file id
+strings**:
+
+```jsonc
+"context": { "__google_files": ["1AbC…", "1XyZ…"] }
+```
+
+Non-negotiables:
+
+- **A raw array. Never** an object wrapper (`{file_ids: […]}`), never objects
+  with a `file_id` field, never content blocks. The server tolerates some of
+  those shapes defensively; this client sends exactly one.
+- **The ids are registered resources**, not arbitrary Drive ids — they are
+  `resource_ref` values from `users.integration_connection_resources`, rows
+  that exist only because the user picked the file with the Google Picker on
+  the web app (or AI Matrx created it for them). **There is no Drive browse
+  here, and none anywhere in the platform.** An unregistered id resolves to
+  nothing and is silently dropped by the server — attaching narrows attention,
+  it never widens reach.
+- **The server does two things with it**, and both matter: it resolves and
+  **names** the files so the agent can talk about "the doc" instead of
+  guessing, and it **injects the `google_workspace` tool for that turn** — even
+  though this surface's manifest does not normally carry that tool. Attaching a
+  file the agent cannot open would be the worst of both worlds. This is why
+  Google file attach works from the extension with no server change and no
+  surface-declaration change.
+- **The cap is the server's.** It truncates past its own limit (20 at the time
+  of writing); this client does not duplicate that number.
+
+Server side: aidream `services/google_workspace/attachments.py`, consumed by
+the shared `conversation_context/context_utils.py` pipeline. Client side:
+[src/state/google-files.ts](../src/state/google-files.ts) (tray) ·
+[src/lib/google/files.ts](../src/lib/google/files.ts) (registry read) ·
+[src/features/chat/GoogleFileAttachmentChip.tsx](../src/features/chat/GoogleFileAttachmentChip.tsx)
+(composer chip).
 
 ### Rules (canonical here — CLAUDE.md links to this section)
 

@@ -327,6 +327,19 @@ export async function buildContextV2Bundled(
     };
   }
 
+  // ── __google_files — RESERVED key, attached Google Docs / Sheets ────────
+  // Not a bundled key and deliberately not shaped like one: the server
+  // reserves `__google_files` and expects a PLAIN ARRAY of Drive file ids.
+  // Wrapping it in an object or sending content blocks breaks the contract.
+  // The ids are registered resources (the user picked them with the Google
+  // Picker); the server resolves them, names the files for the agent, and
+  // injects the `google_workspace` tool for that turn. It truncates past its
+  // own limit — this client sends what the user attached and does not
+  // second-guess the server's cap.
+  if (inputs.googleFileIds && inputs.googleFileIds.length > 0) {
+    ctx.__google_files = inputs.googleFileIds;
+  }
+
   // ── page_dismissibles — modal / banner inventory with close-button refs ─
   // BrowserArena's #2 universal failure mode is agents not dismissing
   // popups. Surface the inventory + close selectors so the agent can

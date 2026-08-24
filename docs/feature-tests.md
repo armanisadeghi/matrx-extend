@@ -423,6 +423,36 @@ Every entry follows this shape:
 
 ## UI surfaces
 
+### Composer — Google Files chip (`__google_files`)
+- **What it does:** Attaches a Google Doc/Sheet the user already registered
+  with AI Matrx to the chat turn. Attached ids ride as the reserved
+  `__google_files` context key; the server names the files for the agent and
+  turns on `google_workspace` for that turn.
+- **Where to test:** Side panel → **Chat** tab → composer toolbar → **Files**.
+- **Steps:**
+  1. Open the chat composer. Confirm a **Files** chip sits next to the
+     settings (sliders) chip — it must be there even with no Google account
+     connected.
+  2. Click it with nothing connected/picked → expect the pitch text plus a
+     **Choose files in AI Matrx** link. Click it; it opens
+     `https://aimatrx.com/user-settings/integrations/google-workspace` in a
+     new tab.
+  3. On the web app, connect Google and pick a Doc and a Sheet with the
+     Google Picker. Back in the side panel, reopen the chip (no reload) →
+     both files are listed, Docs first, with the account email under each.
+  4. Toggle one on. The trigger reads **1 file**. Send "What is in the
+     attached document?".
+  5. Open the **Debug** tab and find the built-context log line → the key
+     list includes `__google_files`, and its value is a plain array of id
+     strings (not an object, not content blocks).
+- **Expected:** The agent names the attached file and can read/edit it,
+  without the extension declaring `google_workspace` anywhere.
+- **Edge cases worth poking:** Attach a file, then un-pick it on the web app
+  and reopen the chip — it drops out of the tray rather than being sent.
+  **Detach all** clears the tray. The tray is sticky across sends and resets
+  when the side panel is closed and reopened (session-scoped, like
+  highlights).
+
 ### Side panel — Tools tab
 - **What it does:** Visible catalog of every registered tool with
   search/filter, JSON argument editor, per-tool **Run** button.

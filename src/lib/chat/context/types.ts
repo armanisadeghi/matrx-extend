@@ -46,6 +46,19 @@ export interface ContextBuildInputs {
    * context key only when non-empty. See src/lib/highlights/.
    */
   highlights?: AttachedHighlight[] | null;
+  /**
+   * Google Drive file ids the user attached via the composer's Files chip.
+   * These are `resource_ref` values from `users.integration_connection_resources`
+   * — files the user already registered with the Google Picker on the web app,
+   * never a Drive listing.
+   *
+   * Attached as the RESERVED `__google_files` context key (a plain array of id
+   * strings, never objects, never content blocks) only when non-empty. The
+   * server resolves the ids against the user's registered resources, names the
+   * files for the agent, and injects the `google_workspace` tool for that turn.
+   * See docs/REQUEST_PAYLOAD_CONTRACT.md §2 and src/state/google-files.ts.
+   */
+  googleFileIds?: string[] | null;
 }
 
 export interface AttachedHighlight {
