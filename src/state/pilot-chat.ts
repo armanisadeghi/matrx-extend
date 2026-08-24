@@ -21,6 +21,7 @@
  * to 'ask' if they want approval-per-step.
  */
 
+import type { InboundRenderBlock } from '@/lib/content-ir/inbound';
 import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import type {
   ChatMessage,
@@ -58,6 +59,13 @@ interface PilotChatState {
   setDraft: (s: string) => void;
   pushMessage: (m: ChatMessage) => void;
   appendAssistantText: (id: string, chunk: string) => void;
+  /**
+   * Upsert one server-built render block, keyed by `blockId`. Same contract as
+   * the Assistant surface (`state/chat.ts`) — including BLOCK MODE WINS below,
+   * which stops chunk text once blocks are authoritative so a structured
+   * region never renders twice.
+   */
+  upsertRenderBlock: (messageId: string, block: InboundRenderBlock) => void;
   appendAssistantReasoning: (id: string, chunk: string) => void;
   finalizeAssistant: (id: string) => void;
   upsertToolPart: (
@@ -185,11 +193,33 @@ export const usePilotChatStore = create<PilotChatState>()(
             return { ...m, parts: next };
           }),
         })),
+      upsertRenderBlock: (messageId, block) =>
+        set((s) => ({
+          messages: s.messages.map((m) => {
+            if (m.id !== messageId) return m;
+            const parts = m.parts ?? [];
+            const idx = parts.findIndex(
+              (p) => p.type === 'block' && p.block.blockId === block.blockId,
+            );
+            if (idx === -1) {
+              return { ...m, parts: [...parts, { type: 'block', block }] };
+            }
+            const existing = parts[idx];
+            if (!existing || existing.type !== 'block') return m;
+            // A replayed `streaming` frame never downgrades a closed block.
+            if (existing.block.status === 'complete' && block.status !== 'complete') return m;
+            const next = parts.slice();
+            next[idx] = { type: 'block', block };
+            return { ...m, parts: next };
+          }),
+        })),
       appendAssistantText: (id, chunk) =>
         set((s) => ({
           messages: s.messages.map((m) => {
             if (m.id !== id) return m;
             const parts = m.parts ?? [];
+            // BLOCK MODE WINS — see `state/chat.ts`.
+            if (parts.some((p) => p.type === 'block')) return m;
             const last = parts[parts.length - 1];
             let nextParts: MessagePart[];
             if (last && last.type === 'text') {

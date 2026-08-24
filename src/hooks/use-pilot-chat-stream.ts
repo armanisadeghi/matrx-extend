@@ -23,6 +23,7 @@ import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { buildChatContext } from '@/lib/chat/build-context';
 import { refreshPageContextBeforeSend } from '@/lib/chat/refresh-page-context';
 import { progressFromWire } from '@/lib/chat/tool-progress';
+import { readInboundRenderBlock } from '@/lib/content-ir/inbound';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
@@ -288,6 +289,21 @@ export function usePilotChatStream() {
               'pilot-stream',
               `provider_retry: ${retry.state} (${retry.provider})`,
               chunk.payload.data,
+            );
+          }
+        } else if (chunk.payload.eventName === 'render_block') {
+          // Same law as the Assistant surface: the server already detected,
+          // parsed and schema-checked the region, so the envelope is rendered
+          // through the SHARED kind route and nothing is parsed here.
+          const block = readInboundRenderBlock(chunk.payload.data);
+          if (block) {
+            usePilotChatStore.getState().upsertRenderBlock(target, block);
+          } else {
+            log.warn(
+              'pilot-stream',
+              'render_block event had no usable blockId — dropped',
+              chunk.payload.data,
+              chunk.payload.eventName,
             );
           }
         } else {
