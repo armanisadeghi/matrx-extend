@@ -1025,7 +1025,7 @@ Every entry follows this shape:
     tools render the inline approval card before each call (privileged
     tools always confirm).
 
-### Cryptographic run receipts (docs/SYSTEM_STATE.md roadmap #8)
+### Cryptographic run receipts (/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md roadmap #8)
 - **What it does:** every tool call gets signed with a device-bound
   Ed25519 key, appended to a local audit log, and exposed via a
   Shield-icon "Show receipt" button on every timeline row.
@@ -1169,7 +1169,7 @@ Every entry follows this shape:
   resume can't be attempted (missing ids, `matrx.stream.resume.enabled` flag
   off, conversation no longer selected, or the resume call itself errors)
   does it fall back to clearing the spinner and showing the amber Retry
-  banner (full-turn replay). See docs/STREAM_RESUME_PROTOCOL.md and
+  banner (full-turn replay). See /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md and
   src/lib/stream/resume.ts.
 - **Where to test:** chat surface (Assistant + Pilot). Hard to trigger
   naturally; force it.
@@ -1632,7 +1632,7 @@ Every entry follows this shape:
   reopen, the extension fetches the outstanding delegated calls
   (`GET /ai/conversations/{id}/pending_calls`) and re-drives each one through the
   same dispatch path as a live `tool_delegated` event — the approval card
-  re-appears, the tool runs, and the agent resumes. See docs/COLD_RESUME.md.
+  re-appears, the tool runs, and the agent resumes. See /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md.
 - **Where to test:** Chat tab, on any normal page.
 - **Steps:**
   1. In **Ask** mode, send a message that forces an action tool, e.g. "click the

@@ -290,7 +290,7 @@ function handleToolEvent(messageId: string, data: Record<string, unknown> | unde
  * `is_visible_to_user` (the drain echoes them at runtime), so we read the
  * generated typed fields directly. We still fall back to our local record of
  * what we sent when `text` is empty — covers a consumed item we never queued
- * locally with no echoed text. See docs/SERVER_NEEDS_turn_boundary_inbox.md.
+ * locally with no echoed text. See /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md.
  */
 function handleInjectionConsumed(
   targetAssistantId: string | null,
@@ -797,7 +797,7 @@ export function useChatStream() {
       // Resolve the active tab ONCE — this Tab is the source of truth for
       // every tab-id field on the wire (page_brief.tab_id, tab_state.*,
       // client.state["browser-dom"].current_tab_id, STREAM_START.assignedTabId).
-      // See docs/REQUEST_PAYLOAD_CONTRACT.md §1.
+      // See /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §1.
       const activeTab = await resolveActiveTab();
       // Highlights the user attached via the Highlight tab (sticky until they
       // clear the tray). Fetched once per send so the agent sees the exact
@@ -1227,7 +1227,7 @@ export function useChatStream() {
 
   // Interrupt the running turn and immediately redirect with a new message —
   // the "stop & send" affordance. Server-managed (docs/TURN_BOUNDARY_INBOX.md,
-  // SERVER_NEEDS_turn_boundary_inbox.md #6): aborting the stream makes the
+  // /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md #6): aborting the stream makes the
   // server persist the partial assistant turn + an auto "[interrupted]" marker;
   // the fresh run then loads that history and answers the redirect. Distinct
   // from the inbox, which waits for the turn boundary on the SAME run.
@@ -1240,7 +1240,7 @@ export function useChatStream() {
       // 2. Brief grace period so the server flushes that partial turn (with its
       //    interrupted-marker) BEFORE the new run loads history. There's no
       //    synchronous /interrupt endpoint yet, so the ordering is handled with
-      //    a short wait (SERVER_NEEDS_turn_boundary_inbox.md #6 — "send the
+      //    a short wait (/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md #6 — "send the
       //    redirect after the aborted stream has fully closed").
       await new Promise((r) => setTimeout(r, 350));
       // 3. Send the redirect as a normal fresh run on the same conversation.

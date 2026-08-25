@@ -203,7 +203,7 @@ matrx-extend/
   Never re-query inside a context builder — a second query reintroduces
   the cross-tab race where `page_brief.tab_id` and
   `client.state["browser-dom"].current_tab_id` end up referencing
-  different tabs. See [docs/REQUEST_PAYLOAD_CONTRACT.md §1](../docs/REQUEST_PAYLOAD_CONTRACT.md).
+  different tabs. See [/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §1](/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md).
 - **Catalog stays in sync**: after any handler change, run
   `pnpm catalog:tools:md` and commit the regenerated JSON + MD, and
   `pnpm docs:tools` to refresh the DB-sourced `docs/TOOLS.generated.md`.

@@ -150,4 +150,4 @@ that caller-scoped client so RLS remains authoritative.
 For the full topology, the FORBIDDEN domain list (de-spaced forms of
 `m a t r x . a p p` and `m a t r i x . c o m` — never reference either),
 the production URL map, and the parallel channels (A and B), see
-[`docs/CROSS_REPO_INTEGRATION.md`](../../../docs/CROSS_REPO_INTEGRATION.md).
+[`/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHANNELS.md`](/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHANNELS.md).

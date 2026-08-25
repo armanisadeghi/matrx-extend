@@ -4,7 +4,7 @@
 This file carries the extension-specific rules that prevent this repo's mistakes, plus pointers
 to the shared systems it consumes — never feature narratives, shipped-work history, rule bodies
 with a canonical doc, or platform doctrine. Feature state lives in
-[docs/SYSTEM_STATE.md](./docs/SYSTEM_STATE.md) (update THAT, not this, when you ship).
+[/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md](/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md) (update THAT, not this, when you ship).
 Budget: ≤200 lines; over budget = relocate, don't append.
 
 ## What this repo is
@@ -15,10 +15,8 @@ direct to Supabase** (never through the Python server); **tool definitions and d
 live in the shared DB**, not here. The user is a brilliant, absolutely non-technical Subject
 Matter Expert: `/Users/armanisadeghi/code/common-docs/systems/ai-dream-platform/USER.md`.
 
-- Integration channel map (extension ↔ aidream / matrx-local / matrx-frontend):
-  `/Users/armanisadeghi/code/common-docs/systems/clients/extension/FEATURE.md`
-- Outbound work to a sibling → invoke `connect-aidream` · `connect-local` ·
-  `connect-frontend` (master: [docs/CROSS_REPO_INTEGRATION.md](./docs/CROSS_REPO_INTEGRATION.md)).
+🚨 **Cross-repo system-of-record: `/Users/armanisadeghi/code/common-docs/systems/clients/extension/` — read it before touching this feature in ANY repo.** `STATE.md` (what exists) · `CHANNELS.md` (every cross-repo channel) · `WIRE_CONTRACT.md` · `ARCHITECTURE.md` · `DECISIONS.md` · `HANDOFF.md` · `CHROME-WEB-STORE.md`. Nothing in this repo restates them.
+- Outbound work to a sibling → invoke `connect-aidream` · `connect-local` · `connect-frontend`.
 
 ## Shared checkout — many concurrent writers is NORMAL
 
@@ -98,12 +96,12 @@ always) + `is_new` + `store`; aidream 422s anything else. `AgentStartRequest` in
   The agent stays pinned to its per-turn assigned tab even when the user switches.
 - Request assembly resolves the active tab ONCE per send (`resolveActiveTab()`) and
   threads it through; a second query reintroduces a cross-tab race. Contract:
-  [docs/REQUEST_PAYLOAD_CONTRACT.md §1](./docs/REQUEST_PAYLOAD_CONTRACT.md).
+  [/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §1](/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md).
 
 **Context keys are public API.** Engineers template `{{page_brief.title}}` into
 prompts; renames are breaking changes. Key catalog + the bundling rules (menu cost,
 one source of truth per fact, no shallow empty keys, confidence gating):
-[docs/REQUEST_PAYLOAD_CONTRACT.md §2](./docs/REQUEST_PAYLOAD_CONTRACT.md) — update it
+[/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §2](/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md) — update it
 in the same commit as any key change.
 
 **Structured content: NEVER parse a stream here.** `render_block` envelopes render through the
@@ -140,7 +138,7 @@ as a hang and kills a healthy run.
 **Sensitive flows — read the linked contract before touching:**
 - `google_email_send`: the review card IS the authorization; never add a server
   binding or a consent-style argument. Repo detail:
-  [docs/SYSTEM_STATE.md](./docs/SYSTEM_STATE.md) § Reviewed Gmail send · cross-repo:
+  [/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md](/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md) § Reviewed Gmail send · cross-repo:
   `/Users/armanisadeghi/code/common-docs/projects/google-oauth-verification/PRODUCTION-ROLLOUT.md`.
 - `credential_login` + Vault: plaintext credentials never egress (grep-guarded tests);
   redaction contract in [src/lib/credentials/sensitive-fields.ts](./src/lib/credentials/sensitive-fields.ts).
@@ -190,10 +188,10 @@ pnpm check:schema-routing # schema-routing gate (check:migrations for the ledger
 
 ## Where the detail lives
 
-[docs/SYSTEM_STATE.md](./docs/SYSTEM_STATE.md) — living feature state; update on every
+[/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md](/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md) — living feature state; update on every
 ship · [docs/DATABASE.md](./docs/DATABASE.md) — DB rules ·
 [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md) — setup, commands, conventions, TS
-toolchain · [docs/REQUEST_PAYLOAD_CONTRACT.md](./docs/REQUEST_PAYLOAD_CONTRACT.md) —
+toolchain · [/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md](/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md) —
 wire contract · [docs/feature-tests.md](./docs/feature-tests.md) — how to verify
 anything · [docs/TOOLS.generated.md](./docs/TOOLS.generated.md) — tool descriptions
 (generated).

@@ -25,9 +25,9 @@
 > Next.js.
 >
 > Sibling docs:
->   - [REQUEST_PAYLOAD_CONTRACT.md](./REQUEST_PAYLOAD_CONTRACT.md) — wire
+>   - [/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md](/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md) — wire
 >     shape the LLM sees (identical across all surfaces).
->   - [CROSS_REPO_INTEGRATION.md](./CROSS_REPO_INTEGRATION.md) — how
+>   - [/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHANNELS.md](/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHANNELS.md) — how
 >     matrx-extend, aidream, and matrx-frontend talk to each other.
 
 ---
@@ -133,7 +133,7 @@ The only thing that changes between matrx-extend and Next.js is steps
 > do, watch for delegations in the stream, run the handler, POST the
 > result back. Five HTTP-shaped steps, the same on every Surface.
 
-The authoritative wire contract is [REQUEST_PAYLOAD_CONTRACT.md](./REQUEST_PAYLOAD_CONTRACT.md).
+The authoritative wire contract is [/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md](/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md).
 The walkthrough below is the bite-sized version for someone who's never
 dispatched a tool before.
 
@@ -162,7 +162,7 @@ Every chat turn POSTs `/ai/agent/{agent_id}` with this shape (matches
 **(a) `context` — what the model reads.** Big rich object full of "menu"
 keys the model can template into prompts (`{{user.name}}`,
 `{{current_page.title}}`, etc.). Pre-loaded once per turn. No
-deferred-load cost — see docs/REQUEST_PAYLOAD_CONTRACT.md §2 for the convention.
+deferred-load cost — see /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §2 for the convention.
 In a Next.js surface this is your chance to ship the things only your
 app knows: current route, signed-in user, theme, active workspace,
 recent actions, whatever powers the chat.
@@ -648,7 +648,7 @@ single-browser limitation.
 
 For these, the matrx-extend Chrome extension stays the surface of
 choice. The Next.js app delegates "use the user's browser to do X" to
-matrx-extend via the bridge described in [CROSS_REPO_INTEGRATION.md](./CROSS_REPO_INTEGRATION.md).
+matrx-extend via the bridge described in [/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHANNELS.md](/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHANNELS.md).
 
 ---
 

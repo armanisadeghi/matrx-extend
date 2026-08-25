@@ -14,7 +14,7 @@
  * Attached files ride as the reserved `__google_files` context key on every
  * send. The SERVER resolves those ids against the user's registered resources,
  * names the files for the agent, and turns on the `google_workspace` tool for
- * that turn — see docs/REQUEST_PAYLOAD_CONTRACT.md §2.
+ * that turn — see /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §2.
  */
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';

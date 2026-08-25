@@ -5,7 +5,7 @@
  * tool calls on reopen by handing each one to the SW via COLD_RESUME_CALL. These
  * cover the discovery → per-call hand-off mapping, the run context it supplies in
  * place of a live STREAM_START (active tab + permission mode), and the
- * one-bad-hand-off-can't-abort-the-rest contract. See docs/COLD_RESUME.md.
+ * one-bad-hand-off-can't-abort-the-rest contract. See /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md.
  */
 
 import type { PendingCall } from '@/lib/api/routes/tool-results';

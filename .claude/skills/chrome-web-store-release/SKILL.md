@@ -13,9 +13,9 @@ or environment; otherwise proceed autonomously.
 
 Read these before acting:
 
-- `docs/CHROME_WEB_STORE_REVIEW.md` — published version, candidate, evidence,
+- `/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHROME-WEB-STORE.md` — published version, candidate, evidence,
   item ID, and past rejection.
-- `docs/CWS_LISTING_DRAFT.md` — canonical dashboard copy.
+- `/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHROME-WEB-STORE.md` — canonical dashboard copy.
 - `config/chrome-web-store-approved-baseline.json` — the exact policy surface
   Google most recently published.
 - `src/config/sidepanel-visibility.ts` — the single public/member/admin feature
@@ -101,7 +101,7 @@ Never reuse or decrease a version. Do not write `0.2.00`; canonical SemVer is
    for a staged release.
 7. Verify the dashboard reaches **Pending review**. Record exact version,
    artifact SHA-256, classification, changed Store fields, submission time, and
-   auto-publish state in `docs/CHROME_WEB_STORE_REVIEW.md`; commit and push it.
+   auto-publish state in `/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHROME-WEB-STORE.md`; commit and push it.
 8. Monitor the dashboard and Google email until approved, rejected, or action
    is requested. On publication, verify **Published - public**, update the
    approved baseline version/commit/policy surface, and close the record.

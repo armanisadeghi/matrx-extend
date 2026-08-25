@@ -80,7 +80,7 @@ export default defineConfig({
       // These served ONLY two admin-gated diagnostic tools a reviewer can never
       // reach, so they read as "declared but unused" — a documented rejection
       // cause (same rule that flagged contextMenus on v0.1.4). The tools were
-      // removed with them. To restore, see docs/REMOVED_FOR_CWS_SUBMISSION.md §2
+      // removed with them. To restore, see /Users/armanisadeghi/code/common-docs/systems/clients/extension/CHROME-WEB-STORE.md §2
       // — but every re-added permission MUST have a reviewer-reachable consumer
       // first. Do not re-add "preemptively"; that is exactly what got flagged.
     ],

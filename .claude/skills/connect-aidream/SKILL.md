@@ -192,4 +192,4 @@ this limitation in extension code; let the server-side fix arrive.
 ## Pointer
 
 For the full topology and the parallel inbound channels, see
-[`docs/CROSS_REPO_INTEGRATION.md`](../../../docs/CROSS_REPO_INTEGRATION.md).
+[`/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHANNELS.md`](/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHANNELS.md).
