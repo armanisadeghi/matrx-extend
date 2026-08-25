@@ -4,7 +4,7 @@
 > rows bound to `executor_name='chrome-extension'` via `tool.binding`,
 > the source of truth. Tool names, descriptions, and argument
 > contracts live ONLY in the database (Rule 4,
-> [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).
+> common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
 Generated: 2026-08-24T05:28:53.996Z

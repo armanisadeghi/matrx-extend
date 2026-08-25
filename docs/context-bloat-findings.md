@@ -199,7 +199,7 @@ tag-implied-by-role, empty fields, `expanded:false` were removed.
 > `proposed_browser_tools.json` "canonical" file. That file was orphaned
 > (no consumer) and has been deleted — the single source of truth is now
 > the DB (`tool.definition` + `tool.surface_defaults`); see
-> [TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md). The `core`-group
+> `/Users/armanisadeghi/code/common-docs/systems/agents/agent-tools/STATE.md`. The `core`-group
 > analysis below is preserved as the original May-2026 finding.
 
 The original proposed `core` group (12 tools, `recommendation: "browser_default"`):

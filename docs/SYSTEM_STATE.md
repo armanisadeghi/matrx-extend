@@ -26,7 +26,7 @@
   `client.state["browser-dom"]` (admin? perms? desktop bridge?) and routes
   via DB rows in `tool.definition` (joined with `tool.binding`
   where `executor_name='chrome-extension'`) — see
-  [docs/MATRX_EXTEND_MIGRATION_GUIDE.md](../docs/MATRX_EXTEND_MIGRATION_GUIDE.md)
+  common-docs/systems/agents/agent-tools/STATE.md
   for the post-redesign source-of-truth flow. The previously-emitted
   `types/server-handoff/browser-dom-capability.json` was retired in
   May 2026.
@@ -54,7 +54,7 @@
   - `desktop` — matrx-local bridge
   The "advanced" junk drawer and the 1-tool categories (cookies, webmcp,
   ai-as-1-tool, interact-as-sleep-only) are gone. Per aidream's
-  [tool_system_rules.md](../../aidream/docs/official/tool_system_rules.md)
+  `common-docs/systems/agents/agent-tools/DECISIONS.md`
   (there is no "TOOL_ROUTING_RULES.md" — that name is a phantom),
   categories are pure UX — they affect
   Tools-tab grouping and discovery helpers, NEVER routing. The LLM only
@@ -728,7 +728,7 @@ discovery handler).
 - `pnpm docs:tools` — writes `docs/TOOLS.generated.md` **from the DB**
   (`tool.definition` joined with `tool.binding` where `executor_name='chrome-extension'`).
   This is the ONLY repo copy of tool descriptions (Rule 4,
-  [docs/TOOL_SOURCE_OF_TRUTH.md](../docs/TOOL_SOURCE_OF_TRUTH.md)).
+  common-docs/systems/agents/agent-tools/STATE.md).
 
 Code-sourced entry: `{ name, tier, input_schema (JSON Schema 7),
 required_permissions, surface_bundles }`. Diffable against the DB.
@@ -1227,7 +1227,7 @@ extension changes needed when it lands.
 
 > 🚨 **CANONICAL VOCABULARY — memorize before touching tools anywhere.**
 > Normative source:
-> [aidream/docs/official/tool_system_rules.md](../../aidream/docs/official/tool_system_rules.md)
+> `common-docs/systems/agents/agent-tools/DECISIONS.md`
 > Part 2. Copy it verbatim; do not paraphrase.
 >
 > **Tool** (a contract) · **Registered tool** (has a `tool.definition` row) ·
@@ -1266,7 +1266,7 @@ extension changes needed when it lands.
   the `matrx-extend:` colon namespace itself in the 2026-05-19 global
   tool namespace redesign (see below) — bare/`chrome_*`/`cdp_*` names no
   longer need aliasing.
-- **Migration guide:** [docs/MATRX_EXTEND_MIGRATION_GUIDE.md](../docs/MATRX_EXTEND_MIGRATION_GUIDE.md)
+- **Migration guide:** common-docs/systems/agents/agent-tools/STATE.md
   has the full PR-by-PR playbook.
 - **Retired:** `types/server-handoff/browser-dom-capability.json` and
   `buildServerCapabilityHandoff()` — aidream no longer reads them.

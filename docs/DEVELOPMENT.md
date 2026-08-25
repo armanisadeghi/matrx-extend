@@ -208,7 +208,7 @@ matrx-extend/
   `pnpm catalog:tools:md` and commit the regenerated JSON + MD, and
   `pnpm docs:tools` to refresh the DB-sourced `docs/TOOLS.generated.md`.
 - **Tool descriptions live ONLY in the DB** (Rule 4,
-  [docs/TOOL_SOURCE_OF_TRUTH.md](../docs/TOOL_SOURCE_OF_TRUTH.md)): never add a
+  common-docs/systems/agents/agent-tools/STATE.md): never add a
   `description` to a `ToolHandler` or a `.describe()` to its Zod args. UI and
   discovery read descriptions live via
   [src/lib/tools/descriptions.ts](../src/lib/tools/descriptions.ts) — which

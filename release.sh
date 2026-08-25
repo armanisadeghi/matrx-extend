@@ -416,7 +416,7 @@ else
 
     # ── 4c. Regenerate docs/TOOLS.generated.md from the DB (NON-FATAL) ────────
     #
-    # Rule 4 (docs/TOOL_SOURCE_OF_TRUTH.md): tool descriptions live ONLY in the
+    # Rule 4 (common-docs/systems/agents/agent-tools/STATE.md): tool descriptions live ONLY in the
     # database; the single repo copy allowed is this auto-generated doc. It
     # reads tl_def directly (not the local catalog), so it runs regardless of
     # CATALOG_OK. Never blocks — warns on failure and ships either way.

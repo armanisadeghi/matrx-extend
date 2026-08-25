@@ -7,7 +7,7 @@
  *   pnpm catalog:tools --out path/to.json → custom path
  *
  * Status: **dev / debug only**. As of the registry redesign
- * (docs/MATRX_EXTEND_MIGRATION_GUIDE.md, May 2026), aidream loads tool
+ * (common-docs/systems/agents/agent-tools/STATE.md, May 2026), aidream loads tool
  * definitions from `public.tools` in the database, NOT from this catalog.
  * Adding/renaming a tool requires a SQL seed PR or admin-API call against
  * aidream — re-running this script does not propagate changes anywhere.

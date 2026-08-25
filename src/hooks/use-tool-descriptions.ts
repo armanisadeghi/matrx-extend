@@ -2,7 +2,7 @@
  * React hook exposing the live bare-name → description map for matrx-extend
  * tools, read from the DB (the source of truth) via
  * `src/lib/tools/descriptions.ts`. Seeds from the in-memory snapshot (instant
- * when already loaded this session) then fetches. See docs/TOOL_SOURCE_OF_TRUTH.md
+ * when already loaded this session) then fetches. See common-docs/systems/agents/agent-tools/STATE.md
  * (Rule 4) — descriptions are never hardcoded in the extension.
  */
 import { ensureToolDescriptions, toolDescriptionsSnapshot } from '@/lib/tools/descriptions';

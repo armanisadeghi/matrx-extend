@@ -3,7 +3,7 @@
  * the docs generator). Reads the `public` schema with the publishable/anon key
  * — the same credentials the extension ships.
  *
- * The DATABASE is the source of truth (docs/TOOL_SOURCE_OF_TRUTH.md). These
+ * The DATABASE is the source of truth (common-docs/systems/agents/agent-tools/STATE.md). These
  * scripts only READ it; there is no code→DB sync (Rule 7).
  */
 import { existsSync, readFileSync } from 'node:fs';

@@ -9,7 +9,7 @@
  *   in the 2026-06 DB canonicalization. Ownership lives on the binding row.
  *
  * This file is the ONLY copy of tool descriptions allowed in the repo
- * (Rule 4, docs/TOOL_SOURCE_OF_TRUTH.md): descriptions live in the DB,
+ * (Rule 4, common-docs/systems/agents/agent-tools/STATE.md): descriptions live in the DB,
  * and this doc is always freshly regenerated from it — never hand-edited,
  * never drifting.
  *
@@ -116,7 +116,7 @@ async function main(): Promise<void> {
   lines.push("> rows bound to `executor_name='chrome-extension'` via `tool.binding`,");
   lines.push('> the source of truth. Tool names, descriptions, and argument');
   lines.push('> contracts live ONLY in the database (Rule 4,');
-  lines.push('> [docs/TOOL_SOURCE_OF_TRUTH.md](./TOOL_SOURCE_OF_TRUTH.md)).');
+  lines.push('> common-docs/systems/agents/agent-tools/STATE.md).');
   lines.push('> Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).');
   lines.push('');
   lines.push(`Generated: ${new Date().toISOString()}`);

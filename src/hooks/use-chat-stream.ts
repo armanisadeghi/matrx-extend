@@ -218,7 +218,7 @@ function handleToolEvent(messageId: string, data: Record<string, unknown> | unde
   if (!callId || !wireName) return;
 
   // Post-2026-05-27 tool refactor every `tool_def.name` is a bare
-  // identifier (per docs/official/tool_system_rules.md R11). The wire
+  // identifier (per common-docs/systems/agents/agent-tools/DECISIONS.md R11). The wire
   // `tool_name` is the registry key directly — no prefix stripping, no
   // canonical_name fallback, no alias map.
   const toolName = wireName;

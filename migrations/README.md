@@ -75,5 +75,5 @@ Every `wbx_*` table enables RLS with owner-only policies keyed on `user_id = aut
 > **2026-06-10 audit notes:** the live DB carries a partial unique index
 > `sch_run_unique_active_per_task` (one active run per task) that was
 > applied out-of-band and is NOT in `2026_05_10_sch_v0.sql` — tracked with
-> the aidream team in docs/AIDREAM_ISSUES.md so a DB rebuild doesn't lose
+> the aidream team in common-docs/systems/agents/agent-tools/HANDOFF.md so a DB rebuild doesn't lose
 > double-run protection.

@@ -57,12 +57,12 @@ always) + `is_new` + `store`; aidream 422s anything else. `AgentStartRequest` in
 **Tool system.**
 - Canonical vocabulary (Tool / Registered / Inline / Executor / Binding / Surface /
   Arming / Bundle / Gate) — copy verbatim, never paraphrase:
-  [../aidream/docs/official/tool_system_rules.md](../aidream/docs/official/tool_system_rules.md)
-  · registry schema: `/Users/armanisadeghi/code/common-docs/systems/agents/agent-tools/FEATURE.md`.
+  [common-docs/systems/agents/agent-tools/DECISIONS.md](common-docs/systems/agents/agent-tools/DECISIONS.md)
+  · registry schema: `/Users/armanisadeghi/code/common-docs/systems/agents/agent-tools/STATE.md`.
 - Registered tools live in `tool.definition` + `tool.binding`
   (`executor_name='chrome-extension'`) + `tool.surface_defaults`. These tables were
   renamed TWICE (`tl_*` → `tool_*` → `tool.*` schema); only the last names exist.
-- **Descriptions live ONLY in the DB** ([docs/TOOL_SOURCE_OF_TRUTH.md](./docs/TOOL_SOURCE_OF_TRUTH.md)):
+- **Descriptions live ONLY in the DB** (common-docs/systems/agents/agent-tools/STATE.md):
   never add a `description` to a `ToolHandler` or `.describe()` to its Zod args. UI reads them live
   via [src/lib/tools/descriptions.ts](./src/lib/tools/descriptions.ts). To change a tool: change
   `tool.definition` first, then align the Zod until `pnpm catalog:tools:drift` is quiet.

@@ -144,7 +144,7 @@ the tool result in the resume body.
 | `src/lib/tools/registry.ts` | `lookup(name)`, `assistantToolNames`, `pilotToolNames` — local handler library |
 | `src/lib/tools/dispatch.ts` | SW dispatcher; subscribes to `STREAM_OPENED` + `STREAM_CHUNK`, runs handlers, posts results |
 | `src/lib/tools/handlers/*.ts` | One file per tool domain; signatures and Zod schemas |
-| `docs/MATRX_EXTEND_MIGRATION_GUIDE.md` | Full wire-format playbook (canonical `:` vs wire `__`) |
+| common-docs/systems/agents/agent-tools/STATE.md | Full wire-format playbook (canonical `:` vs wire `__`) |
 
 ## Server-side reference (read-only from this repo)
 
@@ -184,7 +184,7 @@ this limitation in extension code; let the server-side fix arrive.
   DevTools Network tab; confirm state keys; then look at server logs.
 - **Loud: schema rejection at provider.** Tool name has `:` instead of
   `__`. The wire format is `__`; canonical is `:`. See
-  `docs/MATRX_EXTEND_MIGRATION_GUIDE.md` §1.
+  common-docs/systems/agents/agent-tools/STATE.md §1.
 - **Silent: dispatch falls through to default.** Handler isn't keyed on
   the bare local name. Aliasing in `src/lib/tools/aliases.ts` must
   strip both `matrx-extend__` and bundle-style `<bundle>__` prefixes.

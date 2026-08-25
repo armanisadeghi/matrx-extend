@@ -2,7 +2,7 @@
 /**
  * Tool-drift reporter — the matrx-extend half of the unified code↔DB system
  * (one shared spec across aidream, matrx-extend, matrx-frontend; see
- * docs/TOOL_SOURCE_OF_TRUTH.md, "what match means").
+ * common-docs/systems/agents/agent-tools/STATE.md, "what match means").
  *
  * The DATABASE is the single source of truth. This reporter proves the ACTUAL
  * CODE matches it: it serializes the REAL Zod `argsSchema` of every live

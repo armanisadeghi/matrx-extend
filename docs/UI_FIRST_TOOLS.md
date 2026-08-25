@@ -13,7 +13,7 @@
 > `tool.binding` rows — that is how cross-surface sharing works.
 >
 > Canonical vocabulary:
-> [aidream/docs/official/tool_system_rules.md](../../aidream/docs/official/tool_system_rules.md).
+> `common-docs/systems/agents/agent-tools/DECISIONS.md`.
 > Refactor write-up:
 > [CROSS_TEAM_TOOL_REFACTOR.md](../../aidream/docs/cx_chat/CROSS_TEAM_TOOL_REFACTOR.md).
 
