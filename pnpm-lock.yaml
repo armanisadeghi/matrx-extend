@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ai-matrx/agents':
+        specifier: 0.3.0
+        version: 0.3.0
       '@ai-matrx/content-ir':
         specifier: 0.2.0
         version: 0.2.0
@@ -206,6 +209,10 @@ packages:
 
   '@1natsu/wait-element@4.2.0':
     resolution: {integrity: sha512-Om0Q+WE9mNrpY4AwMTvkFiYHv8VM7TML3PvOqXy+w6kAjLjKhGYHYX+305+a6J8RVpds9s7IF2Z5aOPYwULFNw==}
+
+  '@ai-matrx/agents@0.3.0':
+    resolution: {integrity: sha512-lxJ1xmL148Wkj2xZFXY8vsYIISVlt7IhauWttP3tVgETqroQh1JXQXwp6XxZ3UH+NBB7CLgyuALHSkHD+6EbYw==}
+    engines: {node: '>=20'}
 
   '@ai-matrx/content-ir-react@0.1.0':
     resolution: {integrity: sha512-iROK9oEZ9THFvjZqL6hB3ddFl7LCXl3VIpeDfoTsjEcofZuYbpFnqMpKMTYN3NjtKQS3vTwLsvv3dmqZ6IDuSw==}
@@ -4960,6 +4967,8 @@ snapshots:
     dependencies:
       defu: 6.1.7
       many-keys-map: 3.0.3
+
+  '@ai-matrx/agents@0.3.0': {}
 
   '@ai-matrx/content-ir-react@0.1.0(@ai-matrx/content-ir@0.2.0)(react@19.2.5)':
     dependencies:

@@ -7,21 +7,16 @@
  *   - Compact events use `{ e: "c", t: "..." }` for chunks /
  *     `{ e: "r", t: "..." }` for reasoning chunks
  *   - Standard events use `{ event: "<name>", data: { ... } }`
- *   - Both are normalized via expandCompactEvent before downstream handling
+ *   - Both are normalized by the public `@ai-matrx/agents` wire kernel
  *
  * Every raw line is logged so the user can see exactly what came back.
  */
 
 import { log } from '@/lib/debug/log';
 import {
-  type TypedStreamEvent,
-  expandCompactEvent,
-  isChunkEvent,
-  isCompactEvent,
-  isEndEvent,
-  isErrorEvent,
-  isReasoningChunkEvent,
-} from '@gen/stream-events';
+  readMatrxNdjsonStream,
+  type MatrxStreamEnvelope,
+} from '@ai-matrx/agents/stream/ndjson';
 
 export type StreamEvent =
   | { type: 'text'; content: string }
@@ -93,72 +88,41 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
   });
   opts.onOpened?.({ conversationId, requestId, status: res.status, contentType });
 
-  const reader = res.body?.getReader();
-  if (!reader) {
+  if (!res.body) {
     log.error('stream', 'no response body reader');
     opts.onEvent({ type: 'error', message: 'No response body' });
     opts.onEvent({ type: 'done' });
     return;
   }
 
-  const decoder = new TextDecoder();
-  let buffer = '';
   let lineCount = 0;
   let parsedCount = 0;
 
-  const handleLine = (raw: string): void => {
-    const trimmed = raw.trim();
-    if (!trimmed) return;
-    lineCount++;
-
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(trimmed);
-    } catch (err) {
-      log.warn('stream', `unparseable line #${lineCount}`, {
-        raw: trimmed.slice(0, 500),
-        error: (err as Error).message,
-      });
-      return;
-    }
-
-    // Log the raw event before any normalization so the user sees the wire.
-    // Tag with the wire event type so the Debug tab can filter by it — this
-    // is the one log site that sees EVERY event (incl. tool_event /
-    // resource_changed, which the chat hooks consume without logging).
-    const rawTag =
-      parsed && typeof parsed === 'object' && 'event' in parsed
-        ? String((parsed as Record<string, unknown>).event)
-        : undefined;
-    log.info('stream', `raw event #${lineCount}`, parsed, rawTag);
-
-    let event: TypedStreamEvent;
-    try {
-      event = isCompactEvent(parsed) ? expandCompactEvent(parsed) : (parsed as TypedStreamEvent);
-    } catch (err) {
-      log.warn('stream', `failed to normalize line #${lineCount}`, err);
-      return;
-    }
-
-    parsedCount++;
-    dispatch(event, opts.onEvent);
-  };
-
   try {
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop() ?? '';
-      for (const line of lines) handleLine(line);
+    for await (const event of readMatrxNdjsonStream(res.body, {
+      ...(opts.signal !== undefined ? { signal: opts.signal } : {}),
+      onMalformedLine: ({ line, error, lineNumber }) => {
+        lineCount = Math.max(lineCount, lineNumber);
+        log.warn('stream', `unparseable line #${lineNumber}`, {
+          raw: line.slice(0, 500),
+          error: error instanceof Error ? error.message : String(error),
+        });
+      },
+      onUnknownEnvelope: (raw) => {
+        log.warn('stream', 'unknown JSON envelope', raw);
+      },
+      onValidEnvelope: ({ raw, envelope, lineNumber }) => {
+        lineCount = Math.max(lineCount, lineNumber);
+        parsedCount++;
+        // The package owns framing; Extend retains exact wire diagnostics via
+        // its explicit raw-observation hook instead of a second JSON parser.
+        log.info('stream', `raw event #${lineNumber}`, raw, envelope.event);
+      },
+    })) {
+      dispatch(event, opts.onEvent);
     }
-    // Flush pending UTF-8 + any trailing partial line (server may not send a
-    // final newline before closing).
-    buffer += decoder.decode();
-    if (buffer.trim()) handleLine(buffer);
   } catch (err) {
-    if ((err as Error).name === 'AbortError') {
+    if (opts.signal?.aborted || (err as Error).name === 'AbortError') {
       log.info('stream', 'aborted by client');
     } else {
       log.error('stream', 'read failed', err);
@@ -170,28 +134,34 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
   }
 }
 
-function dispatch(event: TypedStreamEvent, onEvent: (e: StreamEvent) => void): void {
-  if (isChunkEvent(event)) {
-    onEvent({ type: 'text', content: event.data.text });
+function dispatch(event: MatrxStreamEnvelope, onEvent: (e: StreamEvent) => void): void {
+  const data =
+    event.data !== null && typeof event.data === 'object' && !Array.isArray(event.data)
+      ? (event.data as Record<string, unknown>)
+      : {};
+  if (event.event === 'chunk' && typeof data.text === 'string') {
+    onEvent({ type: 'text', content: data.text });
     return;
   }
-  if (isReasoningChunkEvent(event)) {
-    onEvent({ type: 'reasoning', content: event.data.text });
+  if (event.event === 'reasoning_chunk' && typeof data.text === 'string') {
+    onEvent({ type: 'reasoning', content: data.text });
     return;
   }
-  if (isErrorEvent(event)) {
-    const data = event.data;
+  if (event.event === 'error') {
     onEvent({
       type: 'error',
-      message: data.user_message ?? data.message ?? 'unknown error',
+      message:
+        (typeof data.user_message === 'string' && data.user_message) ||
+        (typeof data.message === 'string' && data.message) ||
+        'unknown error',
     });
     return;
   }
-  if (isEndEvent(event)) {
+  if (event.event === 'end') {
     onEvent({
       type: 'event',
       eventName: 'end',
-      data: (event.data ?? {}) as Record<string, unknown>,
+      data,
     });
     return;
   }
@@ -199,6 +169,6 @@ function dispatch(event: TypedStreamEvent, onEvent: (e: StreamEvent) => void): v
   onEvent({
     type: 'event',
     eventName: event.event,
-    data: ((event as { data?: unknown }).data ?? {}) as Record<string, unknown>,
+    data,
   });
 }
