@@ -10,7 +10,7 @@
  *   - images  — `currentSrc` (post-lazy-load, post-srcset) + true intrinsic size.
  *               Overlaid onto the server's HTML-parsed images by exact `src`, so
  *               the gallery gets exact dims without re-downloading. (Shipped first
- *               in RESEARCH_MEDIA_CAPTURE.md.)
+ *               2026-06-17; contract in common-docs .../research/EXTENSION_CAPTURE_CONTRACT.md.)
  *   - media   — JS-injected `<video>`/`<audio>` + YouTube/Vimeo iframes the HTML
  *               scan misses.
  *   - structured — clean OpenGraph/Twitter metadata + parsed JSON-LD blocks.

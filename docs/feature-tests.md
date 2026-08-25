@@ -1532,7 +1532,7 @@ Every entry follows this shape:
   capturable) or **Resolve** with any verdict. Adds two honest verdicts: **Ignore**
   ("not interested" — not dead/gated) → status `ignored`, and **Wrong content**
   ("page isn't what it claimed — redirect/changed page, not a 404") →
-  `content_mismatch`. Both terminal. See docs/RESEARCH_QUEUE_MANAGEMENT.md.
+  `content_mismatch`. Both terminal. See `/Users/armanisadeghi/code/common-docs/systems/knowledge/research/EXTENSION_CAPTURE_CONTRACT.md`.
 - **Where to test:** Tasks tab.
 - **Steps:**
   1. Filter to a project you're done with. Click the **section checkbox** (or

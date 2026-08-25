@@ -10,7 +10,7 @@
  *     the popover shows "already in: TopicX" inline hints; when 404 the
  *     button just degrades to a plain picker)
  *
- * Spec for the server team: aidream/docs/EXTENSION_TOPIC_PICKER_API.md
+ * Contract: common-docs/systems/knowledge/research/EXTENSION_CAPTURE_CONTRACT.md § The topic picker
  */
 
 import { Button } from '@/components/ui/button';
@@ -157,7 +157,7 @@ export function AddToProjectButton({ url, title, variant = 'inline' }: AddToProj
             <div className="font-medium text-destructive">Couldn't load projects</div>
             <div className="mt-0.5 leading-snug">
               The /research/topics endpoint may not be shipped yet. Server-team spec lives in
-              aidream/docs/EXTENSION_TOPIC_PICKER_API.md.
+              common-docs/systems/knowledge/research/EXTENSION_CAPTURE_CONTRACT.md.
             </div>
             <div className="mt-1 font-mono text-[10px] opacity-70">{topicsError.message}</div>
           </div>
