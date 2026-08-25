@@ -16,18 +16,21 @@
 // caller whether the write actually landed.
 
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { z } from 'zod';
 
 import { SchedulerClientError, TaskClaimRaceError, isClaimRaceLoss } from './errors';
 import type { Json, OutputRef, RunStatus, SchRunInsert, SchRunRow, SchTaskRow } from './types';
 
 /** Default claim lease — matches Python scanner.DEFAULT_LEASE_SECONDS. */
 const DEFAULT_LEASE_SECONDS = 600;
+export const SCHEDULER_CLAIM_PROTOCOL = 2;
+const OrganizationIdSchema = z.string().uuid();
 
 // ── claimTask ──────────────────────────────────────────────────────────────
 
 export interface ClaimTaskOptions {
-  /** Task being claimed. We only need id, user_id, and next_due_at. */
-  task: Pick<SchTaskRow, 'id' | 'user_id' | 'next_due_at'>;
+  /** The persisted task is the authoritative organization source for its run. */
+  task: Pick<SchTaskRow, 'id' | 'user_id' | 'organization_id' | 'next_due_at'>;
   /** Surface of the claiming host (e.g. 'chrome-extension-chat'). */
   surface: string;
   /** Stable per-host instance id. Not written to the row today, but tracked
@@ -53,6 +56,13 @@ export async function claimTask(
   supabase: SupabaseClient,
   opts: ClaimTaskOptions,
 ): Promise<SchRunRow> {
+  const organizationId = OrganizationIdSchema.safeParse(opts.task.organization_id);
+  if (!organizationId.success) {
+    throw new SchedulerClientError(
+      `Refusing to claim task ${opts.task.id}: task has no valid organization_id`,
+    );
+  }
+
   const claimToken = crypto.randomUUID();
   const now = new Date();
   const lease = opts.leaseSeconds ?? DEFAULT_LEASE_SECONDS;
@@ -62,6 +72,7 @@ export async function claimTask(
     task_id: opts.task.id,
     trigger_id: opts.triggerId ?? null,
     user_id: opts.task.user_id,
+    organization_id: organizationId.data,
     status: 'claimed' satisfies RunStatus,
     surface: opts.surface,
     queue: opts.queue ?? null,
@@ -69,6 +80,7 @@ export async function claimTask(
     claimed_at: now.toISOString(),
     claim_token: claimToken,
     claim_expires_at: expires.toISOString(),
+    metadata: { claim_protocol: SCHEDULER_CLAIM_PROTOCOL },
   };
 
   const { data, error } = await supabase

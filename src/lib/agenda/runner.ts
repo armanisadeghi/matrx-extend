@@ -74,7 +74,7 @@ export async function runTask(task: AgendaTask, send: SendFn): Promise<AgendaRun
     return null;
   }
 
-  const run = await claimRun(task.id, AGENDA_SURFACE_ID, {
+  const run = await claimRun(task, AGENDA_SURFACE_ID, {
     lease_seconds: task.max_runtime_seconds,
   });
   if (!run) {

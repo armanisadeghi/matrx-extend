@@ -36,6 +36,7 @@ export interface SchTaskRow {
   kind: string;
   last_run_at: string | null;
   next_due_at: string | null;
+  organization_id: string;
   queue: string;
   surfaces: string[];
   tags: string[];
@@ -53,6 +54,7 @@ export interface SchTaskInsert {
   kind: string;
   last_run_at?: string | null;
   next_due_at?: string | null;
+  organization_id: string;
   queue?: string;
   surfaces?: string[];
   tags?: string[];
@@ -70,6 +72,7 @@ export interface SchTaskUpdate {
   kind?: string;
   last_run_at?: string | null;
   next_due_at?: string | null;
+  organization_id?: string;
   queue?: string;
   surfaces?: string[];
   tags?: string[];
@@ -89,6 +92,8 @@ export interface SchRunRow {
   error_message: string | null;
   finished_at: string | null;
   id: string;
+  metadata: Json;
+  organization_id: string;
   output_ref: Json | null;
   queue: string | null;
   result_metadata: Json | null;
@@ -110,6 +115,8 @@ export interface SchRunInsert {
   error_message?: string | null;
   finished_at?: string | null;
   id?: string;
+  metadata?: Json;
+  organization_id: string;
   output_ref?: Json | null;
   queue?: string | null;
   result_metadata?: Json | null;
@@ -131,6 +138,8 @@ export interface SchRunUpdate {
   error_message?: string | null;
   finished_at?: string | null;
   id?: string;
+  metadata?: Json;
+  organization_id?: string;
   output_ref?: Json | null;
   queue?: string | null;
   result_metadata?: Json | null;
@@ -152,6 +161,7 @@ export interface SchTriggerRow {
   id: string;
   last_fired_at: string | null;
   next_due_at: string | null;
+  organization_id: string;
   task_id: string;
   type: string;
   updated_at: string;
@@ -165,6 +175,7 @@ export interface SchTriggerInsert {
   id?: string;
   last_fired_at?: string | null;
   next_due_at?: string | null;
+  organization_id: string;
   task_id: string;
   type: string;
   updated_at?: string;
@@ -178,6 +189,7 @@ export interface SchTriggerUpdate {
   id?: string;
   last_fired_at?: string | null;
   next_due_at?: string | null;
+  organization_id?: string;
   task_id?: string;
   type?: string;
   updated_at?: string;

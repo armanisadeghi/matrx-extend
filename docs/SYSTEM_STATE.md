@@ -575,6 +575,12 @@ discovery handler).
   façade shapes built from those joins; future scheduling kinds
   (workflows, scrapes, webhooks, user-actions) will land as sibling
   `sch_<kind>_task` tables without touching the agenda façade.
+  **Organization provenance (2026-08-24):** both extension claim paths carry
+  the persisted task's validated `organization_id` into each `sch_run` insert.
+  Missing or malformed task identity refuses before Supabase; no request-time
+  personal/default organization lookup is allowed for a scheduled run. Both
+  paths also stamp the shared `metadata.claim_protocol=2` fence required by the
+  live scheduler constraints.
 - **Scrape** — manual page capture pipeline
 - **Data** — pattern picker + apply
 - **Guidance** — user-saved clues for the agent: domain-scoped notes,

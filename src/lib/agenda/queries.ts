@@ -20,6 +20,7 @@
 
 import { getSupabase } from '@/lib/supabase/client';
 import { schedulerDb } from '@/lib/supabase/schemas';
+import { SCHEDULER_CLAIM_PROTOCOL } from '@/lib/scheduler-client/claim';
 import { z } from 'zod';
 import { nextCronTime } from './cron';
 
@@ -62,6 +63,7 @@ export type TriggerConfig =
 export const AgendaTaskSchema = z.object({
   id: z.string().uuid(),
   user_id: z.string().uuid(),
+  organization_id: z.string().uuid(),
   title: z.string(),
   description: z.string().nullable(),
   agent_id: z.string().uuid().nullable(),
@@ -114,6 +116,7 @@ export type AgendaRun = z.infer<typeof AgendaRunSchema>;
 interface SchTaskJoinedRow {
   id: string;
   user_id: string;
+  organization_id: string;
   kind: string;
   title: string;
   description: string | null;
@@ -189,6 +192,7 @@ function rowToAgendaTask(row: SchTaskJoinedRow): AgendaTask {
   return AgendaTaskSchema.parse({
     id: row.id,
     user_id: row.user_id,
+    organization_id: row.organization_id,
     title: row.title,
     description: row.description,
     agent_id: row.agent.agent_id,
@@ -643,10 +647,18 @@ export async function deleteTask(id: string): Promise<boolean> {
  * then `finishRun` on completion.
  */
 export async function claimRun(
-  taskId: string,
+  task: Pick<AgendaTask, 'id' | 'organization_id'>,
   surface: SurfaceTarget,
   opts: { lease_seconds?: number } = {},
 ): Promise<AgendaRun | null> {
+  const organizationId = z.string().uuid().safeParse(task.organization_id);
+  if (!organizationId.success) {
+    console.warn(
+      `[matrx-extend] refusing to claim run for task ${task.id}: task has no valid organization_id`,
+    );
+    return null;
+  }
+
   const c = schedulerDb();
   const claimToken = crypto.randomUUID();
   const claimExpiresAt = new Date(Date.now() + (opts.lease_seconds ?? 600) * 1000).toISOString();
@@ -655,7 +667,8 @@ export async function claimRun(
   const { data, error } = await c
     .from('sch_run')
     .insert({
-      task_id: taskId,
+      task_id: task.id,
+      organization_id: organizationId.data,
       status: 'claimed',
       surface,
       queue: 'default',
@@ -663,6 +676,7 @@ export async function claimRun(
       claimed_at: now,
       claim_token: claimToken,
       claim_expires_at: claimExpiresAt,
+      metadata: { claim_protocol: SCHEDULER_CLAIM_PROTOCOL },
     })
     .select('*')
     .single();
