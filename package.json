@@ -42,6 +42,7 @@
   "dependencies": {
     "@ai-matrx/content-ir": "0.2.0",
     "@ai-matrx/content-ir-react": "0.1.0",
+    "@ai-matrx/design-system": "0.1.1",
     "@cartesia/cartesia-js": "^2.2.9",
     "@hookform/resolvers": "^3.10.0",
     "@joplin/turndown-plugin-gfm": "^1.0.61",

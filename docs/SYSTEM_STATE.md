@@ -432,6 +432,13 @@
     vendor tarball and its publish-waiting instructions are deleted. A fresh
     install therefore exercises the same immutable npm artifact as every other
     external consumer.
+- **Shared UI adoption is equivalence-gated (2026-08-24).** Separator now comes
+  from exact public `@ai-matrx/design-system@0.1.1`, with Tailwind explicitly
+  scanning the installed artifact. Its Radix element, accessibility defaults,
+  orientation contract, and rendered dimensions were already equivalent.
+  Button, Badge, and Label stay local: their styling differs, and Badge uses a
+  `div` here versus the package's `span`, so adopting them without reconciliation
+  would be a behavior change rather than reuse.
 
 ### Tool categories (the discovery system)
 
