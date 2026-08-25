@@ -11,6 +11,7 @@
  * tab is signed-in-only, matching the Notes tab.
  */
 
+import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import {
   type CreateHighlightInput,
   type Highlight,
@@ -150,6 +151,13 @@ export async function getHighlightsByIds(ids: string[]): Promise<Highlight[]> {
 // ─── Writes ─────────────────────────────────────────────────────────────────
 
 export async function createHighlight(input: CreateHighlightInput): Promise<Highlight | null> {
+  let organizationId: string;
+  try {
+    organizationId = await requireRequestOrganizationId();
+  } catch (error) {
+    console.warn('[highlights] createHighlight refused: missing request organization', error);
+    return null;
+  }
   const c = getSupabase();
   const { data: userRes } = await c.auth.getUser();
   const userId = userRes?.user?.id;
@@ -160,6 +168,7 @@ export async function createHighlight(input: CreateHighlightInput): Promise<High
   // Owner (`created_by`) is stamped server-side by the platform _stamp_actor
   // trigger from auth.uid(); we no longer send it in the payload.
   const payload = {
+    organization_id: organizationId,
     conversation_id: input.conversation_id ?? null,
     mode: input.mode,
     url: input.url,

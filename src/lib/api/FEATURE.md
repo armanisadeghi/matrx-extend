@@ -20,12 +20,20 @@ A missing or malformed organization is a loud pre-stream failure. The chat UI
 must end its pending state and show a retryable error; it must never send a
 conversation against an arbitrary fallback organization.
 
-The same assertion supplies direct note creates. Parent-owned child writes do
-not use current request selection: `chat.agent_task` loads the named
-conversation and copies that row's organization into every insert.
+The same assertion supplies direct note creates and every extension-owned
+`extend.wbx_*` insert/upsert: capture, pattern, SEO audit, screenshot,
+guidance, demo, and highlight. Each writer resolves the request organization
+before constructing a Supabase client, includes that exact UUID in its
+payload, and preserves its existing null/false error result when the assertion
+fails. Parent-owned child writes do not use current request selection:
+`chat.agent_task` loads the named conversation and copies that row's
+organization into every insert.
 
 ## Change Log
 
+- 2026-08-24 — Applied the request-organization assertion to all seven
+  extension-owned `wbx_*` insert/upsert families, with zero-Supabase negative
+  tests and exact-payload tests.
 - 2026-08-23 — Replaced effective/personal organization bootstrap with the
   request-carried assertion and documented explicit note and conversation-task
   write provenance.

@@ -577,7 +577,7 @@ discovery handler).
   for the current page's domain is auto-attached to every chat sent
   from that domain. Backs the `guidance` tool category.
   **Cloud-synced (2026-06-10, TASK-004):** guidance *metadata* persists to
-  `public.wbx_guidance` (not just the artifact bytes in `cld_files`), so it
+  `extend.wbx_guidance` (not just the artifact bytes in `cld_files`), so it
   follows the user across machines. DB is the source of truth;
   `chrome.storage.local` is an offline cache. Every `saveGuidanceItem` /
   `deleteGuidanceItem` best-effort mirrors to the cloud
@@ -597,6 +597,12 @@ discovery handler).
   guidance is agent-facing clues). Creates require the organization already
   carried by the authenticated request and include it explicitly; a missing
   request organization fails before Supabase.
+- **Explicit extension-owned writes (2026-08-24)** — capture, pattern, SEO
+  audit, screenshot, guidance, demo, and highlight insert/upsert paths all call
+  `requireRequestOrganizationId()` before creating a Supabase client and send
+  that exact UUID as `organization_id`. Missing request identity preserves each
+  writer's existing null/false failure contract and performs no Supabase I/O;
+  actor attribution remains server-stamped.
 - **Files** — recent discoverable library files plus cross-page extension
   captures. Opens canonical `/files/f/{id}` viewers, inspects the live
   `get_file_resource_family` inventory, and attaches/detaches a canonical
@@ -676,9 +682,9 @@ discovery handler).
     rows were EXTRACTED on (ExtractionSource threading); append schema
     inferred from the union of all rows with ONE shared key mapper
     (`buildFieldNameMap`) so create/append collision suffixes match.
-  - Lifecycle: UNIQUE(user_id,domain,name) on wbx_pattern (migration
+  - Lifecycle: UNIQUE(created_by,domain,name) on `extend.wbx_pattern` (migration
     2026_06_10, auto-suffix on conflict), delete/rename inline in
-    PatternsTab, recipes live in `public.wbx_recipe` (bundled list =
+    PatternsTab, recipes live in `extend.wbx_recipe` (bundled list =
     seed + offline fallback via `loadRecipes()`).
   - Real re-run for interactive kinds (`runSavedPattern` in
     [src/lib/data-pattern/run-interactive.ts](../src/lib/data-pattern/run-interactive.ts)):

@@ -29,6 +29,7 @@
  */
 
 import { DEFAULT_CHAT_MANDATE_KEY, DEFAULT_CHAT_MANDATE_REF } from '@/lib/agents/mandates';
+import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { log } from '@/lib/debug/log';
 import { getSupabase } from '@/lib/supabase/client';
 import { adminDb, aiDb, extendDb } from '@/lib/supabase/schemas';
@@ -656,11 +657,19 @@ export interface SaveCapturePayload {
 }
 
 export async function saveCapture(p: SaveCapturePayload): Promise<{ id: string } | null> {
+  let organizationId: string;
+  try {
+    organizationId = await requireRequestOrganizationId();
+  } catch (error) {
+    console.warn('[matrx-extend] saveCapture refused: missing request organization', error);
+    return null;
+  }
   const c = getSupabase();
   const { data, error } = await c
     .schema(EXTEND_SCHEMA)
     .from('wbx_capture')
     .insert({
+      organization_id: organizationId,
       url: p.url,
       title: p.title ?? null,
       description: p.description ?? null,
@@ -768,6 +777,13 @@ export type SavePatternInput = {
 };
 
 export async function savePattern(p: SavePatternInput): Promise<{ id: string } | null> {
+  let organizationId: string;
+  try {
+    organizationId = await requireRequestOrganizationId();
+  } catch (error) {
+    console.warn('[matrx-extend] savePattern refused: missing request organization', error);
+    return null;
+  }
   const c = getSupabase();
   // UNIQUE(created_by, domain, name) — on a name collision, auto-suffix
   // "name (2)", "name (3)", … instead of failing the save (decision D3).
@@ -777,6 +793,7 @@ export async function savePattern(p: SavePatternInput): Promise<{ id: string } |
       .schema(EXTEND_SCHEMA)
       .from('wbx_pattern')
       .insert({
+        organization_id: organizationId,
         name,
         domain: p.domain,
         route_pattern: p.route_pattern,
@@ -874,11 +891,19 @@ export interface SaveSeoAuditPayload {
 }
 
 export async function saveSeoAudit(p: SaveSeoAuditPayload): Promise<{ id: string } | null> {
+  let organizationId: string;
+  try {
+    organizationId = await requireRequestOrganizationId();
+  } catch (error) {
+    console.warn('[matrx-extend] saveSeoAudit refused: missing request organization', error);
+    return null;
+  }
   const c = getSupabase();
   const { data, error } = await c
     .schema(EXTEND_SCHEMA)
     .from('wbx_seo_audit')
     .insert({
+      organization_id: organizationId,
       url: p.url,
       signals: p.signals,
       flesch_reading_ease: p.flesch_reading_ease ?? null,
@@ -999,11 +1024,19 @@ export interface SaveScreenshotPayload {
  * + per-page metadata so the Screenshots side-panel tab can list them.
  */
 export async function saveScreenshot(p: SaveScreenshotPayload): Promise<{ id: string } | null> {
+  let organizationId: string;
+  try {
+    organizationId = await requireRequestOrganizationId();
+  } catch (error) {
+    console.warn('[matrx-extend] saveScreenshot refused: missing request organization', error);
+    return null;
+  }
   const c = getSupabase();
   const { data, error } = await c
     .schema(EXTEND_SCHEMA)
     .from('wbx_screenshot')
     .insert({
+      organization_id: organizationId,
       page_url_canonical: p.page_url_canonical,
       page_url_full: p.page_url_full,
       page_title: p.page_title ?? null,
@@ -1111,17 +1144,24 @@ export interface SaveGuidanceRowPayload {
 }
 
 /**
- * Upsert one guidance row keyed by its client id. Ownership is set server-side
- * (`created_by` is stamped from `auth.uid()` on insert and the RLS UPDATE policy
- * pins existing rows to the owner), so a row can never change hands.
+ * Upsert one guidance row keyed by its client id. Actor attribution is stamped
+ * server-side; organization identity is required from the initiating request.
  */
 export async function upsertGuidanceRow(p: SaveGuidanceRowPayload): Promise<boolean> {
+  let organizationId: string;
+  try {
+    organizationId = await requireRequestOrganizationId();
+  } catch (error) {
+    console.warn('[matrx-extend] upsertGuidanceRow refused: missing request organization', error);
+    return false;
+  }
   const c = getSupabase();
   const { error } = await c
     .schema(EXTEND_SCHEMA)
     .from('wbx_guidance')
     .upsert(
       {
+        organization_id: organizationId,
         id: p.id,
         domain: p.domain,
         kind: p.kind,
@@ -1221,17 +1261,24 @@ const DEMO_ROW_COLUMNS =
   'id, name, description, start_url, step_count, parameter_names, body, created_at, updated_at, is_deleted';
 
 /**
- * Upsert one demo row keyed by its client id. Ownership is set server-side
- * (`created_by` stamped from `auth.uid()`, `organization_id` resolved by the
- * org-default trigger), so neither column is ever sent from here.
+ * Upsert one demo row keyed by its client id. Actor attribution is stamped
+ * server-side; organization identity is required from the initiating request.
  */
 export async function upsertDemoRow(p: SaveDemoRowPayload): Promise<boolean> {
+  let organizationId: string;
+  try {
+    organizationId = await requireRequestOrganizationId();
+  } catch (error) {
+    console.warn('[matrx-extend] upsertDemoRow refused: missing request organization', error);
+    return false;
+  }
   const c = getSupabase();
   const { error } = await c
     .schema(EXTEND_SCHEMA)
     .from('wbx_demo')
     .upsert(
       {
+        organization_id: organizationId,
         id: p.id,
         name: p.name,
         description: p.description,

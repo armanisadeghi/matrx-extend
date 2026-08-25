@@ -139,8 +139,9 @@ describe('mirror-on-save', () => {
     expect(payload.parameter_names).toEqual(['username']);
     // The whole recorded step list travels — that is the entire point.
     expect((payload.body as Demo).steps).toHaveLength(2);
-    // Ownership columns are stamped by BEFORE-INSERT triggers and must never
-    // be sent from the client (organization_id is NOT NULL with no default).
+    // The pure local-to-row mapper owns neither actor nor request identity.
+    // upsertDemoRow adds organization_id at the Supabase boundary; the actor
+    // remains server-stamped.
     expect(payload).not.toHaveProperty('created_by');
     expect(payload).not.toHaveProperty('organization_id');
   });
