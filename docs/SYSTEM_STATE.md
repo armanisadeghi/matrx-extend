@@ -427,6 +427,11 @@
   - **Block mode wins.** A message that receives any render block stops
     accepting chunk text (aidream replaces chunks with blocks; the workflow
     channel marks the duplicate `block_shadowed`), so nothing renders twice.
+  - **Registry distribution is canonical (2026-08-24).** The extension installs
+    exact public `@ai-matrx/content-ir-react@0.1.0`; the temporary committed
+    vendor tarball and its publish-waiting instructions are deleted. A fresh
+    install therefore exercises the same immutable npm artifact as every other
+    external consumer.
 
 ### Tool categories (the discovery system)
 

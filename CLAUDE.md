@@ -113,7 +113,7 @@ SHARED packages (`@ai-matrx/content-ir` + `@ai-matrx/content-ir-react`) — wiri
 design; a client-side kind parser is the banned "bespoke stream renderer". A kind draws as a real
 component only when a `content_ir.kind_component` row (`platform='chrome-extension'`) names a key
 in `dispatch.tsx` — two explicit halves, no silent fallback; anything else gets the generic floor.
-content-ir-react comes from [vendor/](./vendor/README.md) until its npm publish. SoR:
+Both packages are exact public npm dependencies; committed package tarballs are forbidden. SoR:
 `common-docs/systems/content-ir-twin/FEATURE.md`. Raw stream / markdown parsing
 ([src/lib/api/stream.ts](./src/lib/api/stream.ts),
 [src/components/markdown/block-parser.ts](./src/components/markdown/block-parser.ts)) is next to

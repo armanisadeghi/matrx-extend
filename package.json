@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@ai-matrx/content-ir": "0.2.0",
-    "@ai-matrx/content-ir-react": "file:vendor/ai-matrx-content-ir-react-0.1.0.tgz",
+    "@ai-matrx/content-ir-react": "0.1.0",
     "@cartesia/cartesia-js": "^2.2.9",
     "@hookform/resolvers": "^3.10.0",
     "@joplin/turndown-plugin-gfm": "^1.0.61",
