@@ -195,3 +195,9 @@ toolchain · [/Users/armanisadeghi/code/common-docs/systems/clients/extension/WI
 wire contract · [docs/feature-tests.md](./docs/feature-tests.md) — how to verify
 anything · [docs/TOOLS.generated.md](./docs/TOOLS.generated.md) — tool descriptions
 (generated).
+
+File traffic: this extension is **not** cut over to the standalone file service — its
+`/files`, `/assets` and `/share` calls still ride the general backend base URL.
+Cross-repo system-of-record:
+[/Users/armanisadeghi/code/common-docs/systems/media/file-service/STATE.md](/Users/armanisadeghi/code/common-docs/systems/media/file-service/STATE.md)
+— read it before touching this feature in ANY repo.
