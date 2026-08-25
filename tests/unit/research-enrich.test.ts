@@ -2,7 +2,7 @@
  * Unit tests for the research enrich planner (src/lib/research/enrich.ts) and
  * goal guards (enrich-types.ts). The executor itself drives live DOM + network,
  * so we verify the pure mapping every goal routes through. See
- * docs/RESEARCH_ENRICHMENT.md §3.
+ * common-docs/systems/knowledge/research/EXTENSION_CAPTURE_CONTRACT.md § Enrichment.
  */
 
 import { planEnrich } from '@/lib/research/enrich';
