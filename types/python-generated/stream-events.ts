@@ -442,6 +442,22 @@ export interface ClaudeManagedWarningData {
   session_id: string;
 }
 
+export interface CmsLogoFoundData {
+  type?: "cms_logo_found";
+  site_id: string;
+  found: boolean;
+  message: string;
+  asset_id?: string | null;
+  asset_url?: string | null;
+  source?: string | null;
+  source_url?: string | null;
+  width?: number | null;
+  height?: number | null;
+  mime_type?: string | null;
+  candidates_considered?: number;
+  rejected?: string[];
+}
+
 export interface ContextChangedData {
   type?: "context_changed";
   key: string;
@@ -845,6 +861,7 @@ export interface MasterworkBuildCompleteData {
   rulebook_slug: string;
   rulebook_version: number;
   agent_ids?: string[];
+  submit_label?: string | null;
 }
 
 export interface MasterworkBuildProgressData {
@@ -1595,6 +1612,58 @@ export interface PodcastTickEvent {
   total?: number;
 }
 
+export interface ProofEvaluatedData {
+  type?: "proof_evaluated";
+  run_id: string;
+  proof_id: string;
+  title: string;
+  status: "passed" | "failed" | "skipped";
+  required?: boolean;
+  detail?: string;
+  observed?: Record<string, JsonValue>;
+}
+
+export interface ProofRunCompletedData {
+  type?: "proof_run_completed";
+  run_id: string;
+  slug: string;
+  mode: "live" | "replay";
+  verdict: "pass" | "fail" | "inconclusive";
+  strength: "live_receipts" | "replay_only";
+  summary?: string;
+  passed?: number;
+  failed?: number;
+  skipped?: number;
+  cost_usd?: number;
+  total_tokens?: number;
+  provider_calls?: number;
+  duration_ms?: number;
+}
+
+export interface ProofRunSkippedData {
+  type?: "proof_run_skipped";
+  slug: string;
+  reason: string;
+  month_to_date_usd?: number;
+}
+
+export interface ProofRunStartedData {
+  type?: "proof_run_started";
+  run_id: string;
+  slug: string;
+  label?: string;
+  mode: "live" | "replay";
+  gate_reason?: string;
+  conversation_id?: string | null;
+}
+
+export interface ProofRunStepData {
+  type?: "proof_run_step";
+  run_id: string;
+  message: string;
+  step?: number;
+}
+
 export interface RagVerifyClaimsData {
   type?: "rag_verify_claims";
   claims?: string[];
@@ -1702,6 +1771,7 @@ export type TypedDataPayload =
   | CategorizationResultData
   | ClaudeManagedSdkMessageData
   | ClaudeManagedWarningData
+  | CmsLogoFoundData
   | ContextChangedData
   | ContextConflictData
   | ContextDeltaData
@@ -1790,6 +1860,11 @@ export type TypedDataPayload =
   | PodcastStageEvent
   | PodcastStageStartedEvent
   | PodcastTickEvent
+  | ProofEvaluatedData
+  | ProofRunCompletedData
+  | ProofRunSkippedData
+  | ProofRunStartedData
+  | ProofRunStepData
   | QuestionnaireDisplayData
   | RagVerifyClaimsData
   | RagVerifyResultData
@@ -1879,6 +1954,7 @@ export interface KeywordResearchIngestSummary {
   edges_written?: number;
   edges_skipped_rejected?: number;
   edges_skipped_self?: number;
+  site_keyword_values_created?: number;
 }
 
 export interface KeywordResearchList {
@@ -1919,6 +1995,7 @@ export interface KeywordVolumeRejectedPhrase {
 export interface KeywordResearchResult {
   result_kind?: "keywords.relationship_research";
   primary_keyword: string;
+  site_id: string;
   research_doc_id: string;
   artifact: KeywordResearchArtifact;
   ingest: KeywordResearchIngestSummary;
