@@ -201,3 +201,5 @@ File traffic: this extension is **not** cut over to the standalone file service 
 Cross-repo system-of-record:
 [/Users/armanisadeghi/code/common-docs/systems/media/file-service/STATE.md](/Users/armanisadeghi/code/common-docs/systems/media/file-service/STATE.md)
 — read it before touching this feature in ANY repo.
+
+- **Logging into any Matrx UI**: sign in as `admin@admin.com` — the password is `AI_ADMIN_PASSWORD` in the `.env` of `aidream` or `matrx-frontend` (`AI_ADMIN_USERNAME` holds the email).
