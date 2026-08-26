@@ -88,7 +88,7 @@ export const CaptureArgs = z
     session_id: z.string().min(1).optional(),
     /** One-line description of the site, for the vault item. */
     description: z.string().optional(),
-    /** Provider key, if the agent recognises the site. */
+    /** Provider key, if the agent recognizes the site. */
     provider_key: z.string().optional(),
     /** The submit control selector the agent identified. */
     submit_selector: z.string().optional(),

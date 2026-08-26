@@ -1682,7 +1682,7 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
       }
       if (final?.has_password_field === true) {
         // Still sitting on a password form after a reaction — most likely a
-        // rejection the page phrased in copy we do not recognise.
+        // rejection the page phrased in copy we do not recognize.
         return await finish('unknown', { reason: 'still_on_login_form' });
       }
       return await finish('unknown', { reason: 'auth_state_indeterminate' });

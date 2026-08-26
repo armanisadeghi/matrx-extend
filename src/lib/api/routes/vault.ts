@@ -622,7 +622,7 @@ function normalizeField(raw: Partial<VaultFieldSummary> & { id?: string }): Vaul
 
 /**
  * Materialize server defaults so the panel consumes ONE shape. Anything that
- * isn't a recognised item (no `id`) is dropped rather than rendered half-built.
+ * isn't a recognized item (no `id`) is dropped rather than rendered half-built.
  */
 function normalizeItem(raw: unknown): VaultItemSummary | null {
   if (!raw || typeof raw !== 'object') return null;

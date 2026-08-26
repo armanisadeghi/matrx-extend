@@ -279,7 +279,7 @@ function handleToolEvent(messageId: string, data: Record<string, unknown> | unde
 
 /**
  * The running agent drained one or more queued inbox items at a turn boundary
- * (turn-boundary inbox — docs/TURN_BOUNDARY_INBOX.md). For each item: flip its
+ * (turn-boundary inbox — /Users/armanisadeghi/code/common-docs/systems/agents/execution-runtime/TURN-BOUNDARY-INBOX.md). For each item: flip its
  * floating "waiting" card to delivered, and slot the message into the
  * transcript as a real user bubble immediately above the still-streaming
  * assistant message so ordering reads naturally (… → user steer → assistant
@@ -1226,7 +1226,7 @@ export function useChatStream() {
   }, [sendMessage]);
 
   // Interrupt the running turn and immediately redirect with a new message —
-  // the "stop & send" affordance. Server-managed (docs/TURN_BOUNDARY_INBOX.md,
+  // the "stop & send" affordance. Server-managed (/Users/armanisadeghi/code/common-docs/systems/agents/execution-runtime/TURN-BOUNDARY-INBOX.md,
   // /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md #6): aborting the stream makes the
   // server persist the partial assistant turn + an auto "[interrupted]" marker;
   // the fresh run then loads that history and answers the redirect. Distinct
