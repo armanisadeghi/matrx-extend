@@ -7,7 +7,7 @@
 > common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-08-24T05:28:53.996Z
+Generated: 2026-08-26T07:31:31.811Z
 Total tools: 81
 
 ## ai
@@ -120,7 +120,7 @@ Index of every tool category the Matrx Chrome extension exposes (client-side too
 
 _action_
 
-The ONE credential tool: use, acquire, and document website logins without ever seeing a value. action=list shows every saved login's metadata (no session needed); auto = safe automatic fill; discover = safe field names for the current page; attempt = fill and submit one complete field map; authenticator = complete a supported one-time-code challenge; capture = securely save a NEW login (the person types into a private card — values never enter your arguments or results; served by Matrx Extend today, guidance-only on the server browser); propose_recipe = document an unknown site's selectors and outcome signals for human review after a capture; report = report a leak or wrong verdict. In server-owned Playwright pass the cloud-browser session_id; Matrx Extend derives its assigned tab. Never provide a URL, username, password, token, seed, or code. MFA or CAPTCHA that cannot be completed safely requires user takeover.
+Sign in to websites with the person's saved logins without ever seeing a credential value. For a direct sign-in request, THE PATH is: (1) open the requested sign-in page with cloud_browser; (2) call credential_login action='auto' with that browser session; (3) use discover then one complete attempt only if auto could not read the form; (4) use authenticator for a supported saved TOTP challenge. action='list' is diagnostic metadata only after no_matching_login; it never performs a login. Never pass a URL, username, password, token, seed, or code. End with exactly one verdict: authenticated, needs_mfa, captcha_or_takeover, credentials_rejected, or unknown. Missing credentials and inventory-only results are unknown, never credentials_rejected. CAPTCHA and unsupported MFA require user takeover. When a credential_login result ends the requested task, include a literal final line in the form Verdict: <token>. For an inventory-only or missing-credential result, that line MUST be exactly Verdict: unknown; never replace unknown with prose such as cannot sign in.
 
 **Parameters:** `kind` (string) = ["secret_exposed","wrong_verdict","recipe_wrong","other"]; `notes` (string); `steps` (array); `where` (string); `action` (string, required) = ["list","auto","discover","attempt","authenticator","report","capture","propose_recipe"]; `expect` (object); `fields` (array); `submit` (any); `$variants` (any); `field_map` (array); `attempt_id` (string); `session_id` (string); `description` (string); `display_name` (string); `provider_key` (string); `code_selector` (string); `failure_signals` (array); `submit_selector` (string); `success_signals` (array); `challenge_signals` (array); `credential_item_id` (string)
 
