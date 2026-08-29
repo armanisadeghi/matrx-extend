@@ -42,7 +42,7 @@
   "dependencies": {
     "@ai-matrx/agents": "0.5.0",
     "@ai-matrx/content-ir": "0.3.0",
-    "@ai-matrx/content-ir-react": "0.5.0",
+    "@ai-matrx/content-ir-react": "latest",
     "@ai-matrx/design-system": "0.1.1",
     "@cartesia/cartesia-js": "^2.2.9",
     "@hookform/resolvers": "^3.10.0",
