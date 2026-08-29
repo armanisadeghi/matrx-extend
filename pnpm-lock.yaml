@@ -9,16 +9,16 @@ importers:
   .:
     dependencies:
       '@ai-matrx/agents':
-        specifier: 0.5.0
+        specifier: latest
         version: 0.5.0
       '@ai-matrx/content-ir':
-        specifier: 0.3.0
+        specifier: latest
         version: 0.3.0
       '@ai-matrx/content-ir-react':
         specifier: latest
         version: 0.5.1(@ai-matrx/content-ir@0.3.0)(react@19.2.5)
       '@ai-matrx/design-system':
-        specifier: 0.1.1
+        specifier: latest
         version: 0.1.1(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@cartesia/cartesia-js':
         specifier: ^2.2.9
