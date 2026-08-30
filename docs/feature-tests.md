@@ -2299,6 +2299,38 @@ Every entry follows this shape:
   - Copy the reply ("With everything"): a structured block copies as
     `<kind name="…">` with its zero-loss JSON, `__kind` included.
 
+### Organization on every request
+- **What it does:** every backend request and every organization-scoped write
+  carries the organization you are acting in (`X-Organization-Id`). The server
+  refuses an authenticated request that names none, and this client refuses to
+  send one — it never guesses an organization on your behalf.
+- **Where to test:** Side panel → Settings → Organization, then any action that
+  saves (screenshot, note, highlight, chat send).
+- **Prereq:** signed in.
+- **Steps:**
+  1. Open Settings → Organization. If you belong to more than one organization
+     and have set no default, "Acting as" shows "Choose…" and is marked
+     *Required*.
+  2. Pick an organization.
+  3. Run a screenshot tool call from the Tools tab, or send a chat message.
+  4. Open the Debug tab, filter source `api`, and read the outgoing request.
+- **Expected:** after picking, the action completes and the saved row lands in
+  the organization you chose. The Debug entry for the request shows it going out
+  with an organization; `GET /auth/whoami` is NOT part of the path any more.
+- **Edge cases worth poking:**
+  - BEFORE choosing (multi-org account, no default): a chat send must fail with
+    "No organization is selected for this browser. Choose your organization in
+    Settings, then try again." — a remedy, never a silent hang and never a
+    generic error. The request must not leave the browser at all (no 400 in the
+    Debug log, because nothing was sent).
+  - Sign out and back in as a different user: the previous user's organization
+    must NOT be inherited — Settings shows "Choose…" again.
+  - If you belong to exactly ONE organization, it is selected for you with no
+    prompt (there is nothing to choose). If you have set a default organization
+    in the web app, that one is used.
+  - Leave an organization in the web app, then act in the extension: the stale
+    selection is dropped with a warning in the Debug log rather than sent.
+
 ## Template (copy when adding a new entry)
 
 ```markdown
