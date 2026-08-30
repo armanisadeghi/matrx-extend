@@ -346,6 +346,19 @@ else
     fail "Unqualified Supabase table routing — these 404 at RUNTIME. Run 'pnpm check:schema-routing' for the list."
 fi
 
+# @ai-matrx package currency — BLOCKING. THE LATEST LAW says the specs are
+# "latest"; THE CATCH-UP RULE (C28) says the INSTALLED versions must actually be
+# npm latest before this repo releases. "latest" resolves at install time, so a
+# lockfile happily ships yesterday's package forever. Releasing stale is how one
+# repo silently runs a different version of the shared system than every other.
+# Fix forward — reinstall and adopt the CHANGELOG "Consumer action"s. Never pin.
+CURRENT_STEP="matrx-package-currency"
+if pnpm check:matrx-packages; then
+    ok "@ai-matrx packages are npm latest"
+else
+    fail "@ai-matrx packages are stale or pinned (see above). Run 'pnpm sync:matrx-packages', adopt each new version's CHANGELOG 'Consumer action', commit package.json + pnpm-lock.yaml, then re-run. Catch-up work for this repo is also queued on the Autonomous Work Loop (campaign package-catch-up)."
+fi
+
 # ── 3. Bump version ─────────────────────────────────────────────────────────
 CURRENT_STEP="version-bump"
 step "3/8  Bump version → ${NEW_VERSION}"
