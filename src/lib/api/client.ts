@@ -9,6 +9,7 @@
 import { getBackendUrl } from '@/config/backend';
 import { getAccessToken, refreshAccessToken } from '@/lib/auth/flow';
 import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
+import { getActiveOrganizationId, OrganizationNotSelectedError } from '@/lib/org/active-org';
 import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -25,6 +26,28 @@ export type ApiResult<T> = ApiSuccess<T> | ApiFailure;
  * shape bugs as the user's wifi (audit P2-22).
  */
 export const STATUS_INVALID_BODY = -1;
+
+/**
+ * Status sentinel for "this request was never sent, because no organization
+ * is selected". Every authenticated request to the platform carries BOTH the
+ * user and the organization it acts in; the server's AuthMiddleware refuses
+ * one without an organization, so sending it anyway would burn a round-trip
+ * to earn a 400 the user cannot interpret. We refuse before I/O and hand the
+ * UI a remedy instead (law 4: nothing fails silently).
+ */
+export const STATUS_NO_ORGANIZATION = -2;
+
+/**
+ * The only paths an authenticated caller may reach without an organization —
+ * liveness, and the sign-in/identity surface a client uses BEFORE it can know
+ * its organization. Deliberately tiny: every addition here is a hole in the
+ * contract, so a new entry needs a reason that survives being read aloud.
+ */
+const ORG_EXEMPT_PATH_PREFIXES = ['/health', '/auth/'] as const;
+
+function isOrgExemptPath(path: string): boolean {
+  return ORG_EXEMPT_PATH_PREFIXES.some((prefix) => path.startsWith(prefix));
+}
 
 /**
  * Default per-request deadline. NO call site passed an AbortSignal before
@@ -57,6 +80,11 @@ async function buildHeaders(extra: Record<string, string> = {}): Promise<Record<
   };
   if (token) {
     headers.Authorization = `Bearer ${token}`;
+    // Identity and organization travel together on EVERY request. Resolved
+    // per request (never cached into a token) so switching organizations
+    // takes effect on the next call instead of the next sign-in.
+    const organizationId = await getActiveOrganizationId();
+    if (organizationId) headers['X-Organization-Id'] = organizationId;
   } else {
     // No signed-in session — fall back to guest fingerprint so the server's
     // AuthMiddleware can resolve us to a stable anonymous auth.users row.
@@ -82,6 +110,17 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   const url = `${baseUrl}${opts.path}`;
   const headers = await buildHeaders(opts.headers);
   const hasAuth = !!headers.Authorization;
+  if (hasAuth && !headers['X-Organization-Id'] && !isOrgExemptPath(opts.path)) {
+    const failure = new OrganizationNotSelectedError();
+    log.error('api', `✗ ${opts.method} ${opts.path} — no organization selected`, {
+      remedy: failure.remedy,
+    });
+    return {
+      ok: false,
+      status: STATUS_NO_ORGANIZATION,
+      error: `${failure.message} ${failure.remedy}`,
+    };
+  }
   log.info('api', `→ ${opts.method} ${opts.path}`, { url, auth: hasAuth });
   const start = performance.now();
   // Caller signal + the default deadline. AbortSignal.any (Chrome 116+)

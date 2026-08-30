@@ -8,6 +8,7 @@
 import { getApiBaseUrl } from '@/lib/api/client';
 import { getAccessToken } from '@/lib/auth/flow';
 import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
+import { requireActiveOrganizationId } from '@/lib/org/active-org';
 import { log } from '@/lib/debug/log';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -113,6 +114,10 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
   };
   if (token) {
     headers.Authorization = `Bearer ${token}`;
+    // A stream is a request too. It carries the organization or it does not
+    // start — a run that opens without one dies mid-flight on the server's
+    // admission gate, which reads to the user as a hang.
+    headers['X-Organization-Id'] = await requireActiveOrganizationId();
   } else {
     headers['X-Fingerprint-ID'] = await getOrCreateGuestSignature();
   }

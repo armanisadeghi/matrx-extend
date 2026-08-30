@@ -13,6 +13,7 @@
 
 import { getBackendUrl } from '@/config/backend';
 import { getAccessToken, refreshAccessToken } from '@/lib/auth/flow';
+import { requireActiveOrganizationId } from '@/lib/org/active-org';
 import { log } from '@/lib/debug/log';
 
 export interface FileUploadResponse {
@@ -95,7 +96,14 @@ export async function uploadFile(
 ): Promise<FileUploadResponse> {
   const baseUrl = await getBackendUrl();
   const token = await getAccessToken();
-  const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+  // Multipart is a request like any other: it carries the organization or it
+  // does not go out. `requireActiveOrganizationId` throws a remediable
+  // OrganizationNotSelectedError rather than uploading into nowhere.
+  const organizationId = await requireActiveOrganizationId();
+  const headers: Record<string, string> = {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    'X-Organization-Id': organizationId,
+  };
 
   const rawPath = opts.path ?? `browser-agent/uploads/${filename}`;
   const filePath = opts.userSelected
@@ -118,7 +126,10 @@ export async function uploadFile(
     const refreshed = await refreshAccessToken();
     if (refreshed) {
       const t2 = await getAccessToken();
-      const h2: Record<string, string> = t2 ? { Authorization: `Bearer ${t2}` } : {};
+      const h2: Record<string, string> = {
+        ...(t2 ? { Authorization: `Bearer ${t2}` } : {}),
+        'X-Organization-Id': organizationId,
+      };
       res = await fetch(url, { method: 'POST', headers: h2, body: fd });
     }
   }
@@ -145,14 +156,21 @@ export async function downloadFileBytes(
 ): Promise<{ blob: Blob; filename: string; mimeType: string }> {
   const baseUrl = await getBackendUrl();
   const token = await getAccessToken();
-  const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+  const organizationId = await requireActiveOrganizationId();
+  const headers: Record<string, string> = {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    'X-Organization-Id': organizationId,
+  };
   const url = `${baseUrl}/files/${encodeURIComponent(fileId)}/download`;
   let res = await fetch(url, signal ? { headers, signal } : { headers });
   if (res.status === 401) {
     const refreshed = await refreshAccessToken();
     if (refreshed) {
       const t2 = await getAccessToken();
-      const refreshedHeaders = t2 ? { Authorization: `Bearer ${t2}` } : {};
+      const refreshedHeaders: Record<string, string> = {
+        ...(t2 ? { Authorization: `Bearer ${t2}` } : {}),
+        'X-Organization-Id': organizationId,
+      };
       res = await fetch(
         url,
         signal ? { headers: refreshedHeaders, signal } : { headers: refreshedHeaders },

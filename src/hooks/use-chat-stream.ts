@@ -4,6 +4,7 @@ import {
   mandateExecutePath,
 } from '@/lib/api/routes/ai';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
+import { isOrganizationNotSelectedError } from '@/lib/org/active-org';
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
@@ -745,20 +746,25 @@ export function useChatStream() {
       pendingContinueRef.current = null;
       watchdogRef.current?.start();
 
-      // A new conversation must name its organization explicitly. The same
-      // bootstrap works for bearer users and fingerprint guests; the server is
-      // the authority because a guest's personal organization is not visible
-      // through this client's anonymous Supabase session.
+      // A new conversation must name its organization explicitly. The client
+      // states which organization the user chose (src/lib/org/active-org.ts)
+      // and the server verifies membership — no request reaches the platform
+      // carrying an identity but no organization.
       let organizationId: string;
       try {
         organizationId = await requireRequestOrganizationId();
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
+        // A missing organization is fixable in one click, so say the fix
+        // instead of the generic retry line.
+        const remedy = isOrganizationNotSelectedError(err)
+          ? err.remedy
+          : 'Please try again.';
         log.error('stream', 'conversation organization bootstrap failed', err);
         watchdogRef.current?.stop();
         useChatStore
           .getState()
-          .appendAssistantText(assistantMsg.id, `\n\n_Error:_ ${message} Please try again.`);
+          .appendAssistantText(assistantMsg.id, `\n\n_Error:_ ${message} ${remedy}`);
         useChatStore.getState().finalizeAssistant(assistantMsg.id);
         useChatStore.getState().setStreaming(false);
         runIdRef.current = null;

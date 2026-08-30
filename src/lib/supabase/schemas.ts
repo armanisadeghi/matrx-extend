@@ -92,6 +92,14 @@ export const TABLE_SCHEMA = {
   // kinds exist, and which component draws one on `platform='chrome-extension'`.
   kind_definition: 'content_ir',
   kind_component: 'content_ir',
+  // iam — organizations the signed-in user belongs to. READ-ONLY here: which
+  // organization this install acts in is resolved in src/lib/org/active-org.ts.
+  // Membership itself is read through the canonical `mbr_for_user` RPC, never
+  // by querying the junction table directly.
+  organizations: 'iam',
+  // users.user_preferences — the durable, cross-device default-organization
+  // preference the web app writes. Read-only from this client.
+  user_preferences: 'users',
 } as const;
 
 export type ExtensionTable = keyof typeof TABLE_SCHEMA;
@@ -113,8 +121,15 @@ export const workbenchDb = () => getSupabase().schema('workbench');
  */
 export const chatDb = () => getSupabase().schema('chat');
 
-/** `users` — user_form_profile. Ownership: `user_id` (kept). */
+/** `users` — user_form_profile, user_preferences. Ownership: `user_id` (kept). */
 export const usersDb = () => getSupabase().schema('users');
+
+/**
+ * `iam` — organizations. READ-ONLY from this client: the extension resolves
+ * which organization it acts in (src/lib/org/active-org.ts) but never creates,
+ * renames, or joins one — that is the web app's job.
+ */
+export const iamDb = () => getSupabase().schema('iam');
 
 /** `admin` — admins. Ownership: `user_id` (kept). */
 export const adminDb = () => getSupabase().schema('admin');

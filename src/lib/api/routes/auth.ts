@@ -1,21 +1,20 @@
-import { apiGet, withSchema } from '@/lib/api/client';
-import { z } from 'zod';
-
-const WhoamiSchema = z.object({
-  organization_id: z.string().uuid().nullable(),
-});
+import { requireActiveOrganizationId } from '@/lib/org/active-org';
 
 /**
- * Assert the organization already carried by the authenticated request. This
- * helper never chooses, creates, or substitutes an organization.
+ * The organization this request acts in — the value that goes on the wire as
+ * `X-Organization-Id` and into every organization-scoped write.
+ *
+ * This used to ask the server (`GET /auth/whoami`) which organization the
+ * request "carried". That was backwards, and it broke the moment the server
+ * stopped guessing: the client is the side that knows which organization the
+ * user chose, so the client states it and the server verifies membership.
+ * Resolution — and the refusal to invent one — lives in
+ * `src/lib/org/active-org.ts`.
+ *
+ * Throws `OrganizationNotSelectedError` (with a user-facing remedy) when the
+ * user must pick. Callers keep their existing failure handling: this function
+ * has always thrown rather than returned a fallback.
  */
 export async function requireRequestOrganizationId(): Promise<string> {
-  const result = withSchema(await apiGet<unknown>('/auth/whoami'), WhoamiSchema);
-  if (!result.ok) {
-    throw new Error(`Workspace initialization failed (${result.status}): ${result.error}`);
-  }
-  if (!result.data.organization_id) {
-    throw new Error('Workspace initialization failed: the request carried no organization.');
-  }
-  return result.data.organization_id;
+  return requireActiveOrganizationId();
 }

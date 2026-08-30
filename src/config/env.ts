@@ -108,6 +108,12 @@ export const STORAGE_KEYS = {
   // Origins the user told the login-capture prompt to never ask about again.
   // Origins only — never a credential, never a username.
   CAPTURE_NEVER_ORIGINS: 'matrx.credentials.captureNeverOrigins',
+  // The organization this install acts in. Every backend request carries it as
+  // X-Organization-Id and every org-scoped write sends it explicitly; the
+  // server's AuthMiddleware verifies membership and refuses a request without
+  // it. Set only by an explicit user choice or the canonical resolver in
+  // src/lib/org/active-org.ts — never guessed at a call site.
+  ACTIVE_ORGANIZATION: 'matrx.org.active',
 } as const;
 
 export const ALARMS = {

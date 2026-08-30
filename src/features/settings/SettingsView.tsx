@@ -23,6 +23,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapabilities';
 import { useAuth } from '@/hooks/use-auth';
+import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useDesktopBridge } from '@/hooks/use-desktop';
 import {
   getEnginePortOverride,
@@ -53,6 +54,11 @@ export function SettingsView() {
   const [enginePortSaved, setEnginePortSaved] = useState<number | null>(null);
   const [enginePortError, setEnginePortError] = useState<string | null>(null);
   const [clearLocalDataOpen, setClearLocalDataOpen] = useState(false);
+  // Which organization this install acts in. Every backend request and every
+  // organization-scoped write carries it, so a user with more than one
+  // organization must state which one before the extension can do anything.
+  const org = useActiveOrganization();
+  const [orgError, setOrgError] = useState<string | null>(null);
 
   useEffect(() => {
     // Both signed-in users and guests get the agent list: builtin agents
@@ -123,6 +129,52 @@ export function SettingsView() {
               <Row label="Email" value={user?.email ?? '—'} mono />
               {user?.full_name && <Row label="Name" value={user.full_name} />}
               {isAdmin && <Row label="Role" value={<Badge>admin</Badge>} />}
+            </Card>
+          </Collapsible>
+
+          <Collapsible label="Organization" defaultOpen={org.mustChoose}>
+            <Card>
+              {org.error ? (
+                <Row
+                  label="Organizations"
+                  value={<span className="text-destructive">{org.error}</span>}
+                />
+              ) : org.loading ? (
+                <Row label="Organization" value="Loading…" />
+              ) : !user ? (
+                <Row label="Organization" value="Sign in to choose" />
+              ) : org.organizations.length === 0 ? (
+                <Row label="Organization" value="You are not a member of any organization" />
+              ) : (
+                <ControlRow
+                  label="Acting as"
+                  {...(org.mustChoose
+                    ? { hint: 'Required — every request carries your organization' }
+                    : {})}
+                  control={
+                    <PillSelect
+                      value={org.active?.id ?? NONE}
+                      onChange={(v) => {
+                        if (v === NONE) return;
+                        void org.choose(v).catch((err: unknown) => {
+                          setOrgError(err instanceof Error ? err.message : String(err));
+                        });
+                      }}
+                      placeholder="Choose…"
+                      options={[
+                        ...(org.active ? [] : [{ value: NONE, label: 'Choose…' }]),
+                        ...org.organizations.map((o) => ({
+                          value: o.id,
+                          label: o.isPersonal ? `${o.name} (personal)` : o.name,
+                        })),
+                      ]}
+                    />
+                  }
+                />
+              )}
+              {orgError && (
+                <Row label="" value={<span className="text-destructive">{orgError}</span>} />
+              )}
             </Card>
           </Collapsible>
 

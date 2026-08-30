@@ -126,6 +126,10 @@ export async function signOut(): Promise<void> {
     STORAGE_KEYS.REFRESH_TOKEN_ENC,
     STORAGE_KEYS.REFRESH_TOKEN_IV,
     STORAGE_KEYS.TOKEN_EXPIRES_AT,
+    // The organization is part of the signed-in identity: a different user
+    // signing in on this install must never inherit the last user's
+    // organization.
+    STORAGE_KEYS.ACTIVE_ORGANIZATION,
   ]);
   // Drop the in-memory Supabase JS session in THIS context too (audit P3-5
   // — `clearSupabaseSession` previously had zero callers, so the
@@ -149,6 +153,10 @@ async function readFreshAccessToken(): Promise<string | null> {
   const stored = await chrome.storage.local.get([
     STORAGE_KEYS.ACCESS_TOKEN,
     STORAGE_KEYS.TOKEN_EXPIRES_AT,
+    // The organization is part of the signed-in identity: a different user
+    // signing in on this install must never inherit the last user's
+    // organization.
+    STORAGE_KEYS.ACTIVE_ORGANIZATION,
   ]);
   const accessToken = stored[STORAGE_KEYS.ACCESS_TOKEN] as string | undefined;
   const expiresAt = stored[STORAGE_KEYS.TOKEN_EXPIRES_AT] as number | undefined;

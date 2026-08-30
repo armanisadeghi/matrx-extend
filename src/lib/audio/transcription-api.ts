@@ -10,6 +10,7 @@
 import { getBackendUrl } from '@/config/backend';
 import { getAccessToken, refreshAccessToken } from '@/lib/auth/flow';
 import { AUDIO_API_ROUTES } from './constants';
+import { requireActiveOrganizationId } from '@/lib/org/active-org';
 
 export type TranscriptionResponseBody = Record<string, unknown>;
 
@@ -50,12 +51,18 @@ async function parseResponseBody(response: Response): Promise<TranscriptionRespo
   return parsed;
 }
 
-async function send(url: string, form: FormData, token: string): Promise<TranscriptionHttpResult> {
+async function send(
+  url: string,
+  form: FormData,
+  token: string,
+  organizationId: string,
+): Promise<TranscriptionHttpResult> {
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
       Authorization: `Bearer ${token}`,
+      'X-Organization-Id': organizationId,
     },
     body: form,
   });
@@ -72,15 +79,17 @@ export async function postTranscriptionForm(form: FormData): Promise<Transcripti
     throw new Error('Not signed in. Please sign in to use voice input.');
   }
 
+  // Same law as every other sink: identity and organization travel together.
+  const organizationId = await requireActiveOrganizationId();
   const url = `${await getBackendUrl()}${AUDIO_API_ROUTES.TRANSCRIBE}`;
-  const result = await send(url, form, token);
+  const result = await send(url, form, token, organizationId);
   if (result.response.status !== 401) return result;
 
   const refreshed = await refreshAccessToken();
   if (!refreshed) return result;
   token = await getAccessToken();
   if (!token) return result;
-  return send(url, form, token);
+  return send(url, form, token, organizationId);
 }
 
 export function transcriptionErrorMessage(body: TranscriptionResponseBody, status: number): string {
