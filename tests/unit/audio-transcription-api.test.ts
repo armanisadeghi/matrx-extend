@@ -3,11 +3,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const getBackendUrlMock = vi.hoisted(() => vi.fn());
 const getAccessTokenMock = vi.hoisted(() => vi.fn());
 const refreshAccessTokenMock = vi.hoisted(() => vi.fn());
+const requireActiveOrganizationIdMock = vi.hoisted(() => vi.fn());
 
 vi.mock('@/config/backend', () => ({ getBackendUrl: getBackendUrlMock }));
 vi.mock('@/lib/auth/flow', () => ({
   getAccessToken: getAccessTokenMock,
   refreshAccessToken: refreshAccessTokenMock,
+}));
+vi.mock('@/lib/org/active-org', () => ({
+  requireActiveOrganizationId: requireActiveOrganizationIdMock,
 }));
 
 import { postTranscriptionForm, transcriptionErrorMessage } from '@/lib/audio/transcription-api';
@@ -23,7 +27,10 @@ beforeEach(() => {
   getBackendUrlMock.mockReset().mockResolvedValue('https://server.example.test');
   getAccessTokenMock.mockReset().mockResolvedValue('token-1');
   refreshAccessTokenMock.mockReset().mockResolvedValue(false);
+  requireActiveOrganizationIdMock.mockReset().mockResolvedValue(ORG_ID);
 });
+
+const ORG_ID = '22222222-2222-4222-8222-222222222222';
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -89,6 +96,29 @@ describe('audio transcription API', () => {
         headers: expect.objectContaining({ Authorization: 'Bearer fresh' }),
       }),
     );
+  });
+
+  it('carries the organization on the upload, like every other request', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ success: true, text: 'hi' }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await postTranscriptionForm(new FormData());
+
+    expect(fetchMock.mock.calls[0]?.[1]).toEqual(
+      expect.objectContaining({
+        headers: expect.objectContaining({ 'X-Organization-Id': ORG_ID }),
+      }),
+    );
+  });
+
+  it('does not upload audio at all when no organization is selected', async () => {
+    requireActiveOrganizationIdMock.mockRejectedValue(new Error('No organization is selected.'));
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(postTranscriptionForm(new FormData())).rejects.toThrow('No organization');
+    // The point: the recording never leaves the browser to earn a 400.
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('extracts FastAPI detail errors', () => {
