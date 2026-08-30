@@ -64,6 +64,15 @@ always) + `is_new` + `store`; aidream 422s anything else. `AgentStartRequest` in
 [src/lib/api/routes/ai.ts](./src/lib/api/routes/ai.ts) marks all three required. Contract:
 `/Users/armanisadeghi/code/common-docs/systems/agents/conversation-start-contract/FEATURE.md`.
 
+**Organization on every request.** Identity and organization travel together: every
+authenticated backend call carries `X-Organization-Id` and every org-scoped write sends
+the same id. The server refuses an authenticated request without one at the top
+(`aidream@8e5ee0b93`) and never picks one for you. The ONE resolver is
+[src/lib/org/active-org.ts](./src/lib/org/active-org.ts) — never resolve an org at a call
+site, never fall back to first/personal/system, and never re-add a `whoami` round trip to
+ask the server which org it "carried". A new sink attaches the header or refuses to send.
+Register row EX-T05: `../common-docs/projects/no-db-assigned-org/PLAN.md`.
+
 **Tool system.**
 - Canonical vocabulary (Tool / Registered / Inline / Executor / Binding / Surface /
   Arming / Bundle / Gate) — copy verbatim, never paraphrase:
