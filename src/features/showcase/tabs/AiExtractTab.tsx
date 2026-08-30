@@ -9,7 +9,7 @@ import {
   PATTERN_FROM_DATA_MANDATE_KEY,
   STRUCTURED_EXTRACTOR_MANDATE_KEY,
   STRUCTURED_EXTRACTOR_MANDATE_REF,
-} from '@/lib/agents/mandates';
+} from '@/lib/mandates';
 import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
 import { useAuthStore } from '@/state/auth';
 import { CheckCircle2, Loader2, Plus, Sparkles, Wand2, X } from 'lucide-react';

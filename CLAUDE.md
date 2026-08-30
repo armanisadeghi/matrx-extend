@@ -30,7 +30,7 @@ branch/worktree. Full ruling: workspace root [`../CLAUDE.md`](../CLAUDE.md) § S
   answer resolved at run time by `mandate_key` — never a constant. This repo has ZERO
   Mandate coverage and known hardcoded agent UUIDs (`AiExtractTab.tsx`,
   `lib/agenda/constants.ts`; rollout rows E1/E2). Law:
-  `/Users/armanisadeghi/code/common-docs/systems/agents/mandates/RUNTIME.md` · why clients
+  `/Users/armanisadeghi/code/common-docs/systems/mandates/RUNTIME.md` · why clients
   drift: `/Users/armanisadeghi/code/common-docs/policies/clients-consume-never-reimplement.md`
 - **No unapproved schedules.** Every scheduled task exists only with Arman's approval
   by name and interval, registered + claimed via `schedule_claim`:

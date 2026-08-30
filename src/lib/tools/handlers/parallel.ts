@@ -28,7 +28,7 @@
  * load). Future work: lift to user-configurable.
  */
 
-import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/agents/mandates';
+import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { getApiBaseUrl } from '@/lib/api/client';
 import { agentTargetExecutePath } from '@/lib/api/routes/ai';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';

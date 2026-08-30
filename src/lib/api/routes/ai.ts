@@ -22,7 +22,7 @@
  * `./tool-results.ts` stays hardcoded to `/ai/...` deliberately.
  */
 
-import { mandateKeyFromAgentRef } from '@/lib/agents/mandates';
+import { mandateKeyFromAgentRef } from '@/lib/mandates';
 import { apiDelete, apiGet, apiPatch, apiPost } from '@/lib/api/client';
 
 /**

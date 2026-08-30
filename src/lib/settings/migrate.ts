@@ -1,4 +1,4 @@
-import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/agents/mandates';
+import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 
 export const SETTINGS_PERSIST_VERSION = 4;
 export const LEGACY_DEFAULT_CHAT_MANDATE_REF = 'mandate:chat.default_new_chat';

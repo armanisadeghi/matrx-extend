@@ -1,4 +1,4 @@
-import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/agents/mandates';
+import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { SETTINGS_PERSIST_VERSION, migrateDefaultBrowserAgent } from '@/lib/settings/migrate';
 import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import { create } from 'zustand';

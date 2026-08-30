@@ -9,7 +9,7 @@
  * fields, so this is the second step.
  */
 
-import { isMandateAgentRef } from '@/lib/agents/mandates';
+import { isMandateAgentRef } from '@/lib/mandates';
 import { type AgxAgentExecution, fetchAgentExecution } from '@/lib/supabase/queries';
 import { useEffect, useState } from 'react';
 

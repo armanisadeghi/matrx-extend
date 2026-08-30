@@ -28,7 +28,7 @@ import { Markdown } from '@/components/markdown';
 import { Button } from '@/components/ui/button';
 import { ENV } from '@/config/env';
 import { useAgentTextRun } from '@/hooks/use-agent-text-run';
-import { DEFAULT_CHAT_MANDATE_REF, mandateKeyFromAgentRef } from '@/lib/agents/mandates';
+import { DEFAULT_CHAT_MANDATE_REF, mandateKeyFromAgentRef } from '@/lib/mandates';
 import type { SeoAudit } from '@/lib/seo/audit';
 import { buildSeoRecommendationsRequest } from '@/lib/seo/recommendations';
 import { fetchAgentList } from '@/lib/supabase/queries';
@@ -142,7 +142,7 @@ export function AiRecommendations({ audit }: { audit: SeoAudit }) {
             onClick={() =>
               void chrome.tabs.create({
                 url: mandateKey
-                  ? `${ENV.FRONTEND_URL}/administration/agents/mandates?mandate=${encodeURIComponent(mandateKey)}`
+                  ? `${ENV.FRONTEND_URL}/administration/mandates?mandate=${encodeURIComponent(mandateKey)}`
                   : `${ENV.FRONTEND_URL}/agents/${encodeURIComponent(agentId)}`,
               })
             }

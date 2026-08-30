@@ -1,4 +1,4 @@
-import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/agents/mandates';
+import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import {
   LEGACY_DEFAULT_CHAT_MANDATE_REF,
   migrateDefaultBrowserAgent,

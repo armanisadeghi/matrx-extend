@@ -28,7 +28,7 @@
  *   - extend.wbx_screenshot · extend.wbx_guidance · extend.wbx_demo · extend.wbx_highlight · extend.wbx_recipe
  */
 
-import { DEFAULT_CHAT_MANDATE_KEY, DEFAULT_CHAT_MANDATE_REF } from '@/lib/agents/mandates';
+import { DEFAULT_CHAT_MANDATE_KEY, DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { log } from '@/lib/debug/log';
 import { getSupabase } from '@/lib/supabase/client';
