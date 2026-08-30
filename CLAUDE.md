@@ -223,3 +223,10 @@ range. Guard: `npm run check:matrx-latest` (fails on any pin). Version problems 
 releasing forward, never by pinning — a pin licenses silent drift and workaround code (the
 disaster that nearly killed AI Dream). Law + rationale:
 `../common-docs/policies/typescript-package-standard.md` § THE LATEST LAW.
+
+**THE SAME-SESSION LAW:** a fix that belongs in an `@ai-matrx/*` package is made IN the
+package (`aidream/apps/shared/<name>`), released, and adopted in the same session — never
+massaged in host code, never left edited-unpublished. **THE CATCH-UP RULE:** working here,
+refresh `@ai-matrx/*` to latest and reconcile per each package's CHANGELOG `Consumer action`s
+before this repo's next release. Both: same policy, § THE SAME-SESSION LAW + § THE CATCH-UP
+RULE.
