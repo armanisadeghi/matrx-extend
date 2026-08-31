@@ -9,10 +9,11 @@
 import { getBackendUrl } from '@/config/backend';
 import { getAccessToken, refreshAccessToken } from '@/lib/auth/flow';
 import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
-import { getActiveOrganizationId, OrganizationNotSelectedError } from '@/lib/org/active-org';
 import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { OrganizationNotSelectedError, getActiveOrganizationId } from '@/lib/org/active-org';
+import { applyOrganizationContextHeader } from '@ai-matrx/agents/matrx';
 import type { z } from 'zod';
 
 type ApiSuccess<T> = { ok: true; data: T };
@@ -50,6 +51,19 @@ function isOrgExemptPath(path: string): boolean {
 }
 
 /**
+ * The organization-context header NAME, derived from the package kernel that
+ * writes it rather than typed a second time here. `rawRequest` reads the
+ * header back to decide whether the request may be sent at all, and two
+ * independent spellings of one header is exactly how a rename turns a
+ * fail-closed check into a silent fail-open. Pinned by `ai-protocol.test.ts`.
+ *
+ * The probe id is a real UUID because the kernel VALIDATES what it binds.
+ */
+export const ORGANIZATION_CONTEXT_HEADER = Object.keys(
+  applyOrganizationContextHeader({}, '00000000-0000-4000-8000-000000000000'),
+)[0] as string;
+
+/**
  * Default per-request deadline. NO call site passed an AbortSignal before
  * 2026-06-10, so a stalled (not failed) connection hung postToolResults,
  * the chat-send compute-target resolve, the turn-boundary inbox, and file
@@ -74,7 +88,7 @@ export function clearApiBaseCache(): void {
 
 async function buildHeaders(extra: Record<string, string> = {}): Promise<Record<string, string>> {
   const token = await getAccessToken();
-  const headers: Record<string, string> = {
+  let headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   };
@@ -83,8 +97,35 @@ async function buildHeaders(extra: Record<string, string> = {}): Promise<Record<
     // Identity and organization travel together on EVERY request. Resolved
     // per request (never cached into a token) so switching organizations
     // takes effect on the next call instead of the next sign-in.
+    //
+    // The HEADER ITSELF is the package's (`applyOrganizationContextHeader`,
+    // @ai-matrx/agents 0.6.0 — the org-context kernel moved in under C22).
+    // The header name is not this client's to spell: one repo typing
+    // 'X-Organization-Id' by hand is how a rename becomes a silent
+    // fail-open. WHAT this client still owns is the POLICY of when an
+    // organization is required — see the exempt-path refusal in rawRequest,
+    // which is extension-shaped (guest-fingerprint identity, an ApiResult
+    // sentinel and a plain-language remedy rather than a thrown error).
+    //
+    // The kernel is FAIL-CLOSED: it validates the id and throws
+    // `OrganizationContextError` on a malformed one rather than binding it. A
+    // corrupt stored org id used to be sent anyway and earned an opaque server
+    // 400; now the header is simply not bound, and rawRequest's existing
+    // no-organization refusal below turns that into a plain-language remedy.
+    // The throw is caught HERE and never escapes: an exception out of
+    // rawRequest breaks the ApiResult contract and wedges callers (audit P1-3).
     const organizationId = await getActiveOrganizationId();
-    if (organizationId) headers['X-Organization-Id'] = organizationId;
+    if (organizationId) {
+      try {
+        headers = applyOrganizationContextHeader(headers, organizationId);
+      } catch (err) {
+        log.error(
+          'api',
+          'stored organization id is malformed — refusing to bind it; the request will be refused with a remedy',
+          err,
+        );
+      }
+    }
   } else {
     // No signed-in session — fall back to guest fingerprint so the server's
     // AuthMiddleware can resolve us to a stable anonymous auth.users row.
@@ -110,7 +151,7 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   const url = `${baseUrl}${opts.path}`;
   const headers = await buildHeaders(opts.headers);
   const hasAuth = !!headers.Authorization;
-  if (hasAuth && !headers['X-Organization-Id'] && !isOrgExemptPath(opts.path)) {
+  if (hasAuth && !headers[ORGANIZATION_CONTEXT_HEADER] && !isOrgExemptPath(opts.path)) {
     const failure = new OrganizationNotSelectedError();
     log.error('api', `✗ ${opts.method} ${opts.path} — no organization selected`, {
       remedy: failure.remedy,

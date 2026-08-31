@@ -13,10 +13,8 @@
  */
 
 import { log } from '@/lib/debug/log';
-import {
-  readMatrxNdjsonStream,
-  type MatrxStreamEnvelope,
-} from '@ai-matrx/agents/stream/ndjson';
+import { fetchWithMatrxProtocolFallback } from '@ai-matrx/agents/matrx';
+import { type MatrxStreamEnvelope, readMatrxNdjsonStream } from '@ai-matrx/agents/stream/ndjson';
 
 export type StreamEvent =
   | { type: 'text'; content: string }
@@ -58,12 +56,42 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
 
   let res: Response;
   try {
-    res = await fetch(opts.url, {
-      method: 'POST',
-      headers: opts.headers,
-      ...(opts.body !== undefined ? { body: JSON.stringify(opts.body) } : {}),
-      ...(opts.signal !== undefined ? { signal: opts.signal } : {}),
-    });
+    // THE v2 → v1 TRANSPORT FALLBACK lives in the package (@ai-matrx/agents
+    // 0.6.0, C22), not here. It fires only when a `/v2/ai/...` ENDPOINT itself
+    // fails — a non-abort network throw, a 404/405 (surface not on v2), or a
+    // 5xx — always BEFORE any stream content is consumed, and never on a user
+    // cancel (a cancel logged as a downgrade would poison the exact telemetry
+    // the v2 rollout reads). Before this, the extension hardcoded `/v2` with
+    // no fallback at all: an unhealthy v2 surface was a hard failure here
+    // while the web app degraded and said so.
+    //
+    // The three options below are PARITY, not taste, and none may be dropped:
+    //   - signal goes in the OPTIONS bag, not `init` — resilientFetch drives
+    //     its own AbortController and overwrites `init.signal`, so a signal
+    //     passed the old way would be silently ignored and cancel would break;
+    //   - totalTimeoutMs: null — the shared default is 120_000, which would
+    //     guillotine every agent run at two minutes. Streams are uncapped;
+    //   - throwOnHttpError: false — this function reports a non-2xx through
+    //     its own `onEvent({type:'error', status})` contract (callers branch on
+    //     `status`, e.g. resume's benign 409), so the transport must hand the
+    //     response back rather than throw.
+    const { response } = await fetchWithMatrxProtocolFallback(
+      opts.url,
+      {
+        method: 'POST',
+        headers: opts.headers,
+        ...(opts.body !== undefined ? { body: JSON.stringify(opts.body) } : {}),
+      },
+      {
+        ...(opts.signal !== undefined ? { signal: opts.signal } : {}),
+        totalTimeoutMs: null,
+        throwOnHttpError: false,
+        onDowngrade: ({ url, reason, status }) => {
+          log.warn('stream', `ai_v2_downgrade → retrying on v1: ${url}`, { reason, status });
+        },
+      },
+    );
+    res = response;
   } catch (err) {
     log.error('stream', `✗ ${opts.url} network error`, err);
     opts.onEvent({ type: 'error', message: (err as Error).message, status: 0 });

@@ -16,30 +16,39 @@
  *
  * The v2 surface does NOT include: warm, cancel, tool_results, inbox, or
  * resume/pending_calls. Those endpoints only exist under `/ai/*` — calling
- * them is correct and NOT a bug. `API_VERSION` below is the one knob that
- * moves the two run-start paths (`agentExecutePath`, `CHAT_PATH`) that DO
- * have a v2 form; everything else in this file and in
- * `./tool-results.ts` stays hardcoded to `/ai/...` deliberately.
+ * them is correct and NOT a bug.
+ *
+ * ── Who decides the version (C22, @ai-matrx/agents 0.6.0) ───────────────────
+ * NOT this file any more. Every path below is written in its v1, in-app form
+ * and handed to the PACKAGE's `applyAiApiVersion`, which owns the covered-
+ * surface allowlist and the `/v2` insertion. This client used to carry its
+ * own `API_VERSION` constant and hand-maintained list of which endpoints have
+ * a v2 sibling — a twin of the policy the package now ships, and one that
+ * would drift the moment the backend's v2 surface grows. The allowlist is
+ * anchored per whole path segment, so `/ai/conversations/{id}/inbox`,
+ * `/ai/agents/{id}/warm` and `/ai/cancel/{id}` are correctly left on v1 —
+ * pinned by `__tests__/ai-protocol.test.ts`, which asserts every helper in
+ * this file still produces the exact path it produced before the collapse.
  */
 
-import { mandateKeyFromAgentRef } from '@/lib/mandates';
 import { apiDelete, apiGet, apiPatch, apiPost } from '@/lib/api/client';
+import { mandateKeyFromAgentRef } from '@/lib/mandates';
+import { MATRX_AI_API_VERSION_DEFAULT, applyAiApiVersion } from '@ai-matrx/agents/matrx';
 
 /**
- * Single source of truth for which spine version the agent-run paths use.
- * Bump this to move `agentExecutePath` + `CHAT_PATH` to a future v3 in one
- * edit — never hardcode a version segment at a call site or anywhere else
- * in this file.
+ * THE ONE DOOR every AI path in this client goes through. Give it the v1
+ * in-app path; the package decides whether this surface has a v2 sibling.
+ * Never hardcode a `/v2` segment at a call site or anywhere in this file.
  */
-const API_VERSION = 'v2' as const;
+const aiPath = (v1Path: string): string => applyAiApiVersion(v1Path, MATRX_AI_API_VERSION_DEFAULT);
 
-/** POST /{API_VERSION}/ai/agent/{agent_id} — start agent stream. agent_id is in the URL. */
+/** POST /ai/agent/{agent_id} (promoted to /v2) — start agent stream. */
 export const agentExecutePath = (agentId: string): string =>
-  `/${API_VERSION}/ai/agent/${encodeURIComponent(agentId)}`;
+  aiPath(`/ai/agent/${encodeURIComponent(agentId)}`);
 
-/** POST /{API_VERSION}/ai/mandates/{mandate_key} — resolve and start the Holder server-side. */
+/** POST /ai/mandates/{mandate_key} (promoted to /v2) — resolve and start the Holder server-side. */
 export const mandateExecutePath = (mandateKey: string): string =>
-  `/${API_VERSION}/ai/mandates/${encodeURIComponent(mandateKey)}`;
+  aiPath(`/ai/mandates/${encodeURIComponent(mandateKey)}`);
 
 /** Route a concrete Agent id or a local `mandate:*` UI reference correctly. */
 export const agentTargetExecutePath = (target: string): string => {
@@ -145,8 +154,8 @@ export interface AgentStartRequest {
   writable_variables?: string[];
 }
 
-/** POST /{API_VERSION}/ai/chat — direct chat with explicit ai_model_id (not used by extension currently). */
-export const CHAT_PATH = `/${API_VERSION}/ai/chat`;
+/** POST /ai/chat (promoted to /v2) — direct chat with explicit ai_model_id (not used by extension currently). */
+export const CHAT_PATH = aiPath('/ai/chat');
 
 /**
  * POST /ai/agents/{agent_id}/warm — warm an agent before sending.
@@ -178,7 +187,9 @@ export function cancelRequest(requestId: string) {
  * See docs/TURN_BOUNDARY_INBOX.md.
  *
  * NOT versioned: there is no `/v2/ai/conversations/{id}/inbox` on the
- * backend. Do not "fix" this to use `API_VERSION` — see the file-header note.
+ * backend. Do not "fix" this by routing it through `aiPath` — the package's
+ * allowlist would leave it on v1 anyway, and writing the call as if it had a
+ * v2 form misstates the contract. See the file-header note.
  */
 export const conversationInboxPath = (conversationId: string): string =>
   `/ai/conversations/${encodeURIComponent(conversationId)}/inbox`;
