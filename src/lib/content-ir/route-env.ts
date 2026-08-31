@@ -8,9 +8,9 @@
  */
 
 import type { KindRouteEnv, KindVersionSources } from '@ai-matrx/content-ir-react';
-import { kindRegistry, componentRegistry } from './registry';
-import { CONTENT_IR_PLATFORM } from './platform';
 import { reportContentIrError } from './errors';
+import { CONTENT_IR_PLATFORM } from './platform';
+import { componentRegistry, kindRegistry } from './registry';
 
 export const contentIrRouteEnv: KindRouteEnv = {
   kinds: kindRegistry,
@@ -31,8 +31,13 @@ export const contentIrVersionSources: KindVersionSources = {
 
 /**
  * Warm both registries once. Called when the chat surface mounts, not at
- * module load: an unauthenticated side panel has no session to read with, and
- * the resolver's own failure path is retryable.
+ * module load: an unauthenticated side panel has no session to read with.
+ *
+ * Nothing calls this a second time, so BOTH registries own their own
+ * retry-with-backoff for the auth-hydration race — the component resolver
+ * inside `@ai-matrx/content-ir-react` (0.10.0), the kind source in
+ * `./registry`. A single unlucky first read never becomes this session's
+ * verdict on what the platform knows.
  */
 export function warmContentIr(): void {
   void kindRegistry.ensureWarm();

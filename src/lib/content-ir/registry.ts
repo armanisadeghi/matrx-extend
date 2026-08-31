@@ -30,14 +30,14 @@
  */
 
 import { contentIrDb } from '@/lib/supabase/schemas';
+import type { KindDefinition } from '@ai-matrx/content-ir';
 import {
   ComponentResolver,
-  type KindComponentRow,
   type ComponentRole,
+  type KindComponentRow,
 } from '@ai-matrx/content-ir-react';
-import type { KindDefinition } from '@ai-matrx/content-ir';
-import { CONTENT_IR_PLATFORM } from './platform';
 import { reportContentIrError } from './errors';
+import { CONTENT_IR_PLATFORM } from './platform';
 
 // ─── Kind definitions ──────────────────────────────────────────────────────
 
@@ -55,9 +55,25 @@ function thinDefinition(kind: string): KindDefinition {
   return { kind, schema: null, schemaSource: 'content_ir', tier: 'warm' };
 }
 
+/**
+ * Warm-load retry backoff, matching `@ai-matrx/content-ir-react`'s
+ * `ComponentResolver` (0.10.0) delay for delay. THE AUTH-HYDRATION RACE: a
+ * freshly opened side panel mounts the chat surface — and therefore calls
+ * `warmContentIr()` — before the Supabase session has restored, so this read
+ * runs as `anon`, RLS answers 42501, and the load fails. `warmContentIr()` is
+ * called ONCE per mount, so without a retry that single unlucky read decides
+ * for the whole session that the platform has never heard of ANY kind, and
+ * every render block is captioned "unregistered" while its row sits one
+ * authenticated retry away.
+ */
+const WARM_RETRY_DELAYS_MS: readonly number[] = [1_000, 5_000, 15_000];
+
 class ExtensionKindSource {
   private readonly known = new Map<string, KindDefinition>();
   private warmPromise: Promise<void> | null = null;
+  /** Consecutive warm-load failures — indexes WARM_RETRY_DELAYS_MS. */
+  private warmFailures = 0;
+  private warmRetryTimer: ReturnType<typeof setTimeout> | null = null;
   private version = 0;
   private readonly kindVersions = new Map<string, number>();
   private readonly kindListeners = new Map<string, Set<() => void>>();
@@ -87,21 +103,47 @@ class ExtensionKindSource {
    */
   ensureWarm(): Promise<void> {
     if (!this.warmPromise) {
-      this.warmPromise = this.load().catch((error: unknown) => {
-        // Loud, and RETRYABLE: a failed warm must not permanently convince
-        // this client that every kind is unknown.
-        this.warmPromise = null;
-        reportContentIrError({
-          source: 'content-ir',
-          message: `kind-definition warm load failed — every kind reads as unregistered until this succeeds: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-          relation: 'kind-registry',
-          raw: error,
+      this.warmPromise = this.load()
+        .then(() => {
+          this.warmFailures = 0;
+          this.clearWarmRetry();
+        })
+        .catch((error: unknown) => {
+          // Loud, and RETRYABLE: a failed warm must not permanently convince
+          // this client that every kind is unknown. Nobody calls
+          // `warmContentIr()` a second time, so the retry is OURS to schedule.
+          this.warmPromise = null;
+          const attempt = this.warmFailures;
+          this.warmFailures += 1;
+          const delay = WARM_RETRY_DELAYS_MS[attempt];
+          const remedy =
+            delay === undefined
+              ? 'retries exhausted — reopen the side panel to try again'
+              : `retrying in ${Math.round(delay / 1000)}s`;
+          reportContentIrError({
+            source: 'content-ir',
+            message: `kind-definition warm load failed — every kind reads as unregistered until this succeeds (${remedy}): ${
+              error instanceof Error ? error.message : String(error)
+            }`,
+            relation: 'kind-registry',
+            raw: error,
+          });
+          if (delay === undefined) return;
+          this.clearWarmRetry();
+          this.warmRetryTimer = setTimeout(() => {
+            this.warmRetryTimer = null;
+            void this.ensureWarm();
+          }, delay);
         });
-      });
     }
     return this.warmPromise;
+  }
+
+  private clearWarmRetry(): void {
+    if (this.warmRetryTimer !== null) {
+      clearTimeout(this.warmRetryTimer);
+      this.warmRetryTimer = null;
+    }
   }
 
   private async load(): Promise<void> {
