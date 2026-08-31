@@ -1,4 +1,26 @@
+/* THE LAYER ORDER — must be the FIRST statement in this entry
+   (@ai-matrx/design-system 0.4.0, C26). Declaring the order here puts the
+   package's DEFAULT token values and its utility-shaped rules at the BOTTOM
+   of the cascade, so every token this app declares in `:root` / `.dark`
+   below wins over the package default, regardless of specificity or order.
+   Without this line, layer order falls back to first-appearance and the
+   package defaults could beat this app's own theme. */
+@layer matrx-design-system-tokens, matrx-design-system;
+
 @import "tailwindcss";
+
+/* The design-system's REQUIRED sheets. `tokens.css` gives every
+   `--matrx-glass-*` / `--matrx-overlay-scrim*` / `--matrx-sheet-divider`
+   custom property a default value; `styles.css` carries the structural rules
+   the package's own components WEAR (`.matrx-glass-thin-border`,
+   `.matrx-scroll-fade`, `.matrx-mobile-sheet`, `.pb-safe`, `.shadow-input`).
+   Without them a design-system BottomSheet / CommandDialog / scroll-fade
+   renders with no blur, no mask and no safe-area padding — silently. This
+   app owns no copy of those rules, so nothing is duplicated by importing
+   them. */
+@import "@ai-matrx/design-system/tokens.css";
+@import "@ai-matrx/design-system/styles.css";
+
 @source "../../node_modules/@ai-matrx/design-system/dist";
 
 @custom-variant dark (&:is(.dark *));
