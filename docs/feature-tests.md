@@ -2298,6 +2298,16 @@ Every entry follows this shape:
     a `[content-ir]` scream, never silence.
   - Copy the reply ("With everything"): a structured block copies as
     `<kind name="…">` with its zero-loss JSON, `__kind` included.
+  - THE AUTH-HYDRATION RACE: both registries are warmed ONCE per chat-surface
+    mount, and a side panel opened before the Supabase session restores reads as
+    `anon` and gets an RLS refusal. Provoke it by throttling to Slow 3G, closing
+    the panel completely, reopening it and immediately asking for a kind. The
+    block may sit on the generic floor for a moment, but it must UPGRADE — a
+    caption of "this shape isn't registered on this platform" that never
+    resolves is the bug. Debug tab, source `ui`: the failed warm screams with
+    its remedy ("retrying in 1s"), and after three retries against a genuinely
+    unreachable backend it says "retries exhausted" and stops. Never silence,
+    never a forever loop.
 
 ### Organization on every request
 - **What it does:** every backend request and every organization-scoped write
