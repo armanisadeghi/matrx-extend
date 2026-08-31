@@ -6,7 +6,7 @@
  * single messages produce diff-compatible output.
  */
 
-import { readEnvelope, reconstructRegionValue } from '@ai-matrx/content-ir';
+import { readEnvelope, reconstructRegionValue } from '@ai-matrx/content-ir/core';
 import type { InboundRenderBlock } from '@/lib/content-ir/inbound';
 import { stringifyJson } from '@/lib/clipboard/copy';
 import type { ChatMessage, MessagePart, ToolPartCall } from '@/state/chat';
@@ -133,7 +133,15 @@ export function formatAssistantBody(message: ChatMessage, opts: MessageCopyOptio
 function formatRenderBlock(block: InboundRenderBlock): string {
   const envelope = readEnvelope(block.metadata);
   const kind = envelope?.root.kind;
-  if (envelope && kind) {
+  // `kind` is PRESERVED on failure by design (content-ir KIND PRESERVATION):
+  // a payload that failed its schema stays a *broken* `lulu_print_job` rather
+  // than becoming an anonymous object, so `kind` alone is not a validity
+  // signal — `kindState` is. Refuse `"raw"` (checked and FAILED) and ONLY
+  // `"raw"`: labelling a degraded payload `<kind name="…">` tells the AI on
+  // the receiving end that it IS that shape. `"unverified"` (no schema ever
+  // existed) still carries a real identity and copies as itself.
+  // 2026-08-31 kindState audit, adopting @ai-matrx/content-ir 0.10.0.
+  if (envelope && kind && envelope.root.kindState !== 'raw') {
     const value = reconstructRegionValue(envelope);
     return `<kind name="${escapeAttr(kind)}">\n\`\`\`json\n${JSON.stringify(
       value,

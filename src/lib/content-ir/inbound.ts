@@ -12,7 +12,7 @@
  * a render.
  */
 
-import { sanitizeInboundEnvelopeMetadata } from '@ai-matrx/content-ir';
+import { sanitizeInboundEnvelopeMetadata } from '@ai-matrx/content-ir/core';
 import { reportContentIrError } from './errors';
 
 /** The `render_block` event payload, camelCase on the wire (aidream `RenderBlockEvent`). */

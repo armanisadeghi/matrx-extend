@@ -22,7 +22,7 @@ import {
   useContentIrKindVersion,
   type IrRenderBlock,
 } from '@ai-matrx/content-ir-react';
-import { readEnvelope, reconstructRegionValue } from '@ai-matrx/content-ir';
+import { readEnvelope, reconstructRegionValue } from '@ai-matrx/content-ir/core';
 import { Markdown } from '@/components/markdown';
 import { CodeBlock } from '@/components/markdown/CodeBlock';
 import { chatMarkdownRegistry } from '@/features/chat/markdown-registry';
