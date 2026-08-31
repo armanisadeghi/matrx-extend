@@ -222,6 +222,11 @@ async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'text/event-stream',
+    // Organization admission: this lane bypasses offscreen-proxy's
+    // startStream (it dispatches STREAM_RUN itself), so it must attach the
+    // header the server requires on every authenticated request — the org in
+    // the body alone is refused at the top of the stack.
+    'X-Organization-Id': args.organizationId,
   };
   if (args.authHeader) headers.Authorization = args.authHeader;
 
