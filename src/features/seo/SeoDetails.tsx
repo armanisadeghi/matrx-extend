@@ -5,6 +5,10 @@ import { isOpenableUrl, schemaTypeUrl } from '@/lib/url/openable';
 import { cn } from '@/lib/utils';
 import { ImageOff } from 'lucide-react';
 import { useState } from 'react';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatFileSize } from "@ai-matrx/kit/format";
 
 /**
  * The one renderer for an SEO audit's collected values.
@@ -177,7 +181,7 @@ export function SeoDetails({ signals }: { signals: StoredAuditSignals }) {
             <SeoRow label="Load duration" value={`${perf.duration_ms.toLocaleString()} ms`} />
           )}
           {perf.transfer_size_bytes !== null && (
-            <SeoRow label="Transfer size" value={formatBytes(perf.transfer_size_bytes)} />
+            <SeoRow label="Transfer size" value={formatFileSize(perf.transfer_size_bytes)} />
           )}
         </SeoGroup>
       )}
@@ -445,8 +449,3 @@ function hostOf(url: string | null): string {
   }
 }
 
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024).toLocaleString()} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}

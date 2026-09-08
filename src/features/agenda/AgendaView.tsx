@@ -196,7 +196,7 @@ function TaskRow({
             </span>
           ))}
           {task.next_due_at && (
-            <span title={task.next_due_at}>· next {formatRelativeTime(task.next_due_at)}</span>
+            <span title={task.next_due_at}>· next {formatDueDistance(task.next_due_at)}</span>
           )}
         </div>
         {task.description && (
@@ -488,7 +488,15 @@ function NewTaskForm({ onCancel, onCreated }: { onCancel: () => void; onCreated:
   );
 }
 
-function formatRelativeTime(iso: string): string {
+/**
+ * How far away a DUE DATE is, in both directions: "in 3h" for the future and
+ * "3h ago" for the past. Deliberately not `@ai-matrx/kit/format`'s
+ * `formatRelativeTime`, which answers "how long ago?" and reads a future
+ * timestamp as "just now" — an agenda that says "just now" about tomorrow's
+ * deadline is a screen telling a lie. Renamed 2026-09-07 (census H1) so the
+ * name says which question it answers.
+ */
+function formatDueDistance(iso: string): string {
   const dueMs = new Date(iso).getTime() - Date.now();
   const abs = Math.abs(dueMs);
   const sign = dueMs >= 0 ? 'in ' : '';

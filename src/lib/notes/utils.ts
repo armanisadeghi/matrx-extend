@@ -12,6 +12,10 @@
  */
 
 import type { NoteListItem } from '@/lib/notes/types';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatRelativeTime as kitFormatRelativeTime } from "@ai-matrx/kit/format";
 
 export interface NoteFilter {
   search?: string;
@@ -75,19 +79,11 @@ export function appendToContent(existing: string | null | undefined, block: stri
   return `${base}${sep}${block.trim()}\n`;
 }
 
-/** Format a timestamp as "3 minutes ago" / "2h ago" / "5d ago" / a date for older. */
+/**
+ * "2m ago" / "5d ago", a blank when there is no timestamp at all. THE package
+ * formatter (census H1); a missing note stamp shows NOTHING here rather than an
+ * em-dash, which is why the fallback is bound.
+ */
 export function formatRelativeTime(iso: string | null | undefined): string {
-  if (!iso) return '';
-  const t = Date.parse(iso);
-  if (Number.isNaN(t)) return '';
-  const sec = Math.round((Date.now() - t) / 1000);
-  if (sec < 5) return 'just now';
-  if (sec < 60) return `${sec}s ago`;
-  const min = Math.round(sec / 60);
-  if (min < 60) return `${min}m ago`;
-  const hr = Math.round(min / 60);
-  if (hr < 24) return `${hr}h ago`;
-  const d = Math.round(hr / 24);
-  if (d < 14) return `${d}d ago`;
-  return new Date(t).toLocaleDateString();
+  return kitFormatRelativeTime(iso, { fallback: '' });
 }

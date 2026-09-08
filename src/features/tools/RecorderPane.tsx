@@ -22,22 +22,13 @@ import { type RecordingEntry, useRecordingsStore } from '@/lib/video/recordings-
 import { type RecorderStatus, useTabVideoRecorder } from '@/lib/video/useTabVideoRecorder';
 import { Circle, Copy, ExternalLink, Square, Trash2, Video, VideoOff } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatDurationMs, formatFileSize } from "@ai-matrx/kit/format";
 
 const MIN_DURATION_S = 1;
 const MAX_DURATION_S = 60;
-
-function formatDuration(ms: number): string {
-  const seconds = Math.floor(ms / 1000);
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
-
-function formatBytes(n: number): string {
-  if (n < 1024) return `${n} B`;
-  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
-  return `${(n / (1024 * 1024)).toFixed(2)} MB`;
-}
 
 function StatusBadge({ status }: { status: RecorderStatus }) {
   const config: Record<RecorderStatus, { label: string; className: string }> = {
@@ -219,11 +210,11 @@ export function RecorderPane() {
                       style={{ animation: 'pulse 1.2s ease-in-out infinite' }}
                     />
                     <span className="font-mono text-xs tabular-nums">
-                      {formatDuration(elapsedMs)}
+                      {formatDurationMs(elapsedMs)}
                     </span>
                     {remainingMs != null && (
                       <span className="text-[11px] text-muted-foreground">
-                        / {formatDuration(durationSec * 1000)}
+                        / {formatDurationMs(durationSec * 1000)}
                       </span>
                     )}
                   </>
@@ -235,7 +226,7 @@ export function RecorderPane() {
                 )}
                 {!isRecording && status === 'idle' && lastDurationMs != null && (
                   <span className="text-[11px] text-muted-foreground">
-                    Last recording {formatDuration(lastDurationMs)} — see list below
+                    Last recording {formatDurationMs(lastDurationMs)} — see list below
                   </span>
                 )}
               </div>
@@ -348,7 +339,7 @@ function RecordingRow({
           <span>·</span>
           <span>{(entry.durationMs / 1000).toFixed(1)}s</span>
           <span>·</span>
-          <span>{formatBytes(entry.sizeBytes)}</span>
+          <span>{formatFileSize(entry.sizeBytes)}</span>
           <span>·</span>
           <span className="font-mono">{entry.mimeType}</span>
         </div>

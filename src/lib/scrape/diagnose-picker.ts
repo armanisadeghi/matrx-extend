@@ -14,6 +14,10 @@
 
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { type DiagnosePickPayload, capturePickPayload } from '@/lib/scrape/diagnose-bundle';
+// THE one HTML escaper with a decided character set (census row 14): the
+// fleet's ten copies did NOT escape the same characters. This one was
+// missing the apostrophe while building attribute-bearing markup.
+import { escapeHtml } from "@ai-matrx/kit/html-escape";
 
 const HOST_ID = 'matrx-diagnose-picker-host';
 
@@ -138,10 +142,3 @@ function finish(payload: DiagnosePickPayload | null) {
   unmountDiagnosePicker();
 }
 
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}

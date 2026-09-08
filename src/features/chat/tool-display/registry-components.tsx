@@ -12,6 +12,10 @@ import { Globe } from 'lucide-react';
 import { useState } from 'react';
 import type { ComponentType } from 'react';
 import type { FieldComponentName } from './types';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatFileSize } from "@ai-matrx/kit/format";
 
 interface FieldProps {
   value: unknown;
@@ -141,7 +145,7 @@ function imageMeta(value: unknown): string {
   const bytes = obj.byte_length ?? obj.byteLength ?? obj.size;
   const parts: string[] = [];
   if (typeof w === 'number' && typeof h === 'number') parts.push(`${w}×${h}`);
-  if (typeof bytes === 'number') parts.push(formatBytes(bytes));
+  if (typeof bytes === 'number') parts.push(formatFileSize(bytes));
   return parts.join(' · ');
 }
 
@@ -161,12 +165,6 @@ function formatToMime(format: string | undefined): string | undefined {
   if (f === 'webp') return 'image/webp';
   if (f === 'gif') return 'image/gif';
   return `image/${f}`;
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 
 const Badge = ({ value, className }: FieldProps) => (
