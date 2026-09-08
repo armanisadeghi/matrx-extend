@@ -34,12 +34,12 @@
  *      (common-docs/projects/no-db-assigned-org).
  */
 
+import { STORAGE_KEYS } from '@/config/env';
 import { getCurrentUser } from '@/lib/auth/flow';
+import { log } from '@/lib/debug/log';
+import { getOne, setOne } from '@/lib/storage/chrome-local';
 import { getSupabase } from '@/lib/supabase/client';
 import { iamDb, usersDb } from '@/lib/supabase/schemas';
-import { STORAGE_KEYS } from '@/config/env';
-import { getOne, setOne } from '@/lib/storage/chrome-local';
-import { log } from '@/lib/debug/log';
 
 export interface MemberOrganization {
   id: string;

@@ -33,13 +33,13 @@ import { desktopHealthSnapshotKey } from '@/lib/desktop/types';
 import { connectWs } from '@/lib/desktop/ws-client';
 import { registerWsReverseInvocationHandler } from '@/lib/desktop/ws-invoke';
 import { connectBroadcast, disconnectBroadcast } from '@/lib/frontend-bridge/broadcast';
-import { stopRealtimeHost } from '@/lib/realtime/host';
 import {
   FRONTEND_RPC_CHANNEL,
   FrontendRpcEnvelopeSchema,
   type FrontendRpcResponse,
   handleFrontendRpc,
 } from '@/lib/frontend-bridge/handler';
+import { stopRealtimeHost } from '@/lib/realtime/host';
 import { startSchedulerHost, stopSchedulerHost } from '@/lib/scheduler-host';
 // Side-effect import: registers the example 'ping' task handler at SW boot.
 // Subsequent phases add more handlers via the same pattern.

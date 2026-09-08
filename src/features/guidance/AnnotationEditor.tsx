@@ -12,10 +12,10 @@
  * of the sidepanel.
  */
 
-import { Button } from "@ai-matrx/design-system";
 import { uploadFile } from '@/lib/api/routes/files';
 import { saveGuidanceItem } from '@/lib/guidance/storage';
 import type { GuidanceScreenshot } from '@/lib/guidance/types';
+import { Button } from '@ai-matrx/design-system';
 import { Loader2, Save, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { type Editor, Tldraw, getSnapshot, loadSnapshot } from 'tldraw';

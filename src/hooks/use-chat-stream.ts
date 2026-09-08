@@ -4,7 +4,6 @@ import {
   mandateExecutePath,
 } from '@/lib/api/routes/ai';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
-import { isOrganizationNotSelectedError } from '@/lib/org/active-org';
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
@@ -18,6 +17,7 @@ import { getHighlightsByIds } from '@/lib/highlights/queries';
 import { newId } from '@/lib/id';
 import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { isOrganizationNotSelectedError } from '@/lib/org/active-org';
 import {
   deadlineFor,
   isTerminal,
@@ -757,9 +757,7 @@ export function useChatStream() {
         const message = err instanceof Error ? err.message : String(err);
         // A missing organization is fixable in one click, so say the fix
         // instead of the generic retry line.
-        const remedy = isOrganizationNotSelectedError(err)
-          ? err.remedy
-          : 'Please try again.';
+        const remedy = isOrganizationNotSelectedError(err) ? err.remedy : 'Please try again.';
         log.error('stream', 'conversation organization bootstrap failed', err);
         watchdogRef.current?.stop();
         useChatStore

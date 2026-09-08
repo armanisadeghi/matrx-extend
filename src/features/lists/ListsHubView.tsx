@@ -18,9 +18,11 @@
  * EVERY agent_task row in the account to refetch one conversation.
  */
 
-import { ConfirmDialog } from '@ai-matrx/design-system';
-import { Badge, Button } from "@ai-matrx/design-system";
-import { ScrollArea } from "@ai-matrx/design-system";
+import {
+  agentTaskFingerprint,
+  listsAllTasksChannel,
+  listsConversationTasksChannel,
+} from '@/lib/lists/realtime';
 import {
   clearCompletedTasks,
   clearDoneUserTodos,
@@ -32,17 +34,15 @@ import {
   removeUserTodo,
   updateUserTodo,
 } from '@/lib/lists/storage';
-import {
-  agentTaskFingerprint,
-  listsAllTasksChannel,
-  listsConversationTasksChannel,
-} from '@/lib/lists/realtime';
 import type { ConversationListsSummary, Task, UserTodo } from '@/lib/lists/types';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { ConfirmDialog } from '@ai-matrx/design-system';
+import { Badge, Button } from '@ai-matrx/design-system';
+import { ScrollArea } from '@ai-matrx/design-system';
 import { useChannel } from '@ai-matrx/realtime/react';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';

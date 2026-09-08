@@ -43,18 +43,22 @@ export function readInboundRenderBlock(data: unknown): InboundRenderBlock | null
 
   const metadata =
     typeof raw.metadata === 'object' && raw.metadata !== null
-      ? sanitizeInboundEnvelopeMetadata(raw.metadata as Record<string, unknown>, { blockId }, {
-          reportMalformed: (report) => {
-            reportContentIrError({
-              source: 'content-ir',
-              message: `inbound render_block "${report.blockId}" carried a malformed __ir envelope (engine ${String(
-                report.engine,
-              )}) — the envelope was stripped and the block renders as plain content.`,
-              relation: 'inbound-envelope',
-              raw: report.raw,
-            });
+      ? sanitizeInboundEnvelopeMetadata(
+          raw.metadata as Record<string, unknown>,
+          { blockId },
+          {
+            reportMalformed: (report) => {
+              reportContentIrError({
+                source: 'content-ir',
+                message: `inbound render_block "${report.blockId}" carried a malformed __ir envelope (engine ${String(
+                  report.engine,
+                )}) — the envelope was stripped and the block renders as plain content.`,
+                relation: 'inbound-envelope',
+                raw: report.raw,
+              });
+            },
           },
-        })
+        )
       : undefined;
 
   const blockIndex = typeof raw.blockIndex === 'number' ? raw.blockIndex : 0;
@@ -65,9 +69,10 @@ export function readInboundRenderBlock(data: unknown): InboundRenderBlock | null
     type: asString(raw.type, 'text'),
     status: raw.status === 'complete' ? 'complete' : 'streaming',
     ...(typeof raw.content === 'string' && { content: raw.content }),
-    ...(typeof raw.data === 'object' && raw.data !== null && {
-      data: raw.data as Record<string, unknown>,
-    }),
+    ...(typeof raw.data === 'object' &&
+      raw.data !== null && {
+        data: raw.data as Record<string, unknown>,
+      }),
     ...(metadata !== undefined && { metadata }),
   };
 }

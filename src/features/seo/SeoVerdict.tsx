@@ -1,6 +1,5 @@
 import { CopyButton } from '@/components/CopyMenu';
 import { OpenUrl } from '@/components/OpenUrl';
-import { Button } from "@ai-matrx/design-system";
 import type { SeoAudit } from '@/lib/seo/audit';
 import {
   SECTION_LABELS,
@@ -12,6 +11,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { Button } from '@ai-matrx/design-system';
 import { Bot, CheckCircle } from 'lucide-react';
 import { AuditIssueList } from './AuditIssueList';
 

@@ -1,9 +1,9 @@
 import { CopyMenu } from '@/components/CopyMenu';
-import { Button } from "@ai-matrx/design-system";
 import { rowsToTsv, stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { Button } from '@ai-matrx/design-system';
 import { Bot, Braces, Table2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 

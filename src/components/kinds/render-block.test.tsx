@@ -13,15 +13,22 @@
  * rows `content_ir.kind_component` holds for `platform='chrome-extension'`.
  */
 
-import { afterEach, describe, expect, it, beforeAll } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import fixture from '@/lib/content-ir/__fixtures__/server-render-blocks.json';
 import { readInboundRenderBlock } from '@/lib/content-ir/inbound';
 import { componentRegistry, kindRegistry } from '@/lib/content-ir/registry';
+import { cleanup, render, screen } from '@testing-library/react';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { RenderBlockView } from './RenderBlockView';
-import fixture from '@/lib/content-ir/__fixtures__/server-render-blocks.json';
 
-type FixtureBlock = { blockId: string; blockIndex: number; type: string; status: string;
-  content?: string; data?: Record<string, unknown>; metadata?: Record<string, unknown> };
+type FixtureBlock = {
+  blockId: string;
+  blockIndex: number;
+  type: string;
+  status: string;
+  content?: string;
+  data?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+};
 const BLOCKS = (fixture as { blocks: Record<string, FixtureBlock> }).blocks;
 
 /**
@@ -54,7 +61,10 @@ beforeAll(() => {
   // shape (generic floor) and an unknown slug (untouched).
   for (const kind of ['flashcard_set', 'quiz_set', 'research_report']) {
     (kindRegistry as unknown as { known: Map<string, unknown> }).known.set(kind, {
-      kind, schema: null, schemaSource: 'content_ir', tier: 'warm',
+      kind,
+      schema: null,
+      schemaSource: 'content_ir',
+      tier: 'warm',
     });
   }
 });

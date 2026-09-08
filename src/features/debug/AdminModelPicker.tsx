@@ -14,10 +14,10 @@
  * Customize popover.
  */
 
-import { Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { type AiModel, fetchActiveModels } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '@/state/settings';
+import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { Loader2, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 

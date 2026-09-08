@@ -6,16 +6,16 @@
  * request kernel can never disagree about which organization is active.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { STORAGE_KEYS } from '@/config/env';
 import {
   type MemberOrganization,
   listMemberOrganizations,
   resolveActiveOrganization,
   setActiveOrganization,
 } from '@/lib/org/active-org';
-import { STORAGE_KEYS } from '@/config/env';
 import { onChange } from '@/lib/storage/chrome-local';
 import { useAuthStore } from '@/state/auth';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface UseActiveOrganizationResult {
   /** The organization every request carries, or null when the user must pick. */
@@ -79,13 +79,10 @@ export function useActiveOrganization(): UseActiveOrganizationResult {
   // sidepanel) can change the active organization under us.
   useEffect(() => onChange(STORAGE_KEYS.ACTIVE_ORGANIZATION, () => reload()), [reload]);
 
-  const choose = useCallback(
-    async (organizationId: string) => {
-      const chosen = await setActiveOrganization(organizationId);
-      setActive(chosen);
-    },
-    [],
-  );
+  const choose = useCallback(async (organizationId: string) => {
+    const chosen = await setActiveOrganization(organizationId);
+    setActive(chosen);
+  }, []);
 
   return {
     active,

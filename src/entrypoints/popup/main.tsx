@@ -1,5 +1,5 @@
-import { Button } from "@ai-matrx/design-system";
 import { useAuth } from '@/hooks/use-auth';
+import { Button } from '@ai-matrx/design-system';
 import { ExternalLink, MessageSquare, ScanLine } from 'lucide-react';
 import React from 'react';
 import { createRoot } from 'react-dom/client';

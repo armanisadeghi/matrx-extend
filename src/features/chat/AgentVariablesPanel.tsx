@@ -7,10 +7,16 @@
  * single-row chip strip when filled, so it doesn't dominate the surface.
  */
 
-import { BasicInput as Input, Label, Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import type { AgentVariableDef } from '@/hooks/use-agent-execution';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
+import {
+  BasicInput as Input,
+  Label,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@ai-matrx/design-system';
 import { ChevronDown, Settings2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 

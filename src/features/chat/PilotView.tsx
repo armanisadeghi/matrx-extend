@@ -19,8 +19,8 @@
  */
 
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
+import { RenderBlockView } from '@/components/kinds/RenderBlockView';
 import { Markdown } from '@/components/markdown';
-import { Button, BasicInput as Input, Popover, PopoverContent, PopoverTrigger, Skeleton } from "@ai-matrx/design-system";
 import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
@@ -44,6 +44,7 @@ import {
   scopeOf,
 } from '@/lib/agents/scope';
 import { wrapForAgent } from '@/lib/clipboard/copy';
+import { warmContentIr } from '@/lib/content-ir/route-env';
 import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
 import type { ChatMessage, MessagePart } from '@/state/chat';
@@ -53,6 +54,14 @@ import { usePilotChatStore } from '@/state/pilot-chat';
 import { useSettingsStore } from '@/state/settings';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { useToolInbox } from '@/state/tool-inbox';
+import {
+  Button,
+  BasicInput as Input,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Skeleton,
+} from '@ai-matrx/design-system';
 import {
   AlertTriangle,
   ArrowUp,
@@ -72,8 +81,6 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BreathingOrb } from './BreathingOrb';
 import { chatMarkdownRegistry } from './markdown-registry';
-import { RenderBlockView } from '@/components/kinds/RenderBlockView';
-import { warmContentIr } from '@/lib/content-ir/route-env';
 
 const PILOT_SUGGESTIONS = [
   { icon: Crosshair, label: 'Open three competitor sites and summarize each' },

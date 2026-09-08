@@ -1,8 +1,8 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { claimRun } from '@/lib/agenda/queries';
 import { claimTask } from '@/lib/scheduler-client/claim';
 import { schedulerDb } from '@/lib/supabase/schemas';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/lib/supabase/schemas', () => ({
   schedulerDb: vi.fn(),
@@ -75,10 +75,7 @@ describe('scheduler run organization provenance', () => {
 
   it('refuses an invalid agenda task organization before constructing a database query', async () => {
     await expect(
-      claimRun(
-        { id: TASK_ID, organization_id: '' },
-        'chrome-extension-chat',
-      ),
+      claimRun({ id: TASK_ID, organization_id: '' }, 'chrome-extension-chat'),
     ).resolves.toBeNull();
     expect(schedulerDb).not.toHaveBeenCalled();
   });
@@ -108,10 +105,7 @@ describe('scheduler run organization provenance', () => {
     const from = vi.fn().mockReturnValue({ insert });
     vi.mocked(schedulerDb).mockReturnValue({ from } as never);
 
-    await claimRun(
-      { id: TASK_ID, organization_id: ORGANIZATION_ID },
-      'chrome-extension-chat',
-    );
+    await claimRun({ id: TASK_ID, organization_id: ORGANIZATION_ID }, 'chrome-extension-chat');
 
     expect(insert).toHaveBeenCalledWith(
       expect.objectContaining({

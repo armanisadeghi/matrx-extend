@@ -11,14 +11,14 @@
  * before the next list refetch.
  */
 
-import { ConfirmDialog } from '@ai-matrx/design-system';
 import { MarkdownView } from '@/components/MarkdownView';
-import { Button, BasicInput as Input, Skeleton } from "@ai-matrx/design-system";
-import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { getNote, softDeleteNote, updateNote } from '@/lib/notes/queries';
 import type { NoteListItem } from '@/lib/notes/types';
 import { formatRelativeTime, uniqueFolderNames } from '@/lib/notes/utils';
 import { useNotesUiStore } from '@/state/notes';
+import { ConfirmDialog } from '@ai-matrx/design-system';
+import { Button, BasicInput as Input, Skeleton } from '@ai-matrx/design-system';
+import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

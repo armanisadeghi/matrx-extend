@@ -9,13 +9,10 @@
  * extension at staging / dev / localhost from here.
  */
 
-import { ConfirmDialog } from '@ai-matrx/design-system';
-import { Button, BasicInput as Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
 import { Collapsible } from '@/components/ui/collapsible';
-import { Switch } from "@ai-matrx/design-system";
 import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapabilities';
-import { useAuth } from '@/hooks/use-auth';
 import { useActiveOrganization } from '@/hooks/use-active-organization';
+import { useAuth } from '@/hooks/use-auth';
 import { useDesktopBridge } from '@/hooks/use-desktop';
 import {
   getEnginePortOverride,
@@ -31,6 +28,17 @@ import {
 import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '@/state/settings';
+import { ConfirmDialog } from '@ai-matrx/design-system';
+import {
+  Button,
+  BasicInput as Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@ai-matrx/design-system';
+import { Switch } from '@ai-matrx/design-system';
 import { ChevronRight, LogIn, LogOut, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -436,8 +444,8 @@ export function SettingsView() {
                   Clear all locally cached extension data on this device?
                 </span>
                 <span className="mt-2 block">
-                  You will be signed out. Your chats, captures and patterns saved
-                  on the server are NOT affected.
+                  You will be signed out. Your chats, captures and patterns saved on the server are
+                  NOT affected.
                 </span>
               </>
             }

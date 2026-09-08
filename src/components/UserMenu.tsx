@@ -1,10 +1,10 @@
-import { Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import { canAccessSidepanelTab } from '@/config/sidepanel-visibility';
 import { useAuth } from '@/hooks/use-auth';
 import { useDesktopBridge } from '@/hooks/use-desktop';
 import { desktopStatusDotClass, formatDesktopConnectionLabel } from '@/lib/desktop/types';
 import { cn } from '@/lib/utils';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
 import { ChevronRight, LogOut, Settings, User } from 'lucide-react';
 import { useState } from 'react';
 

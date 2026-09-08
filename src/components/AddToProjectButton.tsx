@@ -13,7 +13,6 @@
  * Contract: common-docs/systems/knowledge/research/EXTENSION_CAPTURE_CONTRACT.md § The topic picker
  */
 
-import { Button, Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import {
   type ResearchTopicSummary,
   type SourceUrlMatch,
@@ -22,6 +21,7 @@ import {
   listTopics,
 } from '@/lib/api/routes/research';
 import { cn } from '@/lib/utils';
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Check, ChevronRight, FolderPlus, Loader2, Plus, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';

@@ -22,14 +22,11 @@
  * `<kind name="flashcard_set">` and the assertion fails.
  */
 
-import { describe, expect, it } from 'vitest';
-import { readInboundRenderBlock } from '@/lib/content-ir/inbound';
 import fixture from '@/lib/content-ir/__fixtures__/server-render-blocks.json';
-import {
-  DEFAULT_MESSAGE_COPY_OPTIONS,
-  formatAssistantBody,
-} from './copy-conversation';
+import { readInboundRenderBlock } from '@/lib/content-ir/inbound';
 import type { ChatMessage } from '@/state/chat';
+import { describe, expect, it } from 'vitest';
+import { DEFAULT_MESSAGE_COPY_OPTIONS, formatAssistantBody } from './copy-conversation';
 
 type FixtureBlock = {
   blockId: string;
@@ -50,9 +47,9 @@ function copyOfFlashcardSet(kindState?: string): string {
 
   let metadata = source!.metadata;
   if (kindState !== undefined) {
-    const envelope = JSON.parse(
-      JSON.stringify(source!.metadata!.__ir),
-    ) as { root: Record<string, unknown> };
+    const envelope = JSON.parse(JSON.stringify(source!.metadata!.__ir)) as {
+      root: Record<string, unknown>;
+    };
     envelope.root.kindState = kindState;
     metadata = { __ir: envelope };
   }

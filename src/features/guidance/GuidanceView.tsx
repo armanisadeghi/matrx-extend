@@ -12,12 +12,12 @@
  * time per the existing recorder backend.
  */
 
-import { Badge, Button, BasicInput as Input, Label } from "@ai-matrx/design-system";
-import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { log } from '@/lib/debug/log';
 import { listAllGuidance } from '@/lib/guidance/storage';
 import type { GuidanceKind, GuidanceSummary } from '@/lib/guidance/types';
 import { type GuidanceFilter, useGuidanceStore } from '@/state/guidance';
+import { Badge, Button, BasicInput as Input, Label } from '@ai-matrx/design-system';
+import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
 import {
   BookOpen,
   Camera,

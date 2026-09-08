@@ -1,13 +1,6 @@
 import { AuthGate } from '@/components/AuthGate';
 import { PermissionPromptModal } from '@/components/PermissionPromptModal';
 import { UserMenu } from '@/components/UserMenu';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  TooltipProvider,
-} from "@ai-matrx/design-system";
 import { canAccessSidepanelTab, firstAccessibleSidepanelTab } from '@/config/sidepanel-visibility';
 import { useAgendaListener } from '@/hooks/use-agenda-listener';
 import { useAuth } from '@/hooks/use-auth';
@@ -20,6 +13,7 @@ import { useParallelEventBridge } from '@/hooks/use-parallel-event-bridge';
 import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
 import { type SidepanelTab, useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { Tabs, TabsContent, TabsList, TabsTrigger, TooltipProvider } from '@ai-matrx/design-system';
 import {
   BookOpen,
   Bug,

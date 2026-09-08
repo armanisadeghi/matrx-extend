@@ -1,4 +1,3 @@
-import { Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
 import {
@@ -9,6 +8,7 @@ import {
   renamePattern,
 } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
+import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import {
   Check,
   CheckCircle2,

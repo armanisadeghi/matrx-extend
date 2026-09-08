@@ -1,5 +1,4 @@
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
-import { Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
@@ -9,6 +8,7 @@ import { runMode } from '@/lib/data-pattern/run-pattern';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { cn } from '@/lib/utils';
+import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { ChevronDown, ChevronRight, Crosshair, Loader2, PlayCircle, Plus, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';

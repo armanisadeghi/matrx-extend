@@ -1,4 +1,3 @@
-import { Button, BasicInput as Input, Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import { useActiveTab } from '@/hooks/use-active-tab';
 import type { ExtractionSource } from '@/hooks/use-extraction';
 import { useUserTables } from '@/hooks/use-user-tables';
@@ -9,6 +8,13 @@ import {
   inferSchemaFromRows,
   unionRowKeys,
 } from '@/lib/supabase/user-tables';
+import {
+  Button,
+  BasicInput as Input,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@ai-matrx/design-system';
 import { CheckCircle2, Loader2, Save, TriangleAlert } from 'lucide-react';
 import { useMemo, useState } from 'react';
 

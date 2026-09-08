@@ -18,9 +18,9 @@
  *   4. no active sch_run is currently claimed (claim_token IS NULL or expired)
  */
 
+import { SCHEDULER_CLAIM_PROTOCOL } from '@/lib/scheduler-client/claim';
 import { getSupabase } from '@/lib/supabase/client';
 import { schedulerDb } from '@/lib/supabase/schemas';
-import { SCHEDULER_CLAIM_PROTOCOL } from '@/lib/scheduler-client/claim';
 import { z } from 'zod';
 import { nextCronTime } from './cron';
 

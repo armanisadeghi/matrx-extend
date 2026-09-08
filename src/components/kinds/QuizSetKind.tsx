@@ -7,9 +7,9 @@
  * beside the questions would make the kind useless as a quiz.
  */
 
-import { useState } from 'react';
-import { Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Check, X } from 'lucide-react';
+import { useState } from 'react';
 import type { KindComponentProps } from './types';
 
 interface Question {

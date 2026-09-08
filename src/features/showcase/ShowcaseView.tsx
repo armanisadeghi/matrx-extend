@@ -1,8 +1,8 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ai-matrx/design-system";
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { cn } from '@/lib/utils';
 import { type ShowcaseSubTab, useShowcaseTabStore } from '@/state/showcase-tab';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ai-matrx/design-system';
 import { useEffect, useRef } from 'react';
 import { AiExtractTab } from './tabs/AiExtractTab';
 import { DoctorTab } from './tabs/DoctorTab';

@@ -11,13 +11,13 @@
  * reads the store + issues control commands.
  */
 
-import { Button } from "@ai-matrx/design-system";
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { setHighlighterMode, startHighlighter, stopHighlighter } from '@/lib/highlights/control';
 import { deleteHighlight, listHighlightsForUrl, listMyHighlights } from '@/lib/highlights/queries';
 import type { HighlightListItem, HighlightMode } from '@/lib/highlights/types';
 import { useHighlightStore } from '@/state/highlights';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { Button } from '@ai-matrx/design-system';
 import {
   Database,
   Highlighter,

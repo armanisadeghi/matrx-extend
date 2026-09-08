@@ -1,5 +1,4 @@
 import { CopyMenu } from '@/components/CopyMenu';
-import { Button } from "@ai-matrx/design-system";
 import { AiRecommendations } from '@/features/seo/AiRecommendations';
 import { SeoDetails } from '@/features/seo/SeoDetails';
 import { SeoVerdict } from '@/features/seo/SeoVerdict';
@@ -19,6 +18,7 @@ import {
 import { evaluateSeoAudit } from '@/lib/seo/evaluators/from-audit';
 import { seoAuditToText } from '@/lib/seo/to-text';
 import { type SeoAuditRow, fetchSeoAuditHistoryForUrl, saveSeoAudit } from '@/lib/supabase/queries';
+import { Button } from '@ai-matrx/design-system';
 import {
   ArrowLeft,
   CheckCircle2,

@@ -20,13 +20,13 @@
  * `features/google-workspace/agent/GmailReviewCard.tsx`.
  */
 
-import { Button, BasicInput as Input } from "@ai-matrx/design-system";
-import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { respondToAsk } from '@/hooks/use-tool-inbox';
 import { sendReviewedGmail } from '@/lib/api/routes/google-workspace';
 import { GOOGLE_WORKSPACE_SETTINGS_URL } from '@/lib/google/connection';
 import type { PendingAskUserRequest } from '@/lib/tools/types';
 import { useToolInbox } from '@/state/tool-inbox';
+import { Button, BasicInput as Input } from '@ai-matrx/design-system';
+import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
 import { ExternalLink, Mail, Send } from 'lucide-react';
 import { useEffect, useState } from 'react';
 

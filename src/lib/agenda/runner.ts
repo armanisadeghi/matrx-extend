@@ -19,8 +19,8 @@
  * SW-side code never imports from here; runner is sidepanel-context only.
  */
 
-import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { log } from '@/lib/debug/log';
+import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { useChatStore } from '@/state/chat';

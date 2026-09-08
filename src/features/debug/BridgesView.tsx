@@ -13,10 +13,7 @@
  * primitives are the engine.
  */
 
-import { Button, BasicInput as Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
 import { JsonTree } from '@/components/ui/json-tree';
-import { Switch } from "@ai-matrx/design-system";
-import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { pingHealth } from '@/lib/api/routes/health';
 import {
   type BridgeTrafficEntry,
@@ -56,6 +53,17 @@ import {
 import { cn } from '@/lib/utils';
 import { registerToolsOnActiveTab } from '@/lib/webmcp/register';
 import { useActiveToolsStore } from '@/state/active-tools';
+import {
+  Button,
+  BasicInput as Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@ai-matrx/design-system';
+import { Switch } from '@ai-matrx/design-system';
+import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
 import {
   ChevronDown,
   ChevronRight,

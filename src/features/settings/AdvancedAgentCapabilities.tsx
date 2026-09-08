@@ -10,7 +10,6 @@
  * `admin_only` and filtered out of regular users' bundles.
  */
 
-import { Switch } from "@ai-matrx/design-system";
 import { AuditKeyCard } from '@/features/settings/AuditKeyCard';
 import {
   ALL_OPTIONAL,
@@ -20,6 +19,7 @@ import {
   removeOptionalPermission,
   requestOptionalPermission,
 } from '@/lib/permissions/optional';
+import { Switch } from '@ai-matrx/design-system';
 import { useEffect, useState } from 'react';
 
 export function AdvancedAgentCapabilities() {

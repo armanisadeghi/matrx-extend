@@ -25,10 +25,10 @@
  */
 
 import type { ComponentType } from 'react';
-import { MarkdownKind } from './MarkdownKind';
-import { SearchResultsKind } from './SearchResultsKind';
 import { FlashcardSetKind } from './FlashcardSetKind';
+import { MarkdownKind } from './MarkdownKind';
 import { QuizSetKind } from './QuizSetKind';
+import { SearchResultsKind } from './SearchResultsKind';
 import type { KindComponentProps } from './types';
 
 export const KIND_COMPONENTS: Record<string, ComponentType<KindComponentProps>> = {

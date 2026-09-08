@@ -1,5 +1,3 @@
-import { Button, BasicInput as Input } from "@ai-matrx/design-system";
-import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAiExtraction } from '@/hooks/use-ai-extraction';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
@@ -11,6 +9,8 @@ import {
 } from '@/lib/mandates';
 import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
 import { useAuthStore } from '@/state/auth';
+import { Button, BasicInput as Input } from '@ai-matrx/design-system';
+import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
 import { CheckCircle2, Loader2, Plus, Sparkles, Wand2, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';

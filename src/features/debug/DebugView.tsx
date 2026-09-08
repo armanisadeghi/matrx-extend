@@ -3,7 +3,6 @@
  * (sidepanel, SW, offscreen, content scripts) via the cross-context relay.
  */
 
-import { Button, BasicInput as Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
 import { setBackendEnv, setBackendOverride, useBackendConfig } from '@/config/backend';
 import type { BackendEnv } from '@/config/env';
 import { AdminAgentFlagsPanel } from '@/features/debug/AdminAgentFlagsPanel';
@@ -24,6 +23,15 @@ import {
   useDebugStore,
 } from '@/lib/debug/log';
 import { cn } from '@/lib/utils';
+import {
+  Button,
+  BasicInput as Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@ai-matrx/design-system';
 import {
   Activity,
   CheckCircle2,

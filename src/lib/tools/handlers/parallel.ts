@@ -28,13 +28,13 @@
  * load). Future work: lift to user-configurable.
  */
 
-import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { getApiBaseUrl } from '@/lib/api/client';
 import { agentTargetExecutePath } from '@/lib/api/routes/ai';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { getAccessToken } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
+import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { ensureOffscreen } from '@/lib/stream/offscreen-proxy';

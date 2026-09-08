@@ -14,12 +14,12 @@
  * zustand store so the UI updates live without re-querying anything.
  */
 
-import { Button } from "@ai-matrx/design-system";
 import {
   type ParallelSession,
   type ParallelSubRun,
   useParallelRunsStore,
 } from '@/state/parallel-runs';
+import { Button } from '@ai-matrx/design-system';
 import {
   AlertTriangle,
   CheckCircle2,

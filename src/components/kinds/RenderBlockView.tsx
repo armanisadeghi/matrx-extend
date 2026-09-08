@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 /**
  * THE RENDER SEAM for one inbound `render_block`.
@@ -15,21 +15,21 @@
  * "bespoke stream renderer" the platform bans.
  */
 
-import { useMemo } from 'react';
-import {
-  applyIrKindRoute,
-  GenericStructuredView,
-  useContentIrKindVersion,
-  type IrRenderBlock,
-} from '@ai-matrx/content-ir-react';
-import { readEnvelope, reconstructRegionValue } from '@ai-matrx/content-ir/core';
 import { Markdown } from '@/components/markdown';
 import { CodeBlock } from '@/components/markdown/CodeBlock';
 import { chatMarkdownRegistry } from '@/features/chat/markdown-registry';
-import { contentIrRouteEnv, contentIrVersionSources } from '@/lib/content-ir/route-env';
-import { componentRegistry } from '@/lib/content-ir/registry';
-import { CONTENT_IR_PLATFORM } from '@/lib/content-ir/platform';
 import type { InboundRenderBlock } from '@/lib/content-ir/inbound';
+import { CONTENT_IR_PLATFORM } from '@/lib/content-ir/platform';
+import { componentRegistry } from '@/lib/content-ir/registry';
+import { contentIrRouteEnv, contentIrVersionSources } from '@/lib/content-ir/route-env';
+import {
+  GenericStructuredView,
+  type IrRenderBlock,
+  applyIrKindRoute,
+  useContentIrKindVersion,
+} from '@ai-matrx/content-ir-react';
+import { readEnvelope, reconstructRegionValue } from '@ai-matrx/content-ir/core';
+import { useMemo } from 'react';
 import { lookupKindComponent } from './dispatch';
 import { ContentIrHostBoundary } from './host';
 
@@ -74,9 +74,7 @@ export function RenderBlockView({ block }: { block: InboundRenderBlock }) {
   // ── A registered component for this kind on this platform ────────────────
   const Component = lookupKindComponent(routed.type);
   if (Component && envelope && kind) {
-    return (
-      <Component value={reconstructRegionValue(envelope)} kind={kind} complete={complete} />
-    );
+    return <Component value={reconstructRegionValue(envelope)} kind={kind} complete={complete} />;
   }
 
   // ── A known shape with no component here — the honest floor (R6) ─────────

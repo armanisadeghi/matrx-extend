@@ -5,8 +5,8 @@
  * declare them here.
  */
 
-import { Button, BasicInput as Input, Label } from "@ai-matrx/design-system";
-import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
+import { Button, BasicInput as Input, Label } from '@ai-matrx/design-system';
+import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
 import { Loader2, Save, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 

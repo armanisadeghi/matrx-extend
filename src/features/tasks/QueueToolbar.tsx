@@ -1,4 +1,3 @@
-import { Button, BasicInput as Input, Popover, PopoverContent, PopoverTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
 import {
   BUCKET_LABELS,
   type BucketKey,
@@ -10,6 +9,18 @@ import {
 } from '@/features/tasks/queue-view';
 import { cn } from '@/lib/utils';
 import { useScrapeQueueView } from '@/state/scrape-queue-view';
+import {
+  Button,
+  BasicInput as Input,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@ai-matrx/design-system';
 import { Check, FolderTree, LayoutList, Search, SlidersHorizontal, X } from 'lucide-react';
 
 const ALL = '__all__';

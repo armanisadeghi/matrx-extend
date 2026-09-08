@@ -75,10 +75,7 @@
               "extra": {
                 "isComplete": false
               },
-              "optionalMissing": [
-                "additionalDetails",
-                "set_title"
-              ],
+              "optionalMissing": ["additionalDetails", "set_title"],
               "notices": null
             }
           }
@@ -98,22 +95,14 @@
           {
             "id": 0,
             "question": "Which pigment absorbs light?",
-            "options": [
-              "Chlorophyll",
-              "Carotene",
-              "Melanin"
-            ],
+            "options": ["Chlorophyll", "Carotene", "Melanin"],
             "correctAnswer": 0,
             "explanation": "It absorbs blue and red wavelengths."
           },
           {
             "id": 1,
             "question": "Where does the Calvin cycle run?",
-            "options": [
-              "Stroma",
-              "Thylakoid",
-              "Nucleus"
-            ],
+            "options": ["Stroma", "Thylakoid", "Nucleus"],
             "correctAnswer": 0,
             "explanation": "The fluid space inside the chloroplast."
           }
@@ -150,11 +139,7 @@
                   "__kind": "quiz_question",
                   "type": "multiple_choice",
                   "question": "Which pigment absorbs light?",
-                  "options": [
-                    "Chlorophyll",
-                    "Carotene",
-                    "Melanin"
-                  ],
+                  "options": ["Chlorophyll", "Carotene", "Melanin"],
                   "correct_answer": "Chlorophyll",
                   "explanation": "It absorbs blue and red wavelengths."
                 },
@@ -162,11 +147,7 @@
                   "__kind": "quiz_question",
                   "type": "multiple_choice",
                   "question": "Where does the Calvin cycle run?",
-                  "options": [
-                    "Stroma",
-                    "Thylakoid",
-                    "Nucleus"
-                  ],
+                  "options": ["Stroma", "Thylakoid", "Nucleus"],
                   "correct_answer": "Stroma",
                   "explanation": "The fluid space inside the chloroplast."
                 }
@@ -180,30 +161,20 @@
                   {
                     "id": 0,
                     "question": "Which pigment absorbs light?",
-                    "options": [
-                      "Chlorophyll",
-                      "Carotene",
-                      "Melanin"
-                    ],
+                    "options": ["Chlorophyll", "Carotene", "Melanin"],
                     "correctAnswer": 0,
                     "explanation": "It absorbs blue and red wavelengths."
                   },
                   {
                     "id": 1,
                     "question": "Where does the Calvin cycle run?",
-                    "options": [
-                      "Stroma",
-                      "Thylakoid",
-                      "Nucleus"
-                    ],
+                    "options": ["Stroma", "Thylakoid", "Nucleus"],
                     "correctAnswer": 0,
                     "explanation": "The fluid space inside the chloroplast."
                   }
                 ]
               },
-              "optionalMissing": [
-                "description"
-              ],
+              "optionalMissing": ["description"],
               "notices": null
             }
           }

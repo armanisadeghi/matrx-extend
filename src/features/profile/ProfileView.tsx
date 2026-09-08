@@ -9,9 +9,7 @@
  * because it's a once-in-a-while destination, not a workflow tab.
  */
 
-import { Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { Collapsible } from '@/components/ui/collapsible';
-import { Switch } from "@ai-matrx/design-system";
 import { useAuth } from '@/hooks/use-auth';
 import { useUserProfile } from '@/hooks/use-user-profile';
 import type {
@@ -23,6 +21,8 @@ import type {
 } from '@/lib/supabase/user-profile';
 import { cn } from '@/lib/utils';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { Button, BasicInput as Input } from '@ai-matrx/design-system';
+import { Switch } from '@ai-matrx/design-system';
 import { Check, ChevronLeft, Loader2, Plus, Star, Trash2 } from 'lucide-react';
 
 export function ProfileView() {

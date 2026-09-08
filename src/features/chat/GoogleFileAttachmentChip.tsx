@@ -17,12 +17,12 @@
  * that turn — see /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §2.
  */
 
-import { Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import { log } from '@/lib/debug/log';
 import { GOOGLE_WORKSPACE_SETTINGS_URL } from '@/lib/google/connection';
 import { listRegisteredGoogleFiles } from '@/lib/google/files';
 import { cn } from '@/lib/utils';
 import { useGoogleFilesStore } from '@/state/google-files';
+import { Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
 import {
   AlertTriangle,
   Check,

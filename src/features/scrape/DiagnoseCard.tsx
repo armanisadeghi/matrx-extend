@@ -14,10 +14,10 @@
  */
 
 import { CopyMenu } from '@/components/CopyMenu';
-import { Button } from "@ai-matrx/design-system";
 import { formatDiagnoseBundle } from '@/lib/scrape/diagnose-bundle';
 import { cn } from '@/lib/utils';
 import { useScrapeStore } from '@/state/scrape';
+import { Button } from '@ai-matrx/design-system';
 import { ChevronDown, ChevronRight, Crosshair, X } from 'lucide-react';
 import { useState } from 'react';
 

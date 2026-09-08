@@ -7,7 +7,6 @@
  * `getContent()` callback, build the new content, persist via `onAppend`.
  */
 
-import { Button, Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import {
   extractPageLinks,
   extractPageMetadata,
@@ -16,6 +15,7 @@ import {
   extractUrlAndTitle,
 } from '@/lib/notes/extract';
 import { appendToContent } from '@/lib/notes/utils';
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
 import { ChevronDown, FileText, Info, Link2, Link as LinkIcon, Loader2, Quote } from 'lucide-react';
 import { useState } from 'react';
 

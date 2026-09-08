@@ -3,12 +3,12 @@ import type { StoredAuditSignals } from '@/lib/seo/diff';
 import { fleschBand } from '@/lib/seo/flesch-bands';
 import { isOpenableUrl, schemaTypeUrl } from '@/lib/url/openable';
 import { cn } from '@/lib/utils';
-import { ImageOff } from 'lucide-react';
-import { useState } from 'react';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
-import { formatFileSize } from "@ai-matrx/kit/format";
+import { formatFileSize } from '@ai-matrx/kit/format';
+import { ImageOff } from 'lucide-react';
+import { useState } from 'react';
 
 /**
  * The one renderer for an SEO audit's collected values.
@@ -448,4 +448,3 @@ function hostOf(url: string | null): string {
     return '';
   }
 }
-

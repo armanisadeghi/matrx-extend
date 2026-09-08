@@ -24,7 +24,6 @@
  *     backwards compatibility with tool calls that fail to persist).
  */
 
-import { Button, Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import { ENV } from '@/config/env';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { downloadFileBytes } from '@/lib/api/routes/files';
@@ -39,6 +38,7 @@ import {
 } from '@/lib/supabase/queries';
 import { take_screenshot } from '@/lib/tools/handlers/read';
 import { normalizeUrl } from '@/lib/url/match';
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
 import {
   AlertTriangle,
   Camera,

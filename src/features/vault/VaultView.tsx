@@ -23,10 +23,6 @@
  *     rebuilt here — they link out to the web vault.
  */
 
-import { Badge, Button, BasicInput as Input } from "@ai-matrx/design-system";
-import { Switch } from "@ai-matrx/design-system";
-import { Tabs, TabsList, TabsTrigger } from "@ai-matrx/design-system";
-import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { ENV } from '@/config/env';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAuth } from '@/hooks/use-auth';
@@ -51,6 +47,10 @@ import {
 } from '@/lib/credentials/login-urls';
 import { useTransientSecret } from '@/lib/credentials/transient-secret';
 import { cn } from '@/lib/utils';
+import { Badge, Button, BasicInput as Input } from '@ai-matrx/design-system';
+import { Switch } from '@ai-matrx/design-system';
+import { Tabs, TabsList, TabsTrigger } from '@ai-matrx/design-system';
+import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
 import {
   AlertTriangle,
   Check,

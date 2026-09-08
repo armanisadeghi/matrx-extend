@@ -1,9 +1,6 @@
 import { AddToProjectButton } from '@/components/AddToProjectButton';
-import { ConfirmDialog } from '@ai-matrx/design-system';
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { MarkdownView } from '@/components/MarkdownView';
-import { Button } from "@ai-matrx/design-system";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ai-matrx/design-system";
 import { DiagnoseCard, DiagnoseLauncher } from '@/features/scrape/DiagnoseCard';
 import { SeoDetails } from '@/features/seo/SeoDetails';
 import { useActiveTab } from '@/hooks/use-active-tab';
@@ -28,6 +25,9 @@ import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/state/auth';
 import { useHighlightStore } from '@/state/highlights';
 import { scrapeLinkKey, useScrapeStore } from '@/state/scrape';
+import { ConfirmDialog } from '@ai-matrx/design-system';
+import { Button } from '@ai-matrx/design-system';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ai-matrx/design-system';
 import {
   AlertTriangle,
   Ban,

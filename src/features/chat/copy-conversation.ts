@@ -6,10 +6,10 @@
  * single messages produce diff-compatible output.
  */
 
-import { readEnvelope, reconstructRegionValue } from '@ai-matrx/content-ir/core';
-import type { InboundRenderBlock } from '@/lib/content-ir/inbound';
 import { stringifyJson } from '@/lib/clipboard/copy';
+import type { InboundRenderBlock } from '@/lib/content-ir/inbound';
 import type { ChatMessage, MessagePart, ToolPartCall } from '@/state/chat';
+import { readEnvelope, reconstructRegionValue } from '@ai-matrx/content-ir/core';
 
 export interface MessageCopyOptions {
   /** Include `[Tool: name — status]` lines inline with the text. */

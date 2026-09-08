@@ -17,11 +17,11 @@
 
 import { Check, Cpu, Loader2, Monitor, Plus, RefreshCw, Server, X } from 'lucide-react';
 
-import { Button, Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import { useComputeTargets } from '@/lib/compute/use-compute-targets';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
 import type { ComputeTarget } from '@/types/compute-target';
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
 
 interface SandboxPickerChipProps {
   disabled?: boolean;

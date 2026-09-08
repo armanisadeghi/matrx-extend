@@ -15,7 +15,7 @@ import type { NoteListItem } from '@/lib/notes/types';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
-import { formatRelativeTime as kitFormatRelativeTime } from "@ai-matrx/kit/format";
+import { formatRelativeTime as kitFormatRelativeTime } from '@ai-matrx/kit/format';
 
 export interface NoteFilter {
   search?: string;

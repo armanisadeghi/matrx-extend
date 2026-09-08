@@ -8,10 +8,10 @@
 import { getApiBaseUrl } from '@/lib/api/client';
 import { getAccessToken } from '@/lib/auth/flow';
 import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
-import { requireActiveOrganizationId } from '@/lib/org/active-org';
 import { log } from '@/lib/debug/log';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { requireActiveOrganizationId } from '@/lib/org/active-org';
 import { markStreamActive, markStreamInactive } from '@/lib/stream/active-runs';
 
 const OFFSCREEN_PATH = 'offscreen.html';

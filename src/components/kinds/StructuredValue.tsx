@@ -14,10 +14,10 @@
  * never as the first thing anyone sees.
  */
 
-import { useState } from 'react';
-import { ChevronRight } from 'lucide-react';
 import { Markdown } from '@/components/markdown';
 import { cn } from '@/lib/utils';
+import { ChevronRight } from 'lucide-react';
+import { useState } from 'react';
 
 /** The discriminator is IDENTITY, not a data field — shown as a label, never as a row. */
 const KIND_KEY = '__kind';
@@ -53,7 +53,10 @@ function ValueBody({ value, depth }: { value: unknown; depth: number }) {
     return (
       <ul className="space-y-1.5">
         {value.map((entry, i) => (
-          <li key={i} className={cn(isPlainObject(entry) && 'rounded border border-border px-2 py-1.5')}>
+          <li
+            key={i}
+            className={cn(isPlainObject(entry) && 'rounded border border-border px-2 py-1.5')}
+          >
             <ValueBody value={entry} depth={depth + 1} />
           </li>
         ))}

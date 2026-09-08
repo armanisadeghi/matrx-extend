@@ -31,19 +31,17 @@
  *                 (a guard that cannot fail is not a guard)
  */
 
-import { readFileSync } from "node:fs";
-import { execFileSync } from "node:child_process";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import process from "node:process";
+import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const STRICT = process.argv.includes("--strict");
-const SELF_TEST = process.argv.includes("--self-test");
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const STRICT = process.argv.includes('--strict');
+const SELF_TEST = process.argv.includes('--self-test');
 
-const register = JSON.parse(
-  readFileSync(resolve(ROOT, "scripts/package-twins.json"), "utf8"),
-);
+const register = JSON.parse(readFileSync(resolve(ROOT, 'scripts/package-twins.json'), 'utf8'));
 const TWINS = register.twins;
 const BY_NAME = new Map(TWINS.map((t) => [t.name, t]));
 
@@ -58,7 +56,7 @@ const DEF_RE =
 /** Findings for one file's source text. Exported shape: {name, line, text}. */
 function twinsIn(file, source) {
   const out = [];
-  const lines = source.split("\n");
+  const lines = source.split('\n');
   for (let i = 0; i < lines.length; i++) {
     const m = DEF_RE.exec(lines[i]);
     if (!m) continue;
@@ -73,19 +71,19 @@ function twinsIn(file, source) {
 if (SELF_TEST) {
   const planted = [
     'import { something } from "@/lib/thing";',
-    "",
-    "/** A re-grown twin of a collapsed package export. */",
-    "export function formatRelativeTime(iso: string): string {",
-    "  return iso;",
-    "}",
-    "",
-    "function notRegistered(x: number) {",
-    "  return x;",
-    "}",
-  ].join("\n");
+    '',
+    '/** A re-grown twin of a collapsed package export. */',
+    'export function formatRelativeTime(iso: string): string {',
+    '  return iso;',
+    '}',
+    '',
+    'function notRegistered(x: number) {',
+    '  return x;',
+    '}',
+  ].join('\n');
 
-  const found = twinsIn("planted.ts", planted);
-  if (found.length !== 1 || found[0].name !== "formatRelativeTime") {
+  const found = twinsIn('planted.ts', planted);
+  if (found.length !== 1 || found[0].name !== 'formatRelativeTime') {
     console.error(
       `SELF-TEST FAILED: a re-grown \`formatRelativeTime\` twin was not ` +
         `reported (found ${found.length}).`,
@@ -96,20 +94,18 @@ if (SELF_TEST) {
   // Planted here rather than read from the register, so this self-test is
   // repo-agnostic: the script and its JSON copy unchanged into every repo, and
   // no repo's real allowlist paths are baked into the proof.
-  const row = BY_NAME.get("formatRelativeTime");
+  const row = BY_NAME.get('formatRelativeTime');
   const realAllow = row.allow ?? [];
-  row.allow = [{ file: "planted.ts", reason: "self-test only" }];
-  const allowed = twinsIn("planted.ts", planted);
+  row.allow = [{ file: 'planted.ts', reason: 'self-test only' }];
+  const allowed = twinsIn('planted.ts', planted);
   row.allow = realAllow;
   if (allowed.length !== 0) {
-    console.error(
-      "SELF-TEST FAILED: an allowlisted file still reported its twin.",
-    );
+    console.error('SELF-TEST FAILED: an allowlisted file still reported its twin.');
     process.exit(1);
   }
   // An indented (inner) definition is not a top-level twin.
-  if (twinsIn("planted.ts", "  const formatRelativeTime = (v) => v;").length !== 0) {
-    console.error("SELF-TEST FAILED: an inner helper was reported as a twin.");
+  if (twinsIn('planted.ts', '  const formatRelativeTime = (v) => v;').length !== 0) {
+    console.error('SELF-TEST FAILED: an inner helper was reported as a twin.');
     process.exit(1);
   }
   console.log(
@@ -120,21 +116,25 @@ if (SELF_TEST) {
 }
 
 function trackedFiles() {
-  const out = execFileSync("git", ["ls-files", "*.ts", "*.tsx", "*.js", "*.jsx", "*.mjs", "*.cjs"], {
-    cwd: ROOT,
-    encoding: "utf8",
-    maxBuffer: 64 * 1024 * 1024,
-  });
-  return out.split("\n").filter(Boolean);
+  const out = execFileSync(
+    'git',
+    ['ls-files', '*.ts', '*.tsx', '*.js', '*.jsx', '*.mjs', '*.cjs'],
+    {
+      cwd: ROOT,
+      encoding: 'utf8',
+      maxBuffer: 64 * 1024 * 1024,
+    },
+  );
+  return out.split('\n').filter(Boolean);
 }
 
 const findings = [];
 let scanned = 0;
 for (const file of trackedFiles()) {
-  if (file.startsWith("scripts/package-twins.json")) continue;
+  if (file.startsWith('scripts/package-twins.json')) continue;
   let source;
   try {
-    source = readFileSync(resolve(ROOT, file), "utf8");
+    source = readFileSync(resolve(ROOT, file), 'utf8');
   } catch {
     continue;
   }

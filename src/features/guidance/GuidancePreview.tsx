@@ -7,12 +7,12 @@
  *   demo_ref    — step count, parameters, Replay button (confirms first)
  */
 
-import { Badge, Button } from "@ai-matrx/design-system";
 import { getDemoOrHydrate } from '@/lib/demos/cloud-sync';
 import { replayDemo } from '@/lib/demos/replayer';
 import type { Demo } from '@/lib/demos/types';
 import { getGuidanceItem, saveGuidanceItem } from '@/lib/guidance/storage';
 import type { GuidanceItem } from '@/lib/guidance/types';
+import { Badge, Button } from '@ai-matrx/design-system';
 import { Camera, Loader2, Pencil, Play } from 'lucide-react';
 import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 

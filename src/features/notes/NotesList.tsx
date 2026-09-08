@@ -7,7 +7,6 @@
  * view swaps to the editor.
  */
 
-import { Button, BasicInput as Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
 import { createNote } from '@/lib/notes/queries';
 import type { NoteListItem } from '@/lib/notes/types';
 import {
@@ -17,6 +16,15 @@ import {
   uniqueFolderNames,
 } from '@/lib/notes/utils';
 import { useNotesUiStore } from '@/state/notes';
+import {
+  Button,
+  BasicInput as Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@ai-matrx/design-system';
 import { useQueryClient } from '@tanstack/react-query';
 import { FolderClosed, NotebookPen, Plus, Search } from 'lucide-react';
 import { useDeferredValue, useMemo, useState } from 'react';

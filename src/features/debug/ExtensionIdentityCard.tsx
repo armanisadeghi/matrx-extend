@@ -11,9 +11,9 @@
  * "Authorization page could not be loaded" with no other clues.
  */
 
-import { Button } from "@ai-matrx/design-system";
 import { readExtensionIdentity } from '@/lib/auth/identity';
 import { cn } from '@/lib/utils';
+import { Button } from '@ai-matrx/design-system';
 import { Check, Copy, ShieldAlert } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 

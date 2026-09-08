@@ -8,14 +8,14 @@
 
 import { MarkdownView } from '@/components/MarkdownView';
 import { cn } from '@/lib/utils';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatFileSize } from '@ai-matrx/kit/format';
 import { Globe } from 'lucide-react';
 import { useState } from 'react';
 import type { ComponentType } from 'react';
 import type { FieldComponentName } from './types';
-// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
-// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
-// twins with no correct owner until kit became one.
-import { formatFileSize } from "@ai-matrx/kit/format";
 
 interface FieldProps {
   value: unknown;

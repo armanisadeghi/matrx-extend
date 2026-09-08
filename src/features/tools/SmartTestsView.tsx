@@ -21,7 +21,6 @@
  */
 
 import { CopyButton } from '@/components/CopyMenu';
-import { Button, BasicInput as Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
 import {
   type OnboxRequestEvent,
   detectLanguage,
@@ -40,6 +39,15 @@ import {
 import { get_page_selection, read_active_page } from '@/lib/tools/handlers/read';
 import type { ToolContext, ToolHandler } from '@/lib/tools/types';
 import { cn } from '@/lib/utils';
+import {
+  Button,
+  BasicInput as Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@ai-matrx/design-system';
 import {
   AlertTriangle,
   ChevronDown,

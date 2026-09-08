@@ -1,5 +1,4 @@
 import { CopyMenu } from '@/components/CopyMenu';
-import { Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAuth } from '@/hooks/use-auth';
 import { rowsToTsv, stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
@@ -15,6 +14,7 @@ import {
 } from '@/lib/supabase/queries';
 import { useAutoExtractStore } from '@/state/auto-extract';
 import { useHighlightStore } from '@/state/highlights';
+import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { Crosshair, Loader2, LogIn, Play, Save, XCircle, Zap } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 

@@ -18,8 +18,6 @@
  * `lib/audit/log`.
  */
 
-import { ConfirmDialog } from '@ai-matrx/design-system';
-import { Button } from "@ai-matrx/design-system";
 import { exportPublicKeyJwk, rotateDeviceKey } from '@/lib/audit/device-key';
 import {
   MAX_RECEIPTS,
@@ -29,6 +27,8 @@ import {
 } from '@/lib/audit/log';
 import type { ReceiptOrigin, ToolReceipt } from '@/lib/audit/receipt';
 import { cn } from '@/lib/utils';
+import { ConfirmDialog } from '@ai-matrx/design-system';
+import { Button } from '@ai-matrx/design-system';
 import { Check, Copy, KeyRound } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -171,8 +171,8 @@ export function AuditKeyCard() {
           <>
             <span className="block">A new keypair will be generated.</span>
             <span className="mt-2 block">
-              Existing receipts continue to verify against the retired key (kept
-              in local history). This cannot be undone.
+              Existing receipts continue to verify against the retired key (kept in local history).
+              This cannot be undone.
             </span>
           </>
         }

@@ -25,7 +25,6 @@
 
 import { CopyButton } from '@/components/CopyMenu';
 import { Markdown } from '@/components/markdown';
-import { Button } from "@ai-matrx/design-system";
 import { ENV } from '@/config/env';
 import { useAgentTextRun } from '@/hooks/use-agent-text-run';
 import { DEFAULT_CHAT_MANDATE_REF, mandateKeyFromAgentRef } from '@/lib/mandates';
@@ -33,6 +32,7 @@ import type { SeoAudit } from '@/lib/seo/audit';
 import { buildSeoRecommendationsRequest } from '@/lib/seo/recommendations';
 import { fetchAgentList } from '@/lib/supabase/queries';
 import { useSettingsStore } from '@/state/settings';
+import { Button } from '@ai-matrx/design-system';
 import { ExternalLink, Loader2, RotateCw, Sparkles, Square } from 'lucide-react';
 import { useEffect, useState } from 'react';
 

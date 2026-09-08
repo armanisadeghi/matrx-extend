@@ -11,8 +11,6 @@
  * local. Broadcasts plus Realtime keep the panel aligned with server writes.
  */
 
-import { Badge, Button, BasicInput as Input } from "@ai-matrx/design-system";
-import { ScrollArea } from "@ai-matrx/design-system";
 import {
   addTasks,
   addUserTodo,
@@ -26,6 +24,8 @@ import {
 import type { Task, TaskStatus, UserTodo } from '@/lib/lists/types';
 import { cn } from '@/lib/utils';
 import { useListsStore } from '@/state/lists';
+import { Badge, Button, BasicInput as Input } from '@ai-matrx/design-system';
+import { ScrollArea } from '@ai-matrx/design-system';
 import { Check, CircleDashed, CircleSlash, Clock, Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 

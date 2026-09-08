@@ -13,8 +13,8 @@
 
 import { getBackendUrl } from '@/config/backend';
 import { getAccessToken, refreshAccessToken } from '@/lib/auth/flow';
-import { requireActiveOrganizationId } from '@/lib/org/active-org';
 import { log } from '@/lib/debug/log';
+import { requireActiveOrganizationId } from '@/lib/org/active-org';
 
 export interface FileUploadResponse {
   file_id: string;

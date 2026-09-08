@@ -12,8 +12,8 @@
  * gate design.
  */
 
-import { Button } from "@ai-matrx/design-system";
 import { type PermissionVerdict, usePermissionPromptsStore } from '@/state/permission-prompts';
+import { Button } from '@ai-matrx/design-system';
 import { Globe, Lock, ShieldCheck, Sparkles, X } from 'lucide-react';
 
 const VERDICT_DETAILS: Record<

@@ -8,9 +8,9 @@
  * URL (the dispatcher's domain-trust shortcut). Off by default.
  */
 
-import { Button } from "@ai-matrx/design-system";
 import { respondToConfirm } from '@/hooks/use-tool-inbox';
 import type { ConfirmInitiator, PendingConfirmRequest } from '@/lib/tools/types';
+import { Button } from '@ai-matrx/design-system';
 import { Check, Globe, ShieldAlert, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 

@@ -1,10 +1,10 @@
 import { CopyMenu } from '@/components/CopyMenu';
-import { Button } from "@ai-matrx/design-system";
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { type PageDiagnostic, pageDiagnosticInPage } from '@/lib/data-pattern/page-diagnostic';
 import { cn } from '@/lib/utils';
 import { type ShowcaseSubTab, useShowcaseTabStore } from '@/state/showcase-tab';
+import { Button } from '@ai-matrx/design-system';
 import { CheckCircle2, Loader2, Stethoscope, XCircle } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

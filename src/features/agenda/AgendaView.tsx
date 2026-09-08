@@ -11,8 +11,6 @@
  * read that here and scroll the matching row into view.
  */
 
-import { ConfirmDialog } from '@ai-matrx/design-system';
-import { Button, BasicInput as Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
 import { useChatStream } from '@/hooks/use-chat-stream';
 import { isValidCron, nextCronTime } from '@/lib/agenda/cron';
 import {
@@ -28,6 +26,17 @@ import {
 import { isTaskRunning, runTask } from '@/lib/agenda/runner';
 import { log } from '@/lib/debug/log';
 import { cn } from '@/lib/utils';
+import { ConfirmDialog } from '@ai-matrx/design-system';
+import {
+  Button,
+  BasicInput as Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@ai-matrx/design-system';
 import { Calendar, Clock, Heart, Pause, Play, PlayCircle, Plus, Trash2, Zap } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 

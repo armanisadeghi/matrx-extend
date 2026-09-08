@@ -66,7 +66,7 @@ import {
   handleFrontendRpc,
 } from '@/lib/frontend-bridge/handler';
 import { ensureRealtimeHost } from '@/lib/realtime/host';
-import { defineChannelNamespace, type ChannelHandle } from '@ai-matrx/realtime';
+import { type ChannelHandle, defineChannelNamespace } from '@ai-matrx/realtime';
 import { z } from 'zod';
 
 // ─── Wire format (CONTRACTUAL — must match frontend) ────────────────────────
@@ -175,11 +175,7 @@ export async function connectBroadcast(): Promise<void> {
             onMessage: ({ data }) => {
               const parsed = BroadcastPayloadSchema.safeParse(data);
               if (!parsed.success) {
-                log.warn(
-                  'frontend-bridge',
-                  'broadcast: malformed payload',
-                  parsed.error.format(),
-                );
+                log.warn('frontend-bridge', 'broadcast: malformed payload', parsed.error.format());
                 return;
               }
               if (next) void routeBroadcastMessage(parsed.data, next);
@@ -190,16 +186,17 @@ export async function connectBroadcast(): Promise<void> {
         // request/reply is one message even if the socket redelivers it.
         eventKey: (_source, payload) => {
           const parsed = BroadcastPayloadSchema.safeParse(payload);
-          return parsed.success
-            ? `${parsed.data.direction}:${parsed.data.requestId}`
-            : undefined;
+          return parsed.success ? `${parsed.data.direction}:${parsed.data.requestId}` : undefined;
         },
         // Nothing to re-read: this bridge is request/reply over an ephemeral
         // substrate, and a caller whose reply was lost in the gap already
         // learns about it through its own 30s timeout. Declared explicitly
         // rather than omitted, so the reason is on the record.
         onBackfill: () => {
-          log.info('frontend-bridge', 'broadcast: rejoined — in-flight calls ride their own timeouts');
+          log.info(
+            'frontend-bridge',
+            'broadcast: rejoined — in-flight calls ride their own timeouts',
+          );
         },
         onStatusChange: (status) => {
           if (status === 'connected') markJoined();

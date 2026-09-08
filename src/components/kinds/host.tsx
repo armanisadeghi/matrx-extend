@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 /**
  * THE EXTENSION'S CONTENT IR HOST — the four things
@@ -12,14 +12,14 @@
  * for no benefit.
  */
 
-import { useMemo, type ReactNode } from 'react';
-import { Info } from 'lucide-react';
-import { ContentIrRenderProvider, type ContentIrHost } from '@ai-matrx/content-ir-react';
-import { kindRegistry, componentRegistry } from '@/lib/content-ir/registry';
 import { reportContentIrError } from '@/lib/content-ir/errors';
 import { CONTENT_IR_PLATFORM } from '@/lib/content-ir/platform';
-import { StructuredValue } from './StructuredValue';
+import { componentRegistry, kindRegistry } from '@/lib/content-ir/registry';
+import { type ContentIrHost, ContentIrRenderProvider } from '@ai-matrx/content-ir-react';
+import { Info } from 'lucide-react';
+import { type ReactNode, useMemo } from 'react';
 import { RenderBlockView } from './RenderBlockView';
+import { StructuredValue } from './StructuredValue';
 
 export const contentIrHost: ContentIrHost = {
   platform: CONTENT_IR_PLATFORM,

@@ -13,12 +13,12 @@
  * doesn't reappear if the user scrolls away and back.
  */
 
-import { Button, Label } from "@ai-matrx/design-system";
-import { Switch } from "@ai-matrx/design-system";
-import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { useChatStream } from '@/hooks/use-chat-stream';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
+import { Button, Label } from '@ai-matrx/design-system';
+import { Switch } from '@ai-matrx/design-system';
+import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
 import { Check, MessageCircleQuestion } from 'lucide-react';
 import { useState } from 'react';
 import { create } from 'zustand';

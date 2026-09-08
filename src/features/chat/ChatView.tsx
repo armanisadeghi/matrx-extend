@@ -2,7 +2,6 @@ import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { GuestBanner } from '@/components/GuestBanner';
 import { RenderBlockView } from '@/components/kinds/RenderBlockView';
 import { Markdown } from '@/components/markdown';
-import { Button, BasicInput as Input, Popover, PopoverContent, PopoverTrigger, Skeleton } from "@ai-matrx/design-system";
 import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentCaptureCredentialCard } from '@/features/chat/AgentCaptureCredentialCard';
@@ -57,6 +56,14 @@ import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { useToolInbox } from '@/state/tool-inbox';
 import { useTurnInboxStore } from '@/state/turn-inbox';
 import { useVoicePrefsStore } from '@/state/voice-prefs';
+import {
+  Button,
+  BasicInput as Input,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Skeleton,
+} from '@ai-matrx/design-system';
 import {
   AlertTriangle,
   ArrowUp,

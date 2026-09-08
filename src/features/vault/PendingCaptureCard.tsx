@@ -7,7 +7,6 @@
  * password never reaches this surface — the SW writes it to the Vault.
  */
 
-import { Button } from "@ai-matrx/design-system";
 import type {
   CaptureDecision,
   CaptureDecisionResult,
@@ -16,6 +15,7 @@ import type {
 } from '@/lib/credentials/capture-types';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { Button } from '@ai-matrx/design-system';
 import { Loader2, ShieldPlus, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 

@@ -10,10 +10,10 @@
  * on `selectedNoteId`.
  */
 
-import { Skeleton } from "@ai-matrx/design-system";
 import { listMyNotes } from '@/lib/notes/queries';
 import { useNotesUiStore } from '@/state/notes';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { Skeleton } from '@ai-matrx/design-system';
 import { useQuery } from '@tanstack/react-query';
 import { NoteEditor } from './NoteEditor';
 import { NotesList } from './NotesList';

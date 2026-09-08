@@ -9,7 +9,7 @@ const logMock = vi.hoisted(() => ({
 
 vi.mock('@/lib/debug/log', () => ({ log: logMock }));
 
-import { streamFetch, type StreamEvent } from '@/lib/api/stream';
+import { type StreamEvent, streamFetch } from '@/lib/api/stream';
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -46,13 +46,15 @@ describe('streamFetch public NDJSON kernel integration', () => {
     const utf8Split = bytes.findIndex((byte) => byte > 127) + 1;
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue(
-        fragmentedResponse([
-          bytes.slice(0, utf8Split),
-          bytes.slice(utf8Split, utf8Split + 7),
-          bytes.slice(utf8Split + 7),
-        ]),
-      ),
+      vi
+        .fn()
+        .mockResolvedValue(
+          fragmentedResponse([
+            bytes.slice(0, utf8Split),
+            bytes.slice(utf8Split, utf8Split + 7),
+            bytes.slice(utf8Split + 7),
+          ]),
+        ),
     );
     const events: StreamEvent[] = [];
 
@@ -90,10 +92,7 @@ describe('streamFetch public NDJSON kernel integration', () => {
   });
 
   it('keeps HTTP failures typed and emits one terminal event', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue(new Response('denied', { status: 409 })),
-    );
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('denied', { status: 409 })));
     const events: StreamEvent[] = [];
 
     await streamFetch({
