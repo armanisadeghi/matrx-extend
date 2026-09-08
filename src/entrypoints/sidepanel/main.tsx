@@ -1,3 +1,4 @@
+import { RealtimeHost } from '@/components/RealtimeHost';
 import { RootErrorBoundary } from '@/components/RootErrorBoundary';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -28,7 +29,12 @@ root.render(
         into a readable message plus a stack. */}
     <RootErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <App />
+        {/* The sidepanel's ONE realtime manager + write ledger. Every channel
+            in this realm hangs off it; a second provider would be a second
+            ledger, under which our own writes classify as remote. */}
+        <RealtimeHost>
+          <App />
+        </RealtimeHost>
       </QueryClientProvider>
     </RootErrorBoundary>
   </React.StrictMode>,

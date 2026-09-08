@@ -56,6 +56,14 @@ These are the only places this mirror intentionally diverges from `matrx-fronten
 
 - **`README.md`** — this file, rewritten with matrx-extend framing.
 
+- **`realtime.ts`** — semantically identical to the canonical file (the same
+  `@ai-matrx/realtime` channel: `private: true`, `wire: {mode:"raw"}`,
+  `foreignTopic: "scheduler:user"`, the same `eventKey` and the same `resync` backfill door).
+  Only the header prose differs: it names the extension's realtime hosts
+  (`<RealtimeHost>` in the sidepanel, `src/lib/realtime/host.ts` in the service worker) as where
+  the manager comes from, and it states the MV3 reason the catch-up matters more here — a
+  service worker dies after ~30s idle, so far more events are missed than a browser tab misses.
+
 Everything else (`client.ts`, `claim.ts`, `subscribe.ts`, `next-due.ts`, `surfaces.ts`, `errors.ts`, `index.ts`) is a verbatim copy.
 
 ## Usage

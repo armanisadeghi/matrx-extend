@@ -42,7 +42,7 @@ export interface SchedulerClient {
    * Subscribe to sch_task changes for `userId`. Returns a teardown
    * function. The host's surface is applied as a client-side filter.
    */
-  subscribeToTasks(opts: Omit<SubscribeOptions, 'surface'>): () => Promise<void>;
+  subscribeToTasks(opts: Omit<SubscribeOptions, 'surface'>): () => void;
 
   /**
    * Atomic claim — INSERT a sch_run row with status='claimed'. Throws
@@ -76,7 +76,9 @@ export function createSchedulerClient(cfg: SchedulerClientConfig): SchedulerClie
     surface,
     instanceId,
     supabaseClient,
-    subscribeToTasks: (opts) => subscribeToTasks(supabaseClient, { ...opts, surface }),
+    // The Supabase client is no longer threaded through: @ai-matrx/realtime
+    // owns the channel and takes this realm's ONE client from its realtime host.
+    subscribeToTasks: (opts) => subscribeToTasks({ ...opts, surface }),
     claimTask: (opts) => claimTask(supabaseClient, { ...opts, surface, instanceId }),
     markRunRunning: (opts) => markRunRunning(supabaseClient, opts),
     completeRun: (opts) => completeRun(supabaseClient, opts),

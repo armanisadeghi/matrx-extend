@@ -15,6 +15,14 @@ The frontend bridge has two transports with one action handler:
 capabilities never advertise privileged or ask-user tools. `broadcast.ts`
 only adapts direction/correlation and must not fork action behavior.
 
+The Broadcast channel is `@ai-matrx/realtime`'s (`wire: {mode:"raw"}` +
+`foreignTopic`, because the deployed frontend and every shipped extension
+build read the bare `BridgeEnvelope` off the wire). The MANAGER is the service
+worker realm's, from `src/lib/realtime/host.ts` — this module must never build
+one of its own: a second manager is a second write ledger, and the scheduler
+host shares this realm. Contract:
+`common-docs/systems/clients/extension/CHANNELS.md` §4.
+
 Requests and replies preserve `requestId`, including send failure, timeout,
 and disconnect paths. The event string is contractual and byte-matches
 matrx-frontend's `BRIDGE_BROADCAST_EVENT`.

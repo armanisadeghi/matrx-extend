@@ -26,6 +26,23 @@
       "allow": []
     },
     {
+      "name": "createTaskChannelTopic",
+      "package": "@ai-matrx/realtime",
+      "why": "A `uniqueChannelTopic` twin under a local name: it appended a crypto.randomUUID() suffix to a per-conversation topic so a React 19 remount could not be handed the previous mount's still-joined channel. The package mints the unique INSTANCE topic for every Postgres Changes channel itself (and deliberately does NOT for broadcast/presence, where the topic IS the room — a hand-rolled suffix there splits the room). Deleted from src/state/lists.ts in the 2026-09-07 realtime adoption.",
+      "allow": []
+    },
+    {
+      "name": "subscribeSchedulerBroadcast",
+      "package": "@ai-matrx/realtime",
+      "why": "NOT a package twin — a sanctioned MIRROR. src/lib/scheduler-client/ is the hand-vendored copy of matrx-frontend/lib/scheduler-client/ (see its README's mirror policy), and this function is the ref-counted fan-out over the package's own `manager.open({private:true, wire:{mode:'raw'}})`. The channel logic itself is 100% the package's; what is local is the sch_task payload filtering the mirror exists to carry.",
+      "allow": [
+        {
+          "file": "src/lib/scheduler-client/realtime.ts",
+          "reason": "The matrx-frontend twin of this exact file is the canonical home; both delegate every channel concern to @ai-matrx/realtime and hold only the scheduler's own fan-out registry."
+        }
+      ]
+    },
+    {
       "name": "toMs",
       "package": "@ai-matrx/realtime",
       "why": "Realtime timestamp normalizer, deleted in the 2026-08-31 realtime adoption.",

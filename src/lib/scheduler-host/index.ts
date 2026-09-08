@@ -24,6 +24,7 @@
 
 import { getOrMintInstanceId } from '@/lib/cross-component/instance-id';
 import { log } from '@/lib/debug/log';
+import { ensureRealtimeHost } from '@/lib/realtime/host';
 import {
   type Json,
   type SchTaskRow,
@@ -33,6 +34,7 @@ import {
   createSchedulerClient,
 } from '@/lib/scheduler-client';
 import { getSupabase } from '@/lib/supabase/client';
+import { schedulerDb } from '@/lib/supabase/schemas';
 
 // ── Handler registry ───────────────────────────────────────────────────────
 
@@ -63,7 +65,7 @@ export function listRegisteredKinds(): string[] {
 
 // ── Host state (singleton, SW-scoped) ──────────────────────────────────────
 
-let activeTeardown: (() => Promise<void>) | null = null;
+let activeTeardown: (() => void) | null = null;
 let activeUserId: string | null = null;
 let starting: Promise<void> | null = null;
 
@@ -92,6 +94,13 @@ export async function startSchedulerHost(userId: string): Promise<void> {
       const supabase = getSupabase();
       const instanceId = await getOrMintInstanceId();
 
+      // The realm's ONE realtime manager. The scheduler channel is opened by
+      // `subscribeSchedulerBroadcast` through the package's ambient door, so it
+      // needs a published manager to attach to — and building it here rather
+      // than inside the subscription keeps a single manager (one write ledger,
+      // one socket) shared with the frontend bridge.
+      ensureRealtimeHost(userId);
+
       const client: SchedulerClient = createSchedulerClient({
         supabaseClient: supabase,
         surface: 'chrome-extension-chat',
@@ -102,6 +111,14 @@ export async function startSchedulerHost(userId: string): Promise<void> {
         userId,
         onTask: (event) => {
           void handleTaskEvent(client, event);
+        },
+        // THE CATCH-UP. This host is REACTIVE, and an MV3 service worker dies
+        // every 30s of idle — so any task that came due while it was gone
+        // produced an event nobody was listening for, and realtime has no
+        // replay. On every recovery path the package says "you were away" here
+        // and the host sweeps for work it should already have claimed.
+        onResync: () => {
+          void sweepDueTasks(client, userId);
         },
       });
 
@@ -132,10 +149,50 @@ export async function stopSchedulerHost(): Promise<void> {
   activeUserId = null;
   if (!fn) return;
   try {
-    await fn();
+    fn();
     log.info('sys', 'scheduler-host: stopped');
   } catch (err) {
     log.warn('sys', `scheduler-host: teardown failed: ${(err as Error).message}`);
+  }
+}
+
+// ── Catch-up ──────────────────────────────────────────────────────────────
+
+/**
+ * Re-read the tasks that are due for this surface RIGHT NOW and walk each one
+ * through the normal claim path.
+ *
+ * This is the answer to "realtime has no replay". Every UPDATE that rolled a
+ * task's `next_due_at` into the present while this service worker was dead, or
+ * while the socket was away, is gone forever — and without this sweep the host
+ * sat perfectly healthy with work waiting in the database. The claim is
+ * atomic (the `sch_run_unique_active_per_task` partial index), so sweeping a
+ * task another claimer already took is a race loss, not a double run.
+ */
+async function sweepDueTasks(client: SchedulerClient, userId: string): Promise<void> {
+  try {
+    const { data, error } = await schedulerDb()
+      .from('sch_task')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('enabled', true)
+      .lte('next_due_at', new Date().toISOString())
+      .overlaps('surfaces', [client.surface, 'any']);
+    if (error) throw new Error(error.message);
+    const due = (data ?? []) as SchTaskRow[];
+    if (due.length === 0) return;
+    log.info('sys', `scheduler-host: resync swept ${due.length} due task(s)`);
+    for (const task of due) {
+      await handleTaskEvent(client, { type: 'UPDATE', task });
+    }
+  } catch (err) {
+    // Loud, with the consequence stated: a failed sweep means the host may be
+    // sitting on work it never learned about.
+    log.warn(
+      'sys',
+      `scheduler-host: resync sweep failed (${(err as Error).message}) — due tasks may go ` +
+        'unclaimed until the next resync or sch_task event',
+    );
   }
 }
 

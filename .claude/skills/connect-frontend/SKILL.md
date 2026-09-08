@@ -71,20 +71,36 @@ chrome.runtime.sendMessage(extensionId, {
 
 **Cross-machine relay via Supabase Broadcast:**
 
+Both ends ride `@ai-matrx/realtime` — never hand-write `supabase.channel(...)`
+(the guard `tests/unit/realtime-adoption.test.ts` fails on one). The topic and
+the payload shape are the PEER's contract, so the channel declares
+`foreignTopic` and `wire: {mode:"raw"}`: the envelope this package normally adds
+would change the wire under a program that ships on its own release train.
+
 ```ts
-// pseudocode — uses the shared Supabase project brsgrqvjdzwihsvnfqkf
-const channel = supabase.channel(`matrx-extension-bridge:${userId}`);
-await channel.subscribe();
-await channel.send({
-  type: "broadcast",
-  event: "FRONTEND_RPC",
-  payload: {
-    direction: "extension->frontend",
-    action: "open_panel",
-    requestId: crypto.randomUUID(),
-    payload: { typeKey: "chat", instanceId: "abc-123" },
-    timestamp: Date.now(),
-  },
+// In this repo, just call publishToFrontend() from
+// src/lib/frontend-bridge/broadcast.ts — it owns the channel. The shape:
+const bridge = defineChannelNamespace({
+  namespace: "extension-bridge",
+  parts: ["userId"],
+  description: "matrx-extend ↔ matrx-frontend RPC bridge (foreign wire).",
+  foreignTopic: "matrx-extension-bridge",
+});
+
+const channel = manager.open({
+  topic: bridge.topic({ userId }),
+  wire: { mode: "raw", acceptEchoFromSelf: true },
+  broadcast: [{ event: "FRONTEND_RPC", onMessage: ({ data }) => route(data) }],
+  eventKey: (_source, p) => `${p.direction}:${p.requestId}`,
+  onBackfill: () => {},
+});
+
+channel.send("FRONTEND_RPC", {
+  direction: "extension->frontend",
+  action: "open_panel",
+  requestId: crypto.randomUUID(),
+  payload: { typeKey: "chat", instanceId: "abc-123" },
+  timestamp: Date.now(),
 });
 ```
 

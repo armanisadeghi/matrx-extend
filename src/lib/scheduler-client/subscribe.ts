@@ -3,8 +3,6 @@
 // Private per-user scheduler Broadcast subscription. Durable task state is
 // still fetched through table RLS; Broadcast is only the low-cost change hint.
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-
 import { type SchedulerBroadcastPayload, subscribeSchedulerBroadcast } from './realtime';
 import type { SchedulerSurface } from './surfaces';
 import type { SchTaskRow } from './types';
@@ -29,17 +27,25 @@ export interface SubscribeOptions {
    */
   surface: SchedulerSurface | string;
   onTask: TaskEventHandler;
+  /**
+   * THE CATCH-UP DOOR. Realtime has no replay, so when the socket has been away
+   * (reconnect, service-worker wake, network restore, queue overflow) the
+   * package says so here and the caller re-reads. A subscriber that omits this
+   * keeps whatever it believed before the gap, and the screen looks perfectly
+   * healthy.
+   */
+  onResync?: () => void;
 }
 
 /**
  * Subscribe to private sch_task Broadcast events for `userId`. Returns a
- * teardown function — call it from useEffect cleanup / shutdown hooks
- * to remove the channel.
+ * teardown function — call it from useEffect cleanup / shutdown hooks.
+ *
+ * The Supabase client parameter is gone: `@ai-matrx/realtime` owns the channel
+ * and takes this realm's one client from its realtime host, so a caller can no
+ * longer hand this a second client (which would have meant a second socket).
  */
-export function subscribeToTasks(
-  supabase: SupabaseClient,
-  opts: SubscribeOptions,
-): () => Promise<void> {
+export function subscribeToTasks(opts: SubscribeOptions): () => void {
   const deliver = (eventType: TaskEventType, payload: SchedulerBroadcastPayload) => {
     // On DELETE, Supabase Realtime ships `payload.old` (PK-only by default,
     // or full row if REPLICA IDENTITY FULL is set) and `payload.new` as
@@ -67,7 +73,11 @@ export function subscribeToTasks(
     opts.onTask({ type: eventType, task: row });
   };
 
-  return subscribeSchedulerBroadcast(supabase, opts.userId, (event, payload) => {
+  return subscribeSchedulerBroadcast(opts.userId, (event, payload) => {
+    if (event === 'resync' || payload === null) {
+      opts.onResync?.();
+      return;
+    }
     if (payload.schema !== 'scheduler' || payload.table !== 'sch_task') return;
     deliver(event, payload);
   });

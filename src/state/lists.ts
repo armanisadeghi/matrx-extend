@@ -9,6 +9,7 @@
  * — UI components should NEVER write directly to chrome.storage.local.
  */
 
+import { agentTaskFingerprint, listsConversationTasksChannel } from '@/lib/lists/realtime';
 import {
   getPlan as storageGetPlan,
   listTasks as storageListTasks,
@@ -17,8 +18,8 @@ import {
 import type { Plan, Task, UserTodo } from '@/lib/lists/types';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { getSupabase } from '@/lib/supabase/client';
-import { useEffect } from 'react';
+import { useChannel } from '@ai-matrx/realtime/react';
+import { useCallback, useEffect } from 'react';
 import { create } from 'zustand';
 
 interface ListsState {
@@ -72,25 +73,53 @@ async function refreshAll(conversationId: string): Promise<void> {
 }
 
 /**
- * Supabase Realtime reuses an existing channel when the topic matches. React
- * StrictMode intentionally mounts, cleans up, and remounts effects before the
- * asynchronous channel removal finishes, so a conversation-only topic can
- * hand the remount an already-subscribed channel and make `.on()` throw.
- *
- * A subscriber-instance suffix keeps each mount independent while the row
- * filter still scopes events to the active conversation.
- */
-export function createTaskChannelTopic(conversationId: string): string {
-  return `chat-agent-task:${conversationId}:${crypto.randomUUID()}`;
-}
-
-/**
  * Mount once at the top of ChatView + PilotView. Subscribes to
  * LISTS_CHANGED broadcasts and refreshes the visible slice whenever the
  * active conversation's data changes from elsewhere (SW tool handler,
  * a parallel sidepanel, another tab editing the same data, etc.).
+ *
+ * REALTIME: `@ai-matrx/realtime` owns the `chat.agent_task` channel. What was
+ * here was a hand-rolled `supabase.channel(...)` with its own
+ * `crypto.randomUUID()` topic suffix (a `uniqueChannelTopic` twin — the package
+ * mints the unique instance topic for a Postgres Changes channel itself), its
+ * own `removeChannel` teardown, no reconnect, no dedup, and — the real defect —
+ * NO CATCH-UP: realtime has no replay, so every task written while the
+ * sidepanel was closed, asleep, or offline simply never arrived, and the panel
+ * went on looking healthy. `onBackfill` closes that gap on reconnect, wake,
+ * network restore and queue overflow.
  */
 export function useListsSubscriber(conversationId: string | null, enabled = true): void {
+  const refreshTasks = useCallback((): void => {
+    if (!conversationId) return;
+    void storageListTasks(conversationId).then((tasks) => {
+      if (useListsStore.getState().conversationId === conversationId) {
+        useListsStore.setState({ tasks });
+      }
+    });
+  }, [conversationId]);
+
+  useChannel(
+    conversationId
+      ? {
+          topic: listsConversationTasksChannel.topic({ conversationId }),
+          postgresChanges: [
+            {
+              event: '*',
+              schema: 'chat',
+              table: 'agent_task',
+              filter: `conversation_id=eq.${conversationId}`,
+              rowId: (row) => (typeof row.id === 'string' ? row.id : undefined),
+              fingerprint: agentTaskFingerprint,
+              onChange: () => refreshTasks(),
+            },
+          ],
+          // THE CATCH-UP the hand-rolled channel never had.
+          onBackfill: () => refreshTasks(),
+        }
+      : null,
+    { enabled: enabled && conversationId !== null },
+  );
+
   useEffect(() => {
     // Disabled subscribers (surfaces whose sidepanel tab is hidden) must not
     // claim OR clear the singleton — clearing would clobber the active
@@ -130,35 +159,8 @@ export function useListsSubscriber(conversationId: string | null, enabled = true
       return { ack: true };
     });
 
-    const refreshTasks = (): void => {
-      void storageListTasks(conversationId).then((tasks) => {
-        if (useListsStore.getState().conversationId === conversationId) {
-          useListsStore.setState({ tasks });
-        }
-      });
-    };
-    const supabase = getSupabase();
-    const taskChannel = supabase
-      .channel(createTaskChannelTopic(conversationId))
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'chat',
-          table: 'agent_task',
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        refreshTasks,
-      )
-      .subscribe((status) => {
-        if (status === 'CHANNEL_ERROR') {
-          console.error('[lists] chat.agent_task Realtime subscription failed');
-        }
-      });
-
     return () => {
       off();
-      void supabase.removeChannel(taskChannel);
     };
   }, [conversationId, enabled]);
 }

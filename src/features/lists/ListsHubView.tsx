@@ -7,6 +7,15 @@
  * Reads via getAllConversationLists() on mount, local LISTS_CHANGED
  * broadcasts, and `chat.agent_task` Realtime events so server task writes
  * repaint without polling.
+ *
+ * REALTIME: both channels are `@ai-matrx/realtime`'s. What was here were two
+ * hand-rolled `supabase.channel(...)` blocks with their own `removeChannel`
+ * teardown, no reconnect (a dropped channel stayed dropped for the life of the
+ * panel), no dedup, and no catch-up read — a task written while the sidepanel
+ * slept never arrived and the hub kept showing yesterday's counts. `onBackfill`
+ * re-reads on every recovery path. The detail channel also grew the
+ * `conversation_id` filter its topic name always implied: it used to wake on
+ * EVERY agent_task row in the account to refetch one conversation.
  */
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
@@ -23,15 +32,20 @@ import {
   removeUserTodo,
   updateUserTodo,
 } from '@/lib/lists/storage';
+import {
+  agentTaskFingerprint,
+  listsAllTasksChannel,
+  listsConversationTasksChannel,
+} from '@/lib/lists/realtime';
 import type { ConversationListsSummary, Task, UserTodo } from '@/lib/lists/types';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { getSupabase } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { useChannel } from '@ai-matrx/realtime/react';
 import { ChevronRight, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface ExpandedDetail {
   conversationId: string;
@@ -43,84 +57,90 @@ export function ListsHubView(): React.JSX.Element {
   const [summaries, setSummaries] = useState<ConversationListsSummary[]>([]);
   const [expanded, setExpanded] = useState<ExpandedDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const expandedConversationId = expanded?.conversationId ?? null;
+
+  const refreshSummaries = useCallback((): void => {
+    void getAllConversationLists().then((s) => {
+      setSummaries(s);
+      setLoading(false);
+    });
+  }, []);
+
+  const refreshDetail = useCallback((): void => {
+    if (!expandedConversationId) return;
+    void Promise.all([
+      listTasks(expandedConversationId),
+      listUserTodos(expandedConversationId),
+    ]).then(([tasks, user_todos]) => {
+      setExpanded((cur) =>
+        cur?.conversationId === expandedConversationId
+          ? { conversationId: expandedConversationId, tasks, user_todos }
+          : cur,
+      );
+    });
+  }, [expandedConversationId]);
 
   // Refresh everything on mount + when anything changes anywhere.
   useEffect(() => {
-    let cancelled = false;
-    const refresh = async (): Promise<void> => {
-      const s = await getAllConversationLists();
-      if (!cancelled) {
-        setSummaries(s);
-        setLoading(false);
-      }
-    };
-    void refresh();
-
+    refreshSummaries();
     const off = on<
       { kind: 'plan' | 'tasks' | 'user_todos'; conversation_id: string },
       { ack: true }
     >(CHANNELS.LISTS_CHANGED, () => {
-      void refresh();
+      refreshSummaries();
       return { ack: true };
     });
-    const supabase = getSupabase();
-    const taskChannel = supabase
-      .channel('lists-hub-agent-tasks')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'chat', table: 'agent_task' },
-        () => void refresh(),
-      )
-      .subscribe((status) => {
-        if (status === 'CHANNEL_ERROR') {
-          console.error('[lists] aggregate agent-task Realtime subscription failed');
-        }
-      });
-    return () => {
-      cancelled = true;
-      off();
-      void supabase.removeChannel(taskChannel);
-    };
-  }, []);
+    return off;
+  }, [refreshSummaries]);
 
-  const expandedConversationId = expanded?.conversationId ?? null;
+  useChannel({
+    topic: listsAllTasksChannel.topic(),
+    postgresChanges: [
+      {
+        event: '*',
+        schema: 'chat',
+        table: 'agent_task',
+        rowId: (row) => (typeof row.id === 'string' ? row.id : undefined),
+        fingerprint: agentTaskFingerprint,
+        onChange: () => refreshSummaries(),
+      },
+    ],
+    // Realtime has no replay: every task written while this panel was closed or
+    // the socket was away is gone. Re-read instead of trusting the screen.
+    onBackfill: () => refreshSummaries(),
+  });
 
   // When the expanded conversation's data changes, refresh that detail too.
   useEffect(() => {
-    if (!expandedConversationId) return;
-    const refresh = async (): Promise<void> => {
-      const [tasks, user_todos] = await Promise.all([
-        listTasks(expandedConversationId),
-        listUserTodos(expandedConversationId),
-      ]);
-      setExpanded({ conversationId: expandedConversationId, tasks, user_todos });
-    };
-    void refresh();
-    const off = on<{ conversation_id: string }, { ack: true }>(
-      CHANNELS.LISTS_CHANGED,
-      (payload) => {
-        if (payload.conversation_id === expandedConversationId) void refresh();
-        return { ack: true };
-      },
-    );
-    const supabase = getSupabase();
-    const taskChannel = supabase
-      .channel(`lists-hub-detail:${expandedConversationId}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'chat', table: 'agent_task' },
-        () => void refresh(),
-      )
-      .subscribe((status) => {
-        if (status === 'CHANNEL_ERROR') {
-          console.error('[lists] detail agent-task Realtime subscription failed');
+    if (!expandedConversationId) return undefined;
+    refreshDetail();
+    return on<{ conversation_id: string }, { ack: true }>(CHANNELS.LISTS_CHANGED, (payload) => {
+      if (payload.conversation_id === expandedConversationId) refreshDetail();
+      return { ack: true };
+    });
+  }, [expandedConversationId, refreshDetail]);
+
+  useChannel(
+    expandedConversationId
+      ? {
+          topic: listsConversationTasksChannel.topic({
+            conversationId: expandedConversationId,
+          }),
+          postgresChanges: [
+            {
+              event: '*',
+              schema: 'chat',
+              table: 'agent_task',
+              filter: `conversation_id=eq.${expandedConversationId}`,
+              rowId: (row) => (typeof row.id === 'string' ? row.id : undefined),
+              fingerprint: agentTaskFingerprint,
+              onChange: () => refreshDetail(),
+            },
+          ],
+          onBackfill: () => refreshDetail(),
         }
-      });
-    return () => {
-      off();
-      void supabase.removeChannel(taskChannel);
-    };
-  }, [expandedConversationId]);
+      : null,
+  );
 
   if (loading) {
     return <div className="p-4 text-sm text-zinc-500">Loading…</div>;

@@ -383,18 +383,47 @@ All four tables are RLS-protected with owner-only policies: a row is readable / 
 
 ## 10. Real-time updates (optional, but recommended)
 
+🚨 **Never hand-write `supabase.channel(...)`.** Every realtime subscription in this repo rides
+`@ai-matrx/realtime`; a hand-rolled channel is a code-review defect and `pnpm vitest run`
+(`tests/unit/realtime-adoption.test.ts`) fails on one. The reason is not style: a hand-rolled
+channel has no reconnect, no dedup, no ordered handler queue, and — the defect that actually
+bites here — no catch-up read, so every run that finished while the panel was closed simply
+never arrives and the screen goes on looking healthy.
+
 Subscribe to `sch_run` changes on visible tasks so the UI updates live as runs progress:
 
 ```ts
-supabase
-  .channel('sch_run-changes')
-  .on('postgres_changes',
-      { event: '*', schema: 'public', table: 'sch_run', filter: `task_id=eq.${taskId}` },
-      (payload) => /* re-render */)
-  .subscribe();
+import { defineChannelNamespace } from "@ai-matrx/realtime";
+import { useChannel } from "@ai-matrx/realtime/react";
+
+const runsChannel = defineChannelNamespace({
+  namespace: "extend-scheduler-runs",
+  parts: ["taskId"],
+  description: "sch_run rows for one scheduled task",
+});
+
+useChannel({
+  topic: runsChannel.topic({ taskId }),
+  postgresChanges: [
+    {
+      event: "*",
+      schema: "scheduler",
+      table: "sch_run",
+      filter: `task_id=eq.${taskId}`,
+      rowId: (row) => String(row.id),
+      onChange: () => refetchRuns(taskId),
+    },
+  ],
+  // MANDATORY. Realtime has no replay: this is the only thing that closes the
+  // gap after a reconnect, a wake, or a network restore.
+  onBackfill: () => refetchRuns(taskId),
+});
 ```
 
-Use this in the detail view's Run History card. For the list view, subscribe to `sch_task` UPDATE events so `next_due_at` and `last_run_at` stay fresh without polling.
+Use this in the detail view's Run History card. For the list view, the private per-user
+Database Broadcast feed already exists — consume `subscribeToTasks` from
+[`src/lib/scheduler-client/`](../src/lib/scheduler-client/) (it carries an `onResync` catch-up
+door) rather than opening a second channel on `sch_task`.
 
 ---
 

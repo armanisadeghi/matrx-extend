@@ -18,6 +18,7 @@
  * sidepanel store + any open tabs refresh without polling.
  */
 
+import { AGENT_TASK_TABLE, agentTaskFingerprint } from '@/lib/lists/realtime';
 import type {
   ConversationListsSummary,
   Plan,
@@ -29,6 +30,7 @@ import type {
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { chatDb } from '@/lib/supabase/schemas';
+import { currentRealtimeManager } from '@ai-matrx/realtime';
 import { z } from 'zod';
 
 const PLAN_KEY = 'matrx.lists.plans';
@@ -208,6 +210,21 @@ export async function updateTask(
   if (patch.status !== undefined) values.status = patch.status;
   if (patch.note !== undefined) values.note = patch.note;
   if (Object.keys(values).length === 0) return null;
+
+  // OWN WRITES GO ON THE SHARED WRITE LEDGER, BEFORE the request.
+  // Supabase echoes our own UPDATE back over realtime 50–500ms after the REST
+  // call already returned the fresh row, so any "save in flight" flag is long
+  // cleared by the time it lands — flag-only suppression always misses it.
+  // Registering here is what lets the lists channels tell our echo from a real
+  // remote edit instead of refetching for every keystroke we ourselves made.
+  const ledger = currentRealtimeManager()?.ledger ?? null;
+  // No fingerprint on `begin`: `values` is a PATCH, so a fingerprint built from
+  // it would not match the full row the echo carries, and a wrong fingerprint
+  // reads as divergent content — i.e. a false conflict. The settle below
+  // records the real one plus the server's `updated_at`, which is what the
+  // ledger's monotonic test actually runs on.
+  const ticket = ledger?.begin({ table: AGENT_TASK_TABLE, id });
+
   const { data, error } = await chatDb()
     .from('agent_task')
     .update(values)
@@ -215,7 +232,19 @@ export async function updateTask(
     .eq('id', id)
     .select(AGENT_TASK_COLUMNS)
     .maybeSingle();
-  if (error) throw new Error(`Failed to update agent task: ${error.message}`);
+  if (error) {
+    if (ledger && ticket) ledger.abandon(ticket);
+    throw new Error(`Failed to update agent task: ${error.message}`);
+  }
+  if (ledger && ticket) {
+    const row = data as AgentTaskRow | null;
+    ledger.settle(ticket, {
+      ...(row?.updated_at !== undefined && { updatedAt: row.updated_at }),
+      ...(row !== null && {
+        fingerprint: agentTaskFingerprint(row as unknown as Record<string, unknown>),
+      }),
+    });
+  }
   notify('tasks', conversationId);
   return data ? taskFromRow(data as AgentTaskRow) : null;
 }

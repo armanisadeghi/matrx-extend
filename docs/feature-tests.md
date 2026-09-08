@@ -2370,6 +2370,38 @@ Every entry follows this shape:
   - Warm, cancel, and the turn-boundary inbox have no v2 sibling and must still
     go to `/ai/...` — pinned by `src/lib/api/ai-protocol.test.ts`.
 
+### Realtime catch-up (all four channels) — 2026-09-07
+- **What it does:** every Supabase realtime subscription in the extension now rides
+  `@ai-matrx/realtime`, which means each one RE-READS after any gap (reconnect, service-worker
+  wake, network restore). Before, a gap silently lost every event and the screen kept showing
+  pre-gap state while looking perfectly healthy.
+- **Where to test:** Lists tab, the chat TaskPanel, and the scheduler (Agenda).
+- **Steps:**
+  1. **Lists hub catch-up.** Open the Lists tab. Turn Wi-Fi OFF. From another client (the web
+     app, or an agent run), add or complete a task in any conversation. Turn Wi-Fi back ON.
+  2. **Per-conversation catch-up.** Open a chat with tasks, close the side panel entirely, have
+     the agent add a task through the `tasks` tool, reopen the panel.
+  3. **Own-write echo.** With the Lists tab open, check/uncheck a todo and rename a task
+     repeatedly. Watch the Debug tab.
+  4. **Scheduler catch-up.** Create a schedule targeting `chrome-extension-chat` due ~2 minutes
+     out. Leave the browser idle (no side panel) past the service worker's idle death, then open
+     the side panel.
+- **Expected:**
+  1. Within a second of reconnecting, the hub repaints with the change made while offline — no
+     manual refresh, no tab switch.
+  2. The reopened panel shows the new task immediately.
+  3. Edits apply instantly and do NOT cause a visible list flicker/refetch per keystroke; the
+     Debug tab shows the realtime line reporting suppressed echoes rather than deliveries.
+  4. The due task is claimed and runs. Before this change it would sit unclaimed until some
+     unrelated `sch_task` event happened to wake the host.
+- **Edge cases worth poking:**
+  - Sign out and back in as a different user: no events from the previous user's channels, and
+    the scheduler/bridge reconnect for the new one (the realm's manager is rebuilt on the actor
+    change, so a stale write ledger cannot survive the switch).
+  - Two side panels open on two windows: both repaint; neither loses the other's events.
+  - The Debug tab is where realtime failures surface — every one carries a remedy sentence. A
+    private-channel join refused by RLS reports `channel.private.auth-failed`, never silence.
+
 ## Template (copy when adding a new entry)
 
 ```markdown

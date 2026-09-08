@@ -44,8 +44,13 @@
  * thing holding them together. Contract:
  * common-docs/systems/clients/extension/CHANNELS.md §4.
  *
- * The service worker has no `document`, so the manager gets the INERT
- * environment bridge: an MV3 worker has no visibility state to report, and the
+ * THE MANAGER IS THE REALM'S, NOT THIS MODULE'S. This file used to build its
+ * own `createRealtimeManager`, which was a second manager (and therefore a
+ * second write ledger) the moment anything else in the service worker wanted
+ * realtime — the scheduler host does. `lib/realtime/host.ts` owns the one
+ * manager for the worker realm and publishes it through the package's ambient
+ * door; this module just asks for it. Its inert environment bridge lives there
+ * too, with the reason: an MV3 worker has no visibility state to report and the
  * package must not guess one. Reconnect and backfill still work; they key on
  * the socket, not on visibility.
  */
@@ -60,14 +65,8 @@ import {
   type FrontendRpcResponse,
   handleFrontendRpc,
 } from '@/lib/frontend-bridge/handler';
-import { getSupabase } from '@/lib/supabase/client';
-import {
-  createInertEnvironment,
-  createRealtimeManager,
-  defineChannelNamespace,
-  type ChannelHandle,
-  type RealtimeManager,
-} from '@ai-matrx/realtime';
+import { ensureRealtimeHost } from '@/lib/realtime/host';
+import { defineChannelNamespace, type ChannelHandle } from '@ai-matrx/realtime';
 import { z } from 'zod';
 
 // ─── Wire format (CONTRACTUAL — must match frontend) ────────────────────────
@@ -117,26 +116,8 @@ interface PendingOutbound {
   timer: ReturnType<typeof setTimeout>;
 }
 
-let manager: RealtimeManager | null = null;
 let state: ConnectionState | null = null;
 let connecting: Promise<void> | null = null;
-
-/** The ONE realtime manager in this service worker. */
-function getManager(): RealtimeManager {
-  if (manager) return manager;
-  manager = createRealtimeManager({
-    client: getSupabase(),
-    // MV3 service worker: no `document`, so no honest visibility signal.
-    environment: createInertEnvironment(),
-    diagnostics: (event) => {
-      const line = `${event.code}: ${event.message}${event.remedy ? ` — ${event.remedy}` : ''}`;
-      if (event.level === 'error') log.warn('frontend-bridge', `realtime ${line}`);
-      else if (event.level === 'warn') log.warn('frontend-bridge', `realtime ${line}`);
-      else log.info('frontend-bridge', `realtime ${line}`);
-    },
-  });
-  return manager;
-}
 
 // ─── Public API ─────────────────────────────────────────────────────────────
 
@@ -183,7 +164,7 @@ export async function connectBroadcast(): Promise<void> {
         resolveJoin();
       };
 
-      const channel = getManager().open({
+      const channel = ensureRealtimeHost(user.id).open({
         topic,
         // See the file header: the frontend and every deployed build read this
         // shape off the wire directly.

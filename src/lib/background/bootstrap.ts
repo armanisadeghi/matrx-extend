@@ -33,6 +33,7 @@ import { desktopHealthSnapshotKey } from '@/lib/desktop/types';
 import { connectWs } from '@/lib/desktop/ws-client';
 import { registerWsReverseInvocationHandler } from '@/lib/desktop/ws-invoke';
 import { connectBroadcast, disconnectBroadcast } from '@/lib/frontend-bridge/broadcast';
+import { stopRealtimeHost } from '@/lib/realtime/host';
 import {
   FRONTEND_RPC_CHANNEL,
   FrontendRpcEnvelopeSchema,
@@ -866,6 +867,11 @@ function registerSchedulerHostUserWatcher(): void {
     } else {
       void stopSchedulerHost();
       void disconnectBroadcast();
+      // Both holders are gone; drop the realm's realtime manager too. Its write
+      // ledger and its actor identity belong to the user who just left, and a
+      // manager kept across a user switch would classify the NEXT user's events
+      // against the previous one's ledger.
+      stopRealtimeHost();
       // Brokered grants belong to the user who minted them — drop the
       // in-memory credential cache the moment the profile clears.
       clearBrokerCacheOnSignOut();
