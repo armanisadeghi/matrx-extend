@@ -371,6 +371,18 @@ else
     fail "Package logic re-grown outside its package (see above). Import from the package and delete the local definition, or — only if it is PROVABLY a different capability — add the file to scripts/package-twins.json with a written reason."
 fi
 
+# THE ONE AGENT PICKER — BLOCKING. This repo shipped two near-identical
+# hand-rolled agent pickers plus a Settings PillSelect and a showcase <select>,
+# each with its own membership rule, order and filters, which is precisely how
+# one Matrx client's agent list stops matching another's. They were deleted on
+# 2026-09-08 in favour of @ai-matrx/agents/catalog/react. This keeps them gone.
+CURRENT_STEP="canonical-pickers"
+if pnpm check:canonical-pickers; then
+    ok "the one agent picker holds"
+else
+    fail "An alternate agent picker was reintroduced (see above). Render AgentListDropdown / AgentListInlinePicker from @ai-matrx/agents/catalog/react; a behaviour the package lacks is a package change made and released in the same session."
+fi
+
 # ── 3. Bump version ─────────────────────────────────────────────────────────
 CURRENT_STEP="version-bump"
 step "3/8  Bump version → ${NEW_VERSION}"

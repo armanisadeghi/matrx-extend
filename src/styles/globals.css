@@ -28,10 +28,19 @@
    from design-system, never from here.) */
 @import "@ai-matrx/tap-target/styles.css";
 
+/* @ai-matrx/agents/catalog's structural sheet — THE ONE agent picker's own
+   rules and its `--matrx-agent-*` token defaults (the favourite star, the
+   drift banner, and the three class names the package owns rather than
+   expecting this app to generate: `matrx-agent-scrollbar-none`,
+   `matrx-agent-fade-in`, `matrx-agent-spin`). Without it the picker renders
+   unstyled — silently. */
+@import "@ai-matrx/agents/catalog/styles.css";
+
 /* Tailwind must scan the packages' BUILT output — the semantic utility classes
    their components wear exist only if these are sources. */
 @source "../../node_modules/@ai-matrx/design-system/dist";
 @source "../../node_modules/@ai-matrx/tap-target/dist";
+@source "../../node_modules/@ai-matrx/agents/dist";
 
 @custom-variant dark (&:is(.dark *));
 

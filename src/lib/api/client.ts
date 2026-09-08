@@ -86,7 +86,16 @@ export function clearApiBaseCache(): void {
   /* no-op: backend.ts owns invalidation via chrome.storage.onChanged */
 }
 
-async function buildHeaders(extra: Record<string, string> = {}): Promise<Record<string, string>> {
+/**
+ * THE ONE header path for every authenticated backend call this extension
+ * makes. Exported because `@ai-matrx/agents/catalog` needs a `transport` port
+ * to resolve a Mandate's default row through `GET /mandates/{key}/resolution`,
+ * and a second spelling of the auth/organization headers is exactly how one
+ * caller quietly stops carrying an organization (see the note below).
+ */
+export async function buildHeaders(
+  extra: Record<string, string> = {},
+): Promise<Record<string, string>> {
   const token = await getAccessToken();
   let headers: Record<string, string> = {
     'Content-Type': 'application/json',

@@ -25,9 +25,10 @@ import {
   engineHealthState,
   formatDesktopConnectionLabel,
 } from '@/lib/desktop/types';
-import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
+import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '@/state/settings';
+import { AgentListDropdown } from '@ai-matrx/agents/catalog/react';
 import { ConfirmDialog } from '@ai-matrx/design-system';
 import {
   Button,
@@ -49,7 +50,6 @@ export function SettingsView() {
   const desktop = useDesktopBridge();
   const settings = useSettingsStore();
   const [pairTokenInput, setPairTokenInput] = useState('');
-  const [agents, setAgents] = useState<AgxAgent[]>([]);
   const [enginePortInput, setEnginePortInput] = useState('');
   const [enginePortSaved, setEnginePortSaved] = useState<number | null>(null);
   const [enginePortError, setEnginePortError] = useState<string | null>(null);
@@ -59,19 +59,6 @@ export function SettingsView() {
   // organization must state which one before the extension can do anything.
   const org = useActiveOrganization();
   const [orgError, setOrgError] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Both signed-in users and guests get the agent list: builtin agents
-    // are readable by anon, owned + shared agents need a JWT.
-    let cancelled = false;
-    void (async () => {
-      const a = await fetchUserAgents(user?.id);
-      if (!cancelled) setAgents(a);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
 
   useEffect(() => {
     let cancelled = false;
@@ -202,14 +189,16 @@ export function SettingsView() {
               <ControlRow
                 label="Default agent"
                 control={
-                  <PillSelect
-                    value={settings.defaultAgentId ?? NONE}
-                    onChange={(v) => settings.setDefaultAgentId(v === NONE ? null : v)}
-                    placeholder="None"
-                    options={[
-                      { value: NONE, label: 'None' },
-                      ...agents.map((a) => ({ value: a.id, label: a.name })),
-                    ]}
+                  /* THE ONE agent picker — the same rows, order and filters
+                     the chat surfaces show, so a person's Settings choice and
+                     their in-chat choice can never disagree about what
+                     exists. */
+                  <AgentListDropdown
+                    consumerId="extend.settings.default-agent"
+                    activeAgentId={settings.defaultAgentId}
+                    onSelect={(id) => settings.setDefaultAgentId(id)}
+                    defaultMandateKey={DEFAULT_CHAT_MANDATE_KEY}
+                    compact
                   />
                 }
               />

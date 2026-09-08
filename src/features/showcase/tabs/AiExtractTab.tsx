@@ -2,17 +2,17 @@ import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAiExtraction } from '@/hooks/use-ai-extraction';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { usePatternFromData } from '@/hooks/use-pattern-from-data';
+import { mandateKeyOf } from '@/lib/agents/use-agent-row';
 import {
   PATTERN_FROM_DATA_MANDATE_KEY,
   STRUCTURED_EXTRACTOR_MANDATE_KEY,
   STRUCTURED_EXTRACTOR_MANDATE_REF,
 } from '@/lib/mandates';
-import { type AgxAgent, fetchUserAgents } from '@/lib/supabase/queries';
-import { useAuthStore } from '@/state/auth';
+import { AgentListDropdown } from '@ai-matrx/agents/catalog/react';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
 import { CheckCircle2, Loader2, Plus, Sparkles, Wand2, X } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
 
@@ -44,10 +44,11 @@ const buildJsonSchema = (fields: SchemaField[]): object => {
 
 export function AiExtractTab() {
   const tab = useActiveTab();
-  const userId = useAuthStore((s) => s.user?.id ?? null);
-  const [agents, setAgents] = useState<AgxAgent[]>([]);
-  const [agentsLoading, setAgentsLoading] = useState(false);
-  const [agentId, setAgentId] = useState<string>('');
+  // This surface's default is a DIFFERENT platform default than chat's — the
+  // package carries one default row per picker instance and each host surface
+  // chooses its own key (Arman, 2026-09-08). The row is named after the
+  // Mandate's REAL Holder, so no "Structured Extractor" string is hardcoded.
+  const [agentId, setAgentId] = useState<string>(STRUCTURED_EXTRACTOR_MANDATE_REF);
   const [description, setDescription] = useState('');
   const [fields, setFields] = useState<SchemaField[]>([]);
   const [source, setSource] = useState<ExtractionSource | null>(null);
@@ -60,50 +61,6 @@ export function AiExtractTab() {
     convert: convertToPattern,
     reset: resetPattern,
   } = usePatternFromData();
-
-  useEffect(() => {
-    if (!userId) return;
-    let cancelled = false;
-    setAgentsLoading(true);
-    void (async () => {
-      const list = await fetchUserAgents(userId);
-      if (cancelled) return;
-      setAgentsLoading(false);
-      const structuredOption: AgxAgent = {
-        id: STRUCTURED_EXTRACTOR_MANDATE_REF,
-        name: 'Structured Extractor',
-        description: 'Canonical page-to-rows extraction Mandate.',
-        agent_type: 'system',
-        category: 'Extraction',
-        tags: ['extract'],
-        model_id: null,
-        is_active: true,
-        is_archived: false,
-        is_favorite: false,
-        is_owner: false,
-        access_level: 'public',
-        shared_by_email: null,
-        source_agent_id: null,
-        created_by: null,
-        organization_id: null,
-        task_id: null,
-        created_at: null,
-        updated_at: null,
-        mandate_key: STRUCTURED_EXTRACTOR_MANDATE_KEY,
-      };
-      const options = [structuredOption, ...list];
-      setAgents(options);
-      const preferred =
-        options.find((a) => a.id === STRUCTURED_EXTRACTOR_MANDATE_REF) ??
-        options.find((a) => a.name?.toLowerCase().includes('structured extractor')) ??
-        options.find((a) => a.name?.toLowerCase().includes('extract')) ??
-        options[0];
-      if (preferred) setAgentId(preferred.id);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [userId]);
 
   const outputSchema = useMemo(() => buildJsonSchema(fields), [fields]);
 
@@ -132,10 +89,10 @@ export function AiExtractTab() {
   const handleRun = () => {
     if (!agentId || !description.trim()) return;
     setSource(sourceFromUrl(tab.url));
-    const agent = agents.find((candidate) => candidate.id === agentId);
+    const mandateKey = mandateKeyOf(agentId);
     void extract({
       agentId,
-      ...(agent?.mandate_key !== undefined && { mandateKey: agent.mandate_key }),
+      ...(mandateKey !== null && { mandateKey }),
       description,
       outputSchema,
     });
@@ -158,21 +115,13 @@ export function AiExtractTab() {
 
         <div className="space-y-1">
           <div className="text-[11px] font-medium text-muted-foreground">Agent</div>
-          <select
-            value={agentId}
-            onChange={(e) => setAgentId(e.target.value)}
-            className="h-8 w-full rounded-full bg-secondary/40 px-3 text-xs outline-none focus-visible:ring-1"
-          >
-            {agents.length === 0 && (
-              <option value="">{agentsLoading ? 'Loading agents…' : 'No agents available'}</option>
-            )}
-            {agents.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.name}
-                {a.category ? ` · ${a.category}` : ''}
-              </option>
-            ))}
-          </select>
+          {/* THE ONE agent picker (@ai-matrx/agents/catalog/react). */}
+          <AgentListDropdown
+            consumerId="extend.showcase.ai-extract"
+            activeAgentId={agentId}
+            onSelect={setAgentId}
+            defaultMandateKey={STRUCTURED_EXTRACTOR_MANDATE_KEY}
+          />
         </div>
 
         <div className="space-y-1">
@@ -387,11 +336,8 @@ export function AiExtractTab() {
                 config={{
                   description,
                   output_schema: outputSchema,
-                  ...(agents.find((candidate) => candidate.id === agentId)?.mandate_key
-                    ? {
-                        mandate_key: agents.find((candidate) => candidate.id === agentId)
-                          ?.mandate_key,
-                      }
+                  ...(mandateKeyOf(agentId) !== null
+                    ? { mandate_key: mandateKeyOf(agentId) }
                     : { agent_id: agentId }),
                 }}
                 rows={rows}

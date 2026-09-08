@@ -27,14 +27,13 @@ import { CopyButton } from '@/components/CopyMenu';
 import { Markdown } from '@/components/markdown';
 import { ENV } from '@/config/env';
 import { useAgentTextRun } from '@/hooks/use-agent-text-run';
+import { useAgentRow } from '@/lib/agents/use-agent-row';
 import { DEFAULT_CHAT_MANDATE_REF, mandateKeyFromAgentRef } from '@/lib/mandates';
 import type { SeoAudit } from '@/lib/seo/audit';
 import { buildSeoRecommendationsRequest } from '@/lib/seo/recommendations';
-import { fetchAgentList } from '@/lib/supabase/queries';
 import { useSettingsStore } from '@/state/settings';
 import { Button } from '@ai-matrx/design-system';
 import { ExternalLink, Loader2, RotateCw, Sparkles, Square } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 export function AiRecommendations({ audit }: { audit: SeoAudit }) {
   // An explicit saved Agent is a run-scope choice. With none, the server
@@ -42,23 +41,11 @@ export function AiRecommendations({ audit }: { audit: SeoAudit }) {
   const defaultAgentId = useSettingsStore((s) => s.defaultAgentId);
   const agentId = defaultAgentId ?? DEFAULT_CHAT_MANDATE_REF;
   const mandateKey = mandateKeyFromAgentRef(agentId);
-  const [agentName, setAgentName] = useState<string | null>(null);
   const { text, running, error, run, cancel } = useAgentTextRun();
-
-  // Resolve the agent's display name lazily — only once the user has actually
-  // asked for recommendations, so opening the SEO tab costs no extra query.
-  useEffect(() => {
-    if (!running || agentName) return;
-    let cancelled = false;
-    void (async () => {
-      const list = await fetchAgentList();
-      if (cancelled) return;
-      setAgentName(list.find((a) => a.id === agentId)?.name ?? null);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [running, agentName, agentId]);
+  // The agent's display name comes from the ONE catalog — including the live
+  // Holder name behind a `mandate:*` target, which is why nothing here spells
+  // an agent name out.
+  const agentName = useAgentRow(agentId).name;
 
   const start = () => {
     void run({

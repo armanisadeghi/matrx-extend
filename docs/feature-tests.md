@@ -22,6 +22,45 @@
   click Run. The Tools tab routes through the same dispatcher path
   agents use, so it's a real end-to-end test.
 
+### THE ONE AGENT PICKER (`@ai-matrx/agents/catalog/react`)
+
+Every agent-selection surface in this extension renders the SAME package
+component, so all four must show identical rows in identical order.
+
+- **What it does:** lists every agent this user can reach (owned + directly
+  shared + org-shared + active builtins) with tabs (Mine / Shared / All /
+  Public), sort (updated / created / name / category), favourites-first,
+  category and tag filters, local + server search, and a live-named default
+  row for the surface's Mandate. Selecting a row hands the host an agent id.
+- **Where to test:**
+  1. Side panel → **Chat** tab, agent trigger in the header.
+  2. Side panel → **Pilot** tab, agent trigger in the header.
+  3. Side panel → **Settings** → Chat → **Default agent**.
+  4. Side panel → **Showcase** → **AI Extract** → Agent.
+- **Steps:** open each picker. Switch tabs; type in search; open Sort and pick
+  "Name"; open Categories/Tags and include one, then "Clear (n)"; star a row;
+  click a row to select it.
+- **Expected:**
+  - The four pickers show the SAME agents in the SAME order under the same
+    tab + sort (they keep separate remembered filters — separate `consumerId`s
+    — which is intended).
+  - The top row is the surface's platform default, named after the Mandate's
+    REAL Holder: `extend.browser_chat` in Chat/Pilot/Settings,
+    `extend.structured_extractor` in AI Extract. It is never a hardcoded
+    string; if the cached name and the live resolution disagree the picker
+    shows a persistent drift banner (that banner is the feature, not a bug —
+    report what it says).
+  - "Clear (n)" clears all n filters, not one.
+  - Selecting the default row and sending routes to
+    `/v2/ai/mandates/<key>`; selecting a normal agent routes to the agent id
+    path. Both start a run.
+- **Signed out:** the picker still lists builtin agents (anon can read them);
+  it must not be blank or dead.
+- **Covered by:** `tests/unit/agent-list-contract.test.ts` (the id shape the
+  package hands back is the one this repo's send path routes) and
+  `pnpm check:canonical-pickers` (no second picker may exist). The list logic
+  itself is tested in the package's 295-case parity matrix.
+
 ## Convention
 
 Every entry follows this shape:

@@ -14,7 +14,6 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 export type PermissionMode = 'ask' | 'act';
 export type ChatSpeed = 'fast' | 'thinking';
 export type ScrapeAutoMode = 'capture' | 'scroll-capture';
-export type AgentScope = 'mine' | 'shared' | 'system';
 
 interface SettingsState {
   theme: 'light' | 'dark' | 'system';
@@ -44,12 +43,6 @@ interface SettingsState {
   defaultPermissionMode: PermissionMode;
   /** Composer speed default. NOT WIRED YET — placeholder UI only. */
   defaultChatSpeed: ChatSpeed;
-  /**
-   * Which agent-scope buckets the chat dropdown shows. Multi-select; defaults
-   * to ['system'] so the browser Mandate's system-owned agent is visible.
-   * Users may opt into their own or shared agents. Persisted across reloads.
-   */
-  agentScopes: AgentScope[];
   /**
    * On the user's first submit on a fresh page, scroll top→bottom (catching
    * lazy-loaded content), capture, then restore the user's scroll position —
@@ -108,8 +101,6 @@ interface SettingsState {
   setDefaultAgentId: (id: string | null) => void;
   setDefaultPermissionMode: (m: PermissionMode) => void;
   setDefaultChatSpeed: (s: ChatSpeed) => void;
-  setAgentScopes: (scopes: AgentScope[]) => void;
-  toggleAgentScope: (scope: AgentScope) => void;
   setAutoFullScrollOnFirstSubmit: (b: boolean) => void;
   setModelOverrideId: (id: string | null) => void;
   setSharePageIdentity: (b: boolean) => void;
@@ -126,7 +117,6 @@ export const useSettingsStore = create<SettingsState>()(
       defaultAgentId: DEFAULT_CHAT_MANDATE_REF,
       defaultPermissionMode: 'ask',
       defaultChatSpeed: 'fast',
-      agentScopes: ['system'],
       autoFullScrollOnFirstSubmit: false,
       modelOverrideId: null,
       sharePageIdentity: true,
@@ -138,18 +128,6 @@ export const useSettingsStore = create<SettingsState>()(
       setDefaultAgentId: (defaultAgentId) => set({ defaultAgentId }),
       setDefaultPermissionMode: (defaultPermissionMode) => set({ defaultPermissionMode }),
       setDefaultChatSpeed: (defaultChatSpeed) => set({ defaultChatSpeed }),
-      setAgentScopes: (agentScopes) => {
-        // Always keep at least one scope selected — empty = nothing visible
-        // and the user gets stuck. Keep the default browser agent visible.
-        set({ agentScopes: agentScopes.length === 0 ? ['system'] : agentScopes });
-      },
-      toggleAgentScope: (scope) =>
-        set((s) => {
-          const next = s.agentScopes.includes(scope)
-            ? s.agentScopes.filter((x) => x !== scope)
-            : [...s.agentScopes, scope];
-          return { agentScopes: next.length === 0 ? ['system'] : next };
-        }),
       setAutoFullScrollOnFirstSubmit: (autoFullScrollOnFirstSubmit) =>
         set({ autoFullScrollOnFirstSubmit }),
       setModelOverrideId: (modelOverrideId) => set({ modelOverrideId }),
@@ -168,6 +146,10 @@ export const useSettingsStore = create<SettingsState>()(
       //     Existing users keep an explicit saved agent selection.
       //   v3 → v4 (2026-08-20): untouched installs move to the browser-only
       //     `extend.browser_chat` Mandate and show the System agent scope.
+      //   v4 → v5 (2026-09-08): `agentScopes` retired. The Mine/Shared/System
+      //     scope pills were this repo's own picker; the ONE package picker
+      //     (@ai-matrx/agents/catalog) owns tabs and filters now, per consumer
+      //     id, so the persisted key is dropped rather than left as dead data.
       version: SETTINGS_PERSIST_VERSION,
       migrate: (persisted, fromVersion) => {
         const state = (persisted ?? {}) as Partial<SettingsState>;

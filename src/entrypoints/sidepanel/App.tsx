@@ -10,9 +10,11 @@ import { useContextMenuListener } from '@/hooks/use-context-menu-listener';
 import { useGuidanceSync } from '@/hooks/use-guidance-sync';
 import { useHighlightBridge } from '@/hooks/use-highlight-bridge';
 import { useParallelEventBridge } from '@/hooks/use-parallel-event-bridge';
+import { getAgentCatalog } from '@/lib/agents/catalog';
 import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
 import { type SidepanelTab, useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { AgentCatalogProvider } from '@ai-matrx/agents/catalog/react';
 import { Tabs, TabsContent, TabsList, TabsTrigger, TooltipProvider } from '@ai-matrx/design-system';
 import {
   BookOpen,
@@ -189,313 +191,321 @@ export function App() {
 
   return (
     <TooltipProvider delayDuration={150}>
-      {/* Mounted at App root (outside AuthGate) so it overlays every
+      {/* THE ONE agent picker. Every surface in this panel that lets a person
+          choose an agent renders @ai-matrx/agents/catalog/react beneath this
+          provider — same rows, same order, same filters as every other Matrx
+          client. `openPeek` is deliberately unbound: the extension has no
+          sneak-peek modal, so the package HIDES that affordance rather than
+          rendering a dead one. */}
+      <AgentCatalogProvider catalog={getAgentCatalog()}>
+        {/* Mounted at App root (outside AuthGate) so it overlays every
           surface and works even on auth screens. Renders nothing when
           there's no active prompt; see lib/permissions/gate.ts. */}
-      <PermissionPromptModal />
-      <div className="flex h-full flex-col bg-background text-foreground">
-        <AuthGate>
-          <Tabs
-            value={tab}
-            onValueChange={(v) => setTab(v as typeof tab)}
-            className="flex flex-1 flex-col min-h-0"
-          >
-            <div className="flex shrink-0 items-center gap-1 px-2 py-1.5">
-              <TabsList className="flex min-w-0 flex-1 justify-start gap-0.5 overflow-x-auto bg-transparent p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&_[role=tab]]:shrink-0">
-                <TabsTrigger value="chat" className="size-7 p-0" title="Chat">
-                  <MessageSquare className="size-3.5" />
-                </TabsTrigger>
-                {canAccess('pilot') && (
-                  <TabsTrigger
-                    value="pilot"
-                    className="size-7 p-0 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400"
-                    title="Pilot (admin only — sandboxed tab group)"
-                  >
-                    <Crosshair className="size-3.5" />
+        <PermissionPromptModal />
+        <div className="flex h-full flex-col bg-background text-foreground">
+          <AuthGate>
+            <Tabs
+              value={tab}
+              onValueChange={(v) => setTab(v as typeof tab)}
+              className="flex flex-1 flex-col min-h-0"
+            >
+              <div className="flex shrink-0 items-center gap-1 px-2 py-1.5">
+                <TabsList className="flex min-w-0 flex-1 justify-start gap-0.5 overflow-x-auto bg-transparent p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&_[role=tab]]:shrink-0">
+                  <TabsTrigger value="chat" className="size-7 p-0" title="Chat">
+                    <MessageSquare className="size-3.5" />
                   </TabsTrigger>
-                )}
-                {canAccess('lists') && (
-                  <TabsTrigger value="lists" className="size-7 p-0" title="Plan & tasks">
-                    <ListChecks className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('tasks') && (
-                  <TabsTrigger value="tasks" className="size-7 p-0" title="Tasks">
-                    <ListTodo className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('agenda') && (
-                  <TabsTrigger value="agenda" className="size-7 p-0" title="Agenda">
-                    <Calendar className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {/* Capture (Scrape), Patterns (Data), SEO — advertised in the
+                  {canAccess('pilot') && (
+                    <TabsTrigger
+                      value="pilot"
+                      className="size-7 p-0 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400"
+                      title="Pilot (admin only — sandboxed tab group)"
+                    >
+                      <Crosshair className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('lists') && (
+                    <TabsTrigger value="lists" className="size-7 p-0" title="Plan & tasks">
+                      <ListChecks className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('tasks') && (
+                    <TabsTrigger value="tasks" className="size-7 p-0" title="Tasks">
+                      <ListTodo className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('agenda') && (
+                    <TabsTrigger value="agenda" className="size-7 p-0" title="Agenda">
+                      <Calendar className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {/* Capture (Scrape), Patterns (Data), SEO — advertised in the
                     Web Store listing and free to run for guests (no
                     server-agent cost). */}
-                {canAccess('scrape') && (
-                  <TabsTrigger value="scrape" className="size-7 p-0" title="Scrape">
-                    <ScanLine className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('data') && (
-                  <TabsTrigger value="data" className="size-7 p-0" title="Data">
-                    <Database className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('seo') && (
-                  <TabsTrigger value="seo" className="size-7 p-0" title="SEO">
-                    <Search className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('highlight') && (
-                  <TabsTrigger value="highlight" className="size-7 p-0" title="Highlights">
-                    <Highlighter className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('guidance') && (
-                  <TabsTrigger value="guidance" className="size-7 p-0" title="Guidance">
-                    <BookOpen className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('notes') && (
-                  <TabsTrigger value="notes" className="size-7 p-0" title="Notes">
-                    <NotebookPen className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('files') && (
-                  <TabsTrigger value="files" className="size-7 p-0" title="Files">
-                    <Files className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('screenshots') && (
-                  <TabsTrigger value="screenshots" className="size-7 p-0" title="Screenshots">
-                    <Camera className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('vault') && (
-                  <TabsTrigger value="vault" className="size-7 p-0" title="Vault">
-                    <Vault className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('tools') && (
-                  <TabsTrigger value="tools" className="size-7 p-0" title="Tools">
-                    <Wrench className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('settings') && (
-                  <TabsTrigger value="settings" className="size-7 p-0" title="Settings">
-                    <SettingsIcon className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('showcase') && (
-                  <TabsTrigger
-                    value="showcase"
-                    className="size-7 p-0 data-[state=active]:text-violet-600 dark:data-[state=active]:text-violet-400"
-                    title="Showcase (admin only)"
-                  >
-                    <Sparkles className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('broker') && (
-                  <TabsTrigger
-                    value="broker"
-                    className="size-7 p-0 data-[state=active]:text-cyan-600 dark:data-[state=active]:text-cyan-400"
-                    title="Token broker (admin only)"
-                  >
-                    <KeyRound className="size-3.5" />
-                  </TabsTrigger>
-                )}
-                {canAccess('debug') && (
-                  <TabsTrigger
-                    value="debug"
-                    className="relative size-7 p-0 data-[state=active]:text-amber-600 dark:data-[state=active]:text-amber-400"
-                    title="Debug (admin only)"
-                  >
-                    <Bug className="size-3.5" />
-                    {errorCount > 0 && (
-                      <span className="absolute right-0.5 top-0.5 size-1.5 rounded-full bg-red-500" />
-                    )}
-                  </TabsTrigger>
-                )}
-              </TabsList>
-              <UserMenu />
-            </div>
-            {/* forceMount (audit P1-14): ChatView owns the live stream-chunk
+                  {canAccess('scrape') && (
+                    <TabsTrigger value="scrape" className="size-7 p-0" title="Scrape">
+                      <ScanLine className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('data') && (
+                    <TabsTrigger value="data" className="size-7 p-0" title="Data">
+                      <Database className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('seo') && (
+                    <TabsTrigger value="seo" className="size-7 p-0" title="SEO">
+                      <Search className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('highlight') && (
+                    <TabsTrigger value="highlight" className="size-7 p-0" title="Highlights">
+                      <Highlighter className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('guidance') && (
+                    <TabsTrigger value="guidance" className="size-7 p-0" title="Guidance">
+                      <BookOpen className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('notes') && (
+                    <TabsTrigger value="notes" className="size-7 p-0" title="Notes">
+                      <NotebookPen className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('files') && (
+                    <TabsTrigger value="files" className="size-7 p-0" title="Files">
+                      <Files className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('screenshots') && (
+                    <TabsTrigger value="screenshots" className="size-7 p-0" title="Screenshots">
+                      <Camera className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('vault') && (
+                    <TabsTrigger value="vault" className="size-7 p-0" title="Vault">
+                      <Vault className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('tools') && (
+                    <TabsTrigger value="tools" className="size-7 p-0" title="Tools">
+                      <Wrench className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('settings') && (
+                    <TabsTrigger value="settings" className="size-7 p-0" title="Settings">
+                      <SettingsIcon className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('showcase') && (
+                    <TabsTrigger
+                      value="showcase"
+                      className="size-7 p-0 data-[state=active]:text-violet-600 dark:data-[state=active]:text-violet-400"
+                      title="Showcase (admin only)"
+                    >
+                      <Sparkles className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('broker') && (
+                    <TabsTrigger
+                      value="broker"
+                      className="size-7 p-0 data-[state=active]:text-cyan-600 dark:data-[state=active]:text-cyan-400"
+                      title="Token broker (admin only)"
+                    >
+                      <KeyRound className="size-3.5" />
+                    </TabsTrigger>
+                  )}
+                  {canAccess('debug') && (
+                    <TabsTrigger
+                      value="debug"
+                      className="relative size-7 p-0 data-[state=active]:text-amber-600 dark:data-[state=active]:text-amber-400"
+                      title="Debug (admin only)"
+                    >
+                      <Bug className="size-3.5" />
+                      {errorCount > 0 && (
+                        <span className="absolute right-0.5 top-0.5 size-1.5 rounded-full bg-red-500" />
+                      )}
+                    </TabsTrigger>
+                  )}
+                </TabsList>
+                <UserMenu />
+              </div>
+              {/* forceMount (audit P1-14): ChatView owns the live stream-chunk
                 listeners and the stall watchdog. Radix unmounts inactive tab
                 content by default, so switching sidepanel tabs mid-stream
                 dropped every chunk in the gap and orphaned the watchdog
                 (which later fired against the new run). Keep the chat
                 surfaces mounted; visibility via data-state. */}
-            <TabsContent
-              value="chat"
-              forceMount
-              className="flex-1 min-h-0 data-[state=inactive]:hidden"
-            >
-              <Suspense fallback={TabFallback}>
-                <ChatView />
-              </Suspense>
-            </TabsContent>
-            {canAccess('pilot') && (
               <TabsContent
-                value="pilot"
+                value="chat"
                 forceMount
                 className="flex-1 min-h-0 data-[state=inactive]:hidden"
               >
                 <Suspense fallback={TabFallback}>
-                  <PilotView />
+                  <ChatView />
                 </Suspense>
               </TabsContent>
-            )}
-            {canAccess('lists') && (
-              <TabsContent value="lists" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <ListsHubView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {/* forceMount: TasksView's onMessage listener is the ONLY
+              {canAccess('pilot') && (
+                <TabsContent
+                  value="pilot"
+                  forceMount
+                  className="flex-1 min-h-0 data-[state=inactive]:hidden"
+                >
+                  <Suspense fallback={TabFallback}>
+                    <PilotView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('lists') && (
+                <TabsContent value="lists" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <ListsHubView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {/* forceMount: TasksView's onMessage listener is the ONLY
                 receiver for the in-page capture overlay's buttons, and the
                 batch-run progress/guard live in component state — Radix
                 unmounting it on tab switch bricked the overlay mid-capture
                 and let a hidden batch run twice. Same pattern as Chat. */}
-            {canAccess('tasks') && (
-              <TabsContent
-                value="tasks"
-                forceMount
-                className="flex-1 min-h-0 data-[state=inactive]:hidden"
-              >
-                <Suspense fallback={TabFallback}>
-                  <TasksView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {canAccess('agenda') && (
-              <TabsContent value="agenda" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <AgendaView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {canAccess('scrape') && (
-              <TabsContent value="scrape" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <ScrapeView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {canAccess('data') && (
-              <TabsContent value="data" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <DataView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {canAccess('seo') && (
-              <TabsContent value="seo" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <SeoView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {canAccess('highlight') && (
-              <TabsContent value="highlight" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <HighlightView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {canAccess('guidance') && (
-              <TabsContent value="guidance" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <GuidanceView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {canAccess('notes') && (
-              <TabsContent value="notes" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <NotesView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {canAccess('files') && (
-              <TabsContent value="files" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <FilesView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {canAccess('screenshots') && (
-              <TabsContent value="screenshots" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <ScreenshotsView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {/* NOT forceMount: unmounting on tab switch is a FEATURE here
+              {canAccess('tasks') && (
+                <TabsContent
+                  value="tasks"
+                  forceMount
+                  className="flex-1 min-h-0 data-[state=inactive]:hidden"
+                >
+                  <Suspense fallback={TabFallback}>
+                    <TasksView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('agenda') && (
+                <TabsContent value="agenda" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <AgendaView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('scrape') && (
+                <TabsContent value="scrape" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <ScrapeView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('data') && (
+                <TabsContent value="data" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <DataView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('seo') && (
+                <TabsContent value="seo" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <SeoView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('highlight') && (
+                <TabsContent value="highlight" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <HighlightView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('guidance') && (
+                <TabsContent value="guidance" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <GuidanceView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('notes') && (
+                <TabsContent value="notes" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <NotesView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('files') && (
+                <TabsContent value="files" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <FilesView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('screenshots') && (
+                <TabsContent value="screenshots" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <ScreenshotsView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {/* NOT forceMount: unmounting on tab switch is a FEATURE here
                     — it drops any revealed credential held in component state
                     the moment the user leaves the Vault. */}
-            {canAccess('vault') && (
-              <TabsContent value="vault" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <VaultView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {canAccess('tools') && (
-              <TabsContent value="tools" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <ToolsView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {canAccess('settings') && (
-              <TabsContent value="settings" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <SettingsView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {canAccess('profile') && (
-              <TabsContent value="profile" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <ProfileView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {/* forceMount (audit P1-1): Showcase sub-tabs hold in-progress
+              {canAccess('vault') && (
+                <TabsContent value="vault" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <VaultView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('tools') && (
+                <TabsContent value="tools" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <ToolsView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('settings') && (
+                <TabsContent value="settings" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <SettingsView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('profile') && (
+                <TabsContent value="profile" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <ProfileView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {/* forceMount (audit P1-1): Showcase sub-tabs hold in-progress
                 work (network capture buffers, half-built list-pattern
                 configs, AI extract results). Leaving and returning must not
                 destroy it. Auto-probes are gated on visibility inside
                 ShowcaseView, so the mounted-but-hidden tree stays idle. */}
-            {canAccess('showcase') && (
-              <TabsContent
-                value="showcase"
-                forceMount
-                className="flex-1 min-h-0 data-[state=inactive]:hidden"
-              >
-                <Suspense fallback={TabFallback}>
-                  <ShowcaseView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {canAccess('broker') && (
-              <TabsContent value="broker" className="flex-1 min-h-0 overflow-y-auto">
-                <Suspense fallback={TabFallback}>
-                  <BrokerView />
-                </Suspense>
-              </TabsContent>
-            )}
-            {canAccess('debug') && (
-              <TabsContent value="debug" className="flex-1 min-h-0">
-                <Suspense fallback={TabFallback}>
-                  <DebugView />
-                </Suspense>
-              </TabsContent>
-            )}
-          </Tabs>
-        </AuthGate>
-      </div>
+              {canAccess('showcase') && (
+                <TabsContent
+                  value="showcase"
+                  forceMount
+                  className="flex-1 min-h-0 data-[state=inactive]:hidden"
+                >
+                  <Suspense fallback={TabFallback}>
+                    <ShowcaseView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('broker') && (
+                <TabsContent value="broker" className="flex-1 min-h-0 overflow-y-auto">
+                  <Suspense fallback={TabFallback}>
+                    <BrokerView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('debug') && (
+                <TabsContent value="debug" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <DebugView />
+                  </Suspense>
+                </TabsContent>
+              )}
+            </Tabs>
+          </AuthGate>
+        </div>
+      </AgentCatalogProvider>
     </TooltipProvider>
   );
 }

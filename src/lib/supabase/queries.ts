@@ -30,7 +30,6 @@
 
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { log } from '@/lib/debug/log';
-import { DEFAULT_CHAT_MANDATE_KEY, DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { getSupabase } from '@/lib/supabase/client';
 import { adminDb, aiDb, extendDb } from '@/lib/supabase/schemas';
 import type { ChatMessage, MessagePart } from '@/state/chat';
@@ -107,92 +106,16 @@ export async function checkIsAdmin(userId: string): Promise<boolean> {
 
 // ─── Agents (via agx_get_list_full RPC) ─────────────────────────────────────
 /**
- * Listing-shape returned by the `agx_get_list_full()` Supabase RPC.
+ * THE AGENT LIST IS NOT READ HERE.
  *
- * Why the RPC instead of `from('agx_agent').select(...)`:
- *   - Includes shared agents and system "builtin" agents the user has access
- *     to, not just rows on agx_agent the user owns
- *   - Lighter (no `messages` JSONB, no `variable_definitions`, no `context_slots`)
- *   - Doesn't leak the agent's "secret sauce" (system instructions etc.)
+ * `agx_get_list_full`, `agx_search`, the default-Mandate row and every filter,
+ * sort and tab live in `@ai-matrx/agents/catalog` — ONE picker, one membership
+ * rule, one order, across every Matrx client. This module used to hold
+ * `AgxAgentSchema`, `fetchAgentList`, `fetchUserAgents` and a hardcoded
+ * "Matrx Browser Agent" default row; all four were deleted on 2026-09-08 when
+ * the extension adopted the package (@ai-matrx/agents 0.7.0). Host wiring is
+ * `src/lib/agents/catalog.ts`. Never re-add a list read here.
  */
-export const AgxAgentSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string(),
-  description: z.string().nullable(),
-  agent_type: z.string().nullable(),
-  category: z.string().nullable(),
-  tags: z.array(z.string()).nullable(),
-  model_id: z.string().uuid().nullable(),
-  is_active: z.boolean().nullable(),
-  is_archived: z.boolean().nullable(),
-  is_favorite: z.boolean().nullable(),
-  is_owner: z.boolean().nullable(),
-  access_level: z.string().nullable(),
-  shared_by_email: z.string().nullable(),
-  source_agent_id: z.string().uuid().nullable(),
-  created_by: z.string().uuid().nullable(),
-  organization_id: z.string().uuid().nullable(),
-  task_id: z.string().uuid().nullable(),
-  created_at: z.string().nullable(),
-  updated_at: z.string().nullable(),
-  mandate_key: z.string().optional(),
-});
-export type AgxAgent = z.infer<typeof AgxAgentSchema>;
-
-/**
- * Synthetic UI entry for the canonical default-chat Mandate. It is always
- * present so a guest or a user with no visible agents has a working choice.
- * The synthetic id is UI state only; execution sends `mandate_key` to aidream
- * and the server resolves the Holder for the current principal at run time.
- */
-const DEFAULT_CHAT_AGENT: AgxAgent = {
-  id: DEFAULT_CHAT_MANDATE_REF,
-  name: 'Matrx Browser Agent',
-  description: 'Default Matrx agent for working in your Chrome browser.',
-  agent_type: null,
-  category: null,
-  tags: null,
-  model_id: null,
-  is_active: true,
-  is_archived: false,
-  is_favorite: false,
-  is_owner: false,
-  access_level: 'public',
-  shared_by_email: null,
-  source_agent_id: null,
-  created_by: null,
-  organization_id: null,
-  task_id: null,
-  created_at: null,
-  updated_at: null,
-  mandate_key: DEFAULT_CHAT_MANDATE_KEY,
-};
-
-export async function fetchAgentList(): Promise<AgxAgent[]> {
-  const c = getSupabase();
-  const { data, error } = await c.rpc('agx_get_list_full');
-  if (error) {
-    console.warn('[matrx-extend] fetchAgentList error', error.message);
-    return [DEFAULT_CHAT_AGENT];
-  }
-  // RLS + RPC body filter actives/non-archived already, but be defensive.
-  // Per-row safeParse (audit P2-18): one malformed agent row used to reject
-  // the whole fetch and brick the chat surface (agents never loaded).
-  const all = parseRowsSafe(AgxAgentSchema, (data ?? []) as unknown[], 'fetchAgentList').rows;
-  const visible = all
-    .filter((a) => a.is_active !== false && a.is_archived !== true)
-    .sort((a, b) => {
-      // Favorites first, then alphabetical by name.
-      const fa = a.is_favorite ? 1 : 0;
-      const fb = b.is_favorite ? 1 : 0;
-      if (fa !== fb) return fb - fa;
-      return a.name.localeCompare(b.name);
-    });
-  return [DEFAULT_CHAT_AGENT, ...visible];
-}
-
-/** Backwards-compat shim — older callers reference `fetchUserAgents`. */
-export const fetchUserAgents = (_userId?: string): Promise<AgxAgent[]> => fetchAgentList();
 
 // ─── ai.model_definition (admin model picker) ───────────────────────────────
 export const AiModelSchema = z.object({

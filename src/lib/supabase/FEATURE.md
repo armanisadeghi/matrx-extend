@@ -5,16 +5,16 @@ must be mirrored from the canonical database/generated frontend types; a
 required retired field causes every valid row to be dropped and is a runtime
 defect even when TypeScript compiles.
 
-## Agent list
+## Agent list — NOT HERE
 
-`AgxAgentSchema` mirrors `agx_get_list_full()`: ownership is `created_by`;
-`user_id` and `project_id` are retired. Per-row validation remains
-fault-tolerant, but a schema mismatch is logged and tested with a live-shaped
-fixture.
-
-The locally synthesized **Matrx Browser Agent** entry is a Mandate-backed UI
-choice, not an Agent row. Its `mandate_key` routes execution through aidream;
-its `mandate:*` id never reaches an Agent-id endpoint.
+The agent list is read by `@ai-matrx/agents/catalog` and nothing else, in every
+Matrx client. `AgxAgentSchema`, `fetchAgentList`, `fetchUserAgents` and the
+hardcoded "Matrx Browser Agent" default row were deleted from `queries.ts` on
+2026-09-08; the package owns `agx_get_list_full`, `agx_search`, the row shape,
+the ordering, the filters and the mandate-resolved default row (named after its
+REAL Holder, so nothing here spells an agent name). Host wiring lives in
+[../agents/catalog.ts](../agents/catalog.ts); the picker is
+`AgentListDropdown` / `AgentListInlinePicker`. Guard: `pnpm check:canonical-pickers`.
 
 ## Change log
 
@@ -23,3 +23,5 @@ its `mandate:*` id never reaches an Agent-id endpoint.
   `chat.default_new_chat`.
 - 2026-08-20 — Scoped the extension default to `extend.browser_chat`, whose
   system seed is the system-owned Matrx Browser Agent.
+- 2026-09-08 — Agent-list reads left this module entirely for
+  `@ai-matrx/agents/catalog` (THE ONE AGENT PICKER, ruling D1).
