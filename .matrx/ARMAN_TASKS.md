@@ -7,20 +7,19 @@
 
 ## Active
 
-### Upload Chrome Web Store build 0.2.6 (Vault management + Save-this-login prompt)
-**Added 2026-08-26.** Everything else is done: `0.2.6` passed the full release battery, the
-approval-risk gate is green (routine update — manifest identical to the approved `0.1.72`
-surface), and the privacy policy with the Vault/save-prompt wording is verified live. The only
-remaining steps need your authenticated Google session:
+### Complete Google account recovery for the prepared 0.2.8 Store submission
+**Updated 2026-09-08.** Agents completed the release work. `0.2.8` passed the full release
+battery, its approval-risk gate is green (routine update — manifest surface identical to the
+approved `0.1.72` baseline), and release commit `b0fad09` plus tag `v0.2.8` are on `origin/main`.
+The exact Store artifact is `.output/matrx-extend-0.2.8-store.zip` with SHA-256
+`dae6f7a5d1a7a66e202ae240e851b73a0571d12beffdcf0fd2fd3a308a94733e`.
 
-1. **Easiest:** open Chrome with the Claude extension signed in and tell any agent session to
-   "finish the Store upload" — it will run the clean-profile test, upload, and submit
-   (dashboard → publisher **Matrx** → item `hnfolienncfklkgmdjjmhhegglimlamg` only, never the
-   duplicate draft).
-2. Or do it yourself: https://chrome.google.com/webstore/devconsole → upload
-   `.output/matrx-extend-0.2.6-store.zip`
-   (SHA-256 `e35b40784b4eb0c303ec72ba6142da49304645b6264a958a5aaa4b681eb86674`) → Submit for
-   review, automatic publication on.
+The in-app Browser is positioned at Google's account-recovery gate for
+`arman@armansadeghi.com`. The saved agent password is not current; Google offers only a recovery-
+device approval or recovery-email code. Arman must complete that identity challenge once. The
+agent then owns every remaining dashboard step: primary item `hnfolienncfklkgmdjjmhhegglimlamg`
+only, upload the Store zip (never the local zip or duplicate draft), save change notes, and submit
+with automatic publication.
 
 Change notes to paste: "Vault: manage saved website logins in the side panel (edit, change
 password, delete) and an optional signed-in prompt to save a login you just used. Bug fixes and
