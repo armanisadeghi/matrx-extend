@@ -25,7 +25,7 @@ importers:
         version: 0.9.0(react@19.2.5)
       '@ai-matrx/realtime':
         specifier: latest
-        version: 0.7.0(react@19.2.5)
+        version: 0.7.1(react@19.2.5)
       '@ai-matrx/tap-target':
         specifier: latest
         version: 0.2.1(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -235,8 +235,8 @@ packages:
     resolution: {integrity: sha512-BIlXpLGA7hM+/DMBJur2dZw71/kDH87DI/5FBmO87OvfA/c8bVv700lvmcWTJsSfE/lNt0ppOGNm1CcYVOEmwQ==}
     engines: {node: '>=20'}
 
-  '@ai-matrx/data@0.9.0':
-    resolution: {integrity: sha512-YQ0BqLWXIuuhPGk3m+OXr+Bq24x5wU/d1CX8L+81ONsxcuKOYlvWz1dUkFi8ezr+5qEkVixsqsKLxptzh6gslQ==}
+  '@ai-matrx/data@0.10.2':
+    resolution: {integrity: sha512-rlSP2tY7zKlT98+mFrfqeJM8Kq8u7V5m57reLRwDE/ez7gkgFgDZxA8jzXoP1qxBFx7p6aQk9ZWL38pwdqPWzw==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -264,8 +264,8 @@ packages:
     peerDependencies:
       react: '>=18.0.0'
 
-  '@ai-matrx/realtime@0.7.0':
-    resolution: {integrity: sha512-FxMRGE6We4tlQ9aH6QEAi4R9qYzTww/8M97JVvstYpKLz2uSn5z2Q5Hn+UjXJU2N2Pr9ZgVKIbGZk15JMmwTJQ==}
+  '@ai-matrx/realtime@0.7.1':
+    resolution: {integrity: sha512-hfK/0irMBY52t8LAO4aQcogE7srTwaVAtpuVyU0jopoBrqYBUccQMwJZRMpoKSQmVNtCdeXs03HHW2WeEGxnlQ==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -5661,7 +5661,7 @@ snapshots:
 
   '@ai-matrx/agents@0.6.2(@supabase/supabase-js@2.112.4)(react@19.2.5)':
     dependencies:
-      '@ai-matrx/data': 0.9.0(@supabase/supabase-js@2.112.4)(react@19.2.5)
+      '@ai-matrx/data': 0.10.2(@supabase/supabase-js@2.112.4)(react@19.2.5)
     optionalDependencies:
       react: 19.2.5
     transitivePeerDependencies:
@@ -5677,9 +5677,9 @@ snapshots:
     dependencies:
       ajv: 8.20.0
 
-  '@ai-matrx/data@0.9.0(@supabase/supabase-js@2.112.4)(react@19.2.5)':
+  '@ai-matrx/data@0.10.2(@supabase/supabase-js@2.112.4)(react@19.2.5)':
     dependencies:
-      '@ai-matrx/realtime': 0.7.0(react@19.2.5)
+      '@ai-matrx/realtime': 0.7.1(react@19.2.5)
       '@supabase/ssr': 0.12.7(@supabase/supabase-js@2.112.4)
     optionalDependencies:
       react: 19.2.5
@@ -5772,7 +5772,7 @@ snapshots:
       jsqr: 1.4.0
       react: 19.2.5
 
-  '@ai-matrx/realtime@0.7.0(react@19.2.5)':
+  '@ai-matrx/realtime@0.7.1(react@19.2.5)':
     optionalDependencies:
       react: 19.2.5
 
