@@ -11,7 +11,7 @@
  * before the next list refetch.
  */
 
-import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { ConfirmDialog } from '@ai-matrx/design-system';
 import { MarkdownView } from '@/components/MarkdownView';
 import { Button, BasicInput as Input, Skeleton } from "@ai-matrx/design-system";
 import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
@@ -250,12 +250,14 @@ export function NoteEditor({ noteId }: { noteId: string }) {
 
       <ConfirmDialog
         open={deleteOpen}
+        onOpenChange={(next) => {
+          if (!next) setDeleteOpen(false);
+        }}
         title="Delete this note?"
         description="It will be marked deleted but is recoverable from the main app."
         confirmLabel="Delete"
-        destructive
+        variant="destructive"
         onConfirm={() => void performDelete()}
-        onClose={() => setDeleteOpen(false)}
       />
 
       <div className="flex shrink-0 flex-col gap-2 border-b border-border/50 px-3 py-2">

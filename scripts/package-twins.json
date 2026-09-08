@@ -28,13 +28,13 @@
     {
       "name": "createTaskChannelTopic",
       "package": "@ai-matrx/realtime",
-      "why": "A `uniqueChannelTopic` twin under a local name: it appended a crypto.randomUUID() suffix to a per-conversation topic so a React 19 remount could not be handed the previous mount's still-joined channel. The package mints the unique INSTANCE topic for every Postgres Changes channel itself (and deliberately does NOT for broadcast/presence, where the topic IS the room — a hand-rolled suffix there splits the room). Deleted from src/state/lists.ts in the 2026-09-07 realtime adoption.",
+      "why": "A `uniqueChannelTopic` twin under a local name: it appended a crypto.randomUUID() suffix to a per-conversation topic so a React 19 remount could not be handed the previous mount's still-joined channel. The package mints the unique INSTANCE topic for every Postgres Changes channel itself (and deliberately does NOT for broadcast/presence, where the topic IS the room \u2014 a hand-rolled suffix there splits the room). Deleted from src/state/lists.ts in the 2026-09-07 realtime adoption.",
       "allow": []
     },
     {
       "name": "subscribeSchedulerBroadcast",
       "package": "@ai-matrx/realtime",
-      "why": "NOT a package twin — a sanctioned MIRROR. src/lib/scheduler-client/ is the hand-vendored copy of matrx-frontend/lib/scheduler-client/ (see its README's mirror policy), and this function is the ref-counted fan-out over the package's own `manager.open({private:true, wire:{mode:'raw'}})`. The channel logic itself is 100% the package's; what is local is the sch_task payload filtering the mirror exists to carry.",
+      "why": "NOT a package twin \u2014 a sanctioned MIRROR. src/lib/scheduler-client/ is the hand-vendored copy of matrx-frontend/lib/scheduler-client/ (see its README's mirror policy), and this function is the ref-counted fan-out over the package's own `manager.open({private:true, wire:{mode:'raw'}})`. The channel logic itself is 100% the package's; what is local is the sch_task payload filtering the mirror exists to carry.",
       "allow": [
         {
           "file": "src/lib/scheduler-client/realtime.ts",
@@ -195,6 +195,12 @@
       "name": "escapeHtml",
       "package": "@ai-matrx/kit/html-escape",
       "why": "TEN copies were live across the fleet and THEY DID NOT ESCAPE THE SAME CHARACTERS \u2014 three did & < > only, two added \", four added ' (two as &#39;, two as &#039;), and a tenth wore the name escapeHtmlAttr while escaping only & < \" into an HTML ATTRIBUTE. A string safe through one was an attribute break-out through another. kit ships ONE decided set: & < > \" ' \u2014 all five, always. It is not in @ai-matrx/print because an HTML escaper must not require jspdf + html2canvas.",
+      "allow": []
+    },
+    {
+      "name": "ConfirmDialog",
+      "package": "@ai-matrx/design-system",
+      "why": "The extension's own `window.confirm` replacement (src/components/ConfirmDialog.tsx), deleted 2026-09-08. It was a genuine twin of the package's ConfirmDialog \u2014 same nine props, same six call shapes \u2014 but with an 80%-of-nothing scrim (`bg-black/40`), hardcoded `red-600` confirm and warning colours instead of tokens, no motion, no viewport clamp, no sticky footer, and sub-44px `py-1.5 text-xs` actions on a touch surface. Collapsing it onto the package also picked up the 0.11.6 sticky-footer fix (feedback bf8fb00b). TWO affordances were dropped rather than moved into the package, deliberately and on the record: the header X (Cancel and Escape are both present, and Radix owns Escape) and a destructive AlertTriangle glyph \u2014 an icon on every confirm in the platform is a taste decision that belongs to Arman, not to this lane. Backdrop-click dismissal is gone BY DESIGN: an AlertDialog does not dismiss on a stray click, which is the safer behaviour on a destructive action.",
       "allow": []
     }
   ]

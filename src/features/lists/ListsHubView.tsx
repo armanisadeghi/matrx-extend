@@ -18,7 +18,7 @@
  * EVERY agent_task row in the account to refetch one conversation.
  */
 
-import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { ConfirmDialog } from '@ai-matrx/design-system';
 import { Badge, Button } from "@ai-matrx/design-system";
 import { ScrollArea } from "@ai-matrx/design-system";
 import {
@@ -273,15 +273,17 @@ function ExpandedView({
           </Button>
           <ConfirmDialog
             open={wipeConfirmOpen}
+            onOpenChange={(next) => {
+              if (!next) setWipeConfirmOpen(false);
+            }}
             title="Wipe this conversation's lists?"
             description="Plan, tasks, and todos for this conversation will be permanently removed."
             confirmLabel="Wipe all"
-            destructive
+            variant="destructive"
             onConfirm={() => {
               setWipeConfirmOpen(false);
               void purgeConversation(detail.conversationId);
             }}
-            onClose={() => setWipeConfirmOpen(false)}
           />
         </div>
         <p className="text-[10px] text-zinc-500">{summary.conversation_id.slice(0, 12)}…</p>

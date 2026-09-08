@@ -18,7 +18,7 @@
  * `lib/audit/log`.
  */
 
-import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { ConfirmDialog } from '@ai-matrx/design-system';
 import { Button } from "@ai-matrx/design-system";
 import { exportPublicKeyJwk, rotateDeviceKey } from '@/lib/audit/device-key';
 import {
@@ -160,15 +160,26 @@ export function AuditKeyCard() {
 
       <ConfirmDialog
         open={rotateOpen}
+        onOpenChange={(next) => {
+          if (!next) setRotateOpen(false);
+        }}
         title="Rotate the device audit key?"
+        // Both paragraphs are the CONSEQUENCE, so both stay inside the
+        // accessible description — block spans rather than a second <p>, which
+        // would be invalid inside the description element.
         description={
-          'A new keypair will be generated.\n\nExisting receipts continue to verify against the retired key (kept in local history). This cannot be undone.'
+          <>
+            <span className="block">A new keypair will be generated.</span>
+            <span className="mt-2 block">
+              Existing receipts continue to verify against the retired key (kept
+              in local history). This cannot be undone.
+            </span>
+          </>
         }
         confirmLabel="Rotate key"
-        destructive
+        variant="destructive"
         busy={busy === 'rotate'}
         onConfirm={() => void handleRotateConfirmed()}
-        onClose={() => setRotateOpen(false)}
       />
     </div>
   );

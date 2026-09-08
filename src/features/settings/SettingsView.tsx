@@ -9,7 +9,7 @@
  * extension at staging / dev / localhost from here.
  */
 
-import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { ConfirmDialog } from '@ai-matrx/design-system';
 import { Button, BasicInput as Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
 import { Collapsible } from '@/components/ui/collapsible';
 import { Switch } from "@ai-matrx/design-system";
@@ -426,14 +426,24 @@ export function SettingsView() {
 
           <ConfirmDialog
             open={clearLocalDataOpen}
+            onOpenChange={(next) => {
+              if (!next) setClearLocalDataOpen(false);
+            }}
             title="Clear local data?"
             description={
-              'Clear all locally cached extension data on this device?\n\nYou will be signed out. Your chats, captures and patterns saved on the server are NOT affected.'
+              <>
+                <span className="block">
+                  Clear all locally cached extension data on this device?
+                </span>
+                <span className="mt-2 block">
+                  You will be signed out. Your chats, captures and patterns saved
+                  on the server are NOT affected.
+                </span>
+              </>
             }
             confirmLabel="Clear & sign out"
-            destructive
+            variant="destructive"
             onConfirm={() => void handleClearLocalDataConfirmed()}
-            onClose={() => setClearLocalDataOpen(false)}
           />
 
           <Collapsible label="About" defaultOpen={false}>

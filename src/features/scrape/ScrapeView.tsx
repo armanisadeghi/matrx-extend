@@ -1,5 +1,5 @@
 import { AddToProjectButton } from '@/components/AddToProjectButton';
-import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { ConfirmDialog } from '@ai-matrx/design-system';
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { MarkdownView } from '@/components/MarkdownView';
 import { Button } from "@ai-matrx/design-system";
@@ -561,12 +561,14 @@ export function ScrapeView() {
       )}
       <ConfirmDialog
         open={pendingCaptureMode !== null}
+        onOpenChange={(next) => {
+          if (!next) setPendingCaptureMode(null);
+        }}
         title="Discard unsaved edits?"
         description="You have unsaved edits to this capture. Re-capturing will discard them. Continue?"
         confirmLabel="Re-capture"
-        destructive
+        variant="destructive"
         onConfirm={confirmRecapture}
-        onClose={() => setPendingCaptureMode(null)}
       />
     </div>
   );
