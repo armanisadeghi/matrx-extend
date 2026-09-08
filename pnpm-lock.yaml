@@ -19,10 +19,10 @@ importers:
         version: 0.10.0(react@19.2.5)
       '@ai-matrx/design-system':
         specifier: latest
-        version: 0.9.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        version: 0.11.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@ai-matrx/kit':
         specifier: latest
-        version: 0.8.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        version: 0.9.0(react@19.2.5)
       '@ai-matrx/realtime':
         specifier: latest
         version: 0.7.0(react@19.2.5)
@@ -198,9 +198,6 @@ importers:
       tailwindcss:
         specifier: ^4.2.0
         version: 4.2.4
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@4.2.4)
       tsx:
         specifier: ^4.19.2
         version: 4.21.0
@@ -247,6 +244,13 @@ packages:
       react:
         optional: true
 
+  '@ai-matrx/design-system@0.11.0':
+    resolution: {integrity: sha512-/V4M2BC5wBuSAL5DNBr0koPSMkg0KH5zDpCPdw8ltTfy5jsyBHaoZJt40qSOO2W5zlWlwdVn2cBhHd/Tc9WvdA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+
   '@ai-matrx/design-system@0.7.0':
     resolution: {integrity: sha512-GNfvlnS8nzaOXHDnj2hZKXUwcRnLsBX6r8yhWdhk4lhihVFepNBNEdakZ36dhazFZAy7+mLFkWp/hXKw1F2uBA==}
     engines: {node: '>=20'}
@@ -254,15 +258,14 @@ packages:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@ai-matrx/design-system@0.9.0':
-    resolution: {integrity: sha512-bVgOdaAtLXh0HWJbVH1emiPlF47BelnfLHA+3anqoD43os0FcWBE7X5wVtGclHmsmIAFN+odezap9dgi5W+x0A==}
+  '@ai-matrx/kit@0.8.0':
+    resolution: {integrity: sha512-tO4DT2c71H6BXE35d6D3ENAPHjoTXCLqzE8BrVfICAttQuyNVBemX+AVyHMYD47YcLFjtF9dp7EhjbtZ88WjMA==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
-      react-dom: '>=18.0.0'
 
-  '@ai-matrx/kit@0.8.0':
-    resolution: {integrity: sha512-tO4DT2c71H6BXE35d6D3ENAPHjoTXCLqzE8BrVfICAttQuyNVBemX+AVyHMYD47YcLFjtF9dp7EhjbtZ88WjMA==}
+  '@ai-matrx/kit@0.9.0':
+    resolution: {integrity: sha512-69846FUdBBbmZPNsM0Yd5cMJu4o1YA3DCME00xI/3c3f4fREALuuHE9eXejBoTwwUYiQUxNIIuTuRi/oXthWkA==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -5125,11 +5128,6 @@ packages:
   tailwind-merge@3.6.0:
     resolution: {integrity: sha512-uxL7qAVQriqRQPAyK3pj66VqskWqoZ37PW94jwOTwNfq/z9oyu1V+eqrZqtR2+fCiXdYOZe/Modt8GtvqNzu+w==}
 
-  tailwindcss-animate@1.0.7:
-    resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
-    peerDependencies:
-      tailwindcss: '>=3.0.0 || insiders'
-
   tailwindcss@4.2.4:
     resolution: {integrity: sha512-HhKppgO81FQof5m6TEnuBWCZGgfRAWbaeOaGT00KOy/Pf/j6oUihdvBpA7ltCeAvZpFhW3j0PTclkxsd4IXYDA==}
 
@@ -5695,9 +5693,10 @@ snapshots:
       - '@supabase/supabase-js'
       - react-native
 
-  '@ai-matrx/design-system@0.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+  '@ai-matrx/design-system@0.11.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
-      '@ai-matrx/kit': 0.8.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@ai-matrx/kit': 0.9.0(react@19.2.5)
+      '@radix-ui/react-accordion': 1.2.20(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@radix-ui/react-alert-dialog': 1.1.23(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@radix-ui/react-avatar': 1.2.6(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@radix-ui/react-checkbox': 1.3.11(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -5733,10 +5732,9 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  '@ai-matrx/design-system@0.9.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+  '@ai-matrx/design-system@0.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
       '@ai-matrx/kit': 0.8.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@radix-ui/react-accordion': 1.2.20(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@radix-ui/react-alert-dialog': 1.1.23(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@radix-ui/react-avatar': 1.2.6(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@radix-ui/react-checkbox': 1.3.11(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -5784,6 +5782,13 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
       - react-dom
+
+  '@ai-matrx/kit@0.9.0(react@19.2.5)':
+    dependencies:
+      idb: 8.0.3
+      json5: 2.2.3
+      jsqr: 1.4.0
+      react: 19.2.5
 
   '@ai-matrx/realtime@0.7.0(react@19.2.5)':
     optionalDependencies:
@@ -10770,10 +10775,6 @@ snapshots:
   tailwind-merge@2.6.1: {}
 
   tailwind-merge@3.6.0: {}
-
-  tailwindcss-animate@1.0.7(tailwindcss@4.2.4):
-    dependencies:
-      tailwindcss: 4.2.4
 
   tailwindcss@4.2.4: {}
 

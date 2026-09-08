@@ -110,7 +110,6 @@
     "lint-staged": "^15.4.0",
     "openapi-typescript": "^7.6.0",
     "tailwindcss": "^4.2.0",
-    "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.19.2",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vitest": "^2.1.0",
