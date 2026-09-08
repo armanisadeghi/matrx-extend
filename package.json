@@ -50,6 +50,7 @@
     "@ai-matrx/content-ir-react": "latest",
     "@ai-matrx/design-system": "latest",
     "@ai-matrx/kit": "latest",
+    "@ai-matrx/realtime": "latest",
     "@ai-matrx/tap-target": "latest",
     "@cartesia/cartesia-js": "^2.2.9",
     "@hookform/resolvers": "^3.10.0",
