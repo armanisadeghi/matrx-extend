@@ -244,8 +244,22 @@ function TaskRow({
         onOpenChange={(next) => {
           if (!next) setDeleteOpen(false);
         }}
-        title="Delete task?"
-        description={`Delete task "${task.title}"?`}
+        title={`Delete "${task.title}"?`}
+        // The consequence, not a restated question: this is a hard row delete
+        // and the FKs cascade the task's triggers AND its whole run history
+        // away with it. Pause sits next to Delete, so the confirmation names
+        // it as the keep-what-I-have choice.
+        description={
+          <>
+            <span className="block">
+              The schedule and every run this task has recorded are permanently deleted. This cannot
+              be undone.
+            </span>
+            <span className="mt-2 block">
+              To stop it running without losing its history, cancel and use Pause instead.
+            </span>
+          </>
+        }
         confirmLabel="Delete"
         variant="destructive"
         busy={working === 'delete'}
