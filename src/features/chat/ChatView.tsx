@@ -657,7 +657,6 @@ export function ChatView() {
         onCancel={() => void cancel()}
         onInterruptSend={() => interruptAndSendMessage(draft)}
         isStreaming={isStreaming}
-        canSend={true}
         canQueue={Boolean(selectedConversationId)}
         voiceAvailable={Boolean(user)}
         placeholder={
@@ -1228,7 +1227,6 @@ function Composer({
   onCancel,
   onInterruptSend,
   isStreaming,
-  canSend,
   canQueue,
   voiceAvailable,
   placeholder,
@@ -1245,7 +1243,6 @@ function Composer({
    */
   onInterruptSend: () => void;
   isStreaming: boolean;
-  canSend: boolean;
   /**
    * Whether queuing into the running agent is possible right now (we have a
    * server-assigned conversation id). Only consulted while `isStreaming`.
@@ -1602,14 +1599,14 @@ function Composer({
               <button
                 type="button"
                 onClick={onSubmit}
-                disabled={!hasText || !canSend}
+                disabled={!hasText}
                 className={cn(
                   'inline-flex size-8 items-center justify-center rounded-full transition-opacity',
-                  hasText && canSend
+                  hasText
                     ? 'bg-primary text-primary-foreground hover:opacity-90'
                     : 'bg-muted text-muted-foreground',
                 )}
-                title={canSend ? 'Send' : 'Select an agent first'}
+                title="Send"
               >
                 <ArrowUp className="size-4" />
               </button>
