@@ -359,6 +359,18 @@ else
     fail "@ai-matrx packages are stale or pinned (see above). Run 'pnpm sync:matrx-packages', adopt each new version's CHANGELOG 'Consumer action', commit package.json + pnpm-lock.yaml, then re-run. Catch-up work for this repo is also queued on the Autonomous Work Loop (campaign package-catch-up)."
 fi
 
+# THE OTHER HALF of the same law (Arman: "the logic of the packages is NEVER
+# duplicated outside of the package"). Currency proves this repo INSTALLS the
+# right version; this proves it does not quietly re-implement what that version
+# already ships. Ported from matrx-frontend 2026-09-07 with the fleet's 27-row
+# register. The only way past is a per-file allow entry carrying a reason.
+CURRENT_STEP="package-twins"
+if pnpm check:package-twins; then
+    ok "no @ai-matrx package logic re-grown in this repo"
+else
+    fail "Package logic re-grown outside its package (see above). Import from the package and delete the local definition, or — only if it is PROVABLY a different capability — add the file to scripts/package-twins.json with a written reason."
+fi
+
 # ── 3. Bump version ─────────────────────────────────────────────────────────
 CURRENT_STEP="version-bump"
 step "3/8  Bump version → ${NEW_VERSION}"
