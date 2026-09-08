@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import { useAuth } from '@/hooks/use-auth';
 import { ExternalLink, MessageSquare, ScanLine } from 'lucide-react';
 import React from 'react';

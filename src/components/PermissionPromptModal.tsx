@@ -12,7 +12,7 @@
  * gate design.
  */
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import { type PermissionVerdict, usePermissionPromptsStore } from '@/state/permission-prompts';
 import { Globe, Lock, ShieldCheck, Sparkles, X } from 'lucide-react';
 

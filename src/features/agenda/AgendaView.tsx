@@ -12,16 +12,7 @@
  */
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Button, BasicInput as Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
 import { useChatStream } from '@/hooks/use-chat-stream';
 import { isValidCron, nextCronTime } from '@/lib/agenda/cron';
 import {

@@ -1,6 +1,5 @@
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';

@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import { JsonTree } from '@/components/ui/json-tree';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useExtraction } from '@/hooks/use-extraction';

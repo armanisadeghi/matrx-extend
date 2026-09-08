@@ -2,10 +2,7 @@ import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { GuestBanner } from '@/components/GuestBanner';
 import { RenderBlockView } from '@/components/kinds/RenderBlockView';
 import { Markdown } from '@/components/markdown';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button, BasicInput as Input, Popover, PopoverContent, PopoverTrigger, Skeleton } from "@ai-matrx/design-system";
 import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentCaptureCredentialCard } from '@/features/chat/AgentCaptureCredentialCard';
@@ -1177,7 +1174,9 @@ function HistoryMenu({
           <History className="size-3.5" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0">
+      {/* `align="end"` is explicit since the design-system PopoverContent
+          defaults to "center" (the deleted local fork defaulted to "end"). */}
+      <PopoverContent align="end" className="w-80 p-0">
         <div className="flex items-center justify-between border-b px-3 py-2">
           <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
             Recent chats

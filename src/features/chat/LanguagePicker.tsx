@@ -15,8 +15,7 @@
  * — the repo CLAUDE.md prohibits emojis in user-visible UI.
  */
 
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button, Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import { cn } from '@/lib/utils';
 import { useVoicePrefsStore } from '@/state/voice-prefs';
 import { Check, Languages } from 'lucide-react';

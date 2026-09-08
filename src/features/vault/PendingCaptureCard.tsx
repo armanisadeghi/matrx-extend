@@ -7,7 +7,7 @@
  * password never reaches this surface — the SW writes it to the Vault.
  */
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import type {
   CaptureDecision,
   CaptureDecisionResult,

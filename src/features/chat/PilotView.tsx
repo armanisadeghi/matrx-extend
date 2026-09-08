@@ -20,10 +20,7 @@
 
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { Markdown } from '@/components/markdown';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button, BasicInput as Input, Popover, PopoverContent, PopoverTrigger, Skeleton } from "@ai-matrx/design-system";
 import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';

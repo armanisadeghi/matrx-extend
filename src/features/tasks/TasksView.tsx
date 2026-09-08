@@ -1,8 +1,6 @@
 import { AddToProjectButton } from '@/components/AddToProjectButton';
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button, Popover, PopoverContent, PopoverTrigger, Skeleton } from "@ai-matrx/design-system";
 import { ParallelRunsPanel } from '@/features/tasks/ParallelRunsPanel';
 import { type BatchProgress, QueueSelectionBar } from '@/features/tasks/QueueSelectionBar';
 import { QueueToolbar } from '@/features/tasks/QueueToolbar';

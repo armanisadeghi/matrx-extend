@@ -12,10 +12,7 @@
  * time per the existing recorder backend.
  */
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Badge, Button, BasicInput as Input, Label } from "@ai-matrx/design-system";
 import { Textarea } from '@/components/ui/textarea';
 import { log } from '@/lib/debug/log';
 import { listAllGuidance } from '@/lib/guidance/storage';

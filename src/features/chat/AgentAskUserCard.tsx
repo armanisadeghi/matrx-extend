@@ -13,9 +13,7 @@
  * just need to stop rendering.
  */
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Badge, Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { Textarea } from '@/components/ui/textarea';
 import { GmailReviewCard } from '@/features/chat/GmailReviewCard';
 import { respondToAsk } from '@/hooks/use-tool-inbox';

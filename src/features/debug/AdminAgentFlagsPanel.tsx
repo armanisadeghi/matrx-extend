@@ -11,8 +11,7 @@
  * morning" — the flags shouldn't outlive the browser session.
  */
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { AdminModelPicker } from '@/features/debug/AdminModelPicker';

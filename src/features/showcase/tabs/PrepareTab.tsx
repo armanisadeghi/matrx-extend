@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import { usePagePrep } from '@/hooks/use-page-prep';
 import { CheckCircle2, Loader2, Wand2 } from 'lucide-react';
 import { useState } from 'react';

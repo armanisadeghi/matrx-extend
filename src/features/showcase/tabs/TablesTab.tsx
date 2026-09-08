@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import { useExtraction } from '@/hooks/use-extraction';
 import { Loader2, PlayCircle } from 'lucide-react';
 import { useState } from 'react';

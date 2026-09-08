@@ -20,6 +20,9 @@ importers:
       '@ai-matrx/design-system':
         specifier: latest
         version: 0.4.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@ai-matrx/tap-target':
+        specifier: latest
+        version: 0.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@cartesia/cartesia-js':
         specifier: ^2.2.9
         version: 2.2.9
@@ -229,8 +232,8 @@ packages:
     resolution: {integrity: sha512-BIlXpLGA7hM+/DMBJur2dZw71/kDH87DI/5FBmO87OvfA/c8bVv700lvmcWTJsSfE/lNt0ppOGNm1CcYVOEmwQ==}
     engines: {node: '>=20'}
 
-  '@ai-matrx/data@0.8.4':
-    resolution: {integrity: sha512-5GBZH/yHS03S/yyGXsuTJSNnkLTjl3ErPwTruY6SGwWC32w9/ytaUVemWESFpbDwYgXqya3Ry3IFYnsid0n0nA==}
+  '@ai-matrx/data@0.8.5':
+    resolution: {integrity: sha512-rJHT4HFyWntU8aIuv0Lv6cps8AdqTVFHII/4trdcnszesAHctMXJKjnzwdvYygMwYf/B0Y/m5KOeYAA8taQkLQ==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -251,8 +254,8 @@ packages:
     peerDependencies:
       react: '>=18.0.0'
 
-  '@ai-matrx/realtime@0.2.1':
-    resolution: {integrity: sha512-xOaYlNa6Pt6IyU+AwKr/UyrRcfv7OfURvB6arMsTOs7z6lsI1DA/6QsRtiTQrEZRGihh8fAh7qg1T6PGMUZmGQ==}
+  '@ai-matrx/realtime@0.3.0':
+    resolution: {integrity: sha512-DLeuSwMLFkrVe7+dMjJE8FKODkaYoCaK3mzdZykT5JPJVVh8KVCobmiJbHBl2vAd/XH9XAgm0Qy/vN9rtJHtTA==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -262,6 +265,12 @@ packages:
         optional: true
       react-native:
         optional: true
+
+  '@ai-matrx/tap-target@0.1.2':
+    resolution: {integrity: sha512-8wpEWNrTAxkZzc+K9/1RxeuEHQH6D2UMwcRfkJrX2zm8miw24F1Etes6Kt8e2DVl0buvd7vr7YOCbJrf0SFZ4A==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      react: '>=18.0.0'
 
   '@aklinker1/rollup-plugin-visualizer@5.12.0':
     resolution: {integrity: sha512-X24LvEGw6UFmy0lpGJDmXsMyBD58XmX1bbwsaMLhNoM+UMQfQ3b2RtC+nz4b/NoRK5r6QJSKJHBNVeUdwqybaQ==}
@@ -5372,7 +5381,7 @@ snapshots:
 
   '@ai-matrx/agents@0.6.2(@supabase/supabase-js@2.112.4)(react@19.2.5)':
     dependencies:
-      '@ai-matrx/data': 0.8.4(@supabase/supabase-js@2.112.4)(react@19.2.5)
+      '@ai-matrx/data': 0.8.5(@supabase/supabase-js@2.112.4)(react@19.2.5)
     optionalDependencies:
       react: 19.2.5
     transitivePeerDependencies:
@@ -5388,9 +5397,9 @@ snapshots:
     dependencies:
       ajv: 8.20.0
 
-  '@ai-matrx/data@0.8.4(@supabase/supabase-js@2.112.4)(react@19.2.5)':
+  '@ai-matrx/data@0.8.5(@supabase/supabase-js@2.112.4)(react@19.2.5)':
     dependencies:
-      '@ai-matrx/realtime': 0.2.1(react@19.2.5)
+      '@ai-matrx/realtime': 0.3.0(react@19.2.5)
       '@supabase/ssr': 0.12.5(@supabase/supabase-js@2.112.4)
     optionalDependencies:
       react: 19.2.5
@@ -5432,9 +5441,18 @@ snapshots:
       - '@types/react-dom'
       - react-dom
 
-  '@ai-matrx/realtime@0.2.1(react@19.2.5)':
+  '@ai-matrx/realtime@0.3.0(react@19.2.5)':
     optionalDependencies:
       react: 19.2.5
+
+  '@ai-matrx/tap-target@0.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+    dependencies:
+      '@radix-ui/react-tooltip': 1.2.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      react: 19.2.5
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
+      - react-dom
 
   '@aklinker1/rollup-plugin-visualizer@5.12.0(rollup@4.60.2)':
     dependencies:

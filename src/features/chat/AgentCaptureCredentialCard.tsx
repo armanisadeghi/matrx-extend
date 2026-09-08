@@ -18,9 +18,7 @@
  * `cancelled: true` so the agent knows the user declined.
  */
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Badge, Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { respondToCapture } from '@/hooks/use-tool-inbox';
 import { captureCredential } from '@/lib/api/routes/vault';
 import type { CaptureCredentialRequest } from '@/lib/tools/handlers/credential-capture';

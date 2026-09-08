@@ -1,5 +1,5 @@
 import { CopyMenu } from '@/components/CopyMenu';
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import { rowsToTsv, stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';

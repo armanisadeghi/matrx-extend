@@ -8,8 +8,7 @@
  * another AI chat.
  */
 
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button, Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import { copyToClipboard } from '@/lib/clipboard/copy';
 import { cn } from '@/lib/utils';
 import type { ChatMessage } from '@/state/chat';

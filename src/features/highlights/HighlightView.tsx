@@ -11,7 +11,7 @@
  * reads the store + issues control commands.
  */
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { setHighlighterMode, startHighlighter, stopHighlighter } from '@/lib/highlights/control';
 import { deleteHighlight, listHighlightsForUrl, listMyHighlights } from '@/lib/highlights/queries';

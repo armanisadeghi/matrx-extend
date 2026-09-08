@@ -14,9 +14,7 @@
  * in once and never see the prompt.
  */
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Badge, Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { Switch } from '@/components/ui/switch';
 import { TabCaptureDialog } from '@/features/tools/TabCaptureDialog';
 import { cn } from '@/lib/utils';

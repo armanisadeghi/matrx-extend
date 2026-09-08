@@ -1,6 +1,6 @@
 import { CopyButton } from '@/components/CopyMenu';
 import { OpenUrl } from '@/components/OpenUrl';
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import type { SeoAudit } from '@/lib/seo/audit';
 import {
   SECTION_LABELS,

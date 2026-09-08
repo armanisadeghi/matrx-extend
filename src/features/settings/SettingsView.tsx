@@ -10,16 +10,8 @@
  */
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { Button } from '@/components/ui/button';
+import { Button, BasicInput as Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
 import { Collapsible } from '@/components/ui/collapsible';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapabilities';
 import { useAuth } from '@/hooks/use-auth';

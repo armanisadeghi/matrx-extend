@@ -17,8 +17,7 @@
 
 import { Check, Cpu, Loader2, Monitor, Plus, RefreshCw, Server, X } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button, Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import { useComputeTargets } from '@/lib/compute/use-compute-targets';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';

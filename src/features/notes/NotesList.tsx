@@ -7,15 +7,7 @@
  * view swaps to the editor.
  */
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Button, BasicInput as Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
 import { createNote } from '@/lib/notes/queries';
 import type { NoteListItem } from '@/lib/notes/types';
 import {

@@ -13,7 +13,7 @@
  * the side panel root is small enough that fixed-position covers it).
  */
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import { getReceiptByCallId } from '@/lib/audit/log';
 import { type ToolReceipt, exportReceiptJws, verifyReceipt } from '@/lib/audit/receipt';
 import { cn } from '@/lib/utils';

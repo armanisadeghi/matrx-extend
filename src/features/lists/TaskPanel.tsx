@@ -11,9 +11,7 @@
  * local. Broadcasts plus Realtime keep the panel aligned with server writes.
  */
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Badge, Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   addTasks,

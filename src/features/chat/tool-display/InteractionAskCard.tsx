@@ -13,8 +13,7 @@
  * doesn't reappear if the user scrolls away and back.
  */
 
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import { Button, Label } from "@ai-matrx/design-system";
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useChatStream } from '@/hooks/use-chat-stream';

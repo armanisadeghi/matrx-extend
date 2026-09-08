@@ -21,7 +21,15 @@
 @import "@ai-matrx/design-system/tokens.css";
 @import "@ai-matrx/design-system/styles.css";
 
+/* @ai-matrx/tap-target ships the Tooltip family this app used to fork, plus
+   the geometry stylesheet its tap buttons WEAR. Import both so a later
+   TapTargetButton adoption cannot land silently unstyled. */
+@import "@ai-matrx/tap-target/styles.css";
+
+/* Tailwind must scan the packages' BUILT output — the semantic utility classes
+   their components wear exist only if these are sources. */
 @source "../../node_modules/@ai-matrx/design-system/dist";
+@source "../../node_modules/@ai-matrx/tap-target/dist";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -45,6 +53,19 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  /* Semantic STATUS colours — required by @ai-matrx/design-system's Badge
+     (`success` / `warning` / `info` / `error` variants) and ScoreRing helpers.
+     This app declares no values for them, so they resolve from the package's
+     own `tokens.css` defaults above, which are hsl CHANNEL TRIPLETS (not the
+     oklch full colours this app uses for the base vocabulary) — hence the
+     `hsl(...)` wrapper here and bare `var()` above. Declare `--success` etc.
+     in `:root` / `.dark` below to brand them. */
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-info: hsl(var(--info));
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);

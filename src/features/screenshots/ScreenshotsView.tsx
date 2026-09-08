@@ -24,8 +24,7 @@
  *     backwards compatibility with tool calls that fail to persist).
  */
 
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button, Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import { ENV } from '@/config/env';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { downloadFileBytes } from '@/lib/api/routes/files';

@@ -13,8 +13,7 @@
  * Contract: common-docs/systems/knowledge/research/EXTENSION_CAPTURE_CONTRACT.md § The topic picker
  */
 
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button, Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import {
   type ResearchTopicSummary,
   type SourceUrlMatch,

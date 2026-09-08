@@ -1,6 +1,4 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Badge, Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ENV } from '@/config/env';
 import { useAuth } from '@/hooks/use-auth';

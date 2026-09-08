@@ -1,5 +1,5 @@
 import { CopyMenu } from '@/components/CopyMenu';
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { type PageDiagnostic, pageDiagnosticInPage } from '@/lib/data-pattern/page-diagnostic';

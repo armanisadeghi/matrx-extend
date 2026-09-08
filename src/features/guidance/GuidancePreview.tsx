@@ -7,8 +7,7 @@
  *   demo_ref    — step count, parameters, Replay button (confirms first)
  */
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge, Button } from "@ai-matrx/design-system";
 import { getDemoOrHydrate } from '@/lib/demos/cloud-sync';
 import { replayDemo } from '@/lib/demos/replayer';
 import type { Demo } from '@/lib/demos/types';

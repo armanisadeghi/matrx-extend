@@ -1,5 +1,4 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { useExtraction } from '@/hooks/use-extraction';
 import { Loader2, PlayCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';

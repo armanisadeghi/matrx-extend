@@ -10,7 +10,7 @@
  * on `selectedNoteId`.
  */
 
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@ai-matrx/design-system";
 import { listMyNotes } from '@/lib/notes/queries';
 import { useNotesUiStore } from '@/state/notes';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';

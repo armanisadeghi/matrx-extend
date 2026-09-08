@@ -20,8 +20,7 @@
  * `features/google-workspace/agent/GmailReviewCard.tsx`.
  */
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { Textarea } from '@/components/ui/textarea';
 import { respondToAsk } from '@/hooks/use-tool-inbox';
 import { sendReviewedGmail } from '@/lib/api/routes/google-workspace';

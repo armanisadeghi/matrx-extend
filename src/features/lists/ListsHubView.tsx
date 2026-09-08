@@ -10,8 +10,7 @@
  */
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge, Button } from "@ai-matrx/design-system";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   clearCompletedTasks,

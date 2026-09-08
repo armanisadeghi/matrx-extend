@@ -9,9 +9,8 @@
  * because it's a once-in-a-while destination, not a workflow tab.
  */
 
-import { Button } from '@/components/ui/button';
+import { Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { Collapsible } from '@/components/ui/collapsible';
-import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/hooks/use-auth';
 import { useUserProfile } from '@/hooks/use-user-profile';

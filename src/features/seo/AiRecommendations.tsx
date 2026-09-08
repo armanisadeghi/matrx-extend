@@ -25,7 +25,7 @@
 
 import { CopyButton } from '@/components/CopyMenu';
 import { Markdown } from '@/components/markdown';
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import { ENV } from '@/config/env';
 import { useAgentTextRun } from '@/hooks/use-agent-text-run';
 import { DEFAULT_CHAT_MANDATE_REF, mandateKeyFromAgentRef } from '@/lib/mandates';

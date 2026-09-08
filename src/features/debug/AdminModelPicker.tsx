@@ -14,8 +14,7 @@
  * Customize popover.
  */
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { type AiModel, fetchActiveModels } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '@/state/settings';

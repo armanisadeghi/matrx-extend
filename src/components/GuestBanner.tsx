@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import { ENV } from '@/config/env';
 import { useAuth } from '@/hooks/use-auth';
 import { LogIn, Sparkles } from 'lucide-react';

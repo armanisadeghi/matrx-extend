@@ -1,6 +1,4 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button, BasicInput as Input, Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import { useActiveTab } from '@/hooks/use-active-tab';
 import type { ExtractionSource } from '@/hooks/use-extraction';
 import { useUserTables } from '@/hooks/use-user-tables';
@@ -190,7 +188,9 @@ export function SaveAsPattern({
           Save pattern
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 space-y-3 p-3">
+      {/* `align="end"` is explicit since the design-system PopoverContent
+          defaults to "center" (the deleted local fork defaulted to "end"). */}
+      <PopoverContent align="end" className="w-80 space-y-3 p-3">
         <div className="space-y-1">
           <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
             Save pattern

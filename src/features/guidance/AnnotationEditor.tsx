@@ -12,7 +12,7 @@
  * of the sidepanel.
  */
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import { uploadFile } from '@/lib/api/routes/files';
 import { saveGuidanceItem } from '@/lib/guidance/storage';
 import type { GuidanceScreenshot } from '@/lib/guidance/types';

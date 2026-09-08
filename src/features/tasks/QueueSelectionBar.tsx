@@ -5,8 +5,7 @@
  * live progress while a batch runs. Mirrors the Gmail/Linear selection pattern.
  */
 
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button, Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import { VERDICT_OPTIONS } from '@/features/tasks/verdicts';
 import type { UserVerdict } from '@/lib/api/routes/research';
 import { CheckSquare, ChevronDown, Loader2, PlayCircle, Square, X } from 'lucide-react';

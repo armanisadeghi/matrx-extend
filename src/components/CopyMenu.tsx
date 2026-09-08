@@ -11,7 +11,7 @@
  * an agent chat, into a terminal.
  */
 
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import { useAuth } from '@/hooks/use-auth';
 import { copyToClipboard } from '@/lib/clipboard/copy';
 import { cn } from '@/lib/utils';

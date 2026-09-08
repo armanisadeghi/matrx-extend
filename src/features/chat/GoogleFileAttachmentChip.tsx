@@ -17,7 +17,7 @@
  * that turn — see /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §2.
  */
 
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from "@ai-matrx/design-system";
 import { log } from '@/lib/debug/log';
 import { GOOGLE_WORKSPACE_SETTINGS_URL } from '@/lib/google/connection';
 import { listRegisteredGoogleFiles } from '@/lib/google/files';

@@ -19,7 +19,7 @@
  */
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { Button } from '@/components/ui/button';
+import { Button } from "@ai-matrx/design-system";
 import { exportPublicKeyJwk, rotateDeviceKey } from '@/lib/audit/device-key';
 import {
   MAX_RECEIPTS,
