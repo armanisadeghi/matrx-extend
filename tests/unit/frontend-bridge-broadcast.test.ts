@@ -128,6 +128,39 @@ describe('frontend bridge Broadcast transport', () => {
     await disconnectBroadcast();
   });
 
+  it('puts the BARE BridgeEnvelope on the wire — no Matrx envelope, ever', async () => {
+    // @ai-matrx/realtime normally wraps a broadcast in `{v, cid, eid, ts, data}`.
+    // This channel declares `wire: {mode:"raw"}` because the frontend and every
+    // deployed build of this extension read the `BridgeEnvelope` directly. If a
+    // future edit drops that declaration, the two halves go mute to each other
+    // with nothing failing loudly — so the exact key set is asserted here.
+    const h = makeHarness();
+    const { connectBroadcast, disconnectBroadcast, publishToFrontend } = await import(
+      '@/lib/frontend-bridge/broadcast'
+    );
+    await connectBroadcast();
+    await publishToFrontend('ping', { hello: 'world' });
+
+    const sent = h.channel.send.mock.calls[0]?.[0] as {
+      type: string;
+      event: string;
+      payload: Record<string, unknown>;
+    };
+    expect(sent.type).toBe('broadcast');
+    expect(sent.event).toBe('FRONTEND_RPC');
+    expect(Object.keys(sent.payload).sort()).toEqual([
+      'action',
+      'direction',
+      'payload',
+      'requestId',
+      'timestamp',
+    ]);
+    expect(sent.payload).not.toHaveProperty('v');
+    expect(sent.payload).not.toHaveProperty('cid');
+    expect(sent.payload).not.toHaveProperty('data');
+    await disconnectBroadcast();
+  });
+
   it('correlates frontend replies to extension-initiated requests', async () => {
     const h = makeHarness();
     const { connectBroadcast, disconnectBroadcast, publishToFrontend } = await import(
