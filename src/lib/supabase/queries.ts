@@ -104,7 +104,7 @@ export async function checkIsAdmin(userId: string): Promise<boolean> {
   return Array.isArray(data) && data.length > 0;
 }
 
-// ─── Agents (via agx_get_list_full RPC) ─────────────────────────────────────
+// ─── Agents ─────────────────────────────────────────────────────────────────
 /**
  * THE AGENT LIST IS NOT READ HERE.
  *
@@ -113,7 +113,7 @@ export async function checkIsAdmin(userId: string): Promise<boolean> {
  * rule, one order, across every Matrx client. This module used to hold
  * `AgxAgentSchema`, `fetchAgentList`, `fetchUserAgents` and a hardcoded
  * "Matrx Browser Agent" default row; all four were deleted on 2026-09-08 when
- * the extension adopted the package (@ai-matrx/agents 0.7.0). Host wiring is
+ * the extension adopted the package (@ai-matrx/agents 0.7.1). Host wiring is
  * `src/lib/agents/catalog.ts`. Never re-add a list read here.
  */
 
