@@ -21,9 +21,11 @@
 @import "@ai-matrx/design-system/tokens.css";
 @import "@ai-matrx/design-system/styles.css";
 
-/* @ai-matrx/tap-target ships the Tooltip family this app used to fork, plus
-   the geometry stylesheet its tap buttons WEAR. Import both so a later
-   TapTargetButton adoption cannot land silently unstyled. */
+/* @ai-matrx/tap-target's geometry stylesheet — the rules its tap buttons WEAR.
+   Import it so a later TapTargetButton adoption cannot land silently unstyled.
+   (The Tooltip family this app once forked moved OUT of tap-target in its
+   0.2.0 and is owned by @ai-matrx/design-system since 0.7.0 — import Tooltip
+   from design-system, never from here.) */
 @import "@ai-matrx/tap-target/styles.css";
 
 /* Tailwind must scan the packages' BUILT output — the semantic utility classes
