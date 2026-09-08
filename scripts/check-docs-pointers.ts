@@ -36,6 +36,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 
 const ROOT = process.cwd();
+const COMMON_DOCS_ROOT = resolve(ROOT, '../common-docs');
 const STRICT = process.argv.includes('--strict');
 
 // Only scan the doc-y parts of the repo — not node_modules, .output, archives.
@@ -91,6 +92,18 @@ function isRelativeLinkTarget(target: string): boolean {
   return true;
 }
 
+function commonDocsBundleTarget(target: string): string | null {
+  const normalized = target.startsWith('/') ? target.slice(1) : target;
+  const first = normalized.split('/')[0];
+  if (first && COMMON_DOCS_ALLOWED_DIRS.has(first)) {
+    return resolve(COMMON_DOCS_ROOT, normalized);
+  }
+  if (normalized.startsWith('common-docs/')) {
+    return resolve(dirname(ROOT), normalized);
+  }
+  return null;
+}
+
 for (const file of trackedMd()) {
   const filePath = join(ROOT, file);
   let lines: string[];
@@ -111,6 +124,13 @@ for (const file of trackedMd()) {
       if (!isRelativeLinkTarget(raw)) continue;
       const withoutAnchor = raw.split('#')[0]?.trim();
       if (!withoutAnchor) continue; // was just an anchor
+      const commonDocsTarget = commonDocsBundleTarget(withoutAnchor);
+      if (commonDocsTarget) {
+        if (!existsSync(commonDocsTarget)) {
+          brokenLinks.push({ file, line: lineNo, target: raw });
+        }
+        continue;
+      }
       const resolvedFromDoc = resolve(fileDir, withoutAnchor);
       // Some docs (esp. .claude/skills/) write bare relative paths meant as
       // repo-root-relative rather than doc-relative. Accept either.
