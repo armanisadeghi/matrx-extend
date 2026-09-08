@@ -14,7 +14,7 @@
  */
 
 import { Badge, Button, BasicInput as Input } from "@ai-matrx/design-system";
-import { Textarea } from '@/components/ui/textarea';
+import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { GmailReviewCard } from '@/features/chat/GmailReviewCard';
 import { respondToAsk } from '@/hooks/use-tool-inbox';
 import type { AskUserResponse, PendingAskUserRequest, UserAskOption } from '@/lib/tools/types';

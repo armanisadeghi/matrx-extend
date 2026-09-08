@@ -10,8 +10,8 @@
  */
 
 import { Badge, Button, BasicInput as Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from "@ai-matrx/design-system";
+import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { useBroker } from '@/hooks/use-broker';
 import type { BrokerResult, BrokeredCredential, TierPolicy } from '@/lib/broker';
 import { KeyRound, RefreshCw, Trash2 } from 'lucide-react';

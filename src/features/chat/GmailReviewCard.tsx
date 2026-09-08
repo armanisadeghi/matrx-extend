@@ -21,7 +21,7 @@
  */
 
 import { Button, BasicInput as Input } from "@ai-matrx/design-system";
-import { Textarea } from '@/components/ui/textarea';
+import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { respondToAsk } from '@/hooks/use-tool-inbox';
 import { sendReviewedGmail } from '@/lib/api/routes/google-workspace';
 import { GOOGLE_WORKSPACE_SETTINGS_URL } from '@/lib/google/connection';

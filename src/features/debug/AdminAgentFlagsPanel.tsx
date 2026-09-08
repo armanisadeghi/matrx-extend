@@ -12,8 +12,8 @@
  */
 
 import { Button, BasicInput as Input } from "@ai-matrx/design-system";
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
+import { Switch } from "@ai-matrx/design-system";
+import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { AdminModelPicker } from '@/features/debug/AdminModelPicker';
 import { cn } from '@/lib/utils';
 import {

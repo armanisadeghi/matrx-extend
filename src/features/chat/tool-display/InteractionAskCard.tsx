@@ -14,8 +14,8 @@
  */
 
 import { Button, Label } from "@ai-matrx/design-system";
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
+import { Switch } from "@ai-matrx/design-system";
+import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { useChatStream } from '@/hooks/use-chat-stream';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';

@@ -1,7 +1,7 @@
 import { AuthGate } from '@/components/AuthGate';
 import { PermissionPromptModal } from '@/components/PermissionPromptModal';
 import { UserMenu } from '@/components/UserMenu';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ai-matrx/design-system";
 import { TooltipProvider } from "@ai-matrx/tap-target";
 import { canAccessSidepanelTab, firstAccessibleSidepanelTab } from '@/config/sidepanel-visibility';
 import { useAgendaListener } from '@/hooks/use-agenda-listener';

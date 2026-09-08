@@ -1,5 +1,5 @@
 import { Button, BasicInput as Input } from "@ai-matrx/design-system";
-import { Textarea } from '@/components/ui/textarea';
+import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAiExtraction } from '@/hooks/use-ai-extraction';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';

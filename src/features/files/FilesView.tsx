@@ -1,5 +1,5 @@
 import { Badge, Button, BasicInput as Input } from "@ai-matrx/design-system";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ai-matrx/design-system";
 import { ENV } from '@/config/env';
 import { useAuth } from '@/hooks/use-auth';
 import type { ScreenshotRow } from '@/lib/supabase/queries';

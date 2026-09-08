@@ -6,7 +6,7 @@
  */
 
 import { Button, BasicInput as Input, Label } from "@ai-matrx/design-system";
-import { Textarea } from '@/components/ui/textarea';
+import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { Loader2, Save, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 

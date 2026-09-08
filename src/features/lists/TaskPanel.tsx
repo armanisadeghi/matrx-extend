@@ -12,7 +12,7 @@
  */
 
 import { Badge, Button, BasicInput as Input } from "@ai-matrx/design-system";
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea } from "@ai-matrx/design-system";
 import {
   addTasks,
   addUserTodo,

@@ -13,7 +13,7 @@
  */
 
 import { Badge, Button, BasicInput as Input, Label } from "@ai-matrx/design-system";
-import { Textarea } from '@/components/ui/textarea';
+import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { log } from '@/lib/debug/log';
 import { listAllGuidance } from '@/lib/guidance/storage';
 import type { GuidanceKind, GuidanceSummary } from '@/lib/guidance/types';

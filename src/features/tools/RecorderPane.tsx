@@ -15,7 +15,7 @@
  */
 
 import { Badge, Button, BasicInput as Input } from "@ai-matrx/design-system";
-import { Switch } from '@/components/ui/switch';
+import { Switch } from "@ai-matrx/design-system";
 import { TabCaptureDialog } from '@/features/tools/TabCaptureDialog';
 import { cn } from '@/lib/utils';
 import { type RecordingEntry, useRecordingsStore } from '@/lib/video/recordings-store';

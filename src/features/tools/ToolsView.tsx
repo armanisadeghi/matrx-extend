@@ -18,8 +18,8 @@
 
 import { CopyButton } from '@/components/CopyMenu';
 import { Badge, Button, BasicInput as Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ai-matrx/design-system";
+import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { RecorderPane } from '@/features/tools/RecorderPane';
 import { SmartTestsView } from '@/features/tools/SmartTestsView';
 import { useToolDescriptions } from '@/hooks/use-tool-descriptions';

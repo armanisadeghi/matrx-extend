@@ -14,7 +14,7 @@
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { MarkdownView } from '@/components/MarkdownView';
 import { Button, BasicInput as Input, Skeleton } from "@ai-matrx/design-system";
-import { Textarea } from '@/components/ui/textarea';
+import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { getNote, softDeleteNote, updateNote } from '@/lib/notes/queries';
 import type { NoteListItem } from '@/lib/notes/types';
 import { formatRelativeTime, uniqueFolderNames } from '@/lib/notes/utils';

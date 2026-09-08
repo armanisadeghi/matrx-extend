@@ -3,7 +3,7 @@ import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { MarkdownView } from '@/components/MarkdownView';
 import { Button } from "@ai-matrx/design-system";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ai-matrx/design-system";
 import { DiagnoseCard, DiagnoseLauncher } from '@/features/scrape/DiagnoseCard';
 import { SeoDetails } from '@/features/seo/SeoDetails';
 import { useActiveTab } from '@/hooks/use-active-tab';

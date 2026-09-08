@@ -11,7 +11,7 @@
 
 import { Button, BasicInput as Input } from "@ai-matrx/design-system";
 import { Collapsible } from '@/components/ui/collapsible';
-import { Switch } from '@/components/ui/switch';
+import { Switch } from "@ai-matrx/design-system";
 import { useAuth } from '@/hooks/use-auth';
 import { useUserProfile } from '@/hooks/use-user-profile';
 import type {

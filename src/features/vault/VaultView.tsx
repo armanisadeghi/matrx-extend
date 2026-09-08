@@ -24,9 +24,9 @@
  */
 
 import { Badge, Button, BasicInput as Input } from "@ai-matrx/design-system";
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
+import { Switch } from "@ai-matrx/design-system";
+import { Tabs, TabsList, TabsTrigger } from "@ai-matrx/design-system";
+import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { ENV } from '@/config/env';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAuth } from '@/hooks/use-auth';

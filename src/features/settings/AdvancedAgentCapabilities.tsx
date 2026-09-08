@@ -10,7 +10,7 @@
  * `admin_only` and filtered out of regular users' bundles.
  */
 
-import { Switch } from '@/components/ui/switch';
+import { Switch } from "@ai-matrx/design-system";
 import { AuditKeyCard } from '@/features/settings/AuditKeyCard';
 import {
   ALL_OPTIONAL,

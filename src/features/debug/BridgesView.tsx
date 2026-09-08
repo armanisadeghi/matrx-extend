@@ -15,8 +15,8 @@
 
 import { Button, BasicInput as Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
 import { JsonTree } from '@/components/ui/json-tree';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
+import { Switch } from "@ai-matrx/design-system";
+import { BasicTextarea as Textarea } from "@ai-matrx/design-system";
 import { pingHealth } from '@/lib/api/routes/health';
 import {
   type BridgeTrafficEntry,

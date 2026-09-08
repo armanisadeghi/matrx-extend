@@ -12,7 +12,7 @@
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Button, BasicInput as Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@ai-matrx/design-system";
 import { Collapsible } from '@/components/ui/collapsible';
-import { Switch } from '@/components/ui/switch';
+import { Switch } from "@ai-matrx/design-system";
 import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapabilities';
 import { useAuth } from '@/hooks/use-auth';
 import { useActiveOrganization } from '@/hooks/use-active-organization';

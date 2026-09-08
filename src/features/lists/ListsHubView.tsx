@@ -11,7 +11,7 @@
 
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { Badge, Button } from "@ai-matrx/design-system";
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea } from "@ai-matrx/design-system";
 import {
   clearCompletedTasks,
   clearDoneUserTodos,
