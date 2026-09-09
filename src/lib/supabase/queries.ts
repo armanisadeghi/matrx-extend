@@ -121,12 +121,16 @@ export async function checkIsAdmin(userId: string): Promise<boolean> {
 export const AiModelSchema = z.object({
   id: z.string().uuid(),
   common_name: z.string(),
+  // Deprecated = hidden from a normal user's default list but fully RUNNABLE
+  // (ruled 2026-09-09). This is an ADMIN picker, so deprecated rows are
+  // listed and badged. retired_at (ai_075) is the dead state — never listed.
   is_deprecated: z.boolean().nullable(),
 });
 export type AiModel = z.infer<typeof AiModelSchema>;
 
 /**
- * Fetch active (non-deprecated) AI models. Used by the admin Debug-tab
+ * Fetch every RUNNABLE AI model — live and deprecated (deprecated still runs;
+ * only RETIRED rows, which the provider no longer serves, are excluded). Used by the admin Debug-tab
  * model picker to override `config_overrides.model` in chat requests. The
  * server resolves the returned UUID to whatever provider/endpoint backs it,
  * so the extension never needs to touch model names.
@@ -142,7 +146,8 @@ export async function fetchActiveModels(): Promise<AiModel[]> {
   const { data, error } = await aiDb()
     .from('model_definition')
     .select('id, common_name, is_deprecated')
-    .eq('is_deprecated', false)
+    .is('deleted_at', null)
+    .is('retired_at', null)
     .order('common_name', { ascending: true });
   if (error) {
     console.warn('[matrx-extend] fetchActiveModels error', error.message);
