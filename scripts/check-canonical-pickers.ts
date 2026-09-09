@@ -46,6 +46,35 @@ const RETIRED = [
   'agx_search',
 ];
 
+/**
+ * 🚨 THE NAME-PREFIX GAP (fixed 2026-09-08, P7). The matrx-frontend original
+ * these patterns came from read `[A-Z]\w*Agent(?:Picker|…)`, which REQUIRES a
+ * character BEFORE "Agent" — so a component named exactly `AgentPicker` (what
+ * matrx-local shipped for months) walked straight through it, in every repo
+ * that copied it. The prefix is now optional. It stays a NAMED prefix class and
+ * not a bare `\w*`, because `\w*` also matches the handler name every one of
+ * these surfaces has — `handleAgentSelect` — which flagged four innocent files
+ * in matrx-frontend when the bare form was tried there.
+ */
+const NAME_PREFIX = '(?:[A-Z]\\w*|use|fetch|get|load|build|create)?';
+const NAME_SIGNALS = {
+  fn: new RegExp(
+    `(?:export\\s+)?function\\s+${NAME_PREFIX}Agent(?:Picker|Selector|Select|Dropdown)\\b`,
+  ),
+  const: new RegExp(
+    `const\\s+${NAME_PREFIX}Agent(?:Picker|Selector|Select|Dropdown)\\b\\s*=\\s*(?:\\([^)]*\\)|[^=])*=>`,
+  ),
+};
+
+const SIGNALS: readonly RegExp[] = [
+  NAME_SIGNALS.fn,
+  NAME_SIGNALS.const,
+  /<SelectValue\b[^>]*placeholder\s*=\s*["'][^"']*(?:select|choose|pick)[^"']*agent/i,
+  /<select\b[^>]*aria-label\s*=\s*["'][^"']*agent/i,
+  /\b(?:agentOptions|availableAgents|displayAgents)\.map\s*\(/,
+  /\bagents\.map\s*\(\s*\(?\s*a\w*\s*\)?\s*=>\s*\(?\s*\{?\s*value:/,
+];
+
 interface Finding {
   file: string;
   line: number;
@@ -53,8 +82,13 @@ interface Finding {
 }
 
 function sourceFiles(): string[] {
+  // 🚨 `src/**/*.tsx` does NOT mean "everything under src" to git: its pathspec
+  // globbing let `src/**/*.tsx` match only depth-3-and-deeper paths, so a file
+  // sitting directly at `src/AgentPicker.tsx` was never scanned (proven with a
+  // probe, 2026-09-08). `src/*.tsx` is the recursive form here — git's `*`
+  // crosses `/`.
   const out = execSync(
-    "git ls-files --cached --others --exclude-standard 'src/**/*.ts' 'src/**/*.tsx'",
+    "git ls-files --cached --others --exclude-standard 'src/*.ts' 'src/*.tsx'",
     {
       cwd: ROOT,
       encoding: 'utf8',
@@ -81,7 +115,63 @@ function firstMatch(text: string, patterns: readonly RegExp[]): { index: number 
   return null;
 }
 
+/**
+ * `--self-test` — a guard you cannot demonstrate failing is not a guard.
+ * Fixture 1 is the exact shape that walked through this script until
+ * 2026-09-08 (a component named EXACTLY `AgentPicker` rendering its own
+ * `<select>`); fixture 2 is a surface that DOES render the package picker;
+ * fixture 3 is the `handleAgentSelect` handler a bare `\w*` prefix would
+ * falsely flag.
+ */
+const SELF_TEST_RED = `
+import { useState } from 'react';
+export function AgentPicker({ agents }) {
+  const [value, setValue] = useState('');
+  return <select value={value}>{agents.map((a) => <option key={a.id}>{a.name}</option>)}</select>;
+}
+`;
+
+const SELF_TEST_GREEN = `
+import { AgentListDropdown } from '${CANONICAL_IMPORT}';
+export function Surface() { return <AgentListDropdown consumerId="x" onSelect={() => {}} />; }
+`;
+
+const SELF_TEST_HANDLER = `
+export function ChatSurface() {
+  const handleAgentSelect = useCallback((agent) => open(agent.id), []);
+  return <button onClick={() => handleAgentSelect({ id: '1' })}>Pick</button>;
+}
+`;
+
+function selfTest(): void {
+  const failures: string[] = [];
+  if (!firstMatch(SELF_TEST_RED, SIGNALS)) {
+    failures.push(
+      'the detector did NOT flag a component named exactly `AgentPicker` — the 2026-09-08 name-prefix gap is back.',
+    );
+  }
+  if (firstMatch(SELF_TEST_GREEN, SIGNALS)) {
+    failures.push('the detector flagged a surface that DOES render the package picker.');
+  }
+  if (firstMatch(SELF_TEST_HANDLER, SIGNALS)) {
+    failures.push('the detector flagged a plain `handleAgentSelect` callback (false positive).');
+  }
+  if (failures.length > 0) {
+    console.error('\n🚨 check:canonical-pickers SELF-TEST FAILED\n');
+    for (const failure of failures) console.error(`  ✗ ${failure}`);
+    process.exit(1);
+  }
+  console.log(
+    '✅ self-test: RED on a bare `AgentPicker` fork, GREEN on the package picker, silent on a handler.',
+  );
+}
+
 function main(): void {
+  if (process.argv.includes('--self-test')) {
+    selfTest();
+    return;
+  }
+
   const findings: Finding[] = [];
 
   for (const file of sourceFiles()) {
@@ -110,14 +200,7 @@ function main(): void {
 
     if (text.includes(CANONICAL_IMPORT) || EXEMPTION.test(text)) continue;
 
-    const signal = firstMatch(text, [
-      /(?:export\s+)?function\s+[A-Z]\w*Agent(?:Picker|Selector|Select|Dropdown)\b/,
-      /const\s+[A-Z]\w*Agent(?:Picker|Selector|Select|Dropdown)\b\s*=\s*(?:\([^)]*\)|[^=])*=>/,
-      /<SelectValue\b[^>]*placeholder\s*=\s*["'][^"']*(?:select|choose|pick)[^"']*agent/i,
-      /<select\b[^>]*aria-label\s*=\s*["'][^"']*agent/i,
-      /\b(?:agentOptions|availableAgents|displayAgents)\.map\s*\(/,
-      /\bagents\.map\s*\(\s*\(?\s*a\w*\s*\)?\s*=>\s*\(?\s*\{?\s*value:/,
-    ]);
+    const signal = firstMatch(text, SIGNALS);
     if (signal) {
       findings.push({
         file,

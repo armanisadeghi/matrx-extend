@@ -43,7 +43,8 @@
     "sync:matrx-packages": "pnpm update \"@ai-matrx/*\" && pnpm check:matrx-packages",
     "check:package-twins": "node scripts/check-package-twins.mjs --strict",
     "check:package-twins:self-test": "node scripts/check-package-twins.mjs --self-test",
-    "check:canonical-pickers": "tsx scripts/check-canonical-pickers.ts"
+    "check:canonical-pickers": "tsx scripts/check-canonical-pickers.ts",
+    "check:canonical-pickers:self-test": "tsx scripts/check-canonical-pickers.ts --self-test"
   },
   "dependencies": {
     "@ai-matrx/agents": "latest",
