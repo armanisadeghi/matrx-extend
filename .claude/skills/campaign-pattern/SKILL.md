@@ -75,8 +75,13 @@ on the wrong things"*), fired chips for parallel work — and otherwise did not 
    This is why context wipes cost nothing: the head is a cache, the repo is the truth.
 2. **Coordinate; don't build.** The chair dispatches fresh-context specialist agents with tight
    briefs, adjudicates their findings, routes fixes, and flips register rows. Every brief passes
-   down the laws (safety constraints, method laws, the model law: every dispatch names its
-   model). Freeze contracts first so lanes can't collide; changes after the freeze are
+   down the laws (safety constraints, method laws, and the model ladder: every dispatch NAMES
+   both model and effort — Opus/Terra is the default worker, Sonnet/Luna when the task is
+   obviously easy, Fable/Astra only where the chair itself would struggle; Fable-under-Fable
+   on simple or chair-checked work is the cost killer. Effort: medium for every tier by
+   default, high only for real reasoning, low never — on Claude the synced lanes
+   `quick` (sonnet) / `standard` (opus) / `deep` (high), on Codex `reasoning_effort`. Exact harness
+   identifiers, compact context, ownership retained — `policies/subagent-model-ladder.md`). Freeze contracts first so lanes can't collide; changes after the freeze are
    amendments, never silent edits.
 3. **Nothing flips on the builder's word.** Independent, zero-authorship verification against
    the SPEC, on the deployed surface, with real identities driving real doors — verifiers try to
@@ -115,6 +120,10 @@ on the wrong things"*), fired chips for parallel work — and otherwise did not 
    own hands when asked (the owner's phone caught defects no agent could) — and let it run.
 
 **Changelog**
+- 2026-09-10 (later) — medium is the default effort for all tiers; low retired.
+- 2026-09-10 — Opus/Terra made the default worker; effort lanes (`quick`/`standard`/`deep`) named.
+- 2026-09-10 — Unified provider model tiers and explicit low/medium/high effort selection.
+- 2026-09-10 — Law 7 (delegate down, never sideways; the subagent model ladder) added to the synced block and to Part 2 §2 at Arman's ruling.
 - 2026-08-30 — Six laws promoted to the workspace root `CLAUDE.md` Headline rules at the owner's
   order (done-means-done · attack-before-trust · fix-the-class · nothing-fails-silently ·
   platform-primitives · opinions-become-knobs) — every agent now reads them before touching code;

@@ -383,6 +383,19 @@ else
     fail "An alternate agent picker was reintroduced (see above). Render AgentListDropdown / AgentListInlinePicker from @ai-matrx/agents/catalog/react; a behaviour the package lacks is a package change made and released in the same session."
 fi
 
+# THE ARCHIVED-ITEMS LAW — BLOCKING. Every list over an entity that can be
+# archived carries an archive filter, the default hides archived rows, and
+# revealing them is one or two clicks (Arman, 2026-09-09 —
+# ../common-docs/policies/archived-items.md). This repo's only archivable list
+# is the agent picker, whose tri-state chip lives in @ai-matrx/agents/catalog;
+# the guard is what makes the NEXT list obey without anyone remembering.
+CURRENT_STEP="archived-items-law"
+if pnpm check:archived-items-law && pnpm check:archived-items-law:self-test; then
+    ok "the archived-items law holds (and its detector can still fail)"
+else
+    fail "A list hides archived rows with no way to reveal them (see above). Agent lists use @ai-matrx/agents/catalog's archFilter; anything else uses @ai-matrx/design-system <ArchiveFilter> with its value passed to the READER, never a client-side sieve."
+fi
+
 # ── 3. Bump version ─────────────────────────────────────────────────────────
 CURRENT_STEP="version-bump"
 step "3/8  Bump version → ${NEW_VERSION}"

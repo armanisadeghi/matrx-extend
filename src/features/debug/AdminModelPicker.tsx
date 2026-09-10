@@ -1,7 +1,8 @@
 /**
- * Admin model picker — searchable list of every active row in `ai_model`
- * (where `is_deprecated = false`). Lives inside the Debug-tab admin flags
- * panel.
+ * Admin model picker — searchable list of every RUNNABLE row in
+ * `ai.model_definition`: live and deprecated (deprecated still runs and is
+ * badged here because admins always see it; only retired rows are excluded).
+ * Lives inside the Debug-tab admin flags panel.
  *
  * Writes to `useSettingsStore.modelOverrideId` — the SAME field the
  * user-facing Customize popover writes to. So an admin can either pick
@@ -76,7 +77,7 @@ export function AdminModelPicker() {
         <div className="flex-1 min-w-0">
           <div className="font-mono text-[11px] font-medium">config_overrides.model</div>
           <div className="text-[10px] leading-snug text-muted-foreground">
-            Override the agent's default model. Pick any active row from `ai_model`. Sent verbatim —
+            Override the agent's default model. Pick any runnable model (deprecated ones are badged; retired ones are not listed). Sent verbatim —
             server resolves UUID → provider endpoint.
           </div>
           {overrideId && (
@@ -145,6 +146,14 @@ export function AdminModelPicker() {
                     )}
                   >
                     <span className="truncate">{m.common_name}</span>
+                    {m.is_deprecated && (
+                      <span
+                        className="ml-1 shrink-0 rounded bg-red-500/15 px-1 text-[9px] text-red-500"
+                        title="Deprecated — still runs; hidden from users by default"
+                      >
+                        dep
+                      </span>
+                    )}
                     <span className="font-mono text-[9px] text-muted-foreground">
                       {m.id.slice(0, 8)}
                     </span>

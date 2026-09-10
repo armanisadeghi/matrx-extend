@@ -113,6 +113,14 @@ function mountPicker(props: { onSelect: (id: string) => void; defaultMandateKey?
       <AgentListInlinePicker
         consumerId={`test-consumer-${seq}`}
         onSelect={props.onSelect}
+        // 🚨 Pinned on purpose (2026-09-09). These assertions are about the
+        // BUILTIN roster, and without a pin the tab is whatever the package's
+        // "does this user own agents?" heuristic decides — which flipped from
+        // "system" to "mine" the moment the fixture gained the user's own rows
+        // (added so THE ARCHIVED-ITEMS LAW could be proven against a real
+        // archived agent, `agent-archive-filter.test.tsx`). A test that silently
+        // depends on a heuristic is testing the heuristic.
+        initialTab="system"
         {...(props.defaultMandateKey !== undefined && {
           defaultMandateKey: props.defaultMandateKey,
         })}
