@@ -1,6 +1,6 @@
 ---
 name: connect-frontend
-description: Use when the matrx-extend Chrome extension needs to coordinate with the Next.js admin app at aimatrx.com — delivering a payload to a tab, opening a window-panels overlay via deep-link, or relaying a message across machines through Supabase Broadcast. Scope guardrail: this skill is for OUTBOUND extension-to-frontend work; do NOT use it for changes that live inside the matrx-frontend repo itself (those go through matrx-frontend's own connect-matrx-extend skill).
+description: "Outbound bridge from matrx-extend to aimatrx.com. Use when sending FRONTEND_RPC to a tab, opening a `?panels=` deep link, relaying across machines over Supabase Broadcast, or an `externally_connectable` message silently vanishes. NOT for matrx-frontend-repo changes (use connect-matrx-extend)."
 ---
 
 # connect-frontend — outbound calls into the aimatrx.com admin app

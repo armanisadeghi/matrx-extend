@@ -1,6 +1,6 @@
 ---
 name: connect-aidream
-description: Use when extending what the matrx-extend Chrome extension exposes to the aidream backend — adding or modifying server-side capabilities, capability-envelope state keys, discovery routing, or the unified tool merge that injects browser tools into the LLM. Scope guardrail: this skill is for OUTBOUND extension-to-aidream work; do NOT use it for changes that live inside the aidream repo itself (those go through aidream's own connect-matrx-extend skill).
+description: "Outbound contract from matrx-extend to the aidream backend. Use when adding a `client.state['browser-dom']` key, wiring a `load_chrome_tools` category, posting tool results or resuming after `tool_delegated`, or 'the model never sees my tool'. NOT for aidream-repo changes (use connect-matrx-extend)."
 ---
 
 # connect-aidream — outbound calls into the AI Dream backend

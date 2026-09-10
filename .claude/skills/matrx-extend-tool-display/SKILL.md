@@ -1,6 +1,6 @@
 ---
 name: matrx-extend-tool-display
-description: Customize how a tool call renders inside the matrx-extend Chrome extension's chat surface (the agent harness). Use when adding a new entry to the per-tool display registry — overriding the inline header (icon, prefix, name, suffix, info), tweaking how args and results are shown, plugging in a fully custom React component, or troubleshooting a registered tool that's falling back to the default rendering. Applies ONLY to this Chrome extension's `src/features/chat/tool-display/` system; do not use for other Matrx surfaces (admin UI, dashboard, workflow studio) which have their own UIs.
+description: "Tool-call row display registry for the matrx-extend side panel. Use when making a tool 'show up nicely', editing `src/features/chat/tool-display/`, changing a row's icon, label, or result view, adding a CustomComponent, or a registered tool renders the default row. NOT for matrx-frontend (use create-tool-renderer)."
 ---
 
 # matrx-extend Tool Display Registry

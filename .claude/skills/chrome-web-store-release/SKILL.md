@@ -1,6 +1,6 @@
 ---
 name: chrome-web-store-release
-description: Audit, package, submit, and track Matrx Extend Chrome Web Store updates. Use for release readiness, Store-policy change assessment, version selection, dashboard submission, listing/privacy/test-instruction updates, and approval monitoring. Do not use for local-only unpacked extension builds.
+description: "Chrome Web Store release process for Matrx Extend. Use when submitting a Store update, running `pnpm zip:store` or its risk gate, judging whether a change is Store-material, picking the version, editing listing or reviewer copy, or tracking a review. NOT for local unpacked builds (use pnpm dev)."
 ---
 
 # Chrome Web Store release ownership

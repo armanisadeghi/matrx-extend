@@ -1,6 +1,6 @@
 ---
 name: connect-local
-description: Use when the matrx-extend Chrome extension needs to invoke a system-level capability that only the matrx-local Tauri desktop engine can provide — running a shell command, accessing the filesystem outside the browser sandbox, or receiving a server-pushed event over the engine's WebSocket. Scope guardrail: this skill is for OUTBOUND extension-to-desktop work; do NOT use it for changes that live inside the matrx-local repo itself (those go through matrx-local's own connect-matrx-extend skill).
+description: "Outbound bridge from matrx-extend to the matrx-local engine. Use when a browser tool runs a shell command or reads local files, calls `desktopRpc` or `/extension/rpc`, needs engine port or tunnel discovery or its WebSocket, or hits 'desktop bridge offline'. NOT for matrx-local-repo changes (use connect-matrx-extend)."
 ---
 
 # connect-local — outbound calls into the Matrx Local desktop engine
