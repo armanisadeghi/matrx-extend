@@ -159,14 +159,11 @@ function sourceFiles(): string[] {
   // sitting directly at `src/AgentPicker.tsx` was never scanned (proven with a
   // probe, 2026-09-08). `src/*.tsx` is the recursive form here — git's `*`
   // crosses `/`.
-  const out = execSync(
-    "git ls-files --cached --others --exclude-standard 'src/*.ts' 'src/*.tsx'",
-    {
-      cwd: ROOT,
-      encoding: 'utf8',
-      maxBuffer: 32 * 1024 * 1024,
-    },
-  );
+  const out = execSync("git ls-files --cached --others --exclude-standard 'src/*.ts' 'src/*.tsx'", {
+    cwd: ROOT,
+    encoding: 'utf8',
+    maxBuffer: 32 * 1024 * 1024,
+  });
   // `git ls-files --cached` still lists a file that has been deleted in the
   // working tree but not yet staged — reading it would crash the guard.
   return out
@@ -320,7 +317,9 @@ function selfTest(): void {
     );
   }
   if (check(SELF_TEST_HANDLER).length > 0) {
-    failures.push('HANDLER: the detector flagged a plain `handleAgentSelect` callback (false positive).');
+    failures.push(
+      'HANDLER: the detector flagged a plain `handleAgentSelect` callback (false positive).',
+    );
   }
   if (failures.length > 0) {
     console.error('\n🚨 check:canonical-pickers SELF-TEST FAILED\n');

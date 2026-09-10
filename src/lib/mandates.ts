@@ -18,8 +18,7 @@
 import { MANDATE_KEYS, type MandateKey } from '@ai-matrx/agents/mandates';
 
 /** Canonical server-resolved target for a brand-new extension chat. */
-export const DEFAULT_CHAT_MANDATE_KEY: MandateKey =
-  MANDATE_KEYS.extend__browser_chat;
+export const DEFAULT_CHAT_MANDATE_KEY: MandateKey = MANDATE_KEYS.extend__browser_chat;
 
 /**
  * Stable UI identity for a Mandate-backed choice. This is not an agent id and
@@ -32,8 +31,7 @@ export const STRUCTURED_EXTRACTOR_MANDATE_KEY: MandateKey =
 export const STRUCTURED_EXTRACTOR_MANDATE_REF =
   `mandate:${STRUCTURED_EXTRACTOR_MANDATE_KEY}` as const;
 
-export const PATTERN_FROM_DATA_MANDATE_KEY: MandateKey =
-  MANDATE_KEYS.extend__pattern_from_data;
+export const PATTERN_FROM_DATA_MANDATE_KEY: MandateKey = MANDATE_KEYS.extend__pattern_from_data;
 
 export function isMandateAgentRef(value: string | null | undefined): boolean {
   return typeof value === 'string' && value.startsWith('mandate:');
@@ -50,9 +48,7 @@ export function isMandateAgentRef(value: string | null | undefined): boolean {
  * that names the wrong thing. The vocabulary binds the keys we NAME (above);
  * this is a parse of a ref we stored.
  */
-export function mandateKeyFromAgentRef(
-  value: string | null | undefined,
-): string | null {
+export function mandateKeyFromAgentRef(value: string | null | undefined): string | null {
   if (!isMandateAgentRef(value)) return null;
   const key = value?.slice('mandate:'.length) ?? '';
   return key.length > 0 ? key : null;

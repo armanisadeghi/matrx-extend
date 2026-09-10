@@ -1,6 +1,6 @@
+import { STRUCTURED_EXTRACTOR_MANDATE_KEY } from '@/lib/mandates';
 import { z } from 'zod';
 import type { ExtractionMode } from '../types';
-import { STRUCTURED_EXTRACTOR_MANDATE_KEY } from '@/lib/mandates';
 
 export const aiExtractConfigSchema = z
   .object({

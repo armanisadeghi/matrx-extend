@@ -1,5 +1,5 @@
-import { MANDATE_KEYS } from '@ai-matrx/agents/mandates';
 import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
+import { MANDATE_KEYS } from '@ai-matrx/agents/mandates';
 
 export const SETTINGS_PERSIST_VERSION = 5;
 /**

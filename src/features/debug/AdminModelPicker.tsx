@@ -77,8 +77,8 @@ export function AdminModelPicker() {
         <div className="flex-1 min-w-0">
           <div className="font-mono text-[11px] font-medium">config_overrides.model</div>
           <div className="text-[10px] leading-snug text-muted-foreground">
-            Override the agent's default model. Pick any runnable model (deprecated ones are badged; retired ones are not listed). Sent verbatim —
-            server resolves UUID → provider endpoint.
+            Override the agent's default model. Pick any runnable model (deprecated ones are badged;
+            retired ones are not listed). Sent verbatim — server resolves UUID → provider endpoint.
           </div>
           {overrideId && (
             <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-amber-200/60 px-2 py-0.5 text-[10px] font-medium text-amber-900 dark:bg-amber-800/40 dark:text-amber-200">
