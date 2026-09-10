@@ -52,8 +52,10 @@ branch/worktree. Full ruling: workspace root [`../CLAUDE.md`](../CLAUDE.md) § S
   `/Users/armanisadeghi/code/common-docs/systems/agents/agent-variable-binding/FEATURE.md`
 - **Limits are knobs, agents set them.** Never hardcode a cap/timeout/quota as a
   constant: `/Users/armanisadeghi/code/common-docs/policies/limits-are-knobs-agents-set-them.md`
-- **No legacy.** No shims, no compatibility layers, no dead code left behind:
-  `/Users/armanisadeghi/code/common-docs/policies/no-legacy.md`
+- **No legacy — UNTIL GO-LIVE** (~90 days from 2026-09-10; nobody outside us depends on us yet). No
+  shims, no compatibility layers, no dead code left behind; every touched package moves to latest.
+  Revisited on go-live day when customer-facing edges get versioned stability — never permanent:
+  `/Users/armanisadeghi/code/common-docs/policies/no-legacy.md` + `/Users/armanisadeghi/code/common-docs/policies/pre-launch-mode.md`
 - **Human steps are guided sessions:**
   `/Users/armanisadeghi/code/common-docs/policies/human-steps-are-guided-sessions.md`
 
@@ -225,7 +227,11 @@ Cross-repo system-of-record:
 
 - **Logging into any Matrx UI**: sign in as `admin@admin.com` — the password is `AI_ADMIN_PASSWORD` in the `.env` of `aidream` or `matrx-frontend` (`AI_ADMIN_USERNAME` holds the email).
 
-## 🚨 THE LATEST LAW — @ai-matrx packages are NEVER pinned
+## 🚨 THE LATEST LAW — @ai-matrx packages are NEVER pinned (pre-launch rule)
+
+**Pre-launch rule:** absolute until go-live (~90 days from 2026-09-10) because no customer code depends
+on us yet; on go-live day the customer-facing edges get a versioned path while internals stay on latest.
+Never quote it as permanent: `../common-docs/policies/pre-launch-mode.md`.
 
 Every `@ai-matrx/*` dependency in this repo is declared `"latest"` — never a version, never a
 range. Guard: `pnpm check:matrx-packages` (fails on any pin AND on an installed version that
