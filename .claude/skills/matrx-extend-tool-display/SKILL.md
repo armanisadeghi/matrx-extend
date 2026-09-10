@@ -18,6 +18,13 @@ Trigger when the user asks to:
 - Plug in a fully custom React component for one tool
 - Debug a registered tool that's silently falling back to the default
 
+## Branch files — read only when your run reaches them
+
+- **Setting `CustomComponent` (charts, comparison views, interactive forms, answer-back tools) → read [custom-component.md](custom-component.md).**
+- **Rendering every item of an array result (e.g. a list of `{title, url}` objects) — `keysInfo` only addresses single values → read [cookbook.md](cookbook.md) (CustomComponent or reshape on the server).**
+- **Want a ready-made config pattern (tense prefixes, counts, hide-while-running, shimmering labels, per-category or favicon icons) → read [cookbook.md](cookbook.md).**
+- **Want a complete registered entry to copy (`ctx_get`, `take_screenshot`) → read [worked-examples.md](worked-examples.md).**
+
 ## Mental model in 30 seconds
 
 ```
@@ -238,143 +245,7 @@ When the URL fails to load (favicon 404, CSP block, etc.) the renderer falls bac
 
 **Colors**: pick a `ColorToken` — `blue`, `sky`, `emerald`, `amber`, `red`, `violet`, `slate`, `primary`, `muted`. Resolves to a `text-{color}-600 dark:text-{color}-400` class. **Error phase always wins (forced red)** regardless of the override — keeps error visuals consistent across the app.
 
-## The CustomComponent escape hatch
-
-When the config isn't expressive enough — e.g. you want a chart, a comparison view, or per-tool interactive elements — pass a full React component:
-
-```tsx
-import type { ToolTimelineEntry } from '../ToolTimelineRow';
-
-function MyTool({ entry, kind }: { entry: ToolTimelineEntry; kind: 'server' | 'client' }) {
-  // entry.args, entry.output, entry.phase, entry.startedAt, etc.
-  return <div className="rounded-md border bg-card/60 p-2">…your UI…</div>;
-}
-
-// in registry.tsx:
-my_tool: { CustomComponent: MyTool }
-```
-
-When `CustomComponent` is set, `inline`/`args`/`results` config is **ignored** — your component owns the entire visual. If your component throws on render, `ToolDisplayBoundary` catches it and the row falls back to the default rendering (with a console warning).
-
-You're responsible for the outer card / styling — match `kind === 'server'` vs `kind === 'client'` if you want surface consistency. See `ConfigurableToolRow` for examples of the existing card classes.
-
-## Adding a new tool — checklist
-
-```
-- [ ] 1. Find the raw toolName. Trigger the tool once; the default row shows
-       the snake_case name. (For server tools, ServerToolRow titleCases it,
-       so use the catalog: types/tool-catalog.json or src/lib/tools/handlers/*.)
-
-- [ ] 2. Decide the inline shape:
-       - prefix (phase-aware verb: "Getting" / "Got" / "Failed to get")
-       - icon (a lucide name that suggests the action)
-       - color (one of the eight ColorTokens; error is always red)
-       - info (the most identifying arg or result field, transformed for humans)
-
-- [ ] 3. Decide the result shape:
-       - Simple? Use 'key-value'.
-       - Has a label + body? Use 'custom' with BoldLabel + Markdown/TextDisplay.
-       - Already pretty as JSON? Leave default ('json').
-
-- [ ] 4. Add the entry to toolDisplayRegistry in registry.tsx.
-
-- [ ] 5. pnpm tsc --noEmit — confirm types check.
-
-- [ ] 6. Reload the extension, trigger the tool, walk all three phases:
-       - while running: prefix + icon + spinning + info text correct
-       - after success: prefix swap + icon swap + color correct
-       - on error: prefix swap + red icon, no crash, message visible
-       (Force an error by passing invalid args or breaking the network.)
-```
-
-## Common patterns (cookbook)
-
-### Phase-aware prefix that conjugates by tense
-
-```ts
-prefix: { started: 'Searching', completed: 'Searched', error: 'Search failed' }
-```
-
-### "Saving X" → "Saved X" with the X coming from args
-
-```ts
-inline: {
-  prefix: { started: 'Saving', completed: 'Saved' },
-  name: '',   // suppress the auto title-case
-  info: { path: 'args.title', transform: 'truncate80' },
-}
-```
-
-### Inline shows a count from the result, only after completion
-
-```ts
-info: {
-  started: undefined,
-  completed: { path: 'output.items.length', fallback: '0' },
-}
-// Wrap in suffix instead if you want "Found 7 results":
-// suffix: { completed: 'results' },
-// info:   { completed: { path: 'output.items.length' } },
-```
-
-### Render a result that's a list of `{title, url}` objects
-
-Use a CustomComponent — `keysInfo` only addresses single values, not "render every item in this array". Or pre-shape the result on the server.
-
-### Suppress the row entirely while running, show only when done
-
-```ts
-inline: { hidden: { started: true } }
-```
-
-## Verification
-
-After every registry change:
-
-1. **Typecheck**: `pnpm tsc --noEmit` (must exit 0).
-2. **Build**: `pnpm wxt build` (extension must build cleanly).
-3. **Visual sweep**: open the side panel, trigger the tool, walk all three phases (`started` → `completed` → `error`). Compare against an unregistered tool to confirm the default still works for everything else.
-4. **Console check**: open DevTools console while triggering. Any `[tool-display] ...` warning means a path/transform/icon is wrong — silent in the UI but logged.
-5. **Catalog regen** (only if you changed tool handlers, not just display): `pnpm catalog:tools:md` and commit. Display registry edits do NOT need catalog regen.
-
-## Anti-patterns
-
-- ❌ Modifying `DefaultToolTimelineRow` / `DefaultServerToolRow`. The defaults are the safety net — touch them and every fallback inherits your bug.
-- ❌ Adding error UI in the configurable renderer. Failures should be silent + logged. The user should never see "config error" — they should see the default rendering.
-- ❌ Putting tool-specific logic inside `helpers.ts` or `ConfigurableToolRow.tsx`. That's what the registry config + `CustomComponent` are for.
-- ❌ Using the `result.` alias in `keysInfo[].key`. `keysInfo` paths are scoped to the result object already — just use `label` (or `nested.field`), not `result.label`.
-- ❌ Registering a tool name that doesn't exist. The dispatcher silently falls through to the default; you'll think your config doesn't work when really the tool never ran.
-- ❌ Importing from outside `src/features/chat/tool-display/` into the registry maps. Registry files should be a flat description of behavior — pull in shared UI through `registry-components.tsx` instead.
-
-## Reference: the `ctx_get` worked example
-
-Currently the only registered tool. It's the canonical example for the four core capabilities:
-
-```ts
-ctx_get: {
-  inline: {
-    icon:   { started: 'Loader2', completed: 'HandGrab', error: 'AlertTriangle' },
-    prefix: { started: 'Getting', completed: 'Got', error: 'Failed to get' },
-    name:   '',
-    info:   { path: 'args.key', transform: 'snakeToTitle' },
-    color:  { started: 'primary', completed: 'blue', error: 'red' },
-  },
-  args: { displayType: 'key-value' },
-  results: {
-    displayType: 'custom',
-    keysInfo: [
-      { key: 'label',   component: 'BoldLabel', className: 'text-foreground' },
-      { key: 'content', component: 'Markdown',  className: 'text-foreground', transform: 'textClean' },
-    ],
-  },
-}
-```
-
-Reads as: "While running, show a spinner with `Getting Clean Content Markdown` in primary color. After success, swap to a HandGrab icon and `Got Clean Content Markdown` in blue. On error, red AlertTriangle and `Failed to get Clean Content Markdown`. Expanded body shows args as a key-value grid, then a bold label + markdown-rendered content with backslash escapes cleaned."
-
-Use it as the starting template for new entries.
-
-### `name` accepting an `InfoSpec`
+## `name` accepting an `InfoSpec`
 
 Two patterns where this matters:
 
@@ -410,32 +281,65 @@ inline: {
 
 When you only want a name in some phases, set the others to `''` explicitly — otherwise the auto title-case sneaks back in.
 
-### A second example — `take_screenshot`
+## The CustomComponent escape hatch
 
-Demonstrates: the whole-result key convention, the `Base64Image` field component, and using a transform on the entire output object for the inline info.
+When the config isn't expressive enough, a full React component owns the whole row. **Setting `CustomComponent` → read [custom-component.md](custom-component.md)** — its contract, the fallback on throw, and when interactive tools need it.
 
-```ts
-take_screenshot: {
-  inline: {
-    icon:   { started: 'Loader2', completed: 'Camera', error: 'AlertTriangle' },
-    prefix: {
-      started:   'Capturing screenshot',
-      completed: 'Captured screenshot',
-      error:     'Failed to capture screenshot',
-    },
-    name:   '',
-    info:   { completed: { path: 'output', transform: 'formatImageDimensions' } },
-    color:  { started: 'primary', completed: 'violet', error: 'red' },
-  },
-  args: { displayType: 'key-value' },
-  results: {
-    displayType: 'custom',
-    keysInfo: [{ key: '', component: 'Base64Image' }],
-  },
-}
+## Adding a new tool — checklist
+
+```
+- [ ] 1. Find the raw toolName. Trigger the tool once; the default row shows
+       the snake_case name. (For server tools, ServerToolRow titleCases it,
+       so use the catalog: types/tool-catalog.json or src/lib/tools/handlers/*.)
+
+- [ ] 2. Decide the inline shape:
+       - prefix (phase-aware verb: "Getting" / "Got" / "Failed to get")
+       - icon (a lucide name that suggests the action)
+       - color (one of the eight ColorTokens; error is always red)
+       - info (the most identifying arg or result field, transformed for humans)
+
+- [ ] 3. Decide the result shape:
+       - Simple? Use 'key-value'.
+       - Has a label + body? Use 'custom' with BoldLabel + Markdown/TextDisplay.
+       - Already pretty as JSON? Leave default ('json').
+
+- [ ] 4. Add the entry to toolDisplayRegistry in registry.tsx.
+
+- [ ] 5. pnpm tsc --noEmit — confirm types check.
+
+- [ ] 6. Reload the extension, trigger the tool, walk all three phases:
+       - while running: prefix + icon + spinning + info text correct
+       - after success: prefix swap + icon swap + color correct
+       - on error: prefix swap + red icon, no crash, message visible
+       (Force an error by passing invalid args or breaking the network.)
 ```
 
-Reads as: "While capturing, show a spinner with `Capturing screenshot` in primary color. After success, swap to a Camera icon and `Captured screenshot 2576×1911` in violet — dimensions extracted by `formatImageDimensions` reading `width`/`height` off the whole output object. The expanded body renders the actual image inline, with a small caption underneath showing `2576×1911 · 313.0 KB`. On error, red AlertTriangle and `Failed to capture screenshot` with no dimensions."
+## Common patterns (cookbook)
+
+Copy-ready `inline` snippets for recurring shapes. **Need one → read [cookbook.md](cookbook.md).**
+
+## Verification
+
+After every registry change:
+
+1. **Typecheck**: `pnpm tsc --noEmit` (must exit 0).
+2. **Build**: `pnpm wxt build` (extension must build cleanly).
+3. **Visual sweep**: open the side panel, trigger the tool, walk all three phases (`started` → `completed` → `error`). Compare against an unregistered tool to confirm the default still works for everything else.
+4. **Console check**: open DevTools console while triggering. Any `[tool-display] ...` warning means a path/transform/icon is wrong — silent in the UI but logged.
+5. **Catalog regen** (only if you changed tool handlers, not just display): `pnpm catalog:tools:md` and commit. Display registry edits do NOT need catalog regen.
+
+## Anti-patterns
+
+- ❌ Modifying `DefaultToolTimelineRow` / `DefaultServerToolRow`. The defaults are the safety net — touch them and every fallback inherits your bug.
+- ❌ Adding error UI in the configurable renderer. Failures should be silent + logged. The user should never see "config error" — they should see the default rendering.
+- ❌ Putting tool-specific logic inside `helpers.ts` or `ConfigurableToolRow.tsx`. That's what the registry config + `CustomComponent` are for.
+- ❌ Using the `result.` alias in `keysInfo[].key`. `keysInfo` paths are scoped to the result object already — just use `label` (or `nested.field`), not `result.label`.
+- ❌ Registering a tool name that doesn't exist. The dispatcher silently falls through to the default; you'll think your config doesn't work when really the tool never ran.
+- ❌ Importing from outside `src/features/chat/tool-display/` into the registry maps. Registry files should be a flat description of behavior — pull in shared UI through `registry-components.tsx` instead.
+
+## Reference: the `ctx_get` worked example
+
+Full registered entries with plain-English readings: `ctx_get` (the canonical starting template) and `take_screenshot` (whole-result key + `Base64Image`). **Starting a new entry from a real one → read [worked-examples.md](worked-examples.md).**
 
 ## Universal copy button
 
@@ -452,73 +356,4 @@ Every row (default and configurable, server and client) has a clipboard icon on 
 }
 ```
 
-Lives in [CopyToolButton.tsx](src/features/chat/tool-display/CopyToolButton.tsx). Each renderer constructs a `ToolCopyData` object and passes it as `data`. The button stops click propagation so it never toggles the row open. Don't add per-tool overrides for it — the universal payload is the right shape for users (paste into bug reports, share with another agent, etc.).
-
-## When to reach for `CustomComponent`
-
-The config-driven path covers ~90% of tools. Use `CustomComponent` when the tool needs **interactive** UI — not just a richer display, but inputs the user fills in and submits. Examples:
-
-- **`interaction_ask`** — server-side multi-question questionnaire (radio + toggle inputs). The args carry the spec; the card renders the form, collects answers, and posts them back as a regular user chat message via `useChatStream().send()`. Submission state is persisted per `callId` in a small Zustand store inside the card so the form doesn't reappear after scrolling away. See [InteractionAskCard.tsx](src/features/chat/tool-display/InteractionAskCard.tsx) as the reference implementation for "tool that asks for input".
-
-The pattern for "answer goes back to the agent" tools without a dedicated SSE response channel: format the answer as a chat message and `void send(text, { agentId, conversationId })`. The next agent turn sees it like any other user message.
-
-## Cookbook — phased animations and dynamic icons
-
-### Long-running tool with shimmering query as the label
-
-```ts
-// `find` — natural-language element search; sometimes 10–20s
-find: {
-  inline: {
-    icon: 'Search',                                  // spins on started by default
-    prefix: { started: 'Searching for', completed: 'Found', error: 'Search failed' },
-    name: { path: 'args.query', transform: 'truncate80' },  // query becomes the label
-    info: { completed: { path: 'output.matches.length', fallback: '0' } },
-    suffix: { completed: 'matches' },
-    color: { started: 'primary', completed: 'violet', error: 'red' },
-    // shimmerOnRunning defaults to true — the query shimmers while we search
-  },
-}
-```
-
-While running: spinning Search icon + shimmering "Searching for the sign-in button". On success: violet Search + "Found the sign-in button 3 matches".
-
-### Per-category dynamic icon
-
-```ts
-// `load_chrome_tools` — category in args drives the icon
-load_chrome_tools: {
-  inline: {
-    icon: {
-      started: 'Loader2',
-      completed: { path: 'args.category', transform: 'browserCategoryIcon' },
-      error: 'AlertTriangle',
-    },
-    prefix: { started: 'Loading my', completed: 'Loaded my', error: 'Failed to load my' },
-    name: { path: 'args.category' },
-    suffix: 'browser tools',
-  },
-}
-```
-
-`forms` category → FormInput icon. `cookies` → Cookie. `debug` → Bug. Add new categories to `BROWSER_CATEGORY_ICONS` in `registry-transforms.ts`.
-
-### Favicon as the inline icon
-
-```ts
-// `get_active_tab` — the tab's own favicon becomes the row icon
-get_active_tab: {
-  inline: {
-    icon: {
-      started: 'Loader2',
-      completed: { path: 'output.fav_icon_url', fallback: 'Globe' },
-      error: 'AlertTriangle',
-    },
-    prefix: { started: 'Reading active tab', error: "Couldn't read active tab" },
-    name: { started: '', completed: { path: 'output.title', transform: 'truncate80' }, error: '' },
-    info: { completed: { path: 'output.url', transform: 'truncate80' } },
-  },
-}
-```
-
-When the URL fails to load (CSP block, 404), it falls back to `Globe` automatically. The whole tab identity (favicon + title + URL) lives in the inline row — no expanded body needed.
+Lives in [CopyToolButton.tsx](../../../src/features/chat/tool-display/CopyToolButton.tsx). Each renderer constructs a `ToolCopyData` object and passes it as `data`. The button stops click propagation so it never toggles the row open. Don't add per-tool overrides for it — the universal payload is the right shape for users (paste into bug reports, share with another agent, etc.).
