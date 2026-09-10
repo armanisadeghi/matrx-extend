@@ -1,6 +1,6 @@
 ---
 name: connect-aidream
-description: "Outbound contract from matrx-extend to the aidream backend. Use when adding a `client.state['browser-dom']` key, wiring a `load_chrome_tools` category, posting tool results or resuming after `tool_delegated`, or 'the model never sees my tool'. NOT for aidream-repo changes (use connect-matrx-extend)."
+description: "Outbound contract from matrx-extend to the aidream backend. Use when exposing a new extension capability to aidream, adding a `client.state['browser-dom']` key, wiring a `load_chrome_tools` category, posting tool results or resuming after `tool_delegated`, or 'the model never sees my tool'. NOT for aidream-repo changes (use aidream's connect-matrx-extend)."
 ---
 
 # connect-aidream — outbound calls into the AI Dream backend

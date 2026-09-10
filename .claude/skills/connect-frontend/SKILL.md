@@ -1,6 +1,6 @@
 ---
 name: connect-frontend
-description: "Outbound bridge from matrx-extend to aimatrx.com. Use when sending FRONTEND_RPC to a tab, opening a `?panels=` deep link, relaying across machines over Supabase Broadcast, or an `externally_connectable` message silently vanishes. NOT for matrx-frontend-repo changes (use connect-matrx-extend)."
+description: "Outbound bridge from matrx-extend to aimatrx.com. Use when sending FRONTEND_RPC to a tab, opening a `?panels=` deep link, relaying across machines over Supabase Broadcast, or an `externally_connectable` message silently vanishes. NOT for matrx-frontend-repo changes (use matrx-frontend's connect-matrx-extend)."
 ---
 
 # connect-frontend — outbound calls into the aimatrx.com admin app

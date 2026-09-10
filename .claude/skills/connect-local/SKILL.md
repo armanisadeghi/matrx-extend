@@ -1,6 +1,6 @@
 ---
 name: connect-local
-description: "Outbound bridge from matrx-extend to the matrx-local engine. Use when a browser tool runs a shell command or reads local files, calls `desktopRpc` or `/extension/rpc`, needs engine port or tunnel discovery or its WebSocket, or hits 'desktop bridge offline'. NOT for matrx-local-repo changes (use connect-matrx-extend)."
+description: "Outbound bridge from matrx-extend to the matrx-local engine. Use when a browser tool needs a desktop-only capability (shell commands, local files), calls `desktopRpc` or `/extension/rpc`, needs engine port or tunnel discovery or its WebSocket push events, or hits 'desktop bridge offline'."
 ---
 
 # connect-local — outbound calls into the Matrx Local desktop engine

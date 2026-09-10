@@ -1,6 +1,6 @@
 ---
 name: token-broker-client
-description: "Brokered short-lived provider credentials client in matrx-extend (`src/lib/broker/`). Use when a feature needs a provider realtime session, a direct provider call via the aidream gateway, or a provider API key in the extension. NOT for adding a new audience server-side (use token-broker)."
+description: "Brokered short-lived provider credentials client in matrx-extend (`src/lib/broker/`). Use when a feature needs a provider realtime session, a direct provider call via the aidream gateway, or a provider API key in the extension. NOT for adding a new audience server-side (use aidream's token-broker)."
 ---
 
 # token-broker-client — consuming brokered credentials in matrx-extend
