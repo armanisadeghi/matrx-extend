@@ -40,7 +40,7 @@
     "check:cws-risk": "node scripts/check-cws-release-risk.mjs",
     "check:matrx-packages": "node scripts/check-matrx-packages.mjs",
     "check:matrx-latest": "node scripts/check-matrx-packages.mjs",
-    "sync:matrx-packages": "pnpm update \"@ai-matrx/*\" && pnpm check:matrx-packages",
+    "sync:matrx-packages": "pnpm update -r \"@ai-matrx/*\" --latest && pnpm check:matrx-packages",
     "check:package-twins": "node scripts/check-package-twins.mjs --strict",
     "check:package-twins:self-test": "node scripts/check-package-twins.mjs --self-test",
     "check:archived-items-law": "tsx scripts/check-archived-items-law.ts",
