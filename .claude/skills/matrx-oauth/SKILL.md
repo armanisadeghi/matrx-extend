@@ -2,7 +2,7 @@
 name: matrx-oauth
 type: Skill
 title: matrx-oauth — the Matrx OAuth flow, end to end
-description: "Guide to the Matrx OAuth flow across aimatrx.com, Supabase, aidream, and the desktop client. Use when wiring OAuth into a Matrx SPA or service, or debugging 'Token exchange failed', 'No access token received', flash-and-bounce logins, the admin allowlist, or /auth/aimatrx and /auth/callback."
+description: "Guide to the Matrx OAuth flow across aimatrx.com, Supabase, aidream, and the desktop client. Use when wiring OAuth into a Matrx SPA or service, or debugging 'Token exchange failed', 'No access token received', flash-and-bounce logins, the admin allowlist, /auth/aimatrx and /auth/callback, or any auth issue involving aimatrx.com or Supabase tokens."
 tags: [auth, oauth, skill, aidream, matrx-frontend, matrx-local, matrx-extend]
 resource: https://server.app.matrxserver.com/auth/aimatrx
 timestamp: 2026-08-21T00:00:00Z
@@ -19,6 +19,11 @@ verified: 2026-08-21 — verdicts below checked against live code in aidream and
 
 The Matrx OAuth provider is **a thin Next.js proxy in front of Supabase Auth**, hosted at `https://www.aimatrx.com`. It is NOT Google / GitHub / generic OAuth — it's our own provider, backed by the same Supabase project that issues Matrx user JWTs. Treat every external behavior as "Supabase OAuth 2.1 with PKCE", not "OAuth 2.0 in general" — Supabase has several non-standard quirks that have burned three weeks of debugging.
 
+## Where to read what
+
+- **Writing or fixing client-side OAuth code** — a SPA's `/oauth/callback` or `/access-denied` route, wiring OAuth into a new Matrx SPA, or the Tauri desktop client → read [client-wiring.md](client-wiring.md).
+- **Tracing why a verified verdict below holds** (ES256 vs HS256, SPA paths, `ai-matrx` naming, `admin.admins`), or the history of this merged doc → read [changelog.md](changelog.md).
+
 ## Repositories
 
 | Repo | Role |
@@ -30,7 +35,7 @@ The Matrx OAuth provider is **a thin Next.js proxy in front of Supabase Auth**, 
 
 ## This doc replaced two divergent copies
 
-Prior to 2026-08-21 this skill existed as two independently-drifted bodies with no canonical source: `matrx-extend/matrx-oauth/` (nonstandard repo-root location) and `aidream/.claude/skills/matrx-oauth/`. Three claims were verified against live code to build this doc — see the changelog at the bottom for the full verdicts and evidence.
+Merge history and the evidence behind every VERIFIED verdict → [changelog.md](changelog.md).
 
 ## Architecture
 
@@ -86,7 +91,7 @@ These took three weeks of debugging to nail down. **Internalize them.** Most "fi
 1. **The Matrx OAuth client is a PUBLIC PKCE client. Never send `client_secret`.**
    Supabase rejects confidential-client params for public clients with `400`. The proof of possession is the PKCE `code_verifier`, not a secret. Same client type matrx-local desktop uses — see `projects/matrx-local/desktop/src/lib/oauth.ts`.
 
-2. **JWT signing algorithm: ES256 is current, not HS256.** VERIFIED (see changelog). Matrx Main signs JWTs with **ES256** (asymmetric). `aidream/aidream/api/middleware/auth.py` documents this explicitly and keeps `JWT_ALGORITHMS = ("HS256", "ES256")` — HS256 stays in the allow-list only as a rotation-window compatibility fallback, not because it's the live signer. Any JWT verification code must accept both via the configured allow-list and JWKS, never hard-code one algorithm.
+2. **JWT signing algorithm: ES256 is current, not HS256.** VERIFIED (see [changelog.md](changelog.md)). Matrx Main signs JWTs with **ES256** (asymmetric). `aidream/aidream/api/middleware/auth.py` documents this explicitly and keeps `JWT_ALGORITHMS = ("HS256", "ES256")` — HS256 stays in the allow-list only as a rotation-window compatibility fallback, not because it's the live signer. Any JWT verification code must accept both via the configured allow-list and JWKS, never hard-code one algorithm.
    The OAuth authorize/token flow still drops the `openid` scope (`scope=email profile` only) — the comment in `aidream/services/auth_oauth/service.py` justifying this still says "Supabase HS256 projects can't sign ID tokens," which is the stale rationale for a decision that may still be operationally correct. **Flagged, not resolved:** re-verify against the live token response before trusting that comment if `openid` is ever needed.
 
 3. **Supabase error responses don't always use `{error, error_description}`.**
@@ -98,7 +103,7 @@ These took three weeks of debugging to nail down. **Internalize them.** Most "fi
 5. **The repo's `.gitignore` has a Python `lib/` rule that swallows TS source.**
    Anything new under `aidream/apps/dashboard/src/lib/`, `aidream/apps/workflow-studio/src/lib/`, etc. is silently dropped from git unless explicitly allow-listed. Symptom: the build fails with `Cannot find module '@/lib/...'`, while the running service continues serving the previous healthy image. **Always run `git check-ignore -v <new-lib-file>` after creating one** — a hit against the bare `lib/` rule means add an explicit `!path/**` rule next to the existing dashboard/studio entries.
 
-6. **The admin table is `admin.admins`, not `public.admins`.** VERIFIED (see changelog) — `aidream/db/models/admin.py` defines `Admins` with `_db_schema = "admin"`, `_table_name = "admins"`.
+6. **The admin table is `admin.admins`, not `public.admins`.** VERIFIED (see [changelog.md](changelog.md)) — `aidream/db/models/admin.py` defines `Admins` with `_db_schema = "admin"`, `_table_name = "admins"`.
 
 7. **The token-verification path in `oauth_callback` is currently UNVERIFIED, as-is.** `aidream/services/auth_oauth/service.py:_decode_jwt_payload` base64url-decodes the JWT payload without checking the signature — this is live code, not a historical artifact. It's defended as safe because `AuthMiddleware` re-verifies the signature on every subsequent API call, so an attacker who forges the callback's decoded claims can't get real API access — but the callback DOES use those unverified claims to decide `access_token` vs `/access-denied` redirect. Route this through `aidream.api.middleware.token_verifier.verify_supabase_token` (the shared, JWKS/ES256-aware verifier) rather than treating unverified decode as the intended end state.
 
@@ -144,91 +149,15 @@ The browser hits `https://www.aimatrx.com/api/oauth/authorize` — a thin proxy 
 
 ### SPA callback (token storage)
 
-The SPA's `/oauth/callback` route component MUST follow this pattern (mirrors the working `apps/dashboard` implementation):
-
-```tsx
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { AUTH_TOKEN_KEY } from "@/lib/constants";
-import { setAuthToken } from "@/hooks/use-auth";
-
-export const Route = createFileRoute("/oauth/callback")({
-  beforeLoad: () => {
-    if (localStorage.getItem(AUTH_TOKEN_KEY)) {
-      throw redirect({ to: "/" });
-    }
-    // NO validateSearch / search schema — we read window.location once.
-  },
-  component: OAuthCallback,
-});
-
-function OAuthCallback() {
-  const navigate = useNavigate();
-  const [status, setStatus] = useState<"processing" | "success" | "error">("processing");
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    // Read ONCE from window.location.search, before replaceState clears it.
-    // Do NOT use useSearch() — it's reactive and re-fires after replaceState.
-    const params = new URLSearchParams(window.location.search);
-    const accessToken = params.get("access_token");
-    const errorParam = params.get("error");
-
-    if (errorParam) { setErrorMessage(decodeURIComponent(errorParam)); setStatus("error"); return; }
-    if (!accessToken) { setErrorMessage("No access token received."); setStatus("error"); return; }
-
-    setAuthToken(accessToken);
-    setStatus("success");
-    window.history.replaceState({}, "", window.location.pathname);
-    const t = setTimeout(() => void navigate({ to: "/", replace: true }), 600);
-    return () => clearTimeout(t);
-  }, [navigate]); // <-- only navigate; NEVER access_token/error here.
-
-  // …status-driven UI omitted — see apps/dashboard or apps/workflow-studio for examples.
-}
-```
-
-The matching `/access-denied` route just reads `?email=` and shows a friendly request-access screen with a `mailto:` link. See `aidream/apps/dashboard/src/routes/access-denied.tsx`.
+The SPA's `/oauth/callback` reads `?access_token` / `?error` once and stores the token; the `/access-denied` route greets non-admins. **Writing or fixing either route → read [client-wiring.md](client-wiring.md)** for the required component pattern.
 
 ### Tauri desktop (matrx-local)
 
-`projects/matrx-local/desktop/src/lib/oauth.ts` is the canonical reference for a public PKCE client. Two key differences from the SPA flow:
-
-- It hits `${SUPABASE_URL}/auth/v1/oauth/authorize` and `/oauth/token` **directly** (skips aimatrx.com). It doesn't need an admin gate.
-- The `state` parameter encodes the `code_verifier` itself: `state = "<verifier>.<nonce>"`. This survives cross-origin tab navigations on the web dev flow when localStorage may be cleared. Not required for SPAs since they store the verifier on the server.
-
-Don't copy matrx-local's flow into a SPA — the SPA pattern is intentionally different because the server-side admin gate has to live somewhere and we don't want every SPA reimplementing it.
+A public PKCE client that calls Supabase directly, with no admin gate. **Working on the desktop client, or about to reuse its flow in a SPA → read [client-wiring.md](client-wiring.md).**
 
 ## Wiring OAuth into a new Matrx SPA
 
-Checklist. All steps are required. Skipping any of them produces one of the failure modes documented in the Debugging playbook above.
-
-```
-- [ ] 1. Add /oauth/callback route — copy from apps/dashboard or apps/workflow-studio
-       verbatim. Use the read-once-from-window.location pattern. NO validateSearch.
-
-- [ ] 2. Add /access-denied route — copy from apps/dashboard or apps/workflow-studio.
-
-- [ ] 3. Add VITE_AIDREAM_API_URL (or VITE_MATRX_ADMIN_URL legacy alias) and
-       VITE_APP_URL to .env.production. Bake them into the Vite build.
-
-- [ ] 4. Wire the login button to:
-       window.location.href =
-         `${AIDREAM_API_URL}/auth/aimatrx?app_redirect=${encodeURIComponent(window.location.origin + "/oauth/callback")}`
-
-- [ ] 5. If you put any new files under <new-spa>/src/lib/, run
-       `git check-ignore -v <file>` to confirm git tracks them. If the
-       Python lib/ rule catches one, add `!<new-spa>/src/lib/**` next to
-       the existing apps/dashboard, apps/workflow-studio allow-rules in .gitignore.
-
-- [ ] 6. Add the new SPA's origin to CORS_DEFAULT_ORIGIN_REGEX in
-       aidream/api/config.py if it's outside *.matrxserver.com /
-       *.aimatrx.com / *.aidream.ai / *.vercel.app.
-
-- [ ] 7. Keep tsc out of the Docker build path: package.json `build: "vite build"`
-       (NOT `tsc -b && vite build`), and add `typecheck: "tsc -b --noEmit"` for
-       local CI use.
-```
+**Adding OAuth to a new SPA → read [client-wiring.md](client-wiring.md)** for the required checklist.
 
 ## Debugging playbook
 
@@ -272,9 +201,4 @@ Required on each SPA (baked into the Vite build via `.env.production`):
 
 ## Changelog
 
-- **2026-08-21 — canonical body created, merging two divergent copies** (`matrx-extend/matrx-oauth/` at a nonstandard repo-root location, and `aidream/.claude/skills/matrx-oauth/`). Board row: `operations/doc-migration.md` #47. Three disputed claims verified against live code, not voted between:
-  1. **JWT signing algorithm** — matrx-extend copy claimed HS256 (symmetric) is the live signer, used to justify dropping the `openid` scope. aidream copy claimed ES256 is current and the HS256 rationale obsolete. **Verdict: ES256 is correct** (aidream copy) — `aidream/aidream/api/middleware/auth.py` carries an explicit, detailed comment: "Matrx Main signs JWTs with ES256 (asymmetric)... HS256 stays for the rotation window," and `JWT_ALGORITHMS = ("HS256", "ES256")`. HS256 remains accepted only as a compatibility fallback, not as the live signer.
-  2. **Repo path for the SPAs** — matrx-extend copy used `dashboard/`, `workflow-studio/` at repo root. aidream copy used `apps/dashboard/`, `apps/workflow-studio/`. **Verdict: `apps/dashboard/` and `apps/workflow-studio/` are correct** (aidream copy) — confirmed on disk at `aidream/apps/dashboard` and `aidream/apps/workflow-studio`; no bare `dashboard/` exists at aidream's repo root.
-  3. **App/provider naming ("matrx-admin" vs "ai-matrx")** — matrx-extend copy labeled the Next.js provider app "matrx-admin" and referenced it at `projects/matrx-admin/`. aidream copy labeled it "ai-matrx" and referenced `../ai-matrx/`. **Verdict: neither path was correct; the label "ai-matrx" is correct.** The actual Next.js OAuth proxy lives at `matrx-frontend/app/api/oauth/{authorize,token}/route.ts`, deployed as the `ai-matrx` Vercel project (`matrx-frontend/next.config.js` documents `ai-matrx → aimatrx.com → MATRX_PROFILE=slim`). "matrx-admin" does not match any live deployment or directory name.
-  - Also corrected in the merge (found during verification, not part of the three named disputes): the admin table is `admin.admins` (matrx-extend copy still said `public.admins`); the callback's token-claim path (`_decode_jwt_payload`) is confirmed still unverified in live code as of this date — the aidream copy's claim that it already routes through `verify_supabase_token` is aspirational, not the current state, and is corrected above (hard-won fact 7).
-  - **Unverified, left out:** whether `openid` truly cannot be requested today — the code comment justifying that decision is itself stale (still cites HS256), so this is flagged rather than asserted either way.
+Merge history and the three disputed claims' verdicts, with evidence → [changelog.md](changelog.md).
