@@ -73,6 +73,18 @@ jobs:
       - name: the picker guard can still fail (self-test)
         run: pnpm check:canonical-pickers:self-test
 
+      # THE ARCHIVED-ITEMS LAW (Arman, 2026-09-09 —
+      # ../common-docs/policies/archived-items.md): every list over an
+      # archivable entity carries an archive filter, the default hides
+      # archived, and revealing them is one or two clicks. Today the only such
+      # list here is the agent picker (the package owns its chip) — this guard
+      # is what makes the next one obey.
+      - name: THE ARCHIVED-ITEMS LAW
+        run: pnpm check:archived-items-law
+
+      - name: the archive guard can still fail (self-test)
+        run: pnpm check:archived-items-law:self-test
+
       - name: Lint
         run: pnpm lint
 

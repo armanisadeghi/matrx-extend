@@ -61,6 +61,32 @@ component, so all four must show identical rows in identical order.
   `pnpm check:canonical-pickers` (no second picker may exist). The list logic
   itself is tested in the package's 295-case parity matrix.
 
+### The archive filter on the agent picker (THE ARCHIVED-ITEMS LAW)
+
+- **What it does:** the picker's filter bar carries an Archive chip — three
+  states, cycling on click: **Archive** (hide archived, the default) →
+  **All + archived** → **Archived only**. Archived agents are hidden until
+  asked for, and asking is ONE click, on every tab including Public/System.
+  Law: `../../common-docs/policies/archived-items.md`.
+- **Where to test:** all four pickers above (Chat, Pilot, Settings › Default
+  agent, Showcase › AI Extract).
+- **Steps:** archive an agent in the web app (`/agents`), reopen a picker here,
+  then click the Archive chip once, then again, then a third time.
+- **Expected:**
+  - First open: the archived agent is NOT in the list, on any tab, and the
+    footer says how many archived rows are hidden.
+  - One click: it appears alongside the active agents.
+  - Two clicks: ONLY archived agents remain.
+  - Three clicks: back to hidden. The tab badge counts match what each tab
+    actually renders in the current state — a badge that counts hidden rows is
+    a defect, report it.
+- **Covered by:** `tests/unit/agent-archive-filter.test.tsx` (component test
+  over the real package and live-captured archived rows: control present,
+  default hides, one click reveals, System tab not exempt, `defaults`
+  knob honoured) and `pnpm check:archived-items-law` (the next list this repo
+  grows cannot hide archived rows with no way to reveal them). Neither drives a
+  real side panel — THIS entry is the live proof.
+
 ## Convention
 
 Every entry follows this shape:
