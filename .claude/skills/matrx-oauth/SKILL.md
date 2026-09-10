@@ -2,7 +2,7 @@
 name: matrx-oauth
 type: Skill
 title: matrx-oauth — the Matrx OAuth flow, end to end
-description: End-to-end guide to the Matrx OAuth flow — a Next.js proxy in matrx-frontend fronting Supabase, the FastAPI (aidream) callback that does the admin gate, SPA callbacks (aidream apps/dashboard, apps/workflow-studio), and the Tauri desktop client (matrx-local). Use when wiring OAuth into a new Matrx SPA or service, debugging "Token exchange failed", "No access token received", silent flash-and-bounce login failures, or any auth issue involving aimatrx.com, Supabase tokens, the admin allowlist, or the /auth/aimatrx / /auth/callback endpoints.
+description: "Guide to the Matrx OAuth flow across aimatrx.com, Supabase, aidream, and the desktop client. Use when wiring OAuth into a Matrx SPA or service, or debugging 'Token exchange failed', 'No access token received', flash-and-bounce logins, the admin allowlist, or /auth/aimatrx and /auth/callback."
 tags: [auth, oauth, skill, aidream, matrx-frontend, matrx-local, matrx-extend]
 resource: https://server.app.matrxserver.com/auth/aimatrx
 timestamp: 2026-08-21T00:00:00Z
