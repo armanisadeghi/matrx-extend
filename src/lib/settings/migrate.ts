@@ -1,7 +1,15 @@
+import { MANDATE_KEYS } from '@ai-matrx/agents/mandates';
 import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 
 export const SETTINGS_PERSIST_VERSION = 5;
-export const LEGACY_DEFAULT_CHAT_MANDATE_REF = 'mandate:chat.default_new_chat';
+/**
+ * What this extension's default chat pointed at BEFORE it got its own mandate.
+ * Still a real, declared platform key (it is the web app's new-chat mandate) —
+ * so it is sourced from the vocabulary like every other key here. It exists
+ * only to RECOGNISE stored settings that still carry it and move them forward.
+ */
+export const LEGACY_DEFAULT_CHAT_MANDATE_REF =
+  `mandate:${MANDATE_KEYS.chat__default_new_chat}` as const;
 
 type MigratableSettings = {
   defaultAgentId?: string | null | undefined;

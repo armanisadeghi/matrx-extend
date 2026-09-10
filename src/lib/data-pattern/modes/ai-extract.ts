@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { ExtractionMode } from '../types';
+import { STRUCTURED_EXTRACTOR_MANDATE_KEY } from '@/lib/mandates';
 
 export const aiExtractConfigSchema = z
   .object({
@@ -31,7 +32,7 @@ export const aiExtractMode: ExtractionMode<AiExtractConfig> = {
   defaultConfig: () => ({
     description: '',
     output_schema: {},
-    mandate_key: 'extend.structured_extractor',
+    mandate_key: STRUCTURED_EXTRACTOR_MANDATE_KEY,
   }),
 
   detectInPage: () => ({ available: true, summary: 'AI extraction is always available' }),
