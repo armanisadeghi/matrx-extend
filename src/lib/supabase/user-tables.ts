@@ -285,8 +285,11 @@ export async function appendRowsToUserTable(
     p_table_id: tableId,
     p_rows: cleanedRows,
   });
-  if (error) failDbCall(site, error);
-  return { inserted: typeof data === 'number' ? data : 0 };
+  // The RPC is `RETURNS integer`. Anything else means it did not run the way we
+  // think it does — reporting `0 inserted` there is the same swallow this seam
+  // removes, so it fails like its sibling `createUserTableFromSchema`.
+  if (error || typeof data !== 'number') failDbCall(site, error);
+  return { inserted: data };
 }
 
 /**

@@ -74,18 +74,27 @@ export function useHighlightBridge(): void {
       },
     );
 
-    const offClear = on<{ url: string }, { ok: true }>(
+    const offClear = on<{ url: string }, { ok: boolean; reason?: string }>(
       CHANNELS.HIGHLIGHT_CLEAR_REQUEST,
       async ({ url }) => {
-        // A refused clear throws (the user has been told why). Resync the list
-        // either way so the panel shows what the database actually holds.
+        // A refused clear throws (the user has been told why by the notice).
+        // ANSWER the overlay with the reason instead of rejecting its request:
+        // a rejected bridge call is indistinguishable from a dropped message,
+        // and the overlay has no way to tell them apart. Resync the list either
+        // way so the panel shows what the database actually holds.
+        let outcome: { ok: boolean; reason?: string } = { ok: true };
         try {
           await clearHighlightsForUrl(url);
+        } catch (err) {
+          outcome = {
+            ok: false,
+            reason: isDbFailureError(err) ? err.userMessage : String(err),
+          };
         } finally {
           setItems(await listMyHighlights());
           broadcast(CHANNELS.HIGHLIGHTS_CHANGED, { reason: 'clear', url });
         }
-        return { ok: true };
+        return outcome;
       },
     );
 

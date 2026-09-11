@@ -17,10 +17,10 @@
  * "before" behaviours are asserted explicitly in the last block.)
  */
 
-import { createHighlight, deleteHighlight } from '@/lib/highlights/queries';
+import { clearHighlightsForUrl, createHighlight, deleteHighlight } from '@/lib/highlights/queries';
 import { classifyDbFailure, isDbFailureError, userMessageFor } from '@/lib/supabase/db-failure';
 import { saveCapture } from '@/lib/supabase/queries';
-import { listUserTables } from '@/lib/supabase/user-tables';
+import { appendRowsToUserTable, listUserTables } from '@/lib/supabase/user-tables';
 import { useNoticeStore } from '@/state/notices';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -33,6 +33,16 @@ const mocks = vi.hoisted(() => ({
   aiDb: vi.fn(),
   getActiveOrganizationId: vi.fn(),
   rpc: vi.fn(),
+  logError: vi.fn(),
+}));
+
+vi.mock('@/lib/debug/log', () => ({
+  log: {
+    error: mocks.logError,
+    warn: vi.fn(),
+    info: vi.fn(),
+    success: vi.fn(),
+  },
 }));
 
 vi.mock('@/lib/api/routes/auth', () => ({
@@ -82,6 +92,20 @@ function builder(result: { data: unknown; error: unknown }) {
   chain.then = (resolve: (v: unknown) => unknown) => Promise.resolve(result).then(resolve);
   chain.auth = { getUser: async () => ({ data: { user: { id: 'u1' } } }) };
   chain.rpc = mocks.rpc;
+  return chain;
+}
+
+/**
+ * One client whose successive terminal awaits resolve to successive results —
+ * for a function that issues two queries through a single `getSupabase()`.
+ */
+function builderSequence(results: { data: unknown; error: unknown }[]) {
+  const queue = [...results];
+  const chain = builder({ data: null, error: null });
+  const next = () => queue.shift() ?? { data: null, error: null };
+  // biome-ignore lint/suspicious/noThenProperty: modelling the real builder
+  chain.then = (resolve: (v: unknown) => unknown) => Promise.resolve(next()).then(resolve);
+  chain.single = vi.fn(async () => next());
   return chain;
 }
 
@@ -178,6 +202,80 @@ describe('a failed dataset read is never an empty list', () => {
 
     await vi.waitFor(() => expect(mocks.rpc).toHaveBeenCalled());
     expect((mocks.rpc.mock.calls[0] as [string, Record<string, unknown>])[1].p_code).toBe('42P01');
+  });
+});
+
+describe('the error door itself can fail — and says so', () => {
+  it('a log_client_error that records nothing (null id) is reported loudly, not swallowed', async () => {
+    // The live RPC returns NULL without inserting when it cannot resolve an
+    // organization, and its body swallows insert errors. From the client that
+    // is indistinguishable from success unless we check the returned id.
+    mocks.rpc.mockResolvedValue({ data: null, error: null });
+    mocks.getSupabase.mockReturnValue(builder({ data: null, error: RLS_REFUSAL }));
+
+    await expect(saveCapture({ url: 'https://example.com', soup: {} })).rejects.toSatisfy(
+      isDbFailureError,
+    );
+
+    // The user is still told.
+    expect(lastNotice()?.title).toBe('Page capture not saved');
+    // And the double-failure is loud locally, carrying BOTH errors.
+    await vi.waitFor(() => {
+      const loud = mocks.logError.mock.calls.find((c) =>
+        String(c[1]).includes('did NOT record this'),
+      );
+      expect(loud).toBeDefined();
+      const detail = loud?.[2] as { original: { code: string }; remedy: string };
+      expect(detail.original.code).toBe('42501');
+      expect(detail.remedy).toContain('log_client_error');
+    });
+  });
+
+  it('an unreachable error store is reported the same way', async () => {
+    mocks.rpc.mockRejectedValue(new Error('Failed to fetch'));
+    mocks.getSupabase.mockReturnValue(builder({ data: null, error: RLS_REFUSAL }));
+
+    await expect(saveCapture({ url: 'https://example.com', soup: {} })).rejects.toSatisfy(
+      isDbFailureError,
+    );
+    await vi.waitFor(() => {
+      expect(
+        mocks.logError.mock.calls.some((c) => String(c[1]).includes('did NOT record this')),
+      ).toBe(true);
+    });
+  });
+});
+
+describe('clearing highlights tells "nothing to clear" apart from "refused"', () => {
+  it('no highlights on the page → 0, no notice, no error', async () => {
+    mocks.getSupabase.mockReturnValue(builder({ data: [], error: null }));
+    await expect(clearHighlightsForUrl('https://example.com')).resolves.toBe(0);
+    expect(useNoticeStore.getState().notices).toHaveLength(0);
+  });
+
+  it('rows existed but none moved → a refusal, never "cleared 0"', async () => {
+    // First call reads two ids; the UPDATE returns zero rows with NO error —
+    // exactly what an RLS-refused update looks like.
+    mocks.getSupabase.mockReturnValue(
+      builderSequence([
+        { data: [{ id: 'a' }, { id: 'b' }], error: null }, // the ids that exist
+        { data: [], error: null }, // the UPDATE moved none, with no error
+      ]),
+    );
+    await expect(clearHighlightsForUrl('https://example.com')).rejects.toMatchObject({
+      kind: 'refused',
+    });
+    expect(lastNotice()?.title).toBe('Highlights not cleared');
+  });
+});
+
+describe('appendRowsToUserTable has no success-shaped fallback', () => {
+  it('an RPC answer that is not a row count fails instead of reporting 0 inserted', async () => {
+    mocks.getSupabase.mockReturnValue(builder({ data: null, error: null }));
+    await expect(
+      appendRowsToUserTable('11111111-1111-4111-8111-111111111111', [{ a: 1 }]),
+    ).rejects.toSatisfy(isDbFailureError);
+    expect(lastNotice()?.title).toBe('Rows not added to the dataset');
   });
 });
 

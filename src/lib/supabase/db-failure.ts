@@ -204,7 +204,7 @@ export async function recordDbFailure(
     } catch {
       organizationId = undefined;
     }
-    await getSupabase().rpc('log_client_error', {
+    const { data, error: rpcError } = await getSupabase().rpc('log_client_error', {
       p_source: 'chrome-extension',
       p_message: `${site.operation} ${site.table} ${kind}: ${error?.message ?? 'no rows returned'}`,
       p_code: error?.code ?? kind,
@@ -220,12 +220,56 @@ export async function recordDbFailure(
       },
       ...(organizationId !== undefined && { p_organization_id: organizationId }),
     });
+    // THE ERROR DOOR CAN FAIL SILENTLY. `log_client_error` returns the new
+    // row's id — but it returns NULL without inserting anything when it cannot
+    // resolve an organization, and its body ends in
+    // `exception when others then return null`, so an insert that blows up
+    // looks identical to a success from out here. A null id therefore means
+    // "nothing was recorded", and a swallowed swallow is the one failure this
+    // whole seam exists to make impossible. Say it loudly in the local error
+    // log; the user's notice is already on screen either way.
+    if (rpcError || typeof data !== 'string' || data.length === 0) {
+      reportFailedReport(site, kind, error, rpcError ?? { message: 'RPC returned no error id' });
+    }
   } catch (err) {
-    // The error channel itself is down. Say so locally; do not recurse.
-    log.warn('supabase', 'could not record db failure to the platform error store', err);
+    // The error channel itself is unreachable. Say so locally; do not recurse.
+    reportFailedReport(site, kind, error, err);
   } finally {
     reporting = false;
   }
+}
+
+/**
+ * The loud local fallback for "the durable record did not land". It carries
+ * BOTH failures — the original refusal and the reporting failure — because the
+ * original is the one a human still has to act on, and it now exists nowhere
+ * else.
+ */
+function reportFailedReport(
+  site: DbCallSite,
+  kind: DbFailureKind,
+  original: DbErrorLike | null | undefined,
+  reportingFailure: unknown,
+): void {
+  log.error(
+    'supabase',
+    `the platform error store did NOT record this ${kind} on ${site.table} — the refusal exists only in this log`,
+    {
+      original: {
+        code: original?.code ?? null,
+        message: original?.message ?? 'no rows returned',
+        operation: site.operation,
+        table: site.table,
+        what: site.what,
+      },
+      reportingFailure:
+        reportingFailure instanceof Error
+          ? { name: reportingFailure.name, message: reportingFailure.message }
+          : reportingFailure,
+      remedy:
+        'log_client_error returned no id (DD-115: it returns null without inserting when no organization resolves, and swallows insert errors). Server-side fix owed.',
+    },
+  );
 }
 
 /**

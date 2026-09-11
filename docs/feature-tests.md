@@ -2510,8 +2510,21 @@ Every entry follows this shape:
 - **Edge cases worth poking:**
   - Go offline and Save: the notice says the database could not be reached and
     to check the connection — not "refused".
-  - Automated guard: `npx vitest run tests/unit/db-refusal-seam.test.ts`
-    (15 cases; proven failing when the seam swallows).
+  - Clear all highlights on a page where you have none: it clears 0 and says
+    nothing (that is not a failure). Clear a page where highlights EXIST but
+    the workspace refuses the write: you get the refusal, never "cleared 0".
+  - **When the error store itself fails** (the `log_client_error` RPC records
+    nothing — it returns null without inserting if it cannot resolve an
+    organization): the notice still appears, and the Debug tab carries a
+    loud line, "the platform error store did NOT record this refusal…",
+    carrying the original error. A swallowed swallow is the one thing this
+    seam must never do.
+  - Automated guards:
+    `npx vitest run tests/unit/db-refusal-seam.test.ts` (20 cases; the
+    behavioural ones proven failing against the swallow shape), and
+    `pnpm check:swallowed-refusals` — the ratchet that fails the build when a
+    new `console.warn` + `return null/[]` appears in a Supabase query module
+    (`pnpm check:swallowed-refusals:self-test` proves the detector fires).
 
 ## Template (copy when adding a new entry)
 

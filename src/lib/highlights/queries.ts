@@ -266,7 +266,16 @@ export async function deleteHighlight(id: string): Promise<void> {
   if (error || !data || data.length === 0) failDbCall(site, error);
 }
 
-/** Soft-delete every highlight on a given URL. Returns the count cleared; throws on refusal. */
+/**
+ * Soft-delete every highlight on a given URL. Returns how many were cleared.
+ *
+ * The ids are read FIRST, deliberately. A refused UPDATE returns `error: null`
+ * with zero rows — identical to "there was nothing to clear" — so without
+ * knowing what was there beforehand, a refusal reports "cleared 0" and the
+ * user is told a comforting number instead of the truth. With the ids in hand
+ * the two cases separate cleanly: nothing to clear is 0 and honest; rows that
+ * existed and did not move is a refusal.
+ */
 export async function clearHighlightsForUrl(url: string): Promise<number> {
   const site: DbCallSite = {
     table: 'extend.wbx_highlight',
@@ -275,13 +284,22 @@ export async function clearHighlightsForUrl(url: string): Promise<number> {
     title: 'Highlights not cleared',
   };
   const c = getSupabase();
+  const { data: existing, error: readError } = await c
+    .schema('extend')
+    .from(TABLE)
+    .select('id')
+    .eq('url', url)
+    .eq('is_deleted', false);
+  if (readError) failDbCall({ ...site, operation: 'select' }, readError);
+  if (!existing || existing.length === 0) return 0;
+
+  const ids = existing.map((row) => (row as { id: string }).id);
   const { data, error } = await c
     .schema('extend')
     .from(TABLE)
     .update({ is_deleted: true, updated_at: new Date().toISOString() })
-    .eq('url', url)
-    .eq('is_deleted', false)
+    .in('id', ids)
     .select('id');
-  if (error) failDbCall(site, error);
-  return data?.length ?? 0;
+  if (error || !data || data.length < ids.length) failDbCall(site, error);
+  return data.length;
 }

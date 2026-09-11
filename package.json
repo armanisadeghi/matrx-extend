@@ -8,10 +8,10 @@
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
-    "prebuild": "tsc --noEmit && tsx scripts/check-canonical-pickers.ts && tsx scripts/check-archived-items-law.ts && (tsx scripts/check-tool-db-drift.ts || true)",
+    "prebuild": "tsc --noEmit && tsx scripts/check-canonical-pickers.ts && tsx scripts/check-archived-items-law.ts && tsx scripts/check-swallowed-refusals.ts && (tsx scripts/check-tool-db-drift.ts || true)",
     "build": "wxt build",
     "build:firefox": "wxt build -b firefox",
-    "prezip": "tsc --noEmit && tsx scripts/check-canonical-pickers.ts && tsx scripts/check-archived-items-law.ts && (tsx scripts/check-tool-db-drift.ts || true)",
+    "prezip": "tsc --noEmit && tsx scripts/check-canonical-pickers.ts && tsx scripts/check-archived-items-law.ts && tsx scripts/check-swallowed-refusals.ts && (tsx scripts/check-tool-db-drift.ts || true)",
     "zip": "wxt zip",
     "zip:store": "pnpm prezip && MATRX_CWS_BUILD=1 wxt zip && node scripts/check-store-package.mjs && node scripts/check-cws-release-risk.mjs",
     "zip:firefox": "wxt zip -b firefox",
@@ -46,6 +46,8 @@
     "check:archived-items-law": "tsx scripts/check-archived-items-law.ts",
     "check:archived-items-law:self-test": "tsx scripts/check-archived-items-law.ts --self-test",
     "check:canonical-pickers": "tsx scripts/check-canonical-pickers.ts",
+    "check:swallowed-refusals": "tsx scripts/check-swallowed-refusals.ts",
+    "check:swallowed-refusals:self-test": "tsx scripts/check-swallowed-refusals.ts --self-test",
     "check:canonical-pickers:self-test": "tsx scripts/check-canonical-pickers.ts --self-test"
   },
   "dependencies": {
