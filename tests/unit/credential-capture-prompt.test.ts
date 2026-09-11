@@ -235,6 +235,28 @@ describe('host — hold, status, prompt', () => {
   });
 });
 
+describe('content prompt — page overlay', () => {
+  it('resets page styles before applying the fixed top-right position', async () => {
+    const { dismissCapturePrompt, showCapturePrompt } = await import(
+      '@/lib/credentials/capture-prompt'
+    );
+    showCapturePrompt({
+      candidateId: 'cap-overlay',
+      tabId: 7,
+      host: 'app.example.com',
+      username: USER,
+      existing: [],
+    });
+
+    const host = document.getElementById('matrx-login-capture-host');
+    const style = host?.getAttribute('style') ?? '';
+    expect(style.indexOf('all:initial')).toBeGreaterThanOrEqual(0);
+    expect(style.indexOf('all:initial')).toBeLessThan(style.indexOf('position:fixed'));
+    expect(style).toContain('top:12px;right:12px;z-index:2147483647');
+    dismissCapturePrompt();
+  });
+});
+
 describe('host — decisions', () => {
   it('save → ONE createVaultItem with the value, then the candidate is gone', async () => {
     const host = await import('@/lib/credentials/capture-candidates');

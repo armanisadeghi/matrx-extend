@@ -64,7 +64,10 @@ export function showCapturePrompt(meta: CapturePromptMeta): void {
 
   const host = document.createElement('div');
   host.id = HOST_ID;
-  host.setAttribute('style', 'position:fixed;top:12px;right:12px;z-index:2147483647;all:initial;');
+  // Reset inherited page styles first. CSS declarations are order-sensitive:
+  // putting `all:initial` last also resets position/inset/z-index, silently
+  // moving the prompt into normal document flow below the page content.
+  host.setAttribute('style', 'all:initial;position:fixed;top:12px;right:12px;z-index:2147483647;');
   const shadow = host.attachShadow({ mode: 'closed' }); /* closed: page can't reach in */
 
   const card = el(
