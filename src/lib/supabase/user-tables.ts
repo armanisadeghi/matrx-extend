@@ -77,7 +77,10 @@ export function toSnakeCaseFieldName(raw: string): string {
 }
 
 /**
- * Mirrors public.udt_datasets (renamed from user_tables 2026-04-30). Column
+ * Mirrors workbench.udt_datasets (renamed from user_tables 2026-04-30; the
+ * table is in schema `workbench`, not `public` — corrected 2026-09-11 from
+ * the data-doctrine discovery atlas §3.4 O-7, which found this comment
+ * contradicted by this file's own client). Column
  * names were intentionally NOT renamed — `table_name`, `is_public`, etc.
  * stay as-is so RPC bodies and existing client code keep working.
  */
