@@ -102,6 +102,39 @@ describe('server-built render blocks reach real components', () => {
     expect(screen.queryByText(/absorbs blue and red/i)).toBeNull();
   });
 
+  it('finishes a shadowed producer’s superseded block in its real component', () => {
+    // THE SHADOWED LANE (content-ir-react 0.11.1). A workflow-style producer
+    // shadows the text channel, so the browser never gets a verified `__ir` —
+    // only the `superseded` terminal the REAL fixture already carries, plus
+    // the block's own closed JSON. Both halves here are derived from the
+    // fixture, not invented: the JSON is the fixture envelope's own value.
+    const source = BLOCKS.flashcard_set;
+    expect(source, 'the flashcard_set fixture is missing').toBeTruthy();
+    const metadata = source!.metadata as {
+      __ir: { root: { value: unknown } };
+      __ir_partial: { state: string; kind: string };
+    };
+    expect(metadata.__ir_partial.state, 'the fixture stopped carrying a superseded terminal').toBe(
+      'superseded',
+    );
+
+    const block = readInboundRenderBlock({
+      ...source!,
+      type: 'json',
+      content: JSON.stringify(metadata.__ir.root.value),
+      // No `__ir`: that is the whole point of the shadowed lane.
+      metadata: { __ir_partial: metadata.__ir_partial },
+    });
+    expect(block).not.toBeNull();
+    expect(block?.metadata?.__ir, 'no verified envelope may be present').toBeUndefined();
+
+    render(<RenderBlockView block={block!} />);
+    // The deck, in the same frame — never the raw Shape JSON.
+    expect(screen.getByText('What pigment absorbs light?')).toBeTruthy();
+    expect(screen.getAllByText('Show answer').length).toBeGreaterThan(0);
+    expect(screen.queryByText(/"__kind"/)).toBeNull();
+  });
+
   it('sends a KNOWN kind with no component here to the honest floor', () => {
     // Same real envelope, relabelled to a kind this client maps no component
     // for — the R6 disposition: readable data plus a muted "no custom view"

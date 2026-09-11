@@ -1,18 +1,20 @@
 /**
  * THE WIRE BOUNDARY for inbound `render_block` events.
  *
- * A server-built envelope on `metadata.__ir` is the ONLY way structured
- * content enters this client. It is not trusted on arrival: the kernel's pure
- * gate (`sanitizeInboundEnvelopeMetadata`) validates the envelope field by
- * field, passes a good one through untouched, and STRIPS a malformed one so
- * nothing downstream routes on garbage. Malformed is reported, never silently
- * dropped.
+ * A server-built envelope on `metadata.__ir` — or, for a producer that shadows
+ * its text channel, a terminal on `metadata.__ir_partial` — is the ONLY way
+ * structured content enters this client. Neither is trusted on arrival: the
+ * kernel's pure gates (`sanitizeInboundEnvelopeMetadata`,
+ * `sanitizeInboundPartialKindMetadata`) validate field by field, pass a good
+ * one through untouched, and STRIP a malformed one so nothing downstream
+ * routes on garbage. Malformed is reported, never silently dropped.
  *
  * React-free: the stream handler runs in the side panel's event loop, not in
  * a render.
  */
 
 import { sanitizeInboundEnvelopeMetadata } from '@ai-matrx/content-ir/core';
+import { sanitizeInboundPartialKindMetadata } from '@ai-matrx/content-ir/wire';
 import { reportContentIrError } from './errors';
 
 /** The `render_block` event payload, camelCase on the wire (aidream `RenderBlockEvent`). */
@@ -41,7 +43,7 @@ export function readInboundRenderBlock(data: unknown): InboundRenderBlock | null
   const blockId = asString(raw.blockId, '');
   if (!blockId) return null;
 
-  const metadata =
+  const withEnvelope =
     typeof raw.metadata === 'object' && raw.metadata !== null
       ? sanitizeInboundEnvelopeMetadata(
           raw.metadata as Record<string, unknown>,
@@ -60,6 +62,27 @@ export function readInboundRenderBlock(data: unknown): InboundRenderBlock | null
           },
         )
       : undefined;
+
+  // The PARTIAL channel (`metadata.__ir_partial`) is the twin gate. A shadowed
+  // producer's `superseded` terminal is the only identity such a block carries,
+  // and `resolveSupersededKindRender` routes on it — so it gets validated at
+  // the same boundary as `__ir` rather than trusted downstream. A valid event
+  // (or no event at all) comes back on the SAME reference; a malformed one is
+  // stripped loudly, degrading that block to "no live rendering" and no more.
+  const metadata = sanitizeInboundPartialKindMetadata(
+    withEnvelope,
+    { blockId },
+    {
+      reportMalformed: (report) => {
+        reportContentIrError({
+          source: 'content-ir',
+          message: `inbound render_block "${report.blockId}" carried a malformed __ir_partial event — the partial channel was stripped and the block renders from its own content only.`,
+          relation: 'inbound-envelope',
+          raw: report.raw,
+        });
+      },
+    },
+  );
 
   const blockIndex = typeof raw.blockIndex === 'number' ? raw.blockIndex : 0;
 

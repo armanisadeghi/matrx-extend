@@ -13,6 +13,17 @@
  * This client never parses a raw chunk looking for structure. Detection is
  * server-side for thin clients by design; re-implementing it here is the
  * "bespoke stream renderer" the platform bans.
+ *
+ * ## THE SUPERSEDED HANDOFF (`@ai-matrx/content-ir-react` 0.11.1)
+ *
+ * A server-built block whose producer shadows the text channel (a workflow
+ * node) never hands the browser a verified `__ir` — only a `superseded`
+ * terminal on `metadata.__ir_partial` plus the block's own closed JSON. The
+ * package reconstructs a render-local complete envelope from exactly that and
+ * routes it through the normal component path, so a finished node swaps into
+ * its real view in the same frame instead of flashing raw Shape JSON. It is
+ * asked FIRST, and it declines on its own whenever a verified envelope (the
+ * higher-fidelity truth) is present, so the ordinary route still owns those.
  */
 
 import { Markdown } from '@/components/markdown';
@@ -26,9 +37,11 @@ import {
   GenericStructuredView,
   type IrRenderBlock,
   applyIrKindRoute,
+  resolveSupersededKindRender,
   useContentIrKindVersion,
 } from '@ai-matrx/content-ir-react';
 import { readEnvelope, reconstructRegionValue } from '@ai-matrx/content-ir/core';
+import { isProvisionalKind, readPartialKindEvent } from '@ai-matrx/content-ir/wire';
 import { useMemo } from 'react';
 import { lookupKindComponent } from './dispatch';
 import { ContentIrHostBoundary } from './host';
@@ -37,8 +50,14 @@ import { ContentIrHostBoundary } from './host';
 const TEXT_TYPES = new Set(['text', 'markdown', 'paragraph']);
 
 export function RenderBlockView({ block }: { block: InboundRenderBlock }) {
-  const envelope = readEnvelope(block.metadata);
-  const kind = envelope?.root.kind ?? null;
+  const verifiedEnvelope = readEnvelope(block.metadata);
+  // The announced kind on a shadowed lane is the ONLY identity a superseded
+  // block carries, so it is what the repaint subscription and the eager
+  // component fetch must key on there.
+  const partial = readPartialKindEvent(block.metadata);
+  const announcedKind =
+    partial === null ? null : isProvisionalKind(partial) ? partial.root.kind : partial.kind;
+  const kind = verifiedEnvelope?.root.kind ?? announcedKind;
 
   // The registries warm asynchronously and a kind may be cold when its block
   // arrives. Without this subscription the block would keep its pre-arrival
@@ -50,26 +69,32 @@ export function RenderBlockView({ block }: { block: InboundRenderBlock }) {
   // waiting on the wholesale warm load.
   if (kind) componentRegistry.requestComponent(kind, CONTENT_IR_PLATFORM, 'output');
 
-  // No React Compiler in this repo (WXT/Vite) — the route is a real function
-  // call and must not re-execute on every unrelated parent render.
-  const routed = useMemo(
-    () =>
-      applyIrKindRoute<IrRenderBlock>(
-        {
-          type: block.type,
-          content: block.content ?? '',
-          // `exactOptionalPropertyTypes` is on here: an OPTIONAL key is omitted,
-          // never widened to `| undefined`.
-          ...(block.metadata !== undefined && { metadata: block.metadata }),
-        },
-        contentIrRouteEnv,
-      ),
-    // `version` is the repaint key: a late schema/component arrival changes it
-    // and only then does the decision get remade.
+  // `exactOptionalPropertyTypes` is on here: an OPTIONAL key is omitted,
+  // never widened to `| undefined`.
+  const source: IrRenderBlock = {
+    type: block.type,
+    content: block.content ?? '',
+    ...(block.metadata !== undefined && { metadata: block.metadata }),
+  };
+
+  // No React Compiler in this repo (WXT/Vite) — the routes are real function
+  // calls and must not re-execute on every unrelated parent render.
+  //
+  // `version` is the repaint key on both: a late schema/component arrival
+  // changes it and only then does the decision get remade.
+  const superseded = useMemo(
+    () => resolveSupersededKindRender<IrRenderBlock>(source, contentIrRouteEnv),
     [block.type, block.metadata, block.content, version],
   );
 
-  const complete = block.status === 'complete';
+  const routed = useMemo(
+    () => superseded?.block ?? applyIrKindRoute<IrRenderBlock>(source, contentIrRouteEnv),
+    [block.type, block.metadata, block.content, version, superseded],
+  );
+
+  const envelope = superseded?.envelope ?? verifiedEnvelope;
+  // A `superseded` terminal IS the producer's proof that the region closed.
+  const complete = superseded !== null || block.status === 'complete';
 
   // ── A registered component for this kind on this platform ────────────────
   const Component = lookupKindComponent(routed.type);
