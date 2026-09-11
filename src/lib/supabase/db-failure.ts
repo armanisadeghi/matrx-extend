@@ -33,10 +33,13 @@
  * `errors` / `app_log_errors` MCP surfaces read. No new mechanism, no new
  * table, no new endpoint.
  *
- * Known residue (2026-09-11): that RPC hardcodes `source_app='matrx-frontend'`,
- * so extension rows land under the frontend's app name. We distinguish them by
- * `kind` (`p_source`), which we set to `chrome-extension`. Fixing `source_app`
- * needs a migration on a shared RPC — filed in the B-13 report, not done here.
+ * Fixed 2026-09-11 (DD-115, matrx-frontend migration
+ * `log_client_error_source_app_and_loud_failures_dd115.sql`): that RPC used to
+ * hardcode `source_app='matrx-frontend'` for every caller, so extension rows
+ * were triaged as web-app rows. It now takes `p_source_app`, validated against a
+ * closed list of client apps, and we send `matrx-extend`. The same migration
+ * stopped it swallowing insert failures into a NULL return and stopped it
+ * discarding the error when no organization resolves.
  *
  * ## Usage
  *
@@ -205,6 +208,11 @@ export async function recordDbFailure(
       organizationId = undefined;
     }
     const { data, error: rpcError } = await getSupabase().rpc('log_client_error', {
+      // DD-115: this extension names ITSELF, so `ops.system_error.source_app`
+      // says matrx-extend instead of blaming the web app. The value is checked
+      // against a closed list inside the database — a typo comes back as a 400
+      // with a sentence, never as a quietly mislabelled row.
+      p_source_app: 'matrx-extend',
       p_source: 'chrome-extension',
       p_message: `${site.operation} ${site.table} ${kind}: ${error?.message ?? 'no rows returned'}`,
       p_code: error?.code ?? kind,
@@ -220,14 +228,14 @@ export async function recordDbFailure(
       },
       ...(organizationId !== undefined && { p_organization_id: organizationId }),
     });
-    // THE ERROR DOOR CAN FAIL SILENTLY. `log_client_error` returns the new
-    // row's id — but it returns NULL without inserting anything when it cannot
-    // resolve an organization, and its body ends in
-    // `exception when others then return null`, so an insert that blows up
-    // looks identical to a success from out here. A null id therefore means
-    // "nothing was recorded", and a swallowed swallow is the one failure this
-    // whole seam exists to make impossible. Say it loudly in the local error
-    // log; the user's notice is already on screen either way.
+    // THE ERROR DOOR USED TO FAIL SILENTLY, AND THIS CHECK STAYS ANYWAY.
+    // `log_client_error` returns the new row's id. Until DD-115 it returned
+    // NULL without inserting when no organization resolved, and ended in
+    // `exception when others then return null`, so a failed insert looked
+    // exactly like a success from out here. Both are fixed in the database: the
+    // row is written either way, and a failure now comes back as `rpcError`.
+    // The check is kept because "the durable record did not land" must never
+    // again be inferred from silence — whichever way it fails, we say so.
     if (rpcError || typeof data !== 'string' || data.length === 0) {
       reportFailedReport(site, kind, error, rpcError ?? { message: 'RPC returned no error id' });
     }

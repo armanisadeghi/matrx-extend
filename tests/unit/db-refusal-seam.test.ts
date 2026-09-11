@@ -149,6 +149,13 @@ describe('a refused write is never swallowed', () => {
     await vi.waitFor(() => expect(mocks.rpc).toHaveBeenCalled());
     const [fn, args] = mocks.rpc.mock.calls[0] as [string, Record<string, unknown>];
     expect(fn).toBe('log_client_error');
+    // DD-115: the extension names ITSELF. Before this, the RPC stamped
+    // source_app='matrx-frontend' on every caller and extension refusals were
+    // triaged as web-app failures. Omitting p_source_app here silently resolves
+    // to the compatibility overload in the database, which still says
+    // matrx-frontend — so the only thing that can catch the regression is this
+    // assertion.
+    expect(args.p_source_app).toBe('matrx-extend');
     expect(args.p_source).toBe('chrome-extension');
     expect(args.p_code).toBe('42501');
     expect(args.p_route).toBe('extend.wbx_capture');
