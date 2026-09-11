@@ -1,6 +1,7 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import type { ExtractionSource } from '@/hooks/use-extraction';
 import { useUserTables } from '@/hooks/use-user-tables';
+import { isDbFailureError } from '@/lib/supabase/db-failure';
 import { type ExtractionPatternField, type PatternKind, savePattern } from '@/lib/supabase/queries';
 import {
   buildFieldNameMap,
@@ -103,16 +104,14 @@ export function SaveAsPattern({
       let targetTableId: string | null = null;
 
       if (target === NEW_TABLE) {
+        // Throws on refusal (the user already saw the reason as a notice);
+        // the catch at the bottom of this function renders the same sentence
+        // in the popover.
         const created = await createTable({
           table_name: newTableName || name || `${host} extraction`,
           description: `Auto-created from matrx-extend ${kind} pattern.`,
           fields: inferredFields,
         });
-        if (!created) {
-          setErr('Failed to create user table.');
-          setSaving(false);
-          return;
-        }
         targetTableId = created.id;
       } else if (target !== NO_TABLE) {
         targetTableId = target;
@@ -152,12 +151,15 @@ export function SaveAsPattern({
           }
         }
 
-        const result = await appendRows(targetTableId, rows);
-        if (result === null) {
+        let result: { inserted: number };
+        try {
+          result = await appendRows(targetTableId, rows);
+        } catch (appendErr) {
           // The pattern row IS saved — but the rows are not. Saying
           // "0 rows appended" here would be a success banner over data loss.
+          const why = isDbFailureError(appendErr) ? ` ${appendErr.userMessage}` : '';
           setErr(
-            `Pattern saved, but appending ${rows.length} row${rows.length === 1 ? '' : 's'} to the table failed. Run the pattern again and re-save, or append from the Patterns tab.`,
+            `Pattern saved, but appending ${rows.length} row${rows.length === 1 ? '' : 's'} to the table failed.${why} Run the pattern again and re-save, or append from the Patterns tab.`,
           );
           onSaved?.();
           setSaving(false);
@@ -173,7 +175,7 @@ export function SaveAsPattern({
       onSaved?.();
       setTimeout(() => setOpen(false), 1200);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(isDbFailureError(e) ? e.userMessage : e instanceof Error ? e.message : String(e));
     } finally {
       setSaving(false);
     }

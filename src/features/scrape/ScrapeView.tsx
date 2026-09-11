@@ -21,6 +21,7 @@ import {
 import { articleToMarkdown } from '@/lib/scrape/to-markdown';
 import type { SeoAudit } from '@/lib/seo/audit';
 import { toStoredSignals } from '@/lib/seo/diff';
+import { isDbFailureError } from '@/lib/supabase/db-failure';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/state/auth';
 import { useHighlightStore } from '@/state/highlights';
@@ -163,14 +164,23 @@ export function ScrapeView() {
     setSaving(true);
     setSaved(false);
     setSaveError(null);
-    const r = await save();
-    setSaving(false);
-    if (r) {
+    try {
+      await save();
       setSaved(true);
-    } else {
-      // null = insert failed (offline / signed-out hitting RLS / DB error) —
-      // the button silently returning to "Save" looked like success.
-      setSaveError('Save failed — check your connection and sign-in, then try again.');
+    } catch (err) {
+      // A refused insert throws DbFailureError carrying the exact sentence the
+      // user already saw in the notice; echo it here so the failure is visible
+      // at the button too. The button silently returning to "Save" looked like
+      // success.
+      setSaveError(
+        isDbFailureError(err)
+          ? err.userMessage
+          : err instanceof Error
+            ? err.message
+            : 'Save failed — check your connection and sign-in, then try again.',
+      );
+    } finally {
+      setSaving(false);
     }
   };
 

@@ -48,6 +48,7 @@ export function HighlightView() {
   const attachMany = useHighlightStore((s) => s.attachMany);
   const clearAttached = useHighlightStore((s) => s.clearAttached);
   const removeItem = useHighlightStore((s) => s.removeItem);
+  const upsertItem = useHighlightStore((s) => s.upsertItem);
   const setDataHandoff = useHighlightStore((s) => s.setDataHandoff);
   const setScrapeHandoff = useHighlightStore((s) => s.setScrapeHandoff);
 
@@ -106,8 +107,15 @@ export function HighlightView() {
   };
 
   const handleDelete = async (h: HighlightListItem) => {
+    // Optimistic removal — but a refused delete must put the row BACK. Leaving
+    // it gone shows the user a deletion the database never performed; the
+    // error seam has already told them why in a sentence.
     removeItem(h.id);
-    await deleteHighlight(h.id);
+    try {
+      await deleteHighlight(h.id);
+    } catch {
+      upsertItem(h);
+    }
   };
 
   const sendElementsToData = () => {

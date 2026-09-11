@@ -1,4 +1,5 @@
 import { AuthGate } from '@/components/AuthGate';
+import { NoticeHost } from '@/components/NoticeHost';
 import { PermissionPromptModal } from '@/components/PermissionPromptModal';
 import { UserMenu } from '@/components/UserMenu';
 import { canAccessSidepanelTab, firstAccessibleSidepanelTab } from '@/config/sidepanel-visibility';
@@ -202,6 +203,11 @@ export function App() {
           surface and works even on auth screens. Renders nothing when
           there's no active prompt; see lib/permissions/gate.ts. */}
         <PermissionPromptModal />
+        {/* Database refusals and other "this did not happen" announcements.
+          Also at App root, outside AuthGate: a refusal raised while the user
+          is on an auth screen still has to be visible. Renders nothing when
+          there is no notice; see lib/supabase/db-failure.ts. */}
+        <NoticeHost />
         <div className="flex h-full flex-col bg-background text-foreground">
           <AuthGate>
             <Tabs

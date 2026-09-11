@@ -2,9 +2,14 @@
  * Supabase queries for the Highlights feature.
  *
  * Direct supabase-js calls — RLS automatically scopes every row to the
- * authenticated user via `user_id = auth.uid()`. Same conventions as
- * src/lib/notes/queries.ts: Zod-parse on read, console.warn + safe defaults
- * on error so the UI never crashes when offline / signed-out.
+ * authenticated user via `user_id = auth.uid()`. Zod-parse on read.
+ *
+ * WRITES go through the one error seam (`src/lib/supabase/db-failure.ts`):
+ * a refused create/update/delete raises `DbFailureError` after telling the
+ * user in a sentence and recording the refusal in the platform error store.
+ * They never return `null`/`false` quietly — the caller has usually already
+ * updated the list optimistically, so a swallowed refusal leaves the screen
+ * lying about what is in the database.
  *
  * NOTE: requires an authenticated user (a valid Supabase session). Guests
  * (X-Fingerprint-ID only) cannot write directly to Supabase — the Highlight
@@ -21,6 +26,7 @@ import {
   type UpdateHighlightPatch,
 } from '@/lib/highlights/types';
 import { getSupabase } from '@/lib/supabase/client';
+import { type DbCallSite, failDbCall } from '@/lib/supabase/db-failure';
 
 const TABLE = 'wbx_highlight';
 
@@ -150,20 +156,32 @@ export async function getHighlightsByIds(ids: string[]): Promise<Highlight[]> {
 
 // ─── Writes ─────────────────────────────────────────────────────────────────
 
-export async function createHighlight(input: CreateHighlightInput): Promise<Highlight | null> {
+/**
+ * Create a highlight. Throws `DbFailureError` on refusal — a highlight the
+ * database rejected must never come back as a quiet `null` while the overlay
+ * keeps the mark on screen.
+ */
+export async function createHighlight(input: CreateHighlightInput): Promise<Highlight> {
+  const site: DbCallSite = {
+    table: 'extend.wbx_highlight',
+    operation: 'insert',
+    what: 'save this highlight',
+    title: 'Highlight not saved',
+  };
   let organizationId: string;
   try {
     organizationId = await requireRequestOrganizationId();
   } catch (error) {
-    console.warn('[highlights] createHighlight refused: missing request organization', error);
-    return null;
+    failDbCall(site, {
+      code: 'no_organization',
+      message: error instanceof Error ? error.message : String(error),
+    });
   }
   const c = getSupabase();
   const { data: userRes } = await c.auth.getUser();
   const userId = userRes?.user?.id;
   if (!userId) {
-    console.warn('[highlights] createHighlight: no auth user');
-    return null;
+    failDbCall(site, { code: 'PGRST301', message: 'no signed-in user' });
   }
   // Owner (`created_by`) is stamped server-side by the platform _stamp_actor
   // trigger from auth.uid(); we no longer send it in the payload.
@@ -187,18 +205,25 @@ export async function createHighlight(input: CreateHighlightInput): Promise<High
     .insert(payload)
     .select(FULL_COLUMNS)
     .single();
-  if (error || !data) {
-    console.warn('[highlights] createHighlight error', error?.message);
-    return null;
-  }
+  // No row back with no error = RLS filtered the RETURNING row: a refusal.
+  if (error || !data) failDbCall(site, error);
   const parsed = HighlightSchema.safeParse(data);
-  return parsed.success ? parsed.data : null;
+  if (!parsed.success) {
+    failDbCall(site, {
+      code: 'row_shape',
+      message: `the saved highlight came back in an unexpected shape: ${parsed.error.issues[0]?.message ?? 'schema mismatch'}`,
+    });
+  }
+  return parsed.data;
 }
 
-export async function updateHighlight(
-  id: string,
-  patch: UpdateHighlightPatch,
-): Promise<Highlight | null> {
+export async function updateHighlight(id: string, patch: UpdateHighlightPatch): Promise<Highlight> {
+  const site: DbCallSite = {
+    table: 'extend.wbx_highlight',
+    operation: 'update',
+    what: 'update this highlight',
+    title: 'Highlight not updated',
+  };
   const c = getSupabase();
   const { data, error } = await c
     .schema('extend')
@@ -207,30 +232,48 @@ export async function updateHighlight(
     .eq('id', id)
     .select(FULL_COLUMNS)
     .single();
-  if (error || !data) {
-    console.warn('[highlights] updateHighlight error', error?.message);
-    return null;
-  }
+  if (error || !data) failDbCall(site, error);
   const parsed = HighlightSchema.safeParse(data);
-  return parsed.success ? parsed.data : null;
+  if (!parsed.success) {
+    failDbCall(site, {
+      code: 'row_shape',
+      message: `the updated highlight came back in an unexpected shape: ${parsed.error.issues[0]?.message ?? 'schema mismatch'}`,
+    });
+  }
+  return parsed.data;
 }
 
-export async function deleteHighlight(id: string): Promise<boolean> {
+/**
+ * Soft-delete a highlight. `.select('id')` is load-bearing: without it an RLS
+ * refusal on an UPDATE comes back as `error: null` with zero rows touched, and
+ * the caller — which has already removed the row from the list optimistically —
+ * shows the user a deletion that never happened.
+ */
+export async function deleteHighlight(id: string): Promise<void> {
+  const site: DbCallSite = {
+    table: 'extend.wbx_highlight',
+    operation: 'delete',
+    what: 'delete this highlight',
+    title: 'Highlight not deleted',
+  };
   const c = getSupabase();
-  const { error } = await c
+  const { data, error } = await c
     .schema('extend')
     .from(TABLE)
     .update({ is_deleted: true, updated_at: new Date().toISOString() })
-    .eq('id', id);
-  if (error) {
-    console.warn('[highlights] deleteHighlight error', error.message);
-    return false;
-  }
-  return true;
+    .eq('id', id)
+    .select('id');
+  if (error || !data || data.length === 0) failDbCall(site, error);
 }
 
-/** Soft-delete every highlight on a given URL. Returns count or -1 on error. */
+/** Soft-delete every highlight on a given URL. Returns the count cleared; throws on refusal. */
 export async function clearHighlightsForUrl(url: string): Promise<number> {
+  const site: DbCallSite = {
+    table: 'extend.wbx_highlight',
+    operation: 'delete',
+    what: 'clear the highlights on this page',
+    title: 'Highlights not cleared',
+  };
   const c = getSupabase();
   const { data, error } = await c
     .schema('extend')
@@ -239,9 +282,6 @@ export async function clearHighlightsForUrl(url: string): Promise<number> {
     .eq('url', url)
     .eq('is_deleted', false)
     .select('id');
-  if (error) {
-    console.warn('[highlights] clearHighlightsForUrl error', error.message);
-    return -1;
-  }
+  if (error) failDbCall(site, error);
   return data?.length ?? 0;
 }

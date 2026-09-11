@@ -28,20 +28,21 @@ export function useUserTables() {
     void refresh();
   }, [refresh]);
 
+  // Both writers THROW `DbFailureError` on a refused write (after telling the
+  // user and recording it) — they never resolve to a success-shaped null. The
+  // caller decides what to render; it must not treat "no error" as "saved"
+  // without awaiting these.
   const createTable = useCallback(
-    async (input: CreateUserTableInput): Promise<{ id: string } | null> => {
+    async (input: CreateUserTableInput): Promise<{ id: string }> => {
       const result = await createUserTableFromSchema(input);
-      if (result) await refresh();
+      await refresh();
       return result;
     },
     [refresh],
   );
 
   const appendRows = useCallback(
-    async (
-      tableId: string,
-      rows: Record<string, unknown>[],
-    ): Promise<{ inserted: number } | null> => {
+    async (tableId: string, rows: Record<string, unknown>[]): Promise<{ inserted: number }> => {
       return appendRowsToUserTable(tableId, rows);
     },
     [],

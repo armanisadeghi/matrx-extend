@@ -2474,6 +2474,45 @@ Every entry follows this shape:
   - The Debug tab is where realtime failures surface — every one carries a remedy sentence. A
     private-channel join refused by RLS reports `channel.private.auth-failed`, never silence.
 
+### Database refusals are announced, never swallowed (DD-092)
+
+- **What it does:** every Supabase read/write on the capture, highlight and
+  dataset paths runs through ONE error seam. A refusal (RLS `42501`, a missing
+  table, or an update/insert RLS quietly matched zero rows) now (1) shows the
+  user a notice at the bottom of the side panel with a plain sentence and a
+  remedy, (2) records the refusal in the platform's error store through the
+  existing `log_client_error` RPC, and (3) makes the call throw — it never
+  returns an empty list or a `null` that reads like success.
+- **Where to test:** Scrape tab (Save), Highlight tab (delete a highlight),
+  Showcase → Save pattern (dataset list + append).
+- **Prereq:** sign in, then switch to a workspace where you do NOT have write
+  access (account menu → workspace). That makes the database refuse for real —
+  no code edit needed.
+- **Steps:**
+  1. Scrape tab → capture a page → **Save**.
+  2. Highlight tab → delete an existing highlight.
+  3. Showcase → extract rows → **Save pattern** → target an existing dataset.
+- **Expected:**
+  1. A red notice appears over the panel: "AI Matrx could not save this page
+     capture: the database refused the request because your account is not
+     allowed to do it in this workspace. Nothing was saved. Check that you are
+     in the right workspace from the account menu…". The Save button also shows
+     the same sentence — it does NOT return silently to "Save".
+  2. The deleted highlight COMES BACK in the list (the delete did not happen,
+     so the list must not pretend it did) plus the notice.
+  3. The popover shows the refusal sentence; the dataset list shows an error,
+     not "no datasets".
+  4. As an admin, each notice carries a technical tail (`insert
+     extend.wbx_capture · 42501: …`). Non-admins never see the code.
+  5. The refusals appear in the platform error store: `errors` MCP tool, kind
+     `chrome-extension` (they land under `source_app='matrx-frontend'` — a
+     known limitation of the shared RPC, tracked in the B-13 report).
+- **Edge cases worth poking:**
+  - Go offline and Save: the notice says the database could not be reached and
+    to check the connection — not "refused".
+  - Automated guard: `npx vitest run tests/unit/db-refusal-seam.test.ts`
+    (15 cases; proven failing when the seam swallows).
+
 ## Template (copy when adding a new entry)
 
 ```markdown

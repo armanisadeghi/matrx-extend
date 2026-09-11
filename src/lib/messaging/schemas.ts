@@ -247,6 +247,12 @@ export const CHANNELS = {
   BROKER_INVALIDATE: 'broker:invalidate', // → { ok: true }
   BROKER_SNAPSHOT: 'broker:snapshot', // → BrokerCacheEntrySnapshot[] (token-free)
   BROKER_PROXIED_JSON: 'broker:proxied-json', // SW-side gateway call → BrokerProxiedJsonResult
+
+  // A database read/write was refused or failed in a non-sidepanel context.
+  // Payload: a `Notice` from src/state/notices.ts. The side panel's NoticeHost
+  // is the only listener — it is the surface the user actually looks at, so a
+  // refusal raised in the SW/offscreen/content script still reaches them.
+  DB_FAILURE_NOTICE: 'db:failure-notice',
 } as const;
 
 export type ChannelName = (typeof CHANNELS)[keyof typeof CHANNELS];

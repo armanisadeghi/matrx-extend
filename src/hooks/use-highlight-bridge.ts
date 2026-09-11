@@ -15,6 +15,7 @@ import { clearHighlightsForUrl, createHighlight, listMyHighlights } from '@/lib/
 import type { CreateHighlightInput, HighlightListItem } from '@/lib/highlights/types';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { isDbFailureError } from '@/lib/supabase/db-failure';
 import { useHighlightStore } from '@/state/highlights';
 import { useEffect } from 'react';
 
@@ -58,8 +59,15 @@ export function useHighlightBridge(): void {
     const offCaptured = on<CreateHighlightInput, { id: string } | { __error: string }>(
       CHANNELS.HIGHLIGHT_CAPTURED,
       async (draft) => {
-        const saved = await createHighlight(draft);
-        if (!saved) return { __error: 'save failed' };
+        // A refused insert throws; the user has already been told in a
+        // sentence by the error seam. Hand the overlay the real reason so the
+        // mark is removed instead of sitting there looking saved.
+        let saved: Awaited<ReturnType<typeof createHighlight>>;
+        try {
+          saved = await createHighlight(draft);
+        } catch (err) {
+          return { __error: isDbFailureError(err) ? err.userMessage : String(err) };
+        }
         upsertItem(toListItem(saved));
         broadcast(CHANNELS.HIGHLIGHTS_CHANGED, { reason: 'create', url: saved.url });
         return { id: saved.id };
@@ -69,10 +77,14 @@ export function useHighlightBridge(): void {
     const offClear = on<{ url: string }, { ok: true }>(
       CHANNELS.HIGHLIGHT_CLEAR_REQUEST,
       async ({ url }) => {
-        await clearHighlightsForUrl(url);
-        const items = await listMyHighlights();
-        setItems(items);
-        broadcast(CHANNELS.HIGHLIGHTS_CHANGED, { reason: 'clear', url });
+        // A refused clear throws (the user has been told why). Resync the list
+        // either way so the panel shows what the database actually holds.
+        try {
+          await clearHighlightsForUrl(url);
+        } finally {
+          setItems(await listMyHighlights());
+          broadcast(CHANNELS.HIGHLIGHTS_CHANGED, { reason: 'clear', url });
+        }
         return { ok: true };
       },
     );

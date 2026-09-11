@@ -29,6 +29,7 @@
  */
 
 import { getSupabase } from '@/lib/supabase/client';
+import { type DbCallSite, failDbCall } from '@/lib/supabase/db-failure';
 import { workbenchDb } from '@/lib/supabase/schemas';
 import { z } from 'zod';
 
@@ -109,7 +110,22 @@ export const TableFieldSchema = z.object({
 });
 export type TableField = z.infer<typeof TableFieldSchema>;
 
+/**
+ * List the user's datasets.
+ *
+ * Throws `DbFailureError` when the read fails — including when the relation is
+ * missing. Returning `[]` there was the worst possible answer: "you have no
+ * datasets" is a sentence about the user's data, and the database never said
+ * it. An empty array from this function now means exactly one thing: the user
+ * has no datasets.
+ */
 export async function listUserTables(): Promise<UserTable[]> {
+  const site: DbCallSite = {
+    table: 'workbench.udt_datasets',
+    operation: 'select',
+    what: 'load your datasets',
+    title: 'Datasets could not be loaded',
+  };
   const { data, error } = await workbenchDb()
     .from('udt_datasets')
     .select(
@@ -117,24 +133,23 @@ export async function listUserTables(): Promise<UserTable[]> {
     )
     .order('updated_at', { ascending: false, nullsFirst: false })
     .order('created_at', { ascending: false });
-  if (error) {
-    if (/relation .* does not exist/i.test(error.message)) return [];
-    console.warn('[matrx-extend] listUserTables error', error.message);
-    return [];
-  }
+  if (error) failDbCall(site, error);
   return z.array(UserTableSchema).parse(data ?? []);
 }
 
 export async function getUserTableSchema(tableId: string): Promise<TableField[]> {
+  const site: DbCallSite = {
+    table: 'workbench.udt_dataset_fields',
+    operation: 'select',
+    what: "load this dataset's columns",
+    title: 'Dataset columns could not be loaded',
+  };
   const { data, error } = await workbenchDb()
     .from('udt_dataset_fields')
     .select('id, table_id, field_name, data_type, field_order, validation_rules')
     .eq('table_id', tableId)
     .order('field_order', { ascending: true });
-  if (error) {
-    console.warn('[matrx-extend] getUserTableSchema error', error.message);
-    return [];
-  }
+  if (error) failDbCall(site, error);
   return z.array(TableFieldSchema).parse(data ?? []);
 }
 
@@ -164,7 +179,13 @@ export interface CreateUserTableInput {
  */
 export async function createUserTableFromSchema(
   input: CreateUserTableInput,
-): Promise<{ id: string } | null> {
+): Promise<{ id: string }> {
+  const site: DbCallSite = {
+    table: 'rpc:create_user_table_with_fields',
+    operation: 'rpc',
+    what: 'create this dataset',
+    title: 'Dataset not created',
+  };
   const c = getSupabase();
   const { data, error } = await c.rpc('create_user_table_with_fields', {
     p_table_name: input.table_name,
@@ -181,10 +202,7 @@ export async function createUserTableFromSchema(
       is_required: f.is_required ?? false,
     })),
   });
-  if (error) {
-    console.warn('[matrx-extend] createUserTableFromSchema error', error.message);
-    return null;
-  }
+  if (error || typeof data !== 'string' || data.length === 0) failDbCall(site, error);
   return { id: data as string };
 }
 
@@ -243,7 +261,13 @@ export function buildFieldNameMap(rawKeys: Iterable<string>): Map<string, string
 export async function appendRowsToUserTable(
   tableId: string,
   rows: Record<string, unknown>[],
-): Promise<{ inserted: number } | null> {
+): Promise<{ inserted: number }> {
+  const site: DbCallSite = {
+    table: 'rpc:append_rows_to_user_table',
+    operation: 'rpc',
+    what: 'add these rows to your dataset',
+    title: 'Rows not added to the dataset',
+  };
   if (rows.length === 0) return { inserted: 0 };
 
   const keyMap = buildFieldNameMap(unionRowKeys(rows));
@@ -261,10 +285,7 @@ export async function appendRowsToUserTable(
     p_table_id: tableId,
     p_rows: cleanedRows,
   });
-  if (error) {
-    console.warn('[matrx-extend] appendRowsToUserTable error', error.message);
-    return null;
-  }
+  if (error) failDbCall(site, error);
   return { inserted: typeof data === 'number' ? data : 0 };
 }
 

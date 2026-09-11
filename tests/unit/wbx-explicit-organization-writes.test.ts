@@ -133,7 +133,10 @@ describe('extend.wbx_* explicit organization writes', () => {
         new Error('Workspace initialization failed: the request carried no organization.'),
       );
 
-      await writer.run();
+      // DD-092: writers on the error seam now THROW on a refusal instead of
+      // returning null. This guard is about what reaches Supabase, not about
+      // the return value — swallow the rejection and assert the same thing.
+      await writer.run().catch(() => undefined);
 
       expect(mocks.getSupabase).not.toHaveBeenCalled();
     });
@@ -143,7 +146,10 @@ describe('extend.wbx_* explicit organization writes', () => {
     mocks.requireRequestOrganizationId.mockResolvedValue(ORG_ID);
     const payloads = installSupabaseWriteRecorder();
 
-    for (const writer of writers) await writer.run();
+    // The recorder captures each payload at insert time; a writer that then
+    // throws (DD-092 error seam — the stub's returned row is not a full
+    // highlight) must not stop the sweep or weaken the payload assertion.
+    for (const writer of writers) await writer.run().catch(() => undefined);
 
     expect(payloads).toHaveLength(7);
     for (const payload of payloads) {

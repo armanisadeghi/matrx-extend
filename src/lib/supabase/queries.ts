@@ -32,6 +32,7 @@
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { log } from '@/lib/debug/log';
 import { getSupabase } from '@/lib/supabase/client';
+import { type DbCallSite, failDbCall } from '@/lib/supabase/db-failure';
 import { adminDb, aiDb, extendDb } from '@/lib/supabase/schemas';
 import type { ChatMessage, MessagePart } from '@/state/chat';
 import { z } from 'zod';
@@ -585,13 +586,29 @@ export interface SaveCapturePayload {
   pattern_id?: string;
 }
 
-export async function saveCapture(p: SaveCapturePayload): Promise<{ id: string } | null> {
+/**
+ * Persist a page capture.
+ *
+ * Throws `DbFailureError` when the database refuses or the write lands
+ * nowhere — never a success-shaped `null`. The user sees the refusal as a
+ * notice and the platform's error store gets the row (see
+ * `src/lib/supabase/db-failure.ts`).
+ */
+export async function saveCapture(p: SaveCapturePayload): Promise<{ id: string }> {
+  const site: DbCallSite = {
+    table: 'extend.wbx_capture',
+    operation: 'insert',
+    what: 'save this page capture',
+    title: 'Page capture not saved',
+  };
   let organizationId: string;
   try {
     organizationId = await requireRequestOrganizationId();
   } catch (error) {
-    console.warn('[matrx-extend] saveCapture refused: missing request organization', error);
-    return null;
+    failDbCall(site, {
+      code: 'no_organization',
+      message: error instanceof Error ? error.message : String(error),
+    });
   }
   const c = getSupabase();
   const { data, error } = await c
@@ -613,10 +630,9 @@ export async function saveCapture(p: SaveCapturePayload): Promise<{ id: string }
     })
     .select('id')
     .single();
-  if (error) {
-    console.warn('[matrx-extend] saveCapture error', error.message);
-    return null;
-  }
+  // `!data` with no error is RLS filtering the RETURNING row away — a refusal
+  // wearing a success costume. Treated as a refusal, never as "saved".
+  if (error || !data) failDbCall(site, error);
   return data as { id: string };
 }
 

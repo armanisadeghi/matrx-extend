@@ -219,11 +219,13 @@ export function useScrape() {
         flesch_reading_ease: current.seo.flesch_reading_ease,
         word_count: current.seo.word_count,
       }).catch(() => undefined);
-      // Only clear the "edited" flag when the row ACTUALLY persisted —
-      // saveCapture returns null on failure (offline, guest RLS), and the
-      // unconditional markSaved() used to silently disarm the unsaved-edits
-      // guard so a Re-capture could destroy edits the user believed saved.
-      if (captureRow) markSaved();
+      // Only clear the "edited" flag when the row ACTUALLY persisted.
+      // `saveCapture` now THROWS on a refused or lost write (it shows the user
+      // a sentence and records the refusal), so reaching this line means the
+      // row is in the database. The unconditional markSaved() this replaced
+      // silently disarmed the unsaved-edits guard, so a Re-capture could
+      // destroy edits the user believed were saved.
+      markSaved();
       return captureRow;
     },
     [current, markSaved],
