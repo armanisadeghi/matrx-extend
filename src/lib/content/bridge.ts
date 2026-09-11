@@ -112,6 +112,18 @@ export function mountContentBridge(_ctx: ContentCtx): void {
       });
       return true;
     }
+    if (msg.kind === CHANNELS.CREDENTIAL_CAPTURE_RESOLVED) {
+      // A decision may come from the side panel, so the page cannot rely on
+      // its own button handler to remove the twin prompt. Candidate identity
+      // prevents a late resolution from dismissing a newer login attempt.
+      const candidateId = (msg.payload as { candidateId?: unknown } | null)?.candidateId;
+      if (typeof candidateId !== 'string') return false;
+      void import('@/lib/credentials/capture-prompt').then(({ dismissCapturePrompt }) => {
+        dismissCapturePrompt(candidateId);
+        sendResponse({ ok: true });
+      });
+      return true;
+    }
     if (msg.kind === CHANNELS.PAGE_SCROLL_SUBSCRIBE) {
       enableScrollEmit();
       sendResponse({ ok: true });

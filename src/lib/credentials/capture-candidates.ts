@@ -99,6 +99,16 @@ function drop(c: Candidate): void {
   // Overwrite before release — belt and braces against a lingering reference.
   c.password = '';
   broadcast(CHANNELS.CREDENTIAL_CAPTURE_CHANGED, { tabId: c.tabId });
+  // `runtime.sendMessage` reaches extension pages but is not the delivery
+  // primitive for a tab's content script. Tell that exact tab explicitly so
+  // a Vault-side Save / Update / Not now / Never also removes the page twin.
+  chrome.tabs
+    .sendMessage(c.tabId, {
+      __matrx: true,
+      kind: CHANNELS.CREDENTIAL_CAPTURE_RESOLVED,
+      payload: { candidateId: c.id },
+    })
+    .catch(() => undefined);
 }
 
 function findById(candidateId: string): Candidate | null {

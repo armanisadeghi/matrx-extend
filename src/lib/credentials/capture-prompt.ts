@@ -19,7 +19,7 @@ const HOST_ID = 'matrx-login-capture-host';
 /** Leave the toast alone after this long — the side-panel card still offers it. */
 const AUTO_HIDE_MS = 25_000;
 
-let current: { host: HTMLElement; timer: number | null } | null = null;
+let current: { candidateId: string; host: HTMLElement; timer: number | null } | null = null;
 
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -37,8 +37,11 @@ const BTN =
 const BTN_PRIMARY = `${BTN}background:#111;color:#fff;border-color:#111;`;
 const BTN_GHOST = `${BTN}background:transparent;border-color:transparent;color:#555;`;
 
-export function dismissCapturePrompt(): void {
+export function dismissCapturePrompt(candidateId?: string): void {
   if (!current) return;
+  // A delayed resolution for a replaced candidate must not close the newer
+  // prompt already mounted in the same tab.
+  if (candidateId && current.candidateId !== candidateId) return;
   if (current.timer !== null) window.clearTimeout(current.timer);
   current.host.remove();
   current = null;
@@ -156,5 +159,9 @@ export function showCapturePrompt(meta: CapturePromptMeta): void {
   shadow.appendChild(card);
   document.body.appendChild(host);
 
-  current = { host, timer: window.setTimeout(dismissCapturePrompt, AUTO_HIDE_MS) };
+  current = {
+    candidateId: meta.candidateId,
+    host,
+    timer: window.setTimeout(dismissCapturePrompt, AUTO_HIDE_MS),
+  };
 }

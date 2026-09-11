@@ -24,10 +24,20 @@ interface Call {
 }
 const calls: Call[] = [];
 const broadcasts: unknown[] = [];
+const tabMessages: unknown[] = [];
 const logCalls: unknown[] = [];
 let signedIn = true;
 let matches: Array<{ item_id: string; display_name: string }> = [];
 let itemFields: Array<{ id: string; field_key: string; is_active: boolean }> = [];
+
+Object.assign(chrome, {
+  tabs: {
+    sendMessage: async (tabId: number, message: unknown) => {
+      tabMessages.push({ tabId, message });
+      return { ok: true };
+    },
+  },
+});
 
 vi.mock('@/lib/api/routes/vault', () => ({
   WEBSITE_LOGIN_DEFINITION_KEY: 'website_login',
@@ -80,6 +90,7 @@ beforeEach(() => {
   calls.length = 0;
   broadcasts.length = 0;
   logCalls.length = 0;
+  tabMessages.length = 0;
   signedIn = true;
   matches = [];
   itemFields = [];
@@ -255,6 +266,24 @@ describe('content prompt — page overlay', () => {
     expect(style).toContain('top:12px;right:12px;z-index:2147483647');
     dismissCapturePrompt();
   });
+
+  it('dismisses only the resolved candidate, never a newer replacement', async () => {
+    const { dismissCapturePrompt, showCapturePrompt } = await import(
+      '@/lib/credentials/capture-prompt'
+    );
+    showCapturePrompt({
+      candidateId: 'cap-new',
+      tabId: 7,
+      host: 'app.example.com',
+      username: USER,
+      existing: [],
+    });
+
+    dismissCapturePrompt('cap-old');
+    expect(document.getElementById('matrx-login-capture-host')).not.toBeNull();
+    dismissCapturePrompt('cap-new');
+    expect(document.getElementById('matrx-login-capture-host')).toBeNull();
+  });
 });
 
 describe('host — decisions', () => {
@@ -276,6 +305,14 @@ describe('host — decisions', () => {
       browser_fill_enabled: true,
     });
     expect(host.pendingCaptureForTab(5)).toBeNull();
+    expect(tabMessages).toContainEqual({
+      tabId: 5,
+      message: {
+        __matrx: true,
+        kind: 'credential-capture:resolved',
+        payload: { candidateId: id },
+      },
+    });
     // A second save of the same id is refused — the value was dropped.
     expect((await host.applyCaptureDecision({ candidateId: id, action: 'save' })).status).toBe(
       'expired',

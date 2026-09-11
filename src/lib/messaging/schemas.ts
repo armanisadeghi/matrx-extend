@@ -77,6 +77,7 @@ export const CHANNELS = {
   // (both log their payload). Every other kind here is metadata only.
   CREDENTIAL_CAPTURE_CANDIDATE: 'credential-capture:candidate', // content → SW (raw, value-bearing)
   CREDENTIAL_CAPTURE_PROMPT: 'credential-capture:prompt', // SW → that tab's content script: show the toast
+  CREDENTIAL_CAPTURE_RESOLVED: 'credential-capture:resolved', // SW → that tab's content script: remove this candidate's toast
   CREDENTIAL_CAPTURE_DECISION: 'credential-capture:decision', // content / sidepanel → SW: save | update | dismiss | never
   CREDENTIAL_CAPTURE_STATUS: 'credential-capture:status', // sidepanel → SW: pending candidate for a tab (metadata)
   CREDENTIAL_CAPTURE_CHANGED: 'credential-capture:changed', // SW → all: { tabId } — a candidate appeared / resolved
