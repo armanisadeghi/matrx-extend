@@ -1,6 +1,7 @@
 /**
  * Direct, RLS-gated Supabase reads from the extension. The publishable key +
- * the user's JWT (set via setSupabaseSession) gates rows server-side.
+ * the user's JWT (read from chrome.storage.local by the client access-token
+ * hook) gates rows server-side.
  *
  * Schema mirror — these tables already exist in the Matrx Supabase project:
  *   - agent.definition        (Agent definitions — was public.agx_agent)

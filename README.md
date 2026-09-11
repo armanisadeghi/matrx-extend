@@ -27,7 +27,7 @@ this repo's specific mistakes. This file is setup and commands only.
 - **State**: Zustand 5 (persisted to `chrome.storage.local`), TanStack Query 5
 - **Validation**: Zod at every external boundary
 - **Cross-context messaging**: typed native `chrome.runtime` wrapper (SW ↔ side panel ↔ content ↔ offscreen)
-- **Auth / DB**: `@supabase/supabase-js` with a `chrome.storage` adapter, `autoRefreshToken: false`, manual refresh via `chrome.alarms`
+- **Auth / DB**: extension-owned OAuth tokens in `chrome.storage.local`; `@supabase/supabase-js` reads the current access token per request; refresh runs via `chrome.alarms`
 - **Scraping**: Defuddle → Readability fallback → DOMPurify → Turndown, plus collectors for images, video, audio, links, JSON-LD, microdata, OpenGraph
 - **Streaming**: `fetch` + `ReadableStream` inside an offscreen document, so a service-worker kill never cuts a long run
 - **Lint/format**: Biome · **tests**: Vitest + Playwright

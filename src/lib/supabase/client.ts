@@ -1,16 +1,15 @@
 /**
  * Supabase client singleton.
  *
- * Configured to NEVER refresh tokens itself — we drive that ourselves through
- * chrome.alarms (see src/lib/auth/flow.ts). persistSession is also off; the
- * extension owns token persistence in chrome.storage.local with explicit
- * encryption for the refresh token.
- *
- * After signIn, call setSupabaseSession() with the access + refresh tokens so
- * RLS policies see auth.uid() correctly.
+ * The extension owns OAuth token persistence and refresh through
+ * chrome.storage.local + chrome.alarms (see src/lib/auth/flow.ts). Supabase JS
+ * therefore receives the current access token through its custom accessToken
+ * hook instead of maintaining a second, in-memory GoTrue session. This is
+ * especially important for MV3: each service-worker wake creates a new JS
+ * realm, while chrome.storage.local remains the canonical session state.
  */
 
-import { ENV } from '@/config/env';
+import { ENV, STORAGE_KEYS } from '@/config/env';
 import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 
 let client: SupabaseClient | null = null;
@@ -18,10 +17,10 @@ let client: SupabaseClient | null = null;
 export function getSupabase(): SupabaseClient {
   if (client) return client;
   client = createClient(ENV.SUPABASE_URL, ENV.SUPABASE_PUBLISHABLE_KEY, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false,
+    accessToken: async () => {
+      const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
+      const token = stored[STORAGE_KEYS.ACCESS_TOKEN];
+      return typeof token === 'string' && token.length > 0 ? token : null;
     },
     global: {
       headers: {
@@ -33,21 +32,19 @@ export function getSupabase(): SupabaseClient {
 }
 
 /**
- * Push the current OAuth tokens into the Supabase JS client so it includes
- * the user's JWT on RLS-gated reads/writes and Realtime subscriptions.
+ * Push a freshly acquired token into Realtime immediately. PostgREST, Storage,
+ * and Functions read the canonical token from chrome.storage.local on every
+ * request through the accessToken hook above.
  */
-export async function setSupabaseSession(accessToken: string, refreshToken: string): Promise<void> {
+export async function setSupabaseSession(
+  accessToken: string,
+  _refreshToken: string,
+): Promise<void> {
   const c = getSupabase();
-  const { error } = await c.auth.setSession({
-    access_token: accessToken,
-    refresh_token: refreshToken,
-  });
-  if (error) {
-    console.warn('[matrx-extend] supabase.setSession failed', error.message);
-  }
+  c.realtime.setAuth(accessToken);
 }
 
 export async function clearSupabaseSession(): Promise<void> {
   const c = getSupabase();
-  await c.auth.signOut({ scope: 'local' }).catch(() => undefined);
+  c.realtime.setAuth();
 }

@@ -2247,10 +2247,13 @@ Every entry follows this shape:
   &lt;name&gt;** (a saved login already covers this site), **Not now**, **Never for this
   site**. Nothing is saved without a click. Signed in only; the prompt is on by default
   and can be turned off in Settings → Privacy → "Offer to save logins to the Vault".
-- **Where to test:** any https login page (a test account on a site you own, or a
-  synthetic credential) with the extension signed in.
+- **Where to test:** `https://the-internet.herokuapp.com/login` with its published
+  synthetic test credential and the extension signed in. Open Matrx from Chrome's
+  toolbar; a raw `chrome-extension://…` URL is not a portable test destination.
 - **Steps:**
-  1. Go to an https login page with NO saved login for that site. Sign in normally.
+  1. Confirm Settings → Organization loads the signed-in user's organizations without
+     `permission denied for function mbr_for_user`, then go to the test login page and
+     sign in normally.
   2. After the page settles, the on-page card says "Save this login to your Matrx
      Vault?" with the host and the username you typed. Click **Save** → "Saved to your
      Vault." → open the Vault tab → the item is in Mine, fill on, login URL set.
@@ -2264,7 +2267,8 @@ Every entry follows this shape:
      it under "Never ask on these sites" with **Ask again**.
   6. Turn the Privacy toggle off → sign in anywhere → no card anywhere.
   7. Sign out of Matrx → sign in to a site → no card (the Vault rejects guests).
-- **Expected:** the Debug tab shows `← receive credential-capture:decision` /
+- **Expected:** the on-page card is visibly fixed 12px from the top-right corner (it
+  must not fall into page flow), and the Debug tab shows `← receive credential-capture:decision` /
   `credential-capture:status` / `↗ broadcast credential-capture:changed` with host /
   username / item names only, and `→ POST vault/items` / `→ PUT vault/items/{item}/
   fields/{field}/value` with no body — the password NEVER appears in the Debug log, a
@@ -2276,6 +2280,9 @@ Every entry follows this shape:
   code box → no card; a two-step login (username on the previous screen) → card with
   host only (or the hidden identifier if the site keeps one). The on-page card hides
   itself after ~25s but the Vault-tab offer stays until the 3-minute expiry.
+- **Automated:** `tests/unit/credential-capture-prompt.test.ts` pins the shadow-host
+  reset-before-position declaration order; `tests/unit/supabase-client.test.ts` pins
+  the extension-owned access-token hook and Realtime token updates.
 
 ### Capture study set (`capture_study_set` — education, IC-11)
 - **What it does:** one-click import of the study set on the current page (a Quizlet set, a
