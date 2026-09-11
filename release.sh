@@ -503,6 +503,10 @@ CURRENT_STEP="version-commit"
 step "5/8  Commit version bump"
 COMMIT_MSG="release: ${NEW_TAG}"
 git add package.json 2>/dev/null || true
+# update-api-types runs before this commit and may change any generated bundle.
+# Stage the complete generated API surface so the release tag reproduces the
+# exact types compiled into both artifacts.
+git add types/python-generated 2>/dev/null || true
 # Only stage catalog files if regen succeeded — don't commit a stale one.
 if $CATALOG_OK; then
     git add types/tool-catalog.json types/tool-catalog.md 2>/dev/null || true
@@ -516,6 +520,13 @@ if ! git diff --cached --quiet; then
 else
     warn "Nothing staged — skipping version-bump commit"
     VERSION_COMMITTED=true  # nothing to roll back either
+fi
+
+# A release is not reproducible when generated API files used by the build are
+# outside the commit that will be tagged. This catches tracked and untracked
+# generated output before either artifact is built.
+if [[ -n "$(git status --porcelain -- types/python-generated)" ]]; then
+    fail "Generated API types remain outside the release commit. Refusing to build or tag a non-reproducible release."
 fi
 
 # ── 6. Build STORE zip (environment-gated key omission) ─────────────────────
