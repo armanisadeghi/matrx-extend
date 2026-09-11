@@ -2380,6 +2380,13 @@ Every entry follows this shape:
     its remedy ("retrying in 1s"), and after three retries against a genuinely
     unreachable backend it says "retries exhausted" and stops. Never silence,
     never a forever loop.
+  - THE SHADOWED LANE: a producer that shadows its text channel (a workflow node)
+    sends no verified `__ir` — only a `superseded` terminal plus the block's own
+    closed JSON. Such a block must swap straight into its real component the
+    moment it completes; seeing raw `{"__kind": …}` JSON sit there, or flash
+    before the component appears, is the bug. A `retracted` terminal, or JSON
+    whose `__kind` disagrees with the announced kind, correctly stays on the
+    honest raw fallback. Pinned by `src/components/kinds/render-block.test.tsx`.
 
 ### Organization on every request
 - **What it does:** every backend request and every organization-scoped write
