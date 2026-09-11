@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@ai-matrx/agents':
         specifier: latest
-        version: 0.10.6(@supabase/supabase-js@2.116.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        version: 0.10.7(@supabase/supabase-js@2.116.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@ai-matrx/content-ir':
         specifier: latest
         version: 0.11.1
@@ -19,7 +19,7 @@ importers:
         version: 0.11.2(react@19.2.5)
       '@ai-matrx/design-system':
         specifier: latest
-        version: 0.14.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        version: 0.14.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@ai-matrx/kit':
         specifier: latest
         version: 0.9.1(react@19.2.5)
@@ -219,8 +219,8 @@ packages:
   '@1natsu/wait-element@4.2.0':
     resolution: {integrity: sha512-Om0Q+WE9mNrpY4AwMTvkFiYHv8VM7TML3PvOqXy+w6kAjLjKhGYHYX+305+a6J8RVpds9s7IF2Z5aOPYwULFNw==}
 
-  '@ai-matrx/agents@0.10.6':
-    resolution: {integrity: sha512-YebeEUiVxkEA2yOgsjb72he7as+6hHTk+9pYxEX2FMFdXrJwHsdTizcffPzWIG388X4XlHClDyZv+TqfbOhlUg==}
+  '@ai-matrx/agents@0.10.7':
+    resolution: {integrity: sha512-ZIInbxQoeFcaK9zhjWaBmT/L/KmkaggjHfYM9vnF8qOdy7hGlgSGlOdfpy3Uw6NeDmNTWp6FDSoKR70Jx/YCIQ==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -253,8 +253,8 @@ packages:
       react:
         optional: true
 
-  '@ai-matrx/design-system@0.14.2':
-    resolution: {integrity: sha512-53GoChEM+rJpuXIYjqKL6YepPvrzQGEyXr/XAOli3xRwZbNYMkBdoV3vg5IugEZrRNRc3vpbkgFC+v1SBw6puw==}
+  '@ai-matrx/design-system@0.14.3':
+    resolution: {integrity: sha512-MDHwjJy2urNCvokoeex3leY6bO0JSX43xSwSTcLax0nAvwZA0HK4puf15+K1/W6DueG6XM5aoF+c3QxmCIZ1kw==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -5667,10 +5667,10 @@ snapshots:
       defu: 6.1.7
       many-keys-map: 3.0.3
 
-  '@ai-matrx/agents@0.10.6(@supabase/supabase-js@2.116.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+  '@ai-matrx/agents@0.10.7(@supabase/supabase-js@2.116.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
       '@ai-matrx/data': 0.11.1(@supabase/supabase-js@2.116.0)(react@19.2.5)
-      '@ai-matrx/design-system': 0.14.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@ai-matrx/design-system': 0.14.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
     optionalDependencies:
       react: 19.2.5
     transitivePeerDependencies:
@@ -5698,7 +5698,7 @@ snapshots:
       - '@supabase/supabase-js'
       - react-native
 
-  '@ai-matrx/design-system@0.14.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+  '@ai-matrx/design-system@0.14.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
       '@ai-matrx/kit': 0.9.1(react@19.2.5)
       '@radix-ui/react-accordion': 1.2.20(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -5750,7 +5750,7 @@ snapshots:
 
   '@ai-matrx/tap-target@0.2.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
-      '@ai-matrx/design-system': 0.14.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@ai-matrx/design-system': 0.14.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@radix-ui/react-tooltip': 1.2.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       react: 19.2.5
     transitivePeerDependencies:
