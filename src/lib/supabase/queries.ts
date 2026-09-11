@@ -605,6 +605,7 @@ export async function saveCapture(p: SaveCapturePayload): Promise<{ id: string }
       lang: p.lang ?? null,
       soup: p.soup,
       markdown: p.markdown ?? null,
+      // CONVERGE: C-7 — caller-supplied metadata written with no reserved-key guard; metadata is system-only — declared 2026-09-10, Data Doctrine §3.2. Register: /projects/data-doctrine-adoption/REGISTER.md#DD-060
       metadata: p.metadata ?? null,
       ld_json: p.ld_json ?? null,
       media_count: p.media_count ?? 0,

@@ -177,6 +177,7 @@ export async function createHighlight(input: CreateHighlightInput): Promise<High
     color: input.color ?? 'yellow',
     text: input.text ?? null,
     anchor: input.anchor ?? {},
+    // CONVERGE: C-7 — caller-supplied metadata written with no reserved-key guard; metadata is system-only — declared 2026-09-10, Data Doctrine §3.2. Register: /projects/data-doctrine-adoption/REGISTER.md#DD-060
     metadata: input.metadata ?? {},
     is_deleted: false,
   };
