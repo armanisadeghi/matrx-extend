@@ -467,7 +467,7 @@ async function ensureSession(): Promise<boolean> {
         return false;
       }
     });
-  return initialization;
+  return (await initialization) && storageAvailable;
 }
 
 async function refreshMatches(candidate: Candidate): Promise<void> {
@@ -744,8 +744,7 @@ export async function holdCandidate(
 
 /** Pending candidate for a tab, value-free. */
 export function pendingCaptureForTab(tabId: number): CapturePromptMeta | null {
-  if (!storageAvailable)
-    return { candidateId: '', tabId, host: '', username: null, existing: [], unavailable: true };
+  if (!storageAvailable) return unavailableMeta(tabId);
   const c = PENDING.get(tabId);
   if (!c) return null;
   if (c.expiresAt <= now()) {
@@ -770,6 +769,14 @@ const CLEANUP_UNAVAILABLE = 'Capture cleanup could not finish. Reopen the extens
 const MUTATION_COMMITTED_CLEANUP_UNAVAILABLE =
   'Your Vault change was committed, but browser cleanup could not finish. Reopen the extension and retry the same action.';
 
+function unavailableMeta(tabId: number): CapturePromptMeta {
+  return { candidateId: '', tabId, host: '', username: null, existing: [], unavailable: true };
+}
+
+function cleanupUnavailableResult(): CaptureDecisionResult {
+  return result('error', CLEANUP_UNAVAILABLE);
+}
+
 function result(
   status: CaptureDecisionResult['status'],
   message = COPY[status],
@@ -785,7 +792,8 @@ function result(
 export async function applyCaptureDecision(
   decision: CaptureDecision,
 ): Promise<CaptureDecisionResult> {
-  if (!(await ensureSession())) return result('error');
+  if (!(await ensureSession()))
+    return storageAvailable ? result('error') : cleanupUnavailableResult();
   const c = findById(decision.candidateId);
   if (!c || c.expiresAt <= now()) {
     if (c) await queued(() => removeCandidate(c));
@@ -1061,7 +1069,8 @@ export function registerCredentialCaptureHost(): void {
       }
       const decision = env.payload;
       void (async () => {
-        if (!(await ensureSession())) return result('error');
+        if (!(await ensureSession()))
+          return storageAvailable ? result('error') : cleanupUnavailableResult();
         const c = findById(decision.candidateId);
         if (!c) return result('expired');
         if (extensionPageSender(sender)) {
@@ -1085,7 +1094,7 @@ export function registerCredentialCaptureHost(): void {
       }
       const query = env.payload;
       void (async () => {
-        if (!(await ensureSession())) return null;
+        if (!(await ensureSession())) return storageAvailable ? null : unavailableMeta(query.tabId);
         const c = PENDING.get(query.tabId);
         if (!c || !sameActor(c.actor, await currentActor())) return null;
         const tab = await chrome.tabs.get(c.tabId).catch(() => null);

@@ -887,6 +887,29 @@ describe('host — registered worker listeners and session continuity', () => {
     expect(firstResult.message).toContain('Vault change was committed');
     expect(resolved(id)).toHaveLength(0);
 
+    const directRetry = await host.applyCaptureDecision({ candidateId: id, action: 'save' });
+    expect(directRetry).toMatchObject({ ok: false, status: 'error' });
+    expect(directRetry.message).toContain('Capture cleanup could not finish');
+    const listenerRetry = await ask({
+      __matrx: true,
+      kind: 'credential-capture:decision',
+      payload: { candidateId: id, action: 'save' },
+    });
+    expect(listenerRetry).toMatchObject({ ok: false, status: 'error' });
+    expect((listenerRetry as { message: string }).message).toContain(
+      'Capture cleanup could not finish',
+    );
+    const unavailableStatus = await ask(
+      { __matrx: true, kind: 'credential-capture:status', payload: { tabId: 33 } },
+      {
+        id: 'test-extension',
+        url: 'chrome-extension://test-extension/sidepanel.html',
+      } as chrome.runtime.MessageSender,
+    );
+    expect(unavailableStatus).toMatchObject({ tabId: 33, unavailable: true });
+    expect(calls.filter((call) => call.name === 'create')).toHaveLength(1);
+    expect(resolved(id)).toHaveLength(0);
+
     sessionSetFailure = null;
     sessionRemoveFailure = null;
     host._simulateCaptureWorkerRestartForTest();
