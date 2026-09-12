@@ -53,6 +53,8 @@ export const CANDIDATE_TTL_MS = 3 * 60_000;
 const PROMPT_FALLBACK_MS = 1500;
 /** The new page's content script may not be listening yet — retry the prompt. */
 const PROMPT_RETRY_DELAYS_MS = [0, 400, 1200, 3000];
+const SESSION_KEY = 'matrx.credentials.capture.pending.v1';
+const SESSION_VERSION = 1;
 
 interface Candidate {
   id: string;
@@ -77,6 +79,43 @@ interface Candidate {
 /** tabId → the one pending candidate for that tab. */
 const PENDING = new Map<number, Candidate>();
 let seq = 0;
+let initialization: Promise<boolean> | null = null;
+let mutationQueue: Promise<unknown> = Promise.resolve();
+
+type StoredCandidate = Pick<Candidate, 'id' | 'tabId' | 'origin' | 'loginUrl' | 'host' | 'username' | 'password' | 'expiresAt'> & { version: 1 };
+
+function serialize(): Record<string, StoredCandidate> {
+  return Object.fromEntries([...PENDING.values()].map((c) => [String(c.tabId), {
+    version: SESSION_VERSION, id: c.id, tabId: c.tabId, origin: c.origin, loginUrl: c.loginUrl,
+    host: c.host, username: c.username, password: c.password, expiresAt: c.expiresAt,
+  }]));
+}
+function queued<T>(work: () => Promise<T>): Promise<T> {
+  const next = mutationQueue.then(work, work);
+  mutationQueue = next.then(() => undefined, () => undefined);
+  return next;
+}
+async function persist(): Promise<void> {
+  await chrome.storage.session.set({ [SESSION_KEY]: serialize() });
+}
+async function ensureSession(): Promise<boolean> {
+  if (!initialization) initialization = queued(async () => {
+    try {
+      await chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
+      const stored = (await chrome.storage.session.get(SESSION_KEY))[SESSION_KEY];
+      if (!stored || typeof stored !== 'object') return true;
+      for (const row of Object.values(stored as Record<string, StoredCandidate>)) {
+        if (row?.version !== SESSION_VERSION || !Number.isInteger(row.tabId) || row.expiresAt <= now()) continue;
+        const tab = await chrome.tabs.get(row.tabId).catch(() => null);
+        if (!tab?.url || new URL(tab.url).origin !== row.origin) continue;
+        PENDING.set(row.tabId, { ...row, existing: [], promptTimer: null, expiryTimer: null, ready: false, loadCompleted: false, prompted: false });
+      }
+      await persist();
+      return true;
+    } catch { PENDING.clear(); return false; }
+  });
+  return initialization;
+}
 
 /** Test seam — tests replace this to avoid real timers. */
 let now: () => number = () => Date.now();
@@ -96,6 +135,7 @@ function drop(c: Candidate): void {
   if (c.promptTimer) clearTimeout(c.promptTimer);
   if (c.expiryTimer) clearTimeout(c.expiryTimer);
   if (PENDING.get(c.tabId) === c) PENDING.delete(c.tabId);
+  void queued(async () => { try { await persist(); } catch { /* no fallback */ } });
   // Overwrite before release — belt and braces against a lingering reference.
   c.password = '';
   broadcast(CHANNELS.CREDENTIAL_CAPTURE_CHANGED, { tabId: c.tabId });
@@ -172,6 +212,7 @@ export async function holdCandidate(
     prompt?: (c: Candidate) => Promise<void>;
   } = {},
 ): Promise<boolean> {
+  if (!(await ensureSession())) return false;
   const normalized = normalizeLoginUrl(wire.loginUrl);
   const parsed = safeParseUrl(wire.loginUrl);
   if (!normalized || !parsed || !isFillablePageUrl(wire.loginUrl)) return false;
@@ -201,6 +242,7 @@ export async function holdCandidate(
     prompted: false,
   };
   PENDING.set(tabId, candidate);
+  try { await queued(persist); } catch { PENDING.delete(tabId); candidate.password = ''; return false; }
   candidate.expiryTimer = setTimeout(() => {
     if (PENDING.get(tabId) === candidate) drop(candidate);
   }, CANDIDATE_TTL_MS);
@@ -217,6 +259,7 @@ export async function holdCandidate(
   candidate.existing = await resolveMatches(normalized);
   if (PENDING.get(tabId) !== candidate) return false; // replaced while resolving
   candidate.ready = true;
+  try { await queued(persist); } catch { drop(candidate); return false; }
 
   const prompt = deps.prompt ?? promptTab;
   if (candidate.loadCompleted) {
@@ -260,6 +303,7 @@ function result(status: CaptureDecisionResult['status']): CaptureDecisionResult 
 export async function applyCaptureDecision(
   decision: CaptureDecision,
 ): Promise<CaptureDecisionResult> {
+  if (!(await ensureSession())) return result('error');
   const c = findById(decision.candidateId);
   if (!c || c.expiresAt <= now()) {
     if (c) drop(c);

@@ -26,12 +26,25 @@ const calls: Call[] = [];
 const broadcasts: unknown[] = [];
 const tabMessages: unknown[] = [];
 const logCalls: unknown[] = [];
+const localStorage = new Map<string, unknown>();
 let signedIn = true;
 let matches: Array<{ item_id: string; display_name: string }> = [];
 let itemFields: Array<{ id: string; field_key: string; is_active: boolean }> = [];
 
 Object.assign(chrome, {
+  storage: {
+    local: {
+      get: async (keys?: string[] | null) => keys === null ? Object.fromEntries(localStorage) : Object.fromEntries((keys ?? []).flatMap((key) => localStorage.has(key) ? [[key, localStorage.get(key)]] : [])),
+      set: async (values: Record<string, unknown>) => void Object.entries(values).forEach(([key, value]) => localStorage.set(key, value)),
+    },
+    session: {
+      setAccessLevel: async () => undefined,
+      get: async () => ({}),
+      set: async () => undefined,
+    },
+  },
   tabs: {
+    get: async (id: number) => ({ id, url: 'https://app.example.com/login' }),
     sendMessage: async (tabId: number, message: unknown) => {
       tabMessages.push({ tabId, message });
       return { ok: true };
@@ -87,6 +100,7 @@ const DEPS = {
 };
 
 beforeEach(() => {
+  localStorage.clear();
   calls.length = 0;
   broadcasts.length = 0;
   logCalls.length = 0;
@@ -418,7 +432,7 @@ describe('plaintext path stays off the bus and off every persistence API', () =>
     expect(src).not.toMatch(/\bon<[^>]*>\(\s*CHANNELS\.CREDENTIAL_CAPTURE_CANDIDATE/);
     expect(src).not.toMatch(/\bon\(\s*CHANNELS\.CREDENTIAL_CAPTURE_CANDIDATE/);
     expect(src).toContain('chrome.runtime.onMessage.addListener');
-    for (const api of ['chrome.storage', 'localStorage', 'sessionStorage', 'indexedDB']) {
+    for (const api of ['chrome.storage.local', 'chrome.storage.sync', 'localStorage', 'sessionStorage', 'indexedDB']) {
       expect(src, `capture-candidates.ts must not reference ${api}`).not.toContain(api);
     }
     // The only log line mentions tab + host after a prompt attempt — no payload object.
