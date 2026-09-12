@@ -24,7 +24,7 @@
  */
 
 import { CHANNELS } from '@/lib/messaging/schemas';
-import type { CaptureCandidateReply } from './capture-types';
+import type { CaptureCandidateReply, CaptureUnavailableReason } from './capture-types';
 
 /** Wire shape of the one value-bearing envelope. Mirrored in capture-candidates.ts. */
 export interface CaptureCandidateWire {
@@ -243,18 +243,24 @@ export function mountCaptureDetector(doc: Document = document): () => void {
     const submittedOrigin = submittedUrl.origin;
     const submittedPath = submittedUrl.pathname;
     const submittedGeneration = ++generation;
-    postCandidate(snap, (reply, transportFailure) => {
-      if (disposed || generation !== submittedGeneration) return;
+    const isCurrentSubmission = () => {
+      if (disposed || generation !== submittedGeneration) return false;
       const currentUrl = new URL(doc.location.href);
-      if (currentUrl.origin !== submittedOrigin || currentUrl.pathname !== submittedPath) return;
+      return currentUrl.origin === submittedOrigin && currentUrl.pathname === submittedPath;
+    };
+    const renderUnavailable = (reason: CaptureUnavailableReason, transportFailure = false) => {
+      void import('./capture-prompt')
+        .then(({ showCaptureUnavailable }) => {
+          if (isCurrentSubmission()) showCaptureUnavailable(reason, transportFailure);
+        })
+        .catch(() => undefined);
+    };
+    postCandidate(snap, (reply, transportFailure) => {
+      if (!isCurrentSubmission()) return;
       if (reply?.status === 'unavailable') {
-        void import('./capture-prompt').then(({ showCaptureUnavailable }) =>
-          showCaptureUnavailable(reply.reason),
-        );
+        renderUnavailable(reply.reason);
       } else if (transportFailure) {
-        void import('./capture-prompt').then(({ showCaptureUnavailable }) =>
-          showCaptureUnavailable('capture_unavailable', true),
-        );
+        renderUnavailable('capture_unavailable', true);
       }
     });
   };

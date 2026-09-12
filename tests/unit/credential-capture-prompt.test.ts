@@ -738,6 +738,15 @@ describe('host — registered worker listeners and session continuity', () => {
     expect(JSON.stringify(reply)).not.toContain(USER);
   });
 
+  it('returns a value-free unavailable reply when a verified candidate cannot be held', async () => {
+    sessionSetFailure = new Error('trusted session unavailable');
+    const reply = await ask({ __matrx: true, kind: 'credential-capture:candidate', payload: WIRE });
+    expect(reply).toEqual({ status: 'unavailable', reason: 'capture_unavailable', tabId: 33 });
+    expect(JSON.stringify(reply)).not.toContain(SENTINEL);
+    expect(JSON.stringify(reply)).not.toContain(USER);
+    expect(JSON.stringify(reply)).not.toContain(ACTOR.userId);
+  });
+
   it('rehydrates before an extension-page status request and schedules idle expiry', async () => {
     const host = await import('@/lib/credentials/capture-candidates');
     await host.holdCandidate(33, WIRE, DEPS);
