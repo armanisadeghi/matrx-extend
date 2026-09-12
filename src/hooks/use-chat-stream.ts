@@ -1,5 +1,6 @@
 import {
   type AgentStartRequest,
+  type RequestInitiation,
   agentTargetExecutePath,
   mandateExecutePath,
 } from '@/lib/api/routes/ai';
@@ -109,6 +110,16 @@ interface SendOptions {
    * Pilot runs report 'pilot' so server-side analytics can split the two.
    */
   sourceFeature?: string;
+  /**
+   * Provenance attestation for THIS send — the only input we have into the
+   * server's `origin_class` (see `AgentStartRequest.initiation`). Defaults to
+   * `'user'` because every send through the chat composer, the retry button
+   * and the ask-card answer IS a direct human gesture. Callers that fire
+   * without one — the Agenda alarm listener, the auto-run-on-focus effect —
+   * MUST pass `'auto'`; claiming `'user'` there would file a robot's run as a
+   * person's.
+   */
+  initiation?: RequestInitiation;
   /**
    * When provided, the run pins to this tab id instead of the active tab.
    * Pilot uses this to keep every tool call inside the session's tab group.
@@ -941,6 +952,12 @@ export function useChatStream() {
         store: true,
         source_app: 'matrx-extend',
         source_feature: opts.sourceFeature ?? 'chat',
+        // Provenance attestation. Default 'user': the composer, retry and
+        // ask-card answer paths are all direct human gestures. Automation
+        // (Agenda alarms, the auto-run-on-focus effect) passes 'auto'.
+        // Omitting the field entirely would file this human's chat as an
+        // unattested API caller.
+        initiation: opts.initiation ?? 'user',
         ...adminOverrides,
         ...(configOverrides ? { config_overrides: configOverrides } : {}),
         // New capability envelope. Replaces the old `client_tools` field.
@@ -1180,6 +1197,11 @@ export function useChatStream() {
 
       const body: Record<string, unknown> = {
         context,
+        // Provenance: a resume is ALWAYS client code, never a gesture. It is
+        // fired by the STREAM_CONTINUE broadcast after the SW answered a
+        // delegated tool call, or by the stall watchdog — nobody clicks it.
+        // `/resume` is a ScopedRequest endpoint, so the field lands.
+        initiation: 'auto' satisfies RequestInitiation,
         client: {
           capabilities: ['browser-dom'],
           state: {

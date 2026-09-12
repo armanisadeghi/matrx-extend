@@ -52,6 +52,10 @@ export function AiRecommendations({ audit }: { audit: SeoAudit }) {
       agentId,
       body: buildSeoRecommendationsRequest(audit),
       runIdPrefix: 'seorec',
+      // 'user': `start` is only wired to the "Get recommendations" / retry
+      // buttons below. The audit itself is computed on load, but this AI run
+      // never fires until the person asks for it.
+      initiation: 'user',
     });
   };
 

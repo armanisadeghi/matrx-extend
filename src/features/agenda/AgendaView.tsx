@@ -72,7 +72,11 @@ export function AgendaView() {
     const task = tasks.find((t) => t.id === focusTaskId);
     if (!task) return;
     if (task.auth_mode === 'auto' && task.enabled && !isTaskRunning(task.id)) {
-      void runTask(task, send).then(() => void refresh());
+      // 'auto': this fires from a mount effect reacting to a focus id restored
+      // from session storage, not from a control the person pressed on this
+      // screen. An effect-driven send is automation even when a notification
+      // click led here.
+      void runTask(task, send, 'auto').then(() => void refresh());
     }
   }, [focusTaskId, tasks, send, refresh]);
 
@@ -153,7 +157,8 @@ function TaskRow({
     try {
       // Fires the task through the chat stream pipeline. Switches the
       // sidepanel to the chat tab so the user sees it run.
-      await runTask(task, send);
+      // 'user': the Run-now button — a direct press on this row.
+      await runTask(task, send, 'user');
       log.info('sys', `agenda: "${task.title}" running`);
     } finally {
       setWorking(null);

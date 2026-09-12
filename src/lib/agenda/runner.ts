@@ -19,6 +19,7 @@
  * SW-side code never imports from here; runner is sidepanel-context only.
  */
 
+import type { RequestInitiation } from '@/lib/api/routes/ai';
 import { log } from '@/lib/debug/log';
 import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { on, send } from '@/lib/messaging/native';
@@ -43,6 +44,8 @@ type SendFn = (
     agentName?: string;
     conversationId?: string;
     variables?: Record<string, unknown>;
+    /** Provenance attestation — see AgentStartRequest.initiation. */
+    initiation?: RequestInitiation;
     /** Fires synchronously with the claimed runId, before any await. */
     onRunId?: (runId: string) => void;
     /** Fires when the stream failed to start (no chunk will ever arrive). */
@@ -67,8 +70,18 @@ export function isTaskRunning(taskId: string): boolean {
 /**
  * Kick off a run. Returns null if another surface already holds the lease
  * or if the lease attempt failed; otherwise returns the new run row.
+ *
+ * `initiation` is REQUIRED and has no default on purpose: an Agenda task runs
+ * from BOTH a scheduled alarm (`'auto'`) and the Run-now button (`'user'`), and
+ * a default here would quietly file one of them as the other. It is the
+ * client's only input into the server's `origin_class` — see
+ * `AgentStartRequest.initiation`.
  */
-export async function runTask(task: AgendaTask, send: SendFn): Promise<AgendaRun | null> {
+export async function runTask(
+  task: AgendaTask,
+  send: SendFn,
+  initiation: RequestInitiation,
+): Promise<AgendaRun | null> {
   if (inFlightByTaskId.has(task.id)) {
     log.info('sys', `agenda: task ${task.id} already running locally`);
     return null;
@@ -177,6 +190,7 @@ export async function runTask(task: AgendaTask, send: SendFn): Promise<AgendaRun
   try {
     const returnedRunId = await send(task.prompt, {
       agentId,
+      initiation,
       ...(task.persistent_conversation_id
         ? { conversationId: task.persistent_conversation_id }
         : {}),

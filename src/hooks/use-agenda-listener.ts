@@ -34,7 +34,10 @@ export function useAgendaListener(): void {
         }
         if (!task.enabled) return { ack: true };
         log.info('sys', `agenda listener: SW asked us to run "${task.title}"`);
-        await runTask(task, send);
+        // 'auto': the SW's schedule alarm asked for this run. Nobody clicked
+        // anything — the person may not even have the sidepanel in front of
+        // them. Claiming 'user' here would file a cron run as a human's.
+        await runTask(task, send, 'auto');
         return { ack: true };
       },
     );

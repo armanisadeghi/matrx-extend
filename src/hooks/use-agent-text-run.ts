@@ -21,7 +21,11 @@
  * missing conversation id does not, and is rejected.
  */
 
-import { type AgentStartRequest, agentTargetExecutePath } from '@/lib/api/routes/ai';
+import {
+  type AgentStartRequest,
+  type RequestInitiation,
+  agentTargetExecutePath,
+} from '@/lib/api/routes/ai';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
@@ -51,6 +55,13 @@ export interface AgentTextRunInput {
   body: Omit<AgentStartRequest, 'stream' | 'organization_id'>;
   /** Prefix for the generated runId — shows up in stream logs. */
   runIdPrefix?: string;
+  /**
+   * REQUIRED provenance attestation — see `AgentStartRequest.initiation`.
+   * No default: this is a generic one-shot-run primitive, so only the caller
+   * knows whether a person pressed something. A default would be a guess, and
+   * a wrong guess here corrupts the platform's human/automation split.
+   */
+  initiation: RequestInitiation;
 }
 
 export interface AgentTextRun {
@@ -152,6 +163,9 @@ export function useAgentTextRun(): AgentTextRun {
             ...input.body,
             organization_id: organizationId,
             stream: true,
+            // Stamped AFTER the caller's body so this hook is the single,
+            // authoritative writer of the attestation for every run it opens.
+            initiation: input.initiation,
           } satisfies AgentStartRequest,
           parser: 'rich-events' as const,
           agentName: null,

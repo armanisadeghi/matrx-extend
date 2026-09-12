@@ -81,7 +81,11 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
     setRunError(null);
     setRunNote(null);
     try {
-      const data = await runSavedPattern(p, tab.id, { onProgress: setRunNote });
+      // 'user': handleRun is the Run control on a pattern row.
+      const data = await runSavedPattern(p, tab.id, {
+        onProgress: setRunNote,
+        initiation: 'user',
+      });
       setRows(data);
       void bumpPatternRun(p.id, 'ok', data.length);
     } catch (err) {

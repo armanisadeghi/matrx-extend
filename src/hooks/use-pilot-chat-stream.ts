@@ -15,7 +15,11 @@
  *     scoped to the session's tab group, never to the user's focused tab.
  */
 
-import { type AgentStartRequest, agentExecutePath } from '@/lib/api/routes/ai';
+import {
+  type AgentStartRequest,
+  type RequestInitiation,
+  agentExecutePath,
+} from '@/lib/api/routes/ai';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
@@ -55,6 +59,13 @@ interface SendOptions {
    * pilot gate rejects calls whose assignedTabId isn't in the group.
    */
   assignedTabId: number;
+  /**
+   * Provenance attestation for THIS send — see `AgentStartRequest.initiation`.
+   * Defaults to `'user'`: PilotView's only send path is the composer submit,
+   * a direct human gesture. An automated Pilot driver added later MUST pass
+   * `'auto'` rather than inherit the human default.
+   */
+  initiation?: RequestInitiation;
 }
 
 interface StreamChunk {
@@ -486,6 +497,9 @@ export function usePilotChatStream() {
         store: true,
         source_app: 'matrx-extend',
         source_feature: 'pilot-chat',
+        // Provenance attestation — PilotView only sends from the composer
+        // submit handler, so 'user' is the honest default here.
+        initiation: opts.initiation ?? 'user',
         ...adminOverrides,
         ...(configOverrides ? { config_overrides: configOverrides } : {}),
         client: {
@@ -643,6 +657,9 @@ export function usePilotChatStream() {
 
       const body: Record<string, unknown> = {
         context,
+        // Provenance: a resume is ALWAYS client code (STREAM_CONTINUE after a
+        // delegated tool answer, or the stall watchdog) — never a gesture.
+        initiation: 'auto' satisfies RequestInitiation,
         client: {
           capabilities: ['browser-dom'],
           state: {

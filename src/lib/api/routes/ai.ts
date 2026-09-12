@@ -74,6 +74,17 @@ export interface AgentClientEnvelope {
 }
 
 /**
+ * Provenance attestation carried by every AI request. See
+ * `AgentStartRequest.initiation` for the contract — this is the client's only
+ * input into aidream's `origin_class`, and omitting it classes the run `api`.
+ *
+ * Declared HERE rather than taken from `types/python-generated/api-types.ts`
+ * on purpose: that file is generated from aidream's OpenAPI and must never be
+ * hand-edited, and this is the call-site-facing type our hooks thread around.
+ */
+export type RequestInitiation = 'user' | 'auto';
+
+/**
  * AgentStartRequest shape. Matches the live FastAPI route after the
  * capability-based agent API rolled out (2026-05-01).
  *
@@ -124,6 +135,23 @@ export interface AgentStartRequest {
   };
   source_app?: string;
   source_feature?: string;
+  /**
+   * REQUIRED IN PRACTICE on every request this client sends. The ONLY input a
+   * client has into the server's `origin_class`: `'user'` means a person
+   * directly triggered this run (typed and sent, clicked a button); `'auto'`
+   * means extension code triggered it (an on-mount effect, an alarm, an agent
+   * tool spawning a sub-run). OMIT it and aidream classes the traffic `api`
+   * — an unattested HTTP caller — so every honest human send in this
+   * extension would be filed as a robot.
+   *
+   * Be honest: the field is an attestation, not a label. aidream derives the
+   * real class in `matrx_connect.context.provenance` from this plus its own
+   * witnessed facts (route, auth type, process role), records the witness on
+   * the row, and overrules a background caller that claims `'user'`. Claiming
+   * `'user'` for an effect-driven send corrupts the human/automation split for
+   * the whole platform.
+   */
+  initiation?: RequestInitiation;
 
   // ── admin overrides ─────────────────────────────────────────────────────
   /** Verbose debug events in the SSE stream. Admin-only. */

@@ -14,7 +14,12 @@
  * of `runPattern` — DOM kinds route straight through to runPattern.
  */
 
-import { type AgentStartRequest, agentExecutePath, mandateExecutePath } from '@/lib/api/routes/ai';
+import {
+  type AgentStartRequest,
+  type RequestInitiation,
+  agentExecutePath,
+  mandateExecutePath,
+} from '@/lib/api/routes/ai';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
@@ -30,6 +35,13 @@ export interface InteractiveRunOptions {
   onProgress?: (note: string) => void;
   /** Hard cap for the whole interactive run. */
   timeoutMs?: number;
+  /**
+   * REQUIRED provenance attestation for any AI request this run opens — see
+   * `AgentStartRequest.initiation`. No default: a saved pattern is run BOTH
+   * from a Run button (`'user'`) and by the `data_patterns` agent tool
+   * (`'auto'`), so the two drivers must declare themselves.
+   */
+  initiation: RequestInitiation;
 }
 
 interface StreamChunk {
@@ -96,7 +108,7 @@ interface SavedAiConfig {
 export async function runAiExtractPattern(
   config: unknown,
   tabId: number,
-  opts: InteractiveRunOptions = {},
+  opts: InteractiveRunOptions,
 ): Promise<ExtractedRow[]> {
   const { agent_id, mandate_key, description, output_schema } = (config ?? {}) as SavedAiConfig;
   if ((!agent_id && !mandate_key) || !description) {
@@ -139,6 +151,9 @@ export async function runAiExtractPattern(
     store: false,
     source_app: 'matrx-extend',
     source_feature: 'data-ai-extract-rerun',
+    // Declared by the driver: the Patterns/Data Run buttons pass 'user', the
+    // `data_patterns` agent tool passes 'auto'. Never defaulted here.
+    initiation: opts.initiation,
   };
 
   opts.onProgress?.('Extracting via agent…');
@@ -288,7 +303,7 @@ export class NetworkNoMatchError extends Error {
 export async function runNetworkCapturePattern(
   config: unknown,
   tabId: number,
-  opts: InteractiveRunOptions = {},
+  opts: InteractiveRunOptions,
 ): Promise<ExtractedRow[]> {
   const { url_filter, method, key_path } = (config ?? {}) as SavedNetConfig;
   if (!url_filter) {
@@ -396,7 +411,7 @@ export async function runNetworkCapturePattern(
 export async function runSavedPattern(
   pattern: ExtractionPattern,
   tabId: number,
-  opts: InteractiveRunOptions = {},
+  opts: InteractiveRunOptions,
 ): Promise<ExtractedRow[]> {
   if (pattern.kind === 'ai_extract') return runAiExtractPattern(pattern.config, tabId, opts);
   if (pattern.kind === 'network_capture') {

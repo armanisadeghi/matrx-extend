@@ -213,6 +213,11 @@ async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
     stream: true,
     source_app: 'matrx-extend',
     source_feature: 'parallel-tab',
+    // 'auto': a sub-run SPAWNED BY AN AGENT TOOL CALL. The human gesture was
+    // the parent chat send, which already attested 'user'; this fan-out is the
+    // model's decision, and claiming 'user' would multiply one person's send
+    // into N "human" runs.
+    initiation: 'auto',
     client: {
       capabilities: ['browser-dom'],
       state: { 'browser-dom': browserDomState },

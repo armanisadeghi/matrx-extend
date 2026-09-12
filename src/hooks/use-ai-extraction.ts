@@ -168,6 +168,10 @@ export function useAiExtraction() {
         store: false,
         source_app: 'matrx-extend',
         source_feature: 'data-ai-extract',
+        // 'user': `extract()` has exactly one caller — the Extract button in
+        // AiExtractTab. Nothing schedules or effect-fires this hook. If an
+        // automated driver is added, thread an option; don't inherit this.
+        initiation: 'user',
         // No browser-dom capability needed — this flow is pure extraction
         // against page text we already captured. The server runs without
         // any client-side tool round-trips.

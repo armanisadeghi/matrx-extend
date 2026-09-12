@@ -155,8 +155,12 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
         return { ok: false, reason: `No pattern ${args.pattern_id} under ${domain}.` };
       }
       try {
+        // 'auto': an AGENT called this tool. The person's gesture was the
+        // parent chat send, already attested there; this nested AI run is the
+        // model's decision, not a second human action.
         const rows = await runSavedPattern(pattern, tab.id, {
           onProgress: (note) => ctx.reportProgress?.(note),
+          initiation: 'auto',
         });
         void bumpPatternRun(pattern.id, 'ok', rows.length);
         const limit = args.rows_limit ?? DEFAULT_ROWS_LIMIT;

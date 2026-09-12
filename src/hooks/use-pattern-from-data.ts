@@ -305,6 +305,9 @@ export function usePatternFromData() {
         store: false,
         source_app: 'matrx-extend',
         source_feature: 'data-pattern-from-data',
+        // 'user': one caller — the "build a pattern from these rows" button in
+        // AiExtractTab, pressed on rows the person just extracted by hand.
+        initiation: 'user',
         // No browser-dom capability needed — this flow synthesizes a CSS
         // pattern from sample rows the user already extracted, without
         // any browser tool round-trips.

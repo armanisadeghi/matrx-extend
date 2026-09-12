@@ -187,7 +187,11 @@ export function DataView() {
     setRows(null);
     setRunNote(null);
     try {
-      const data = await runSavedPattern(pattern, tab.id, { onProgress: setRunNote });
+      // 'user': handleRun is the Run control on a pattern row.
+      const data = await runSavedPattern(pattern, tab.id, {
+        onProgress: setRunNote,
+        initiation: 'user',
+      });
       setRows(data);
       void bumpPatternRun(pattern.id, 'ok', data.length);
     } catch (err) {
