@@ -92,7 +92,7 @@ const read = (file: string): string => readFileSync(join(SRC, file), 'utf8');
 /** How far from the anchor an attestation may sit and still belong to it. */
 const WINDOW_LINES = 12;
 
-export function attestationOf(source: string, anchor: string): string | null {
+function attestationOf(source: string, anchor: string): string | null {
   const lines = source.split('\n');
   // Skip doc-comment mentions of the anchor (several of these files describe
   // their own `source_feature` in the header block) — only real code counts.
