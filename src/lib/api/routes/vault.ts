@@ -48,7 +48,15 @@
  * they consume — same convention as every other file in this folder.
  */
 
-import { type ApiResult, apiDelete, apiGet, apiPatch, apiPost, apiPut } from '@/lib/api/client';
+import {
+  type ApiRequestOptions,
+  type ApiResult,
+  apiDelete,
+  apiGet,
+  apiPatch,
+  apiPost,
+  apiPut,
+} from '@/lib/api/client';
 import { getAccessToken } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 
@@ -164,18 +172,35 @@ const SIGN_IN_REQUIRED: ApiResult<never> = {
   error: 'sign_in_required',
 };
 
-async function vaultGet<T>(path: string): Promise<ApiResult<T>> {
+export interface VaultExpectedActor {
+  userId: string;
+  organizationId: string;
+}
+interface VaultRequestOptions {
+  expectedActor?: VaultExpectedActor;
+  idempotencyKey?: string;
+}
+function transportOptions(options?: VaultRequestOptions, silent = false): ApiRequestOptions {
+  return {
+    ...(silent ? { silent: true } : {}),
+    ...(options?.expectedActor ? { expectedActor: options.expectedActor } : {}),
+    ...(options?.idempotencyKey ? { headers: { 'Idempotency-Key': options.idempotencyKey } } : {}),
+  };
+}
+
+async function vaultGet<T>(path: string, options?: VaultRequestOptions): Promise<ApiResult<T>> {
   if (!(await hasRealUserToken())) return SIGN_IN_REQUIRED;
-  return apiGet<T>(path);
+  return apiGet<T>(path, undefined, transportOptions(options));
 }
 
 async function vaultPost<T>(
   path: string,
   body: unknown,
-  opts?: { silent?: boolean },
+  options?: VaultRequestOptions,
+  silent = false,
 ): Promise<ApiResult<T>> {
   if (!(await hasRealUserToken())) return SIGN_IN_REQUIRED;
-  return apiPost<T>(path, body, undefined, opts);
+  return apiPost<T>(path, body, undefined, transportOptions(options, silent));
 }
 
 async function vaultPatch<T>(path: string, body: unknown): Promise<ApiResult<T>> {
@@ -186,10 +211,11 @@ async function vaultPatch<T>(path: string, body: unknown): Promise<ApiResult<T>>
 async function vaultPut<T>(
   path: string,
   body: unknown,
-  opts?: { silent?: boolean },
+  options?: VaultRequestOptions,
+  silent = false,
 ): Promise<ApiResult<T>> {
   if (!(await hasRealUserToken())) return SIGN_IN_REQUIRED;
-  return apiPut<T>(path, body, undefined, opts);
+  return apiPut<T>(path, body, undefined, transportOptions(options, silent));
 }
 
 async function vaultDelete<T>(path: string): Promise<ApiResult<T>> {
@@ -201,12 +227,13 @@ async function vaultDelete<T>(path: string): Promise<ApiResult<T>> {
 export async function fetchBrowserLoginMatches(
   pageUrl: string,
   options?: { includeFieldInventory?: boolean },
+  request?: VaultRequestOptions,
 ): Promise<VaultResult<BrowserLoginMatchesResponse>> {
   log.info('api', '→ POST vault/browser-login/matches');
   const r = await vaultPost<BrowserLoginMatchesResponse>(`${BASE}/matches`, {
     page_url: pageUrl,
     ...(options?.includeFieldInventory ? { include_field_inventory: true } : {}),
-  });
+  }, request);
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   const data = r.data;
   if (!data || !Array.isArray(data.matches)) {
@@ -244,6 +271,7 @@ export async function materializeBrowserLogin(
     clientBuild: string;
     fieldKeys?: string[];
   },
+  request?: VaultRequestOptions,
 ): Promise<VaultResult<BrowserLoginMaterialized>> {
   log.info('api', '→ POST vault/browser-login/{item}/materialize');
   const r = await vaultPost<BrowserLoginMaterialized>(
@@ -255,7 +283,8 @@ export async function materializeBrowserLogin(
       ...(params.fieldKeys ? { field_keys: params.fieldKeys } : {}),
     },
     // Plaintext body: a malformed 2xx must not be quoted into the debug log.
-    { silent: true },
+    request,
+    true,
   );
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   const data = r.data;
@@ -298,7 +327,8 @@ export async function materializeBrowserAuthenticator(
       client_build: params.clientBuild,
     },
     // TOTP body: a malformed response must never be quoted into debug logs.
-    { silent: true },
+    undefined,
+    true,
   );
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   const data = r.data;
@@ -355,10 +385,8 @@ export async function submitBrowserLoginReport(
   input: BrowserLoginReportInput,
 ): Promise<VaultResult<BrowserLoginReportReceipt>> {
   log.info('api', '→ POST vault/browser-login/report');
-  const r = await vaultPost<BrowserLoginReportReceipt>(`${BASE}/report`, input, {
-    // User-authored text: never let a malformed response quote request context.
-    silent: true,
-  });
+  // User-authored text: never let a malformed response quote request context.
+  const r = await vaultPost<BrowserLoginReportReceipt>(`${BASE}/report`, input, undefined, true);
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   if (!r.data || typeof r.data.id !== 'string' || typeof r.data.status !== 'string') {
     return { ok: false, failure: { kind: 'server_error', status: 200 } };
@@ -469,7 +497,7 @@ export async function captureCredential(
     field_values: input.field_values,
   };
   // Plaintext body: silent so a malformed 2xx cannot be quoted into the log.
-  const r = await vaultPost<CaptureReceipt>(`${BASE}/capture`, body, { silent: true });
+  const r = await vaultPost<CaptureReceipt>(`${BASE}/capture`, body, undefined, true);
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   const data = r.data;
   if (!data || typeof data.status !== 'string') {
@@ -674,8 +702,11 @@ export async function fetchVaultItemsSharedWithMe(): Promise<VaultResult<VaultIt
 }
 
 /** One item, freshly masked. Used to refresh a row after a PATCH. */
-export async function fetchVaultItem(itemId: string): Promise<VaultResult<VaultItemSummary>> {
-  const r = await vaultGet<unknown>(`${ITEMS}/${encodeURIComponent(itemId)}`);
+export async function fetchVaultItem(
+  itemId: string,
+  options?: VaultRequestOptions,
+): Promise<VaultResult<VaultItemSummary>> {
+  const r = await vaultGet<unknown>(`${ITEMS}/${encodeURIComponent(itemId)}`, options);
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   const item = normalizeItem(r.data);
   if (!item) return { ok: false, failure: { kind: 'server_error', status: 200 } };
@@ -706,6 +737,7 @@ export async function updateVaultItemMetadata(
  */
 export async function createVaultItem(
   input: VaultItemCreateInput,
+  options?: VaultRequestOptions,
 ): Promise<VaultResult<VaultItemSummary>> {
   log.info('api', '→ POST vault/items');
   const body = {
@@ -725,7 +757,7 @@ export async function createVaultItem(
     ...(input.notes !== undefined ? { notes: input.notes } : {}),
   };
   // Plaintext body: silent so a malformed 2xx cannot be quoted into the log.
-  const r = await vaultPost<unknown>(ITEMS, body, { silent: true });
+  const r = await vaultPost<unknown>(ITEMS, body, options, true);
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   const item = normalizeItem(r.data);
   if (!item) return { ok: false, failure: { kind: 'server_error', status: 200 } };
@@ -751,12 +783,14 @@ export async function updateVaultFieldValue(
   itemId: string,
   fieldId: string,
   value: string,
+  options?: VaultRequestOptions,
 ): Promise<VaultResult<void>> {
   log.info('api', '→ PUT vault/items/{item}/fields/{field}/value');
   const r = await vaultPut<unknown>(
     `${fieldPath(itemId, fieldId)}/value`,
     { value },
-    { silent: true },
+    options,
+    true,
   );
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   return { ok: true, data: undefined };
@@ -766,12 +800,14 @@ export async function updateVaultFieldValue(
 export async function addVaultField(
   itemId: string,
   field: VaultFieldInput,
+  options?: VaultRequestOptions,
 ): Promise<VaultResult<void>> {
   log.info('api', '→ POST vault/items/{item}/fields');
   const r = await vaultPost<unknown>(
     `${itemPath(itemId)}/fields`,
     { field_key: field.field_key, value: field.value, handling: field.handling ?? 'revealable' },
-    { silent: true },
+    options,
+    true,
   );
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   return { ok: true, data: undefined };
@@ -813,7 +849,8 @@ export async function revealVaultField(
     `${ITEMS}/${encodeURIComponent(itemId)}/reveal`,
     { field_key: fieldKey },
     // Plaintext body: a malformed 2xx must not be quoted into the debug log.
-    { silent: true },
+    undefined,
+    true,
   );
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   const value = r.data?.value;

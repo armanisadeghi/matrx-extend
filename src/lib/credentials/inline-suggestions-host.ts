@@ -294,7 +294,11 @@ async function query(tabId: number, documentId: string, selector: string): Promi
   const url = new URL(group.pageUrl);
   if (!isSafeDestination(url) || !normalizeLoginUrl(group.pageUrl))
     return response('unsafe_destination');
-  const matches = await fetchBrowserLoginMatches(group.pageUrl, { includeFieldInventory: true });
+  const matches = await fetchBrowserLoginMatches(
+    group.pageUrl,
+    { includeFieldInventory: true },
+    { expectedActor: actor },
+  );
   if (GENERATIONS.get(generationKey(tabId, documentId)) !== generation)
     return response('unsafe_destination');
   const actorAfterMatches = await context();
@@ -374,7 +378,7 @@ async function fill(
     toolInvocationId: `inline-${offer.id}`,
     clientBuild: chrome.runtime.getManifest().version,
     fieldKeys: current.usernameOnly ? ['username'] : ['username', 'password'],
-  });
+  }, { expectedActor: actor });
   if (!materialized.ok)
     return fillResponse(materialized.failure.kind === 'forbidden' ? 'stale' : 'unavailable');
   const data = materialized.data;

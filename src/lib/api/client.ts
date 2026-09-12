@@ -7,7 +7,7 @@
  */
 
 import { getBackendUrl } from '@/config/backend';
-import { getAccessToken, refreshAccessToken } from '@/lib/auth/flow';
+import { getAccessToken, getVerifiedCurrentUser, refreshAccessToken } from '@/lib/auth/flow';
 import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
 import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';
@@ -153,6 +153,14 @@ interface RequestOptions {
   retryOn401?: boolean;
   /** Suppress the per-request error log line. Caller still gets the structured ApiResult. */
   silent?: boolean;
+  /** Fail closed unless the actual bearer subject and canonical org still match. */
+  expectedActor?: { userId: string; organizationId: string };
+}
+
+export interface ApiRequestOptions {
+  silent?: boolean;
+  expectedActor?: { userId: string; organizationId: string };
+  headers?: Record<string, string>;
 }
 
 async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
@@ -160,6 +168,21 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   const url = `${baseUrl}${opts.path}`;
   const headers = await buildHeaders(opts.headers);
   const hasAuth = !!headers.Authorization;
+  if (opts.expectedActor) {
+    const [verifiedUser, canonicalOrganizationId] = await Promise.all([
+      getVerifiedCurrentUser(headers.Authorization?.slice('Bearer '.length)),
+      getActiveOrganizationId(),
+    ]);
+    if (
+      verifiedUser?.id !== opts.expectedActor.userId ||
+      canonicalOrganizationId !== opts.expectedActor.organizationId
+    ) {
+      return { ok: false, status: 403, error: 'expected_actor_mismatch' };
+    }
+    // Call-site headers can never substitute an organization after this check.
+    const bound = applyOrganizationContextHeader({}, opts.expectedActor.organizationId);
+    headers[ORGANIZATION_CONTEXT_HEADER] = bound[ORGANIZATION_CONTEXT_HEADER] as string;
+  }
   if (hasAuth && !headers[ORGANIZATION_CONTEXT_HEADER] && !isOrgExemptPath(opts.path)) {
     const failure = new OrganizationNotSelectedError();
     log.error('api', `✗ ${opts.method} ${opts.path} — no organization selected`, {
@@ -257,13 +280,15 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
 export async function apiGet<T>(
   path: string,
   signal?: AbortSignal,
-  opts?: { silent?: boolean },
+  opts?: ApiRequestOptions,
 ): Promise<ApiResult<T>> {
   return rawRequest<T>({
     method: 'GET',
     path,
     ...(signal !== undefined ? { signal } : {}),
     ...(opts?.silent !== undefined ? { silent: opts.silent } : {}),
+    ...(opts?.expectedActor !== undefined ? { expectedActor: opts.expectedActor } : {}),
+    ...(opts?.headers !== undefined ? { headers: opts.headers } : {}),
   });
 }
 
@@ -278,7 +303,7 @@ export async function apiPost<T>(
   path: string,
   body: unknown,
   signal?: AbortSignal,
-  opts?: { silent?: boolean },
+  opts?: ApiRequestOptions,
 ): Promise<ApiResult<T>> {
   return rawRequest<T>({
     method: 'POST',
@@ -286,6 +311,8 @@ export async function apiPost<T>(
     body,
     ...(signal !== undefined ? { signal } : {}),
     ...(opts?.silent !== undefined ? { silent: opts.silent } : {}),
+    ...(opts?.expectedActor !== undefined ? { expectedActor: opts.expectedActor } : {}),
+    ...(opts?.headers !== undefined ? { headers: opts.headers } : {}),
   });
 }
 
@@ -293,7 +320,7 @@ export async function apiPatch<T>(
   path: string,
   body: unknown,
   signal?: AbortSignal,
-  opts?: { silent?: boolean },
+  opts?: ApiRequestOptions,
 ): Promise<ApiResult<T>> {
   return rawRequest<T>({
     method: 'PATCH',
@@ -301,6 +328,8 @@ export async function apiPatch<T>(
     body,
     ...(signal !== undefined ? { signal } : {}),
     ...(opts?.silent !== undefined ? { silent: opts.silent } : {}),
+    ...(opts?.expectedActor !== undefined ? { expectedActor: opts.expectedActor } : {}),
+    ...(opts?.headers !== undefined ? { headers: opts.headers } : {}),
   });
 }
 
@@ -308,7 +337,7 @@ export async function apiPut<T>(
   path: string,
   body: unknown,
   signal?: AbortSignal,
-  opts?: { silent?: boolean },
+  opts?: ApiRequestOptions,
 ): Promise<ApiResult<T>> {
   return rawRequest<T>({
     method: 'PUT',
@@ -316,6 +345,8 @@ export async function apiPut<T>(
     body,
     ...(signal !== undefined ? { signal } : {}),
     ...(opts?.silent !== undefined ? { silent: opts.silent } : {}),
+    ...(opts?.expectedActor !== undefined ? { expectedActor: opts.expectedActor } : {}),
+    ...(opts?.headers !== undefined ? { headers: opts.headers } : {}),
   });
 }
 

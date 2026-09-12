@@ -360,7 +360,7 @@ function scheduleRefresh(tokens: OAuthTokens): void {
   }
 }
 
-async function fetchSupabaseUser(accessToken: string): Promise<UserProfile> {
+export async function fetchSupabaseUser(accessToken: string): Promise<UserProfile> {
   const res = await fetch(`${ENV.SUPABASE_URL}/auth/v1/user`, {
     headers: {
       apikey: ENV.SUPABASE_PUBLISHABLE_KEY,
@@ -384,6 +384,23 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
   const result = await chrome.storage.local.get([STORAGE_KEYS.USER_PROFILE]);
   const profile = result[STORAGE_KEYS.USER_PROFILE];
   return profile ? (profile as UserProfile) : null;
+}
+
+/**
+ * Resolve the subject of the bearer token that will be sent on a sensitive
+ * request. The cached profile is useful for rendering, but it is not proof
+ * that a refreshed or replaced token belongs to the same person.
+ */
+export async function getVerifiedCurrentUser(
+  accessToken?: string | null,
+): Promise<UserProfile | null> {
+  const token = accessToken ?? (await getAccessToken());
+  if (!token) return null;
+  try {
+    return await fetchSupabaseUser(token);
+  } catch {
+    return null;
+  }
 }
 
 export async function isAuthenticated(): Promise<boolean> {
