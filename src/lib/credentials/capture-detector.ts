@@ -35,8 +35,9 @@ export interface CaptureCandidateWire {
 
 const MAX_USERNAME_LEN = 256;
 const MAX_PASSWORD_LEN = 1024;
-/** Don't re-send the same snapshot for a double submit (Enter + click). */
+/** A submission identity lives briefly, but only coalesces one user gesture. */
 const DEDUPE_WINDOW_MS = 3000;
+const GESTURE_FOLLOWUP_MS = 500;
 
 function isVisibleEditable(input: HTMLInputElement): boolean {
   if (input.disabled || input.readOnly || input.type === 'hidden') return false;
@@ -215,16 +216,22 @@ function postCandidate(candidate: CaptureCandidateWire): void {
  * Install the listeners. Idempotent per document. Returns a disposer (tests).
  */
 export function mountCaptureDetector(doc: Document = document): () => void {
-  const submitted = new WeakMap<HTMLElement, number>();
+  const transactions = new WeakMap<HTMLElement, { id: number; at: number }>();
+  let nextTransactionId = 0;
 
-  const consider = (anchor: Element | null) => {
+  const consider = (anchor: Element | null, startsGesture: boolean) => {
     const group = coherentGroup(anchor);
     if (!group) return;
     const now = Date.now();
-    if (now - (submitted.get(group) ?? 0) < DEDUPE_WINDOW_MS) return;
+    const prior = transactions.get(group);
+    if (prior && now - prior.at >= DEDUPE_WINDOW_MS) transactions.delete(group);
+    const previous = transactions.get(group);
+    if (!startsGesture && previous && now - previous.at < GESTURE_FOLLOWUP_MS) return;
     const snap = snapshotLogin(anchor, doc);
     if (!snap) return;
-    submitted.set(group, now);
+    // The identity joins click/Enter with its native submit. A later trusted
+    // gesture starts a new transaction, even inside the short retention window.
+    transactions.set(group, { id: ++nextTransactionId, at: now });
     postCandidate(snap);
   };
 
@@ -235,12 +242,13 @@ export function mountCaptureDetector(doc: Document = document): () => void {
     const submitter = (e as SubmitEvent).submitter;
     consider(
       submitter instanceof Element ? submitter : e.target instanceof Element ? e.target : null,
+      false,
     );
   };
   // Enter inside a password box — SPA logins often have no <form>.
   const onKeyDown = (e: KeyboardEvent) => {
     if (!e.isTrusted || e.key !== 'Enter') return;
-    if (isPasswordInput(e.target as Element | null)) consider(e.target as Element);
+    if (isPasswordInput(e.target as Element | null)) consider(e.target as Element, true);
   };
   // A submit-looking control clicked near a filled password box.
   const onClick = (e: MouseEvent) => {
@@ -250,10 +258,10 @@ export function mountCaptureDetector(doc: Document = document): () => void {
     if (!control) return;
     const form = control.closest('form');
     if (form) {
-      consider(control);
+      consider(control, true);
       return;
     }
-    if (coherentGroup(control)) consider(control);
+    if (coherentGroup(control)) consider(control, true);
   };
 
   doc.addEventListener('submit', onSubmit, true);
