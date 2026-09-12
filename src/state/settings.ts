@@ -81,6 +81,8 @@ interface SettingsState {
    * path; the toggle (and per-site "Never") make it reversible.
    */
   captureLoginsEnabled: boolean;
+  /** Offer a Vault chooser when an eligible login control receives focus. */
+  offerSavedLoginsEnabled: boolean;
 
   // ─── Scrape auto-capture ───────────────────────────────────────────────
   /**
@@ -105,6 +107,7 @@ interface SettingsState {
   setModelOverrideId: (id: string | null) => void;
   setSharePageIdentity: (b: boolean) => void;
   setCaptureLoginsEnabled: (b: boolean) => void;
+  setOfferSavedLoginsEnabled: (b: boolean) => void;
   setScrapeAutoOnLoad: (b: boolean) => void;
   setScrapeAutoMode: (m: ScrapeAutoMode) => void;
 }
@@ -121,6 +124,7 @@ export const useSettingsStore = create<SettingsState>()(
       modelOverrideId: null,
       sharePageIdentity: true,
       captureLoginsEnabled: true,
+      offerSavedLoginsEnabled: true,
       scrapeAutoOnLoad: false,
       scrapeAutoMode: 'capture',
       setTheme: (theme) => set({ theme }),
@@ -133,6 +137,7 @@ export const useSettingsStore = create<SettingsState>()(
       setModelOverrideId: (modelOverrideId) => set({ modelOverrideId }),
       setSharePageIdentity: (sharePageIdentity) => set({ sharePageIdentity }),
       setCaptureLoginsEnabled: (captureLoginsEnabled) => set({ captureLoginsEnabled }),
+      setOfferSavedLoginsEnabled: (offerSavedLoginsEnabled) => set({ offerSavedLoginsEnabled }),
       setScrapeAutoOnLoad: (scrapeAutoOnLoad) => set({ scrapeAutoOnLoad }),
       setScrapeAutoMode: (scrapeAutoMode) => set({ scrapeAutoMode }),
     }),

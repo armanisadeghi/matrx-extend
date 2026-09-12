@@ -81,6 +81,12 @@ export const CHANNELS = {
   CREDENTIAL_CAPTURE_DECISION: 'credential-capture:decision', // content / sidepanel → SW: save | update | dismiss | never
   CREDENTIAL_CAPTURE_STATUS: 'credential-capture:status', // sidepanel → SW: pending candidate for a tab (metadata)
   CREDENTIAL_CAPTURE_CHANGED: 'credential-capture:changed', // SW → all: { tabId } — a candidate appeared / resolved
+  // Inline saved-login suggestions. These envelopes are metadata-only: values
+  // are materialized only after a user chooses an offer inside the SW.
+  CREDENTIAL_SUGGESTIONS_QUERY: 'credential-suggestions:query', // content → SW (raw)
+  CREDENTIAL_SUGGESTIONS_FILL: 'credential-suggestions:fill', // content → SW (raw)
+  CREDENTIAL_SUGGESTIONS_CONTEXT_CHANGED: 'credential-suggestions:context-changed', // SW → content
+  CREDENTIAL_SUGGESTIONS_OPEN_VAULT: 'credential-suggestions:open-vault', // content → SW
   TOOL_TIMELINE_EVENT: 'tool:timeline-event', // SW → sidepanel: render in the chat (started / completed / error)
   // sidepanel → SW: re-dispatch a persisted client-delegated call on conversation
   // open (cold-resume). The conversation was left paused waiting on the call; the

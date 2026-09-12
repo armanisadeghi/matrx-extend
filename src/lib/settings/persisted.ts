@@ -26,6 +26,7 @@ interface PersistedSettingsBlob {
   state?: {
     defaultPermissionMode?: PermissionMode;
     captureLoginsEnabled?: boolean;
+    offerSavedLoginsEnabled?: boolean;
     [k: string]: unknown;
   };
   version?: number;
@@ -65,4 +66,10 @@ export async function readDefaultPermissionMode(): Promise<PermissionMode> {
 export async function readCaptureLoginsEnabled(): Promise<boolean> {
   const state = await readPersistedSettingsState();
   return state?.captureLoginsEnabled !== false;
+}
+
+/** Whether focused login fields may offer a metadata-only Vault chooser. */
+export async function readOfferSavedLoginsEnabled(): Promise<boolean> {
+  const state = await readPersistedSettingsState();
+  return state?.offerSavedLoginsEnabled !== false;
 }

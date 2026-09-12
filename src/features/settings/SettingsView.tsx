@@ -259,6 +259,16 @@ export function SettingsView() {
                   />
                 }
               />
+              <ControlRow
+                label="Offer saved logins on sign-in forms"
+                hint="shows account names beside eligible sign-in fields; a login is filled only after you choose one"
+                control={
+                  <Switch
+                    checked={settings.offerSavedLoginsEnabled}
+                    onCheckedChange={settings.setOfferSavedLoginsEnabled}
+                  />
+                }
+              />
               <NeverCaptureSites />
             </Card>
           </Collapsible>

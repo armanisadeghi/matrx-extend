@@ -57,6 +57,11 @@ export function mountContentBridge(_ctx: ContentCtx): void {
   // and register two onMessage listeners, producing double responses.
   if (window.__matrx_bridge_mounted) return;
   window.__matrx_bridge_mounted = true;
+  // Focus-time metadata matching is independent of capture and never reads an
+  // input value. The module owns its closed-shadow UI and raw SW messages.
+  void import('@/lib/credentials/inline-suggestions').then(({ mountInlineCredentialSuggestions }) =>
+    mountInlineCredentialSuggestions(),
+  );
 
   // Scroll sync state. The side panel turns the listener on when the
   // user enables "Sync scroll" on the Scrape tab; off when they disable it
