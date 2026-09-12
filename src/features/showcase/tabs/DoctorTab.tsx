@@ -157,6 +157,14 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
                           {MODE_LABELS[r.mode] ?? r.mode}
                         </span>
                         <span className="text-[11px]">{r.reason}</span>
+                        {/* The probe returned bytes; the size is rendered HERE,
+                            where `formatFileSize` exists — the same number the
+                            Page signals rows below already print. */}
+                        {r.size_bytes === undefined ? null : (
+                          <span className="mt-0.5 shrink-0 whitespace-nowrap rounded-md bg-muted px-1.5 py-px text-[9px] font-medium tabular-nums text-muted-foreground">
+                            {formatFileSize(r.size_bytes)}
+                          </span>
+                        )}
                       </button>
                     );
                   })}

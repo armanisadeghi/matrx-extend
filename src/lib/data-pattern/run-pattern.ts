@@ -75,7 +75,13 @@ export async function detectModeInPage(
     func: mode.detectInPage as (cfg?: unknown) => DetectionHint,
     args: [safeArg(config)],
   });
-  return (result?.[0]?.result ?? null) as DetectionHint | null;
+  const hint = (result?.[0]?.result ?? null) as DetectionHint | null;
+  if (hint === null) return null;
+  // THE PROBE RETURNS FACTS; THE EXTENSION REALM RENDERS THEM (2026-09-12).
+  // `detectInPage` runs in the page, where no import exists — which is why a
+  // mode that wanted to print a byte count used to divide by 1024 and append
+  // " KB" in there. The hook runs HERE, where `@ai-matrx/kit/format` resolves.
+  return mode.summarize ? { ...hint, summary: mode.summarize(hint) } : hint;
 }
 
 /**

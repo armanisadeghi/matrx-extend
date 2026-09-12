@@ -41,8 +41,24 @@ export interface PageDiagnostic {
     window_assignments: { name: string; size_bytes: number }[];
     repeating_groups: RepeatingGroup[];
   };
-  // Recommendations: which mode is most likely to work
-  recommendations: { mode: string; reason: string; config?: unknown }[];
+  /**
+   * Which mode is most likely to work.
+   *
+   * `size_bytes` IS THE REASON THIS IS A NUMBER (2026-09-12). One
+   * recommendation used to build "…present (12.4 KB) —…" inside the probe,
+   * dividing by 1024 and appending the unit in the page's realm, and that was
+   * allowlisted on the grounds that `chrome.scripting.executeScript` cannot
+   * carry an import. The boundary is real; the conclusion was not. A byte count
+   * is a FACT the probe can report, and "12.7 KB" is a rendering decision that
+   * belongs where `formatFileSize` lives — which is also why the diagnostic
+   * JSON a user copies to an AI is better off carrying the number.
+   */
+  recommendations: {
+    mode: string;
+    reason: string;
+    size_bytes?: number;
+    config?: unknown;
+  }[];
   // Lightweight body sample for debugging (first ~500 chars of <main>/<article>/<body>)
   body_sample: string;
   body_total_bytes: number;
@@ -352,7 +368,8 @@ export function pageDiagnosticInPage(): PageDiagnostic {
   if (out.sources.next_data.present) {
     out.recommendations.push({
       mode: 'next_data',
-      reason: `__NEXT_DATA__ present (${(out.sources.next_data.size_bytes / 1024).toFixed(1)} KB) — pick a key path in Framework tab`,
+      reason: '__NEXT_DATA__ present — pick a key path in Framework tab',
+      size_bytes: out.sources.next_data.size_bytes,
     });
   }
   if (out.sources.nuxt_data.present) {

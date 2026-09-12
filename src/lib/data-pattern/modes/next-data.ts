@@ -1,3 +1,4 @@
+import { formatFileSize } from '@ai-matrx/kit/format';
 import { z } from 'zod';
 import type { ExtractionMode } from '../types';
 
@@ -135,13 +136,37 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
     if (found.length === 0) {
       return { available: false, summary: 'No embedded framework data' };
     }
-    const summary = found.map((f) => `${f.source} (${(f.size / 1024).toFixed(1)} KB)`).join(', ');
+    // NO FORMATTING IN THE PAGE. The sizes travel as NUMBERS in `meta.sources`
+    // and `summarize` below turns them into a sentence in the extension realm,
+    // where `formatFileSize` exists. This line used to read
+    // `${f.source} (${(f.size / 1024).toFixed(1)} KB)` — a byte-size formatter
+    // that was silently allowlisted because "it can't import across the
+    // chrome.scripting boundary". True, and not a reason: the probe reports
+    // facts, the extension renders them.
     return {
       available: true,
-      summary,
+      summary: found.map((f) => f.source).join(', '),
       count: found.length,
       meta: { sources: found },
     };
+  },
+
+  /**
+   * "__NEXT_DATA__ (12.7 KB), window._initialData (48.3 KB)". Runs in the
+   * extension realm on the hint the probe returned, so the number is
+   * `formatFileSize`'s — which also means a 3 MB blob now reads "3.0 MB"
+   * instead of the old "3072.0 KB".
+   */
+  summarize: (hint) => {
+    const sources = hint.meta?.sources;
+    if (!Array.isArray(sources) || sources.length === 0) return hint.summary;
+    return sources
+      .map((entry) => {
+        const { source, size } = entry as { source?: unknown; size?: unknown };
+        const name = typeof source === 'string' ? source : 'unknown source';
+        return typeof size === 'number' ? `${name} (${formatFileSize(size)})` : name;
+      })
+      .join(', ');
   },
 
   runInPage: (config) => {

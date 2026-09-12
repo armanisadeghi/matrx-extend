@@ -32,6 +32,24 @@ export type ExtractionMode<TConfig = unknown> = {
   runInPage: (config: TConfig) => ExtractedRow[];
   buildConfig?: (pattern: PatternForBuildConfig) => TConfig;
   /**
+   * Rewrite the hint's `summary` in the EXTENSION realm, from the facts the
+   * probe returned in `meta`.
+   *
+   * WHY THIS EXISTS (2026-09-12). `detectInPage` crosses the chrome.scripting
+   * boundary, so it genuinely cannot import a package symbol — and that fact
+   * was being used as a reason to let a probe keep FORMATTING. It is not one:
+   * the probe's job is to report facts about the page, and a byte count is a
+   * fact while "12.4 KB" is a rendering decision. `next_data`'s probe divided
+   * by 1024 and appended " KB" inside the page; now it returns the sizes it
+   * already carried in `meta.sources` and this hook, which runs where the
+   * imports DO exist, calls `formatFileSize`. The boundary was never the
+   * problem — the probe returning a sentence instead of a number was.
+   *
+   * `detectModeInPage` applies it to every hint. Optional: a mode whose summary
+   * is a constant ("Manual mode") has nothing to format.
+   */
+  summarize?: (hint: DetectionHint) => string;
+  /**
    * True for modes whose runInPage is a stub (ai_extract, network_capture):
    * a real run needs surface-level orchestration (agent stream / re-capture),
    * not a single executeScript pass. `runPattern` refuses these so they can

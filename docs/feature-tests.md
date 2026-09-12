@@ -894,6 +894,19 @@ Every entry follows this shape:
   On chrome:// pages a readable error shows (no spinner hang).
 - **Edge cases:** giant pages (50k+ elements) still probe quickly — the
   repeating-group scan is capped at 20k elements.
+- **Byte sizes come from the package, including inside the recommendations
+  (2026-09-12).** The `__NEXT_DATA__` recommendation used to read
+  "__NEXT_DATA__ present (12.4 KB) — pick a key path in Framework tab", with
+  the number built by the in-page probe. The probe now returns `size_bytes` and
+  the row renders a separate size chip through `formatFileSize`, the same
+  function the "Page signals" rows below it already used.
+  - **Steps:** Open any Next.js site (e.g. nextjs.org) → Doctor auto-probes.
+  - **Expected:** the Framework recommendation shows the sentence plus a size
+    chip, and that chip matches the `__NEXT_DATA__` row in Page signals
+    EXACTLY. A multi-megabyte blob reads "3.0 MB", never "3072.0 KB".
+  - **Same change in the Framework tab's detection line:** it reads
+    "__NEXT_DATA__ (12.7 KB), window._initialData (48.3 MB)" — built in the
+    extension realm from the sizes the probe returned as numbers.
 
 ### Showcase — Recipes tab (DB-backed)
 - **What it does:** One-click curated extraction configs, loaded from
