@@ -940,7 +940,10 @@ Every entry follows this shape:
   Extract → Save pattern (create new table from fields).
 - **Expected:** Detection summary matches the page; rows render; saving with
   a duplicate name auto-suffixes "(2)". The created table has EVERY column
-  the preview showed (union of all rows, not just row 1).
+  the preview showed (union of all rows, not just row 1), and is created in
+  the organization selected when Save pattern was clicked. With no selected
+  organization, the draft remains open and names Settings as the recovery;
+  no dataset request is sent.
 
 ### Showcase — Tables tab (auto_table mode)
 - **What it does:** Detects every `<table>` on the page (≥2 rows) and

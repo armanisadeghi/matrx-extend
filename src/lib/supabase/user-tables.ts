@@ -31,6 +31,7 @@
 import { getSupabase } from '@/lib/supabase/client';
 import { type DbCallSite, failDbCall } from '@/lib/supabase/db-failure';
 import { workbenchDb } from '@/lib/supabase/schemas';
+import { applyOrganizationContextHeader } from '@ai-matrx/agents/matrx';
 import { z } from 'zod';
 
 /**
@@ -158,7 +159,8 @@ export interface CreateUserTableInput {
   table_name: string;
   description?: string;
   is_public?: boolean;
-  organization_id?: string | null;
+  /** Immutable organization captured when the create action begins. */
+  organization_id: string;
   project_id?: string | null;
   task_id?: string | null;
   fields: {
@@ -168,6 +170,25 @@ export interface CreateUserTableInput {
     field_order: number;
     is_required?: boolean;
   }[];
+}
+
+/**
+ * Fail before constructing a Supabase client when an operation has no usable
+ * organization. The shared request kernel owns UUID validation, so the direct
+ * RPC path cannot drift from the organization header's contract.
+ */
+function requireUserTableOrganizationId(organizationId: unknown): string {
+  if (typeof organizationId !== 'string') {
+    throw new Error('Choose your organization in Settings, then try creating this dataset again.');
+  }
+  try {
+    applyOrganizationContextHeader({}, organizationId);
+  } catch {
+    throw new Error(
+      'Choose a valid organization in Settings, then try creating this dataset again.',
+    );
+  }
+  return organizationId;
 }
 
 /**
@@ -186,12 +207,13 @@ export async function createUserTableFromSchema(
     what: 'create this dataset',
     title: 'Dataset not created',
   };
+  const organizationId = requireUserTableOrganizationId(input.organization_id);
   const c = getSupabase();
   const { data, error } = await c.rpc('create_user_table_with_fields', {
     p_table_name: input.table_name,
     p_description: input.description ?? null,
     p_is_public: input.is_public ?? false,
-    p_organization_id: input.organization_id ?? null,
+    p_organization_id: organizationId,
     p_project_id: input.project_id ?? null,
     p_task_id: input.task_id ?? null,
     p_fields: input.fields.map((f) => ({

@@ -1,3 +1,4 @@
+import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import type { ExtractionSource } from '@/hooks/use-extraction';
 import { useUserTables } from '@/hooks/use-user-tables';
@@ -64,6 +65,7 @@ export function SaveAsPattern({
   const [err, setErr] = useState<string | null>(null);
 
   const { tables, createTable, appendRows } = useUserTables();
+  const { active: activeOrganization } = useActiveOrganization();
 
   // Union across ALL rows — the preview table shows every column, so the
   // created table must too (single-row inference silently dropped columns
@@ -87,6 +89,14 @@ export function SaveAsPattern({
 
   const handleSave = async () => {
     if (!host) return;
+
+    // Capture the selected organization at the initiating click. A later
+    // Settings change must not redirect this in-flight dataset create.
+    const operationOrganizationId = activeOrganization?.id;
+    if (target === NEW_TABLE && !operationOrganizationId) {
+      setErr('Choose your organization in Settings, then try creating this dataset again.');
+      return;
+    }
     setSaving(true);
     setErr(null);
     setSavedSummary(null);
@@ -104,12 +114,20 @@ export function SaveAsPattern({
       let targetTableId: string | null = null;
 
       if (target === NEW_TABLE) {
+        // Kept beside the write as a type-and-runtime boundary: only this
+        // captured operation value may enter the dataset RPC.
+        if (!operationOrganizationId) {
+          throw new Error(
+            'Choose your organization in Settings, then try creating this dataset again.',
+          );
+        }
         // Throws on refusal (the user already saw the reason as a notice);
         // the catch at the bottom of this function renders the same sentence
         // in the popover.
         const created = await createTable({
           table_name: newTableName || name || `${host} extraction`,
           description: `Auto-created from matrx-extend ${kind} pattern.`,
+          organization_id: operationOrganizationId,
           fields: inferredFields,
         });
         targetTableId = created.id;
