@@ -204,6 +204,51 @@ function clearMemory(): void {
   PENDING.clear();
   storageAvailable = false;
 }
+
+/**
+ * The persisted operation is a sealed capability, not a second user input.
+ * Keep its construction and restore-time validation tied to the same frozen
+ * candidate snapshot so a corrupt session row cannot redirect a later retry.
+ */
+function createBodyFor(snapshot: Pick<Candidate, 'host' | 'loginUrl' | 'username' | 'password'>) {
+  if (!snapshot.password) return null;
+  return {
+    display_name: snapshot.host,
+    fields: [
+      ...(snapshot.username ? [{ field_key: 'username' as const, value: snapshot.username }] : []),
+      { field_key: 'password' as const, value: snapshot.password },
+    ],
+    definition_key: WEBSITE_LOGIN_DEFINITION_KEY,
+    login_urls: [snapshot.loginUrl],
+    browser_fill_enabled: true,
+  };
+}
+
+function exactKeys(value: object, keys: readonly string[]): boolean {
+  return (
+    Object.keys(value).length === keys.length &&
+    Object.keys(value).every((key) => keys.includes(key))
+  );
+}
+
+function exactFields(
+  fields: unknown,
+  expected: ReadonlyArray<{ field_key: 'username' | 'password'; value: string }>,
+): boolean {
+  return (
+    Array.isArray(fields) &&
+    fields.length === expected.length &&
+    fields.every(
+      (field, index) =>
+        !!field &&
+        typeof field === 'object' &&
+        exactKeys(field, ['field_key', 'value']) &&
+        (field as Record<string, unknown>).field_key === expected[index]?.field_key &&
+        (field as Record<string, unknown>).value === expected[index]?.value,
+    )
+  );
+}
+
 function validStored(row: unknown): row is StoredCandidate {
   if (!row || typeof row !== 'object') return false;
   const r = row as Record<string, unknown>;
@@ -235,7 +280,8 @@ function validStored(row: unknown): row is StoredCandidate {
     typeof r.loginUrl !== 'string' ||
     typeof r.host !== 'string' ||
     (r.stage !== 'username_first' && r.stage !== 'password') ||
-    (r.username !== null && typeof r.username !== 'string') ||
+    (r.username !== null &&
+      (typeof r.username !== 'string' || r.username.length === 0 || r.username.length > 256)) ||
     !(
       (r.stage === 'password' &&
         typeof r.password === 'string' &&
@@ -253,8 +299,9 @@ function validStored(row: unknown): row is StoredCandidate {
     !r.sourcePath.startsWith('/') ||
     !r.actor ||
     typeof r.actor !== 'object' ||
-    typeof (r.actor as Record<string, unknown>).userId !== 'string' ||
-    typeof (r.actor as Record<string, unknown>).organizationId !== 'string' ||
+    !exactKeys(r.actor, ['userId', 'organizationId']) ||
+    !UUID.test(String((r.actor as Record<string, unknown>).userId)) ||
+    !UUID.test(String((r.actor as Record<string, unknown>).organizationId)) ||
     !Number.isFinite(r.createdAt) ||
     !Number.isFinite(r.expiresAt) ||
     (r.expiresAt as number) - (r.createdAt as number) !== CANDIDATE_TTL_MS ||
@@ -263,64 +310,71 @@ function validStored(row: unknown): row is StoredCandidate {
     (r.state !== 'ready' && r.state !== 'in_flight')
   )
     return false;
-  const exact = (value: object, keys: readonly string[]) =>
-    Object.keys(value).every((key) => keys.includes(key));
+
+  const parsed = safeParseUrl(r.loginUrl);
+  const normalized = normalizeLoginUrl(r.loginUrl);
+  if (
+    !parsed ||
+    !normalized ||
+    !isFillablePageUrl(r.loginUrl) ||
+    r.loginUrl !== normalized ||
+    r.origin !== parsed.origin ||
+    r.host !== parsed.host ||
+    r.sourcePath !== parsed.pathname
+  )
+    return false;
+
   if (r.state === 'ready') return r.operation === null;
-  if (!r.operation || typeof r.operation !== 'object') return false;
+  if (r.stage !== 'password' || !r.password || !r.operation || typeof r.operation !== 'object')
+    return false;
   const operation = r.operation as Record<string, unknown>;
   if (!UUID.test(String(operation.key))) return false;
   if (operation.kind === 'create_item') {
     const body = operation.body as Record<string, unknown> | null;
-    const urls = body?.login_urls;
+    const expected = createBodyFor({
+      host: r.host as string,
+      loginUrl: r.loginUrl as string,
+      username: r.username as string | null,
+      password: r.password as string | null,
+    });
     return (
       !!body &&
+      !!expected &&
       typeof body === 'object' &&
-      exact(operation, ['kind', 'key', 'body']) &&
-      exact(body, [
+      exactKeys(operation, ['kind', 'key', 'body']) &&
+      exactKeys(body, [
         'display_name',
         'fields',
         'definition_key',
         'login_urls',
         'browser_fill_enabled',
       ]) &&
-      typeof body.display_name === 'string' &&
-      body.definition_key === WEBSITE_LOGIN_DEFINITION_KEY &&
-      body.browser_fill_enabled === true &&
-      Array.isArray(body.fields) &&
-      body.fields.length >= 1 &&
-      body.fields.length <= 2 &&
-      body.fields.every(
-        (field) =>
-          !!field &&
-          typeof field === 'object' &&
-          exact(field, ['field_key', 'value']) &&
-          ['username', 'password'].includes(
-            (field as Record<string, unknown>).field_key as string,
-          ) &&
-          typeof (field as Record<string, unknown>).value === 'string',
-      ) &&
-      Array.isArray(urls) &&
-      urls.length === 1 &&
-      urls[0] === r.loginUrl
+      body.display_name === expected.display_name &&
+      exactFields(body.fields, expected.fields) &&
+      body.definition_key === expected.definition_key &&
+      Array.isArray(body.login_urls) &&
+      body.login_urls.length === 1 &&
+      body.login_urls[0] === expected.login_urls[0] &&
+      body.browser_fill_enabled === expected.browser_fill_enabled
     );
   }
   return (
     (operation.kind === 'update_field' &&
-      exact(operation, ['kind', 'key', 'itemId', 'fieldId', 'body']) &&
-      typeof operation.itemId === 'string' &&
-      typeof operation.fieldId === 'string' &&
+      exactKeys(operation, ['kind', 'key', 'itemId', 'fieldId', 'body']) &&
+      UUID.test(String(operation.itemId)) &&
+      UUID.test(String(operation.fieldId)) &&
       !!operation.body &&
       typeof operation.body === 'object' &&
-      exact(operation.body as object, ['value']) &&
-      typeof (operation.body as Record<string, unknown>)?.value === 'string') ||
+      exactKeys(operation.body as object, ['value']) &&
+      (operation.body as Record<string, unknown>).value === r.password) ||
     (operation.kind === 'add_field' &&
-      exact(operation, ['kind', 'key', 'itemId', 'body']) &&
-      typeof operation.itemId === 'string' &&
+      exactKeys(operation, ['kind', 'key', 'itemId', 'body']) &&
+      UUID.test(String(operation.itemId)) &&
       !!operation.body &&
       typeof operation.body === 'object' &&
-      exact(operation.body as object, ['field_key', 'value']) &&
+      exactKeys(operation.body as object, ['field_key', 'value']) &&
       (operation.body as Record<string, unknown>)?.field_key === 'password' &&
-      typeof (operation.body as Record<string, unknown>)?.value === 'string')
+      (operation.body as Record<string, unknown>)?.value === r.password)
   );
 }
 async function currentActor(): Promise<{ userId: string; organizationId: string } | null> {
@@ -767,18 +821,12 @@ async function beginMutation(
   }
   let command: MutationCommand;
   if (decision.action === 'save') {
-    const fields = [{ field_key: 'password', value: c.password }];
-    if (c.username) fields.unshift({ field_key: 'username', value: c.username });
+    const body = createBodyFor(c);
+    if (!body) return result('error');
     command = {
       kind: 'create_item',
       key: crypto.randomUUID(),
-      body: {
-        display_name: c.host,
-        fields,
-        definition_key: WEBSITE_LOGIN_DEFINITION_KEY,
-        login_urls: [c.loginUrl],
-        browser_fill_enabled: true,
-      },
+      body,
     };
   } else {
     if (decision.action !== 'update' || !decision.itemId) return result('error');

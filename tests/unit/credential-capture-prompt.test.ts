@@ -16,6 +16,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const SENTINEL = 'Tr0ub4dor&3-sentinel';
 const USER = 'arman@example.com';
+const ACTOR = {
+  userId: '11111111-1111-4111-8111-111111111111',
+  organizationId: '22222222-2222-4222-8222-222222222222',
+};
+const ITEM_ID = '33333333-3333-4333-8333-333333333333';
+const FIELD_ID = '44444444-4444-4444-8444-444444444444';
+const SESSION_KEY = 'matrx.credentials.capture.pending.v1';
+const SETTINGS_KEY = 'matrx.settings.v1';
+const NEVER_KEY = 'matrx.credentials.captureNeverOrigins';
 
 // ── SW-side mocks ───────────────────────────────────────────────────────────
 
@@ -33,6 +42,13 @@ let signedIn = true;
 let matches: Array<{ item_id: string; display_name: string }> = [];
 let itemFields: Array<{ id: string; field_key: string; is_active: boolean }> = [];
 let createGate: Promise<void> | null = null;
+let createResult: unknown = { ok: true, data: { id: 'new-item' } };
+let updateResult: unknown = { ok: true, data: undefined };
+let addResult: unknown = { ok: true, data: undefined };
+let sessionSetFailure: Error | null = null;
+let sessionRemoveFailure: Error | null = null;
+let sessionSetGate: Promise<void> | null = null;
+let onSessionSetAwait: (() => void) | null = null;
 
 Object.assign(chrome, {
   storage: {
@@ -58,9 +74,13 @@ Object.assign(chrome, {
         );
       },
       set: async (values: Record<string, unknown>) => {
+        if (sessionSetFailure) throw sessionSetFailure;
+        onSessionSetAwait?.();
+        await sessionSetGate;
         for (const [key, value] of Object.entries(values)) sessionStorage.set(key, value);
       },
       remove: async (keys: string | string[]) => {
+        if (sessionRemoveFailure) throw sessionRemoveFailure;
         for (const key of typeof keys === 'string' ? [keys] : keys) sessionStorage.delete(key);
       },
     },
@@ -84,7 +104,7 @@ vi.mock('@/lib/api/routes/vault', () => ({
   createVaultItem: async (input: unknown, options?: unknown) => {
     calls.push({ name: 'create', args: [input, options] });
     await createGate;
-    return { ok: true, data: { id: 'new-item' } };
+    return createResult;
   },
   fetchVaultItem: async (id: string) => {
     calls.push({ name: 'fetchItem', args: [id] });
@@ -97,15 +117,17 @@ vi.mock('@/lib/api/routes/vault', () => ({
     options?: unknown,
   ) => {
     calls.push({ name: 'updateValue', args: [itemId, fieldId, value, options] });
-    return { ok: true, data: undefined };
+    return updateResult;
   },
   addVaultField: async (itemId: string, field: unknown, options?: unknown) => {
     calls.push({ name: 'addField', args: [itemId, field, options] });
-    return { ok: true, data: undefined };
+    return addResult;
   },
 }));
-vi.mock('@/lib/auth/flow', () => ({ getCurrentUser: async () => ({ id: 'test-user' }) }));
-vi.mock('@/lib/org/active-org', () => ({ getActiveOrganizationId: async () => 'test-org' }));
+vi.mock('@/lib/auth/flow', () => ({ getCurrentUser: async () => ({ id: ACTOR.userId }) }));
+vi.mock('@/lib/org/active-org', () => ({
+  getActiveOrganizationId: async () => ACTOR.organizationId,
+}));
 vi.mock('@/lib/messaging/native', () => ({
   on: () => () => undefined,
   send: async () => undefined,
@@ -127,7 +149,7 @@ const DEPS = {
   signedIn: async () => signedIn,
   never: async () => false,
   prompt: async () => undefined,
-  actor: { userId: 'test-user', organizationId: 'test-org' },
+  actor: ACTOR,
   documentId: 'doc-live',
 };
 
@@ -142,6 +164,13 @@ beforeEach(() => {
   matches = [];
   itemFields = [];
   createGate = null;
+  createResult = { ok: true, data: { id: 'new-item' } };
+  updateResult = { ok: true, data: undefined };
+  addResult = { ok: true, data: undefined };
+  sessionSetFailure = null;
+  sessionRemoveFailure = null;
+  sessionSetGate = null;
+  onSessionSetAwait = null;
   vi.useFakeTimers();
 });
 afterEach(async () => {
@@ -511,6 +540,9 @@ describe('host — registered worker listeners and session continuity', () => {
   const listeners: Listener[] = [];
   const updated: Array<(tabId: number, info: chrome.tabs.TabChangeInfo) => void> = [];
   const alarms: Array<(alarm: chrome.alarms.Alarm) => void> = [];
+  const storageChanges: Array<
+    (changes: Record<string, chrome.storage.StorageChange>, areaName: string) => void
+  > = [];
   const alarmCalls: unknown[] = [];
 
   function sender(tabId = 33): chrome.runtime.MessageSender {
@@ -532,6 +564,7 @@ describe('host — registered worker listeners and session continuity', () => {
     listeners.length = 0;
     updated.length = 0;
     alarms.length = 0;
+    storageChanges.length = 0;
     alarmCalls.length = 0;
     (globalThis as unknown as { chrome: unknown }).chrome = {
       runtime: {
@@ -539,16 +572,42 @@ describe('host — registered worker listeners and session continuity', () => {
         onMessage: { addListener: (listener: Listener) => listeners.push(listener) },
       },
       storage: {
+        local: {
+          get: async (keys?: string[] | null) =>
+            keys === null
+              ? Object.fromEntries(localStorage)
+              : Object.fromEntries(
+                  (keys ?? []).flatMap((key) =>
+                    localStorage.has(key) ? [[key, localStorage.get(key)]] : [],
+                  ),
+                ),
+          set: async (values: Record<string, unknown>) => {
+            for (const [key, value] of Object.entries(values)) localStorage.set(key, value);
+          },
+        },
         session: {
           setAccessLevel: async () => undefined,
           get: async (key: string) =>
             sessionStorage.has(key) ? { [key]: sessionStorage.get(key) } : {},
           set: async (values: Record<string, unknown>) => {
+            if (sessionSetFailure) throw sessionSetFailure;
+            onSessionSetAwait?.();
+            await sessionSetGate;
             for (const [key, value] of Object.entries(values)) sessionStorage.set(key, value);
           },
-          remove: async (key: string) => sessionStorage.delete(key),
+          remove: async (key: string) => {
+            if (sessionRemoveFailure) throw sessionRemoveFailure;
+            sessionStorage.delete(key);
+          },
         },
-        onChanged: { addListener: () => undefined },
+        onChanged: {
+          addListener: (
+            listener: (
+              changes: Record<string, chrome.storage.StorageChange>,
+              areaName: string,
+            ) => void,
+          ) => storageChanges.push(listener),
+        },
       },
       tabs: {
         get: async (id: number) => ({ id, url: 'https://app.example.com/login' }),
@@ -616,6 +675,224 @@ describe('host — registered worker listeners and session continuity', () => {
       expect(sessionStorage.has('matrx.credentials.capture.pending.v1')).toBe(false),
     );
   });
+
+  it('auth change is a first wake: it hydrates the persisted draft before purging it', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    await host.holdCandidate(33, WIRE, DEPS);
+    host._simulateCaptureWorkerRestartForTest();
+    signedIn = false;
+    host.registerCredentialCaptureHost();
+    for (const listener of listeners)
+      listener({ __matrx: true, kind: 'auth:state-changed' }, sender(), () => undefined);
+    await vi.waitFor(() => expect(sessionStorage.has(SESSION_KEY)).toBe(false));
+  });
+
+  it('settings change is a first wake: it reads the real local settings blob before purging', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    await host.holdCandidate(33, WIRE, DEPS);
+    host._simulateCaptureWorkerRestartForTest();
+    localStorage.set(SETTINGS_KEY, JSON.stringify({ state: { captureLoginsEnabled: false } }));
+    host.registerCredentialCaptureHost();
+    for (const listener of storageChanges)
+      listener({ [SETTINGS_KEY]: { newValue: localStorage.get(SETTINGS_KEY) } }, 'local');
+    await vi.waitFor(() => expect(sessionStorage.has(SESSION_KEY)).toBe(false));
+  });
+
+  it.each([
+    {
+      name: 'a create missing its password field',
+      operation: {
+        kind: 'create_item',
+        key: '55555555-5555-4555-8555-555555555555',
+        body: {
+          display_name: 'app.example.com',
+          fields: [{ field_key: 'username', value: USER }],
+          definition_key: 'website_login',
+          login_urls: ['https://app.example.com/login'],
+          browser_fill_enabled: true,
+        },
+      },
+    },
+    {
+      name: 'a create with a value from another candidate',
+      operation: {
+        kind: 'create_item',
+        key: '55555555-5555-4555-8555-555555555555',
+        body: {
+          display_name: 'app.example.com',
+          fields: [
+            { field_key: 'username', value: USER },
+            { field_key: 'password', value: 'wrong-candidate-password' },
+          ],
+          definition_key: 'website_login',
+          login_urls: ['https://app.example.com/login'],
+          browser_fill_enabled: true,
+        },
+      },
+    },
+    {
+      name: 'a create addressed to another host',
+      operation: {
+        kind: 'create_item',
+        key: '55555555-5555-4555-8555-555555555555',
+        body: {
+          display_name: 'other.example.com',
+          fields: [
+            { field_key: 'username', value: USER },
+            { field_key: 'password', value: SENTINEL },
+          ],
+          definition_key: 'website_login',
+          login_urls: ['https://app.example.com/login'],
+          browser_fill_enabled: true,
+        },
+      },
+    },
+    {
+      name: 'an update whose persisted target is not a UUID',
+      operation: {
+        kind: 'update_field',
+        key: '55555555-5555-4555-8555-555555555555',
+        itemId: 'not-a-uuid',
+        fieldId: FIELD_ID,
+        body: { value: SENTINEL },
+      },
+    },
+    {
+      name: 'an add whose body has an unrelated value',
+      operation: {
+        kind: 'add_field',
+        key: '55555555-5555-4555-8555-555555555555',
+        itemId: ITEM_ID,
+        body: { field_key: 'password', value: 'wrong-candidate-password' },
+      },
+    },
+  ])('refuses $name instead of replaying a corrupted persisted command', async ({ operation }) => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    await host.holdCandidate(33, WIRE, DEPS);
+    const id = host.pendingCaptureForTab(33)?.candidateId as string;
+    const stored = sessionStorage.get(SESSION_KEY) as Record<string, Record<string, unknown>>;
+    const row = stored['33'];
+    if (!row) throw new Error('the held candidate must be persisted before restart');
+    row.state = 'in_flight';
+    row.operation = operation;
+    host._simulateCaptureWorkerRestartForTest();
+
+    expect((await host.applyCaptureDecision({ candidateId: id, action: 'save' })).status).toBe(
+      'expired',
+    );
+    expect(sessionStorage.has(SESSION_KEY)).toBe(false);
+    expect(
+      calls.filter((call) => ['create', 'updateValue', 'addField'].includes(call.name)),
+    ).toEqual([]);
+  });
+
+  it('startup purges persisted drafts when capture is disabled or the origin is Never', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    await host.holdCandidate(33, WIRE, DEPS);
+    localStorage.set(SETTINGS_KEY, JSON.stringify({ state: { captureLoginsEnabled: false } }));
+    host._simulateCaptureWorkerRestartForTest();
+    expect(
+      (await host.applyCaptureDecision({ candidateId: 'unknown', action: 'save' })).status,
+    ).toBe('expired');
+    expect(sessionStorage.has(SESSION_KEY)).toBe(false);
+
+    localStorage.delete(SETTINGS_KEY);
+    await host.holdCandidate(33, WIRE, DEPS);
+    localStorage.set(NEVER_KEY, ['https://app.example.com']);
+    host._simulateCaptureWorkerRestartForTest();
+    expect(
+      (await host.applyCaptureDecision({ candidateId: 'unknown', action: 'save' })).status,
+    ).toBe('expired');
+    expect(sessionStorage.has(SESSION_KEY)).toBe(false);
+  });
+
+  it('storage failures fail closed: a set never holds a draft and a remove makes status unavailable', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    sessionSetFailure = new Error('session unavailable');
+    expect(await host.holdCandidate(33, WIRE, DEPS)).toBe(false);
+    expect(host.pendingCaptureForTab(33)).toMatchObject({ unavailable: true });
+    expect(calls.find((call) => call.name === 'create')).toBeUndefined();
+
+    host._resetCaptureCandidates();
+    sessionSetFailure = null;
+    await host.holdCandidate(33, WIRE, DEPS);
+    const id = host.pendingCaptureForTab(33)?.candidateId as string;
+    sessionRemoveFailure = new Error('session unavailable');
+    expect((await host.applyCaptureDecision({ candidateId: id, action: 'dismiss' })).status).toBe(
+      'dismissed',
+    );
+    expect(host.pendingCaptureForTab(33)).toMatchObject({ unavailable: true });
+  });
+
+  it('does not send after an invalidation lands while the final frozen-command persist is awaiting', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    await host.holdCandidate(33, WIRE, DEPS);
+    const id = host.pendingCaptureForTab(33)?.candidateId as string;
+    let release!: () => void;
+    sessionSetGate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    let persisted!: () => void;
+    const persistedFrozenCommand = new Promise<void>((resolve) => {
+      persisted = resolve;
+    });
+    onSessionSetAwait = persisted;
+    const saving = host.applyCaptureDecision({ candidateId: id, action: 'save' });
+    await persistedFrozenCommand;
+    for (const listener of listeners)
+      listener({ __matrx: true, kind: 'auth:state-changed' }, sender(), () => undefined);
+    release();
+    expect((await saving).status).toBe('expired');
+    expect(calls.find((call) => call.name === 'create')).toBeUndefined();
+  });
+
+  async function replayLostResponse(kind: 'create' | 'update' | 'add'): Promise<void> {
+    const host = await import('@/lib/credentials/capture-candidates');
+    if (kind !== 'create') {
+      matches = [{ item_id: ITEM_ID, display_name: 'Example' }];
+      itemFields =
+        kind === 'update' ? [{ id: FIELD_ID, field_key: 'password', is_active: true }] : [];
+    }
+    if (kind === 'create') createResult = { ok: false, failure: { kind: 'network_error' } };
+    if (kind === 'update') updateResult = { ok: false, failure: { kind: 'network_error' } };
+    if (kind === 'add') addResult = { ok: false, failure: { kind: 'network_error' } };
+    await host.holdCandidate(33, WIRE, DEPS);
+    const id = host.pendingCaptureForTab(33)?.candidateId as string;
+    expect(
+      (
+        await host.applyCaptureDecision({
+          candidateId: id,
+          action: kind === 'create' ? 'save' : 'update',
+          ...(kind === 'create' ? {} : { itemId: ITEM_ID }),
+        })
+      ).status,
+    ).toBe('error');
+    const name = kind === 'create' ? 'create' : kind === 'update' ? 'updateValue' : 'addField';
+    const first = calls.find((call) => call.name === name) as Call;
+    host._simulateCaptureWorkerRestartForTest();
+    if (kind === 'create') createResult = { ok: true, data: { id: 'new-item' } };
+    if (kind === 'update') updateResult = { ok: true, data: undefined };
+    if (kind === 'add') addResult = { ok: true, data: undefined };
+    expect(
+      (
+        await host.applyCaptureDecision({
+          candidateId: id,
+          action: kind === 'create' ? 'save' : 'update',
+          ...(kind === 'create' ? {} : { itemId: ITEM_ID }),
+        })
+      ).status,
+    ).toBe(kind === 'create' ? 'saved' : 'updated');
+    const writes = calls.filter((call) => call.name === name);
+    expect(writes).toHaveLength(2);
+    expect(writes[1]?.args).toEqual(first.args);
+    if (kind === 'update')
+      expect(calls.filter((call) => call.name === 'fetchItem')).toHaveLength(1);
+  }
+
+  it.each(['create', 'update', 'add'] as const)(
+    'replays a lost-response %s command with the same frozen target and idempotency key',
+    async (kind) => replayLostResponse(kind),
+  );
 
   it('rejects a hostile page relay before it can observe or decide a candidate', async () => {
     const host = await import('@/lib/credentials/capture-candidates');
