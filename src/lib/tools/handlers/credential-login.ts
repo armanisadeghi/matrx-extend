@@ -42,7 +42,7 @@ import {
   submitBrowserLoginReport,
 } from '@/lib/api/routes/vault';
 import { checkAuthState } from '@/lib/chat/context/check-auth-state';
-import { fillSensitiveFieldSource } from '@/lib/credentials/fill-primitive';
+import { fillControlledCredentialFieldsSource } from '@/lib/credentials/fill-primitive';
 import { isSafeDestination } from '@/lib/credentials/login-urls';
 import {
   SENSITIVE_ATTR,
@@ -1083,11 +1083,11 @@ async function runCompleteAttempt(
         rememberSensitiveFields(tabId, [spec.selector]);
         filledSelectors.push(spec.selector);
       }
-      const filled = await injectTopFrame<{ ok: boolean }>(tabId, fillSensitiveFieldSource, [
-        spec.selector,
-        value,
-        spec.field_key ? SENSITIVE_ATTR : '',
-      ]).catch(() => null);
+      const filled = await injectTopFrame<{ ok: boolean }>(
+        tabId,
+        fillControlledCredentialFieldsSource,
+        [null, [{ selector: spec.selector, value }], spec.field_key ? SENSITIVE_ATTR : '', true],
+      ).catch(() => null);
       if (!filled?.ok) {
         return await finish(
           safeResult('unknown', { reason: `step_${stepIndex}_fill_failed` }),
@@ -1195,11 +1195,11 @@ async function runAuthenticatorAttempt(
   let code = transient.code;
   transient.code = '';
   try {
-    const filled = await injectTopFrame<{ ok: boolean }>(tabId, fillSensitiveFieldSource, [
-      args.code_selector,
-      code,
-      SENSITIVE_ATTR,
-    ]).catch(() => null);
+    const filled = await injectTopFrame<{ ok: boolean }>(
+      tabId,
+      fillControlledCredentialFieldsSource,
+      [null, [{ selector: args.code_selector, value: code }], SENSITIVE_ATTR, true],
+    ).catch(() => null);
     code = '';
     // The transient response and the only local code reference are cleared
     // before submission/classification. Neither can reach a result, log,
@@ -1511,11 +1511,16 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
         // fill succeeding, or on the page keeping the marker attribute.
         rememberSensitiveFields(tabId, [probe.username_selector]);
         filledSelectors.push(probe.username_selector);
-        const r = await injectTopFrame<{ ok: boolean }>(tabId, fillSensitiveFieldSource, [
-          probe.username_selector,
-          credential.username,
-          SENSITIVE_ATTR,
-        ]);
+        const r = await injectTopFrame<{ ok: boolean }>(
+          tabId,
+          fillControlledCredentialFieldsSource,
+          [
+            null,
+            [{ selector: probe.username_selector, value: credential.username }],
+            SENSITIVE_ATTR,
+            true,
+          ],
+        );
         if (!r?.ok) return await finish('unknown', { reason: 'username_fill_failed', clear: true });
       }
 
@@ -1569,11 +1574,11 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
 
       rememberSensitiveFields(tabId, [passwordSelector]);
       filledSelectors.push(passwordSelector);
-      const pwFill = await injectTopFrame<{ ok: boolean }>(tabId, fillSensitiveFieldSource, [
-        passwordSelector,
-        credential.password,
-        SENSITIVE_ATTR,
-      ]);
+      const pwFill = await injectTopFrame<{ ok: boolean }>(
+        tabId,
+        fillControlledCredentialFieldsSource,
+        [null, [{ selector: passwordSelector, value: credential.password }], SENSITIVE_ATTR, true],
+      );
       if (!pwFill?.ok) {
         return await finish('unknown', { reason: 'password_fill_failed', clear: true });
       }

@@ -4,7 +4,10 @@ import {
   materializeBrowserLogin,
 } from '@/lib/api/routes/vault';
 import { getCurrentUser } from '@/lib/auth/flow';
-import { type BoundLoginGroup, fillBoundLoginGroupSource } from '@/lib/credentials/fill-primitive';
+import {
+  type BoundLoginGroup,
+  fillControlledCredentialFieldsSource,
+} from '@/lib/credentials/fill-primitive';
 import { isSafeDestination, normalizeLoginUrl } from '@/lib/credentials/login-urls';
 import { SENSITIVE_ATTR, rememberSensitiveFields } from '@/lib/credentials/sensitive-fields';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -230,7 +233,7 @@ function probeFocusedLoginGroup(selector: string): FormGroup | null {
 }
 
 /** Test seam: callers must remain serializable across the scripting boundary. */
-export const __inlineFillSerializedSourceForTest = fillBoundLoginGroupSource.toString();
+export const __inlineFillSerializedSourceForTest = fillControlledCredentialFieldsSource.toString();
 
 async function inject<T>(
   tabId: number,
@@ -247,8 +250,10 @@ async function inject<T>(
   return (first?.result as T | undefined) ?? null;
 }
 
-function supportsDocumentTargeting(): boolean {
-  // `documentIds` is Chrome 106+. Never fall back to a tab-wide write.
+function canTargetCurrentDocument(): boolean {
+  // Chrome 106 is frozen in the manifest, which guarantees documentIds. These
+  // checks only catch a partially unavailable API; they do not claim to prove
+  // an option an older browser never supported.
   return (
     typeof chrome.scripting?.executeScript === 'function' &&
     typeof chrome.webNavigation?.getFrame === 'function'
@@ -263,7 +268,7 @@ async function context(): Promise<{ userId: string; organizationId: string } | n
 
 /** Chrome 106+ document targeting is mandatory; never fall back to tab-only injection. */
 async function isCurrentTopDocument(tabId: number, documentId: string): Promise<boolean> {
-  if (!supportsDocumentTargeting()) return false;
+  if (!canTargetCurrentDocument()) return false;
   try {
     const frame = (await chrome.webNavigation.getFrame({ tabId, frameId: 0 })) as unknown as {
       documentId?: unknown;
@@ -276,7 +281,7 @@ async function isCurrentTopDocument(tabId: number, documentId: string): Promise<
 
 async function query(tabId: number, documentId: string, selector: string): Promise<QueryResponse> {
   const generation = nextGeneration(tabId, documentId);
-  if (!supportsDocumentTargeting()) return response('unavailable');
+  if (!canTargetCurrentDocument()) return response('unavailable');
   if (!(await isCurrentTopDocument(tabId, documentId))) return response('unavailable');
   if (!(await readOfferSavedLoginsEnabled())) return response('unavailable');
   if (!(await hasRealUserToken())) return response('sign_in_required');
@@ -346,7 +351,7 @@ async function fill(
     !offer.itemIds.has(payload.itemId)
   )
     return fillResponse('stale');
-  if (!supportsDocumentTargeting()) return fillResponse('unavailable');
+  if (!canTargetCurrentDocument()) return fillResponse('unavailable');
   if (!(await isCurrentTopDocument(tabId, documentId))) return fillResponse('unavailable');
   if (GENERATIONS.get(generationKey(tabId, documentId)) !== offer.generation)
     return fillResponse('stale');
@@ -373,29 +378,38 @@ async function fill(
   if (!materialized.ok)
     return fillResponse(materialized.failure.kind === 'forbidden' ? 'stale' : 'unavailable');
   const data = materialized.data;
-  const actorAfterMaterialize = await context();
-  if (
-    !actorAfterMaterialize ||
-    actorAfterMaterialize.userId !== offer.userId ||
-    actorAfterMaterialize.organizationId !== offer.organizationId ||
-    !(await readOfferSavedLoginsEnabled()) ||
-    GENERATIONS.get(generationKey(tabId, documentId)) !== offer.generation
-  ) {
+  const clearMaterialized = (): void => {
     data.username = '';
     data.password = '';
     data.fields = {};
+  };
+  const stillAuthorized = async (): Promise<boolean> => {
+    const currentActor = await context();
+    return (
+      !!currentActor &&
+      currentActor.userId === offer.userId &&
+      currentActor.organizationId === offer.organizationId &&
+      (await readOfferSavedLoginsEnabled()) &&
+      GENERATIONS.get(generationKey(tabId, documentId)) === offer.generation
+    );
+  };
+  if (!(await stillAuthorized())) {
+    clearMaterialized();
     return fillResponse('stale');
   }
   if (!(await isCurrentTopDocument(tabId, documentId))) {
-    data.username = '';
-    data.password = '';
-    data.fields = {};
+    clearMaterialized();
+    return fillResponse('stale');
+  }
+  // This is immediately after the final awaited document check. An
+  // invalidation can happen while Chrome resolves getFrame, so re-check the
+  // current actor/settings and synchronous offer generation before injection.
+  if (!(await stillAuthorized())) {
+    clearMaterialized();
     return fillResponse('stale');
   }
   if (data.origin !== new URL(offer.pageUrl).origin) {
-    data.username = '';
-    data.password = '';
-    data.fields = {};
+    clearMaterialized();
     return fillResponse('unsafe_destination');
   }
   const username = data.fields?.username ?? data.username;
@@ -403,17 +417,55 @@ async function fill(
   const sensitive = [offer.username, offer.password].filter((x): x is string => !!x);
   rememberSensitiveFields(tabId, sensitive);
   try {
-    const done = await inject<{ ok: boolean }>(tabId, documentId, fillBoundLoginGroupSource, [
-      offer,
-      username ?? null,
-      password ?? null,
-      SENSITIVE_ATTR,
-    ]).catch(() => null);
+    const done = await inject<{ ok: boolean }>(
+      tabId,
+      documentId,
+      fillControlledCredentialFieldsSource,
+      [
+        offer,
+        [
+          ...(offer.username ? [{ selector: offer.username, value: username ?? null }] : []),
+          ...(offer.password ? [{ selector: offer.password, value: password ?? null }] : []),
+        ],
+        SENSITIVE_ATTR,
+        false,
+      ],
+    ).catch(() => null);
     return done?.ok ? fillResponse('filled') : fillResponse('stale');
   } finally {
-    data.username = '';
-    data.password = '';
-    data.fields = {};
+    clearMaterialized();
+  }
+}
+
+function contextTargets(): Array<{ tabId: number; documentId: string }> {
+  const targets = new Map<string, { tabId: number; documentId: string }>();
+  for (const offer of OFFERS.values())
+    targets.set(generationKey(offer.tabId, offer.documentId), {
+      tabId: offer.tabId,
+      documentId: offer.documentId,
+    });
+  for (const key of GENERATIONS.keys()) {
+    const separator = key.indexOf(':');
+    const tabId = Number(key.slice(0, separator));
+    const documentId = key.slice(separator + 1);
+    if (Number.isInteger(tabId) && documentId) targets.set(key, { tabId, documentId });
+  }
+  return [...targets.values()];
+}
+
+function broadcastContextChanged(targets: Array<{ tabId: number; documentId: string }>): void {
+  for (const { tabId, documentId } of targets) {
+    void chrome.tabs
+      .sendMessage(
+        tabId,
+        {
+          __matrx: true,
+          kind: CHANNELS.CREDENTIAL_SUGGESTIONS_CONTEXT_CHANGED,
+          payload: {},
+        },
+        { documentId },
+      )
+      .catch(() => undefined);
   }
 }
 
@@ -425,14 +477,9 @@ export function registerInlineCredentialSuggestionHost(): void {
     const env = message as { __matrx?: unknown; kind?: unknown; payload?: unknown };
     if (env.__matrx !== true) return false;
     if (env.kind === CHANNELS.AUTH_STATE_CHANGED) {
+      const targets = contextTargets();
       invalidate();
-      chrome.runtime
-        .sendMessage({
-          __matrx: true,
-          kind: CHANNELS.CREDENTIAL_SUGGESTIONS_CONTEXT_CHANGED,
-          payload: {},
-        })
-        .catch(() => undefined);
+      broadcastContextChanged(targets);
       return false;
     }
     const tabId = sender.tab?.id;
@@ -481,14 +528,9 @@ export function registerInlineCredentialSuggestionHost(): void {
   });
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && ('matrx.settings.v1' in changes || 'matrx.org.active' in changes)) {
+      const targets = contextTargets();
       invalidate();
-      chrome.runtime
-        .sendMessage({
-          __matrx: true,
-          kind: CHANNELS.CREDENTIAL_SUGGESTIONS_CONTEXT_CHANGED,
-          payload: {},
-        })
-        .catch(() => undefined);
+      broadcastContextChanged(targets);
     }
   });
 }

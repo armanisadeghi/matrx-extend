@@ -1,40 +1,12 @@
 /**
  * Shared, self-contained page-realm primitive for value-bearing credential
  * writes. It intentionally has no module bindings so Chrome can serialize it.
+ *
+ * Both credential_login and inline saved-login selection use this one writer.
+ * The former keeps its single-field focus/scroll/blur behavior; the latter
+ * supplies a bound login group and gets exact-node revalidation before every
+ * write.
  */
-export function fillSensitiveFieldSource(
-  selector: string,
-  value: string,
-  sensitiveAttr: string,
-): { ok: boolean; reason?: string } {
-  const el = document.querySelector(selector) as HTMLInputElement | null;
-  if (!el) return { ok: false, reason: 'field_not_found' };
-  if (el.disabled || el.readOnly || el.type === 'hidden')
-    return { ok: false, reason: 'field_not_fillable' };
-  const rect = el.getBoundingClientRect();
-  const style = getComputedStyle(el);
-  if (
-    rect.width === 0 ||
-    rect.height === 0 ||
-    style.display === 'none' ||
-    style.visibility === 'hidden'
-  )
-    return { ok: false, reason: 'field_not_fillable' };
-  // Preserve the legacy credential_login contract: some sites only validate
-  // controlled fields after focus/blur, and agents expect the field in view.
-  // Mark before any page-controlled event so redaction survives an interruption.
-  if (sensitiveAttr) el.setAttribute(sensitiveAttr, '');
-  el.scrollIntoView({ block: 'center', behavior: 'instant' });
-  el.focus();
-  const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value')?.set;
-  if (setter) setter.call(el, value);
-  else el.value = value;
-  el.dispatchEvent(new Event('input', { bubbles: true }));
-  el.dispatchEvent(new Event('change', { bubbles: true }));
-  el.dispatchEvent(new Event('blur', { bubbles: true }));
-  return { ok: true };
-}
-
 export interface BoundLoginGroup {
   anchor: string;
   username: string | null;
@@ -43,19 +15,17 @@ export interface BoundLoginGroup {
   pageUrl: string;
 }
 
-/**
- * The value-bearing inline path. It is deliberately self-contained because
- * Chrome serializes it into the page realm. Resolve and bind every input once,
- * then require those exact nodes and the entire safe form classification before
- * every write. A page event must never redirect a later secret to a replacement
- * control.
- */
-export function fillBoundLoginGroupSource(
-  expected: BoundLoginGroup,
-  usernameValue: string | null,
-  passwordValue: string | null,
+export interface ControlledCredentialField {
+  selector: string;
+  value: string | null;
+}
+
+export function fillControlledCredentialFieldsSource(
+  expected: BoundLoginGroup | null,
+  requested: ControlledCredentialField[],
   sensitiveAttr: string,
-): { ok: boolean } {
+  preserveLegacyFieldBehavior: boolean,
+): { ok: boolean; reason?: string } {
   function visibleEditable(input: HTMLInputElement | null): input is HTMLInputElement {
     if (!input || input.disabled || input.readOnly || input.type === 'hidden') return false;
     const rect = input.getBoundingClientRect();
@@ -66,12 +36,42 @@ export function fillBoundLoginGroupSource(
   }
   function inputFor(selector: string | null): HTMLInputElement | null {
     if (!selector) return null;
-    const node = document.querySelector(selector);
-    return node instanceof HTMLInputElement ? node : null;
+    try {
+      const node = document.querySelector(selector);
+      return node instanceof HTMLInputElement ? node : null;
+    } catch {
+      return null;
+    }
   }
-  const anchor = inputFor(expected.anchor);
-  const username = inputFor(expected.username);
-  const password = inputFor(expected.password);
+  function write(input: HTMLInputElement, value: string): void {
+    const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')?.set;
+    if (setter) setter.call(input, value);
+    else input.value = value;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  if (!expected) {
+    const field = requested[0];
+    if (requested.length !== 1 || !field || field.value === null) return { ok: false };
+    const value = field.value;
+    const input = inputFor(field.selector);
+    if (!visibleEditable(input)) return { ok: false, reason: 'field_not_fillable' };
+    // Preserve credential_login's established controlled-field behavior.
+    if (sensitiveAttr) input.setAttribute(sensitiveAttr, '');
+    if (preserveLegacyFieldBehavior) {
+      input.scrollIntoView({ block: 'center', behavior: 'instant' });
+      input.focus();
+    }
+    write(input, value);
+    if (preserveLegacyFieldBehavior) input.dispatchEvent(new Event('blur', { bubbles: true }));
+    return { ok: true };
+  }
+
+  const group = expected;
+  const anchor = inputFor(group.anchor);
+  const username = inputFor(group.username);
+  const password = inputFor(group.password);
   const originals = { anchor, username, password };
 
   function sameNode(selector: string | null, node: HTMLInputElement | null): boolean {
@@ -80,14 +80,14 @@ export function fillBoundLoginGroupSource(
       : !!node && node.isConnected && document.querySelector(selector) === node;
   }
   function safeGroup(): boolean {
-    if (`${location.origin}${location.pathname}` !== expected.pageUrl) return false;
-    if (!sameNode(expected.anchor, originals.anchor)) return false;
-    if (!sameNode(expected.username, originals.username)) return false;
-    if (!sameNode(expected.password, originals.password)) return false;
+    if (`${location.origin}${location.pathname}` !== group.pageUrl) return false;
+    if (!sameNode(group.anchor, originals.anchor)) return false;
+    if (!sameNode(group.username, originals.username)) return false;
+    if (!sameNode(group.password, originals.password)) return false;
     if (!visibleEditable(originals.anchor)) return false;
-    if (expected.username && !visibleEditable(originals.username)) return false;
-    if (expected.password && !visibleEditable(originals.password)) return false;
-    if (expected.usernameOnly !== !expected.password) return false;
+    if (group.username && !visibleEditable(originals.username)) return false;
+    if (group.password && !visibleEditable(originals.password)) return false;
+    if (group.usernameOnly !== !group.password) return false;
     const anchorAutocomplete = (originals.anchor.autocomplete || '').toLowerCase();
     const anchorType = (originals.anchor.type || 'text').toLowerCase();
     if (
@@ -107,9 +107,9 @@ export function fillBoundLoginGroupSource(
       (node): node is HTMLInputElement => node instanceof HTMLInputElement && visibleEditable(node),
     );
     const passwords = inputs.filter((node) => (node.type || '').toLowerCase() === 'password');
-    if (passwords.length !== (expected.password ? 1 : 0)) return false;
+    if (passwords.length !== (group.password ? 1 : 0)) return false;
     if (passwords.some((node) => node.autocomplete.toLowerCase() === 'new-password')) return false;
-    if (expected.password && passwords[0] !== originals.password) return false;
+    if (group.password && passwords[0] !== originals.password) return false;
     const form = originals.anchor.closest('form');
     if (form) {
       const action = form.getAttribute('action');
@@ -127,25 +127,24 @@ export function fillBoundLoginGroupSource(
     return true;
   }
   function clearOwned(written: HTMLInputElement[]): void {
-    if (`${location.origin}${location.pathname}` !== expected.pageUrl) return;
     for (const input of written) {
-      const selector = input === originals.username ? expected.username : expected.password;
-      // Clear only an original node that still belongs to this document. A
-      // replacement control is deliberately never touched.
+      const selector = input === originals.username ? group.username : group.password;
+      // A history mutation is still the same document, so clear the exact
+      // connected node we wrote. Never clear a replacement control.
       if (!sameNode(selector, input)) continue;
-      const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')?.set;
-      if (setter) setter.call(input, '');
-      else input.value = '';
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
+      write(input, '');
     }
   }
+
+  const requestedBySelector = new Map(requested.map((field) => [field.selector, field.value]));
   const fields: Array<[HTMLInputElement, string]> = [];
-  if (expected.username && usernameValue !== null && originals.username)
+  const usernameValue = group.username ? requestedBySelector.get(group.username) : undefined;
+  const passwordValue = group.password ? requestedBySelector.get(group.password) : undefined;
+  if (group.username && usernameValue !== undefined && usernameValue !== null && originals.username)
     fields.push([originals.username, usernameValue]);
-  if (expected.password && passwordValue !== null && originals.password)
+  if (group.password && passwordValue !== undefined && passwordValue !== null && originals.password)
     fields.push([originals.password, passwordValue]);
-  if (!safeGroup() || fields.length === 0 || (expected.password && passwordValue === null))
+  if (!safeGroup() || fields.length === 0 || (group.password && passwordValue == null))
     return { ok: false };
   for (const [input] of fields) if (sensitiveAttr) input.setAttribute(sensitiveAttr, '');
   const written: HTMLInputElement[] = [];
@@ -154,11 +153,7 @@ export function fillBoundLoginGroupSource(
       clearOwned(written);
       return { ok: false };
     }
-    const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')?.set;
-    if (setter) setter.call(input, value);
-    else input.value = value;
-    input.dispatchEvent(new Event('input', { bubbles: true }));
-    input.dispatchEvent(new Event('change', { bubbles: true }));
+    write(input, value);
     written.push(input);
   }
   if (safeGroup()) return { ok: true };

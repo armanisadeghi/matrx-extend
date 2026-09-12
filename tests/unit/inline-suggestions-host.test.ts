@@ -21,14 +21,25 @@ const state = vi.hoisted(() => ({
   matchGate: null as Promise<void> | null,
   matchStarted: null as (() => void) | null,
   materializeGate: null as Promise<void> | null,
+  finalFrameGate: null as Promise<void> | null,
+  finalFrameStarted: null as (() => void) | null,
+  getFrameCalls: 0,
 }));
-let runtimeListener:
+const runtimeListeners: Array<
+  (
+    message: unknown,
+    sender: chrome.runtime.MessageSender,
+    reply: (value: unknown) => void,
+  ) => boolean
+> = [];
+const tabMessages: Array<{ tabId: number; message: unknown; options: unknown }> = [];
+type RuntimeListener =
   | ((
       message: unknown,
       sender: chrome.runtime.MessageSender,
       reply: (value: unknown) => void,
     ) => boolean)
-  | null = null;
+  | undefined;
 const targets: chrome.scripting.InjectionTarget[] = [];
 
 vi.mock('@/lib/auth/flow', () => ({
@@ -66,12 +77,13 @@ vi.mock('@/lib/credentials/sensitive-fields', () => ({
 
 function replyFor(message: unknown): Promise<unknown> {
   return new Promise((resolve) => {
-    const kept = runtimeListener?.(
-      message,
-      { tab: { id: 7 }, frameId: 0, documentId: state.documentId } as chrome.runtime.MessageSender,
-      resolve,
-    );
-    expect(kept).toBe(true);
+    const sender = {
+      tab: { id: 7 },
+      frameId: 0,
+      documentId: state.documentId,
+    } as chrome.runtime.MessageSender;
+    const kept = runtimeListeners.map((listener) => listener(message, sender, resolve));
+    expect(kept).toContain(true);
   });
 }
 
@@ -83,6 +95,9 @@ beforeEach(() => {
   state.matchGate = null;
   state.matchStarted = null;
   state.materializeGate = null;
+  state.finalFrameGate = null;
+  state.finalFrameStarted = null;
+  state.getFrameCalls = 0;
   state.matches = [
     {
       item_id: ITEM,
@@ -94,6 +109,9 @@ beforeEach(() => {
     },
   ];
   targets.length = 0;
+  tabMessages.length = 0;
+  runtimeListeners.length = 0;
+  history.replaceState({}, '', '/');
   document.body.innerHTML =
     '<form method="post"><input id="username" autocomplete="username"><input id="password" type="password" autocomplete="current-password"><button type="submit">Sign in</button></form>';
   for (const input of Array.from(document.querySelectorAll('input'))) {
@@ -105,11 +123,18 @@ beforeEach(() => {
     runtime: {
       getManifest: () => ({ version: 'test' }),
       onMessage: {
-        addListener: (listener: typeof runtimeListener) => {
-          runtimeListener = listener;
-        },
+        addListener: (listener: RuntimeListener) => listener && runtimeListeners.push(listener),
       },
-      sendMessage: async () => undefined,
+      sendMessage: async (message: unknown) =>
+        new Promise<unknown>((resolve) => {
+          const sender = {
+            tab: { id: 7 },
+            frameId: 0,
+            documentId: state.documentId,
+          } as chrome.runtime.MessageSender;
+          const kept = runtimeListeners.map((listener) => listener(message, sender, resolve));
+          if (!kept.includes(true)) resolve(undefined);
+        }),
     },
     scripting: {
       executeScript: async ({
@@ -128,15 +153,33 @@ beforeEach(() => {
     tabs: {
       onRemoved: { addListener: () => undefined },
       onUpdated: { addListener: () => undefined },
+      sendMessage: async (tabId: number, message: unknown, options: unknown) => {
+        tabMessages.push({ tabId, message, options });
+        const sender = {
+          tab: { id: tabId },
+          frameId: 0,
+          documentId: (options as { documentId?: string } | undefined)?.documentId,
+        } as chrome.runtime.MessageSender;
+        for (const listener of runtimeListeners) listener(message, sender, () => undefined);
+      },
     },
-    webNavigation: { getFrame: async () => ({ documentId: state.documentId }) },
+    webNavigation: {
+      getFrame: async () => {
+        state.getFrameCalls++;
+        if (state.finalFrameGate && state.getFrameCalls >= 3) {
+          state.finalFrameStarted?.();
+          await state.finalFrameGate;
+        }
+        return { documentId: state.documentId };
+      },
+    },
     storage: { onChanged: { addListener: () => undefined } },
     sidePanel: { open: async () => undefined },
   };
 });
 
 afterEach(() => {
-  runtimeListener = null;
+  runtimeListeners.length = 0;
   vi.resetModules();
   document.body.innerHTML = '';
 });
@@ -150,9 +193,9 @@ describe('inline saved-login host', () => {
       `return (${__inlineFillSerializedSourceForTest});`,
     )() as (
       expected: unknown,
-      username: string | null,
-      password: string | null,
+      fields: Array<{ selector: string; value: string | null }>,
       sensitiveAttr: string,
+      preserveLegacyFieldBehavior: boolean,
     ) => { ok: boolean };
     const result = sourceTransferred(
       {
@@ -162,9 +205,12 @@ describe('inline saved-login host', () => {
         usernameOnly: false,
         pageUrl: `${location.origin}${location.pathname}`,
       },
-      'INLINE_USER_SENTINEL',
-      'INLINE_PASSWORD_SENTINEL',
+      [
+        { selector: '#username', value: 'INLINE_USER_SENTINEL' },
+        { selector: '#password', value: 'INLINE_PASSWORD_SENTINEL' },
+      ],
       'data-matrx-sensitive',
+      false,
     );
     expect(result).toEqual({ ok: true });
     expect((document.querySelector('#password') as HTMLInputElement).value).toBe(
@@ -173,7 +219,9 @@ describe('inline saved-login host', () => {
   });
 
   it('preserves legacy credential-login scroll, focus, and blur behavior in the shared field primitive', async () => {
-    const { fillSensitiveFieldSource } = await import('@/lib/credentials/fill-primitive');
+    const { fillControlledCredentialFieldsSource } = await import(
+      '@/lib/credentials/fill-primitive'
+    );
     const input = document.querySelector('#username') as HTMLInputElement & {
       scrollIntoView: (options?: ScrollIntoViewOptions | boolean) => void;
     };
@@ -183,10 +231,11 @@ describe('inline saved-login host', () => {
     };
     let blurred = 0;
     input.addEventListener('blur', () => blurred++);
-    const result = fillSensitiveFieldSource(
-      '#username',
-      'INLINE_USER_SENTINEL',
+    const result = fillControlledCredentialFieldsSource(
+      null,
+      [{ selector: '#username', value: 'INLINE_USER_SENTINEL' }],
       'data-matrx-sensitive',
+      true,
     );
     expect(result).toEqual({ ok: true });
     expect(scrolls).toEqual([{ block: 'center', behavior: 'instant' }]);
@@ -239,9 +288,9 @@ describe('inline saved-login host', () => {
     );
     const source = new Function(`return (${__inlineFillSerializedSourceForTest});`)() as (
       expected: unknown,
-      username: string | null,
-      password: string | null,
+      fields: Array<{ selector: string; value: string | null }>,
       attr: string,
+      preserveLegacyFieldBehavior: boolean,
     ) => { ok: boolean };
     const username = document.querySelector('#username') as HTMLInputElement;
     username.addEventListener('input', () => {
@@ -265,12 +314,47 @@ describe('inline saved-login host', () => {
         usernameOnly: false,
         pageUrl: `${location.origin}${location.pathname}`,
       },
-      'INLINE_USER_SENTINEL',
-      'INLINE_PASSWORD_SENTINEL',
+      [
+        { selector: '#username', value: 'INLINE_USER_SENTINEL' },
+        { selector: '#password', value: 'INLINE_PASSWORD_SENTINEL' },
+      ],
       'data-matrx-sensitive',
+      false,
     );
     expect(result).toEqual({ ok: false });
     expect((document.querySelector('#username') as HTMLInputElement).value).toBe('');
+    expect((document.querySelector('#password') as HTMLInputElement).value).toBe('');
+  });
+
+  it('clears the exact connected username after same-document history mutation', async () => {
+    const { __inlineFillSerializedSourceForTest } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    const source = new Function(`return (${__inlineFillSerializedSourceForTest});`)() as (
+      expected: unknown,
+      fields: Array<{ selector: string; value: string | null }>,
+      attr: string,
+      preserveLegacyFieldBehavior: boolean,
+    ) => { ok: boolean };
+    const username = document.querySelector('#username') as HTMLInputElement;
+    username.addEventListener('input', () => history.pushState({}, '', '/login-next'));
+    const result = source(
+      {
+        anchor: '#password',
+        username: '#username',
+        password: '#password',
+        usernameOnly: false,
+        pageUrl: `${location.origin}/`,
+      },
+      [
+        { selector: '#username', value: 'INLINE_USER_SENTINEL' },
+        { selector: '#password', value: 'INLINE_PASSWORD_SENTINEL' },
+      ],
+      'data-matrx-sensitive',
+      false,
+    );
+    expect(result).toEqual({ ok: false });
+    expect(username.value).toBe('');
     expect((document.querySelector('#password') as HTMLInputElement).value).toBe('');
   });
 
@@ -441,4 +525,77 @@ describe('inline saved-login host', () => {
       expect((document.querySelector('#password') as HTMLInputElement).value).toBe('');
     },
   );
+
+  it('rechecks generation after the final current-document await before secret injection', async () => {
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    const query = (await replyFor({
+      __matrx: true,
+      kind: 'credential-suggestions:query',
+      payload: { fieldSelector: '#password' },
+    })) as { status: string; offerId: string };
+    let releaseFrame!: () => void;
+    let finalFrameReached!: () => void;
+    state.finalFrameGate = new Promise((resolve) => {
+      releaseFrame = resolve;
+    });
+    const finalFrame = new Promise<void>((resolve) => {
+      finalFrameReached = resolve;
+    });
+    state.finalFrameStarted = finalFrameReached;
+    const filling = replyFor({
+      __matrx: true,
+      kind: 'credential-suggestions:fill',
+      payload: { offerId: query.offerId, itemId: ITEM },
+    });
+    await finalFrame;
+    const authResults = runtimeListeners.map((listener) =>
+      listener(
+        { __matrx: true, kind: 'auth:state-changed', payload: {} },
+        {} as chrome.runtime.MessageSender,
+        () => undefined,
+      ),
+    );
+    expect(authResults).toContain(false);
+    releaseFrame();
+    expect((await filling) as { status: string }).toMatchObject({ status: 'stale' });
+    expect((document.querySelector('#username') as HTMLInputElement).value).toBe('');
+    expect((document.querySelector('#password') as HTMLInputElement).value).toBe('');
+  });
+
+  it('fans auth invalidation from the SW to the mounted content receiver at its exact document', async () => {
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    const { mountInlineCredentialSuggestions } = await import(
+      '@/lib/credentials/inline-suggestions'
+    );
+    registerInlineCredentialSuggestionHost();
+    mountInlineCredentialSuggestions();
+    const target = document.querySelector('#password') as HTMLInputElement;
+    target.focus();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const callsBefore = state.getFrameCalls;
+    for (const listener of runtimeListeners)
+      listener(
+        { __matrx: true, kind: 'auth:state-changed', payload: {} },
+        {} as chrome.runtime.MessageSender,
+        () => undefined,
+      );
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(tabMessages).toContainEqual({
+      tabId: 7,
+      message: {
+        __matrx: true,
+        kind: 'credential-suggestions:context-changed',
+        payload: {},
+      },
+      options: { documentId: 'doc-7' },
+    });
+    // tabs.sendMessage invoked the content listener, which re-queried its
+    // still-focused field through the real producer/consumer seam.
+    expect(state.getFrameCalls).toBeGreaterThan(callsBefore);
+  });
 });

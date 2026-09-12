@@ -63,8 +63,20 @@ function send(kind: string, payload: unknown): Promise<unknown> {
 function place(target: HTMLInputElement): void {
   if (!host) return;
   const rect = target.getBoundingClientRect();
+  const margin = 8;
+  const below = rect.bottom + 6;
+  const roomBelow = Math.max(0, window.innerHeight - below - margin);
+  const roomAbove = Math.max(0, rect.top - 6 - margin);
+  const showBelow = roomBelow >= roomAbove;
+  const top = showBelow ? below : Math.max(margin, rect.top - 6 - Math.min(168, roomAbove));
   host.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - 300))}px`;
-  host.style.top = `${Math.max(8, Math.min(rect.bottom + 6, window.innerHeight - 180))}px`;
+  host.style.top = `${Math.max(margin, top)}px`;
+  // The card scrolls within the space actually remaining after its placement;
+  // it never extends below the visual viewport on a short page.
+  host.style.setProperty(
+    '--matrx-inline-max-height',
+    `${Math.max(0, window.innerHeight - Math.max(margin, top) - margin)}px`,
+  );
 }
 
 function requestFor(target: HTMLInputElement): void {
@@ -98,7 +110,11 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
           : response.message;
     message.setAttribute('aria-label', response.message);
     message.style.cssText =
-      'all:initial;display:block;box-sizing:border-box;max-width:292px;padding:8px;border:1px solid #d4d4d4;border-radius:8px;background:#fff;color:#333;cursor:pointer;font:12px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;';
+      'all:initial;display:block;box-sizing:border-box;max-width:292px;max-height:var(--matrx-inline-max-height,168px);overflow:auto;padding:8px;border:1px solid #d4d4d4;border-radius:8px;background:#fff;color:#333;cursor:pointer;font:12px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;outline:2px solid transparent;outline-offset:2px;';
+    message.addEventListener('focus', () =>
+      message.style.setProperty('outline', '2px solid #2563eb'),
+    );
+    message.addEventListener('blur', () => message.style.removeProperty('outline'));
     message.addEventListener(
       'click',
       () => void send(CHANNELS.CREDENTIAL_SUGGESTIONS_OPEN_VAULT, {}),
@@ -116,13 +132,15 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
   card.setAttribute('role', 'dialog');
   card.setAttribute('aria-label', 'Saved logins from Matrx Vault');
   card.style.cssText =
-    'all:initial;display:block;box-sizing:border-box;width:292px;max-width:calc(100vw - 16px);max-height:168px;overflow:auto;padding:8px;background:#fff;color:#171717;border:1px solid #d4d4d4;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);font:13px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;';
+    'all:initial;display:block;box-sizing:border-box;width:292px;max-width:calc(100vw - 16px);max-height:var(--matrx-inline-max-height,168px);overflow:auto;padding:8px;background:#fff;color:#171717;border:1px solid #d4d4d4;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);font:13px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;';
   const title = document.createElement('button');
   title.type = 'button';
   title.textContent = 'Matrx — choose a saved login';
   title.setAttribute('aria-expanded', 'false');
   title.style.cssText =
-    'all:initial;display:block;font:600 12px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 6px;color:#333;';
+    'all:initial;display:block;font:600 12px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 6px;color:#333;cursor:pointer;outline:2px solid transparent;outline-offset:2px;';
+  title.addEventListener('focus', () => title.style.setProperty('outline', '2px solid #2563eb'));
+  title.addEventListener('blur', () => title.style.removeProperty('outline'));
   card.append(title);
   const buttons: HTMLButtonElement[] = [];
   for (const match of response.matches) {

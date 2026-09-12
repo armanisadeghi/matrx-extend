@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 let contentListener: ((message: unknown) => boolean) | null = null;
 let queryCount = 0;
 const originalAttachShadow = HTMLElement.prototype.attachShadow;
+const originalInnerHeight = window.innerHeight;
 
 beforeEach(() => {
   queryCount = 0;
@@ -44,6 +45,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  Object.defineProperty(window, 'innerHeight', { configurable: true, value: originalInnerHeight });
+  document.querySelector('#matrx-inline-login-suggestion')?.remove();
   vi.restoreAllMocks();
   contentListener = null;
   vi.resetModules();
@@ -52,6 +55,7 @@ afterEach(() => {
 
 describe('inline saved-login chooser', () => {
   it('keeps accounts behind a deliberate Matrx click, restores target focus, and re-queries after context recovery', async () => {
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 96 });
     const { mountInlineCredentialSuggestions } = await import(
       '@/lib/credentials/inline-suggestions'
     );
@@ -64,6 +68,11 @@ describe('inline saved-login chooser', () => {
     const host = document.querySelector('#matrx-inline-login-suggestion') as HTMLElement;
     const title = host.shadowRoot?.querySelector('button') as HTMLButtonElement;
     const account = host.shadowRoot?.querySelectorAll('button')[1] as HTMLButtonElement;
+    const card = host.shadowRoot?.querySelector('[role="dialog"]') as HTMLElement;
+    title.focus();
+    expect(title.style.outline).toContain('#2563eb');
+    expect(host.style.getPropertyValue('--matrx-inline-max-height')).toBe('48px');
+    expect(card.style.maxHeight).toContain('--matrx-inline-max-height');
     expect(account.hidden).toBe(true);
     expect(account.style.display).toBe('');
 
