@@ -58,6 +58,18 @@ const PROMPT_FALLBACK_MS = 1500;
 const PROMPT_RETRY_DELAYS_MS = [0, 400, 1200, 3000];
 const SESSION_KEY = 'matrx.credentials.capture.pending.v1';
 const SESSION_VERSION = 1;
+const EXPIRY_ALARM = 'matrx.credentials.capture.expiry';
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+type Actor = { userId: string; organizationId: string };
+type MutationCommand =
+  | { kind: 'create_item'; key: string; body: Parameters<typeof createVaultItem>[0] }
+  | { kind: 'update_field'; key: string; itemId: string; fieldId: string; body: { value: string } }
+  | {
+      kind: 'add_field';
+      key: string;
+      itemId: string;
+      body: { field_key: 'password'; value: string };
+    };
 
 interface Candidate {
   id: string;
@@ -71,11 +83,11 @@ interface Candidate {
   password: string | null;
   sourceDocumentId: string;
   sourcePath: string;
-  actor: { userId: string; organizationId: string } | null;
+  actor: Actor | null;
   createdAt: number;
   generation: number;
   state: 'ready' | 'in_flight';
-  operation: { action: 'save' | 'update'; itemId?: string; key: string } | null;
+  operation: MutationCommand | null;
   expiresAt: number;
   existing: CaptureExistingLogin[];
   promptTimer: ReturnType<typeof setTimeout> | null;
@@ -92,6 +104,24 @@ const PENDING = new Map<number, Candidate>();
 let initialization: Promise<boolean> | null = null;
 let mutationQueue: Promise<unknown> = Promise.resolve();
 let storageAvailable = true;
+const EPOCHS = new Map<number, number>();
+let globalEpoch = 0;
+const OPERATIONS = new Map<
+  string,
+  { action: CaptureDecision['action']; itemId?: string; promise: Promise<CaptureDecisionResult> }
+>();
+
+function epoch(tabId: number): number {
+  return EPOCHS.get(tabId) ?? 0;
+}
+function invalidateNow(tabId?: number): void {
+  globalEpoch++;
+  if (tabId !== undefined) EPOCHS.set(tabId, epoch(tabId) + 1);
+  else for (const id of PENDING.keys()) EPOCHS.set(id, epoch(id) + 1);
+}
+function sameEpoch(c: Candidate, baseline: number, global: number): boolean {
+  return PENDING.get(c.tabId) === c && epoch(c.tabId) === baseline && globalEpoch === global;
+}
 
 type StoredCandidate = Pick<
   Candidate,
@@ -111,7 +141,7 @@ type StoredCandidate = Pick<
   | 'operation'
 > & {
   version: 1;
-  actor: { userId: string; organizationId: string };
+  actor: Actor;
 };
 
 function serialize(): Record<string, StoredCandidate> {
@@ -153,7 +183,17 @@ function queued<T>(work: () => Promise<T>): Promise<T> {
 }
 async function persist(): Promise<void> {
   if (!storageAvailable) throw new Error('capture session unavailable');
-  await chrome.storage.session.set({ [SESSION_KEY]: serialize() });
+  const serialized = serialize();
+  if (Object.keys(serialized).length === 0) await chrome.storage.session.remove(SESSION_KEY);
+  else await chrome.storage.session.set({ [SESSION_KEY]: serialized });
+  const earliest = [...PENDING.values()].reduce<number | null>(
+    (value, candidate) =>
+      value === null ? candidate.expiresAt : Math.min(value, candidate.expiresAt),
+    null,
+  );
+  if (!chrome.alarms) return;
+  if (earliest === null) await chrome.alarms.clear(EXPIRY_ALARM);
+  else chrome.alarms.create(EXPIRY_ALARM, { when: earliest });
 }
 function clearMemory(): void {
   for (const c of PENDING.values()) {
@@ -189,6 +229,7 @@ function validStored(row: unknown): row is StoredCandidate {
     Object.keys(r).some((key) => !keys.includes(key)) ||
     r.version !== SESSION_VERSION ||
     typeof r.id !== 'string' ||
+    !UUID.test(r.id) ||
     !Number.isInteger(r.tabId) ||
     typeof r.origin !== 'string' ||
     typeof r.loginUrl !== 'string' ||
@@ -207,7 +248,9 @@ function validStored(row: unknown): row is StoredCandidate {
         r.username.length <= 256)
     ) ||
     typeof r.sourceDocumentId !== 'string' ||
+    !r.sourceDocumentId ||
     typeof r.sourcePath !== 'string' ||
+    !r.sourcePath.startsWith('/') ||
     !r.actor ||
     typeof r.actor !== 'object' ||
     typeof (r.actor as Record<string, unknown>).userId !== 'string' ||
@@ -220,13 +263,30 @@ function validStored(row: unknown): row is StoredCandidate {
     (r.state !== 'ready' && r.state !== 'in_flight')
   )
     return false;
+  if (r.state === 'ready') return r.operation === null;
+  if (!r.operation || typeof r.operation !== 'object') return false;
+  const operation = r.operation as Record<string, unknown>;
+  if (!UUID.test(String(operation.key))) return false;
+  if (operation.kind === 'create_item') {
+    const body = operation.body as Record<string, unknown> | null;
+    const urls = body?.login_urls;
+    return (
+      !!body &&
+      typeof body === 'object' &&
+      Array.isArray(body.fields) &&
+      Array.isArray(urls) &&
+      urls[0] === r.loginUrl
+    );
+  }
   return (
-    r.operation === null ||
-    (!!r.operation &&
-      typeof r.operation === 'object' &&
-      ((r.operation as Record<string, unknown>).action === 'save' ||
-        (r.operation as Record<string, unknown>).action === 'update') &&
-      typeof (r.operation as Record<string, unknown>).key === 'string')
+    (operation.kind === 'update_field' &&
+      typeof operation.itemId === 'string' &&
+      typeof operation.fieldId === 'string' &&
+      typeof (operation.body as Record<string, unknown>)?.value === 'string') ||
+    (operation.kind === 'add_field' &&
+      typeof operation.itemId === 'string' &&
+      (operation.body as Record<string, unknown>)?.field_key === 'password' &&
+      typeof (operation.body as Record<string, unknown>)?.value === 'string')
   );
 }
 async function currentActor(): Promise<{ userId: string; organizationId: string } | null> {
@@ -255,7 +315,7 @@ async function ensureSession(): Promise<boolean> {
             existing: [],
             promptTimer: null,
             expiryTimer: null,
-            ready: row.state === 'ready',
+            ready: false,
             loadCompleted: true,
             prompted: false,
           };
@@ -264,6 +324,8 @@ async function ensureSession(): Promise<boolean> {
             Math.max(0, row.expiresAt - now()),
           );
           PENDING.set(row.tabId, candidate);
+          if (candidate.stage === 'password' && candidate.state === 'ready')
+            void refreshMatches(candidate);
         }
         await persist();
         return true;
@@ -273,6 +335,33 @@ async function ensureSession(): Promise<boolean> {
       }
     });
   return initialization;
+}
+
+async function refreshMatches(candidate: Candidate): Promise<void> {
+  if (!candidate.actor || candidate.stage !== 'password') return;
+  const baseline = epoch(candidate.tabId);
+  const global = globalEpoch;
+  const matched = await fetchBrowserLoginMatches(candidate.loginUrl, undefined, {
+    expectedActor: candidate.actor,
+  });
+  const [actor, enabled] = await Promise.all([currentActor(), readCaptureLoginsEnabled()]);
+  if (!sameEpoch(candidate, baseline, global) || !sameActor(candidate.actor, actor) || !enabled)
+    return;
+  const existing = matched.ok
+    ? matched.data.matches.map((m) => ({ item_id: m.item_id, display_name: m.display_name }))
+    : [];
+  await queued(async () => {
+    if (!sameEpoch(candidate, baseline, global)) return;
+    candidate.existing = existing;
+    candidate.ready = true;
+    try {
+      await persist();
+    } catch {
+      clearMemory();
+      return;
+    }
+    if (candidate.loadCompleted) void promptTab(candidate);
+  });
 }
 
 /** Test seam — tests replace this to avoid real timers. */
@@ -321,7 +410,7 @@ async function removeCandidate(c: Candidate): Promise<void> {
   if (c.expiryTimer) clearTimeout(c.expiryTimer);
   PENDING.delete(c.tabId);
   c.generation++;
-  c.password = '';
+  c.password = null;
   try {
     await persist();
   } catch {
@@ -434,14 +523,17 @@ export async function holdCandidate(
   const parsed = safeParseUrl(wire.loginUrl);
   if (!normalized || !parsed || !isFillablePageUrl(wire.loginUrl)) return false;
   const origin = parsed.origin;
+  const actor = deps.actor === undefined ? await currentActor() : deps.actor;
+  if (!actor) return false;
+  const stillAuthorized = async (): Promise<boolean> =>
+    sameActor(actor, await currentActor()) && (await (deps.enabled ?? readCaptureLoginsEnabled)());
 
   if (wire.stage === 'password' && typeof wire.password !== 'string') return false;
   if (wire.username !== null && wire.username.length > 256) return false;
   if (!(await (deps.enabled ?? readCaptureLoginsEnabled)())) return false;
   if (!(await (deps.signedIn ?? hasRealUserToken)())) return false;
   if (await (deps.never ?? isNeverCaptureOrigin)(origin)) return false;
-
-  const actor = deps.actor === undefined ? null : deps.actor;
+  if (!(await stillAuthorized())) return false;
   const previous = PENDING.get(tabId);
   const continuedUsername =
     wire.stage === 'password' &&
@@ -494,15 +586,19 @@ export async function holdCandidate(
   const resolveMatches =
     deps.matches ??
     (async (loginUrl: string) => {
-      const r = await fetchBrowserLoginMatches(loginUrl);
+      const r = await fetchBrowserLoginMatches(loginUrl, undefined, { expectedActor: actor });
       return r.ok
         ? r.data.matches.map((m) => ({ item_id: m.item_id, display_name: m.display_name }))
         : [];
     });
-  candidate.existing = await resolveMatches(normalized);
+  const baseline = epoch(tabId);
+  const global = globalEpoch;
+  const resolved = await resolveMatches(normalized);
+  if (!sameEpoch(candidate, baseline, global) || !(await stillAuthorized())) return false;
+  candidate.existing = resolved;
   if (PENDING.get(tabId) !== candidate) return false; // replaced while resolving
   candidate.ready = true;
-  if (!(await (deps.enabled ?? readCaptureLoginsEnabled)())) {
+  if (!(await stillAuthorized())) {
     await removeCandidate(candidate);
     return false;
   }
@@ -574,104 +670,138 @@ export async function applyCaptureDecision(
     await queued(() => removeCandidate(c));
     return result('never');
   }
-
-  if (!(await hasRealUserToken())) return result('sign_in_required');
-  const actor = await currentActor();
-  if (c.actor && !sameActor(c.actor, actor)) {
-    await queued(() => removeCandidate(c));
-    return result('sign_in_required');
-  }
-  if (c.state === 'in_flight') {
-    if (
-      c.operation?.action !== decision.action ||
-      (decision.action === 'update' && c.operation.itemId !== decision.itemId)
-    )
+  const existing = OPERATIONS.get(c.id);
+  if (existing) {
+    if (existing.action !== decision.action || existing.itemId !== decision.itemId)
       return result('error');
-    // A repeated click shares the same frozen operation and key.
-    return executeMutation(c, c.operation, c.actor ?? actor);
+    return existing.promise;
   }
-  const operation =
-    decision.action === 'save'
-      ? { action: 'save' as const, key: crypto.randomUUID() }
-      : decision.itemId
-        ? { action: 'update' as const, itemId: decision.itemId, key: crypto.randomUUID() }
-        : null;
-  if (!operation) return result('error');
-  c.state = 'in_flight';
-  c.operation = operation;
+  const promise = beginMutation(c, decision);
+  OPERATIONS.set(c.id, {
+    action: decision.action,
+    ...(decision.itemId ? { itemId: decision.itemId } : {}),
+    promise,
+  });
   try {
-    await queued(persist);
-  } catch {
-    clearMemory();
-    return result('error');
+    return await promise;
+  } finally {
+    if (OPERATIONS.get(c.id)?.promise === promise) OPERATIONS.delete(c.id);
   }
-  return executeMutation(c, operation, c.actor ?? actor);
 }
 
-async function executeMutation(
+async function beginMutation(
   c: Candidate,
-  operation: NonNullable<Candidate['operation']>,
-  actor: Candidate['actor'],
+  decision: CaptureDecision,
 ): Promise<CaptureDecisionResult> {
-  if (
-    !actor ||
-    c.stage !== 'password' ||
-    !c.password ||
-    PENDING.get(c.tabId) !== c ||
-    c.generation < 0
-  )
+  const baseline = epoch(c.tabId);
+  const global = globalEpoch;
+  const expectedActor = c.actor;
+  if (!expectedActor || c.stage !== 'password' || !c.password || !sameEpoch(c, baseline, global))
     return result('error');
-  const expectedActor = actor;
   const stillBound = async (): Promise<boolean> =>
-    sameActor(expectedActor, await currentActor()) && PENDING.get(c.tabId) === c;
+    sameActor(expectedActor, await currentActor()) &&
+    (await readCaptureLoginsEnabled()) &&
+    sameEpoch(c, baseline, global);
   if (!(await stillBound())) {
     await queued(() => removeCandidate(c));
     return result('sign_in_required');
   }
-
-  if (operation.action === 'save') {
+  if (c.state === 'in_flight' && c.operation) {
+    const matchesDecision =
+      (decision.action === 'save' && c.operation.kind === 'create_item') ||
+      (decision.action === 'update' &&
+        (c.operation.kind === 'update_field' || c.operation.kind === 'add_field') &&
+        c.operation.itemId === decision.itemId);
+    return matchesDecision
+      ? dispatchFrozen(c, c.operation, expectedActor, baseline, global)
+      : result('error');
+  }
+  let command: MutationCommand;
+  if (decision.action === 'save') {
     const fields = [{ field_key: 'password', value: c.password }];
     if (c.username) fields.unshift({ field_key: 'username', value: c.username });
-    const r = await createVaultItem(
-      {
+    command = {
+      kind: 'create_item',
+      key: crypto.randomUUID(),
+      body: {
         display_name: c.host,
         fields,
         definition_key: WEBSITE_LOGIN_DEFINITION_KEY,
         login_urls: [c.loginUrl],
         browser_fill_enabled: true,
       },
-      { expectedActor, idempotencyKey: operation.key },
-    );
-    if (!r.ok) return mutationFailure(c, r.failure.kind);
+    };
+  } else {
+    if (decision.action !== 'update' || !decision.itemId) return result('error');
+    const matches = await fetchBrowserLoginMatches(c.loginUrl, undefined, { expectedActor });
+    if (!matches.ok || !matches.data.matches.some((entry) => entry.item_id === decision.itemId))
+      return mutationFailure(c, matches.ok ? 'forbidden' : matches.failure.kind);
     if (!(await stillBound())) return result('expired');
-    await queued(() => removeCandidate(c));
-    return result('saved');
+    const item = await fetchVaultItem(decision.itemId, { expectedActor });
+    if (!item.ok || !item.data.capabilities?.can_edit)
+      return mutationFailure(c, item.ok ? 'forbidden' : item.failure.kind);
+    const field = item.data.fields.find(
+      (entry) => entry.is_active && entry.field_key === 'password',
+    );
+    command = field
+      ? {
+          kind: 'update_field',
+          key: crypto.randomUUID(),
+          itemId: decision.itemId,
+          fieldId: field.id,
+          body: { value: c.password },
+        }
+      : {
+          kind: 'add_field',
+          key: crypto.randomUUID(),
+          itemId: decision.itemId,
+          body: { field_key: 'password', value: c.password },
+        };
   }
-
-  // update
-  const itemId = operation.itemId;
-  if (!itemId) return result('error');
-  const matched = await fetchBrowserLoginMatches(c.loginUrl, undefined, { expectedActor });
-  if (!matched.ok || !matched.data.matches.some((e) => e.item_id === itemId))
-    return mutationFailure(c, matched.ok ? 'forbidden' : matched.failure.kind);
   if (!(await stillBound())) return result('expired');
-  const item = await fetchVaultItem(itemId, { expectedActor });
-  if (!item.ok) return mutationFailure(c, item.failure.kind);
-  const passwordField = item.data.fields.find((f) => f.is_active && f.field_key === 'password');
-  const write = passwordField
-    ? await updateVaultFieldValue(itemId, passwordField.id, c.password, {
-        expectedActor,
-        idempotencyKey: operation.key,
-      })
-    : await addVaultField(
-        itemId,
-        { field_key: 'password', value: c.password },
-        { expectedActor, idempotencyKey: operation.key },
-      );
+  await queued(async () => {
+    if (!sameEpoch(c, baseline, global)) return;
+    c.state = 'in_flight';
+    c.operation = command;
+    try {
+      await persist();
+    } catch {
+      clearMemory();
+    }
+  });
+  if (!sameEpoch(c, baseline, global) || !storageAvailable || !(await stillBound()))
+    return result('expired');
+  return dispatchFrozen(c, command, expectedActor, baseline, global);
+}
+
+async function dispatchFrozen(
+  c: Candidate,
+  command: MutationCommand,
+  expectedActor: Actor,
+  baseline: number,
+  global: number,
+): Promise<CaptureDecisionResult> {
+  const stillBound = async (): Promise<boolean> =>
+    sameActor(expectedActor, await currentActor()) &&
+    (await readCaptureLoginsEnabled()) &&
+    sameEpoch(c, baseline, global);
+  if (!(await stillBound())) return result('expired');
+  const write =
+    command.kind === 'create_item'
+      ? await createVaultItem(command.body, { expectedActor, idempotencyKey: command.key })
+      : command.kind === 'update_field'
+        ? await updateVaultFieldValue(command.itemId, command.fieldId, command.body.value, {
+            expectedActor,
+            idempotencyKey: command.key,
+          })
+        : await addVaultField(command.itemId, command.body, {
+            expectedActor,
+            idempotencyKey: command.key,
+          });
   if (!write.ok) return mutationFailure(c, write.failure.kind);
   if (!(await stillBound())) return result('expired');
   await queued(() => removeCandidate(c));
-  return result('updated');
+  return result(command.kind === 'create_item' ? 'saved' : 'updated');
 }
 
 function mutationFailure(c: Candidate, kind: string): CaptureDecisionResult {
@@ -765,6 +895,7 @@ export function registerCredentialCaptureHost(): void {
     const env = msg as { __matrx?: unknown; kind?: unknown; payload?: unknown };
     if (env.__matrx !== true) return false;
     if (env.kind === CHANNELS.AUTH_STATE_CHANGED) {
+      invalidateNow();
       void queued(async () => {
         for (const c of [...PENDING.values()]) await removeCandidate(c);
       });
@@ -804,6 +935,7 @@ export function registerCredentialCaptureHost(): void {
       }
       const decision = env.payload;
       void (async () => {
+        if (!(await ensureSession())) return result('error');
         const c = findById(decision.candidateId);
         if (!c) return result('expired');
         if (extensionPageSender(sender)) {
@@ -827,6 +959,7 @@ export function registerCredentialCaptureHost(): void {
       }
       const query = env.payload;
       void (async () => {
+        if (!(await ensureSession())) return null;
         const c = PENDING.get(query.tabId);
         if (!c || !sameActor(c.actor, await currentActor())) return null;
         const tab = await chrome.tabs.get(c.tabId).catch(() => null);
@@ -844,38 +977,56 @@ export function registerCredentialCaptureHost(): void {
   // The post-login navigation finished → show the prompt on the new page.
   chrome.tabs.onUpdated.addListener((tabId, info) => {
     if (info.status !== 'complete') return;
-    void queued(async () => {
-      const c = PENDING.get(tabId);
-      if (!c || c.prompted) return;
-      const tab = await chrome.tabs.get(tabId).catch(() => null);
-      if (!tab?.url || new URL(tab.url).origin !== c.origin) {
-        await removeCandidate(c);
-        return;
-      }
-      if (c.ready) void promptTab(c);
-      else c.loadCompleted = true;
-    });
+    void (async () => {
+      if (!(await ensureSession())) return;
+      await queued(async () => {
+        const c = PENDING.get(tabId);
+        if (!c || c.prompted) return;
+        const tab = await chrome.tabs.get(tabId).catch(() => null);
+        if (!tab?.url || new URL(tab.url).origin !== c.origin) {
+          await removeCandidate(c);
+          return;
+        }
+        if (c.ready) void promptTab(c);
+        else c.loadCompleted = true;
+      });
+    })();
   });
   chrome.tabs.onRemoved.addListener((tabId) => {
-    const c = PENDING.get(tabId);
-    if (c) {
-      c.generation++;
-      void queued(() => removeCandidate(c));
-    }
+    invalidateNow(tabId);
+    void (async () => {
+      if (await ensureSession()) {
+        const c = PENDING.get(tabId);
+        if (c) await queued(() => removeCandidate(c));
+      }
+    })();
   });
   chrome.tabs.onUpdated.addListener((tabId, info) => {
     if (!info.url) return;
+    const updatedUrl = info.url;
     const c = PENDING.get(tabId);
     if (c && new URL(info.url).origin !== c.origin) {
-      c.generation++;
+      invalidateNow(tabId);
       void queued(() => removeCandidate(c));
+      return;
     }
+    void (async () => {
+      if (await ensureSession()) {
+        const restored = PENDING.get(tabId);
+        if (restored && new URL(updatedUrl).origin !== restored.origin) {
+          invalidateNow(tabId);
+          await queued(() => removeCandidate(restored));
+        }
+      }
+    })();
   });
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'local' && ('matrx.settings.v1' in changes || 'matrx.org.active' in changes))
+    if (area === 'local' && ('matrx.settings.v1' in changes || 'matrx.org.active' in changes)) {
+      invalidateNow();
       void queued(async () => {
         for (const c of [...PENDING.values()]) await removeCandidate(c);
       });
+    }
   });
   chrome.alarms?.onAlarm.addListener((alarm) => {
     if (alarm.name !== 'matrx.credentials.capture.expiry') return;
@@ -891,4 +1042,19 @@ export function _resetCaptureCandidates(clock?: () => number): void {
   initialization = null;
   storageAvailable = true;
   now = clock ?? (() => Date.now());
+}
+
+/** Test seam: drops worker memory without touching session storage, as MV3 suspension does. */
+export function _simulateCaptureWorkerRestartForTest(): void {
+  for (const candidate of PENDING.values()) {
+    if (candidate.promptTimer) clearTimeout(candidate.promptTimer);
+    if (candidate.expiryTimer) clearTimeout(candidate.expiryTimer);
+    candidate.password = null;
+  }
+  PENDING.clear();
+  OPERATIONS.clear();
+  initialization = null;
+  mutationQueue = Promise.resolve();
+  storageAvailable = true;
+  registered = false;
 }

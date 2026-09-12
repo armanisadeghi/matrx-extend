@@ -12,6 +12,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { CaptureExistingLogin } from '@/lib/credentials/capture-types';
 
 const SENTINEL = 'Tr0ub4dor&3-sentinel';
 const USER = 'arman@example.com';
@@ -27,9 +28,11 @@ const broadcasts: unknown[] = [];
 const tabMessages: unknown[] = [];
 const logCalls: unknown[] = [];
 const localStorage = new Map<string, unknown>();
+const sessionStorage = new Map<string, unknown>();
 let signedIn = true;
 let matches: Array<{ item_id: string; display_name: string }> = [];
 let itemFields: Array<{ id: string; field_key: string; is_active: boolean }> = [];
+let createGate: Promise<void> | null = null;
 
 Object.assign(chrome, {
   storage: {
@@ -48,8 +51,18 @@ Object.assign(chrome, {
     },
     session: {
       setAccessLevel: async () => undefined,
-      get: async () => ({}),
-      set: async () => undefined,
+      get: async (keys?: string | string[]) => {
+        const list = typeof keys === 'string' ? [keys] : (keys ?? [...sessionStorage.keys()]);
+        return Object.fromEntries(
+          list.flatMap((key) => (sessionStorage.has(key) ? [[key, sessionStorage.get(key)]] : [])),
+        );
+      },
+      set: async (values: Record<string, unknown>) => {
+        for (const [key, value] of Object.entries(values)) sessionStorage.set(key, value);
+      },
+      remove: async (keys: string | string[]) => {
+        for (const key of typeof keys === 'string' ? [keys] : keys) sessionStorage.delete(key);
+      },
     },
   },
   tabs: {
@@ -68,20 +81,26 @@ vi.mock('@/lib/api/routes/vault', () => ({
     calls.push({ name: 'matches', args: [url] });
     return { ok: true, data: { matches } };
   },
-  createVaultItem: async (input: unknown) => {
-    calls.push({ name: 'create', args: [input] });
+  createVaultItem: async (input: unknown, options?: unknown) => {
+    calls.push({ name: 'create', args: [input, options] });
+    await createGate;
     return { ok: true, data: { id: 'new-item' } };
   },
   fetchVaultItem: async (id: string) => {
     calls.push({ name: 'fetchItem', args: [id] });
-    return { ok: true, data: { id, fields: itemFields } };
+    return { ok: true, data: { id, fields: itemFields, capabilities: { can_edit: true } } };
   },
-  updateVaultFieldValue: async (itemId: string, fieldId: string, value: string) => {
-    calls.push({ name: 'updateValue', args: [itemId, fieldId, value] });
+  updateVaultFieldValue: async (
+    itemId: string,
+    fieldId: string,
+    value: string,
+    options?: unknown,
+  ) => {
+    calls.push({ name: 'updateValue', args: [itemId, fieldId, value, options] });
     return { ok: true, data: undefined };
   },
-  addVaultField: async (itemId: string, field: unknown) => {
-    calls.push({ name: 'addField', args: [itemId, field] });
+  addVaultField: async (itemId: string, field: unknown, options?: unknown) => {
+    calls.push({ name: 'addField', args: [itemId, field, options] });
     return { ok: true, data: undefined };
   },
 }));
@@ -109,10 +128,12 @@ const DEPS = {
   never: async () => false,
   prompt: async () => undefined,
   actor: { userId: 'test-user', organizationId: 'test-org' },
+  documentId: 'doc-live',
 };
 
 beforeEach(() => {
   localStorage.clear();
+  sessionStorage.clear();
   calls.length = 0;
   broadcasts.length = 0;
   logCalls.length = 0;
@@ -120,6 +141,7 @@ beforeEach(() => {
   signedIn = true;
   matches = [];
   itemFields = [];
+  createGate = null;
   vi.useFakeTimers();
 });
 afterEach(async () => {
@@ -342,6 +364,27 @@ describe('content prompt — page overlay', () => {
 });
 
 describe('host — decisions', () => {
+  it('shares one frozen create command and idempotency key across concurrent clicks', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    let release!: () => void;
+    createGate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await host.holdCandidate(55, WIRE, DEPS);
+    const id = host.pendingCaptureForTab(55)?.candidateId as string;
+    const first = host.applyCaptureDecision({ candidateId: id, action: 'save' });
+    const second = host.applyCaptureDecision({ candidateId: id, action: 'save' });
+    await vi.waitFor(() => expect(calls.filter((call) => call.name === 'create')).toHaveLength(1));
+    const create = calls.find((call) => call.name === 'create');
+    expect(create?.args[1]).toMatchObject({
+      expectedActor: DEPS.actor,
+      idempotencyKey: expect.any(String),
+    });
+    release();
+    expect((await first).status).toBe('saved');
+    expect((await second).status).toBe('saved');
+  });
+
   it('save → ONE createVaultItem with the value, then the candidate is gone', async () => {
     const host = await import('@/lib/credentials/capture-candidates');
     await host.holdCandidate(5, WIRE, DEPS);
@@ -446,7 +489,7 @@ describe('host — decisions', () => {
     expect(calls.filter((c) => c.name === 'create' || c.name === 'updateValue')).toHaveLength(0);
   });
 
-  it('signed-out at decision time → sign_in_required, nothing written, candidate kept', async () => {
+  it('signed-out at decision time clears the bound candidate without writing', async () => {
     const host = await import('@/lib/credentials/capture-candidates');
     await host.holdCandidate(10, WIRE, DEPS);
     const id = host.pendingCaptureForTab(10)?.candidateId as string;
@@ -455,7 +498,144 @@ describe('host — decisions', () => {
       'sign_in_required',
     );
     expect(calls.find((c) => c.name === 'create')).toBeUndefined();
-    expect(host.pendingCaptureForTab(10)).not.toBeNull();
+    expect(host.pendingCaptureForTab(10)).toBeNull();
+  });
+});
+
+describe('host — registered worker listeners and session continuity', () => {
+  type Listener = (
+    message: unknown,
+    sender: chrome.runtime.MessageSender,
+    reply: (value: unknown) => void,
+  ) => boolean;
+  const listeners: Listener[] = [];
+  const updated: Array<(tabId: number, info: chrome.tabs.TabChangeInfo) => void> = [];
+  const alarms: Array<(alarm: chrome.alarms.Alarm) => void> = [];
+  const alarmCalls: unknown[] = [];
+
+  function sender(tabId = 33): chrome.runtime.MessageSender {
+    return {
+      id: 'test-extension',
+      tab: { id: tabId },
+      frameId: 0,
+      documentId: 'doc-live',
+      url: 'https://app.example.com/login',
+    } as chrome.runtime.MessageSender;
+  }
+  async function ask(message: unknown, from = sender()): Promise<unknown> {
+    return new Promise((resolve) => {
+      expect(listeners.some((listener) => listener(message, from, resolve))).toBe(true);
+    });
+  }
+
+  beforeEach(async () => {
+    listeners.length = 0;
+    updated.length = 0;
+    alarms.length = 0;
+    alarmCalls.length = 0;
+    (globalThis as unknown as { chrome: unknown }).chrome = {
+      runtime: {
+        id: 'test-extension',
+        onMessage: { addListener: (listener: Listener) => listeners.push(listener) },
+      },
+      storage: {
+        session: {
+          setAccessLevel: async () => undefined,
+          get: async (key: string) =>
+            sessionStorage.has(key) ? { [key]: sessionStorage.get(key) } : {},
+          set: async (values: Record<string, unknown>) => {
+            for (const [key, value] of Object.entries(values)) sessionStorage.set(key, value);
+          },
+          remove: async (key: string) => sessionStorage.delete(key),
+        },
+        onChanged: { addListener: () => undefined },
+      },
+      tabs: {
+        get: async (id: number) => ({ id, url: 'https://app.example.com/login' }),
+        sendMessage: async () => ({ ok: true }),
+        onUpdated: {
+          addListener: (listener: (tabId: number, info: chrome.tabs.TabChangeInfo) => void) =>
+            updated.push(listener),
+        },
+        onRemoved: { addListener: () => undefined },
+      },
+      webNavigation: {
+        getFrame: async () => ({ documentId: 'doc-live', url: 'https://app.example.com/login' }),
+      },
+      alarms: {
+        create: (name: string, info: unknown) => alarmCalls.push({ name, info }),
+        clear: async () => true,
+        onAlarm: {
+          addListener: (listener: (alarm: chrome.alarms.Alarm) => void) => alarms.push(listener),
+        },
+      },
+    };
+    const host = await import('@/lib/credentials/capture-candidates');
+    host._simulateCaptureWorkerRestartForTest();
+    host.registerCredentialCaptureHost();
+  });
+
+  it('rehydrates before an extension-page status request and schedules idle expiry', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    await host.holdCandidate(33, WIRE, DEPS);
+    host._simulateCaptureWorkerRestartForTest();
+    host.registerCredentialCaptureHost();
+    const response = await ask(
+      { __matrx: true, kind: 'credential-capture:status', payload: { tabId: 33 } },
+      {
+        id: 'test-extension',
+        url: 'chrome-extension://test-extension/sidepanel.html',
+      } as chrome.runtime.MessageSender,
+    );
+    expect(response).toMatchObject({ tabId: 33, host: 'app.example.com' });
+    expect(
+      alarmCalls.some(
+        (call) => (call as { name: string }).name === 'matrx.credentials.capture.expiry',
+      ),
+    ).toBe(true);
+    for (const listener of alarms)
+      listener({ name: 'matrx.credentials.capture.expiry' } as chrome.alarms.Alarm);
+  });
+
+  it('rejects a hostile page relay before it can observe or decide a candidate', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    await host.holdCandidate(33, WIRE, DEPS);
+    const id = host.pendingCaptureForTab(33)?.candidateId;
+    const response = await ask(
+      {
+        __matrx: true,
+        kind: 'credential-capture:decision',
+        payload: { candidateId: id, action: 'save' },
+      },
+      { ...sender(), id: 'forged-extension' } as chrome.runtime.MessageSender,
+    );
+    expect(response).toMatchObject({ status: 'expired' });
+    expect(calls.find((call) => call.name === 'create')).toBeUndefined();
+  });
+
+  it('advances the tab epoch before delayed matching can commit after cross-origin navigation', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    let release!: (value: CaptureExistingLogin[]) => void;
+    let started!: () => void;
+    const startedMatch = new Promise<void>((resolve) => {
+      started = resolve;
+    });
+    const delayed = new Promise<CaptureExistingLogin[]>((resolve) => {
+      release = resolve;
+    });
+    const hold = host.holdCandidate(33, WIRE, {
+      ...DEPS,
+      matches: async () => {
+        started();
+        return delayed;
+      },
+    });
+    await startedMatch;
+    for (const listener of updated)
+      listener(33, { url: 'https://other.example/login' } as chrome.tabs.TabChangeInfo);
+    release([]);
+    expect(await hold).toBe(false);
+    expect(host.pendingCaptureForTab(33)).toBeNull();
   });
 });
 
