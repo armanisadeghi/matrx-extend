@@ -927,6 +927,15 @@ Every entry follows this shape:
   - **Same change in the Framework tab's detection line:** it reads
     "__NEXT_DATA__ (12.7 KB), window._initialData (48.3 MB)" — built in the
     extension realm from the sizes the probe returned as numbers.
+- **Those sizes are real UTF-8 BYTES (2026-09-12).** Until then the Doctor
+  `size_bytes` fields, the Framework detection line and the Network tab's body
+  size were a string's character count (UTF-16 code units) under a byte label,
+  so a non-ASCII page read up to ~3x lighter than its payload.
+  - **Steps:** Open a Japanese Next.js site (e.g. a nikkei.com or note.com
+    article page) → Doctor, Framework and Network tabs.
+  - **Expected:** a Japanese `__NEXT_DATA__` of 1,000 characters reads
+    "3.0 KB", not "1021 B". On an ASCII page the numbers are unchanged. The
+    Doctor chip, the Page signals row and the Framework line agree exactly.
 
 ### Showcase — Recipes tab (DB-backed)
 - **What it does:** One-click curated extraction configs, loaded from

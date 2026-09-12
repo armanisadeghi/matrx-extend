@@ -72,7 +72,8 @@ export const get_clipboard: ToolHandler<GetClipboardArgs, GetClipboardResult> = 
       return {
         ok: true,
         text,
-        byte_length: text.length,
+        // UTF-8 bytes; `text.length` is UTF-16 code units.
+        byte_length: new TextEncoder().encode(text).length,
         truncated,
       };
     } catch (err) {

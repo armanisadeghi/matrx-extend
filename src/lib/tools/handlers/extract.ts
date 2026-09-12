@@ -682,7 +682,8 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
         height: cropH,
         source_rect: padded,
         image_base64: base64,
-        byte_length: base64.length,
+        // DECODED bytes — `base64.length` is the wire text, ~4/3 larger.
+        byte_length: bytes.byteLength,
         profile: profileName,
         file_id: fileId,
         file_url: fileUrl,

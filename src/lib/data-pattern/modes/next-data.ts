@@ -30,12 +30,17 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
   defaultConfig: () => ({ key_path: '' }),
 
   detectInPage: () => {
-    const found: { source: string; size: number }[] = [];
+    // WEIGHTS ARE BYTES, MEASURED HERE (2026-09-12). A payload's weight is a
+    // byte question, and `.length` of text is UTF-16 code units — on a Japanese
+    // page the real payload is ~3x what `.length` reports. TextEncoder exists in
+    // the page realm with no import, so the probe measures UTF-8 bytes itself.
+    const encoder = new TextEncoder();
+    const found: { source: string; sizeBytes: number }[] = [];
     const checkScript = (id: string, node: Element | null) => {
       if (!node?.textContent) return;
       try {
         JSON.parse(node.textContent);
-        found.push({ source: id, size: node.textContent.length });
+        found.push({ source: id, sizeBytes: encoder.encode(node.textContent).length });
       } catch {
         // skip
       }
@@ -47,19 +52,19 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
     // LinkedIn Voyager hydration: <code id="bpr-guid-*"> blocks.
     const bprBlocks = document.querySelectorAll<HTMLElement>('code[id^="bpr-guid-"]');
     if (bprBlocks.length > 0) {
-      let total = 0;
+      let totalBytes = 0;
       let parsedCount = 0;
       for (const b of Array.from(bprBlocks)) {
         try {
           JSON.parse(b.textContent ?? '');
           parsedCount++;
-          total += (b.textContent ?? '').length;
+          totalBytes += encoder.encode(b.textContent ?? '').length;
         } catch {
           // skip
         }
       }
       if (parsedCount > 0) {
-        found.push({ source: `bpr-guid (LinkedIn) ×${parsedCount}`, size: total });
+        found.push({ source: `bpr-guid (LinkedIn) ×${parsedCount}`, sizeBytes: totalBytes });
       }
     }
 
@@ -79,7 +84,7 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
       document.querySelectorAll<HTMLScriptElement>('script:not([src])'),
     );
     for (const name of WINDOW_NAMES) {
-      let bestSize = 0;
+      let bestBytes = 0;
       const escName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const lhsRe = new RegExp(
         `(?:window\\.|self\\.|var\\s+|let\\s+|const\\s+)?${escName}\\s*=\\s*`,
@@ -125,12 +130,12 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
             i++;
           }
           if (depth === 0) {
-            const size = i - start;
-            if (size > bestSize) bestSize = size;
+            const spanBytes = encoder.encode(txt.slice(start, i)).length;
+            if (spanBytes > bestBytes) bestBytes = spanBytes;
           }
         }
       }
-      if (bestSize > 0) found.push({ source: `window.${name}`, size: bestSize });
+      if (bestBytes > 0) found.push({ source: `window.${name}`, sizeBytes: bestBytes });
     }
 
     if (found.length === 0) {
@@ -140,7 +145,7 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
     // and `summarize` below turns them into a sentence in the extension realm,
     // where `formatFileSize` exists. This line used to read
     // `${f.source} (${(f.size / 1024).toFixed(1)} KB)` — a byte-size formatter
-    // that was silently allowlisted because "it can't import across the
+    // (over a character count, until the probe measured bytes) that was silently allowlisted because "it can't import across the
     // chrome.scripting boundary". True, and not a reason: the probe reports
     // facts, the extension renders them.
     return {
@@ -162,9 +167,9 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
     if (!Array.isArray(sources) || sources.length === 0) return hint.summary;
     return sources
       .map((entry) => {
-        const { source, size } = entry as { source?: unknown; size?: unknown };
+        const { source, sizeBytes } = entry as { source?: unknown; sizeBytes?: unknown };
         const name = typeof source === 'string' ? source : 'unknown source';
-        return typeof size === 'number' ? `${name} (${formatFileSize(size)})` : name;
+        return typeof sizeBytes === 'number' ? `${name} (${formatFileSize(sizeBytes)})` : name;
       })
       .join(', ');
   },

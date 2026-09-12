@@ -47,11 +47,15 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
     }
   };
 
-  const truncate = (s: string): { body: string; truncated: boolean; size: number } => {
-    const size = s.length;
-    return size > maxBodyBytes
-      ? { body: s.slice(0, maxBodyBytes), truncated: true, size }
-      : { body: s, truncated: false, size };
+  // `body_size` is rendered with formatFileSize, so it is UTF-8 BYTES — a
+  // string's `.length` is UTF-16 code units (2026-09-12). The body cap stays a
+  // character slice; only the reported weight changed.
+  const encoder = new TextEncoder();
+  const truncate = (s: string): { body: string; truncated: boolean; sizeBytes: number } => {
+    const sizeBytes = encoder.encode(s).length;
+    return s.length > maxBodyBytes
+      ? { body: s.slice(0, maxBodyBytes), truncated: true, sizeBytes }
+      : { body: s, truncated: false, sizeBytes };
   };
 
   const headersToObj = (h: Headers): Record<string, string> => {
@@ -111,7 +115,7 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
           response_headers: headersToObj(res.headers),
           body: t.body,
           body_truncated: t.truncated,
-          body_size: t.size,
+          body_size: t.sizeBytes,
           content_type: res.headers.get('content-type') ?? undefined,
         });
       })
@@ -161,7 +165,7 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
           response_headers: responseHeaders,
           body: t.body,
           body_truncated: t.truncated,
-          body_size: t.size,
+          body_size: t.sizeBytes,
           content_type: responseHeaders['content-type'],
         });
       } catch {

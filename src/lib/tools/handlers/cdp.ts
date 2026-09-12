@@ -501,7 +501,10 @@ export const cdp_print_pdf: ToolHandler<PrintPdfArgs, unknown> = {
         landscape: args.landscape,
         printBackground: args.print_background,
       });
-      return { ok: true, pdf_base64: r.data, byte_length: r.data.length };
+      // DECODED bytes, not the base64 text length (~4/3 larger).
+      const pdfPadding = r.data.endsWith('==') ? 2 : r.data.endsWith('=') ? 1 : 0;
+      const pdfBytes = Math.floor((r.data.length * 3) / 4) - pdfPadding;
+      return { ok: true, pdf_base64: r.data, byte_length: pdfBytes };
     } catch (err) {
       return { ok: false, reason: (err as Error).message };
     }

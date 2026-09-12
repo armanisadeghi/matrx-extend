@@ -65,6 +65,12 @@ export interface PageDiagnostic {
 }
 
 export function pageDiagnosticInPage(): PageDiagnostic {
+  // EVERY `*_bytes` BELOW IS UTF-8 BYTES, MEASURED IN THE PAGE (2026-09-12).
+  // Until then each one was `.length` of text — UTF-16 code units — under a
+  // name that promised bytes, so a Japanese page's payloads read ~3x lighter
+  // than they are. TextEncoder exists in the page realm with no import, which
+  // is what a `chrome.scripting.executeScript` `func:` body needs.
+  const encoder = new TextEncoder();
   const out: PageDiagnostic = {
     url: location.href,
     host: location.host,
@@ -96,7 +102,7 @@ export function pageDiagnosticInPage(): PageDiagnostic {
   let jsonLdSize = 0;
   for (const s of jsonLd) {
     const txt = s.textContent ?? '';
-    jsonLdSize += txt.length;
+    jsonLdSize += encoder.encode(txt).length;
     try {
       const parsed = JSON.parse(txt) as unknown;
       const collect = (item: unknown): void => {
@@ -149,22 +155,22 @@ export function pageDiagnosticInPage(): PageDiagnostic {
   };
 
   // ── __NEXT_DATA__ / __NUXT_DATA__ / Apollo DOM ──────────────────────────
-  const checkScript = (id: string): { present: boolean; size: number } => {
+  const checkScript = (id: string): { present: boolean; sizeBytes: number } => {
     const el = document.getElementById(id);
-    if (!el?.textContent) return { present: false, size: 0 };
+    if (!el?.textContent) return { present: false, sizeBytes: 0 };
     try {
       JSON.parse(el.textContent);
-      return { present: true, size: el.textContent.length };
+      return { present: true, sizeBytes: encoder.encode(el.textContent).length };
     } catch {
-      return { present: false, size: 0 };
+      return { present: false, sizeBytes: 0 };
     }
   };
   const next = checkScript('__NEXT_DATA__');
-  out.sources.next_data = { present: next.present, size_bytes: next.size };
+  out.sources.next_data = { present: next.present, size_bytes: next.sizeBytes };
   const nuxt = checkScript('__NUXT_DATA__');
-  out.sources.nuxt_data = { present: nuxt.present, size_bytes: nuxt.size };
+  out.sources.nuxt_data = { present: nuxt.present, size_bytes: nuxt.sizeBytes };
   const apolloDom = checkScript('__APOLLO_STATE__');
-  out.sources.apollo_dom = { present: apolloDom.present, size_bytes: apolloDom.size };
+  out.sources.apollo_dom = { present: apolloDom.present, size_bytes: apolloDom.sizeBytes };
 
   // ── LinkedIn bpr-guid ───────────────────────────────────────────────────
   const bpr = Array.from(document.querySelectorAll<HTMLElement>('code[id^="bpr-guid-"]'));
@@ -175,7 +181,7 @@ export function pageDiagnosticInPage(): PageDiagnostic {
     try {
       JSON.parse(txt);
       bprParsed++;
-      bprSize += txt.length;
+      bprSize += encoder.encode(txt).length;
     } catch {
       // skip
     }
@@ -209,7 +215,8 @@ export function pageDiagnosticInPage(): PageDiagnostic {
         // Don't actually JSON.parse here — many of these are JS object
         // literals (unquoted keys), not JSON. Just record presence + size.
         const prev = seenAssignments.get(name) ?? 0;
-        if (trimmed.length > prev) seenAssignments.set(name, trimmed.length);
+        const trimmedBytes = encoder.encode(trimmed).length;
+        if (trimmedBytes > prev) seenAssignments.set(name, trimmedBytes);
       } catch {
         // skip
       }
@@ -219,10 +226,12 @@ export function pageDiagnosticInPage(): PageDiagnostic {
       out.sources.apollo_inline.present = true;
     }
   }
-  out.sources.window_assignments = Array.from(seenAssignments.entries()).map(([name, size]) => ({
-    name,
-    size_bytes: size,
-  }));
+  out.sources.window_assignments = Array.from(seenAssignments.entries()).map(
+    ([name, sizeBytes]) => ({
+      name,
+      size_bytes: sizeBytes,
+    }),
+  );
 
   // ── Repeating-card pattern detection ────────────────────────────────────
   // Walk every parent and find direct children with a repeated structural
@@ -322,7 +331,7 @@ export function pageDiagnosticInPage(): PageDiagnostic {
   // ── Body sample ─────────────────────────────────────────────────────────
   const main = document.querySelector('main, article, [role="main"]') ?? document.body;
   const text = (main as HTMLElement)?.innerText ?? document.body.innerText ?? '';
-  out.body_total_bytes = text.length;
+  out.body_total_bytes = encoder.encode(text).length;
   out.body_sample = text.replace(/\s+/g, ' ').trim().slice(0, 500);
 
   // ── Recommendations (ranked by likely usefulness) ───────────────────────
