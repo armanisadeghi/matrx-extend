@@ -31,7 +31,7 @@
 
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { log } from '@/lib/debug/log';
-import { getSupabase } from '@/lib/supabase/client';
+import { type WriteActor, getSupabase, supabaseForActor } from '@/lib/supabase/client';
 import { type DbCallSite, failDbCall } from '@/lib/supabase/db-failure';
 import { adminDb, aiDb, extendDb } from '@/lib/supabase/schemas';
 import type { ChatMessage, MessagePart } from '@/state/chat';
@@ -712,6 +712,14 @@ export async function fetchPatternsForDomain(domain: string): Promise<Extraction
 }
 
 export type SavePatternInput = {
+  /**
+   * DD-131 — who caused this save. `'agent'` (the `data_patterns` tool acting
+   * inside a model's turn) rides the agent-authored client and declares
+   * `x-matrx-actor-tier: ai`; `'person'` (the Data / Showcase tab's own Save
+   * button) rides the ordinary client and declares nothing. Required, with no
+   * default, so the channel is visible in the calling line.
+   */
+  authored_by: WriteActor;
   name: string;
   domain: string;
   route_pattern: string | null;
@@ -730,7 +738,7 @@ export async function savePattern(p: SavePatternInput): Promise<{ id: string } |
     console.warn('[matrx-extend] savePattern refused: missing request organization', error);
     return null;
   }
-  const c = getSupabase();
+  const c = supabaseForActor(p.authored_by);
   // UNIQUE(created_by, domain, name) — on a name collision, auto-suffix
   // "name (2)", "name (3)", … instead of failing the save (decision D3).
   for (let attempt = 0; attempt < 5; attempt++) {
@@ -761,9 +769,16 @@ export async function savePattern(p: SavePatternInput): Promise<{ id: string } |
   return null;
 }
 
-/** Hard-delete a saved pattern. Returns false (with a console.warn) on failure. */
-export async function deletePattern(patternId: string): Promise<boolean> {
-  const c = getSupabase();
+/**
+ * Hard-delete a saved pattern. Returns false (with a console.warn) on failure.
+ *
+ * `authoredBy` is DD-131's actor declaration: `'agent'` when the `data_patterns`
+ * tool deletes during a model's turn, `'person'` when someone clicks Delete in
+ * the Patterns tab. Required — a deletion is exactly the kind of write nobody
+ * should have to guess the author of.
+ */
+export async function deletePattern(patternId: string, authoredBy: WriteActor): Promise<boolean> {
+  const c = supabaseForActor(authoredBy);
   const { error } = await c.schema(EXTEND_SCHEMA).from('wbx_pattern').delete().eq('id', patternId);
   if (error) {
     console.warn('[matrx-extend] deletePattern error', error.message);
@@ -977,7 +992,12 @@ export async function saveScreenshot(p: SaveScreenshotPayload): Promise<{ id: st
     console.warn('[matrx-extend] saveScreenshot refused: missing request organization', error);
     return null;
   }
-  const c = getSupabase();
+  // DD-131: `source` already records who took the shot, so the write channel
+  // follows it — an agent capture declares `x-matrx-actor-tier: ai`, the user's
+  // own "Take screenshot" button declares nothing. ('unknown' is treated as the
+  // person channel: absent means human, and inventing an agent claim is worse
+  // than the default.)
+  const c = supabaseForActor(p.source === 'agent' ? 'agent' : 'person');
   const { data, error } = await c
     .schema(EXTEND_SCHEMA)
     .from('wbx_screenshot')

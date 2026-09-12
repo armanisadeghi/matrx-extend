@@ -20,6 +20,10 @@ vi.mock('@/lib/api/routes/auth', () => ({
 
 vi.mock('@/lib/supabase/client', () => ({
   getSupabase: mocks.getSupabase,
+  // DD-131 added a second, agent-authored client. Both channels must still
+  // stamp the organization explicitly, so both resolve to the same fake here.
+  getAgentAuthoredSupabase: mocks.getSupabase,
+  supabaseForActor: mocks.getSupabase,
 }));
 
 const ORG_ID = '22222222-2222-4222-8222-222222222222';
@@ -39,6 +43,7 @@ const writers: Writer[] = [
     name: 'pattern',
     run: () =>
       savePattern({
+        authored_by: 'person',
         name: 'Example',
         domain: 'example.com',
         route_pattern: '/',

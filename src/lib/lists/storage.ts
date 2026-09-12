@@ -29,7 +29,7 @@ import type {
 } from '@/lib/lists/types';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { chatDb } from '@/lib/supabase/schemas';
+import { agentChatDb, chatDb } from '@/lib/supabase/schemas';
 import { currentRealtimeManager } from '@ai-matrx/realtime';
 import { z } from 'zod';
 
@@ -194,7 +194,12 @@ export async function addTasks(
     position: nextPosition++,
     creator_kind: creatorKind,
   }));
-  const { data, error } = await chatDb().from('agent_task').insert(rows).select(AGENT_TASK_COLUMNS);
+  // DD-131: `creatorKind` already says who authored these tasks, so the write
+  // channel follows it. The model's own `update_plan` turn rides the
+  // agent-authored client (`x-matrx-actor-tier: ai`); the user typing a task
+  // into the panel rides the ordinary client and declares nothing.
+  const db = creatorKind === 'agent' ? agentChatDb() : chatDb();
+  const { data, error } = await db.from('agent_task').insert(rows).select(AGENT_TASK_COLUMNS);
   if (error) throw new Error(`Failed to add agent tasks: ${error.message}`);
   notify('tasks', conversationId);
   return taskRows(data);

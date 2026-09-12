@@ -12,7 +12,41 @@
 import { ENV, STORAGE_KEYS } from '@/config/env';
 import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 
+/**
+ * DD-131 — the client-channel actor declaration.
+ *
+ * A supabase-js client cannot set a Postgres session GUC, so the actor tier
+ * travels as an HTTP REQUEST HEADER. PostgREST exposes request headers to SQL
+ * as `current_setting('request.headers', true)::json`; the database-side
+ * carrier reads this header and stamps the row's actor tier from it, but ONLY
+ * when the `app.actor_tier` GUC is unset and the session role is
+ * `authenticated` (i.e. exactly the client channel this extension writes on).
+ *
+ * AN ABSENT HEADER MEANS A PERSON. That is the whole point, so this header must
+ * NEVER be attached to the shared client — a person's own click or keystroke
+ * sends nothing and is stamped `human` by the database.
+ */
+export const ACTOR_TIER_HEADER = 'x-matrx-actor-tier';
+/** The only value this client emits. (`code` exists in the ruling for machinery
+ *  writes; nothing in this extension declares it yet.) */
+export const ACTOR_TIER_AI = 'ai';
+
+/**
+ * Who caused a write.
+ *
+ *  - `'person'` — a human's own click or typing in the side panel. Sends NO
+ *    actor header; the database stamps `human`.
+ *  - `'agent'`  — a write a MODEL'S TURN caused (a tool handler running inside
+ *    the browser-agent dispatcher). Sends `x-matrx-actor-tier: ai`.
+ *
+ * Pass this explicitly at the call site. There is deliberately no default and
+ * no ambient "current actor" — the two channels are two different clients, and
+ * which one a write rides is meant to be readable in the calling line.
+ */
+export type WriteActor = 'person' | 'agent';
+
 let client: SupabaseClient | null = null;
+let agentAuthoredClient: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient {
   if (client) return client;
@@ -29,6 +63,55 @@ export function getSupabase(): SupabaseClient {
     },
   });
   return client;
+}
+
+/**
+ * The AGENT-AUTHORED client (DD-131). Same URL, same publishable key, same
+ * access token as `getSupabase()` — the only difference is that every request
+ * it makes carries `x-matrx-actor-tier: ai`.
+ *
+ * It is a SEPARATE instance on purpose: there is no way to "forget to unset"
+ * the header, and no way for a person's write to pick it up. Reach for it only
+ * on a path a model's turn drives.
+ *
+ * Throws rather than degrading: silently handing back the person's client would
+ * record the agent's write as the human's, which is the exact lie this ruling
+ * exists to prevent.
+ */
+export function getAgentAuthoredSupabase(): SupabaseClient {
+  if (agentAuthoredClient) return agentAuthoredClient;
+  try {
+    agentAuthoredClient = createClient(ENV.SUPABASE_URL, ENV.SUPABASE_PUBLISHABLE_KEY, {
+      accessToken: async () => {
+        const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
+        const token = stored[STORAGE_KEYS.ACCESS_TOKEN];
+        return typeof token === 'string' && token.length > 0 ? token : null;
+      },
+      global: {
+        headers: {
+          'X-Client-Info': 'matrx-extend',
+          [ACTOR_TIER_HEADER]: ACTOR_TIER_AI,
+        },
+      },
+    });
+  } catch (cause) {
+    const detail = cause instanceof Error ? cause.message : String(cause);
+    throw new Error(
+      'The agent tried to save something, but this extension could not open the ' +
+        'connection that marks a save as agent-made. Nothing was saved — saving it ' +
+        'as if you had typed it yourself would be worse. Reload the extension from ' +
+        `chrome://extensions and try again; if it keeps happening, sign out and back in. (${detail})`,
+    );
+  }
+  return agentAuthoredClient;
+}
+
+/**
+ * Pick the write channel for an explicitly-declared actor. `'person'` returns
+ * the ordinary client (no actor header — absent means human).
+ */
+export function supabaseForActor(actor: WriteActor): SupabaseClient {
+  return actor === 'agent' ? getAgentAuthoredSupabase() : getSupabase();
 }
 
 /**

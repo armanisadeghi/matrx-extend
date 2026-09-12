@@ -38,6 +38,14 @@ vi.mock('@/lib/supabase/client', () => ({
       return rpcResult;
     },
   }),
+  // DD-131: the capture handler imports the deck through the AGENT-AUTHORED
+  // client (the model's turn caused it), so that is the one this test fakes.
+  getAgentAuthoredSupabase: () => ({
+    rpc: async (fn: string, args: unknown) => {
+      rpcCalls.push({ fn, args });
+      return rpcResult;
+    },
+  }),
 }));
 
 const tab: { id: number; url?: string; title?: string } | null = {

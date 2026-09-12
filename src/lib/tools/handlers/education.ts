@@ -30,7 +30,7 @@
  */
 
 import { getAccessToken } from '@/lib/auth/flow';
-import { getSupabase } from '@/lib/supabase/client';
+import { getAgentAuthoredSupabase } from '@/lib/supabase/client';
 import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler, ToolTier } from '@/lib/tools/types';
 import { z } from 'zod';
@@ -253,7 +253,11 @@ export const capture_study_set: ToolHandler<CaptureStudySetArgs, unknown> = {
 
     // The ONE import door (IC-11): transactional set + cards + membership
     // edges. Tab identity is Chrome's own committed URL, never page-supplied.
-    const { data, error } = await getSupabase().rpc('edu_import_deck', {
+    // DD-131: the model's `capture_study_set` turn is what creates this deck,
+    // so the RPC rides the agent-authored client and declares
+    // `x-matrx-actor-tier: ai`. (RPCs are plain PostgREST requests — the header
+    // reaches SQL the same way a table write's does.)
+    const { data, error } = await getAgentAuthoredSupabase().rpc('edu_import_deck', {
       p_deck: {
         name: deckName,
         description: `Captured from ${tab.url}`,

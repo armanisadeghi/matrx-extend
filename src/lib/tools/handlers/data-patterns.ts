@@ -195,6 +195,9 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
         route = null;
       }
       const saved = await savePattern({
+        // DD-131: the model's turn is what produced this pattern, so the write
+        // rides the agent-authored client and declares `x-matrx-actor-tier: ai`.
+        authored_by: 'agent',
         name: args.name as string,
         domain,
         route_pattern: route,
@@ -209,7 +212,8 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
     }
 
     if (args.action === 'delete') {
-      const ok = await deletePattern(args.pattern_id as string);
+      // DD-131: the model asked for this deletion, not the person.
+      const ok = await deletePattern(args.pattern_id as string, 'agent');
       return ok ? { ok: true, deleted: args.pattern_id } : { ok: false, reason: 'Delete failed.' };
     }
 

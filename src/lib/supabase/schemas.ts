@@ -45,7 +45,7 @@
  *    defect, never a writer contract. See common-docs/no-db-assigned-org.
  */
 
-import { getSupabase } from '@/lib/supabase/client';
+import { getAgentAuthoredSupabase, getSupabase } from '@/lib/supabase/client';
 
 /**
  * Where each table the extension uses actually lives. Verified against the live
@@ -149,3 +149,18 @@ export const aiDb = () => getSupabase().schema('ai');
  * these tables directly from a feature.
  */
 export const contentIrDb = () => getSupabase().schema('content_ir');
+
+// ─── Agent-authored write channels (DD-131) ─────────────────────────────────
+//
+// Identical routing to the accessors above, but on the SEPARATE client that
+// declares `x-matrx-actor-tier: ai` on every request. Use one of these ONLY
+// from a path a model's turn drives (a tool handler under src/lib/tools/). A
+// person's own click keeps using the plain accessor and sends no header at all
+// — absent means human, and that is the whole contract.
+//
+// There is no agent variant of a read-only schema, and none is added "just in
+// case": an unused agent channel is one more way for a person's write to end up
+// on it by accident.
+
+/** `chat` — agent_task rows the AGENT created during its turn. */
+export const agentChatDb = () => getAgentAuthoredSupabase().schema('chat');

@@ -150,6 +150,8 @@ export function DataView() {
     setError(null);
     try {
       const r = await savePattern({
+        // DD-131: the person clicked Save in the Data tab — no actor header.
+        authored_by: 'person',
         name: patternName || `${host} pattern`,
         domain: host,
         route_pattern: tab.url ? new URL(tab.url).pathname : null,

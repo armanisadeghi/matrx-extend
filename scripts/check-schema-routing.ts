@@ -67,7 +67,8 @@ const REMOVED_TABLES: Record<string, string> = {
   cx_conversation: 'renamed — use chat.conversation (via chatDb())',
 };
 
-const ACCESSOR = /(?:extendDb|schedulerDb|workbenchDb|chatDb|usersDb|adminDb|toolDb|aiDb)\(\)/;
+const ACCESSOR =
+  /(?:extendDb|schedulerDb|workbenchDb|chatDb|usersDb|adminDb|toolDb|aiDb|agentChatDb)\(\)/;
 
 /**
  * A `.from()` is qualified if the thing it is called ON is schema-scoped. That

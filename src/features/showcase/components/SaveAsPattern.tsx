@@ -136,6 +136,8 @@ export function SaveAsPattern({
       }
 
       const saved = await savePattern({
+        // DD-131: the person clicked "Save as pattern" in Showcase — no actor header.
+        authored_by: 'person',
         name: name || `${host} ${kind}`,
         domain: host,
         route_pattern: routePattern,

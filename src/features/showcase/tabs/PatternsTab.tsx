@@ -241,7 +241,8 @@ function PatternRow({
       confirmLabel: 'Delete pattern',
       run: async () => {
         setBusy(true);
-        const ok = await deletePattern(p.id);
+        // DD-131: the person clicked Delete in the Patterns tab — no actor header.
+        const ok = await deletePattern(p.id, 'person');
         setBusy(false);
         if (!ok) {
           setRowError('Delete failed. Check your connection and try again.');

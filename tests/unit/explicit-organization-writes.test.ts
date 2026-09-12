@@ -16,6 +16,9 @@ vi.mock('@/lib/api/routes/auth', () => ({
 vi.mock('@/lib/supabase/schemas', () => ({
   workbenchDb: mocks.workbenchDb,
   chatDb: mocks.chatDb,
+  // DD-131: agent-authored task inserts ride a second client. Same fake — the
+  // organization must be stamped explicitly on BOTH channels.
+  agentChatDb: mocks.chatDb,
 }));
 
 vi.mock('@/lib/messaging/native', () => ({ broadcast: mocks.broadcast }));
