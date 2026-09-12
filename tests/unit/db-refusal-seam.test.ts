@@ -86,6 +86,7 @@ function builder(result: { data: unknown; error: unknown }) {
   }
   chain.schema = vi.fn(hop);
   chain.single = vi.fn(async () => result);
+  chain.maybeSingle = vi.fn(async () => result);
   // A PostgREST builder really IS thenable — that is how `await db.from(...)
   // .select(...)` terminates. Reproducing that shape is the point of the stub.
   // biome-ignore lint/suspicious/noThenProperty: modelling the real builder
@@ -278,7 +279,9 @@ describe('clearing highlights tells "nothing to clear" apart from "refused"', ()
 
 describe('appendRowsToUserTable has no success-shaped fallback', () => {
   it('an RPC answer that is not a row count fails instead of reporting 0 inserted', async () => {
+    mocks.workbenchDb.mockReturnValue(builder({ data: { organization_id: ORG_ID }, error: null }));
     mocks.getSupabase.mockReturnValue(builder({ data: null, error: null }));
+    mocks.rpc.mockResolvedValue({ data: null, error: null });
     await expect(
       appendRowsToUserTable(
         '11111111-1111-4111-8111-111111111111',

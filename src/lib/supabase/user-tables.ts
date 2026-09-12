@@ -31,7 +31,7 @@
 import { getSupabase } from '@/lib/supabase/client';
 import { type DbCallSite, failDbCall } from '@/lib/supabase/db-failure';
 import { workbenchDb } from '@/lib/supabase/schemas';
-import { requireOrganizationContext } from '@ai-matrx/agents/matrx';
+import { OrganizationContextError, requireOrganizationContext } from '@ai-matrx/agents/matrx';
 import { z } from 'zod';
 
 /**
@@ -298,12 +298,34 @@ export async function appendRowsToUserTable(
     what: 'add these rows to your dataset',
     title: 'Rows not added to the dataset',
   };
+  // Validate first, including for the empty-row no-op. A required operation
+  // context is never optional merely because this invocation has no rows.
+  const organizationId = requireOrganizationContext(operationOrganizationId);
   if (rows.length === 0) return { inserted: 0 };
 
-  // This RPC has no organization parameter. Its required operation context is
-  // nevertheless validated here so a caller cannot append under a UI-derived
-  // fallback after the linked pattern was saved in a different tenant.
-  requireOrganizationContext(operationOrganizationId);
+  // This is defense in depth until the append RPC itself accepts and locks the
+  // operation organization. The read prevents a stale or direct caller from
+  // targeting an already-persisted dataset in another organization. It cannot
+  // close a concurrent parent move; the prepared RPC contract does that in one
+  // transaction.
+  const { data: target, error: targetError } = await workbenchDb()
+    .from('udt_datasets')
+    .select('organization_id')
+    .eq('id', tableId)
+    .maybeSingle();
+  if (targetError || !target) failDbCall(site, targetError);
+  if (!target.organization_id) {
+    throw new OrganizationContextError(
+      'organization_context_required',
+      'This dataset has no organization. Choose a different dataset or create a new one.',
+    );
+  }
+  if (requireOrganizationContext(target.organization_id) !== organizationId) {
+    throw new OrganizationContextError(
+      'organization_context_mismatch',
+      'The selected dataset belongs to a different organization. Choose a dataset in your active organization.',
+    );
+  }
 
   const keyMap = buildFieldNameMap(unionRowKeys(rows));
   const cleanedRows = rows.map((r) => {
