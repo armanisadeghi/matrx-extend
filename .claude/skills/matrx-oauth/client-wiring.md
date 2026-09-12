@@ -61,7 +61,7 @@ The matching `/access-denied` route just reads `?email=` and shows a friendly re
 `projects/matrx-local/desktop/src/lib/oauth.ts` is the canonical reference for a public PKCE client. Two key differences from the SPA flow:
 
 - It hits `${SUPABASE_URL}/auth/v1/oauth/authorize` and `/oauth/token` **directly** (skips aimatrx.com). It doesn't need an admin gate.
-- The `state` parameter encodes the `code_verifier` itself: `state = "<verifier>.<nonce>"`. This survives cross-origin tab navigations on the web dev flow when localStorage may be cleared. Not required for SPAs since they store the verifier on the server.
+- **Codex correction, 2026-09-12 (Vault Improvements): never encode the PKCE verifier in `state` or any authorization URL.** Desktop source now retains a local transaction and validates independent state plus the exact redirect before a single-use exchange. Local implementation: `matrx-local/app/api/FEATURE.md` section OAuth callback handling. Live native/web acceptance remains pending; the old URL-carried verifier guidance is withdrawn.
 
 Don't copy matrx-local's flow into a SPA — the SPA pattern is intentionally different because the server-side admin gate has to live somewhere and we don't want every SPA reimplementing it.
 
