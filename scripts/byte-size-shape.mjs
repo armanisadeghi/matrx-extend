@@ -21,6 +21,18 @@
  * detector requires `/ 1024`, `< 1024`, `>= 1024` etc. That asymmetry is the
  * whole reason the rule is usable — the repo has ~60 legitimate byte ceilings.
  *
+ * THE SINGLE-UNIT FORM (added 2026-09-11 after an independent review). The
+ * window above assumes the unit label sits near the arithmetic. One whole
+ * idiom does not: the conversion is hoisted into a NAMED value at the top of a
+ * component and the label is typed into JSX far below it. In
+ * `features/flashcards/fast-fire/capture-test/WavePlayer.tsx` the division is
+ * on line 58 and the ` KB` is on line 102 — forty-four lines away, invisible to
+ * any window a byte-size rule could afford. What IS on line 58 is the unit: the
+ * name. `const sizeKb = (blob.size / 1024).toFixed(0)` declares its unit in the
+ * identifier, so an identifier ending in a byte unit (`…Kb`, `…KB`, `…MB`,
+ * `…GiB`) taking a byte division is a formatter on its own evidence, with no
+ * window at all.
+ *
  * THE ONE HOME is `formatFileSize` from `@ai-matrx/kit/format`, which owns the
  * display decisions (binary units, one decimal below ten in a unit, whole bytes
  * below 1 KB, em-dash for unknown — never a confident "0 B").
@@ -35,6 +47,16 @@ const UNIT_LABEL_RE = /(?:^|[^A-Za-z])(?:[KMGT]i?B|B)(?:[^A-Za-z]|$)/;
 /** A byte DIVISION or THRESHOLD COMPARISON. Multiplication never matches. */
 const BYTE_DIVISOR_RE =
   /(?:\/\s*\(?\s*(?:1024|1048576|1073741824)|[<>]=?\s*\(?\s*(?:1024|1048576|1073741824))/;
+
+/**
+ * A value whose NAME carries the unit — `sizeKb`, `totalMB`, `ramGiB`. Paired
+ * with a byte division on the same line this needs no window: the identifier
+ * IS the unit label, which is exactly why the hoisted single-unit idiom slipped
+ * past the windowed rule. Requires an assignment or property position so a
+ * mere mention (`props.sizeKb`) is not a definition.
+ */
+const UNIT_NAMED_VALUE_RE =
+  /\b[\w$]*(?:[KkMmGgTt]i?[Bb])\s*(?::[^=]*)?=(?!=)/;
 
 /**
  * How many lines on EITHER side of a hit may supply the unit label. The window
@@ -56,6 +78,12 @@ export function byteShapeIn(source) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     if (!BYTE_DIVISOR_RE.test(line)) continue;
+    // The single-unit form: the identifier carries the unit, so the label may
+    // be anywhere — or nowhere at all, until it is typed into JSX far below.
+    if (UNIT_NAMED_VALUE_RE.test(line)) {
+      out.push({ line: i + 1, text: line.trim() });
+      continue;
+    }
     const window = lines
       .slice(Math.max(0, i - WINDOW), i + WINDOW + 1)
       .join("\n");
@@ -91,6 +119,23 @@ export function selfTestByteShape() {
   ].join("\n");
   if (byteShapeIn(adopted).length !== 0) {
     return { ok: false, why: "an adopted call site was reported" };
+  }
+  // THE SINGLE-UNIT FORM: the unit is in the NAME and the label is forty-four
+  // lines away in JSX. Nothing but the identifier can catch this.
+  // Deliberately NO unit label anywhere in this fixture: in the real file it
+  // was forty-four lines below, so a fixture that puts one nearby would be
+  // caught by the windowed arm and would prove nothing about this one.
+  const hoisted = ["  const sizeKb = (blob.size / 1024).toFixed(0);"].join("\n");
+  if (byteShapeIn(hoisted).length === 0) {
+    return {
+      ok: false,
+      why: "the hoisted single-unit form (`const sizeKb = blob.size / 1024`) was NOT reported",
+    };
+  }
+  // …and a unit-named CONSTANT still escapes, because it multiplies.
+  const namedCeiling = ["const maxUploadMb = 80 * 1024 * 1024;"].join("\n");
+  if (byteShapeIn(namedCeiling).length !== 0) {
+    return { ok: false, why: "a unit-named capacity CONSTANT was reported" };
   }
   return { ok: true };
 }
