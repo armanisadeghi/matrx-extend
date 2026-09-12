@@ -22,7 +22,7 @@ importers:
         version: 0.18.4(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@ai-matrx/kit':
         specifier: latest
-        version: 0.13.1(react@19.2.5)
+        version: 0.13.3(react@19.2.5)
       '@ai-matrx/realtime':
         specifier: latest
         version: 0.7.9(react@19.2.5)
@@ -260,8 +260,8 @@ packages:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@ai-matrx/kit@0.13.1':
-    resolution: {integrity: sha512-zPfh5VwtNR+cF8jYUF5ZYP8o1ggF/43ivB5DqenF+ZNxEBbgkwXhDlULD5RYv41JD07dNEYPyAi8I1tlVWQ7hQ==}
+  '@ai-matrx/kit@0.13.3':
+    resolution: {integrity: sha512-EafVtp+zOcQKR6YqTmRiZ27ktEzi2fVdSeJJj2w6MvogEeRUCxh66hpqPgbG2eyOwI4gB/VywMyJhvMioxYf8Q==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -5736,7 +5736,7 @@ snapshots:
     dependencies:
       '@ai-matrx/data': 0.13.1(@supabase/supabase-js@2.116.0)(react@19.2.5)
       '@ai-matrx/design-system': 0.18.4(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@ai-matrx/kit': 0.13.1(react@19.2.5)
+      '@ai-matrx/kit': 0.13.3(react@19.2.5)
     optionalDependencies:
       react: 19.2.5
     transitivePeerDependencies:
@@ -5766,7 +5766,7 @@ snapshots:
 
   '@ai-matrx/design-system@0.18.4(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
-      '@ai-matrx/kit': 0.13.1(react@19.2.5)
+      '@ai-matrx/kit': 0.13.3(react@19.2.5)
       '@dnd-kit/core': 6.3.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@radix-ui/react-accordion': 1.2.20(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@radix-ui/react-alert-dialog': 1.1.23(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -5806,7 +5806,7 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  '@ai-matrx/kit@0.13.1(react@19.2.5)':
+  '@ai-matrx/kit@0.13.3(react@19.2.5)':
     dependencies:
       dompurify: 3.4.15
       idb: 8.0.3
