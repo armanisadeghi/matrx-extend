@@ -17,38 +17,76 @@ if (!playwrightModule?.endsWith('.mjs') || !esbuildModule)
 const { chromium } = await import(playwrightModule);
 const { build } = require(esbuildModule);
 const root = process.cwd();
-const bundle = await build({
-  entryPoints: [`${root}/src/lib/credentials/capture-detector.ts`],
-  bundle: true,
-  format: 'esm',
-  splitting: true,
-  outdir: `${root}/.tmp-browser-guard`,
-  write: false,
-  plugins: [
-    {
-      name: 'matrx-alias',
-      setup(plugin) {
-        plugin.onResolve({ filter: /^@\// }, (args) => ({
-          path: `${root}/src/${args.path.slice(2)}.ts`,
-        }));
+const detectorSource = `${root}/src/lib/credentials/capture-detector.ts`;
+const weakenings = {
+  normal: (source) => source,
+  // Each mutant removes exactly the behavior named by its companion fixture.
+  route: (source) =>
+    source.replace(
+      'return currentUrl.origin === submittedOrigin && currentUrl.pathname === submittedPath;',
+      'return currentUrl.origin === submittedOrigin;',
+    ),
+  generation: (source) =>
+    source.replace(
+      'if (disposed || generation !== submittedGeneration) return false;',
+      'if (disposed) return false;',
+    ),
+  dispose: (source) =>
+    source.replace(
+      'disposed = true;\n    generation++;',
+      'void 0; // in-memory mutant: disposal no longer invalidates pending replies',
+    ),
+};
+const assets = new Map();
+const entryPaths = {};
+for (const [variant, weaken] of Object.entries(weakenings)) {
+  const original = await readFile(detectorSource, 'utf8');
+  const mutated = weaken(original);
+  if (variant !== 'normal' && mutated === original)
+    throw new Error(`${variant} in-memory weakening did not change capture-detector`);
+  const bundle = await build({
+    entryPoints: [detectorSource],
+    bundle: true,
+    format: 'esm',
+    splitting: true,
+    outdir: `${root}/.tmp-browser-guard/${variant}`,
+    write: false,
+    plugins: [
+      {
+        name: 'matrx-alias',
+        setup(plugin) {
+          plugin.onResolve({ filter: /^@\// }, (args) => ({
+            path: `${root}/src/${args.path.slice(2)}.ts`,
+          }));
+        },
       },
-    },
-    {
-      name: 'delay-real-capture-prompt-import',
-      setup(plugin) {
-        plugin.onLoad({ filter: /capture-prompt\.ts$/ }, async (args) => ({
-          contents: `await globalThis.__capturePromptImportGate;\n${await readFile(args.path, 'utf8')}`,
-          loader: 'ts',
-        }));
+      {
+        name: 'in-memory-capture-detector',
+        setup(plugin) {
+          plugin.onLoad({ filter: /capture-detector\.ts$/ }, () => ({
+            contents: mutated,
+            loader: 'ts',
+          }));
+        },
       },
-    },
-  ],
-});
-const assets = new Map(
-  bundle.outputFiles.map((file) => [`/${file.path.slice(root.length + 1)}`, file]),
-);
-const entryPath = [...assets.keys()].find((path) => path.endsWith('/capture-detector.js'));
-if (!entryPath) throw new Error('capture detector browser bundle entry was not produced');
+      {
+        name: 'delay-real-capture-prompt-import',
+        setup(plugin) {
+          plugin.onLoad({ filter: /capture-prompt\.ts$/ }, async (args) => ({
+            contents: `globalThis.__capturePromptImportStarted?.();\nawait globalThis.__capturePromptImportGate;\n${await readFile(args.path, 'utf8')}\nglobalThis.__capturePromptImportCompleted?.();`,
+            loader: 'ts',
+          }));
+        },
+      },
+    ],
+  });
+  for (const file of bundle.outputFiles) assets.set(`/${file.path.slice(root.length + 1)}`, file);
+  const entryPath = [...assets.keys()].find(
+    (path) => path.endsWith(`/${variant}/capture-detector.js`),
+  );
+  if (!entryPath) throw new Error(`${variant} capture detector browser bundle entry was not produced`);
+  entryPaths[variant] = entryPath;
+}
 const server = http.createServer((request, response) => {
   const asset = assets.get(new URL(request.url, 'http://fixture.test').pathname);
   if (asset) {
@@ -60,12 +98,17 @@ const server = http.createServer((request, response) => {
 });
 await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}/login`;
-const entryUrl = `http://127.0.0.1:${server.address().port}${entryPath}`;
+const entryUrls = Object.fromEntries(
+  Object.entries(entryPaths).map(([variant, path]) => [
+    variant,
+    `http://127.0.0.1:${server.address().port}${path}`,
+  ]),
+);
 const chromePath =
   process.env.MATRX_CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const browser = await chromium.launch({ executablePath: chromePath, headless: true });
 const page = await browser.newPage();
-async function fixture(html, reply = { status: 'held' }) {
+async function fixture(html, reply = { status: 'held' }, variant = 'normal') {
   await page.addInitScript((initialReply) => {
     const attachShadow = Element.prototype.attachShadow;
     Element.prototype.attachShadow = function (init) {
@@ -74,6 +117,8 @@ async function fixture(html, reply = { status: 'held' }) {
     window.__captured = [];
     window.__opened = 0;
     window.__capturePromptImportGate = Promise.resolve();
+    window.__capturePromptImportStarted = () => (window.__capturePromptImportEntered = true);
+    window.__capturePromptImportCompleted = () => (window.__capturePromptImportFinished = true);
     window.chrome = {
       runtime: {
         id: 'fixture-extension',
@@ -90,7 +135,7 @@ async function fixture(html, reply = { status: 'held' }) {
   await page.evaluate(async (entry) => {
     const module = await import(entry);
     window.CaptureDetectorTest = { mountCaptureDetector: module.mountCaptureDetector };
-  }, entryUrl);
+  }, entryUrls[variant]);
   await page.evaluate(() => {
     window.__disposeCaptureDetector = window.CaptureDetectorTest.mountCaptureDetector();
   });
@@ -103,6 +148,31 @@ async function expectCase(name, action, expected) {
   const actual = await payloads();
   if (JSON.stringify(actual) !== JSON.stringify(expected))
     throw new Error(`${name}: ${JSON.stringify(actual)}`);
+}
+async function delayPromptImport() {
+  await page.evaluate(() => {
+    window.__capturePromptImportEntered = false;
+    window.__capturePromptImportFinished = false;
+    window.__capturePromptImportGate = new Promise((resolve) => {
+      window.__releaseCapturePromptImport = resolve;
+    });
+  });
+}
+async function waitForPromptImport() {
+  await page.waitForFunction(() => window.__capturePromptImportEntered === true);
+}
+async function releasePromptImport() {
+  await page.evaluate(() => window.__releaseCapturePromptImport());
+  await page.waitForFunction(() => window.__capturePromptImportFinished === true);
+  await page.evaluate(async () => {
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+}
+async function expectRecoveryHost(name, expected) {
+  const count = await page.locator('#matrx-login-capture-host').count();
+  if (count !== expected)
+    throw new Error(`${name}: expected recovery host count ${expected}, received ${count}`);
 }
 try {
   await fixture('');
@@ -141,27 +211,73 @@ try {
       ),
     [],
   );
-  await fixture(
-    '<form method="post" onsubmit="event.preventDefault()"><input autocomplete="username" value="pending@fixture.test"><input type="password" value="pending-secret"><button>Go</button></form>',
-    { status: 'unavailable', reason: 'capture_unavailable', tabId: 1 },
-  );
-  await page.evaluate(() => {
-    window.__capturePromptImportGate = new Promise((resolve) => {
-      window.__releaseCapturePromptImport = resolve;
-    });
-  });
-  await page.locator('button').click();
-  await page.locator('button').click(); // a newer gesture invalidates the first response
-  await page.evaluate(() => {
-    window.__disposeCaptureDetector();
-    history.pushState({}, '', '/after-pending-import');
-    window.__releaseCapturePromptImport();
-  });
-  await page.waitForTimeout(50);
-  if ((await page.locator('#matrx-login-capture-host').count()) !== 0)
-    throw new Error(
-      'pending prompt import rendered after route, generation, or disposal invalidation',
+  // Delayed split-ESM imports must re-check their own original submission.
+  // Each normal/mutant pair has exactly one invalidation, so a sibling rule
+  // cannot turn the proof green when its named rule is removed in memory.
+  const lateImportForm = (name) =>
+    `<form method="post" onsubmit="event.preventDefault()"><input autocomplete="username" value="${name}@fixture.test"><input type="password" value="${name}-secret"><button>Go</button></form>`;
+  for (const [name, variant, invalidate] of [
+    [
+      'late import route change',
+      'route',
+      () => page.evaluate(() => history.pushState({}, '', '/after-pending-import')),
+    ],
+    [
+      'late import newer gesture',
+      'generation',
+      () => page.locator('button').click(),
+    ],
+    [
+      'late import disposal',
+      'dispose',
+      () => page.evaluate(() => window.__disposeCaptureDetector()),
+    ],
+  ]) {
+    await fixture(
+      lateImportForm(`protected-${variant}`),
+      { status: 'unavailable', reason: 'capture_unavailable', tabId: 1 },
     );
+    if (variant === 'generation') {
+      await page.evaluate(() => {
+        let calls = 0;
+        window.chrome.runtime.sendMessage = () =>
+          Promise.resolve(
+            ++calls === 1
+              ? { status: 'unavailable', reason: 'capture_unavailable', tabId: 1 }
+              : { status: 'held' },
+          );
+      });
+    }
+    await delayPromptImport();
+    await page.locator('button').click();
+    await waitForPromptImport();
+    await invalidate();
+    await releasePromptImport();
+    await expectRecoveryHost(`${name} stayed invalidated`, 0);
+
+    await fixture(
+      lateImportForm(`mutant-${variant}`),
+      { status: 'unavailable', reason: 'capture_unavailable', tabId: 1 },
+      variant,
+    );
+    if (variant === 'generation') {
+      await page.evaluate(() => {
+        let calls = 0;
+        window.chrome.runtime.sendMessage = () =>
+          Promise.resolve(
+            ++calls === 1
+              ? { status: 'unavailable', reason: 'capture_unavailable', tabId: 1 }
+              : { status: 'held' },
+          );
+      });
+    }
+    await delayPromptImport();
+    await page.locator('button').click();
+    await waitForPromptImport();
+    await invalidate();
+    await releasePromptImport();
+    await expectRecoveryHost(`${name} in-memory weakening was not detected`, 1);
+  }
   await fixture(
     '<form method="post" onsubmit="event.preventDefault()"><input autocomplete="username" value="unavailable@fixture.test"><input type="password" value="unavailable-secret"><button>Go</button></form>',
     { status: 'unavailable', reason: 'sign_in_required', tabId: 1 },
