@@ -43,6 +43,7 @@ import {
 } from '@/lib/api/routes/vault';
 import { checkAuthState } from '@/lib/chat/context/check-auth-state';
 import { isSafeDestination } from '@/lib/credentials/login-urls';
+import { fillSensitiveFieldSource } from '@/lib/credentials/fill-primitive';
 import {
   SENSITIVE_ATTR,
   forgetSensitiveFields,
@@ -504,29 +505,6 @@ function probeLoginFormSource(): LoginFormProbe {
  * Mark + fill one field. `value` is credential plaintext travelling into the
  * page — which is the entire point of the tool. It is never returned.
  */
-function fillFieldSource(
-  selector: string,
-  value: string,
-  sensitiveAttr: string,
-): { ok: boolean; reason?: string } {
-  const el = document.querySelector(selector) as HTMLInputElement | null;
-  if (!el) return { ok: false, reason: 'field_not_found' };
-  // Mark BEFORE writing so a mid-fill failure still leaves the field redacted.
-  if (sensitiveAttr) el.setAttribute(sensitiveAttr, '');
-  el.scrollIntoView({ block: 'center', behavior: 'instant' });
-  el.focus();
-  // React/Vue track the value setter — bypass with the native one, then
-  // dispatch the events a controlled input needs to register the change.
-  const desc = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value');
-  const nativeSetter = desc?.set;
-  if (nativeSetter) nativeSetter.call(el, value);
-  else el.value = value;
-  el.dispatchEvent(new Event('input', { bubbles: true }));
-  el.dispatchEvent(new Event('change', { bubbles: true }));
-  el.dispatchEvent(new Event('blur', { bubbles: true }));
-  return { ok: true };
-}
-
 /** Click the submit affordance, or fall back to the form's own submit. */
 function submitLoginSource(selector: string | null): { ok: boolean; mode: string } {
   if (selector) {
@@ -1105,7 +1083,7 @@ async function runCompleteAttempt(
         rememberSensitiveFields(tabId, [spec.selector]);
         filledSelectors.push(spec.selector);
       }
-      const filled = await injectTopFrame<{ ok: boolean }>(tabId, fillFieldSource, [
+      const filled = await injectTopFrame<{ ok: boolean }>(tabId, fillSensitiveFieldSource, [
         spec.selector,
         value,
         spec.field_key ? SENSITIVE_ATTR : '',
@@ -1217,7 +1195,7 @@ async function runAuthenticatorAttempt(
   let code = transient.code;
   transient.code = '';
   try {
-    const filled = await injectTopFrame<{ ok: boolean }>(tabId, fillFieldSource, [
+    const filled = await injectTopFrame<{ ok: boolean }>(tabId, fillSensitiveFieldSource, [
       args.code_selector,
       code,
       SENSITIVE_ATTR,
@@ -1533,7 +1511,7 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
         // fill succeeding, or on the page keeping the marker attribute.
         rememberSensitiveFields(tabId, [probe.username_selector]);
         filledSelectors.push(probe.username_selector);
-        const r = await injectTopFrame<{ ok: boolean }>(tabId, fillFieldSource, [
+        const r = await injectTopFrame<{ ok: boolean }>(tabId, fillSensitiveFieldSource, [
           probe.username_selector,
           credential.username,
           SENSITIVE_ATTR,
@@ -1591,7 +1569,7 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
 
       rememberSensitiveFields(tabId, [passwordSelector]);
       filledSelectors.push(passwordSelector);
-      const pwFill = await injectTopFrame<{ ok: boolean }>(tabId, fillFieldSource, [
+      const pwFill = await injectTopFrame<{ ok: boolean }>(tabId, fillSensitiveFieldSource, [
         passwordSelector,
         credential.password,
         SENSITIVE_ATTR,

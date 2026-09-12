@@ -65,7 +65,27 @@ function place(target: HTMLInputElement): void {
 function render(target: HTMLInputElement, response: QueryResponse, token: number): void {
   if (token !== generation || focused !== target) return;
   dismiss();
-  if (response.status !== 'ready') return;
+  if (response.status !== 'ready') {
+    // Explicit focus is still an interaction: show a bounded, actionable
+    // explanation instead of silently discarding a recoverable state.
+    host = document.createElement('div');
+    host.id = HOST_ID;
+    host.style.cssText = 'all:initial;position:fixed;z-index:2147483647;';
+    const shadow = host.attachShadow({ mode: 'closed' });
+    const message = document.createElement('button');
+    message.type = 'button';
+    message.textContent = response.message;
+    message.style.cssText =
+      'all:initial;display:block;box-sizing:border-box;max-width:292px;padding:8px;border:1px solid #d4d4d4;border-radius:8px;background:#fff;color:#333;cursor:pointer;font:12px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;';
+    message.addEventListener(
+      'click',
+      () => void send(CHANNELS.CREDENTIAL_SUGGESTIONS_OPEN_VAULT, {}),
+    );
+    shadow.append(message);
+    document.documentElement.append(host);
+    place(target);
+    return;
+  }
   host = document.createElement('div');
   host.id = HOST_ID;
   host.style.cssText = 'all:initial;position:fixed;z-index:2147483647;';
@@ -75,8 +95,9 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
   card.setAttribute('aria-label', 'Saved logins from Matrx Vault');
   card.style.cssText =
     'all:initial;display:block;box-sizing:border-box;width:292px;max-width:calc(100vw - 16px);max-height:168px;overflow:auto;padding:8px;background:#fff;color:#171717;border:1px solid #d4d4d4;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);font:13px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;';
-  const title = document.createElement('div');
-  title.textContent = 'Fill from Matrx Vault';
+  const title = document.createElement('button');
+  title.type = 'button';
+  title.textContent = 'Matrx';
   title.style.cssText =
     'all:initial;display:block;font:600 12px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 6px;color:#333;';
   card.append(title);
@@ -84,6 +105,7 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
   for (const match of response.matches) {
     const button = document.createElement('button');
     button.type = 'button';
+    button.hidden = true;
     button.textContent = match.display_name;
     button.style.cssText =
       'all:initial;display:block;box-sizing:border-box;width:100%;padding:7px 8px;margin:1px 0;border-radius:5px;cursor:pointer;font:13px/1.3 system-ui,-apple-system,Segoe UI,sans-serif;color:#171717;';
@@ -109,10 +131,14 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
     buttons.push(button);
     card.append(button);
   }
+  title.addEventListener('click', () => {
+    title.hidden = true;
+    for (const button of buttons) button.hidden = false;
+    buttons[0]?.focus(); // a trusted click, never focus-time autofocus
+  });
   shadow.append(card);
   document.documentElement.append(host);
   place(target);
-  buttons[0]?.focus();
   card.addEventListener('keydown', (event) => {
     const index = buttons.indexOf(shadow.activeElement as HTMLButtonElement);
     if (event.key === 'Escape') {
@@ -135,7 +161,7 @@ export function mountInlineCredentialSuggestions(): void {
     'focusin',
     (event) => {
       const target = event.target;
-      if (!(target instanceof HTMLInputElement) || target === focused) return;
+      if (!(target instanceof HTMLInputElement) || (target === focused && host)) return;
       focused = target;
       dismiss();
       const selector = selectorFor(target);
