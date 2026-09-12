@@ -1,11 +1,12 @@
+import { readFile } from 'node:fs/promises';
+import http from 'node:http';
+import { createRequire } from 'node:module';
+
 /*
  * Controlled real-Chrome guard for the content detector. Run with the local
  * browser runner already installed by the workspace, for example:
  * MATRX_PLAYWRIGHT_MODULE=/path/to/playwright/index.mjs MATRX_ESBUILD_MODULE=/path/to/esbuild/lib/main.js node tests/browser/trusted-capture-detector.mjs
  */
-import http from 'node:http';
-import { createRequire } from 'node:module';
-
 const require = createRequire(import.meta.url);
 const playwrightModule = process.env.MATRX_PLAYWRIGHT_MODULE;
 const esbuildModule = process.env.MATRX_ESBUILD_MODULE;
@@ -19,8 +20,9 @@ const root = process.cwd();
 const bundle = await build({
   entryPoints: [`${root}/src/lib/credentials/capture-detector.ts`],
   bundle: true,
-  format: 'iife',
-  globalName: 'CaptureDetectorTest',
+  format: 'esm',
+  splitting: true,
+  outdir: `${root}/.tmp-browser-guard`,
   write: false,
   plugins: [
     {
@@ -31,14 +33,34 @@ const bundle = await build({
         }));
       },
     },
+    {
+      name: 'delay-real-capture-prompt-import',
+      setup(plugin) {
+        plugin.onLoad({ filter: /capture-prompt\.ts$/ }, async (args) => ({
+          contents: `await globalThis.__capturePromptImportGate;\n${await readFile(args.path, 'utf8')}`,
+          loader: 'ts',
+        }));
+      },
+    },
   ],
 });
-const source = bundle.outputFiles[0].text;
-const server = http.createServer((_, response) =>
-  response.end('<!doctype html><title>capture fixture</title>'),
+const assets = new Map(
+  bundle.outputFiles.map((file) => [`/${file.path.slice(root.length + 1)}`, file]),
 );
+const entryPath = [...assets.keys()].find((path) => path.endsWith('/capture-detector.js'));
+if (!entryPath) throw new Error('capture detector browser bundle entry was not produced');
+const server = http.createServer((request, response) => {
+  const asset = assets.get(new URL(request.url, 'http://fixture.test').pathname);
+  if (asset) {
+    response.setHeader('content-type', 'text/javascript');
+    response.end(asset.text);
+    return;
+  }
+  response.end('<!doctype html><title>capture fixture</title>');
+});
 await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}/login`;
+const entryUrl = `http://127.0.0.1:${server.address().port}${entryPath}`;
 const chromePath =
   process.env.MATRX_CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const browser = await chromium.launch({ executablePath: chromePath, headless: true });
@@ -51,6 +73,7 @@ async function fixture(html, reply = { status: 'held' }) {
     };
     window.__captured = [];
     window.__opened = 0;
+    window.__capturePromptImportGate = Promise.resolve();
     window.chrome = {
       runtime: {
         id: 'fixture-extension',
@@ -64,7 +87,10 @@ async function fixture(html, reply = { status: 'held' }) {
   }, reply);
   await page.goto(url);
   await page.setContent(html);
-  await page.addScriptTag({ content: source });
+  await page.evaluate(async (entry) => {
+    const module = await import(entry);
+    window.CaptureDetectorTest = { mountCaptureDetector: module.mountCaptureDetector };
+  }, entryUrl);
   await page.evaluate(() => {
     window.__disposeCaptureDetector = window.CaptureDetectorTest.mountCaptureDetector();
   });
@@ -115,6 +141,27 @@ try {
       ),
     [],
   );
+  await fixture(
+    '<form method="post" onsubmit="event.preventDefault()"><input autocomplete="username" value="pending@fixture.test"><input type="password" value="pending-secret"><button>Go</button></form>',
+    { status: 'unavailable', reason: 'capture_unavailable', tabId: 1 },
+  );
+  await page.evaluate(() => {
+    window.__capturePromptImportGate = new Promise((resolve) => {
+      window.__releaseCapturePromptImport = resolve;
+    });
+  });
+  await page.locator('button').click();
+  await page.locator('button').click(); // a newer gesture invalidates the first response
+  await page.evaluate(() => {
+    window.__disposeCaptureDetector();
+    history.pushState({}, '', '/after-pending-import');
+    window.__releaseCapturePromptImport();
+  });
+  await page.waitForTimeout(50);
+  if ((await page.locator('#matrx-login-capture-host').count()) !== 0)
+    throw new Error(
+      'pending prompt import rendered after route, generation, or disposal invalidation',
+    );
   await fixture(
     '<form method="post" onsubmit="event.preventDefault()"><input autocomplete="username" value="unavailable@fixture.test"><input type="password" value="unavailable-secret"><button>Go</button></form>',
     { status: 'unavailable', reason: 'sign_in_required', tabId: 1 },
@@ -180,6 +227,29 @@ try {
   await page.waitForTimeout(50);
   if ((await page.locator('#matrx-login-capture-host').count()) !== 0)
     throw new Error('disposed detector rendered recovery feedback');
+  await fixture(
+    '<form method="post" onsubmit="event.preventDefault()"><input autocomplete="username" value="rejected@fixture.test"><input type="password" value="rejected-secret"><button>Go</button></form>',
+    { status: 'unavailable', reason: 'capture_unavailable', tabId: 1 },
+  );
+  const pageErrors = [];
+  const onPageError = (error) => pageErrors.push(error.message);
+  page.on('pageerror', onPageError);
+  await page.evaluate(() => {
+    window.__capturePromptImportGate = new Promise((_, reject) => {
+      window.__rejectCapturePromptImport = reject;
+    });
+  });
+  await page.locator('button').click();
+  await page.waitForTimeout(10);
+  await page.evaluate(() =>
+    window.__rejectCapturePromptImport(new Error('fixture import failure')),
+  );
+  await page.waitForTimeout(50);
+  page.off('pageerror', onPageError);
+  if (pageErrors.length > 0)
+    throw new Error(`rejected prompt import escaped: ${pageErrors.join(', ')}`);
+  if ((await page.locator('#matrx-login-capture-host').count()) !== 0)
+    throw new Error('rejected prompt import rendered recovery feedback');
   console.log('PASS trusted capture detector browser guard');
 } finally {
   await browser.close();
