@@ -52,3 +52,18 @@ export interface CaptureDecisionResult {
 export interface CaptureStatusQuery {
   tabId: number;
 }
+
+/** Value-free acknowledgement for the raw content-to-worker candidate message. */
+export type CaptureUnavailableReason =
+  | 'sign_in_required'
+  | 'organization_required'
+  | 'capture_unavailable';
+
+export type CaptureCandidateReply =
+  | { status: 'held' }
+  | { status: 'ignored' }
+  | {
+      status: 'unavailable';
+      reason: CaptureUnavailableReason;
+      tabId: number;
+    };

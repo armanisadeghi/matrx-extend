@@ -709,6 +709,35 @@ describe('host — registered worker listeners and session continuity', () => {
     host.registerCredentialCaptureHost();
   });
 
+  it('returns a value-free held acknowledgement for a valid raw candidate', async () => {
+    const reply = await ask({
+      __matrx: true,
+      kind: 'credential-capture:candidate',
+      payload: WIRE,
+    });
+    expect(reply).toEqual({ status: 'held' });
+    expect(JSON.stringify(reply)).not.toContain(SENTINEL);
+    expect(JSON.stringify(reply)).not.toContain(USER);
+  });
+
+  it('keeps disabled and Never capture requests quiet, but names a valid signed-out request', async () => {
+    localStorage.set(SETTINGS_KEY, JSON.stringify({ state: { captureLoginsEnabled: false } }));
+    expect(
+      await ask({ __matrx: true, kind: 'credential-capture:candidate', payload: WIRE }),
+    ).toEqual({ status: 'ignored' });
+    localStorage.clear();
+    localStorage.set(NEVER_KEY, ['https://app.example.com']);
+    expect(
+      await ask({ __matrx: true, kind: 'credential-capture:candidate', payload: WIRE }),
+    ).toEqual({ status: 'ignored' });
+    localStorage.clear();
+    signedIn = false;
+    const reply = await ask({ __matrx: true, kind: 'credential-capture:candidate', payload: WIRE });
+    expect(reply).toEqual({ status: 'unavailable', reason: 'sign_in_required', tabId: 33 });
+    expect(JSON.stringify(reply)).not.toContain(SENTINEL);
+    expect(JSON.stringify(reply)).not.toContain(USER);
+  });
+
   it('rehydrates before an extension-page status request and schedules idle expiry', async () => {
     const host = await import('@/lib/credentials/capture-candidates');
     await host.holdCandidate(33, WIRE, DEPS);

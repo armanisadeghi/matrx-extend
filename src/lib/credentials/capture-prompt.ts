@@ -13,7 +13,12 @@
  */
 
 import { CHANNELS } from '@/lib/messaging/schemas';
-import type { CaptureDecision, CaptureDecisionResult, CapturePromptMeta } from './capture-types';
+import type {
+  CaptureDecision,
+  CaptureDecisionResult,
+  CapturePromptMeta,
+  CaptureUnavailableReason,
+} from './capture-types';
 
 const HOST_ID = 'matrx-login-capture-host';
 /** Leave the toast alone after this long — the side-panel card still offers it. */
@@ -45,6 +50,59 @@ export function dismissCapturePrompt(candidateId?: string): void {
   if (current.timer !== null) window.clearTimeout(current.timer);
   current.host.remove();
   current = null;
+}
+
+function openVault(): void {
+  try {
+    if (!chrome.runtime?.id) return;
+    chrome.runtime
+      .sendMessage({ __matrx: true, kind: CHANNELS.CREDENTIAL_SUGGESTIONS_OPEN_VAULT, payload: {} })
+      .catch(() => undefined);
+  } catch {
+    // The same disconnected-extension case as the candidate sender is quiet.
+  }
+}
+
+/** Metadata-only recovery card for a valid capture the worker could not hold. */
+export function showCaptureUnavailable(
+  reason: CaptureUnavailableReason,
+  transportFailure = false,
+): void {
+  dismissCapturePrompt();
+  if (!document.body) return;
+  const host = document.createElement('div');
+  host.id = HOST_ID;
+  host.setAttribute('role', 'dialog');
+  host.setAttribute('aria-label', 'Matrx Vault needs attention');
+  host.setAttribute('style', 'all:initial;position:fixed;top:12px;right:12px;z-index:2147483647;');
+  const shadow = host.attachShadow({ mode: 'closed' });
+  const card = el(
+    'div',
+    'box-sizing:border-box;width:320px;max-width:calc(100vw - 24px);padding:12px;border-radius:10px;background:#fff;color:#111;box-shadow:0 8px 30px rgba(0,0,0,.18),0 0 0 1px rgba(0,0,0,.06);font:13px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;',
+  );
+  card.setAttribute('role', 'dialog');
+  card.setAttribute('aria-label', 'Matrx Vault needs attention');
+  const copy = transportFailure
+    ? 'Matrx could not reach the extension. Reopen it from the toolbar, then try again.'
+    : reason === 'sign_in_required'
+      ? 'Sign in to Matrx before saving logins.'
+      : reason === 'organization_required'
+        ? 'Choose an organization in Matrx before saving logins.'
+        : 'Temporary browser memory is unavailable. Reopen the extension, then try again.';
+  card.appendChild(
+    el('div', 'font-weight:600;font-size:13px;margin-bottom:4px;', 'Login was not saved'),
+  );
+  card.appendChild(el('div', 'color:#555;font-size:12px;margin-bottom:10px;', copy));
+  const actions = el('div', 'display:flex;gap:6px;');
+  const vault = el('button', BTN_PRIMARY, 'Open Vault');
+  vault.addEventListener('click', openVault);
+  const dismiss = el('button', BTN_GHOST, 'Dismiss');
+  dismiss.addEventListener('click', () => dismissCapturePrompt());
+  actions.append(vault, dismiss);
+  card.appendChild(actions);
+  shadow.appendChild(card);
+  document.body.appendChild(host);
+  current = { candidateId: '', host, timer: window.setTimeout(dismissCapturePrompt, AUTO_HIDE_MS) };
 }
 
 async function decide(decision: CaptureDecision): Promise<CaptureDecisionResult> {

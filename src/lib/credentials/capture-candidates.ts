@@ -42,6 +42,7 @@ import { readCaptureLoginsEnabled } from '@/lib/settings/persisted';
 import type { CaptureCandidateWire } from './capture-detector';
 import { addNeverCaptureOrigin, isNeverCaptureOrigin } from './capture-settings';
 import type {
+  CaptureCandidateReply,
   CaptureDecision,
   CaptureDecisionResult,
   CaptureExistingLogin,
@@ -1037,29 +1038,57 @@ export function registerCredentialCaptureHost(): void {
     }
     if (env.kind === CHANNELS.CREDENTIAL_CAPTURE_CANDIDATE) {
       if (!isWire(env.payload)) {
-        sendResponse({ ok: false });
+        sendResponse({ status: 'ignored' } satisfies CaptureCandidateReply);
         return false;
       }
       const wire = env.payload;
       void currentContentSender(sender)
         .then(async (source) => {
-          const actor = await currentActor();
-          if (!source || !actor) return false;
+          if (!source) return { status: 'ignored' } satisfies CaptureCandidateReply;
           const candidateUrl = safeParseUrl(wire.loginUrl);
           if (
             !candidateUrl ||
             candidateUrl.origin !== new URL(source.url).origin ||
             candidateUrl.pathname !== new URL(source.url).pathname
           )
-            return false;
-          return holdCandidate(source.tabId, wire, {
+            return { status: 'ignored' } satisfies CaptureCandidateReply;
+          if (
+            !(await readCaptureLoginsEnabled()) ||
+            (await isNeverCaptureOrigin(candidateUrl.origin))
+          )
+            return { status: 'ignored' } satisfies CaptureCandidateReply;
+          if (!(await hasRealUserToken()))
+            return {
+              status: 'unavailable',
+              reason: 'sign_in_required',
+              tabId: source.tabId,
+            } satisfies CaptureCandidateReply;
+          const actor = await currentActor();
+          if (!actor)
+            return {
+              status: 'unavailable',
+              reason: 'organization_required',
+              tabId: source.tabId,
+            } satisfies CaptureCandidateReply;
+          const held = await holdCandidate(source.tabId, wire, {
             actor,
             documentId: source.documentId,
             senderUrl: source.url,
           });
+          if (held) return { status: 'held' } satisfies CaptureCandidateReply;
+          if (
+            !(await readCaptureLoginsEnabled()) ||
+            (await isNeverCaptureOrigin(candidateUrl.origin))
+          )
+            return { status: 'ignored' } satisfies CaptureCandidateReply;
+          return {
+            status: 'unavailable',
+            reason: 'capture_unavailable',
+            tabId: source.tabId,
+          } satisfies CaptureCandidateReply;
         })
-        .then((held) => sendResponse({ ok: held }))
-        .catch(() => sendResponse({ ok: false }));
+        .then(sendResponse)
+        .catch(() => sendResponse({ status: 'ignored' } satisfies CaptureCandidateReply));
       return true;
     }
     if (env.kind === CHANNELS.CREDENTIAL_CAPTURE_DECISION) {

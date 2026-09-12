@@ -24,6 +24,7 @@
  */
 
 import { CHANNELS } from '@/lib/messaging/schemas';
+import type { CaptureCandidateReply } from './capture-types';
 
 /** Wire shape of the one value-bearing envelope. Mirrored in capture-candidates.ts. */
 export interface CaptureCandidateWire {
@@ -197,7 +198,10 @@ export function snapshotLogin(
 }
 
 /** Raw send — deliberately not `@/lib/messaging/native#send` (it logs payloads). */
-function postCandidate(candidate: CaptureCandidateWire): void {
+function postCandidate(
+  candidate: CaptureCandidateWire,
+  onReply: (reply: CaptureCandidateReply | null, transportFailure: boolean) => void,
+): void {
   try {
     if (!chrome.runtime?.id) return;
     chrome.runtime
@@ -206,9 +210,10 @@ function postCandidate(candidate: CaptureCandidateWire): void {
         kind: CHANNELS.CREDENTIAL_CAPTURE_CANDIDATE,
         payload: candidate,
       })
-      .catch(() => undefined);
+      .then((reply) => onReply(reply as CaptureCandidateReply, false))
+      .catch(() => onReply(null, true));
   } catch {
-    // orphaned content script — nothing to do
+    onReply(null, true);
   }
 }
 
@@ -218,6 +223,8 @@ function postCandidate(candidate: CaptureCandidateWire): void {
 export function mountCaptureDetector(doc: Document = document): () => void {
   const transactions = new WeakMap<HTMLElement, { id: number; at: number }>();
   let nextTransactionId = 0;
+  let disposed = false;
+  let generation = 0;
 
   const consider = (anchor: Element | null, startsGesture: boolean) => {
     const group = coherentGroup(anchor);
@@ -232,7 +239,24 @@ export function mountCaptureDetector(doc: Document = document): () => void {
     // The identity joins click/Enter with its native submit. A later trusted
     // gesture starts a new transaction, even inside the short retention window.
     transactions.set(group, { id: ++nextTransactionId, at: now });
-    postCandidate(snap);
+    const submittedUrl = new URL(doc.location.href);
+    const submittedOrigin = submittedUrl.origin;
+    const submittedPath = submittedUrl.pathname;
+    const submittedGeneration = ++generation;
+    postCandidate(snap, (reply, transportFailure) => {
+      if (disposed || generation !== submittedGeneration) return;
+      const currentUrl = new URL(doc.location.href);
+      if (currentUrl.origin !== submittedOrigin || currentUrl.pathname !== submittedPath) return;
+      if (reply?.status === 'unavailable') {
+        void import('./capture-prompt').then(({ showCaptureUnavailable }) =>
+          showCaptureUnavailable(reply.reason),
+        );
+      } else if (transportFailure) {
+        void import('./capture-prompt').then(({ showCaptureUnavailable }) =>
+          showCaptureUnavailable('capture_unavailable', true),
+        );
+      }
+    });
   };
 
   // Real form submission (capture phase so a handler that stops propagation or
@@ -268,6 +292,8 @@ export function mountCaptureDetector(doc: Document = document): () => void {
   doc.addEventListener('keydown', onKeyDown, true);
   doc.addEventListener('click', onClick, true);
   return () => {
+    disposed = true;
+    generation++;
     doc.removeEventListener('submit', onSubmit, true);
     doc.removeEventListener('keydown', onKeyDown, true);
     doc.removeEventListener('click', onClick, true);
