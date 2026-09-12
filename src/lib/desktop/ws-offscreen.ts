@@ -30,6 +30,10 @@
 import { log } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatDurationMs } from '@ai-matrx/kit/format';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -401,7 +405,7 @@ function startIdleWatchdog(): void {
   state.idleTimer = setInterval(() => {
     const idleFor = Date.now() - state.lastActivityAt;
     if (idleFor >= IDLE_DISCONNECT_MS) {
-      log.info('desktop-ws-offscreen', `idle for ${Math.round(idleFor / 1000)}s — disconnecting`);
+      log.info('desktop-ws-offscreen', `idle for ${formatDurationMs(idleFor, { style: 'long' })} — disconnecting`);
       // Mark as stopped so we don't auto-reconnect; the SW will reopen
       // on next outbound send.
       state.stopped = true;

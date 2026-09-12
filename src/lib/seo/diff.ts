@@ -20,6 +20,10 @@
  */
 
 import type { SeoAudit } from '@/lib/seo/audit';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatCount } from '@ai-matrx/kit/format';
 
 /**
  * Whether a change is an improvement. Only claimed where the direction is
@@ -233,7 +237,10 @@ export function toStoredSignals(a: SeoAudit): StoredAuditSignals {
 
 /* ── phrasing helpers ────────────────────────────────────────────────────── */
 
-const n = (v: number) => v.toLocaleString();
+/** The grouped-count voice, from the package — this was a `formatCount` body
+ * under a one-letter name. Kept as `n` because the phrasing helpers below read
+ * as sentences (`${n(a)} → ${n(b)} chars`) and a long name buries them. */
+const n = formatCount;
 
 /** "3 more" / "3 fewer" — never "+3", which makes the reader do the work. */
 function moreFewer(delta: number, unit: string, unitPlural = `${unit}s`): string {

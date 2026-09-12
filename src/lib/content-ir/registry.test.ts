@@ -70,7 +70,7 @@ describe('kind-definition warm load', () => {
 
     await registry.ensureWarm();
     expect(registry.getDefinition('agent_mandate_specification')).toBeUndefined();
-    expect(reported[0]).toContain('retrying in 1s');
+    expect(reported[0]).toContain('retrying in 1 second');
 
     await vi.advanceTimersByTimeAsync(1_000);
 

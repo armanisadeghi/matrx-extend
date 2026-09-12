@@ -19,6 +19,10 @@ import type { AskUserResponse, PendingAskUserRequest, UserAskOption } from '@/li
 import { useToolInbox } from '@/state/tool-inbox';
 import { Badge, Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatDurationMs } from '@ai-matrx/kit/format';
 import { AlertTriangle, Bell, CheckCircle2, HelpCircle, Info, XCircle } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -637,12 +641,11 @@ function useCountdown(expiresAt: number | undefined): number | null {
   return remaining;
 }
 
+/**
+ * Time left before the ask expires, in the fixed-width `clock` voice the
+ * tabular-nums pill was already built for. `clock` floors by construction,
+ * which is the countdown rule: the old `Math.ceil` said "1s" with 200ms left.
+ */
 function formatRemaining(ms: number): string {
-  const s = Math.ceil(ms / 1000);
-  if (s >= 60) {
-    const m = Math.floor(s / 60);
-    const rem = s % 60;
-    return `${m}:${rem.toString().padStart(2, '0')}`;
-  }
-  return `${s}s`;
+  return formatDurationMs(ms, { style: 'clock' });
 }

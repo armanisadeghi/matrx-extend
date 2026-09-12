@@ -14,17 +14,24 @@
 import { cancelInboxMessage, editInboxMessage } from '@/lib/api/routes/ai';
 import { cn } from '@/lib/utils';
 import { type QueuedInjection, useTurnInboxStore } from '@/state/turn-inbox';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatDurationSeconds } from '@ai-matrx/kit/format';
 import { AlertTriangle, Check, Clock, Loader2, Pencil, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 /** How long a delivered card lingers (ms) before it removes itself. */
 const DELIVERED_LINGER_MS = 1600;
 
+/**
+ * How long this message has been waiting — the package's `compact` voice, the
+ * one made for elapsed work. Seconds are floored before the package sees them
+ * so the 1s ticker never renders a jittering tenth under 10 seconds.
+ */
 function elapsedLabel(ms: number): string {
   const s = Math.max(0, Math.floor(ms / 1000));
-  if (s < 60) return `${s}s`;
-  const m = Math.floor(s / 60);
-  return `${m}:${String(s % 60).padStart(2, '0')}`;
+  return formatDurationSeconds(s, { style: 'compact', round: 'down' });
 }
 
 /**

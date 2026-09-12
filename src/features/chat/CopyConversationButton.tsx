@@ -12,6 +12,10 @@ import { copyToClipboard } from '@/lib/clipboard/copy';
 import { cn } from '@/lib/utils';
 import type { ChatMessage } from '@/state/chat';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatCount } from '@ai-matrx/kit/format';
 import { Check, ClipboardCopy, Copy } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import {
@@ -153,7 +157,7 @@ export function CopyConversationButton({
         </div>
         <div className="mt-2 flex items-center justify-between gap-2 border-t pt-2">
           <span className="px-1 text-[10px] text-muted-foreground">
-            ~{previewLength.toLocaleString()} chars
+            ~{formatCount(previewLength)} chars
           </span>
           <Button
             size="sm"

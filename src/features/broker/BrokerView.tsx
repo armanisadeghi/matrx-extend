@@ -24,6 +24,10 @@ import {
 } from '@ai-matrx/design-system';
 import { Card, CardContent, CardHeader, CardTitle } from '@ai-matrx/design-system';
 import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatDurationSeconds } from '@ai-matrx/kit/format';
 import { KeyRound, RefreshCw, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -33,11 +37,15 @@ const KNOWN_AUDIENCES = ['anthropic', 'openai_realtime'];
 
 const TIER_POLICIES: TierPolicy[] = ['none', 'guest', 'mid'];
 
+/**
+ * Time left on a minted credential. A COUNTDOWN, so `round: "down"` — never
+ * hand the caller a second of TTL they do not have. Seconds are floored before
+ * the package sees them so a 1s tick never renders a jittering tenth.
+ */
 function fmtCountdown(expiresAtSec: number, nowMs: number): string {
-  const s = Math.round(expiresAtSec - nowMs / 1000);
+  const s = Math.floor(expiresAtSec - nowMs / 1000);
   if (s <= 0) return 'expired';
-  const m = Math.floor(s / 60);
-  return m > 0 ? `${m}m ${s % 60}s` : `${s}s`;
+  return formatDurationSeconds(s, { style: 'compact', round: 'down' });
 }
 
 export default function BrokerView() {

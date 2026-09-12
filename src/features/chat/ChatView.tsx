@@ -56,6 +56,10 @@ import { useVoicePrefsStore } from '@/state/voice-prefs';
 import { AgentListDropdown } from '@ai-matrx/agents/catalog/react';
 import { useAgentCatalog } from '@ai-matrx/agents/catalog/react';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatDurationMs, formatRelativeTime } from '@ai-matrx/kit/format';
 import {
   AlertTriangle,
   ArrowUp,
@@ -687,17 +691,16 @@ export function ChatView() {
  * pause feels accounted-for.
  */
 function ProviderRetryBanner({ retry }: { retry: ProviderRetryState }) {
-  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
+  const [remainingMs, setRemainingMs] = useState<number | null>(null);
 
   useEffect(() => {
     if (retry.retryAtMs === null) {
-      setSecondsLeft(null);
+      setRemainingMs(null);
       return;
     }
-    const tick = () => {
-      const ms = (retry.retryAtMs ?? 0) - Date.now();
-      setSecondsLeft(Math.max(0, Math.ceil(ms / 1000)));
-    };
+    // A COUNTDOWN: the package prose voice floors by construction, so this
+    // never promises a second that has already gone (the old Math.ceil did).
+    const tick = () => setRemainingMs(Math.max(0, (retry.retryAtMs ?? 0) - Date.now()));
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
@@ -710,7 +713,9 @@ function ProviderRetryBanner({ retry }: { retry: ProviderRetryState }) {
         <p className="text-amber-800 dark:text-amber-200">{retry.userMessage}</p>
         <p className="mt-0.5 text-amber-700/70 dark:text-amber-300/70">
           {retry.provider} · attempt {retry.failedAttempt} of {retry.maxRetries}
-          {secondsLeft !== null && secondsLeft > 0 ? ` · retrying in ${secondsLeft}s` : ''}
+          {remainingMs !== null && remainingMs >= 1000
+            ? ` · retrying in ${formatDurationMs(remainingMs, { style: 'long' })}`
+            : ''}
         </p>
       </div>
     </div>
@@ -730,7 +735,7 @@ function StreamInterruptionBanner({
 }) {
   const detail =
     reason === 'stalled'
-      ? `The response stalled${silentMs ? ` (no activity for ${Math.round(silentMs / 1000)}s)` : ''}.`
+      ? `The response stalled${silentMs ? ` (no activity for ${formatDurationMs(silentMs, { style: 'long' })})` : ''}.`
       : 'The response was interrupted by an error.';
   return (
     <div className="mx-3 mb-2 flex items-center gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-[11px] text-amber-700 dark:text-amber-400">
@@ -1033,15 +1038,10 @@ function HistoryMenu({
   );
 }
 
+/** Conversation-list stamp. Empty string for an unparseable date, as before. */
 function formatRelative(iso: string): string {
-  const t = new Date(iso).getTime();
-  if (!Number.isFinite(t)) return '';
-  const diffSec = Math.floor((Date.now() - t) / 1000);
-  if (diffSec < 60) return 'just now';
-  if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
-  if (diffSec < 86_400) return `${Math.floor(diffSec / 3600)}h ago`;
-  if (diffSec < 86_400 * 7) return `${Math.floor(diffSec / 86_400)}d ago`;
-  return new Date(iso).toLocaleDateString();
+  if (!Number.isFinite(new Date(iso).getTime())) return '';
+  return formatRelativeTime(iso);
 }
 
 function MessageRow({ message }: { message: ChatMessage }) {

@@ -337,7 +337,7 @@ function RecordingRow({
         <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-muted-foreground">
           <span>{captured.toLocaleString()}</span>
           <span>·</span>
-          <span>{(entry.durationMs / 1000).toFixed(1)}s</span>
+          <span>{formatDurationMs(entry.durationMs, { style: 'compact' })}</span>
           <span>·</span>
           <span>{formatFileSize(entry.sizeBytes)}</span>
           <span>·</span>

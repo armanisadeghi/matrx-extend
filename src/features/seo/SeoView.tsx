@@ -19,6 +19,10 @@ import { evaluateSeoAudit } from '@/lib/seo/evaluators/from-audit';
 import { seoAuditToText } from '@/lib/seo/to-text';
 import { type SeoAuditRow, fetchSeoAuditHistoryForUrl, saveSeoAudit } from '@/lib/supabase/queries';
 import { Button } from '@ai-matrx/design-system';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatCount } from '@ai-matrx/kit/format';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -427,7 +431,7 @@ function HistoryList({
             <div className="truncate text-[10px] text-muted-foreground">
               {e.diffVsPrevious ? summarizeDiff(e.diffVsPrevious) : 'First saved audit'}
               {e.signals?.word_count !== null && e.signals?.word_count !== undefined
-                ? ` · ${e.signals.word_count.toLocaleString()} words`
+                ? ` · ${formatCount(e.signals.word_count)} words`
                 : ''}
             </div>
           </div>

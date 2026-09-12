@@ -26,6 +26,10 @@ import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
 import type { SoupResult } from '@/lib/scrape/pipeline';
 import { type AutoScrapeRecord, useAutoScrapeStore } from '@/state/auto-scrape';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatDurationMs } from '@ai-matrx/kit/format';
 
 const FAST_FRESH_MS = 8_000;
 
@@ -157,7 +161,7 @@ export async function refreshPageContextBeforeSend(opts: RefreshOptions): Promis
     return {
       action: 'noop',
       record: cur,
-      reason: `cache fresh (${Math.round((Date.now() - cur.capturedAt) / 1000)}s)`,
+      reason: `cache fresh (${formatDurationMs(Date.now() - cur.capturedAt, { style: 'long' })} old)`,
     };
   }
 

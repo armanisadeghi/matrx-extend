@@ -42,6 +42,10 @@ import { urlsMatch } from '@/lib/url/match';
 import { cn } from '@/lib/utils';
 import { useScrapeQueueView } from '@/state/scrape-queue-view';
 import { Button, Popover, PopoverContent, PopoverTrigger, Skeleton } from '@ai-matrx/design-system';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatCount, formatRelativeTime, isKnownNumber } from '@ai-matrx/kit/format';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertTriangle,
@@ -1438,7 +1442,7 @@ function ItemContext({ item }: { item: ExtensionScrapeItem }) {
     extBits.push(`tried L${item.attempted_levels.join(', L')}`);
   }
   if (item.last_char_count != null) {
-    extBits.push(`${item.last_char_count.toLocaleString()} chars`);
+    extBits.push(`${formatCount(item.last_char_count)} chars`);
   }
   if (item.last_attempt_at) {
     const ago = relativeTime(item.last_attempt_at);
@@ -1495,17 +1499,11 @@ function ItemContext({ item }: { item: ExtensionScrapeItem }) {
   );
 }
 
+/** `null` (render nothing) for an unparseable stamp — the package always
+ * returns a string, and the callers here want the element gone entirely. */
 function relativeTime(iso: string): string | null {
-  const t = Date.parse(iso);
-  if (Number.isNaN(t)) return null;
-  const sec = Math.round((Date.now() - t) / 1000);
-  if (sec < 60) return 'just now';
-  const min = Math.round(sec / 60);
-  if (min < 60) return `${min}m ago`;
-  const hr = Math.round(min / 60);
-  if (hr < 24) return `${hr}h ago`;
-  const d = Math.round(hr / 24);
-  return `${d}d ago`;
+  if (Number.isNaN(Date.parse(iso))) return null;
+  return formatRelativeTime(iso);
 }
 
 function Status({
@@ -1520,7 +1518,7 @@ function Status({
     return (
       <span className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
         <CheckCircle2 className="size-3.5" />
-        {charCount != null ? `${charCount.toLocaleString()} chars` : 'done'}
+        {charCount != null ? `${formatCount(charCount)} chars` : 'done'}
       </span>
     );
   }
@@ -1528,7 +1526,7 @@ function Status({
     return (
       <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
         <AlertTriangle className="size-3.5" />
-        thin{charCount != null ? ` · ${charCount.toLocaleString()}` : ''}
+        thin{charCount != null ? ` · ${formatCount(charCount)}` : ''}
       </span>
     );
   }
@@ -1659,7 +1657,13 @@ function VerdictCard({
   return (
     <div className="mt-2 space-y-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-2.5">
       <div className="text-xs font-medium text-amber-700 dark:text-amber-300">
-        Only {charCount?.toLocaleString() ?? '0'} chars extracted. What is it actually?
+        {/* `charCount ?? 0` used to print "Only 0 chars extracted" for a page
+            nobody measured — a confident wrong number the reader then acted on.
+            An unmeasured count now says so. */}
+        {isKnownNumber(charCount)
+          ? `Only ${formatCount(charCount)} chars extracted.`
+          : 'Very little came back, and the character count was never measured.'}{' '}
+        What is it actually?
       </div>
       {preview && (
         <div className="max-h-24 overflow-y-auto rounded bg-background/60 p-2 text-[11px] leading-relaxed text-muted-foreground">

@@ -9,6 +9,10 @@ import {
 } from '@/lib/supabase/queries';
 import { cn } from '@/lib/utils';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatRelativeTime } from '@ai-matrx/kit/format';
 import {
   Check,
   CheckCircle2,
@@ -303,7 +307,7 @@ function PatternRow({
           <div className="text-[11px] text-muted-foreground">
             {p.fields.length > 0 &&
               `${p.fields.length} field${p.fields.length === 1 ? '' : 's'} · `}
-            {p.last_run_at ? `last run ${formatRelative(p.last_run_at)}` : 'never run'}
+            {p.last_run_at ? `last run ${formatRelativeTime(p.last_run_at)}` : 'never run'}
             {p.last_run_count != null && ` · ${p.last_run_count} rows`}
           </div>
         </div>
@@ -391,18 +395,4 @@ function StatusBadge({ status }: { status: ExtractionPattern['last_status'] }) {
       {status === 'ok' ? 'ok' : status === 'broken' ? 'broken' : 'idle'}
     </span>
   );
-}
-
-function formatRelative(iso: string): string {
-  const then = new Date(iso).getTime();
-  const now = Date.now();
-  const diff = now - then;
-  const min = Math.round(diff / 60_000);
-  if (min < 1) return 'just now';
-  if (min < 60) return `${min}m ago`;
-  const hr = Math.round(min / 60);
-  if (hr < 24) return `${hr}h ago`;
-  const day = Math.round(hr / 24);
-  if (day < 30) return `${day}d ago`;
-  return new Date(iso).toLocaleDateString();
 }

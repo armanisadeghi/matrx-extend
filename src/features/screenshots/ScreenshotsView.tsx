@@ -39,6 +39,10 @@ import {
 import { take_screenshot } from '@/lib/tools/handlers/read';
 import { normalizeUrl } from '@/lib/url/match';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatRelativeTime } from '@ai-matrx/kit/format';
 import {
   AlertTriangle,
   Camera,
@@ -589,16 +593,5 @@ function EmptyMessage({
 function formatTimestamp(iso: string): { short: string; full: string } {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return { short: iso, full: iso };
-  const now = Date.now();
-  const diffMs = now - d.getTime();
-  const diffMin = Math.floor(diffMs / 60_000);
-  const diffHr = Math.floor(diffMs / 3_600_000);
-  const diffDay = Math.floor(diffMs / 86_400_000);
-  let short: string;
-  if (diffMin < 1) short = 'just now';
-  else if (diffMin < 60) short = `${diffMin}m ago`;
-  else if (diffHr < 24) short = `${diffHr}h ago`;
-  else if (diffDay < 7) short = `${diffDay}d ago`;
-  else short = d.toLocaleDateString();
-  return { short, full: d.toLocaleString() };
+  return { short: formatRelativeTime(d), full: d.toLocaleString() };
 }

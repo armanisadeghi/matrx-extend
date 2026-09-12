@@ -6,6 +6,10 @@
  */
 
 import { cn } from '@/lib/utils';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatDurationMs } from '@ai-matrx/kit/format';
 import { AlertTriangle, Loader2, Moon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ShimmerText } from '../BreathingOrb';
@@ -20,8 +24,14 @@ function readNumber(obj: unknown, key: string): number | undefined {
   return typeof v === 'number' && Number.isFinite(v) ? v : undefined;
 }
 
-function formatSeconds(ms: number, digits = 1): string {
-  return `${(ms / 1000).toFixed(digits)}s`;
+/**
+ * THIS ROW IS A COUNTDOWN, so `round: "down"` is mandatory: with 1.7s left,
+ * rounding to "2s" hands the reader time that has already gone. `compact` is
+ * the package's elapsed-work voice and is honest about being sub-second
+ * (`250ms`) instead of collapsing to `0:00`.
+ */
+function sleepSpan(ms: number): string {
+  return formatDurationMs(ms, { style: 'compact', round: 'down' });
 }
 
 export function SleepCountdown({ entry }: { entry: ToolTimelineEntry; kind: 'server' | 'client' }) {
@@ -41,12 +51,12 @@ export function SleepCountdown({ entry }: { entry: ToolTimelineEntry; kind: 'ser
   let label: string;
   let infoText = '';
   if (phase === 'started') {
-    label = targetMs > 0 ? `Sleeping ${formatSeconds(targetMs, 0)}` : 'Sleeping';
-    infoText = targetMs > 0 ? `${formatSeconds(remaining)} remaining` : formatSeconds(elapsed);
+    label = targetMs > 0 ? `Sleeping ${sleepSpan(targetMs)}` : 'Sleeping';
+    infoText = targetMs > 0 ? `${sleepSpan(remaining)} remaining` : sleepSpan(elapsed);
   } else if (phase === 'completed') {
     const sleptMs = readNumber(entry.output, 'slept_ms') ?? targetMs;
     label = 'Slept';
-    infoText = formatSeconds(sleptMs, 2);
+    infoText = sleepSpan(sleptMs);
   } else {
     label = 'Sleep failed';
   }

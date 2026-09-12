@@ -48,7 +48,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@ai-matrx/design-system';
-import { formatFileSize } from '@ai-matrx/kit/format';
+import { formatCount, formatDurationMs, formatFileSize } from '@ai-matrx/kit/format';
 import {
   AlertTriangle,
   ChevronDown,
@@ -340,7 +340,7 @@ function ModelInputEvent({
       <ModelInputSection
         label={`prompt() input${
           typeof event.promptInput === 'string'
-            ? ` · ${event.promptInput.length.toLocaleString()} chars`
+            ? ` · ${formatCount(event.promptInput.length)} chars`
             : ''
         }`}
       >
@@ -397,7 +397,7 @@ function stringifyPayload(value: unknown): string {
     value,
     (_key, v) => {
       if (typeof Blob !== 'undefined' && v instanceof Blob) {
-        return `[Blob ${v.type || 'unknown'} · ${v.size.toLocaleString()} bytes]`;
+        return `[Blob ${v.type || 'unknown'} · ${formatCount(v.size)} bytes]`;
       }
       return v;
     },
@@ -458,7 +458,7 @@ async function capturePage(
     throw new Error(o.reason ?? 'read_active_page failed');
   }
   const md = o.article?.content_markdown ?? '';
-  step('scrape', ms, `${md.length.toLocaleString()} chars · ${o.article?.word_count ?? '—'} words`);
+  step('scrape', ms, `${formatCount(md.length)} chars · ${o.article?.word_count ?? '—'} words`);
   return {
     url: o.url ?? '',
     title: o.article?.title ?? null,
@@ -475,10 +475,9 @@ async function runHandler<TArgs, TResult>(
   return handler.run(args, TEST_CTX);
 }
 
-function fmtMs(ms: number): string {
-  if (ms < 1000) return `${Math.round(ms)}ms`;
-  return `${(ms / 1000).toFixed(2)}s`;
-}
+/** Scenario timings — the package's elapsed-work voice (`450ms`, `2.3s`,
+ * `1m 05s`), which the old body could only spell up to `65.00s`. */
+const fmtMs = (ms: number): string => formatDurationMs(ms, { style: 'compact' });
 
 /**
  * Per-scenario hook — owns state, exposes a runner builder that wires up
@@ -539,7 +538,7 @@ function SummarizePageScenario() {
     try {
       const page = await capturePage(pushStep);
       const sliced = cap > 0 ? page.markdown.slice(0, cap) : page.markdown;
-      pushStep('truncate', 0, `${sliced.length.toLocaleString()} chars sent to model`);
+      pushStep('truncate', 0, `${formatCount(sliced.length)} chars sent to model`);
       const t0 = performance.now();
       const out = await summarize(sliced, { type, length, onRequest });
       pushStep('summarize', performance.now() - t0, `${type} · ${length}`);
@@ -638,7 +637,7 @@ function ClassifyPageScenario() {
       if (labels.length < 2) throw new Error('Need at least 2 comma-separated labels.');
       const page = await capturePage(pushStep);
       const sliced = page.markdown.slice(0, 3000);
-      pushStep('truncate', 0, `${sliced.length.toLocaleString()} chars`);
+      pushStep('truncate', 0, `${formatCount(sliced.length)} chars`);
       const t0 = performance.now();
       const r = await quickPrompt(sliced, {
         systemPrompt: buildClassifySystemPrompt(labels),
@@ -742,7 +741,7 @@ function ExtractJsonPageScenario() {
       }
       const page = await capturePage(pushStep);
       const sliced = page.markdown.slice(0, 5000);
-      pushStep('truncate', 0, `${sliced.length.toLocaleString()} chars`);
+      pushStep('truncate', 0, `${formatCount(sliced.length)} chars`);
       const t0 = performance.now();
       const r = await quickPrompt(sliced, {
         systemPrompt: buildExtractSystemPrompt(),
@@ -900,7 +899,7 @@ function DetectLanguageScenario() {
     try {
       const page = await capturePage(pushStep);
       const sliced = page.markdown.slice(0, 1500);
-      pushStep('truncate', 0, `${sliced.length.toLocaleString()} chars`);
+      pushStep('truncate', 0, `${formatCount(sliced.length)} chars`);
       const t0 = performance.now();
       const out = await detectLanguage(sliced, { onRequest });
       pushStep('detect', performance.now() - t0);
@@ -995,7 +994,7 @@ function InjectionCheckScenario() {
     try {
       const page = await capturePage(pushStep);
       const sliced = page.markdown.slice(0, 6000);
-      pushStep('truncate', 0, `${sliced.length.toLocaleString()} chars`);
+      pushStep('truncate', 0, `${formatCount(sliced.length)} chars`);
       const t0 = performance.now();
       const r = await quickPrompt(sliced, {
         systemPrompt: buildInjectionSystemPrompt(page.url),

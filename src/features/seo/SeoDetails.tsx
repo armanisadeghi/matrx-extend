@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
-import { formatFileSize } from '@ai-matrx/kit/format';
+import { formatCount, formatFileSize } from '@ai-matrx/kit/format';
 import { ImageOff } from 'lucide-react';
 import { useState } from 'react';
 
@@ -322,8 +322,8 @@ function ReadabilityGroup({ signals }: { signals: StoredAuditSignals }) {
         </div>
       )}
       <div className="grid grid-cols-2 gap-2 py-1">
-        <SeoStat label="Words" value={signals.word_count ?? 0} />
-        <SeoStat label="Sentences" value={signals.sentence_count ?? 0} />
+        <SeoStat label="Words" value={signals.word_count} />
+        <SeoStat label="Sentences" value={signals.sentence_count} />
       </div>
     </SeoGroup>
   );
@@ -421,7 +421,9 @@ function SeoStat({
   tone = 'neutral',
 }: {
   label: string;
-  value: number | string;
+  /** `null`/`undefined` renders the em-dash — an audit row that never
+   * measured a field must not show a confident `0`. */
+  value: number | string | null | undefined;
   tone?: 'neutral' | 'ok' | 'warn';
 }) {
   return (
@@ -433,7 +435,7 @@ function SeoStat({
           tone === 'ok' && 'text-emerald-600 dark:text-emerald-400',
         )}
       >
-        {typeof value === 'number' ? value.toLocaleString() : value}
+        {typeof value === 'string' ? value : formatCount(value)}
       </div>
       <div className="text-[10px] text-muted-foreground">{label}</div>
     </div>

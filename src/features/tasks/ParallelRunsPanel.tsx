@@ -20,6 +20,10 @@ import {
   useParallelRunsStore,
 } from '@/state/parallel-runs';
 import { Button } from '@ai-matrx/design-system';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatDurationMs } from '@ai-matrx/kit/format';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -84,7 +88,7 @@ function SubRunRow({ sub }: { sub: ParallelSubRun }) {
             <span className="text-xs font-medium">tab {sub.tabId}</span>
             {elapsed != null && (
               <span className="text-[10px] text-muted-foreground">
-                {(elapsed / 1000).toFixed(1)}s
+                {formatDurationMs(elapsed, { style: 'compact' })}
               </span>
             )}
           </div>

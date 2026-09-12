@@ -18,6 +18,10 @@ import type { GuidanceKind, GuidanceSummary } from '@/lib/guidance/types';
 import { type GuidanceFilter, useGuidanceStore } from '@/state/guidance';
 import { Badge, Button, BasicInput as Input, Label } from '@ai-matrx/design-system';
 import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatRelativeTime } from '@ai-matrx/kit/format';
 import {
   BookOpen,
   Camera,
@@ -646,7 +650,7 @@ function GuidanceRow({
             </Badge>
           </div>
           <div className="text-[11px] text-muted-foreground">
-            {item.domain} · {timeAgo(item.updated_at)}
+            {item.domain} · {formatRelativeTime(item.updated_at)}
           </div>
         </div>
         <div className="flex shrink-0 gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
@@ -698,17 +702,6 @@ function defaultLabel(kind: GuidanceKind): string {
     case 'demo_ref':
       return 'Demo';
   }
-}
-
-function timeAgo(ms: number): string {
-  const diff = Date.now() - ms;
-  const m = Math.round(diff / 60_000);
-  if (m < 1) return 'just now';
-  if (m < 60) return `${m}m ago`;
-  const h = Math.round(m / 60);
-  if (h < 24) return `${h}h ago`;
-  const d = Math.round(h / 24);
-  return `${d}d ago`;
 }
 
 function toSummary(item: {

@@ -13,6 +13,10 @@ import type { Demo } from '@/lib/demos/types';
 import { getGuidanceItem, saveGuidanceItem } from '@/lib/guidance/storage';
 import type { GuidanceItem } from '@/lib/guidance/types';
 import { Badge, Button } from '@ai-matrx/design-system';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatDurationMs } from '@ai-matrx/kit/format';
 import { Camera, Loader2, Pencil, Play } from 'lucide-react';
 import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 
@@ -216,7 +220,7 @@ function GifPreview({ item }: { item: Extract<GuidanceItem, { kind: 'gif' }> }) 
       )}
       {item.duration_ms != null && (
         <div className="text-[11px] text-muted-foreground">
-          Duration: {(item.duration_ms / 1000).toFixed(1)}s
+          Duration: {formatDurationMs(item.duration_ms, { style: 'compact' })}
           {item.frame_count != null && ` · ${item.frame_count} frames`}
         </div>
       )}

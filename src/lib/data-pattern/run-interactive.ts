@@ -25,6 +25,10 @@ import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import type { ExtractionPattern } from '@/lib/supabase/queries';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatDurationMs } from '@ai-matrx/kit/format';
 import { aiExtractCapturePage } from './modes/ai-extract';
 import { type CapturedNetEvent, networkRelayIsolated, networkTapMain } from './network-tap';
 import { runPattern } from './run-pattern';
@@ -389,7 +393,7 @@ export async function runNetworkCapturePattern(
         finish(() =>
           reject(
             new NetworkNoMatchError(
-              `No request matching "${url_filter}" fired within ${Math.round(windowMs / 1000)}s of reloading. Interact with the page (scroll, open the list) and run again — the listener installs on reload.`,
+              `No request matching "${url_filter}" fired within ${formatDurationMs(windowMs, { style: 'long' })} of reloading. Interact with the page (scroll, open the list) and run again — the listener installs on reload.`,
             ),
           ),
         );

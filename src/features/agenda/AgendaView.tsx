@@ -27,6 +27,10 @@ import { isTaskRunning, runTask } from '@/lib/agenda/runner';
 import { log } from '@/lib/debug/log';
 import { cn } from '@/lib/utils';
 import { ConfirmDialog } from '@ai-matrx/design-system';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatDurationMs } from '@ai-matrx/kit/format';
 import {
   Button,
   BasicInput as Input,
@@ -519,23 +523,22 @@ function NewTaskForm({ onCancel, onCreated }: { onCancel: () => void; onCreated:
 }
 
 /**
- * How far away a DUE DATE is, in both directions: "in 3h" for the future and
- * "3h ago" for the past. Deliberately not `@ai-matrx/kit/format`'s
+ * How far away a DUE DATE is, in both directions: "in 3h 5m" for the future and
+ * "3d 4h ago" for the past. Deliberately not `@ai-matrx/kit/format`'s
  * `formatRelativeTime`, which answers "how long ago?" and reads a future
  * timestamp as "just now" — an agenda that says "just now" about tomorrow's
  * deadline is a screen telling a lie. Renamed 2026-09-07 (census H1) so the
  * name says which question it answers.
+ *
+ * The SPAN itself is the package's (`coarse` — the dense-cell voice), and this
+ * is only the direction wrapper the package deliberately has no opinion about.
+ * `round: "down"` because a future due date IS a countdown: "in 3h" with 2h31m
+ * left promises the user half an hour they do not have.
  */
 function formatDueDistance(iso: string): string {
   const dueMs = new Date(iso).getTime() - Date.now();
   const abs = Math.abs(dueMs);
-  const sign = dueMs >= 0 ? 'in ' : '';
-  const past = dueMs >= 0 ? '' : ' ago';
-  const min = Math.round(abs / 60_000);
-  if (min < 1) return dueMs >= 0 ? 'now' : 'just now';
-  if (min < 60) return `${sign}${min}m${past}`;
-  const hr = Math.round(abs / 3_600_000);
-  if (hr < 24) return `${sign}${hr}h${past}`;
-  const day = Math.round(abs / 86_400_000);
-  return `${sign}${day}d${past}`;
+  if (abs < 60_000) return dueMs >= 0 ? 'now' : 'just now';
+  const span = formatDurationMs(abs, { style: 'coarse', round: 'down' });
+  return dueMs >= 0 ? `in ${span}` : `${span} ago`;
 }
