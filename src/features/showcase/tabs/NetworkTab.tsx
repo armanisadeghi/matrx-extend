@@ -2,6 +2,7 @@ import { JsonTree } from '@/components/ui/json-tree';
 import { useNetworkCapture } from '@/hooks/use-network-capture';
 import { cn } from '@/lib/utils';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
+import { formatFileSize } from '@ai-matrx/kit/format';
 import { Circle, RefreshCw, Square, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
@@ -164,7 +165,7 @@ export function NetworkTab() {
                 <span className="w-8 shrink-0 text-muted-foreground">{e.method}</span>
                 <span className="flex-1 truncate">{shortenUrl(e.url)}</span>
                 <span className="shrink-0 text-muted-foreground">
-                  {(e.body_size / 1024).toFixed(1)}KB
+                  {formatFileSize(e.body_size)}
                 </span>
               </button>
             ))}
@@ -178,7 +179,7 @@ export function NetworkTab() {
               <div className="text-muted-foreground">
                 {selected.method} · {selected.status}
                 {selected.status_text ? ` ${selected.status_text}` : ''} ·{' '}
-                {selected.content_type ?? 'unknown'} · {(selected.body_size / 1024).toFixed(1)}KB
+                {selected.content_type ?? 'unknown'} · {formatFileSize(selected.body_size)}
                 {selected.body_truncated && ' · truncated'}
               </div>
             </div>

@@ -48,6 +48,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@ai-matrx/design-system';
+import { formatFileSize } from '@ai-matrx/kit/format';
 import {
   AlertTriangle,
   ChevronDown,
@@ -1068,11 +1069,7 @@ function DescribeFirstImageScenario() {
       if (!page.first_image_url) throw new Error('No images found on the active page.');
       const tFetch = performance.now();
       const { blob, mime, bytes } = await fetchImageAsBlob(page.first_image_url);
-      pushStep(
-        'fetch image',
-        performance.now() - tFetch,
-        `${(bytes / 1024).toFixed(0)} KB · ${mime}`,
-      );
+      pushStep('fetch image', performance.now() - tFetch, `${formatFileSize(bytes)} · ${mime}`);
       const t0 = performance.now();
       const out = await quickPrompt(
         [

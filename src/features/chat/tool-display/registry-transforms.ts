@@ -7,6 +7,7 @@
  * it can't handle (e.g. titleCase only acts on strings) — never throw.
  */
 
+import { formatFileSize } from '@ai-matrx/kit/format';
 import type { TransformName } from './types';
 
 const titleCaseFn = (v: unknown): unknown => {
@@ -37,12 +38,7 @@ export const transforms: Record<TransformName, (v: unknown) => unknown> = {
     return `${w}×${h}`;
   },
   /** Number of bytes → human-readable size ("123 KB", "4.5 MB"). */
-  formatBytes: (v) => {
-    if (typeof v !== 'number') return v;
-    if (v < 1024) return `${v} B`;
-    if (v < 1024 * 1024) return `${(v / 1024).toFixed(1)} KB`;
-    return `${(v / (1024 * 1024)).toFixed(2)} MB`;
-  },
+  formatBytes: (v) => (typeof v === 'number' ? formatFileSize(v) : v),
   /**
    * Browser-tools category name → lucide icon name. Each category gets a
    * distinct, recognizable icon (Wrench for core, Cookie for cookies, etc.).

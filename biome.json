@@ -16,7 +16,10 @@
       "src/components/ui/**",
       ".claude/skills/matrx-oauth/**",
       "pnpm-lock.yaml",
-      "scripts/check-matrx-packages.mjs"
+      "scripts/check-matrx-packages.mjs",
+      "scripts/check-package-twins.mjs",
+      "scripts/byte-size-shape.mjs",
+      "scripts/duration-shape.mjs"
     ]
   },
   "formatter": {

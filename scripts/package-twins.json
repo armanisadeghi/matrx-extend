@@ -10,7 +10,8 @@
     "PROVABLY not the same capability, and it must say why in `reason`.",
     "A WRAPPER is not a twin: a local function that BINDS the package function's options (unit, style, fallback) and delegates in a line or two is the sanctioned adapter, and needs no entry. A re-implemented BODY is a twin, always.",
     "",
-    "Register: common-docs /projects/npm-package-extraction/DUPLICATION-CENSUS.md (common-docs)."
+    "Register: common-docs /projects/npm-package-extraction/DUPLICATION-CENSUS.md (common-docs).",
+    "A SHAPE rule (`shapeWhy` + `shapeAllow` + `shapeCensus` on a row) catches the same capability under an UNREGISTERED name, or with no name at all. `shapeAllow` = provably NOT this capability, silent. `shapeCensus` = pre-existing bodies that ARE it and are not collapsed yet: loud every run, shrink-only, and a stale entry fails the guard."
   ],
   "twins": [
     {
@@ -130,7 +131,86 @@
       "name": "formatDurationMs",
       "package": "@ai-matrx/kit/format",
       "why": "THE UNIT LAW: the fleet's ~35 duration twins variously took milliseconds, seconds and minutes behind an identical `formatDuration(n)` signature, so kit ships formatDurationMs / formatDurationSeconds / formatDurationMinutes and NO bare `formatDuration`. Two host copies had already re-grown under this exact name (observational-memory format.ts, marketing crawl-session-panels.tsx) and were deleted 2026-09-07. A local `formatDuration` that BINDS unit+style+fallback and delegates is an adapter, not a twin; a local `formatDurationMs` is always a twin.",
-      "allow": []
+      "shapeWhy": "A millisecond count becoming a unit string is this capability whatever it is called. The name lane read GREEN on all four formatDuration* exports while aidream's dashboard carried SEVEN bodies under the private names fmtMs and fmtMsSummary, each with its own rounding, and 115 more files in this repo turned ms into `2.3s` / `1.5m` / `3m ago` inline. Pattern and its proof: scripts/duration-shape.mjs. Plain time arithmetic can never match \u2014 the rule requires a DIVISION, MODULO or THRESHOLD COMPARISON against a time base PAIRED with a duration unit label, so a timeout budget (30 * 1000), an API seconds field and a rate denominator all stay untouched. `shapeCensus` below is the pre-existing census, not an exemption: it is reported every run and is ratcheted shrink-only \u2014 a stale entry FAILS the guard.",
+      "allow": [],
+      "shapeCensus": [
+        {
+          "file": "src/features/agenda/AgendaView.tsx",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/features/broker/BrokerView.tsx",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/features/chat/AgentAskUserCard.tsx",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/features/chat/ChatView.tsx",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/features/chat/QueuedMessageCard.tsx",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/features/chat/tool-display/SleepCountdown.tsx",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/features/guidance/GuidancePreview.tsx",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/features/guidance/GuidanceView.tsx",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/features/screenshots/ScreenshotsView.tsx",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/features/showcase/tabs/PatternsTab.tsx",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/features/tasks/ParallelRunsPanel.tsx",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/features/tasks/TasksView.tsx",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/features/tools/RecorderPane.tsx",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/features/tools/SmartTestsView.tsx",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/lib/audio/useChunkedRecordAndTranscribe.ts",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/lib/chat/refresh-page-context.ts",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/lib/content-ir/registry.ts",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/lib/data-pattern/run-interactive.ts",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        },
+        {
+          "file": "src/lib/desktop/ws-offscreen.ts",
+          "reason": "Pre-existing duration body, censused 2026-09-11 when the duration SHAPE lane was ported here. NOT an exemption: it belongs to @ai-matrx/kit/format and awaits the fleet-wide duration collapse campaign. Remove this entry when the file is collapsed."
+        }
+      ]
     },
     {
       "name": "formatDurationSeconds",
@@ -177,6 +257,17 @@
       "name": "formatFileSize",
       "package": "@ai-matrx/kit/format",
       "why": "THE byte-size formatter. It was hiding inside @ai-matrx/media's UploadProgressList React component, so six matrx-frontend twins could only reach it by depending on the media React bundle to print a byte count. Moved to kit 2026-09-07 with the display decisions written down (binary units, short labels, one decimal below ten in a unit, whole bytes below 1 KB, em-dash for unknown/negative \u2014 NEVER a confident '0 B').",
+      "shapeWhy": "A byte count becoming a unit string is this capability whatever it is called. The 2026-09-07 census predicted this gap ('the census method needs a shape pass') and the 2026-09-11 re-verification proved it: formatBytes, fmtBytes, humanSize, bytesHuman, formatSize, and ~60 bare inline JSX expressions that are not definitions at all and can never be caught by a name. Pattern and its proof: scripts/byte-size-shape.mjs. A capacity constant (80 * 1024 * 1024) can never match \u2014 the rule requires a DIVISION or THRESHOLD COMPARISON against 1024, and this repo has ~60 legitimate byte ceilings that must stay untouched.",
+      "shapeAllow": [
+        {
+          "file": "src/lib/data-pattern/page-diagnostic.ts",
+          "reason": "PHYSICALLY UNREACHABLE BY AN IMPORT, not deferred work. The whole of `pageDiagnosticInPage` is handed to chrome.scripting.executeScript as `func:` (DoctorTab.tsx:48), so Chrome serialises the function to source and evaluates it in the PAGE's realm where none of this module's imports exist. A `formatFileSize` call inside it is a guaranteed runtime ReferenceError in the page, which is why the file's own header says 'Self-contained \u2014 runs across the chrome.scripting boundary'. The 1024 division here builds the recommendation `reason` string in-page; collapsing it would require moving recommendation assembly out of the probe, which changes the probe's returned payload contract."
+        },
+        {
+          "file": "src/lib/data-pattern/modes/next-data.ts",
+          "reason": "Same chrome.scripting boundary. The hit is inside `detectInPage`, passed as `func:` in src/lib/data-pattern/run-pattern.ts:75, and the file's own header states it: 'those functions cross the chrome.scripting boundary and can't reference outer-scope identifiers'. An imported package symbol is not in scope in the page's realm."
+        }
+      ],
       "allow": []
     },
     {

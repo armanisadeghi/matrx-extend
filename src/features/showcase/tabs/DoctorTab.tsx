@@ -5,6 +5,7 @@ import { type PageDiagnostic, pageDiagnosticInPage } from '@/lib/data-pattern/pa
 import { cn } from '@/lib/utils';
 import { type ShowcaseSubTab, useShowcaseTabStore } from '@/state/showcase-tab';
 import { Button } from '@ai-matrx/design-system';
+import { formatFileSize } from '@ai-matrx/kit/format';
 import { CheckCircle2, Loader2, Stethoscope, XCircle } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -235,7 +236,7 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
                 ok={diag.sources.next_data.present}
                 detail={
                   diag.sources.next_data.present
-                    ? `${(diag.sources.next_data.size_bytes / 1024).toFixed(1)} KB`
+                    ? formatFileSize(diag.sources.next_data.size_bytes)
                     : 'absent'
                 }
               />
@@ -244,7 +245,7 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
                 ok={diag.sources.nuxt_data.present}
                 detail={
                   diag.sources.nuxt_data.present
-                    ? `${(diag.sources.nuxt_data.size_bytes / 1024).toFixed(1)} KB`
+                    ? formatFileSize(diag.sources.nuxt_data.size_bytes)
                     : 'absent'
                 }
               />
@@ -253,7 +254,7 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
                 ok={diag.sources.apollo_dom.present}
                 detail={
                   diag.sources.apollo_dom.present
-                    ? `${(diag.sources.apollo_dom.size_bytes / 1024).toFixed(1)} KB`
+                    ? formatFileSize(diag.sources.apollo_dom.size_bytes)
                     : 'absent'
                 }
               />
@@ -267,7 +268,7 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
                 ok={diag.sources.bpr_guid.count > 0}
                 detail={
                   diag.sources.bpr_guid.count > 0
-                    ? `${diag.sources.bpr_guid.count} block(s) · ${(diag.sources.bpr_guid.total_size_bytes / 1024).toFixed(1)} KB`
+                    ? `${diag.sources.bpr_guid.count} block(s) · ${formatFileSize(diag.sources.bpr_guid.total_size_bytes)}`
                     : 'absent'
                 }
               />
@@ -277,7 +278,7 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
                 detail={
                   diag.sources.window_assignments.length > 0
                     ? diag.sources.window_assignments
-                        .map((a) => `${a.name} (~${(a.size_bytes / 1024).toFixed(1)} KB)`)
+                        .map((a) => `${a.name} (~${formatFileSize(a.size_bytes)})`)
                         .join(', ')
                     : 'absent'
                 }
@@ -292,7 +293,7 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
               <KV label="Title" value={diag.title || '—'} />
               <KV label="Lang" value={diag.lang ?? '—'} />
               <KV label="Meta tags" value={String(diag.meta_count)} />
-              <KV label="Body text" value={`${(diag.body_total_bytes / 1024).toFixed(1)} KB`} />
+              <KV label="Body text" value={formatFileSize(diag.body_total_bytes)} />
             </div>
           </>
         )}

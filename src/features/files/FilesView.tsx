@@ -4,6 +4,7 @@ import type { ScreenshotRow } from '@/lib/supabase/queries';
 import { useChatStore } from '@/state/chat';
 import { Badge, Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ai-matrx/design-system';
+import { formatFileSize } from '@ai-matrx/kit/format';
 import {
   AlertTriangle,
   ArrowLeft,
@@ -374,7 +375,7 @@ function FileRow({
           {file.name}
         </div>
         <div className="mt-0.5 flex items-center gap-1.5 text-[10px] text-muted-foreground">
-          <span>{formatSize(file.sizeBytes)}</span>
+          <span>{formatFileSize(file.sizeBytes, { fallback: 'Unknown size' })}</span>
           <span>·</span>
           <span>{formatDate(file.updatedAt)}</span>
           <span>·</span>
@@ -966,14 +967,6 @@ function Empty({
       <div className="max-w-xs text-xs text-muted-foreground">{body}</div>
     </div>
   );
-}
-
-function formatSize(bytes: number | null): string {
-  if (bytes === null || bytes < 0) return 'Unknown size';
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
-  return `${(bytes / 1024 / 1024 / 1024).toFixed(1)} GB`;
 }
 
 function formatDate(value: string): string {
