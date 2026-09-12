@@ -611,7 +611,10 @@ describe('host — registered worker listeners and session continuity', () => {
       },
       tabs: {
         get: async (id: number) => ({ id, url: 'https://app.example.com/login' }),
-        sendMessage: async () => ({ ok: true }),
+        sendMessage: async (tabId: number, message: unknown) => {
+          tabMessages.push({ tabId, message });
+          return { ok: true };
+        },
         onUpdated: {
           addListener: (listener: (tabId: number, info: chrome.tabs.TabChangeInfo) => void) =>
             updated.push(listener),
@@ -806,22 +809,94 @@ describe('host — registered worker listeners and session continuity', () => {
     expect(sessionStorage.has(SESSION_KEY)).toBe(false);
   });
 
-  it('storage failures fail closed: a set never holds a draft and a remove makes status unavailable', async () => {
+  function resolved(candidateId: string): unknown[] {
+    return tabMessages.filter(
+      (entry) =>
+        (entry as { message?: { kind?: string; payload?: { candidateId?: string } } }).message
+          ?.kind === 'credential-capture:resolved' &&
+        (entry as { message?: { payload?: { candidateId?: string } } }).message?.payload
+          ?.candidateId === candidateId,
+    );
+  }
+
+  it('fails closed with a reopen remedy when trusted-session storage cannot hold a draft', async () => {
     const host = await import('@/lib/credentials/capture-candidates');
     sessionSetFailure = new Error('session unavailable');
     expect(await host.holdCandidate(33, WIRE, DEPS)).toBe(false);
     expect(host.pendingCaptureForTab(33)).toMatchObject({ unavailable: true });
-    expect(calls.find((call) => call.name === 'create')).toBeUndefined();
+    expect(
+      calls.filter((call) => ['create', 'updateValue', 'addField'].includes(call.name)),
+    ).toEqual([]);
+  });
 
-    host._resetCaptureCandidates();
-    sessionSetFailure = null;
+  it('treats a failed empty-key removal as successful after a value-free snapshot commits', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
     await host.holdCandidate(33, WIRE, DEPS);
     const id = host.pendingCaptureForTab(33)?.candidateId as string;
-    sessionRemoveFailure = new Error('session unavailable');
+    sessionRemoveFailure = new Error('empty-key removal unavailable');
     expect((await host.applyCaptureDecision({ candidateId: id, action: 'dismiss' })).status).toBe(
       'dismissed',
     );
+    expect(sessionStorage.get(SESSION_KEY)).toEqual({});
+    expect(JSON.stringify(sessionStorage.get(SESSION_KEY))).not.toContain(SENTINEL);
+    expect(resolved(id)).toHaveLength(1);
+
+    host._simulateCaptureWorkerRestartForTest();
+    expect(
+      (await host.applyCaptureDecision({ candidateId: 'no-draft', action: 'dismiss' })).status,
+    ).toBe('expired');
+  });
+
+  it('does not resolve a dismissed draft until one of the plaintext-erasure writes succeeds', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    await host.holdCandidate(33, WIRE, DEPS);
+    const id = host.pendingCaptureForTab(33)?.candidateId as string;
+    sessionSetFailure = new Error('empty snapshot unavailable');
+    sessionRemoveFailure = new Error('key removal unavailable');
+    const failed = await host.applyCaptureDecision({ candidateId: id, action: 'dismiss' });
+    expect(failed).toMatchObject({ ok: false, status: 'error' });
+    expect(failed.message).toContain('Reopen the extension');
+    expect(resolved(id)).toHaveLength(0);
     expect(host.pendingCaptureForTab(33)).toMatchObject({ unavailable: true });
+
+    sessionSetFailure = null;
+    sessionRemoveFailure = null;
+    host._simulateCaptureWorkerRestartForTest();
+    expect((await host.applyCaptureDecision({ candidateId: id, action: 'dismiss' })).status).toBe(
+      'dismissed',
+    );
+    expect(resolved(id)).toHaveLength(1);
+  });
+
+  it('keeps a committed mutation frozen and unresolved until cleanup succeeds, then replays its receipt', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    await host.holdCandidate(33, WIRE, DEPS);
+    const id = host.pendingCaptureForTab(33)?.candidateId as string;
+    let release!: () => void;
+    createGate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const saving = host.applyCaptureDecision({ candidateId: id, action: 'save' });
+    await vi.waitFor(() => expect(calls.filter((call) => call.name === 'create')).toHaveLength(1));
+    sessionSetFailure = new Error('empty snapshot unavailable');
+    sessionRemoveFailure = new Error('key removal unavailable');
+    const firstCreate = calls.find((call) => call.name === 'create') as Call;
+    release();
+    const firstResult = await saving;
+    expect(firstResult).toMatchObject({ ok: false, status: 'error' });
+    expect(firstResult.message).toContain('Vault change was committed');
+    expect(resolved(id)).toHaveLength(0);
+
+    sessionSetFailure = null;
+    sessionRemoveFailure = null;
+    host._simulateCaptureWorkerRestartForTest();
+    expect((await host.applyCaptureDecision({ candidateId: id, action: 'save' })).status).toBe(
+      'saved',
+    );
+    const creates = calls.filter((call) => call.name === 'create');
+    expect(creates).toHaveLength(2);
+    expect(creates[1]?.args).toEqual(firstCreate.args);
+    expect(resolved(id)).toHaveLength(1);
   });
 
   it('does not send after an invalidation lands while the final frozen-command persist is awaiting', async () => {

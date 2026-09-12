@@ -83,8 +83,8 @@ export function PendingCaptureCard({
       {meta ? (
         meta.unavailable ? (
           <p className="text-[11px] text-muted-foreground">
-            Temporary browser memory is unavailable. Sign in again, then save this login from the
-            Vault.
+            Temporary browser memory is unavailable. Reopen the extension, then save this login from
+            the Vault.
           </p>
         ) : (
           <>

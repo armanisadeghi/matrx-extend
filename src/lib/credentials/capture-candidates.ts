@@ -184,8 +184,9 @@ function queued<T>(work: () => Promise<T>): Promise<T> {
 async function persist(): Promise<void> {
   if (!storageAvailable) throw new Error('capture session unavailable');
   const serialized = serialize();
-  if (Object.keys(serialized).length === 0) await chrome.storage.session.remove(SESSION_KEY);
-  else await chrome.storage.session.set({ [SESSION_KEY]: serialized });
+  if (Object.keys(serialized).length === 0) {
+    if (!(await erasePersistedSnapshot())) throw new Error('capture session cleanup unavailable');
+  } else await chrome.storage.session.set({ [SESSION_KEY]: serialized });
   const earliest = [...PENDING.values()].reduce<number | null>(
     (value, candidate) =>
       value === null ? candidate.expiresAt : Math.min(value, candidate.expiresAt),
@@ -194,6 +195,32 @@ async function persist(): Promise<void> {
   if (!chrome.alarms) return;
   if (earliest === null) await chrome.alarms.clear(EXPIRY_ALARM);
   else chrome.alarms.create(EXPIRY_ALARM, { when: earliest });
+}
+
+/**
+ * Commit a value-free replacement before treating the old session entry as
+ * resolved. Removing that now-empty key is housekeeping: a remove failure
+ * cannot bring plaintext back after the empty snapshot has been stored.
+ */
+async function erasePersistedSnapshot(): Promise<boolean> {
+  try {
+    await chrome.storage.session.set({ [SESSION_KEY]: {} });
+  } catch {
+    // A successful remove is equally sufficient, but only when it actually
+    // commits. If both writes fail, keep the frozen command retryable.
+    try {
+      await chrome.storage.session.remove(SESSION_KEY);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  try {
+    await chrome.storage.session.remove(SESSION_KEY);
+  } catch {
+    // The already-written empty snapshot is the durable privacy boundary.
+  }
+  return true;
 }
 function clearMemory(): void {
   for (const c of PENDING.values()) {
@@ -400,7 +427,10 @@ async function ensureSession(): Promise<boolean> {
         if (!stored || typeof stored !== 'object') return true;
         const actor = await currentActor();
         if (!actor || !(await readCaptureLoginsEnabled())) {
-          await chrome.storage.session.remove(SESSION_KEY);
+          if (!(await erasePersistedSnapshot())) {
+            clearMemory();
+            return false;
+          }
           return true;
         }
         for (const row of Object.values(stored as Record<string, StoredCandidate>)) {
@@ -494,21 +524,10 @@ function drop(c: Candidate): void {
   });
   // Overwrite before release — belt and braces against a lingering reference.
   c.password = null;
-  broadcast(CHANNELS.CREDENTIAL_CAPTURE_CHANGED, { tabId: c.tabId });
-  // `runtime.sendMessage` reaches extension pages but is not the delivery
-  // primitive for a tab's content script. Tell that exact tab explicitly so
-  // a Vault-side Save / Update / Not now / Never also removes the page twin.
-  chrome.tabs
-    .sendMessage(c.tabId, {
-      __matrx: true,
-      kind: CHANNELS.CREDENTIAL_CAPTURE_RESOLVED,
-      payload: { candidateId: c.id },
-    })
-    .catch(() => undefined);
 }
 
-async function removeCandidate(c: Candidate): Promise<void> {
-  if (PENDING.get(c.tabId) !== c) return;
+async function removeCandidate(c: Candidate): Promise<boolean> {
+  if (PENDING.get(c.tabId) !== c) return true;
   if (c.promptTimer) clearTimeout(c.promptTimer);
   if (c.expiryTimer) clearTimeout(c.expiryTimer);
   PENDING.delete(c.tabId);
@@ -518,6 +537,7 @@ async function removeCandidate(c: Candidate): Promise<void> {
     await persist();
   } catch {
     clearMemory();
+    return false;
   }
   broadcast(CHANNELS.CREDENTIAL_CAPTURE_CHANGED, { tabId: c.tabId });
   void chrome.tabs
@@ -527,6 +547,7 @@ async function removeCandidate(c: Candidate): Promise<void> {
       payload: { candidateId: c.id },
     })
     .catch(() => undefined);
+  return true;
 }
 
 function findById(candidateId: string): Candidate | null {
@@ -745,11 +766,18 @@ const COPY: Record<CaptureDecisionResult['status'], string> = {
   error: 'The Vault could not save that. Try again from the Vault tab.',
 };
 
-function result(status: CaptureDecisionResult['status']): CaptureDecisionResult {
+const CLEANUP_UNAVAILABLE = 'Capture cleanup could not finish. Reopen the extension and try again.';
+const MUTATION_COMMITTED_CLEANUP_UNAVAILABLE =
+  'Your Vault change was committed, but browser cleanup could not finish. Reopen the extension and retry the same action.';
+
+function result(
+  status: CaptureDecisionResult['status'],
+  message = COPY[status],
+): CaptureDecisionResult {
   return {
     ok: status === 'saved' || status === 'updated' || status === 'dismissed' || status === 'never',
     status,
-    message: COPY[status],
+    message,
   };
 }
 
@@ -765,13 +793,15 @@ export async function applyCaptureDecision(
   }
 
   if (decision.action === 'dismiss') {
-    await queued(() => removeCandidate(c));
-    return result('dismissed');
+    return (await queued(() => removeCandidate(c)))
+      ? result('dismissed')
+      : result('error', CLEANUP_UNAVAILABLE);
   }
   if (decision.action === 'never') {
     await addNeverCaptureOrigin(c.origin);
-    await queued(() => removeCandidate(c));
-    return result('never');
+    return (await queued(() => removeCandidate(c)))
+      ? result('never')
+      : result('error', CLEANUP_UNAVAILABLE);
   }
   const existing = OPERATIONS.get(c.id);
   if (existing) {
@@ -897,7 +927,8 @@ async function dispatchFrozen(
           });
   if (!write.ok) return mutationFailure(c, write.failure.kind);
   if (!(await stillBound())) return result('expired');
-  await queued(() => removeCandidate(c));
+  if (!(await queued(() => removeCandidate(c))))
+    return result('error', MUTATION_COMMITTED_CLEANUP_UNAVAILABLE);
   return result(command.kind === 'create_item' ? 'saved' : 'updated');
 }
 
