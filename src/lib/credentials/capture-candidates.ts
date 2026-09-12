@@ -263,6 +263,8 @@ function validStored(row: unknown): row is StoredCandidate {
     (r.state !== 'ready' && r.state !== 'in_flight')
   )
     return false;
+  const exact = (value: object, keys: readonly string[]) =>
+    Object.keys(value).every((key) => keys.includes(key));
   if (r.state === 'ready') return r.operation === null;
   if (!r.operation || typeof r.operation !== 'object') return false;
   const operation = r.operation as Record<string, unknown>;
@@ -273,18 +275,50 @@ function validStored(row: unknown): row is StoredCandidate {
     return (
       !!body &&
       typeof body === 'object' &&
+      exact(operation, ['kind', 'key', 'body']) &&
+      exact(body, [
+        'display_name',
+        'fields',
+        'definition_key',
+        'login_urls',
+        'browser_fill_enabled',
+      ]) &&
+      typeof body.display_name === 'string' &&
+      body.definition_key === WEBSITE_LOGIN_DEFINITION_KEY &&
+      body.browser_fill_enabled === true &&
       Array.isArray(body.fields) &&
+      body.fields.length >= 1 &&
+      body.fields.length <= 2 &&
+      body.fields.every(
+        (field) =>
+          !!field &&
+          typeof field === 'object' &&
+          exact(field, ['field_key', 'value']) &&
+          ['username', 'password'].includes(
+            (field as Record<string, unknown>).field_key as string,
+          ) &&
+          typeof (field as Record<string, unknown>).value === 'string',
+      ) &&
       Array.isArray(urls) &&
+      urls.length === 1 &&
       urls[0] === r.loginUrl
     );
   }
   return (
     (operation.kind === 'update_field' &&
+      exact(operation, ['kind', 'key', 'itemId', 'fieldId', 'body']) &&
       typeof operation.itemId === 'string' &&
       typeof operation.fieldId === 'string' &&
+      !!operation.body &&
+      typeof operation.body === 'object' &&
+      exact(operation.body as object, ['value']) &&
       typeof (operation.body as Record<string, unknown>)?.value === 'string') ||
     (operation.kind === 'add_field' &&
+      exact(operation, ['kind', 'key', 'itemId', 'body']) &&
       typeof operation.itemId === 'string' &&
+      !!operation.body &&
+      typeof operation.body === 'object' &&
+      exact(operation.body as object, ['field_key', 'value']) &&
       (operation.body as Record<string, unknown>)?.field_key === 'password' &&
       typeof (operation.body as Record<string, unknown>)?.value === 'string')
   );
@@ -297,6 +331,12 @@ async function currentActor(): Promise<{ userId: string; organizationId: string 
 function sameActor(a: Candidate['actor'], b: Candidate['actor']): boolean {
   return !!a && !!b && a.userId === b.userId && a.organizationId === b.organizationId;
 }
+async function initializeAndPurge(): Promise<void> {
+  if (!(await ensureSession())) return;
+  await queued(async () => {
+    for (const candidate of [...PENDING.values()]) await removeCandidate(candidate);
+  });
+}
 async function ensureSession(): Promise<boolean> {
   if (!initialization)
     initialization = queued(async () => {
@@ -305,8 +345,17 @@ async function ensureSession(): Promise<boolean> {
         const stored = (await chrome.storage.session.get(SESSION_KEY))[SESSION_KEY];
         if (!stored || typeof stored !== 'object') return true;
         const actor = await currentActor();
+        if (!actor || !(await readCaptureLoginsEnabled())) {
+          await chrome.storage.session.remove(SESSION_KEY);
+          return true;
+        }
         for (const row of Object.values(stored as Record<string, StoredCandidate>)) {
-          if (!validStored(row) || !sameActor(row.actor, actor)) continue;
+          if (
+            !validStored(row) ||
+            !sameActor(row.actor, actor) ||
+            (await isNeverCaptureOrigin(row.origin))
+          )
+            continue;
           const tab = await chrome.tabs.get(row.tabId).catch(() => null);
           if (!tab?.url || new URL(tab.url).origin !== row.origin) continue;
           const candidate: Candidate = {
@@ -896,9 +945,7 @@ export function registerCredentialCaptureHost(): void {
     if (env.__matrx !== true) return false;
     if (env.kind === CHANNELS.AUTH_STATE_CHANGED) {
       invalidateNow();
-      void queued(async () => {
-        for (const c of [...PENDING.values()]) await removeCandidate(c);
-      });
+      void initializeAndPurge();
       return false;
     }
     if (env.kind === CHANNELS.CREDENTIAL_CAPTURE_CANDIDATE) {
@@ -1023,16 +1070,17 @@ export function registerCredentialCaptureHost(): void {
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && ('matrx.settings.v1' in changes || 'matrx.org.active' in changes)) {
       invalidateNow();
-      void queued(async () => {
-        for (const c of [...PENDING.values()]) await removeCandidate(c);
-      });
+      void initializeAndPurge();
     }
   });
   chrome.alarms?.onAlarm.addListener((alarm) => {
-    if (alarm.name !== 'matrx.credentials.capture.expiry') return;
-    void queued(async () => {
-      for (const c of [...PENDING.values()]) if (c.expiresAt <= now()) await removeCandidate(c);
-    });
+    if (alarm.name !== EXPIRY_ALARM) return;
+    void (async () => {
+      if (!(await ensureSession())) return;
+      await queued(async () => {
+        for (const c of [...PENDING.values()]) if (c.expiresAt <= now()) await removeCandidate(c);
+      });
+    })();
   });
 }
 

@@ -11,8 +11,8 @@
 
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { CaptureExistingLogin } from '@/lib/credentials/capture-types';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const SENTINEL = 'Tr0ub4dor&3-sentinel';
 const USER = 'arman@example.com';
@@ -595,6 +595,26 @@ describe('host — registered worker listeners and session continuity', () => {
     ).toBe(true);
     for (const listener of alarms)
       listener({ name: 'matrx.credentials.capture.expiry' } as chrome.alarms.Alarm);
+  });
+
+  it('hydrates and removes an expired session record when the alarm is the first worker wake', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    await host.holdCandidate(33, WIRE, DEPS);
+    const stored = sessionStorage.get('matrx.credentials.capture.pending.v1') as Record<
+      string,
+      Record<string, unknown>
+    >;
+    for (const row of Object.values(stored)) {
+      row.createdAt = Date.now() - 181_000;
+      row.expiresAt = Date.now() - 1_000;
+    }
+    host._simulateCaptureWorkerRestartForTest();
+    host.registerCredentialCaptureHost();
+    for (const listener of alarms)
+      listener({ name: 'matrx.credentials.capture.expiry' } as chrome.alarms.Alarm);
+    await vi.waitFor(() =>
+      expect(sessionStorage.has('matrx.credentials.capture.pending.v1')).toBe(false),
+    );
   });
 
   it('rejects a hostile page relay before it can observe or decide a candidate', async () => {
