@@ -46,6 +46,7 @@ import {
   withPageAdded,
 } from '@/lib/credentials/login-urls';
 import { useTransientSecret } from '@/lib/credentials/transient-secret';
+import { confirmDestructive } from '@/lib/destructive/confirm';
 import { cn } from '@/lib/utils';
 import { Badge, Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { Switch } from '@ai-matrx/design-system';
@@ -79,6 +80,23 @@ import { useCredentialLogin, useVault } from './useVault';
 const WEB_VAULT_URL = `${ENV.FRONTEND_URL}/vault`;
 
 type Scope = 'mine' | 'shared';
+
+/** What a row learns back from a confirmed removal: it unmounts only on `removed`. */
+type VaultRemoval =
+  | { status: 'removed' }
+  | { status: 'cancelled' }
+  | { status: 'failed'; message: string };
+
+/**
+ * Folds a `confirmDestructive` outcome and the hook method's failure sentence
+ * into what a row needs. The `confirmDestructive` call itself stays at the
+ * call site so the guard can see the operation inside its `run`.
+ */
+function vaultRemoval(confirmed: boolean, failure: string | null): VaultRemoval {
+  if (!confirmed) return { status: 'cancelled' };
+  if (failure) return { status: 'failed', message: failure };
+  return { status: 'removed' };
+}
 
 export function VaultView() {
   const tab = useActiveTab();
@@ -229,8 +247,34 @@ export function VaultView() {
                 onPatch={(patch) => vault.patchItem(item.id, patch)}
                 onChangeValue={(fieldId, value) => vault.changeFieldValue(item.id, fieldId, value)}
                 onAddField={(field) => vault.addField(item.id, field)}
-                onRemoveField={(fieldId) => vault.removeVaultField(item.id, fieldId)}
-                onRemove={() => vault.removeVaultItem(item.id)}
+                onRemoveField={async (fieldId) => {
+                  const field = item.fields.find((f) => f.id === fieldId);
+                  let failure: string | null = null;
+                  const confirmed = await confirmDestructive({
+                    title: `Remove the field "${field?.field_key || 'this field'}" from "${item.display_name}"?`,
+                    consequence:
+                      'The field and its saved value are deleted from the Vault on the server, for everyone this login is shared with. This cannot be undone.',
+                    confirmLabel: 'Remove field',
+                    run: async () => {
+                      failure = await vault.removeVaultField(item.id, fieldId);
+                    },
+                  });
+                  return vaultRemoval(confirmed, failure);
+                }}
+                onRemove={async () => {
+                  let failure: string | null = null;
+                  const confirmed = await confirmDestructive({
+                    title: `Delete the login "${item.display_name}"?`,
+                    consequence: `The login and every one of its ${item.fields.length} saved ${item.fields.length === 1 ? 'field' : 'fields'} are deleted from the Vault on the server, for everyone it is shared with. This cannot be undone.`,
+                    alternative:
+                      'To stop the browser filling it without losing it, cancel and turn off "Fill in browser" on the login instead.',
+                    confirmLabel: 'Delete login',
+                    run: async () => {
+                      failure = await vault.removeVaultItem(item.id);
+                    },
+                  });
+                  return vaultRemoval(confirmed, failure);
+                }}
               />
             ))}
           </ul>
@@ -381,8 +425,8 @@ interface ItemRowProps {
   onPatch: (patch: VaultItemMetadataPatch) => Promise<string | null>;
   onChangeValue: (fieldId: string, value: string) => Promise<string | null>;
   onAddField: (field: VaultFieldInput) => Promise<string | null>;
-  onRemoveField: (fieldId: string) => Promise<string | null>;
-  onRemove: () => Promise<string | null>;
+  onRemoveField: (fieldId: string) => Promise<VaultRemoval>;
+  onRemove: () => Promise<VaultRemoval>;
 }
 
 function ItemRow({
@@ -399,7 +443,6 @@ function ItemRow({
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [addingField, setAddingField] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const mode = asUriMatchMode(item.uri_match_mode);
   const host = primaryHost(item.login_urls);
@@ -421,11 +464,10 @@ function ItemRow({
 
   const remove = useCallback(async () => {
     setBusy(true);
-    const failure = await onRemove();
-    // On success this row unmounts — only touch state on failure.
-    if (failure) {
-      setError(failure);
-      setConfirmDelete(false);
+    const outcome = await onRemove();
+    // On success this row unmounts — only touch state otherwise.
+    if (outcome.status !== 'removed') {
+      if (outcome.status === 'failed') setError(outcome.message);
       setBusy(false);
     }
   }, [onRemove]);
@@ -582,36 +624,16 @@ function ItemRow({
                   <Pencil className="size-3" /> Edit details
                 </button>
               )}
-              {canManage &&
-                (confirmDelete ? (
-                  <span className="flex items-center gap-1 text-[11px]">
-                    <span className="text-muted-foreground">Delete this login?</span>
-                    <button
-                      type="button"
-                      className="font-medium text-destructive hover:underline disabled:opacity-50"
-                      disabled={busy}
-                      onClick={() => void remove()}
-                    >
-                      {busy ? 'Deleting…' : 'Yes, delete'}
-                    </button>
-                    <button
-                      type="button"
-                      className="text-muted-foreground hover:text-foreground"
-                      disabled={busy}
-                      onClick={() => setConfirmDelete(false)}
-                    >
-                      Keep
-                    </button>
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-destructive"
-                    onClick={() => setConfirmDelete(true)}
-                  >
-                    <Trash2 className="size-3" /> Delete
-                  </button>
-                ))}
+              {canManage && (
+                <button
+                  type="button"
+                  className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-destructive disabled:opacity-50"
+                  disabled={busy}
+                  onClick={() => void remove()}
+                >
+                  <Trash2 className="size-3" /> {busy ? 'Deleting…' : 'Delete'}
+                </button>
+              )}
               <button
                 type="button"
                 className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
@@ -843,7 +865,7 @@ function FieldRow({
   canReveal: boolean;
   canEdit: boolean;
   onChangeValue: (value: string) => Promise<string | null>;
-  onRemove: () => Promise<string | null>;
+  onRemove: () => Promise<VaultRemoval>;
 }) {
   const secret = useTransientSecret();
   const [busy, setBusy] = useState(false);
@@ -851,7 +873,6 @@ function FieldRow({
   const [error, setError] = useState<string | null>(null);
   const [changing, setChanging] = useState(false);
   const [draft, setDraft] = useState('');
-  const [confirmRemove, setConfirmRemove] = useState(false);
 
   const sealed = field.handling === 'sealed';
   const revealable = canReveal && !sealed;
@@ -913,11 +934,10 @@ function FieldRow({
 
   const remove = useCallback(async () => {
     setBusy(true);
-    const failure = await onRemove();
-    // On success this row unmounts — only touch state on failure.
-    if (failure) {
-      setError(failure);
-      setConfirmRemove(false);
+    const outcome = await onRemove();
+    // On success this row unmounts — only touch state otherwise.
+    if (outcome.status !== 'removed') {
+      if (outcome.status === 'failed') setError(outcome.message);
       setBusy(false);
     }
   }, [onRemove]);
@@ -1002,18 +1022,13 @@ function FieldRow({
                 <IconButton
                   title="Change value"
                   onClick={() => {
-                    setConfirmRemove(false);
                     setChanging(true);
                   }}
                   disabled={busy}
                 >
                   <Pencil className="size-3" />
                 </IconButton>
-                <IconButton
-                  title="Remove field"
-                  onClick={() => setConfirmRemove((v) => !v)}
-                  disabled={busy}
-                >
+                <IconButton title="Remove field" onClick={() => void remove()} disabled={busy}>
                   <Trash2 className="size-3" />
                 </IconButton>
               </>
@@ -1021,27 +1036,6 @@ function FieldRow({
           </>
         )}
       </div>
-      {confirmRemove && (
-        <p className="flex items-center gap-1 text-[10px]">
-          <span className="text-muted-foreground">Remove “{field.field_key}”?</span>
-          <button
-            type="button"
-            className="font-medium text-destructive hover:underline disabled:opacity-50"
-            disabled={busy}
-            onClick={() => void remove()}
-          >
-            {busy ? 'Removing…' : 'Yes, remove'}
-          </button>
-          <button
-            type="button"
-            className="text-muted-foreground hover:text-foreground"
-            disabled={busy}
-            onClick={() => setConfirmRemove(false)}
-          >
-            Keep
-          </button>
-        </p>
-      )}
       {sealed && !changing && (
         <p className="text-[10px] text-muted-foreground">
           Sealed — this value can never be shown, only used or replaced.

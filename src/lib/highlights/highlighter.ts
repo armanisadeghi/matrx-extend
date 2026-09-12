@@ -205,13 +205,20 @@ function onToggleClick(e: Event) {
 }
 
 function onClearClick() {
-  // Ask the side panel to soft-delete every highlight on this URL; it will
-  // broadcast HIGHLIGHTS_CHANGED and we unpaint locally regardless.
-  safeSend(CHANNELS.HIGHLIGHT_CLEAR_REQUEST, { url: location.href });
-  for (const item of painted) for (const b of item.boxes) b.remove();
-  painted.length = 0;
-  updateCount();
-  emitState();
+  // Ask the side panel to soft-delete every highlight on this URL. The side
+  // panel is where the confirmation lives (this overlay has no dialog host),
+  // so the answer says whether the person actually went through with it —
+  // unpainting BEFORE the answer showed a deletion that may never happen.
+  void safeAsk<{ ok: boolean }>(CHANNELS.HIGHLIGHT_CLEAR_REQUEST, {
+    url: location.href,
+    count: painted.length,
+  }).then((answer) => {
+    if (!answer?.ok) return;
+    for (const item of painted) for (const b of item.boxes) b.remove();
+    painted.length = 0;
+    updateCount();
+    emitState();
+  });
 }
 
 function requestStop() {
@@ -458,6 +465,19 @@ function updateCount() {
 
 function insideHost(t: EventTarget | null): boolean {
   return !!host && t instanceof Node && host.contains(t);
+}
+
+/** Like `safeSend`, but resolves with the side panel's answer (or null). */
+function safeAsk<T>(kind: string, payload: unknown): Promise<T | null> {
+  try {
+    if (!chrome.runtime?.id) return Promise.resolve(null);
+    return chrome.runtime
+      .sendMessage({ __matrx: true, kind, payload })
+      .then((r: unknown) => (r as T) ?? null)
+      .catch(() => null);
+  } catch {
+    return Promise.resolve(null);
+  }
 }
 
 function safeSend(kind: string, payload: unknown) {

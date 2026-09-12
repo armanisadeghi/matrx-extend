@@ -39,6 +39,7 @@ import {
   getWsStateChangedAt,
   onWsMessage,
 } from '@/lib/desktop/ws-client';
+import { confirmDestructive } from '@/lib/destructive/confirm';
 import {
   connectBroadcast,
   disconnectBroadcast,
@@ -345,24 +346,35 @@ function DiscoverySection() {
   }, [refresh]);
 
   const onRepair = useCallback(async () => {
-    setPairWorking(true);
-    await clearPairToken();
-    const baseUrl = await getEngineBaseUrl();
-    if (!baseUrl) {
-      log.warn('desktop', 'bridges: re-pair failed — engine base URL unresolved');
-      setPaired(false);
-      setPairWorking(false);
-      return;
-    }
-    const token = await autoPair(baseUrl);
-    setPaired(token !== null);
-    log.info(
-      'desktop',
-      token !== null
-        ? 'bridges: re-pair OK (engine-issued token stored)'
-        : 'bridges: re-pair failed — engine offline or pre-pairing version',
-    );
-    setPairWorking(false);
+    // Re-pair throws the current token away BEFORE it knows whether the
+    // engine will hand out a new one; if the engine is offline this leaves the
+    // browser unpaired. That is a real loss, so it is said before it happens.
+    await confirmDestructive({
+      title: 'Re-pair with the desktop app?',
+      consequence:
+        'The current pair code is discarded first and a new one is requested from the engine. If the engine is offline or too old to issue one, this browser is left unpaired until it is paired again by hand.',
+      confirmLabel: 'Re-pair',
+      run: async () => {
+        setPairWorking(true);
+        await clearPairToken();
+        const baseUrl = await getEngineBaseUrl();
+        if (!baseUrl) {
+          log.warn('desktop', 'bridges: re-pair failed — engine base URL unresolved');
+          setPaired(false);
+          setPairWorking(false);
+          return;
+        }
+        const token = await autoPair(baseUrl);
+        setPaired(token !== null);
+        log.info(
+          'desktop',
+          token !== null
+            ? 'bridges: re-pair OK (engine-issued token stored)'
+            : 'bridges: re-pair failed — engine offline or pre-pairing version',
+        );
+        setPairWorking(false);
+      },
+    });
   }, []);
 
   return (

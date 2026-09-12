@@ -46,7 +46,7 @@ export const DESTRUCTIVE_OPERATIONS: DestructiveOperation[] = [
     fn: 'deleteTask',
     module: 'src/lib/agenda/queries.ts',
     uiEntryPoints: ['deleteTask'],
-    destroys: "A scheduled task row plus, by FK cascade, its triggers and its entire run history.",
+    destroys: 'A scheduled task row plus, by FK cascade, its triggers and its entire run history.',
   },
   {
     fn: 'deleteHighlight',
@@ -102,7 +102,7 @@ export const DESTRUCTIVE_OPERATIONS: DestructiveOperation[] = [
     fn: 'clearAllTasks',
     module: 'src/lib/lists/storage.ts',
     uiEntryPoints: ['clearAllTasks'],
-    destroys: "Every task in the conversation, done or not.",
+    destroys: 'Every task in the conversation, done or not.',
   },
   {
     fn: 'removeUserTodo',
@@ -139,7 +139,7 @@ export const DESTRUCTIVE_OPERATIONS: DestructiveOperation[] = [
     module: 'src/features/settings/SettingsView.tsx',
     uiEntryPoints: ['handleClearLocalDataConfirmed'],
     destroys:
-      "Everything the extension has cached on this device — settings, tokens, pair codes — and signs the user out. Server-side chats, captures and patterns survive.",
+      'Everything the extension has cached on this device — settings, tokens, pair codes — and signs the user out. Server-side chats, captures and patterns survive.',
   },
   {
     fn: 'clearPairToken',

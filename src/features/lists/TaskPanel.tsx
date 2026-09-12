@@ -11,16 +11,7 @@
  * local. Broadcasts plus Realtime keep the panel aligned with server writes.
  */
 
-import {
-  addTasks,
-  addUserTodo,
-  clearCompletedTasks,
-  clearDoneUserTodos,
-  removeTask,
-  removeUserTodo,
-  updateTask,
-  updateUserTodo,
-} from '@/lib/lists/storage';
+import { addTasks, addUserTodo, updateTask, updateUserTodo } from '@/lib/lists/storage';
 import type { Task, TaskStatus, UserTodo } from '@/lib/lists/types';
 import { cn } from '@/lib/utils';
 import { useListsStore } from '@/state/lists';
@@ -28,6 +19,12 @@ import { Badge, Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { ScrollArea } from '@ai-matrx/design-system';
 import { Check, CircleDashed, CircleSlash, Clock, Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
+import {
+  confirmClearCompletedTasks,
+  confirmClearDoneUserTodos,
+  confirmRemoveTask,
+  confirmRemoveUserTodo,
+} from './confirm-list-actions';
 
 interface Props {
   conversationId: string | null;
@@ -165,7 +162,7 @@ export function TaskPanel({ conversationId, open, onClose }: Props): React.JSX.E
               variant="ghost"
               size="sm"
               className="mt-1 h-6 px-2 text-xs text-zinc-500"
-              onClick={() => void clearCompletedTasks(cid)}
+              onClick={() => void confirmClearCompletedTasks(cid, tasks)}
             >
               Clear completed
             </Button>
@@ -229,7 +226,7 @@ export function TaskPanel({ conversationId, open, onClose }: Props): React.JSX.E
               variant="ghost"
               size="sm"
               className="mt-1 h-6 px-2 text-xs text-zinc-500"
-              onClick={() => void clearDoneUserTodos(cid)}
+              onClick={() => void confirmClearDoneUserTodos(cid, userTodos)}
             >
               Clear done
             </Button>
@@ -336,7 +333,7 @@ function TaskRow({
       <button
         type="button"
         className="opacity-0 transition-opacity group-hover:opacity-100"
-        onClick={() => void removeTask(conversationId, task.id)}
+        onClick={() => void confirmRemoveTask(conversationId, task)}
         title="Remove"
       >
         <Trash2 className="h-3 w-3 text-zinc-400" />
@@ -368,7 +365,7 @@ function UserTodoRow({
       <button
         type="button"
         className="opacity-0 transition-opacity group-hover:opacity-100"
-        onClick={() => void removeUserTodo(conversationId, todo.id)}
+        onClick={() => void confirmRemoveUserTodo(conversationId, todo)}
         title="Remove"
       >
         <Trash2 className="h-3 w-3 text-zinc-400" />

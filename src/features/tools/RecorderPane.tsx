@@ -15,6 +15,7 @@
  */
 
 import { TabCaptureDialog } from '@/features/tools/TabCaptureDialog';
+import { confirmDestructive } from '@/lib/destructive/confirm';
 import { cn } from '@/lib/utils';
 import { type RecordingEntry, useRecordingsStore } from '@/lib/video/recordings-store';
 import { type RecorderStatus, useTabVideoRecorder } from '@/lib/video/useTabVideoRecorder';
@@ -271,7 +272,17 @@ export function RecorderPane() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => void clearRecordings()}
+                onClick={() =>
+                  void confirmDestructive({
+                    title: `Clear ${entries.length === 1 ? 'this recording' : `all ${entries.length} recordings`} from the list?`,
+                    consequence:
+                      `The list of ${entries.length === 1 ? 'the one recording' : `${entries.length} recordings`} on this device is wiped and cannot be rebuilt from here. ` +
+                      'The video files themselves stay in your Files, but this pane loses its links to them.',
+                    alternative: 'To drop just one, cancel and use the trash icon on that row.',
+                    confirmLabel: 'Clear list',
+                    run: () => clearRecordings(),
+                  })
+                }
                 className="h-6 px-2 text-[11px] text-muted-foreground"
               >
                 Clear list
@@ -290,7 +301,15 @@ export function RecorderPane() {
                 <RecordingRow
                   key={entry.id}
                   entry={entry}
-                  onRemove={() => void removeRecording(entry.id)}
+                  onRemove={() =>
+                    void confirmDestructive({
+                      title: `Remove "${entry.tabTitle || 'this recording'}" from the list?`,
+                      consequence:
+                        'The recording is taken off this list and cannot be re-added from here. The video file itself stays in your Files.',
+                      confirmLabel: 'Remove',
+                      run: () => removeRecording(entry.id),
+                    })
+                  }
                 />
               ))}
             </ul>

@@ -24,14 +24,10 @@ import {
   listsConversationTasksChannel,
 } from '@/lib/lists/realtime';
 import {
-  clearCompletedTasks,
-  clearDoneUserTodos,
   getAllConversationLists,
   listTasks,
   listUserTodos,
   purgeConversation,
-  removeTask,
-  removeUserTodo,
   updateUserTodo,
 } from '@/lib/lists/storage';
 import type { ConversationListsSummary, Task, UserTodo } from '@/lib/lists/types';
@@ -46,6 +42,13 @@ import { ScrollArea } from '@ai-matrx/design-system';
 import { useChannel } from '@ai-matrx/realtime/react';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import {
+  confirmClearCompletedTasks,
+  confirmClearDoneUserTodos,
+  confirmRemoveTask,
+  confirmRemoveUserTodo,
+  isFinishedTask,
+} from './confirm-list-actions';
 
 interface ExpandedDetail {
   conversationId: string;
@@ -295,15 +298,17 @@ function ExpandedView({
             <h4 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
               Tasks
             </h4>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-5 px-1 text-[10px] text-zinc-500"
-              onClick={() => void clearCompletedTasks(detail.conversationId)}
-            >
-              Clear done
-            </Button>
+            {detail.tasks.some(isFinishedTask) ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-5 px-1 text-[10px] text-zinc-500"
+                onClick={() => void confirmClearCompletedTasks(detail.conversationId, detail.tasks)}
+              >
+                Clear done
+              </Button>
+            ) : null}
           </div>
           <ul className="space-y-0.5">
             {detail.tasks.map((t) => (
@@ -319,7 +324,7 @@ function ExpandedView({
                 <button
                   type="button"
                   className="opacity-0 group-hover:opacity-100"
-                  onClick={() => void removeTask(detail.conversationId, t.id)}
+                  onClick={() => void confirmRemoveTask(detail.conversationId, t)}
                   title="Remove"
                 >
                   <Trash2 className="h-3 w-3 text-zinc-400" />
@@ -336,15 +341,19 @@ function ExpandedView({
             <h4 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
               Your todos
             </h4>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-5 px-1 text-[10px] text-zinc-500"
-              onClick={() => void clearDoneUserTodos(detail.conversationId)}
-            >
-              Clear done
-            </Button>
+            {detail.user_todos.some((t) => t.done) ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-5 px-1 text-[10px] text-zinc-500"
+                onClick={() =>
+                  void confirmClearDoneUserTodos(detail.conversationId, detail.user_todos)
+                }
+              >
+                Clear done
+              </Button>
+            ) : null}
           </div>
           <ul className="space-y-0.5">
             {detail.user_todos.map((t) => (
@@ -362,7 +371,7 @@ function ExpandedView({
                 <button
                   type="button"
                   className="opacity-0 group-hover:opacity-100"
-                  onClick={() => void removeUserTodo(detail.conversationId, t.id)}
+                  onClick={() => void confirmRemoveUserTodo(detail.conversationId, t)}
                   title="Remove"
                 >
                   <Trash2 className="h-3 w-3 text-zinc-400" />

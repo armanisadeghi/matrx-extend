@@ -27,6 +27,7 @@
 import { ENV } from '@/config/env';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { downloadFileBytes } from '@/lib/api/routes/files';
+import { confirmDestructive } from '@/lib/destructive/confirm';
 import { newId } from '@/lib/id';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -38,7 +39,7 @@ import {
 } from '@/lib/supabase/queries';
 import { take_screenshot } from '@/lib/tools/handlers/read';
 import { normalizeUrl } from '@/lib/url/match';
-import { Button, Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
+import { Button } from '@ai-matrx/design-system';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
@@ -234,16 +235,31 @@ export function ScreenshotsView() {
   );
 
   const onDelete = useCallback(
-    async (id: string) => {
+    async (row: ScreenshotRow) => {
       if (deletingId) return;
-      setDeletingId(id);
-      setDeleteError(null);
+      const id = row.id;
+      // Consequence first: the index row goes, the image file does not. That
+      // was already true of the old inline popover; this is the ONE
+      // confirmation primitive so the guard can see it.
+      const proceed = await confirmDestructive({
+        title: `Delete this screenshot${row.source === 'agent' ? ' the agent took' : ''}?`,
+        consequence:
+          'The screenshot disappears from this list and the agent stops seeing it for this page. ' +
+          'The image file itself stays in your Files, so nothing is lost from storage.',
+        confirmLabel: 'Delete',
+        run: async () => {
+          setDeletingId(id);
+          setDeleteError(null);
+          const ok = await deleteScreenshot(id);
+          if (!ok) throw new Error('refused');
+        },
+      }).catch(() => {
+        setDeleteError('Could not delete the screenshot. Try again.');
+        setDeletingId(null);
+        return false;
+      });
+      if (!proceed) return;
       try {
-        const ok = await deleteScreenshot(id);
-        if (!ok) {
-          setDeleteError('Could not delete the screenshot. Try again.');
-          return;
-        }
         setRows((prev) => prev.filter((row) => row.id !== id));
         // Supersede any query that captured the deleted row, while retaining
         // unrelated captures and honoring a page navigation that happened
@@ -307,7 +323,7 @@ export function ScreenshotsView() {
                 row={row}
                 deleting={deletingId === row.id}
                 deletePending={deletingId !== null}
-                onDelete={() => void onDelete(row.id)}
+                onDelete={() => void onDelete(row)}
               />
             ))}
           </div>
@@ -378,7 +394,6 @@ function ScreenshotCard({
   deletePending: boolean;
   onDelete: () => void;
 }) {
-  const [confirming, setConfirming] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFailed, setPreviewFailed] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
@@ -505,51 +520,16 @@ function ScreenshotCard({
           >
             <Link2 className="size-3" />
           </Button>
-          <Popover open={confirming} onOpenChange={setConfirming}>
-            <PopoverTrigger asChild>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="size-6 p-0 text-muted-foreground hover:text-destructive"
-                title="Delete"
-                disabled={deletePending}
-              >
-                {deleting ? (
-                  <Loader2 className="size-3 animate-spin" />
-                ) : (
-                  <Trash2 className="size-3" />
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-56 p-2 text-xs">
-              <div className="mb-2 text-foreground">Delete this screenshot?</div>
-              <div className="mb-2 text-muted-foreground">
-                Removes the index row only — the file in cloud storage is kept.
-              </div>
-              <div className="flex justify-end gap-1">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-7 px-2 text-xs"
-                  onClick={() => setConfirming(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  className="h-7 px-2 text-xs"
-                  onClick={() => {
-                    setConfirming(false);
-                    onDelete();
-                  }}
-                  disabled={deletePending}
-                >
-                  {deleting ? 'Deleting…' : 'Delete'}
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="size-6 p-0 text-muted-foreground hover:text-destructive"
+            title="Delete"
+            disabled={deletePending}
+            onClick={onDelete}
+          >
+            {deleting ? <Loader2 className="size-3 animate-spin" /> : <Trash2 className="size-3" />}
+          </Button>
         </div>
       </div>
     </div>

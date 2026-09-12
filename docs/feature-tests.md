@@ -488,6 +488,17 @@ Every entry follows this shape:
 
 ## UI surfaces
 
+### Destructive clicks stop and name the consequence (THE DESTRUCTIVE-CLICK LAW)
+- **What it does:** every control that deletes, clears or wipes persisted data opens the ONE confirmation (`confirmDestructive`, rendered by the shared `ConfirmDialogHost`) whose text says what is destroyed, how much, whether it can be undone, and — where one exists — the safer alternative. Never a bare "Are you sure?".
+- **Where to test:** Guidance (row trash) · Highlights (row trash; on-page overlay trash = clear all) · Lists hub and the chat Plan & tasks drawer (row trash, "Clear done") · Tools → Recorder ("Clear list", row trash) · Screenshots (card trash) · Showcase → Patterns (row trash) · Vault (Delete login, Remove field) · Settings → Desktop ("Forget pair code") · Debug → Bridges ("Re-pair").
+- **Steps:**
+  1. Open any surface above with at least one item. Click its delete/clear control.
+  2. Read the dialog: title names the item; body states the consequence in the declarative (what, how many, undoable or not); the confirm button carries the verb ("Delete", "Clear 4", "Forget pair code"), never "OK".
+  3. Cancel — nothing changes, no optimistic removal (the highlight overlay stays painted).
+  4. Confirm — the item goes; on a refused delete the row comes back and the refusal sentence shows.
+- **Expected:** no destructive control in the side panel acts on a single click. `pnpm test -- destructive-confirm-guard` walks the source and fails on any that does.
+- **Edge cases worth poking:** "Clear done" is absent (not disabled) when nothing is done; the highlighter's overlay trash does nothing when the side panel is closed (there is no listener to confirm with — pre-existing gap, noted in `.matrx/AGENT_TASKS.md` TASK-013).
+
 ### Composer — Google Files chip (`__google_files`)
 - **What it does:** Attaches a Google Doc/Sheet the user already registered
   with AI Matrx to the chat turn. Attached ids ride as the reserved

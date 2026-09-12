@@ -1,5 +1,6 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
+import { confirmDestructive } from '@/lib/destructive/confirm';
 import {
   type ExtractionPattern,
   bumpPatternRun,
@@ -208,16 +209,7 @@ function PatternRow({
   const [editing, setEditing] = useState(false);
   const [draftName, setDraftName] = useState(p.name);
   const [rowError, setRowError] = useState<string | null>(null);
-  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [busy, setBusy] = useState(false);
-
-  // The two-step delete confirm disarms itself so a stray click later
-  // doesn't delete.
-  useEffect(() => {
-    if (!confirmingDelete) return;
-    const t = setTimeout(() => setConfirmingDelete(false), 3000);
-    return () => clearTimeout(t);
-  }, [confirmingDelete]);
 
   const commitRename = async () => {
     if (draftName.trim() === p.name) {
@@ -237,20 +229,27 @@ function PatternRow({
   };
 
   const handleDelete = async () => {
-    if (!confirmingDelete) {
-      setConfirmingDelete(true);
-      return;
-    }
-    setBusy(true);
     setRowError(null);
-    const ok = await deletePattern(p.id);
-    setBusy(false);
-    setConfirmingDelete(false);
-    if (!ok) {
-      setRowError('Delete failed. Check your connection and try again.');
-      return;
-    }
-    onChanged();
+    // Was a click-twice-within-3s arm/disarm. That stopped the click but
+    // named nothing; the law wants the consequence said out loud, and the
+    // guard wants the ONE primitive.
+    await confirmDestructive({
+      title: `Delete the pattern "${p.name}"?`,
+      consequence:
+        `The saved ${p.kind === 'ai_extract' ? 'AI extraction' : 'extraction'} pattern for ${p.domain} is deleted for good. ` +
+        'Rows it already extracted into your tables are kept; the recipe that produced them is not. This cannot be undone.',
+      confirmLabel: 'Delete pattern',
+      run: async () => {
+        setBusy(true);
+        const ok = await deletePattern(p.id);
+        setBusy(false);
+        if (!ok) {
+          setRowError('Delete failed. Check your connection and try again.');
+          return;
+        }
+        onChanged();
+      },
+    });
   };
 
   return (
@@ -320,7 +319,6 @@ function PatternRow({
                 onClick={() => {
                   setDraftName(p.name);
                   setEditing(true);
-                  setConfirmingDelete(false);
                 }}
                 className="size-7 opacity-0 transition-opacity group-hover:opacity-100"
                 title="Rename"
@@ -332,13 +330,8 @@ function PatternRow({
                 variant="ghost"
                 onClick={() => void handleDelete()}
                 disabled={busy}
-                className={cn(
-                  'size-7 transition-opacity',
-                  confirmingDelete
-                    ? 'bg-destructive/15 text-destructive opacity-100'
-                    : 'opacity-0 group-hover:opacity-100',
-                )}
-                title={confirmingDelete ? 'Click again to delete permanently' : 'Delete pattern'}
+                className="size-7 opacity-0 transition-opacity group-hover:opacity-100"
+                title="Delete pattern"
               >
                 <Trash2 className="size-3.5" />
               </Button>

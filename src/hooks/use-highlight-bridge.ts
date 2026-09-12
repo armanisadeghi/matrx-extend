@@ -11,6 +11,7 @@
  *   (any write) ──HIGHLIGHTS_CHANGED──▶ re-list so every surface refreshes
  */
 
+import { confirmDestructive } from '@/lib/destructive/confirm';
 import { clearHighlightsForUrl, createHighlight, listMyHighlights } from '@/lib/highlights/queries';
 import type { CreateHighlightInput, HighlightListItem } from '@/lib/highlights/types';
 import { broadcast, on } from '@/lib/messaging/native';
@@ -74,17 +75,35 @@ export function useHighlightBridge(): void {
       },
     );
 
-    const offClear = on<{ url: string }, { ok: boolean; reason?: string }>(
+    const offClear = on<{ url: string; count?: number }, { ok: boolean; reason?: string }>(
       CHANNELS.HIGHLIGHT_CLEAR_REQUEST,
-      async ({ url }) => {
+      async ({ url, count }) => {
+        // The overlay's trash button lands here. The confirmation is raised
+        // HERE, not on the page, because the side panel is where the dialog
+        // host is — and the overlay unpaints only when this answers ok.
+        //
         // A refused clear throws (the user has been told why by the notice).
         // ANSWER the overlay with the reason instead of rejecting its request:
         // a rejected bridge call is indistinguishable from a dropped message,
         // and the overlay has no way to tell them apart. Resync the list either
         // way so the panel shows what the database actually holds.
         let outcome: { ok: boolean; reason?: string } = { ok: true };
+        const n = typeof count === 'number' && count > 0 ? count : null;
         try {
-          await clearHighlightsForUrl(url);
+          const confirmed = await confirmDestructive({
+            title: n
+              ? `Clear ${n === 1 ? 'the highlight' : `all ${n} highlights`} on this page?`
+              : 'Clear every highlight on this page?',
+            consequence: `${n === 1 ? 'The highlight' : 'Every highlight'} you saved on this page is removed from your highlights and stops being available to the agent. This cannot be undone from the extension.`,
+            alternative:
+              'To remove just one, cancel and use the trash icon on that row in the Highlights tab.',
+            confirmLabel: n ? `Clear ${n}` : 'Clear all',
+            run: async () => {
+              await clearHighlightsForUrl(url);
+              broadcast(CHANNELS.HIGHLIGHTS_CHANGED, { reason: 'clear', url });
+            },
+          });
+          if (!confirmed) outcome = { ok: false, reason: 'cancelled' };
         } catch (err) {
           outcome = {
             ok: false,
@@ -92,7 +111,6 @@ export function useHighlightBridge(): void {
           };
         } finally {
           setItems(await listMyHighlights());
-          broadcast(CHANNELS.HIGHLIGHTS_CHANGED, { reason: 'clear', url });
         }
         return outcome;
       },

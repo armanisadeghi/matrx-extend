@@ -25,6 +25,7 @@ import {
   engineHealthState,
   formatDesktopConnectionLabel,
 } from '@/lib/desktop/types';
+import { confirmDestructive } from '@/lib/destructive/confirm';
 import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '@/state/settings';
@@ -371,7 +372,20 @@ export function SettingsView() {
                 </div>
               )}
               {desktop.transport === 'http' && (
-                <ActionRow label="Forget pair code" onClick={() => void clearPairToken()} />
+                <ActionRow
+                  label="Forget pair code"
+                  onClick={() =>
+                    void confirmDestructive({
+                      title: 'Forget the desktop pair code?',
+                      consequence:
+                        'This browser is unpaired from the Matrx desktop app: local tools and desktop files stop working here until you pair again. Nothing on the desktop is deleted.',
+                      alternative:
+                        'If the desktop app is just offline, cancel — the code still works when it comes back.',
+                      confirmLabel: 'Forget pair code',
+                      run: () => clearPairToken(),
+                    })
+                  }
+                />
               )}
               <div className="flex items-center gap-2 px-3.5 py-2">
                 <span className="shrink-0 text-sm">Local engine port</span>

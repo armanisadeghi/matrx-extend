@@ -12,6 +12,7 @@
  */
 
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { confirmDestructive } from '@/lib/destructive/confirm';
 import { setHighlighterMode, startHighlighter, stopHighlighter } from '@/lib/highlights/control';
 import { deleteHighlight, listHighlightsForUrl, listMyHighlights } from '@/lib/highlights/queries';
 import type { HighlightListItem, HighlightMode } from '@/lib/highlights/types';
@@ -107,15 +108,31 @@ export function HighlightView() {
   };
 
   const handleDelete = async (h: HighlightListItem) => {
-    // Optimistic removal — but a refused delete must put the row BACK. Leaving
-    // it gone shows the user a deletion the database never performed; the
-    // error seam has already told them why in a sentence.
-    removeItem(h.id);
-    try {
-      await deleteHighlight(h.id);
-    } catch {
-      upsertItem(h);
-    }
+    const snippet = h.text?.trim();
+    const named = snippet
+      ? `"${snippet.length > 60 ? `${snippet.slice(0, 57)}…` : snippet}"`
+      : h.mode === 'element'
+        ? 'this element highlight'
+        : 'this highlight';
+    await confirmDestructive({
+      title: `Delete ${named}?`,
+      consequence: `The highlight is removed from ${h.page_title ? `"${h.page_title}"` : 'this page'} and from your saved highlights, and stops being available to the agent. This cannot be undone from the extension.`,
+      ...(attachedIds.includes(h.id) && {
+        alternative: 'To keep it but leave it out of the chat, cancel and use Detach instead.',
+      }),
+      confirmLabel: 'Delete',
+      run: async () => {
+        // Optimistic removal — but a refused delete must put the row BACK.
+        // Leaving it gone shows the user a deletion the database never
+        // performed; the error seam has already told them why in a sentence.
+        removeItem(h.id);
+        try {
+          await deleteHighlight(h.id);
+        } catch {
+          upsertItem(h);
+        }
+      },
+    });
   };
 
   const sendElementsToData = () => {

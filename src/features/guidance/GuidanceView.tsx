@@ -13,6 +13,7 @@
  */
 
 import { log } from '@/lib/debug/log';
+import { confirmDestructive } from '@/lib/destructive/confirm';
 import { listAllGuidance } from '@/lib/guidance/storage';
 import type { GuidanceKind, GuidanceSummary } from '@/lib/guidance/types';
 import { type GuidanceFilter, useGuidanceStore } from '@/state/guidance';
@@ -48,6 +49,14 @@ import {
   stopDemoRecordingAndSave,
   stopGifRecordingAsGuidance,
 } from './actions';
+
+/** What the person is about to delete, in the word they would use for it. */
+const GUIDANCE_KIND_NOUN: Record<GuidanceKind, string> = {
+  note: 'note',
+  screenshot: 'screenshot',
+  gif: 'GIF recording',
+  demo_ref: 'demo',
+};
 
 type AddMenu = 'closed' | 'note' | 'demo-stop' | 'gif-stop';
 
@@ -255,10 +264,21 @@ export function GuidanceView() {
   );
 
   const handleDelete = useCallback(
-    async (id: string) => {
+    async (g: GuidanceSummary) => {
+      const what = GUIDANCE_KIND_NOUN[g.kind] ?? 'item';
+      const named = g.caption ? `"${g.caption}"` : `this ${what}`;
       try {
-        await deleteGuidance(id);
-        removeSummary(id);
+        await confirmDestructive({
+          title: `Delete ${named}?`,
+          consequence:
+            `The ${what} is removed from this device and from every other device that syncs your guidance for ${g.domain}. ` +
+            'This cannot be undone.',
+          confirmLabel: 'Delete',
+          run: async () => {
+            await deleteGuidance(g.id);
+            removeSummary(g.id);
+          },
+        });
       } catch (err) {
         setErrorMsg(`Delete failed: ${(err as Error).message}`);
       }
@@ -393,7 +413,7 @@ export function GuidanceView() {
                 item={g}
                 expanded={selectedId === g.id}
                 onToggle={() => setSelectedId(selectedId === g.id ? null : g.id)}
-                onDelete={() => handleDelete(g.id)}
+                onDelete={() => handleDelete(g)}
                 onRefresh={refresh}
               />
             ))}
