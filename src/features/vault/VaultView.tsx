@@ -229,8 +229,8 @@ export function VaultView() {
                 onPatch={(patch) => vault.patchItem(item.id, patch)}
                 onChangeValue={(fieldId, value) => vault.changeFieldValue(item.id, fieldId, value)}
                 onAddField={(field) => vault.addField(item.id, field)}
-                onRemoveField={(fieldId) => vault.removeField(item.id, fieldId)}
-                onRemove={() => vault.removeItem(item.id)}
+                onRemoveField={(fieldId) => vault.removeVaultField(item.id, fieldId)}
+                onRemove={() => vault.removeVaultItem(item.id)}
               />
             ))}
           </ul>

@@ -57,8 +57,8 @@ export interface VaultData {
    */
   changeFieldValue: (itemId: string, fieldId: string, value: string) => Promise<string | null>;
   addField: (itemId: string, field: VaultFieldInput) => Promise<string | null>;
-  removeField: (itemId: string, fieldId: string) => Promise<string | null>;
-  removeItem: (itemId: string) => Promise<string | null>;
+  removeVaultField: (itemId: string, fieldId: string) => Promise<string | null>;
+  removeVaultItem: (itemId: string) => Promise<string | null>;
 }
 
 /**
@@ -197,7 +197,7 @@ export function useVault(pageUrl: string | null): VaultData {
     [refreshItem],
   );
 
-  const removeField = useCallback(
+  const removeVaultField = useCallback(
     async (itemId: string, fieldId: string): Promise<string | null> => {
       const result = await deleteVaultField(itemId, fieldId);
       if (!result.ok) return describeVaultFailure(result.failure);
@@ -206,7 +206,7 @@ export function useVault(pageUrl: string | null): VaultData {
     [refreshItem],
   );
 
-  const removeItem = useCallback(async (itemId: string): Promise<string | null> => {
+  const removeVaultItem = useCallback(async (itemId: string): Promise<string | null> => {
     const result = await deleteVaultItem(itemId);
     if (!result.ok) return describeVaultFailure(result.failure);
     const drop = (list: VaultItemSummary[]) => list.filter((item) => item.id !== itemId);
@@ -229,8 +229,8 @@ export function useVault(pageUrl: string | null): VaultData {
     createItem,
     changeFieldValue,
     addField,
-    removeField,
-    removeItem,
+    removeVaultField,
+    removeVaultItem,
   };
 }
 

@@ -95,8 +95,8 @@ export function RecorderPane() {
   const entries = useRecordingsStore((s) => s.entries);
   const hydrated = useRecordingsStore((s) => s.hydrated);
   const hydrate = useRecordingsStore((s) => s.hydrate);
-  const removeEntry = useRecordingsStore((s) => s.remove);
-  const clearEntries = useRecordingsStore((s) => s.clear);
+  const removeRecording = useRecordingsStore((s) => s.remove);
+  const clearRecordings = useRecordingsStore((s) => s.clear);
 
   const [durationSec, setDurationSec] = useState(5);
   const [audio, setAudio] = useState(false);
@@ -271,7 +271,7 @@ export function RecorderPane() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => void clearEntries()}
+                onClick={() => void clearRecordings()}
                 className="h-6 px-2 text-[11px] text-muted-foreground"
               >
                 Clear list
@@ -290,7 +290,7 @@ export function RecorderPane() {
                 <RecordingRow
                   key={entry.id}
                   entry={entry}
-                  onRemove={() => void removeEntry(entry.id)}
+                  onRemove={() => void removeRecording(entry.id)}
                 />
               ))}
             </ul>

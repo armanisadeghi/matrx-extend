@@ -16,7 +16,14 @@ import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
 import { type SidepanelTab, useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { AgentCatalogProvider } from '@ai-matrx/agents/catalog/react';
-import { Tabs, TabsContent, TabsList, TabsTrigger, TooltipProvider } from '@ai-matrx/design-system';
+import {
+  ConfirmDialogHost,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  TooltipProvider,
+} from '@ai-matrx/design-system';
 import {
   BookOpen,
   Bug,
@@ -208,6 +215,14 @@ export function App() {
           is on an auth screen still has to be visible. Renders nothing when
           there is no notice; see lib/supabase/db-failure.ts. */}
         <NoticeHost />
+        {/* THE ONE confirmation host. Every destructive click in the side
+          panel goes through `confirmDestructive()` (src/lib/destructive/),
+          which calls the shared `confirm()` opener; that opener needs exactly
+          one mounted host to render into. Mounted here, at App root outside
+          AuthGate, for the same reason as the two above: a confirmation must
+          be able to appear over any surface. Renders nothing until something
+          asks. Guarded by tests/unit/destructive-confirm-guard.ts. */}
+        <ConfirmDialogHost />
         <div className="flex h-full flex-col bg-background text-foreground">
           <AuthGate>
             <Tabs
