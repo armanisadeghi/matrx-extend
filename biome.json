@@ -15,7 +15,8 @@
       "types/tool-catalog.json",
       "src/components/ui/**",
       ".claude/skills/matrx-oauth/**",
-      "pnpm-lock.yaml"
+      "pnpm-lock.yaml",
+      "scripts/check-matrx-packages.mjs"
     ]
   },
   "formatter": {
