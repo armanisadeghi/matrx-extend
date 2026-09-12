@@ -270,6 +270,7 @@ describe('inline saved-login host', () => {
       'data-matrx-sensitive',
     );
     expect(result).toEqual({ ok: false });
+    expect((document.querySelector('#username') as HTMLInputElement).value).toBe('');
     expect((document.querySelector('#password') as HTMLInputElement).value).toBe('');
   });
 

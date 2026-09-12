@@ -127,9 +127,12 @@ export function fillBoundLoginGroupSource(
     return true;
   }
   function clearOwned(written: HTMLInputElement[]): void {
-    if (!safeGroup()) return;
+    if (`${location.origin}${location.pathname}` !== expected.pageUrl) return;
     for (const input of written) {
-      if (input !== originals.username && input !== originals.password) continue;
+      const selector = input === originals.username ? expected.username : expected.password;
+      // Clear only an original node that still belongs to this document. A
+      // replacement control is deliberately never touched.
+      if (!sameNode(selector, input)) continue;
       const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')?.set;
       if (setter) setter.call(input, '');
       else input.value = '';
