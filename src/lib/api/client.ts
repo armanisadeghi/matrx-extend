@@ -95,11 +95,26 @@ export function clearApiBaseCache(): void {
  */
 export async function buildHeaders(
   extra: Record<string, string> = {},
+  bound?: { token: string | null; organizationId: string | null },
 ): Promise<Record<string, string>> {
-  const token = await getAccessToken();
+  const token = bound?.token ?? (await getAccessToken());
+  // Authorization context belongs to this transport. HTTP header names are
+  // case-insensitive, so filtering only the canonical spellings would let a
+  // caller make fetch use a different bearer/org than the one we verified.
+  const safeExtra = Object.fromEntries(
+    Object.entries(extra).filter(([name]) => {
+      const normalized = name.toLowerCase();
+      return ![
+        'authorization',
+        ORGANIZATION_CONTEXT_HEADER.toLowerCase(),
+        'x-fingerprint-id',
+      ].includes(normalized);
+    }),
+  );
   let headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
+    ...safeExtra,
   };
   if (token) {
     headers.Authorization = `Bearer ${token}`;
@@ -123,7 +138,7 @@ export async function buildHeaders(
     // no-organization refusal below turns that into a plain-language remedy.
     // The throw is caught HERE and never escapes: an exception out of
     // rawRequest breaks the ApiResult contract and wedges callers (audit P1-3).
-    const organizationId = await getActiveOrganizationId();
+    const organizationId = bound?.organizationId ?? (await getActiveOrganizationId());
     if (organizationId) {
       try {
         headers = applyOrganizationContextHeader(headers, organizationId);
@@ -141,7 +156,7 @@ export async function buildHeaders(
     const sig = await getOrCreateGuestSignature();
     headers['X-Fingerprint-ID'] = sig;
   }
-  return { ...headers, ...extra };
+  return headers;
 }
 
 interface RequestOptions {
@@ -163,26 +178,47 @@ export interface ApiRequestOptions {
   headers?: Record<string, string>;
 }
 
+async function buildExpectedActorHeaders(
+  expectedActor: NonNullable<RequestOptions['expectedActor']>,
+  extra: Record<string, string> | undefined,
+): Promise<Record<string, string> | null> {
+  // A token/org can change while /auth/v1/user verifies the bearer. Retry once
+  // from a fresh snapshot, then fail closed rather than dispatching as a new
+  // identity or organization.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const token = await getAccessToken();
+    if (!token) return null;
+    const verified = await getVerifiedCurrentUser(token);
+    const [tokenAfterVerification, orgAfterVerification] = await Promise.all([
+      getAccessToken(),
+      getActiveOrganizationId(),
+    ]);
+    if (tokenAfterVerification !== token) continue;
+    if (
+      verified?.id !== expectedActor.userId ||
+      orgAfterVerification !== expectedActor.organizationId
+    )
+      return null;
+    // Immediately before fetch, confirm neither half of the authority pair
+    // changed after the slow verified-user read.
+    const [tokenAtDispatch, orgAtDispatch] = await Promise.all([
+      getAccessToken(),
+      getActiveOrganizationId(),
+    ]);
+    if (tokenAtDispatch !== token || orgAtDispatch !== orgAfterVerification) continue;
+    return buildHeaders(extra, { token, organizationId: orgAtDispatch });
+  }
+  return null;
+}
+
 async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   const baseUrl = await getApiBaseUrl();
   const url = `${baseUrl}${opts.path}`;
-  const headers = await buildHeaders(opts.headers);
+  const headers = opts.expectedActor
+    ? await buildExpectedActorHeaders(opts.expectedActor, opts.headers)
+    : await buildHeaders(opts.headers);
+  if (!headers) return { ok: false, status: 403, error: 'expected_actor_mismatch' };
   const hasAuth = !!headers.Authorization;
-  if (opts.expectedActor) {
-    const [verifiedUser, canonicalOrganizationId] = await Promise.all([
-      getVerifiedCurrentUser(headers.Authorization?.slice('Bearer '.length)),
-      getActiveOrganizationId(),
-    ]);
-    if (
-      verifiedUser?.id !== opts.expectedActor.userId ||
-      canonicalOrganizationId !== opts.expectedActor.organizationId
-    ) {
-      return { ok: false, status: 403, error: 'expected_actor_mismatch' };
-    }
-    // Call-site headers can never substitute an organization after this check.
-    const bound = applyOrganizationContextHeader({}, opts.expectedActor.organizationId);
-    headers[ORGANIZATION_CONTEXT_HEADER] = bound[ORGANIZATION_CONTEXT_HEADER] as string;
-  }
   if (hasAuth && !headers[ORGANIZATION_CONTEXT_HEADER] && !isOrgExemptPath(opts.path)) {
     const failure = new OrganizationNotSelectedError();
     log.error('api', `✗ ${opts.method} ${opts.path} — no organization selected`, {
