@@ -9,9 +9,10 @@
  * Plaintext rules (the whole reason this is its own module):
  *   - The CANDIDATE envelope is received by a RAW `chrome.runtime.onMessage`
  *     listener — never `@/lib/messaging/native#on`, which logs every payload.
- *   - The password lives ONLY in `PENDING` (service-worker memory), keyed by
- *     tab, for at most `CANDIDATE_TTL_MS`, and is dropped on decision / expiry
- *     / tab close. Never chrome.storage, never a log line, never a broadcast,
+ *   - The password lives only in the `PENDING` worker Map and its matching
+ *     `chrome.storage.session` trusted-context record, keyed by tab, for at
+ *     most `CANDIDATE_TTL_MS`. It is dropped on decision / expiry / tab close.
+ *     It never reaches disk storage, a log line, or a broadcast,
  *     never a tool result or model context. `tests/unit/credential-capture-
  *     prompt.test.ts` greps this file for the banned APIs.
  *   - Everything that leaves this module (PROMPT, STATUS, CHANGED, decision
@@ -32,9 +33,11 @@ import {
   hasRealUserToken,
   updateVaultFieldValue,
 } from '@/lib/api/routes/vault';
+import { getCurrentUser } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
-import { broadcast, on } from '@/lib/messaging/native';
+import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { readCaptureLoginsEnabled } from '@/lib/settings/persisted';
 import type { CaptureCandidateWire } from './capture-detector';
 import { addNeverCaptureOrigin, isNeverCaptureOrigin } from './capture-settings';
@@ -64,7 +67,15 @@ interface Candidate {
   host: string;
   username: string | null;
   /** PLAINTEXT. Memory only. See file header. */
-  password: string;
+  stage: 'username_first' | 'password';
+  password: string | null;
+  sourceDocumentId: string;
+  sourcePath: string;
+  actor: { userId: string; organizationId: string } | null;
+  createdAt: number;
+  generation: number;
+  state: 'ready' | 'in_flight';
+  operation: { action: 'save' | 'update'; itemId?: string; key: string } | null;
   expiresAt: number;
   existing: CaptureExistingLogin[];
   promptTimer: ReturnType<typeof setTimeout> | null;
@@ -78,42 +89,189 @@ interface Candidate {
 
 /** tabId → the one pending candidate for that tab. */
 const PENDING = new Map<number, Candidate>();
-let seq = 0;
 let initialization: Promise<boolean> | null = null;
 let mutationQueue: Promise<unknown> = Promise.resolve();
+let storageAvailable = true;
 
-type StoredCandidate = Pick<Candidate, 'id' | 'tabId' | 'origin' | 'loginUrl' | 'host' | 'username' | 'password' | 'expiresAt'> & { version: 1 };
+type StoredCandidate = Pick<
+  Candidate,
+  | 'id'
+  | 'tabId'
+  | 'origin'
+  | 'loginUrl'
+  | 'host'
+  | 'stage'
+  | 'username'
+  | 'password'
+  | 'sourceDocumentId'
+  | 'sourcePath'
+  | 'createdAt'
+  | 'expiresAt'
+  | 'state'
+  | 'operation'
+> & {
+  version: 1;
+  actor: { userId: string; organizationId: string };
+};
 
 function serialize(): Record<string, StoredCandidate> {
-  return Object.fromEntries([...PENDING.values()].map((c) => [String(c.tabId), {
-    version: SESSION_VERSION, id: c.id, tabId: c.tabId, origin: c.origin, loginUrl: c.loginUrl,
-    host: c.host, username: c.username, password: c.password, expiresAt: c.expiresAt,
-  }]));
+  return Object.fromEntries(
+    [...PENDING.values()]
+      .filter(
+        (c): c is Candidate & { actor: { userId: string; organizationId: string } } => !!c.actor,
+      )
+      .map((c) => [
+        String(c.tabId),
+        {
+          version: SESSION_VERSION,
+          id: c.id,
+          tabId: c.tabId,
+          origin: c.origin,
+          loginUrl: c.loginUrl,
+          host: c.host,
+          stage: c.stage,
+          username: c.username,
+          password: c.password,
+          sourceDocumentId: c.sourceDocumentId,
+          sourcePath: c.sourcePath,
+          actor: c.actor,
+          createdAt: c.createdAt,
+          expiresAt: c.expiresAt,
+          state: c.state,
+          operation: c.operation,
+        },
+      ]),
+  );
 }
 function queued<T>(work: () => Promise<T>): Promise<T> {
   const next = mutationQueue.then(work, work);
-  mutationQueue = next.then(() => undefined, () => undefined);
+  mutationQueue = next.then(
+    () => undefined,
+    () => undefined,
+  );
   return next;
 }
 async function persist(): Promise<void> {
+  if (!storageAvailable) throw new Error('capture session unavailable');
   await chrome.storage.session.set({ [SESSION_KEY]: serialize() });
 }
+function clearMemory(): void {
+  for (const c of PENDING.values()) {
+    if (c.promptTimer) clearTimeout(c.promptTimer);
+    if (c.expiryTimer) clearTimeout(c.expiryTimer);
+    c.password = null;
+  }
+  PENDING.clear();
+  storageAvailable = false;
+}
+function validStored(row: unknown): row is StoredCandidate {
+  if (!row || typeof row !== 'object') return false;
+  const r = row as Record<string, unknown>;
+  const keys = [
+    'version',
+    'id',
+    'tabId',
+    'origin',
+    'loginUrl',
+    'host',
+    'stage',
+    'username',
+    'password',
+    'sourceDocumentId',
+    'sourcePath',
+    'actor',
+    'createdAt',
+    'expiresAt',
+    'state',
+    'operation',
+  ];
+  if (
+    Object.keys(r).some((key) => !keys.includes(key)) ||
+    r.version !== SESSION_VERSION ||
+    typeof r.id !== 'string' ||
+    !Number.isInteger(r.tabId) ||
+    typeof r.origin !== 'string' ||
+    typeof r.loginUrl !== 'string' ||
+    typeof r.host !== 'string' ||
+    (r.stage !== 'username_first' && r.stage !== 'password') ||
+    (r.username !== null && typeof r.username !== 'string') ||
+    !(
+      (r.stage === 'password' &&
+        typeof r.password === 'string' &&
+        r.password.length > 0 &&
+        r.password.length <= 1024) ||
+      (r.stage === 'username_first' &&
+        r.password === null &&
+        typeof r.username === 'string' &&
+        r.username.length > 0 &&
+        r.username.length <= 256)
+    ) ||
+    typeof r.sourceDocumentId !== 'string' ||
+    typeof r.sourcePath !== 'string' ||
+    !r.actor ||
+    typeof r.actor !== 'object' ||
+    typeof (r.actor as Record<string, unknown>).userId !== 'string' ||
+    typeof (r.actor as Record<string, unknown>).organizationId !== 'string' ||
+    !Number.isFinite(r.createdAt) ||
+    !Number.isFinite(r.expiresAt) ||
+    (r.expiresAt as number) - (r.createdAt as number) !== CANDIDATE_TTL_MS ||
+    (r.createdAt as number) > now() + 10_000 ||
+    (r.expiresAt as number) <= now() ||
+    (r.state !== 'ready' && r.state !== 'in_flight')
+  )
+    return false;
+  return (
+    r.operation === null ||
+    (!!r.operation &&
+      typeof r.operation === 'object' &&
+      ((r.operation as Record<string, unknown>).action === 'save' ||
+        (r.operation as Record<string, unknown>).action === 'update') &&
+      typeof (r.operation as Record<string, unknown>).key === 'string')
+  );
+}
+async function currentActor(): Promise<{ userId: string; organizationId: string } | null> {
+  if (!(await hasRealUserToken())) return null;
+  const [user, organizationId] = await Promise.all([getCurrentUser(), getActiveOrganizationId()]);
+  return user?.id && organizationId ? { userId: user.id, organizationId } : null;
+}
+function sameActor(a: Candidate['actor'], b: Candidate['actor']): boolean {
+  return !!a && !!b && a.userId === b.userId && a.organizationId === b.organizationId;
+}
 async function ensureSession(): Promise<boolean> {
-  if (!initialization) initialization = queued(async () => {
-    try {
-      await chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
-      const stored = (await chrome.storage.session.get(SESSION_KEY))[SESSION_KEY];
-      if (!stored || typeof stored !== 'object') return true;
-      for (const row of Object.values(stored as Record<string, StoredCandidate>)) {
-        if (row?.version !== SESSION_VERSION || !Number.isInteger(row.tabId) || row.expiresAt <= now()) continue;
-        const tab = await chrome.tabs.get(row.tabId).catch(() => null);
-        if (!tab?.url || new URL(tab.url).origin !== row.origin) continue;
-        PENDING.set(row.tabId, { ...row, existing: [], promptTimer: null, expiryTimer: null, ready: false, loadCompleted: false, prompted: false });
+  if (!initialization)
+    initialization = queued(async () => {
+      try {
+        await chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
+        const stored = (await chrome.storage.session.get(SESSION_KEY))[SESSION_KEY];
+        if (!stored || typeof stored !== 'object') return true;
+        const actor = await currentActor();
+        for (const row of Object.values(stored as Record<string, StoredCandidate>)) {
+          if (!validStored(row) || !sameActor(row.actor, actor)) continue;
+          const tab = await chrome.tabs.get(row.tabId).catch(() => null);
+          if (!tab?.url || new URL(tab.url).origin !== row.origin) continue;
+          const candidate: Candidate = {
+            ...row,
+            generation: 0,
+            existing: [],
+            promptTimer: null,
+            expiryTimer: null,
+            ready: row.state === 'ready',
+            loadCompleted: true,
+            prompted: false,
+          };
+          candidate.expiryTimer = setTimeout(
+            () => void removeCandidate(candidate),
+            Math.max(0, row.expiresAt - now()),
+          );
+          PENDING.set(row.tabId, candidate);
+        }
+        await persist();
+        return true;
+      } catch {
+        clearMemory();
+        return false;
       }
-      await persist();
-      return true;
-    } catch { PENDING.clear(); return false; }
-  });
+    });
   return initialization;
 }
 
@@ -135,14 +293,42 @@ function drop(c: Candidate): void {
   if (c.promptTimer) clearTimeout(c.promptTimer);
   if (c.expiryTimer) clearTimeout(c.expiryTimer);
   if (PENDING.get(c.tabId) === c) PENDING.delete(c.tabId);
-  void queued(async () => { try { await persist(); } catch { /* no fallback */ } });
+  void queued(async () => {
+    try {
+      await persist();
+    } catch {
+      clearMemory();
+    }
+  });
   // Overwrite before release — belt and braces against a lingering reference.
-  c.password = '';
+  c.password = null;
   broadcast(CHANNELS.CREDENTIAL_CAPTURE_CHANGED, { tabId: c.tabId });
   // `runtime.sendMessage` reaches extension pages but is not the delivery
   // primitive for a tab's content script. Tell that exact tab explicitly so
   // a Vault-side Save / Update / Not now / Never also removes the page twin.
   chrome.tabs
+    .sendMessage(c.tabId, {
+      __matrx: true,
+      kind: CHANNELS.CREDENTIAL_CAPTURE_RESOLVED,
+      payload: { candidateId: c.id },
+    })
+    .catch(() => undefined);
+}
+
+async function removeCandidate(c: Candidate): Promise<void> {
+  if (PENDING.get(c.tabId) !== c) return;
+  if (c.promptTimer) clearTimeout(c.promptTimer);
+  if (c.expiryTimer) clearTimeout(c.expiryTimer);
+  PENDING.delete(c.tabId);
+  c.generation++;
+  c.password = '';
+  try {
+    await persist();
+  } catch {
+    clearMemory();
+  }
+  broadcast(CHANNELS.CREDENTIAL_CAPTURE_CHANGED, { tabId: c.tabId });
+  void chrome.tabs
     .sendMessage(c.tabId, {
       __matrx: true,
       kind: CHANNELS.CREDENTIAL_CAPTURE_RESOLVED,
@@ -160,15 +346,39 @@ function isWire(p: unknown): p is CaptureCandidateWire {
   if (!p || typeof p !== 'object') return false;
   const w = p as Record<string, unknown>;
   return (
+    Object.keys(w).every((key) => ['stage', 'loginUrl', 'username', 'password'].includes(key)) &&
     typeof w.loginUrl === 'string' &&
-    typeof w.password === 'string' &&
-    w.password.length > 0 &&
-    (w.username === null || typeof w.username === 'string')
+    (w.username === null || typeof w.username === 'string') &&
+    ((w.stage === 'password' &&
+      typeof w.password === 'string' &&
+      w.password.length > 0 &&
+      w.password.length <= 1024) ||
+      (w.stage === 'username_first' &&
+        typeof w.username === 'string' &&
+        w.username.length > 0 &&
+        w.username.length <= 256 &&
+        !('password' in w)))
   );
 }
 
 async function promptTab(c: Candidate): Promise<void> {
   if (c.prompted) return;
+  const actor = await currentActor();
+  const [tab, frame] = await Promise.all([
+    chrome.tabs.get(c.tabId).catch(() => null),
+    chrome.webNavigation.getFrame({ tabId: c.tabId, frameId: 0 }).catch(() => null),
+  ]);
+  if (
+    !sameActor(c.actor, actor) ||
+    !tab?.url ||
+    !frame?.documentId ||
+    new URL(tab.url).origin !== c.origin ||
+    !frame.url ||
+    new URL(frame.url).origin !== c.origin
+  ) {
+    await queued(() => removeCandidate(c));
+    return;
+  }
   c.prompted = true;
   if (c.promptTimer) {
     clearTimeout(c.promptTimer);
@@ -180,11 +390,15 @@ async function promptTab(c: Candidate): Promise<void> {
     if (PENDING.get(c.tabId) !== c) return; // resolved meanwhile
     if (delay > 0) await new Promise((r) => setTimeout(r, delay));
     try {
-      const ack = (await chrome.tabs.sendMessage(c.tabId, {
-        __matrx: true,
-        kind: CHANNELS.CREDENTIAL_CAPTURE_PROMPT,
-        payload: meta,
-      })) as { ok?: boolean } | undefined;
+      const ack = (await chrome.tabs.sendMessage(
+        c.tabId,
+        {
+          __matrx: true,
+          kind: CHANNELS.CREDENTIAL_CAPTURE_PROMPT,
+          payload: meta,
+        },
+        { documentId: frame.documentId },
+      )) as { ok?: boolean } | undefined;
       if (ack?.ok) return;
     } catch {
       // "Receiving end does not exist" while the new page is still loading.
@@ -210,6 +424,9 @@ export async function holdCandidate(
     never?: (origin: string) => Promise<boolean>;
     matches?: (loginUrl: string) => Promise<CaptureExistingLogin[]>;
     prompt?: (c: Candidate) => Promise<void>;
+    actor?: { userId: string; organizationId: string } | null;
+    documentId?: string;
+    senderUrl?: string;
   } = {},
 ): Promise<boolean> {
   if (!(await ensureSession())) return false;
@@ -218,22 +435,41 @@ export async function holdCandidate(
   if (!normalized || !parsed || !isFillablePageUrl(wire.loginUrl)) return false;
   const origin = parsed.origin;
 
+  if (wire.stage === 'password' && typeof wire.password !== 'string') return false;
+  if (wire.username !== null && wire.username.length > 256) return false;
   if (!(await (deps.enabled ?? readCaptureLoginsEnabled)())) return false;
   if (!(await (deps.signedIn ?? hasRealUserToken)())) return false;
   if (await (deps.never ?? isNeverCaptureOrigin)(origin)) return false;
 
+  const actor = deps.actor === undefined ? null : deps.actor;
   const previous = PENDING.get(tabId);
-  if (previous) drop(previous);
+  const continuedUsername =
+    wire.stage === 'password' &&
+    wire.username === null &&
+    previous?.stage === 'username_first' &&
+    previous.origin === origin &&
+    sameActor(previous.actor, actor)
+      ? previous.username
+      : null;
+  if (previous) await removeCandidate(previous);
 
   const candidate: Candidate = {
-    id: `cap-${tabId}-${++seq}-${now().toString(36)}`,
+    id: crypto.randomUUID(),
     tabId,
     origin,
     loginUrl: normalized,
     host: parsed.host,
-    username: wire.username ? wire.username.slice(0, 256) : null,
-    password: wire.password,
+    stage: wire.stage,
+    username: wire.username ?? continuedUsername,
+    password: wire.stage === 'password' ? (wire.password ?? null) : null,
+    sourceDocumentId: deps.documentId ?? '',
+    sourcePath: parsed.pathname,
+    actor,
+    createdAt: now(),
     expiresAt: now() + CANDIDATE_TTL_MS,
+    generation: 0,
+    state: 'ready',
+    operation: null,
     existing: [],
     promptTimer: null,
     expiryTimer: null,
@@ -242,11 +478,18 @@ export async function holdCandidate(
     prompted: false,
   };
   PENDING.set(tabId, candidate);
-  try { await queued(persist); } catch { PENDING.delete(tabId); candidate.password = ''; return false; }
+  try {
+    await queued(persist);
+  } catch {
+    clearMemory();
+    return false;
+  }
   candidate.expiryTimer = setTimeout(() => {
-    if (PENDING.get(tabId) === candidate) drop(candidate);
+    if (PENDING.get(tabId) === candidate) void removeCandidate(candidate);
   }, CANDIDATE_TTL_MS);
 
+  // A username-first handoff is only a bounded continuation; it never prompts.
+  if (candidate.stage === 'username_first') return true;
   // Which saved logins already cover this site? Ids + names only.
   const resolveMatches =
     deps.matches ??
@@ -259,7 +502,16 @@ export async function holdCandidate(
   candidate.existing = await resolveMatches(normalized);
   if (PENDING.get(tabId) !== candidate) return false; // replaced while resolving
   candidate.ready = true;
-  try { await queued(persist); } catch { drop(candidate); return false; }
+  if (!(await (deps.enabled ?? readCaptureLoginsEnabled)())) {
+    await removeCandidate(candidate);
+    return false;
+  }
+  try {
+    await queued(persist);
+  } catch {
+    clearMemory();
+    return false;
+  }
 
   const prompt = deps.prompt ?? promptTab;
   if (candidate.loadCompleted) {
@@ -272,12 +524,15 @@ export async function holdCandidate(
 
 /** Pending candidate for a tab, value-free. */
 export function pendingCaptureForTab(tabId: number): CapturePromptMeta | null {
+  if (!storageAvailable)
+    return { candidateId: '', tabId, host: '', username: null, existing: [], unavailable: true };
   const c = PENDING.get(tabId);
   if (!c) return null;
   if (c.expiresAt <= now()) {
-    drop(c);
+    void removeCandidate(c);
     return null;
   }
+  if (c.stage !== 'password') return null;
   return toMeta(c);
 }
 
@@ -306,54 +561,195 @@ export async function applyCaptureDecision(
   if (!(await ensureSession())) return result('error');
   const c = findById(decision.candidateId);
   if (!c || c.expiresAt <= now()) {
-    if (c) drop(c);
+    if (c) await queued(() => removeCandidate(c));
     return result('expired');
   }
 
   if (decision.action === 'dismiss') {
-    drop(c);
+    await queued(() => removeCandidate(c));
     return result('dismissed');
   }
   if (decision.action === 'never') {
     await addNeverCaptureOrigin(c.origin);
-    drop(c);
+    await queued(() => removeCandidate(c));
     return result('never');
   }
 
   if (!(await hasRealUserToken())) return result('sign_in_required');
+  const actor = await currentActor();
+  if (c.actor && !sameActor(c.actor, actor)) {
+    await queued(() => removeCandidate(c));
+    return result('sign_in_required');
+  }
+  if (c.state === 'in_flight') {
+    if (
+      c.operation?.action !== decision.action ||
+      (decision.action === 'update' && c.operation.itemId !== decision.itemId)
+    )
+      return result('error');
+    // A repeated click shares the same frozen operation and key.
+    return executeMutation(c, c.operation, c.actor ?? actor);
+  }
+  const operation =
+    decision.action === 'save'
+      ? { action: 'save' as const, key: crypto.randomUUID() }
+      : decision.itemId
+        ? { action: 'update' as const, itemId: decision.itemId, key: crypto.randomUUID() }
+        : null;
+  if (!operation) return result('error');
+  c.state = 'in_flight';
+  c.operation = operation;
+  try {
+    await queued(persist);
+  } catch {
+    clearMemory();
+    return result('error');
+  }
+  return executeMutation(c, operation, c.actor ?? actor);
+}
 
-  if (decision.action === 'save') {
+async function executeMutation(
+  c: Candidate,
+  operation: NonNullable<Candidate['operation']>,
+  actor: Candidate['actor'],
+): Promise<CaptureDecisionResult> {
+  if (
+    !actor ||
+    c.stage !== 'password' ||
+    !c.password ||
+    PENDING.get(c.tabId) !== c ||
+    c.generation < 0
+  )
+    return result('error');
+  const expectedActor = actor;
+  const stillBound = async (): Promise<boolean> =>
+    sameActor(expectedActor, await currentActor()) && PENDING.get(c.tabId) === c;
+  if (!(await stillBound())) {
+    await queued(() => removeCandidate(c));
+    return result('sign_in_required');
+  }
+
+  if (operation.action === 'save') {
     const fields = [{ field_key: 'password', value: c.password }];
     if (c.username) fields.unshift({ field_key: 'username', value: c.username });
-    const r = await createVaultItem({
-      display_name: c.host,
-      fields,
-      definition_key: WEBSITE_LOGIN_DEFINITION_KEY,
-      login_urls: [c.loginUrl],
-      browser_fill_enabled: true,
-    });
-    if (!r.ok) return result(r.failure.kind === 'sign_in_required' ? 'sign_in_required' : 'error');
-    drop(c);
+    const r = await createVaultItem(
+      {
+        display_name: c.host,
+        fields,
+        definition_key: WEBSITE_LOGIN_DEFINITION_KEY,
+        login_urls: [c.loginUrl],
+        browser_fill_enabled: true,
+      },
+      { expectedActor, idempotencyKey: operation.key },
+    );
+    if (!r.ok) return mutationFailure(c, r.failure.kind);
+    if (!(await stillBound())) return result('expired');
+    await queued(() => removeCandidate(c));
     return result('saved');
   }
 
   // update
-  const itemId = decision.itemId;
-  if (!itemId || !c.existing.some((e) => e.item_id === itemId)) return result('error');
-  const item = await fetchVaultItem(itemId);
-  if (!item.ok)
-    return result(item.failure.kind === 'sign_in_required' ? 'sign_in_required' : 'error');
+  const itemId = operation.itemId;
+  if (!itemId) return result('error');
+  const matched = await fetchBrowserLoginMatches(c.loginUrl, undefined, { expectedActor });
+  if (!matched.ok || !matched.data.matches.some((e) => e.item_id === itemId))
+    return mutationFailure(c, matched.ok ? 'forbidden' : matched.failure.kind);
+  if (!(await stillBound())) return result('expired');
+  const item = await fetchVaultItem(itemId, { expectedActor });
+  if (!item.ok) return mutationFailure(c, item.failure.kind);
   const passwordField = item.data.fields.find((f) => f.is_active && f.field_key === 'password');
   const write = passwordField
-    ? await updateVaultFieldValue(itemId, passwordField.id, c.password)
-    : await addVaultField(itemId, { field_key: 'password', value: c.password });
-  if (!write.ok)
-    return result(write.failure.kind === 'sign_in_required' ? 'sign_in_required' : 'error');
-  drop(c);
+    ? await updateVaultFieldValue(itemId, passwordField.id, c.password, {
+        expectedActor,
+        idempotencyKey: operation.key,
+      })
+    : await addVaultField(
+        itemId,
+        { field_key: 'password', value: c.password },
+        { expectedActor, idempotencyKey: operation.key },
+      );
+  if (!write.ok) return mutationFailure(c, write.failure.kind);
+  if (!(await stillBound())) return result('expired');
+  await queued(() => removeCandidate(c));
   return result('updated');
 }
 
+function mutationFailure(c: Candidate, kind: string): CaptureDecisionResult {
+  // Definitive errors abandon the frozen command; transport failure keeps it
+  // for same-key retry. Existing route failures expose only a safe category.
+  if (kind === 'forbidden') {
+    c.state = 'ready';
+    c.operation = null;
+    void queued(persist);
+  }
+  return result(kind === 'sign_in_required' ? 'sign_in_required' : 'error');
+}
+
 let registered = false;
+
+function validDecision(value: unknown): value is CaptureDecision {
+  if (!value || typeof value !== 'object') return false;
+  const d = value as Record<string, unknown>;
+  return (
+    typeof d.candidateId === 'string' &&
+    ['save', 'update', 'dismiss', 'never'].includes(d.action as string) &&
+    Object.keys(d).every((key) => ['candidateId', 'action', 'itemId'].includes(key)) &&
+    (d.itemId === undefined || typeof d.itemId === 'string')
+  );
+}
+function validStatus(value: unknown): value is CaptureStatusQuery {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    Object.keys(value).length === 1 &&
+    Number.isInteger((value as { tabId?: unknown }).tabId)
+  );
+}
+function extensionPageSender(sender: chrome.runtime.MessageSender): boolean {
+  return (
+    !sender.tab &&
+    typeof sender.url === 'string' &&
+    sender.url.startsWith(`chrome-extension://${chrome.runtime.id}/`) &&
+    sender.id === chrome.runtime.id
+  );
+}
+async function currentContentSender(
+  sender: chrome.runtime.MessageSender,
+): Promise<{ tabId: number; documentId: string; url: string } | null> {
+  const tabId = sender.tab?.id;
+  const documentId = (sender as chrome.runtime.MessageSender & { documentId?: unknown }).documentId;
+  if (
+    sender.id !== chrome.runtime.id ||
+    tabId == null ||
+    sender.frameId !== 0 ||
+    typeof documentId !== 'string' ||
+    typeof sender.url !== 'string'
+  )
+    return null;
+  try {
+    const [tab, frame] = await Promise.all([
+      chrome.tabs.get(tabId),
+      chrome.webNavigation.getFrame({ tabId, frameId: 0 }),
+    ]);
+    const tabUrl = tab.url ? new URL(tab.url) : null;
+    const senderUrl = new URL(sender.url);
+    const frameUrl = frame?.url ? new URL(frame.url) : null;
+    if (
+      !tabUrl ||
+      !frameUrl ||
+      !frame ||
+      frame.documentId !== documentId ||
+      tabUrl.origin !== senderUrl.origin ||
+      tabUrl.pathname !== senderUrl.pathname ||
+      frameUrl.origin !== senderUrl.origin ||
+      frameUrl.pathname !== senderUrl.pathname
+    )
+      return null;
+    return { tabId, documentId, url: sender.url };
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Register the raw CANDIDATE listener + the value-free bus handlers + tab
@@ -367,43 +763,132 @@ export function registerCredentialCaptureHost(): void {
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (!msg || typeof msg !== 'object') return false;
     const env = msg as { __matrx?: unknown; kind?: unknown; payload?: unknown };
-    if (env.__matrx !== true || env.kind !== CHANNELS.CREDENTIAL_CAPTURE_CANDIDATE) return false;
-    const tabId = sender.tab?.id;
-    // Only a top-frame content script of a real tab may report a login.
-    if (tabId == null || sender.frameId !== 0 || !isWire(env.payload)) {
-      sendResponse({ ok: false });
+    if (env.__matrx !== true) return false;
+    if (env.kind === CHANNELS.AUTH_STATE_CHANGED) {
+      void queued(async () => {
+        for (const c of [...PENDING.values()]) await removeCandidate(c);
+      });
       return false;
     }
-    void holdCandidate(tabId, env.payload)
-      .then((held) => sendResponse({ ok: held }))
-      .catch(() => sendResponse({ ok: false }));
-    return true;
+    if (env.kind === CHANNELS.CREDENTIAL_CAPTURE_CANDIDATE) {
+      if (!isWire(env.payload)) {
+        sendResponse({ ok: false });
+        return false;
+      }
+      const wire = env.payload;
+      void currentContentSender(sender)
+        .then(async (source) => {
+          const actor = await currentActor();
+          if (!source || !actor) return false;
+          const candidateUrl = safeParseUrl(wire.loginUrl);
+          if (
+            !candidateUrl ||
+            candidateUrl.origin !== new URL(source.url).origin ||
+            candidateUrl.pathname !== new URL(source.url).pathname
+          )
+            return false;
+          return holdCandidate(source.tabId, wire, {
+            actor,
+            documentId: source.documentId,
+            senderUrl: source.url,
+          });
+        })
+        .then((held) => sendResponse({ ok: held }))
+        .catch(() => sendResponse({ ok: false }));
+      return true;
+    }
+    if (env.kind === CHANNELS.CREDENTIAL_CAPTURE_DECISION) {
+      if (!validDecision(env.payload)) {
+        sendResponse(result('error'));
+        return false;
+      }
+      const decision = env.payload;
+      void (async () => {
+        const c = findById(decision.candidateId);
+        if (!c) return result('expired');
+        if (extensionPageSender(sender)) {
+          const actor = await currentActor();
+          if (!sameActor(c.actor, actor)) return result('expired');
+        } else {
+          const source = await currentContentSender(sender);
+          if (!source || source.tabId !== c.tabId || new URL(source.url).origin !== c.origin)
+            return result('expired');
+        }
+        return applyCaptureDecision(decision);
+      })()
+        .then(sendResponse)
+        .catch(() => sendResponse(result('error')));
+      return true;
+    }
+    if (env.kind === CHANNELS.CREDENTIAL_CAPTURE_STATUS) {
+      if (!extensionPageSender(sender) || !validStatus(env.payload)) {
+        sendResponse(null);
+        return false;
+      }
+      const query = env.payload;
+      void (async () => {
+        const c = PENDING.get(query.tabId);
+        if (!c || !sameActor(c.actor, await currentActor())) return null;
+        const tab = await chrome.tabs.get(c.tabId).catch(() => null);
+        return tab?.url && new URL(tab.url).origin === c.origin
+          ? pendingCaptureForTab(c.tabId)
+          : null;
+      })()
+        .then(sendResponse)
+        .catch(() => sendResponse(null));
+      return true;
+    }
+    return false;
   });
-
-  on<CaptureDecision, CaptureDecisionResult>(CHANNELS.CREDENTIAL_CAPTURE_DECISION, (decision) =>
-    applyCaptureDecision(decision),
-  );
-  on<CaptureStatusQuery, CapturePromptMeta | null>(CHANNELS.CREDENTIAL_CAPTURE_STATUS, (q) =>
-    typeof q?.tabId === 'number' ? pendingCaptureForTab(q.tabId) : null,
-  );
 
   // The post-login navigation finished → show the prompt on the new page.
   chrome.tabs.onUpdated.addListener((tabId, info) => {
     if (info.status !== 'complete') return;
-    const c = PENDING.get(tabId);
-    if (!c || c.prompted) return;
-    if (c.ready) void promptTab(c);
-    else c.loadCompleted = true;
+    void queued(async () => {
+      const c = PENDING.get(tabId);
+      if (!c || c.prompted) return;
+      const tab = await chrome.tabs.get(tabId).catch(() => null);
+      if (!tab?.url || new URL(tab.url).origin !== c.origin) {
+        await removeCandidate(c);
+        return;
+      }
+      if (c.ready) void promptTab(c);
+      else c.loadCompleted = true;
+    });
   });
   chrome.tabs.onRemoved.addListener((tabId) => {
     const c = PENDING.get(tabId);
-    if (c) drop(c);
+    if (c) {
+      c.generation++;
+      void queued(() => removeCandidate(c));
+    }
+  });
+  chrome.tabs.onUpdated.addListener((tabId, info) => {
+    if (!info.url) return;
+    const c = PENDING.get(tabId);
+    if (c && new URL(info.url).origin !== c.origin) {
+      c.generation++;
+      void queued(() => removeCandidate(c));
+    }
+  });
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && ('matrx.settings.v1' in changes || 'matrx.org.active' in changes))
+      void queued(async () => {
+        for (const c of [...PENDING.values()]) await removeCandidate(c);
+      });
+  });
+  chrome.alarms?.onAlarm.addListener((alarm) => {
+    if (alarm.name !== 'matrx.credentials.capture.expiry') return;
+    void queued(async () => {
+      for (const c of [...PENDING.values()]) if (c.expiresAt <= now()) await removeCandidate(c);
+    });
   });
 }
 
 /** Test-only reset. */
 export function _resetCaptureCandidates(clock?: () => number): void {
   for (const c of [...PENDING.values()]) drop(c);
-  seq = 0;
+  initialization = null;
+  storageAvailable = true;
   now = clock ?? (() => Date.now());
 }

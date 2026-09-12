@@ -27,9 +27,10 @@ import { CHANNELS } from '@/lib/messaging/schemas';
 
 /** Wire shape of the one value-bearing envelope. Mirrored in capture-candidates.ts. */
 export interface CaptureCandidateWire {
+  stage: 'username_first' | 'password';
   loginUrl: string;
   username: string | null;
-  password: string;
+  password?: string;
 }
 
 const MAX_USERNAME_LEN = 256;
@@ -145,6 +146,7 @@ export function snapshotLogin(
   if (value.length > MAX_PASSWORD_LEN) return null;
 
   return {
+    stage: 'password',
     loginUrl: doc.location.href,
     username: findUsername(password),
     password: value,
@@ -180,6 +182,7 @@ export function mountCaptureDetector(doc: Document = document): () => void {
     // Dedupe Enter-then-click on the same values without keeping the values:
     // compare lengths + a cheap non-reversible fold of the password.
     let fold = 0;
+    if (snap.stage !== 'password' || typeof snap.password !== 'string') return;
     for (let i = 0; i < snap.password.length; i++)
       fold = (fold * 31 + snap.password.charCodeAt(i)) | 0;
     const key = `${snap.loginUrl}|${snap.username ?? ''}|${snap.password.length}|${fold}`;

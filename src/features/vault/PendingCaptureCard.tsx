@@ -81,62 +81,73 @@ export function PendingCaptureCard({
   return (
     <div className="mx-2 mb-2 rounded-md border border-primary/30 bg-primary/5 p-2">
       {meta ? (
-        <>
-          <div className="mb-1 flex items-start gap-1.5">
-            <ShieldPlus className="mt-0.5 size-3.5 shrink-0 text-primary" />
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium">Save this login to your Vault?</p>
-              <p className="truncate text-[11px] text-muted-foreground">
-                {meta.username ? `${meta.host} · ${meta.username}` : meta.host}
-              </p>
+        meta.unavailable ? (
+          <p className="text-[11px] text-muted-foreground">
+            Temporary browser memory is unavailable. Sign in again, then save this login from the
+            Vault.
+          </p>
+        ) : (
+          <>
+            <div className="mb-1 flex items-start gap-1.5">
+              <ShieldPlus className="mt-0.5 size-3.5 shrink-0 text-primary" />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium">Save this login to your Vault?</p>
+                <p className="truncate text-[11px] text-muted-foreground">
+                  {meta.username ? `${meta.host} · ${meta.username}` : meta.host}
+                </p>
+              </div>
+              <button
+                type="button"
+                title="Not now"
+                className="text-muted-foreground hover:text-foreground"
+                disabled={busy}
+                onClick={() => void decide({ action: 'dismiss' })}
+              >
+                <X className="size-3.5" />
+              </button>
             </div>
-            <button
-              type="button"
-              title="Not now"
-              className="text-muted-foreground hover:text-foreground"
-              disabled={busy}
-              onClick={() => void decide({ action: 'dismiss' })}
-            >
-              <X className="size-3.5" />
-            </button>
-          </div>
-          <div className="flex flex-wrap gap-1">
-            {meta.existing.slice(0, 3).map((item) => (
+            <div className="flex flex-wrap gap-1">
+              {meta.existing.slice(0, 3).map((item) => (
+                <Button
+                  key={item.item_id}
+                  size="sm"
+                  className="h-6 px-2 text-[11px]"
+                  disabled={busy}
+                  onClick={() => void decide({ action: 'update', itemId: item.item_id })}
+                >
+                  {busy ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    `Update ${item.display_name}`
+                  )}
+                </Button>
+              ))}
               <Button
-                key={item.item_id}
                 size="sm"
+                variant={meta.existing.length > 0 ? 'outline' : 'default'}
                 className="h-6 px-2 text-[11px]"
                 disabled={busy}
-                onClick={() => void decide({ action: 'update', itemId: item.item_id })}
+                onClick={() => void decide({ action: 'save' })}
               >
-                {busy ? <Loader2 className="size-3 animate-spin" /> : `Update ${item.display_name}`}
+                {busy ? (
+                  <Loader2 className="size-3 animate-spin" />
+                ) : meta.existing.length > 0 ? (
+                  'Save as new'
+                ) : (
+                  'Save'
+                )}
               </Button>
-            ))}
-            <Button
-              size="sm"
-              variant={meta.existing.length > 0 ? 'outline' : 'default'}
-              className="h-6 px-2 text-[11px]"
-              disabled={busy}
-              onClick={() => void decide({ action: 'save' })}
-            >
-              {busy ? (
-                <Loader2 className="size-3 animate-spin" />
-              ) : meta.existing.length > 0 ? (
-                'Save as new'
-              ) : (
-                'Save'
-              )}
-            </Button>
-            <button
-              type="button"
-              className="px-1 text-[11px] text-muted-foreground hover:text-foreground"
-              disabled={busy}
-              onClick={() => void decide({ action: 'never' })}
-            >
-              Never for this site
-            </button>
-          </div>
-        </>
+              <button
+                type="button"
+                className="px-1 text-[11px] text-muted-foreground hover:text-foreground"
+                disabled={busy}
+                onClick={() => void decide({ action: 'never' })}
+              >
+                Never for this site
+              </button>
+            </div>
+          </>
+        )
       ) : null}
       {notice && <p className="mt-1 text-[11px] text-muted-foreground">{notice}</p>}
     </div>

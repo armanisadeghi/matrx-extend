@@ -34,8 +34,17 @@ let itemFields: Array<{ id: string; field_key: string; is_active: boolean }> = [
 Object.assign(chrome, {
   storage: {
     local: {
-      get: async (keys?: string[] | null) => keys === null ? Object.fromEntries(localStorage) : Object.fromEntries((keys ?? []).flatMap((key) => localStorage.has(key) ? [[key, localStorage.get(key)]] : [])),
-      set: async (values: Record<string, unknown>) => void Object.entries(values).forEach(([key, value]) => localStorage.set(key, value)),
+      get: async (keys?: string[] | null) =>
+        keys === null
+          ? Object.fromEntries(localStorage)
+          : Object.fromEntries(
+              (keys ?? []).flatMap((key) =>
+                localStorage.has(key) ? [[key, localStorage.get(key)]] : [],
+              ),
+            ),
+      set: async (values: Record<string, unknown>) => {
+        for (const [key, value] of Object.entries(values)) localStorage.set(key, value);
+      },
     },
     session: {
       setAccessLevel: async () => undefined,
@@ -76,6 +85,8 @@ vi.mock('@/lib/api/routes/vault', () => ({
     return { ok: true, data: undefined };
   },
 }));
+vi.mock('@/lib/auth/flow', () => ({ getCurrentUser: async () => ({ id: 'test-user' }) }));
+vi.mock('@/lib/org/active-org', () => ({ getActiveOrganizationId: async () => 'test-org' }));
 vi.mock('@/lib/messaging/native', () => ({
   on: () => () => undefined,
   send: async () => undefined,
@@ -97,6 +108,7 @@ const DEPS = {
   signedIn: async () => signedIn,
   never: async () => false,
   prompt: async () => undefined,
+  actor: { userId: 'test-user', organizationId: 'test-org' },
 };
 
 beforeEach(() => {
@@ -135,7 +147,12 @@ describe('detector — snapshotLogin', () => {
     const doc = mount(`<form method="post"><input name="email" type="text" value="${USER}">
       <input type="password" name="pw" value="${SENTINEL}"><button type="submit">Go</button></form>`);
     const snap = snapshotLogin(doc.querySelector('form'), doc);
-    expect(snap).toEqual({ loginUrl: doc.location.href, username: USER, password: SENTINEL });
+    expect(snap).toEqual({
+      stage: 'password',
+      loginUrl: doc.location.href,
+      username: USER,
+      password: SENTINEL,
+    });
   });
 
   it('refuses a GET form — the password would land in the URL', async () => {
@@ -185,13 +202,19 @@ describe('detector — snapshotLogin', () => {
     const doc = mount(`<div><input type="text" placeholder="Email address" value="${USER}">
       <input type="password" id="pw" value="${SENTINEL}"><button>Sign in</button></div>`);
     const snap = snapshotLogin(doc.getElementById('pw'), doc);
-    expect(snap).toEqual({ loginUrl: doc.location.href, username: USER, password: SENTINEL });
+    expect(snap).toEqual({
+      stage: 'password',
+      loginUrl: doc.location.href,
+      username: USER,
+      password: SENTINEL,
+    });
   });
 });
 
 // ── 2. SW host ──────────────────────────────────────────────────────────────
 
 const WIRE = {
+  stage: 'password' as const,
   loginUrl: 'https://app.example.com/login?next=%2F#x',
   username: USER,
   password: SENTINEL,
@@ -212,6 +235,24 @@ describe('host — gates', () => {
 });
 
 describe('host — hold, status, prompt', () => {
+  it('keeps an explicit username-first continuation private until a password-stage candidate arrives', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    expect(
+      await host.holdCandidate(
+        71,
+        {
+          stage: 'username_first',
+          loginUrl: WIRE.loginUrl,
+          username: USER,
+        },
+        DEPS,
+      ),
+    ).toBe(true);
+    expect(host.pendingCaptureForTab(71)).toBeNull();
+    expect(await host.holdCandidate(71, { ...WIRE, username: null }, DEPS)).toBe(true);
+    expect(host.pendingCaptureForTab(71)?.username).toBe(USER);
+  });
+
   it('holds a candidate and exposes ONLY value-free metadata', async () => {
     const host = await import('@/lib/credentials/capture-candidates');
     matches = [{ item_id: 'item-1', display_name: 'Example (work)' }];
@@ -356,7 +397,7 @@ describe('host — decisions', () => {
       itemId: 'item-1',
     });
     expect(r.status).toBe('updated');
-    expect(calls.find((c) => c.name === 'updateValue')?.args).toEqual([
+    expect(calls.find((c) => c.name === 'updateValue')?.args.slice(0, 3)).toEqual([
       'item-1',
       'f-pass',
       SENTINEL,
@@ -374,7 +415,7 @@ describe('host — decisions', () => {
       (await host.applyCaptureDecision({ candidateId: id, action: 'update', itemId: 'item-2' }))
         .status,
     ).toBe('updated');
-    expect(calls.find((c) => c.name === 'addField')?.args).toEqual([
+    expect(calls.find((c) => c.name === 'addField')?.args.slice(0, 2)).toEqual([
       'item-2',
       { field_key: 'password', value: SENTINEL },
     ]);
@@ -432,7 +473,13 @@ describe('plaintext path stays off the bus and off every persistence API', () =>
     expect(src).not.toMatch(/\bon<[^>]*>\(\s*CHANNELS\.CREDENTIAL_CAPTURE_CANDIDATE/);
     expect(src).not.toMatch(/\bon\(\s*CHANNELS\.CREDENTIAL_CAPTURE_CANDIDATE/);
     expect(src).toContain('chrome.runtime.onMessage.addListener');
-    for (const api of ['chrome.storage.local', 'chrome.storage.sync', 'localStorage', 'sessionStorage', 'indexedDB']) {
+    for (const api of [
+      'chrome.storage.local',
+      'chrome.storage.sync',
+      'localStorage',
+      'sessionStorage',
+      'indexedDB',
+    ]) {
       expect(src, `capture-candidates.ts must not reference ${api}`).not.toContain(api);
     }
     // The only log line mentions tab + host after a prompt attempt — no payload object.

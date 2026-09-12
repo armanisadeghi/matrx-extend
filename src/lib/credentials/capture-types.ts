@@ -20,6 +20,8 @@ export interface CapturePromptMeta {
   username: string | null;
   /** Server-approved logins already saved for this site → "Update" instead of duplicate. */
   existing: CaptureExistingLogin[];
+  /** A request could not be kept in trusted browser memory for this wake. */
+  unavailable?: boolean;
 }
 
 export type CaptureDecisionAction = 'save' | 'update' | 'dismiss' | 'never';
