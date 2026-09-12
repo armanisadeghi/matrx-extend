@@ -1370,6 +1370,16 @@ export async function handleWebmcpCall(
     };
   }
 
+  // Router tools can raise their tier for a particular action. Apply the
+  // external-caller restriction to that parsed action before any execution.
+  const effectiveTier = handler.tierFor ? handler.tierFor(parsed.data as never) : handler.tier;
+  if (effectiveTier === 'ask-user' || effectiveTier === 'privileged') {
+    return {
+      ok: false,
+      error: `webmcp: tool '${toolName}' is ${effectiveTier}-tier and not callable externally`,
+    };
+  }
+
   if (handler.required_optional_permissions?.length) {
     const granted = await hasOptionalPermissions(
       handler.required_optional_permissions as OptionalPermission[],
@@ -1393,7 +1403,6 @@ export async function handleWebmcpCall(
 
   // External action calls ALWAYS confirm — the user's act-mode preference
   // applies to their own agent, never to a page/frontend/desktop caller.
-  const effectiveTier = handler.tierFor ? handler.tierFor(parsed.data as never) : handler.tier;
   if (effectiveTier === 'action') {
     const allowed = await requestConfirmation(handler, parsed.data, ctx, undefined, {
       effectiveTier,

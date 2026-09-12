@@ -2572,6 +2572,13 @@ Every entry follows this shape:
     new `console.warn` + `return null/[]` appears in a Supabase query module
     (`pnpm check:swallowed-refusals:self-test` proves the detector fires).
 
+### External calls respect action-specific permission tiers
+
+- **What it does:** page, frontend, and desktop callers cannot run an action that a router tool classifies as privileged or ask-user, even when its default tier is read or action.
+- **Where to test:** external tool bridge; regression command `pnpm exec vitest run tests/unit/external-dispatch-tier.test.ts`.
+- **Steps:** request a router tool's privileged action through the external bridge in Act mode, then request its read action.
+- **Expected:** the privileged action is refused before handler execution or receipt/timeline emission; the valid read action still executes. This does not grant a desktop agent a delegated browser session.
+
 ## Template (copy when adding a new entry)
 
 ```markdown
