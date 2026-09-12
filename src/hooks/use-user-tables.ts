@@ -42,8 +42,12 @@ export function useUserTables() {
   );
 
   const appendRows = useCallback(
-    async (tableId: string, rows: Record<string, unknown>[]): Promise<{ inserted: number }> => {
-      return appendRowsToUserTable(tableId, rows);
+    async (
+      tableId: string,
+      operationOrganizationId: string,
+      rows: Record<string, unknown>[],
+    ): Promise<{ inserted: number }> => {
+      return appendRowsToUserTable(tableId, operationOrganizationId, rows);
     },
     [],
   );

@@ -44,6 +44,9 @@ const writers: Writer[] = [
     run: () =>
       savePattern({
         authored_by: 'person',
+        // savePattern now has an explicit operation identity, so this proves
+        // its own boundary instead of relying on a late request re-resolution.
+        organization_id: '',
         name: 'Example',
         domain: 'example.com',
         route_pattern: '/',
@@ -154,7 +157,18 @@ describe('extend.wbx_* explicit organization writes', () => {
     // The recorder captures each payload at insert time; a writer that then
     // throws (DD-092 error seam — the stub's returned row is not a full
     // highlight) must not stop the sweep or weaken the payload assertion.
-    for (const writer of writers) await writer.run().catch(() => undefined);
+    for (const writer of writers.filter((writer) => writer.name !== 'pattern')) {
+      await writer.run().catch(() => undefined);
+    }
+    await savePattern({
+      authored_by: 'person',
+      organization_id: ORG_ID,
+      name: 'Example',
+      domain: 'example.com',
+      route_pattern: '/',
+      list_root_selector: null,
+      fields: [],
+    });
 
     expect(payloads).toHaveLength(7);
     for (const payload of payloads) {

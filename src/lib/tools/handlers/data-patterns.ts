@@ -19,6 +19,7 @@
  * No `description` here (Rule 4) — tool descriptions live ONLY in tool_def.
  */
 
+import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { loadRecipes, recipesForUrl } from '@/lib/data-pattern/recipes';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
 import {
@@ -198,6 +199,7 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
         // DD-131: the model's turn is what produced this pattern, so the write
         // rides the agent-authored client and declares `x-matrx-actor-tier: ai`.
         authored_by: 'agent',
+        organization_id: await requireRequestOrganizationId(),
         name: args.name as string,
         domain,
         route_pattern: route,

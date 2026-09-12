@@ -1,6 +1,7 @@
 import { CopyMenu } from '@/components/CopyMenu';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAuth } from '@/hooks/use-auth';
+import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { rowsToTsv, stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { findFirstMatch } from '@/lib/data-pattern/matcher';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
@@ -152,6 +153,7 @@ export function DataView() {
       const r = await savePattern({
         // DD-131: the person clicked Save in the Data tab — no actor header.
         authored_by: 'person',
+        organization_id: await requireRequestOrganizationId(),
         name: patternName || `${host} pattern`,
         domain: host,
         route_pattern: tab.url ? new URL(tab.url).pathname : null,

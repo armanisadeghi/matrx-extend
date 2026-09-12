@@ -87,7 +87,7 @@ const TOUCHES_SUPABASE = /@\/lib\/supabase\/(client|schemas)|supabaseClient|crea
  */
 const BUDGET: Record<string, number> = {
   // patterns, SEO audits, screenshots, guidance, demos, admin check, models
-  'src/lib/supabase/queries.ts': 27,
+  'src/lib/supabase/queries.ts': 26,
   // the six highlight READ paths (every write is on the seam)
   'src/lib/highlights/queries.ts': 6,
   'src/lib/notes/queries.ts': 7,

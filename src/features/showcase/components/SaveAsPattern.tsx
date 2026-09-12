@@ -6,10 +6,12 @@ import { isDbFailureError } from '@/lib/supabase/db-failure';
 import { type ExtractionPatternField, type PatternKind, savePattern } from '@/lib/supabase/queries';
 import {
   buildFieldNameMap,
+  getUserTable,
   getUserTableSchema,
   inferSchemaFromRows,
   unionRowKeys,
 } from '@/lib/supabase/user-tables';
+import { OrganizationContextError, requireOrganizationContext } from '@ai-matrx/agents/matrx';
 import {
   Button,
   BasicInput as Input,
@@ -92,9 +94,11 @@ export function SaveAsPattern({
 
     // Capture the selected organization at the initiating click. A later
     // Settings change must not redirect this in-flight dataset create.
-    const operationOrganizationId = activeOrganization?.id;
-    if (target === NEW_TABLE && !operationOrganizationId) {
-      setErr('Choose your organization in Settings, then try creating this dataset again.');
+    let operationOrganizationId: string;
+    try {
+      operationOrganizationId = requireOrganizationContext(activeOrganization?.id);
+    } catch (error) {
+      setErr(error instanceof Error ? error.message : String(error));
       return;
     }
     setSaving(true);
@@ -114,13 +118,6 @@ export function SaveAsPattern({
       let targetTableId: string | null = null;
 
       if (target === NEW_TABLE) {
-        // Kept beside the write as a type-and-runtime boundary: only this
-        // captured operation value may enter the dataset RPC.
-        if (!operationOrganizationId) {
-          throw new Error(
-            'Choose your organization in Settings, then try creating this dataset again.',
-          );
-        }
         // Throws on refusal (the user already saw the reason as a notice);
         // the catch at the bottom of this function renders the same sentence
         // in the popover.
@@ -133,11 +130,27 @@ export function SaveAsPattern({
         targetTableId = created.id;
       } else if (target !== NO_TABLE) {
         targetTableId = target;
+        // Load the persisted parent before any linked write. The selected
+        // value is only a UI choice; its organization is authoritative here.
+        const existingTable = await getUserTable(targetTableId);
+        if (!existingTable.organization_id) {
+          throw new OrganizationContextError(
+            'organization_context_required',
+            'This dataset has no organization. Choose a different dataset or create a new one.',
+          );
+        }
+        if (requireOrganizationContext(existingTable.organization_id) !== operationOrganizationId) {
+          throw new OrganizationContextError(
+            'organization_context_mismatch',
+            'The selected dataset belongs to a different organization. Choose a dataset in your active organization.',
+          );
+        }
       }
 
       const saved = await savePattern({
         // DD-131: the person clicked "Save as pattern" in Showcase — no actor header.
         authored_by: 'person',
+        organization_id: operationOrganizationId,
         name: name || `${host} ${kind}`,
         domain: host,
         route_pattern: routePattern,
@@ -173,7 +186,7 @@ export function SaveAsPattern({
 
         let result: { inserted: number };
         try {
-          result = await appendRows(targetTableId, rows);
+          result = await appendRows(targetTableId, operationOrganizationId, rows);
         } catch (appendErr) {
           // The pattern row IS saved — but the rows are not. Saying
           // "0 rows appended" here would be a success banner over data loss.

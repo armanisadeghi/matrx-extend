@@ -35,6 +35,7 @@ import { type WriteActor, getSupabase, supabaseForActor } from '@/lib/supabase/c
 import { type DbCallSite, failDbCall } from '@/lib/supabase/db-failure';
 import { adminDb, aiDb, extendDb } from '@/lib/supabase/schemas';
 import type { ChatMessage, MessagePart } from '@/state/chat';
+import { requireOrganizationContext } from '@ai-matrx/agents/matrx';
 import { z } from 'zod';
 
 /**
@@ -720,6 +721,8 @@ export type SavePatternInput = {
    * default, so the channel is visible in the calling line.
    */
   authored_by: WriteActor;
+  /** Immutable organization captured when this save action begins. */
+  organization_id: string;
   name: string;
   domain: string;
   route_pattern: string | null;
@@ -731,13 +734,7 @@ export type SavePatternInput = {
 };
 
 export async function savePattern(p: SavePatternInput): Promise<{ id: string } | null> {
-  let organizationId: string;
-  try {
-    organizationId = await requireRequestOrganizationId();
-  } catch (error) {
-    console.warn('[matrx-extend] savePattern refused: missing request organization', error);
-    return null;
-  }
+  const organizationId = requireOrganizationContext(p.organization_id);
   const c = supabaseForActor(p.authored_by);
   // UNIQUE(created_by, domain, name) — on a name collision, auto-suffix
   // "name (2)", "name (3)", … instead of failing the save (decision D3).

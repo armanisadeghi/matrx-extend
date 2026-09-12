@@ -31,7 +31,7 @@
 import { getSupabase } from '@/lib/supabase/client';
 import { type DbCallSite, failDbCall } from '@/lib/supabase/db-failure';
 import { workbenchDb } from '@/lib/supabase/schemas';
-import { applyOrganizationContextHeader } from '@ai-matrx/agents/matrx';
+import { requireOrganizationContext } from '@ai-matrx/agents/matrx';
 import { z } from 'zod';
 
 /**
@@ -154,6 +154,30 @@ export async function getUserTableSchema(tableId: string): Promise<TableField[]>
   return z.array(TableFieldSchema).parse(data ?? []);
 }
 
+/**
+ * Read the selected dataset's organization at the beginning of an operation.
+ * An append RPC does not accept an organization argument, so callers must
+ * prove its persisted parent is in the same immutable operation organization
+ * before creating a linked pattern or appending rows.
+ */
+export async function getUserTable(tableId: string): Promise<UserTable> {
+  const site: DbCallSite = {
+    table: 'workbench.udt_datasets',
+    operation: 'select',
+    what: 'load this dataset',
+    title: 'Dataset could not be loaded',
+  };
+  const { data, error } = await workbenchDb()
+    .from('udt_datasets')
+    .select(
+      'id, table_name, description, user_id, is_public, version, organization_id, project_id, task_id, created_at, updated_at',
+    )
+    .eq('id', tableId)
+    .maybeSingle();
+  if (error || !data) failDbCall(site, error);
+  return UserTableSchema.parse(data);
+}
+
 export interface CreateUserTableInput {
   /** Maps to `udt_datasets.table_name`. */
   table_name: string;
@@ -173,25 +197,6 @@ export interface CreateUserTableInput {
 }
 
 /**
- * Fail before constructing a Supabase client when an operation has no usable
- * organization. The shared request kernel owns UUID validation, so the direct
- * RPC path cannot drift from the organization header's contract.
- */
-function requireUserTableOrganizationId(organizationId: unknown): string {
-  if (typeof organizationId !== 'string') {
-    throw new Error('Choose your organization in Settings, then try creating this dataset again.');
-  }
-  try {
-    applyOrganizationContextHeader({}, organizationId);
-  } catch {
-    throw new Error(
-      'Choose a valid organization in Settings, then try creating this dataset again.',
-    );
-  }
-  return organizationId;
-}
-
-/**
  * Atomic create via the `create_user_table_with_fields` RPC. Inserts the
  * udt_datasets row plus all udt_dataset_fields rows in one transaction; the
  * RPC runs as security_invoker so RLS still applies and `auth.uid()` stamps
@@ -207,7 +212,9 @@ export async function createUserTableFromSchema(
     what: 'create this dataset',
     title: 'Dataset not created',
   };
-  const organizationId = requireUserTableOrganizationId(input.organization_id);
+  // The request kernel is the sole UUID parser/normalizer. Keep its canonical
+  // OrganizationContextError intact so every direct-write boundary agrees.
+  const organizationId = requireOrganizationContext(input.organization_id);
   const c = getSupabase();
   const { data, error } = await c.rpc('create_user_table_with_fields', {
     p_table_name: input.table_name,
@@ -282,6 +289,7 @@ export function buildFieldNameMap(rawKeys: Iterable<string>): Map<string, string
  */
 export async function appendRowsToUserTable(
   tableId: string,
+  operationOrganizationId: string,
   rows: Record<string, unknown>[],
 ): Promise<{ inserted: number }> {
   const site: DbCallSite = {
@@ -291,6 +299,11 @@ export async function appendRowsToUserTable(
     title: 'Rows not added to the dataset',
   };
   if (rows.length === 0) return { inserted: 0 };
+
+  // This RPC has no organization parameter. Its required operation context is
+  // nevertheless validated here so a caller cannot append under a UI-derived
+  // fallback after the linked pattern was saved in a different tenant.
+  requireOrganizationContext(operationOrganizationId);
 
   const keyMap = buildFieldNameMap(unionRowKeys(rows));
   const cleanedRows = rows.map((r) => {

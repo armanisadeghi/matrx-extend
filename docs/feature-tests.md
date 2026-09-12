@@ -940,8 +940,11 @@ Every entry follows this shape:
   Extract → Save pattern (create new table from fields).
 - **Expected:** Detection summary matches the page; rows render; saving with
   a duplicate name auto-suffixes "(2)". The created table has EVERY column
-  the preview showed (union of all rows, not just row 1), and is created in
-  the organization selected when Save pattern was clicked. With no selected
+  the preview showed (union of all rows, not just row 1), and every linked
+  write uses the normalized organization captured when Save pattern was
+  clicked. Switching organizations while creation is pending cannot redirect
+  the pattern or appended rows. An existing target is loaded before writes
+  and a cross-organization target refuses with a remedy. With no selected
   organization, the draft remains open and names Settings as the recovery;
   no dataset request is sent.
 

@@ -280,7 +280,11 @@ describe('appendRowsToUserTable has no success-shaped fallback', () => {
   it('an RPC answer that is not a row count fails instead of reporting 0 inserted', async () => {
     mocks.getSupabase.mockReturnValue(builder({ data: null, error: null }));
     await expect(
-      appendRowsToUserTable('11111111-1111-4111-8111-111111111111', [{ a: 1 }]),
+      appendRowsToUserTable(
+        '11111111-1111-4111-8111-111111111111',
+        '22222222-2222-4222-8222-222222222222',
+        [{ a: 1 }],
+      ),
     ).rejects.toSatisfy(isDbFailureError);
     expect(lastNotice()?.title).toBe('Rows not added to the dataset');
   });
