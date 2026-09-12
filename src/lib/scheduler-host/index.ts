@@ -33,7 +33,7 @@ import {
   type TaskEvent,
   createSchedulerClient,
 } from '@/lib/scheduler-client';
-import { getSupabase } from '@/lib/supabase/client';
+import { getMachineryAuthoredSupabase } from '@/lib/supabase/client';
 import { schedulerDb } from '@/lib/supabase/schemas';
 
 // ── Handler registry ───────────────────────────────────────────────────────
@@ -91,7 +91,11 @@ export async function startSchedulerHost(userId: string): Promise<void> {
         await stopSchedulerHost();
       }
 
-      const supabase = getSupabase();
+      // DD-131 (B-44): every write this host makes through the scheduler
+      // client — claiming a run, completing it, failing it — is this
+      // extension's own machinery, not a person's gesture, so it rides the
+      // machinery-authored client and declares `x-matrx-actor-tier: code`.
+      const supabase = getMachineryAuthoredSupabase();
       const instanceId = await getOrMintInstanceId();
 
       // The realm's ONE realtime manager. The scheduler channel is opened by

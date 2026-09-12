@@ -20,7 +20,7 @@
 
 import { SCHEDULER_CLAIM_PROTOCOL } from '@/lib/scheduler-client/claim';
 import { getSupabase } from '@/lib/supabase/client';
-import { schedulerDb } from '@/lib/supabase/schemas';
+import { schedulerDb, schedulerMachineryDb } from '@/lib/supabase/schemas';
 import { z } from 'zod';
 import { nextCronTime } from './cron';
 
@@ -563,7 +563,9 @@ export async function claimDueFire(
   task: AgendaTask,
   patch: { next_due_at: string | null; last_run_at: string; enabled: boolean },
 ): Promise<boolean> {
-  const c = schedulerDb();
+  // DD-131 (B-44): only the SW scanner (a chrome.alarms poller) calls this —
+  // never a person's gesture — so it declares `x-matrx-actor-tier: code`.
+  const c = schedulerMachineryDb();
   let q = c
     .from('sch_task')
     .update({
@@ -607,7 +609,9 @@ export async function claimDueFire(
  * sweep to this user's rows.
  */
 export async function reapExpiredRuns(): Promise<number> {
-  const c = schedulerDb();
+  // DD-131 (B-44): fail-closing an expired lease is the SW scanner's own
+  // housekeeping, not any person's or agent's action.
+  const c = schedulerMachineryDb();
   const now = new Date().toISOString();
   const { data, error } = await c
     .from('sch_run')

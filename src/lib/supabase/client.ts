@@ -27,9 +27,12 @@ import { type SupabaseClient, createClient } from '@supabase/supabase-js';
  * sends nothing and is stamped `human` by the database.
  */
 export const ACTOR_TIER_HEADER = 'x-matrx-actor-tier';
-/** The only value this client emits. (`code` exists in the ruling for machinery
- *  writes; nothing in this extension declares it yet.) */
+/** A model's turn caused this write. */
 export const ACTOR_TIER_AI = 'ai';
+/** This extension's OWN machinery caused this write — a scheduler claim, a
+ *  background scanner, a rolling-health bookkeeping bump — not a model's turn
+ *  and not a person's gesture. (DD-131, B-44.) */
+export const ACTOR_TIER_CODE = 'code';
 
 /**
  * Who caused a write.
@@ -104,6 +107,54 @@ export function getAgentAuthoredSupabase(): SupabaseClient {
     );
   }
   return agentAuthoredClient;
+}
+
+let machineryAuthoredClient: SupabaseClient | null = null;
+
+/**
+ * The MACHINERY-AUTHORED client (DD-131, B-44). Same URL, same publishable
+ * key, same access token as `getSupabase()` — the only difference is that
+ * every request it makes carries `x-matrx-actor-tier: code`.
+ *
+ * Reach for it from a path the extension's OWN infrastructure drives with no
+ * model's turn and no person's gesture behind it: the scheduler claiming a
+ * `sch_run`, the agenda scanner firing a due task, a rolling-health bookkeeping
+ * bump after a run finishes. A job is not a person and not an agent turn — it
+ * is code, and the database needs to be able to tell the three apart.
+ *
+ * A SEPARATE instance for the same reason `getAgentAuthoredSupabase` is: there
+ * is no way to "forget to unset" the header, and no way for a person's write
+ * to pick it up by accident.
+ *
+ * Throws rather than degrading: silently handing back the person's client
+ * would record the job's write as the human's.
+ */
+export function getMachineryAuthoredSupabase(): SupabaseClient {
+  if (machineryAuthoredClient) return machineryAuthoredClient;
+  try {
+    machineryAuthoredClient = createClient(ENV.SUPABASE_URL, ENV.SUPABASE_PUBLISHABLE_KEY, {
+      accessToken: async () => {
+        const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
+        const token = stored[STORAGE_KEYS.ACCESS_TOKEN];
+        return typeof token === 'string' && token.length > 0 ? token : null;
+      },
+      global: {
+        headers: {
+          'X-Client-Info': 'matrx-extend',
+          [ACTOR_TIER_HEADER]: ACTOR_TIER_CODE,
+        },
+      },
+    });
+  } catch (cause) {
+    const detail = cause instanceof Error ? cause.message : String(cause);
+    throw new Error(
+      'The extension\'s background machinery tried to write something, but could not ' +
+        'open the connection that marks a write as machine-made. Nothing was written — ' +
+        'recording it as a person\'s action would be worse. Reload the extension from ' +
+        `chrome://extensions and try again; if it keeps happening, sign out and back in. (${detail})`,
+    );
+  }
+  return machineryAuthoredClient;
 }
 
 /**

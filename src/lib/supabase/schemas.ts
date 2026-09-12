@@ -45,7 +45,7 @@
  *    defect, never a writer contract. See common-docs/no-db-assigned-org.
  */
 
-import { getAgentAuthoredSupabase, getSupabase } from '@/lib/supabase/client';
+import { getAgentAuthoredSupabase, getMachineryAuthoredSupabase, getSupabase } from '@/lib/supabase/client';
 
 /**
  * Where each table the extension uses actually lives. Verified against the live
@@ -164,3 +164,22 @@ export const contentIrDb = () => getSupabase().schema('content_ir');
 
 /** `chat` — agent_task rows the AGENT created during its turn. */
 export const agentChatDb = () => getAgentAuthoredSupabase().schema('chat');
+
+// ─── Machinery-authored write channels (DD-131, B-44) ───────────────────────
+//
+// Identical routing to the accessors above, but on the SEPARATE client that
+// declares `x-matrx-actor-tier: code` on every request. Use one of these ONLY
+// from a path this extension's OWN background infrastructure drives — the
+// scheduler claiming/finishing a run, the agenda scanner firing a due task, a
+// rolling-health bookkeeping bump — never from a path a person's click or a
+// model's turn drives directly.
+
+/** `scheduler` — sch_* writes made by the scheduler/agenda machinery itself
+ *  (claim, lease transitions, terminal states), not by a person editing a
+ *  task through the UI. */
+export const schedulerMachineryDb = () => getMachineryAuthoredSupabase().schema('scheduler');
+
+/** `extend` — wbx_* rolling-health/bookkeeping writes the extension's own
+ *  code makes after a run, independent of whether a person or an agent
+ *  triggered the run itself. */
+export const extendMachineryDb = () => getMachineryAuthoredSupabase().schema('extend');

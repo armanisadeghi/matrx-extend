@@ -31,7 +31,12 @@
 
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { log } from '@/lib/debug/log';
-import { type WriteActor, getSupabase, supabaseForActor } from '@/lib/supabase/client';
+import {
+  type WriteActor,
+  getMachineryAuthoredSupabase,
+  getSupabase,
+  supabaseForActor,
+} from '@/lib/supabase/client';
 import { type DbCallSite, failDbCall } from '@/lib/supabase/db-failure';
 import { adminDb, aiDb, extendDb } from '@/lib/supabase/schemas';
 import type { ChatMessage, MessagePart } from '@/state/chat';
@@ -808,13 +813,18 @@ export async function renamePattern(patternId: string, name: string): Promise<st
 /**
  * Update rolling health columns after a pattern run. Status drives the badge
  * shown next to saved patterns and the backend's broken-pattern queue.
+ *
+ * DD-131 (B-44): this is bookkeeping the extension's own code performs after
+ * ANY run finishes — whether a person clicked "run" or an agent's tool call
+ * drove it — so it rides the machinery-authored client and declares
+ * `x-matrx-actor-tier: code`, never the person's or the agent's channel.
  */
 export async function bumpPatternRun(
   patternId: string,
   status: 'ok' | 'broken',
   rowCount: number,
 ): Promise<void> {
-  const c = getSupabase();
+  const c = getMachineryAuthoredSupabase();
   await c
     .schema(EXTEND_SCHEMA)
     .from('wbx_pattern')
