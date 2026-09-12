@@ -89,6 +89,13 @@ component, so all four must show identical rows in identical order.
 
 ## Convention
 
+### Inline saved-login suggestions
+- **What it does:** On an eligible top-frame sign-in field, shows a Matrx control; choosing an account fills available login fields without submitting.
+- **Where to test:** An admin-owned disposable login page with the installed extension.
+- **Steps:** Focus a password field, click the Matrx control, choose a saved account, and inspect the form before submitting yourself.
+- **Expected:** Account names only are shown. The chosen username/password fields fill, no navigation or submit occurs, Escape returns focus, and changing page, sign-in, organization, or the Privacy toggle makes the old choice unavailable.
+- **Edge cases worth poking:** username-only continuation, multiple accounts and keyboard arrows, OTP/new-password/confirmation/readonly/GET/cross-origin forms, and a reload while the chooser is open.
+
 Every entry follows this shape:
 
 ```

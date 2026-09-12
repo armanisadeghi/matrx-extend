@@ -53,9 +53,11 @@ interface Offer extends FormGroup {
   userId: string;
   itemIds: Set<string>;
   expiresAt: number;
+  generation: number;
 }
 
 const OFFERS = new Map<string, Offer>();
+const GENERATIONS = new Map<string, number>();
 let registered = false;
 
 const COPY = {
@@ -78,6 +80,23 @@ function purge(tabId?: number): void {
   for (const [id, offer] of OFFERS)
     if (tabId === undefined || offer.tabId === tabId) OFFERS.delete(id);
 }
+function generationKey(tabId: number, documentId: string): string {
+  return `${tabId}:${documentId}`;
+}
+function nextGeneration(tabId: number, documentId: string): number {
+  const key = generationKey(tabId, documentId);
+  const next = (GENERATIONS.get(key) ?? 0) + 1;
+  GENERATIONS.set(key, next);
+  purge(tabId);
+  return next;
+}
+function invalidate(tabId?: number): void {
+  purge(tabId);
+  for (const key of GENERATIONS.keys()) {
+    if (tabId === undefined || key.startsWith(`${tabId}:`))
+      GENERATIONS.set(key, (GENERATIONS.get(key) ?? 0) + 1);
+  }
+}
 function randomOfferId(): string {
   const bytes = new Uint8Array(18);
   crypto.getRandomValues(bytes);
@@ -89,7 +108,8 @@ function validQuery(payload: unknown): payload is { fieldSelector: string } {
     typeof payload === 'object' &&
     typeof (payload as { fieldSelector?: unknown }).fieldSelector === 'string' &&
     (payload as { fieldSelector: string }).fieldSelector.length > 0 &&
-    (payload as { fieldSelector: string }).fieldSelector.length <= MAX_SELECTOR_LENGTH
+    (payload as { fieldSelector: string }).fieldSelector.length <= MAX_SELECTOR_LENGTH &&
+    Object.keys(payload).length === 1
   );
 }
 function validFill(payload: unknown): payload is { offerId: string; itemId: string } {
@@ -97,7 +117,8 @@ function validFill(payload: unknown): payload is { offerId: string; itemId: stri
     !!payload &&
     typeof payload === 'object' &&
     typeof (payload as { offerId?: unknown }).offerId === 'string' &&
-    typeof (payload as { itemId?: unknown }).itemId === 'string'
+    typeof (payload as { itemId?: unknown }).itemId === 'string' &&
+    Object.keys(payload).length === 2
   );
 }
 
@@ -182,12 +203,17 @@ function probeFocusedLoginGroup(selector: string): FormGroup | null {
   const anchorIsPassword = type === 'password' && autocomplete !== 'new-password';
   const anchorIsUsername = autocomplete === 'username';
   if (!anchorIsPassword && !anchorIsUsername) return null;
-  if (!anchorIsPassword && !password) return null; // host applies saved-match gate to username-only
+  // A username-only step is valid when its autocomplete is explicit; the
+  // host requires a canonical saved-origin match before it displays a choice.
   const anchorSelector = selectorFor(anchor);
   if (!anchorSelector) return null;
   const usernameSelector = username ? selectorFor(username) : null;
   const passwordSelector = password ? selectorFor(password) : null;
   if ((username && !usernameSelector) || (password && !passwordSelector)) return null;
+  const confirmation = inputs.filter(
+    (i) => (i.type || '').toLowerCase() === 'password' && i !== password,
+  );
+  if (confirmation.length > 0) return null;
   const form = anchor.closest('form');
   const action = form?.getAttribute('action');
   if (
@@ -210,22 +236,45 @@ function probeFocusedLoginGroup(selector: string): FormGroup | null {
 
 function fillBoundGroup(
   expected: FormGroup,
-  username: string | undefined,
-  password: string | undefined,
+  username: string | null,
+  password: string | null,
   sensitiveAttr: string,
 ): { ok: boolean } {
-  const current = probeFocusedLoginGroup(expected.anchor);
-  if (
-    !current ||
-    current.pageUrl !== expected.pageUrl ||
-    current.username !== expected.username ||
-    current.password !== expected.password
-  )
-    return { ok: false };
+  // This function is passed directly to executeScript. It must be entirely
+  // self-contained: Chrome serializes its source, never module bindings.
+  function visibleEditable(input: HTMLInputElement | null): input is HTMLInputElement {
+    if (!input || input.disabled || input.readOnly || input.type === 'hidden') return false;
+    const rect = input.getBoundingClientRect();
+    const style = getComputedStyle(input);
+    return (
+      rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden'
+    );
+  }
+  function currentMatches(): boolean {
+    if (`${location.origin}${location.pathname}` !== expected.pageUrl) return false;
+    const anchor = document.querySelector(expected.anchor);
+    const username = expected.username ? document.querySelector(expected.username) : null;
+    const password = expected.password ? document.querySelector(expected.password) : null;
+    if (!visibleEditable(anchor instanceof HTMLInputElement ? anchor : null)) return false;
+    if (
+      expected.username &&
+      !visibleEditable(username instanceof HTMLInputElement ? username : null)
+    )
+      return false;
+    if (
+      expected.password &&
+      !visibleEditable(password instanceof HTMLInputElement ? password : null)
+    )
+      return false;
+    const form = (anchor as HTMLInputElement).closest('form');
+    if (form && (form.method || 'get').toLowerCase() === 'get') return false;
+    return true;
+  }
+  if (!currentMatches()) return { ok: false };
   const fields: Array<[string, string]> = [];
-  if (current.username && username !== undefined) fields.push([current.username, username]);
-  if (current.password && password !== undefined) fields.push([current.password, password]);
-  if (fields.length === 0 || (current.password && password === undefined)) return { ok: false };
+  if (expected.username && username !== null) fields.push([expected.username, username]);
+  if (expected.password && password !== null) fields.push([expected.password, password]);
+  if (fields.length === 0 || (expected.password && password === null)) return { ok: false };
   for (const [selector] of fields) {
     const input = document.querySelector(selector);
     if (
@@ -239,14 +288,7 @@ function fillBoundGroup(
   const written: HTMLInputElement[] = [];
   for (const [selector, value] of fields) {
     const input = document.querySelector(selector) as HTMLInputElement;
-    const again = probeFocusedLoginGroup(expected.anchor);
-    if (
-      !again ||
-      again.pageUrl !== expected.pageUrl ||
-      again.username !== expected.username ||
-      again.password !== expected.password ||
-      document.querySelector(selector) !== input
-    ) {
+    if (!currentMatches() || document.querySelector(selector) !== input) {
       for (const prior of written) {
         const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(prior), 'value')?.set;
         if (setter) setter.call(prior, '');
@@ -266,6 +308,9 @@ function fillBoundGroup(
   }
   return { ok: true };
 }
+
+/** Test seam: callers must remain serializable across the scripting boundary. */
+export const __inlineFillSerializedSourceForTest = fillBoundGroup.toString();
 
 async function inject<T>(
   tabId: number,
@@ -288,7 +333,22 @@ async function context(): Promise<{ userId: string; organizationId: string } | n
   return user?.id && organizationId ? { userId: user.id, organizationId } : null;
 }
 
+/** Chrome 106+ document targeting is mandatory; never fall back to tab-only injection. */
+async function isCurrentTopDocument(tabId: number, documentId: string): Promise<boolean> {
+  if (!chrome.webNavigation?.getFrame) return false;
+  try {
+    const frame = (await chrome.webNavigation.getFrame({ tabId, frameId: 0 })) as unknown as {
+      documentId?: unknown;
+    } | null;
+    return frame?.documentId === documentId;
+  } catch {
+    return false;
+  }
+}
+
 async function query(tabId: number, documentId: string, selector: string): Promise<QueryResponse> {
+  const generation = nextGeneration(tabId, documentId);
+  if (!(await isCurrentTopDocument(tabId, documentId))) return response('unavailable');
   if (!(await readOfferSavedLoginsEnabled())) return response('unavailable');
   if (!(await hasRealUserToken())) return response('sign_in_required');
   const actor = await context();
@@ -301,18 +361,28 @@ async function query(tabId: number, documentId: string, selector: string): Promi
   if (!isSafeDestination(url) || !normalizeLoginUrl(group.pageUrl))
     return response('unsafe_destination');
   const matches = await fetchBrowserLoginMatches(group.pageUrl, { includeFieldInventory: true });
+  if (GENERATIONS.get(generationKey(tabId, documentId)) !== generation)
+    return response('unsafe_destination');
+  const actorAfterMatches = await context();
+  if (
+    !actorAfterMatches ||
+    actorAfterMatches.userId !== actor.userId ||
+    actorAfterMatches.organizationId !== actor.organizationId
+  )
+    return response('organization_required');
   if (!matches.ok)
     return response(
       matches.failure.kind === 'sign_in_required' ? 'sign_in_required' : 'unavailable',
     );
   // Username-only is permitted only after the server's canonical URL matcher has a match.
-  const eligible = matches.data.matches.filter(
-    (m) =>
-      !group.usernameOnly ||
-      m.available_fields?.some((f) => f.field_key === 'username' && f.fillable),
-  );
+  const eligible = matches.data.matches.filter((m) => {
+    const inventory = m.available_fields ?? [];
+    return (
+      (!group.username || inventory.some((f) => f.field_key === 'username' && f.fillable)) &&
+      (!group.password || inventory.some((f) => f.field_key === 'password' && f.fillable))
+    );
+  });
   if (eligible.length === 0) return response('no_matches');
-  purge(tabId); // a new focus invalidates all earlier offers in this tab
   const id = randomOfferId();
   OFFERS.set(id, {
     id,
@@ -322,6 +392,7 @@ async function query(tabId: number, documentId: string, selector: string): Promi
     userId: actor.userId,
     itemIds: new Set(eligible.map((m) => m.item_id)),
     expiresAt: Date.now() + OFFER_TTL_MS,
+    generation,
     ...group,
   });
   return {
@@ -346,6 +417,9 @@ async function fill(
     !offer.itemIds.has(payload.itemId)
   )
     return fillResponse('stale');
+  if (!(await isCurrentTopDocument(tabId, documentId))) return fillResponse('unavailable');
+  if (GENERATIONS.get(generationKey(tabId, documentId)) !== offer.generation)
+    return fillResponse('stale');
   if (!(await readOfferSavedLoginsEnabled())) return fillResponse('unavailable');
   const actor = await context();
   if (!actor || actor.userId !== offer.userId || actor.organizationId !== offer.organizationId)
@@ -369,6 +443,25 @@ async function fill(
   if (!materialized.ok)
     return fillResponse(materialized.failure.kind === 'forbidden' ? 'stale' : 'unavailable');
   const data = materialized.data;
+  const actorAfterMaterialize = await context();
+  if (
+    !actorAfterMaterialize ||
+    actorAfterMaterialize.userId !== offer.userId ||
+    actorAfterMaterialize.organizationId !== offer.organizationId ||
+    !(await readOfferSavedLoginsEnabled()) ||
+    GENERATIONS.get(generationKey(tabId, documentId)) !== offer.generation
+  ) {
+    data.username = '';
+    data.password = '';
+    data.fields = {};
+    return fillResponse('stale');
+  }
+  if (!(await isCurrentTopDocument(tabId, documentId))) {
+    data.username = '';
+    data.password = '';
+    data.fields = {};
+    return fillResponse('stale');
+  }
   if (data.origin !== new URL(offer.pageUrl).origin) {
     data.username = '';
     data.password = '';
@@ -382,8 +475,8 @@ async function fill(
   try {
     const done = await inject<{ ok: boolean }>(tabId, documentId, fillBoundGroup, [
       offer,
-      username,
-      password,
+      username ?? null,
+      password ?? null,
       SENSITIVE_ATTR,
     ]).catch(() => null);
     return done?.ok ? fillResponse('filled') : fillResponse('stale');
@@ -402,7 +495,7 @@ export function registerInlineCredentialSuggestionHost(): void {
     const env = message as { __matrx?: unknown; kind?: unknown; payload?: unknown };
     if (env.__matrx !== true) return false;
     if (env.kind === CHANNELS.AUTH_STATE_CHANGED) {
-      purge();
+      invalidate();
       chrome.runtime
         .sendMessage({
           __matrx: true,
@@ -452,13 +545,13 @@ export function registerInlineCredentialSuggestionHost(): void {
     }
     return false;
   });
-  chrome.tabs.onRemoved.addListener((tabId) => purge(tabId));
+  chrome.tabs.onRemoved.addListener((tabId) => invalidate(tabId));
   chrome.tabs.onUpdated.addListener((tabId, change) => {
-    if (change.status === 'loading' || change.url) purge(tabId);
+    if (change.status === 'loading' || change.url) invalidate(tabId);
   });
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && ('matrx.settings.v1' in changes || 'matrx.org.active' in changes)) {
-      purge();
+      invalidate();
       chrome.runtime
         .sendMessage({
           __matrx: true,

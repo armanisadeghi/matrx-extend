@@ -23,7 +23,10 @@ vi.mock('@/lib/api/routes/vault', () => ({
         {
           item_id: ITEM,
           display_name: 'Work account',
-          available_fields: [{ field_key: 'username', fillable: true }],
+          available_fields: [
+            { field_key: 'username', fillable: true },
+            { field_key: 'password', fillable: true },
+          ],
         },
       ],
     },
@@ -92,6 +95,7 @@ beforeEach(() => {
       onRemoved: { addListener: () => undefined },
       onUpdated: { addListener: () => undefined },
     },
+    webNavigation: { getFrame: async () => ({ documentId: 'doc-7' }) },
     storage: { onChanged: { addListener: () => undefined } },
     sidePanel: { open: async () => undefined },
   };
@@ -104,6 +108,36 @@ afterEach(() => {
 });
 
 describe('inline saved-login host', () => {
+  it('runs the value-bearing fill source after source transfer without module bindings', async () => {
+    const { __inlineFillSerializedSourceForTest } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    const sourceTransferred = new Function(
+      `return (${__inlineFillSerializedSourceForTest});`,
+    )() as (
+      expected: unknown,
+      username: string | null,
+      password: string | null,
+      sensitiveAttr: string,
+    ) => { ok: boolean };
+    const result = sourceTransferred(
+      {
+        anchor: '#password',
+        username: '#username',
+        password: '#password',
+        usernameOnly: false,
+        pageUrl: `${location.origin}${location.pathname}`,
+      },
+      'INLINE_USER_SENTINEL',
+      'INLINE_PASSWORD_SENTINEL',
+      'data-matrx-sensitive',
+    );
+    expect(result).toEqual({ ok: true });
+    expect((document.querySelector('#password') as HTMLInputElement).value).toBe(
+      'INLINE_PASSWORD_SENTINEL',
+    );
+  });
+
   it('fills a bound POST login form once without submitting it', async () => {
     const { registerInlineCredentialSuggestionHost } = await import(
       '@/lib/credentials/inline-suggestions-host'
