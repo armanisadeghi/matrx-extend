@@ -35,6 +35,21 @@ export const ACTOR_TIER_AI = 'ai';
 export const ACTOR_TIER_CODE = 'code';
 
 /**
+ * DD-131/B-56 — the client-channel SYSTEM declaration, read by
+ * `platform.declared_actor_system()` exactly the way `ACTOR_TIER_HEADER`
+ * above is read by `platform.declared_actor_tier()`: only on the
+ * `authenticated` channel, only when nothing else declared a system. A
+ * person's write carries no system at all — this header rides ONLY on the
+ * two actor-declaring clients below, never on the shared person's client.
+ */
+export const ACTOR_SYSTEM_HEADER = 'x-matrx-actor-system';
+/** Stable name for every write a model's turn causes inside this extension. */
+export const ACTOR_SYSTEM_AGENT = 'matrx-extend:agent';
+/** Stable name for every write this extension's own background machinery
+ *  causes (scheduler, agenda scanner, bookkeeping bumps). */
+export const ACTOR_SYSTEM_MACHINERY = 'matrx-extend:scheduler';
+
+/**
  * Who caused a write.
  *
  *  - `'person'` — a human's own click or typing in the side panel. Sends NO
@@ -69,9 +84,10 @@ export function getSupabase(): SupabaseClient {
 }
 
 /**
- * The AGENT-AUTHORED client (DD-131). Same URL, same publishable key, same
- * access token as `getSupabase()` — the only difference is that every request
- * it makes carries `x-matrx-actor-tier: ai`.
+ * The AGENT-AUTHORED client (DD-131, DD-131/B-56). Same URL, same publishable
+ * key, same access token as `getSupabase()` — the only difference is that
+ * every request it makes carries `x-matrx-actor-tier: ai` and
+ * `x-matrx-actor-system: matrx-extend:agent`.
  *
  * It is a SEPARATE instance on purpose: there is no way to "forget to unset"
  * the header, and no way for a person's write to pick it up. Reach for it only
@@ -94,6 +110,7 @@ export function getAgentAuthoredSupabase(): SupabaseClient {
         headers: {
           'X-Client-Info': 'matrx-extend',
           [ACTOR_TIER_HEADER]: ACTOR_TIER_AI,
+          [ACTOR_SYSTEM_HEADER]: ACTOR_SYSTEM_AGENT,
         },
       },
     });
@@ -112,9 +129,10 @@ export function getAgentAuthoredSupabase(): SupabaseClient {
 let machineryAuthoredClient: SupabaseClient | null = null;
 
 /**
- * The MACHINERY-AUTHORED client (DD-131, B-44). Same URL, same publishable
- * key, same access token as `getSupabase()` — the only difference is that
- * every request it makes carries `x-matrx-actor-tier: code`.
+ * The MACHINERY-AUTHORED client (DD-131, B-44, DD-131/B-56). Same URL, same
+ * publishable key, same access token as `getSupabase()` — the only difference
+ * is that every request it makes carries `x-matrx-actor-tier: code` and
+ * `x-matrx-actor-system: matrx-extend:scheduler`.
  *
  * Reach for it from a path the extension's OWN infrastructure drives with no
  * model's turn and no person's gesture behind it: the scheduler claiming a
@@ -142,6 +160,7 @@ export function getMachineryAuthoredSupabase(): SupabaseClient {
         headers: {
           'X-Client-Info': 'matrx-extend',
           [ACTOR_TIER_HEADER]: ACTOR_TIER_CODE,
+          [ACTOR_SYSTEM_HEADER]: ACTOR_SYSTEM_MACHINERY,
         },
       },
     });
