@@ -232,6 +232,11 @@ export const INTERNAL_ONLY: { fn: string; module: string; why: string }[] = [
     module: 'src/lib/demos/storage.ts',
     why: 'Also listed above as a confirmed operation; the sync engine reaches it when applying a delete another device already confirmed.',
   },
+  {
+    fn: 'erasePersistedSnapshot',
+    module: 'src/lib/credentials/capture-candidates.ts',
+    why: 'Wipes the plaintext login-capture session cache (chrome.storage.session), never a user record. Called only from the service worker\'s own bookkeeping — persist() once no candidate is pending, and ensureSession() on worker startup when the actor changed or capture got disabled — never from a click or a message a user or the UI sends.',
+  },
 ];
 
 /**
