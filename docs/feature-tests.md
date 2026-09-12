@@ -95,6 +95,8 @@ component, so all four must show identical rows in identical order.
 - **Steps:** Focus a password field, click the Matrx control, choose a saved account, and inspect the form before submitting yourself.
 - **Expected:** Account names only are shown. The chosen username/password fields fill, no navigation or submit occurs, Escape returns focus, and changing page, sign-in, organization, or the Privacy toggle makes the old choice unavailable.
 - **Edge cases worth poking:** username-only continuation, multiple accounts and keyboard arrows, OTP/new-password/confirmation/readonly/GET/cross-origin forms, and a reload while the chooser is open.
+- **Compatibility:** Requires Chrome 106 or later. The chooser refuses to query or fill when top-document identity or `documentIds` targeting is unavailable; it never falls back to tab-wide injection.
+- **Privacy disclosure:** Focus-time matching sends only the current page origin/path and a generated field selector to the extension service worker. No field value is read, captured, or materialized until an account is explicitly selected.
 
 Every entry follows this shape:
 

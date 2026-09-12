@@ -42,8 +42,8 @@ import {
   submitBrowserLoginReport,
 } from '@/lib/api/routes/vault';
 import { checkAuthState } from '@/lib/chat/context/check-auth-state';
-import { isSafeDestination } from '@/lib/credentials/login-urls';
 import { fillSensitiveFieldSource } from '@/lib/credentials/fill-primitive';
+import { isSafeDestination } from '@/lib/credentials/login-urls';
 import {
   SENSITIVE_ATTR,
   forgetSensitiveFields,

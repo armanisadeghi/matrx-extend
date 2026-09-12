@@ -4,6 +4,7 @@ import {
   materializeBrowserLogin,
 } from '@/lib/api/routes/vault';
 import { getCurrentUser } from '@/lib/auth/flow';
+import { type BoundLoginGroup, fillBoundLoginGroupSource } from '@/lib/credentials/fill-primitive';
 import { isSafeDestination, normalizeLoginUrl } from '@/lib/credentials/login-urls';
 import { SENSITIVE_ATTR, rememberSensitiveFields } from '@/lib/credentials/sensitive-fields';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -38,13 +39,7 @@ type FillResponse = {
   message: string;
 };
 
-interface FormGroup {
-  anchor: string;
-  username: string | null;
-  password: string | null;
-  usernameOnly: boolean;
-  pageUrl: string;
-}
+interface FormGroup extends BoundLoginGroup {}
 interface Offer extends FormGroup {
   id: string;
   tabId: number;
@@ -234,83 +229,8 @@ function probeFocusedLoginGroup(selector: string): FormGroup | null {
   };
 }
 
-function fillBoundGroup(
-  expected: FormGroup,
-  username: string | null,
-  password: string | null,
-  sensitiveAttr: string,
-): { ok: boolean } {
-  // This function is passed directly to executeScript. It must be entirely
-  // self-contained: Chrome serializes its source, never module bindings.
-  function visibleEditable(input: HTMLInputElement | null): input is HTMLInputElement {
-    if (!input || input.disabled || input.readOnly || input.type === 'hidden') return false;
-    const rect = input.getBoundingClientRect();
-    const style = getComputedStyle(input);
-    return (
-      rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden'
-    );
-  }
-  function currentMatches(): boolean {
-    if (`${location.origin}${location.pathname}` !== expected.pageUrl) return false;
-    const anchor = document.querySelector(expected.anchor);
-    const username = expected.username ? document.querySelector(expected.username) : null;
-    const password = expected.password ? document.querySelector(expected.password) : null;
-    if (!visibleEditable(anchor instanceof HTMLInputElement ? anchor : null)) return false;
-    if (
-      expected.username &&
-      !visibleEditable(username instanceof HTMLInputElement ? username : null)
-    )
-      return false;
-    if (
-      expected.password &&
-      !visibleEditable(password instanceof HTMLInputElement ? password : null)
-    )
-      return false;
-    const form = (anchor as HTMLInputElement).closest('form');
-    if (form && (form.method || 'get').toLowerCase() === 'get') return false;
-    return true;
-  }
-  if (!currentMatches()) return { ok: false };
-  const fields: Array<[string, string]> = [];
-  if (expected.username && username !== null) fields.push([expected.username, username]);
-  if (expected.password && password !== null) fields.push([expected.password, password]);
-  if (fields.length === 0 || (expected.password && password === null)) return { ok: false };
-  for (const [selector] of fields) {
-    const input = document.querySelector(selector);
-    if (
-      !(input instanceof HTMLInputElement) ||
-      input.disabled ||
-      input.readOnly ||
-      input.type === 'hidden'
-    )
-      return { ok: false };
-  }
-  const written: HTMLInputElement[] = [];
-  for (const [selector, value] of fields) {
-    const input = document.querySelector(selector) as HTMLInputElement;
-    if (!currentMatches() || document.querySelector(selector) !== input) {
-      for (const prior of written) {
-        const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(prior), 'value')?.set;
-        if (setter) setter.call(prior, '');
-        else prior.value = '';
-        prior.dispatchEvent(new Event('input', { bubbles: true }));
-        prior.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-      return { ok: false };
-    }
-    input.setAttribute(sensitiveAttr, '');
-    const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')?.set;
-    if (setter) setter.call(input, value);
-    else input.value = value;
-    input.dispatchEvent(new Event('input', { bubbles: true }));
-    input.dispatchEvent(new Event('change', { bubbles: true }));
-    written.push(input);
-  }
-  return { ok: true };
-}
-
 /** Test seam: callers must remain serializable across the scripting boundary. */
-export const __inlineFillSerializedSourceForTest = fillBoundGroup.toString();
+export const __inlineFillSerializedSourceForTest = fillBoundLoginGroupSource.toString();
 
 async function inject<T>(
   tabId: number,
@@ -327,6 +247,14 @@ async function inject<T>(
   return (first?.result as T | undefined) ?? null;
 }
 
+function supportsDocumentTargeting(): boolean {
+  // `documentIds` is Chrome 106+. Never fall back to a tab-wide write.
+  return (
+    typeof chrome.scripting?.executeScript === 'function' &&
+    typeof chrome.webNavigation?.getFrame === 'function'
+  );
+}
+
 async function context(): Promise<{ userId: string; organizationId: string } | null> {
   if (!(await hasRealUserToken())) return null;
   const [user, organizationId] = await Promise.all([getCurrentUser(), getActiveOrganizationId()]);
@@ -335,7 +263,7 @@ async function context(): Promise<{ userId: string; organizationId: string } | n
 
 /** Chrome 106+ document targeting is mandatory; never fall back to tab-only injection. */
 async function isCurrentTopDocument(tabId: number, documentId: string): Promise<boolean> {
-  if (!chrome.webNavigation?.getFrame) return false;
+  if (!supportsDocumentTargeting()) return false;
   try {
     const frame = (await chrome.webNavigation.getFrame({ tabId, frameId: 0 })) as unknown as {
       documentId?: unknown;
@@ -348,6 +276,7 @@ async function isCurrentTopDocument(tabId: number, documentId: string): Promise<
 
 async function query(tabId: number, documentId: string, selector: string): Promise<QueryResponse> {
   const generation = nextGeneration(tabId, documentId);
+  if (!supportsDocumentTargeting()) return response('unavailable');
   if (!(await isCurrentTopDocument(tabId, documentId))) return response('unavailable');
   if (!(await readOfferSavedLoginsEnabled())) return response('unavailable');
   if (!(await hasRealUserToken())) return response('sign_in_required');
@@ -417,6 +346,7 @@ async function fill(
     !offer.itemIds.has(payload.itemId)
   )
     return fillResponse('stale');
+  if (!supportsDocumentTargeting()) return fillResponse('unavailable');
   if (!(await isCurrentTopDocument(tabId, documentId))) return fillResponse('unavailable');
   if (GENERATIONS.get(generationKey(tabId, documentId)) !== offer.generation)
     return fillResponse('stale');
@@ -473,7 +403,7 @@ async function fill(
   const sensitive = [offer.username, offer.password].filter((x): x is string => !!x);
   rememberSensitiveFields(tabId, sensitive);
   try {
-    const done = await inject<{ ok: boolean }>(tabId, documentId, fillBoundGroup, [
+    const done = await inject<{ ok: boolean }>(tabId, documentId, fillBoundLoginGroupSource, [
       offer,
       username ?? null,
       password ?? null,

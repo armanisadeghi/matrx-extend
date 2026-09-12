@@ -52,6 +52,11 @@ function dismiss(): void {
   host?.remove();
   host = null;
 }
+function focusIsInChooser(): boolean {
+  // A focused element in a closed shadow root is exposed as its host to the
+  // page document. This keeps a pointer click alive through its click handler.
+  return document.activeElement === host;
+}
 function send(kind: string, payload: unknown): Promise<unknown> {
   return chrome.runtime.sendMessage({ __matrx: true, kind, payload });
 }
@@ -60,6 +65,17 @@ function place(target: HTMLInputElement): void {
   const rect = target.getBoundingClientRect();
   host.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - 300))}px`;
   host.style.top = `${Math.max(8, Math.min(rect.bottom + 6, window.innerHeight - 180))}px`;
+}
+
+function requestFor(target: HTMLInputElement): void {
+  focused = target;
+  dismiss();
+  const selector = selectorFor(target);
+  if (!selector) return;
+  const token = ++generation;
+  void send(CHANNELS.CREDENTIAL_SUGGESTIONS_QUERY, { fieldSelector: selector })
+    .then((raw) => render(target, raw as QueryResponse, token))
+    .catch(() => undefined);
 }
 
 function render(target: HTMLInputElement, response: QueryResponse, token: number): void {
@@ -74,7 +90,13 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
     const shadow = host.attachShadow({ mode: 'closed' });
     const message = document.createElement('button');
     message.type = 'button';
-    message.textContent = response.message;
+    message.textContent =
+      response.status === 'organization_required'
+        ? 'Choose organization in Matrx'
+        : response.status === 'sign_in_required'
+          ? 'Open Vault to sign in'
+          : response.message;
+    message.setAttribute('aria-label', response.message);
     message.style.cssText =
       'all:initial;display:block;box-sizing:border-box;max-width:292px;padding:8px;border:1px solid #d4d4d4;border-radius:8px;background:#fff;color:#333;cursor:pointer;font:12px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;';
     message.addEventListener(
@@ -97,7 +119,8 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
     'all:initial;display:block;box-sizing:border-box;width:292px;max-width:calc(100vw - 16px);max-height:168px;overflow:auto;padding:8px;background:#fff;color:#171717;border:1px solid #d4d4d4;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);font:13px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;';
   const title = document.createElement('button');
   title.type = 'button';
-  title.textContent = 'Matrx';
+  title.textContent = 'Matrx — choose a saved login';
+  title.setAttribute('aria-expanded', 'false');
   title.style.cssText =
     'all:initial;display:block;font:600 12px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 6px;color:#333;';
   card.append(title);
@@ -108,7 +131,11 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
     button.hidden = true;
     button.textContent = match.display_name;
     button.style.cssText =
-      'all:initial;display:block;box-sizing:border-box;width:100%;padding:7px 8px;margin:1px 0;border-radius:5px;cursor:pointer;font:13px/1.3 system-ui,-apple-system,Segoe UI,sans-serif;color:#171717;';
+      'all:initial;box-sizing:border-box;width:100%;padding:7px 8px;margin:1px 0;border-radius:5px;cursor:pointer;font:13px/1.3 system-ui,-apple-system,Segoe UI,sans-serif;color:#171717;';
+    button.addEventListener('focus', () =>
+      button.style.setProperty('outline', '2px solid #2563eb'),
+    );
+    button.addEventListener('blur', () => button.style.removeProperty('outline'));
     button.addEventListener('mouseenter', () => button.style.setProperty('background', '#f0f0f0'));
     button.addEventListener('mouseleave', () => button.style.removeProperty('background'));
     button.addEventListener('click', () => {
@@ -119,8 +146,10 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
       })
         .then((raw) => raw as FillResponse)
         .then((result) => {
-          if (result.status === 'filled') dismiss();
-          else {
+          if (result.status === 'filled') {
+            target.focus();
+            dismiss();
+          } else {
             title.textContent = result.message;
           }
         })
@@ -132,8 +161,11 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
     card.append(button);
   }
   title.addEventListener('click', () => {
-    title.hidden = true;
-    for (const button of buttons) button.hidden = false;
+    title.setAttribute('aria-expanded', 'true');
+    for (const button of buttons) {
+      button.hidden = false;
+      button.style.setProperty('display', 'block');
+    }
     buttons[0]?.focus(); // a trusted click, never focus-time autofocus
   });
   shadow.append(card);
@@ -162,14 +194,7 @@ export function mountInlineCredentialSuggestions(): void {
     (event) => {
       const target = event.target;
       if (!(target instanceof HTMLInputElement) || (target === focused && host)) return;
-      focused = target;
-      dismiss();
-      const selector = selectorFor(target);
-      if (!selector) return;
-      const token = ++generation;
-      void send(CHANNELS.CREDENTIAL_SUGGESTIONS_QUERY, { fieldSelector: selector })
-        .then((raw) => render(target, raw as QueryResponse, token))
-        .catch(() => undefined);
+      requestFor(target);
     },
     true,
   );
@@ -178,7 +203,7 @@ export function mountInlineCredentialSuggestions(): void {
     () => {
       window.setTimeout(() => {
         const active = document.activeElement;
-        if (active !== focused && !host?.contains(active)) dismiss();
+        if (active !== focused && !focusIsInChooser()) dismiss();
       }, 0);
     },
     true,
@@ -188,8 +213,11 @@ export function mountInlineCredentialSuggestions(): void {
   window.addEventListener('pagehide', dismiss);
   chrome.runtime.onMessage.addListener((message) => {
     const env = message as { __matrx?: unknown; kind?: unknown } | null;
-    if (env?.__matrx === true && env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_CONTEXT_CHANGED)
+    if (env?.__matrx === true && env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_CONTEXT_CHANGED) {
+      const target = focused;
       dismiss();
+      if (target?.isConnected && document.activeElement === target) requestFor(target);
+    }
     return false;
   });
 }
