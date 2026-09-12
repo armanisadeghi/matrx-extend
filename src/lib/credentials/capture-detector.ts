@@ -38,15 +38,13 @@ const MAX_PASSWORD_LEN = 1024;
 /** Don't re-send the same snapshot for a double submit (Enter + click). */
 const DEDUPE_WINDOW_MS = 3000;
 
-const USERNAME_HINT = /user|email|login|account|identifier|phone|mobile/i;
-const USERNAME_AUTOCOMPLETE = /^(username|email|tel)$/i;
-
-function isVisible(el: HTMLElement): boolean {
-  if ((el as HTMLInputElement).disabled) return false;
-  const rect = el.getBoundingClientRect();
-  if (rect.width === 0 && rect.height === 0) return false;
-  const cs = window.getComputedStyle(el);
-  return cs.display !== 'none' && cs.visibility !== 'hidden';
+function isVisibleEditable(input: HTMLInputElement): boolean {
+  if (input.disabled || input.readOnly || input.type === 'hidden') return false;
+  const rect = input.getBoundingClientRect();
+  const style = window.getComputedStyle(input);
+  return (
+    rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden'
+  );
 }
 
 function isPasswordInput(el: Element | null): el is HTMLInputElement {
@@ -63,57 +61,69 @@ function isOneTimeCode(input: HTMLInputElement): boolean {
 }
 
 /**
- * The container to look for the username in: the password's <form>, else the
- * nearest ancestor that holds more than one input (SPA logins without <form>),
- * else the document body.
+ * A submitted form, or the nearest bounded form-less control group. Never
+ * fall back to the document: unrelated password boxes must not join a capture.
  */
-function scopeOf(password: HTMLInputElement): HTMLElement {
-  const form = password.closest('form');
+function coherentGroup(anchor: Element | null): HTMLElement | null {
+  const form = anchor?.closest('form');
   if (form) return form;
-  let node: HTMLElement | null = password.parentElement;
-  while (node && node !== document.body) {
-    if (node.querySelectorAll('input').length > 1) return node;
-    node = node.parentElement;
+  for (
+    let node = anchor instanceof HTMLElement ? anchor : null, depth = 0;
+    node && depth < 6;
+    node = node.parentElement, depth++
+  ) {
+    const inputs = Array.from(node.querySelectorAll('input'));
+    if (inputs.length >= 2 && inputs.length <= 12 && inputs.some((input) => isPasswordInput(input)))
+      return node;
   }
-  return document.body;
+  return null;
 }
 
-function findUsername(password: HTMLInputElement): string | null {
-  const scope = scopeOf(password);
-  const textInputs = Array.from(
-    scope.querySelectorAll<HTMLInputElement>(
-      'input[type="text"], input[type="email"], input[type="tel"], input:not([type])',
+function findUsername(group: HTMLElement): string | null {
+  const inputs = Array.from(group.querySelectorAll<HTMLInputElement>('input')).filter(
+    (input) =>
+      isVisibleEditable(input) &&
+      input.value.trim().length > 0 &&
+      /^(text|email|tel|search)$/i.test(input.type || 'text'),
+  );
+  const explicit = inputs.find((input) => input.autocomplete.toLowerCase() === 'username');
+  if (explicit) return explicit.value.trim().slice(0, MAX_USERNAME_LEN);
+  const hinted = inputs.find((input) =>
+    /user|email|login|account|identifier/i.test(
+      `${input.name} ${input.id} ${input.placeholder} ${input.getAttribute('aria-label') ?? ''}`,
     ),
-  ).filter((i) => isVisible(i) && i.value.trim().length > 0);
+  );
+  return hinted ? hinted.value.trim().slice(0, MAX_USERNAME_LEN) : null;
+}
 
-  const pick =
-    // 1. explicit autocomplete contract wins
-    textInputs.find((i) => USERNAME_AUTOCOMPLETE.test(i.getAttribute('autocomplete') ?? '')) ??
-    // 2. name / id / placeholder / label heuristic
-    textInputs.find((i) =>
-      USERNAME_HINT.test(
-        `${i.name} ${i.id} ${i.placeholder} ${i.getAttribute('aria-label') ?? ''}`,
-      ),
-    ) ??
-    // 3. the last filled text input before the password
-    [...textInputs]
-      .reverse()
-      .find((i) => {
-        const pos = password.compareDocumentPosition(i);
-        return (pos & Node.DOCUMENT_POSITION_PRECEDING) !== 0;
-      }) ??
-    null;
-
-  // Two-step logins (username on the previous screen) leave nothing visible:
-  // some sites keep the identifier in a hidden input — accept that as a last
-  // resort, value only, never a guess from page text.
-  if (!pick) {
-    const hidden = Array.from(
-      scope.querySelectorAll<HTMLInputElement>('input[type="hidden"]'),
-    ).find((i) => USERNAME_HINT.test(`${i.name} ${i.id}`) && i.value.trim().length > 0);
-    if (hidden) return hidden.value.trim().slice(0, MAX_USERNAME_LEN);
+function safeAction(
+  form: HTMLFormElement | null,
+  submitter: Element | null,
+  doc: Document,
+): boolean {
+  if (!form) return true;
+  const control =
+    submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement
+      ? submitter
+      : null;
+  const method = (
+    control?.getAttribute('formmethod') ??
+    form.getAttribute('method') ??
+    'get'
+  ).toLowerCase();
+  if (method === 'get') return false;
+  const rawAction =
+    control?.getAttribute('formaction') ?? form.getAttribute('action') ?? doc.location.href;
+  try {
+    const action = new URL(rawAction, doc.location.href);
+    const loopback = /^(localhost|127\.0\.0\.1|\[::1\]|::1)$/.test(action.hostname);
+    return (
+      action.origin === doc.location.origin &&
+      (action.protocol === 'https:' || (action.protocol === 'http:' && loopback))
+    );
+  } catch {
+    return false;
   }
-  return pick ? pick.value.trim().slice(0, MAX_USERNAME_LEN) : null;
 }
 
 /**
@@ -130,25 +140,57 @@ export function snapshotLogin(
   anchor: Element | null,
   doc: Document = document,
 ): CaptureCandidateWire | null {
-  const form = anchor?.closest('form') ?? null;
-  const root: ParentNode = form ?? doc;
+  const group = coherentGroup(anchor);
+  if (!group) return null;
+  const form = group instanceof HTMLFormElement ? group : null;
+  if (!safeAction(form, anchor, doc)) return null;
   const passwords = Array.from(
-    root.querySelectorAll<HTMLInputElement>('input[type="password"]'),
-  ).filter((i) => isVisible(i) && i.value.length > 0 && !isOneTimeCode(i));
-  if (passwords.length === 0) return null;
-  if (form && (form.getAttribute('method') ?? 'get').toLowerCase() === 'get') return null;
-
-  const distinct = new Set(passwords.map((p) => p.value));
-  if (distinct.size > 1) return null;
-
-  const password = passwords[passwords.length - 1] as HTMLInputElement;
-  const value = password.value;
-  if (value.length > MAX_PASSWORD_LEN) return null;
+    group.querySelectorAll<HTMLInputElement>('input[type="password"]'),
+  ).filter((input) => isVisibleEditable(input) && input.value.length > 0 && !isOneTimeCode(input));
+  if (passwords.length === 0) {
+    const username = Array.from(group.querySelectorAll<HTMLInputElement>('input')).find(
+      (input) =>
+        isVisibleEditable(input) &&
+        input.autocomplete.toLowerCase() === 'username' &&
+        input.value.trim().length > 0,
+    );
+    return username
+      ? {
+          stage: 'username_first',
+          loginUrl: doc.location.href,
+          username: username.value.trim().slice(0, MAX_USERNAME_LEN),
+        }
+      : null;
+  }
+  const current = passwords.filter(
+    (input) => input.autocomplete.toLowerCase() === 'current-password',
+  );
+  const fresh = passwords.filter((input) => input.autocomplete.toLowerCase() === 'new-password');
+  let password: HTMLInputElement | null;
+  if (current.length > 0 || fresh.length > 0) {
+    const newValues = new Set(fresh.map((input) => input.value));
+    const currentValues = new Set(current.map((input) => input.value));
+    if (
+      current.length === 0 ||
+      fresh.length === 0 ||
+      newValues.size !== 1 ||
+      currentValues.size !== 1 ||
+      [...newValues][0] === [...currentValues][0] ||
+      passwords.some((input) => !current.includes(input) && !fresh.includes(input))
+    )
+      return null;
+    password = fresh[0] ?? null;
+  } else {
+    if (new Set(passwords.map((input) => input.value)).size !== 1) return null;
+    password = passwords[0] ?? null;
+  }
+  const value = password?.value;
+  if (!password || !value || value.length > MAX_PASSWORD_LEN) return null;
 
   return {
     stage: 'password',
     loginUrl: doc.location.href,
-    username: findUsername(password),
+    username: findUsername(group),
     password: value,
   };
 }
@@ -173,57 +215,45 @@ function postCandidate(candidate: CaptureCandidateWire): void {
  * Install the listeners. Idempotent per document. Returns a disposer (tests).
  */
 export function mountCaptureDetector(doc: Document = document): () => void {
-  let lastKey = '';
-  let lastAt = 0;
+  const submitted = new WeakMap<HTMLElement, number>();
 
   const consider = (anchor: Element | null) => {
+    const group = coherentGroup(anchor);
+    if (!group) return;
+    const now = Date.now();
+    if (now - (submitted.get(group) ?? 0) < DEDUPE_WINDOW_MS) return;
     const snap = snapshotLogin(anchor, doc);
     if (!snap) return;
-    // Dedupe Enter-then-click on the same values without keeping the values:
-    // compare lengths + a cheap non-reversible fold of the password.
-    let fold = 0;
-    if (snap.stage !== 'password' || typeof snap.password !== 'string') return;
-    for (let i = 0; i < snap.password.length; i++)
-      fold = (fold * 31 + snap.password.charCodeAt(i)) | 0;
-    const key = `${snap.loginUrl}|${snap.username ?? ''}|${snap.password.length}|${fold}`;
-    const now = Date.now();
-    if (key === lastKey && now - lastAt < DEDUPE_WINDOW_MS) return;
-    lastKey = key;
-    lastAt = now;
+    submitted.set(group, now);
     postCandidate(snap);
   };
 
   // Real form submission (capture phase so a handler that stops propagation or
   // calls preventDefault + fetch() still lets us see it).
-  const onSubmit = (e: Event) => consider(e.target instanceof Element ? e.target : null);
+  const onSubmit = (e: Event) => {
+    if (!e.isTrusted) return;
+    const submitter = (e as SubmitEvent).submitter;
+    consider(
+      submitter instanceof Element ? submitter : e.target instanceof Element ? e.target : null,
+    );
+  };
   // Enter inside a password box — SPA logins often have no <form>.
   const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key !== 'Enter') return;
+    if (!e.isTrusted || e.key !== 'Enter') return;
     if (isPasswordInput(e.target as Element | null)) consider(e.target as Element);
   };
   // A submit-looking control clicked near a filled password box.
   const onClick = (e: MouseEvent) => {
+    if (!e.isTrusted) return;
     const target = e.target instanceof Element ? e.target : null;
-    const control = target?.closest('button, input[type="submit"], [role="button"]') ?? null;
+    const control = target?.closest('button, input[type="submit"]') ?? null;
     if (!control) return;
     const form = control.closest('form');
     if (form) {
       consider(control);
       return;
     }
-    // No form: only act when a filled password input lives in the same
-    // container — otherwise every button on the page would be a candidate.
-    let node: HTMLElement | null = control.parentElement;
-    for (let depth = 0; node && depth < 6; depth++, node = node.parentElement) {
-      if (
-        Array.from(node.querySelectorAll<HTMLInputElement>('input[type="password"]')).some(
-          (i) => i.value.length > 0,
-        )
-      ) {
-        consider(control);
-        return;
-      }
-    }
+    if (coherentGroup(control)) consider(control);
   };
 
   doc.addEventListener('submit', onSubmit, true);

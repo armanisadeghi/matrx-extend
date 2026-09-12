@@ -222,11 +222,11 @@ describe('detector — snapshotLogin', () => {
     expect(snapshotLogin(doc.querySelector('form'), doc)).toBeNull();
   });
 
-  it('accepts a sign-up form (password + matching confirm)', async () => {
+  it('refuses a mixed new-password and unclassified confirmation field', async () => {
     const { snapshotLogin } = await import('@/lib/credentials/capture-detector');
     const doc = mount(`<form method="post"><input type="email" autocomplete="email" value="${USER}">
       <input type="password" autocomplete="new-password" value="${SENTINEL}"><input type="password" value="${SENTINEL}"></form>`);
-    expect(snapshotLogin(doc.querySelector('form'), doc)?.password).toBe(SENTINEL);
+    expect(snapshotLogin(doc.querySelector('form'), doc)).toBeNull();
   });
 
   it('ignores a one-time-code box and an empty password', async () => {
@@ -259,6 +259,78 @@ describe('detector — snapshotLogin', () => {
       username: USER,
       password: SENTINEL,
     });
+  });
+
+  it('chooses agreeing explicit new-password controls over a distinct current password', async () => {
+    const { snapshotLogin } = await import('@/lib/credentials/capture-detector');
+    const doc = mount(`<form method="post"><input autocomplete="username" value="${USER}">
+      <input type="password" autocomplete="current-password" value="old-password">
+      <input type="password" autocomplete="new-password" value="${SENTINEL}">
+      <input type="password" autocomplete="new-password" value="${SENTINEL}"></form>`);
+    expect(snapshotLogin(doc.querySelector('form'), doc)).toMatchObject({
+      stage: 'password',
+      username: USER,
+      password: SENTINEL,
+    });
+  });
+
+  it('refuses conflicting explicit new-password controls', async () => {
+    const { snapshotLogin } = await import('@/lib/credentials/capture-detector');
+    const doc =
+      mount(`<form method="post"><input type="password" autocomplete="current-password" value="old-password">
+      <input type="password" autocomplete="new-password" value="${SENTINEL}">
+      <input type="password" autocomplete="new-password" value="different-new-password"></form>`);
+    expect(snapshotLogin(doc.querySelector('form'), doc)).toBeNull();
+  });
+
+  it('captures only an explicit autocomplete=username field as a username-first continuation', async () => {
+    const { snapshotLogin } = await import('@/lib/credentials/capture-detector');
+    const allowed = mount(
+      `<form method="post"><input autocomplete="username" value="${USER}"><button>Continue</button></form>`,
+    );
+    expect(snapshotLogin(allowed.querySelector('form'), allowed)).toMatchObject({
+      stage: 'username_first',
+      username: USER,
+    });
+    const refused = mount(
+      `<form method="post"><input type="email" value="${USER}"><button>Continue</button></form>`,
+    );
+    expect(snapshotLogin(refused.querySelector('form'), refused)).toBeNull();
+  });
+
+  it('honors submitter overrides and refuses an insecure or GET effective destination', async () => {
+    const { snapshotLogin } = await import('@/lib/credentials/capture-detector');
+    const insecure = mount(`<form method="post"><input type="password" value="${SENTINEL}">
+      <button type="submit" formaction="http://attacker.invalid">Go</button></form>`);
+    expect(snapshotLogin(insecure.querySelector('button'), insecure)).toBeNull();
+    const get = mount(`<form method="post"><input type="password" value="${SENTINEL}">
+      <button type="submit" formmethod="get">Go</button></form>`);
+    expect(snapshotLogin(get.querySelector('button'), get)).toBeNull();
+    const crossOrigin =
+      mount(`<form method="post" action="https://attacker.invalid"><input type="password" value="${SENTINEL}">
+      <button type="submit">Go</button></form>`);
+    expect(snapshotLogin(crossOrigin.querySelector('button'), crossOrigin)).toBeNull();
+  });
+
+  it('refuses a synthetic submit even when a late SPA form is mounted after its listeners', async () => {
+    const { mountCaptureDetector } = await import('@/lib/credentials/capture-detector');
+    const sent: unknown[] = [];
+    Object.assign(chrome, {
+      runtime: {
+        id: 'test-extension',
+        sendMessage: async (message: unknown) => void sent.push(message),
+      },
+    });
+    document.body.innerHTML = '';
+    const dispose = mountCaptureDetector(document);
+    const doc = mount(`<form method="post"><input autocomplete="username" value="${USER}">
+      <input type="password" value="${SENTINEL}"><button type="submit">Go</button></form>`);
+    doc
+      .querySelector('form')
+      ?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    await Promise.resolve();
+    expect(sent).toEqual([]);
+    dispose();
   });
 });
 
