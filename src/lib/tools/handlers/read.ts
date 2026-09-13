@@ -2,7 +2,7 @@
  * Tier: READ — informational tools. Run automatically without approval.
  */
 
-import { base64ByteLength } from '@/lib/base64';
+import { base64ByteLength } from '@ai-matrx/kit/base64';
 import { SENSITIVE_ATTR, sensitiveSelectorsForTab } from '@/lib/credentials/sensitive-fields';
 import { log } from '@/lib/debug/log';
 // Static imports — these three were dynamic (`await import(...)`) inside

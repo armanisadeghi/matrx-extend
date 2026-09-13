@@ -28,7 +28,7 @@
  * checks this BEFORE invoking the handler — see ToolHandler.required_optional_permissions.
  */
 
-import { base64ByteLength } from '@/lib/base64';
+import { base64ByteLength } from '@ai-matrx/kit/base64';
 import * as cdp from '@/lib/cdp/client';
 import { log } from '@/lib/debug/log';
 import { type ScreenshotProfile, resolveProfile } from '@/lib/screenshot/profiles';
