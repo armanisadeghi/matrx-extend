@@ -47,3 +47,14 @@ it('refuses an OTP/new-password bound group before writing', () => {
   expect(outcome).toEqual({ ok: false });
   expect((document.querySelector('#password') as HTMLInputElement).value).toBe('');
 });
+
+it('accepts the exact short React sentinel through serialized focused_group', () => {
+  document.body.innerHTML = `<form action="${short.replaceAll('"', '&quot;')}"><input id="user" autocomplete="username"></form>`;
+  const input = document.querySelector('#user') as HTMLInputElement;
+  Object.defineProperty(input, 'getBoundingClientRect', { value: () => ({ width: 40, height: 20 }) });
+  expect(serialized({ operation: 'focused_group', selector: '#user' })).toMatchObject({
+    anchor: '#user',
+    username: '#user',
+    usernameOnly: true,
+  });
+});

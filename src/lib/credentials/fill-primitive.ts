@@ -10,63 +10,124 @@ export interface BoundLoginGroup {
   usernameOnly: boolean;
   pageUrl: string;
 }
-export interface ControlledCredentialField { selector: string; value: string | null; }
+export interface ControlledCredentialField {
+  selector: string;
+  value: string | null;
+}
 export type FormDestinationKind = 'safe_post' | 'react_action' | 'unsafe';
-export interface FormDestination { kind: FormDestinationKind; reason?: 'method' | 'url' | 'origin' | 'scheme' | 'override'; }
+export interface FormDestination {
+  kind: FormDestinationKind;
+  reason?: 'method' | 'url' | 'origin' | 'scheme' | 'override';
+}
 export interface LoginFormProbe {
-  is_top_frame: boolean; origin: string; href: string;
-  username_selector: string | null; password_selector: string | null;
-  submit_selector: string | null; destination_safe: boolean;
+  is_top_frame: boolean;
+  origin: string;
+  href: string;
+  username_selector: string | null;
+  password_selector: string | null;
+  submit_selector: string | null;
+  destination_safe: boolean;
 }
 export interface SpecProbe {
-  is_top_frame: boolean; origin: string;
+  is_top_frame: boolean;
+  origin: string;
   fields: Record<string, { exists: boolean; destination_safe: boolean }>;
   controls: Record<string, boolean>;
 }
 export interface CredentialDomRequestMap {
-  classify_form: { form: HTMLFormElement | null; submitter: Element | null; currentUrl: string; baseUri: string };
+  classify_form: {
+    form: HTMLFormElement | null;
+    submitter: Element | null;
+    currentUrl: string;
+    baseUri: string;
+  };
   focused_group: { selector: string };
   attempt_probe: { fieldSelectors: string[]; controlSelectors: string[] };
   auto_probe: {};
-  fill: { expected: BoundLoginGroup | null; requested: ControlledCredentialField[]; sensitiveAttr: string; preserveLegacyFieldBehavior: boolean };
+  fill: {
+    expected: BoundLoginGroup | null;
+    requested: ControlledCredentialField[];
+    sensitiveAttr: string;
+    preserveLegacyFieldBehavior: boolean;
+  };
   submit_auto: { selector: string | null };
   submit_explicit: { kind: 'click' | 'press_enter' | 'none'; selector: string | null };
 }
 export type CredentialDomOperation = keyof CredentialDomRequestMap;
 export type CredentialDomInjectedOperation = Exclude<CredentialDomOperation, 'classify_form'>;
-export type CredentialDomRequest = { [O in CredentialDomOperation]: { operation: O } & CredentialDomRequestMap[O] }[CredentialDomOperation];
-export type CredentialDomInjectedRequest = { [O in CredentialDomInjectedOperation]: { operation: O } & CredentialDomRequestMap[O] }[CredentialDomInjectedOperation];
+export type CredentialDomRequest = {
+  [O in CredentialDomOperation]: { operation: O } & CredentialDomRequestMap[O];
+}[CredentialDomOperation];
+export type CredentialDomInjectedRequest = {
+  [O in CredentialDomInjectedOperation]: { operation: O } & CredentialDomRequestMap[O];
+}[CredentialDomInjectedOperation];
 export interface CredentialDomResultMap {
-  classify_form: FormDestination; focused_group: BoundLoginGroup | null; attempt_probe: SpecProbe; auto_probe: LoginFormProbe;
-  fill: { ok: boolean; reason?: string }; submit_auto: { ok: boolean; mode: string }; submit_explicit: { ok: boolean; mode: string };
+  classify_form: FormDestination;
+  focused_group: BoundLoginGroup | null;
+  attempt_probe: SpecProbe;
+  auto_probe: LoginFormProbe;
+  fill: { ok: boolean; reason?: string };
+  submit_auto: { ok: boolean; mode: string };
+  submit_explicit: { ok: boolean; mode: string };
 }
 export type CredentialDomResult<O extends CredentialDomOperation> = CredentialDomResultMap[O];
 
-export function credentialDomSource<O extends CredentialDomOperation>(request: { operation: O } & CredentialDomRequestMap[O]): CredentialDomResult<O>;
-export function credentialDomSource(request: CredentialDomRequest): CredentialDomResultMap[CredentialDomOperation] {
+export function credentialDomSource<O extends CredentialDomOperation>(
+  request: { operation: O } & CredentialDomRequestMap[O],
+): CredentialDomResult<O>;
+export function credentialDomSource(
+  request: CredentialDomRequest,
+): CredentialDomResultMap[CredentialDomOperation] {
   // Exact React DOM 19.2 and Next vendored literals. Unknown javascript: is unsafe.
-  const reactLong = "javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')";
+  const reactLong =
+    "javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')";
   const nextShort = "javascript:throw new Error('React form unexpectedly submitted.')";
   const result = <T>(value: T): T => value;
-  function submitControl(control: Element | null, form: HTMLFormElement): control is HTMLButtonElement | HTMLInputElement {
-    if (!(control instanceof HTMLButtonElement || control instanceof HTMLInputElement) || control.form !== form) return false;
-    const type = (control.getAttribute('type') ?? (control instanceof HTMLButtonElement ? 'submit' : 'text')).toLowerCase();
-    return control instanceof HTMLButtonElement ? type === 'submit' : type === 'submit' || type === 'image';
+  function submitControl(
+    control: Element | null,
+    form: HTMLFormElement,
+  ): control is HTMLButtonElement | HTMLInputElement {
+    if (
+      !(control instanceof HTMLButtonElement || control instanceof HTMLInputElement) ||
+      control.form !== form
+    )
+      return false;
+    const type = control.type.toLowerCase();
+    return control instanceof HTMLButtonElement
+      ? type === 'submit'
+      : type === 'submit' || type === 'image';
   }
-  function classifyOne(form: HTMLFormElement, control: Element | null, currentUrl: string, baseUri: string): FormDestination {
+  function classifyOne(
+    form: HTMLFormElement,
+    control: Element | null,
+    currentUrl: string,
+    baseUri: string,
+  ): FormDestination {
     const submitter = submitControl(control, form) ? control : null;
     const rawAction = submitter?.getAttribute('formaction') ?? form.getAttribute('action') ?? '';
     if (rawAction === reactLong || rawAction === nextShort) return { kind: 'react_action' };
     const rawMethod = submitter?.getAttribute('formmethod') ?? form.getAttribute('method') ?? 'get';
     if (rawMethod.toLowerCase() !== 'post') return { kind: 'unsafe', reason: 'method' };
-    let target: URL; let current: URL;
-    try { target = new URL(rawAction || currentUrl, rawAction ? baseUri : currentUrl); current = new URL(currentUrl); } catch { return { kind: 'unsafe', reason: 'url' }; }
+    let target: URL;
+    let current: URL;
+    try {
+      target = new URL(rawAction || currentUrl, rawAction ? baseUri : currentUrl);
+      current = new URL(currentUrl);
+    } catch {
+      return { kind: 'unsafe', reason: 'url' };
+    }
     const loopback = /^(localhost|127\.0\.0\.1|\[::1\]|::1)$/.test(target.hostname);
     if (target.origin !== current.origin) return { kind: 'unsafe', reason: 'origin' };
-    if (target.protocol !== 'https:' && !(target.protocol === 'http:' && loopback)) return { kind: 'unsafe', reason: 'scheme' };
+    if (target.protocol !== 'https:' && !(target.protocol === 'http:' && loopback))
+      return { kind: 'unsafe', reason: 'scheme' };
     return { kind: 'safe_post' };
   }
-  function classify(form: HTMLFormElement | null, submitter: Element | null, currentUrl = location.href, baseUri = document.baseURI): FormDestination {
+  function classify(
+    form: HTMLFormElement | null,
+    submitter: Element | null,
+    currentUrl = location.href,
+    baseUri = document.baseURI,
+  ): FormDestination {
     if (!form) return { kind: 'safe_post' };
     const selected = submitControl(submitter, form) ? submitter : null;
     const primary = classifyOne(form, selected, currentUrl, baseUri);
@@ -74,7 +135,8 @@ export function credentialDomSource(request: CredentialDomRequest): CredentialDo
     for (const candidate of Array.from(form.elements)) {
       if (!submitControl(candidate, form) || candidate.disabled || candidate === selected) continue;
       if (!candidate.hasAttribute('formaction') && !candidate.hasAttribute('formmethod')) continue;
-      if (classifyOne(form, candidate, currentUrl, baseUri).kind === 'unsafe') return { kind: 'unsafe', reason: 'override' };
+      if (classifyOne(form, candidate, currentUrl, baseUri).kind === 'unsafe')
+        return { kind: 'unsafe', reason: 'override' };
     }
     return primary;
   }
@@ -169,17 +231,7 @@ export function credentialDomSource(request: CredentialDomRequest): CredentialDo
       (i) => (i.type || '').toLowerCase() === 'password' && i !== password,
     );
     if (confirmation.length > 0) return null;
-    const form = anchor.form;
-    const action = form?.getAttribute('action');
-    if (
-      form &&
-      ((form.method || 'get').toLowerCase() === 'get' ||
-        (action && new URL(action, location.href).origin !== location.origin) ||
-        (action &&
-          new URL(action, location.href).protocol !== 'https:' &&
-          location.protocol !== 'http:'))
-    )
-      return null;
+    if (classify(anchor.form, null).kind === 'unsafe') return null;
     return {
       anchor: anchorSelector,
       username: usernameSelector,
@@ -187,7 +239,8 @@ export function credentialDomSource(request: CredentialDomRequest): CredentialDo
       usernameOnly: !passwordSelector,
       pageUrl: `${location.origin}${location.pathname}`,
     };
-    }  function autoProbe(): LoginFormProbe {
+  }
+  function autoProbe(): LoginFormProbe {
     function uniqueSelector(el: Element): string {
       const id = el.getAttribute('id');
       if (id) return `#${CSS.escape(id)}`;
@@ -296,14 +349,55 @@ export function credentialDomSource(request: CredentialDomRequest): CredentialDo
       destination_safe: classify(form, submit).kind !== 'unsafe',
     };
   }
-  function attemptProbe(fieldSelectors:string[],controlSelectors:string[]): SpecProbe { const controls:Record<string,boolean>={}; const selected:Record<string,Element|null>={}; for(const selector of controlSelectors){try{const e=document.querySelector(selector); controls[selector]=e instanceof HTMLElement;selected[selector]=e;}catch{controls[selector]=false;selected[selector]=null;}} const fields:SpecProbe['fields']={};for(const selector of fieldSelectors){let e:Element|null=null;try{e=document.querySelector(selector);}catch{} const form=e?.closest('form')??null; const submit=Object.values(selected).find(x=>x&&submitControl(x,form as HTMLFormElement))??null; fields[selector]={exists:e instanceof HTMLInputElement||e instanceof HTMLTextAreaElement,destination_safe:classify(form,submit).kind!=='unsafe'};}return {is_top_frame:window.top===window.self,origin:location.origin,fields,controls}; }
-  function fill(expected: BoundLoginGroup | null, requested: ControlledCredentialField[], sensitiveAttr: string, preserveLegacyFieldBehavior: boolean): { ok: boolean; reason?: string } {
+  function attemptProbe(fieldSelectors: string[], controlSelectors: string[]): SpecProbe {
+    const controls: Record<string, boolean> = {};
+    const selected: Record<string, Element | null> = {};
+    for (const selector of controlSelectors) {
+      try {
+        const e = document.querySelector(selector);
+        controls[selector] = e instanceof HTMLElement;
+        selected[selector] = e;
+      } catch {
+        controls[selector] = false;
+        selected[selector] = null;
+      }
+    }
+    const fields: SpecProbe['fields'] = {};
+    for (const selector of fieldSelectors) {
+      let e: Element | null = null;
+      try {
+        e = document.querySelector(selector);
+      } catch {}
+      const form =
+        e instanceof HTMLInputElement ||
+        e instanceof HTMLTextAreaElement ||
+        e instanceof HTMLButtonElement
+          ? e.form
+          : (e?.closest('form') ?? null);
+      const submit =
+        Object.values(selected).find((x) => x && submitControl(x, form as HTMLFormElement)) ?? null;
+      fields[selector] = {
+        exists: e instanceof HTMLInputElement || e instanceof HTMLTextAreaElement,
+        destination_safe: classify(form, submit).kind !== 'unsafe',
+      };
+    }
+    return { is_top_frame: window.top === window.self, origin: location.origin, fields, controls };
+  }
+  function fill(
+    expected: BoundLoginGroup | null,
+    requested: ControlledCredentialField[],
+    sensitiveAttr: string,
+    preserveLegacyFieldBehavior: boolean,
+  ): { ok: boolean; reason?: string } {
     function visibleEditable(input: HTMLInputElement | null): input is HTMLInputElement {
       if (!input || input.disabled || input.readOnly || input.type === 'hidden') return false;
       const rect = input.getBoundingClientRect();
       const style = getComputedStyle(input);
       return (
-        rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden'
+        rect.width > 0 &&
+        rect.height > 0 &&
+        style.display !== 'none' &&
+        style.visibility !== 'hidden'
       );
     }
     function inputFor(selector: string | null): HTMLInputElement | null {
@@ -377,14 +471,15 @@ export function credentialDomSource(request: CredentialDomRequest): CredentialDo
         )
       )
         return false;
-      const scope =
-        currentAnchor.form ?? currentAnchor.parentElement ?? document.body;
+      const scope = currentAnchor.form ?? currentAnchor.parentElement ?? document.body;
       const inputs = Array.from(scope.querySelectorAll('input')).filter(
-        (node): node is HTMLInputElement => node instanceof HTMLInputElement && visibleEditable(node),
+        (node): node is HTMLInputElement =>
+          node instanceof HTMLInputElement && visibleEditable(node),
       );
       const passwords = inputs.filter((node) => (node.type || '').toLowerCase() === 'password');
       if (passwords.length !== (group.password ? 1 : 0)) return false;
-      if (passwords.some((node) => node.autocomplete.toLowerCase() === 'new-password')) return false;
+      if (passwords.some((node) => node.autocomplete.toLowerCase() === 'new-password'))
+        return false;
       if (group.password && passwords[0] !== originals.password) return false;
       const form = currentAnchor.form;
       if (classify(form, null).kind === 'unsafe') return false;
@@ -404,9 +499,19 @@ export function credentialDomSource(request: CredentialDomRequest): CredentialDo
     const fields: Array<[HTMLInputElement, string]> = [];
     const usernameValue = group.username ? requestedBySelector.get(group.username) : undefined;
     const passwordValue = group.password ? requestedBySelector.get(group.password) : undefined;
-    if (group.username && usernameValue !== undefined && usernameValue !== null && originals.username)
+    if (
+      group.username &&
+      usernameValue !== undefined &&
+      usernameValue !== null &&
+      originals.username
+    )
       fields.push([originals.username, usernameValue]);
-    if (group.password && passwordValue !== undefined && passwordValue !== null && originals.password)
+    if (
+      group.password &&
+      passwordValue !== undefined &&
+      passwordValue !== null &&
+      originals.password
+    )
       fields.push([originals.password, passwordValue]);
     if (!safeGroup() || fields.length === 0 || (group.password && passwordValue == null))
       return { ok: false };
@@ -424,7 +529,77 @@ export function credentialDomSource(request: CredentialDomRequest): CredentialDo
     clearOwned(written);
     return { ok: false };
   }
-  function submitAuto(selector:string|null):{ok:boolean;mode:string}{let el:Element|null=null;try{el=selector?document.querySelector(selector):null;}catch{} const form=(el instanceof HTMLButtonElement||el instanceof HTMLInputElement ? el.form : el?.closest('form'))??((document.querySelector('input[type="password"],input') as HTMLInputElement | null)?.form??null);if(classify(form,el).kind==='unsafe')return {ok:false,mode:'unsafe_destination'};if(el instanceof HTMLElement&&submitControl(el,form as HTMLFormElement)){el.click();return {ok:true,mode:'click'};}if(!form||typeof form.requestSubmit!=='function')return {ok:false,mode:'none'};form.requestSubmit();return {ok:true,mode:'form'}; }
-  function explicit(kind:'click'|'press_enter'|'none',selector:string|null):{ok:boolean;mode:string}{if(kind==='none')return {ok:true,mode:'none'};let el:Element|null=null;try{el=selector?document.querySelector(selector):null;}catch{} if(!el)return {ok:false,mode:'not_found'};const form=el instanceof HTMLButtonElement||el instanceof HTMLInputElement ? el.form : el.closest('form');if(classify(form,el).kind==='unsafe')return {ok:false,mode:'unsafe_destination'};if(kind==='click'&&el instanceof HTMLElement){el.click();return {ok:true,mode:'click'};}if(!form||typeof form.requestSubmit!=='function')return {ok:false,mode:'request_submit_unavailable'};form.requestSubmit();return {ok:true,mode:'press_enter'}; }
-  switch(request.operation){case 'classify_form':return result(classify(request.form,request.submitter,request.currentUrl,request.baseUri)) as CredentialDomResultMap[CredentialDomOperation];case 'focused_group':return result(focused(request.selector)) as CredentialDomResultMap[CredentialDomOperation];case 'attempt_probe':return result(attemptProbe(request.fieldSelectors,request.controlSelectors)) as CredentialDomResultMap[CredentialDomOperation];case 'auto_probe':return result(autoProbe()) as CredentialDomResultMap[CredentialDomOperation];case 'fill':return result(fill(request.expected,request.requested,request.sensitiveAttr,request.preserveLegacyFieldBehavior)) as CredentialDomResultMap[CredentialDomOperation];case 'submit_auto':return result(submitAuto(request.selector)) as CredentialDomResultMap[CredentialDomOperation];case 'submit_explicit':return result(explicit(request.kind,request.selector)) as CredentialDomResultMap[CredentialDomOperation];}
+  function submitAuto(selector: string | null): { ok: boolean; mode: string } {
+    let el: Element | null = null;
+    try {
+      el = selector ? document.querySelector(selector) : null;
+    } catch {}
+    const form =
+      (el instanceof HTMLButtonElement || el instanceof HTMLInputElement
+        ? el.form
+        : el?.closest('form')) ??
+      (document.querySelector('input[type="password"],input') as HTMLInputElement | null)?.form ??
+      null;
+    if (classify(form, el).kind === 'unsafe') return { ok: false, mode: 'unsafe_destination' };
+    if (el instanceof HTMLElement && submitControl(el, form as HTMLFormElement)) {
+      el.click();
+      return { ok: true, mode: 'click' };
+    }
+    if (!form || typeof form.requestSubmit !== 'function') return { ok: false, mode: 'none' };
+    form.requestSubmit();
+    return { ok: true, mode: 'form' };
+  }
+  function explicit(
+    kind: 'click' | 'press_enter' | 'none',
+    selector: string | null,
+  ): { ok: boolean; mode: string } {
+    if (kind === 'none') return { ok: true, mode: 'none' };
+    let el: Element | null = null;
+    try {
+      el = selector ? document.querySelector(selector) : null;
+    } catch {}
+    if (!el) return { ok: false, mode: 'not_found' };
+    const form =
+      el instanceof HTMLButtonElement || el instanceof HTMLInputElement
+        ? el.form
+        : el.closest('form');
+    if (classify(form, el).kind === 'unsafe') return { ok: false, mode: 'unsafe_destination' };
+    if (kind === 'click' && el instanceof HTMLElement) {
+      el.click();
+      return { ok: true, mode: 'click' };
+    }
+    if (!form || typeof form.requestSubmit !== 'function')
+      return { ok: false, mode: 'request_submit_unavailable' };
+    form.requestSubmit();
+    return { ok: true, mode: 'press_enter' };
+  }
+  switch (request.operation) {
+    case 'classify_form':
+      return result(
+        classify(request.form, request.submitter, request.currentUrl, request.baseUri),
+      ) as CredentialDomResultMap[CredentialDomOperation];
+    case 'focused_group':
+      return result(focused(request.selector)) as CredentialDomResultMap[CredentialDomOperation];
+    case 'attempt_probe':
+      return result(
+        attemptProbe(request.fieldSelectors, request.controlSelectors),
+      ) as CredentialDomResultMap[CredentialDomOperation];
+    case 'auto_probe':
+      return result(autoProbe()) as CredentialDomResultMap[CredentialDomOperation];
+    case 'fill':
+      return result(
+        fill(
+          request.expected,
+          request.requested,
+          request.sensitiveAttr,
+          request.preserveLegacyFieldBehavior,
+        ),
+      ) as CredentialDomResultMap[CredentialDomOperation];
+    case 'submit_auto':
+      return result(submitAuto(request.selector)) as CredentialDomResultMap[CredentialDomOperation];
+    case 'submit_explicit':
+      return result(
+        explicit(request.kind, request.selector),
+      ) as CredentialDomResultMap[CredentialDomOperation];
+  }
 }
