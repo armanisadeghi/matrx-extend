@@ -24,7 +24,7 @@ import { Switch } from '@ai-matrx/design-system';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
-import { formatDurationMs, formatFileSize } from '@ai-matrx/kit/format';
+import { formatDurationMs, formatDurationSeconds, formatFileSize } from '@ai-matrx/kit/format';
 import { Circle, Copy, ExternalLink, Square, Trash2, Video, VideoOff } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -215,7 +215,7 @@ export function RecorderPane() {
                     </span>
                     {remainingMs != null && (
                       <span className="text-[11px] text-muted-foreground">
-                        / {formatDurationMs(durationSec * 1000)}
+                        / {formatDurationSeconds(durationSec)}
                       </span>
                     )}
                   </>
