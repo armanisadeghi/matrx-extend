@@ -48,14 +48,26 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
   };
 
   // `body_size` is rendered with formatFileSize, so it is UTF-8 BYTES — a
-  // string's `.length` is UTF-16 code units (2026-09-12). The body cap stays a
-  // character slice; only the reported weight changed.
+  // string's `.length` is UTF-16 code units (2026-09-12).
+  //
+  // AND SO IS THE CAP. `maxBodyBytes` is a BYTE budget, and until the sixth
+  // adversarial review the truncation was `s.slice(0, maxBodyBytes)` — a
+  // CHARACTER slice, so a body of non-ASCII text (any CJK or emoji payload)
+  // was stored well ABOVE the cap it claims to enforce, up to 3× it. Bytes is
+  // the honest unit here: what this cap protects is the message we post and
+  // the row we store, both measured in bytes, so the budget stays bytes and
+  // the slice moved to them — never the other way round.
   const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
   const truncate = (s: string): { body: string; truncated: boolean; sizeBytes: number } => {
-    const sizeBytes = encoder.encode(s).length;
-    return s.length > maxBodyBytes
-      ? { body: s.slice(0, maxBodyBytes), truncated: true, sizeBytes }
-      : { body: s, truncated: false, sizeBytes };
+    const bytes = encoder.encode(s);
+    const sizeBytes = bytes.length;
+    if (sizeBytes <= maxBodyBytes) return { body: s, truncated: false, sizeBytes };
+    // Never cut a multi-byte sequence in half: walk back off continuation
+    // bytes (0b10xxxxxx) so the decoded tail is text, not a replacement char.
+    let end = maxBodyBytes;
+    while (end > 0 && ((bytes[end] ?? 0) & 0xc0) === 0x80) end -= 1;
+    return { body: decoder.decode(bytes.subarray(0, end)), truncated: true, sizeBytes };
   };
 
   const headersToObj = (h: Headers): Record<string, string> => {
