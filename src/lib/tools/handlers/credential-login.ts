@@ -42,7 +42,12 @@ import {
   submitBrowserLoginReport,
 } from '@/lib/api/routes/vault';
 import { checkAuthState } from '@/lib/chat/context/check-auth-state';
-import { fillControlledCredentialFieldsSource } from '@/lib/credentials/fill-primitive';
+import {
+  credentialDomSource,
+  type CredentialDomInjectedRequest,
+  type CredentialDomResult,
+  type LoginFormProbe,
+} from '@/lib/credentials/fill-primitive';
 import { isSafeDestination } from '@/lib/credentials/login-urls';
 import {
   SENSITIVE_ATTR,
@@ -368,16 +373,6 @@ const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms
 // closure over module scope) because chrome.scripting serializes it. All of
 // them are injected with `frameIds: [0]` — top frame only.
 
-interface LoginFormProbe {
-  is_top_frame: boolean;
-  origin: string;
-  href: string;
-  username_selector: string | null;
-  password_selector: string | null;
-  submit_selector: string | null;
-  form_method: string | null;
-}
-
 interface PageStateProbe {
   href: string;
   has_password_field: boolean;
@@ -385,159 +380,6 @@ interface PageStateProbe {
   error_kind: 'credentials' | 'generic' | null;
   mfa: boolean;
   captcha: boolean;
-}
-
-/**
- * Detect the login fields WITHOUT reading their values. Returns identity
- * (CSS selectors) only.
- */
-function probeLoginFormSource(): LoginFormProbe {
-  function uniqueSelector(el: Element): string {
-    const id = el.getAttribute('id');
-    if (id) return `#${CSS.escape(id)}`;
-    const name = el.getAttribute('name');
-    if (name) return `${el.tagName.toLowerCase()}[name="${CSS.escape(name)}"]`;
-    const parts: string[] = [];
-    let node: Element | null = el;
-    while (node && node.nodeType === 1 && node !== document.body && parts.length < 8) {
-      const current: Element = node;
-      const tag = current.tagName.toLowerCase();
-      const parent = current.parentElement;
-      if (!parent) {
-        parts.unshift(tag);
-        break;
-      }
-      const siblings = Array.from(parent.children).filter(
-        (c: Element) => c.tagName === current.tagName,
-      );
-      const idx = siblings.indexOf(current) + 1;
-      parts.unshift(siblings.length > 1 ? `${tag}:nth-of-type(${idx})` : tag);
-      node = parent;
-    }
-    return parts.join(' > ');
-  }
-  function visible(el: Element): boolean {
-    if (!(el instanceof HTMLElement)) return false;
-    if ((el as HTMLInputElement).disabled) return false;
-    const rect = el.getBoundingClientRect();
-    if (rect.width === 0 && rect.height === 0) return false;
-    const cs = window.getComputedStyle(el);
-    if (cs.display === 'none' || cs.visibility === 'hidden') return false;
-    return true;
-  }
-
-  const password =
-    Array.from(document.querySelectorAll<HTMLInputElement>('input[type="password"]')).find(
-      visible,
-    ) ?? null;
-
-  const USERNAME_HINT = /user|email|login|account|identifier|phone|mobile/i;
-  const textInputs = Array.from(
-    document.querySelectorAll<HTMLInputElement>(
-      'input[type="text"], input[type="email"], input[type="tel"], input:not([type])',
-    ),
-  ).filter(visible);
-
-  let username: HTMLInputElement | null = null;
-  // 1. explicit autocomplete contract wins
-  username =
-    textInputs.find((i) => /^(username|email)$/i.test(i.getAttribute('autocomplete') ?? '')) ??
-    null;
-  // 2. the field immediately before the password field in the same form
-  if (!username && password) {
-    const scope = password.closest('form') ?? document.body;
-    const inScope = textInputs.filter((i) => scope.contains(i));
-    username = inScope.length > 0 ? (inScope[inScope.length - 1] ?? null) : null;
-  }
-  // 3. name / id / placeholder / label heuristic
-  if (!username) {
-    username =
-      textInputs.find((i) =>
-        USERNAME_HINT.test(
-          `${i.getAttribute('name') ?? ''} ${i.getAttribute('id') ?? ''} ${
-            i.getAttribute('placeholder') ?? ''
-          } ${i.getAttribute('aria-label') ?? ''}`,
-        ),
-      ) ?? null;
-  }
-  // 4. a lone visible text input on a page that has a password field
-  if (!username && password && textInputs.length === 1) username = textInputs[0] ?? null;
-
-  // Submit affordance: prefer the form's own submit, then a button whose
-  // label reads like a login continuation.
-  const anchor = password ?? username;
-  const form = anchor?.closest('form') ?? null;
-  let submit: Element | null = form
-    ? form.querySelector('button[type="submit"], input[type="submit"]')
-    : null;
-  if (!submit) {
-    const SUBMIT_TEXT = /^(sign\s*in|log\s*in|login|continue|next|submit|go)$/i;
-    const scope: ParentNode = form ?? document;
-    submit =
-      Array.from(
-        scope.querySelectorAll<HTMLElement>('button, input[type="submit"], [role="button"]'),
-      )
-        .filter(visible)
-        .find((b) => {
-          const label = (
-            b.innerText ||
-            (b as HTMLInputElement).value ||
-            b.getAttribute('aria-label') ||
-            ''
-          ).trim();
-          return SUBMIT_TEXT.test(label);
-        }) ?? null;
-  }
-  if (!submit && form) submit = form.querySelector('button:not([type])');
-
-  return {
-    is_top_frame: window.top === window.self,
-    origin: location.origin,
-    href: location.href,
-    username_selector: username ? uniqueSelector(username) : null,
-    password_selector: password ? uniqueSelector(password) : null,
-    submit_selector: submit ? uniqueSelector(submit) : null,
-    form_method: form?.method.toLowerCase() ?? null,
-  };
-}
-
-/**
- * Mark + fill one field. `value` is credential plaintext travelling into the
- * page — which is the entire point of the tool. It is never returned.
- */
-
-
-/** Click the submit affordance, or fall back to requestSubmit only. */
-function submitLoginSource(selector: string | null): { ok: boolean; mode: string } {
-  function sourceFormSafe(form: HTMLFormElement | null, submitter: Element | null = null): boolean {
-    if (!form) return true;
-    const long = "javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')";
-    const short = "javascript:throw new Error('React form unexpectedly submitted.')";
-    const submit = submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement ? submitter : null;
-    if (submit && submit.form !== form) return false;
-    const action = submit?.getAttribute('formaction') ?? form.getAttribute('action') ?? '';
-    if (action === long || action === short) return true;
-    if ((submit?.getAttribute('formmethod') ?? form.getAttribute('method') ?? 'get').toLowerCase() !== 'post') return false;
-    try { const target = new URL(action || location.href, action ? document.baseURI : location.href); const loopback = /^(localhost|127\.0\.0\.1|\[::1\]|::1)$/.test(target.hostname); return target.origin === location.origin && (target.protocol === 'https:' || (target.protocol === 'http:' && loopback)); } catch { return false; }
-  }
-  if (selector) {
-    const btn = document.querySelector(selector) as HTMLElement | null;
-    if (btn) {
-      const buttonForm = btn.closest('form');
-      if (!sourceFormSafe(buttonForm, btn)) return { ok: false, mode: 'unsafe_get' };
-      btn.click();
-      return { ok: true, mode: 'click' };
-    }
-  }
-  const pw = document.querySelector('input[type="password"]') as HTMLInputElement | null;
-  const form = (pw ?? document.querySelector('input'))?.closest('form') ?? null;
-  if (form) {
-    if (!sourceFormSafe(form)) return { ok: false, mode: 'unsafe_get' };
-    if (typeof form.requestSubmit !== 'function') return { ok: false, mode: 'request_submit_unavailable' };
-    form.requestSubmit();
-    return { ok: true, mode: 'form' };
-  }
-  return { ok: false, mode: 'none' };
 }
 
 /** Post-submit page state. Returns categories and booleans — never page text. */
@@ -642,86 +484,6 @@ function clearSensitiveSource(selectors: string[], sensitiveAttr: string): { cle
     el.removeAttribute(sensitiveAttr);
   }
   return { cleared };
-}
-
-interface SpecProbe {
-  is_top_frame: boolean;
-  origin: string;
-  fields: Record<string, { exists: boolean; form_method: string | null }>;
-  controls: Record<string, boolean>;
-}
-
-/** Validate the ENTIRE declared attempt before requesting any secret. */
-function probeAttemptSpecSource(fieldSelectors: string[], controlSelectors: string[]): SpecProbe {
-  function effectiveMethod(form: HTMLFormElement | null): string | null {
-    if (!form) return null;
-    const action = form.getAttribute('action') ?? '';
-    const long = "javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')";
-    const short = "javascript:throw new Error('React form unexpectedly submitted.')";
-    if (action === long || action === short) return 'post';
-    return (form.getAttribute('method') ?? 'get').toLowerCase();
-  }
-  const fields: SpecProbe['fields'] = {};
-  const controls: SpecProbe['controls'] = {};
-  for (const selector of fieldSelectors) {
-    let element: Element | null = null;
-    try {
-      element = document.querySelector(selector);
-    } catch {
-      element = null;
-    }
-    fields[selector] = {
-      exists: element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement,
-      form_method: effectiveMethod(element?.closest('form') ?? null),
-    };
-  }
-  for (const selector of controlSelectors) {
-    try {
-      controls[selector] = document.querySelector(selector) instanceof HTMLElement;
-    } catch {
-      controls[selector] = false;
-    }
-  }
-  return { is_top_frame: window.top === window.self, origin: location.origin, fields, controls };
-}
-
-function explicitSubmitSource(
-  kind: 'click' | 'press_enter' | 'none',
-  selector: string | null,
-): { ok: boolean; mode: string } {
-  function sourceFormSafe(form: HTMLFormElement | null, submitter: Element | null = null): boolean {
-    if (!form) return true;
-    const long = "javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')";
-    const short = "javascript:throw new Error('React form unexpectedly submitted.')";
-    const submit = submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement ? submitter : null;
-    if (submit && submit.form !== form) return false;
-    const action = submit?.getAttribute('formaction') ?? form.getAttribute('action') ?? '';
-    if (action === long || action === short) return true;
-    if ((submit?.getAttribute('formmethod') ?? form.getAttribute('method') ?? 'get').toLowerCase() !== 'post') return false;
-    try { const target = new URL(action || location.href, action ? document.baseURI : location.href); const loopback = /^(localhost|127\.0\.0\.1|\[::1\]|::1)$/.test(target.hostname); return target.origin === location.origin && (target.protocol === 'https:' || (target.protocol === 'http:' && loopback)); } catch { return false; }
-  }
-  if (kind === 'none') return { ok: true, mode: 'none' };
-  if (!selector) return { ok: false, mode: 'missing_selector' };
-  const element = document.querySelector(selector) as HTMLElement | null;
-  if (!element) return { ok: false, mode: 'not_found' };
-  const form = element.closest('form');
-  if (!sourceFormSafe(form, element)) return { ok: false, mode: 'unsafe_get' };
-  if (kind === 'click') {
-    element.click();
-    return { ok: true, mode: 'click' };
-  }
-  element.focus();
-  element.dispatchEvent(
-    new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', bubbles: true, cancelable: true }),
-  );
-  element.dispatchEvent(
-    new KeyboardEvent('keyup', { key: 'Enter', code: 'Enter', bubbles: true, cancelable: true }),
-  );
-  if (form) {
-    if (typeof form.requestSubmit !== 'function') return { ok: false, mode: 'request_submit_unavailable' };
-    form.requestSubmit(element instanceof HTMLButtonElement || element instanceof HTMLInputElement ? element : undefined);
-  }
-  return { ok: true, mode: 'press_enter' };
 }
 
 // ── Handler ─────────────────────────────────────────────────────────────────
@@ -937,6 +699,17 @@ async function injectTopFrame<T>(
   return (first?.result as T | undefined) ?? null;
 }
 
+async function injectCredentialDom<O extends CredentialDomInjectedRequest['operation']>(
+  tabId: number,
+  request: Extract<CredentialDomInjectedRequest, { operation: O }>,
+): Promise<CredentialDomResult<O> | null> {
+  return await injectTopFrame<CredentialDomResult<O>>(
+    tabId,
+    credentialDomSource as unknown as (...args: never[]) => CredentialDomResult<O>,
+    [request] as unknown as never[],
+  );
+}
+
 async function runCompleteAttempt(
   args: CompleteAttemptArgs,
   ctx: Parameters<typeof getAssignedTab>[0],
@@ -988,10 +761,7 @@ async function runCompleteAttempt(
     return safeResult('spec_incomplete', { reason: 'attempt_has_no_steps' });
   }
   const firstControl = firstStep.submit.kind === 'none' ? null : firstStep.submit.selector;
-  const firstProbe = await injectTopFrame<SpecProbe>(tabId, probeAttemptSpecSource, [
-    firstStep.fields,
-    firstControl ? [firstControl] : [],
-  ]).catch(() => null);
+  const firstProbe = await injectCredentialDom(tabId, { operation: 'attempt_probe', fieldSelectors: firstStep.fields, controlSelectors: firstControl ? [firstControl] : [] }).catch(() => null);
   if (!firstProbe || !firstProbe.is_top_frame || firstProbe.origin !== pageUrl.origin) {
     return safeResult('unsafe_destination', { reason: 'origin_changed_before_attempt' });
   }
@@ -1003,7 +773,7 @@ async function runCompleteAttempt(
       message: `The first step could not be found (${firstMissing.length} selector${firstMissing.length === 1 ? '' : 's'} missing). Nothing was decrypted or typed.`,
     });
   }
-  if (firstStep.fields.some((selector) => firstProbe.fields[selector]?.form_method === 'get')) {
+  if (firstStep.fields.some((selector) => firstProbe.fields[selector]?.destination_safe === false)) {
     return safeResult('unsafe_destination', { reason: 'unsafe_get_form' });
   }
 
@@ -1072,10 +842,7 @@ async function runCompleteAttempt(
       );
     }
     const controlSelector = step.submit.kind === 'none' ? null : step.submit.selector;
-    const probe = await injectTopFrame<SpecProbe>(tabId, probeAttemptSpecSource, [
-      step.fields,
-      controlSelector ? [controlSelector] : [],
-    ]).catch(() => null);
+    const probe = await injectCredentialDom(tabId, { operation: 'attempt_probe', fieldSelectors: step.fields, controlSelectors: controlSelector ? [controlSelector] : [] }).catch(() => null);
     if (!probe || !probe.is_top_frame || probe.origin !== pageUrl.origin) {
       return await finish(
         safeResult('unsafe_destination', { reason: 'origin_changed_during_attempt' }),
@@ -1093,7 +860,7 @@ async function runCompleteAttempt(
         true,
       );
     }
-    if (step.fields.some((selector) => probe.fields[selector]?.form_method === 'get')) {
+    if (step.fields.some((selector) => probe.fields[selector]?.destination_safe === false)) {
       return await finish(safeResult('unsafe_destination', { reason: 'unsafe_get_form' }), true);
     }
 
@@ -1113,11 +880,7 @@ async function runCompleteAttempt(
         rememberSensitiveFields(tabId, [spec.selector]);
         filledSelectors.push(spec.selector);
       }
-      const filled = await injectTopFrame<{ ok: boolean }>(
-        tabId,
-        fillControlledCredentialFieldsSource,
-        [null, [{ selector: spec.selector, value }], spec.field_key ? SENSITIVE_ATTR : '', true],
-      ).catch(() => null);
+      const filled = await injectCredentialDom(tabId, { operation: 'fill', expected: null, requested: [{ selector: spec.selector, value }], sensitiveAttr: spec.field_key ? SENSITIVE_ATTR : '', preserveLegacyFieldBehavior: true }).catch(() => null);
       if (!filled?.ok) {
         return await finish(
           safeResult('unknown', { reason: `step_${stepIndex}_fill_failed` }),
@@ -1126,15 +889,11 @@ async function runCompleteAttempt(
       }
     }
 
-    const submitted = await injectTopFrame<{ ok: boolean; mode: string }>(
-      tabId,
-      explicitSubmitSource,
-      [step.submit.kind, controlSelector],
-    ).catch(() => null);
+    const submitted = await injectCredentialDom(tabId, { operation: 'submit_explicit', kind: step.submit.kind, selector: controlSelector }).catch(() => null);
     if (!submitted?.ok) {
       return await finish(
-        safeResult(submitted?.mode === 'unsafe_get' ? 'unsafe_destination' : 'unknown', {
-          reason: submitted?.mode === 'unsafe_get' ? 'unsafe_get_form' : 'submit_failed',
+        safeResult(submitted?.mode === 'unsafe_destination' ? 'unsafe_destination' : 'unknown', {
+          reason: submitted?.mode === 'unsafe_destination' ? 'unsafe_get_form' : 'submit_failed',
         }),
         true,
       );
@@ -1181,10 +940,7 @@ async function runAuthenticatorAttempt(
     return safeResult('unknown', { reason: 'conversation_binding_missing' });
   }
   const controlSelector = args.submit.kind === 'none' ? null : args.submit.selector;
-  const probe = await injectTopFrame<SpecProbe>(tabId, probeAttemptSpecSource, [
-    [args.code_selector],
-    controlSelector ? [controlSelector] : [],
-  ]).catch(() => null);
+  const probe = await injectCredentialDom(tabId, { operation: 'attempt_probe', fieldSelectors: [args.code_selector], controlSelectors: controlSelector ? [controlSelector] : [] }).catch(() => null);
   if (!probe || !probe.is_top_frame || probe.origin !== pageUrl.origin) {
     return safeResult('unsafe_destination', { reason: 'origin_changed_before_authenticator' });
   }
@@ -1197,7 +953,7 @@ async function runAuthenticatorAttempt(
       message: 'The verification field or submit control was not found. No code was generated.',
     });
   }
-  if (probe.fields[args.code_selector]?.form_method === 'get') {
+  if (probe.fields[args.code_selector]?.destination_safe === false) {
     return safeResult('unsafe_destination', { reason: 'unsafe_get_form' });
   }
 
@@ -1225,26 +981,18 @@ async function runAuthenticatorAttempt(
   let code = transient.code;
   transient.code = '';
   try {
-    const filled = await injectTopFrame<{ ok: boolean }>(
-      tabId,
-      fillControlledCredentialFieldsSource,
-      [null, [{ selector: args.code_selector, value: code }], SENSITIVE_ATTR, true],
-    ).catch(() => null);
+    const filled = await injectCredentialDom(tabId, { operation: 'fill', expected: null, requested: [{ selector: args.code_selector, value: code }], sensitiveAttr: SENSITIVE_ATTR, preserveLegacyFieldBehavior: true }).catch(() => null);
     code = '';
     // The transient response and the only local code reference are cleared
     // before submission/classification. Neither can reach a result, log,
     // receipt, capture, or persistent store.
     if (!filled?.ok) return safeResult('unknown', { reason: 'authenticator_fill_failed' });
 
-    const submitted = await injectTopFrame<{ ok: boolean; mode: string }>(
-      tabId,
-      explicitSubmitSource,
-      [args.submit.kind, controlSelector],
-    ).catch(() => null);
+    const submitted = await injectCredentialDom(tabId, { operation: 'submit_explicit', kind: args.submit.kind, selector: controlSelector }).catch(() => null);
     if (!submitted?.ok) {
-      return safeResult(submitted?.mode === 'unsafe_get' ? 'unsafe_destination' : 'unknown', {
+      return safeResult(submitted?.mode === 'unsafe_destination' ? 'unsafe_destination' : 'unknown', {
         reason:
-          submitted?.mode === 'unsafe_get' ? 'unsafe_get_form' : 'authenticator_submit_failed',
+          submitted?.mode === 'unsafe_destination' ? 'unsafe_get_form' : 'authenticator_submit_failed',
       });
     }
 
@@ -1423,7 +1171,7 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
     // ── 3. Detect the login fields (top frame only, values never read) ─────
     let probe: LoginFormProbe | null;
     try {
-      probe = await injectTopFrame<LoginFormProbe>(tabId, probeLoginFormSource, []);
+      probe = await injectCredentialDom(tabId, { operation: 'auto_probe' });
     } catch {
       return safeResult('unknown', { reason: 'page_not_scriptable' });
     }
@@ -1441,7 +1189,7 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
         message: 'No username or password field was found in the top frame of this page.',
       });
     }
-    if (probe.form_method === 'get') {
+    if (probe.destination_safe === false) {
       return safeResult('unsafe_destination', {
         reason: 'unsafe_get_form',
         message:
@@ -1541,28 +1289,19 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
         // fill succeeding, or on the page keeping the marker attribute.
         rememberSensitiveFields(tabId, [probe.username_selector]);
         filledSelectors.push(probe.username_selector);
-        const r = await injectTopFrame<{ ok: boolean }>(
-          tabId,
-          fillControlledCredentialFieldsSource,
-          [
-            null,
-            [{ selector: probe.username_selector, value: credential.username }],
-            SENSITIVE_ATTR,
-            true,
-          ],
-        );
+        const r = await injectCredentialDom(tabId, {
+          operation: 'fill', expected: null,
+          requested: [{ selector: probe.username_selector, value: credential.username }],
+          sensitiveAttr: SENSITIVE_ATTR, preserveLegacyFieldBehavior: true,
+        });
         if (!r?.ok) return await finish('unknown', { reason: 'username_fill_failed', clear: true });
       }
 
       // Two-step flow: username first, then advance to reveal the password.
       if (!passwordSelector) {
-        const advanced = await injectTopFrame<{ ok: boolean; mode: string }>(
-          tabId,
-          submitLoginSource,
-          [probe.submit_selector],
-        );
+        const advanced = await injectCredentialDom(tabId, { operation: 'submit_auto', selector: probe.submit_selector });
         if (!advanced?.ok) {
-          const unsafeGet = advanced?.mode === 'unsafe_get';
+          const unsafeGet = advanced?.mode === 'unsafe_destination';
           return await finish(unsafeGet ? 'unsafe_destination' : 'unknown', {
             reason: unsafeGet ? 'unsafe_get_form' : 'two_step_advance_failed',
             message: unsafeGet
@@ -1574,7 +1313,7 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
         const deadline = Date.now() + WAIT_FOR_PASSWORD_MS;
         while (Date.now() < deadline && !passwordSelector) {
           await sleep(POLL_INTERVAL_MS);
-          const again = await injectTopFrame<LoginFormProbe>(tabId, probeLoginFormSource, []).catch(
+          const again = await injectCredentialDom(tabId, { operation: 'auto_probe' }).catch(
             () => null,
           );
           if (!again) continue;
@@ -1604,11 +1343,7 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
 
       rememberSensitiveFields(tabId, [passwordSelector]);
       filledSelectors.push(passwordSelector);
-      const pwFill = await injectTopFrame<{ ok: boolean }>(
-        tabId,
-        fillControlledCredentialFieldsSource,
-        [null, [{ selector: passwordSelector, value: credential.password }], SENSITIVE_ATTR, true],
-      );
+      const pwFill = await injectCredentialDom(tabId, { operation: 'fill', expected: null, requested: [{ selector: passwordSelector, value: credential.password ?? null }], sensitiveAttr: SENSITIVE_ATTR, preserveLegacyFieldBehavior: true });
       if (!pwFill?.ok) {
         return await finish('unknown', { reason: 'password_fill_failed', clear: true });
       }
@@ -1619,7 +1354,7 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
       );
       const beforeHref = before?.href ?? probe.href;
 
-      if (probe.form_method === 'get') {
+      if (probe.destination_safe === false) {
         return await finish('unsafe_destination', {
           reason: 'unsafe_get_form',
           message:
@@ -1628,13 +1363,9 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
         });
       }
 
-      const submitted = await injectTopFrame<{ ok: boolean; mode: string }>(
-        tabId,
-        submitLoginSource,
-        [probe.submit_selector],
-      ).catch(() => null);
+      const submitted = await injectCredentialDom(tabId, { operation: 'submit_auto', selector: probe.submit_selector }).catch(() => null);
       if (!submitted?.ok) {
-        const unsafeGet = submitted?.mode === 'unsafe_get';
+        const unsafeGet = submitted?.mode === 'unsafe_destination';
         return await finish(unsafeGet ? 'unsafe_destination' : 'unknown', {
           reason: unsafeGet ? 'unsafe_get_form' : 'no_submit_affordance',
           message: unsafeGet

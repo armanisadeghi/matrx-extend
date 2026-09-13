@@ -25,7 +25,7 @@
 
 import { CHANNELS } from '@/lib/messaging/schemas';
 import type { CaptureCandidateReply, CaptureUnavailableReason } from './capture-types';
-import { classifyFormDestination } from './form-destination';
+import { credentialDomSource } from './fill-primitive';
 
 /** Wire shape of the one value-bearing envelope. Mirrored in capture-candidates.ts. */
 export interface CaptureCandidateWire {
@@ -104,7 +104,13 @@ function safeAction(
   submitter: Element | null,
   doc: Document,
 ): boolean {
-  return classifyFormDestination(form, submitter, doc.location.href, doc.baseURI).kind !== 'unsafe';
+  return credentialDomSource({
+    operation: 'classify_form',
+    form,
+    submitter,
+    currentUrl: doc.location.href,
+    baseUri: doc.baseURI,
+  }).kind !== 'unsafe';
 }
 
 /**

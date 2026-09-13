@@ -72,7 +72,7 @@
  */
 
 import { execSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path, { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -253,6 +253,7 @@ function sourceFiles(): string[] {
     .split('\n')
     .filter(Boolean)
     .filter((file) => file.startsWith('src/'))
+    .filter((file) => existsSync(path.join(ROOT, file)))
     .filter((file) => !/\.(test|spec)\.tsx?$/.test(file));
 }
 

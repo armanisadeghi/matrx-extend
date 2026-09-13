@@ -6,7 +6,9 @@ import {
 import { getCurrentUser } from '@/lib/auth/flow';
 import {
   type BoundLoginGroup,
-  fillControlledCredentialFieldsSource,
+  credentialDomSource,
+  type CredentialDomInjectedRequest,
+  type CredentialDomResult,
 } from '@/lib/credentials/fill-primitive';
 import { isSafeDestination, normalizeLoginUrl } from '@/lib/credentials/login-urls';
 import { SENSITIVE_ATTR, rememberSensitiveFields } from '@/lib/credentials/sensitive-fields';
@@ -120,134 +122,21 @@ function validFill(payload: unknown): payload is { offerId: string; itemId: stri
   );
 }
 
-/** Runs in the page and reads only field shape/identity, never current values. */
-function probeFocusedLoginGroup(selector: string): FormGroup | null {
-  function visibleEditable(input: HTMLInputElement): boolean {
-    const r = input.getBoundingClientRect();
-    const style = getComputedStyle(input);
-    return (
-      !input.disabled &&
-      !input.readOnly &&
-      r.width > 0 &&
-      r.height > 0 &&
-      style.display !== 'none' &&
-      style.visibility !== 'hidden'
-    );
-  }
-  function selectorFor(input: HTMLInputElement): string | null {
-    const escapeSelector = (value: string) =>
-      globalThis.CSS?.escape?.(value) ?? value.replace(/[^a-zA-Z0-9_-]/g, '\\$&');
-    const id = input.id;
-    if (id && document.querySelectorAll(`#${escapeSelector(id)}`).length === 1)
-      return `#${escapeSelector(id)}`;
-    const name = input.getAttribute('name');
-    if (name) {
-      const candidate = `input[name="${escapeSelector(name)}"]`;
-      if (document.querySelectorAll(candidate).length === 1) return candidate;
-    }
-    const parts: string[] = [];
-    let node: Element | null = input;
-    while (node && node !== document.body && parts.length < 8) {
-      const parent: Element | null = node.parentElement;
-      if (!parent) return null;
-      const current = node;
-      const siblings = Array.from(parent.children).filter(
-        (x: Element) => x.tagName === current.tagName,
-      );
-      const index = siblings.indexOf(node) + 1;
-      parts.unshift(`${node.tagName.toLowerCase()}:nth-of-type(${index})`);
-      node = parent;
-    }
-    const candidate = parts.join(' > ');
-    return candidate && document.querySelectorAll(candidate).length === 1 ? candidate : null;
-  }
-  let anchor: HTMLInputElement | null = null;
-  try {
-    const matches = document.querySelectorAll(selector);
-    if (matches.length !== 1 || !(matches[0] instanceof HTMLInputElement)) return null;
-    anchor = matches[0];
-  } catch {
-    return null;
-  }
-  if (!visibleEditable(anchor)) return null;
-  const autocomplete = (anchor.autocomplete || '').toLowerCase();
-  const type = (anchor.type || 'text').toLowerCase();
-  if (
-    autocomplete === 'one-time-code' ||
-    autocomplete === 'new-password' ||
-    /otp|mfa|2fa|verification|confirm/i.test(`${anchor.name} ${anchor.id} ${anchor.placeholder}`)
-  )
-    return null;
-  const scope = anchor.closest('form') ?? anchor.parentElement ?? document.body;
-  const inputs = Array.from(scope.querySelectorAll<HTMLInputElement>('input')).filter(
-    visibleEditable,
-  );
-  const password =
-    inputs.find(
-      (i) =>
-        (i.type || '').toLowerCase() === 'password' &&
-        i.autocomplete.toLowerCase() !== 'new-password',
-    ) ?? null;
-  const username =
-    inputs.find((i) => /^(username|email)$/i.test(i.autocomplete)) ??
-    inputs.find(
-      (i) =>
-        /^(text|email|tel)$/i.test((i.type || 'text').toLowerCase()) &&
-        /user|email|login|account|identifier/i.test(
-          `${i.name} ${i.id} ${i.placeholder} ${i.getAttribute('aria-label') ?? ''}`,
-        ),
-    ) ??
-    null;
-  const anchorIsPassword = type === 'password' && autocomplete !== 'new-password';
-  const anchorIsUsername = autocomplete === 'username';
-  if (!anchorIsPassword && !anchorIsUsername) return null;
-  // A username-only step is valid when its autocomplete is explicit; the
-  // host requires a canonical saved-origin match before it displays a choice.
-  const anchorSelector = selectorFor(anchor);
-  if (!anchorSelector) return null;
-  const usernameSelector = username ? selectorFor(username) : null;
-  const passwordSelector = password ? selectorFor(password) : null;
-  if ((username && !usernameSelector) || (password && !passwordSelector)) return null;
-  const confirmation = inputs.filter(
-    (i) => (i.type || '').toLowerCase() === 'password' && i !== password,
-  );
-  if (confirmation.length > 0) return null;
-  const form = anchor.closest('form');
-  const action = form?.getAttribute('action');
-  if (
-    form &&
-    ((form.method || 'get').toLowerCase() === 'get' ||
-      (action && new URL(action, location.href).origin !== location.origin) ||
-      (action &&
-        new URL(action, location.href).protocol !== 'https:' &&
-        location.protocol !== 'http:'))
-  )
-    return null;
-  return {
-    anchor: anchorSelector,
-    username: usernameSelector,
-    password: passwordSelector,
-    usernameOnly: !passwordSelector,
-    pageUrl: `${location.origin}${location.pathname}`,
-  };
-}
+/** Test seam: this is the one serializable credential DOM source. */
+export const __inlineFillSerializedSourceForTest = credentialDomSource.toString();
 
-/** Test seam: callers must remain serializable across the scripting boundary. */
-export const __inlineFillSerializedSourceForTest = fillControlledCredentialFieldsSource.toString();
-
-async function inject<T>(
+async function injectCredentialDom<O extends CredentialDomInjectedRequest['operation']>(
   tabId: number,
   documentId: string,
-  func: (...args: never[]) => T,
-  args: unknown[],
-): Promise<T | null> {
+  request: Extract<CredentialDomInjectedRequest, { operation: O }>,
+): Promise<CredentialDomResult<O> | null> {
   const target = { tabId, documentIds: [documentId] } as chrome.scripting.InjectionTarget;
   const [first] = await chrome.scripting.executeScript({
     target,
-    func: func as (...a: unknown[]) => T,
-    args,
+    func: credentialDomSource as unknown as (...args: never[]) => CredentialDomResult<O>,
+    args: [request] as unknown as never[],
   });
-  return (first?.result as T | undefined) ?? null;
+  return (first?.result as CredentialDomResult<O> | undefined) ?? null;
 }
 
 function canTargetCurrentDocument(): boolean {
@@ -287,9 +176,7 @@ async function query(tabId: number, documentId: string, selector: string): Promi
   if (!(await hasRealUserToken())) return response('sign_in_required');
   const actor = await context();
   if (!actor) return response('organization_required');
-  const group = await inject<FormGroup | null>(tabId, documentId, probeFocusedLoginGroup, [
-    selector,
-  ]).catch(() => null);
+  const group = await injectCredentialDom(tabId, documentId, { operation: 'focused_group', selector }).catch(() => null);
   if (!group) return response('unsafe_destination');
   const url = new URL(group.pageUrl);
   if (!isSafeDestination(url) || !normalizeLoginUrl(group.pageUrl))
@@ -363,9 +250,7 @@ async function fill(
   const actor = await context();
   if (!actor || actor.userId !== offer.userId || actor.organizationId !== offer.organizationId)
     return fillResponse('stale');
-  const current = await inject<FormGroup | null>(tabId, documentId, probeFocusedLoginGroup, [
-    offer.anchor,
-  ]).catch(() => null);
+  const current = await injectCredentialDom(tabId, documentId, { operation: 'focused_group', selector: offer.anchor }).catch(() => null);
   if (
     !current ||
     current.pageUrl !== offer.pageUrl ||
@@ -425,20 +310,16 @@ async function fill(
   const sensitive = [offer.username, offer.password].filter((x): x is string => !!x);
   rememberSensitiveFields(tabId, sensitive);
   try {
-    const done = await inject<{ ok: boolean }>(
-      tabId,
-      documentId,
-      fillControlledCredentialFieldsSource,
-      [
-        offer,
-        [
-          ...(offer.username ? [{ selector: offer.username, value: username ?? null }] : []),
-          ...(offer.password ? [{ selector: offer.password, value: password ?? null }] : []),
-        ],
-        SENSITIVE_ATTR,
-        false,
+    const done = await injectCredentialDom(tabId, documentId, {
+      operation: 'fill',
+      expected: offer,
+      requested: [
+        ...(offer.username ? [{ selector: offer.username, value: username ?? null }] : []),
+        ...(offer.password ? [{ selector: offer.password, value: password ?? null }] : []),
       ],
-    ).catch(() => null);
+      sensitiveAttr: SENSITIVE_ATTR,
+      preserveLegacyFieldBehavior: false,
+    }).catch(() => null);
     return done?.ok ? fillResponse('filled') : fillResponse('stale');
   } finally {
     clearMaterialized();
