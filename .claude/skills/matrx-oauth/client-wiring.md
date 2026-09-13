@@ -34,25 +34,46 @@ function OAuthCallback() {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
     // Read ONCE from window.location.search, before replaceState clears it.
     // Do NOT use useSearch() — it's reactive and re-fires after replaceState.
-    const params = new URLSearchParams(window.location.search);
-    const accessToken = params.get("access_token");
-    const errorParam = params.get("error");
+    const intent = classifyCallback(window.location.search);
 
-    if (errorParam) { setErrorMessage(decodeURIComponent(errorParam)); setStatus("error"); return; }
-    if (!accessToken) { setErrorMessage("No access token received."); setStatus("error"); return; }
+    // 🚨 REFUSAL COMES FIRST. A token in the address bar is a security defect,
+    // never a sign-in: by the time you can read it, it has already reached
+    // browser history, the Referer header and every proxy log on the way.
+    if (intent.kind === "token-in-query") {
+      scrubAddressBar();
+      void reportTokenInQuery(API_BASE_URL, intent.params, "<app>/oauth/callback");
+      setErrorMessage(TOKEN_IN_QUERY_MESSAGE);
+      setStatus("error");
+      return;
+    }
+    if (intent.kind === "error") { setErrorMessage(intent.message); setStatus("error"); return; }
+    if (intent.kind !== "handoff") { setErrorMessage("No sign-in code received."); setStatus("error"); return; }
 
-    setAuthToken(accessToken);
-    setStatus("success");
-    window.history.replaceState({}, "", window.location.pathname);
-    const t = setTimeout(() => void navigate({ to: "/", replace: true }), 600);
-    return () => clearTimeout(t);
-  }, [navigate]); // <-- only navigate; NEVER access_token/error here.
+    scrubAddressBar();
+    void (async () => {
+      try {
+        const token = await exchangeHandoff(API_BASE_URL, intent.handoff);
+        if (cancelled) return;
+        setAuthToken(token);
+        setStatus("success");
+        setTimeout(() => void navigate({ to: "/", replace: true }), 600);
+      } catch (err) {
+        if (cancelled) return;
+        setErrorMessage(err instanceof Error ? err.message : "Sign in could not be completed.");
+        setStatus("error");
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [navigate]); // <-- only navigate; NEVER the search params here.
 
   // …status-driven UI omitted — see apps/dashboard or apps/workflow-studio for examples.
 }
 ```
+
+`classifyCallback` / `exchangeHandoff` / `reportTokenInQuery` / `scrubAddressBar` / `TOKEN_IN_QUERY_MESSAGE` are the ~60-line `src/lib/oauth-callback.ts` module each SPA carries verbatim (`aidream/apps/workflow-studio/src/lib/oauth-callback.ts` is the reference; `apps/dashboard` holds the identical twin). Copy it whole, with its test.
 
 The matching `/access-denied` route just reads `?email=` and shows a friendly request-access screen with a `mailto:` link. See `aidream/apps/dashboard/src/routes/access-denied.tsx`.
 

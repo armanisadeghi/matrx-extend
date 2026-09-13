@@ -6,7 +6,7 @@ description: "Guide to the Matrx OAuth flow across aimatrx.com, Supabase, aidrea
 tags: [auth, oauth, skill, aidream, matrx-frontend, matrx-local, matrx-extend]
 resource: https://server.app.matrxserver.com/auth/aimatrx
 timestamp: 2026-08-21T00:00:00Z
-verified: 2026-08-21 — verdicts below checked against live code in aidream and matrx-frontend, not against either prior skill copy.
+verified: 2026-09-12 — hard-won fact 0 (no token in a URL; one-time handoff + /auth/session/exchange) written against the code that fixed feedback 08b3fdc0. The 2026-08-21 verdicts below were checked against live code in aidream and matrx-frontend, not against either prior skill copy.
 ---
 
 <!-- SYNCED COPY — do not edit here.
@@ -72,21 +72,37 @@ Merge history and the evidence behind every VERIFIED verdict → [changelog.md](
    ┌──────────────────────┐
    │ FastAPI /auth/callback│ ③ POST code → aimatrx /token (PUBLIC PKCE)
    │  decodes JWT (sub,    │ ④ SELECT from admin.admins WHERE user_id=sub
-   │  email)               │ ⑤ admin → 302 to {app_redirect}?access_token=...
+   │  email)               │ ⑤ admin → 302 to {app_redirect}?handoff=<code>
    │  admin lookup         │     non-admin → 302 to {origin}/access-denied
    │  redirects to SPA     │     failure   → 302 to {app_redirect}?error=...
    └──────────┬────────────┘
               ▼
    ┌─────────────────────────┐
-   │ SPA /oauth/callback     │ Reads ?access_token / ?error ONCE from
-   │  setItem(AUTH_TOKEN_KEY)│ window.location.search, then strips the URL.
-   │  navigate("/")          │ See "SPA callback gotcha" below.
+   │ SPA /oauth/callback     │ Reads ?handoff / ?error ONCE from
+   │  POST /auth/session/    │ window.location.search, strips the URL, then
+   │       exchange {handoff}│ POSTs the one-time code and receives the token
+   │  setItem(AUTH_TOKEN_KEY)│ in the RESPONSE BODY. A token-shaped query
+   │  navigate("/")          │ param is REFUSED, never used.
    └─────────────────────────┘
 ```
 
 ## The hard-won facts
 
 These took three weeks of debugging to nail down. **Internalize them.** Most "fixes" that don't respect these will reintroduce one of the bugs.
+
+0. 🚨 **A live token NEVER rides a URL — the callback hands over a one-time code.**
+   Query strings land in browser history, `Referer` headers and proxy/CDN logs.
+   `access_token`, `token`, `refresh_token` and `id_token` are the banned
+   parameter names (`service.TOKEN_QUERY_PARAMS`). `/auth/callback` redirects to
+   `{app_redirect}?handoff=<code>`; the SPA POSTs that code to
+   `/auth/session/exchange` (single use, 120 s, `credentials: "include"`) and
+   the token comes back in the body. Any inbound URL carrying a banned
+   parameter is REFUSED — server-side and in every SPA callback — and files an
+   `oauth_token_in_query` system_error naming the parameters, never the value.
+   Until 2026-09-12 this flow redirected with `?access_token=<live JWT>`
+   (feedback 08b3fdc0), the same class the platform had already deleted from
+   dev-login's `?token=`. Guards: `aidream/services/auth_oauth/tests/test_token_never_in_query.py`
+   and `apps/*/src/lib/oauth-callback.test.ts`.
 
 1. **The Matrx OAuth client is a PUBLIC PKCE client. Never send `client_secret`.**
    Supabase rejects confidential-client params for public clients with `400`. The proof of possession is the PKCE `code_verifier`, not a secret. Same client type matrx-local desktop uses — see `projects/matrx-local/desktop/src/lib/oauth.ts`.
@@ -145,11 +161,13 @@ The browser hits `https://www.aimatrx.com/api/oauth/authorize` — a thin proxy 
 4. On 2xx: parse `access_token` from the JSON body.
 5. `_decode_jwt_payload(access_token)` — base64url-decode the middle JWT segment WITHOUT signature verification (see hard-won fact 7 above) — pulls `sub` and `email`. Signature is re-checked by `AuthMiddleware` on every subsequent API call.
 6. `_is_admin(user_id)` → `await Admins.filter(user_id=...).all()` against `admin.admins`. Any DB exception → fail closed.
-7. **Admin** → `302` to `{app_redirect}?access_token=<urlencoded>`. **Non-admin** → `302` to `{origin}/access-denied?email=<urlencoded>` (`origin` is the SPA's `scheme://netloc` parsed from `app_redirect`). **Failure** → `302` to `{app_redirect}?error=...`.
+7. **Admin** → `302` to `{app_redirect}?handoff=<one-time code>` (the token is
+   held server-side and traded at `POST /auth/session/exchange`; see fact 0). **Non-admin** → `302` to `{origin}/access-denied?email=<urlencoded>` (`origin` is the SPA's `scheme://netloc` parsed from `app_redirect`). **Failure** → `302` to `{app_redirect}?error=...`.
 
 ### SPA callback (token storage)
 
-The SPA's `/oauth/callback` reads `?access_token` / `?error` once and stores the token; the `/access-denied` route greets non-admins. **Writing or fixing either route → read [client-wiring.md](client-wiring.md)** for the required component pattern.
+The SPA's `/oauth/callback` reads `?handoff` / `?error` once, exchanges the code
+for the token over `POST /auth/session/exchange`, and stores it; the `/access-denied` route greets non-admins. **Writing or fixing either route → read [client-wiring.md](client-wiring.md)** for the required component pattern.
 
 ### Tauri desktop (matrx-local)
 
@@ -167,7 +185,9 @@ A public PKCE client that calls Supabase directly, with no admin gate. **Working
 | Login flashes back to /login with no error message | Old SPA build is running — check the deploy pipeline and running image/version. |
 | Build fails with `Cannot find module '@/lib/...'` | `lib/` rule in `.gitignore` swallowed your file. Add an allow-rule. |
 | Token exchange returns 400 immediately after deploying a refactor | Re-introduced `client_secret` or `scope=openid`. Compare against `auth.py`/`service.py`. |
-| /oauth/callback shows "No access token received" but the redirect URL had `?access_token=...` | Re-introduced reactive `useSearch()` in the callback. Read `window.location.search` once instead. |
+| /oauth/callback shows "No sign-in code received" but the redirect URL had `?handoff=...` | Re-introduced reactive `useSearch()` in the callback. Read `window.location.search` once instead. |
+| The callback screen says the link carried a token and was refused | `oauth_token_in_query` — something is emitting the DELETED `?access_token=` shape (a stale build, or a forged link). Find the emitter and delete it; the system_error row names where it was seen. |
+| `POST /auth/session/exchange` 400s with `handoff_rejected` | The one-time code was already spent (double-mounted effect / reload) or is older than 120 s. Sign in again. |
 | "OAuth state missing or expired" | Server restarted between authorize and callback (in-memory state), or it's been > 10 minutes. Retry. |
 | Admin user sees /access-denied | Their Supabase `sub` isn't in `admin.admins`. Add it. |
 
