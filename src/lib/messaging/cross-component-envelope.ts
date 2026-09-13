@@ -54,14 +54,21 @@ export const CrossComponentEnvelopeSchema = z.object({
    * and keep parse back-compat for at least one version.
    */
   v: z.number().int().default(2),
-  kind: z.enum(['rpc', 'wake', 'presence']).default('rpc'),
+  // `directive` is THE platform client-directive channel (settings_changed /
+  // app_config_changed / refresh_required). Mirrors matrx-frontend's
+  // lib/types/bridge-envelope.ts and aidream's cross_component/envelope.py.
+  kind: z.enum(['rpc', 'wake', 'presence', 'directive']).default('rpc'),
   direction: z.string().min(1),
   action: z.string(),
   requestId: z.string(),
   payload: z.unknown().optional().default(null),
   timestamp: z.number(),
   fromInstance: InstanceRefSchema.default({ component: 'unknown', instanceId: 'unknown' }),
-  toInstance: InstanceRefSchema.partial({ instanceId: true }).optional(),
+  // `nullish`, never merely `optional`: the Python publisher serialises an
+  // explicit `"toInstance": null` on every server broadcast. `.optional()`
+  // rejected every directive as not_an_envelope (found 2026-09-12 in the web
+  // client; same class here).
+  toInstance: InstanceRefSchema.partial({ instanceId: true }).nullish(),
 });
 
 export type CrossComponentEnvelope = z.infer<typeof CrossComponentEnvelopeSchema>;
