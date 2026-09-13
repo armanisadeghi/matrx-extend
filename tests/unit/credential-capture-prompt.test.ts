@@ -193,6 +193,21 @@ function mount(html: string): Document {
 }
 
 describe('detector — snapshotLogin', () => {
+  it.each(['current-password', 'new-password'])(
+    'captures an unambiguous %s form',
+    async (autocomplete) => {
+      const { snapshotLogin } = await import('@/lib/credentials/capture-detector');
+      const doc = mount(`<form method="post"><input name="email" type="email" value="${USER}">
+      <input type="password" autocomplete="${autocomplete}" value="${SENTINEL}"><button type="submit">Sign in</button></form>`);
+      expect(snapshotLogin(doc.querySelector('button'), doc)).toEqual({
+        stage: 'password',
+        loginUrl: doc.location.href,
+        username: USER,
+        password: SENTINEL,
+      });
+    },
+  );
+
   it('captures username + password from an ordinary POST form', async () => {
     const { snapshotLogin } = await import('@/lib/credentials/capture-detector');
     const doc = mount(`<form method="post"><input name="email" type="text" value="${USER}">

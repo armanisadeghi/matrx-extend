@@ -104,13 +104,15 @@ function safeAction(
   submitter: Element | null,
   doc: Document,
 ): boolean {
-  return credentialDomSource({
-    operation: 'classify_form',
-    form,
-    submitter,
-    currentUrl: doc.location.href,
-    baseUri: doc.baseURI,
-  }).kind !== 'unsafe';
+  return (
+    credentialDomSource({
+      operation: 'classify_form',
+      form,
+      submitter,
+      currentUrl: doc.location.href,
+      baseUri: doc.baseURI,
+    }).kind !== 'unsafe'
+  );
 }
 
 /**
@@ -157,16 +159,14 @@ export function snapshotLogin(
   if (current.length > 0 || fresh.length > 0) {
     const newValues = new Set(fresh.map((input) => input.value));
     const currentValues = new Set(current.map((input) => input.value));
-    if (
-      current.length === 0 ||
-      fresh.length === 0 ||
-      newValues.size !== 1 ||
-      currentValues.size !== 1 ||
-      [...newValues][0] === [...currentValues][0] ||
-      passwords.some((input) => !current.includes(input) && !fresh.includes(input))
-    )
+    // Explicit login and signup forms can carry only one password role.
+    // A change form carries both; prefer its new value only when unambiguous.
+    if (passwords.some((input) => !current.includes(input) && !fresh.includes(input))) return null;
+    if (current.length > 0 && currentValues.size !== 1) return null;
+    if (fresh.length > 0 && newValues.size !== 1) return null;
+    if (current.length > 0 && fresh.length > 0 && [...newValues][0] === [...currentValues][0])
       return null;
-    password = fresh[0] ?? null;
+    password = fresh[0] ?? current[0] ?? null;
   } else {
     if (new Set(passwords.map((input) => input.value)).size !== 1) return null;
     password = passwords[0] ?? null;
