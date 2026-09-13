@@ -27,3 +27,23 @@ describe('credential form destination classifier', () => {
     expect(classify(form,foreign).kind).toBe('safe_post');
   });
 });
+
+it('revalidates legacy fill after focus mutates its destination', () => {
+  document.body.innerHTML = '<form method="post"><input id="user" autocomplete="username"></form>';
+  const input = document.querySelector('#user') as HTMLInputElement;
+  Object.defineProperty(input, 'getBoundingClientRect', { value: () => ({ width: 40, height: 20 }) });
+  input.addEventListener('focus', () => input.form?.setAttribute('method', 'get'));
+  const outcome = serialized({ operation: 'fill', expected: null, requested: [{ selector: '#user', value: 'secret' }], sensitiveAttr: '', preserveLegacyFieldBehavior: true });
+  expect(outcome).toEqual({ ok: false, reason: 'field_changed_during_focus' });
+  expect(input.value).toBe('');
+});
+
+it('refuses an OTP/new-password bound group before writing', () => {
+  document.body.innerHTML = '<form method="post"><input id="otp" autocomplete="one-time-code"><input id="password" type="password"></form>';
+  const form = document.querySelector('form') as HTMLFormElement;
+  for (const input of Array.from(form.querySelectorAll('input')))
+    Object.defineProperty(input, 'getBoundingClientRect', { value: () => ({ width: 40, height: 20 }) });
+  const outcome = serialized({ operation: 'fill', expected: { anchor: '#otp', username: '#otp', password: '#password', usernameOnly: false, pageUrl: `${location.origin}${location.pathname}` }, requested: [{ selector: '#otp', value: 'code' }, { selector: '#password', value: 'secret' }], sensitiveAttr: '', preserveLegacyFieldBehavior: false });
+  expect(outcome).toEqual({ ok: false });
+  expect((document.querySelector('#password') as HTMLInputElement).value).toBe('');
+});
