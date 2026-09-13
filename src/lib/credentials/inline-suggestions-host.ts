@@ -6,9 +6,9 @@ import {
 import { getCurrentUser } from '@/lib/auth/flow';
 import {
   type BoundLoginGroup,
-  credentialDomSource,
   type CredentialDomInjectedRequest,
   type CredentialDomResult,
+  credentialDomSource,
 } from '@/lib/credentials/fill-primitive';
 import { isSafeDestination, normalizeLoginUrl } from '@/lib/credentials/login-urls';
 import { SENSITIVE_ATTR, rememberSensitiveFields } from '@/lib/credentials/sensitive-fields';
@@ -176,7 +176,10 @@ async function query(tabId: number, documentId: string, selector: string): Promi
   if (!(await hasRealUserToken())) return response('sign_in_required');
   const actor = await context();
   if (!actor) return response('organization_required');
-  const group = await injectCredentialDom(tabId, documentId, { operation: 'focused_group', selector }).catch(() => null);
+  const group = await injectCredentialDom(tabId, documentId, {
+    operation: 'focused_group',
+    selector,
+  }).catch(() => null);
   if (!group) return response('unsafe_destination');
   const url = new URL(group.pageUrl);
   if (!isSafeDestination(url) || !normalizeLoginUrl(group.pageUrl))
@@ -250,7 +253,10 @@ async function fill(
   const actor = await context();
   if (!actor || actor.userId !== offer.userId || actor.organizationId !== offer.organizationId)
     return fillResponse('stale');
-  const current = await injectCredentialDom(tabId, documentId, { operation: 'focused_group', selector: offer.anchor }).catch(() => null);
+  const current = await injectCredentialDom(tabId, documentId, {
+    operation: 'focused_group',
+    selector: offer.anchor,
+  }).catch(() => null);
   if (
     !current ||
     current.pageUrl !== offer.pageUrl ||

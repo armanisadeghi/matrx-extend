@@ -43,10 +43,10 @@ import {
 } from '@/lib/api/routes/vault';
 import { checkAuthState } from '@/lib/chat/context/check-auth-state';
 import {
-  credentialDomSource,
   type CredentialDomInjectedRequest,
   type CredentialDomResult,
   type LoginFormProbe,
+  credentialDomSource,
 } from '@/lib/credentials/fill-primitive';
 import { isSafeDestination } from '@/lib/credentials/login-urls';
 import {
@@ -761,7 +761,11 @@ async function runCompleteAttempt(
     return safeResult('spec_incomplete', { reason: 'attempt_has_no_steps' });
   }
   const firstControl = firstStep.submit.kind === 'none' ? null : firstStep.submit.selector;
-  const firstProbe = await injectCredentialDom(tabId, { operation: 'attempt_probe', fieldSelectors: firstStep.fields, controlSelectors: firstControl ? [firstControl] : [] }).catch(() => null);
+  const firstProbe = await injectCredentialDom(tabId, {
+    operation: 'attempt_probe',
+    fieldSelectors: firstStep.fields,
+    controlSelectors: firstControl ? [firstControl] : [],
+  }).catch(() => null);
   if (!firstProbe || !firstProbe.is_top_frame || firstProbe.origin !== pageUrl.origin) {
     return safeResult('unsafe_destination', { reason: 'origin_changed_before_attempt' });
   }
@@ -773,7 +777,9 @@ async function runCompleteAttempt(
       message: `The first step could not be found (${firstMissing.length} selector${firstMissing.length === 1 ? '' : 's'} missing). Nothing was decrypted or typed.`,
     });
   }
-  if (firstStep.fields.some((selector) => firstProbe.fields[selector]?.destination_safe === false)) {
+  if (
+    firstStep.fields.some((selector) => firstProbe.fields[selector]?.destination_safe === false)
+  ) {
     return safeResult('unsafe_destination', { reason: 'unsafe_get_form' });
   }
 
@@ -842,7 +848,11 @@ async function runCompleteAttempt(
       );
     }
     const controlSelector = step.submit.kind === 'none' ? null : step.submit.selector;
-    const probe = await injectCredentialDom(tabId, { operation: 'attempt_probe', fieldSelectors: step.fields, controlSelectors: controlSelector ? [controlSelector] : [] }).catch(() => null);
+    const probe = await injectCredentialDom(tabId, {
+      operation: 'attempt_probe',
+      fieldSelectors: step.fields,
+      controlSelectors: controlSelector ? [controlSelector] : [],
+    }).catch(() => null);
     if (!probe || !probe.is_top_frame || probe.origin !== pageUrl.origin) {
       return await finish(
         safeResult('unsafe_destination', { reason: 'origin_changed_during_attempt' }),
@@ -880,7 +890,13 @@ async function runCompleteAttempt(
         rememberSensitiveFields(tabId, [spec.selector]);
         filledSelectors.push(spec.selector);
       }
-      const filled = await injectCredentialDom(tabId, { operation: 'fill', expected: null, requested: [{ selector: spec.selector, value }], sensitiveAttr: spec.field_key ? SENSITIVE_ATTR : '', preserveLegacyFieldBehavior: true }).catch(() => null);
+      const filled = await injectCredentialDom(tabId, {
+        operation: 'fill',
+        expected: null,
+        requested: [{ selector: spec.selector, value }],
+        sensitiveAttr: spec.field_key ? SENSITIVE_ATTR : '',
+        preserveLegacyFieldBehavior: true,
+      }).catch(() => null);
       if (!filled?.ok) {
         return await finish(
           safeResult('unknown', { reason: `step_${stepIndex}_fill_failed` }),
@@ -889,7 +905,11 @@ async function runCompleteAttempt(
       }
     }
 
-    const submitted = await injectCredentialDom(tabId, { operation: 'submit_explicit', kind: step.submit.kind, selector: controlSelector }).catch(() => null);
+    const submitted = await injectCredentialDom(tabId, {
+      operation: 'submit_explicit',
+      kind: step.submit.kind,
+      selector: controlSelector,
+    }).catch(() => null);
     if (!submitted?.ok) {
       return await finish(
         safeResult(submitted?.mode === 'unsafe_destination' ? 'unsafe_destination' : 'unknown', {
@@ -940,7 +960,11 @@ async function runAuthenticatorAttempt(
     return safeResult('unknown', { reason: 'conversation_binding_missing' });
   }
   const controlSelector = args.submit.kind === 'none' ? null : args.submit.selector;
-  const probe = await injectCredentialDom(tabId, { operation: 'attempt_probe', fieldSelectors: [args.code_selector], controlSelectors: controlSelector ? [controlSelector] : [] }).catch(() => null);
+  const probe = await injectCredentialDom(tabId, {
+    operation: 'attempt_probe',
+    fieldSelectors: [args.code_selector],
+    controlSelectors: controlSelector ? [controlSelector] : [],
+  }).catch(() => null);
   if (!probe || !probe.is_top_frame || probe.origin !== pageUrl.origin) {
     return safeResult('unsafe_destination', { reason: 'origin_changed_before_authenticator' });
   }
@@ -981,19 +1005,34 @@ async function runAuthenticatorAttempt(
   let code = transient.code;
   transient.code = '';
   try {
-    const filled = await injectCredentialDom(tabId, { operation: 'fill', expected: null, requested: [{ selector: args.code_selector, value: code }], sensitiveAttr: SENSITIVE_ATTR, preserveLegacyFieldBehavior: true }).catch(() => null);
+    const filled = await injectCredentialDom(tabId, {
+      operation: 'fill',
+      expected: null,
+      requested: [{ selector: args.code_selector, value: code }],
+      sensitiveAttr: SENSITIVE_ATTR,
+      preserveLegacyFieldBehavior: true,
+    }).catch(() => null);
     code = '';
     // The transient response and the only local code reference are cleared
     // before submission/classification. Neither can reach a result, log,
     // receipt, capture, or persistent store.
     if (!filled?.ok) return safeResult('unknown', { reason: 'authenticator_fill_failed' });
 
-    const submitted = await injectCredentialDom(tabId, { operation: 'submit_explicit', kind: args.submit.kind, selector: controlSelector }).catch(() => null);
+    const submitted = await injectCredentialDom(tabId, {
+      operation: 'submit_explicit',
+      kind: args.submit.kind,
+      selector: controlSelector,
+    }).catch(() => null);
     if (!submitted?.ok) {
-      return safeResult(submitted?.mode === 'unsafe_destination' ? 'unsafe_destination' : 'unknown', {
-        reason:
-          submitted?.mode === 'unsafe_destination' ? 'unsafe_get_form' : 'authenticator_submit_failed',
-      });
+      return safeResult(
+        submitted?.mode === 'unsafe_destination' ? 'unsafe_destination' : 'unknown',
+        {
+          reason:
+            submitted?.mode === 'unsafe_destination'
+              ? 'unsafe_get_form'
+              : 'authenticator_submit_failed',
+        },
+      );
     }
 
     const classified = await classifyExplicitAttempt(
@@ -1290,16 +1329,21 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
         rememberSensitiveFields(tabId, [probe.username_selector]);
         filledSelectors.push(probe.username_selector);
         const r = await injectCredentialDom(tabId, {
-          operation: 'fill', expected: null,
+          operation: 'fill',
+          expected: null,
           requested: [{ selector: probe.username_selector, value: credential.username }],
-          sensitiveAttr: SENSITIVE_ATTR, preserveLegacyFieldBehavior: true,
+          sensitiveAttr: SENSITIVE_ATTR,
+          preserveLegacyFieldBehavior: true,
         });
         if (!r?.ok) return await finish('unknown', { reason: 'username_fill_failed', clear: true });
       }
 
       // Two-step flow: username first, then advance to reveal the password.
       if (!passwordSelector) {
-        const advanced = await injectCredentialDom(tabId, { operation: 'submit_auto', selector: probe.submit_selector });
+        const advanced = await injectCredentialDom(tabId, {
+          operation: 'submit_auto',
+          selector: probe.submit_selector,
+        });
         if (!advanced?.ok) {
           const unsafeGet = advanced?.mode === 'unsafe_destination';
           return await finish(unsafeGet ? 'unsafe_destination' : 'unknown', {
@@ -1343,7 +1387,13 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
 
       rememberSensitiveFields(tabId, [passwordSelector]);
       filledSelectors.push(passwordSelector);
-      const pwFill = await injectCredentialDom(tabId, { operation: 'fill', expected: null, requested: [{ selector: passwordSelector, value: credential.password ?? null }], sensitiveAttr: SENSITIVE_ATTR, preserveLegacyFieldBehavior: true });
+      const pwFill = await injectCredentialDom(tabId, {
+        operation: 'fill',
+        expected: null,
+        requested: [{ selector: passwordSelector, value: credential.password ?? null }],
+        sensitiveAttr: SENSITIVE_ATTR,
+        preserveLegacyFieldBehavior: true,
+      });
       if (!pwFill?.ok) {
         return await finish('unknown', { reason: 'password_fill_failed', clear: true });
       }
@@ -1363,7 +1413,10 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
         });
       }
 
-      const submitted = await injectCredentialDom(tabId, { operation: 'submit_auto', selector: probe.submit_selector }).catch(() => null);
+      const submitted = await injectCredentialDom(tabId, {
+        operation: 'submit_auto',
+        selector: probe.submit_selector,
+      }).catch(() => null);
       if (!submitted?.ok) {
         const unsafeGet = submitted?.mode === 'unsafe_destination';
         return await finish(unsafeGet ? 'unsafe_destination' : 'unknown', {

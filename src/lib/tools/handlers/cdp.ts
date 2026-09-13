@@ -28,12 +28,12 @@
  * checks this BEFORE invoking the handler — see ToolHandler.required_optional_permissions.
  */
 
-import { base64ByteLength } from '@ai-matrx/kit/base64';
 import * as cdp from '@/lib/cdp/client';
 import { log } from '@/lib/debug/log';
 import { type ScreenshotProfile, resolveProfile } from '@/lib/screenshot/profiles';
 import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
+import { base64ByteLength } from '@ai-matrx/kit/base64';
 import { z } from 'zod';
 
 const NoArgs = z.object({}).default({});

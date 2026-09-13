@@ -26,7 +26,12 @@ const ALT_NAME = `A-${RUN}`;
 const ALT_USER = `extend-${RUN}@example.invalid`;
 const ALT_PASSWORD = `Owned-${crypto.randomUUID()}`;
 const STALE_PASSWORD = `Stale-${crypto.randomUUID()}`;
-let ctx, sw, popup, token, userId, orgId;
+let ctx;
+let sw;
+let popup;
+let token;
+let userId;
+let orgId;
 const owned = [];
 let baselineIds = [];
 let website;
@@ -325,7 +330,7 @@ async function doWebsiteLogin(p, stages) {
   await p.locator('#password').fill(process.env.AI_ADMIN_PASSWORD);
   markStage(stages.submitWait);
   await Promise.all([
-    p.waitForURL((u) => u.pathname != '/login', { timeout: 30000 }),
+    p.waitForURL((u) => u.pathname !== '/login', { timeout: 30000 }),
     p.getByRole('button', { name: 'Sign in', exact: true }).click(),
   ]);
 }
@@ -446,7 +451,7 @@ async function promptBox(p, stage) {
     markStage('fixture_create_alternate');
     const altId = await create(ALT_NAME, ALT_USER, ALT_PASSWORD);
     markStage('fixture_metadata');
-    let rows = await metadata([updateId, altId]);
+    const rows = await metadata([updateId, altId]);
     assert(
       rows.length === 2 &&
         rows.every(
@@ -534,8 +539,8 @@ async function promptBox(p, stage) {
       .catch(() => {});
     const inlineState = await website.evaluate(
       ({ u, p }) => {
-        const e = document.querySelector('#email'),
-          q = document.querySelector('#password');
+        const e = document.querySelector('#email');
+        const q = document.querySelector('#password');
         return {
           emailMatches: e?.value === u,
           passwordMatches: q?.value === p,

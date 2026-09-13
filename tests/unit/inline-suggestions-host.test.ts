@@ -186,28 +186,56 @@ afterEach(() => {
 
 describe('inline saved-login host', () => {
   it('runs the value-bearing dispatcher after source transfer without module bindings', async () => {
-    const { __inlineFillSerializedSourceForTest } = await import('@/lib/credentials/inline-suggestions-host');
-    const sourceTransferred = new Function(`return (${__inlineFillSerializedSourceForTest});`)() as typeof import('@/lib/credentials/fill-primitive').credentialDomSource;
+    const { __inlineFillSerializedSourceForTest } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    const sourceTransferred = new Function(
+      `return (${__inlineFillSerializedSourceForTest});`,
+    )() as typeof import('@/lib/credentials/fill-primitive').credentialDomSource;
     const result = sourceTransferred({
       operation: 'fill',
-      expected: { anchor: '#password', username: '#username', password: '#password', usernameOnly: false, pageUrl: `${location.origin}${location.pathname}` },
-      requested: [{ selector: '#username', value: 'INLINE_USER_SENTINEL' }, { selector: '#password', value: 'INLINE_PASSWORD_SENTINEL' }],
-      sensitiveAttr: 'data-matrx-sensitive', preserveLegacyFieldBehavior: false,
+      expected: {
+        anchor: '#password',
+        username: '#username',
+        password: '#password',
+        usernameOnly: false,
+        pageUrl: `${location.origin}${location.pathname}`,
+      },
+      requested: [
+        { selector: '#username', value: 'INLINE_USER_SENTINEL' },
+        { selector: '#password', value: 'INLINE_PASSWORD_SENTINEL' },
+      ],
+      sensitiveAttr: 'data-matrx-sensitive',
+      preserveLegacyFieldBehavior: false,
     });
     expect(result).toEqual({ ok: true });
-    expect((document.querySelector('#password') as HTMLInputElement).value).toBe('INLINE_PASSWORD_SENTINEL');
+    expect((document.querySelector('#password') as HTMLInputElement).value).toBe(
+      'INLINE_PASSWORD_SENTINEL',
+    );
   });
 
   it('preserves legacy credential-login scroll, focus, and blur behavior in the shared dispatcher', async () => {
     const { credentialDomSource } = await import('@/lib/credentials/fill-primitive');
-    const input = document.querySelector('#username') as HTMLInputElement & { scrollIntoView: (options?: ScrollIntoViewOptions | boolean) => void; };
+    const input = document.querySelector('#username') as HTMLInputElement & {
+      scrollIntoView: (options?: ScrollIntoViewOptions | boolean) => void;
+    };
     const scrolls: ScrollIntoViewOptions[] = [];
-    input.scrollIntoView = (options) => { if (typeof options === 'object') scrolls.push(options); };
-    let blurred = 0; input.addEventListener('blur', () => blurred++);
-    const result = credentialDomSource({ operation: 'fill', expected: null, requested: [{ selector: '#username', value: 'INLINE_USER_SENTINEL' }], sensitiveAttr: 'data-matrx-sensitive', preserveLegacyFieldBehavior: true });
+    input.scrollIntoView = (options) => {
+      if (typeof options === 'object') scrolls.push(options);
+    };
+    let blurred = 0;
+    input.addEventListener('blur', () => blurred++);
+    const result = credentialDomSource({
+      operation: 'fill',
+      expected: null,
+      requested: [{ selector: '#username', value: 'INLINE_USER_SENTINEL' }],
+      sensitiveAttr: 'data-matrx-sensitive',
+      preserveLegacyFieldBehavior: true,
+    });
     expect(result).toEqual({ ok: true });
     expect(scrolls).toEqual([{ block: 'center', behavior: 'instant' }]);
-    expect(document.activeElement).toBe(input); expect(blurred).toBe(1);
+    expect(document.activeElement).toBe(input);
+    expect(blurred).toBe(1);
   });
 
   it('fills a bound POST login form once without submitting it', async () => {
@@ -253,7 +281,9 @@ describe('inline saved-login host', () => {
     const { __inlineFillSerializedSourceForTest } = await import(
       '@/lib/credentials/inline-suggestions-host'
     );
-    const source = new Function(`return (${__inlineFillSerializedSourceForTest});`)() as typeof import('@/lib/credentials/fill-primitive').credentialDomSource;
+    const source = new Function(
+      `return (${__inlineFillSerializedSourceForTest});`,
+    )() as typeof import('@/lib/credentials/fill-primitive').credentialDomSource;
     const username = document.querySelector('#username') as HTMLInputElement;
     username.addEventListener('input', () => {
       document.querySelector('#password')?.replaceWith(
@@ -270,9 +300,19 @@ describe('inline saved-login host', () => {
     });
     const result = source({
       operation: 'fill',
-      expected: { anchor: '#password', username: '#username', password: '#password', usernameOnly: false, pageUrl: `${location.origin}${location.pathname}` },
-      requested: [{ selector: '#username', value: 'INLINE_USER_SENTINEL' }, { selector: '#password', value: 'INLINE_PASSWORD_SENTINEL' }],
-      sensitiveAttr: 'data-matrx-sensitive', preserveLegacyFieldBehavior: false,
+      expected: {
+        anchor: '#password',
+        username: '#username',
+        password: '#password',
+        usernameOnly: false,
+        pageUrl: `${location.origin}${location.pathname}`,
+      },
+      requested: [
+        { selector: '#username', value: 'INLINE_USER_SENTINEL' },
+        { selector: '#password', value: 'INLINE_PASSWORD_SENTINEL' },
+      ],
+      sensitiveAttr: 'data-matrx-sensitive',
+      preserveLegacyFieldBehavior: false,
     });
     expect(result).toEqual({ ok: false });
     expect((document.querySelector('#username') as HTMLInputElement).value).toBe('');
@@ -283,14 +323,26 @@ describe('inline saved-login host', () => {
     const { __inlineFillSerializedSourceForTest } = await import(
       '@/lib/credentials/inline-suggestions-host'
     );
-    const source = new Function(`return (${__inlineFillSerializedSourceForTest});`)() as typeof import('@/lib/credentials/fill-primitive').credentialDomSource;
+    const source = new Function(
+      `return (${__inlineFillSerializedSourceForTest});`,
+    )() as typeof import('@/lib/credentials/fill-primitive').credentialDomSource;
     const username = document.querySelector('#username') as HTMLInputElement;
     username.addEventListener('input', () => history.pushState({}, '', '/login-next'));
     const result = source({
       operation: 'fill',
-      expected: { anchor: '#password', username: '#username', password: '#password', usernameOnly: false, pageUrl: `${location.origin}/` },
-      requested: [{ selector: '#username', value: 'INLINE_USER_SENTINEL' }, { selector: '#password', value: 'INLINE_PASSWORD_SENTINEL' }],
-      sensitiveAttr: 'data-matrx-sensitive', preserveLegacyFieldBehavior: false,
+      expected: {
+        anchor: '#password',
+        username: '#username',
+        password: '#password',
+        usernameOnly: false,
+        pageUrl: `${location.origin}/`,
+      },
+      requested: [
+        { selector: '#username', value: 'INLINE_USER_SENTINEL' },
+        { selector: '#password', value: 'INLINE_PASSWORD_SENTINEL' },
+      ],
+      sensitiveAttr: 'data-matrx-sensitive',
+      preserveLegacyFieldBehavior: false,
     });
     expect(result).toEqual({ ok: false });
     expect(username.value).toBe('');

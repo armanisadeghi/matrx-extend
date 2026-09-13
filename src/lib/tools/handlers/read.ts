@@ -2,7 +2,6 @@
  * Tier: READ — informational tools. Run automatically without approval.
  */
 
-import { base64ByteLength } from '@ai-matrx/kit/base64';
 import { SENSITIVE_ATTR, sensitiveSelectorsForTab } from '@/lib/credentials/sensitive-fields';
 import { log } from '@/lib/debug/log';
 // Static imports — these three were dynamic (`await import(...)`) inside
@@ -20,6 +19,7 @@ import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
 import { type ScreenshotProfile, resolveProfile } from '@/lib/screenshot/profiles';
 import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
+import { base64ByteLength } from '@ai-matrx/kit/base64';
 import { z } from 'zod';
 
 const NoArgs = z.object({}).default({});
