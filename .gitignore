@@ -68,6 +68,10 @@ lib64/
 # Arman Specific
 .arman-temp/
 
+# Redacted, local-only receipts from the deliberate real-browser Vault canary.
+# The runner writes here so reconnects and /tmp cleanup cannot erase evidence.
+.matrx/realbrowser-vault/
+
 # macOS Finder metadata
 .DS_Store
 **/.DS_Store
