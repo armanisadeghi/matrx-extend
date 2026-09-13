@@ -19,10 +19,10 @@ importers:
         version: 0.11.3(react@19.2.5)
       '@ai-matrx/design-system':
         specifier: latest
-        version: 0.18.9(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        version: 0.18.10(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@ai-matrx/kit':
         specifier: latest
-        version: 0.13.4(react@19.2.5)
+        version: 0.13.5(react@19.2.5)
       '@ai-matrx/realtime':
         specifier: latest
         version: 0.7.9(react@19.2.5)
@@ -253,15 +253,15 @@ packages:
       react:
         optional: true
 
-  '@ai-matrx/design-system@0.18.9':
-    resolution: {integrity: sha512-SOhjhX3ehyHWdTn6VL/+SJra/gWHPFe8Rr14YKbIeF/QqRFOZM1k60HwyU7EN1ArIrVYVHpbFW+HDgDXsqKANg==}
+  '@ai-matrx/design-system@0.18.10':
+    resolution: {integrity: sha512-4rg618pzPg7CIWOMid+z4odpUvwmhfSu7AFn8DXrFL/wdo2oeLbn4ahawBL0hAV1Ady08mEQDjuN45Yfq7O49A==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@ai-matrx/kit@0.13.4':
-    resolution: {integrity: sha512-Tn5oEYnUlHvMNT37y53BGIdN6fEtgoLQPgMZFWXxJiL9CbqyHFDVn0MYpM+FaJNSoG0fsddkccT5wwoNYsjEFg==}
+  '@ai-matrx/kit@0.13.5':
+    resolution: {integrity: sha512-NPOovGVthgxCxbnqlabvWh45QCYKD/tRJeVwLtWI1+WKoEHfGMkhIY7x4BGuwYJb/4rFCRJAbUUj1RngR9KlIw==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -5735,8 +5735,8 @@ snapshots:
   '@ai-matrx/agents@0.11.0(@supabase/supabase-js@2.116.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
       '@ai-matrx/data': 0.13.1(@supabase/supabase-js@2.116.0)(react@19.2.5)
-      '@ai-matrx/design-system': 0.18.9(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@ai-matrx/kit': 0.13.4(react@19.2.5)
+      '@ai-matrx/design-system': 0.18.10(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@ai-matrx/kit': 0.13.5(react@19.2.5)
     optionalDependencies:
       react: 19.2.5
     transitivePeerDependencies:
@@ -5764,9 +5764,9 @@ snapshots:
       - '@supabase/supabase-js'
       - react-native
 
-  '@ai-matrx/design-system@0.18.9(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+  '@ai-matrx/design-system@0.18.10(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
-      '@ai-matrx/kit': 0.13.4(react@19.2.5)
+      '@ai-matrx/kit': 0.13.5(react@19.2.5)
       '@dnd-kit/core': 6.3.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@radix-ui/react-accordion': 1.2.20(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@radix-ui/react-alert-dialog': 1.1.23(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -5806,7 +5806,7 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  '@ai-matrx/kit@0.13.4(react@19.2.5)':
+  '@ai-matrx/kit@0.13.5(react@19.2.5)':
     dependencies:
       dompurify: 3.4.15
       idb: 8.0.3
@@ -5821,7 +5821,7 @@ snapshots:
 
   '@ai-matrx/tap-target@0.2.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
-      '@ai-matrx/design-system': 0.18.9(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@ai-matrx/design-system': 0.18.10(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@radix-ui/react-tooltip': 1.2.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       react: 19.2.5
     transitivePeerDependencies:
