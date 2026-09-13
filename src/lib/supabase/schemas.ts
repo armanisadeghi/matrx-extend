@@ -45,7 +45,11 @@
  *    defect, never a writer contract. See common-docs/no-db-assigned-org.
  */
 
-import { getAgentAuthoredSupabase, getMachineryAuthoredSupabase, getSupabase } from '@/lib/supabase/client';
+import {
+  getAgentAuthoredSupabase,
+  getMachineryAuthoredSupabase,
+  getSupabase,
+} from '@/lib/supabase/client';
 
 /**
  * Where each table the extension uses actually lives. Verified against the live

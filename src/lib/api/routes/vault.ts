@@ -230,10 +230,14 @@ export async function fetchBrowserLoginMatches(
   request?: VaultRequestOptions,
 ): Promise<VaultResult<BrowserLoginMatchesResponse>> {
   log.info('api', '→ POST vault/browser-login/matches');
-  const r = await vaultPost<BrowserLoginMatchesResponse>(`${BASE}/matches`, {
-    page_url: pageUrl,
-    ...(options?.includeFieldInventory ? { include_field_inventory: true } : {}),
-  }, request);
+  const r = await vaultPost<BrowserLoginMatchesResponse>(
+    `${BASE}/matches`,
+    {
+      page_url: pageUrl,
+      ...(options?.includeFieldInventory ? { include_field_inventory: true } : {}),
+    },
+    request,
+  );
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   const data = r.data;
   if (!data || !Array.isArray(data.matches)) {

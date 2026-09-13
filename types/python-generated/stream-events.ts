@@ -813,6 +813,35 @@ export interface LegalSyncEventData {
   error?: string | null;
 }
 
+export interface MasterworkAuditionOutcomeVerdictData {
+  type?: "masterwork_audition_outcome_verdict";
+  rulebook_id: string;
+  case_id: string;
+  run_scope: string;
+  verdict: string;
+  why?: string;
+  summary?: string;
+  judge_confidence?: number | null;
+  dangerous_branch?: boolean;
+  dangerous_branch_quote?: string;
+  decisive_question_seq?: number | null;
+  missed_cheaper_question?: string;
+  disclosures?: number;
+  asks?: number;
+  cost_points?: number;
+  risk_points?: number;
+  quality_score?: number | null;
+  weights?: Record<string, number>;
+  vanilla_compared?: boolean;
+  vanilla_verdict?: string | null;
+  vanilla_answer?: string | null;
+  vanilla_score?: number | null;
+  vanilla_model?: string | null;
+  vanilla_error?: string | null;
+  beat_vanilla?: boolean | null;
+  verdict_sentence?: string | null;
+}
+
 export interface MasterworkAuditionProgressData {
   type?: "masterwork_audition_progress";
   step: string;
@@ -945,6 +974,19 @@ export interface MasterworkDumpResourceOutcome {
   rules_added?: number;
   duplicates?: number;
   error?: string | null;
+  already_distilled?: MasterworkSourceAlreadyDistilled | null;
+  replaced_rules?: number;
+}
+
+export interface MasterworkSourceAlreadyDistilled {
+  source: string;
+  label?: string | null;
+  rules?: number;
+  draft_rules?: number;
+  approved_rules?: number;
+  run_ids?: string[];
+  message: string;
+  can_replace?: boolean;
 }
 
 export interface MasterworkDumpCompleteData {
@@ -956,6 +998,8 @@ export interface MasterworkDumpCompleteData {
   quotes_verified?: number;
   quotes_unverified?: number;
   resources?: MasterworkDumpResourceOutcome[];
+  already_distilled?: MasterworkSourceAlreadyDistilled[];
+  replaced_rules?: number;
 }
 
 export interface MasterworkDumpProgressData {
@@ -984,6 +1028,8 @@ export interface MasterworkIngestCompleteData {
   failed_chunks?: number;
   skipped_words?: number;
   followup_seed?: string | null;
+  already_distilled?: MasterworkSourceAlreadyDistilled[];
+  replaced_rules?: number;
 }
 
 export interface MasterworkIngestProgressData {
@@ -993,6 +1039,49 @@ export interface MasterworkIngestProgressData {
   chunk_index?: number | null;
   total_chunks?: number | null;
   rules_found?: number | null;
+}
+
+export interface MasterworkPairwiseArmFaithfulness {
+  side: string;
+  label: string;
+  rulebook_id: string;
+  verdict: string;
+  reasoning?: string;
+  confidence?: number | null;
+  departures?: MasterworkPairwiseRuleNote[];
+  honored_rule_ids?: string[];
+}
+
+export interface MasterworkPairwiseDifference {
+  aspect: string;
+  one_does?: string;
+  two_does?: string;
+  matters?: string;
+}
+
+export interface MasterworkPairwiseRuleNote {
+  rule_id: string;
+  winner: string;
+  note?: string;
+}
+
+export interface MasterworkPairwiseVerdictData {
+  type?: "masterwork_pairwise_verdict";
+  rulebook_id: string;
+  mode: string;
+  candidate_one_label: string;
+  candidate_two_label: string;
+  preferred?: string | null;
+  preferred_label?: string | null;
+  judge_verdict?: string;
+  judge_confidence?: number | null;
+  summary?: string;
+  differences?: MasterworkPairwiseDifference[];
+  rule_notes?: MasterworkPairwiseRuleNote[];
+  faithfulness?: MasterworkPairwiseArmFaithfulness[];
+  blind_key?: Record<string, string>;
+  blind_key_sealed_at?: string | null;
+  verdict_sentence?: string | null;
 }
 
 export interface MasterworkRunData {
@@ -1022,6 +1111,21 @@ export interface MasterworkRunSnapshotData {
   completed_at?: string | null;
 }
 
+export interface MasterworkSealedCaseDisclosureData {
+  type?: "masterwork_sealed_case_disclosure";
+  case_id: string;
+  run_scope: string;
+  seq: number;
+  event?: string;
+  question?: string;
+  answer?: string;
+  found?: boolean;
+  cost?: string | null;
+  risk?: string | null;
+  asked_kind?: string | null;
+  disclosures_so_far?: number;
+}
+
 export interface MasterworkShortlistItem {
   key: string;
   reason?: string;
@@ -1031,6 +1135,41 @@ export interface MasterworkShortlistData {
   type?: "masterwork_shortlist";
   selected?: MasterworkShortlistItem[];
   considered?: number;
+}
+
+export interface MasterworkTriageDecision {
+  rule_id: string;
+  name?: string;
+  verdict?: string;
+  reason?: string;
+  statement?: string;
+}
+
+export interface MasterworkTriageCompleteData {
+  type?: "masterwork_triage_complete";
+  rulebook_id: string;
+  rulebook_version: number;
+  drafts_considered?: number;
+  retired?: number;
+  kept?: number;
+  rewritten?: number;
+  refused?: string[];
+  failed_batches?: number;
+  drafts_unreviewed?: number;
+  dry_run?: boolean;
+  decisions?: MasterworkTriageDecision[];
+}
+
+export interface MasterworkTriageProgressData {
+  type?: "masterwork_triage_progress";
+  step: string;
+  message: string;
+  batch_index?: number | null;
+  batch_count?: number | null;
+  drafts_total?: number;
+  retired?: number;
+  kept?: number;
+  rewritten?: number;
 }
 
 export interface AudioBlock {
@@ -1788,6 +1927,7 @@ export type TypedDataPayload =
   | ImageStudioProcessCompleteData
   | ImageStudioVariantData
   | LegalSyncEventData
+  | MasterworkAuditionOutcomeVerdictData
   | MasterworkAuditionProgressData
   | MasterworkAuditionVerdictData
   | MasterworkBuildCompleteData
@@ -1801,10 +1941,14 @@ export type TypedDataPayload =
   | MasterworkDumpProgressData
   | MasterworkIngestCompleteData
   | MasterworkIngestProgressData
+  | MasterworkPairwiseVerdictData
   | MasterworkRunData
   | MasterworkRunFailedData
   | MasterworkRunSnapshotData
+  | MasterworkSealedCaseDisclosureData
   | MasterworkShortlistData
+  | MasterworkTriageCompleteData
+  | MasterworkTriageProgressData
   | MediaBlockData
   | MediaNoticeData
   | MemoryBufferSpawnedData
@@ -3407,6 +3551,14 @@ export interface SearchReplaceRenderData {
   language?: string | null;
 }
 
+export interface DirectiveReceiptRenderData {
+  directive: string;
+  outcome: "proposed" | "applied" | "already_applied" | "failed" | "blocked";
+  message: string;
+  resource_kind?: string;
+  resource_ids?: string[];
+}
+
 export interface UnknownDataEventData {
   [key: string]: unknown;
   _dataType: string;
@@ -3550,6 +3702,15 @@ export interface SearchReplaceRenderBlock {
   metadata?: Record<string, unknown>;
 }
 
+/** Kind Directive apply receipt — FE-synthesized from the kind-discriminated directive_apply.* events. Carries the SERVER's own sentence for the outcome (created / already applied / proposed / failed / blocked); never composed client-side. Never persisted to cx_message.content. */
+export interface DirectiveReceiptRenderBlock {
+  type: "directive_receipt";
+  /** Always null — a non-null content would leak into committed message parts. The payload lives on `data`. */
+  content: null;
+  data: DirectiveReceiptRenderData;
+  metadata?: Record<string, unknown>;
+}
+
 /** Fallback for data events whose type is not recognized; _dataType preserves the original type string. */
 export interface UnknownDataEventRenderBlock {
   type: "unknown_data_event";
@@ -3569,10 +3730,11 @@ export type ServerProtocolRenderBlock =
   | ScrapeBatchCompleteRenderBlock
   | ValueStoreStoredRenderBlock
   | ContextGroomedRenderBlock
-  | SearchReplaceRenderBlock;
+  | SearchReplaceRenderBlock
+  | DirectiveReceiptRenderBlock;
 
 export const SERVER_PROTOCOL_RENDER_BLOCK_TYPES = new Set<string>([
-  "function_result", "workflow_step", "search_error", "structured_input_warning", "podcast_stage", "podcast_complete", "scrape_batch_complete", "value_store_stored", "context_groomed", "search_replace",
+  "function_result", "workflow_step", "search_error", "structured_input_warning", "podcast_stage", "podcast_complete", "scrape_batch_complete", "value_store_stored", "context_groomed", "search_replace", "directive_receipt",
 ]);
 
 /** Generated-media delivery blocks — generic media primitives. */

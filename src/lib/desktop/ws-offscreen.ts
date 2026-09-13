@@ -405,7 +405,10 @@ function startIdleWatchdog(): void {
   state.idleTimer = setInterval(() => {
     const idleFor = Date.now() - state.lastActivityAt;
     if (idleFor >= IDLE_DISCONNECT_MS) {
-      log.info('desktop-ws-offscreen', `idle for ${formatDurationMs(idleFor, { style: 'long' })} — disconnecting`);
+      log.info(
+        'desktop-ws-offscreen',
+        `idle for ${formatDurationMs(idleFor, { style: 'long' })} — disconnecting`,
+      );
       // Mark as stopped so we don't auto-reconnect; the SW will reopen
       // on next outbound send.
       state.stopped = true;
