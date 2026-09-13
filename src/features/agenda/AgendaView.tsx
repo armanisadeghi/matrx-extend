@@ -27,10 +27,6 @@ import { isTaskRunning, runTask } from '@/lib/agenda/runner';
 import { log } from '@/lib/debug/log';
 import { cn } from '@/lib/utils';
 import { ConfirmDialog } from '@ai-matrx/design-system';
-// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
-// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
-// twins with no correct owner until kit became one.
-import { formatDurationMs } from '@ai-matrx/kit/format';
 import {
   Button,
   BasicInput as Input,
@@ -41,6 +37,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@ai-matrx/design-system';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatDurationMs } from '@ai-matrx/kit/format';
 import { Calendar, Clock, Heart, Pause, Play, PlayCircle, Plus, Trash2, Zap } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 

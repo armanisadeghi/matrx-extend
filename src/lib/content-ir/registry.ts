@@ -31,15 +31,15 @@
 
 import { contentIrDb } from '@/lib/supabase/schemas';
 import type { KindDefinition } from '@ai-matrx/content-ir';
-// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
-// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
-// twins with no correct owner until kit became one.
-import { formatDurationMs } from '@ai-matrx/kit/format';
 import {
   ComponentResolver,
   type ComponentRole,
   type KindComponentRow,
 } from '@ai-matrx/content-ir-react';
+// THE package formatters (`@ai-matrx/kit/format`, duplication census H1
+// 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
+// twins with no correct owner until kit became one.
+import { formatDurationMs } from '@ai-matrx/kit/format';
 import { reportContentIrError } from './errors';
 import { CONTENT_IR_PLATFORM } from './platform';
 

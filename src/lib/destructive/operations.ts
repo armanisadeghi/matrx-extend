@@ -235,7 +235,7 @@ export const INTERNAL_ONLY: { fn: string; module: string; why: string }[] = [
   {
     fn: 'erasePersistedSnapshot',
     module: 'src/lib/credentials/capture-candidates.ts',
-    why: 'Wipes the plaintext login-capture session cache (chrome.storage.session), never a user record. Called only from the service worker\'s own bookkeeping — persist() once no candidate is pending, and ensureSession() on worker startup when the actor changed or capture got disabled — never from a click or a message a user or the UI sends.',
+    why: "Wipes the plaintext login-capture session cache (chrome.storage.session), never a user record. Called only from the service worker's own bookkeeping — persist() once no candidate is pending, and ensureSession() on worker startup when the actor changed or capture got disabled — never from a click or a message a user or the UI sends.",
   },
 ];
 

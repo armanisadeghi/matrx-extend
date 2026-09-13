@@ -25,7 +25,9 @@ vi.mock('@/lib/org/active-org', () => ({
   },
 }));
 vi.mock('@/lib/auth/guest-signature', () => ({ getOrCreateGuestSignature: async () => 'guest' }));
-vi.mock('@/lib/debug/log', () => ({ log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), success: vi.fn() } }));
+vi.mock('@/lib/debug/log', () => ({
+  log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), success: vi.fn() },
+}));
 vi.mock('@/lib/messaging/native', () => ({ broadcast: vi.fn() }));
 
 import { apiPost } from './client';
@@ -37,19 +39,29 @@ const actor = {
 
 describe('expectedActor transport binding', () => {
   it('strips authorization and organization aliases before fetch', async () => {
-    const fetchMock = vi.fn(async () => new Response('{}', { headers: { 'content-type': 'application/json' } }));
+    const fetchMock = vi.fn(
+      async () => new Response('{}', { headers: { 'content-type': 'application/json' } }),
+    );
     vi.stubGlobal('fetch', fetchMock);
     const result = await apiPost('/api/vault/items', {}, undefined, {
       expectedActor: actor,
-      headers: { authorization: 'Bearer attacker', 'x-organization-id': 'attacker', ACCEPT: 'text/plain' },
+      headers: {
+        authorization: 'Bearer attacker',
+        'x-organization-id': 'attacker',
+        ACCEPT: 'text/plain',
+      },
     });
     expect(result.ok).toBe(true);
     const headers = (fetchMock.mock.calls as unknown as Array<[string, RequestInit]>)[0]?.[1]
       ?.headers as Record<string, string>;
     expect(headers.Authorization).toBe('Bearer token-a');
     expect(headers['X-Organization-Id']).toBe(actor.organizationId);
-    expect(Object.keys(headers).filter((name) => name.toLowerCase() === 'authorization')).toHaveLength(1);
-    expect(Object.keys(headers).filter((name) => name.toLowerCase() === 'x-organization-id')).toHaveLength(1);
+    expect(
+      Object.keys(headers).filter((name) => name.toLowerCase() === 'authorization'),
+    ).toHaveLength(1);
+    expect(
+      Object.keys(headers).filter((name) => name.toLowerCase() === 'x-organization-id'),
+    ).toHaveLength(1);
     expect(headers.ACCEPT).toBe('text/plain');
   });
 

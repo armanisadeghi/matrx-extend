@@ -373,12 +373,16 @@ async function fill(
     current.password !== offer.password
   )
     return fillResponse('stale');
-  const materialized = await materializeBrowserLogin(payload.itemId, {
-    pageUrl: offer.pageUrl,
-    toolInvocationId: `inline-${offer.id}`,
-    clientBuild: chrome.runtime.getManifest().version,
-    fieldKeys: current.usernameOnly ? ['username'] : ['username', 'password'],
-  }, { expectedActor: actor });
+  const materialized = await materializeBrowserLogin(
+    payload.itemId,
+    {
+      pageUrl: offer.pageUrl,
+      toolInvocationId: `inline-${offer.id}`,
+      clientBuild: chrome.runtime.getManifest().version,
+      fieldKeys: current.usernameOnly ? ['username'] : ['username', 'password'],
+    },
+    { expectedActor: actor },
+  );
   if (!materialized.ok)
     return fillResponse(materialized.failure.kind === 'forbidden' ? 'stale' : 'unavailable');
   const data = materialized.data;

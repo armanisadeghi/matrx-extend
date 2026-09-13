@@ -75,7 +75,9 @@ describe('user-table organization boundary', () => {
     });
 
     await expect(
-      appendRowsToUserTable('33333333-3333-4333-8333-333333333333', ORGANIZATION_ID, [{ name: 'Ada' }]),
+      appendRowsToUserTable('33333333-3333-4333-8333-333333333333', ORGANIZATION_ID, [
+        { name: 'Ada' },
+      ]),
     ).rejects.toMatchObject({ code: 'organization_context_mismatch' });
 
     expect(mocks.rpc).not.toHaveBeenCalled();
@@ -90,7 +92,9 @@ describe('user-table organization boundary', () => {
       ]),
     ).rejects.toBeInstanceOf(OrganizationContextError);
     await expect(
-      appendRowsToUserTable('33333333-3333-4333-8333-333333333333', 'not-a-uuid', [{ name: 'Ada' }]),
+      appendRowsToUserTable('33333333-3333-4333-8333-333333333333', 'not-a-uuid', [
+        { name: 'Ada' },
+      ]),
     ).rejects.toBeInstanceOf(OrganizationContextError);
 
     expect(mocks.maybeSingle).not.toHaveBeenCalled();

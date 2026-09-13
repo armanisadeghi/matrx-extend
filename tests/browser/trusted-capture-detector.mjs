@@ -81,10 +81,11 @@ for (const [variant, weaken] of Object.entries(weakenings)) {
     ],
   });
   for (const file of bundle.outputFiles) assets.set(`/${file.path.slice(root.length + 1)}`, file);
-  const entryPath = [...assets.keys()].find(
-    (path) => path.endsWith(`/${variant}/capture-detector.js`),
+  const entryPath = [...assets.keys()].find((path) =>
+    path.endsWith(`/${variant}/capture-detector.js`),
   );
-  if (!entryPath) throw new Error(`${variant} capture detector browser bundle entry was not produced`);
+  if (!entryPath)
+    throw new Error(`${variant} capture detector browser bundle entry was not produced`);
   entryPaths[variant] = entryPath;
 }
 const server = http.createServer((request, response) => {
@@ -222,21 +223,18 @@ try {
       'route',
       () => page.evaluate(() => history.pushState({}, '', '/after-pending-import')),
     ],
-    [
-      'late import newer gesture',
-      'generation',
-      () => page.locator('button').click(),
-    ],
+    ['late import newer gesture', 'generation', () => page.locator('button').click()],
     [
       'late import disposal',
       'dispose',
       () => page.evaluate(() => window.__disposeCaptureDetector()),
     ],
   ]) {
-    await fixture(
-      lateImportForm(`protected-${variant}`),
-      { status: 'unavailable', reason: 'capture_unavailable', tabId: 1 },
-    );
+    await fixture(lateImportForm(`protected-${variant}`), {
+      status: 'unavailable',
+      reason: 'capture_unavailable',
+      tabId: 1,
+    });
     if (variant === 'generation') {
       await page.evaluate(() => {
         let calls = 0;

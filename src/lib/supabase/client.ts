@@ -167,9 +167,9 @@ export function getMachineryAuthoredSupabase(): SupabaseClient {
   } catch (cause) {
     const detail = cause instanceof Error ? cause.message : String(cause);
     throw new Error(
-      'The extension\'s background machinery tried to write something, but could not ' +
+      "The extension's background machinery tried to write something, but could not " +
         'open the connection that marks a write as machine-made. Nothing was written — ' +
-        'recording it as a person\'s action would be worse. Reload the extension from ' +
+        "recording it as a person's action would be worse. Reload the extension from " +
         `chrome://extensions and try again; if it keeps happening, sign out and back in. (${detail})`,
     );
   }
