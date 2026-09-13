@@ -26,6 +26,20 @@ export function fillControlledCredentialFieldsSource(
   sensitiveAttr: string,
   preserveLegacyFieldBehavior: boolean,
 ): { ok: boolean; reason?: string } {
+  // Kept inside the injected function so Chrome receives a closure-free source.
+  function classify(form: HTMLFormElement, currentUrl: string, baseUri: string): boolean {
+    const long = "javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')";
+    const short = "javascript:throw new Error('React form unexpectedly submitted.')";
+    const action = form.getAttribute('action') ?? '';
+    if (action === long || action === short) return true;
+    if ((form.getAttribute('method') ?? 'get').toLowerCase() !== 'post') return false;
+    try {
+      const target = new URL(action || currentUrl, action ? baseUri : currentUrl);
+      const current = new URL(currentUrl);
+      const loopback = /^(localhost|127\.0\.0\.1|\[::1\]|::1)$/.test(target.hostname);
+      return target.origin === current.origin && (target.protocol === 'https:' || (target.protocol === 'http:' && loopback));
+    } catch { return false; }
+  }
   function visibleEditable(input: HTMLInputElement | null): input is HTMLInputElement {
     if (!input || input.disabled || input.readOnly || input.type === 'hidden') return false;
     const rect = input.getBoundingClientRect();
@@ -111,19 +125,7 @@ export function fillControlledCredentialFieldsSource(
     if (passwords.some((node) => node.autocomplete.toLowerCase() === 'new-password')) return false;
     if (group.password && passwords[0] !== originals.password) return false;
     const form = originals.anchor.closest('form');
-    if (form) {
-      const action = form.getAttribute('action');
-      if ((form.method || 'get').toLowerCase() === 'get') return false;
-      if (action) {
-        const destination = new URL(action, location.href);
-        const localhost = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
-        if (
-          destination.origin !== location.origin ||
-          (destination.protocol !== 'https:' && !(destination.protocol === 'http:' && localhost))
-        )
-          return false;
-      }
-    }
+    if (form && !classify(form, location.href, document.baseURI)) return false;
     return true;
   }
   function clearOwned(written: HTMLInputElement[]): void {

@@ -2602,3 +2602,10 @@ Every entry follows this shape:
 - **Edge cases worth poking:**
   - ...
 ```
+
+### React function-action login forms
+
+- **What it does:** Treats the two pinned React 19/Next function-action sentinels as intercepted actions while preserving GET, cross-origin, malformed, and arbitrary JavaScript destination refusals.
+- **Where to test:** An admin-owned disposable React login fixture with the installed extension.
+- **Steps:** Choose a saved login on a same-origin React function-action form, then repeat with default GET, a submitter GET override, and a mutated sentinel.
+- **Expected:** The exact React form can fill without a native GET navigation; all unsafe variants refuse before a secret write. Inline selection never submits.

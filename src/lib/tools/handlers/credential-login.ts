@@ -505,15 +505,26 @@ function probeLoginFormSource(): LoginFormProbe {
  * Mark + fill one field. `value` is credential plaintext travelling into the
  * page — which is the entire point of the tool. It is never returned.
  */
-/** Click the submit affordance, or fall back to the form's own submit. */
+
+
+/** Click the submit affordance, or fall back to requestSubmit only. */
 function submitLoginSource(selector: string | null): { ok: boolean; mode: string } {
+  function sourceFormSafe(form: HTMLFormElement | null, submitter: Element | null = null): boolean {
+    if (!form) return true;
+    const long = "javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')";
+    const short = "javascript:throw new Error('React form unexpectedly submitted.')";
+    const submit = submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement ? submitter : null;
+    if (submit && submit.form !== form) return false;
+    const action = submit?.getAttribute('formaction') ?? form.getAttribute('action') ?? '';
+    if (action === long || action === short) return true;
+    if ((submit?.getAttribute('formmethod') ?? form.getAttribute('method') ?? 'get').toLowerCase() !== 'post') return false;
+    try { const target = new URL(action || location.href, action ? document.baseURI : location.href); const loopback = /^(localhost|127\.0\.0\.1|\[::1\]|::1)$/.test(target.hostname); return target.origin === location.origin && (target.protocol === 'https:' || (target.protocol === 'http:' && loopback)); } catch { return false; }
+  }
   if (selector) {
     const btn = document.querySelector(selector) as HTMLElement | null;
     if (btn) {
       const buttonForm = btn.closest('form');
-      if (buttonForm?.method.toLowerCase() === 'get') {
-        return { ok: false, mode: 'unsafe_get' };
-      }
+      if (!sourceFormSafe(buttonForm, btn)) return { ok: false, mode: 'unsafe_get' };
       btn.click();
       return { ok: true, mode: 'click' };
     }
@@ -521,9 +532,9 @@ function submitLoginSource(selector: string | null): { ok: boolean; mode: string
   const pw = document.querySelector('input[type="password"]') as HTMLInputElement | null;
   const form = (pw ?? document.querySelector('input'))?.closest('form') ?? null;
   if (form) {
-    if (form.method.toLowerCase() === 'get') return { ok: false, mode: 'unsafe_get' };
-    if (typeof form.requestSubmit === 'function') form.requestSubmit();
-    else form.submit();
+    if (!sourceFormSafe(form)) return { ok: false, mode: 'unsafe_get' };
+    if (typeof form.requestSubmit !== 'function') return { ok: false, mode: 'request_submit_unavailable' };
+    form.requestSubmit();
     return { ok: true, mode: 'form' };
   }
   return { ok: false, mode: 'none' };
@@ -642,6 +653,14 @@ interface SpecProbe {
 
 /** Validate the ENTIRE declared attempt before requesting any secret. */
 function probeAttemptSpecSource(fieldSelectors: string[], controlSelectors: string[]): SpecProbe {
+  function effectiveMethod(form: HTMLFormElement | null): string | null {
+    if (!form) return null;
+    const action = form.getAttribute('action') ?? '';
+    const long = "javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')";
+    const short = "javascript:throw new Error('React form unexpectedly submitted.')";
+    if (action === long || action === short) return 'post';
+    return (form.getAttribute('method') ?? 'get').toLowerCase();
+  }
   const fields: SpecProbe['fields'] = {};
   const controls: SpecProbe['controls'] = {};
   for (const selector of fieldSelectors) {
@@ -653,7 +672,7 @@ function probeAttemptSpecSource(fieldSelectors: string[], controlSelectors: stri
     }
     fields[selector] = {
       exists: element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement,
-      form_method: element?.closest('form')?.method.toLowerCase() ?? null,
+      form_method: effectiveMethod(element?.closest('form') ?? null),
     };
   }
   for (const selector of controlSelectors) {
@@ -670,12 +689,23 @@ function explicitSubmitSource(
   kind: 'click' | 'press_enter' | 'none',
   selector: string | null,
 ): { ok: boolean; mode: string } {
+  function sourceFormSafe(form: HTMLFormElement | null, submitter: Element | null = null): boolean {
+    if (!form) return true;
+    const long = "javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')";
+    const short = "javascript:throw new Error('React form unexpectedly submitted.')";
+    const submit = submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement ? submitter : null;
+    if (submit && submit.form !== form) return false;
+    const action = submit?.getAttribute('formaction') ?? form.getAttribute('action') ?? '';
+    if (action === long || action === short) return true;
+    if ((submit?.getAttribute('formmethod') ?? form.getAttribute('method') ?? 'get').toLowerCase() !== 'post') return false;
+    try { const target = new URL(action || location.href, action ? document.baseURI : location.href); const loopback = /^(localhost|127\.0\.0\.1|\[::1\]|::1)$/.test(target.hostname); return target.origin === location.origin && (target.protocol === 'https:' || (target.protocol === 'http:' && loopback)); } catch { return false; }
+  }
   if (kind === 'none') return { ok: true, mode: 'none' };
   if (!selector) return { ok: false, mode: 'missing_selector' };
   const element = document.querySelector(selector) as HTMLElement | null;
   if (!element) return { ok: false, mode: 'not_found' };
   const form = element.closest('form');
-  if (form?.method.toLowerCase() === 'get') return { ok: false, mode: 'unsafe_get' };
+  if (!sourceFormSafe(form, element)) return { ok: false, mode: 'unsafe_get' };
   if (kind === 'click') {
     element.click();
     return { ok: true, mode: 'click' };
@@ -688,8 +718,8 @@ function explicitSubmitSource(
     new KeyboardEvent('keyup', { key: 'Enter', code: 'Enter', bubbles: true, cancelable: true }),
   );
   if (form) {
-    if (typeof form.requestSubmit === 'function') form.requestSubmit();
-    else form.submit();
+    if (typeof form.requestSubmit !== 'function') return { ok: false, mode: 'request_submit_unavailable' };
+    form.requestSubmit(element instanceof HTMLButtonElement || element instanceof HTMLInputElement ? element : undefined);
   }
   return { ok: true, mode: 'press_enter' };
 }
