@@ -237,16 +237,17 @@ export function toStoredSignals(a: SeoAudit): StoredAuditSignals {
 
 /* ── phrasing helpers ────────────────────────────────────────────────────── */
 
-/** The grouped-count voice, from the package — this was a `formatCount` body
- * under a one-letter name. Kept as `n` because the phrasing helpers below read
- * as sentences (`${n(a)} → ${n(b)} chars`) and a long name buries them. */
-const n = formatCount;
+/* THE ONE-LETTER ALIAS IS GONE (2026-09-12, seventh review). `const n =
+ * formatCount` was the alias lane's own assignment form, live: a second name
+ * for a collapsed export puts every call site below outside the guards that
+ * judge that export, and it survived only because this repo's register had no
+ * `formatCount` row to look for. The phrasing helpers say `formatCount`. */
 
 /** "3 more" / "3 fewer" — never "+3", which makes the reader do the work. */
 function moreFewer(delta: number, unit: string, unitPlural = `${unit}s`): string {
   const abs = Math.abs(delta);
   const noun = abs === 1 ? unit : unitPlural;
-  return `${n(abs)} ${delta > 0 ? 'more' : 'fewer'} ${noun}`;
+  return `${formatCount(abs)} ${delta > 0 ? 'more' : 'fewer'} ${noun}`;
 }
 
 function multiset(list: { level: number; text: string }[]): Map<string, number> {
@@ -289,8 +290,8 @@ export function diffSeoAudits(before: StoredAuditSignals, after: StoredAuditSign
     if (b.value !== a.value) {
       const lenPart =
         b.length === a.length
-          ? `still ${n(a.length)} chars`
-          : `${n(b.length)} → ${n(a.length)} chars`;
+          ? `still ${formatCount(a.length)} chars`
+          : `${formatCount(b.length)} → ${formatCount(a.length)} chars`;
       entries.push({
         key: 'title',
         label: 'Title',
@@ -310,13 +311,13 @@ export function diffSeoAudits(before: StoredAuditSignals, after: StoredAuditSign
       let verdict: string;
       let direction: SeoDiffDirection = 'neutral';
       if (!b.value && a.value) {
-        verdict = `Meta description added (${n(a.length)} chars)`;
+        verdict = `Meta description added (${formatCount(a.length)} chars)`;
         direction = 'better';
       } else if (b.value && !a.value) {
         verdict = 'Meta description removed';
         direction = 'worse';
       } else {
-        verdict = `Meta description rewritten (${n(b.length)} → ${n(a.length)} chars)`;
+        verdict = `Meta description rewritten (${formatCount(b.length)} → ${formatCount(a.length)} chars)`;
       }
       entries.push({
         key: 'description',
@@ -366,12 +367,12 @@ export function diffSeoAudits(before: StoredAuditSignals, after: StoredAuditSign
       unchanged.push('Headings');
     } else {
       const parts: string[] = [];
-      if (added.length) parts.push(`${n(added.length)} added`);
-      if (removed.length) parts.push(`${n(removed.length)} removed`);
+      if (added.length) parts.push(`${formatCount(added.length)} added`);
+      if (removed.length) parts.push(`${formatCount(removed.length)} removed`);
       entries.push({
         key: 'headings',
         label: 'Headings',
-        verdict: `Headings: ${parts.join(', ')} (${n(before.headings.length)} → ${n(after.headings.length)})`,
+        verdict: `Headings: ${parts.join(', ')} (${formatCount(before.headings.length)} → ${formatCount(after.headings.length)})`,
         direction: 'neutral',
         items: [
           ...added.slice(0, 5).map((h) => `+ ${h}`),
@@ -389,7 +390,7 @@ export function diffSeoAudits(before: StoredAuditSignals, after: StoredAuditSign
       entries.push({
         key: 'images_total',
         label: 'Images',
-        verdict: `${moreFewer(dTotal, 'image')} on the page (${n(before.images.total)} → ${n(after.images.total)})`,
+        verdict: `${moreFewer(dTotal, 'image')} on the page (${formatCount(before.images.total)} → ${formatCount(after.images.total)})`,
         direction: 'neutral',
       });
 
@@ -401,8 +402,8 @@ export function diffSeoAudits(before: StoredAuditSignals, after: StoredAuditSign
         label: 'Missing alt text',
         verdict:
           after.images.missing_alt === 0
-            ? `Every image now has alt text (was ${n(before.images.missing_alt)} missing)`
-            : `${moreFewer(dAlt, 'image')} missing alt text (${n(before.images.missing_alt)} → ${n(after.images.missing_alt)})`,
+            ? `Every image now has alt text (was ${formatCount(before.images.missing_alt)} missing)`
+            : `${moreFewer(dAlt, 'image')} missing alt text (${formatCount(before.images.missing_alt)} → ${formatCount(after.images.missing_alt)})`,
         direction: dAlt < 0 ? 'better' : 'worse',
       });
   }
@@ -415,7 +416,7 @@ export function diffSeoAudits(before: StoredAuditSignals, after: StoredAuditSign
       entries.push({
         key: 'word_count',
         label: 'Word count',
-        verdict: `${moreFewer(d, 'word')} (${n(before.word_count)} → ${n(after.word_count)})`,
+        verdict: `${moreFewer(d, 'word')} (${formatCount(before.word_count)} → ${formatCount(after.word_count)})`,
         direction: 'neutral',
       });
   }
@@ -430,7 +431,7 @@ export function diffSeoAudits(before: StoredAuditSignals, after: StoredAuditSign
         entries.push({
           key: `links_${kind}`,
           label,
-          verdict: `${moreFewer(d, `${kind} link`)} (${n(before.links[kind])} → ${n(after.links[kind])})`,
+          verdict: `${moreFewer(d, `${kind} link`)} (${formatCount(before.links[kind])} → ${formatCount(after.links[kind])})`,
           direction: 'neutral',
         });
     }

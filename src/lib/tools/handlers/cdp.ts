@@ -28,6 +28,7 @@
  * checks this BEFORE invoking the handler — see ToolHandler.required_optional_permissions.
  */
 
+import { base64ByteLength } from '@/lib/base64';
 import * as cdp from '@/lib/cdp/client';
 import { log } from '@/lib/debug/log';
 import { type ScreenshotProfile, resolveProfile } from '@/lib/screenshot/profiles';
@@ -183,8 +184,7 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
       const mediaType =
         format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png';
       // Provider image limits apply to decoded bytes, not the base64 text.
-      const padding = result.data.endsWith('==') ? 2 : result.data.endsWith('=') ? 1 : 0;
-      const decodedBytes = Math.floor((result.data.length * 3) / 4) - padding;
+      const decodedBytes = base64ByteLength(result.data);
       // Captured image dimensions (best-effort, in image-pixels). Full-page
       // applies captureScale via the clip; viewport capture does not.
       const scale = args.full_page ? captureScale : 1;
@@ -502,8 +502,7 @@ export const cdp_print_pdf: ToolHandler<PrintPdfArgs, unknown> = {
         printBackground: args.print_background,
       });
       // DECODED bytes, not the base64 text length (~4/3 larger).
-      const pdfPadding = r.data.endsWith('==') ? 2 : r.data.endsWith('=') ? 1 : 0;
-      const pdfBytes = Math.floor((r.data.length * 3) / 4) - pdfPadding;
+      const pdfBytes = base64ByteLength(r.data);
       return { ok: true, pdf_base64: r.data, byte_length: pdfBytes };
     } catch (err) {
       return { ok: false, reason: (err as Error).message };

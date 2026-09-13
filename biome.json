@@ -19,7 +19,9 @@
       "scripts/check-matrx-packages.mjs",
       "scripts/check-package-twins.mjs",
       "scripts/byte-size-shape.mjs",
-      "scripts/duration-shape.mjs"
+      "scripts/duration-shape.mjs",
+      "scripts/format-input-shape.mjs",
+      "scripts/package-twins.json"
     ]
   },
   "formatter": {

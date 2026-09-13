@@ -35,7 +35,6 @@ export type TransformName =
   | 'lowercase'
   | 'uppercase'
   | 'formatImageDimensions'
-  | 'formatBytes'
   | 'browserCategoryIcon'
   // Mega-tool action → verb (e.g. computer.left_click → 'Clicked')
   | 'computerActionVerb'

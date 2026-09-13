@@ -2,6 +2,7 @@
  * Tier: READ — informational tools. Run automatically without approval.
  */
 
+import { base64ByteLength } from '@/lib/base64';
 import { SENSITIVE_ATTR, sensitiveSelectorsForTab } from '@/lib/credentials/sensitive-fields';
 import { log } from '@/lib/debug/log';
 // Static imports — these three were dynamic (`await import(...)`) inside
@@ -399,7 +400,7 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
             mediaType,
             width: processed.width,
             height: processed.height,
-            sizeBytes: Math.floor((processed.base64.length * 3) / 4),
+            sizeBytes: base64ByteLength(processed.base64),
             capture: {
               mode,
               format,

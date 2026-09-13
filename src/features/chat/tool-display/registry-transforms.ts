@@ -7,7 +7,6 @@
  * it can't handle (e.g. titleCase only acts on strings) — never throw.
  */
 
-import { formatFileSize } from '@ai-matrx/kit/format';
 import type { TransformName } from './types';
 
 const titleCaseFn = (v: unknown): unknown => {
@@ -37,8 +36,14 @@ export const transforms: Record<TransformName, (v: unknown) => unknown> = {
     if (typeof w !== 'number' || typeof h !== 'number') return undefined;
     return `${w}×${h}`;
   },
-  /** Number of bytes → human-readable size ("123 KB", "4.5 MB"). */
-  formatBytes: (v) => (typeof v === 'number' ? formatFileSize(v) : v),
+  /* `formatBytes` IS NOT A TRANSFORM ANY MORE (2026-09-12, seventh review).
+   * It was `(v) => formatFileSize(v)` — an object-property PASS-THROUGH, the
+   * same class as the point-free `format: formatFileSize` hand-off: a second
+   * name for a collapsed export, under which the input lane
+   * (`format-input-shape.mjs`) cannot see what reaches `formatFileSize`. It
+   * had zero call sites in this repo — the registry is keyed by a string
+   * union and no `info` entry named it. A field that renders a byte count
+   * calls `formatFileSize` directly. */
   /**
    * Browser-tools category name → lucide icon name. Each category gets a
    * distinct, recognizable icon (Wrench for core, Cookie for cookies, etc.).
