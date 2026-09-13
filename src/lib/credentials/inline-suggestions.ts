@@ -18,6 +18,8 @@ const HOST_ID = 'matrx-inline-login-suggestion';
 let host: HTMLElement | null = null;
 let generation = 0;
 let focused: HTMLInputElement | null = null;
+let focusEntry: { target: HTMLInputElement; listener: (event: KeyboardEvent) => void } | null =
+  null;
 
 function selectorFor(input: HTMLInputElement): string | null {
   const escapeSelector = (value: string) =>
@@ -49,6 +51,10 @@ function selectorFor(input: HTMLInputElement): string | null {
 
 function dismiss(): void {
   generation++;
+  if (focusEntry) {
+    focusEntry.target.removeEventListener('keydown', focusEntry.listener, true);
+    focusEntry = null;
+  }
   host?.remove();
   host = null;
 }
@@ -135,7 +141,8 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
     'all:initial;display:block;box-sizing:border-box;width:292px;max-width:calc(100vw - 16px);max-height:var(--matrx-inline-max-height,168px);overflow:auto;padding:8px;background:#fff;color:#171717;border:1px solid #d4d4d4;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);font:13px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;';
   const title = document.createElement('button');
   title.type = 'button';
-  title.textContent = 'Matrx — choose a saved login';
+  title.textContent = 'Matrx — choose a saved login (Arrow Down to browse)';
+  title.setAttribute('aria-label', 'Matrx saved logins. Press Arrow Down to browse.');
   title.setAttribute('aria-expanded', 'false');
   title.style.cssText =
     'all:initial;display:block;font:600 12px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;margin:0 0 6px;color:#333;cursor:pointer;outline:2px solid transparent;outline-offset:2px;';
@@ -178,17 +185,33 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
     buttons.push(button);
     card.append(button);
   }
-  title.addEventListener('click', () => {
+  const expandChoices = (): void => {
     title.setAttribute('aria-expanded', 'true');
     for (const button of buttons) {
       button.hidden = false;
       button.style.setProperty('display', 'block');
     }
-    buttons[0]?.focus(); // a trusted click, never focus-time autofocus
-  });
+    buttons[0]?.focus();
+  };
+  title.addEventListener('click', expandChoices);
   shadow.append(card);
   document.documentElement.append(host);
   place(target);
+  const entryListener = (event: KeyboardEvent): void => {
+    if (
+      !event.isTrusted ||
+      event.key !== 'ArrowDown' ||
+      document.activeElement !== target ||
+      focused !== target ||
+      host?.id !== HOST_ID
+    ) {
+      return;
+    }
+    event.preventDefault();
+    expandChoices();
+  };
+  focusEntry = { target, listener: entryListener };
+  target.addEventListener('keydown', entryListener, true);
   card.addEventListener('keydown', (event) => {
     const index = buttons.indexOf(shadow.activeElement as HTMLButtonElement);
     if (event.key === 'Escape') {
@@ -202,7 +225,10 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
         (index + (event.key === 'ArrowDown' ? 1 : -1) + buttons.length) % buttons.length
       ]?.focus();
     }
-    if (event.key === 'Enter' && index >= 0) buttons[index]?.click();
+    if (event.key === 'Enter' && index >= 0) {
+      event.preventDefault();
+      buttons[index]?.click();
+    }
   });
 }
 
