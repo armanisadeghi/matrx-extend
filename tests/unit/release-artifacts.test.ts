@@ -3,15 +3,17 @@ import { createHash } from 'node:crypto';
 import {
   chmodSync,
   cpSync,
+  lstatSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  readdirSync,
   rmSync,
   symlinkSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { hashReleaseTree, promoteUnpackedRelease } from '../../scripts/sync-unpacked-release.mjs';
 
@@ -40,6 +42,18 @@ const run = (command: string, args: string[], cwd: string, env: NodeJS.ProcessEn
   return result;
 };
 const git = (root: string, ...args: string[]) => run('git', args, root).stdout.trim();
+const independentlyReadTree = (root: string) => {
+  const files: Record<string, string> = {};
+  const walk = (dir: string) => {
+    for (const name of readdirSync(dir).sort()) {
+      const file = join(dir, name);
+      if (lstatSync(file).isDirectory()) walk(file);
+      else files[relative(root, file)] = readFileSync(file, 'utf8');
+    }
+  };
+  walk(root);
+  return files;
+};
 
 function createReleaseFixture(mode: 'dirty' | 'mutate' | 'push-race' | 'no-push' | 'success') {
   const root = makeRoot();
@@ -281,7 +295,17 @@ describe('release.sh Git integrity boundary', () => {
       key: 'dev-key',
     });
     expect(() => readFileSync(join(promoted, 'obsolete-0.0.0.js'))).toThrow();
-    expect(hashReleaseTree(promoted)).toBe(hashReleaseTree(join(repo, '.output/chrome-mv3')));
+    const expectedFiles = {
+      'main.js': 'bundle',
+      'manifest.json': '{"version":"0.0.1","key":"dev-key"}',
+    };
+    expect(independentlyReadTree(promoted)).toEqual(expectedFiles);
+    expect(independentlyReadTree(join(repo, '.output/chrome-mv3'))).toEqual(expectedFiles);
+    // This fixed digest was calculated independently from the two literal
+    // path/content records, using the documented path + NUL + bytes + NUL framing.
+    expect(hashReleaseTree(promoted)).toBe(
+      'eef29b14751a8df39ff2f36eafdfeed93b4a006db6ef50329bff5a35bc589aa5',
+    );
     const receipt = JSON.parse(readFileSync(join(repo, '.output/release-receipt.json'), 'utf8'));
     expect(receipt).toMatchObject({
       sourceSha: head,
