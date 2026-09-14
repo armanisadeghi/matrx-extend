@@ -152,6 +152,9 @@ describe('scrape pipeline — inline SVG figures', () => {
             <svg style="position:absolute;top:0;left:0" width="260" height="260" viewBox="0 0 260 260" stroke="#99A4AF">
               ${mathspaceGridLines}
             </svg>
+            <svg class="JXGsvg" width="260" height="260" viewBox="0 0 260 260">
+              <path d=" M2 258 C45 4 95 245 140 125 S220 20 258 180" stroke="#03A887" stroke-width="2px" fill="none" fill-opacity="0" />
+            </svg>
             <div style="width:100%;height:100%;position:absolute;top:0;left:0;z-index:2"></div>
           </div>
         </div>
@@ -159,9 +162,10 @@ describe('scrape pipeline — inline SVG figures', () => {
       expectedAlt: 'Inline figure graphic',
       expectedGraphics: ['<line', '<path'],
       expectedImages: 1,
-      expectedSvgLayers: 3,
-      expectedPaths: 2,
+      expectedSvgLayers: 4,
+      expectedPaths: 3,
       expectedLines: 44,
+      expectedCurve: 'stroke="#03A887" stroke-width="2px" fill="none" fill-opacity="0"',
     },
   ])('keeps $name through Defuddle, sanitization, and Turndown', async (sample) => {
     const doc = new DOMParser().parseFromString(
@@ -192,6 +196,9 @@ describe('scrape pipeline — inline SVG figures', () => {
     for (const graphic of sample.expectedGraphics) {
       expect(decodedImages.some((image) => image.includes(graphic))).toBe(true);
     }
+    if (sample.expectedCurve !== undefined) {
+      expect(decodedImages.some((image) => image.includes(sample.expectedCurve))).toBe(true);
+    }
     if (sample.expectedSvgLayers !== undefined) {
       // Captured Mathspace graphs have two 260x7 arrow layers over a 260x260
       // grid. This catches the old same-size filter silently dropping arrows.
@@ -203,7 +210,7 @@ describe('scrape pipeline — inline SVG figures', () => {
     expect(encodedImages, markdown).toHaveLength(sample.expectedImages);
   });
 
-  it('sanitizes executable SVG markup before encoding the image URL', () => {
+  it('reports an SVG whose executable child strips its curve instead of encoding a blank graph', () => {
     const doc = new DOMParser().parseFromString(
       `<body><figure><svg width="100" height="100" onload="steal()">
         <script>steal()</script>
@@ -214,13 +221,97 @@ describe('scrape pipeline — inline SVG figures', () => {
     );
 
     normalizeSemanticMarkup(doc);
-    const src = doc.querySelector('figure img')?.getAttribute('src') ?? '';
-    const decoded = atob(src.slice(src.indexOf(',') + 1));
+    expect(doc.querySelector('figure')).toBeNull();
+    expect(doc.body.textContent).toContain(
+      'Inline figure graphic was omitted because this capture could not preserve it completely.',
+    );
+  });
 
-    expect(decoded).toContain('<svg');
-    expect(decoded).not.toContain('<script');
-    expect(decoded).not.toContain('onload=');
-    expect(decoded).not.toContain('javascript:');
+  it('reports an unsupported layered figure instead of emitting a partial graph', async () => {
+    const doc = new DOMParser().parseFromString(
+      `<!doctype html><html><head><title>Visual lesson</title></head><body><article>
+        <h1>Visual lesson</h1><p>${'Before the figure. '.repeat(40)}</p>
+        <figure><svg width="260" height="260" viewBox="0 0 260 260">
+          <line x1="0" y1="0" x2="260" y2="260" />
+          <foreignObject width="260" height="260"><div>Unsupported visual layer</div></foreignObject>
+        </svg><svg width="260" height="260" viewBox="0 0 260 260">
+          <path d="M2 258 C45 4 95 245 140 125 S220 20 258 180" stroke="#03A887" stroke-width="2px" fill="none" fill-opacity="0" />
+        </svg></figure><p>${'After the figure. '.repeat(40)}</p>
+      </article></body></html>`,
+      'text/html',
+    );
+
+    const result = await runScrape(doc, {
+      includeImages: false,
+      includeVideos: false,
+      includeAudio: false,
+      includeLinks: false,
+      includeStructured: false,
+    });
+    const markdown = result.article.content_markdown ?? '';
+
+    expect(markdown).toContain(
+      'Inline figure graphic was omitted because this capture could not preserve it completely.',
+    );
+    expect(markdown).not.toContain('data:image/svg+xml;base64,');
+  });
+
+  it('keeps a Mathspace-style empty foreignObject overlay with the plotted curve', async () => {
+    const doc = new DOMParser().parseFromString(
+      `<!doctype html><html><head><title>Visual lesson</title></head><body><article>
+        <h1>Visual lesson</h1><p>${'Before the figure. '.repeat(40)}</p>
+        <figure><svg width="260" height="260" viewBox="0 0 260 260">
+          <line x1="0" y1="0" x2="260" y2="260" />
+          <foreignObject x="0" y="0" width="100%" height="100%"></foreignObject>
+        </svg><svg width="260" height="260" viewBox="0 0 260 260">
+          <path d="M2 258 C45 4 95 245 140 125 S220 20 258 180" stroke="#03A887" stroke-width="2px" fill="none" fill-opacity="0" />
+        </svg></figure><p>${'After the figure. '.repeat(40)}</p>
+      </article></body></html>`,
+      'text/html',
+    );
+
+    const result = await runScrape(doc, {
+      includeImages: false,
+      includeVideos: false,
+      includeAudio: false,
+      includeLinks: false,
+      includeStructured: false,
+    });
+    const payload = result.article.content_markdown?.match(/base64,([\w+/=]+)/)?.[1] ?? '';
+    const composite = atob(payload);
+
+    expect(composite).toContain('stroke="#03A887"');
+    expect(composite).toContain('stroke-width="2px"');
+    expect(composite).toContain('fill-opacity="0"');
+  });
+
+  it('reports a Mathspace renderer shell that still has no plotted graphics', async () => {
+    const doc = new DOMParser().parseFromString(
+      `<!doctype html><html><head><title>Visual lesson</title></head><body><article>
+        <h1>Visual lesson</h1><p>${'Before the figure. '.repeat(40)}</p>
+        <figure>
+          <svg width="260" height="260"><line x1="0" y1="130" x2="260" y2="130" /></svg>
+          <svg class="JXGsvg" width="260" height="260"><defs><filter id="f"></filter></defs>
+            <foreignObject x="0" y="0" width="100%" height="100%"></foreignObject>
+          </svg>
+        </figure><p>${'After the figure. '.repeat(40)}</p>
+      </article></body></html>`,
+      'text/html',
+    );
+
+    const result = await runScrape(doc, {
+      includeImages: false,
+      includeVideos: false,
+      includeAudio: false,
+      includeLinks: false,
+      includeStructured: false,
+    });
+    const markdown = result.article.content_markdown ?? '';
+
+    expect(markdown).toContain(
+      'Inline figure graphic was omitted because this capture could not preserve it completely.',
+    );
+    expect(markdown).not.toContain('data:image/svg+xml;base64,');
   });
 
   it('keeps Mathspace axes at their measured graph positions and orientation', async () => {

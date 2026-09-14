@@ -6,13 +6,9 @@
  *   - settlePage(tabId, opts)    — wait for DOM mutations to quiet
  *   - scrollToLoadLazy(tabId, opts) — top→bottom scroll to fire lazy loaders
  *
- * Each call site picks its own option set:
- *   - Manual Scrape "Scroll & capture": skips settlePage, fast scroll (100ms),
- *     short cap (4s), with live progress callback wired to the button.
- *   - Automated Tasks: keeps both, conservative timings (defaults below).
- *
- * Tuning one call site CANNOT change the other. The algorithm is shared but
- * each behavior knob is a parameter.
+ * Scroll capture always settles after restoring position: lazy graph shells
+ * can exist before their plotted children hydrate. Callers still tune scroll
+ * pacing independently, but all inherit ready-to-capture completion.
  */
 
 import { log } from '@/lib/debug/log';
@@ -28,9 +24,7 @@ interface SettlePageOptions {
  * Wait for the page DOM to stop mutating. Returns when there have been no
  * mutations for `quietMs`, or when `maxMs` elapses (whichever first).
  *
- * Used ONLY by the automated Tasks flow. The manual Scroll & capture button
- * skips this — by the time the user clicks, the page has been visible long
- * enough that settling adds no value, only latency.
+ * Used after every lazy-load scroll, plus callers that need settling alone.
  */
 export async function settlePage(
   tabId: number,
@@ -234,6 +228,9 @@ export async function scrollToLoadLazy(
       args: [stepRatio, delayMs, maxMs, restoreScroll, !!onProgress, SCROLL_PROGRESS_KIND],
     });
     const summary = result?.[0]?.result as ScrollResult | undefined;
+    // A scroll only triggers lazy graph hydration. Do not let any caller
+    // capture the intermediate shell before JSXGraph's plotted children land.
+    await settlePage(tabId);
     const ms = Math.round(performance.now() - start);
     log.success(
       'scrape',

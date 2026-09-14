@@ -721,10 +721,11 @@ Every entry follows this shape:
 
 ### Scrape — inline SVG figure preservation
 - **What it does:** Before Defuddle runs, turns inline SVGs inside article
-  `<figure>` elements into sanitized SVG data images. Layered graphs are
-  combined using each live layer's measured position and quarter-turn, so the
-  grid, plotted curve, and horizontal/vertical axes stay together. SVGs outside
-  figures (navigation, buttons, logos) are left alone.
+  `<figure>` elements into sanitized SVG data images only when every supported
+  vector shape survives sanitization. Layered graphs are combined using each
+  live layer's measured position and quarter-turn, so the grid, plotted curve,
+  and horizontal/vertical axes stay together. SVGs outside figures (navigation,
+  buttons, logos) are left alone.
 - **Where to test:** Side panel → **Scrape** tab → Article.
 - **Steps:**
   1. Open the Mathspace AP Precalculus lesson **1.4 Polynomial functions and
@@ -739,7 +740,11 @@ Every entry follows this shape:
   contains no scripts, event handlers, or `javascript:` URLs.
 - **Edge cases worth poking:** A standalone labelled SVG keeps its
   `aria-label` as alt text; a layered SVG with no label uses `Inline figure
-  graphic`; normal `<img>` figures are unchanged.
+  graphic`; an empty Mathspace `foreignObject` overlay does not block a graph;
+  visual `foreignObject`/embedded-image content, a sanitizer-stripped vector,
+  or an unhydrated graph-renderer shell shows an explicit unavailable message
+  instead of plausible blank graph paper;
+  normal `<img>` figures are unchanged.
 
 ---
 

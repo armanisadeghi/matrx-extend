@@ -79,7 +79,8 @@ export function useAutoScrape(): void {
       try {
         if (deep) {
           try {
-            await scrollToLoadLazy(tabId, { delayMs: 100, maxMs: 4000 });
+            // scrollToLoadLazy settles lazy graph hydration before returning.
+            await scrollToLoadLazy(tabId);
           } catch (err) {
             // Scroll is best-effort; fall through to capture whatever loaded.
             setError(null);

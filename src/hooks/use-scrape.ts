@@ -30,9 +30,9 @@ interface CaptureOptions {
    * 'fast' (default): captures whatever's currently in the DOM. Predictable,
    * instant. Same behavior the manual Scrape tab has always had.
    *
-   * 'deep': scrolls top→bottom (no settle wait — page is already visible)
+   * 'deep': scrolls top→bottom and waits for lazy content to settle
    * to trigger lazy-loaded images / IntersectionObserver content, THEN
-   * captures. Tuned for snappiness: 100ms/step, 4s cap, with live progress.
+   * captures, with live progress shown while the shared readiness routine runs.
    */
   mode?: ScrapeMode;
 }
@@ -126,12 +126,9 @@ export function useScrape() {
         }
 
         if (mode === 'deep') {
-          // NOTE: no settlePage here. The user already sees the rendered page
-          // before clicking — settling adds latency without value. Tasks
-          // (automated) is where settling matters; that path is untouched.
+          // scrollToLoadLazy includes shared post-scroll settling so JSXGraph
+          // cannot be captured while only its empty axis/grid shell exists.
           await scrollToLoadLazy(tab.id, {
-            delayMs: 100,
-            maxMs: 4000,
             onProgress: ({ step, total }) => setProgress({ step, total }),
           });
           setProgress(null);

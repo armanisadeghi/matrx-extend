@@ -269,6 +269,85 @@ interface SvgLayerGeometry {
 
 type FigureSvgGeometry = Array<Array<SvgLayerGeometry | null>>;
 
+const VECTOR_GRAPHIC_SELECTOR = 'path[d], line, polyline, polygon, rect, circle, ellipse';
+const VECTOR_GRAPHIC_ATTRIBUTES = [
+  'd',
+  'points',
+  'x',
+  'y',
+  'x1',
+  'x2',
+  'y1',
+  'y2',
+  'cx',
+  'cy',
+  'r',
+  'rx',
+  'ry',
+  'stroke',
+  'stroke-width',
+  'fill',
+  'fill-opacity',
+  'opacity',
+  'transform',
+] as const;
+
+function normalizedVectorAttribute(attribute: string, value: string): string {
+  // DOMPurify normalizes SVG path/list attributes (notably dropping a leading
+  // space from JSXGraph's `d`). Whitespace only separates SVG tokens here, so
+  // trim/collapse it before comparing semantic drawing instructions.
+  if (attribute === 'd' || attribute === 'points' || attribute === 'transform') {
+    return value.trim().replace(/\s+/g, ' ');
+  }
+  return value;
+}
+
+function vectorGraphicSignatures(root: ParentNode): string[] {
+  return Array.from(root.querySelectorAll(VECTOR_GRAPHIC_SELECTOR))
+    .map((element) => {
+      const attrs = VECTOR_GRAPHIC_ATTRIBUTES.map(
+        (attribute) =>
+          `${attribute}=${normalizedVectorAttribute(attribute, element.getAttribute(attribute) ?? '')}`,
+      ).join('|');
+      return `${element.tagName.toLowerCase()}|${attrs}`;
+    })
+    .sort();
+}
+
+function hasMatchingVectorGraphics(doc: Document, source: Element, sanitized: string): boolean {
+  const sourceGraphics = vectorGraphicSignatures(source);
+  if (sourceGraphics.length === 0) return false;
+  const container = doc.createElement('div');
+  container.innerHTML = sanitized;
+  const sanitizedGraphics = vectorGraphicSignatures(container);
+  return (
+    sourceGraphics.length === sanitizedGraphics.length &&
+    sourceGraphics.every((graphic, index) => graphic === sanitizedGraphics[index])
+  );
+}
+
+function hasUnsupportedFigureGraphics(source: Element): boolean {
+  // foreignObject and embedded images need HTML/external-resource rendering.
+  // An empty foreignObject is a common inert Mathspace interaction overlay,
+  // not visual content, so it does not make the vector graph incomplete.
+  const visualForeignObject = Array.from(source.querySelectorAll('foreignObject')).some(
+    (foreignObject) =>
+      foreignObject.children.length > 0 || (foreignObject.textContent ?? '').trim().length > 0,
+  );
+  return visualForeignObject || source.querySelector('image') !== null;
+}
+
+function hasUnrenderedSvgLayer(source: Element): boolean {
+  // JSXGraph creates a full-size SVG shell with defs and an empty
+  // foreignObject before it asynchronously appends plotted paths/points.
+  // Axes and grid in sibling layers make the composite look valid, so a
+  // whole-figure shape count cannot detect this intermediate state.
+  return Array.from(source.querySelectorAll('svg')).some(
+    (svg) =>
+      svg.querySelector('foreignObject') !== null && !svg.querySelector(VECTOR_GRAPHIC_SELECTOR),
+  );
+}
+
 function finiteLayoutRect(svg: Element): DOMRect | null {
   const rect = svg.getBoundingClientRect();
   return rect.width > 0 && rect.height > 0 ? rect : null;
@@ -366,6 +445,7 @@ function protectInlineSvgFigures(doc: Document, figureSvgGeometry?: FigureSvgGeo
     const height = Math.max(...svgs.map((svg) => numericSvgDimension(svg, 'height') ?? 0));
 
     let serialized: string;
+    let compositeRoot: Element | null = null;
     let insertionPoint = firstSvg;
     if (svgs.length === 1) {
       const serializable = firstSvg.cloneNode(true) as Element;
@@ -376,6 +456,7 @@ function protectInlineSvgFigures(doc: Document, figureSvgGeometry?: FigureSvgGeo
     } else {
       insertionPoint = firstSvg;
       const composite = doc.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      compositeRoot = composite;
       composite.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
       composite.setAttribute('width', String(width));
       composite.setAttribute('height', String(height));
@@ -410,6 +491,19 @@ function protectInlineSvgFigures(doc: Document, figureSvgGeometry?: FigureSvgGeo
       USE_PROFILES: { svg: true, svgFilters: true },
       FORBID_TAGS: ['script', 'style', 'foreignObject'],
     });
+
+    const complete =
+      !hasUnsupportedFigureGraphics(figure) &&
+      !hasUnrenderedSvgLayer(figure) &&
+      hasMatchingVectorGraphics(doc, compositeRoot ?? firstSvg, serialized);
+    if (!complete) {
+      const fallback = doc.createElement('p');
+      fallback.textContent = `${alt} was omitted because this capture could not preserve it completely.`;
+      // Defuddle prunes an empty <figure>, so replace the figure itself with
+      // an honest text result rather than leaving fallback text in SVG chrome.
+      figure.replaceWith(fallback);
+      continue;
+    }
 
     const image = doc.createElement('img');
     image.setAttribute('src', svgDataUrl(serialized));
