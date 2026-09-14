@@ -16,18 +16,19 @@
 #         (this is the file you upload to the Chrome Web Store dashboard)
 #   9.  Build LOCAL zip with the dev `key` intact
 #         → .output/matrx-extend-<ver>-local.zip
-#         (also leaves .output/chrome-mv3/ as the keyed dev build, so
+#         (after a successful push, replaces .output/chrome-mv3-dev/, so
 #          "Load unpacked" → stable ID cihdmkcdjjckfhjpgoedmgfpoljebaml,
 #          OAuth redirect works, dev experience unbroken)
 #   10. Push branch + tag to origin
-#   11. Print final upload instructions
+#   11. Verify and promote the keyed local bundle, then write the receipt
+#   12. Print final upload instructions
 #
 # Usage:
 #   ./release.sh                         # patch bump (default)
 #   ./release.sh --patch                 # patch bump
 #   ./release.sh --minor                 # minor bump
 #   ./release.sh --major                 # major bump
-#   ./release.sh --message "feat: X"     # custom commit message for auto-stash
+#   ./release.sh --message "feat: X"     # custom release commit message
 #   ./release.sh --skip-types            # skip server type sync (offline)
 #   ./release.sh --skip-typecheck        # skip explicit tsc (still runs inside zip)
 #   ./release.sh --skip-catalog          # skip dev/debug tool-catalog regen
@@ -492,7 +493,7 @@ fi
 # ── 5. Commit version bump ──────────────────────────────────────────────────
 CURRENT_STEP="version-commit"
 step "5/8  Commit version bump"
-COMMIT_MSG="release: ${NEW_TAG}"
+COMMIT_MSG="${CUSTOM_MESSAGE:-release: ${NEW_TAG}}"
 git add package.json 2>/dev/null || true
 # update-api-types runs before this commit and may change any generated bundle.
 # Stage the complete generated API surface so the release tag reproduces the
