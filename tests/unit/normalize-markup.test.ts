@@ -1,4 +1,4 @@
-import { normalizeSemanticMarkup } from '@/lib/scrape/pipeline';
+import { normalizeSemanticMarkup, runScrape } from '@/lib/scrape/pipeline';
 import { gfm } from '@joplin/turndown-plugin-gfm';
 import TurndownService from 'turndown';
 import { describe, expect, it } from 'vitest';
@@ -17,6 +17,17 @@ function toMarkdown(html: string): string {
   normalizeSemanticMarkup(doc);
   return turndown.turndown(doc.body.innerHTML);
 }
+
+// The captured Mathspace graph has 11 vertical and 11 horizontal grid lines,
+// each drawn once in the light grid and once in the dark axis layer (44 total).
+const mathspaceGridLines = [-0.5, 25.5, 51.5, 77.5, 103.5, 129.5, 155.5, 181.5, 207.5, 233.5, 259.5]
+  .flatMap((coordinate) => [
+    `<line x1="${coordinate}" y1="0" x2="${coordinate}" y2="260" stroke="#F1F2F3" />`,
+    `<line x1="0" y1="${coordinate + 0.5}" x2="260" y2="${coordinate + 0.5}" stroke="#F1F2F3" />`,
+    `<line x1="${coordinate}" y1="0" x2="${coordinate}" y2="260" />`,
+    `<line x1="0" y1="${coordinate + 0.5}" x2="260" y2="${coordinate + 0.5}" />`,
+  ])
+  .join('');
 
 describe('normalizeSemanticMarkup — Mintlify/MDX paragraphs', () => {
   it('keeps span[data-as=p] paragraphs separate instead of joining them', () => {
@@ -111,5 +122,104 @@ describe('normalizeSemanticMarkup — highlighted code blocks', () => {
     // not buried in wrapper divs.
     expect(pre?.parentElement?.id).toBe('content');
     expect(pre?.querySelector('code')?.className).toBe('language-json');
+  });
+});
+
+describe('scrape pipeline — inline SVG figures', () => {
+  it.each([
+    {
+      name: 'a labelled standalone chart',
+      figure: `<figure>
+        <svg aria-label="Quarterly revenue chart" width="320" height="180" viewBox="0 0 320 180">
+          <path d="M0 170 L80 120 L160 140 L240 60 L320 20" stroke="#0875BE" />
+        </svg>
+      </figure>`,
+      expectedAlt: 'Quarterly revenue chart',
+      expectedGraphics: ['<path'],
+      expectedImages: 1,
+    },
+    {
+      name: 'a Mathspace-style layered coordinate plane',
+      figure: `<figure style="display:block;margin:16px 0;break-inside:avoid">
+        <div style="position:relative;text-align:center;isolation:isolate">
+          <div style="display:block;position:relative;width:260px;height:260px;margin:0 auto;background:#fff">
+            <svg width="260" height="7" viewBox="0 0 260 7">
+              <path d="M 7 3 v -3 l -7 3.5 l 7 3.5 v -3 h 246 v 3 l 7,-3.5 l -7,-3.5 v 3 h -246 Z" />
+            </svg>
+            <svg width="260" height="7" viewBox="0 0 260 7">
+              <path d="M 7 3 v -3 l -7 3.5 l 7 3.5 v -3 h 246 v 3 l 7,-3.5 l -7,-3.5 v 3 h -246 Z" />
+            </svg>
+            <svg style="position:absolute;top:0;left:0" width="260" height="260" viewBox="0 0 260 260" stroke="#99A4AF">
+              ${mathspaceGridLines}
+            </svg>
+            <div style="width:100%;height:100%;position:absolute;top:0;left:0;z-index:2"></div>
+          </div>
+        </div>
+      </figure>`,
+      expectedAlt: 'Inline figure graphic',
+      expectedGraphics: ['<line', '<path'],
+      expectedImages: 1,
+      expectedSvgLayers: 3,
+      expectedPaths: 2,
+      expectedLines: 44,
+    },
+  ])('keeps $name through Defuddle, sanitization, and Turndown', async (sample) => {
+    const doc = new DOMParser().parseFromString(
+      `<!doctype html><html><head><title>Visual lesson</title></head><body>
+        <main><article>
+          <h1>Visual lesson</h1>
+          <p>${'This explanatory paragraph establishes the lesson article content. '.repeat(12)}</p>
+          ${sample.figure}
+          <p>${'The discussion continues after the visual with more explanatory content. '.repeat(12)}</p>
+        </article></main>
+      </body></html>`,
+      'text/html',
+    );
+
+    const result = await runScrape(doc, {
+      includeImages: false,
+      includeVideos: false,
+      includeAudio: false,
+      includeLinks: false,
+      includeStructured: false,
+    });
+    const markdown = result.article.content_markdown ?? '';
+    const encodedImages = Array.from(markdown.matchAll(/data:image\/svg\+xml;base64,([\w+/=]+)/g));
+    const decodedImages = encodedImages.map((match) => atob(match[1] ?? ''));
+
+    expect(result.article.extractor).toBe('defuddle');
+    expect(markdown).toContain(`![${sample.expectedAlt}](data:image/svg+xml;base64,`);
+    for (const graphic of sample.expectedGraphics) {
+      expect(decodedImages.some((image) => image.includes(graphic))).toBe(true);
+    }
+    if (sample.expectedSvgLayers !== undefined) {
+      // Captured Mathspace graphs have two 260x7 arrow layers over a 260x260
+      // grid. This catches the old same-size filter silently dropping arrows.
+      const composite = decodedImages[0] ?? '';
+      expect(composite.match(/<svg\b/g) ?? []).toHaveLength(sample.expectedSvgLayers + 1);
+      expect(composite.match(/<path\b/g) ?? []).toHaveLength(sample.expectedPaths);
+      expect(composite.match(/<line\b/g) ?? []).toHaveLength(sample.expectedLines);
+    }
+    expect(encodedImages, markdown).toHaveLength(sample.expectedImages);
+  });
+
+  it('sanitizes executable SVG markup before encoding the image URL', () => {
+    const doc = new DOMParser().parseFromString(
+      `<body><figure><svg width="100" height="100" onload="steal()">
+        <script>steal()</script>
+        <a href="javascript:steal()">unsafe link</a>
+        <path d="M0 0 L100 100" />
+      </svg></figure></body>`,
+      'text/html',
+    );
+
+    normalizeSemanticMarkup(doc);
+    const src = doc.querySelector('figure img')?.getAttribute('src') ?? '';
+    const decoded = atob(src.slice(src.indexOf(',') + 1));
+
+    expect(decoded).toContain('<svg');
+    expect(decoded).not.toContain('<script');
+    expect(decoded).not.toContain('onload=');
+    expect(decoded).not.toContain('javascript:');
   });
 });

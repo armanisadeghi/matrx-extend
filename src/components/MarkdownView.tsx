@@ -12,7 +12,7 @@
  */
 
 import { cn } from '@/lib/utils';
-import ReactMarkdown, { type Components } from 'react-markdown';
+import ReactMarkdown, { defaultUrlTransform, type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 export interface MarkdownViewProps {
@@ -126,6 +126,17 @@ const COMPONENTS: Components = {
   em: ({ node: _n, ...props }) => <em className="italic" {...props} />,
 };
 
+// react-markdown correctly rejects data URLs by default. Scrape captures use
+// one deliberately inert exception: a sanitized, base64-encoded SVG image.
+// Keep every other URL on react-markdown's default allow-list.
+const SAFE_SVG_DATA_URL =
+  /^data:image\/svg\+xml;base64,(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+
+function markdownUrlTransform(url: string, key: string): string {
+  if (key === 'src' && SAFE_SVG_DATA_URL.test(url)) return url;
+  return defaultUrlTransform(url);
+}
+
 export function MarkdownView({ content, density = 'comfortable', className }: MarkdownViewProps) {
   return (
     <div
@@ -135,7 +146,11 @@ export function MarkdownView({ content, density = 'comfortable', className }: Ma
         className,
       )}
     >
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={COMPONENTS}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={COMPONENTS}
+        urlTransform={markdownUrlTransform}
+      >
         {content}
       </ReactMarkdown>
     </div>

@@ -229,6 +229,104 @@ export function normalizeSemanticMarkup(doc: Document): void {
     newPre.appendChild(newCode);
     codeBlockWrapper(pre, text).replaceWith(newPre);
   }
+
+  // 3. Turn content SVGs into ordinary images before Defuddle and the
+  //    HTML-only DOMPurify profile see them. Defuddle keeps the SVG markup,
+  //    but DOMPurify deliberately removes it; Turndown therefore used to see
+  //    an empty <figure>. A data-image remains inert, survives sanitization,
+  //    and has a native Markdown representation. Scope this to <figure> so
+  //    navigation/logo/button icons do not become article images.
+  protectInlineSvgFigures(doc);
+}
+
+/** Base64 keeps large SVGs smaller than percent encoding and Markdown-safe. */
+function svgDataUrl(svg: string): string {
+  const bytes = new TextEncoder().encode(svg);
+  let binary = '';
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return `data:image/svg+xml;base64,${btoa(binary)}`;
+}
+
+function numericSvgDimension(svg: Element, attribute: 'width' | 'height'): number | null {
+  const direct = Number.parseFloat(svg.getAttribute(attribute) ?? '');
+  if (Number.isFinite(direct) && direct > 0) return direct;
+  const viewBox = (svg.getAttribute('viewBox') ?? '')
+    .trim()
+    .split(/[\s,]+/)
+    .map(Number);
+  const fromViewBox = (attribute === 'width' ? viewBox[2] : viewBox[3]) ?? Number.NaN;
+  return Number.isFinite(fromViewBox) && fromViewBox > 0 ? fromViewBox : null;
+}
+
+/**
+ * Preserve inline vector graphics through Defuddle -> DOMPurify -> Turndown.
+ * SVG layers become one self-contained SVG image so coordinate grids and
+ * plotted curves do not split apart. HTML labels remain in the figure. Layers
+ * are deliberately not filtered by their dimensions: graph renderers commonly
+ * add narrow arrow/axis SVGs alongside the full-size grid.
+ */
+function protectInlineSvgFigures(doc: Document): void {
+  for (const figure of Array.from(doc.querySelectorAll('figure'))) {
+    const svgs = Array.from(figure.querySelectorAll('svg'));
+    if (svgs.length === 0) continue;
+    const firstSvg = svgs[0];
+    if (!firstSvg) continue;
+    const caption = (figure.querySelector('figcaption')?.textContent ?? '').trim();
+    const labelled = svgs.map((svg) => (svg.getAttribute('aria-label') ?? '').trim()).find(Boolean);
+    const titled = svgs
+      .map((svg) => (svg.querySelector('title')?.textContent ?? '').trim())
+      .find(Boolean);
+    const described = svgs
+      .map((svg) => (svg.querySelector('desc')?.textContent ?? '').trim())
+      .find(Boolean);
+    const alt = labelled || titled || described || caption || 'Inline figure graphic';
+    const width = Math.max(...svgs.map((svg) => numericSvgDimension(svg, 'width') ?? 0));
+    const height = Math.max(...svgs.map((svg) => numericSvgDimension(svg, 'height') ?? 0));
+
+    let serialized: string;
+    let insertionPoint = firstSvg;
+    if (svgs.length === 1) {
+      const serializable = firstSvg.cloneNode(true) as Element;
+      if (!serializable.hasAttribute('xmlns')) {
+        serializable.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      }
+      serialized = serializable.outerHTML;
+    } else {
+      insertionPoint = firstSvg;
+      const composite = doc.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      composite.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      composite.setAttribute('width', String(width));
+      composite.setAttribute('height', String(height));
+      composite.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      // Keep every layer, including mixed-size overlay SVGs. Nested SVGs
+      // retain their own viewBox and dimensions, which preserves their vector
+      // coordinate systems in the single serialized image.
+      for (const layer of svgs) composite.appendChild(layer.cloneNode(true));
+      serialized = composite.outerHTML;
+    }
+
+    // The encoded image bypasses DOMPurify's later markup walk, so sanitize
+    // the SVG payload itself before putting it in a data URL.
+    serialized = DOMPurify.sanitize(serialized, {
+      USE_PROFILES: { svg: true, svgFilters: true },
+      FORBID_TAGS: ['script', 'style', 'foreignObject'],
+    });
+
+    const image = doc.createElement('img');
+    image.setAttribute('src', svgDataUrl(serialized));
+    image.setAttribute('alt', alt);
+    if (width > 0) image.setAttribute('width', String(width));
+    if (height > 0) image.setAttribute('height', String(height));
+
+    if (svgs.length === 1) {
+      const style = firstSvg.getAttribute('style');
+      if (style !== null) image.setAttribute('style', style);
+      firstSvg.replaceWith(image);
+    } else {
+      insertionPoint.replaceWith(image);
+      for (const svg of svgs) if (svg.isConnected) svg.remove();
+    }
+  }
 }
 
 /** Class hints that mark a code-block chrome wrapper across common renderers. */
