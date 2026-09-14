@@ -553,6 +553,7 @@ step "6/8  Build STORE zip (key removed)"
 # a contributor who actually needs an older zip can always
 # `git checkout vX.Y.Z && pnpm zip`. There's no value in preserving
 # build artifacts here.
+mkdir -p "$OUTPUT_DIR"
 STALE_ZIPS=$(find "$OUTPUT_DIR" -maxdepth 1 -type f \( \
     -name "${PROJECT_NAME}-*-store.zip" -o \
     -name "${PROJECT_NAME}-*-local.zip" -o \
