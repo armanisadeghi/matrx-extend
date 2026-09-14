@@ -193,9 +193,9 @@ export const INTERNAL_ONLY: { fn: string; module: string; why: string }[] = [
     why: 'Clears the one-time PKCE verifier the sign-in exchange has just consumed.',
   },
   {
-    fn: 'signOut',
+    fn: 'clearLocalSession',
     module: 'src/lib/auth/flow.ts',
-    why: 'Sign-out drops session keys. A session is not data; signing back in restores everything.',
+    why: 'The locked sign-out/invalid-session helper drops only credentials, auth-attempt state, and cached identity/organization. Signing back in restores the session; no user content is deleted.',
   },
   {
     fn: 'signOut',

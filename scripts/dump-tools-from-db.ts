@@ -22,6 +22,7 @@
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import process from 'node:process';
+import { selectRowsViaManagementApi } from './_supabase-management';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
 
 const EXECUTOR_NAME = 'chrome-extension';
@@ -43,6 +44,17 @@ interface DbToolRow {
     { type?: string | string[]; required?: boolean; enum?: unknown[]; default?: unknown }
   > | null;
   is_active: boolean | null;
+}
+
+function isRecord(row: unknown): row is Record<string, unknown> {
+  return typeof row === 'object' && row !== null;
+}
+
+function fetchToolsViaManagementApi(): DbToolRow[] {
+  return selectRowsViaManagementApi(
+    `select distinct d.name, d.description, d.tier, d.category, d.admin_only, d.parameters, d.is_active from tool.definition d join tool.binding b on b.tool_id = d.id where b.is_active and (b.executor_name = '${EXECUTOR_NAME}' or b.executor_name like '${EXECUTOR_NAME}.%') order by d.category, d.name`,
+    (row): row is DbToolRow => isRecord(row) && typeof row.name === 'string',
+  );
 }
 
 function paramSummary(params: DbToolRow['parameters']): string {
@@ -94,10 +106,15 @@ async function main(): Promise<void> {
       'tool',
     );
   } catch (err) {
-    console.warn(
-      `docs:tools — DB fetch failed; leaving docs/TOOLS.generated.md untouched. ${(err as Error).message}`,
-    );
-    return;
+    try {
+      rows = fetchToolsViaManagementApi();
+      console.log('docs:tools — private tool catalog read through Supabase Management API');
+    } catch (managementError) {
+      console.warn(
+        `docs:tools — DB fetch failed; leaving docs/TOOLS.generated.md untouched. Publishable read: ${(err as Error).message}; Management API read: ${String(managementError)}`,
+      );
+      return;
+    }
   }
 
   const active = rows.filter((r) => r.is_active !== false);

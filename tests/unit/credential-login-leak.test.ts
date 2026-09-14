@@ -43,6 +43,8 @@ interface PostRecord {
   body: unknown;
 }
 const posts: PostRecord[] = [];
+const getPaths: string[] = [];
+const knobRequests: unknown[] = [];
 const logCalls: unknown[] = [];
 let accessToken: string | null = 'real-user-jwt';
 
@@ -52,10 +54,33 @@ let postImpl: (path: string, body: unknown) => Promise<unknown> = async () => ({
   status: 500,
   error: 'no impl',
 });
+let getImpl: (path: string) => Promise<unknown> = async () => ({
+  ok: false,
+  status: 404,
+  error: 'unmocked',
+});
+let knobImpl: () => Promise<{ data: unknown; error: unknown }> = async () => ({
+  data: 25,
+  error: null,
+});
 
 vi.mock('@/lib/auth/flow', () => ({
   getAccessToken: async () => accessToken,
+  getCurrentUser: async () => ({ id: 'user-1' }),
   refreshAccessToken: async () => null,
+}));
+
+vi.mock('@/lib/org/active-org', () => ({
+  getActiveOrganizationId: async () => 'org-1',
+}));
+
+vi.mock('@/lib/supabase/schemas', () => ({
+  platformDb: () => ({
+    rpc: async (_name: string, args: unknown) => {
+      knobRequests.push(args);
+      return knobImpl();
+    },
+  }),
 }));
 
 vi.mock('@/lib/debug/log', () => {
@@ -81,7 +106,10 @@ vi.mock('@/lib/api/client', () => ({
     posts.push({ path, body });
     return postImpl(path, body);
   },
-  apiGet: async () => ({ ok: false, status: 404, error: 'unmocked' }),
+  apiGet: async (path: string) => {
+    getPaths.push(path);
+    return getImpl(path);
+  },
   apiPatch: async () => ({ ok: false, status: 404, error: 'unmocked' }),
   apiPut: async () => ({ ok: false, status: 404, error: 'unmocked' }),
   apiDelete: async () => ({ ok: false, status: 404, error: 'unmocked' }),
@@ -262,10 +290,14 @@ function expectNoSentinels(blob: string, label: string): void {
 
 function resetRecorders(): void {
   posts.length = 0;
+  getPaths.length = 0;
+  knobRequests.length = 0;
   logCalls.length = 0;
   frameTargets.length = 0;
   accessToken = 'real-user-jwt';
   postImpl = happyLoginServer;
+  getImpl = async () => ({ ok: false, status: 404, error: 'unmocked' });
+  knobImpl = async () => ({ data: 25, error: null });
   tabUrl = PAGE_URL;
   _resetSensitiveFieldMemory();
   installChrome();
@@ -362,6 +394,188 @@ describe('credential_login — plaintext never leaves the handler', () => {
     );
     expectNoSentinels(JSON.stringify(inspections), 'page-inspection results');
   }, 30_000);
+});
+
+describe('credential_login — filtered inventory', () => {
+  beforeEach(resetRecorders);
+
+  function inventoryItem(
+    item_id: string,
+    display_name: string,
+    definition_key: string,
+    host: string,
+    authenticator = false,
+  ) {
+    return {
+      item_id,
+      display_name,
+      definition_key,
+      status: 'active',
+      browser_fill_enabled: true,
+      uri_match_mode: 'host',
+      login_urls: [`https://${host}/login`],
+      available_fields: [{ field_key: 'username', label: 'Username', fillable: true }],
+      non_secret_fields: authenticator
+        ? [{ key: 'totp_enabled', label: 'Authenticator enabled', value: 'true' }]
+        : [],
+    };
+  }
+
+  it('returns only the matching compact metadata when host and query both match', async () => {
+    const github = {
+      ...inventoryItem('github-id', 'GitHub work', 'github_login', 'github.com', true),
+      server_only_secret: SENTINEL_PASSWORD,
+    };
+    const gitlab = inventoryItem('gitlab-id', 'GitLab work', 'gitlab_login', 'gitlab.com');
+    getImpl = async (path) => {
+      expect(path).toBe('/api/vault/browser-login/inventory');
+      return { ok: true, data: { items: [github, gitlab], count: 2 } };
+    };
+
+    const { credential_login } = await import('@/lib/tools/handlers/credential-login');
+    const result = await credential_login.run(
+      credential_login.argsSchema.parse({
+        action: 'list',
+        host: 'HTTPS://GITHUB.COM/settings',
+        query: 'work',
+      }),
+      ctx,
+    );
+
+    expect(result).toMatchObject({
+      status: 'inventory_ready',
+      filter: { host: 'HTTPS://GITHUB.COM/settings', query: 'work' },
+      matched: true,
+      item_count: 1,
+      inventory_total: 2,
+      verbose: false,
+      items: [
+        {
+          item_id: 'github-id',
+          display_name: 'GitHub work',
+          definition_key: 'github_login',
+          status: 'active',
+          hosts: ['github.com'],
+          authenticator_enabled: true,
+        },
+      ],
+    });
+    expect(Object.keys(result.items?.[0] ?? {}).sort()).toEqual([
+      'authenticator_enabled',
+      'definition_key',
+      'display_name',
+      'hosts',
+      'item_id',
+      'status',
+    ]);
+    expect(JSON.stringify(result)).not.toContain(SENTINEL_PASSWORD);
+    expect(getPaths).toEqual(['/api/vault/browser-login/inventory']);
+    expect(knobRequests).toEqual([
+      {
+        p_feature: 'vault.browser_login',
+        p_key: 'list_item_cap',
+        p_organization_id: 'org-1',
+        p_user_id: 'user-1',
+      },
+    ]);
+    expect(posts).toEqual([]);
+  });
+
+  it('returns terminal no_matching_login instead of an unfiltered inventory', async () => {
+    getImpl = async () => ({
+      ok: true,
+      data: {
+        items: [inventoryItem('gitlab-id', 'GitLab work', 'gitlab_login', 'gitlab.com')],
+        count: 1,
+      },
+    });
+
+    const { credential_login } = await import('@/lib/tools/handlers/credential-login');
+    const result = await credential_login.run(
+      credential_login.argsSchema.parse({ action: 'list', host: 'github.com' }),
+      ctx,
+    );
+
+    expect(result).toMatchObject({
+      status: 'no_matching_login',
+      reason: 'no_inventory_match',
+      filter: { host: 'github.com' },
+      matched: false,
+      inventory_total: 1,
+      items: [],
+    });
+    expect(getPaths).toEqual(['/api/vault/browser-login/inventory']);
+    expect(posts).toEqual([]);
+  });
+
+  it('whitelists verbose inventory records before they enter tool output', async () => {
+    getImpl = async () => ({
+      ok: true,
+      data: {
+        items: [
+          {
+            ...inventoryItem('github-id', 'GitHub work', 'github_login', 'github.com'),
+            server_only_secret: SENTINEL_PASSWORD,
+          },
+        ],
+        count: 1,
+      },
+    });
+
+    const { credential_login } = await import('@/lib/tools/handlers/credential-login');
+    const result = await credential_login.run(
+      credential_login.argsSchema.parse({ action: 'list', host: 'github.com', verbose: true }),
+      ctx,
+    );
+
+    expect(result).toMatchObject({ status: 'inventory_ready', verbose: true, item_count: 1 });
+    expect(JSON.stringify(result)).not.toContain(SENTINEL_PASSWORD);
+  });
+
+  it.each([1, 2])('caps matching metadata at the scoped knob value %i', async (cap) => {
+    knobImpl = async () => ({ data: cap, error: null });
+    const items = [
+      inventoryItem('github-1', 'GitHub work', 'github_login', 'github.com'),
+      {
+        ...inventoryItem('github-2', 'GitHub personal', 'github_login', 'github.com'),
+        server_only_secret: SENTINEL_PASSWORD,
+      },
+      inventoryItem('github-3', 'GitHub archive', 'github_login', 'github.com'),
+    ];
+    getImpl = async () => ({ ok: true, data: { items, count: items.length } });
+
+    const { credential_login } = await import('@/lib/tools/handlers/credential-login');
+    const result = await credential_login.run(
+      credential_login.argsSchema.parse({ action: 'list', host: 'github.com' }),
+      ctx,
+    );
+
+    expect(result).toMatchObject({
+      status: 'inventory_ready',
+      item_count: cap,
+      inventory_total: 3,
+      truncated: cap < 3,
+    });
+    expect(result.items).toHaveLength(cap);
+    expect(JSON.stringify(result)).not.toContain(SENTINEL_PASSWORD);
+  });
+
+  it('refuses the list visibly when the scoped cap cannot be read', async () => {
+    knobImpl = async () => ({ data: null, error: { message: 'permission denied' } });
+
+    const { credential_login } = await import('@/lib/tools/handlers/credential-login');
+    const result = await credential_login.run(
+      credential_login.argsSchema.parse({ action: 'list', host: 'github.com' }),
+      ctx,
+    );
+
+    expect(result).toMatchObject({
+      status: 'vault_error',
+      reason: 'vault_list_cap_configuration_unavailable',
+    });
+    expect(getPaths).toEqual([]);
+    expect(JSON.stringify(result)).not.toContain(SENTINEL_PASSWORD);
+  });
 });
 
 describe('credential_login — complete attempt contract', () => {

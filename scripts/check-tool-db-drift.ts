@@ -37,11 +37,12 @@
  *
  *   tsx scripts/check-tool-db-drift.ts   (pnpm catalog:tools:drift)
  *
- * LOUD + NON-BLOCKING (Rule 6): it screams a big red banner on drift but never
- * stops the world. It is wired into release.sh as a non-fatal step and into
- * prebuild/prezip with `|| true`; no env var gates it. It exits non-zero on
- * drift purely as a SIGNAL for those callers — none hard-gate on it. "Couldn't
- * run" (missing creds / DB unreachable) is NOT drift: it warns and exits 0.
+ * LOUD by default (Rule 6): the normal command screams a big red banner on
+ * drift, but treats an unreachable DB as "cannot verify" and exits 0 for
+ * development builds. `pnpm catalog:tools:drift:strict` is the release gate:
+ * it fails closed when neither the publishable read nor the authenticated
+ * Management API read can verify the catalog. Both modes exit non-zero on
+ * actual drift. No env var gates either behavior.
  * When drift fires: the DB is the source of truth, so bring the handler's Zod
  * to match `tool.definition`, or change the DB first (admin API / migration)
  * then match code. Never push code→DB silently (Rule 7).
@@ -49,6 +50,7 @@
 import process from 'node:process';
 import { buildToolCatalogManifest } from '../src/lib/tools/catalog';
 import { CANONICAL_SURFACE } from '../src/lib/tools/categories';
+import { selectRowsViaManagementApi } from './_supabase-management';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
 
 interface LocalTool {
@@ -143,6 +145,30 @@ async function fetchOwnedTools(
   return { defs, bindings };
 }
 
+function isRecord(row: unknown): row is Record<string, unknown> {
+  return typeof row === 'object' && row !== null;
+}
+
+function fetchOwnedToolsViaManagementApi(): {
+  defs: DbToolRow[];
+  bindings: DbBindingRow[];
+} {
+  const bindings = selectRowsViaManagementApi(
+    `select tool_id, executor_name, is_active from tool.binding where executor_name = '${EXECUTOR_NAME}' or executor_name like '${EXECUTOR_NAME}.%'`,
+    (row): row is DbBindingRow =>
+      isRecord(row) &&
+      typeof row.tool_id === 'string' &&
+      typeof row.executor_name === 'string' &&
+      typeof row.is_active === 'boolean',
+  );
+  const defs = selectRowsViaManagementApi(
+    `select distinct d.id, d.name, d.description, d.parameters, d.tier, d.admin_only, d.is_active, d.category, d.source_kind from tool.definition d join tool.binding b on b.tool_id = d.id where b.is_active and (b.executor_name = '${EXECUTOR_NAME}' or b.executor_name like '${EXECUTOR_NAME}.%') order by d.name`,
+    (row): row is DbToolRow =>
+      isRecord(row) && typeof row.id === 'string' && typeof row.name === 'string',
+  );
+  return { defs, bindings };
+}
+
 /**
  * Fetch `tool_surface_defaults` rows for the chrome-extension assistant +
  * pilot surfaces. The discovery handler reads `always_include_tools` to
@@ -156,6 +182,13 @@ async function fetchSurfaceDefaults(url: string, key: string): Promise<DbSurface
     key,
     `surface_defaults?or=(surface_name.eq.${encodeURIComponent(ASSISTANT_SURFACE)},surface_name.eq.${encodeURIComponent(PILOT_SURFACE)})&select=surface_name,always_include_tools,always_include_bundles,never_include_tools`,
     'tool',
+  );
+}
+
+function fetchSurfaceDefaultsViaManagementApi(): DbSurfaceDefaultsRow[] {
+  return selectRowsViaManagementApi(
+    `select surface_name, always_include_tools, always_include_bundles, never_include_tools from tool.surface_defaults where surface_name in ('${ASSISTANT_SURFACE}', '${PILOT_SURFACE}')`,
+    (row): row is DbSurfaceDefaultsRow => isRecord(row) && typeof row.surface_name === 'string',
   );
 }
 
@@ -332,16 +365,24 @@ async function main(): Promise<void> {
     // "Couldn't run" (DB unreachable / RLS / network) is NOT drift — never
     // block a dev build. Strict (release) mode fails: an unverified release
     // is exactly what the gate exists to prevent.
-    if (STRICT) {
-      console.error(
-        `drift-check (--strict): could not read the DB — FAILING. ${(err as Error).message}`,
+    try {
+      const owned = fetchOwnedToolsViaManagementApi();
+      dbDefs = owned.defs;
+      dbBindings = owned.bindings;
+      dbSurfaces = fetchSurfaceDefaultsViaManagementApi();
+      console.log('drift-check: private tool catalog verified through Supabase Management API');
+    } catch (managementError) {
+      if (STRICT) {
+        console.error(
+          `drift-check (--strict): could not read the DB — FAILING. Publishable read: ${(err as Error).message}; Management API read: ${String(managementError)}`,
+        );
+        process.exit(3);
+      }
+      console.warn(
+        `drift-check: could not read the DB — SKIPPING (this is NOT drift). Publishable read: ${(err as Error).message}; Management API read: ${String(managementError)}`,
       );
-      process.exit(3);
+      process.exit(0);
     }
-    console.warn(
-      `drift-check: could not read the DB — SKIPPING (this is NOT drift). ${(err as Error).message}`,
-    );
-    process.exit(0);
   }
 
   // Only compare tools the LLM is meant to see. CANONICAL_SURFACE

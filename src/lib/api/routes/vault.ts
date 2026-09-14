@@ -57,8 +57,10 @@ import {
   apiPost,
   apiPut,
 } from '@/lib/api/client';
-import { getAccessToken } from '@/lib/auth/flow';
+import { getAccessToken, getCurrentUser } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
+import { getActiveOrganizationId } from '@/lib/org/active-org';
+import { platformDb } from '@/lib/supabase/schemas';
 
 const BASE = '/api/vault/browser-login';
 const ITEMS = '/api/vault/items';
@@ -86,6 +88,28 @@ export interface BrowserLoginMatchesResponse {
   matches: BrowserLoginMatch[];
   count: number;
 }
+
+/** One usable saved login from `/inventory`. Metadata only, never a value. */
+export interface BrowserLoginInventoryItem {
+  item_id: string;
+  display_name: string;
+  definition_key: string;
+  status: string;
+  browser_fill_enabled: boolean;
+  uri_match_mode: string;
+  login_urls: string[];
+  available_fields: BrowserLoginAvailableField[];
+  non_secret_fields: Array<{ key: string; label: string; value: string }>;
+}
+
+export interface BrowserLoginInventoryResponse {
+  items: BrowserLoginInventoryItem[];
+  count: number;
+}
+
+export type BrowserLoginListCapResult =
+  | { ok: true; cap: number }
+  | { ok: false; reason: 'organization_not_selected' | 'configuration_unavailable' };
 
 /**
  * The transient payload from `/materialize` (served `Cache-Control: no-store`).
@@ -250,10 +274,10 @@ export async function fetchBrowserLoginMatches(
 /** Every saved login the actor may use, destination-independent — metadata only,
  * never a value. Backs `credential_login action='list'` (both executors). */
 export async function fetchBrowserLoginInventory(): Promise<
-  VaultResult<{ items: unknown[]; count: number }>
+  VaultResult<BrowserLoginInventoryResponse>
 > {
   log.info('api', '→ GET vault/browser-login/inventory');
-  const r = await vaultGet<{ items: unknown[]; count: number }>(`${BASE}/inventory`);
+  const r = await vaultGet<BrowserLoginInventoryResponse>(`${BASE}/inventory`);
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   const data = r.data;
   if (!data || !Array.isArray(data.items)) {
@@ -261,6 +285,26 @@ export async function fetchBrowserLoginInventory(): Promise<
   }
   log.info('api', `← vault inventory count=${data.items.length}`);
   return { ok: true, data };
+}
+
+/** Resolve the actor's effective vault list cap through the platform's ONE
+ * scoped-knob door. No client fallback is allowed: an unreadable cap must not
+ * turn an inventory answer back into an unbounded model payload. */
+export async function resolveBrowserLoginListItemCap(): Promise<BrowserLoginListCapResult> {
+  const [organizationId, user] = await Promise.all([getActiveOrganizationId(), getCurrentUser()]);
+  if (!organizationId || !user?.id) return { ok: false, reason: 'organization_not_selected' };
+
+  const { data, error } = await platformDb().rpc('knob_resolve', {
+    p_feature: 'vault.browser_login',
+    p_key: 'list_item_cap',
+    p_organization_id: organizationId,
+    p_user_id: user.id,
+  });
+  if (error || !Number.isInteger(data) || (data as number) < 1) {
+    log.warn('api', 'vault browser-login list cap unavailable');
+    return { ok: false, reason: 'configuration_unavailable' };
+  }
+  return { ok: true, cap: data as number };
 }
 
 /**

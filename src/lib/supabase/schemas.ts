@@ -141,6 +141,9 @@ export const adminDb = () => getSupabase().schema('admin');
 /** `tool` — tool `definition` rows (tool descriptions, read live). */
 export const toolDb = () => getSupabase().schema('tool');
 
+/** `platform` — scoped feature-knob resolution and other platform primitives. */
+export const platformDb = () => getSupabase().schema('platform');
+
 /** `ai` — model registry. NOTE: `ai.model` was split; use `model_definition`. */
 export const aiDb = () => getSupabase().schema('ai');
 

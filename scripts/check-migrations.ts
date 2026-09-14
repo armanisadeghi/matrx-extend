@@ -1,5 +1,4 @@
 #!/usr/bin/env tsx
-import { execFileSync } from 'node:child_process';
 /**
  * Migration ledger check — the matrx-extend half of the cross-repo migration
  * durability system. See docs/DATABASE.md § Database migrations.
@@ -25,11 +24,11 @@ import { execFileSync } from 'node:child_process';
  * live) is exempted with `-- migrate: skip: <reason>` in its first 25 lines.
  */
 import { createHash } from 'node:crypto';
-import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { selectRowsViaManagementApi } from './_supabase-management';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -71,68 +70,16 @@ interface LedgerRow {
   checksum: string;
 }
 
-function loadProjectRef(): string | null {
-  let projectRef = process.env.MATRX_SUPABASE_PROJECT_REF ?? '';
-  if (projectRef) return projectRef;
-
-  for (const f of [
-    '.env.production.local',
-    '.env.production',
-    '.env.development.local',
-    '.env.development',
-    '.env',
-  ]) {
-    const path = resolve(ROOT, f);
-    if (!existsSync(path)) continue;
-    for (const line of readFileSync(path, 'utf8').split('\n')) {
-      const match = line.match(/^\s*MATRX_SUPABASE_PROJECT_REF\s*=\s*(.+?)\s*$/);
-      if (!match) continue;
-      projectRef = (match[1] ?? '').replace(/^['"]|['"]$/g, '');
-      if (projectRef) return projectRef;
-    }
-  }
-  return null;
-}
-
-function fetchLedgerViaManagementApi(projectRef: string): LedgerRow[] {
+function fetchLedgerViaManagementApi(): LedgerRow[] {
   const sql = `select filename, checksum from public._schema_migrations where source = '${SOURCE}' order by filename`;
-  const workdir = mkdtempSync(join(tmpdir(), 'matrx-extend-migration-check-'));
-  let output: string;
-  try {
-    output = execFileSync(
-      'supabase',
-      [
-        'db',
-        'query',
-        '--linked',
-        '--project-ref',
-        projectRef,
-        '--output',
-        'json',
-        '--workdir',
-        workdir,
-        sql,
-      ],
-      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
-    );
-  } finally {
-    rmSync(workdir, { recursive: true, force: true });
-  }
-  const payload = JSON.parse(output) as { rows?: unknown };
-  if (!Array.isArray(payload.rows)) {
-    throw new Error('Supabase Management API returned no rows array');
-  }
-  return payload.rows.map((row) => {
-    if (
-      typeof row !== 'object' ||
-      row === null ||
-      typeof (row as Record<string, unknown>).filename !== 'string' ||
-      typeof (row as Record<string, unknown>).checksum !== 'string'
-    ) {
-      throw new Error('Supabase Management API returned an invalid ledger row');
-    }
-    return row as LedgerRow;
-  });
+  return selectRowsViaManagementApi(
+    sql,
+    (row): row is LedgerRow =>
+      typeof row === 'object' &&
+      row !== null &&
+      typeof (row as Record<string, unknown>).filename === 'string' &&
+      typeof (row as Record<string, unknown>).checksum === 'string',
+  );
 }
 
 function loudBox(title: string): void {
@@ -180,10 +127,8 @@ async function main(): Promise<number> {
       `_schema_migrations?source=eq.${encodeURIComponent(SOURCE)}&select=filename,checksum`,
     );
   } catch (publicError) {
-    const projectRef = loadProjectRef();
     try {
-      if (!projectRef) throw new Error('MATRX_SUPABASE_PROJECT_REF is absent');
-      ledgerRows = fetchLedgerViaManagementApi(projectRef);
+      ledgerRows = fetchLedgerViaManagementApi();
       console.log(
         `${C.dim}check:migrations — private ledger verified through Supabase Management API${C.reset}`,
       );

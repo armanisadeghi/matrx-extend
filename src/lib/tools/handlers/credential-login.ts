@@ -31,6 +31,7 @@
  */
 
 import {
+  type BrowserLoginInventoryItem,
   type BrowserLoginResultStatus,
   type VaultCallFailure,
   fetchBrowserLoginInventory,
@@ -39,6 +40,7 @@ import {
   materializeBrowserAuthenticator,
   materializeBrowserLogin,
   reportBrowserLoginResult,
+  resolveBrowserLoginListItemCap,
   submitBrowserLoginReport,
 } from '@/lib/api/routes/vault';
 import { checkAuthState } from '@/lib/chat/context/check-auth-state';
@@ -96,6 +98,15 @@ interface SafeChoice {
   display_name: string;
 }
 
+interface InventorySummaryItem {
+  item_id: string;
+  display_name: string;
+  definition_key: string;
+  status: string;
+  hosts: string[];
+  authenticator_enabled: boolean;
+}
+
 interface CredentialLoginResult {
   status: CredentialLoginStatus;
   /** Machine-readable detail. Never derived from page or credential content. */
@@ -104,8 +115,14 @@ interface CredentialLoginResult {
   message?: string;
   /** Only populated for `selection_required`. */
   choices?: SafeChoice[];
-  /** Only populated for `inventory_ready` (action=list) — metadata, never values. */
-  items?: unknown[];
+  /** Only populated for action=list — safe inventory metadata, never values. */
+  items?: Array<InventorySummaryItem | BrowserLoginInventoryItem>;
+  filter?: { query?: string; host?: string };
+  matched?: boolean;
+  item_count?: number;
+  inventory_total?: number;
+  truncated?: boolean;
+  verbose?: boolean;
   /** Capture family (action=capture/propose_recipe) — ids/flags only, never a value. */
   credential_item_id?: string;
   branch?: 'known' | 'unknown';
@@ -176,6 +193,9 @@ const ListArgs = z
     action: z.literal('list'),
     /** Server-owned Playwright target. Matrx Extend ignores this (no session needed). */
     session_id: z.string().min(1).optional(),
+    query: z.string().min(1).max(200).optional(),
+    host: z.string().min(1).max(253).optional(),
+    verbose: z.boolean().default(false),
   })
   .strict();
 
@@ -280,6 +300,9 @@ const CredentialLoginArgs = z
       'propose_recipe',
     ]),
     session_id: z.string().min(1).optional(),
+    query: z.string().min(1).max(200).optional(),
+    host: z.string().min(1).max(253).optional(),
+    verbose: z.boolean().optional(),
     credential_item_id: z.string().min(1).optional(),
     // Item shape differs per action (attempt field-map vs capture field spec);
     // the per-action arm below re-validates strictly.
@@ -520,6 +543,84 @@ function safeResult(
   };
   Object.assign(out, extra);
   return out;
+}
+
+/** Match the cloud executor's host semantics: URL or bare host, lowercased,
+ * with ports and paths excluded. This is inventory filtering only; it never
+ * authorizes a destination for fill. */
+function inventoryHost(raw: string): string | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  try {
+    return new URL(trimmed.includes('//') ? trimmed : `https://${trimmed}`).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+function inventoryHosts(item: BrowserLoginInventoryItem): string[] {
+  const seen = new Set<string>();
+  for (const loginUrl of item.login_urls) {
+    const host = inventoryHost(loginUrl);
+    if (host) seen.add(host);
+  }
+  return [...seen];
+}
+
+function inventorySummary(item: BrowserLoginInventoryItem): InventorySummaryItem {
+  return {
+    item_id: item.item_id,
+    display_name: item.display_name,
+    definition_key: item.definition_key,
+    status: item.status,
+    hosts: inventoryHosts(item),
+    authenticator_enabled: item.non_secret_fields.some(
+      (field) => field.key === 'totp_enabled' && field.value.trim().toLowerCase() === 'true',
+    ),
+  };
+}
+
+/** Whitelist the documented inventory shape before a verbose result crosses
+ * the tool boundary. The server also validates this route as metadata-only,
+ * but an unexpected extra response key must never become model context. */
+function inventoryVerbose(item: BrowserLoginInventoryItem): BrowserLoginInventoryItem {
+  return {
+    item_id: item.item_id,
+    display_name: item.display_name,
+    definition_key: item.definition_key,
+    status: item.status,
+    browser_fill_enabled: item.browser_fill_enabled,
+    uri_match_mode: item.uri_match_mode,
+    login_urls: item.login_urls,
+    available_fields: item.available_fields.map((field) => ({
+      field_key: field.field_key,
+      label: field.label,
+      fillable: field.fillable,
+      ...(field.reason !== undefined ? { reason: field.reason } : {}),
+    })),
+    non_secret_fields: item.non_secret_fields.map((field) => ({
+      key: field.key,
+      label: field.label,
+      value: field.value,
+    })),
+  };
+}
+
+function inventoryMatches(
+  item: BrowserLoginInventoryItem,
+  filters: { query?: string; host?: string },
+): boolean {
+  const hosts = inventoryHosts(item);
+  if (filters.host !== undefined) {
+    const host = inventoryHost(filters.host) ?? filters.host.trim().toLowerCase();
+    if (!hosts.includes(host)) return false;
+  }
+  if (filters.query !== undefined) {
+    const query = filters.query.trim().toLowerCase();
+    const haystack = [item.display_name, item.definition_key, ...hosts];
+    if (!haystack.some((value) => value.toLowerCase().includes(query))) return false;
+  }
+  return true;
 }
 
 function signal(
@@ -1109,15 +1210,57 @@ export const credential_login: ToolHandler<CredentialLoginArgs, CredentialLoginR
     }
 
     if (args.action === 'list') {
+      const list = ListArgs.parse(args);
+      const cap = await resolveBrowserLoginListItemCap();
+      if (!cap.ok) {
+        return safeResult('vault_error', {
+          reason: `vault_list_cap_${cap.reason}`,
+          message:
+            cap.reason === 'organization_not_selected'
+              ? 'Choose your organization in Settings, then try the saved-login list again.'
+              : 'The saved-login list limit could not be read. Reload the extension and try again.',
+        });
+      }
       const inventory = await fetchBrowserLoginInventory();
       if (!inventory.ok) return failureResult(inventory.failure, 'inventory');
+      const filter = {
+        ...(list.query !== undefined ? { query: list.query } : {}),
+        ...(list.host !== undefined ? { host: list.host } : {}),
+      };
+      const filtered =
+        Object.keys(filter).length === 0
+          ? inventory.data.items
+          : inventory.data.items.filter((item) => inventoryMatches(item, filter));
+      if (Object.keys(filter).length > 0 && filtered.length === 0) {
+        return safeResult('no_matching_login', {
+          reason: 'no_inventory_match',
+          filter,
+          matched: false,
+          inventory_total: inventory.data.count,
+          items: [],
+          message:
+            'No saved login matches this filter. Stop searching with the same filter; try a different host or broader query. No login attempt ran.',
+        });
+      }
+      const items = filtered.slice(0, cap.cap);
+      const truncated = items.length < filtered.length;
       return safeResult('inventory_ready', {
         reason: 'safe_metadata_only',
-        items: inventory.data.items,
+        ...(Object.keys(filter).length > 0 ? { filter, matched: true } : {}),
+        item_count: items.length,
+        inventory_total: inventory.data.count,
+        truncated,
+        verbose: list.verbose,
+        items: list.verbose ? items.map(inventoryVerbose) : items.map(inventorySummary),
         message:
-          'Metadata only — no values. An item fills a page only when browser_fill_enabled ' +
-          'is true and one of its login_urls matches the page under its uri_match_mode ' +
-          "('domain' covers sibling hosts like accounts.google.com for mail.google.com).",
+          (truncated
+            ? `Showing ${items.length} of ${filtered.length} matching saved logins. Narrow the list with host or query. `
+            : '') +
+          'Metadata only — no login attempt ran. An item fills a page only when browser_fill_enabled ' +
+          'is true and one of its login_urls matches the page under its uri_match_mode. ' +
+          (list.verbose
+            ? 'Verbose records contain only allowed URLs, match mode, field names, and explicitly non-secret metadata.'
+            : 'Each item is a compact summary; use verbose=true only when its full metadata is needed.'),
       });
     }
 
