@@ -89,6 +89,13 @@ component, so all four must show identical rows in identical order.
 
 ## Convention
 
+### Matrx sign-in failure recovery
+- **What it does:** Shows a visible sign-in error throughout the side panel and offers an immediate retry when the OAuth handoff fails or is cancelled.
+- **Where to test:** Open the side panel while signed out.
+- **Steps:** Start sign-in, then cancel the Chrome-managed OAuth window or make its token exchange fail. Click **Try again** in the visible error.
+- **Expected:** The side panel names the sign-in failure instead of silently returning to guest state. **Try again** starts a new sign-in attempt, and a successful attempt clears the error.
+- **Covered by:** `tests/unit/auth-gate.test.tsx`, `tests/unit/use-auth-race.test.tsx`, and the PKCE/401 regressions under `tests/unit/auth-repro-*.test.ts`.
+
 ### Inline saved-login suggestions
 - **What it does:** On an eligible top-frame sign-in field, shows a Matrx control; choosing an account fills available login fields without submitting.
 - **Where to test:** An admin-owned disposable login page with the installed extension.
@@ -697,6 +704,26 @@ Every entry follows this shape:
     exit on empty `querySelectorAll`).
   - Pages where `aria-label` is identical to inner text: no
     parenthetical is appended (we skip if equal).
+
+### Scrape — inline SVG figure preservation
+- **What it does:** Before Defuddle runs, turns inline SVGs inside article
+  `<figure>` elements into sanitized SVG data images. Multiple full-size SVG
+  layers are combined so graph grids and plotted curves stay together. SVGs
+  outside figures (navigation, buttons, logos) are left alone.
+- **Where to test:** Side panel → **Scrape** tab → Article.
+- **Steps:**
+  1. Open the Mathspace AP Precalculus lesson **1.4 Polynomial functions and
+     rates of change**.
+  2. Click **Scroll & capture** so its lazy-rendered coordinate planes exist.
+  3. Find **Local and global extrema** in the Article output.
+- **Expected:** The coordinate-plane figures appear as images between their
+  surrounding paragraphs. Their grid and plotted curve are in one image;
+  ordinary page chrome does not appear as extra images. Copied Markdown has
+  one `data:image/svg+xml` image per inline figure, and the encoded payload
+  contains no scripts, event handlers, or `javascript:` URLs.
+- **Edge cases worth poking:** A standalone labelled SVG keeps its
+  `aria-label` as alt text; a layered SVG with no label uses `Inline figure
+  graphic`; normal `<img>` figures are unchanged.
 
 ---
 
@@ -2247,14 +2274,15 @@ Every entry follows this shape:
 - **Where to test:** sidepanel → Tools → search `credential_login`, with an https login
   page assigned to the conversation and a matching Vault item. Signed in only.
 - **Steps:**
-  1. Run `discover` → exactly one candidate returns its safe field inventory (names,
+  1. Run `list` with `host: "example.com"` and a matching `query` → only matching saved-login metadata returns. The organization-configured list cap bounds model-visible items; when more items match, `truncated:true` and the count message say how to narrow the list. Run a host with no match → `no_matching_login`, `matched:false`, an empty item list, and no login attempt. Use `verbose:true` only when allowed URLs, match mode, field names, and explicitly non-secret metadata are needed.
+  2. Run `discover` → exactly one candidate returns its safe field inventory (names,
      labels, fillability, and non-secret preset values), never any secret value.
-  2. Run one `attempt` containing the complete field map, selectors, explicit submit
+  3. Run one `attempt` containing the complete field map, selectors, explicit submit
      action, and optional non-secret expectations. Use `field_key` for every Vault value.
-  3. Confirm the result has a fixed status, verdict, bounded confidence, named boolean
+  4. Confirm the result has a fixed status, verdict, bounded confidence, named boolean
      signals, sanitized before/after origin+path metadata, elapsed time, and
      `feedback.how_to_report`; it must contain no page text or field value.
-  4. Run `report` with `kind: wrong_verdict`, a precise `where`, and the attempt id when
+  5. Run `report` with `kind: wrong_verdict`, a precise `where`, and the attempt id when
      present → `report_received` without any credential data in the request/result.
 - **Expected:** malformed or partial attempts return `spec_incomplete` before filling;
   GET forms and unsafe destinations are refused; later-step fields may be filled after

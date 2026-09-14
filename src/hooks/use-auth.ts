@@ -8,7 +8,6 @@ import {
 import type { UserProfile } from '@/lib/auth/types';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { setSupabaseSession } from '@/lib/supabase/client';
 import { checkIsAdmin } from '@/lib/supabase/queries';
 import { useAuthStore } from '@/state/auth';
 import { useCallback, useEffect } from 'react';
@@ -25,8 +24,13 @@ import { useCallback, useEffect } from 'react';
  * recheck and health ping.
  */
 let bootRan = false;
+// `useAuth` is mounted by several independently-rendered surfaces. This must
+// be realm-wide rather than a hook ref: a sign-out or newer sign-in from one
+// surface cancels every older in-flight attempt in this extension context.
+let signInGeneration = 0;
 export function resetAuthBootGuard(): void {
   bootRan = false;
+  signInGeneration = 0;
 }
 
 /**
@@ -77,37 +81,55 @@ export function useAuth() {
     return on<{ user: UserProfile | null; isAdmin?: boolean }, { ack: true }>(
       CHANNELS.AUTH_STATE_CHANGED,
       (payload) => {
+        // A sign-in/sign-out from a different extension context supersedes
+        // any local OAuth attempt still awaiting admin lookup.
+        signInGeneration += 1;
+        // Realtime must follow canonical encrypted storage, never a token
+        // carried by a stale broadcast payload.
+        void restoreSupabaseSession();
         setUser(payload.user);
+        if (payload.user) setError(null);
         if (typeof payload.isAdmin === 'boolean') setIsAdmin(payload.isAdmin);
         return { ack: true };
       },
     );
-  }, [setUser, setIsAdmin]);
+  }, [setUser, setIsAdmin, setError]);
 
   const signIn = useCallback(async () => {
+    const attempt = ++signInGeneration;
     setStatus('signing-in');
     setError(null);
     try {
-      const { user: profile, tokens } = await runSignIn();
-      await setSupabaseSession(tokens.access_token, tokens.refresh_token);
+      const { user: profile } = await runSignIn();
+      if (attempt !== signInGeneration) return;
+      // signIn committed storage under the auth lock. Re-read that canonical
+      // session rather than installing this attempt's supplied token.
+      await restoreSupabaseSession();
+      if (attempt !== signInGeneration) return;
       setUser(profile);
 
       // Determine admin status now that we have a JWT.
       const admin = await checkIsAdmin(profile.id);
+      if (attempt !== signInGeneration) return;
       setIsAdmin(admin);
       await chrome.storage.local.set({ [STORAGE_KEYS.IS_ADMIN]: admin });
+      if (attempt !== signInGeneration) return;
 
       broadcast(CHANNELS.AUTH_STATE_CHANGED, { user: profile, isAdmin: admin });
       void pingHealth('after sign-in');
     } catch (err) {
+      if (attempt !== signInGeneration) return;
       setError((err as Error).message);
       setStatus('signed-out');
     }
   }, [setError, setIsAdmin, setStatus, setUser]);
 
   const signOut = useCallback(async () => {
+    const attempt = ++signInGeneration;
     await runSignOut();
+    if (attempt !== signInGeneration) return;
     await chrome.storage.local.remove([STORAGE_KEYS.IS_ADMIN]);
+    if (attempt !== signInGeneration) return;
     setUser(null);
     setIsAdmin(false);
     broadcast(CHANNELS.AUTH_STATE_CHANGED, { user: null, isAdmin: false });

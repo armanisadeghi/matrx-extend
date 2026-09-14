@@ -7,7 +7,12 @@
  */
 
 import { getBackendUrl } from '@/config/backend';
-import { getAccessToken, getVerifiedCurrentUser, refreshAccessToken } from '@/lib/auth/flow';
+import {
+  getAccessToken,
+  getStoredAccessToken,
+  getVerifiedCurrentUser,
+  refreshAccessToken,
+} from '@/lib/auth/flow';
 import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
 import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';
@@ -62,6 +67,14 @@ function isOrgExemptPath(path: string): boolean {
 export const ORGANIZATION_CONTEXT_HEADER = Object.keys(
   applyOrganizationContextHeader({}, '00000000-0000-4000-8000-000000000000'),
 )[0] as string;
+
+function bearerFromHeaders(headers: Record<string, string>): string | null {
+  const authorization = Object.entries(headers).find(
+    ([name]) => name.toLowerCase() === 'authorization',
+  )?.[1];
+  if (!authorization?.startsWith('Bearer ')) return null;
+  return authorization.slice('Bearer '.length);
+}
 
 /**
  * Default per-request deadline. NO call site passed an AbortSignal before
@@ -260,7 +273,9 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   const ms = Math.round(performance.now() - start);
   if (res.status === 401 && opts.retryOn401 !== false) {
     log.warn('api', `← ${opts.path} 401 — refreshing & retrying`);
-    const refreshed = await refreshAccessToken();
+    // Pass the exact dispatched bearer. refreshAccessToken must not mistake a
+    // nominally unexpired, server-rejected token for another context's refresh.
+    const refreshed = await refreshAccessToken(bearerFromHeaders(headers) ?? undefined);
     if (refreshed) {
       return rawRequest<T>({ ...opts, retryOn401: false });
     }
@@ -272,13 +287,27 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
     // the UI can drop into the sign-in state instead of failing every
     // request generically while still claiming "signed in".
     if (res.status === 401 && opts.retryOn401 === false) {
-      // Shape matches use-auth's listener: user:null flips the UI to the
-      // signed-out state (which shows the sign-in affordance).
-      broadcast(CHANNELS.AUTH_STATE_CHANGED, {
-        user: null,
-        isAdmin: false,
-        reason: 'unauthorized',
-      });
+      const requestToken = bearerFromHeaders(headers);
+      // Do not refresh here: this is an invalidation decision, so it must
+      // compare the rejected request's exact bearer with the current stored
+      // bearer without rotating tokens or triggering another sign-out path.
+      const currentToken = await getStoredAccessToken();
+      if (requestToken && requestToken === currentToken) {
+        // Shape matches use-auth's listener: user:null flips the UI to the
+        // signed-out state (which shows the sign-in affordance).
+        broadcast(CHANNELS.AUTH_STATE_CHANGED, {
+          user: null,
+          isAdmin: false,
+          reason: 'unauthorized',
+        });
+      } else {
+        // The rejected request was sent before another context completed a
+        // sign-in or refresh. Its 401 cannot invalidate that newer session.
+        log.info(
+          'api',
+          `← ${opts.path} 401 belonged to a superseded bearer; keeping current session`,
+        );
+      }
     }
     const text = await res.text().catch(() => res.statusText);
     if (!opts.silent) {

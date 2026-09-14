@@ -1,4 +1,5 @@
 import { useAuth } from '@/hooks/use-auth';
+import { Button } from '@ai-matrx/design-system';
 
 /**
  * Pass-through wrapper. Kept as a named component so existing call sites
@@ -17,6 +18,26 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   // session, refresh admin flag) still runs on cold sidepanel open even if
   // no other early component subscribes. The hook is internally guarded
   // against double boot.
-  useAuth();
-  return <>{children}</>;
+  const { error, signIn, status } = useAuth();
+  return (
+    <>
+      {error && (
+        <div
+          role="alert"
+          className="flex shrink-0 items-center justify-between gap-3 border-b border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive"
+        >
+          <span>Sign-in failed: {error}</span>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={status === 'signing-in'}
+            onClick={() => void signIn()}
+          >
+            Try again
+          </Button>
+        </div>
+      )}
+      {children}
+    </>
+  );
 }

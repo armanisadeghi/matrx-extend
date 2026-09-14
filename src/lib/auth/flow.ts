@@ -17,9 +17,39 @@ import { log } from '@/lib/debug/log';
 import { Mutex, truncate } from '@/lib/utils';
 
 const refreshMutex = new Mutex();
+const AUTH_MUTATION_LOCK = 'matrx-extend-auth-mutation';
+const ACTIVE_AUTH_ATTEMPT_KEY = `${STORAGE_KEYS.PKCE_VERIFIER}.active-attempt`;
 
 const authorizeUrl = (): string => `${ENV.SUPABASE_URL}/auth/v1/oauth/authorize`;
 const tokenUrl = (): string => `${ENV.SUPABASE_URL}/auth/v1/oauth/token`;
+
+/**
+ * Each OAuth attempt owns its verifier. A single global session key lets a
+ * second sidepanel/context attempt overwrite the first before either callback
+ * arrives, then the first callback deletes the second attempt's verifier.
+ */
+function pkceVerifierStorageKey(state: string): string {
+  return `${STORAGE_KEYS.PKCE_VERIFIER}.${state}`;
+}
+
+class SupersededAuthAttemptError extends Error {
+  constructor() {
+    super('This sign-in attempt was superseded by a newer authentication change');
+  }
+}
+
+/**
+ * chrome.storage is shared by all extension contexts, so mutations need an
+ * origin-wide lock. Never perform OAuth, refresh, or revocation I/O inside
+ * this callback; only publish/validate/clear local credentials here.
+ */
+async function withAuthMutationLock<T>(callback: () => Promise<T>): Promise<T> {
+  const locks = navigator.locks;
+  if (!locks) {
+    throw new Error('Secure authentication storage locking is unavailable in this browser context');
+  }
+  return locks.request(AUTH_MUTATION_LOCK, { mode: 'exclusive' }, callback);
+}
 
 export function getRedirectUri(): string {
   // Recompute lazily — chrome.identity is not available in offscreen / content
@@ -49,103 +79,131 @@ export async function signIn(): Promise<{ user: UserProfile; tokens: OAuthTokens
   // PKCE's interception protection. chrome.storage.session matches the
   // flow's lifetime (cleared with the browser session, survives SW restarts).
   const state = nonce;
-  await chrome.storage.session.set({ [STORAGE_KEYS.PKCE_VERIFIER]: verifier });
-  const redirectUri = getRedirectUri();
-
-  const params = new URLSearchParams({
-    response_type: 'code',
-    client_id: ENV.EXTENSION_OAUTH_CLIENT_ID,
-    redirect_uri: redirectUri,
-    state,
-    code_challenge: challenge,
-    code_challenge_method: 'S256',
-    // Never include 'openid' — see plan §3, fact #2.
-    scope: 'email profile',
+  const attemptId = `oauth:${state}`;
+  const verifierStorageKey = pkceVerifierStorageKey(state);
+  await withAuthMutationLock(async () => {
+    await chrome.storage.session.set({
+      [verifierStorageKey]: verifier,
+      [ACTIVE_AUTH_ATTEMPT_KEY]: attemptId,
+    });
   });
+  try {
+    const redirectUri = getRedirectUri();
 
-  const url = `${authorizeUrl()}?${params.toString()}`;
+    const params = new URLSearchParams({
+      response_type: 'code',
+      client_id: ENV.EXTENSION_OAUTH_CLIENT_ID,
+      redirect_uri: redirectUri,
+      state,
+      code_challenge: challenge,
+      code_challenge_method: 'S256',
+      // Never include 'openid' — see plan §3, fact #2.
+      scope: 'email profile',
+    });
 
-  // Log origins/paths only — the full authorize/callback URLs carry `state`
-  // and (on callback) the single-use auth `code`; a shared debug-log dump
-  // must not contain replayable material (audit P3-9).
-  log.info('auth', 'OAuth sign-in starting', {
-    redirectUri,
-    clientId: ENV.EXTENSION_OAUTH_CLIENT_ID,
-    authorizeOrigin: new URL(url).origin + new URL(url).pathname,
-  });
+    const url = `${authorizeUrl()}?${params.toString()}`;
 
-  const callbackUrl = await launchWebAuthFlow(url);
-  log.info('auth', 'callback received', {
-    callbackOrigin: new URL(callbackUrl).origin + new URL(callbackUrl).pathname,
-  });
-  const { code, returnedState } = parseCallbackUrl(callbackUrl);
-  if (returnedState !== state) {
-    throw new Error('OAuth state mismatch — possible CSRF, ignoring response');
+    // Log origins/paths only — the full authorize/callback URLs carry `state`
+    // and (on callback) the single-use auth `code`; a shared debug-log dump
+    // must not contain replayable material (audit P3-9).
+    log.info('auth', 'OAuth sign-in starting', {
+      redirectUri,
+      clientId: ENV.EXTENSION_OAUTH_CLIENT_ID,
+      authorizeOrigin: new URL(url).origin + new URL(url).pathname,
+    });
+
+    const callbackUrl = await launchWebAuthFlow(url);
+    log.info('auth', 'callback received', {
+      callbackOrigin: new URL(callbackUrl).origin + new URL(callbackUrl).pathname,
+    });
+    const { code, returnedState } = parseCallbackUrl(callbackUrl);
+    if (returnedState !== state) {
+      throw new Error('OAuth state mismatch — possible CSRF, ignoring response');
+    }
+    const verifierRow = await chrome.storage.session.get([verifierStorageKey]);
+    const recoveredVerifier = verifierRow[verifierStorageKey] as string | undefined;
+    if (!recoveredVerifier || recoveredVerifier !== verifier) {
+      throw new Error('Could not recover code_verifier for this sign-in attempt');
+    }
+
+    log.info('auth', 'exchanging code for tokens');
+    const tokens = await exchangeCode(code, recoveredVerifier, redirectUri);
+    log.info('auth', 'fetching user profile');
+    const user = await fetchSupabaseUser(tokens.access_token);
+    // Validate the exchanged bearer before it displaces a working local
+    // session. A failed /user response is an unsuccessful sign-in attempt.
+    await commitSignInAttempt(attemptId, tokens, user);
+    log.success('auth', `signed in as ${user.email ?? user.id}`);
+    return { user, tokens };
+  } finally {
+    // Cancellation, state rejection, and exchange failure must each clean up
+    // only this attempt. Never erase another context's in-flight verifier.
+    try {
+      await chrome.storage.session.remove([verifierStorageKey]);
+    } catch (err) {
+      // Cleanup cannot turn a successful sign-in into a failure or mask the
+      // original OAuth error. The session store is cleared on browser exit.
+      log.warn('auth', 'could not clear PKCE verifier after sign-in attempt', err);
+    }
   }
-  const verifierRow = await chrome.storage.session.get([STORAGE_KEYS.PKCE_VERIFIER]);
-  const recoveredVerifier = verifierRow[STORAGE_KEYS.PKCE_VERIFIER] as string | undefined;
-  // Single-use: clear immediately so a replayed callback can't re-exchange.
-  await chrome.storage.session.remove([STORAGE_KEYS.PKCE_VERIFIER]);
-  if (!recoveredVerifier || recoveredVerifier !== verifier) {
-    throw new Error('Could not recover code_verifier for this sign-in attempt');
-  }
-
-  log.info('auth', 'exchanging code for tokens');
-  const tokens = await exchangeCode(code, recoveredVerifier, redirectUri);
-  await persistTokens(tokens);
-  scheduleRefresh(tokens);
-
-  log.info('auth', 'fetching user profile');
-  const user = await fetchSupabaseUser(tokens.access_token);
-  await chrome.storage.local.set({ [STORAGE_KEYS.USER_PROFILE]: user });
-  log.success('auth', `signed in as ${user.email ?? user.id}`);
-  return { user, tokens };
 }
 
 export async function signOut(): Promise<void> {
-  // Best-effort SERVER-SIDE revocation first (audit P3-6) — without it the
-  // refresh token stayed valid until natural expiry after a local sign-out.
+  await clearLocalSession();
+}
+
+async function clearLocalSession(expectedRefreshCt?: string): Promise<void> {
+  let clearSupabaseSession: (() => void) | undefined;
   try {
-    const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
-    const access = stored[STORAGE_KEYS.ACCESS_TOKEN] as string | undefined;
-    if (access) {
-      await fetch(`${ENV.SUPABASE_URL}/auth/v1/logout`, {
-        method: 'POST',
-        headers: {
-          apikey: ENV.SUPABASE_PUBLISHABLE_KEY,
-          Authorization: `Bearer ${access}`,
-        },
-      });
-    }
-  } catch {
-    /* revocation is best-effort — local cleanup proceeds regardless */
-  }
-  await chrome.storage.local.remove([
-    STORAGE_KEYS.USER_PROFILE,
-    STORAGE_KEYS.ACCESS_TOKEN,
-    STORAGE_KEYS.REFRESH_TOKEN_ENC,
-    STORAGE_KEYS.REFRESH_TOKEN_IV,
-    STORAGE_KEYS.TOKEN_EXPIRES_AT,
-    // The organization is part of the signed-in identity: a different user
-    // signing in on this install must never inherit the last user's
-    // organization.
-    STORAGE_KEYS.ACTIVE_ORGANIZATION,
-  ]);
-  // Drop the in-memory Supabase JS session in THIS context too (audit P3-5
-  // — `clearSupabaseSession` previously had zero callers, so the
-  // authenticated client survived sign-out until the context died). Other
-  // contexts clear via their own sign-out broadcast handling / next boot.
-  try {
-    const { clearSupabaseSession } = await import('@/lib/supabase/client');
-    clearSupabaseSession();
+    ({ clearSupabaseSession } = await import('@/lib/supabase/client'));
   } catch {
     /* best-effort */
   }
-  try {
-    await chrome.alarms.clear(ALARMS.TOKEN_REFRESH);
-  } catch {
-    /* alarm may not exist; ignore */
-  }
+  const access = await withAuthMutationLock(async () => {
+    const stored = await chrome.storage.local.get([
+      STORAGE_KEYS.ACCESS_TOKEN,
+      STORAGE_KEYS.REFRESH_TOKEN_ENC,
+    ]);
+    if (expectedRefreshCt && stored[STORAGE_KEYS.REFRESH_TOKEN_ENC] !== expectedRefreshCt) {
+      return null;
+    }
+    await Promise.all([
+      chrome.storage.session.remove([ACTIVE_AUTH_ATTEMPT_KEY]),
+      chrome.storage.local.remove([
+        STORAGE_KEYS.USER_PROFILE,
+        STORAGE_KEYS.ACCESS_TOKEN,
+        STORAGE_KEYS.REFRESH_TOKEN_ENC,
+        STORAGE_KEYS.REFRESH_TOKEN_IV,
+        STORAGE_KEYS.TOKEN_EXPIRES_AT,
+        STORAGE_KEYS.ACTIVE_ORGANIZATION,
+        STORAGE_KEYS.IS_ADMIN,
+      ]),
+      chrome.alarms.clear(ALARMS.TOKEN_REFRESH).catch(() => undefined),
+    ]);
+    clearSupabaseSession?.();
+    const token = stored[STORAGE_KEYS.ACCESS_TOKEN];
+    return typeof token === 'string' ? token : null;
+  });
+  if (access === null && expectedRefreshCt) return;
+  if (!access) return;
+  // This is a captured pre-clear bearer. `scope=local` avoids revoking a
+  // later login that may have completed while this best-effort call is in I/O.
+  void fetch(`${ENV.SUPABASE_URL}/auth/v1/logout?scope=local`, {
+    method: 'POST',
+    headers: {
+      apikey: ENV.SUPABASE_PUBLISHABLE_KEY,
+      Authorization: `Bearer ${access}`,
+    },
+  }).catch(() => {
+    // Revocation is best-effort; canonical local sign-out already completed.
+  });
+}
+
+/** Reads the persisted bearer without refreshing or mutating session state. */
+export async function getStoredAccessToken(): Promise<string | null> {
+  const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
+  const token = stored[STORAGE_KEYS.ACCESS_TOKEN];
+  return typeof token === 'string' && token.length > 0 ? token : null;
 }
 
 /** Stored-token read with the 60s freshness margin applied. */
@@ -190,11 +248,18 @@ export async function getAccessToken(): Promise<string | null> {
  * freshness after acquiring — the losers of an intra-context race simply
  * return the winner's token.
  */
-export async function refreshAccessToken(): Promise<{ access_token: string } | null> {
+export async function refreshAccessToken(
+  rejectedAccessToken?: string,
+): Promise<{ access_token: string } | null> {
   return refreshMutex.run(async () => {
-    // Someone else may have refreshed while we waited on the mutex.
+    // A background alarm has no rejected bearer, so it may adopt any fresh
+    // token. A 401 retry may adopt only a token another context wrote after
+    // dispatch; otherwise it must actually refresh the bearer the server
+    // rejected, even if its expiry timestamp still looks healthy.
     const fresh = await readFreshAccessToken();
-    if (fresh) return { access_token: fresh };
+    if (fresh && (!rejectedAccessToken || fresh !== rejectedAccessToken)) {
+      return { access_token: fresh };
+    }
     return doRefresh();
   });
 }
@@ -213,7 +278,7 @@ async function doRefresh(): Promise<OAuthTokens | null> {
     refreshToken = await decryptString({ ct, iv });
   } catch (err) {
     console.warn('[matrx-extend] refresh-token decrypt failed', err);
-    await signOut();
+    await clearLocalSession(ct);
     return null;
   }
 
@@ -239,26 +304,31 @@ async function doRefresh(): Promise<OAuthTokens | null> {
       // though the SESSION is perfectly healthy. Signing out here wiped the
       // winner's fresh tokens. Only sign out when the stored token is still
       // the one that just failed; if it changed, adopt the winner's result.
-      const recheck = await chrome.storage.local.get([STORAGE_KEYS.REFRESH_TOKEN_ENC]);
-      const ctNow = recheck[STORAGE_KEYS.REFRESH_TOKEN_ENC] as string | undefined;
-      if (ctNow && ctNow !== ct) {
+      const fresh = await withAuthMutationLock(async () => {
+        const recheck = await chrome.storage.local.get([STORAGE_KEYS.REFRESH_TOKEN_ENC]);
+        const ctNow = recheck[STORAGE_KEYS.REFRESH_TOKEN_ENC] as string | undefined;
+        if (!ctNow || ctNow === ct) return null;
+        return readFreshAccessToken();
+      });
+      if (fresh) {
         console.info('[matrx-extend] refresh race: another context rotated the token — adopting');
-        const fresh = await readFreshAccessToken();
-        if (fresh) {
-          // Shape-compatible minimal result; callers only use access_token
-          // / truthiness.
-          return { access_token: fresh } as OAuthTokens;
-        }
-        return null;
+        return { access_token: fresh } as OAuthTokens;
       }
-      await signOut();
+      await clearLocalSession(ct);
     }
     return null;
   }
   const json = await res.json();
   const tokens = OAuthTokensSchema.parse(json);
-  await persistTokens(tokens);
-  scheduleRefresh(tokens);
+  const committed = await withAuthMutationLock(async () => {
+    const recheck = await chrome.storage.local.get([STORAGE_KEYS.REFRESH_TOKEN_ENC]);
+    if (recheck[STORAGE_KEYS.REFRESH_TOKEN_ENC] !== ct) return readFreshAccessToken();
+    await persistTokens(tokens);
+    scheduleRefresh(tokens);
+    return tokens.access_token;
+  });
+  if (!committed) return null;
+  if (committed !== tokens.access_token) return { access_token: committed } as OAuthTokens;
   return tokens;
 }
 
@@ -349,6 +419,29 @@ async function persistTokens(tokens: OAuthTokens): Promise<void> {
   });
 }
 
+async function commitSignInAttempt(
+  attemptId: string,
+  tokens: OAuthTokens,
+  user: UserProfile,
+): Promise<void> {
+  await withAuthMutationLock(async () => {
+    const active = await chrome.storage.session.get([ACTIVE_AUTH_ATTEMPT_KEY]);
+    if (active[ACTIVE_AUTH_ATTEMPT_KEY] !== attemptId) {
+      throw new SupersededAuthAttemptError();
+    }
+    const expiresAt = Date.now() + tokens.expires_in * 1000;
+    const enc = await encryptString(tokens.refresh_token);
+    await chrome.storage.local.set({
+      [STORAGE_KEYS.ACCESS_TOKEN]: tokens.access_token,
+      [STORAGE_KEYS.REFRESH_TOKEN_ENC]: enc.ct,
+      [STORAGE_KEYS.REFRESH_TOKEN_IV]: enc.iv,
+      [STORAGE_KEYS.TOKEN_EXPIRES_AT]: expiresAt,
+      [STORAGE_KEYS.USER_PROFILE]: user,
+    });
+    scheduleRefresh(tokens);
+  });
+}
+
 function scheduleRefresh(tokens: OAuthTokens): void {
   // Refresh ~5 min before expiry, but at least 50 minutes from now.
   const minutesUntilExpiry = tokens.expires_in / 60;
@@ -418,26 +511,29 @@ export async function isAuthenticated(): Promise<boolean> {
  * Returns true if a session was restored, false otherwise.
  */
 export async function restoreSupabaseSession(): Promise<boolean> {
-  const stored = await chrome.storage.local.get([
-    STORAGE_KEYS.ACCESS_TOKEN,
-    STORAGE_KEYS.REFRESH_TOKEN_ENC,
-    STORAGE_KEYS.REFRESH_TOKEN_IV,
-  ]);
-  const access = stored[STORAGE_KEYS.ACCESS_TOKEN] as string | undefined;
-  const ct = stored[STORAGE_KEYS.REFRESH_TOKEN_ENC] as string | undefined;
-  const iv = stored[STORAGE_KEYS.REFRESH_TOKEN_IV] as string | undefined;
-  if (!access || !ct || !iv) {
-    log.info('auth', 'restoreSupabaseSession: no stored tokens');
-    return false;
-  }
-  try {
-    const refresh = await decryptString({ ct, iv });
-    const { setSupabaseSession } = await import('@/lib/supabase/client');
-    await setSupabaseSession(access, refresh);
-    log.success('auth', 'supabase session restored from storage');
-    return true;
-  } catch (err) {
-    log.error('auth', 'restoreSupabaseSession failed', err);
-    return false;
-  }
+  return withAuthMutationLock(async () => {
+    const stored = await chrome.storage.local.get([
+      STORAGE_KEYS.ACCESS_TOKEN,
+      STORAGE_KEYS.REFRESH_TOKEN_ENC,
+      STORAGE_KEYS.REFRESH_TOKEN_IV,
+    ]);
+    const access = stored[STORAGE_KEYS.ACCESS_TOKEN] as string | undefined;
+    const ct = stored[STORAGE_KEYS.REFRESH_TOKEN_ENC] as string | undefined;
+    const iv = stored[STORAGE_KEYS.REFRESH_TOKEN_IV] as string | undefined;
+    try {
+      const { clearSupabaseSession, setSupabaseSession } = await import('@/lib/supabase/client');
+      if (!access || !ct || !iv) {
+        clearSupabaseSession();
+        log.info('auth', 'restoreSupabaseSession: no stored tokens');
+        return false;
+      }
+      const refresh = await decryptString({ ct, iv });
+      await setSupabaseSession(access, refresh);
+      log.success('auth', 'supabase session restored from storage');
+      return true;
+    } catch (err) {
+      log.error('auth', 'restoreSupabaseSession failed', err);
+      return false;
+    }
+  });
 }
