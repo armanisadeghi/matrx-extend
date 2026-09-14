@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import {
   chmodSync,
   cpSync,
@@ -40,7 +41,7 @@ const run = (command: string, args: string[], cwd: string, env: NodeJS.ProcessEn
 };
 const git = (root: string, ...args: string[]) => run('git', args, root).stdout.trim();
 
-function createReleaseFixture(mode: 'dirty' | 'mutate' | 'push-race' | 'no-push') {
+function createReleaseFixture(mode: 'dirty' | 'mutate' | 'push-race' | 'no-push' | 'success') {
   const root = makeRoot();
   const remote = join(root, 'remote.git');
   const repo = join(root, 'repo');
@@ -51,9 +52,10 @@ function createReleaseFixture(mode: 'dirty' | 'mutate' | 'push-race' | 'no-push'
   git(repo, 'config', 'user.email', 'test@example.com');
   git(repo, 'config', 'user.name', 'release test');
   cpSync(join(process.cwd(), 'release.sh'), join(repo, 'release.sh'));
+  mkdirSync(join(repo, 'scripts'));
   cpSync(
     join(process.cwd(), 'scripts', 'sync-unpacked-release.mjs'),
-    join(repo, 'sync-unpacked-release.mjs'),
+    join(repo, 'scripts', 'sync-unpacked-release.mjs'),
   );
   writeFileSync(join(repo, 'package.json'), '{"name":"matrx-extend","version":"0.0.0"}\n');
   writeFileSync(join(repo, '.gitignore'), '.output/\n');
@@ -62,6 +64,7 @@ function createReleaseFixture(mode: 'dirty' | 'mutate' | 'push-race' | 'no-push'
     'const isChromeWebStoreBuild = false;\nconst manifest = { key: devExtensionKey };\n',
   );
   writeBundle(join(repo, '.output', 'chrome-mv3-dev'), '0.0.0');
+  writeFileSync(join(repo, '.output', 'chrome-mv3-dev', 'obsolete-0.0.0.js'), 'stale');
   git(repo, 'add', '.');
   git(repo, 'commit', '-m', 'base');
   git(repo, 'remote', 'add', 'origin', remote);
@@ -262,5 +265,38 @@ describe('release.sh Git integrity boundary', () => {
     expect(
       JSON.parse(readFileSync(join(repo, '.output/chrome-mv3-dev/manifest.json'), 'utf8')).version,
     ).toBe('0.0.0');
+  });
+
+  it('pushes one source SHA, then promotes its complete keyed local bundle and receipt', () => {
+    const { repo, release } = createReleaseFixture('success');
+    expect(release.status, release.stderr).toBe(0);
+    const head = git(repo, 'rev-parse', 'HEAD');
+    const remoteLines = git(repo, 'ls-remote', 'origin', 'refs/heads/main', 'refs/tags/v0.0.1')
+      .split('\n')
+      .map((line) => line.split('\t')[0]);
+    expect(remoteLines).toEqual([head, head]);
+    const promoted = join(repo, '.output/chrome-mv3-dev');
+    expect(JSON.parse(readFileSync(join(promoted, 'manifest.json'), 'utf8'))).toMatchObject({
+      version: '0.0.1',
+      key: 'dev-key',
+    });
+    expect(() => readFileSync(join(promoted, 'obsolete-0.0.0.js'))).toThrow();
+    expect(hashReleaseTree(promoted)).toBe(hashReleaseTree(join(repo, '.output/chrome-mv3')));
+    const receipt = JSON.parse(readFileSync(join(repo, '.output/release-receipt.json'), 'utf8'));
+    expect(receipt).toMatchObject({
+      sourceSha: head,
+      version: '0.0.1',
+      treeSha256: hashReleaseTree(promoted),
+    });
+    expect(receipt.storeZip.sha256).toBe(
+      createHash('sha256')
+        .update(readFileSync(join(repo, '.output/matrx-extend-0.0.1-store.zip')))
+        .digest('hex'),
+    );
+    expect(receipt.localZip.sha256).toBe(
+      createHash('sha256')
+        .update(readFileSync(join(repo, '.output/matrx-extend-0.0.1-local.zip')))
+        .digest('hex'),
+    );
   });
 });
