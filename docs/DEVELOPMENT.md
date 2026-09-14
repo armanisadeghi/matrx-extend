@@ -20,7 +20,7 @@ pnpm install           # installs deps; postinstall runs `wxt prepare` + husky
 | `pnpm lint` | `biome check .` |
 | `pnpm lint:fix` | `biome check --write .` (safe + unsafe fixes) |
 | `pnpm format` | `biome format --write .` |
-| `pnpm test` | `vitest run` (unit tests) |
+| `pnpm test` | unit tests with 1–2 workers; this avoids the proven local load flake |
 | `pnpm test:watch` | vitest in watch mode |
 | `pnpm update-api-types` | regenerate `types/python-generated/*` from the live FastAPI |
 | `pnpm update-api-types:local` | …against `http://localhost:8000` |
@@ -28,7 +28,14 @@ pnpm install           # installs deps; postinstall runs `wxt prepare` + husky
 
 ## Loading unpacked
 
-`chrome://extensions` → enable Developer Mode → "Load unpacked" → select `.output/chrome-mv3/`.
+`chrome://extensions` → enable Developer Mode → "Load unpacked" → select `.output/chrome-mv3-dev/`.
+
+`pnpm dev` uses that directory for temporary HMR output. A successful `release.sh`
+replaces its whole tree with the fresh, keyed local release bundle, including removing
+obsolete chunks, then writes `.output/release-receipt.json` with the release commit,
+version, zip hashes, and complete-tree hash. The Store bundle is never promoted: it has
+no dev key. Do not load `.output/chrome-mv3/` directly; it is transient while a release
+build runs and is overwritten by the Store build before the local build restores its key.
 
 The `key` field in `wxt.config.ts` locks the extension ID at `cihdmkcdjjckfhjpgoedmgfpoljebaml` for both dev and prod, so the OAuth redirect URI never has to change.
 
@@ -287,6 +294,7 @@ matrx-extend/
 ---
 
 
+
 ---
 
 ## 🧬 TypeScript — the dual install (read before touching `typescript` in package.json)
@@ -396,4 +404,3 @@ into ours and turn every typo'd `import.meta.env.WXT_*` into a silent `any` —
 exactly what the env-var rules above exist to prevent.
 
 ---
-

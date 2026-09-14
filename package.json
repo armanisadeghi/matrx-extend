@@ -19,7 +19,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
-    "test": "vitest run",
+    "test": "vitest run --maxWorkers=2 --minWorkers=1",
     "test:watch": "vitest",
     "update-api-types": "node scripts/update-api-types.mjs",
     "update-api-types:local": "node scripts/update-api-types.mjs --local",

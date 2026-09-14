@@ -3,7 +3,7 @@
 #
 # What it does (in order):
 #   1.  Pre-flight checks (correct branch, git available, scripts exist)
-#   2.  Auto-stage + commit any uncommitted changes (so we ship a clean tree)
+#   2.  Refuse an uncommitted tree (so the release source is explicit)
 #   3.  Sync server API types  (pnpm update-api-types)
 #   4.  TypeScript typecheck   (pnpm compile)
 #   5.  Bump version           (default --patch; --minor / --major supported)
@@ -161,6 +161,7 @@ CURRENT_STEP=""
 CATALOG_OK=true
 WARNINGS=()
 DRIFT_DETECTED=false
+RELEASE_SHA=""
 
 # ── Pre-flight checks ───────────────────────────────────────────────────────
 step "Pre-flight checks"
@@ -183,23 +184,13 @@ grep -q "key: devExtensionKey" "$WXT_CONFIG" \
 
 ok "On branch $BRANCH, environment-gated key boundary and tooling available"
 
-# ── Auto-stage uncommitted work ─────────────────────────────────────────────
-step "Sync working tree"
-
+# ── Refuse uncommitted work ─────────────────────────────────────────────────
+step "Validate working tree"
 if [[ -n "$(git status --porcelain)" ]]; then
-    info "Uncommitted changes detected — staging and committing"
     git status --short | sed 's/^/   /'
-    if $DRY_RUN; then
-        preview "Would: git add -A && git commit -m '...'"
-    else
-        git add -A
-        local_msg="${CUSTOM_MESSAGE:-chore: pre-release sync}"
-        git commit -m "$local_msg"
-        ok "Committed pre-release changes: $local_msg"
-    fi
-else
-    ok "Working tree clean — proceeding with current HEAD"
+    fail "Release starts only from a clean tree. Commit the exact intended files, then re-run; release.sh will never stage them for you."
 fi
+ok "Working tree clean — proceeding with current HEAD"
 
 # ── Sync with remote (BEFORE the long build, so a diverged branch never ──────
 # leaves an orphaned tag pointing at a commit that cannot be pushed). Runs ────
@@ -529,6 +520,19 @@ if [[ -n "$(git status --porcelain -- types/python-generated)" ]]; then
     fail "Generated API types remain outside the release commit. Refusing to build or tag a non-reproducible release."
 fi
 
+# The zips must be bytes from exactly the commit that is tagged and pushed.
+# Do not let a concurrent writer or a post-build rebase silently detach them.
+RELEASE_SHA=$(git rev-parse HEAD)
+assert_release_source() {
+    [[ "$(git rev-parse HEAD)" == "$RELEASE_SHA" ]] \
+        || fail "Release source changed after build began. Re-run the normal release; do not rebase or retag built artifacts."
+    [[ -z "$(git status --porcelain)" ]] \
+        || fail "Release source changed after build began. Re-run the normal release; do not stage, amend, or add source files to built artifacts."
+    [[ "$(node -p "require('./package.json').version")" == "$NEW_VERSION" ]] \
+        || fail "package.json version changed after build began. Re-run the normal release."
+}
+assert_release_source
+
 # ── 6. Build STORE zip (environment-gated key omission) ─────────────────────
 #
 # IMPORTANT: store goes FIRST, local goes SECOND. `pnpm zip` rebuilds
@@ -602,33 +606,36 @@ if [[ -f "$OUTPUT_DIR/chrome-mv3/manifest.json" ]]; then
     fi
 fi
 
-# ── 8. Tag and push ─────────────────────────────────────────────────────────
+# ── 8. Tag, push, then refresh the path existing dev installs use ───────────
 CURRENT_STEP="git-push"
 step "8/8  Tag and push"
+assert_release_source
 git tag "$NEW_TAG"
 ok "Tag $NEW_TAG created"
 
 if $NO_PUSH; then
-    warn "--no-push set — skipping git push"
+    warn "--no-push set — this is an unpushed local candidate, not a released build"
 elif git push --atomic "$REMOTE" "$BRANCH" "$NEW_TAG" 2>/dev/null; then
-    # --atomic: branch + tag push together or not at all (never a half-push).
     ok "Pushed $BRANCH and $NEW_TAG to $REMOTE"
 else
-    warn "Push rejected — $REMOTE/$BRANCH moved during the build. Reconciling once..."
-    git fetch --quiet "$REMOTE" "$BRANCH" \
-        || fail "Push rejected and re-fetch failed. Tag $NEW_TAG exists locally; run: git pull --rebase $REMOTE $BRANCH && git tag -f $NEW_TAG HEAD && git push --atomic $REMOTE $BRANCH $NEW_TAG"
-    if git rebase "$REMOTE/$BRANCH" >/dev/null 2>&1; then
-        git tag -f "$NEW_TAG" HEAD >/dev/null  # rebase rewrote the commit; move the tag onto it
-        info "Rebased onto updated $REMOTE/$BRANCH and re-pointed $NEW_TAG. Retrying push..."
-        if git push --atomic "$REMOTE" "$BRANCH" "$NEW_TAG" 2>/dev/null; then
-            ok "Pushed $BRANCH and $NEW_TAG to $REMOTE"
-        else
-            fail "Rejected again after a clean rebase — $REMOTE/$BRANCH is moving rapidly. History is clean locally; push by hand: git push --atomic $REMOTE $BRANCH $NEW_TAG"
-        fi
-    else
-        git rebase --abort >/dev/null 2>&1 || true
-        fail "Push rejected and an automatic rebase conflicts. Tag $NEW_TAG exists locally; resolve: git rebase $REMOTE/$BRANCH && git tag -f $NEW_TAG HEAD && git push --atomic $REMOTE $BRANCH $NEW_TAG"
-    fi
+    git tag -d "$NEW_TAG" >/dev/null 2>&1 || true
+    fail "Push rejected because $REMOTE/$BRANCH moved. No built artifact was rebased or retagged; update the branch and re-run the normal release."
+fi
+
+if ! $NO_PUSH; then
+    CURRENT_STEP="promote-unpacked"
+    step "Promote keyed local bundle to the existing development path"
+    assert_release_source
+    node scripts/sync-unpacked-release.mjs \
+        --root "$REPO_ROOT" \
+        --version "$NEW_VERSION" \
+        --source-sha "$RELEASE_SHA" \
+        --store-zip "$STORE_ZIP" \
+        --local-zip "$LOCAL_ZIP" \
+        --receipt "$OUTPUT_DIR/release-receipt.json" \
+        --publish-state "pushed"
+    assert_release_source
+    ok "Refreshed $OUTPUT_DIR/chrome-mv3-dev/ from the verified keyed local release"
 fi
 CURRENT_STEP="done"
 

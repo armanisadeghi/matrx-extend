@@ -22,6 +22,20 @@
   click Run. The Tools tab routes through the same dispatcher path
   agents use, so it's a real end-to-end test.
 
+### Release refreshes the existing unpacked development path
+
+- **What it does:** a successful release replaces `.output/chrome-mv3-dev/` with the
+  complete keyed local bundle that was built from the released commit. It removes stale
+  chunks and records the source SHA, version, zip hashes, and tree hash in
+  `.output/release-receipt.json`.
+- **Where to test:** `chrome://extensions` with the unpacked extension already loaded
+  from `.output/chrome-mv3-dev/`.
+- **Steps:** run the normal release; reload the existing extension in Chrome; compare its
+  manifest version with `package.json` and inspect the receipt.
+- **Expected:** the loaded path contains the same version and complete-tree hash as the
+  keyed local release bundle. A Store/unkeyed bundle, a changed source tree, or a push
+  race stops the release without replacing the existing development tree.
+
 ### THE ONE AGENT PICKER (`@ai-matrx/agents/catalog/react`)
 
 Every agent-selection surface in this extension renders the SAME package
