@@ -191,7 +191,10 @@ function detectCodeLang(pre: Element): string | null {
  *
  * Always runs on a CLONE — never the live document.
  */
-export function normalizeSemanticMarkup(doc: Document): void {
+export function normalizeSemanticMarkup(
+  doc: Document,
+  figureSvgGeometry?: FigureSvgGeometry,
+): void {
   // 1. Rename `[data-as]` block elements to their real tag.
   for (const el of Array.from(doc.querySelectorAll('[data-as]'))) {
     const tag = (el.getAttribute('data-as') ?? '').toLowerCase().trim();
@@ -236,7 +239,7 @@ export function normalizeSemanticMarkup(doc: Document): void {
   //    an empty <figure>. A data-image remains inert, survives sanitization,
   //    and has a native Markdown representation. Scope this to <figure> so
   //    navigation/logo/button icons do not become article images.
-  protectInlineSvgFigures(doc);
+  protectInlineSvgFigures(doc, figureSvgGeometry);
 }
 
 /** Base64 keeps large SVGs smaller than percent encoding and Markdown-safe. */
@@ -258,6 +261,85 @@ function numericSvgDimension(svg: Element, attribute: 'width' | 'height'): numbe
   return Number.isFinite(fromViewBox) && fromViewBox > 0 ? fromViewBox : null;
 }
 
+interface SvgLayerGeometry {
+  x: number;
+  y: number;
+  rotation: -90 | 0 | 90 | 180;
+}
+
+type FigureSvgGeometry = Array<Array<SvgLayerGeometry | null>>;
+
+function finiteLayoutRect(svg: Element): DOMRect | null {
+  const rect = svg.getBoundingClientRect();
+  return rect.width > 0 && rect.height > 0 ? rect : null;
+}
+
+function svgLayerRotation(svg: Element, figure: Element): -90 | 0 | 90 | 180 {
+  for (
+    let current: Element | null = svg;
+    current && current !== figure;
+    current = current.parentElement
+  ) {
+    const rotation = current.getAttribute('style')?.match(/rotate\(\s*(-?90|180)deg\s*\)/i)?.[1];
+    if (rotation === '-90') return -90;
+    if (rotation === '90') return 90;
+    if (rotation === '180') return 180;
+  }
+  return 0;
+}
+
+/**
+ * A cloned Document has no layout. Capture each live SVG's rectangle before
+ * cloning so narrow overlays retain their placement inside the largest graph
+ * layer; DOMParser documents simply return null and use the stable fallback.
+ */
+function captureFigureSvgGeometry(doc: Document): FigureSvgGeometry {
+  return Array.from(doc.querySelectorAll('figure')).map((figure) => {
+    const svgs = Array.from(figure.querySelectorAll('svg'));
+    const rects = svgs.map(finiteLayoutRect);
+    const canvas = rects.reduce<DOMRect | null>((largest, rect) => {
+      if (!rect || (largest && largest.width * largest.height >= rect.width * rect.height)) {
+        return largest;
+      }
+      return rect;
+    }, null);
+    if (!canvas) return svgs.map(() => null);
+
+    return svgs.map((svg, index) => {
+      const rect = rects[index];
+      if (!rect) return null;
+      return {
+        x: rect.left - canvas.left,
+        y: rect.top - canvas.top,
+        rotation: svgLayerRotation(svg, figure),
+      };
+    });
+  });
+}
+
+function svgNumber(value: number): string {
+  const rounded = Math.round(value * 1000) / 1000;
+  return String(Object.is(rounded, -0) ? 0 : rounded);
+}
+
+function svgLayerTransform(layer: Element, geometry: SvgLayerGeometry): string | null {
+  const width = numericSvgDimension(layer, 'width');
+  const height = numericSvgDimension(layer, 'height');
+  if (width === null || height === null) return null;
+  const x = svgNumber(geometry.x);
+  const y = svgNumber(geometry.y);
+  if (geometry.rotation === 90) {
+    return `translate(${svgNumber(geometry.x + height)} ${y}) rotate(90)`;
+  }
+  if (geometry.rotation === -90) {
+    return `translate(${x} ${svgNumber(geometry.y + width)}) rotate(-90)`;
+  }
+  if (geometry.rotation === 180) {
+    return `translate(${svgNumber(geometry.x + width)} ${svgNumber(geometry.y + height)}) rotate(180)`;
+  }
+  return `translate(${x} ${y})`;
+}
+
 /**
  * Preserve inline vector graphics through Defuddle -> DOMPurify -> Turndown.
  * SVG layers become one self-contained SVG image so coordinate grids and
@@ -265,8 +347,8 @@ function numericSvgDimension(svg: Element, attribute: 'width' | 'height'): numbe
  * are deliberately not filtered by their dimensions: graph renderers commonly
  * add narrow arrow/axis SVGs alongside the full-size grid.
  */
-function protectInlineSvgFigures(doc: Document): void {
-  for (const figure of Array.from(doc.querySelectorAll('figure'))) {
+function protectInlineSvgFigures(doc: Document, figureSvgGeometry?: FigureSvgGeometry): void {
+  for (const [figureIndex, figure] of Array.from(doc.querySelectorAll('figure')).entries()) {
     const svgs = Array.from(figure.querySelectorAll('svg'));
     if (svgs.length === 0) continue;
     const firstSvg = svgs[0];
@@ -298,10 +380,27 @@ function protectInlineSvgFigures(doc: Document): void {
       composite.setAttribute('width', String(width));
       composite.setAttribute('height', String(height));
       composite.setAttribute('viewBox', `0 0 ${width} ${height}`);
-      // Keep every layer, including mixed-size overlay SVGs. Nested SVGs
-      // retain their own viewBox and dimensions, which preserves their vector
-      // coordinate systems in the single serialized image.
-      for (const layer of svgs) composite.appendChild(layer.cloneNode(true));
+      // Keep every layer, including mixed-size overlay SVGs. When the source
+      // document had layout, wrap each layer in its measured graph-relative
+      // translation/quarter-turn so axes do not collapse at the composite's
+      // origin. DOMParser captures have no layout and retain raw SVG fallback.
+      for (const [layerIndex, layer] of svgs.entries()) {
+        const clone = layer.cloneNode(true) as Element;
+        const transform = figureSvgGeometry?.[figureIndex]?.[layerIndex]
+          ? svgLayerTransform(
+              layer,
+              figureSvgGeometry[figureIndex]?.[layerIndex] as SvgLayerGeometry,
+            )
+          : null;
+        if (!transform) {
+          composite.appendChild(clone);
+          continue;
+        }
+        const group = doc.createElementNS('http://www.w3.org/2000/svg', 'g');
+        group.setAttribute('transform', transform);
+        group.appendChild(clone);
+        composite.appendChild(group);
+      }
       serialized = composite.outerHTML;
     }
 
@@ -365,8 +464,9 @@ async function extractArticle(
   // Normalize once on a clone so MDX/Mintlify markup (span-paragraphs,
   // span-wrapped code) is converted to standard HTML before extraction.
   // Never mutate the caller's document — on the Scrape tab `doc` is live.
+  const figureSvgGeometry = captureFigureSvgGeometry(doc);
   const normalized = doc.cloneNode(true) as Document;
-  normalizeSemanticMarkup(normalized);
+  normalizeSemanticMarkup(normalized, figureSvgGeometry);
 
   if (preferDefuddle) {
     try {

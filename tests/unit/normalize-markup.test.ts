@@ -222,4 +222,47 @@ describe('scrape pipeline — inline SVG figures', () => {
     expect(decoded).not.toContain('onload=');
     expect(decoded).not.toContain('javascript:');
   });
+
+  it('keeps Mathspace axes at their measured graph positions and orientation', async () => {
+    const doc = new DOMParser().parseFromString(
+      `<!doctype html><html><head><title>Coordinate plane</title></head><body><article>
+        <h1>Coordinate plane</h1><p>${'Context before the graph. '.repeat(40)}</p>
+        <figure><div style="position:relative;width:260px;height:260px">
+          <div style="position:absolute;transform:translateY(130px) translateY(calc(-50% - .5px))">
+            <svg width="260" height="7" viewBox="0 0 260 7"><path d="M0 3h260" /></svg>
+          </div>
+          <div style="position:absolute;transform:translateX(129.5px) rotate(90deg)">
+            <svg width="260" height="7" viewBox="0 0 260 7"><path d="M0 3h260" /></svg>
+          </div>
+          <svg width="260" height="260" viewBox="0 0 260 260"><line x1="0" y1="0" x2="260" y2="260" /></svg>
+        </div></figure>
+        <p>${'Context after the graph. '.repeat(40)}</p>
+      </article></body></html>`,
+      'text/html',
+    );
+    const layers = Array.from(doc.querySelectorAll('figure svg'));
+    const rect = (left: number, top: number, width: number, height: number) =>
+      ({ left, top, width, height }) as DOMRect;
+    const rects = [rect(0, 126, 260, 7), rect(126.5, 0, 7, 260), rect(0, 0, 260, 260)];
+    for (const [index, layer] of layers.entries()) {
+      Object.defineProperty(layer, 'getBoundingClientRect', {
+        value: () => rects[index],
+      });
+    }
+
+    const result = await runScrape(doc, {
+      includeImages: false,
+      includeVideos: false,
+      includeAudio: false,
+      includeLinks: false,
+      includeStructured: false,
+    });
+    const encoded = result.article.content_markdown?.match(/base64,([\w+/=]+)/)?.[1] ?? '';
+    const composite = atob(encoded);
+
+    // These exact bounds come from the captured Mathspace figure: the
+    // horizontal arrow is y=126 and the 7px-wide vertical arrow is x=126.5.
+    expect(composite).toContain('transform="translate(0 126)"');
+    expect(composite).toContain('transform="translate(133.5 0) rotate(90)"');
+  });
 });
