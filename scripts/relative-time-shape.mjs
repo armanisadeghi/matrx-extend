@@ -65,37 +65,35 @@
 
 /** Comments and string TEXT gone, `${…}` interpolations kept. */
 function codeOnlyLine(line) {
-  if (/^\s*\*/.test(line)) return "";
-  const noComments = line
-    .replace(/(^|[^:])\/\/.*$/, "$1")
-    .replace(/\/\*.*?\*\//g, " ");
+  if (/^\s*\*/.test(line)) return '';
+  const noComments = line.replace(/(^|[^:])\/\/.*$/, '$1').replace(/\/\*.*?\*\//g, ' ');
   const noQuoted = noComments
     .replace(/"(?:[^"\\]|\\.)*"/g, '""')
     .replace(/'(?:[^'\\]|\\.)*'/g, "''");
-  let out = "";
+  let out = '';
   let i = 0;
   while (i < noQuoted.length) {
-    if (noQuoted[i] !== "`") {
+    if (noQuoted[i] !== '`') {
       out += noQuoted[i];
       i += 1;
       continue;
     }
     i += 1;
-    while (i < noQuoted.length && noQuoted[i] !== "`") {
-      if (noQuoted[i] === "\\") {
+    while (i < noQuoted.length && noQuoted[i] !== '`') {
+      if (noQuoted[i] === '\\') {
         i += 2;
         continue;
       }
-      if (noQuoted[i] === "$" && noQuoted[i + 1] === "{") {
+      if (noQuoted[i] === '$' && noQuoted[i + 1] === '{') {
         let depth = 1;
         i += 2;
         while (i < noQuoted.length && depth > 0) {
-          if (noQuoted[i] === "{") depth += 1;
-          else if (noQuoted[i] === "}") depth -= 1;
+          if (noQuoted[i] === '{') depth += 1;
+          else if (noQuoted[i] === '}') depth -= 1;
           if (depth > 0) out += noQuoted[i];
           i += 1;
         }
-        out += " ";
+        out += ' ';
         continue;
       }
       i += 1;
@@ -115,8 +113,8 @@ function codeOnlyLine(line) {
  * whole.
  */
 function withoutComments(line) {
-  if (/^\s*\*/.test(line)) return "";
-  return line.replace(/(^|[^:])\/\/.*$/, "$1").replace(/\/\*.*?\*\//g, " ");
+  if (/^\s*\*/.test(line)) return '';
+  return line.replace(/(^|[^:])\/\/.*$/, '$1').replace(/\/\*.*?\*\//g, ' ');
 }
 
 const MINIFIED_LINE = 500;
@@ -154,7 +152,8 @@ const NAMED_BASE_DIVIDE_RE =
  * "yesterday" / "just now" are the named tiers.
  */
 const AGO_RE = /\sago\b/;
-const NAMED_TIER_RE = /["'`][^"'`]{0,16}\b(?:today|yesterday|tomorrow|just now)\b[^"'`]{0,16}["'`]/i;
+const NAMED_TIER_RE =
+  /["'`][^"'`]{0,16}\b(?:today|yesterday|tomorrow|just now)\b[^"'`]{0,16}["'`]/i;
 
 /**
  * THE FUTURE PREFIX "in …" IS DELIBERATELY NOT A VOICE, in either arm, even
@@ -167,7 +166,7 @@ const NAMED_TIER_RE = /["'`][^"'`]{0,16}\b(?:today|yesterday|tomorrow|just now)\
  * the relative-time row. A future stamp that also says "ago" on another branch,
  * or sits in a function NAMED for age, is still caught by everything below.
  */
-const VOICE_RE = new RegExp(`${AGO_RE.source}|${NAMED_TIER_RE.source}`, "i");
+const VOICE_RE = new RegExp(`${AGO_RE.source}|${NAMED_TIER_RE.source}`, 'i');
 
 /**
  * A FUNCTION NAME that declares the value is an AGE. This is the arm that
@@ -180,7 +179,7 @@ const AGE_NAME_RE =
 
 /** Identifiers split at their camelCase humps, so `ageInDays` reads as words. */
 function wordsIn(text) {
-  return text.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/_/g, " ");
+  return text.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/_/g, ' ');
 }
 
 /** A TIME WORD naming an interpolated part — `days`, `scanAgeDays`, `hrs`. */
@@ -200,8 +199,8 @@ function braceBlocks(lines) {
   for (let i = 0; i < lines.length; i++) {
     const code = codeOnlyLine(lines[i]);
     for (const ch of code) {
-      if (ch === "{") stack.push(i);
-      else if (ch === "}") {
+      if (ch === '{') stack.push(i);
+      else if (ch === '}') {
         const start = stack.pop();
         if (start !== undefined) blocks.push({ start, end: i });
       }
@@ -232,13 +231,13 @@ function enclosingFunction(lines, blocks, index) {
 function interpolationsIn(line) {
   const parts = [];
   for (let i = 0; i < line.length - 1; i++) {
-    if (line[i] !== "$" || line[i + 1] !== "{") continue;
+    if (line[i] !== '$' || line[i + 1] !== '{') continue;
     let depth = 1;
     let j = i + 2;
-    let expr = "";
+    let expr = '';
     while (j < line.length && depth > 0) {
-      if (line[j] === "{") depth += 1;
-      else if (line[j] === "}") depth -= 1;
+      if (line[j] === '{') depth += 1;
+      else if (line[j] === '}') depth -= 1;
       if (depth > 0) expr += line[j];
       j += 1;
     }
@@ -262,7 +261,7 @@ function bodyDividesTime(lines, scope) {
  * Returns [{ line, text }].
  */
 export function relativeTimeShapeIn(source) {
-  const lines = source.split("\n");
+  const lines = source.split('\n');
   const blocks = braceBlocks(lines);
   const out = [];
   const seen = new Set();
@@ -281,20 +280,20 @@ export function relativeTimeShapeIn(source) {
     if (!AGE_DIVIDE_RE.test(code) && !NAMED_BASE_DIVIDE_RE.test(code)) continue;
 
     const scope = enclosingFunction(lines, blocks, i);
-    const rawBody = lines.slice(scope.start, scope.end + 1).join("\n");
+    const rawBody = lines.slice(scope.start, scope.end + 1).join('\n');
     const codeBody = lines
       .slice(scope.start, scope.end + 1)
       .map(codeOnlyLine)
-      .join("\n");
+      .join('\n');
     if (!EPOCH_DELTA_RE.test(codeBody)) continue;
 
-    const head = wordsIn(lines[scope.start] ?? "");
+    const head = wordsIn(lines[scope.start] ?? '');
     const namesAge = AGE_NAME_RE.test(head);
     const speaks = VOICE_RE.test(
       lines
         .slice(scope.start, scope.end + 1)
         .map(withoutComments)
-        .join("\n"),
+        .join('\n'),
     );
     if (!namesAge && !speaks) continue;
     void rawBody;
@@ -349,30 +348,30 @@ export function selfTestRelativeTimeShape() {
   // features/admin/lint-debt/LintDebtConsole.tsx, which are the same body twice.
   // The function says nothing; the string it feeds is six hundred lines below.
   const ageHelper = [
-    "function ageInDays(iso: string): number {",
-    "  const ms = Date.now() - new Date(iso).getTime();",
-    "  return Number.isFinite(ms) ? Math.max(0, Math.floor(ms / 86_400_000)) : 0;",
-    "}",
-  ].join("\n");
+    'function ageInDays(iso: string): number {',
+    '  const ms = Date.now() - new Date(iso).getTime();',
+    '  return Number.isFinite(ms) ? Math.max(0, Math.floor(ms / 86_400_000)) : 0;',
+    '}',
+  ].join('\n');
   if (relativeTimeShapeIn(ageHelper).length === 0) {
     return {
       ok: false,
-      why: "an `ageInDays` helper (an epoch delta over 86_400_000, with no string anywhere in the body) was NOT reported — the day base is absent from every other lane, so a rule that waits for a rendered word is blind to half of every split relative-time body in the fleet",
+      why: 'an `ageInDays` helper (an epoch delta over 86_400_000, with no string anywhere in the body) was NOT reported — the day base is absent from every other lane, so a rule that waits for a rendered word is blind to half of every split relative-time body in the fleet',
     };
   }
   // …and the hours spelling, `hoursSince` from ProviderSyncDashboard.tsx.
   const hoursSince = [
-    "function hoursSince(iso: string | null | undefined): number | null {",
-    "  if (!iso) return null;",
-    "  const t = Date.parse(iso);",
-    "  if (Number.isNaN(t)) return null;",
-    "  return Math.max(0, (Date.now() - t) / 3_600_000);",
-    "}",
-  ].join("\n");
+    'function hoursSince(iso: string | null | undefined): number | null {',
+    '  if (!iso) return null;',
+    '  const t = Date.parse(iso);',
+    '  if (Number.isNaN(t)) return null;',
+    '  return Math.max(0, (Date.now() - t) / 3_600_000);',
+    '}',
+  ].join('\n');
   if (relativeTimeShapeIn(hoursSince).length === 0) {
     return {
       ok: false,
-      why: "`hoursSince` (a Date.parse epoch delta over 3_600_000) was NOT reported",
+      why: '`hoursSince` (a Date.parse epoch delta over 3_600_000) was NOT reported',
     };
   }
 
@@ -380,20 +379,20 @@ export function selfTestRelativeTimeShape() {
   // features/admin/spend/format.ts — the body that renders "today" for a
   // FUTURE stamp, which is the lie kit's future tense exists to stop.
   const staleness = [
-    "export function staleness(value: string | null | undefined): string {",
+    'export function staleness(value: string | null | undefined): string {',
     '  if (!value) return "never written";',
-    "  const then = new Date(value).getTime();",
+    '  const then = new Date(value).getTime();',
     '  if (Number.isNaN(then)) return "never written";',
-    "  const days = Math.floor((Date.now() - then) / 86_400_000);",
+    '  const days = Math.floor((Date.now() - then) / 86_400_000);',
     '  if (days <= 0) return "today";',
     '  if (days === 1) return "yesterday";',
-    "  return `${days} days ago`;",
-    "}",
-  ].join("\n");
+    '  return `${days} days ago`;',
+    '}',
+  ].join('\n');
   if (relativeTimeShapeIn(staleness).length === 0) {
     return {
       ok: false,
-      why: "a full relative-time cascade (epoch delta / 86_400_000 → \"today\" / \"yesterday\" / \"N days ago\") was NOT reported",
+      why: 'a full relative-time cascade (epoch delta / 86_400_000 → "today" / "yesterday" / "N days ago") was NOT reported',
     };
   }
 
@@ -401,35 +400,35 @@ export function selfTestRelativeTimeShape() {
   // Byte-for-byte the dead-ends console footer, whose `ageInDays` lives at the
   // top of a 900-line file.
   const renderOnly = [
-    "function Footer({ scanAgeDays }: { scanAgeDays: number | null }) {",
-    "  return (",
-    "    <span>",
-    "      {scanAgeDays === null",
-    "        ? null",
-    "        : scanAgeDays === 0",
+    'function Footer({ scanAgeDays }: { scanAgeDays: number | null }) {',
+    '  return (',
+    '    <span>',
+    '      {scanAgeDays === null',
+    '        ? null',
+    '        : scanAgeDays === 0',
     '          ? " · scanned today"',
-    "          : ` · scanned ${scanAgeDays}d ago`}",
-    "    </span>",
-    "  );",
-    "}",
-  ].join("\n");
+    '          : ` · scanned ${scanAgeDays}d ago`}',
+    '    </span>',
+    '  );',
+    '}',
+  ].join('\n');
   if (relativeTimeShapeIn(renderOnly).length === 0) {
     return {
       ok: false,
-      why: "a relative-time VOICE bound to a value in a function that does NO time arithmetic was NOT reported — the split body is the commonest relative-time twin in this fleet and is invisible to every arithmetic-first rule",
+      why: 'a relative-time VOICE bound to a value in a function that does NO time arithmetic was NOT reported — the split body is the commonest relative-time twin in this fleet and is invisible to every arithmetic-first rule',
     };
   }
   // …and the one-line ternary form from ProviderSyncDashboard.tsx, where the
   // "verified today" branch hides the hours the helper just measured.
   const ternaryVoice = [
-    "function Stamp({ days }: { days: number }) {",
+    'function Stamp({ days }: { days: number }) {',
     '  return <Badge>{days === 0 ? "verified today" : `${days}d ago`}</Badge>;',
-    "}",
-  ].join("\n");
+    '}',
+  ].join('\n');
   if (relativeTimeShapeIn(ternaryVoice).length === 0) {
     return {
       ok: false,
-      why: "`{days === 0 ? \"verified today\" : `${days}d ago`}` was NOT reported",
+      why: '`{days === 0 ? "verified today" : `${days}d ago`}` was NOT reported',
     };
   }
 
@@ -437,18 +436,18 @@ export function selfTestRelativeTimeShape() {
   // A THRESHOLD-ONLY use: an age picking a branch, with no division and no
   // rendered string. Branching on an age is the normal, correct use of one.
   const thresholdOnly = [
-    "const DAY_MS = 24 * 60 * 60 * 1000;",
-    "function isStale(iso: string): boolean {",
-    "  return Date.now() - new Date(iso).getTime() > DAY_MS;",
-    "}",
-  ].join("\n");
+    'const DAY_MS = 24 * 60 * 60 * 1000;',
+    'function isStale(iso: string): boolean {',
+    '  return Date.now() - new Date(iso).getTime() > DAY_MS;',
+    '}',
+  ].join('\n');
   const thresholdHits = relativeTimeShapeIn(thresholdOnly);
   if (thresholdHits.length !== 0) {
     return {
       ok: false,
       why: `an age used ONLY as a branch threshold was reported as a formatter (${thresholdHits
         .map((h) => h.text)
-        .join(" | ")})`,
+        .join(' | ')})`,
     };
   }
   // A DURATION: an elapsed length with no "ago". duration-shape.mjs owns it,
@@ -462,70 +461,70 @@ export function selfTestRelativeTimeShape() {
   // every censused clock the last time a lane widened. The veto is what keeps
   // arm B to the RENDER-ONLY sites it was built for.
   const duration = [
-    "function elapsedLabel(startedAt: number, finishedAt: number): string {",
-    "  const ms = finishedAt - startedAt;",
-    "  return `${(ms / 1000).toFixed(1)}s`;",
-    "}",
-    "function agoLabel(ms: number): string {",
-    "  const mins = Math.round(ms / 60_000);",
-    "  return `${mins}m ago`;",
-    "}",
-  ].join("\n");
+    'function elapsedLabel(startedAt: number, finishedAt: number): string {',
+    '  const ms = finishedAt - startedAt;',
+    '  return `${(ms / 1000).toFixed(1)}s`;',
+    '}',
+    'function agoLabel(ms: number): string {',
+    '  const mins = Math.round(ms / 60_000);',
+    '  return `${mins}m ago`;',
+    '}',
+  ].join('\n');
   const durationHits = relativeTimeShapeIn(duration);
   if (durationHits.length !== 0) {
     return {
       ok: false,
       why: `an ELAPSED DURATION with no "ago" was reported as a relative time (${durationHits
         .map((h) => h.text)
-        .join(" | ")})`,
+        .join(' | ')})`,
     };
   }
   // A DATE-ONLY render is an absolute stamp, not a relative one.
   const dateOnly = [
-    "function stamp(iso: string): string {",
-    "  return new Date(iso).toLocaleDateString();",
-    "}",
-    "const shown = value.toLocaleString(undefined, { month: \"short\", day: \"numeric\" });",
-  ].join("\n");
+    'function stamp(iso: string): string {',
+    '  return new Date(iso).toLocaleDateString();',
+    '}',
+    'const shown = value.toLocaleString(undefined, { month: "short", day: "numeric" });',
+  ].join('\n');
   const dateHits = relativeTimeShapeIn(dateOnly);
   if (dateHits.length !== 0) {
     return {
       ok: false,
       why: `an absolute DATE render was reported as a relative time (${dateHits
         .map((h) => h.text)
-        .join(" | ")})`,
+        .join(' | ')})`,
     };
   }
   // A TICKING COUNTDOWN is formatDurationMs's, by kit's own doc. Both of these
   // are live, and both read "in …" exactly as a deadline stamp would.
   const countdown = [
-    "function Gate({ secondsLeft }: { secondsLeft: number }) {",
-    "  return <span>{`${baseTitle} · auto-continue in ${secondsLeft}s`}</span>;",
-    "}",
-  ].join("\n");
+    'function Gate({ secondsLeft }: { secondsLeft: number }) {',
+    '  return <span>{`${baseTitle} · auto-continue in ${secondsLeft}s`}</span>;',
+    '}',
+  ].join('\n');
   const countdownHits = relativeTimeShapeIn(countdown);
   if (countdownHits.length !== 0) {
     return {
       ok: false,
       why: `a ticking COUNTDOWN ("auto-continue in 30s") was reported as a relative-time stamp — kit's own doc sends a countdown to formatDurationMs, and arm B has no delta to tell the two apart (${countdownHits
         .map((h) => h.text)
-        .join(" | ")})`,
+        .join(' | ')})`,
     };
   }
   // A WINDOW between two GIVEN stamps is a duration somebody chose, not an age.
   const window = [
-    "function windowLength(window: { from: Date; to: Date }) {",
-    "  const windowDays = (window.to.getTime() - window.from.getTime()) / 86_400_000;",
+    'function windowLength(window: { from: Date; to: Date }) {',
+    '  const windowDays = (window.to.getTime() - window.from.getTime()) / 86_400_000;',
     '  return `${Math.round(windowDays)} days ago`;',
-    "}",
-  ].join("\n");
+    '}',
+  ].join('\n');
   const windowHits = relativeTimeShapeIn(window);
   if (windowHits.length !== 0) {
     return {
       ok: false,
       why: `a WINDOW between two given stamps was reported as an age — only the CLOCK (Date.now(), a no-argument new Date()) makes a delta an age (${windowHits
         .map((h) => h.text)
-        .join(" | ")})`,
+        .join(' | ')})`,
     };
   }
   // A VOICE WITH NO VALUE BOUND TO IT. Three live shapes, one rule: prose that
@@ -534,59 +533,59 @@ export function selfTestRelativeTimeShape() {
   // discriminant, a menu label, and formats nothing.
   // features/admin/spend/windows.ts is nothing but the second kind.
   const prose = [
-    "function Empty() {",
-    "  return <p>This project was archived long ago and nothing runs here.</p>;",
-    "}",
-    "// the census below was taken a while ago",
+    'function Empty() {',
+    '  return <p>This project was archived long ago and nothing runs here.</p>;',
+    '}',
+    '// the census below was taken a while ago',
     'export type WindowPreset = "today" | "yesterday" | "last7";',
-    "function rangeFor(preset: WindowPreset) {",
-    "  switch (preset) {",
+    'function rangeFor(preset: WindowPreset) {',
+    '  switch (preset) {',
     '    case "today":',
-    "      return todayRange();",
+    '      return todayRange();',
     '    case "yesterday":',
-    "      return yesterdayRange();",
-    "  }",
-    "}",
-  ].join("\n");
+    '      return yesterdayRange();',
+    '  }',
+    '}',
+  ].join('\n');
   const proseHits = relativeTimeShapeIn(prose);
   if (proseHits.length !== 0) {
     return {
       ok: false,
       why: `a relative-time word with NO VALUE BOUND TO IT — prose, or a named tier used as VOCABULARY (a \`case "today":\` window preset, a type union) — was reported as a formatter (${proseHits
         .map((h) => h.text)
-        .join(" | ")})`,
+        .join(' | ')})`,
     };
   }
   // A MINIFIED BUNDLE is not source.
   const minified = [
     '"use strict";(()=>{' +
-      "x".repeat(400) +
-      "let a=Date.now()-t,b=a/86400000,c=`${b}d ago`;" +
-      "y".repeat(200) +
-      "})();",
-  ].join("\n");
+      'x'.repeat(400) +
+      'let a=Date.now()-t,b=a/86400000,c=`${b}d ago`;' +
+      'y'.repeat(200) +
+      '})();',
+  ].join('\n');
   const minifiedHits = relativeTimeShapeIn(minified);
   if (minifiedHits.length !== 0) {
     return {
       ok: false,
       why: `a MINIFIED BUNDLE line was reported as a relative-time body (${minifiedHits
         .map((h) => h.text.slice(0, 60))
-        .join(" | ")})`,
+        .join(' | ')})`,
     };
   }
   // AN ADOPTED CALL SITE is silent, in both directions and bare.
   const adopted = [
     'import { formatRelativeTime } from "@ai-matrx/kit/format";',
     'const seen = formatRelativeTime(row.last_seen_at, { style: "short" });',
-    "const due = formatRelativeTime(row.due_at, { suffix: false });",
-  ].join("\n");
+    'const due = formatRelativeTime(row.due_at, { suffix: false });',
+  ].join('\n');
   const adoptedHits = relativeTimeShapeIn(adopted);
   if (adoptedHits.length !== 0) {
     return {
       ok: false,
       why: `an adopted formatRelativeTime call site was reported (${adoptedHits
         .map((h) => h.text)
-        .join(" | ")})`,
+        .join(' | ')})`,
     };
   }
   return { ok: true };
