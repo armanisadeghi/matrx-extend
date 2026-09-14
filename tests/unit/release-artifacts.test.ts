@@ -60,7 +60,7 @@ function createReleaseFixture(mode: 'dirty' | 'mutate' | 'push-race' | 'no-push'
   const remote = join(root, 'remote.git');
   const repo = join(root, 'repo');
   const bin = join(root, 'bin');
-  run('git', ['init', '--bare', remote], root);
+  run('git', ['init', '--bare', '--initial-branch=main', remote], root);
   mkdirSync(repo);
   git(repo, 'init', '-b', 'main');
   git(repo, 'config', 'user.email', 'test@example.com');
