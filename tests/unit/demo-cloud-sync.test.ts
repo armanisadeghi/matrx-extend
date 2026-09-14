@@ -31,7 +31,7 @@ vi.mock('@/lib/supabase/queries', () => ({
   upsertDemoRow: (p: unknown) => upsertDemoRow(p),
   deleteDemoRow: (id: string) => deleteDemoRow(id),
   fetchAllDemoRows: async () => cloudRows,
-  fetchDemoRow: async (id: string) => cloudRows.find((r) => r.id === id) ?? null,
+  fetchDemoRow: async (id: string) => cloudRows.find((r) => r.demo_key === id) ?? null,
 }));
 
 const CREATED = Date.parse('2026-08-09T10:00:00.000Z');
@@ -78,7 +78,7 @@ function makeDemo(over: Partial<Demo> = {}): Demo {
 function rowFor(demo: Demo, over: Partial<WbxDemoRow> = {}): WbxDemoRow {
   const p = demoToRowPayload(demo);
   return {
-    id: p.id,
+    demo_key: p.demo_key,
     name: p.name,
     description: p.description,
     start_url: p.start_url,
@@ -134,7 +134,7 @@ describe('mirror-on-save', () => {
 
     await vi.waitFor(() => expect(upsertDemoRow).toHaveBeenCalledTimes(1));
     const payload = upsertDemoRow.mock.calls[0]?.[0] as ReturnType<typeof demoToRowPayload>;
-    expect(payload.id).toBe('demo_login');
+    expect(payload.demo_key).toBe('demo_login');
     expect(payload.step_count).toBe(2);
     expect(payload.parameter_names).toEqual(['username']);
     // The whole recorded step list travels — that is the entire point.

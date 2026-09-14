@@ -208,7 +208,10 @@ export function recipesForUrl(url: string, recipes: Recipe[] = RECIPES): Recipe[
 // owned via `created_by`.)
 
 const RecipeRowSchema = z.object({
-  id: z.string(),
+  // DD-173 (B-103): the slug moved off `id` to `recipe_key` when `extend.wbx_recipe`
+  // gained its canonical uuid identity. `Recipe.id` — the pointer every bundled
+  // fallback recipe and every saved pattern keys on — is the SLUG, not the uuid.
+  recipe_key: z.string(),
   label: z.string(),
   description: z.string().default(''),
   hosts: z.array(z.string()),
@@ -235,14 +238,14 @@ export async function loadRecipes(): Promise<Recipe[]> {
     const { data, error } = await c
       .schema('extend')
       .from('wbx_recipe')
-      .select('id, label, description, hosts, routes, kind, config, yields_rows')
+      .select('recipe_key, label, description, hosts, routes, kind, config, yields_rows')
       .eq('is_active', true)
-      .order('id');
+      .order('recipe_key');
     if (error) throw new Error(error.message);
     const rows = z.array(RecipeRowSchema).parse(data ?? []);
     if (rows.length === 0) return RECIPES; // empty table → seed not applied yet
     const recipes: Recipe[] = rows.map((r) => ({
-      id: r.id,
+      id: r.recipe_key,
       label: r.label,
       description: r.description,
       hosts: r.hosts,

@@ -1194,7 +1194,7 @@ export async function fetchAllGuidanceRows(): Promise<WbxGuidanceRow[]> {
 
 // ─── wbx_demo (cloud-synced recorded demo BODIES) ───────────────────────────
 /**
- * One recorded-demo row. `id` is the CLIENT-generated demo id (`demo_<uuid>`,
+ * One recorded-demo row. `demo_key` is the CLIENT-generated demo id (`demo_<uuid>`,
  * a text PK — not a uuid) so a guidance `demo_ref` pointer stays valid across
  * machines with no id-translation layer.
  *
@@ -1205,7 +1205,13 @@ export async function fetchAllGuidanceRows(): Promise<WbxGuidanceRow[]> {
  * bookkeeping and cannot drive cross-machine last-write-wins.
  */
 export const WbxDemoRowSchema = z.object({
-  id: z.string(),
+  /**
+   * DD-173 (B-103): the client demo id moved off `id` to `demo_key` when
+   * `extend.wbx_demo` gained its canonical uuid identity. `demo_key` is still
+   * the CLIENT-generated `demo_<uuid>` text pointer a guidance `demo_ref`
+   * carries across machines; the uuid `id` is a surrogate nothing here reads.
+   */
+  demo_key: z.string(),
   name: z.string().nullable().default(null),
   description: z.string().nullable().default(null),
   start_url: z.string().nullable().default(null),
@@ -1220,7 +1226,8 @@ export const WbxDemoRowSchema = z.object({
 export type WbxDemoRow = z.infer<typeof WbxDemoRowSchema>;
 
 export interface SaveDemoRowPayload {
-  id: string;
+  /** The client-generated `demo_<uuid>` pointer — `extend.wbx_demo.demo_key`. */
+  demo_key: string;
   name: string;
   description: string;
   start_url: string;
@@ -1231,7 +1238,7 @@ export interface SaveDemoRowPayload {
 }
 
 const DEMO_ROW_COLUMNS =
-  'id, name, description, start_url, step_count, parameter_names, body, created_at, updated_at, is_deleted';
+  'demo_key, name, description, start_url, step_count, parameter_names, body, created_at, updated_at, is_deleted';
 
 /**
  * Upsert one demo row keyed by its client id. Actor attribution is stamped
@@ -1252,7 +1259,7 @@ export async function upsertDemoRow(p: SaveDemoRowPayload): Promise<boolean> {
     .upsert(
       {
         organization_id: organizationId,
-        id: p.id,
+        demo_key: p.demo_key,
         name: p.name,
         description: p.description,
         start_url: p.start_url,
@@ -1263,7 +1270,7 @@ export async function upsertDemoRow(p: SaveDemoRowPayload): Promise<boolean> {
         // re-recorded/edited it here, which outranks an older delete.
         is_deleted: false,
       },
-      { onConflict: 'id' },
+      { onConflict: 'demo_key' },
     );
   if (error) {
     if (/relation .* does not exist/i.test(error.message)) return false;
@@ -1280,7 +1287,7 @@ export async function deleteDemoRow(id: string): Promise<boolean> {
     .schema(EXTEND_SCHEMA)
     .from('wbx_demo')
     .update({ is_deleted: true })
-    .eq('id', id);
+    .eq('demo_key', id);
   if (error) {
     if (/relation .* does not exist/i.test(error.message)) return false;
     console.warn('[matrx-extend] deleteDemoRow error', error.message);
@@ -1316,7 +1323,7 @@ export async function fetchDemoRow(id: string): Promise<WbxDemoRow | null> {
     .schema(EXTEND_SCHEMA)
     .from('wbx_demo')
     .select(DEMO_ROW_COLUMNS)
-    .eq('id', id)
+    .eq('demo_key', id)
     .maybeSingle();
   if (error) {
     if (/relation .* does not exist/i.test(error.message)) return null;

@@ -29,7 +29,7 @@ import type { SaveDemoRowPayload, WbxDemoRow } from '@/lib/supabase/queries';
 /** Flatten a Demo into the row payload. Summary columns are denormalised; `body` is the whole record. */
 export function demoToRowPayload(demo: Demo): SaveDemoRowPayload {
   return {
-    id: demo.id,
+    demo_key: demo.id,
     name: demo.name,
     description: demo.description,
     start_url: demo.start_url,
@@ -68,7 +68,7 @@ export function rowToDemo(row: WbxDemoRow): Demo | null {
   const createdByUserId = body.created_by_user_id;
 
   return {
-    id: row.id,
+    id: row.demo_key,
     name: row.name ?? str(body.name, 'Demo'),
     description: row.description ?? str(body.description, ''),
     start_url: row.start_url ?? str(body.start_url, ''),
@@ -131,9 +131,9 @@ export async function hydrateDemosFromCloud(): Promise<{ merged: number; ok: boo
     if (row.is_deleted) {
       // Tombstone application. The column timestamp is the only clock we have
       // for a delete (nothing writes a body on delete), so compare against it.
-      const local = await getDemo(row.id);
+      const local = await getDemo(row.demo_key);
       if (local && new Date(row.updated_at).getTime() >= local.updated_at) {
-        await deleteDemo(row.id, { sync: false });
+        await deleteDemo(row.demo_key, { sync: false });
         merged += 1;
       }
       continue;

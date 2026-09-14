@@ -84,7 +84,7 @@ const writers: Writer[] = [
     name: 'demo',
     run: () =>
       upsertDemoRow({
-        id: 'demo-example',
+        demo_key: 'demo-example',
         name: 'Example',
         description: 'Example workflow',
         start_url: 'https://example.com',
