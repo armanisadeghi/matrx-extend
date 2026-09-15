@@ -28,6 +28,8 @@ vi.mock('@/lib/auth/pkce', () => ({
 vi.mock('@/lib/debug/log', () => ({
   log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), success: vi.fn() },
 }));
+vi.mock('@/lib/messaging/native', () => ({ broadcast: vi.fn() }));
+vi.mock('@/lib/supabase/client', () => ({ clearSupabaseSession: vi.fn() }));
 
 describe('401 force-refresh reproduction', () => {
   beforeEach(() => {
@@ -168,6 +170,8 @@ describe('401 force-refresh reproduction', () => {
     );
 
     const { refreshAccessToken } = await import('@/lib/auth/flow');
+    const { broadcast } = await import('@/lib/messaging/native');
+    vi.mocked(broadcast).mockClear();
     const refresh = refreshAccessToken();
     await vi.waitFor(() => expect(fetch).toHaveBeenCalledOnce());
     Object.assign(stored, {
@@ -181,5 +185,48 @@ describe('401 force-refresh reproduction', () => {
     await expect(refresh).resolves.toMatchObject({ access_token: 'new-login-access' });
     expect(stored.access).toBe('new-login-access');
     expect(stored['refresh-ct']).toBe('new-login-ct');
+    expect(broadcast).not.toHaveBeenCalled();
+  });
+
+  it('broadcasts signed-out only after a terminal refresh rejection clears the matching local session', async () => {
+    const stored: Record<string, unknown> = {
+      access: 'rejected-access',
+      'refresh-ct': 'rejected-refresh-ct',
+      'refresh-iv': 'iv',
+      'expires-at': 0,
+    };
+    vi.stubGlobal('chrome', {
+      storage: {
+        local: {
+          get: async (keys: string[]) =>
+            Object.fromEntries(
+              keys.filter((key) => key in stored).map((key) => [key, stored[key]]),
+            ),
+          set: async (values: Record<string, unknown>) => Object.assign(stored, values),
+          remove: async (keys: string[]) => {
+            for (const key of keys) delete stored[key];
+          },
+        },
+        session: { remove: vi.fn() },
+      },
+      alarms: { create: vi.fn(), clear: async () => true },
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify({ error: 'invalid_grant' }), { status: 400 })),
+    );
+
+    const { refreshAccessToken } = await import('@/lib/auth/flow');
+    const { broadcast } = await import('@/lib/messaging/native');
+    const { CHANNELS } = await import('@/lib/messaging/schemas');
+    await expect(refreshAccessToken('rejected-access')).resolves.toBeNull();
+
+    expect(stored.access).toBeUndefined();
+    expect(stored['refresh-ct']).toBeUndefined();
+    expect(broadcast).toHaveBeenCalledWith(CHANNELS.AUTH_STATE_CHANGED, {
+      user: null,
+      isAdmin: false,
+      reason: 'refresh_token_rejected',
+    });
   });
 });

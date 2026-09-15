@@ -14,6 +14,8 @@ import { decryptString, encryptString } from '@/lib/auth/crypto';
 import { generateCodeChallenge, generateCodeVerifier, generateNonce } from '@/lib/auth/pkce';
 import { type OAuthTokens, OAuthTokensSchema, type UserProfile } from '@/lib/auth/types';
 import { log } from '@/lib/debug/log';
+import { broadcast } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { Mutex, truncate } from '@/lib/utils';
 
 const refreshMutex = new Mutex();
@@ -152,20 +154,24 @@ export async function signOut(): Promise<void> {
   await clearLocalSession();
 }
 
-async function clearLocalSession(expectedRefreshCt?: string): Promise<void> {
+/**
+ * Clear only the local owner. Returns false when another context replaced the
+ * expected refresh-token ciphertext before we acquired the mutation lock.
+ */
+async function clearLocalSession(expectedRefreshCt?: string): Promise<boolean> {
   let clearSupabaseSession: (() => void) | undefined;
   try {
     ({ clearSupabaseSession } = await import('@/lib/supabase/client'));
   } catch {
     /* best-effort */
   }
-  const access = await withAuthMutationLock(async () => {
+  const result = await withAuthMutationLock(async () => {
     const stored = await chrome.storage.local.get([
       STORAGE_KEYS.ACCESS_TOKEN,
       STORAGE_KEYS.REFRESH_TOKEN_ENC,
     ]);
     if (expectedRefreshCt && stored[STORAGE_KEYS.REFRESH_TOKEN_ENC] !== expectedRefreshCt) {
-      return null;
+      return { cleared: false, access: null };
     }
     await Promise.all([
       chrome.storage.session.remove([ACTIVE_AUTH_ATTEMPT_KEY]),
@@ -182,21 +188,22 @@ async function clearLocalSession(expectedRefreshCt?: string): Promise<void> {
     ]);
     clearSupabaseSession?.();
     const token = stored[STORAGE_KEYS.ACCESS_TOKEN];
-    return typeof token === 'string' ? token : null;
+    return { cleared: true, access: typeof token === 'string' ? token : null };
   });
-  if (access === null && expectedRefreshCt) return;
-  if (!access) return;
+  if (!result.cleared) return false;
+  if (!result.access) return true;
   // This is a captured pre-clear bearer. `scope=local` avoids revoking a
   // later login that may have completed while this best-effort call is in I/O.
   void fetch(`${ENV.SUPABASE_URL}/auth/v1/logout?scope=local`, {
     method: 'POST',
     headers: {
       apikey: ENV.SUPABASE_PUBLISHABLE_KEY,
-      Authorization: `Bearer ${access}`,
+      Authorization: `Bearer ${result.access}`,
     },
   }).catch(() => {
     // Revocation is best-effort; canonical local sign-out already completed.
   });
+  return true;
 }
 
 /** Reads the persisted bearer without refreshing or mutating session state. */
@@ -314,7 +321,17 @@ async function doRefresh(): Promise<OAuthTokens | null> {
         console.info('[matrx-extend] refresh race: another context rotated the token — adopting');
         return { access_token: fresh } as OAuthTokens;
       }
-      await clearLocalSession(ct);
+      const cleared = await clearLocalSession(ct);
+      // This is a terminal response for the exact credential we read. Notify
+      // every UI realm only after the compare-and-clear succeeded; a newer
+      // sign-in/refresh must never be turned into a spurious signed-out view.
+      if (cleared) {
+        broadcast(CHANNELS.AUTH_STATE_CHANGED, {
+          user: null,
+          isAdmin: false,
+          reason: 'refresh_token_rejected',
+        });
+      }
     }
     return null;
   }
