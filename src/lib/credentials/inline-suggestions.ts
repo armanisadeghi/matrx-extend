@@ -58,6 +58,10 @@ function dismiss(): void {
   host?.remove();
   host = null;
 }
+function invalidate(): void {
+  dismiss();
+  focused = null;
+}
 function focusIsInChooser(): boolean {
   // A focused element in a closed shadow root is exposed as its host to the
   // page document. This keeps a pointer click alive through its click handler.
@@ -97,39 +101,12 @@ function requestFor(target: HTMLInputElement): void {
 }
 
 function render(target: HTMLInputElement, response: QueryResponse, token: number): void {
-  if (token !== generation || focused !== target) return;
+  if (token !== generation || focused !== target || document.activeElement !== target) return;
   dismiss();
-  if (response.status !== 'ready') {
-    // Explicit focus is still an interaction: show a bounded, actionable
-    // explanation instead of silently discarding a recoverable state.
-    host = document.createElement('div');
-    host.id = HOST_ID;
-    host.style.cssText = 'all:initial;position:fixed;z-index:2147483647;';
-    const shadow = host.attachShadow({ mode: 'closed' });
-    const message = document.createElement('button');
-    message.type = 'button';
-    message.textContent =
-      response.status === 'organization_required'
-        ? 'Choose organization in Matrx'
-        : response.status === 'sign_in_required'
-          ? 'Open Vault to sign in'
-          : response.message;
-    message.setAttribute('aria-label', response.message);
-    message.style.cssText =
-      'all:initial;display:block;box-sizing:border-box;max-width:292px;max-height:var(--matrx-inline-max-height,168px);overflow:auto;padding:8px;border:1px solid #d4d4d4;border-radius:8px;background:#fff;color:#333;cursor:pointer;font:12px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;outline:2px solid transparent;outline-offset:2px;';
-    message.addEventListener('focus', () =>
-      message.style.setProperty('outline', '2px solid #2563eb'),
-    );
-    message.addEventListener('blur', () => message.style.removeProperty('outline'));
-    message.addEventListener(
-      'click',
-      () => void send(CHANNELS.CREDENTIAL_SUGGESTIONS_OPEN_VAULT, {}),
-    );
-    shadow.append(message);
-    document.documentElement.append(host);
-    place(target);
-    return;
-  }
+  // A focus-triggered lookup is not a request to interrupt the page. Only a
+  // usable saved-login choice earns page UI; errors remain explicit when a
+  // person deliberately asks the Vault to fill a login.
+  if (response.status !== 'ready' || response.matches.length === 0) return;
   host = document.createElement('div');
   host.id = HOST_ID;
   host.style.cssText = 'all:initial;position:fixed;z-index:2147483647;';
@@ -217,7 +194,7 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
     if (event.key === 'Escape') {
       event.preventDefault();
       target.focus();
-      dismiss();
+      invalidate();
     }
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
@@ -232,36 +209,74 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
   });
 }
 
-export function mountInlineCredentialSuggestions(): void {
-  document.addEventListener(
-    'focusin',
-    (event) => {
-      const target = event.target;
-      if (!(target instanceof HTMLInputElement) || (target === focused && host)) return;
-      requestFor(target);
-    },
-    true,
-  );
-  document.addEventListener(
-    'focusout',
-    () => {
-      window.setTimeout(() => {
-        const active = document.activeElement;
-        if (active !== focused && !focusIsInChooser()) dismiss();
-      }, 0);
-    },
-    true,
-  );
-  window.addEventListener('scroll', () => focused && place(focused), { passive: true });
-  window.addEventListener('resize', () => focused && place(focused));
-  window.addEventListener('pagehide', dismiss);
-  chrome.runtime.onMessage.addListener((message) => {
+export function mountInlineCredentialSuggestions(): () => void {
+  const onFocusIn = (event: FocusEvent): void => {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement) || (target === focused && host)) return;
+    requestFor(target);
+  };
+  const onFocusOut = (): void => {
+    window.setTimeout(() => {
+      const active = document.activeElement;
+      if (active !== focused && !focusIsInChooser()) invalidate();
+    }, 0);
+  };
+  const onInput = (event: Event): void => {
+    if (event.target === focused) invalidate();
+  };
+  const onPointerDown = (event: PointerEvent): void => {
+    if (event.target === focused || event.composedPath().includes(host as EventTarget)) return;
+    invalidate();
+  };
+  const onKeyDown = (event: KeyboardEvent): void => {
+    if (event.key === 'Escape' && (document.activeElement === focused || focusIsInChooser())) {
+      invalidate();
+    }
+  };
+  const onViewportChange = (): void => {
+    if (focused?.isConnected) place(focused);
+  };
+  const onContextChanged = (message: unknown): boolean => {
     const env = message as { __matrx?: unknown; kind?: unknown } | null;
     if (env?.__matrx === true && env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_CONTEXT_CHANGED) {
       const target = focused;
-      dismiss();
+      invalidate();
       if (target?.isConnected && document.activeElement === target) requestFor(target);
     }
     return false;
+  };
+  const removalObserver = new MutationObserver(() => {
+    if (focused && !focused.isConnected) invalidate();
   });
+
+  document.addEventListener('focusin', onFocusIn, true);
+  document.addEventListener('focusout', onFocusOut, true);
+  document.addEventListener('input', onInput, true);
+  document.addEventListener('pointerdown', onPointerDown, true);
+  document.addEventListener('keydown', onKeyDown, true);
+  window.addEventListener('scroll', onViewportChange, { passive: true });
+  window.addEventListener('resize', onViewportChange);
+  window.addEventListener('pagehide', invalidate);
+  window.addEventListener('beforeunload', invalidate);
+  window.addEventListener('popstate', invalidate);
+  window.addEventListener('hashchange', invalidate);
+  removalObserver.observe(document.documentElement, { childList: true, subtree: true });
+  chrome.runtime.onMessage.addListener(onContextChanged);
+
+  return () => {
+    invalidate();
+    document.removeEventListener('focusin', onFocusIn, true);
+    document.removeEventListener('focusout', onFocusOut, true);
+    document.removeEventListener('input', onInput, true);
+    document.removeEventListener('pointerdown', onPointerDown, true);
+    document.removeEventListener('keydown', onKeyDown, true);
+    window.removeEventListener('scroll', onViewportChange);
+    window.removeEventListener('resize', onViewportChange);
+    window.removeEventListener('pagehide', invalidate);
+    window.removeEventListener('beforeunload', invalidate);
+    window.removeEventListener('popstate', invalidate);
+    window.removeEventListener('hashchange', invalidate);
+    removalObserver.disconnect();
+    chrome.runtime.onMessage.removeListener(onContextChanged);
+  };
 }

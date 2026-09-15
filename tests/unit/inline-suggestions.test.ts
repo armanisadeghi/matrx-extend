@@ -4,6 +4,10 @@ let contentListener: ((message: unknown) => boolean) | null = null;
 let queryCount = 0;
 let fillCount = 0;
 let matches = [{ item_id: 'item-1', display_name: 'Work account' }];
+let queryResponse: unknown;
+let pendingQueryResolve: ((response: unknown) => void) | null = null;
+let openVaultCount = 0;
+let unmount: (() => void) | null = null;
 const originalAttachShadow = HTMLElement.prototype.attachShadow;
 const originalInnerHeight = window.innerHeight;
 
@@ -11,8 +15,11 @@ beforeEach(() => {
   queryCount = 0;
   fillCount = 0;
   matches = [{ item_id: 'item-1', display_name: 'Work account' }];
+  queryResponse = undefined;
+  pendingQueryResolve = null;
+  openVaultCount = 0;
   document.body.innerHTML =
-    '<form><input id="password" type="password" autocomplete="current-password"><button>Continue</button></form>';
+    '<form><input id="password" type="password" autocomplete="current-password"><input id="plain-text" type="text"><input id="search" type="search"><input id="contact" type="email"><button>Continue</button></form>';
   const input = document.querySelector('#password') as HTMLInputElement;
   Object.defineProperty(input, 'getBoundingClientRect', {
     value: () => ({ width: 120, height: 24, top: 10, left: 10, bottom: 34 }),
@@ -28,17 +35,27 @@ beforeEach(() => {
       sendMessage: async (message: { kind: string }) => {
         if (message.kind === 'credential-suggestions:query') {
           queryCount++;
+          if (queryResponse) return queryResponse;
+          if (pendingQueryResolve !== null) {
+            return new Promise((resolve) => {
+              pendingQueryResolve = resolve;
+            });
+          }
           return { status: 'ready', offerId: `offer-${queryCount}`, matches };
         }
         if (message.kind === 'credential-suggestions:fill') {
           fillCount++;
           return { status: 'filled', message: 'Filled. Matrx did not submit the form.' };
         }
+        if (message.kind === 'credential-suggestions:open-vault') openVaultCount++;
         return { ok: true };
       },
       onMessage: {
         addListener: (listener: typeof contentListener) => {
           contentListener = listener;
+        },
+        removeListener: (listener: typeof contentListener) => {
+          if (contentListener === listener) contentListener = null;
         },
       },
     },
@@ -46,6 +63,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  unmount?.();
+  unmount = null;
   Object.defineProperty(window, 'innerHeight', { configurable: true, value: originalInnerHeight });
   document.querySelector('#matrx-inline-login-suggestion')?.remove();
   vi.restoreAllMocks();
@@ -62,7 +81,7 @@ async function mountReadyChooser(): Promise<{
   card: HTMLElement;
 }> {
   const { mountInlineCredentialSuggestions } = await import('@/lib/credentials/inline-suggestions');
-  mountInlineCredentialSuggestions();
+  unmount = mountInlineCredentialSuggestions();
   const target = document.querySelector('#password') as HTMLInputElement;
   target.focus();
   await Promise.resolve();
@@ -78,6 +97,114 @@ async function mountReadyChooser(): Promise<{
 }
 
 describe('inline saved-login chooser', () => {
+  it.each([
+    { status: 'no_matches', message: 'No saved login is available for this form.' },
+    { status: 'sign_in_required', message: 'Sign in to Matrx to use saved logins.' },
+    { status: 'organization_required', message: 'Choose an organization first.' },
+    { status: 'unavailable', message: 'Saved logins are unavailable right now.' },
+    { status: 'unsafe_destination', message: 'This form cannot be filled safely.' },
+  ])('does not place an unsolicited overlay for a $status lookup', async (response) => {
+    queryResponse = response;
+    const { mountInlineCredentialSuggestions } = await import(
+      '@/lib/credentials/inline-suggestions'
+    );
+    unmount = mountInlineCredentialSuggestions();
+    const continueButton = document.querySelector('form button') as HTMLButtonElement;
+    let pageClickCount = 0;
+    continueButton.addEventListener('click', () => {
+      pageClickCount++;
+    });
+
+    for (const selector of ['#plain-text', '#search', '#contact']) {
+      (document.querySelector(selector) as HTMLInputElement).focus();
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
+    }
+
+    continueButton.click();
+    expect(pageClickCount).toBe(1);
+    expect(openVaultCount).toBe(0);
+  });
+
+  it('does not render a delayed saved-login chooser after the person starts typing', async () => {
+    pendingQueryResolve = () => undefined;
+    const { mountInlineCredentialSuggestions } = await import(
+      '@/lib/credentials/inline-suggestions'
+    );
+    unmount = mountInlineCredentialSuggestions();
+    const target = document.querySelector('#password') as HTMLInputElement;
+
+    target.focus();
+    await Promise.resolve();
+    target.dispatchEvent(
+      new InputEvent('input', { bubbles: true, data: 'x', inputType: 'insertText' }),
+    );
+    pendingQueryResolve?.({
+      status: 'ready',
+      offerId: 'late-offer',
+      matches: [{ item_id: 'item-1', display_name: 'Work account' }],
+    });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
+  });
+
+  it.each([
+    [
+      'Escape',
+      (target: HTMLInputElement) =>
+        target.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })),
+    ],
+    [
+      'an outside pointer',
+      () =>
+        document.body.dispatchEvent(new Event('pointerdown', { bubbles: true, composed: true })),
+    ],
+    ['page navigation', () => window.dispatchEvent(new Event('pagehide'))],
+    [
+      'focus loss',
+      (target: HTMLInputElement) =>
+        (target.form?.querySelector('button') as HTMLButtonElement).focus(),
+    ],
+    ['field removal', (target: HTMLInputElement) => target.remove()],
+  ])('drops a delayed chooser after %s', async (_reason, endInteraction) => {
+    pendingQueryResolve = () => undefined;
+    const { mountInlineCredentialSuggestions } = await import(
+      '@/lib/credentials/inline-suggestions'
+    );
+    unmount = mountInlineCredentialSuggestions();
+    const target = document.querySelector('#password') as HTMLInputElement;
+
+    target.focus();
+    await Promise.resolve();
+    endInteraction(target);
+    pendingQueryResolve?.({
+      status: 'ready',
+      offerId: 'late-offer',
+      matches: [{ item_id: 'item-1', display_name: 'Work account' }],
+    });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
+  });
+
+  it('does not render an empty ready lookup', async () => {
+    queryResponse = { status: 'ready', offerId: 'empty-offer', matches: [] };
+    const { mountInlineCredentialSuggestions } = await import(
+      '@/lib/credentials/inline-suggestions'
+    );
+    unmount = mountInlineCredentialSuggestions();
+
+    (document.querySelector('#password') as HTMLInputElement).focus();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
+  });
+
   it('uses trusted ArrowDown to enter choices, refuses synthetic entry, and keeps fills deliberate', async () => {
     matches = [
       { item_id: 'item-1', display_name: 'Work account' },

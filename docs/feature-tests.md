@@ -2291,6 +2291,25 @@ Every entry follows this shape:
   - Sign out with the panel open → the next action reports
     "Sign in to Matrx to use the Vault".
 
+### Inline saved-login chooser
+- **What it does:** when a saved login is ready for the focused sign-in field, a compact chooser
+  lets you deliberately select it. The extension never reads the field value and never submits the
+  form. A lookup that has no usable login, requires sign-in or an organization, is unavailable, or
+  rejects the destination leaves the page untouched; use the Vault when you want feedback for one
+  of those states.
+- **Where to test:** a normal web form with a password or username input, with the extension
+  enabled. Use both a site with a browser-fill-enabled saved login and one with no saved login.
+- **Steps:**
+  1. Focus a field on the no-login site, type, click another page control, press Escape, and then
+     navigate away while the lookup is pending.
+  2. Confirm no Matrx card, fixed button, focus change, or click interception appears in any of
+     those cases.
+  3. Focus a matching sign-in field. Expand the chooser with Arrow Down or its title, then select a
+     saved login. If a fill fails, the chooser reports that result and does not submit the form.
+- **Expected:** ordinary page typing and clicks always remain page interactions. A delayed lookup
+  cannot show a chooser after typing, Escape, an outside click, focus loss, navigation, or removal
+  of the focused field. Only a ready saved-login choice produces an on-page chooser.
+
 ### Agent-directed saved login (`credential_login`)
 - **Where to test:** sidepanel → Tools → search `credential_login`, with an https login
   page assigned to the conversation and a matching Vault item. Signed in only.
