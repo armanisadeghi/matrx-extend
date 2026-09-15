@@ -68,6 +68,7 @@ afterEach(() => {
   Object.defineProperty(window, 'innerHeight', { configurable: true, value: originalInnerHeight });
   document.querySelector('#matrx-inline-login-suggestion')?.remove();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
   contentListener = null;
   vi.resetModules();
   document.body.innerHTML = '';
@@ -147,6 +148,42 @@ describe('inline saved-login chooser', () => {
     });
     await Promise.resolve();
     await Promise.resolve();
+
+    expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
+  });
+
+  it.each(['pushState', 'replaceState'] as const)(
+    'does not render a delayed chooser after same-document history.%s',
+    async (method) => {
+      pendingQueryResolve = () => undefined;
+      const { mountInlineCredentialSuggestions } = await import(
+        '@/lib/credentials/inline-suggestions'
+      );
+      unmount = mountInlineCredentialSuggestions();
+      const target = document.querySelector('#password') as HTMLInputElement;
+
+      target.focus();
+      await Promise.resolve();
+      history[method]({}, '', `/inline-suggestions-${method}`);
+      pendingQueryResolve?.({
+        status: 'ready',
+        offerId: 'late-offer',
+        matches: [{ item_id: 'item-1', display_name: 'Work account' }],
+      });
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
+    },
+  );
+
+  it('dismisses a visible chooser on a Navigation API entry change', async () => {
+    const navigationEvents = new EventTarget();
+    vi.stubGlobal('navigation', navigationEvents);
+    const chooser = await mountReadyChooser();
+
+    expect(chooser.host.isConnected).toBe(true);
+    navigationEvents.dispatchEvent(new Event('currententrychange'));
 
     expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
   });

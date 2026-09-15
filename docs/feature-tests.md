@@ -2307,8 +2307,9 @@ Every entry follows this shape:
   3. Focus a matching sign-in field. Expand the chooser with Arrow Down or its title, then select a
      saved login. If a fill fails, the chooser reports that result and does not submit the form.
 - **Expected:** ordinary page typing and clicks always remain page interactions. A delayed lookup
-  cannot show a chooser after typing, Escape, an outside click, focus loss, navigation, or removal
-  of the focused field. Only a ready saved-login choice produces an on-page chooser.
+  cannot show a chooser after typing, Escape, an outside click, focus loss, full or same-document
+  navigation, or removal of the focused field. Only a ready saved-login choice produces an on-page
+  chooser.
 
 ### Agent-directed saved login (`credential_login`)
 - **Where to test:** sidepanel → Tools → search `credential_login`, with an https login

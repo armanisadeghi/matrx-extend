@@ -95,13 +95,26 @@ function requestFor(target: HTMLInputElement): void {
   const selector = selectorFor(target);
   if (!selector) return;
   const token = ++generation;
+  const requestUrl = location.href;
   void send(CHANNELS.CREDENTIAL_SUGGESTIONS_QUERY, { fieldSelector: selector })
-    .then((raw) => render(target, raw as QueryResponse, token))
+    .then((raw) => render(target, raw as QueryResponse, token, requestUrl))
     .catch(() => undefined);
 }
 
-function render(target: HTMLInputElement, response: QueryResponse, token: number): void {
-  if (token !== generation || focused !== target || document.activeElement !== target) return;
+function render(
+  target: HTMLInputElement,
+  response: QueryResponse,
+  token: number,
+  requestUrl: string,
+): void {
+  if (
+    token !== generation ||
+    focused !== target ||
+    document.activeElement !== target ||
+    location.href !== requestUrl
+  ) {
+    return;
+  }
   dismiss();
   // A focus-triggered lookup is not a request to interrupt the page. Only a
   // usable saved-login choice earns page UI; errors remain explicit when a
@@ -210,6 +223,7 @@ function render(target: HTMLInputElement, response: QueryResponse, token: number
 }
 
 export function mountInlineCredentialSuggestions(): () => void {
+  const navigationApi = (globalThis as typeof globalThis & { navigation?: EventTarget }).navigation;
   const onFocusIn = (event: FocusEvent): void => {
     const target = event.target;
     if (!(target instanceof HTMLInputElement) || (target === focused && host)) return;
@@ -260,6 +274,7 @@ export function mountInlineCredentialSuggestions(): () => void {
   window.addEventListener('beforeunload', invalidate);
   window.addEventListener('popstate', invalidate);
   window.addEventListener('hashchange', invalidate);
+  navigationApi?.addEventListener('currententrychange', invalidate);
   removalObserver.observe(document.documentElement, { childList: true, subtree: true });
   chrome.runtime.onMessage.addListener(onContextChanged);
 
@@ -276,6 +291,7 @@ export function mountInlineCredentialSuggestions(): () => void {
     window.removeEventListener('beforeunload', invalidate);
     window.removeEventListener('popstate', invalidate);
     window.removeEventListener('hashchange', invalidate);
+    navigationApi?.removeEventListener('currententrychange', invalidate);
     removalObserver.disconnect();
     chrome.runtime.onMessage.removeListener(onContextChanged);
   };
