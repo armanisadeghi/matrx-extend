@@ -85,6 +85,17 @@ jobs:
       - name: the archive guard can still fail (self-test)
         run: pnpm check:archived-items-law:self-test
 
+      # A SIGN-OUT ENDS ONLY THE DEVICE THAT ASKED. A bare supabase-js
+      # signOut() / scope-less GoTrue /logout is scope "global": it deletes
+      # every session the account holds, including the OAuth session Claude
+      # Code / claude.ai / Codex use for the AI Dream MCP (2026-09-15 incident,
+      # Matrx Local account switch). flow.ts already sends ?scope=local; this
+      # keeps it that way. ~1s static scan with self-test.
+      - name: A SIGN-OUT ENDS ONLY THE DEVICE THAT ASKED
+        run: pnpm check:signout-scope
+      - name: the sign-out scope guard can still fail (self-test)
+        run: pnpm check:signout-scope:self-test
+
       - name: Lint
         run: pnpm lint
 
