@@ -2,6 +2,7 @@ import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAiExtraction } from '@/hooks/use-ai-extraction';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { usePatternFromData } from '@/hooks/use-pattern-from-data';
+import { useRequestOrganizationId } from '@/hooks/use-request-organization';
 import { mandateKeyOf } from '@/lib/agents/use-agent-row';
 import {
   PATTERN_FROM_DATA_MANDATE_KEY,
@@ -44,6 +45,7 @@ const buildJsonSchema = (fields: SchemaField[]): object => {
 
 export function AiExtractTab() {
   const tab = useActiveTab();
+  const organizationId = useRequestOrganizationId();
   // This surface's default is a DIFFERENT platform default than chat's — the
   // package carries one default row per picker instance and each host surface
   // chooses its own key (Arman, 2026-09-08). The row is named after the
@@ -98,7 +100,8 @@ export function AiExtractTab() {
     });
   };
 
-  const canRun = agentId && description.trim().length > 0 && !running && !schemaProblem;
+  const canRun =
+    organizationId && agentId && description.trim().length > 0 && !running && !schemaProblem;
 
   return (
     <div className="h-full overflow-y-auto">
@@ -116,12 +119,18 @@ export function AiExtractTab() {
         <div className="space-y-1">
           <div className="text-[11px] font-medium text-muted-foreground">Agent</div>
           {/* THE ONE agent picker (@ai-matrx/agents/catalog/react). */}
-          <AgentListDropdown
-            consumerId="extend.showcase.ai-extract"
-            activeAgentId={agentId}
-            onSelect={setAgentId}
-            defaultMandateKey={STRUCTURED_EXTRACTOR_MANDATE_KEY}
-          />
+          {organizationId ? (
+            <AgentListDropdown
+              consumerId="extend.showcase.ai-extract"
+              activeAgentId={agentId}
+              onSelect={setAgentId}
+              defaultMandateKey={STRUCTURED_EXTRACTOR_MANDATE_KEY}
+            />
+          ) : (
+            <div className="text-xs text-muted-foreground">
+              Choose an organization in Settings to select an agent.
+            </div>
+          )}
         </div>
 
         <div className="space-y-1">

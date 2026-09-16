@@ -194,13 +194,19 @@ export function SettingsView() {
                      the chat surfaces show, so a person's Settings choice and
                      their in-chat choice can never disagree about what
                      exists. */
-                  <AgentListDropdown
-                    consumerId="extend.settings.default-agent"
-                    activeAgentId={settings.defaultAgentId}
-                    onSelect={(id) => settings.setDefaultAgentId(id)}
-                    defaultMandateKey={DEFAULT_CHAT_MANDATE_KEY}
-                    compact
-                  />
+                  org.active ? (
+                    <AgentListDropdown
+                      consumerId="extend.settings.default-agent"
+                      activeAgentId={settings.defaultAgentId}
+                      onSelect={(id) => settings.setDefaultAgentId(id)}
+                      defaultMandateKey={DEFAULT_CHAT_MANDATE_KEY}
+                      compact
+                    />
+                  ) : (
+                    <span className="text-xs text-muted-foreground">
+                      Choose an organization above
+                    </span>
+                  )
                 }
               />
               <ControlRow
