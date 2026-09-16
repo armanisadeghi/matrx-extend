@@ -35,6 +35,7 @@ import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { usePilotChatStream } from '@/hooks/use-pilot-chat-stream';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
+import { ensureAuthenticatedCatalogLoaded } from '@/lib/agents/catalog';
 import { useAgentRow } from '@/lib/agents/use-agent-row';
 import { wrapForAgent } from '@/lib/clipboard/copy';
 import { warmContentIr } from '@/lib/content-ir/route-env';
@@ -76,8 +77,10 @@ const PILOT_SUGGESTIONS = [
 
 export function PilotView() {
   // One warm load per session for the Content IR registries — see ChatView.
-  useEffect(() => warmContentIr(), []);
   const { user, isAdmin } = useAuth();
+  useEffect(() => {
+    if (user) void warmContentIr();
+  }, [user]);
   const { selectedAgentId, draft, messages, isStreaming, setAgent, setDraft, setMessages } =
     usePilotChatStore();
   const pilotTabActive = useSidepanelTabStore((s) => s.tab) === 'pilot';
@@ -125,8 +128,8 @@ export function PilotView() {
   );
 
   useEffect(() => {
-    // The package catalog owns the list read for every picker in this panel.
-    void catalog.ensureLoaded();
+    // The catalogue door is signed-in only.
+    void ensureAuthenticatedCatalogLoaded(catalog);
 
     // Auto-select the user's saved default target if nothing is chosen yet.
     const chat = usePilotChatStore.getState();
@@ -138,7 +141,7 @@ export function PilotView() {
     if (agentsRefreshing) return;
     setAgentsRefreshing(true);
     try {
-      await catalog.ensureLoaded({ force: true });
+      await ensureAuthenticatedCatalogLoaded(catalog, { force: true });
     } finally {
       setAgentsRefreshing(false);
     }

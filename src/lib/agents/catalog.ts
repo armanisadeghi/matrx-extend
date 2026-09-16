@@ -113,3 +113,17 @@ export function getAgentCatalog(): AgentCatalog {
   });
   return catalog;
 }
+
+/**
+ * The catalogue RPC is a signed-in door. Keeping the authentication check in
+ * this host adapter prevents any mounted chat surface from accidentally
+ * turning an expected guest session into a rejected RPC and a red console.
+ */
+export async function ensureAuthenticatedCatalogLoaded(
+  target: Pick<AgentCatalog, 'ensureLoaded'>,
+  options?: { force?: boolean },
+): Promise<void> {
+  const auth = useAuthStore.getState();
+  if (auth.status !== 'signed-in' || !auth.user) return;
+  await target.ensureLoaded(options);
+}

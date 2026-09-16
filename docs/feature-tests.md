@@ -51,8 +51,8 @@
   slice. Identity hydration and retrying/compiled-bootstrap Content IR diagnostics are
   informational or warnings; only a genuinely exhausted registry load is one error.
   While signed out, the panel does not call the signed-in agent-catalogue, mandate,
-  compute-target, or Content IR registry doors. Diagnostics include readable JSON/error
-  text, never a trailing `[object Object]`.
+  compute-target, saved-pattern, or Content IR registry doors. Diagnostics include
+  readable JSON/error text, never a trailing `[object Object]`.
 
 ### THE ONE AGENT PICKER (`@ai-matrx/agents/catalog/react`)
 

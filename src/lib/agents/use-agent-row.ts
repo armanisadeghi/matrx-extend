@@ -12,11 +12,12 @@
  * "Matrx Browser Agent" string — a label that lies is worse than no label.
  */
 
+import { useAuthStore } from '@/state/auth';
 import { type AgentSummary, isMandateAgentId } from '@ai-matrx/agents/catalog';
 import type { DefaultRowState } from '@ai-matrx/agents/catalog';
 import { useAgentCatalog, useAgentCatalogState } from '@ai-matrx/agents/catalog/react';
-import { useAuthStore } from '@/state/auth';
 import { useCallback, useEffect } from 'react';
+import { ensureAuthenticatedCatalogLoaded } from './catalog';
 
 export interface SelectedAgentRow {
   /** The agent's display name, or `null` while it is still being resolved. */
@@ -37,7 +38,7 @@ export function useAgentRow(agentId: string | null | undefined): SelectedAgentRo
   const signedIn = useAuthStore((state) => state.status === 'signed-in');
 
   useEffect(() => {
-    if (signedIn) void catalog.ensureLoaded();
+    if (signedIn) void ensureAuthenticatedCatalogLoaded(catalog);
   }, [catalog, signedIn]);
 
   useEffect(() => {

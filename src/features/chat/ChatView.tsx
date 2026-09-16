@@ -21,6 +21,7 @@ import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
+import { ensureAuthenticatedCatalogLoaded } from '@/lib/agents/catalog';
 import { USER_MODEL_LABEL_BY_ID, USER_MODEL_PRESETS } from '@/lib/agents/model-presets';
 import { useAgentRow } from '@/lib/agents/use-agent-row';
 import { enqueueInboxMessage } from '@/lib/api/routes/ai';
@@ -218,12 +219,9 @@ export function ChatView() {
   }, [user]);
 
   useEffect(() => {
-    // The package catalog owns the list read (guests included: the anon role
-    // reads active builtin agents through `agx_agent_builtin_read`, and the
-    // package's own tab heuristic handles a signed-out visitor). Conversation
-    // history is still skipped for guests — they have no JWT, so anon can't
-    // see any chat.conversation rows for their server-side guest user id.
-    void catalog.ensureLoaded();
+    // The catalogue door is signed-in only. Guests see the explicit sign-in
+    // affordance and must not generate a rejected RPC merely by opening Chat.
+    void ensureAuthenticatedCatalogLoaded(catalog);
 
     // Auto-select the user's saved default target. Fresh installs carry the
     // server-resolved `extend.browser_chat` Mandate ref, which is always a
@@ -266,7 +264,7 @@ export function ChatView() {
     if (agentsRefreshing) return;
     setAgentsRefreshing(true);
     try {
-      await catalog.ensureLoaded({ force: true });
+      await ensureAuthenticatedCatalogLoaded(catalog, { force: true });
     } finally {
       setAgentsRefreshing(false);
     }

@@ -6,6 +6,7 @@ import {
   bumpPatternRun,
   fetchPatternsForDomain,
 } from '@/lib/supabase/queries';
+import { useAuthStore } from '@/state/auth';
 import { autoExtractKey, useAutoExtractStore } from '@/state/auto-extract';
 import { useEffect, useRef } from 'react';
 
@@ -30,6 +31,7 @@ const DEBOUNCE_MS = 600;
 const TTL_MS = 5 * 60 * 1000; // skip re-run within 5 minutes of a successful run
 
 export function useAutoExtract(): void {
+  const signedIn = useAuthStore((state) => state.status === 'signed-in' && state.user !== null);
   const tab = useActiveTab();
   const records = useAutoExtractStore((s) => s.records);
   const setRecord = useAutoExtractStore((s) => s.setRecord);
@@ -45,6 +47,7 @@ export function useAutoExtract(): void {
   }, [tab.url, pruneTo]);
 
   useEffect(() => {
+    if (!signedIn) return;
     const tabId = tab.id;
     const url = tab.url;
     if (!tabId || !url) return;
@@ -130,5 +133,5 @@ export function useAutoExtract(): void {
     // stable from Zustand and including `records` would re-fire on every
     // store update. (useExhaustiveDependencies is warn-level during the
     // lint-baseline ratchet, so no suppression needed.)
-  }, [tab.id, tab.url]);
+  }, [signedIn, tab.id, tab.url]);
 }
