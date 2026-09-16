@@ -618,6 +618,27 @@ async function waitForConversationId(runId: string, timeoutMs = 3000): Promise<s
   return null;
 }
 
+/**
+ * Client tool handlers use ``{ ok: false, error: <stable-code> }`` for an
+ * expected execution failure.  That must use the protocol error channel;
+ * posting it as successful output makes the server model it as a completed
+ * tool call and can trip its structured-output gate.
+ *
+ * This is intentionally narrow. A successful payload may legitimately carry
+ * an ``error`` field, so only the explicit ``ok: false`` contract converts an
+ * answer into a failure. Do not copy handler-provided detail into the model
+ * context or logs here; the stable code is enough for a useful remedy.
+ */
+export function clientResultFailureMessage(result: unknown): string | null {
+  if (!result || typeof result !== 'object' || Array.isArray(result)) return null;
+  const envelope = result as Record<string, unknown>;
+  if (envelope.ok !== false) return null;
+  const rawCode = envelope.error;
+  const candidate = typeof rawCode === 'string' ? rawCode.toLowerCase() : '';
+  const code = /^[a-z][a-z0-9_.-]{0,79}$/.test(candidate) ? candidate : '';
+  return code ? `Tool reported failure: ${code}.` : 'Tool reported a failure.';
+}
+
 async function postUnknownToolError(
   ctx: ToolContext,
   toolName: string,
@@ -823,6 +844,11 @@ async function handleCall(
     result = await handler.run(parsed.data as never, ctx);
   } catch (err) {
     return fail((err as Error)?.message ?? String(err));
+  }
+
+  const failureMessage = clientResultFailureMessage(result);
+  if (failureMessage) {
+    return fail(failureMessage);
   }
 
   const delivery = await postResult(handler, ctx, result, false, null, Date.now() - startedAt);
