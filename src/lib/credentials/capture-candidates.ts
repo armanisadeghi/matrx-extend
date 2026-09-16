@@ -229,6 +229,7 @@ function clearMemory(): void {
     if (c.promptTimer) clearTimeout(c.promptTimer);
     if (c.expiryTimer) clearTimeout(c.expiryTimer);
     c.password = null;
+    setCaptureAssistance(c.tabId, 'none');
   }
   PENDING.clear();
   storageAvailable = false;
@@ -459,8 +460,10 @@ async function ensureSession(): Promise<boolean> {
             Math.max(0, row.expiresAt - now()),
           );
           PENDING.set(row.tabId, candidate);
-          if (candidate.stage === 'password' && candidate.state === 'ready')
+          if (candidate.stage === 'password' && candidate.state === 'ready') {
+            setCaptureAssistance(candidate.tabId, 'save_pending');
             void refreshMatches(candidate);
+          }
         }
         await persist();
         return true;
@@ -579,7 +582,7 @@ function isWire(p: unknown): p is CaptureCandidateWire {
 }
 
 async function promptTab(c: Candidate): Promise<void> {
-  if (c.prompted) return;
+  if (c.prompted || PENDING.get(c.tabId) !== c || !c.ready || c.expiresAt <= now()) return;
   const actor = await currentActor();
   const [tab, frame] = await Promise.all([
     chrome.tabs.get(c.tabId).catch(() => null),
@@ -597,6 +600,7 @@ async function promptTab(c: Candidate): Promise<void> {
     return;
   }
   c.prompted = true;
+  setCaptureAssistance(c.tabId, 'save_pending');
   if (c.promptTimer) {
     clearTimeout(c.promptTimer);
     c.promptTimer = null;
@@ -699,7 +703,6 @@ export async function holdCandidate(
     prompted: false,
   };
   PENDING.set(tabId, candidate);
-  if (candidate.stage === 'password') setCaptureAssistance(tabId, 'save_pending');
   try {
     await queued(persist);
   } catch {
@@ -712,6 +715,8 @@ export async function holdCandidate(
 
   // A username-first handoff is only a bounded continuation; it never prompts.
   if (candidate.stage === 'username_first') return true;
+  if (PENDING.get(tabId) !== candidate || candidate.expiresAt <= now()) return false;
+  setCaptureAssistance(tabId, 'save_pending');
   // Which saved logins already cover this site? Ids + names only.
   const resolveMatches =
     deps.matches ??

@@ -78,9 +78,14 @@ function fillResponse(status: FillResponse['status']): FillResponse {
   return { status, message: COPY[status] };
 }
 function purge(tabId?: number): void {
+  const affected = new Set<number>();
   for (const [id, offer] of OFFERS)
-    if (tabId === undefined || offer.tabId === tabId) OFFERS.delete(id);
-  if (tabId !== undefined) setSavedLoginAssistance(tabId, false);
+    if (tabId === undefined || offer.tabId === tabId) {
+      affected.add(offer.tabId);
+      OFFERS.delete(id);
+    }
+  for (const id of tabId === undefined ? affected : new Set([tabId]))
+    setSavedLoginAssistance(id, false);
 }
 function generationKey(tabId: number, documentId: string): string {
   return `${tabId}:${documentId}`;
@@ -226,7 +231,7 @@ async function query(tabId: number, documentId: string, selector: string): Promi
     ...group,
   });
   setSavedLoginAssistance(tabId, true);
-  window.setTimeout(() => {
+  globalThis.setTimeout(() => {
     const current = OFFERS.get(id);
     if (current && current.expiresAt <= Date.now()) {
       OFFERS.delete(id);

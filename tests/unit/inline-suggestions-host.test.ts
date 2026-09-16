@@ -69,6 +69,7 @@ vi.mock('@/lib/org/active-org', () => ({
 }));
 vi.mock('@/lib/settings/persisted', () => ({
   readOfferSavedLoginsEnabled: async () => state.enabled,
+  readCredentialAssistancePresentation: async () => 'on_page',
 }));
 vi.mock('@/lib/credentials/sensitive-fields', () => ({
   SENSITIVE_ATTR: 'data-matrx-sensitive',

@@ -9,18 +9,13 @@ export type CredentialAssistanceState =
 
 const saved = new Set<number>();
 const capture = new Map<number, Exclude<CredentialAssistanceState, 'none' | 'saved_login'>>();
-const generations = new Map<number, number>();
+const writes = new Map<number, Promise<void>>();
 let registered = false;
 
 function stateFor(tabId: number): CredentialAssistanceState {
   return capture.get(tabId) ?? (saved.has(tabId) ? 'saved_login' : 'none');
 }
-function nextGeneration(tabId: number): number {
-  const next = (generations.get(tabId) ?? 0) + 1;
-  generations.set(tabId, next);
-  return next;
-}
-async function project(tabId: number, generation: number): Promise<void> {
+async function project(tabId: number): Promise<void> {
   const state = stateFor(tabId);
   const badge = state === 'none' ? '' : state === 'saved_login' ? '•' : state === 'save_pending' ? '+' : '!';
   const title =
@@ -33,15 +28,18 @@ async function project(tabId: number, generation: number): Promise<void> {
           : 'Matrx Vault needs attention';
   try {
     await chrome.action.setBadgeText({ tabId, text: badge });
-    if (generations.get(tabId) !== generation) return;
     await chrome.action.setTitle({ tabId, title });
   } catch {
     // Tab may have closed while an asynchronous Chrome mutation was pending.
   }
 }
 function changed(tabId: number): void {
-  const generation = nextGeneration(tabId);
-  void project(tabId, generation);
+  const previous = writes.get(tabId) ?? Promise.resolve();
+  const next = previous.then(() => project(tabId), () => project(tabId));
+  writes.set(tabId, next);
+  void next.finally(() => {
+    if (writes.get(tabId) === next) writes.delete(tabId);
+  });
   broadcast(CHANNELS.CREDENTIAL_ASSISTANCE_CHANGED, { tabId });
 }
 
@@ -63,13 +61,9 @@ export function setCaptureAssistance(
 }
 
 export function clearCredentialAssistance(tabId: number): void {
-  const existed = saved.delete(tabId) || capture.delete(tabId);
-  if (existed) changed(tabId);
-  else {
-    const generation = nextGeneration(tabId);
-    void project(tabId, generation);
-  }
-  generations.delete(tabId);
+  saved.delete(tabId);
+  capture.delete(tabId);
+  changed(tabId);
 }
 
 function trustedExtensionPage(sender: chrome.runtime.MessageSender): boolean {
