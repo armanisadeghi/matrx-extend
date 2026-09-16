@@ -222,3 +222,7 @@ Required on each SPA (baked into the Vite build via `.env.production`):
 ## Changelog
 
 Merge history and the three disputed claims' verdicts, with evidence → [changelog.md](changelog.md).
+
+## Sign-out scope — a sign-out ends only the session that asked (2026-09-15)
+
+GoTrue `POST /logout` and supabase-js `signOut()` default to `scope=global`, which deletes **every** session the account holds — including the OAuth-client session Claude Code / claude.ai / Codex use for the AI Dream MCP. That was the whole "MCP keeps losing its sign-in" class: Matrx Local's account switch signed `admin@admin.com` out globally (2026-09-15 00:43Z, 02:01Z) and the Claude Code plugin's session on that account died with it (~6,050 `refresh_token_not_found` retries followed). Always `signOut({ scope: "local" })` / `/logout?scope=local` / `SupabaseAuth.sign_out(token)` (default local); guards: `pnpm check:signout-scope` (matrx-frontend CI) and `scripts/check_logout_scope.py` (aidream CI). Mechanism + identity rules: `aidream/docs/agents_service/USING_THE_MCP.md` §5.
