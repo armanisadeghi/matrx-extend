@@ -3,7 +3,7 @@
  *
  * The everyday path is the top section: you are standing on a login page, you
  * open the panel, and the logins the SERVER says may fill this page are right
- * there with a "Use here" button. Everything else (search, Mine / Shared,
+ * there with a "Sign in" button. Everything else (search, Mine / Shared,
  * per-item settings, create-from-this-page) sits below it.
  *
  * Security contract for this file:
@@ -13,7 +13,7 @@
  *     `POST /items/{id}/reveal` (audited server-side), lives in
  *     `useTransientSecret` (auto-clears ~30s, dropped on unmount), and is
  *     never written to storage, a store, a log, or model context.
- *   - "Use here" runs the SAME `credential_login` handler the agent runs, so
+ *   - "Sign in" runs the SAME `credential_login` handler the agent runs, so
  *     the human button cannot fill anywhere the agent could not.
  *   - Everyday management lives here: rename, login URLs / match rule / notes,
  *     change or add or remove a field value, delete the login. A typed value
@@ -380,7 +380,7 @@ function SiteSection(props: SiteSectionProps) {
                 {running === match.item_id ? (
                   <Loader2 className="size-3 animate-spin" />
                 ) : (
-                  'Use here'
+                  'Sign in'
                 )}
               </Button>
             </li>

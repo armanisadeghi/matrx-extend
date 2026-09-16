@@ -261,11 +261,23 @@ export function SettingsView() {
               />
               <ControlRow
                 label="Offer saved logins on sign-in forms"
-                hint="shows account names beside eligible sign-in fields; a login is filled only after you choose one"
+                hint="allows matching saved logins; choose where suggestions appear below"
                 control={
                   <Switch
                     checked={settings.offerSavedLoginsEnabled}
                     onCheckedChange={settings.setOfferSavedLoginsEnabled}
+                  />
+                }
+              />
+              <ControlRow
+                label="Show password suggestions on websites"
+                hint="Off keeps websites quiet. Pin Matrx to see toolbar assistance, then open Vault to review Save or Update; nothing is saved automatically."
+                control={
+                  <Switch
+                    checked={settings.credentialAssistancePresentation === 'on_page'}
+                    onCheckedChange={(checked) =>
+                      settings.setCredentialAssistancePresentation(checked ? 'on_page' : 'quiet')
+                    }
                   />
                 }
               />

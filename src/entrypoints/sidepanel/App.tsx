@@ -10,8 +10,11 @@ import { useAutoScrape } from '@/hooks/use-auto-scrape';
 import { useContextMenuListener } from '@/hooks/use-context-menu-listener';
 import { useGuidanceSync } from '@/hooks/use-guidance-sync';
 import { useHighlightBridge } from '@/hooks/use-highlight-bridge';
+import { useActiveTab } from '@/hooks/use-active-tab';
 import { useParallelEventBridge } from '@/hooks/use-parallel-event-bridge';
 import { getAgentCatalog } from '@/lib/agents/catalog';
+import { on, send } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
 import { type SidepanelTab, useSidepanelTabStore } from '@/state/sidepanel-tab';
@@ -46,7 +49,7 @@ import {
   Vault,
   Wrench,
 } from 'lucide-react';
-import { type ComponentType, Suspense, lazy, useEffect } from 'react';
+import { type ComponentType, Suspense, lazy, useEffect, useState } from 'react';
 
 // Per-tab dynamic imports. Single source of truth for module paths so each
 // view ships in its own chunk and the eager sidepanel bundle stays small.
@@ -119,6 +122,8 @@ export function App() {
   const errorCount = useDebugStore((s) => s.events.filter((e) => e.level === 'error').length);
   const tab = useSidepanelTabStore((s) => s.tab);
   const setTab = useSidepanelTabStore((s) => s.setTab);
+  const activeTab = useActiveTab();
+  const [assistance, setAssistance] = useState<'none' | 'saved_login' | 'save_pending' | 'capture_unavailable'>('none');
 
   const signedIn = user !== null;
   const canAccess = (candidate: SidepanelTab) =>
@@ -196,6 +201,36 @@ export function App() {
     mql.addEventListener('change', apply);
     return () => mql.removeEventListener('change', apply);
   }, [theme]);
+
+  useEffect(() => {
+    let stale = false;
+    let sequence = 0;
+    const refresh = () => {
+      const request = ++sequence;
+      if (activeTab.id === null) {
+        setAssistance('none');
+        return;
+      }
+      void send<{ tabId: number }, { state: typeof assistance }>(
+        CHANNELS.CREDENTIAL_ASSISTANCE_STATUS,
+        { tabId: activeTab.id },
+      )
+        .then((snapshot) => {
+          if (!stale && request === sequence) setAssistance(snapshot.state);
+        })
+        .catch(() => {
+          if (!stale && request === sequence) setAssistance('none');
+        });
+    };
+    refresh();
+    const unsubscribe = on<{ tabId: number }, void>(CHANNELS.CREDENTIAL_ASSISTANCE_CHANGED, (event) => {
+      if (event?.tabId === activeTab.id) refresh();
+    });
+    return () => {
+      stale = true;
+      unsubscribe();
+    };
+  }, [activeTab.id]);
 
   return (
     <TooltipProvider delayDuration={150}>
@@ -348,6 +383,16 @@ export function App() {
                     </TabsTrigger>
                   )}
                 </TabsList>
+                {assistance !== 'none' && tab !== 'vault' && (
+                  <button
+                    type="button"
+                    className="shrink-0 rounded px-1.5 py-1 text-[10px] font-medium text-primary hover:bg-primary/10"
+                    title="Open Vault to review saved-login assistance"
+                    onClick={() => setTab('vault')}
+                  >
+                    Open Vault
+                  </button>
+                )}
                 <UserMenu />
               </div>
               {/* forceMount (audit P1-14): ChatView owns the live stream-chunk

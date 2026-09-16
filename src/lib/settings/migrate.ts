@@ -1,7 +1,7 @@
 import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { MANDATE_KEYS } from '@ai-matrx/agents/mandates';
 
-export const SETTINGS_PERSIST_VERSION = 5;
+export const SETTINGS_PERSIST_VERSION = 6;
 /**
  * What this extension's default chat pointed at BEFORE it got its own mandate.
  * Still a real, declared platform key (it is the web app's new-chat mandate) —

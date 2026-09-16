@@ -15,6 +15,7 @@ import { SENSITIVE_ATTR, rememberSensitiveFields } from '@/lib/credentials/sensi
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { readOfferSavedLoginsEnabled } from '@/lib/settings/persisted';
+import { setSavedLoginAssistance } from '@/lib/credentials/assistance-status';
 
 /**
  * Service-worker host for the metadata-only inline Vault chooser.
@@ -79,6 +80,7 @@ function fillResponse(status: FillResponse['status']): FillResponse {
 function purge(tabId?: number): void {
   for (const [id, offer] of OFFERS)
     if (tabId === undefined || offer.tabId === tabId) OFFERS.delete(id);
+  if (tabId !== undefined) setSavedLoginAssistance(tabId, false);
 }
 function generationKey(tabId: number, documentId: string): string {
   return `${tabId}:${documentId}`;
@@ -223,6 +225,14 @@ async function query(tabId: number, documentId: string, selector: string): Promi
     generation,
     ...group,
   });
+  setSavedLoginAssistance(tabId, true);
+  window.setTimeout(() => {
+    const current = OFFERS.get(id);
+    if (current && current.expiresAt <= Date.now()) {
+      OFFERS.delete(id);
+      setSavedLoginAssistance(tabId, false);
+    }
+  }, OFFER_TTL_MS + 1);
   return {
     status: 'ready',
     offerId: id,
@@ -237,6 +247,7 @@ async function fill(
 ): Promise<FillResponse> {
   const offer = OFFERS.get(payload.offerId);
   OFFERS.delete(payload.offerId); // claim before async work: duplicate clicks cannot fill twice
+  if (offer) setSavedLoginAssistance(tabId, false);
   if (
     !offer ||
     offer.tabId !== tabId ||

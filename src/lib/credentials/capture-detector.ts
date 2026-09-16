@@ -24,6 +24,7 @@
  */
 
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { readCredentialAssistancePresentation } from '@/lib/settings/persisted';
 import type { CaptureCandidateReply, CaptureUnavailableReason } from './capture-types';
 import { credentialDomSource } from './fill-primitive';
 
@@ -235,8 +236,12 @@ export function mountCaptureDetector(doc: Document = document): () => void {
     };
     const renderUnavailable = (reason: CaptureUnavailableReason, transportFailure = false) => {
       void import('./capture-prompt')
-        .then(({ showCaptureUnavailable }) => {
-          if (isCurrentSubmission()) showCaptureUnavailable(reason, transportFailure);
+        .then(async ({ showCaptureUnavailable }) => {
+          if (
+            isCurrentSubmission() &&
+            (await readCredentialAssistancePresentation()) === 'on_page'
+          )
+            showCaptureUnavailable(reason, transportFailure);
         })
         .catch(() => undefined);
     };

@@ -14,6 +14,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 export type PermissionMode = 'ask' | 'act';
 export type ChatSpeed = 'fast' | 'thinking';
 export type ScrapeAutoMode = 'capture' | 'scroll-capture';
+export type CredentialAssistancePresentation = 'quiet' | 'on_page';
 
 interface SettingsState {
   theme: 'light' | 'dark' | 'system';
@@ -83,6 +84,8 @@ interface SettingsState {
   captureLoginsEnabled: boolean;
   /** Offer a Vault chooser when an eligible login control receives focus. */
   offerSavedLoginsEnabled: boolean;
+  /** Where Vault assistance appears. Quiet is deliberately the default. */
+  credentialAssistancePresentation: CredentialAssistancePresentation;
 
   // ─── Scrape auto-capture ───────────────────────────────────────────────
   /**
@@ -108,6 +111,7 @@ interface SettingsState {
   setSharePageIdentity: (b: boolean) => void;
   setCaptureLoginsEnabled: (b: boolean) => void;
   setOfferSavedLoginsEnabled: (b: boolean) => void;
+  setCredentialAssistancePresentation: (p: CredentialAssistancePresentation) => void;
   setScrapeAutoOnLoad: (b: boolean) => void;
   setScrapeAutoMode: (m: ScrapeAutoMode) => void;
 }
@@ -125,6 +129,7 @@ export const useSettingsStore = create<SettingsState>()(
       sharePageIdentity: true,
       captureLoginsEnabled: true,
       offerSavedLoginsEnabled: true,
+      credentialAssistancePresentation: 'quiet',
       scrapeAutoOnLoad: false,
       scrapeAutoMode: 'capture',
       setTheme: (theme) => set({ theme }),
@@ -138,6 +143,8 @@ export const useSettingsStore = create<SettingsState>()(
       setSharePageIdentity: (sharePageIdentity) => set({ sharePageIdentity }),
       setCaptureLoginsEnabled: (captureLoginsEnabled) => set({ captureLoginsEnabled }),
       setOfferSavedLoginsEnabled: (offerSavedLoginsEnabled) => set({ offerSavedLoginsEnabled }),
+      setCredentialAssistancePresentation: (credentialAssistancePresentation) =>
+        set({ credentialAssistancePresentation }),
       setScrapeAutoOnLoad: (scrapeAutoOnLoad) => set({ scrapeAutoOnLoad }),
       setScrapeAutoMode: (scrapeAutoMode) => set({ scrapeAutoMode }),
     }),

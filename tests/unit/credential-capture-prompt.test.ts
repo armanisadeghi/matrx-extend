@@ -948,7 +948,7 @@ describe('host — registered worker listeners and session continuity', () => {
     const host = await import('@/lib/credentials/capture-candidates');
     sessionSetFailure = new Error('session unavailable');
     expect(await host.holdCandidate(33, WIRE, DEPS)).toBe(false);
-    expect(host.pendingCaptureForTab(33)).toMatchObject({ unavailable: true });
+    expect(host.pendingCaptureForTab(33)).toBeNull();
     expect(
       calls.filter((call) => ['create', 'updateValue', 'addField'].includes(call.name)),
     ).toEqual([]);
@@ -982,7 +982,7 @@ describe('host — registered worker listeners and session continuity', () => {
     expect(failed).toMatchObject({ ok: false, status: 'error' });
     expect(failed.message).toContain('Reopen the extension');
     expect(resolved(id)).toHaveLength(0);
-    expect(host.pendingCaptureForTab(33)).toMatchObject({ unavailable: true });
+    expect(host.pendingCaptureForTab(33)).toBeNull();
 
     sessionSetFailure = null;
     sessionRemoveFailure = null;
@@ -1031,7 +1031,7 @@ describe('host — registered worker listeners and session continuity', () => {
         url: 'chrome-extension://test-extension/sidepanel.html',
       } as chrome.runtime.MessageSender,
     );
-    expect(unavailableStatus).toMatchObject({ tabId: 33, unavailable: true });
+    expect(unavailableStatus).toBeNull();
     expect(calls.filter((call) => call.name === 'create')).toHaveLength(1);
     expect(resolved(id)).toHaveLength(0);
 

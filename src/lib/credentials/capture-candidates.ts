@@ -38,7 +38,8 @@ import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
-import { readCaptureLoginsEnabled } from '@/lib/settings/persisted';
+import { readCaptureLoginsEnabled, readCredentialAssistancePresentation } from '@/lib/settings/persisted';
+import { setCaptureAssistance } from '@/lib/credentials/assistance-status';
 import type { CaptureCandidateWire } from './capture-detector';
 import { addNeverCaptureOrigin, isNeverCaptureOrigin } from './capture-settings';
 import type {
@@ -525,6 +526,7 @@ function drop(c: Candidate): void {
   });
   // Overwrite before release — belt and braces against a lingering reference.
   c.password = null;
+  setCaptureAssistance(c.tabId, 'none');
 }
 
 async function removeCandidate(c: Candidate): Promise<boolean> {
@@ -534,6 +536,7 @@ async function removeCandidate(c: Candidate): Promise<boolean> {
   PENDING.delete(c.tabId);
   c.generation++;
   c.password = null;
+  setCaptureAssistance(c.tabId, 'none');
   try {
     await persist();
   } catch {
@@ -599,6 +602,7 @@ async function promptTab(c: Candidate): Promise<void> {
     c.promptTimer = null;
   }
   broadcast(CHANNELS.CREDENTIAL_CAPTURE_CHANGED, { tabId: c.tabId });
+  if ((await readCredentialAssistancePresentation()) !== 'on_page') return;
   const meta = toMeta(c);
   for (const delay of PROMPT_RETRY_DELAYS_MS) {
     if (PENDING.get(c.tabId) !== c) return; // resolved meanwhile
@@ -695,6 +699,7 @@ export async function holdCandidate(
     prompted: false,
   };
   PENDING.set(tabId, candidate);
+  if (candidate.stage === 'password') setCaptureAssistance(tabId, 'save_pending');
   try {
     await queued(persist);
   } catch {
@@ -745,7 +750,7 @@ export async function holdCandidate(
 
 /** Pending candidate for a tab, value-free. */
 export function pendingCaptureForTab(tabId: number): CapturePromptMeta | null {
-  if (!storageAvailable) return unavailableMeta(tabId);
+  if (!storageAvailable) return null;
   const c = PENDING.get(tabId);
   if (!c) return null;
   if (c.expiresAt <= now()) {
@@ -769,10 +774,6 @@ const COPY: Record<CaptureDecisionResult['status'], string> = {
 const CLEANUP_UNAVAILABLE = 'Capture cleanup could not finish. Reopen the extension and try again.';
 const MUTATION_COMMITTED_CLEANUP_UNAVAILABLE =
   'Your Vault change was committed, but browser cleanup could not finish. Reopen the extension and retry the same action.';
-
-function unavailableMeta(tabId: number): CapturePromptMeta {
-  return { candidateId: '', tabId, host: '', username: null, existing: [], unavailable: true };
-}
 
 function cleanupUnavailableResult(): CaptureDecisionResult {
   return result('error', CLEANUP_UNAVAILABLE);
@@ -1128,7 +1129,7 @@ export function registerCredentialCaptureHost(): void {
       }
       const query = env.payload;
       void (async () => {
-        if (!(await ensureSession())) return storageAvailable ? null : unavailableMeta(query.tabId);
+        if (!(await ensureSession())) return null;
         const c = PENDING.get(query.tabId);
         if (!c || !sameActor(c.actor, await currentActor())) return null;
         const tab = await chrome.tabs.get(c.tabId).catch(() => null);

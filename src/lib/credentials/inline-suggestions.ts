@@ -1,5 +1,6 @@
 /** Metadata-only, closed-shadow chooser for eligible focused login controls. */
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { readCredentialAssistancePresentation } from '@/lib/settings/persisted';
 
 type QueryResponse =
   | { status: 'ready'; offerId: string; matches: Array<{ item_id: string; display_name: string }> }
@@ -224,7 +225,14 @@ function render(
 
 export function mountInlineCredentialSuggestions(): () => void {
   const navigationApi = (globalThis as typeof globalThis & { navigation?: EventTarget }).navigation;
+  let enabled = false;
+  void readCredentialAssistancePresentation().then((presentation) => {
+    enabled = presentation === 'on_page';
+    const target = document.activeElement;
+    if (enabled && target instanceof HTMLInputElement) requestFor(target);
+  });
   const onFocusIn = (event: FocusEvent): void => {
+    if (!enabled) return;
     const target = event.target;
     if (!(target instanceof HTMLInputElement) || (target === focused && host)) return;
     requestFor(target);
@@ -277,6 +285,14 @@ export function mountInlineCredentialSuggestions(): () => void {
   navigationApi?.addEventListener('currententrychange', invalidate);
   removalObserver.observe(document.documentElement, { childList: true, subtree: true });
   chrome.runtime.onMessage.addListener(onContextChanged);
+  const onStorageChanged = (changes: Record<string, chrome.storage.StorageChange>, area: string) => {
+    if (area !== 'local' || !('matrx.settings.v1' in changes)) return;
+    void readCredentialAssistancePresentation().then((presentation) => {
+      enabled = presentation === 'on_page';
+      if (!enabled) invalidate();
+    });
+  };
+  chrome.storage?.onChanged?.addListener(onStorageChanged);
 
   return () => {
     invalidate();
@@ -294,5 +310,6 @@ export function mountInlineCredentialSuggestions(): () => void {
     navigationApi?.removeEventListener('currententrychange', invalidate);
     removalObserver.disconnect();
     chrome.runtime.onMessage.removeListener(onContextChanged);
+    chrome.storage?.onChanged?.removeListener(onStorageChanged);
   };
 }

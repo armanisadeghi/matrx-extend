@@ -2284,7 +2284,7 @@ Every entry follows this shape:
   - An http (non-loopback) page → "Browser login only runs on https pages", no matches
     fetched, and creating from that page attaches no site.
   - A sealed field → no eye/copy buttons and a "can never be shown" note.
-  - Two matching logins on one page → both listed, each with its own **Use here**
+  - Two matching logins on one page → both listed, each with its own **Sign in**
     (the agent path returns `selection_required` in the same situation).
   - A login form with `method="get"`, or no method at all →
     `unsafe_destination / unsafe_get_form` before any Vault materialization or fill.
@@ -2292,7 +2292,7 @@ Every entry follows this shape:
     "Sign in to Matrx to use the Vault".
 
 ### Inline saved-login chooser
-- **What it does:** when a saved login is ready for the focused sign-in field, a compact chooser
+- **What it does:** with Settings → Privacy → **Show password suggestions on websites** enabled, a ready saved login gets a compact chooser
   lets you deliberately select it. The extension never reads the field value and never submits the
   form. A lookup that has no usable login, requires sign-in or an organization, is unavailable, or
   rejects the destination leaves the page untouched; use the Vault when you want feedback for one
@@ -2310,6 +2310,12 @@ Every entry follows this shape:
   cannot show a chooser after typing, Escape, an outside click, focus loss, full or same-document
   navigation, or removal of the focused field. Only a ready saved-login choice produces an on-page
   chooser.
+
+### Quiet Vault assistance
+- **What it does:** the default presentation adds no Matrx UI to websites. Matching and submitted-login capture continue in the background; the toolbar shows a metadata-only indicator and an open side panel offers **Open Vault**. Pin Matrx in Chrome's toolbar if the indicator is hidden. Nothing is saved automatically.
+- **Where to test:** a disposable https sign-in page with a matching Vault login, then a submitted disposable login.
+- **Steps:** leave **Show password suggestions on websites** off; focus a matching field and submit a login. Verify page UI remains absent, click the toolbar action to open the existing side panel, then choose **Open Vault** and review the matching login or pending Save/Update card. Turn the setting on and refocus the field.
+- **Expected:** quiet mode never opens or focuses the panel and never intercepts page clicks. The toolbar/title and sidepanel snapshot contain no account names, hosts, counts, values, or item ids. Navigation, sign-out, organization/capability changes, expiry, and tab close clear stale assistance. Turning the setting on restores the chooser/save prompt; **Sign in** remains explicit automation and may submit.
 
 ### Agent-directed saved login (`credential_login`)
 - **Where to test:** sidepanel → Tools → search `credential_login`, with an https login
@@ -2359,8 +2365,8 @@ Every entry follows this shape:
 ### Save this login? — page-driven Vault capture (no agent)
 - **What it does:** when you sign in to a site yourself (submit a form with a password,
   press Enter in a password box, or click its Sign-in button), the extension offers to
-  save that login to your Vault — like a password manager. A small card appears on the
-  page (top-right) AND at the top of the Vault tab: **Save** (new login), **Update
+  save that login to your Vault — like a password manager. By default the request is in the
+  Vault tab only; enabling **Show password suggestions on websites** also shows a small top-right card: **Save** (new login), **Update
   &lt;name&gt;** (a saved login already covers this site), **Not now**, **Never for this
   site**. Nothing is saved without a click. Signed in only; the prompt is on by default
   and can be turned off in Settings → Privacy → "Offer to save logins to the Vault".

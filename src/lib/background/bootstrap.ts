@@ -49,6 +49,7 @@ import type { UserProfile } from '@/lib/auth/types';
 import { clearBrokerCacheOnSignOut, registerBrokerHandlers } from '@/lib/broker/sw-host';
 import { setupContextMenus } from '@/lib/context-menus/setup';
 import { registerCredentialCaptureHost } from '@/lib/credentials/capture-candidates';
+import { registerCredentialAssistanceStatus } from '@/lib/credentials/assistance-status';
 import { registerInlineCredentialSuggestionHost } from '@/lib/credentials/inline-suggestions-host';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -106,6 +107,7 @@ export function bootstrapBackground(): void {
   // "Save this login?" host — raw value-bearing listener + value-free bus handlers.
   registerCredentialCaptureHost();
   registerInlineCredentialSuggestionHost();
+  registerCredentialAssistanceStatus();
 
   // ── 2. Tool dispatcher subscribes to STREAM_OPENED + STREAM_CHUNK.
   //       Per-run permission mode is latched from the chat hook; this default

@@ -17,7 +17,7 @@
  * to `'ask'`. This is the single source of truth so that can't drift again.
  */
 
-import type { PermissionMode } from '@/state/settings';
+import type { CredentialAssistancePresentation, PermissionMode } from '@/state/settings';
 
 /** Must match `name:` in the settings store's persist config. */
 const SETTINGS_PERSIST_KEY = 'matrx.settings.v1';
@@ -27,6 +27,7 @@ interface PersistedSettingsBlob {
     defaultPermissionMode?: PermissionMode;
     captureLoginsEnabled?: boolean;
     offerSavedLoginsEnabled?: boolean;
+    credentialAssistancePresentation?: CredentialAssistancePresentation;
     [k: string]: unknown;
   };
   version?: number;
@@ -72,4 +73,10 @@ export async function readCaptureLoginsEnabled(): Promise<boolean> {
 export async function readOfferSavedLoginsEnabled(): Promise<boolean> {
   const state = await readPersistedSettingsState();
   return state?.offerSavedLoginsEnabled !== false;
+}
+
+/** Quiet is the safe migration/default for absent, corrupt, and unknown values. */
+export async function readCredentialAssistancePresentation(): Promise<CredentialAssistancePresentation> {
+  const state = await readPersistedSettingsState();
+  return state?.credentialAssistancePresentation === 'on_page' ? 'on_page' : 'quiet';
 }

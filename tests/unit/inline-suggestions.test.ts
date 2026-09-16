@@ -31,6 +31,15 @@ beforeEach(() => {
     return originalAttachShadow.call(this, { ...init, mode: 'open' });
   });
   (globalThis as unknown as { chrome: unknown }).chrome = {
+    storage: {
+      local: {
+        get: async () => ({
+          'matrx.settings.v1': JSON.stringify({
+            state: { credentialAssistancePresentation: 'on_page' },
+          }),
+        }),
+      },
+    },
     runtime: {
       sendMessage: async (message: { kind: string }) => {
         if (message.kind === 'credential-suggestions:query') {
@@ -85,6 +94,8 @@ async function mountReadyChooser(): Promise<{
   unmount = mountInlineCredentialSuggestions();
   const target = document.querySelector('#password') as HTMLInputElement;
   target.focus();
+  await Promise.resolve();
+  await Promise.resolve();
   await Promise.resolve();
   await Promise.resolve();
   const host = document.querySelector('#matrx-inline-login-suggestion') as HTMLElement;
