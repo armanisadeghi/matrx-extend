@@ -76,12 +76,12 @@ vi.mock('@/lib/credentials/sensitive-fields', () => ({
   rememberSensitiveFields: vi.fn(),
 }));
 
-function replyFor(message: unknown): Promise<unknown> {
+function replyFor(message: unknown, tabId = 7, documentId = state.documentId): Promise<unknown> {
   return new Promise((resolve) => {
     const sender = {
-      tab: { id: 7 },
+      tab: { id: tabId },
       frameId: 0,
-      documentId: state.documentId,
+      documentId,
     } as chrome.runtime.MessageSender;
     const kept = runtimeListeners.map((listener) => listener(message, sender, resolve));
     expect(kept).toContain(true);
@@ -589,5 +589,96 @@ describe('inline saved-login host', () => {
     // tabs.sendMessage invoked the content listener, which re-queried its
     // still-focused field through the real producer/consumer seam.
     expect(state.getFrameCalls).toBeGreaterThan(callsBefore);
+  });
+
+  it('globally purges offers and invalidates every affected document on auth change', async () => {
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    const first = (await replyFor(
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:query',
+        payload: { fieldSelector: '#password' },
+      },
+      7,
+      'doc-7',
+    )) as { status: string; offerId: string };
+    const second = (await replyFor(
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:query',
+        payload: { fieldSelector: '#password' },
+      },
+      8,
+      'doc-8',
+    )) as { status: string; offerId: string };
+    for (const listener of runtimeListeners)
+      listener(
+        { __matrx: true, kind: 'auth:state-changed', payload: {} },
+        {} as chrome.runtime.MessageSender,
+        () => undefined,
+      );
+    expect(tabMessages).toContainEqual({
+      tabId: 7,
+      message: { __matrx: true, kind: 'credential-suggestions:context-changed', payload: {} },
+      options: { documentId: 'doc-7' },
+    });
+    expect(tabMessages).toContainEqual({
+      tabId: 8,
+      message: { __matrx: true, kind: 'credential-suggestions:context-changed', payload: {} },
+      options: { documentId: 'doc-8' },
+    });
+    expect(
+      await replyFor(
+        {
+          __matrx: true,
+          kind: 'credential-suggestions:fill',
+          payload: { offerId: first.offerId, itemId: ITEM },
+        },
+        7,
+        'doc-7',
+      ),
+    ).toMatchObject({ status: 'stale' });
+    expect(
+      await replyFor(
+        {
+          __matrx: true,
+          kind: 'credential-suggestions:fill',
+          payload: { offerId: second.offerId, itemId: ITEM },
+        },
+        8,
+        'doc-8',
+      ),
+    ).toMatchObject({ status: 'stale' });
+  });
+
+  it('expires an offer by invalidating its exact mounted document without reopening the chooser', async () => {
+    vi.useFakeTimers();
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    const { mountInlineCredentialSuggestions } = await import(
+      '@/lib/credentials/inline-suggestions'
+    );
+    registerInlineCredentialSuggestionHost();
+    mountInlineCredentialSuggestions();
+    const target = document.querySelector('#password') as HTMLInputElement;
+    target.focus();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(document.querySelector('#matrx-inline-login-suggestion')).not.toBeNull();
+    await vi.advanceTimersByTimeAsync(60_001);
+    expect(tabMessages).toContainEqual({
+      tabId: 7,
+      message: {
+        __matrx: true,
+        kind: 'credential-suggestions:context-changed',
+        payload: { requery: false },
+      },
+      options: { documentId: 'doc-7' },
+    });
+    expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
+    vi.useRealTimers();
   });
 });

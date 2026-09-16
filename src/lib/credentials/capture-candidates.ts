@@ -475,6 +475,11 @@ async function ensureSession(): Promise<boolean> {
   return (await initialization) && storageAvailable;
 }
 
+/** Rehydrate only validated capture state after the action projection is clear. */
+export async function rehydrateCredentialCaptureCandidates(): Promise<void> {
+  await ensureSession();
+}
+
 async function refreshMatches(candidate: Candidate): Promise<void> {
   if (!candidate.actor || candidate.stage !== 'password') return;
   const baseline = epoch(candidate.tabId);

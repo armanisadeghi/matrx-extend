@@ -232,11 +232,7 @@ async function query(tabId: number, documentId: string, selector: string): Promi
   });
   setSavedLoginAssistance(tabId, true);
   globalThis.setTimeout(() => {
-    const current = OFFERS.get(id);
-    if (current && current.expiresAt <= Date.now()) {
-      OFFERS.delete(id);
-      setSavedLoginAssistance(tabId, false);
-    }
+    expireOffer(id);
   }, OFFER_TTL_MS + 1);
   return {
     status: 'ready',
@@ -364,7 +360,10 @@ function contextTargets(): Array<{ tabId: number; documentId: string }> {
   return [...targets.values()];
 }
 
-function broadcastContextChanged(targets: Array<{ tabId: number; documentId: string }>): void {
+function broadcastContextChanged(
+  targets: Array<{ tabId: number; documentId: string }>,
+  requery = true,
+): void {
   for (const { tabId, documentId } of targets) {
     void chrome.tabs
       .sendMessage(
@@ -372,12 +371,21 @@ function broadcastContextChanged(targets: Array<{ tabId: number; documentId: str
         {
           __matrx: true,
           kind: CHANNELS.CREDENTIAL_SUGGESTIONS_CONTEXT_CHANGED,
-          payload: {},
+          payload: requery ? {} : { requery: false },
         },
         { documentId },
       )
       .catch(() => undefined);
   }
+}
+
+function expireOffer(id: string): void {
+  const offer = OFFERS.get(id);
+  if (!offer || offer.expiresAt > Date.now()) return;
+  OFFERS.delete(id);
+  setSavedLoginAssistance(offer.tabId, false);
+  // Expiry must clear the mounted chooser, not immediately mint another offer.
+  broadcastContextChanged([{ tabId: offer.tabId, documentId: offer.documentId }], false);
 }
 
 export function registerInlineCredentialSuggestionHost(): void {

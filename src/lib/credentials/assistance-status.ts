@@ -10,13 +10,14 @@ export type CredentialAssistanceState =
 const saved = new Set<number>();
 const capture = new Map<number, Exclude<CredentialAssistanceState, 'none' | 'saved_login'>>();
 const writes = new Map<number, Promise<void>>();
+const revisions = new Map<number, number>();
+let revision = 0;
 let registered = false;
 
 function stateFor(tabId: number): CredentialAssistanceState {
   return capture.get(tabId) ?? (saved.has(tabId) ? 'saved_login' : 'none');
 }
-async function project(tabId: number): Promise<void> {
-  const state = stateFor(tabId);
+async function project(tabId: number, state = stateFor(tabId)): Promise<void> {
   const badge = state === 'none' ? '' : state === 'saved_login' ? '•' : state === 'save_pending' ? '+' : '!';
   const title =
     state === 'none'
@@ -33,13 +34,18 @@ async function project(tabId: number): Promise<void> {
     // Tab may have closed while an asynchronous Chrome mutation was pending.
   }
 }
-function changed(tabId: number): void {
+function enqueue(tabId: number, write: () => Promise<void>): Promise<void> {
   const previous = writes.get(tabId) ?? Promise.resolve();
-  const next = previous.then(() => project(tabId), () => project(tabId));
+  const next = previous.then(write, write);
   writes.set(tabId, next);
   void next.finally(() => {
     if (writes.get(tabId) === next) writes.delete(tabId);
   });
+  return next;
+}
+function changed(tabId: number): void {
+  revisions.set(tabId, ++revision);
+  void enqueue(tabId, () => project(tabId));
   broadcast(CHANNELS.CREDENTIAL_ASSISTANCE_CHANGED, { tabId });
 }
 
@@ -64,6 +70,23 @@ export function clearCredentialAssistance(tabId: number): void {
   saved.delete(tabId);
   capture.delete(tabId);
   changed(tabId);
+}
+
+/** Clear stale MV3 action state without erasing a newer live offer. */
+export async function reconcileCredentialAssistanceActionOnBoot(): Promise<void> {
+  const bootRevision = revision;
+  const tabs = await chrome.tabs.query({}).catch(() => []);
+  await Promise.all(
+    tabs.flatMap((tab) => {
+      if (tab.id == null) return [];
+      const tabId = tab.id;
+      return [
+        enqueue(tabId, () =>
+          project(tabId, (revisions.get(tabId) ?? 0) > bootRevision ? stateFor(tabId) : 'none'),
+        ),
+      ];
+    }),
+  );
 }
 
 function trustedExtensionPage(sender: chrome.runtime.MessageSender): boolean {

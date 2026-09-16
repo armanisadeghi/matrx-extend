@@ -259,11 +259,16 @@ export function mountInlineCredentialSuggestions(): () => void {
     if (focused?.isConnected) place(focused);
   };
   const onContextChanged = (message: unknown): boolean => {
-    const env = message as { __matrx?: unknown; kind?: unknown } | null;
+    const env = message as {
+      __matrx?: unknown;
+      kind?: unknown;
+      payload?: { requery?: unknown };
+    } | null;
     if (env?.__matrx === true && env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_CONTEXT_CHANGED) {
       const target = focused;
       invalidate();
-      if (target?.isConnected && document.activeElement === target) requestFor(target);
+      if (env.payload?.requery !== false && target?.isConnected && document.activeElement === target)
+        requestFor(target);
     }
     return false;
   };

@@ -48,8 +48,14 @@ import type { MicRequestPayload, MicRunPayload } from '@/lib/audio/mic-types';
 import type { UserProfile } from '@/lib/auth/types';
 import { clearBrokerCacheOnSignOut, registerBrokerHandlers } from '@/lib/broker/sw-host';
 import { setupContextMenus } from '@/lib/context-menus/setup';
-import { registerCredentialCaptureHost } from '@/lib/credentials/capture-candidates';
-import { registerCredentialAssistanceStatus } from '@/lib/credentials/assistance-status';
+import {
+  registerCredentialCaptureHost,
+  rehydrateCredentialCaptureCandidates,
+} from '@/lib/credentials/capture-candidates';
+import {
+  reconcileCredentialAssistanceActionOnBoot,
+  registerCredentialAssistanceStatus,
+} from '@/lib/credentials/assistance-status';
 import { registerInlineCredentialSuggestionHost } from '@/lib/credentials/inline-suggestions-host';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -108,6 +114,11 @@ export function bootstrapBackground(): void {
   registerCredentialCaptureHost();
   registerInlineCredentialSuggestionHost();
   registerCredentialAssistanceStatus();
+  // Chrome retains action state across MV3 worker suspension while saved-login
+  // offers do not. Validated capture state reprojects only after that clear.
+  void reconcileCredentialAssistanceActionOnBoot().then(() =>
+    rehydrateCredentialCaptureCandidates(),
+  );
 
   // ── 2. Tool dispatcher subscribes to STREAM_OPENED + STREAM_CHUNK.
   //       Per-run permission mode is latched from the chat hook; this default
