@@ -148,7 +148,9 @@ function emit(level: LogLevel, args: PushArgs): void {
     event.detail = captureError(event.detail);
   }
   if (event.detail !== undefined) {
-    consoleFn(`[matrx-extend][${event.ctx}/${event.source}] ${event.message}`, event.detail);
+    consoleFn(
+      `[matrx-extend][${event.ctx}/${event.source}] ${event.message} ${formatConsoleDetail(event.detail)}`,
+    );
   } else {
     consoleFn(`[matrx-extend][${event.ctx}/${event.source}] ${event.message}`);
   }
@@ -205,9 +207,12 @@ export function captureError(err: unknown): Record<string, unknown> {
   }
   if (typeof err === 'object') {
     const obj = err as Record<string, unknown>;
+    const stringValue = String(err);
     const out: Record<string, unknown> = {
-      __kind: Object.prototype.toString.call(err),
-      __string: String(err),
+      __kind:
+        (err as { constructor?: { name?: string } }).constructor?.name ??
+        Object.prototype.toString.call(err),
+      ...(stringValue !== '[object Object]' ? { __string: stringValue } : {}),
     };
     for (const key of Object.getOwnPropertyNames(obj)) {
       out[key] = obj[key];
@@ -215,6 +220,25 @@ export function captureError(err: unknown): Record<string, unknown> {
     return out;
   }
   return { __kind: typeof err, __raw: String(err) };
+}
+
+function formatConsoleDetail(detail: unknown): string {
+  if (typeof detail === 'string') return detail;
+  const seen = new WeakSet<object>();
+  try {
+    const value = JSON.stringify(detail, (_key, nested: unknown) => {
+      if (nested instanceof Error) return captureError(nested);
+      if (typeof nested === 'bigint') return nested.toString();
+      if (nested && typeof nested === 'object') {
+        if (seen.has(nested)) return '[Circular]';
+        seen.add(nested);
+      }
+      return nested;
+    });
+    return value ?? String(detail);
+  } catch {
+    return String(detail);
+  }
 }
 
 /**
@@ -265,7 +289,7 @@ export function startDebugRelay(): void {
           : console.log;
     const prefix = `[matrx-extend][${remote.ctx}/${remote.source}]`;
     if (remote.detail !== undefined) {
-      consoleFn(`${prefix} ${remote.message}`, remote.detail);
+      consoleFn(`${prefix} ${remote.message} ${formatConsoleDetail(remote.detail)}`);
     } else {
       consoleFn(`${prefix} ${remote.message}`);
     }

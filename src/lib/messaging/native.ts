@@ -98,14 +98,28 @@ function dispatchLocal(env: Envelope): void {
 export function broadcast<T>(kind: string, payload: T): void {
   const env: Envelope<T> = { __matrx: true, kind, payload };
   log.info('msg', `↗ broadcast ${kind}`);
-  chrome.runtime.sendMessage(env).catch((err) => {
-    const msg = (err as Error).message ?? '';
-    if (msg.includes('Receiving end does not exist')) {
-      // Normal when no surface is open. Don't log as warning.
-      return;
+  // Reloading/updating an unpacked extension invalidates old content-script
+  // realms. In that state runtime.sendMessage can throw synchronously (or the
+  // runtime object can already be gone), so a promise-only catch still leaks
+  // `Extension context invalidated` / `undefined.sendMessage` as uncaught.
+  try {
+    const runtime = globalThis.chrome?.runtime;
+    if (runtime?.sendMessage) {
+      runtime.sendMessage(env).catch((err) => {
+        const msg = (err as Error).message ?? '';
+        if (
+          msg.includes('Receiving end does not exist') ||
+          msg.includes('Extension context invalidated')
+        ) {
+          return;
+        }
+        log.warn('msg', `broadcast(${kind}) failed`, err);
+      });
     }
-    log.warn('msg', `broadcast(${kind}) failed`, err);
-  });
+  } catch {
+    // Orphaned extension context. Local subscribers below are still valid in
+    // the current JavaScript realm and must receive the broadcast.
+  }
   dispatchLocal(env);
 }
 

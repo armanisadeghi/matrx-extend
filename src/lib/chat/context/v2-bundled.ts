@@ -24,12 +24,12 @@
  */
 
 import { log } from '@/lib/debug/log';
-import { getPlan, listTasks, listUserTodos } from '@/lib/lists/storage';
 import { fetchPatternsForDomain, lookupCapturedByUrl } from '@/lib/supabase/queries';
 import { prewarmReadPageCache } from '@/lib/tools/handlers/page-refs';
 import { useSettingsStore } from '@/state/settings';
 import { checkAuthState } from './check-auth-state';
 import { checkPageReady } from './check-page-ready';
+import { loadConversationContextSlices } from './conversation-slices';
 import { detectEmail, isEmailUrl } from './detect-email';
 import { detectPullRequest, isPullRequestUrl } from './detect-pull-request';
 import { detectTicket, isTicketUrl } from './detect-ticket';
@@ -74,51 +74,13 @@ export async function buildContextV2Bundled(
   // stays clean during fresh conversations. Surfaces user edits since
   // the last turn — the model literally sees what the user changed.
   if (inputs.conversationId) {
-    const [plan, taskList, userTodos] = await Promise.all([
-      getPlan(inputs.conversationId),
-      listTasks(inputs.conversationId),
-      listUserTodos(inputs.conversationId),
-    ]);
-    if (plan) {
-      ctx.current_plan = {
-        title: plan.title,
-        steps: plan.steps,
-        status: plan.status,
-        reasoning: plan.reasoning,
-        domains: plan.domains,
-        estimated_minutes: plan.estimated_minutes,
-        updated_at: plan.updated_at,
-      };
-    }
-    if (taskList.length) {
-      ctx.task_list = taskList.map((t) => ({
-        id: t.id,
-        title: t.title,
-        status: t.status,
-        note: t.note,
-      }));
-    }
-    // Surface OPEN todos always; include up to 5 most-recent done so the
-    // model sees what the user has cleared since last turn.
-    const openTodos = userTodos.filter((t) => !t.done);
-    const recentDone = userTodos
-      .filter((t) => t.done)
-      .sort((a, b) => (b.done_at ?? 0) - (a.done_at ?? 0))
-      .slice(0, 5);
-    if (openTodos.length || recentDone.length) {
-      ctx.user_todos = {
-        open: openTodos.map((t) => ({
-          id: t.id,
-          title: t.title,
-          context: t.context,
-          due: t.due,
-        })),
-        recent_done: recentDone.map((t) => ({
-          id: t.id,
-          title: t.title,
-          done_at: t.done_at,
-        })),
-      };
+    const { failures, ...slices } = await loadConversationContextSlices(inputs.conversationId);
+    Object.assign(ctx, slices);
+    if (failures.length) {
+      log.warn('stream', 'conversation context loaded partially', {
+        conversation_id: inputs.conversationId,
+        failures,
+      });
     }
   }
 

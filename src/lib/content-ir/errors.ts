@@ -10,8 +10,14 @@ import { log } from '@/lib/debug/log';
 import type { ContentIrErrorReporter } from '@ai-matrx/content-ir-react';
 
 export const reportContentIrError: ContentIrErrorReporter = (report) => {
-  console.error(`[content-ir] ${report.message}`, report.raw ?? '');
-  log.error('ui', `[content-ir] ${report.message}`, {
+  // `log.error` already writes to the context console and relays into the
+  // Debug tab. A second console.error here made every single registry failure
+  // appear twice (the raw Error line plus `[object Object]` from the relay).
+  const recovering =
+    report.message.includes('retrying in') ||
+    report.message.includes('compiled bootstrap still serving');
+  const write = recovering ? log.warn : log.error;
+  write('ui', `[content-ir] ${report.message}`, {
     relation: report.relation,
     name: report.name,
     stack: report.stack,

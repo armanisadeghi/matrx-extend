@@ -53,6 +53,27 @@ const catalogTransport: AgentCatalogTransport = {
 
 let catalog: AgentCatalog | null = null;
 
+interface CatalogErrorEvent {
+  code: string;
+  message: string;
+  context?: unknown;
+}
+
+export function reportCatalogError(event: CatalogErrorEvent): void {
+  if (event.code === 'identity_unavailable') {
+    const status = useAuthStore.getState().status;
+    if (status === 'unknown') {
+      log.info('sys', '[agent-catalog] identity pending during auth hydration');
+      return;
+    }
+    if (status === 'signed-out') {
+      log.info('sys', '[agent-catalog] guest session using the public catalogue');
+      return;
+    }
+  }
+  log.error('sys', `[agent-catalog] ${event.code}: ${event.message}`, event.context);
+}
+
 /**
  * The catalog singleton. Built lazily: `getSupabase()` reads env at first
  * call, and a module-load client would break the catalog scripts that import
@@ -78,9 +99,7 @@ export function getAgentCatalog(): AgentCatalog {
       },
     },
     transport: catalogTransport,
-    errorSink: (event) => {
-      log.error('sys', `[agent-catalog] ${event.code}: ${event.message}`, event.context);
-    },
+    errorSink: reportCatalogError,
     notifier: (event) => {
       // The extension has no toast system; the Debug tab's event stream IS its
       // notification surface. The package's persistent in-picker banner stays

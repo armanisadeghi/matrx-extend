@@ -19,11 +19,16 @@ const OFFSCREEN_PATH = 'offscreen.html';
 let creating: Promise<void> | null = null;
 
 export async function ensureOffscreen(): Promise<void> {
+  // Check the realm-local creation barrier BEFORE asking Chrome whether a
+  // context exists. Chrome can expose the new OFFSCREEN_DOCUMENT while its
+  // createDocument promise is still in flight; treating that half-created
+  // context as ready lets a concurrent WS/audio/stream caller send before the
+  // document has registered its listeners (`ws:start — no listener`).
+  if (creating) return creating;
   if (await offscreenExists()) {
     log.info('stream', 'offscreen already exists');
     return;
   }
-  if (creating) return creating;
   log.info('stream', 'creating offscreen document');
   // USER_MEDIA is required for getUserMedia from the offscreen doc — voice
   // input (TASK-002) won't work without it. BLOBS is for the SSE / scrape

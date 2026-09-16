@@ -36,6 +36,22 @@
   keyed local release bundle. A Store/unkeyed bundle, a changed source tree, or a push
   race stops the release without replacing the existing development tree.
 
+### Reload and transient-outage console hygiene
+
+- **What it does:** extension reloads and optional-context startup races do not leave
+  uncaught exceptions; independent chat-context reads survive one timed-out list read;
+  recoverable Content IR warm-load attempts are warnings until retries are exhausted.
+- **Where to test:** the loaded unpacked extension's service-worker and side-panel
+  DevTools consoles, plus `chrome://extensions` → extension **Errors**.
+- **Steps:** reload the extension while an ordinary page and the side panel are open,
+  refresh the page, reopen the side panel, and open the agent picker. Temporarily make
+  one list/context request fail while page context remains available, then restore it.
+- **Expected:** no uncaught `Extension context invalidated`, undefined `sendMessage`, or
+  `ws:start — no listener` appears. The message still sends with every healthy context
+  slice. Identity hydration and retrying/compiled-bootstrap Content IR diagnostics are
+  informational or warnings; only a genuinely exhausted registry load is one error.
+  Diagnostics include readable JSON/error text, never a trailing `[object Object]`.
+
 ### THE ONE AGENT PICKER (`@ai-matrx/agents/catalog/react`)
 
 Every agent-selection surface in this extension renders the SAME package
@@ -65,6 +81,8 @@ component, so all four must show identical rows in identical order.
     shows a persistent drift banner (that banner is the feature, not a bug —
     report what it says).
   - "Clear (n)" clears all n filters, not one.
+  - On the narrow side panel, opening the Drawer moves focus without Chrome's
+    `Blocked aria-hidden` accessibility warning.
   - Selecting the default row and sending routes to
     `/v2/ai/mandates/<key>`; selecting a normal agent routes to the agent id
     path. Both start a run.
