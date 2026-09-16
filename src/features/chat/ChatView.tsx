@@ -20,6 +20,7 @@ import { TaskPanel, TaskPanelChip } from '@/features/lists/TaskPanel';
 import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { useChatStream } from '@/hooks/use-chat-stream';
+import { useRequestOrganizationId } from '@/hooks/use-request-organization';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
 import { ensureAuthenticatedCatalogLoaded } from '@/lib/agents/catalog';
 import { USER_MODEL_LABEL_BY_ID, USER_MODEL_PRESETS } from '@/lib/agents/model-presets';
@@ -123,6 +124,7 @@ function formatMicErrorForUser(message: string, code?: string): string {
 
 export function ChatView() {
   const { user } = useAuth();
+  const organizationId = useRequestOrganizationId();
   // One warm load per session for the Content IR registries (which kinds
   // exist, and what draws them on chrome-extension). Here rather than at
   // module load: an unauthenticated panel has no session to read with.
@@ -232,7 +234,7 @@ export function ChatView() {
     if (!chat.selectedAgentId && savedDefaultId) chat.setAgent(savedDefaultId);
 
     void refreshHistory();
-  }, [user, refreshHistory, catalog]);
+  }, [user, organizationId, refreshHistory, catalog]);
 
   // Pick up brand-new conversations mid-session. The server assigns an id
   // on the first message of a fresh chat (returned via X-Conversation-ID,
@@ -528,6 +530,7 @@ export function ChatView() {
       />
       <ChatHeader
         signedIn={Boolean(user)}
+        organizationReady={organizationId !== null}
         agentsRefreshing={agentsRefreshing}
         onRefreshAgents={() => void refreshAgents()}
         historyLoading={historyLoading}
@@ -766,6 +769,7 @@ function StreamInterruptionBanner({
 
 function ChatHeader({
   signedIn,
+  organizationReady,
   agentsRefreshing,
   onRefreshAgents,
   historyLoading,
@@ -785,6 +789,7 @@ function ChatHeader({
   getAgent,
 }: {
   signedIn: boolean;
+  organizationReady: boolean;
   agentsRefreshing: boolean;
   onRefreshAgents: () => void;
   historyLoading: boolean;
@@ -809,7 +814,7 @@ function ChatHeader({
           order, tabs, sort, filters and favourites as every other Matrx
           client. `defaultMandateKey` puts this client's platform default at
           the top of the list, named after its REAL Holder. */}
-      {signedIn ? (
+      {signedIn && organizationReady ? (
         <>
           <AgentListDropdown
             consumerId="extend.chat"
@@ -830,13 +835,17 @@ function ChatHeader({
             <RefreshCw className={cn('size-3.5', agentsRefreshing && 'animate-spin')} />
           </Button>
         </>
+      ) : signedIn ? (
+        <span className="px-2 text-[11px] text-muted-foreground">
+          Choose an organization in Settings
+        </span>
       ) : (
         <span className="px-2 text-[11px] text-muted-foreground">Sign in to choose an agent</span>
       )}
       <div className="ml-auto flex items-center gap-1">
         <TaskPanelChip conversationId={selectedConversationId} onClick={onToggleTaskPanel} />
         <LanguagePicker />
-        <SandboxPickerChip disabled={!signedIn} />
+        <SandboxPickerChip disabled={!signedIn || !organizationReady} />
         <PermissionModeChip
           mode={permissionMode}
           disabled={!selectedAgentId}

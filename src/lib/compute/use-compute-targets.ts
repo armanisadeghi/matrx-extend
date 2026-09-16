@@ -15,6 +15,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useRequestOrganizationId } from '@/hooks/use-request-organization';
 import { apiGet, apiPost } from '@/lib/api/client';
 import { useAuthStore } from '@/state/auth';
 import type {
@@ -32,6 +33,7 @@ interface UseComputeTargetsResult {
 
 export function useComputeTargets(enabled = true): UseComputeTargetsResult {
   const signedIn = useAuthStore((state) => state.status === 'signed-in');
+  const organizationId = useRequestOrganizationId();
   const [data, setData] = useState<ComputeTargetListResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +41,7 @@ export function useComputeTargets(enabled = true): UseComputeTargetsResult {
   const fetchIdRef = useRef(0);
 
   const fetchOnce = useCallback(async () => {
-    if (!signedIn) {
+    if (!signedIn || !organizationId) {
       fetchIdRef.current += 1;
       setData(null);
       setLoading(false);
@@ -57,12 +59,12 @@ export function useComputeTargets(enabled = true): UseComputeTargetsResult {
       setError(result.error || `HTTP ${result.status}`);
     }
     setLoading(false);
-  }, [signedIn]);
+  }, [organizationId, signedIn]);
 
   useEffect(() => {
-    if (!enabled || !signedIn) return;
+    if (!enabled || !signedIn || !organizationId) return;
     void fetchOnce();
-  }, [enabled, signedIn, fetchOnce]);
+  }, [enabled, organizationId, signedIn, fetchOnce]);
 
   return { data, loading, error, refetch: fetchOnce };
 }

@@ -20,6 +20,7 @@
  * same way. Announced here rather than left to be rediscovered.
  */
 
+import { ensureRequestOrganizationId } from '@/hooks/use-request-organization';
 import { buildHeaders, getApiBaseUrl } from '@/lib/api/client';
 import { log } from '@/lib/debug/log';
 import { getSupabase } from '@/lib/supabase/client';
@@ -125,5 +126,6 @@ export async function ensureAuthenticatedCatalogLoaded(
 ): Promise<void> {
   const auth = useAuthStore.getState();
   if (auth.status !== 'signed-in' || !auth.user) return;
+  if (!(await ensureRequestOrganizationId())) return;
   await target.ensureLoaded(options);
 }

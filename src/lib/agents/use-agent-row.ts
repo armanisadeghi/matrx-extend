@@ -12,6 +12,7 @@
  * "Matrx Browser Agent" string — a label that lies is worse than no label.
  */
 
+import { useRequestOrganizationId } from '@/hooks/use-request-organization';
 import { useAuthStore } from '@/state/auth';
 import { type AgentSummary, isMandateAgentId } from '@ai-matrx/agents/catalog';
 import type { DefaultRowState } from '@ai-matrx/agents/catalog';
@@ -36,14 +37,15 @@ export function useAgentRow(agentId: string | null | undefined): SelectedAgentRo
   const catalog = useAgentCatalog();
   const mandateKey = mandateKeyOf(agentId);
   const signedIn = useAuthStore((state) => state.status === 'signed-in');
+  const organizationId = useRequestOrganizationId();
 
   useEffect(() => {
-    if (signedIn) void ensureAuthenticatedCatalogLoaded(catalog);
-  }, [catalog, signedIn]);
+    if (signedIn && organizationId) void ensureAuthenticatedCatalogLoaded(catalog);
+  }, [catalog, organizationId, signedIn]);
 
   useEffect(() => {
-    if (signedIn && mandateKey) catalog.ensureDefaultRow(mandateKey);
-  }, [catalog, mandateKey, signedIn]);
+    if (signedIn && organizationId && mandateKey) catalog.ensureDefaultRow(mandateKey);
+  }, [catalog, mandateKey, organizationId, signedIn]);
 
   // Every selector below returns a reference the catalog itself owns, so
   // `useSyncExternalStore` sees a stable snapshot between changes.

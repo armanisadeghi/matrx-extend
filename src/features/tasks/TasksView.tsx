@@ -17,6 +17,7 @@ import {
 } from '@/features/tasks/queue-view';
 import { VERDICT_OPTIONS, VERDICT_SHORT } from '@/features/tasks/verdicts';
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { useRequestOrganizationId } from '@/hooks/use-request-organization';
 import {
   type BulkVerdictItem,
   type ExtensionScrapeItem,
@@ -114,6 +115,7 @@ const isAutoCapturable = (b: BucketKey): boolean =>
   b === 'level_1_quick' || b === 'level_2_scroll' || b === 'low_value';
 
 export function TasksView() {
+  const organizationId = useRequestOrganizationId();
   const queryClient = useQueryClient();
   const activeTab = useActiveTab();
   const [statusByItem, setStatusByItem] = useState<Record<string, ItemState>>({});
@@ -165,6 +167,7 @@ export function TasksView() {
       return r.data;
     },
     staleTime: 60_000,
+    enabled: organizationId !== null,
   });
   const error = queryError?.message ?? null;
 

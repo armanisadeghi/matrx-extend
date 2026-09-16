@@ -34,6 +34,7 @@ import { TaskPanel, TaskPanelChip } from '@/features/lists/TaskPanel';
 import { useAgentExecution } from '@/hooks/use-agent-execution';
 import { useAuth } from '@/hooks/use-auth';
 import { usePilotChatStream } from '@/hooks/use-pilot-chat-stream';
+import { useRequestOrganizationId } from '@/hooks/use-request-organization';
 import { useToolInbox$Subscribe } from '@/hooks/use-tool-inbox';
 import { ensureAuthenticatedCatalogLoaded } from '@/lib/agents/catalog';
 import { useAgentRow } from '@/lib/agents/use-agent-row';
@@ -78,6 +79,7 @@ const PILOT_SUGGESTIONS = [
 export function PilotView() {
   // One warm load per session for the Content IR registries — see ChatView.
   const { user, isAdmin } = useAuth();
+  const organizationId = useRequestOrganizationId();
   useEffect(() => {
     if (user) void warmContentIr();
   }, [user]);
@@ -135,7 +137,7 @@ export function PilotView() {
     const chat = usePilotChatStore.getState();
     const defaultId = useSettingsStore.getState().defaultAgentId;
     if (!chat.selectedAgentId && defaultId) chat.setAgent(defaultId);
-  }, [catalog]);
+  }, [catalog, organizationId]);
 
   const refreshAgents = async () => {
     if (agentsRefreshing) return;
@@ -347,6 +349,7 @@ export function PilotView() {
         onClose={() => setTaskPanelOpen(false)}
       />
       <PilotHeader
+        organizationReady={organizationId !== null}
         agentsRefreshing={agentsRefreshing}
         onRefreshAgents={() => void refreshAgents()}
         selectedAgentId={selectedAgentId}
@@ -441,6 +444,7 @@ export function PilotView() {
 }
 
 function PilotHeader({
+  organizationReady,
   agentsRefreshing,
   onRefreshAgents,
   selectedAgentId,
@@ -457,6 +461,7 @@ function PilotHeader({
   getMessages,
   getAgent,
 }: {
+  organizationReady: boolean;
   agentsRefreshing: boolean;
   onRefreshAgents: () => void;
   selectedAgentId: string | null;
@@ -477,24 +482,32 @@ function PilotHeader({
     <div className="flex h-9 shrink-0 items-center px-2">
       {/* THE ONE agent picker (@ai-matrx/agents/catalog/react) — its own
           consumer id so Pilot's tab/sort/filter state is separate from Chat's. */}
-      <AgentListDropdown
-        consumerId="extend.pilot"
-        activeAgentId={selectedAgentId}
-        onSelect={onAgentChange}
-        defaultMandateKey={DEFAULT_CHAT_MANDATE_KEY}
-        compact
-        noBorder
-      />
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-7 text-muted-foreground"
-        title="Refresh agents (pull latest edits)"
-        onClick={onRefreshAgents}
-        disabled={agentsRefreshing}
-      >
-        <RefreshCw className={cn('size-3.5', agentsRefreshing && 'animate-spin')} />
-      </Button>
+      {organizationReady ? (
+        <>
+          <AgentListDropdown
+            consumerId="extend.pilot"
+            activeAgentId={selectedAgentId}
+            onSelect={onAgentChange}
+            defaultMandateKey={DEFAULT_CHAT_MANDATE_KEY}
+            compact
+            noBorder
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 text-muted-foreground"
+            title="Refresh agents (pull latest edits)"
+            onClick={onRefreshAgents}
+            disabled={agentsRefreshing}
+          >
+            <RefreshCw className={cn('size-3.5', agentsRefreshing && 'animate-spin')} />
+          </Button>
+        </>
+      ) : (
+        <span className="px-2 text-[11px] text-muted-foreground">
+          Choose an organization in Settings
+        </span>
+      )}
       <div className="ml-auto flex items-center gap-1">
         <LanguagePicker />
         <PermissionModeChip

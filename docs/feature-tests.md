@@ -52,7 +52,9 @@
   informational or warnings; only a genuinely exhausted registry load is one error.
   While signed out, the panel does not call the signed-in agent-catalogue, mandate,
   compute-target, saved-pattern, or Content IR registry doors. Diagnostics include
-  readable JSON/error text, never a trailing `[object Object]`.
+  readable JSON/error text, never a trailing `[object Object]`. Immediately after sign-in,
+  org-scoped startup remains quiet until the active organization resolves; if the user must
+  choose one, the header says so instead of opening the picker or emitting HTTP 400 errors.
 
 ### THE ONE AGENT PICKER (`@ai-matrx/agents/catalog/react`)
 
