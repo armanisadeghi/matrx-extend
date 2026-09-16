@@ -134,6 +134,25 @@ describe('refusals a user can act on', () => {
     expect(result.error).toBe('sign_in_required');
     expect(String(result.message)).toContain('Sign in');
   });
+
+  it('does not return a JSON error envelope as a scalar tool-result message', async () => {
+    captureResult = {
+      ok: false,
+      status: 400,
+      error: JSON.stringify({
+        error: 'bad_request',
+        message: 'Add a website before capturing a prospect.',
+      }),
+    };
+
+    const result = await run({ action: 'capture' });
+
+    expect(result).toMatchObject({
+      ok: false,
+      error: 'capture_failed',
+      message: 'Add a website before capturing a prospect.',
+    });
+  });
 });
 
 describe('there is no second door', () => {

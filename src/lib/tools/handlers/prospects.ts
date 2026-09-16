@@ -62,6 +62,26 @@ const CaptureProspectArgs = z.object({
 type CaptureProspectArgs = z.infer<typeof CaptureProspectArgs>;
 
 /**
+ * ``apiPost`` preserves a non-2xx body as text. The server normally uses a
+ * JSON error envelope, but handing that serialized envelope to the delegated
+ * tool-result protocol makes it look like a structured value hidden in a
+ * scalar. Keep the tool result honest and readable instead.
+ */
+function captureFailureMessage(error: string): string {
+  try {
+    const parsed: unknown = JSON.parse(error);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      const message = (parsed as { message?: unknown }).message;
+      if (typeof message === 'string' && message.trim()) return message;
+      return 'Prospect capture failed. Please try again.';
+    }
+  } catch {
+    // Non-JSON transport failures are already plain text.
+  }
+  return error;
+}
+
+/**
  * The address a page is really at. `tab.url` is Chrome's own record of the
  * committed navigation, not something the page can rewrite — a page that
  * spoofed `location` in its own DOM must not be able to aim a capture.
@@ -123,7 +143,11 @@ export const capture_prospect: ToolHandler<CaptureProspectArgs, unknown> = {
           detail: result.error,
         };
       }
-      return { ok: false, error: 'capture_failed', message: result.error };
+      return {
+        ok: false,
+        error: 'capture_failed',
+        message: captureFailureMessage(result.error),
+      };
     }
 
     return { ok: true, action: args.action, ...result.data };
