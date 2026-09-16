@@ -16,7 +16,7 @@ importers:
         version: 0.11.5
       '@ai-matrx/content-ir-react':
         specifier: latest
-        version: 0.11.7(react@19.2.5)
+        version: 0.11.8(react@19.2.5)
       '@ai-matrx/design-system':
         specifier: latest
         version: 0.20.16(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -234,8 +234,8 @@ packages:
       react-native-svg:
         optional: true
 
-  '@ai-matrx/content-ir-react@0.11.7':
-    resolution: {integrity: sha512-PdWiTyFbIU+1YO6alQbSgWV62yOBljf0GoFQhPpMJ4q4L3anj+QQGS/w21qgJHUeF9t2kbArxcSiac/fZTc8TA==}
+  '@ai-matrx/content-ir-react@0.11.8':
+    resolution: {integrity: sha512-6taXROpiPj3eymTLbWf8SbLOJl+hGyb4f0gxVl8NvNOYYbWDOkx15FcMdaRYC+TJn6QDUNIS42Pdvz4kCoQjWQ==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=19.0.0'
@@ -5745,7 +5745,7 @@ snapshots:
       - '@types/react-dom'
       - react-dom
 
-  '@ai-matrx/content-ir-react@0.11.7(react@19.2.5)':
+  '@ai-matrx/content-ir-react@0.11.8(react@19.2.5)':
     dependencies:
       '@ai-matrx/content-ir': 0.11.5
       react: 19.2.5
