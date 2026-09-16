@@ -19,6 +19,7 @@ const HOST_ID = 'matrx-inline-login-suggestion';
 let host: HTMLElement | null = null;
 let generation = 0;
 let focused: HTMLInputElement | null = null;
+let presentation: 'quiet' | 'on_page' = 'quiet';
 let focusEntry: { target: HTMLInputElement; listener: (event: KeyboardEvent) => void } | null =
   null;
 
@@ -120,7 +121,8 @@ function render(
   // A focus-triggered lookup is not a request to interrupt the page. Only a
   // usable saved-login choice earns page UI; errors remain explicit when a
   // person deliberately asks the Vault to fill a login.
-  if (response.status !== 'ready' || response.matches.length === 0) return;
+  if (presentation !== 'on_page' || response.status !== 'ready' || response.matches.length === 0)
+    return;
   host = document.createElement('div');
   host.id = HOST_ID;
   host.style.cssText = 'all:initial;position:fixed;z-index:2147483647;';
@@ -225,14 +227,12 @@ function render(
 
 export function mountInlineCredentialSuggestions(): () => void {
   const navigationApi = (globalThis as typeof globalThis & { navigation?: EventTarget }).navigation;
-  let enabled = false;
-  void readCredentialAssistancePresentation().then((presentation) => {
-    enabled = presentation === 'on_page';
+  void readCredentialAssistancePresentation().then((value) => {
+    presentation = value;
     const target = document.activeElement;
-    if (enabled && target instanceof HTMLInputElement) requestFor(target);
+    if (target instanceof HTMLInputElement) requestFor(target);
   });
   const onFocusIn = (event: FocusEvent): void => {
-    if (!enabled) return;
     const target = event.target;
     if (!(target instanceof HTMLInputElement) || (target === focused && host)) return;
     requestFor(target);
@@ -267,7 +267,11 @@ export function mountInlineCredentialSuggestions(): () => void {
     if (env?.__matrx === true && env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_CONTEXT_CHANGED) {
       const target = focused;
       invalidate();
-      if (env.payload?.requery !== false && target?.isConnected && document.activeElement === target)
+      if (
+        env.payload?.requery !== false &&
+        target?.isConnected &&
+        document.activeElement === target
+      )
         requestFor(target);
     }
     return false;
@@ -290,11 +294,16 @@ export function mountInlineCredentialSuggestions(): () => void {
   navigationApi?.addEventListener('currententrychange', invalidate);
   removalObserver.observe(document.documentElement, { childList: true, subtree: true });
   chrome.runtime.onMessage.addListener(onContextChanged);
-  const onStorageChanged = (changes: Record<string, chrome.storage.StorageChange>, area: string) => {
+  const onStorageChanged = (
+    changes: Record<string, chrome.storage.StorageChange>,
+    area: string,
+  ) => {
     if (area !== 'local' || !('matrx.settings.v1' in changes)) return;
-    void readCredentialAssistancePresentation().then((presentation) => {
-      enabled = presentation === 'on_page';
-      if (!enabled) invalidate();
+    void readCredentialAssistancePresentation().then((value) => {
+      presentation = value;
+      invalidate();
+      const target = document.activeElement;
+      if (target instanceof HTMLInputElement) requestFor(target);
     });
   };
   chrome.storage?.onChanged?.addListener(onStorageChanged);

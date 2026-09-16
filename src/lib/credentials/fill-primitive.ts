@@ -41,7 +41,7 @@ export interface CredentialDomRequestMap {
     currentUrl: string;
     baseUri: string;
   };
-  focused_group: { selector: string };
+  focused_group: { selector: string; requirePanelFocus?: boolean };
   attempt_probe: { fieldSelectors: string[]; controlSelectors: string[] };
   auto_probe: {};
   fill: {
@@ -49,6 +49,7 @@ export interface CredentialDomRequestMap {
     requested: ControlledCredentialField[];
     sensitiveAttr: string;
     preserveLegacyFieldBehavior: boolean;
+    requirePanelFocus?: boolean;
   };
   submit_auto: { selector: string | null };
   submit_explicit: { kind: 'click' | 'press_enter' | 'none'; selector: string | null };
@@ -140,7 +141,7 @@ export function credentialDomSource(
     }
     return primary;
   }
-  function focused(selector: string): BoundLoginGroup | null {
+  function focused(selector: string, requirePanelFocus = false): BoundLoginGroup | null {
     function visibleEditable(input: HTMLInputElement): boolean {
       const r = input.getBoundingClientRect();
       const style = getComputedStyle(input);
@@ -227,6 +228,13 @@ export function credentialDomSource(
     const usernameSelector = username ? selectorFor(username) : null;
     const passwordSelector = password ? selectorFor(password) : null;
     if ((username && !usernameSelector) || (password && !passwordSelector)) return null;
+    if (
+      requirePanelFocus &&
+      document.activeElement !== anchor &&
+      document.activeElement !== username &&
+      document.activeElement !== password
+    )
+      return null;
     const confirmation = inputs.filter(
       (i) => (i.type || '').toLowerCase() === 'password' && i !== password,
     );
@@ -388,6 +396,7 @@ export function credentialDomSource(
     requested: ControlledCredentialField[],
     sensitiveAttr: string,
     preserveLegacyFieldBehavior: boolean,
+    requirePanelFocus = false,
   ): { ok: boolean; reason?: string } {
     function visibleEditable(input: HTMLInputElement | null): input is HTMLInputElement {
       if (!input || input.disabled || input.readOnly || input.type === 'hidden') return false;
@@ -455,6 +464,7 @@ export function credentialDomSource(
       if (!sameNode(group.username, originals.username)) return false;
       if (!sameNode(group.password, originals.password)) return false;
       if (!visibleEditable(currentAnchor)) return false;
+      if (requirePanelFocus && document.visibilityState !== 'visible') return false;
       if (group.username && !visibleEditable(originals.username)) return false;
       if (group.password && !visibleEditable(originals.password)) return false;
       if (group.usernameOnly !== !group.password) return false;
@@ -481,6 +491,13 @@ export function credentialDomSource(
       if (passwords.some((node) => node.autocomplete.toLowerCase() === 'new-password'))
         return false;
       if (group.password && passwords[0] !== originals.password) return false;
+      if (
+        requirePanelFocus &&
+        document.activeElement !== originals.anchor &&
+        document.activeElement !== originals.username &&
+        document.activeElement !== originals.password
+      )
+        return false;
       const form = currentAnchor.form;
       if (classify(form, null).kind === 'unsafe') return false;
       return true;
@@ -579,7 +596,9 @@ export function credentialDomSource(
         classify(request.form, request.submitter, request.currentUrl, request.baseUri),
       ) as CredentialDomResultMap[CredentialDomOperation];
     case 'focused_group':
-      return result(focused(request.selector)) as CredentialDomResultMap[CredentialDomOperation];
+      return result(
+        focused(request.selector, request.requirePanelFocus),
+      ) as CredentialDomResultMap[CredentialDomOperation];
     case 'attempt_probe':
       return result(
         attemptProbe(request.fieldSelectors, request.controlSelectors),
@@ -593,6 +612,7 @@ export function credentialDomSource(
           request.requested,
           request.sensitiveAttr,
           request.preserveLegacyFieldBehavior,
+          request.requirePanelFocus,
         ),
       ) as CredentialDomResultMap[CredentialDomOperation];
     case 'submit_auto':

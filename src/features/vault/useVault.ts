@@ -34,7 +34,9 @@ import { isBrowserSupported } from '@/lib/browser/detect';
 import { isFillablePageUrl, normalizeLoginUrl } from '@/lib/credentials/login-urls';
 import { credential_login } from '@/lib/tools/handlers/credential-login';
 import type { CredentialLoginStatus } from '@/lib/tools/handlers/credential-login';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+
+import type { PanelActionAdmission } from './usePanelAdmission';
 
 export type VaultAuthState = 'checking' | 'signed-out' | 'ready';
 
@@ -65,35 +67,45 @@ export interface VaultData {
  * Load the actor's own items, the items shared with them, and the safe match
  * candidates for `pageUrl` — all gated behind a real user JWT.
  */
-export function useVault(pageUrl: string | null): VaultData {
+export function useVault(
+  pageUrl: string | null,
+  tabId: number | null,
+  actor: { userId: string; organizationId: string } | null,
+  admission: PanelActionAdmission,
+): VaultData {
   const [auth, setAuth] = useState<VaultAuthState>('checking');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mine, setMine] = useState<VaultItemSummary[]>([]);
   const [shared, setShared] = useState<VaultItemSummary[]>([]);
   const [matches, setMatches] = useState<BrowserLoginMatch[]>([]);
+  const [matchesOwner, setMatchesOwner] = useState('');
   const [matchesLoading, setMatchesLoading] = useState(false);
   const generation = useRef(0);
   const matchGeneration = useRef(0);
+  const matchOwner = `${tabId ?? 'none'}:${normalizeLoginUrl(pageUrl) ?? 'none'}:${actor?.userId ?? 'none'}:${actor?.organizationId ?? 'none'}`;
 
   const reload = useCallback(async () => {
+    if (!admission.current()) return;
     const run = ++generation.current;
     setLoading(true);
     setError(null);
     if (!(await hasRealUserToken())) {
-      if (run !== generation.current) return;
+      if (run !== generation.current || !admission.current()) return;
       setAuth('signed-out');
       setMine([]);
       setShared([]);
       setMatches([]);
+      setMatchesOwner('');
       setLoading(false);
       return;
     }
+    if (!admission.current()) return;
     const [mineResult, sharedResult] = await Promise.all([
       fetchMyVaultItems(),
       fetchVaultItemsSharedWithMe(),
     ]);
-    if (run !== generation.current) return;
+    if (run !== generation.current || !admission.current()) return;
     setAuth(
       mineResult.ok === false && mineResult.failure.kind === 'sign_in_required'
         ? 'signed-out'
@@ -110,10 +122,13 @@ export function useVault(pageUrl: string | null): VaultData {
         : null;
     setError(failure ? describeVaultFailure(failure) : null);
     setLoading(false);
-  }, []);
+  }, [admission]);
 
   useEffect(() => {
     void reload();
+    return () => {
+      generation.current++;
+    };
   }, [reload]);
 
   // Match candidates re-resolve whenever the tab's URL changes — the whole
@@ -121,23 +136,40 @@ export function useVault(pageUrl: string | null): VaultData {
   useEffect(() => {
     const run = ++matchGeneration.current;
     const normalized = normalizeLoginUrl(pageUrl);
-    if (auth !== 'ready' || !normalized || !isFillablePageUrl(pageUrl)) {
+    if (
+      !admission.current() ||
+      auth !== 'ready' ||
+      !actor ||
+      tabId == null ||
+      !normalized ||
+      !isFillablePageUrl(pageUrl)
+    ) {
       setMatches([]);
+      setMatchesOwner('');
       setMatchesLoading(false);
       return;
     }
     setMatchesLoading(true);
     void (async () => {
-      const result = await fetchBrowserLoginMatches(normalized);
-      if (run !== matchGeneration.current) return;
+      if (!admission.current()) return;
+      const result = await fetchBrowserLoginMatches(normalized, undefined, {
+        expectedActor: actor,
+      });
+      if (run !== matchGeneration.current || !admission.current()) return;
       setMatches(result.ok ? result.data.matches : []);
+      setMatchesOwner(matchOwner);
       setMatchesLoading(false);
     })();
-  }, [auth, pageUrl]);
+    return () => {
+      matchGeneration.current++;
+    };
+  }, [admission, actor, auth, matchOwner, pageUrl, tabId]);
 
   const patchItem = useCallback(
     async (itemId: string, patch: VaultItemMetadataPatch): Promise<string | null> => {
+      if (!admission.current()) return null;
       const result = await updateVaultItemMetadata(itemId, patch);
+      if (!admission.current()) return null;
       if (!result.ok) return describeVaultFailure(result.failure);
       const updated = result.data;
       const replace = (list: VaultItemSummary[]) =>
@@ -147,74 +179,97 @@ export function useVault(pageUrl: string | null): VaultData {
       // Changing login URLs / fill flag changes what matches this page.
       matchGeneration.current++;
       const normalized = normalizeLoginUrl(pageUrl);
-      if (normalized && isFillablePageUrl(pageUrl)) {
+      if (actor && normalized && isFillablePageUrl(pageUrl)) {
         const run = matchGeneration.current;
-        const fresh = await fetchBrowserLoginMatches(normalized);
-        if (run === matchGeneration.current) setMatches(fresh.ok ? fresh.data.matches : []);
+        const fresh = await fetchBrowserLoginMatches(normalized, undefined, {
+          expectedActor: actor,
+        });
+        if (run === matchGeneration.current && admission.current()) {
+          setMatches(fresh.ok ? fresh.data.matches : []);
+          setMatchesOwner(matchOwner);
+        }
       }
       return null;
     },
-    [pageUrl],
+    [admission, actor, matchOwner, pageUrl],
   );
 
   const createItem = useCallback(
     async (input: VaultItemCreateInput): Promise<string | null> => {
+      if (!admission.current()) return null;
       const result = await createVaultItem(input);
+      if (!admission.current()) return null;
       if (!result.ok) return describeVaultFailure(result.failure);
       await reload();
       return null;
     },
-    [reload],
+    [admission, reload],
   );
 
   /** Swap one item for its freshly-masked server copy in whichever list has it. */
-  const refreshItem = useCallback(async (itemId: string): Promise<string | null> => {
-    const result = await fetchVaultItem(itemId);
-    if (!result.ok) return describeVaultFailure(result.failure);
-    const updated = result.data;
-    const replace = (list: VaultItemSummary[]) =>
-      list.map((item) => (item.id === updated.id ? updated : item));
-    setMine(replace);
-    setShared(replace);
-    return null;
-  }, []);
+  const refreshItem = useCallback(
+    async (itemId: string): Promise<string | null> => {
+      if (!admission.current()) return null;
+      const result = await fetchVaultItem(itemId);
+      if (!admission.current()) return null;
+      if (!result.ok) return describeVaultFailure(result.failure);
+      const updated = result.data;
+      const replace = (list: VaultItemSummary[]) =>
+        list.map((item) => (item.id === updated.id ? updated : item));
+      setMine(replace);
+      setShared(replace);
+      return null;
+    },
+    [admission],
+  );
 
   const changeFieldValue = useCallback(
     async (itemId: string, fieldId: string, value: string): Promise<string | null> => {
+      if (!admission.current()) return null;
       const result = await updateVaultFieldValue(itemId, fieldId, value);
+      if (!admission.current()) return null;
       if (!result.ok) return describeVaultFailure(result.failure);
       return refreshItem(itemId);
     },
-    [refreshItem],
+    [admission, refreshItem],
   );
 
   const addField = useCallback(
     async (itemId: string, field: VaultFieldInput): Promise<string | null> => {
+      if (!admission.current()) return null;
       const result = await addVaultField(itemId, field);
+      if (!admission.current()) return null;
       if (!result.ok) return describeVaultFailure(result.failure);
       return refreshItem(itemId);
     },
-    [refreshItem],
+    [admission, refreshItem],
   );
 
   const removeVaultField = useCallback(
     async (itemId: string, fieldId: string): Promise<string | null> => {
+      if (!admission.current()) return null;
       const result = await deleteVaultField(itemId, fieldId);
+      if (!admission.current()) return null;
       if (!result.ok) return describeVaultFailure(result.failure);
       return refreshItem(itemId);
     },
-    [refreshItem],
+    [admission, refreshItem],
   );
 
-  const removeVaultItem = useCallback(async (itemId: string): Promise<string | null> => {
-    const result = await deleteVaultItem(itemId);
-    if (!result.ok) return describeVaultFailure(result.failure);
-    const drop = (list: VaultItemSummary[]) => list.filter((item) => item.id !== itemId);
-    setMine(drop);
-    setShared(drop);
-    setMatches((list) => list.filter((m) => m.item_id !== itemId));
-    return null;
-  }, []);
+  const removeVaultItem = useCallback(
+    async (itemId: string): Promise<string | null> => {
+      if (!admission.current()) return null;
+      const result = await deleteVaultItem(itemId);
+      if (!admission.current()) return null;
+      if (!result.ok) return describeVaultFailure(result.failure);
+      const drop = (list: VaultItemSummary[]) => list.filter((item) => item.id !== itemId);
+      setMine(drop);
+      setShared(drop);
+      setMatches((list) => list.filter((m) => m.item_id !== itemId));
+      return null;
+    },
+    [admission],
+  );
 
   return {
     auth,
@@ -222,7 +277,7 @@ export function useVault(pageUrl: string | null): VaultData {
     error,
     mine,
     shared,
-    matches,
+    matches: matchesOwner === matchOwner ? matches : [],
     matchesLoading,
     reload,
     patchItem,
@@ -273,16 +328,23 @@ const STATUS_COPY: Record<CredentialLoginStatus, string> = {
  * checks, identical top-frame-only filling, identical auditing, and identical
  * "the plaintext never leaves the handler's local scope" guarantee.
  */
-export function useCredentialLogin(): {
+export function useCredentialLogin(admission: PanelActionAdmission): {
   /** False on builds where the handler's `supportedBrowsers` excludes us. */
   supported: boolean;
   running: string | null;
   outcome: CredentialLoginOutcome | null;
-  useHere: (itemId: string) => Promise<void>;
+  useHere: (itemId: string, assignedTabId: number | null) => Promise<void>;
   dismiss: () => void;
 } {
   const [running, setRunning] = useState<string | null>(null);
   const [outcome, setOutcome] = useState<CredentialLoginOutcome | null>(null);
+  const mounted = useRef(false);
+  useLayoutEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   // Calling `run()` directly bypasses the SW dispatcher, which is where the
   // per-browser gate normally lives. Honour the handler's own declaration here
@@ -290,7 +352,11 @@ export function useCredentialLogin(): {
   const supported = isBrowserSupported(credential_login.supportedBrowsers);
 
   const useHere = useCallback(
-    async (itemId: string) => {
+    async (itemId: string, assignedTabId: number | null) => {
+      if (assignedTabId == null) {
+        setOutcome({ status: 'no_active_tab', message: STATUS_COPY.no_active_tab });
+        return;
+      }
       if (!supported) {
         setOutcome({
           status: 'unknown',
@@ -298,35 +364,38 @@ export function useCredentialLogin(): {
         });
         return;
       }
-      setRunning(itemId);
-      setOutcome(null);
-      try {
-        const result = await credential_login.run(
-          { action: 'auto', credential_item_id: itemId },
-          {
-            conversationId: null,
-            runId: 'vault-panel',
-            callId: `vault-panel-${Date.now()}`,
-            agentName: null,
-            permissionMode: 'act',
-            // The user clicked this in the panel while looking at a tab — there
-            // is no agent assignment to honour, so the handler resolves the
-            // focused tab itself.
-            assignedTabId: null,
-          },
-        );
-        const status: CredentialLoginStatus =
-          result.status in STATUS_COPY ? (result.status as CredentialLoginStatus) : 'unknown';
-        setOutcome({ status, message: STATUS_COPY[status] });
-      } catch {
-        // Never surface a thrown error: an exception raised inside a fill can
-        // carry the value in its message on some engines.
-        setOutcome({ status: 'unknown', message: STATUS_COPY.unknown });
-      } finally {
-        setRunning(null);
-      }
+      if (!mounted.current || !admission.current()) return;
+      await admission.run(async () => {
+        setRunning(itemId);
+        setOutcome(null);
+        try {
+          if (!admission.current()) return;
+          const result = await credential_login.run(
+            { action: 'auto', credential_item_id: itemId },
+            {
+              conversationId: null,
+              runId: 'vault-panel',
+              callId: `vault-panel-${Date.now()}`,
+              agentName: null,
+              permissionMode: 'act',
+              assignedTabId,
+            },
+          );
+          if (!mounted.current || !admission.current()) return;
+          const status: CredentialLoginStatus =
+            result.status in STATUS_COPY ? (result.status as CredentialLoginStatus) : 'unknown';
+          setOutcome({ status, message: STATUS_COPY[status] });
+        } catch {
+          // Never surface a thrown error: an exception raised inside a fill can
+          // carry the value in its message on some engines.
+          if (mounted.current && admission.current())
+            setOutcome({ status: 'unknown', message: STATUS_COPY.unknown });
+        } finally {
+          if (mounted.current && admission.current()) setRunning(null);
+        }
+      });
     },
-    [supported],
+    [admission, supported],
   );
 
   const dismiss = useCallback(() => setOutcome(null), []);

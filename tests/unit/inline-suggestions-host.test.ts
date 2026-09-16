@@ -21,9 +21,12 @@ const state = vi.hoisted(() => ({
   matchGate: null as Promise<void> | null,
   matchStarted: null as (() => void) | null,
   materializeGate: null as Promise<void> | null,
+  materializeStarted: null as (() => void) | null,
+  materializeCalls: 0,
   finalFrameGate: null as Promise<void> | null,
   finalFrameStarted: null as (() => void) | null,
   getFrameCalls: 0,
+  activeTabId: 7,
 }));
 const runtimeListeners: Array<
   (
@@ -41,6 +44,7 @@ type RuntimeListener =
     ) => boolean)
   | undefined;
 const targets: chrome.scripting.InjectionTarget[] = [];
+const activationListeners: Array<(info: chrome.tabs.TabActiveInfo) => void> = [];
 
 vi.mock('@/lib/auth/flow', () => ({
   getCurrentUser: async () => (state.authenticated ? { id: USER } : null),
@@ -53,6 +57,8 @@ vi.mock('@/lib/api/routes/vault', () => ({
     return { ok: true, data: { count: state.matches.length, matches: state.matches } };
   },
   materializeBrowserLogin: async () => {
+    state.materializeCalls++;
+    state.materializeStarted?.();
     await state.materializeGate;
     return {
       ok: true,
@@ -87,6 +93,20 @@ function replyFor(message: unknown, tabId = 7, documentId = state.documentId): P
     expect(kept).toContain(true);
   });
 }
+function replyForPanel(
+  message: unknown,
+  sender: Partial<chrome.runtime.MessageSender> = {},
+): Promise<unknown> {
+  return new Promise((resolve) => {
+    const panel = {
+      id: 'test-extension',
+      url: 'chrome-extension://test-extension/sidepanel.html',
+      ...sender,
+    } as chrome.runtime.MessageSender;
+    const kept = runtimeListeners.map((listener) => listener(message, panel, resolve));
+    expect(kept).toContain(true);
+  });
+}
 
 beforeEach(() => {
   state.authenticated = true;
@@ -96,9 +116,12 @@ beforeEach(() => {
   state.matchGate = null;
   state.matchStarted = null;
   state.materializeGate = null;
+  state.materializeStarted = null;
+  state.materializeCalls = 0;
   state.finalFrameGate = null;
   state.finalFrameStarted = null;
   state.getFrameCalls = 0;
+  state.activeTabId = 7;
   state.matches = [
     {
       item_id: ITEM,
@@ -112,6 +135,7 @@ beforeEach(() => {
   targets.length = 0;
   tabMessages.length = 0;
   runtimeListeners.length = 0;
+  activationListeners.length = 0;
   history.replaceState({}, '', '/');
   document.body.innerHTML =
     '<form method="post"><input id="username" autocomplete="username"><input id="password" type="password" autocomplete="current-password"><button type="submit">Sign in</button></form>';
@@ -122,7 +146,9 @@ beforeEach(() => {
   }
   (globalThis as unknown as { chrome: unknown }).chrome = {
     runtime: {
+      id: 'test-extension',
       getManifest: () => ({ version: 'test' }),
+      getURL: (path: string) => `chrome-extension://test-extension/${path}`,
       onMessage: {
         addListener: (listener: RuntimeListener) => listener && runtimeListeners.push(listener),
       },
@@ -152,8 +178,17 @@ beforeEach(() => {
       },
     },
     tabs: {
+      get: async (tabId: number) => ({
+        id: tabId,
+        windowId: 1,
+        active: tabId === state.activeTabId,
+      }),
       onRemoved: { addListener: () => undefined },
       onUpdated: { addListener: () => undefined },
+      onActivated: {
+        addListener: (listener: (info: chrome.tabs.TabActiveInfo) => void) =>
+          activationListeners.push(listener),
+      },
       sendMessage: async (tabId: number, message: unknown, options: unknown) => {
         tabMessages.push({ tabId, message, options });
         const sender = {
@@ -180,12 +215,291 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.restoreAllMocks();
   runtimeListeners.length = 0;
   vi.resetModules();
   document.body.innerHTML = '';
 });
 
 describe('inline saved-login host', () => {
+  it('refuses forged panel callers and projects only eligible IDs to the sidepanel', async () => {
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    const query = await replyFor({
+      __matrx: true,
+      kind: 'credential-suggestions:query',
+      payload: { fieldSelector: '#password' },
+    });
+    expect((query as { status: string }).status).toBe('ready');
+    const status = await replyForPanel({
+      __matrx: true,
+      kind: 'credential-suggestions:panel-status',
+      payload: { tabId: 7 },
+    });
+    expect(status).toEqual({ status: 'ready', itemIds: [ITEM] });
+    const replies: unknown[] = [];
+    for (const listener of runtimeListeners)
+      replies.push(
+        listener(
+          { __matrx: true, kind: 'credential-suggestions:panel-status', payload: { tabId: 7 } },
+          {
+            id: 'test-extension',
+            url: 'chrome-extension://test-extension/options.html',
+          } as chrome.runtime.MessageSender,
+          () => undefined,
+        ),
+      );
+    expect(replies).not.toContain(true);
+  });
+
+  it('does not write after activation changes away and back while panel materialization waits', async () => {
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    (document.querySelector('#password') as HTMLInputElement).focus();
+    await replyFor({
+      __matrx: true,
+      kind: 'credential-suggestions:query',
+      payload: { fieldSelector: '#password' },
+    });
+    let release!: () => void;
+    state.materializeGate = new Promise((resolve) => {
+      release = resolve;
+    });
+    let materializing!: () => void;
+    const materializingNow = new Promise<void>((resolve) => {
+      materializing = resolve;
+    });
+    state.materializeStarted = materializing;
+    const filling = replyForPanel({
+      __matrx: true,
+      kind: 'credential-suggestions:panel-fill',
+      payload: { tabId: 7, itemId: ITEM },
+    });
+    await materializingNow;
+    state.activeTabId = 8;
+    for (const listener of activationListeners) listener({ tabId: 8, windowId: 1 });
+    state.activeTabId = 7;
+    for (const listener of activationListeners) listener({ tabId: 7, windowId: 1 });
+    release();
+    expect(await filling).toMatchObject({ status: 'stale' });
+    expect(targets.filter((target) => target.documentIds?.[0] === 'doc-7')).toHaveLength(2);
+    expect((document.querySelector('#username') as HTMLInputElement).value).toBe('');
+    expect((document.querySelector('#password') as HTMLInputElement).value).toBe('');
+  });
+
+  it('claims a panel offer synchronously so duplicate clicks materialize once', async () => {
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    (document.querySelector('#password') as HTMLInputElement).focus();
+    await replyFor({
+      __matrx: true,
+      kind: 'credential-suggestions:query',
+      payload: { fieldSelector: '#password' },
+    });
+    let release!: () => void;
+    state.materializeGate = new Promise((resolve) => {
+      release = resolve;
+    });
+    const first = replyForPanel({
+      __matrx: true,
+      kind: 'credential-suggestions:panel-fill',
+      payload: { tabId: 7, itemId: ITEM },
+    });
+    const second = replyForPanel({
+      __matrx: true,
+      kind: 'credential-suggestions:panel-fill',
+      payload: { tabId: 7, itemId: ITEM },
+    });
+    await vi.waitFor(() => expect(state.materializeCalls).toBe(1));
+    release();
+    expect(await second).toMatchObject({ status: 'stale' });
+    expect(await first).toMatchObject({ status: 'filled' });
+    expect((document.querySelector('#username') as HTMLInputElement).value).toBe(
+      'INLINE_USER_SENTINEL',
+    );
+    expect((document.querySelector('#password') as HTMLInputElement).value).toBe(
+      'INLINE_PASSWORD_SENTINEL',
+    );
+  });
+  it('refuses a same-actor auth invalidation after the panel offer was claimed', async () => {
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    (document.querySelector('#password') as HTMLInputElement).focus();
+    await replyFor({
+      __matrx: true,
+      kind: 'credential-suggestions:query',
+      payload: { fieldSelector: '#password' },
+    });
+    let release!: () => void;
+    let reached!: () => void;
+    state.materializeGate = new Promise((r) => {
+      release = r;
+    });
+    const started = new Promise<void>((r) => {
+      reached = r;
+    });
+    state.materializeStarted = reached;
+    const fill = replyForPanel({
+      __matrx: true,
+      kind: 'credential-suggestions:panel-fill',
+      payload: { tabId: 7, itemId: ITEM },
+    });
+    await started;
+    for (const listener of runtimeListeners)
+      listener(
+        { __matrx: true, kind: 'auth:state-changed', payload: {} },
+        {} as chrome.runtime.MessageSender,
+        () => {},
+      );
+    release();
+    expect(await fill).toMatchObject({ status: 'stale' });
+    expect((document.querySelector('#password') as HTMLInputElement).value).toBe('');
+  });
+
+  it.each(['query-start', 'matching'])(
+    'invalidates a query activated away during %s',
+    async (stage) => {
+      const { registerInlineCredentialSuggestionHost } = await import(
+        '@/lib/credentials/inline-suggestions-host'
+      );
+      registerInlineCredentialSuggestionHost();
+      let release!: () => void;
+      let reached!: () => void;
+      const gate = new Promise<void>((r) => {
+        release = r;
+      });
+      const started = new Promise<void>((r) => {
+        reached = r;
+      });
+      if (stage === 'matching') {
+        state.matchGate = gate;
+        state.matchStarted = reached;
+      } else {
+        const original = chrome.webNavigation.getFrame;
+        chrome.webNavigation.getFrame = vi.fn(async (arg: chrome.webNavigation.GetFrameDetails) => {
+          reached();
+          await gate;
+          return original(arg);
+        }) as unknown as typeof original;
+      }
+      (document.querySelector('#password') as HTMLInputElement).focus();
+      const query = replyFor({
+        __matrx: true,
+        kind: 'credential-suggestions:query',
+        payload: { fieldSelector: '#password' },
+      });
+      await started;
+      for (const tabId of [8, 7])
+        for (const listener of activationListeners) listener({ tabId, windowId: 1 });
+      release();
+      expect(await query).not.toMatchObject({ status: 'ready' });
+      expect(
+        await replyForPanel({
+          __matrx: true,
+          kind: 'credential-suggestions:panel-status',
+          payload: { tabId: 7 },
+        }),
+      ).toMatchObject({ status: 'none', itemIds: [] });
+    },
+  );
+
+  it.each(['tab', 'document'])('rechecks activation after final %s lookup', async (dependency) => {
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    (document.querySelector('#password') as HTMLInputElement).focus();
+    await replyFor({
+      __matrx: true,
+      kind: 'credential-suggestions:query',
+      payload: { fieldSelector: '#password' },
+    });
+    let release!: () => void;
+    let reached!: () => void;
+    const gate = new Promise<void>((r) => {
+      release = r;
+    });
+    const started = new Promise<void>((r) => {
+      reached = r;
+    });
+    let calls = 0;
+    if (dependency === 'tab') {
+      const original = chrome.tabs.get;
+      chrome.tabs.get = vi.fn(async (arg: number) => {
+        if (++calls === 4) {
+          reached();
+          await gate;
+        }
+        return original(arg);
+      }) as unknown as typeof original;
+    } else {
+      const original = chrome.webNavigation.getFrame;
+      chrome.webNavigation.getFrame = vi.fn(async (arg: chrome.webNavigation.GetFrameDetails) => {
+        if (++calls === 4) {
+          reached();
+          await gate;
+        }
+        return original(arg);
+      }) as unknown as typeof original;
+    }
+    const fill = replyForPanel({
+      __matrx: true,
+      kind: 'credential-suggestions:panel-fill',
+      payload: { tabId: 7, itemId: ITEM },
+    });
+    await started;
+    for (const tabId of [8, 7])
+      for (const listener of activationListeners) listener({ tabId, windowId: 1 });
+    release();
+    expect(await fill).toMatchObject({ status: 'stale' });
+    expect((document.querySelector('#password') as HTMLInputElement).value).toBe('');
+  });
+
+  it.each(['unrelated-first', 'hidden-first', 'unrelated-next', 'hidden-next'])(
+    'panel writer refuses %s and clears its partial fill',
+    async (mode) => {
+      const { registerInlineCredentialSuggestionHost } = await import(
+        '@/lib/credentials/inline-suggestions-host'
+      );
+      registerInlineCredentialSuggestionHost();
+      const username = document.querySelector('#username') as HTMLInputElement;
+      const password = document.querySelector('#password') as HTMLInputElement;
+      const other = document.createElement('input');
+      document.body.append(other);
+      password.focus();
+      await replyFor({
+        __matrx: true,
+        kind: 'credential-suggestions:query',
+        payload: { fieldSelector: '#password' },
+      });
+      const alter = () => {
+        if (mode.startsWith('hidden'))
+          vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+        else other.focus();
+      };
+      if (mode.endsWith('first')) alter();
+      else username.addEventListener('input', alter, { once: true });
+      expect(
+        await replyForPanel({
+          __matrx: true,
+          kind: 'credential-suggestions:panel-fill',
+          payload: { tabId: 7, itemId: ITEM },
+        }),
+      ).toMatchObject({ status: 'stale' });
+      expect(username.value).toBe('');
+      expect(password.value).toBe('');
+      vi.restoreAllMocks();
+    },
+  );
+
   it('runs the value-bearing dispatcher after source transfer without module bindings', async () => {
     const { __inlineFillSerializedSourceForTest } = await import(
       '@/lib/credentials/inline-suggestions-host'
@@ -605,6 +919,7 @@ describe('inline saved-login host', () => {
       7,
       'doc-7',
     )) as { status: string; offerId: string };
+    state.activeTabId = 8;
     const second = (await replyFor(
       {
         __matrx: true,

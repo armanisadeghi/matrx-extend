@@ -4,6 +4,7 @@ import {
   materializeBrowserLogin,
 } from '@/lib/api/routes/vault';
 import { getCurrentUser } from '@/lib/auth/flow';
+import { setSavedLoginAssistance } from '@/lib/credentials/assistance-status';
 import {
   type BoundLoginGroup,
   type CredentialDomInjectedRequest,
@@ -15,7 +16,6 @@ import { SENSITIVE_ATTR, rememberSensitiveFields } from '@/lib/credentials/sensi
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { readOfferSavedLoginsEnabled } from '@/lib/settings/persisted';
-import { setSavedLoginAssistance } from '@/lib/credentials/assistance-status';
 
 /**
  * Service-worker host for the metadata-only inline Vault chooser.
@@ -28,6 +28,7 @@ import { setSavedLoginAssistance } from '@/lib/credentials/assistance-status';
 
 const OFFER_TTL_MS = 60_000;
 const MAX_SELECTOR_LENGTH = 800;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type QueryResponse =
   | { status: 'ready'; offerId: string; matches: Array<{ item_id: string; display_name: string }> }
@@ -49,6 +50,7 @@ interface FormGroup extends BoundLoginGroup {}
 interface Offer extends FormGroup {
   id: string;
   tabId: number;
+  windowId: number;
   documentId: string;
   organizationId: string;
   userId: string;
@@ -59,6 +61,9 @@ interface Offer extends FormGroup {
 
 const OFFERS = new Map<string, Offer>();
 const GENERATIONS = new Map<string, number>();
+// This fence deliberately outlives an offer claim. A claimed fill can still be
+// awaiting materialization when a person changes tabs and comes back.
+const ACTIVATION_EPOCHS = new Map<number, number>();
 let registered = false;
 
 const COPY = {
@@ -69,6 +74,11 @@ const COPY = {
   unsafe_destination: 'Matrx will not fill this page.',
   stale: 'That sign-in form changed. Focus it again to choose a saved login.',
   filled: 'Filled. Matrx did not submit the form.',
+} as const;
+const PANEL_COPY = {
+  stale: 'Click the username or password box on the website, then choose Fill.',
+  disabled: 'Turn on saved-login matching in extension settings to use Fill.',
+  filled: 'Filled. Review the form, then sign in.',
 } as const;
 
 function response(status: keyof typeof COPY): QueryResponse {
@@ -86,6 +96,9 @@ function purge(tabId?: number): void {
     }
   for (const id of tabId === undefined ? affected : new Set([tabId]))
     setSavedLoginAssistance(id, false);
+}
+function purgeExpired(): void {
+  for (const [id, offer] of OFFERS) if (offer.expiresAt <= Date.now()) expireOffer(id);
 }
 function generationKey(tabId: number, documentId: string): string {
   return `${tabId}:${documentId}`;
@@ -127,6 +140,36 @@ function validFill(payload: unknown): payload is { offerId: string; itemId: stri
     typeof (payload as { itemId?: unknown }).itemId === 'string' &&
     Object.keys(payload).length === 2
   );
+}
+function validPanelPayload(payload: unknown): payload is { tabId: number; itemId?: string } {
+  return (
+    !!payload &&
+    typeof payload === 'object' &&
+    Number.isInteger((payload as { tabId?: unknown }).tabId) &&
+    (payload as { tabId: number }).tabId >= 0 &&
+    Object.keys(payload).every((key) => key === 'tabId' || key === 'itemId') &&
+    (!('itemId' in payload) ||
+      (typeof (payload as { itemId?: unknown }).itemId === 'string' &&
+        UUID.test((payload as { itemId: string }).itemId)))
+  );
+}
+function trustedSidepanel(sender: chrome.runtime.MessageSender): boolean {
+  return (
+    sender.id === chrome.runtime.id &&
+    !sender.tab &&
+    sender.url === chrome.runtime.getURL('sidepanel.html')
+  );
+}
+function activationEpoch(windowId: number): number {
+  return ACTIVATION_EPOCHS.get(windowId) ?? 0;
+}
+async function currentActiveTab(tabId: number, windowId: number): Promise<boolean> {
+  try {
+    const tab = await chrome.tabs.get(tabId);
+    return tab.windowId === windowId && tab.active === true;
+  } catch {
+    return false;
+  }
 }
 
 /** Test seam: this is the one serializable credential DOM source. */
@@ -177,6 +220,9 @@ async function isCurrentTopDocument(tabId: number, documentId: string): Promise<
 
 async function query(tabId: number, documentId: string, selector: string): Promise<QueryResponse> {
   const generation = nextGeneration(tabId, documentId);
+  // Window identity arrives asynchronously; retain each window's epoch from
+  // query entry so activation during any earlier await cannot mint an offer.
+  const activationAtStart = new Map(ACTIVATION_EPOCHS);
   if (!canTargetCurrentDocument()) return response('unavailable');
   if (!(await isCurrentTopDocument(tabId, documentId))) return response('unavailable');
   if (!(await readOfferSavedLoginsEnabled())) return response('unavailable');
@@ -188,6 +234,10 @@ async function query(tabId: number, documentId: string, selector: string): Promi
     selector,
   }).catch(() => null);
   if (!group) return response('unsafe_destination');
+  const tab = await chrome.tabs.get(tabId).catch(() => null);
+  if (!tab || tab.windowId == null || !tab.active) return response('unavailable');
+  const queryEpoch = activationAtStart.get(tab.windowId) ?? 0;
+  if (activationEpoch(tab.windowId) !== queryEpoch) return response('unsafe_destination');
   const url = new URL(group.pageUrl);
   if (!isSafeDestination(url) || !normalizeLoginUrl(group.pageUrl))
     return response('unsafe_destination');
@@ -198,6 +248,7 @@ async function query(tabId: number, documentId: string, selector: string): Promi
   );
   if (GENERATIONS.get(generationKey(tabId, documentId)) !== generation)
     return response('unsafe_destination');
+  if (activationEpoch(tab.windowId) !== queryEpoch) return response('unsafe_destination');
   const actorAfterMatches = await context();
   if (
     !actorAfterMatches ||
@@ -205,6 +256,7 @@ async function query(tabId: number, documentId: string, selector: string): Promi
     actorAfterMatches.organizationId !== actor.organizationId
   )
     return response('organization_required');
+  if (activationEpoch(tab.windowId) !== queryEpoch) return response('unsafe_destination');
   if (!matches.ok)
     return response(
       matches.failure.kind === 'sign_in_required' ? 'sign_in_required' : 'unavailable',
@@ -218,10 +270,16 @@ async function query(tabId: number, documentId: string, selector: string): Promi
     );
   });
   if (eligible.length === 0) return response('no_matches');
+  if (
+    GENERATIONS.get(generationKey(tabId, documentId)) !== generation ||
+    activationEpoch(tab.windowId) !== queryEpoch
+  )
+    return response('unsafe_destination');
   const id = randomOfferId();
   OFFERS.set(id, {
     id,
     tabId,
+    windowId: tab.windowId,
     documentId,
     organizationId: actor.organizationId,
     userId: actor.userId,
@@ -241,6 +299,33 @@ async function query(tabId: number, documentId: string, selector: string): Promi
   };
 }
 
+type PanelStatus = { status: 'ready' | 'none' | 'disabled'; itemIds: string[] };
+async function panelStatus(tabId: number): Promise<PanelStatus> {
+  purgeExpired();
+  if (!(await readOfferSavedLoginsEnabled())) return { status: 'disabled', itemIds: [] };
+  const offers = [...OFFERS.values()].filter(
+    (offer) =>
+      offer.tabId === tabId &&
+      offer.expiresAt > Date.now() &&
+      GENERATIONS.get(generationKey(offer.tabId, offer.documentId)) === offer.generation,
+  );
+  if (offers.length !== 1) return { status: 'none', itemIds: [] };
+  const offer = offers[0];
+  if (!offer) return { status: 'none', itemIds: [] };
+  if (!(await isCurrentTopDocument(offer.tabId, offer.documentId)))
+    return { status: 'none', itemIds: [] };
+  const actor = await context();
+  if (!actor || actor.userId !== offer.userId || actor.organizationId !== offer.organizationId)
+    return { status: 'none', itemIds: [] };
+  if (
+    OFFERS.get(offer.id) !== offer ||
+    GENERATIONS.get(generationKey(offer.tabId, offer.documentId)) !== offer.generation ||
+    offer.expiresAt <= Date.now()
+  )
+    return { status: 'none', itemIds: [] };
+  return { status: 'ready', itemIds: [...offer.itemIds] };
+}
+
 async function fill(
   tabId: number,
   documentId: string,
@@ -249,8 +334,8 @@ async function fill(
   const offer = OFFERS.get(payload.offerId);
   OFFERS.delete(payload.offerId); // claim before async work: duplicate clicks cannot fill twice
   if (offer) setSavedLoginAssistance(tabId, false);
+  if (!offer) return fillResponse('stale');
   if (
-    !offer ||
     offer.tabId !== tabId ||
     offer.documentId !== documentId ||
     offer.expiresAt <= Date.now() ||
@@ -344,6 +429,111 @@ async function fill(
   }
 }
 
+async function panelFill(tabId: number, itemId: string): Promise<FillResponse> {
+  purgeExpired();
+  const candidates = [...OFFERS.values()].filter(
+    (offer) => offer.tabId === tabId && offer.itemIds.has(itemId) && offer.expiresAt > Date.now(),
+  );
+  if (candidates.length !== 1) return { status: 'stale', message: PANEL_COPY.stale };
+  const offer = candidates[0];
+  if (!offer) return { status: 'stale', message: PANEL_COPY.stale };
+  // Claim synchronously before any await. This is the only admission point for
+  // competing panel clicks and survives later validation failure.
+  OFFERS.delete(offer.id);
+  setSavedLoginAssistance(offer.tabId, false);
+  const capturedEpoch = activationEpoch(offer.windowId);
+  if (!(await readOfferSavedLoginsEnabled()))
+    return { status: 'unavailable', message: PANEL_COPY.disabled };
+  if (
+    !(await currentActiveTab(offer.tabId, offer.windowId)) ||
+    !(await isCurrentTopDocument(offer.tabId, offer.documentId))
+  )
+    return { status: 'stale', message: PANEL_COPY.stale };
+  const valid = (): boolean =>
+    activationEpoch(offer.windowId) === capturedEpoch &&
+    GENERATIONS.get(generationKey(offer.tabId, offer.documentId)) === offer.generation &&
+    offer.expiresAt > Date.now();
+  const fence = async (): Promise<boolean> => {
+    if (!valid()) return false;
+    if (!(await currentActiveTab(offer.tabId, offer.windowId)) || !valid()) return false;
+    if (!(await isCurrentTopDocument(offer.tabId, offer.documentId))) return false;
+    return valid();
+  };
+  if (!(await fence())) return { status: 'stale', message: PANEL_COPY.stale };
+  if (GENERATIONS.get(generationKey(offer.tabId, offer.documentId)) !== offer.generation)
+    return { status: 'stale', message: PANEL_COPY.stale };
+  const actor = await context();
+  if (!actor || actor.userId !== offer.userId || actor.organizationId !== offer.organizationId)
+    return { status: 'stale', message: PANEL_COPY.stale };
+  const current = await injectCredentialDom(offer.tabId, offer.documentId, {
+    operation: 'focused_group',
+    selector: offer.anchor,
+    requirePanelFocus: true,
+  }).catch(() => null);
+  if (
+    !(await fence()) ||
+    !current ||
+    current.pageUrl !== offer.pageUrl ||
+    current.username !== offer.username ||
+    current.password !== offer.password
+  )
+    return { status: 'stale', message: PANEL_COPY.stale };
+  const materialized = await materializeBrowserLogin(
+    itemId,
+    {
+      pageUrl: offer.pageUrl,
+      toolInvocationId: `panel-${offer.id}`,
+      clientBuild: chrome.runtime.getManifest().version,
+      fieldKeys: current.usernameOnly ? ['username'] : ['username', 'password'],
+    },
+    { expectedActor: actor },
+  );
+  if (!materialized.ok)
+    return fillResponse(materialized.failure.kind === 'forbidden' ? 'stale' : 'unavailable');
+  const data = materialized.data;
+  const clear = (): void => {
+    data.username = '';
+    data.password = '';
+    data.fields = {};
+  };
+  try {
+    const actorAfterMaterialization = await context();
+    if (
+      !actorAfterMaterialization ||
+      actorAfterMaterialization.userId !== offer.userId ||
+      actorAfterMaterialization.organizationId !== offer.organizationId ||
+      !(await readOfferSavedLoginsEnabled()) ||
+      !(await fence()) ||
+      data.origin !== new URL(offer.pageUrl).origin
+    )
+      return { status: 'stale', message: PANEL_COPY.stale };
+    rememberSensitiveFields(
+      offer.tabId,
+      [offer.username, offer.password].filter((x): x is string => !!x),
+    );
+    const done = await injectCredentialDom(offer.tabId, offer.documentId, {
+      operation: 'fill',
+      expected: offer,
+      requested: [
+        ...(offer.username
+          ? [{ selector: offer.username, value: data.fields?.username ?? data.username ?? null }]
+          : []),
+        ...(offer.password
+          ? [{ selector: offer.password, value: data.fields?.password ?? data.password ?? null }]
+          : []),
+      ],
+      sensitiveAttr: SENSITIVE_ATTR,
+      preserveLegacyFieldBehavior: false,
+      requirePanelFocus: true,
+    }).catch(() => null);
+    return done?.ok
+      ? { status: 'filled', message: PANEL_COPY.filled }
+      : { status: 'stale', message: PANEL_COPY.stale };
+  } finally {
+    clear();
+  }
+}
+
 function contextTargets(): Array<{ tabId: number; documentId: string }> {
   const targets = new Map<string, { tabId: number; documentId: string }>();
   for (const offer of OFFERS.values())
@@ -401,6 +591,26 @@ export function registerInlineCredentialSuggestionHost(): void {
       broadcastContextChanged(targets);
       return false;
     }
+    if (env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_PANEL_STATUS) {
+      if (!trustedSidepanel(sender) || !validPanelPayload(env.payload) || 'itemId' in env.payload)
+        return false;
+      void panelStatus(env.payload.tabId)
+        .then(sendResponse)
+        .catch(() => sendResponse({ status: 'none', itemIds: [] }));
+      return true;
+    }
+    if (env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_PANEL_FILL) {
+      if (
+        !trustedSidepanel(sender) ||
+        !validPanelPayload(env.payload) ||
+        typeof env.payload.itemId !== 'string'
+      )
+        return false;
+      void panelFill(env.payload.tabId, env.payload.itemId)
+        .then(sendResponse)
+        .catch(() => sendResponse(fillResponse('unavailable')));
+      return true;
+    }
     const tabId = sender.tab?.id;
     const documentId = (sender as chrome.runtime.MessageSender & { documentId?: unknown })
       .documentId;
@@ -445,8 +655,24 @@ export function registerInlineCredentialSuggestionHost(): void {
   chrome.tabs.onUpdated.addListener((tabId, change) => {
     if (change.status === 'loading' || change.url) invalidate(tabId);
   });
+  chrome.tabs.onActivated.addListener((activeInfo) => {
+    ACTIVATION_EPOCHS.set(activeInfo.windowId, activationEpoch(activeInfo.windowId) + 1);
+    for (const offer of [...OFFERS.values()]) {
+      if (offer.windowId !== activeInfo.windowId) continue;
+      OFFERS.delete(offer.id);
+      setSavedLoginAssistance(offer.tabId, false);
+    }
+    // The state projection is value-free. Consumers re-read rather than retain IDs.
+    setSavedLoginAssistance(activeInfo.tabId, false);
+  });
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'local' && ('matrx.settings.v1' in changes || 'matrx.org.active' in changes)) {
+    if (
+      area === 'local' &&
+      ('matrx.settings.v1' in changes ||
+        'matrx.org.active' in changes ||
+        'matrx.auth.accessToken' in changes ||
+        'matrx.user.profile' in changes)
+    ) {
       const targets = contextTargets();
       invalidate();
       broadcastContextChanged(targets);

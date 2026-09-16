@@ -24,6 +24,7 @@
  */
 
 import { ENV } from '@/config/env';
+import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAuth } from '@/hooks/use-auth';
 import type {
@@ -73,8 +74,9 @@ import {
   Vault as VaultIcon,
   X,
 } from 'lucide-react';
-import { useCallback, useId, useMemo, useState } from 'react';
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { PendingCaptureCard } from './PendingCaptureCard';
+import { type PanelActionAdmission, usePanelAdmission } from './usePanelAdmission';
 import { useCredentialLogin, useVault } from './useVault';
 
 const WEB_VAULT_URL = `${ENV.FRONTEND_URL}/vault`;
@@ -101,8 +103,34 @@ function vaultRemoval(confirmed: boolean, failure: string | null): VaultRemoval 
 export function VaultView() {
   const tab = useActiveTab();
   const pageUrl = tab.url;
-  const vault = useVault(pageUrl);
-  const login = useCredentialLogin();
+  const { user } = useAuth();
+  const organization = useActiveOrganization();
+  const actor = useMemo(
+    () =>
+      user && organization.active
+        ? { userId: user.id, organizationId: organization.active.id }
+        : null,
+    [organization.active, user],
+  );
+  // A new browsing/identity context owns a fresh component lifetime. Keying
+  // the whole session also drops revealed values and edit forms immediately.
+  const { owner, admission } = usePanelAdmission(tab.id, pageUrl, actor);
+  return <VaultSession key={owner} tab={tab} actor={actor} admission={admission} />;
+}
+
+function VaultSession({
+  tab,
+  actor,
+  admission,
+}: {
+  tab: ReturnType<typeof useActiveTab>;
+  actor: { userId: string; organizationId: string } | null;
+  admission: PanelActionAdmission;
+}) {
+  const pageUrl = tab.url;
+  const vault = useVault(pageUrl, tab.id, actor, admission);
+  const login = useCredentialLogin(admission);
+  const panel = usePanelFill(tab.id, admission);
   const [scope, setScope] = useState<Scope>('mine');
   const [query, setQuery] = useState('');
   const [creating, setCreating] = useState(false);
@@ -158,6 +186,7 @@ export function VaultView() {
       <div className="flex-1 overflow-y-auto">
         <PendingCaptureCard tabId={tab.id} onSaved={() => void vault.reload()} />
         <SiteSection
+          key={tab.id ?? 'no-tab'}
           host={host}
           blockedReason={
             !login.supported
@@ -171,7 +200,12 @@ export function VaultView() {
           matchesLoading={vault.matchesLoading}
           running={login.running}
           outcome={login.outcome}
-          onUseHere={(id) => void login.useHere(id)}
+          panelStatus={panel.status}
+          panelOutcome={panel.outcome}
+          panelRunning={panel.running}
+          panelItemIds={panel.itemIds}
+          onFill={(id) => void panel.fill(id)}
+          onUseHere={(id) => void login.useHere(id, tab.id)}
           onDismissOutcome={login.dismiss}
           onCreateFromPage={() => setCreating(true)}
         />
@@ -332,6 +366,11 @@ interface SiteSectionProps {
   matchesLoading: boolean;
   running: string | null;
   outcome: { status: string; message: string } | null;
+  panelStatus: 'ready' | 'none' | 'disabled';
+  panelOutcome: string | null;
+  panelRunning: string | null;
+  panelItemIds: string[];
+  onFill: (itemId: string) => void;
   onUseHere: (itemId: string) => void;
   onDismissOutcome: () => void;
   onCreateFromPage: () => void;
@@ -371,10 +410,25 @@ function SiteSection(props: SiteSectionProps) {
               className="flex items-center gap-2 rounded-md border bg-background px-2 py-1"
             >
               <span className="min-w-0 flex-1 truncate text-xs">{match.display_name}</span>
+              {props.panelStatus === 'ready' && props.panelItemIds.includes(match.item_id) && (
+                <Button
+                  size="sm"
+                  className="h-6 px-2 text-[11px]"
+                  disabled={running !== null || props.panelRunning !== null}
+                  onClick={() => props.onFill(match.item_id)}
+                >
+                  {props.panelRunning === match.item_id ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    'Fill'
+                  )}
+                </Button>
+              )}
               <Button
                 size="sm"
+                variant="outline"
                 className="h-6 px-2 text-[11px]"
-                disabled={running !== null}
+                disabled={running !== null || props.panelRunning !== null}
                 onClick={() => props.onUseHere(match.item_id)}
               >
                 {running === match.item_id ? (
@@ -413,8 +467,130 @@ function SiteSection(props: SiteSectionProps) {
           </button>
         </div>
       )}
+      {props.panelStatus === 'disabled' && (
+        <p className="mt-1.5 text-[11px] text-muted-foreground">
+          Turn on saved-login matching in extension settings to use Fill.
+        </p>
+      )}
+      {props.panelStatus === 'none' && !outcome && (
+        <p className="mt-1.5 text-[11px] text-muted-foreground">
+          Click the username or password box on the website, then choose Fill.
+        </p>
+      )}
+      {props.panelOutcome && (
+        <p className="mt-1.5 text-[11px] text-muted-foreground">{props.panelOutcome}</p>
+      )}
     </div>
   );
+}
+
+function usePanelFill(
+  tabId: number | null,
+  admission: PanelActionAdmission,
+): {
+  status: 'ready' | 'none' | 'disabled';
+  itemIds: string[];
+  running: string | null;
+  outcome: string | null;
+  fill: (itemId: string) => Promise<void>;
+} {
+  const [snapshot, setSnapshot] = useState<{
+    status: 'ready' | 'none' | 'disabled';
+    itemIds: string[];
+  }>({ status: 'none', itemIds: [] });
+  const [running, setRunning] = useState<string | null>(null);
+  const [outcome, setOutcome] = useState<string | null>(null);
+  const mounted = useRef(false);
+  useLayoutEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  useEffect(() => {
+    let live = true;
+    let request = 0;
+    setOutcome(null);
+    setRunning(null);
+    setSnapshot({ status: 'none', itemIds: [] });
+    const read = (): void => {
+      if (tabId == null) return;
+      const ticket = ++request;
+      void chrome.runtime
+        .sendMessage({
+          __matrx: true,
+          kind: 'credential-suggestions:panel-status',
+          payload: { tabId },
+        })
+        .then((value: { status?: unknown; itemIds?: unknown }) => {
+          if (!admission.current() || !mounted.current || !live || ticket !== request) return;
+          setSnapshot(
+            value.status === 'ready' || value.status === 'disabled'
+              ? {
+                  status: value.status,
+                  itemIds: Array.isArray(value.itemIds)
+                    ? value.itemIds.filter((id): id is string => typeof id === 'string')
+                    : [],
+                }
+              : { status: 'none', itemIds: [] },
+          );
+        })
+        .catch(() => {
+          if (admission.current() && mounted.current && live && ticket === request)
+            setSnapshot({ status: 'none', itemIds: [] });
+        });
+    };
+    read();
+    const listener = (message: unknown): void => {
+      const env = message as { __matrx?: unknown; kind?: unknown; payload?: { tabId?: unknown } };
+      if (
+        env?.__matrx === true &&
+        env.kind === 'credential-assistance:changed' &&
+        env.payload?.tabId === tabId
+      )
+        read();
+    };
+    chrome.runtime.onMessage.addListener(listener);
+    return () => {
+      live = false;
+      chrome.runtime.onMessage.removeListener(listener);
+    };
+  }, [admission, tabId]);
+  const fill = useCallback(
+    async (itemId: string) => {
+      if (tabId == null || running !== null || !snapshot.itemIds.includes(itemId)) return;
+      if (!mounted.current || !admission.current()) return;
+      await admission.run(async () => {
+        setRunning(itemId);
+        setOutcome(null);
+        try {
+          const result = (await chrome.runtime.sendMessage({
+            __matrx: true,
+            kind: 'credential-suggestions:panel-fill',
+            payload: { tabId, itemId },
+          })) as { status?: unknown };
+          if (!mounted.current || !admission.current()) return;
+          setOutcome(
+            result?.status === 'filled'
+              ? 'Filled. Review the form, then sign in.'
+              : result?.status === 'stale'
+                ? 'Click the username or password box on the website, then choose Fill.'
+                : 'Saved logins are unavailable right now.',
+          );
+        } catch {
+          if (mounted.current && admission.current())
+            setOutcome('Saved logins are unavailable right now.');
+        } finally {
+          if (mounted.current && admission.current()) {
+            setRunning(null);
+            setSnapshot({ status: 'none', itemIds: [] });
+          }
+        }
+      });
+    },
+    [admission, running, snapshot.itemIds, tabId],
+  );
+  return { ...snapshot, running, outcome, fill };
 }
 
 // ── One saved login ─────────────────────────────────────────────────────────

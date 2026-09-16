@@ -9,8 +9,8 @@
  *
  * Contract:
  *   - If `ctx.assignedTabId` is set AND the tab still exists → return it.
- *   - If the assigned tab was closed → fall back to the focused tab so
- *     the agent at least gets *something* and can recover gracefully.
+ *   - If the assigned tab was closed → return null. A latched request must
+ *     never drift to whichever page the user focused later.
  *   - If `ctx.assignedTabId` is null (e.g. handler invoked from the
  *     Tools-tab "Run" button before any stream is open) → return the
  *     focused tab.
@@ -27,9 +27,7 @@ export async function getAssignedTab(ctx: ToolContext): Promise<chrome.tabs.Tab 
       const tab = await chrome.tabs.get(ctx.assignedTabId);
       if (tab) return tab;
     } catch {
-      // Tab was closed (or never existed). Fall through to the focused-tab
-      // fallback rather than failing the call outright — the agent gets a
-      // chance to detect the URL changed and react.
+      return null;
     }
   }
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });

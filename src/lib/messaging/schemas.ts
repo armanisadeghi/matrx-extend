@@ -87,6 +87,8 @@ export const CHANNELS = {
   // are materialized only after a user chooses an offer inside the SW.
   CREDENTIAL_SUGGESTIONS_QUERY: 'credential-suggestions:query', // content → SW (raw)
   CREDENTIAL_SUGGESTIONS_FILL: 'credential-suggestions:fill', // content → SW (raw)
+  CREDENTIAL_SUGGESTIONS_PANEL_STATUS: 'credential-suggestions:panel-status', // sidepanel → SW (raw)
+  CREDENTIAL_SUGGESTIONS_PANEL_FILL: 'credential-suggestions:panel-fill', // sidepanel → SW (raw)
   CREDENTIAL_SUGGESTIONS_CONTEXT_CHANGED: 'credential-suggestions:context-changed', // SW → content
   CREDENTIAL_SUGGESTIONS_OPEN_VAULT: 'credential-suggestions:open-vault', // content → SW
   TOOL_TIMELINE_EVENT: 'tool:timeline-event', // SW → sidepanel: render in the chat (started / completed / error)
