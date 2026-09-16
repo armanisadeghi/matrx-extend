@@ -121,11 +121,13 @@ function formatMicErrorForUser(message: string, code?: string): string {
 }
 
 export function ChatView() {
+  const { user } = useAuth();
   // One warm load per session for the Content IR registries (which kinds
   // exist, and what draws them on chrome-extension). Here rather than at
   // module load: an unauthenticated panel has no session to read with.
-  useEffect(() => warmContentIr(), []);
-  const { user } = useAuth();
+  useEffect(() => {
+    if (user) void warmContentIr();
+  }, [user]);
   const {
     selectedAgentId,
     selectedConversationId,
@@ -527,6 +529,7 @@ export function ChatView() {
         onClose={() => setTaskPanelOpen(false)}
       />
       <ChatHeader
+        signedIn={Boolean(user)}
         agentsRefreshing={agentsRefreshing}
         onRefreshAgents={() => void refreshAgents()}
         historyLoading={historyLoading}
@@ -764,6 +767,7 @@ function StreamInterruptionBanner({
 }
 
 function ChatHeader({
+  signedIn,
   agentsRefreshing,
   onRefreshAgents,
   historyLoading,
@@ -782,6 +786,7 @@ function ChatHeader({
   getMessages,
   getAgent,
 }: {
+  signedIn: boolean;
   agentsRefreshing: boolean;
   onRefreshAgents: () => void;
   historyLoading: boolean;
@@ -806,28 +811,34 @@ function ChatHeader({
           order, tabs, sort, filters and favourites as every other Matrx
           client. `defaultMandateKey` puts this client's platform default at
           the top of the list, named after its REAL Holder. */}
-      <AgentListDropdown
-        consumerId="extend.chat"
-        activeAgentId={selectedAgentId}
-        onSelect={onAgentChange}
-        defaultMandateKey={DEFAULT_CHAT_MANDATE_KEY}
-        compact
-        noBorder
-      />
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-7 text-muted-foreground"
-        title="Refresh agents (pull latest edits)"
-        onClick={onRefreshAgents}
-        disabled={agentsRefreshing}
-      >
-        <RefreshCw className={cn('size-3.5', agentsRefreshing && 'animate-spin')} />
-      </Button>
+      {signedIn ? (
+        <>
+          <AgentListDropdown
+            consumerId="extend.chat"
+            activeAgentId={selectedAgentId}
+            onSelect={onAgentChange}
+            defaultMandateKey={DEFAULT_CHAT_MANDATE_KEY}
+            compact
+            noBorder
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 text-muted-foreground"
+            title="Refresh agents (pull latest edits)"
+            onClick={onRefreshAgents}
+            disabled={agentsRefreshing}
+          >
+            <RefreshCw className={cn('size-3.5', agentsRefreshing && 'animate-spin')} />
+          </Button>
+        </>
+      ) : (
+        <span className="px-2 text-[11px] text-muted-foreground">Sign in to choose an agent</span>
+      )}
       <div className="ml-auto flex items-center gap-1">
         <TaskPanelChip conversationId={selectedConversationId} onClick={onToggleTaskPanel} />
         <LanguagePicker />
-        <SandboxPickerChip />
+        <SandboxPickerChip disabled={!signedIn} />
         <PermissionModeChip
           mode={permissionMode}
           disabled={!selectedAgentId}

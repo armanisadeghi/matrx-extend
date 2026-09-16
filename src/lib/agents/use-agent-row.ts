@@ -15,6 +15,7 @@
 import { type AgentSummary, isMandateAgentId } from '@ai-matrx/agents/catalog';
 import type { DefaultRowState } from '@ai-matrx/agents/catalog';
 import { useAgentCatalog, useAgentCatalogState } from '@ai-matrx/agents/catalog/react';
+import { useAuthStore } from '@/state/auth';
 import { useCallback, useEffect } from 'react';
 
 export interface SelectedAgentRow {
@@ -33,14 +34,15 @@ export function mandateKeyOf(agentId: string | null | undefined): string | null 
 export function useAgentRow(agentId: string | null | undefined): SelectedAgentRow {
   const catalog = useAgentCatalog();
   const mandateKey = mandateKeyOf(agentId);
+  const signedIn = useAuthStore((state) => state.status === 'signed-in');
 
   useEffect(() => {
-    void catalog.ensureLoaded();
-  }, [catalog]);
+    if (signedIn) void catalog.ensureLoaded();
+  }, [catalog, signedIn]);
 
   useEffect(() => {
-    if (mandateKey) catalog.ensureDefaultRow(mandateKey);
-  }, [catalog, mandateKey]);
+    if (signedIn && mandateKey) catalog.ensureDefaultRow(mandateKey);
+  }, [catalog, mandateKey, signedIn]);
 
   // Every selector below returns a reference the catalog itself owns, so
   // `useSyncExternalStore` sees a stable snapshot between changes.
@@ -58,7 +60,7 @@ export function useAgentRow(agentId: string | null | undefined): SelectedAgentRo
   const defaultRow = useAgentCatalogState(selectDefaultRow);
   const status = useAgentCatalogState(selectStatus);
 
-  if (!agentId) return { name: null, description: null, resolving: false };
+  if (!agentId || !signedIn) return { name: null, description: null, resolving: false };
   if (mandateKey) {
     if (defaultRow?.row) {
       return {

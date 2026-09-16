@@ -88,9 +88,10 @@ export function getAgentCatalog(): AgentCatalog {
        * Throws when signed out — and that is correct. The package catches this
        * in exactly one place (the "which tab do we open on" heuristic, where a
        * guest legitimately lands on the public catalogue) and reports it once.
-       * The extension deliberately serves guests: `agx_agent_builtin_read` lets
-       * the anon role read active builtin agents, so a signed-out panel still
-       * shows a real list. No host-side branch on sign-in state.
+       * The catalog door is deliberately signed-in only. Guest surfaces do not
+       * mount a picker or call `ensureLoaded`; if this method is reached during
+       * auth hydration, the package catches it for its tab heuristic and the
+       * error sink below records an informational state instead of a failure.
        */
       requireUserId: () => {
         const id = useAuthStore.getState().user?.id;

@@ -25,6 +25,16 @@ export async function ensureOffscreen(): Promise<void> {
   // context as ready lets a concurrent WS/audio/stream caller send before the
   // document has registered its listeners (`ws:start — no listener`).
   if (creating) return creating;
+  // Install the barrier synchronously, before the first async existence
+  // check. Otherwise two callers can both enter while getContexts() is in
+  // flight, both observe no document, and both call createDocument().
+  creating = createOffscreenIfMissing().finally(() => {
+    creating = null;
+  });
+  return creating;
+}
+
+async function createOffscreenIfMissing(): Promise<void> {
   if (await offscreenExists()) {
     log.info('stream', 'offscreen already exists');
     return;
@@ -33,7 +43,7 @@ export async function ensureOffscreen(): Promise<void> {
   // USER_MEDIA is required for getUserMedia from the offscreen doc — voice
   // input (TASK-002) won't work without it. BLOBS is for the SSE / scrape
   // pipeline. Multiple reasons are allowed in a single offscreen doc.
-  creating = chrome.offscreen
+  await chrome.offscreen
     .createDocument({
       url: OFFSCREEN_PATH,
       reasons: ['BLOBS', 'USER_MEDIA'] as chrome.offscreen.Reason[],
@@ -50,11 +60,7 @@ export async function ensureOffscreen(): Promise<void> {
       }
       log.error('stream', 'offscreen creation failed', err);
       throw err;
-    })
-    .finally(() => {
-      creating = null;
     });
-  await creating;
 }
 
 async function offscreenExists(): Promise<boolean> {

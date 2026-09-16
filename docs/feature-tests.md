@@ -44,13 +44,15 @@
 - **Where to test:** the loaded unpacked extension's service-worker and side-panel
   DevTools consoles, plus `chrome://extensions` → extension **Errors**.
 - **Steps:** reload the extension while an ordinary page and the side panel are open,
-  refresh the page, reopen the side panel, and open the agent picker. Temporarily make
+  refresh the page, reopen the side panel signed out, then sign in and open the agent picker. Temporarily make
   one list/context request fail while page context remains available, then restore it.
 - **Expected:** no uncaught `Extension context invalidated`, undefined `sendMessage`, or
   `ws:start — no listener` appears. The message still sends with every healthy context
   slice. Identity hydration and retrying/compiled-bootstrap Content IR diagnostics are
   informational or warnings; only a genuinely exhausted registry load is one error.
-  Diagnostics include readable JSON/error text, never a trailing `[object Object]`.
+  While signed out, the panel does not call the signed-in agent-catalogue, mandate,
+  compute-target, or Content IR registry doors. Diagnostics include readable JSON/error
+  text, never a trailing `[object Object]`.
 
 ### THE ONE AGENT PICKER (`@ai-matrx/agents/catalog/react`)
 

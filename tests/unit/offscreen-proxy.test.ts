@@ -6,6 +6,7 @@ describe('ensureOffscreen creation barrier', () => {
   });
 
   it('keeps every concurrent caller behind the same in-flight document creation', async () => {
+    let resolveContexts!: (contexts: chrome.runtime.ExtensionContext[]) => void;
     let resolveCreate!: () => void;
     const createDocument = vi.fn(
       () =>
@@ -13,12 +14,12 @@ describe('ensureOffscreen creation barrier', () => {
           resolveCreate = resolve;
         }),
     );
-    const getContexts = vi
-      .fn()
-      .mockResolvedValueOnce([])
-      // Chrome can expose the new context before createDocument() has
-      // completed. That must not let a second caller send into it early.
-      .mockResolvedValueOnce([{ contextType: 'OFFSCREEN_DOCUMENT' }]);
+    const getContexts = vi.fn(
+      () =>
+        new Promise<chrome.runtime.ExtensionContext[]>((resolve) => {
+          resolveContexts = resolve;
+        }),
+    );
 
     vi.stubGlobal('chrome', {
       runtime: { getContexts },
@@ -27,8 +28,6 @@ describe('ensureOffscreen creation barrier', () => {
 
     const { ensureOffscreen } = await import('@/lib/stream/offscreen-proxy');
     const first = ensureOffscreen();
-    await vi.waitFor(() => expect(createDocument).toHaveBeenCalledTimes(1));
-
     let secondResolved = false;
     const second = ensureOffscreen().then(() => {
       secondResolved = true;
@@ -38,6 +37,10 @@ describe('ensureOffscreen creation barrier', () => {
 
     expect(secondResolved).toBe(false);
     expect(getContexts).toHaveBeenCalledTimes(1);
+    expect(createDocument).not.toHaveBeenCalled();
+
+    resolveContexts([]);
+    await vi.waitFor(() => expect(createDocument).toHaveBeenCalledTimes(1));
 
     resolveCreate();
     await Promise.all([first, second]);

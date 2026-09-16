@@ -16,6 +16,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { apiGet, apiPost } from '@/lib/api/client';
+import { useAuthStore } from '@/state/auth';
 import type {
   ComputeTargetListResponse,
   ComputeTargetRef,
@@ -30,6 +31,7 @@ interface UseComputeTargetsResult {
 }
 
 export function useComputeTargets(enabled = true): UseComputeTargetsResult {
+  const signedIn = useAuthStore((state) => state.status === 'signed-in');
   const [data, setData] = useState<ComputeTargetListResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,6 +39,13 @@ export function useComputeTargets(enabled = true): UseComputeTargetsResult {
   const fetchIdRef = useRef(0);
 
   const fetchOnce = useCallback(async () => {
+    if (!signedIn) {
+      fetchIdRef.current += 1;
+      setData(null);
+      setLoading(false);
+      setError(null);
+      return;
+    }
     const myId = ++fetchIdRef.current;
     setLoading(true);
     setError(null);
@@ -48,12 +57,12 @@ export function useComputeTargets(enabled = true): UseComputeTargetsResult {
       setError(result.error || `HTTP ${result.status}`);
     }
     setLoading(false);
-  }, []);
+  }, [signedIn]);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !signedIn) return;
     void fetchOnce();
-  }, [enabled, fetchOnce]);
+  }, [enabled, signedIn, fetchOnce]);
 
   return { data, loading, error, refetch: fetchOnce };
 }
