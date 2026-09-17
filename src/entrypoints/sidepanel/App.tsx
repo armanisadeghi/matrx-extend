@@ -5,6 +5,7 @@ import { UserMenu } from '@/components/UserMenu';
 import { canAccessSidepanelTab, firstAccessibleSidepanelTab } from '@/config/sidepanel-visibility';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAgendaListener } from '@/hooks/use-agenda-listener';
+import { useNeedsYouCount } from '@/features/capture-ladder/use-needs-you-count';
 import { useAuth } from '@/hooks/use-auth';
 import { useAutoExtract } from '@/hooks/use-auto-extract';
 import { useAutoScrape } from '@/hooks/use-auto-scrape';
@@ -39,6 +40,7 @@ import {
   KeyRound,
   ListChecks,
   ListTodo,
+  Inbox,
   Loader2,
   MessageSquare,
   NotebookPen,
@@ -66,6 +68,10 @@ const VIEW_LOADERS: Record<SidepanelTab, () => Promise<{ default: ComponentType 
   lists: () => import('@/features/lists/ListsHubView').then((m) => ({ default: m.ListsHubView })),
   agenda: () => import('@/features/agenda/AgendaView').then((m) => ({ default: m.AgendaView })),
   scrape: () => import('@/features/scrape/ScrapeView').then((m) => ({ default: m.ScrapeView })),
+  capture: () =>
+    import('@/features/capture-ladder/NeedsYourBrowserView').then((m) => ({
+      default: m.NeedsYourBrowserView,
+    })),
   data: () => import('@/features/data/DataView').then((m) => ({ default: m.DataView })),
   highlight: () =>
     import('@/features/highlights/HighlightView').then((m) => ({ default: m.HighlightView })),
@@ -95,6 +101,7 @@ const TasksView = lazy(VIEW_LOADERS.tasks);
 const ListsHubView = lazy(VIEW_LOADERS.lists);
 const AgendaView = lazy(VIEW_LOADERS.agenda);
 const ScrapeView = lazy(VIEW_LOADERS.scrape);
+const NeedsYourBrowserView = lazy(VIEW_LOADERS.capture);
 const DataView = lazy(VIEW_LOADERS.data);
 const HighlightView = lazy(VIEW_LOADERS.highlight);
 const GuidanceView = lazy(VIEW_LOADERS.guidance);
@@ -128,6 +135,9 @@ export function App() {
   >('none');
 
   const signedIn = user !== null;
+  // The capture-ladder badge. Subscribed at App level so the count is right the
+  // first time the person looks, without having opened the tab.
+  const needsYou = useNeedsYouCount(signedIn);
   const canAccess = (candidate: SidepanelTab) =>
     canAccessSidepanelTab(candidate, { signedIn, isAdmin });
 
@@ -307,6 +317,24 @@ export function App() {
                       <ScanLine className="size-3.5" />
                     </TabsTrigger>
                   )}
+                  {canAccess('capture') && (
+                    <TabsTrigger
+                      value="capture"
+                      className="relative size-7 p-0"
+                      title={
+                        needsYou.count > 0
+                          ? `${needsYou.count} page${needsYou.count === 1 ? '' : 's'} need your browser`
+                          : 'Pages that need your browser'
+                      }
+                    >
+                      <Inbox className="size-3.5" />
+                      {needsYou.count > 0 && (
+                        <span className="absolute -right-0.5 -top-0.5 min-w-3.5 rounded-full bg-primary px-0.5 text-[9px] font-semibold leading-3.5 text-primary-foreground">
+                          {needsYou.count > 9 ? '9+' : needsYou.count}
+                        </span>
+                      )}
+                    </TabsTrigger>
+                  )}
                   {canAccess('data') && (
                     <TabsTrigger value="data" className="size-7 p-0" title="Data">
                       <Database className="size-3.5" />
@@ -460,6 +488,13 @@ export function App() {
                 <TabsContent value="scrape" className="flex-1 min-h-0">
                   <Suspense fallback={TabFallback}>
                     <ScrapeView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('capture') && (
+                <TabsContent value="capture" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <NeedsYourBrowserView />
                   </Suspense>
                 </TabsContent>
               )}

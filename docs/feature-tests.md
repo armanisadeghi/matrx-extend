@@ -2706,3 +2706,19 @@ Every entry follows this shape:
 - **Where to test:** An admin-owned disposable React login fixture with the installed extension.
 - **Steps:** Choose a saved login on a same-origin React function-action form, then repeat with default GET, a submitter GET override, and a mutated sentinel.
 - **Expected:** The exact React form can fill without a native GET navigation; all unsafe variants refuse before a secret write. Inline selection never submits.
+
+### Pages that need your browser (the capture ladder, rungs 3 and 4)
+
+- **What it does:** When neither our scraper nor our server browser can read a page, the page is queued for the browser that belongs to the person. The sidepanel's "Capture" tab lists what is waiting, runs the unattended pass in the person's own logged-in Chrome, and — when even that fails — hands the page over for them to drive and captures whatever they reach.
+- **Where to test:** Sidepanel → Capture tab (signed in).
+- **Prereq:** At least one `media.capture_handoff` row for your active organization, which a failed batch on the web app's `/scraper/batch` screen creates when you press "Send the rest to my browser".
+- **Steps:**
+  1. Open the Capture tab. The badge shows how many pages are waiting.
+  2. Press "Run these in my browser". Each item opens in a background tab, scrolls, is read, and the tab closes.
+  3. For an item that comes back as "needs you", press it. The page opens focused with one sentence saying what to do.
+  4. Sign in / click through as you normally would, then press "I'm done, capture it".
+- **Expected:** Items that read cleanly land as Sources in the org's capture Library, marked as captured by your own browser. Items the unattended pass could not read move to "needs you" with a sentence, never disappear. A page you drove lands marked as captured by you driving.
+- **Edge cases worth poking:**
+  - Close the sidepanel mid-run: the claim expires and the item comes back as waiting, never stuck.
+  - Press "This one won't work": the item is dismissed with your note and stops asking.
+  - A rung this organization has turned off: the tab says so in a sentence, and no item silently disappears.

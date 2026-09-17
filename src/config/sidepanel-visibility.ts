@@ -16,6 +16,9 @@ export const SIDEPANEL_TAB_AUDIENCE = {
   agenda: 'signed-in',
   lists: 'signed-in',
   scrape: 'everyone',
+  // The capture ladder's rung-3/rung-4 tray. Reads an org-scoped queue, so it
+  // means nothing to a guest.
+  capture: 'signed-in',
   data: 'everyone',
   highlight: 'signed-in',
   guidance: 'signed-in',
