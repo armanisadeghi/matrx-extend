@@ -29,7 +29,9 @@
  * RUN:
  *   pnpm build && node tests/browser/capture-ladder-e2e.mjs
  * Options:
- *   --keep-open     leave the browser up for a human to look at
+ *   --keep-open     run HEADED and leave the browser up for a person who asked
+ *                   to watch. Never use it unattended: a headed automated window
+ *                   steals keyboard focus from whoever is at the machine.
  *   --seed          write one real handoff row for this org through aidream
  *                   /capture/handoffs first (needs the endpoints deployed)
  *
@@ -248,9 +250,22 @@ async function main() {
   }
   console.log(`  queue       ${queue.rows.length} row(s) waiting for a browser`);
 
+  // HEADLESS, ALWAYS. A headed automated browser steals keyboard focus from
+  // whoever is at the machine: on 2026-09-17 windows from runs like this one
+  // popped up while the owner was typing, so his keystrokes went into a test's
+  // address bar and the test saw failures that were his keys, not the code.
+  // Chrome's new headless mode loads unpacked extensions properly, so there is
+  // nothing to trade away. `--keep-open` runs headed ON PURPOSE and says so —
+  // it is for a person who asked to watch, never for an unattended run.
+  // `headless: false` plus `--headless=new` is not a contradiction: Playwright's
+  // own `headless: true` swaps in the headless SHELL binary, which cannot load
+  // an unpacked extension at all (it hangs waiting for a service worker that
+  // never starts). Launching the full browser and putting IT in new headless
+  // mode keeps extensions working with no window on anyone's screen.
   const context = await chromium.launchPersistentContext('', {
     headless: false,
     args: [
+      ...(KEEP_OPEN ? [] : ['--headless=new']),
       `--disable-extensions-except=${EXTENSION_DIR}`,
       `--load-extension=${EXTENSION_DIR}`,
     ],
