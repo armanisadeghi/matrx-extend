@@ -321,6 +321,15 @@ export function App() {
                     <TabsTrigger
                       value="capture"
                       className="relative size-7 p-0"
+                      // An icon-only tab with only a `title` has no accessible
+                      // name: a screen reader announces "tab" and the count in
+                      // the corner is invisible to it. The label carries the
+                      // count for the same reason the badge does.
+                      aria-label={
+                        needsYou.count > 0
+                          ? `${needsYou.count} page${needsYou.count === 1 ? '' : 's'} need your browser`
+                          : 'Pages that need your browser'
+                      }
                       title={
                         needsYou.count > 0
                           ? `${needsYou.count} page${needsYou.count === 1 ? '' : 's'} need your browser`
