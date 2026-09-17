@@ -34,12 +34,15 @@ import {
   updateVaultFieldValue,
 } from '@/lib/api/routes/vault';
 import { getCurrentUser } from '@/lib/auth/flow';
+import { setCaptureAssistance } from '@/lib/credentials/assistance-status';
 import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
-import { readCaptureLoginsEnabled, readCredentialAssistancePresentation } from '@/lib/settings/persisted';
-import { setCaptureAssistance } from '@/lib/credentials/assistance-status';
+import {
+  readCaptureLoginsEnabled,
+  readCredentialAssistancePresentation,
+} from '@/lib/settings/persisted';
 import type { CaptureCandidateWire } from './capture-detector';
 import { addNeverCaptureOrigin, isNeverCaptureOrigin } from './capture-settings';
 import type {

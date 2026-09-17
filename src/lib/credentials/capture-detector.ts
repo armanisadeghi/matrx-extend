@@ -237,10 +237,7 @@ export function mountCaptureDetector(doc: Document = document): () => void {
     const renderUnavailable = (reason: CaptureUnavailableReason, transportFailure = false) => {
       void import('./capture-prompt')
         .then(async ({ showCaptureUnavailable }) => {
-          if (
-            isCurrentSubmission() &&
-            (await readCredentialAssistancePresentation()) === 'on_page'
-          )
+          if (isCurrentSubmission() && (await readCredentialAssistancePresentation()) === 'on_page')
             showCaptureUnavailable(reason, transportFailure);
         })
         .catch(() => undefined);

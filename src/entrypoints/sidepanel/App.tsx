@@ -3,6 +3,7 @@ import { NoticeHost } from '@/components/NoticeHost';
 import { PermissionPromptModal } from '@/components/PermissionPromptModal';
 import { UserMenu } from '@/components/UserMenu';
 import { canAccessSidepanelTab, firstAccessibleSidepanelTab } from '@/config/sidepanel-visibility';
+import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAgendaListener } from '@/hooks/use-agenda-listener';
 import { useAuth } from '@/hooks/use-auth';
 import { useAutoExtract } from '@/hooks/use-auto-extract';
@@ -10,12 +11,11 @@ import { useAutoScrape } from '@/hooks/use-auto-scrape';
 import { useContextMenuListener } from '@/hooks/use-context-menu-listener';
 import { useGuidanceSync } from '@/hooks/use-guidance-sync';
 import { useHighlightBridge } from '@/hooks/use-highlight-bridge';
-import { useActiveTab } from '@/hooks/use-active-tab';
 import { useParallelEventBridge } from '@/hooks/use-parallel-event-bridge';
 import { getAgentCatalog } from '@/lib/agents/catalog';
+import { useDebugStore } from '@/lib/debug/log';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { useDebugStore } from '@/lib/debug/log';
 import { useSettingsStore } from '@/state/settings';
 import { type SidepanelTab, useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { AgentCatalogProvider } from '@ai-matrx/agents/catalog/react';
@@ -123,7 +123,9 @@ export function App() {
   const tab = useSidepanelTabStore((s) => s.tab);
   const setTab = useSidepanelTabStore((s) => s.setTab);
   const activeTab = useActiveTab();
-  const [assistance, setAssistance] = useState<'none' | 'saved_login' | 'save_pending' | 'capture_unavailable'>('none');
+  const [assistance, setAssistance] = useState<
+    'none' | 'saved_login' | 'save_pending' | 'capture_unavailable'
+  >('none');
 
   const signedIn = user !== null;
   const canAccess = (candidate: SidepanelTab) =>
@@ -223,9 +225,12 @@ export function App() {
         });
     };
     refresh();
-    const unsubscribe = on<{ tabId: number }, void>(CHANNELS.CREDENTIAL_ASSISTANCE_CHANGED, (event) => {
-      if (event?.tabId === activeTab.id) refresh();
-    });
+    const unsubscribe = on<{ tabId: number }, void>(
+      CHANNELS.CREDENTIAL_ASSISTANCE_CHANGED,
+      (event) => {
+        if (event?.tabId === activeTab.id) refresh();
+      },
+    );
     return () => {
       stale = true;
       unsubscribe();

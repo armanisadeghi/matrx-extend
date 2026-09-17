@@ -49,13 +49,13 @@ import type { UserProfile } from '@/lib/auth/types';
 import { clearBrokerCacheOnSignOut, registerBrokerHandlers } from '@/lib/broker/sw-host';
 import { setupContextMenus } from '@/lib/context-menus/setup';
 import {
-  registerCredentialCaptureHost,
-  rehydrateCredentialCaptureCandidates,
-} from '@/lib/credentials/capture-candidates';
-import {
   reconcileCredentialAssistanceActionOnBoot,
   registerCredentialAssistanceStatus,
 } from '@/lib/credentials/assistance-status';
+import {
+  registerCredentialCaptureHost,
+  rehydrateCredentialCaptureCandidates,
+} from '@/lib/credentials/capture-candidates';
 import { registerInlineCredentialSuggestionHost } from '@/lib/credentials/inline-suggestions-host';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';

@@ -43,6 +43,8 @@ describe('agent catalog error classification', () => {
     });
 
     expect(calls.info).toEqual([]);
-    expect(calls.error).toEqual(['[agent-catalog] identity_unavailable: identity.requireUserId() threw']);
+    expect(calls.error).toEqual([
+      '[agent-catalog] identity_unavailable: identity.requireUserId() threw',
+    ]);
   });
 });

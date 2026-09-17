@@ -30,8 +30,7 @@ export async function loadConversationContextSlices(
   ) => {
     result.failures.push({
       slice,
-      message:
-        rejected.reason instanceof Error ? rejected.reason.message : String(rejected.reason),
+      message: rejected.reason instanceof Error ? rejected.reason.message : String(rejected.reason),
     });
   };
 

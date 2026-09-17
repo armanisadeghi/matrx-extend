@@ -18,7 +18,8 @@ function stateFor(tabId: number): CredentialAssistanceState {
   return capture.get(tabId) ?? (saved.has(tabId) ? 'saved_login' : 'none');
 }
 async function project(tabId: number, state = stateFor(tabId)): Promise<void> {
-  const badge = state === 'none' ? '' : state === 'saved_login' ? '•' : state === 'save_pending' ? '+' : '!';
+  const badge =
+    state === 'none' ? '' : state === 'saved_login' ? '•' : state === 'save_pending' ? '+' : '!';
   const title =
     state === 'none'
       ? 'Matrx'
