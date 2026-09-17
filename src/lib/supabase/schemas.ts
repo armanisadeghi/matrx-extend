@@ -81,6 +81,12 @@ export const TABLE_SCHEMA = {
   message: 'chat',
   tool_call: 'chat',
   agent_task: 'chat',
+  // media — the capture ladder's handoff queue (media.capture_handoff). Read
+  // ONLY from this client: every WRITE goes through aidream's `/capture/*`
+  // endpoints so the ladder law, the rung knobs and the Library landing are
+  // enforced in one place (capture-ladder CONTRACT.md §3/§4). Org-stamped and
+  // RLS-scoped; soft-delete is `deleted_at`.
+  capture_handoff: 'media',
   // misc
   user_form_profile: 'users',
   // users.integration_connections — safe Google connection metadata only. The
@@ -134,6 +140,15 @@ export const usersDb = () => getSupabase().schema('users');
  * renames, or joins one — that is the web app's job.
  */
 export const iamDb = () => getSupabase().schema('iam');
+
+/**
+ * `media` — the capture ladder's `capture_handoff` queue. READ-ONLY from this
+ * client. There is no outbound channel from aidream to the extension
+ * (common-docs/systems/clients/extension/CHANNELS.md §2), so the extension
+ * learns about work by reading this table directly; it never writes a row
+ * here, because `/capture/*` is the one door that runs the ladder law.
+ */
+export const mediaDb = () => getSupabase().schema('media');
 
 /** `admin` — admins. Ownership: `user_id` (kept). */
 export const adminDb = () => getSupabase().schema('admin');

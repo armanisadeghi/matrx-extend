@@ -56,6 +56,7 @@ const MOVED_TABLES: Record<string, string> = {
   admins: 'admin',
   definition: 'tool',
   model_definition: 'ai',
+  capture_handoff: 'media',
 };
 
 /** Tables that were REMOVED outright — using them at all is a bug. */
@@ -68,7 +69,7 @@ const REMOVED_TABLES: Record<string, string> = {
 };
 
 const ACCESSOR =
-  /(?:extendDb|schedulerDb|workbenchDb|chatDb|usersDb|adminDb|toolDb|aiDb|agentChatDb)\(\)/;
+  /(?:extendDb|schedulerDb|workbenchDb|chatDb|usersDb|adminDb|toolDb|aiDb|mediaDb|agentChatDb)\(\)/;
 
 /**
  * A `.from()` is qualified if the thing it is called ON is schema-scoped. That
