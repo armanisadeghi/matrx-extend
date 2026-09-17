@@ -3,9 +3,7 @@
   "originRepo": "aidream",
   "packagesGuard": {
     "commit": "7c786d4fed45010727850d2e6f573c13c4399e88",
-    "files": [
-      "check-matrx-packages.mjs"
-    ]
+    "files": ["check-matrx-packages.mjs"]
   },
   "twinsGuard": {
     "commit": "a7504e5a2adec7da9dcf22196f490742561e7ddc",
