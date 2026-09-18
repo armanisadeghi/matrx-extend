@@ -121,6 +121,7 @@ Register row EX-T05: `../common-docs/projects/no-db-assigned-org/PLAN.md`.
   neither) — check [docs/DATABASE.md](./docs/DATABASE.md) before filtering; guessing
   corrupts data. Every org-scoped INSERT sends an explicit `organization_id`; database
   assignment is forbidden. Emergency: `../common-docs/projects/no-db-assigned-org/PLAN.md`.
+- **Arman's preference (2026-09-18): change the database directly through the Supabase MCP** (project `brsgrqvjdzwihsvnfqkf`). The database is the source of truth, and type/model generation PULLS from it into the codebase. A migration FILE is fine only if you OWN it end to end: write it, apply it, regenerate, and confirm it broke nothing. If you will not own it end to end, use the MCP. **Never hand Arman a command to run — he does not use terminals.**
 - A `.sql` file in `migrations/` changes nothing until applied from aidream
   (`python db/apply_migrations.py --source matrx-extend`). Verify: `pnpm check:migrations`.
 
