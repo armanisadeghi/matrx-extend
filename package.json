@@ -8,10 +8,10 @@
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
-    "prebuild": "tsc --noEmit && tsx scripts/check-canonical-pickers.ts && tsx scripts/check-archived-items-law.ts && tsx scripts/check-swallowed-refusals.ts && (tsx scripts/check-tool-db-drift.ts || true)",
+    "prebuild": "tsc --noEmit && tsx scripts/check-canonical-pickers.ts && tsx scripts/check-archived-items-law.ts && tsx scripts/check-swallowed-refusals.ts && (tsx scripts/check-tool-db-drift.ts || true) && (pnpm check:mandate-references || true)",
     "build": "wxt build",
     "build:firefox": "wxt build -b firefox",
-    "prezip": "tsc --noEmit && tsx scripts/check-canonical-pickers.ts && tsx scripts/check-archived-items-law.ts && tsx scripts/check-swallowed-refusals.ts && (tsx scripts/check-tool-db-drift.ts || true)",
+    "prezip": "tsc --noEmit && tsx scripts/check-canonical-pickers.ts && tsx scripts/check-archived-items-law.ts && tsx scripts/check-swallowed-refusals.ts && (tsx scripts/check-tool-db-drift.ts || true) && (pnpm check:mandate-references || true)",
     "zip": "wxt zip",
     "zip:store": "pnpm prezip && MATRX_CWS_BUILD=1 wxt zip && node scripts/check-store-package.mjs && node scripts/check-cws-release-risk.mjs",
     "zip:firefox": "wxt zip -b firefox",
@@ -50,7 +50,9 @@
     "check:swallowed-refusals:self-test": "tsx scripts/check-swallowed-refusals.ts --self-test",
     "check:canonical-pickers:self-test": "tsx scripts/check-canonical-pickers.ts --self-test",
     "check:signout-scope": "node scripts/check-signout-scope.mjs",
-    "check:signout-scope:self-test": "node scripts/check-signout-scope.mjs --self-test"
+    "check:signout-scope:self-test": "node scripts/check-signout-scope.mjs --self-test",
+    "check:mandate-references": "uvx --from matrx-mandate-scan==0.2.0 matrx-mandate-scan check",
+    "check:mandate-references:strict": "uvx --from matrx-mandate-scan==0.2.0 matrx-mandate-scan check --strict"
   },
   "dependencies": {
     "@ai-matrx/agents": "latest",

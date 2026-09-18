@@ -96,6 +96,23 @@ jobs:
       - name: the sign-out scope guard can still fail (self-test)
         run: pnpm check:signout-scope:self-test
 
+      # MANDATE REFERENCES — a non-blocking job step (ruling D23). It reports
+      # every Mandate this extension names, and every bypass, to the platform.
+      # `continue-on-error` is the law, not a convenience: a reference check may
+      # never be the reason a push to main goes red.
+      #
+      # The version is pinned EXACTLY. "Always latest" governs @ai-matrx npm
+      # packages; this is a python release gate whose output is compared across
+      # revisions, so what it measures may not drift between two commits.
+      #
+      # CI carries no SUPABASE_SECRET_KEY, so this step SCANS and prints and
+      # says UNMEASURED-for-report — loudly, never silently. The release script
+      # and the scheduled remediation task are what submit.
+      - uses: astral-sh/setup-uv@v5
+      - name: Mandate references (non-blocking; scan only in CI)
+        continue-on-error: true
+        run: uvx --from matrx-mandate-scan==0.2.0 matrx-mandate-scan check
+
       - name: Lint
         run: pnpm lint
 

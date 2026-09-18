@@ -388,6 +388,39 @@ else
     fail "A list hides archived rows with no way to reveal them (see above). Agent lists use @ai-matrx/agents/catalog's archFilter; anything else uses @ai-matrx/design-system <ArchiveFilter> with its value passed to the READER, never a client-side sieve."
 fi
 
+# MANDATE REFERENCES — LOUD AND DELIBERATELY NON-BLOCKING (ruling D23,
+# common-docs/projects/mandate-declaration-reporting/REGISTER.md law 1).
+#
+# Every Mandate this extension names, and every place intelligence is reached
+# outside a Mandate, is found here and reported to the platform with its exact
+# file, symbol and line — so the fleet board at
+# /administration/mandates/references can say what this release actually
+# consumes instead of guessing. It NEVER blocks: `check` always exits 0, and the
+# `|| true` is belt-and-braces for a crash inside uvx itself.
+#
+# 🚨 THE VERSION IS PINNED EXACTLY, ON PURPOSE. "Always latest" is the law for
+# @ai-matrx NPM packages (check:matrx-packages above enforces it); this is a
+# PYTHON release gate, and a gate that silently changes what it measures between
+# two releases cannot be compared across revisions — reconciliation is keyed on
+# (identity, revision_kind, revision), and the identity hash includes the
+# scanner's own classification. Bump the pin deliberately, in a commit that says
+# what changed.
+#
+# With no SUPABASE_SECRET_KEY in the environment the check still scans and still
+# screams; it says UNMEASURED-for-report loudly rather than pretending it filed.
+CURRENT_STEP="mandate-references"
+if command -v uvx >/dev/null 2>&1; then
+    if pnpm check:mandate-references; then
+        ok "mandate references scanned and reported (findings above, if any, never block)"
+    else
+        warn "The mandate reference check could not complete — release continues (D23)."
+        WARNINGS+=("Mandate reference check failed to run. Every Mandate this build names is UNMEASURED on the fleet board until it does.")
+    fi
+else
+    warn "uvx not found — the mandate reference check did not run (D23: never a brake)."
+    WARNINGS+=("uvx is missing, so this release reported NO mandate references. Install uv (https://astral.sh/uv) so the fleet board stops calling matrx-extend unmeasured.")
+fi
+
 # ── 3. Bump version ─────────────────────────────────────────────────────────
 CURRENT_STEP="version-bump"
 step "3/8  Bump version → ${NEW_VERSION}"
