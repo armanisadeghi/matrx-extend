@@ -39,6 +39,7 @@ import { log } from '@/lib/debug/log';
 import { getOuterHtml } from '@/lib/scrape/capture-html';
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import { settlePage } from '@/lib/scrape/page-ready';
+import { formatCount } from "@ai-matrx/kit/format";
 
 /** Human-like pacing band. Never a constant interval. */
 const SCROLL_MIN_MS = 400;
@@ -289,7 +290,7 @@ export async function runOne(
 
       outcome.posted = 'result';
       outcome.ok = true;
-      outcome.note = `Read and saved — ${chars.toLocaleString()} characters.`;
+      outcome.note = `Read and saved — ${formatCount(chars)} characters.`;
       report('done', outcome.note);
       return outcome;
     } finally {
@@ -397,7 +398,7 @@ export async function captureDrivenTab(
     }
     outcome.posted = 'result';
     outcome.ok = true;
-    outcome.note = `Saved — ${text.length.toLocaleString()} characters.`;
+    outcome.note = `Saved — ${formatCount(text.length)} characters.`;
     return outcome;
   } catch (err) {
     if (isLadderViolation(err)) {
