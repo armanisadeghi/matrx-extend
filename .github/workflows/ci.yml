@@ -111,7 +111,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - name: Mandate references (non-blocking; scan only in CI)
         continue-on-error: true
-        run: uvx --from matrx-mandate-scan==0.2.0 matrx-mandate-scan check
+        run: uvx --from matrx-mandate-scan==0.2.1 matrx-mandate-scan check
 
       - name: Lint
         run: pnpm lint
