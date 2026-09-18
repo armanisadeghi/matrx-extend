@@ -48,35 +48,37 @@
 
 /** Comments and string TEXT gone, `${…}` interpolations kept. */
 function codeOnlyLine(line) {
-  if (/^\s*\*/.test(line)) return '';
-  const noComments = line.replace(/(^|[^:])\/\/.*$/, '$1').replace(/\/\*.*?\*\//g, ' ');
+  if (/^\s*\*/.test(line)) return "";
+  const noComments = line
+    .replace(/(^|[^:])\/\/.*$/, "$1")
+    .replace(/\/\*.*?\*\//g, " ");
   const noQuoted = noComments
     .replace(/"(?:[^"\\]|\\.)*"/g, '""')
     .replace(/'(?:[^'\\]|\\.)*'/g, "''");
-  let out = '';
+  let out = "";
   let i = 0;
   while (i < noQuoted.length) {
-    if (noQuoted[i] !== '`') {
+    if (noQuoted[i] !== "`") {
       out += noQuoted[i];
       i += 1;
       continue;
     }
     i += 1;
-    while (i < noQuoted.length && noQuoted[i] !== '`') {
-      if (noQuoted[i] === '\\') {
+    while (i < noQuoted.length && noQuoted[i] !== "`") {
+      if (noQuoted[i] === "\\") {
         i += 2;
         continue;
       }
-      if (noQuoted[i] === '$' && noQuoted[i + 1] === '{') {
+      if (noQuoted[i] === "$" && noQuoted[i + 1] === "{") {
         let depth = 1;
         i += 2;
         while (i < noQuoted.length && depth > 0) {
-          if (noQuoted[i] === '{') depth += 1;
-          else if (noQuoted[i] === '}') depth -= 1;
+          if (noQuoted[i] === "{") depth += 1;
+          else if (noQuoted[i] === "}") depth -= 1;
           if (depth > 0) out += noQuoted[i];
           i += 1;
         }
-        out += ' ';
+        out += " ";
         continue;
       }
       i += 1;
@@ -96,8 +98,8 @@ function codeOnlyLine(line) {
  * whole.
  */
 function withoutComments(line) {
-  if (/^\s*\*/.test(line)) return '';
-  return line.replace(/(^|[^:])\/\/.*$/, '$1').replace(/\/\*.*?\*\//g, ' ');
+  if (/^\s*\*/.test(line)) return "";
+  return line.replace(/(^|[^:])\/\/.*$/, "$1").replace(/\/\*.*?\*\//g, " ");
 }
 
 const MINIFIED_LINE = 500;
@@ -119,7 +121,8 @@ const DATE_RECEIVER_RE =
   /\bnew\s+Date\s*\(|\b(?:date|dt|day|iso|stamp|timestamp|time|when|at|created|updated|expires|deadline|start|end|published|verified|scanned|last|now|parsed)(?:[A-Z][\w$]*)?\s*(?:\?\.)?\.toLocaleString/i;
 
 /** `.toLocaleString()` with no options, or a LOCALE argument only. */
-const PLAIN_TOLOCALE_RE = /\.toLocaleString\s*\(\s*(?:\)|["'`][A-Za-z-]*["'`]\s*\)|undefined\s*\))/;
+const PLAIN_TOLOCALE_RE =
+  /\.toLocaleString\s*\(\s*(?:\)|["'`][A-Za-z-]*["'`]\s*\)|undefined\s*\))/;
 
 /**
  * COUNT NOUNS. The word a rendered integer is standing next to — this is what
@@ -138,7 +141,8 @@ const NOUN_WINDOW = 2;
  * disqualifies it: that body is `byte-size-shape.mjs`'s, and reporting it here
  * too would open one body in two register rows.
  */
-const SI_DIVIDE_RE = /[/]\s*\(?\s*(?:1_?000_?000_?000|1_?000_?000|1_?000|1e9|1e6|1e3)\b/;
+const SI_DIVIDE_RE =
+  /[/]\s*\(?\s*(?:1_?000_?000_?000|1_?000_?000|1_?000|1e9|1e6|1e3)\b/;
 const ABBREV_SUFFIX_RE = /\}\s*(?:k|K|M)\b|["'`]\s*(?:k|K|M)\s*["'`]/;
 /**
  * THE SUFFIX VOCABULARY IS THE WHOLE SEPARATION FROM BYTES, and it is tight on
@@ -157,7 +161,7 @@ const ABBREV_WINDOW = 4;
  * Returns [{ line, text }].
  */
 export function countShapeIn(source) {
-  const lines = source.split('\n');
+  const lines = source.split("\n");
   const out = [];
   const seen = new Set();
   const report = (index) => {
@@ -175,7 +179,7 @@ export function countShapeIn(source) {
     const window = lines
       .slice(i, Math.min(lines.length, i + OPTIONS_WINDOW + 1))
       .map(withoutComments)
-      .join('\n');
+      .join("\n");
     if (CURRENCY_STYLE_RE.test(window)) continue; // the money lane's body
     report(i);
     const bound = /(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*(?::[^=]*)?=/.exec(raw);
@@ -183,8 +187,8 @@ export function countShapeIn(source) {
   }
   if (countNames.size > 0) {
     const alternation = [...countNames]
-      .map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-      .join('|');
+      .map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+      .join("|");
     const callRe = new RegExp(String.raw`\b(?:${alternation})\s*\.\s*format\s*\(`);
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].length > MINIFIED_LINE) continue;
@@ -202,7 +206,7 @@ export function countShapeIn(source) {
       const band = lines
         .slice(Math.max(0, i - NOUN_WINDOW), i + NOUN_WINDOW + 1)
         .map(withoutComments)
-        .join('\n');
+        .join("\n");
       if (!DATE_OPTION_RE.test(band) && COUNT_NOUN_RE.test(band)) {
         report(i);
         continue;
@@ -213,7 +217,7 @@ export function countShapeIn(source) {
     const band = lines
       .slice(Math.max(0, i - ABBREV_WINDOW), i + ABBREV_WINDOW + 1)
       .map(withoutComments)
-      .join('\n');
+      .join("\n");
     if (ABBREV_SUFFIX_RE.test(band)) report(i);
   }
 
@@ -227,52 +231,52 @@ export function selfTestCountShape() {
   // matrx-frontend features/admin/spend/format.ts on origin/main.
   const liveCount = [
     'const COUNT = new Intl.NumberFormat("en-US");',
-    '',
-    'export function count(value: number | null | undefined): string {',
+    "",
+    "export function count(value: number | null | undefined): string {",
     '  if (value === null || value === undefined) return "—";',
-    '  return COUNT.format(value);',
-    '}',
-  ].join('\n');
+    "  return COUNT.format(value);",
+    "}",
+  ].join("\n");
   const countHits = countShapeIn(liveCount);
   if (countHits.length === 0) {
     return {
       ok: false,
-      why: 'a hand-built NON-currency `new Intl.NumberFormat(…)` was NOT reported — this is the live `count` body the Spend Dashboard and Spend Explorer both import',
+      why: "a hand-built NON-currency `new Intl.NumberFormat(…)` was NOT reported — this is the live `count` body the Spend Dashboard and Spend Explorer both import",
     };
   }
-  if (!countHits.some((h) => h.text.includes('COUNT.format(value)'))) {
+  if (!countHits.some((h) => h.text.includes("COUNT.format(value)"))) {
     return {
       ok: false,
-      why: 'the CONSTRUCTION was reported and the `.format(…)` CALL SITE on the bound formatter was not — a module that builds one formatter and calls it from several exports would show one finding and hide the rest',
+      why: "the CONSTRUCTION was reported and the `.format(…)` CALL SITE on the bound formatter was not — a module that builds one formatter and calls it from several exports would show one finding and hide the rest",
     };
   }
 
   // ── LEG 2: the bare toLocaleString beside its noun. Byte-for-byte the live
   // lint-debt console line, `Scanned {n} files`.
   const besideNoun = [
-    '        <span>',
-    '          Scanned {report.totals.filesScanned.toLocaleString()} files',
-    '        </span>',
-  ].join('\n');
+    "        <span>",
+    "          Scanned {report.totals.filesScanned.toLocaleString()} files",
+    "        </span>",
+  ].join("\n");
   if (countShapeIn(besideNoun).length === 0) {
     return {
       ok: false,
-      why: '`n.toLocaleString()` beside the word "files" was NOT reported — the noun label is what makes a rendered integer a COUNT rather than a number in a calculation',
+      why: "`n.toLocaleString()` beside the word \"files\" was NOT reported — the noun label is what makes a rendered integer a COUNT rather than a number in a calculation",
     };
   }
 
   // ── LEG 3: the magnitude abbreviation, the voice kit does not have.
   const abbreviated = [
-    'function compactNumber(value: number): string {',
-    '  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;',
-    '  if (value >= 1_000) return `${(value / 1_000).toFixed(0)}k`;',
-    '  return String(value);',
-    '}',
-  ].join('\n');
+    "function compactNumber(value: number): string {",
+    "  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;",
+    "  if (value >= 1_000) return `${(value / 1_000).toFixed(0)}k`;",
+    "  return String(value);",
+    "}",
+  ].join("\n");
   if (countShapeIn(abbreviated).length < 2) {
     return {
       ok: false,
-      why: 'a hand-rolled k / M magnitude abbreviation was NOT reported on both branches — this is the compact COUNT voice, and it is censused with its blocker (kit has no compact voice) rather than silently allowed',
+      why: "a hand-rolled k / M magnitude abbreviation was NOT reported on both branches — this is the compact COUNT voice, and it is censused with its blocker (kit has no compact voice) rather than silently allowed",
     };
   }
 
@@ -282,38 +286,38 @@ export function selfTestCountShape() {
     // THE LOAD-BEARING ONE: a date rendered in the same breath as a count noun,
     // which is what a table footer looks like. Only the receiver test separates
     // it from a finding.
-    '  <span>{new Date(row.created_at).toLocaleString()} · {rows.length} rows</span>',
-    'function fmtDate(iso: string | null): string {',
+    "  <span>{new Date(row.created_at).toLocaleString()} · {rows.length} rows</span>",
+    "function fmtDate(iso: string | null): string {",
     '  return iso ? new Date(iso).toLocaleString() : "—";',
-    '}',
-    'const shown = updatedAt.toLocaleString();',
-    'const withFields = value.toLocaleString(undefined, {',
+    "}",
+    "const shown = updatedAt.toLocaleString();",
+    "const withFields = value.toLocaleString(undefined, {",
     '  month: "short",',
     '  day: "numeric",',
-    '});',
-    '// 12 rows, 4 files',
-  ].join('\n');
+    "});",
+    "// 12 rows, 4 files",
+  ].join("\n");
   const dateHits = countShapeIn(dates);
   if (dateHits.length !== 0) {
     return {
       ok: false,
       why: `a DATE rendered with toLocaleString was reported as a count (${dateHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // A COUNT USED ONLY IN A COMPARISON renders nothing.
   const comparisonOnly = [
-    'if (rows.length > 1_000) truncate(rows);',
-    'const tooMany = files.length >= 1000;',
-  ].join('\n');
+    "if (rows.length > 1_000) truncate(rows);",
+    "const tooMany = files.length >= 1000;",
+  ].join("\n");
   const comparisonHits = countShapeIn(comparisonOnly);
   if (comparisonHits.length !== 0) {
     return {
       ok: false,
       why: `a count used only in a COMPARISON was reported as a formatter (${comparisonHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // A CURRENCY formatter is the MONEY lane's, never this one.
@@ -321,63 +325,63 @@ export function selfTestCountShape() {
     'const USD = new Intl.NumberFormat("en-US", {',
     '  style: "currency",',
     '  currency: "USD",',
-    '});',
-    'const shown = USD.format(total);',
-  ].join('\n');
+    "});",
+    "const shown = USD.format(total);",
+  ].join("\n");
   const currencyHits = countShapeIn(currency);
   if (currencyHits.length !== 0) {
     return {
       ok: false,
       why: `a CURRENCY formatter was reported by the COUNT lane — it belongs to money-shape.mjs, and reporting it here would open one body in two register rows (${currencyHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // A BYTE abbreviation divides by the same 1000 and is byte-size-shape.mjs's.
   const bytes = [
-    'function humanSize(bytes: number): string {',
-    '  if (bytes >= 1_000_000) return `${(bytes / 1_000_000).toFixed(1)} MB`;',
-    '  return `${(bytes / 1_000).toFixed(1)} KB`;',
-    '}',
-  ].join('\n');
+    "function humanSize(bytes: number): string {",
+    "  if (bytes >= 1_000_000) return `${(bytes / 1_000_000).toFixed(1)} MB`;",
+    "  return `${(bytes / 1_000).toFixed(1)} KB`;",
+    "}",
+  ].join("\n");
   const byteHits = countShapeIn(bytes);
   if (byteHits.length !== 0) {
     return {
       ok: false,
       why: `a BYTE abbreviation was reported by the COUNT lane — the same \`/ 1000\` carries a byte unit and byte-size-shape.mjs owns it (${byteHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // A MINIFIED BUNDLE is not source.
   const minified = [
     '"use strict";(()=>{' +
-      'x'.repeat(400) +
+      "x".repeat(400) +
       'let a=new Intl.NumberFormat("en-US"),b=`${(n/1000).toFixed(1)}k`;' +
-      'y'.repeat(200) +
-      '})();',
-  ].join('\n');
+      "y".repeat(200) +
+      "})();",
+  ].join("\n");
   const minifiedHits = countShapeIn(minified);
   if (minifiedHits.length !== 0) {
     return {
       ok: false,
       why: `a MINIFIED BUNDLE line was reported as a count body (${minifiedHits
         .map((h) => h.text.slice(0, 60))
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // AN ADOPTED CALL SITE is silent.
   const adopted = [
     'import { formatCount } from "@ai-matrx/kit/format";',
-    'const label = `${formatCount(row.tokens)} tokens`;',
-  ].join('\n');
+    "const label = `${formatCount(row.tokens)} tokens`;",
+  ].join("\n");
   const adoptedHits = countShapeIn(adopted);
   if (adoptedHits.length !== 0) {
     return {
       ok: false,
       why: `an adopted formatCount call site was reported (${adoptedHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   return { ok: true };

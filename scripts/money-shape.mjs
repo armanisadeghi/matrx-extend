@@ -66,35 +66,37 @@
  * shared helper would be a ninth file to keep in step.
  */
 function codeOnlyLine(line) {
-  if (/^\s*\*/.test(line)) return '';
-  const noComments = line.replace(/(^|[^:])\/\/.*$/, '$1').replace(/\/\*.*?\*\//g, ' ');
+  if (/^\s*\*/.test(line)) return "";
+  const noComments = line
+    .replace(/(^|[^:])\/\/.*$/, "$1")
+    .replace(/\/\*.*?\*\//g, " ");
   const noQuoted = noComments
     .replace(/"(?:[^"\\]|\\.)*"/g, '""')
     .replace(/'(?:[^'\\]|\\.)*'/g, "''");
-  let out = '';
+  let out = "";
   let i = 0;
   while (i < noQuoted.length) {
-    if (noQuoted[i] !== '`') {
+    if (noQuoted[i] !== "`") {
       out += noQuoted[i];
       i += 1;
       continue;
     }
     i += 1;
-    while (i < noQuoted.length && noQuoted[i] !== '`') {
-      if (noQuoted[i] === '\\') {
+    while (i < noQuoted.length && noQuoted[i] !== "`") {
+      if (noQuoted[i] === "\\") {
         i += 2;
         continue;
       }
-      if (noQuoted[i] === '$' && noQuoted[i + 1] === '{') {
+      if (noQuoted[i] === "$" && noQuoted[i + 1] === "{") {
         let depth = 1;
         i += 2;
         while (i < noQuoted.length && depth > 0) {
-          if (noQuoted[i] === '{') depth += 1;
-          else if (noQuoted[i] === '}') depth -= 1;
+          if (noQuoted[i] === "{") depth += 1;
+          else if (noQuoted[i] === "}") depth -= 1;
           if (depth > 0) out += noQuoted[i];
           i += 1;
         }
-        out += ' ';
+        out += " ";
         continue;
       }
       i += 1;
@@ -114,8 +116,8 @@ function codeOnlyLine(line) {
  * whole.
  */
 function withoutComments(line) {
-  if (/^\s*\*/.test(line)) return '';
-  return line.replace(/(^|[^:])\/\/.*$/, '$1').replace(/\/\*.*?\*\//g, ' ');
+  if (/^\s*\*/.test(line)) return "";
+  return line.replace(/(^|[^:])\/\/.*$/, "$1").replace(/\/\*.*?\*\//g, " ");
 }
 
 /**
@@ -173,7 +175,7 @@ const MONEY_WORD_RE =
  * exactly how the live per-call cost bodies are spelled.
  */
 function wordsIn(line) {
-  return line.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/_/g, ' ');
+  return line.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/_/g, " ");
 }
 
 /**
@@ -210,7 +212,7 @@ const LABEL_WINDOW = 3;
  * Returns [{ line, text }] — every place a number becomes a money string.
  */
 export function moneyShapeIn(source) {
-  const lines = source.split('\n');
+  const lines = source.split("\n");
   const out = [];
   const seen = new Set();
   const report = (index) => {
@@ -228,7 +230,7 @@ export function moneyShapeIn(source) {
     const window = lines
       .slice(i, Math.min(lines.length, i + OPTIONS_WINDOW + 1))
       .map(withoutComments)
-      .join('\n');
+      .join("\n");
     // The options object ends at the first line that closes the call; a window
     // is enough because nothing else in it can spell `style: "currency"`.
     if (!CURRENCY_STYLE_RE.test(window) && !CURRENCY_CODE_RE.test(window)) {
@@ -242,8 +244,8 @@ export function moneyShapeIn(source) {
   // ── PASS 2: every `.format(…)` call on one of those bindings ──
   if (currencyNames.size > 0) {
     const alternation = [...currencyNames]
-      .map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-      .join('|');
+      .map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+      .join("|");
     const callRe = new RegExp(String.raw`\b(?:${alternation})\s*\.\s*format\s*\(`);
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].length > MINIFIED_LINE) continue;
@@ -270,7 +272,7 @@ export function moneyShapeIn(source) {
       const band = lines
         .slice(Math.max(0, i - LABEL_WINDOW), i + LABEL_WINDOW + 1)
         .map(withoutComments)
-        .join('\n');
+        .join("\n");
       const labelled =
         TEMPLATE_DOLLAR_RE.test(band) ||
         CONCAT_DOLLAR_RE.test(band) ||
@@ -299,26 +301,26 @@ export function selfTestMoneyShape() {
     'const USD = new Intl.NumberFormat("en-US", {',
     '  style: "currency",',
     '  currency: "USD",',
-    '  minimumFractionDigits: 2,',
-    '  maximumFractionDigits: 2,',
-    '});',
-    '',
-    'export function usd(value: number | null | undefined): string {',
+    "  minimumFractionDigits: 2,",
+    "  maximumFractionDigits: 2,",
+    "});",
+    "",
+    "export function usd(value: number | null | undefined): string {",
     '  if (value === null || value === undefined) return "not measured";',
-    '  return USD.format(value);',
-    '}',
-  ].join('\n');
+    "  return USD.format(value);",
+    "}",
+  ].join("\n");
   const intlHits = moneyShapeIn(liveIntl);
   if (intlHits.length === 0) {
     return {
       ok: false,
-      why: 'a hand-built `new Intl.NumberFormat(…, { style: "currency" })` was NOT reported — 22 files outside the package build one, and the money lane exists because the NAME lane read formatUsd as adopted while they did',
+      why: "a hand-built `new Intl.NumberFormat(…, { style: \"currency\" })` was NOT reported — 22 files outside the package build one, and the money lane exists because the NAME lane read formatUsd as adopted while they did",
     };
   }
-  if (!intlHits.some((h) => h.text.includes('USD.format(value)'))) {
+  if (!intlHits.some((h) => h.text.includes("USD.format(value)"))) {
     return {
       ok: false,
-      why: 'the CONSTRUCTION was reported and the `.format(…)` CALL SITE on the bound formatter was not — a module that builds one formatter and calls it from six exports would show one finding and hide six bodies',
+      why: "the CONSTRUCTION was reported and the `.format(…)` CALL SITE on the bound formatter was not — a module that builds one formatter and calls it from six exports would show one finding and hide six bodies",
     };
   }
 
@@ -326,14 +328,14 @@ export function selfTestMoneyShape() {
   // features/admin/users/components/UsageTableClient.tsx (ten call sites), which
   // also uses the VIEWER's locale, so a German admin reads "0,00 $".
   const boundDollar = [
-    'function fmtCost(n: number): string {',
+    "function fmtCost(n: number): string {",
     '  return `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;',
-    '}',
-  ].join('\n');
+    "}",
+  ].join("\n");
   if (moneyShapeIn(boundDollar).length === 0) {
     return {
       ok: false,
-      why: '`` `$${n…}` `` was NOT reported — a literal dollar glued to an interpolation is the commonest money body in the fleet and carries no `style: "currency"` to find',
+      why: "`` `$${n…}` `` was NOT reported — a literal dollar glued to an interpolation is the commonest money body in the fleet and carries no `style: \"currency\"` to find",
     };
   }
 
@@ -341,63 +343,67 @@ export function selfTestMoneyShape() {
   // features/hindsight/components/tokens.ts — three fixed decimals, in a file
   // that ALREADY imports @ai-matrx/kit/format for durations.
   const fixedDecimals = [
-    'export function fmtCost(value: number | null | undefined): string {',
+    "export function fmtCost(value: number | null | undefined): string {",
     '  if (value == null) return "—";',
-    '  return `$${Number(value).toFixed(3)}`;',
-    '}',
-  ].join('\n');
+    "  return `$${Number(value).toFixed(3)}`;",
+    "}",
+  ].join("\n");
   if (moneyShapeIn(fixedDecimals).length === 0) {
     return {
       ok: false,
-      why: 'a `$` + `.toFixed(3)` money body was NOT reported',
+      why: "a `$` + `.toFixed(3)` money body was NOT reported",
     };
   }
   // …and the same precision with the currency word instead of the symbol.
   // A NON-USD currency word, deliberately: `USD` is also in MONEY_WORD_RE, so a
   // USD fixture would prove nothing about this leg. It is also the real gap —
   // kit has no voice for a currency that is not the dollar.
-  const wordLabelled = ['const total = `${gross.toFixed(2)} EUR`;'].join('\n');
+  const wordLabelled = [
+    "const total = `${gross.toFixed(2)} EUR`;",
+  ].join("\n");
   if (moneyShapeIn(wordLabelled).length === 0) {
     return {
       ok: false,
-      why: 'a `.toFixed(2)` beside a quoted currency WORD ("EUR") was NOT reported — a money body does not have to spell the symbol, and a non-dollar currency is the one kit has no voice for at all',
+      why: "a `.toFixed(2)` beside a quoted currency WORD (\"EUR\") was NOT reported — a money body does not have to spell the symbol, and a non-dollar currency is the one kit has no voice for at all",
     };
   }
   // …and the money-word corroboration, where neither symbol nor code appears.
-  const moneyWord = ['const label = costPerCall.toFixed(4) + suffix;'].join('\n');
+  const moneyWord = [
+    "const label = costPerCall.toFixed(4) + suffix;",
+  ].join("\n");
   if (moneyShapeIn(moneyWord).length === 0) {
     return {
       ok: false,
-      why: 'a `.toFixed(4)` on a value NAMED as money (`costPerCall`) was NOT reported',
+      why: "a `.toFixed(4)` on a value NAMED as money (`costPerCall`) was NOT reported",
     };
   }
 
   // ── LEG 4: the sub-unit conversion, the money shape with no symbol at all.
   const cents = [
-    'const dollars = row.amountCents / 100;',
-    'const perCall = usage.millicents / 100_000;',
-  ].join('\n');
+    "const dollars = row.amountCents / 100;",
+    "const perCall = usage.millicents / 100_000;",
+  ].join("\n");
   if (moneyShapeIn(cents).length < 2) {
     return {
       ok: false,
-      why: 'a cents / millicents conversion was NOT reported — it is the one money shape that reaches a screen with neither a `$` nor a `.toFixed` on its own line',
+      why: "a cents / millicents conversion was NOT reported — it is the one money shape that reaches a screen with neither a `$` nor a `.toFixed` on its own line",
     };
   }
 
   // ── NEGATIVES ────────────────────────────────────────────────────────────
   // THE TEMPLATE MARKER ITSELF. One dollar is interpolation; money has two.
   const plainInterpolation = [
-    'const label = `${count} rows in ${table}`;',
-    'const css = `width: ${pct}%`;',
-    'const cls = `text-${tone}-600`;',
-  ].join('\n');
+    "const label = `${count} rows in ${table}`;",
+    "const css = `width: ${pct}%`;",
+    "const cls = `text-${tone}-600`;",
+  ].join("\n");
   const plainHits = moneyShapeIn(plainInterpolation);
   if (plainHits.length !== 0) {
     return {
       ok: false,
       why: `a plain template interpolation was reported as money — the \`\${\` marker is ONE dollar and money is two (${plainHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // A `$` inside a REGEX literal, including an end-of-string anchor.
@@ -405,152 +411,152 @@ export function selfTestMoneyShape() {
     // The load-bearing one: a regex BUILT from a template, where a literal
     // dollar is escaped immediately in front of an interpolated pattern. The
     // backslash lookbehind is the only thing between this and a money finding.
-    'const re = new RegExp(`^\\\\$${escaped}$`);',
-    'const MONEY_RE = /^\\$\\d+(?:\\.\\d{2})?$/;',
+    "const re = new RegExp(`^\\\\$${escaped}$`);",
+    "const MONEY_RE = /^\\$\\d+(?:\\.\\d{2})?$/;",
     'const cleaned = raw.replace(/\\s+$/, "");',
-    'const trailing = /[a-z]+$/.test(name);',
-  ].join('\n');
+    "const trailing = /[a-z]+$/.test(name);",
+  ].join("\n");
   const regexHits = moneyShapeIn(regexDollar);
   if (regexHits.length !== 0) {
     return {
       ok: false,
       why: `a \`$\` inside a REGEX literal was reported as money (${regexHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // A `$` inside a SHELL string.
   const shell = [
     'const out = execSync(`echo $HOME`, { encoding: "utf8" });',
-    'execFileSync("bash", ["-c", `cd $DIR && git rev-parse HEAD`]);',
-  ].join('\n');
+    "execFileSync(\"bash\", [\"-c\", `cd $DIR && git rev-parse HEAD`]);",
+  ].join("\n");
   const shellHits = moneyShapeIn(shell);
   if (shellHits.length !== 0) {
     return {
       ok: false,
       why: `a SHELL parameter expansion was reported as money (${shellHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // LATEX DISPLAY MATH. `$$…$$` around an interpolation is THREE dollars, and
   // four markdown renderers in this fleet build it exactly this way.
   const latex = [
-    'const wrapped = `\\n\\n$$${mathContent}$$\\n\\n`;',
-    'const inline = `$$${mathContent}$$`;',
-  ].join('\n');
+    "const wrapped = `\\n\\n$$${mathContent}$$\\n\\n`;",
+    "const inline = `$$${mathContent}$$`;",
+  ].join("\n");
   const latexHits = moneyShapeIn(latex);
   if (latexHits.length !== 0) {
     return {
       ok: false,
       why: `LaTeX display math (\`$$…$$\` around an interpolation) was reported as money — money is EXACTLY two dollars (${latexHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // A POSTGRES POSITIONAL PARAMETER. `$1`, `$2` — two dollars, an
   // interpolation, and a loop index where money would have a value.
   const sqlPlaceholder = [
-    'const label = arg.name || `$${index + 1}`;',
-    'const ref = `$${i}`;',
-    'parts.push(`${name} => $${values.length}::${type}`);',
-  ].join('\n');
+    "const label = arg.name || `$${index + 1}`;",
+    "const ref = `$${i}`;",
+    "parts.push(`${name} => $${values.length}::${type}`);",
+  ].join("\n");
   const sqlHits = moneyShapeIn(sqlPlaceholder);
   if (sqlHits.length !== 0) {
     return {
       ok: false,
       why: `a Postgres positional parameter (\`$1\`, built as \`$\${index + 1}\`) was reported as money (${sqlHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // A CSS/SCSS variable and a jQuery-style `$(` call.
   const cssAndJquery = [
     'const token = "$primary";',
     'const el = $("#root");',
-    'const scss = `$spacing-4`;',
-  ].join('\n');
+    "const scss = `$spacing-4`;",
+  ].join("\n");
   const cssHits = moneyShapeIn(cssAndJquery);
   if (cssHits.length !== 0) {
     return {
       ok: false,
       why: `a CSS variable or a \`$(\` selector was reported as money (${cssHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // `.toFixed(2)` with NO currency in sight: a percentage, a score, a latency.
   const notMoney = [
-    'const pct = `${(ratio * 100).toFixed(2)}%`;',
-    'const score = confidence.toFixed(2);',
-    'const latency = `${ms.toFixed(2)} ms`;',
-  ].join('\n');
+    "const pct = `${(ratio * 100).toFixed(2)}%`;",
+    "const score = confidence.toFixed(2);",
+    "const latency = `${ms.toFixed(2)} ms`;",
+  ].join("\n");
   const notMoneyHits = moneyShapeIn(notMoney);
   if (notMoneyHits.length !== 0) {
     return {
       ok: false,
       why: `a fixed-decimal NON-money value was reported (${notMoneyHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // `/ 100` AS A PERCENTAGE, which is the commonest `/ 100` there is.
   const percentStep = [
-    'const fraction = percentComplete / 100;',
-    'const opacity = alphaPercent / 100;',
-  ].join('\n');
+    "const fraction = percentComplete / 100;",
+    "const opacity = alphaPercent / 100;",
+  ].join("\n");
   const percentHits = moneyShapeIn(percentStep);
   if (percentHits.length !== 0) {
     return {
       ok: false,
       why: `a PERCENTAGE step (\`/ 100\`) was reported as a cents conversion — arm (d) requires the dividend to NAME itself cents/millicents (${percentHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // A NON-currency Intl.NumberFormat belongs to the COUNT lane, not this one.
   const countFormatter = [
     'const COUNT = new Intl.NumberFormat("en-US");',
-    'const label = COUNT.format(rows.length);',
-  ].join('\n');
+    "const label = COUNT.format(rows.length);",
+  ].join("\n");
   const countHits = moneyShapeIn(countFormatter);
   if (countHits.length !== 0) {
     return {
       ok: false,
       why: `a NON-currency Intl.NumberFormat was reported by the MONEY lane — it is the COUNT lane's, and reporting it here would put every count body in the wrong register row (${countHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // A MINIFIED BUNDLE is not source.
   const minified = [
     '"use strict";(()=>{' +
-      'x'.repeat(400) +
+      "x".repeat(400) +
       'let a=`$${n.toFixed(2)}`,b=c/100;' +
-      'y'.repeat(200) +
-      '})();',
-  ].join('\n');
+      "y".repeat(200) +
+      "})();",
+  ].join("\n");
   const minifiedHits = moneyShapeIn(minified);
   if (minifiedHits.length !== 0) {
     return {
       ok: false,
       why: `a MINIFIED BUNDLE line was reported as a money body (${minifiedHits
         .map((h) => h.text.slice(0, 60))
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   // AN ADOPTED CALL SITE is silent.
   const adopted = [
     'import { formatUsd } from "@ai-matrx/kit/format";',
     'const label = formatUsd(row.total_cost, { digits: "adaptive" });',
-  ].join('\n');
+  ].join("\n");
   const adoptedHits = moneyShapeIn(adopted);
   if (adoptedHits.length !== 0) {
     return {
       ok: false,
       why: `an adopted formatUsd call site was reported (${adoptedHits
         .map((h) => h.text)
-        .join(' | ')})`,
+        .join(" | ")})`,
     };
   }
   return { ok: true };
