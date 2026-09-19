@@ -97,6 +97,7 @@ let local;
 let localUrl;
 let website;
 let sidepanel;
+let realPanel;
 const createKeys = new Set();
 const createdIds = new Set();
 let baselineIds = new Set();
@@ -423,29 +424,77 @@ async function localCanonicalCleanup(proven) {
   assert(result.route === 'local_canonical_authmiddleware' && result.provenance === 'local_router_and_service_hash_pinned' && result.receiptCount === proven.size && result.attempts.length === proven.size && attemptedIds.size === proven.size && [...proven].every((id) => attemptedIds.has(id)) && result.attempts.every((attempt) => ['already_cleaned', 'deleted_and_missing'].includes(attempt.terminal)), 'local_cleanup_proof_refused');
   return result;
 }
+async function attachPanelSession(cdp, targetId) {
+  const { sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: false });
+  let nextId = 0;
+  const pending = new Map();
+  const onMessage = ({ sessionId: received, message }) => {
+    if (received !== sessionId) return;
+    let envelope;
+    try { envelope = JSON.parse(message); } catch { return; }
+    const waiter = pending.get(envelope.id);
+    if (!waiter) return;
+    pending.delete(envelope.id);
+    envelope.error ? waiter.reject(new Error(envelope.error.message)) : waiter.resolve(envelope.result);
+  };
+  cdp.on('Target.receivedMessageFromTarget', onMessage);
+  return {
+    send(method, params = {}) {
+      return new Promise((resolve, reject) => {
+        const id = ++nextId;
+        pending.set(id, { resolve, reject });
+        cdp.send('Target.sendMessageToTarget', { sessionId, message: JSON.stringify({ id, method, params }) }).catch(reject);
+      });
+    },
+  };
+}
+async function openGenuineSidePanel(extensionId, popup) {
+  await popup.bringToFront();
+  await popup.getByRole('button', { name: 'Open chat', exact: true }).click();
+  let contexts = [];
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    contexts = await worker.evaluate(() => chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }));
+    if (contexts.length === 1 && contexts[0].documentUrl === `chrome-extension://${extensionId}/sidepanel.html` && contexts[0].tabId === -1) break;
+    await wait(250);
+  }
+  assert(contexts.length === 1 && contexts[0].tabId === -1, 'real_side_panel_missing');
+  const host = context.pages()[0];
+  assert(host, 'cdp_host_missing');
+  const cdp = await context.newCDPSession(host);
+  const targets = await cdp.send('Target.getTargets');
+  const target = targets.targetInfos.find((candidate) => candidate.url === `chrome-extension://${extensionId}/sidepanel.html`);
+  assert(target?.type === 'page', 'real_side_panel_target_missing');
+  const panel = await attachPanelSession(cdp, target.targetId);
+  const evaluate = async (expression) => {
+    const result = await panel.send('Runtime.evaluate', { expression, returnByValue: true });
+    assert(!result.exceptionDetails, 'real_side_panel_eval_refused');
+    return result.result.value;
+  };
+  const click = async (expression) => {
+    let box;
+    for (let attempt = 0; attempt < 30; attempt += 1) {
+      box = await evaluate(`(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = element.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { x, y, width: rect.width, height: rect.height, viewport: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === element || element.contains(hit)) }; })()`);
+      if (box?.width > 0 && box?.height > 0 && box.viewport && box.hit) break;
+      await wait(250);
+    }
+    assert(box?.width > 0 && box?.height > 0 && box.viewport && box.hit, 'real_side_panel_control_not_actionable');
+    await panel.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: box.x, y: box.y });
+    await panel.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: box.x, y: box.y, button: 'left', clickCount: 1 });
+    await panel.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: box.x, y: box.y, button: 'left', clickCount: 1 });
+  };
+  return { evaluate, click };
+}
 async function chooseAuthorizedOrganization(extensionId) {
   const settingsPage = await context.newPage();
   try {
     await settingsPage.goto(`chrome-extension://${extensionId}/sidepanel.html`);
-    // These are the actual sidepanel navigation and Settings controls. Do not
-    // write matrx.org.active here: selection must traverse the UI and its
-    // membership-verifying resolver.
     await settingsPage.getByTitle('Settings', { exact: true }).click();
-    const organizationSection = settingsPage.getByRole('button', { name: 'Organization', exact: true });
     const actingAs = settingsPage.getByText('Acting as', { exact: true });
-    if (!(await actingAs.isVisible())) await organizationSection.click();
-    const organizationRow = actingAs.locator('xpath=../..');
-    const selector = organizationRow.getByRole('combobox');
-    await selector.click();
-    const authorizedOption = settingsPage.getByRole('option', { name: 'AI Matrx', exact: true });
-    assert(await authorizedOption.count() === 1, 'authorized_organization_option_missing_or_ambiguous');
-    await authorizedOption.click();
-    // The selection verifies membership asynchronously in this page. Keep its
-    // realm alive until the canonical resolver has persisted the choice.
+    if (!(await actingAs.isVisible())) await settingsPage.getByRole('button', { name: 'Organization', exact: true }).click();
+    await actingAs.locator('xpath=../..').getByRole('combobox').click();
+    await settingsPage.getByRole('option', { name: 'AI Matrx', exact: true }).click();
     await waitForActiveOrganization();
-  } finally {
-    await settingsPage.close();
-  }
+  } finally { await settingsPage.close(); }
 }
 async function waitForActiveOrganization() {
   let active;
@@ -465,7 +514,9 @@ async function authenticate(extension) {
   proof.phase = 'browser_launch';
   persist();
   context = await chromium.launchPersistentContext(profile, {
-    headless: true,
+    // Chrome does not give SIDE_PANEL a compositor surface in headless mode.
+    // This is the disposable, agent-owned Chrome-for-Testing profile only.
+    headless: false,
     // Playwright's default headless shell does not load this extension.
     executablePath: process.env.MATRX_VAULT_CANARY_CHROME_EXECUTABLE || chromium.executablePath(),
     args: [`--disable-extensions-except=${extension}`, `--load-extension=${extension}`],
@@ -523,6 +574,7 @@ async function authenticate(extension) {
   proof.extensionId = extensionId;
   // Retain independent identity evidence even if organization selection fails.
   persist();
+  realPanel = await openGenuineSidePanel(extensionId, popup);
   let active = session['matrx.org.active'];
   if (!active?.id) {
     proof.phase = 'organization_selection';
@@ -536,6 +588,20 @@ async function authenticate(extension) {
   // Both identity and organization evidence exist before the first fixture.
   persist();
   assert(!(await hasPendingCapture()), 'admin_password_pending_before_writes');
+}
+async function verifyRealVaultPanel() {
+  assert(realPanel, 'real_side_panel_unavailable');
+  const vaultControl = 'document.querySelector(`[title="Vault"]`)';
+  await realPanel.click(vaultControl);
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    if (await realPanel.evaluate(`(() => { const control = (${vaultControl}); return control?.getAttribute('aria-selected') === 'true' && !!document.querySelector('[role="tabpanel"]'); })()`)) {
+      proof.checks.realSidePanelVaultVisible = true;
+      persist();
+      return;
+    }
+    await wait(250);
+  }
+  throw new Error('real_side_panel_vault_not_visible');
 }
 async function submitLogin(page, username, password) {
   await page.goto(localUrl, { waitUntil: 'domcontentloaded' });
@@ -603,6 +669,7 @@ async function materializedPassword(id) {
     const baseline = await items();
     baselineIds = new Set(baseline.map((entry) => entry.id));
     proof.baselineMetadataSha256 = baselineMetadataSha256(baseline);
+    await verifyRealVaultPanel();
     await prewriteLocalCanonicalPreflight();
     if (readOnlyAdmissionMode) {
       proof.admission.baselineRead = true;
