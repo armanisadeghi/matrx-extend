@@ -31,7 +31,12 @@ vi.mock('@/lib/api/routes/vault', () => ({
   fetchBrowserLoginMatches: deps.matches,
 }));
 vi.mock('@/lib/destructive/confirm', () => ({ confirmDestructive: vi.fn() }));
-vi.mock('@/lib/credentials/transient-secret', () => ({ useTransientSecret: vi.fn() }));
+// The transient secret hold is REAL here on purpose: it is pure React state
+// plus an auto-clear timer, and every component in this tree (the item detail
+// and the password generator) depends on its exact shape. A stand-in returning
+// a hand-written object silently rots the moment a component starts using
+// another of its fields — which is exactly how this file broke when the
+// generator panel was mounted into VaultView.
 vi.mock('@/lib/clipboard/copy', () => ({ copyToClipboard: vi.fn() }));
 vi.mock('@/lib/messaging/native', () => ({ send: async () => null, on: () => () => {} }));
 import { STORAGE_KEYS } from '@/config/env';
