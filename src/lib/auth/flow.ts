@@ -213,6 +213,34 @@ export async function getStoredAccessToken(): Promise<string | null> {
   return typeof token === 'string' && token.length > 0 ? token : null;
 }
 
+/**
+ * Why a signed-in install has no readable bearer, as plain facts for a log line
+ * (never the token itself). Used by the request path when it refuses to send a
+ * signed-in request as a guest, so the NEXT occurrence explains itself: the
+ * 2026-09-19 guest-downgrade 401s could only be explained after the fact.
+ */
+export async function describeStoredSession(): Promise<{
+  hasAccessToken: boolean;
+  expiresInMs: number | null;
+  hasRefreshMaterial: boolean;
+  hasOauthClientId: boolean;
+}> {
+  const stored = await chrome.storage.local.get([
+    STORAGE_KEYS.ACCESS_TOKEN,
+    STORAGE_KEYS.TOKEN_EXPIRES_AT,
+    STORAGE_KEYS.REFRESH_TOKEN_ENC,
+    STORAGE_KEYS.REFRESH_TOKEN_IV,
+  ]);
+  const expiresAt = stored[STORAGE_KEYS.TOKEN_EXPIRES_AT];
+  return {
+    hasAccessToken: typeof stored[STORAGE_KEYS.ACCESS_TOKEN] === 'string',
+    expiresInMs: typeof expiresAt === 'number' ? expiresAt - Date.now() : null,
+    hasRefreshMaterial:
+      !!stored[STORAGE_KEYS.REFRESH_TOKEN_ENC] && !!stored[STORAGE_KEYS.REFRESH_TOKEN_IV],
+    hasOauthClientId: !!ENV.EXTENSION_OAUTH_CLIENT_ID,
+  };
+}
+
 /** Stored-token read with the 60s freshness margin applied. */
 async function readFreshAccessToken(): Promise<string | null> {
   const stored = await chrome.storage.local.get([

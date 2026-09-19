@@ -19,6 +19,12 @@ vi.mock('@/lib/auth/flow', () => ({
     state.tokenReads += 1;
     return state.token;
   },
+  describeStoredSession: async () => ({
+    hasAccessToken: false,
+    expiresInMs: null,
+    hasRefreshMaterial: true,
+    hasOauthClientId: true,
+  }),
   getCurrentUser: async () => state.profile,
   getStoredAccessToken: async () => state.token,
   refreshAccessToken: async () => null,
@@ -58,28 +64,27 @@ describe('a signed-in session never speaks as a guest', () => {
     state.profile = { id: 'u1' };
     const pending = buildHeaders();
     // The bearer lands a beat after the surface asked (sign-in commit / refresh).
-    await vi.advanceTimersByTimeAsync(300);
+    await vi.advanceTimersByTimeAsync(1_100);
     state.token = 'token-late';
-    await vi.advanceTimersByTimeAsync(300);
+    await vi.advanceTimersByTimeAsync(1_100);
     const headers = await pending;
     expect(headers.Authorization).toBe('Bearer token-late');
     expect(headers['X-Fingerprint-ID']).toBeUndefined();
   });
 
   it('REFUSES with a remedy instead of downgrading when the bearer never comes', async () => {
-    vi.useFakeTimers();
+    // Real timers: the two spaced re-asks take ~2 s and that IS the behaviour
+    // under test (few, spaced refresh attempts — never a tight poll).
     state.profile = { id: 'u1' };
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
-    const pending = apiGet('/mandates/extend.browser_chat/resolution');
-    await vi.advanceTimersByTimeAsync(6_000);
-    const result = await pending;
+    const result = await apiGet('/mandates/extend.browser_chat/resolution');
     expect(result.ok).toBe(false);
     if (result.ok) return;
     expect(result.status).toBe(STATUS_SESSION_NOT_READY);
     expect(result.error).toMatch(/not ready yet/);
     expect(result.error).toMatch(/try again/i);
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(state.tokenReads).toBeGreaterThan(1);
-  });
+    expect(state.tokenReads).toBe(3); // one ask + two spaced re-asks
+  }, 10_000);
 });

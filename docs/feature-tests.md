@@ -100,13 +100,16 @@ component, so all four must show identical rows in identical order.
 ### First sign-in resolves the default agent (no guest downgrade)
 
 - **What it does:** on a fresh install, the very first calls after sign-in (the
-  default agent's mandate resolution, compute targets) used to race the bearer
-  and go out as a GUEST fingerprint; the server answered 401 and the picker
-  showed "the server refused to resolve it" until the panel was reloaded
-  (2026-09-19). Now a signed-in surface never speaks as a guest: the request
-  waits briefly for the bearer, and if it never comes it is refused with a
-  plain remedy instead of being downgraded. If a refusal still happens, the
-  package re-asks on the next open and the error banner has **Try again**.
+  default agent's mandate resolution, compute targets) went out as a GUEST
+  fingerprint when no bearer was readable (the stored token was outside its
+  freshness margin and the refresh call returned nothing); the server answered
+  401 and the picker showed "the server refused to resolve it" until the panel
+  was reloaded (2026-09-19, seen for two users). Now a signed-in surface never
+  speaks as a guest: the request re-asks for the bearer twice, one second
+  apart, and if it never comes it is refused with a plain remedy and a log line
+  saying why (token present? expiry? refresh material?) instead of being
+  downgraded. A refused default row is re-asked once automatically after 1.5 s,
+  the package re-asks on the next open, and the error banner has **Try again**.
 - **Where to test:** load the unpacked build in a fresh Chrome profile (or
   remove + re-add the extension), open the side panel signed out, sign in as
   `admin@admin.com`, choose an organization if asked, open **Chat**.
