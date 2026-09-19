@@ -192,12 +192,24 @@ export function startWsOffscreenRuntime(): void {
 let connectingPromise: Promise<void> | null = null;
 let activeConnectingAttemptId: number | null = null;
 let nextConnectingAttemptId = 0;
+let connectingSocket: WebSocket | null = null;
+let connectingBackgroundBootId: string | null = null;
 
 function abandonConnectingAttempt(): void {
   // A new background boot owns a new connection attempt. The old promise may
   // settle later, but must never prevent or clear the new attempt.
   connectingPromise = null;
   activeConnectingAttemptId = null;
+  connectingBackgroundBootId = null;
+  const ws = connectingSocket;
+  connectingSocket = null;
+  if (ws) {
+    try {
+      ws.close(1000, 'connection attempt retired');
+    } catch {
+      /* ignore */
+    }
+  }
 }
 
 function redactToken(url: string): string {
@@ -207,6 +219,7 @@ function redactToken(url: string): string {
 async function openWebSocket(): Promise<void> {
   if (connectingPromise) return connectingPromise;
   const attemptId = ++nextConnectingAttemptId;
+  const attemptBackgroundBootId = state.backgroundBootId;
   const attempt = (async () => {
     try {
       const wsUrl = state.wsUrl;
@@ -231,6 +244,9 @@ async function openWebSocket(): Promise<void> {
           settle(err as Error);
           return;
         }
+        activeConnectingAttemptId = attemptId;
+        connectingSocket = ws;
+        connectingBackgroundBootId = attemptBackgroundBootId;
 
         const openTimeout = setTimeout(
           () => settle(new Error(`ws open timeout (5s) — ${safeUrl} did not respond`)),
@@ -239,12 +255,33 @@ async function openWebSocket(): Promise<void> {
 
         ws.addEventListener('open', () => {
           clearTimeout(openTimeout);
+          if (
+            activeConnectingAttemptId !== attemptId ||
+            connectingSocket !== ws ||
+            connectingBackgroundBootId !== attemptBackgroundBootId ||
+            state.backgroundBootId !== attemptBackgroundBootId
+          ) {
+            try {
+              ws.close(1000, 'connection attempt retired');
+            } catch {
+              /* ignore */
+            }
+            settle(new Error('connection attempt retired'));
+            return;
+          }
           state.ws = ws;
           state.acknowledgedEpoch = null;
           state.reconnectAttempt = 0;
           bumpActivity();
           const socketEpoch = crypto.randomUUID();
-          void acknowledgeEpoch(ws, socketEpoch, settle, openTimeout);
+          void acknowledgeEpoch(
+            ws,
+            socketEpoch,
+            attemptId,
+            attemptBackgroundBootId,
+            settle,
+            openTimeout,
+          );
         });
 
         ws.addEventListener('message', (ev) => {
@@ -279,6 +316,8 @@ async function openWebSocket(): Promise<void> {
       if (activeConnectingAttemptId === attemptId) {
         connectingPromise = null;
         activeConnectingAttemptId = null;
+        connectingSocket = null;
+        connectingBackgroundBootId = null;
       }
     }
   })();
@@ -334,9 +373,11 @@ function closeWebSocket(reason: string): void {
       state: 'closed',
       ...(socketEpoch !== null && { socketEpoch }),
     });
+    abandonConnectingAttempt();
     return;
   }
   state.acknowledgedEpoch = null;
+  abandonConnectingAttempt();
   broadcast<{ state: 'closed' }>(CHANNELS.WS_STATE, { state: 'closed' });
 }
 
@@ -380,6 +421,8 @@ function cancelReconnect(): void {
 async function acknowledgeEpoch(
   ws: WebSocket,
   socketEpoch: string,
+  attemptId: number,
+  attemptBackgroundBootId: string | null,
   settle: (err: Error | null) => void,
   openTimeout: ReturnType<typeof setTimeout>,
 ): Promise<void> {
@@ -387,8 +430,16 @@ async function acknowledgeEpoch(
     const ack = await send<
       { socketEpoch: string; backgroundBootId: string | null },
       { ok: boolean; socketEpoch?: string }
-    >(CHANNELS.WS_EPOCH_HANDSHAKE, { socketEpoch, backgroundBootId: state.backgroundBootId });
-    if (state.ws !== ws || ack?.ok !== true || ack.socketEpoch !== socketEpoch) {
+    >(CHANNELS.WS_EPOCH_HANDSHAKE, { socketEpoch, backgroundBootId: attemptBackgroundBootId });
+    if (
+      state.ws !== ws ||
+      activeConnectingAttemptId !== attemptId ||
+      connectingSocket !== ws ||
+      connectingBackgroundBootId !== attemptBackgroundBootId ||
+      state.backgroundBootId !== attemptBackgroundBootId ||
+      ack?.ok !== true ||
+      ack.socketEpoch !== socketEpoch
+    ) {
       throw new Error('socket epoch acknowledgement rejected');
     }
     state.acknowledgedEpoch = socketEpoch;

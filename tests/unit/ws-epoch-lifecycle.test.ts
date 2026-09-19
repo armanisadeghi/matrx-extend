@@ -195,6 +195,38 @@ describe('private local-browser socket epochs', () => {
     });
   });
 
+  it('fails closed while completing every invalidation when a consumer throws', async () => {
+    installChrome();
+    const ws = await import('@/lib/desktop/ws-client');
+    const invalidations: Array<string | null> = [];
+    const throwing = ws.onLocalBrowserEpochInvalidated(() => {
+      throw new Error('private-grant-sentinel');
+    });
+    ws.onLocalBrowserEpochInvalidated((epoch) => invalidations.push(epoch));
+    const handshake = handlers.get('ws:epoch-handshake');
+
+    expect(
+      handshake?.({ socketEpoch: 'epoch-1', backgroundBootId: 'current-background-boot' }),
+    ).toEqual({ ok: false });
+    expect(ws.getLocalBrowserSocketEpoch()).toBeNull();
+    expect(invalidations).toEqual(['epoch-1']);
+    expect(JSON.stringify(debugLog.error.mock.calls)).not.toContain('private-grant-sentinel');
+
+    throwing();
+    handshake?.({ socketEpoch: 'epoch-1', backgroundBootId: 'current-background-boot' });
+    ws.onLocalBrowserEpochInvalidated(() => {
+      throw new Error('private-grant-sentinel');
+    });
+    chromeMessageListener?.({
+      __matrx: true,
+      kind: 'ws:state',
+      payload: { state: 'closed', socketEpoch: 'epoch-1' },
+    });
+    expect(ws.getLocalBrowserSocketEpoch()).toBeNull();
+    expect(invalidations).toEqual(['epoch-1', 'epoch-1', null]);
+    expect(JSON.stringify(debugLog.error.mock.calls)).not.toContain('private-grant-sentinel');
+  });
+
   it('reconnects a retained offscreen socket after a background restart and preserves normal frames', async () => {
     vi.stubGlobal('WebSocket', FakeWebSocket);
     FakeWebSocket.instances = [];
@@ -237,6 +269,38 @@ describe('private local-browser socket epochs', () => {
 
     FakeWebSocket.instances[1]?.message(JSON.stringify({ type: 'pong', timestamp: 1 }));
     expect(native.broadcast).toHaveBeenCalledWith('ws:message', { type: 'pong', timestamp: 1 });
+    await (handlers.get('ws:stop')?.({}) as Promise<unknown>);
+  });
+
+  it('closes a retired connecting socket that opens after a new boot is ready', async () => {
+    vi.stubGlobal('WebSocket', FakeWebSocket);
+    FakeWebSocket.instances = [];
+    native.send.mockImplementation((kind: string, payload: { socketEpoch: string }) => {
+      if (kind === 'ws:epoch-handshake') return { ok: true, socketEpoch: payload.socketEpoch };
+      return { ok: true };
+    });
+    const { startWsOffscreenRuntime } = await import('@/lib/desktop/ws-offscreen');
+    startWsOffscreenRuntime();
+    const start = handlers.get('ws:start');
+    const firstStart = start?.({
+      wsUrl: 'ws://old-token.test',
+      backgroundBootId: 'boot-1',
+    }) as Promise<unknown>;
+    const secondStart = start?.({
+      wsUrl: 'ws://new-token.test',
+      backgroundBootId: 'boot-2',
+    }) as Promise<unknown>;
+    expect(FakeWebSocket.instances).toHaveLength(2);
+    FakeWebSocket.instances[1]?.open();
+    await secondStart;
+    FakeWebSocket.instances[0]?.open();
+    await firstStart;
+
+    expect(FakeWebSocket.instances[0]?.sent).toEqual([]);
+    expect(FakeWebSocket.instances[0]?.readyState).toBe(3);
+    expect(FakeWebSocket.instances[1]?.sent).toContain(
+      JSON.stringify({ type: 'local_browser.ready', version: 1 }),
+    );
     await (handlers.get('ws:stop')?.({}) as Promise<unknown>);
   });
 });

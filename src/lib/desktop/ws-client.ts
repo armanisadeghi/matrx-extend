@@ -79,6 +79,19 @@ let activeLocalBrowserSocketEpoch: string | null = null;
 // perform a fresh epoch handshake.
 const backgroundBootId = crypto.randomUUID();
 
+function invalidateLocalBrowserEpoch(nextSocketEpoch: string | null): boolean {
+  let completed = true;
+  for (const invalidate of localBrowserEpochInvalidators) {
+    try {
+      invalidate(nextSocketEpoch);
+    } catch {
+      completed = false;
+      log.error('desktop', 'local-browser epoch invalidator threw');
+    }
+  }
+  return completed;
+}
+
 function retireLocalBrowserEpoch(expectedSocketEpoch: string | null): void {
   if (
     activeLocalBrowserSocketEpoch === null ||
@@ -86,8 +99,8 @@ function retireLocalBrowserEpoch(expectedSocketEpoch: string | null): void {
   ) {
     return;
   }
-  for (const invalidate of localBrowserEpochInvalidators) invalidate(null);
   activeLocalBrowserSocketEpoch = null;
+  invalidateLocalBrowserEpoch(null);
 }
 
 // ─── Public API ─────────────────────────────────────────────────────────────
@@ -257,6 +270,7 @@ export function onLocalBrowserLifecycle(
 export function onLocalBrowserEpochInvalidated(
   handler: (nextSocketEpoch: string | null) => void,
 ): () => void {
+  installRouterIfNeeded();
   localBrowserEpochInvalidators.add(handler);
   return () => localBrowserEpochInvalidators.delete(handler);
 }
@@ -305,7 +319,8 @@ function installRouterIfNeeded(): void {
       if (handshake.socketEpoch !== activeLocalBrowserSocketEpoch) {
         // This is intentionally synchronous: offscreen does not receive the
         // acknowledgement until all lifecycle owners have dropped old state.
-        for (const invalidate of localBrowserEpochInvalidators) invalidate(handshake.socketEpoch);
+        activeLocalBrowserSocketEpoch = null;
+        if (!invalidateLocalBrowserEpoch(handshake.socketEpoch)) return { ok: false };
         activeLocalBrowserSocketEpoch = handshake.socketEpoch;
       }
       return { ok: true, socketEpoch: handshake.socketEpoch };
