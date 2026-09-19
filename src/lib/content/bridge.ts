@@ -9,6 +9,7 @@
  */
 
 import { mountCaptureDetector } from '@/lib/credentials/capture-detector';
+import { mountGenerationTargetRegistry } from '@/lib/credentials/generation-targets';
 import { CHANNELS } from '@/lib/messaging/schemas';
 
 interface ContentCtx {
@@ -58,6 +59,9 @@ export function mountContentBridge(_ctx: ContentCtx): void {
   // and register two onMessage listeners, producing double responses.
   if (window.__matrx_bridge_mounted) return;
   window.__matrx_bridge_mounted = true;
+  // This is intentionally a persistent isolated-world registry. Generation
+  // discovery and explicit Use are separate document-targeted injections.
+  mountGenerationTargetRegistry();
   // Focus-time metadata matching is independent of capture and never reads an
   // input value. The module owns its closed-shadow UI and raw SW messages.
   void import('@/lib/credentials/inline-suggestions').then(({ mountInlineCredentialSuggestions }) =>
