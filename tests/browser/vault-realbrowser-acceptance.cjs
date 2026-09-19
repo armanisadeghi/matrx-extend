@@ -61,6 +61,7 @@ let organizationId;
 let local;
 let localUrl;
 let website;
+let sidepanel;
 const createKeys = new Set();
 const createdIds = new Set();
 let baselineIds = new Set();
@@ -91,6 +92,8 @@ async function verifyArtifact() {
   const artifactRoot = path.dirname(manifestReal);
   const manifest = JSON.parse(await fs.readFile(manifestReal, 'utf8'));
   assert(manifest.schema === 2 && manifest.extensionDirectory === 'extension', 'artifact_manifest_shape');
+  assert(manifest.kind === required('MATRX_VAULT_CANARY_ARTIFACT_KIND'), 'artifact_kind_mismatch');
+  assert(manifest.sourceCommit === required('MATRX_VAULT_CANARY_EXPECTED_COMMIT'), 'artifact_commit_mismatch');
   assert(Array.isArray(manifest.extensionFiles) && manifest.extensionFiles.length > 0, 'artifact_manifest_files');
   const extension = path.join(artifactRoot, manifest.extensionDirectory);
   assert(await fs.realpath(extension) === extension, 'artifact_path_refused');
@@ -149,6 +152,12 @@ function startLocalSite() {
 async function storage(keys) {
   return worker.evaluate((names) => chrome.storage.local.get(names), keys);
 }
+async function hasPendingCapture() {
+  return worker.evaluate(async () => {
+    const value = (await chrome.storage.session.get('matrx.credentials.capture.pending.v1'))['matrx.credentials.capture.pending.v1'];
+    return !!value && typeof value === 'object' && Object.keys(value).length > 0;
+  });
+}
 async function api(url, options = {}) {
   const headers = { ...(options.headers || {}), Authorization: `Bearer ${token}` };
   if (organizationId) headers['X-Organization-Id'] = organizationId;
@@ -169,6 +178,8 @@ async function item(id) {
 async function createFixture(displayName, fields) {
   const key = crypto.randomUUID();
   createKeys.add(key);
+  proof.ownedCreateMutationKeys = [...createKeys];
+  persist();
   const response = await api(`${API}/api/vault/items`, {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'Idempotency-Key': key },
@@ -199,6 +210,12 @@ async function reconcile() {
   assert(ids.size === createKeys.size, 'receipt_duplicate_item');
   for (const row of result.results)
     assert(row.user_id === userId && row.organization_id === null && !row.retired, 'receipt_scope');
+  // A response may be lost after the server commits. Receipt truth, rather than
+  // the client response, determines every cleanup target.
+  for (const id of ids) {
+    assert(!baselineIds.has(id), 'receipt_baseline_refusal');
+    createdIds.add(id);
+  }
   return ids;
 }
 async function authenticate(extension) {
@@ -216,6 +233,17 @@ async function authenticate(extension) {
   worker = context.serviceWorkers()[0] || await context.waitForEvent('serviceworker', { timeout: 15000 });
   const extensionId = await worker.evaluate(() => chrome.runtime.id);
   assert(typeof extensionId === 'string' && extensionId.length > 10, 'extension_runtime_identity');
+  // Track value-free create metadata before OAuth. A login password is never a
+  // website fixture and must not appear in a pending candidate before writes.
+  context.on('request', (request) => {
+    if (request.method() !== 'POST' || request.url() !== `${API}/api/vault/items`) return;
+    const key = request.headers()['idempotency-key'];
+    if (typeof key === 'string' && /^[0-9a-f-]{36}$/i.test(key)) {
+      createKeys.add(key);
+      proof.ownedCreateMutationKeys = [...createKeys];
+      persist();
+    }
+  });
   const popup = await context.newPage();
   await popup.goto(`chrome-extension://${extensionId}/popup.html`);
   const authPage = await Promise.all([
@@ -246,15 +274,7 @@ async function authenticate(extension) {
   assert(identity.id === userId && identity.email === adminEmail, 'independent_admin_identity');
   proof.checks.independentAdminIdentity = true;
   proof.extensionId = extensionId;
-  context.on('request', (request) => {
-    if (request.method() !== 'POST' || request.url() !== `${API}/api/vault/items`) return;
-    const key = request.headers()['idempotency-key'];
-    if (typeof key === 'string' && /^[0-9a-f-]{36}$/i.test(key)) {
-      createKeys.add(key);
-      proof.ownedCreateMutationKeys = [...createKeys];
-      persist();
-    }
-  });
+  assert(!(await hasPendingCapture()), 'admin_password_pending_before_writes');
 }
 async function submitLogin(page, username, password) {
   await page.goto(localUrl, { waitUntil: 'domcontentloaded' });
@@ -266,6 +286,11 @@ async function prompt(page) {
   const host = page.locator('#matrx-login-capture-host');
   await host.waitFor({ state: 'visible', timeout: 15000 });
   return host;
+}
+async function pendingCard() {
+  const card = sidepanel.getByText('Save this login to your Vault?', { exact: true });
+  await card.waitFor({ state: 'visible', timeout: 15000 });
+  return sidepanel;
 }
 async function materializedPassword(id) {
   const response = await api(`${API}/api/vault/browser-login/${encodeURIComponent(id)}/materialize`, {
@@ -290,7 +315,9 @@ async function materializedPassword(id) {
     local = await startLocalSite();
     localUrl = local.url;
     await authenticate(extension);
-    baselineIds = new Set((await items()).map((entry) => entry.id));
+    const baseline = await items();
+    baselineIds = new Set(baseline.map((entry) => entry.id));
+    proof.baselineMetadataSha256 = crypto.createHash('sha256').update(JSON.stringify(baseline.map((entry) => ({ id: entry.id, updated_at: entry.updated_at, fields: entry.fields?.map((field) => ({ id: field.id, field_key: field.field_key, is_active: field.is_active, handling: field.handling })) })))).digest('hex');
     const suffix = crypto.randomUUID().slice(0, 8);
     const username = `canary-${suffix}@example.invalid`;
     const oldPassword = `old-${crypto.randomUUID()}`;
@@ -302,45 +329,60 @@ async function materializedPassword(id) {
       { field_key: 'password', value: oldPassword, handling: 'revealable' },
       { field_key: 'totp_seed', value: mfaSeed, handling: 'sealed' },
     ]);
-    await createFixture(`Canary duplicate ${suffix}`, [
+    const otherIds = [await createFixture(`Canary duplicate ${suffix}`, [
       { field_key: 'username', value: username, handling: 'revealable' },
       { field_key: 'password', value: `other-${crypto.randomUUID()}`, handling: 'revealable' },
-    ]);
-    await createFixture(`Canary no username ${suffix}`, [
+    ]), await createFixture(`Canary no username ${suffix}`, [
       { field_key: 'password', value: `missing-${crypto.randomUUID()}`, handling: 'revealable' },
-    ]);
-    await createFixture(`Canary alternate ${suffix}`, [
+    ]), await createFixture(`Canary alternate ${suffix}`, [
       { field_key: 'username', value: `alternate-${suffix}@example.invalid`, handling: 'revealable' },
       { field_key: 'password', value: `alternate-${crypto.randomUUID()}`, handling: 'revealable' },
-    ]);
+    ])];
+    const otherBefore = await Promise.all(otherIds.map(item));
     const targetBefore = await item(targetId);
     const mfaBefore = targetBefore.fields.find((field) => field.field_key === 'totp_seed' && field.is_active);
     assert(mfaBefore?.id, 'fixture_mfa_missing');
     website = await context.newPage();
+    sidepanel = await context.newPage();
+    await sidepanel.goto(`chrome-extension://${proof.extensionId}/sidepanel.html`);
+    await sidepanel.getByTitle('Vault', { exact: true }).click();
+    await website.bringToFront();
     await submitLogin(website, username, newPassword);
-    const updatePrompt = await prompt(website);
-    const updateButtons = updatePrompt.getByRole('button', { name: /^Update / });
-    assert(await updateButtons.count() >= 4, 'four_update_targets_not_reachable');
-    const targetButton = updatePrompt.getByRole('button', { name: `Update ${targetName}`, exact: true });
+    assert((await website.locator('#matrx-login-capture-host').count()) === 0, 'quiet_default_overlay');
+    const updatePrompt = await pendingCard();
+    assert((await updatePrompt.getByRole('button', { name: /^Update/ }).count()) >= 4, 'four_update_targets_not_reachable');
+    assert((await website.locator('#matrx-login-capture-host').count()) === 0, 'quiet_delayed_overlay');
+    const search = updatePrompt.getByRole('textbox', { name: 'Search saved logins to update' });
+    await search.fill(targetName);
+    const targetButton = updatePrompt.getByRole('button', { name: new RegExp(`Update.*${targetName}`, 'i') });
     await targetButton.waitFor({ state: 'visible', timeout: 5000 });
+    assert((await updatePrompt.getByRole('button', { name: /^Update/ }).count()) === 1, 'search_target_not_unique');
+    const cardSurface = sidepanel.getByText('Save this login to your Vault?', { exact: true }).locator('xpath=../../..');
+    const cardScreenshot = path.join(root, 'synthetic-update-choices.png');
+    await cardSurface.screenshot({ path: cardScreenshot });
+    proof.choiceScreenshot = { path: 'synthetic-update-choices.png', sha256: await sha256(cardScreenshot) };
+
     const submitsBeforeUpdateChoice = local.state.submits;
     await targetButton.click();
-    await updatePrompt.waitFor({ state: 'detached', timeout: 10000 });
+    await updatePrompt.getByText('Save this login to your Vault?', { exact: true }).waitFor({ state: 'detached', timeout: 10000 });
     assert(local.state.submits === submitsBeforeUpdateChoice, 'update_choice_submitted_site');
     const targetAfter = await item(targetId);
     const mfaAfter = targetAfter.fields.find((field) => field.field_key === 'totp_seed' && field.is_active);
     assert(mfaAfter?.id === mfaBefore.id, 'mfa_not_preserved');
     assert((await materializedPassword(targetId)) === newPassword, 'selected_target_password_not_updated');
-    proof.checks.fourTargetsReachable = true;
+    const otherAfter = await Promise.all(otherIds.map(item));
+    assert(JSON.stringify(otherAfter) === JSON.stringify(otherBefore), 'unselected_fixture_changed');
+    proof.checks.fourUpdateTargetsReachable = true;
+    proof.checks.displayNameSearchSelectedExactTarget = true;
     proof.checks.selectedTargetOnlyUpdated = true;
     proof.checks.mfaPreserved = true;
     proof.checks.updateChoiceDidNotSubmit = true;
     const beforeSave = new Set((await items()).map((entry) => entry.id));
     await submitLogin(website, `save-${suffix}@example.invalid`, `save-${crypto.randomUUID()}`);
-    const savePrompt = await prompt(website);
+    const savePrompt = await pendingCard();
     const submitsBeforeSaveChoice = local.state.submits;
     await savePrompt.getByRole('button', { name: 'Save as new', exact: true }).click();
-    await savePrompt.waitFor({ state: 'detached', timeout: 10000 });
+    await savePrompt.getByText('Save this login to your Vault?', { exact: true }).waitFor({ state: 'detached', timeout: 10000 });
     assert(local.state.submits === submitsBeforeSaveChoice, 'save_choice_submitted_site');
     const afterSave = await items();
     const delta = afterSave.filter((entry) => !beforeSave.has(entry.id));
@@ -350,7 +392,7 @@ async function materializedPassword(id) {
     if (artifactAdmitted) persist();
     proof.checks.saveAsNewExactOne = true;
     proof.checks.saveChoiceDidNotSubmit = true;
-    proof.openProof = ['browser restart and distributed-release acceptance are separate gates'];
+    proof.openProof = ['lost-response retry is not exercised by this canary', 'browser restart and distributed-release acceptance are separate gates'];
   } catch (error) {
     failure = error;
     proof.failureCode = String(error?.message || 'canary_failure').match(/^[a-z0-9_]{1,100}$/)?.[0] || 'canary_failure';
@@ -369,21 +411,31 @@ async function materializedPassword(id) {
         }
         const remaining = new Set((await items()).map((entry) => entry.id));
         proof.cleanup.receiptReconciled = proven.size === createdIds.size;
-        proof.cleanup.baselineUntouched = [...baselineIds].every((id) => remaining.has(id));
+        const baselineAfter = await items();
+        proof.cleanup.baselineUntouched = [...baselineIds].every((id) => remaining.has(id)) && proof.baselineMetadataSha256 === crypto.createHash('sha256').update(JSON.stringify(baselineAfter.filter((entry) => baselineIds.has(entry.id)).map((entry) => ({ id: entry.id, updated_at: entry.updated_at, fields: entry.fields?.map((field) => ({ id: field.id, field_key: field.field_key, is_active: field.is_active, handling: field.handling })) })))).digest('hex');
         proof.cleanup.createdItemsGone = [...createdIds].every((id) => !remaining.has(id));
+      }
+    } catch {
+      proof.cleanup.failure = 'cleanup_refused';
+    }
+    // Authentication cleanup is independent of mutation cleanup: even a run
+    // that failed before its first write, or failed reconciliation, revokes its
+    // own local auth session. Never let an item-cleanup exception skip this.
+    if (token) {
+      try {
         const logout = await fetch(`${DB}/auth/v1/logout?scope=local`, {
           method: 'POST', headers: { apikey: process.env.SUPABASE_MATRIX_PUBLISHABLE_KEY, Authorization: `Bearer ${token}` },
         });
         proof.cleanup.localAuthLogoutStatus = logout.status;
+      } catch {
+        proof.cleanup.localAuthLogoutFailure = true;
       }
-    } catch {
-      proof.cleanup.failure = 'cleanup_refused';
     }
     try { if (context) await context.close(); proof.cleanup.browserClosed = true; } catch { proof.cleanup.browserClosed = false; }
     try { if (local) await new Promise((resolve) => local.server.close(resolve)); } catch {}
     await fs.rm(profile, { recursive: true, force: true });
     proof.cleanup.profileRemoved = !(await fs.stat(profile).then(() => true, () => false));
-    proof.ok = !failure && proof.cleanup.receiptReconciled && proof.cleanup.baselineUntouched && proof.cleanup.createdItemsGone && proof.cleanup.profileRemoved;
+    proof.ok = !failure && proof.cleanup.receiptReconciled && proof.cleanup.baselineUntouched && proof.cleanup.createdItemsGone && proof.cleanup.profileRemoved && proof.cleanup.localAuthLogoutStatus === 204 && proof.cleanup.browserClosed === true;
     // Persist outside the disposable profile only as a value-free, caller-chosen path.
     persist();
     if (process.env.MATRX_VAULT_CANARY_PROOF) await fs.writeFile(process.env.MATRX_VAULT_CANARY_PROOF, `${JSON.stringify(proof, null, 2)}\n`, { mode: 0o600 });
