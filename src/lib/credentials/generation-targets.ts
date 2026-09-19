@@ -13,6 +13,7 @@ export interface GenerationTargetRegistry {
   register(input: HTMLInputElement, group: Element, documentId: string, expiresAt: number): string | null;
   resolve(id: string, documentId: string, expiresAt: number): HTMLInputElement | null;
   belongsTo(id: string, input: HTMLInputElement, group: Element): boolean;
+  bindGroup(ids: readonly string[]): boolean;
   claim(ids: readonly string[], documentId: string, expiresAt: number): boolean;
   invalidate(ids?: readonly string[]): void;
 }
@@ -40,7 +41,7 @@ export function mountGenerationTargetRegistry(): GenerationTargetRegistry {
   const documentRef = document;
   const entries = new Map<
     string,
-    { node: WeakRef<HTMLInputElement>; group: WeakRef<Element>; documentId: string; expiresAt: number; claimed: boolean }
+    { node: WeakRef<HTMLInputElement>; group: WeakRef<Element>; hosts: WeakRef<Element>[]; documentId: string; expiresAt: number; claimed: boolean; members: string[] | null }
   >();
   const purge = () => {
     const now = Date.now();
@@ -56,12 +57,15 @@ export function mountGenerationTargetRegistry(): GenerationTargetRegistry {
         !input.isConnected ||
         !documentId ||
         !Number.isFinite(expiresAt) ||
-        expiresAt <= Date.now()
+        expiresAt <= Date.now() || expiresAt - Date.now() > GENERATED_SECRET_TTL_MS
       )
         return null;
       const id = opaqueId();
       if (!id) return null;
-      entries.set(id, { node: new WeakRef(input), group: new WeakRef(group), documentId, expiresAt, claimed: false });
+      const hosts: WeakRef<Element>[] = [];
+      let root: Node = input.getRootNode();
+      while (root instanceof ShadowRoot) { hosts.unshift(new WeakRef(root.host)); root = root.host.getRootNode(); }
+      entries.set(id, { node: new WeakRef(input), group: new WeakRef(group), hosts, documentId, expiresAt, claimed: false, members: null });
       // Expiry is an active cleanup guarantee, not merely a later lookup check.
       window.setTimeout(() => {
         const entry = entries.get(id);
@@ -87,13 +91,24 @@ export function mountGenerationTargetRegistry(): GenerationTargetRegistry {
     },
     belongsTo(id, input, group) {
       const entry = entries.get(id);
-      return entry?.node.deref() === input && entry.group.deref() === group;
+      if (entry?.node.deref() !== input || entry.group.deref() !== group) return false;
+      const hosts: Element[] = [];
+      let root: Node = input.getRootNode();
+      while (root instanceof ShadowRoot) { hosts.unshift(root.host); root = root.host.getRootNode(); }
+      return hosts.length === entry.hosts.length && hosts.every((host, index) => entry.hosts[index]?.deref() === host);
+    },
+    bindGroup(ids) {
+      if (ids.length === 0 || new Set(ids).size !== ids.length) return false;
+      const selected = ids.map((id) => entries.get(id));
+      if (selected.some((entry) => !entry || entry.members || entry.claimed)) return false;
+      for (const entry of selected) entry!.members = [...ids];
+      return true;
     },
     claim(ids, documentId, expiresAt) {
       purge();
       if (ids.length === 0 || new Set(ids).size !== ids.length) return false;
       const selected = ids.map((id) => entries.get(id));
-      if (selected.some((entry) => !entry || entry.claimed || entry.documentId !== documentId || entry.expiresAt !== expiresAt)) return false;
+      if (selected.some((entry) => !entry || entry.claimed || entry.documentId !== documentId || entry.expiresAt !== expiresAt || !entry.members || entry.members.length !== ids.length || entry.members.some((id, index) => id !== ids[index]))) return false;
       for (const entry of selected) entry!.claimed = true;
       return true;
     },

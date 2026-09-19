@@ -484,7 +484,7 @@ export function credentialDomSource(
           : null;
     };
     const scopeFor = (input: HTMLInputElement): Element | null =>
-      input.form ?? input.closest('fieldset,[role="group"],[data-password-group]');
+      input.closest('fieldset,[role="group"],[data-password-group]') ?? input.form;
     const groups: GeneratedPasswordGroup[] = [];
     const seen = new Set<Element>();
     for (const primary of candidates.filter((input) => role(input) === 'new_password')) {
@@ -521,6 +521,10 @@ export function credentialDomSource(
           },
         });
       }
+      if (!registry.bindGroup(targets.map((target) => target.id))) {
+        registry.invalidate(targets.map((target) => target.id));
+        return { groups: [], reason: 'registry_unavailable' };
+      }
       groups.push({ targets });
     }
     return { groups };
@@ -532,7 +536,7 @@ export function credentialDomSource(
     value: string,
   ): { status: GeneratedPasswordFillStatus; reason?: string } {
     const registry = window.__matrx_generation_target_registry__;
-    if (!registry || !documentId || !Number.isFinite(expiresAt) || expiresAt <= Date.now())
+    if (!registry || !documentId || !Number.isFinite(expiresAt) || expiresAt <= Date.now() || expiresAt - Date.now() > 30_000)
       return { status: 'refused_unchanged', reason: 'expired_or_unavailable' };
     if (!value || !Array.isArray(targets) || targets.length === 0)
       return { status: 'refused_unchanged', reason: 'invalid_request' };
@@ -557,7 +561,7 @@ export function credentialDomSource(
         : confirmation && /password|passcode/.test(text) ? 'confirmation' : null;
     };
     const scopeFor = (input: HTMLInputElement): Element | null =>
-      input.form ?? input.closest('fieldset,[role="group"],[data-password-group]');
+      input.closest('fieldset,[role="group"],[data-password-group]') ?? input.form;
     const shadowPathFor = (input: HTMLInputElement): string[] => {
       const path: string[] = [];
       let root: Node = input.getRootNode();
@@ -573,15 +577,25 @@ export function credentialDomSource(
     const samePath = (left: string[], right: string[]) =>
       left.length === right.length && left.every((part, index) => part === right[index]);
     const group = scopeFor(inputs[0]!);
-    const wholeGroupValid = () =>
-      !!group &&
-      inputs.every((input, index) =>
+    const wholeGroupValid = () => {
+      if (!group) return false;
+      const currentMembers = group
+        ? Array.from(group.querySelectorAll<HTMLInputElement>('input[type="password"]')).filter((input) => {
+            const text = textFor(input);
+            return input.isConnected && input.type.toLowerCase() === 'password' &&
+              input.autocomplete.toLowerCase() !== 'current-password' && input.autocomplete.toLowerCase() !== 'one-time-code' &&
+              !/\b(otp|mfa|2fa|verification)\b/.test(text);
+          })
+        : [];
+      if (currentMembers.length !== inputs.length || currentMembers.some((input) => !inputs.includes(input))) return false;
+      return inputs.every((input, index) =>
         registry.belongsTo(targets[index]!.id, input, group) &&
         scopeFor(input) === group &&
         roleFor(input) === targets[index]!.constraint.roleEvidence &&
         samePath(shadowPathFor(input), targets[index]!.openShadowPath),
       ) &&
       targets.filter((target) => target.constraint.roleEvidence === 'new_password').length === 1;
+    };
     if (!wholeGroupValid()) return { status: 'refused_unchanged', reason: 'ambiguous_group' };
     const visibleEditable = (input: HTMLInputElement) => {
       const rect = input.getBoundingClientRect();
@@ -601,15 +615,26 @@ export function credentialDomSource(
       }
       return true;
     };
+    const hasUnsupportedPattern = inputs.some((input) => {
+      const pattern = input.getAttribute('pattern');
+      if (pattern === null) return false;
+      try { new RegExp(`^(?:${pattern})$`, 'v'); return false; } catch { return true; }
+    });
+    if (hasUnsupportedPattern) return { status: 'refused_unchanged', reason: 'unsupported_constraint' };
     if (!inputs.every(compatible)) return { status: 'refused_unchanged', reason: 'constraint_changed' };
     const originals = inputs.map((input) => input.value);
-    const write = (input: HTMLInputElement, next: string): boolean => {
+    const setValue = (input: HTMLInputElement, next: string): boolean => {
       try {
         const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')?.set;
         if (setter) setter.call(input, next);
         else input.value = next;
+        return true;
+      } catch { return false; }
+    };
+    const events = (input: HTMLInputElement, includeChange: boolean): boolean => {
+      try {
         input.dispatchEvent(new Event('input', { bubbles: true }));
-        input.dispatchEvent(new Event('change', { bubbles: true }));
+        if (includeChange) input.dispatchEvent(new Event('change', { bubbles: true }));
         return true;
       } catch {
         return false;
@@ -626,7 +651,7 @@ export function credentialDomSource(
           complete = false;
           continue;
         }
-        if (!write(input, original) || input.value !== original) complete = false;
+        if (!setValue(input, original) || input.value !== original || !events(input, false) || current()[index] !== input || input.value !== original || !events(input, true) || current()[index] !== input || input.value !== original) complete = false;
       }
       return complete ? 'rolled_back' : 'partial_manual_check';
     };
@@ -634,8 +659,12 @@ export function credentialDomSource(
       const input = inputs[index];
       if (!input || current()[index] !== input || !wholeGroupValid() || !inputs.every(compatible))
         return written.length ? { status: rollback() } : { status: 'refused_unchanged', reason: 'target_changed' };
-      if (!write(input, value)) return written.length ? { status: rollback() } : { status: 'refused_unchanged', reason: 'write_failed' };
+      if (!setValue(input, value) || current()[index] !== input || !wholeGroupValid() || !inputs.every(compatible) || input.value !== value)
+        return written.length ? { status: rollback() } : { status: 'refused_unchanged', reason: 'write_failed' };
       written.push(index);
+      if (!events(input, false) || current()[index] !== input || !wholeGroupValid() || !inputs.every(compatible) || written.some((writtenIndex) => inputs[writtenIndex]?.value !== value))
+        return { status: rollback() };
+      if (!events(input, true)) return { status: rollback() };
       if (
         current()[index] !== input ||
         !wholeGroupValid() ||
