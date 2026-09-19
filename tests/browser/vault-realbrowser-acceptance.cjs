@@ -483,12 +483,20 @@ async function attachPanelSession(cdp, targetId) {
   const { sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: false });
   let nextId = 0;
   const pending = new Map();
+  const eventListeners = new Set();
   const onMessage = ({ sessionId: received, message }) => {
     if (received !== sessionId) return;
     let envelope;
     try { envelope = JSON.parse(message); } catch { return; }
     const waiter = pending.get(envelope.id);
-    if (!waiter) return;
+    if (!waiter) {
+      if (typeof envelope.method === 'string') {
+        for (const listener of eventListeners) {
+          try { listener(envelope.method, envelope.params ?? {}); } catch { /* diagnostic observers cannot affect the panel */ }
+        }
+      }
+      return;
+    }
     pending.delete(envelope.id);
     clearTimeout(waiter.timer);
     envelope.error ? waiter.reject(new Error('panel_protocol_refused')) : waiter.resolve(envelope.result);
@@ -499,6 +507,7 @@ async function attachPanelSession(cdp, targetId) {
       cdp.off('Target.receivedMessageFromTarget', onMessage);
       for (const waiter of pending.values()) { clearTimeout(waiter.timer); waiter.reject(new Error('panel_session_closed')); }
       pending.clear();
+      eventListeners.clear();
     },
     send(method, params = {}) {
       return new Promise((resolve, reject) => {
@@ -508,6 +517,10 @@ async function attachPanelSession(cdp, targetId) {
         pending.set(id, { resolve, reject, timer });
         cdp.send('Target.sendMessageToTarget', { sessionId, message: JSON.stringify({ id, method, params }) }).catch(fail);
       });
+    },
+    onEvent(listener) {
+      eventListeners.add(listener);
+      return () => eventListeners.delete(listener);
     },
   };
 }
@@ -528,6 +541,7 @@ async function openGenuineSidePanel(extensionId, popup) {
   const target = targets.targetInfos.find((candidate) => candidate.url === `chrome-extension://${extensionId}/sidepanel.html`);
   assert(target?.type === 'page', 'real_side_panel_target_missing');
   const panel = await attachPanelSession(cdp, target.targetId);
+  await panel.send('Network.enable');
   const evaluate = async (expression) => {
     const result = await panel.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
     if (result.exceptionDetails) { proof.panelEvalFailure = { exceptionClass: result.exceptionDetails.exception?.className ?? 'unknown', stackLocations: new Error().stack.split('\n').filter(line => line.includes('vault-') && /:\d+:\d+/.test(line)).map(line => line.replace(/.*(vault-[^/ ]+\.cjs:\d+:\d+).*/, '$1')) }; persist(); throw new Error('real_side_panel_eval_refused'); }
@@ -561,6 +575,49 @@ async function openGenuineSidePanel(extensionId, popup) {
     await panel.send('Input.insertText', { text: value });
     await waitFor(`(${expression})?.value === ${JSON.stringify(value)}`);
   };
+  // Use Chrome's input protocol rather than a DOM click for keyboard-only
+  // acceptance. This preserves the browser's native focus-visible behavior.
+  const key = async ({ key, code, windowsVirtualKeyCode, modifiers = 0, text }) => {
+    // A focused native button activates on Enter's text-bearing keyDown. This
+    // matches Chrome's keyboard path; a key code alone only delivers events.
+    const effectiveText = text ?? (key === 'Enter' ? '\r' : undefined);
+    const params = { key, code, windowsVirtualKeyCode, nativeVirtualKeyCode: windowsVirtualKeyCode, modifiers };
+    if (effectiveText !== undefined) {
+      params.text = effectiveText;
+      params.unmodifiedText = effectiveText;
+    }
+    await panel.send('Input.dispatchKeyEvent', { type: 'keyDown', ...params });
+    await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', ...params });
+  };
+  const startKnobResolveProbe = () => {
+    const calls = new Map();
+    const stop = panel.onEvent((method, params) => {
+      if (method === 'Network.requestWillBeSent') {
+        let pathname;
+        try { pathname = new URL(params.request?.url).pathname; } catch { return; }
+        if (pathname !== '/rest/v1/rpc/knob_resolve') return;
+        calls.set(params.requestId, { startedAt: Date.now(), status: null, completedAt: null });
+      }
+      if (method === 'Network.responseReceived' && calls.has(params.requestId)) {
+        const call = calls.get(params.requestId);
+        call.status = Number.isInteger(params.response?.status) ? params.response.status : null;
+        call.completedAt = Date.now();
+      }
+    });
+    return {
+      snapshot: () => {
+        const entries = [...calls.values()];
+        return {
+          requestCount: entries.length,
+          responseCount: entries.filter((call) => call.completedAt !== null).length,
+          pendingCount: entries.filter((call) => call.completedAt === null).length,
+          statuses: entries.map((call) => call.status),
+          elapsedMs: entries.map((call) => (call.completedAt ?? Date.now()) - call.startedAt),
+        };
+      },
+      stop,
+    };
+  };
   const screenshot = async (expression, destination) => {
     const clip = await evaluate(`(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest' }); const r = element.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.x >= 0 && r.y >= 0 && r.right <= innerWidth && r.bottom <= innerHeight ? { x: r.x, y: r.y, width: r.width, height: r.height, scale: 1 } : null; })()`);
     assert(clip, 'panel_screenshot_not_visible');
@@ -568,18 +625,59 @@ async function openGenuineSidePanel(extensionId, popup) {
     assert(typeof captured.data === 'string', 'panel_screenshot_refused');
     await fs.writeFile(destination, Buffer.from(captured.data, 'base64'), { mode: 0o600 });
   };
-  return { evaluate, click, waitFor, fill, screenshot, dispose: panel.dispose };
+  return { evaluate, click, waitFor, fill, key, startKnobResolveProbe, screenshot, dispose: panel.dispose };
 }
 async function chooseAuthorizedOrganization(extensionId) {
   const settingsPage = await context.newPage();
+  const selection = {
+    settingsReady: 'not_observed',
+    organizationSectionOpened: false,
+    actingAsVisible: false,
+    outcome: 'in_progress',
+  };
+  proof.organizationSelection = selection;
+  persist();
   try {
+    checkpoint('organization_settings_navigation');
     await settingsPage.goto(`chrome-extension://${extensionId}/sidepanel.html`);
+    checkpoint('organization_settings_open');
     await settingsPage.getByTitle('Settings', { exact: true }).click();
     const actingAs = settingsPage.getByText('Acting as', { exact: true });
-    if (!(await actingAs.isVisible())) await settingsPage.getByRole('button', { name: 'Organization', exact: true }).click();
+    const organizationButton = settingsPage.getByRole('button', { name: 'Organization', exact: true });
+    for (let attempt = 0; attempt < 40; attempt += 1) {
+      if (await actingAs.isVisible()) {
+        selection.settingsReady = 'acting_as_visible';
+        selection.actingAsVisible = true;
+        break;
+      }
+      if (await organizationButton.isVisible()) {
+        selection.settingsReady = 'organization_button_visible';
+        break;
+      }
+      await wait(250);
+    }
+    assert(selection.settingsReady !== 'not_observed', 'organization_settings_not_ready');
+    persist();
+    if (!selection.actingAsVisible) {
+      checkpoint('organization_section_open');
+      await organizationButton.click();
+      selection.organizationSectionOpened = true;
+      await actingAs.waitFor({ state: 'visible', timeout: 10000 });
+      selection.actingAsVisible = true;
+      persist();
+    }
+    checkpoint('organization_combobox_open');
     await actingAs.locator('xpath=../..').getByRole('combobox').click();
+    checkpoint('organization_option_select');
     await settingsPage.getByRole('option', { name: 'AI Matrx', exact: true }).click();
+    checkpoint('organization_persist');
     await waitForActiveOrganization();
+    selection.outcome = 'persisted';
+    persist();
+  } catch (error) {
+    selection.outcome = error?.name === 'TimeoutError' ? 'timeout' : 'refused_or_error';
+    persist();
+    throw error;
   } finally { await settingsPage.close(); }
 }
 async function waitForActiveOrganization() {

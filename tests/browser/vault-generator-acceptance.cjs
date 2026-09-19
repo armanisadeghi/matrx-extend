@@ -18,6 +18,7 @@ async function fixture(childUrl = null) {
       <label>New password<input id="new" type="password" autocomplete="new-password" minlength="12"></label>
       <label>Confirm password<input id="confirm" type="password" autocomplete="new-password" aria-label="Confirm password"></label>
       <button type="submit">Save password</button></form>
+      <textarea id="clipboard-fixture" aria-label="Disposable clipboard fixture"></textarea>
       ${childUrl && request.url !== '/embedded' ? `<iframe title="Embedded password form" src="${childUrl}" style="width:100%;height:220px"></iframe><iframe title="Same-site password form" src="/embedded" style="width:100%;height:220px"></iframe>` : ''}
       </body></html>`);
   });
@@ -33,7 +34,9 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
   let top;
   let page;
   let synthetic = `generated-${crypto.randomUUID()}`;
+  let copiedSyntheticValue = null;
   const evidence = proof.generator = { scope: 'real side-panel host transport and password/passphrase controls', hostTransportOk: false, positiveGeneratorUi: false, checks: {} };
+  const clipboardCustody = evidence.clipboard = { copyAttempted: false, disposition: 'unknown' };
   try {
     top = await fixture(child.url);
     page = await context.newPage();
@@ -215,18 +218,136 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     });
     const section = `document.querySelector('[aria-label="Password generator"]')`;
     const button = (label) => `Array.from((${section}).querySelectorAll("button")).find((button) => button.textContent.trim() === ${JSON.stringify(label)})`;
+    const nativeModifier = process.platform === 'darwin' ? 'Meta' : 'Control';
+    const clipboardMarker = 'matrx-vault-canary-clipboard-marker';
+    const generatedValueWait = `!!(${section})?.querySelector('[aria-label="Reveal generated value"]') && (${section})?.innerText.includes('Generated.')`;
+    const captureGenerateTimeout = async (kind, phase, knobResolve) => {
+      let panelState;
+      try {
+        panelState = await panel.evaluate(`(() => {
+          const root = (${section});
+          const opener = Array.from(root?.querySelectorAll('button') ?? []).find((control) => control.textContent.trim() === 'Password generator');
+          const control = (label) => Array.from(root?.querySelectorAll('button') ?? []).find((candidate) => candidate.textContent.trim() === label);
+          const notice = root?.querySelector('[aria-live]')?.textContent?.trim() ?? '';
+          const active = document.activeElement;
+          const activeControl = active === opener ? 'opener'
+            : active === control('Password') ? 'password'
+            : active === control('Passphrase') ? 'passphrase'
+            : active === control('Generate') || active === control('Regenerate') ? 'generate'
+            : active?.getAttribute('aria-label') === 'Reveal generated value' ? 'reveal'
+            : active?.getAttribute('aria-label') === 'Hide generated value' ? 'hide'
+            : active === control('Copy') ? 'copy'
+            : active === control('Use') ? 'use'
+            : active?.tagName === 'INPUT' ? 'input'
+            : active?.tagName === 'BUTTON' ? 'other_button'
+            : active?.tagName?.toLowerCase() ?? 'none';
+          return {
+            generatorPresent: !!root,
+            generatorOpen: opener?.getAttribute('aria-expanded') === 'true',
+            documentFocused: document.hasFocus(),
+            activeControl,
+            busySpinnerPresent: !!root?.querySelector('.animate-spin'),
+            generateDisabled: !!control('Generate')?.disabled || !!control('Regenerate')?.disabled || !!root?.querySelector('.animate-spin')?.closest('button')?.disabled,
+            passwordDisabled: !!control('Password')?.disabled,
+            passphraseDisabled: !!control('Passphrase')?.disabled,
+            generatedCodePresent: !!root?.querySelector('code'),
+            notice: notice === '' ? 'none'
+              : notice.startsWith('Finding compatible new-password fields') ? 'finding_compatible_fields'
+              : notice.startsWith('Generated.') ? 'generated'
+              : notice.includes('secure limits could not be loaded') ? 'configuration_unavailable'
+              : notice.includes('page or account changed') ? 'page_or_account_changed'
+              : notice.includes('page changed') ? 'page_changed'
+              : notice.includes('Options changed') ? 'options_changed'
+              : 'other',
+          };
+        })()`);
+      } catch {
+        panelState = { unavailable: true };
+      }
+      evidence.uiTimeoutDiagnostic = { phase, kind, ...panelState, knobResolve: knobResolve.snapshot() };
+      checkpoint(`${phase}_timeout`);
+    };
+    const waitForGeneratedValue = async (kind, phase, knobResolve) => {
+      try {
+        await panel.waitFor(generatedValueWait);
+      } catch (error) {
+        await captureGenerateTimeout(kind, phase, knobResolve);
+        throw error;
+      } finally {
+        knobResolve.stop();
+      }
+    };
+    const replaceOwnedCopiedClipboard = async (expectedValue) => {
+      if (!page || page.isClosed() || typeof expectedValue !== 'string') return 'unknown';
+      const target = page.locator('#clipboard-fixture');
+      try {
+        await target.focus();
+        await page.keyboard.press(`${nativeModifier}+V`);
+        const owned = await page.evaluate((value) => {
+          const textarea = document.querySelector('#clipboard-fixture');
+          const matchesValue = textarea?.value === value;
+          if (textarea) textarea.value = '';
+          return matchesValue;
+        }, expectedValue);
+        // A mismatch can also be a failed native paste. Leave the clipboard
+        // untouched unless the exact copied value was positively observed.
+        if (!owned) return 'unknown';
+        await page.evaluate((marker) => {
+          const textarea = document.querySelector('#clipboard-fixture');
+          textarea.value = marker;
+          textarea.focus();
+          textarea.select();
+        }, clipboardMarker);
+        // Replace only the generated value just proven by native paste. The
+        // marker is harmless fixture data and the following paste verifies it.
+        await page.keyboard.press(`${nativeModifier}+C`);
+        await page.evaluate(() => { document.querySelector('#clipboard-fixture').value = ''; });
+        await target.focus();
+        await page.keyboard.press(`${nativeModifier}+V`);
+        const markerVerified = await page.evaluate((marker) => {
+          const textarea = document.querySelector('#clipboard-fixture');
+          const matchesMarker = textarea?.value === marker;
+          if (textarea) textarea.value = '';
+          return matchesMarker;
+        }, clipboardMarker);
+        return markerVerified ? 'owned_value_replaced' : 'unknown';
+      } catch {
+        return 'unknown';
+      }
+    };
     await panel.click(button('Password generator'));
     for (const kind of ['Password', 'Passphrase']) {
       await panel.click(button(kind));
+      const phase = `generator_${kind.toLowerCase()}_generated_value_wait`;
+      checkpoint(`${phase}_start`);
+      const knobResolve = panel.startKnobResolveProbe();
       await panel.click(button('Generate'));
       await wait(1000);
       evidence.uiAfterGenerate = await panel.evaluate(`({ generatorPresent: !!(${section}), selectedVault: document.querySelector('[title="Vault"]')?.getAttribute('aria-selected'), generatedCodePresent: !!(${section})?.querySelector('code'), signInPresent: /Sign in/.test(document.body.innerText), loadingPresent: !!document.querySelector('.animate-spin') })`);
-      checkpoint('generator_ui_after_generate');
-      await panel.waitFor(`!!(${section})?.querySelector('[aria-label="Reveal generated value"]') && (${section})?.innerText.includes('Generated.')`);
+      checkpoint(phase);
+      await waitForGeneratedValue(kind, phase, knobResolve);
       assert(await panel.evaluate(`(${section}).querySelector('code').textContent === '••••••••••••••••••••••••'`), 'generator_value_not_masked');
       await panel.click(`(${section}).querySelector('[aria-label="Reveal generated value"]')`);
       synthetic = await panel.evaluate(`(${section}).querySelector('code').textContent`);
       assert(typeof synthetic === 'string' && (kind === 'Password' ? synthetic.length === 24 : synthetic.length >= 11 && synthetic.includes('-')), 'generator_default_value_invalid');
+      if (kind === 'Password') {
+        copiedSyntheticValue = synthetic;
+        clipboardCustody.copyAttempted = true;
+        await panel.click(button('Copy'));
+        await panel.waitFor(`(${section})?.innerText.includes('Copied. Clipboard is not cleared automatically.')`);
+        await page.bringToFront();
+        // Exercise the cleanup path for an interruption after the real Copy
+        // action without simulating a product failure, then continue normally.
+        try {
+          throw new Error('controlled_post_copy_acceptance_interruption');
+        } catch {
+          clipboardCustody.disposition = await replaceOwnedCopiedClipboard(copiedSyntheticValue);
+        }
+        assert(clipboardCustody.disposition === 'owned_value_replaced', 'generator_copy_native_paste_or_owned_replacement_mismatch');
+        evidence.checks.passwordCopyNativePasteAndOwnedGeneratedClipboardReplacementVerified = true;
+        evidence.checks.passwordCopyControlledFailureCustody = true;
+        await focusOwnedBrowser();
+      }
       await panel.click(`(${section}).querySelector('[aria-label="Hide generated value"]')`);
       await panel.click(button('Regenerate'));
       await panel.waitFor(`!!(${section})?.querySelector('[aria-label="Reveal generated value"]') && (${section})?.innerText.includes('Generated.')`);
@@ -242,10 +363,74 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
       evidence.checks[kind.toLowerCase() + 'GenerateRevealRegenerateUse'] = true;
       await page.evaluate(() => { document.querySelector('#new').value = ''; document.querySelector('#confirm').value = ''; });
     }
+    const captureKeyboardTimeout = async (step, key) => {
+      let panelState;
+      try {
+        panelState = await panel.evaluate(`(() => {
+          const root = (${section});
+          const opener = Array.from(root?.querySelectorAll('button') ?? []).find((control) => control.textContent.trim() === 'Password generator');
+          const active = document.activeElement;
+          const activeControl = active === opener ? 'opener'
+            : active?.getAttribute('aria-label') === 'Reveal generated value' ? 'reveal'
+            : active?.getAttribute('aria-label') === 'Hide generated value' ? 'hide'
+            : active?.tagName === 'INPUT' ? 'input'
+            : active?.tagName === 'BUTTON' ? 'button'
+            : active?.tagName?.toLowerCase() ?? 'none';
+          return {
+            generatorPresent: !!root,
+            generatorOpen: opener?.getAttribute('aria-expanded') === 'true',
+            generatedCodePresent: !!root?.querySelector('code'),
+            busySpinnerPresent: !!root?.querySelector('.animate-spin'),
+            documentFocused: document.hasFocus(),
+            activeControl,
+            activeFocusVisible: !!active?.matches(':focus-visible'),
+            openerFocused: active === opener,
+          };
+        })()`);
+      } catch {
+        panelState = { unavailable: true };
+      }
+      evidence.keyboardTimeoutDiagnostic = { step, key, ...panelState };
+      checkpoint(`generator_keyboard_${step}_timeout`);
+    };
+    const dispatchAndWaitForKeyboard = async (step, event, condition) => {
+      checkpoint(`generator_keyboard_${step}_dispatch`);
+      await panel.key(event);
+      checkpoint(`generator_keyboard_${step}_wait`);
+      try {
+        await panel.waitFor(condition);
+      } catch (error) {
+        await captureKeyboardTimeout(step, event.key);
+        throw error;
+      }
+    };
+    // Generate a fresh value solely to prove that actual key events clear it,
+    // collapse the section, and return focus to its native opener.
+    await panel.click(button('Password'));
+    await panel.click(button('Generate'));
+    await panel.waitFor(`!!(${section})?.querySelector('[aria-label="Reveal generated value"]')`);
+    await dispatchAndWaitForKeyboard('escape_generated_clear', { key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }, `(${section})?.querySelector('[aria-expanded="false"]') && !(${section})?.querySelector('code') && document.activeElement === (${button('Password generator')})`);
+    evidence.checks.escapeClearsCollapsesAndRestoresOpenerFocus = true;
+
+    await dispatchAndWaitForKeyboard('enter_opens', { key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 }, `(${section})?.querySelector('[aria-expanded="true"]') && !(${section})?.querySelector('code')`);
+    await dispatchAndWaitForKeyboard('escape_after_enter', { key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }, `(${section})?.querySelector('[aria-expanded="false"]') && document.activeElement === (${button('Password generator')})`);
+    await dispatchAndWaitForKeyboard('space_opens', { key: ' ', code: 'Space', windowsVirtualKeyCode: 32, text: ' ' }, `(${section})?.querySelector('[aria-expanded="true"]') && !(${section})?.querySelector('code')`);
+    await panel.evaluate(`(${button('Password generator')}).focus()`);
+    await dispatchAndWaitForKeyboard('tab_password_focus', { key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 }, `document.activeElement === (${button('Password')}) && document.activeElement.matches(':focus-visible')`);
+    evidence.checks.keyboardEnterSpaceAndTabNativeFocus = true;
+    await dispatchAndWaitForKeyboard('escape_final', { key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }, `(${section})?.querySelector('[aria-expanded="false"]') && document.activeElement === (${button('Password generator')})`);
     evidence.positiveGenerateRevealUse = true;
     evidence.maskedUiScreenshot = true;
-    evidence.remaining = ['clipboard and keyboard acceptance', 'window/actor/organization switches and restart need separate real-browser cases', 'distributed artifact and other browsers remain separate acceptance'];
+    evidence.remaining = ['window/actor/organization switches and restart need separate real-browser cases', 'distributed artifact and other browsers remain separate acceptance'];
   } finally {
+    if (clipboardCustody.copyAttempted && clipboardCustody.disposition !== 'owned_value_replaced') {
+      try {
+        clipboardCustody.disposition = await replaceOwnedCopiedClipboard(copiedSyntheticValue);
+      } catch {
+        clipboardCustody.disposition = 'unknown';
+      }
+    }
+    copiedSyntheticValue = null;
     synthetic = '';
     if (page && !page.isClosed()) await page.close();
     if (top) await top.close();
