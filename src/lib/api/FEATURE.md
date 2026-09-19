@@ -6,6 +6,16 @@ timeout, retries one refreshed 401, and returns `ApiResult` rather than throwing
 for HTTP/network failures. Route modules under `routes/` own typed capability
 contracts and validate server responses with Zod.
 
+Private local-browser callbacks use `privatePost` and `routes/local-browser.ts`.
+They bind the verified user, exact login session and selected organization,
+refuse identity changes after waits, and never retry, log or reflect private
+payloads. The entire request is bounded by its original deadline and five
+seconds; replies require an actual no-store directive and a strict4KiB JSON
+body. Acknowledgements must echo the submitted receipt exactly, except the
+explicit cancellation directive, and only a created admission can carry a live
+lease. `getPrivateExpectedActor` supplies a bounded, freshly verified identity
+snapshot without exposing its bearer. These helpers establish no tab ownership.
+
 ## Request organization assertion
 
 Every agent start must include an explicit `organization_id`. The extension

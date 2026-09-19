@@ -29,6 +29,7 @@ import { log, startDebugRelay } from '@/lib/debug/log';
 import type { CapturedEvent } from '@/lib/demos/event-capture';
 import { onCapturedEvent } from '@/lib/demos/recorder';
 import { desktopRpc, probeDesktop, startDesktopProbeAlarm } from '@/lib/desktop/bridge';
+import { startLocalBrowserController } from '@/lib/desktop/local-browser/controller';
 import { desktopHealthSnapshotKey } from '@/lib/desktop/types';
 import { connectWs } from '@/lib/desktop/ws-client';
 import { registerWsReverseInvocationHandler } from '@/lib/desktop/ws-invoke';
@@ -56,8 +57,8 @@ import {
   registerCredentialCaptureHost,
   rehydrateCredentialCaptureCandidates,
 } from '@/lib/credentials/capture-candidates';
-import { registerInlineCredentialSuggestionHost } from '@/lib/credentials/inline-suggestions-host';
 import { registerGeneratedPasswordHost } from '@/lib/credentials/generation-host';
+import { registerInlineCredentialSuggestionHost } from '@/lib/credentials/inline-suggestions-host';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
@@ -192,6 +193,7 @@ export function bootstrapBackground(): void {
   //       the desktop bridge is reachable over HTTP. If native messaging is
   //       the active transport, that connection IS the reverse channel and
   //       we skip WS.
+  startLocalBrowserController();
   registerWsReverseInvocationHandler();
 
   // ── 7b. Right-click context menus. "Ask Matrx about \"%s\"" pre-fills
