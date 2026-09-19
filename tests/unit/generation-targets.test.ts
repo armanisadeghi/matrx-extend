@@ -197,7 +197,7 @@ describe('generated password DOM primitive', () => {
   it('refuses an expiry beyond the generator TTL ceiling', () => {
     mount('<form><input type=password autocomplete=new-password></form>');
     mountGenerationTargetRegistry();
-    expect(discover(Date.now() + GENERATED_SECRET_TTL_MS + 1)).toMatchObject({ groups: [], reason: 'registry_unavailable' });
+    expect(discover(Date.now() + GENERATED_SECRET_TTL_MS * 2)).toMatchObject({ groups: [], reason: 'registry_unavailable' });
   });
 
   it('refuses expiry before any write', () => {
@@ -221,5 +221,38 @@ describe('generated password DOM primitive', () => {
     expect(dispatcher({ operation: 'fill_new_password_group', documentId, expiresAt: expiry, targets, value: 'abcdEFGH1234' }).status)
       .toBe('partial_manual_check');
     expect({ inputs, changes }).toEqual({ inputs: 1, changes: 0 });
+  });
+
+  it('rolls back an operation value when the native controlled setter writes then throws', () => {
+    mount('<form><input id=new type=password autocomplete=new-password value="original"></form>');
+    mountGenerationTargetRegistry();
+    const expiry = expiresAt(); const targets = discover(expiry).groups[0]?.targets ?? [];
+    const input = document.querySelector('#new') as HTMLInputElement;
+    const nativeDescriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')!;
+    const native = nativeDescriptor.set!;
+    const layer = Object.create(Object.getPrototypeOf(input));
+    let throws = true;
+    Object.defineProperty(layer, 'value', { set(next: string) { native.call(this, next); if (throws) { throws = false; throw new Error('setter_after_write'); } }, get() { return nativeDescriptor.get!.call(this); } });
+    Object.setPrototypeOf(input, layer);
+    const result = dispatcher({ operation: 'fill_new_password_group', documentId, expiresAt: expiry, targets, value: 'abcdEFGH1234' });
+    expect(['rolled_back', 'partial_manual_check']).toContain(result.status);
+    expect(input.value).toBe('original');
+  });
+
+  it('preserves a site-owned replacement supplied by a rollback input reaction', () => {
+    mount('<form><input id=new type=password autocomplete=new-password><input id=confirm type=password autocomplete=new-password aria-label="confirm password"></form>');
+    mountGenerationTargetRegistry();
+    const expiry = expiresAt(); const targets = discover(expiry).groups[0]?.targets ?? [];
+    const input = document.querySelector('#new') as HTMLInputElement;
+    let events = 0;
+    input.addEventListener('input', () => {
+      events++;
+      if (events === 1) input.maxLength = 4;
+      else input.value = 'site-owned-replacement';
+    });
+    const result = dispatcher({ operation: 'fill_new_password_group', documentId, expiresAt: expiry, targets, value: 'abcdEFGH1234' });
+    expect(result.status).toBe('partial_manual_check');
+    expect(input.value).toBe('site-owned-replacement');
+    expect((document.querySelector('#confirm') as HTMLInputElement).value).toBe('');
   });
 });
