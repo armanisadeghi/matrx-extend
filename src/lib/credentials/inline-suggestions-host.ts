@@ -190,7 +190,7 @@ async function injectCredentialDom<O extends CredentialDomInjectedRequest['opera
 }
 
 function canTargetCurrentDocument(): boolean {
-  // Chrome 106 is frozen in the manifest, which guarantees documentIds. These
+  // The manifest minimum is newer than Chrome 106, guaranteeing documentIds. These
   // checks only catch a partially unavailable API; they do not claim to prove
   // an option an older browser never supported.
   return (
