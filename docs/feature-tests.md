@@ -2722,3 +2722,21 @@ Every entry follows this shape:
   - Close the sidepanel mid-run: the claim expires and the item comes back as waiting, never stuck.
   - Press "This one won't work": the item is dismissed with your note and stops asking.
   - A rung this organization has turned off: the tab says so in a sentence, and no item silently disappears.
+
+### The organization's records (the `records` tool)
+
+- **What it does:** Lets the browser agent read and write the organization's own custom records — the Tables a person defined for their work — through the record store's doors. One tool, eight actions: list the Tables, search their metadata, read a record, aggregate over a Table, write or update a record, delete or restore one, propose a Field or a Table. It carries exactly the authority of the person operating it, in their active organization.
+- **Where to test:** Sidepanel → Tools tab → `records` (signed in). It is the same tool the agent calls mid-turn.
+- **Prereq:** The record store must be switched on for your active organization. It is off at platform scope and turned on per organization; `admin@admin.com`'s Workspace has it on.
+- **Steps:**
+  1. Open the Tools tab, search `records`, open the row.
+  2. Run `{"action":"table_list"}` — the Tables your organization holds come back with their ids.
+  3. Run `{"action":"record_write","table_id":"<one of them>","values":{"title":"hello"}}` — you get the new record's id.
+  4. Run `{"action":"record_read","record_id":"<that id>"}` — the values come back.
+  5. Run `{"action":"record_write","record_id":"<that id>","values":{"title":"changed"}}` — the record is patched, not duplicated.
+- **Expected:** Every action answers either the data or the store's own sentence. A field the store decided you may not see comes back present with its reason, never a silent blank.
+- **Edge cases worth poking:**
+  - Switch to an organization the store is off for: every action says so in one sentence and names who turns it on — it never returns an empty list.
+  - Sign out or clear the organization: the tool says no organization is selected and where to choose one.
+  - Pass `expected_version` on an update after someone else changed the record: the store refuses and tells you which fields are contested instead of overwriting them.
+- **The automated version:** `pnpm build && node tests/browser/records-agent-turn-e2e.mjs --table <uuid> --record <uuid>` runs all of this in headless Chrome as `admin@admin.com` against the live store, and confirms every write from outside the browser through the store's read door.

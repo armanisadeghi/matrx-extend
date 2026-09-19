@@ -464,6 +464,21 @@ export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
     args: { displayType: 'key-value' },
   },
 
+  // ─── The organization's records ───────────────────────────────────────
+  // Eight actions under one name, so the ACTION is what the row must say:
+  // "Records" alone cannot tell a person whether their data was read or
+  // rewritten. The action is rendered as words, and a refusal carries the
+  // store's own sentence into the row rather than a code.
+  records: {
+    inline: {
+      icon: { started: 'Loader2', completed: 'Database', error: 'AlertTriangle' },
+      prefix: { started: 'Records', completed: 'Records', error: 'Records refused' },
+      name: { path: 'args.action', transform: 'snakeToTitle' },
+      color: { started: 'primary', completed: 'emerald', error: 'red' },
+    },
+    args: { displayType: 'key-value' },
+  },
+
   // ─── Google Workspace ─────────────────────────────────────────────────
   // Server-executed (executor `aidream`); the extension has no handler for it,
   // only this row config. The action is what matters — "Google Workspace" alone
