@@ -57,6 +57,7 @@ import {
   rehydrateCredentialCaptureCandidates,
 } from '@/lib/credentials/capture-candidates';
 import { registerInlineCredentialSuggestionHost } from '@/lib/credentials/inline-suggestions-host';
+import { registerGeneratedPasswordHost } from '@/lib/credentials/generation-host';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
@@ -113,6 +114,7 @@ export function bootstrapBackground(): void {
   // "Save this login?" host — raw value-bearing listener + value-free bus handlers.
   registerCredentialCaptureHost();
   registerInlineCredentialSuggestionHost();
+  registerGeneratedPasswordHost();
   registerCredentialAssistanceStatus();
   // Chrome retains action state across MV3 worker suspension while saved-login
   // offers do not. Validated capture state reprojects only after that clear.
