@@ -32,6 +32,12 @@ import { CAPTURE_PICKUP_MESSAGE, writeCapturePickup } from '@/lib/capture-ladder
 import { countNeedsYou } from '@/lib/capture-ladder/queue';
 import { log } from '@/lib/debug/log';
 import {
+  GESTURE_PANEL_ACTIONS,
+  type PanelOpenAttempt,
+  openPanelInGesture,
+  settlePanelOpen,
+} from '@/lib/frontend-bridge/panel-gesture';
+import {
   getActiveOrganizationId,
   listMemberOrganizations,
   selectActiveOrganization,
@@ -92,6 +98,16 @@ const CapturePickUpPayloadSchema = z.object({
 interface SenderInfo {
   url?: string | undefined;
   origin?: string | undefined;
+  /**
+   * `sender.tab.id` / `sender.tab.windowId`, threaded through from the
+   * listener. GESTURE-CRITICAL: they exist so the panel can be opened without
+   * the `chrome.tabs.query()` await that used to consume the user gesture
+   * before `chrome.sidePanel.open()` was ever reached. See
+   * `panel-gesture.ts`. Absent on the Supabase Broadcast path, which has no
+   * tab and no gesture.
+   */
+  tabId?: number | undefined;
+  windowId?: number | undefined;
 }
 
 /**
@@ -109,20 +125,33 @@ export async function handleFrontendRpc(
   sender: SenderInfo,
 ): Promise<FrontendRpcResponse> {
   const { action, payload, requestId } = envelope;
-  log.info('frontend-bridge', `← rpc ${action} req=${requestId}`, {
-    sender: sender.origin ?? sender.url ?? 'unknown',
-  });
 
   // Defensive origin check — bootstrap.ts also enforces this, but the
   // Broadcast path could theoretically deliver an envelope from an
   // unauthenticated tab. matchesAllowedOrigin is a pure URL check; if no
-  // sender URL is provided we treat it as trusted (Broadcast path).
+  // sender URL is provided we treat it as trusted (Broadcast path). It runs
+  // FIRST, and synchronously, so nothing below opens a panel for an origin we
+  // would have refused.
   if (sender.url && !matchesAllowedOrigin(sender.url)) {
     log.warn('frontend-bridge', `rejected ${action} from disallowed sender`, {
       sender: sender.url,
     });
     return { ok: false, error: 'origin not allowed', requestId };
   }
+
+  // 🚨 GESTURE-CRITICAL — DO NOT MOVE, AND DO NOT PUT AN `await` ABOVE IT.
+  // Chrome consumes the user-gesture token this message carries at the first
+  // `await` of the listener's turn, so `chrome.sidePanel.open()` has to be
+  // INVOKED here, before any work. Its promise is settled inside the action,
+  // which is allowed: one microtask of slack does not exist, but the promise
+  // can be awaited whenever. Measured, sixteen ways: panel-gesture.ts.
+  const panelAttempt: PanelOpenAttempt | null = GESTURE_PANEL_ACTIONS.has(action)
+    ? openPanelInGesture(sender)
+    : null;
+
+  log.info('frontend-bridge', `← rpc ${action} req=${requestId}`, {
+    sender: sender.origin ?? sender.url ?? 'unknown',
+  });
 
   try {
     switch (action) {
@@ -131,11 +160,11 @@ export async function handleFrontendRpc(
       case 'capabilities':
         return await actionCapabilities(payload, requestId);
       case 'openPanel':
-        return await actionOpenPanel(payload, requestId);
+        return await actionOpenPanel(payload, requestId, panelAttempt);
       case 'callTool':
         return await actionCallTool(payload, requestId);
       case 'captureHandoff.pickUp':
-        return await actionCaptureHandoffPickUp(payload, requestId);
+        return await actionCaptureHandoffPickUp(payload, requestId, panelAttempt);
       default:
         return {
           ok: false,
@@ -195,7 +224,11 @@ async function actionCapabilities(
   };
 }
 
-async function actionOpenPanel(payload: unknown, requestId: string): Promise<FrontendRpcResponse> {
+async function actionOpenPanel(
+  payload: unknown,
+  requestId: string,
+  panelAttempt: PanelOpenAttempt | null,
+): Promise<FrontendRpcResponse> {
   const parsed = OpenPanelPayloadSchema.safeParse(payload);
   if (!parsed.success) {
     return {
@@ -206,27 +239,14 @@ async function actionOpenPanel(payload: unknown, requestId: string): Promise<Fro
   }
   const { panelId, data } = parsed.data;
 
-  // chrome.sidePanel.open requires a windowId or tabId. Programmatic open
-  // also requires a user gesture; cross-extension messaging does NOT
-  // count as a gesture, so this MAY fail with "must be in response to a
-  // user gesture" depending on Chrome version. We attempt anyway and
-  // gracefully degrade — the side panel may already be open from the
-  // user clicking the action button.
-  let opened = false;
-  let openReason = 'unknown';
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-    if (tab?.windowId !== undefined) {
-      await chrome.sidePanel.open({ windowId: tab.windowId });
-      opened = true;
-      openReason = 'opened';
-    } else {
-      openReason = 'no-active-window';
-    }
-  } catch (err) {
-    openReason = (err as Error)?.message ?? 'open-failed';
-    log.warn('frontend-bridge', `sidePanel.open failed for ${panelId}`, openReason);
-  }
+  // The open was already INVOKED at the top of handleFrontendRpc, inside the
+  // gesture. All that is left is to find out what Chrome did with it. Opening
+  // it here instead is the bug this design exists to prevent: the
+  // `chrome.tabs.query` that used to stand on this line consumed the gesture
+  // token before `open()` was ever called. See panel-gesture.ts.
+  const { panelOpened: opened, panelReason: openReason } = await settlePanelOpen(
+    panelAttempt ?? { promise: null, reason: 'no-gesture-sender' },
+  );
 
   // Broadcast a UI hint regardless — if the side panel is already open
   // (or opens shortly), it can pick up the panelId from this message.
@@ -299,17 +319,25 @@ async function actionCallTool(payload: unknown, requestId: string): Promise<Fron
  * `mbr_for_user` read; anything else is refused with a sentence they can act
  * on, not a code.
  *
- * ## What it never pretends
+ * ## The panel opens by itself, and why that is not obvious
  *
- * `chrome.sidePanel.open()` needs a user gesture, and cross-extension
- * messaging is not one — so Chrome may refuse. `panelOpened` is then false and
- * `panelReason` carries what Chrome actually said, so the web app can tell the
- * person to click the extension icon instead of claiming a panel that is not
- * there (law 4).
+ * `chrome.sidePanel.open()` needs a user gesture, and the message the web app
+ * sends DOES carry one — measured, not assumed (`panel-gesture.ts`). What it
+ * does not survive is an `await`: every read below this line would have spent
+ * the gesture, which is exactly why this action used to report a panel that
+ * never opened. The open is therefore invoked at the top of
+ * `handleFrontendRpc` and only settled here.
+ *
+ * It still never pretends: a browser with no panel permission, a Broadcast
+ * message with no tab, or any refusal Chrome invents later comes back as
+ * `panelOpened: false` with `panelReason` in Chrome's own words, and the web
+ * app's receipt then names the one step left instead of claiming a panel that
+ * is not there (law 4).
  */
 async function actionCaptureHandoffPickUp(
   payload: unknown,
   requestId: string,
+  panelAttempt: PanelOpenAttempt | null,
 ): Promise<FrontendRpcResponse> {
   const parsed = CapturePickUpPayloadSchema.safeParse(payload);
   if (!parsed.success) {
@@ -362,19 +390,12 @@ async function actionCaptureHandoffPickUp(
 
   await writeCapturePickup({ handoffId, url });
 
-  let panelOpened = false;
-  let panelReason = 'no-active-window';
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-    if (tab?.windowId !== undefined) {
-      await chrome.sidePanel.open({ windowId: tab.windowId });
-      panelOpened = true;
-      panelReason = 'opened';
-    }
-  } catch (err) {
-    panelReason = (err as Error)?.message ?? 'open-failed';
-    log.warn('frontend-bridge', 'captureHandoff.pickUp could not open the side panel', panelReason);
-  }
+  // The panel was asked to open at the top of handleFrontendRpc, before any of
+  // the reads above had a chance to spend the gesture. Here we only collect
+  // the verdict.
+  const { panelOpened, panelReason } = await settlePanelOpen(
+    panelAttempt ?? { promise: null, reason: 'no-gesture-sender' },
+  );
 
   // An ALREADY-OPEN panel must react now, not on the next poll tick. Unlike
   // `frontend:open-panel-hint`, this message has a listener:

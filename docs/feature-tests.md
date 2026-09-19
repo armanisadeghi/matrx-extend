@@ -2783,3 +2783,31 @@ Every entry follows this shape:
   - Sign out or clear the organization: the tool says no organization is selected and where to choose one.
   - Pass `expected_version` on an update after someone else changed the record: the store refuses and tells you which fields are contested instead of overwriting them.
 - **The automated version:** `pnpm build && node tests/browser/records-agent-turn-e2e.mjs --table <uuid> --record <uuid>` runs all of this in headless Chrome as `admin@admin.com` against the live store, and confirms every write from outside the browser through the store's read door.
+
+### The panel opens by itself when the web app sends you
+
+- **What it does:** Pressing "Open in my browser" in the web app no longer leaves the person
+  hunting for the Matrx icon. The web page's click reaches this extension carrying Chrome's user
+  gesture, and the side panel opens on the spot, already pointed at the workspace and page the web
+  app meant.
+- **Where to test:** any AI Matrx page that offers the "Open in my browser" button — the capture
+  assist card, or `/capture/needs-you`.
+- **Steps:**
+  1. Sign in to the extension as `admin@admin.com`, in a workspace with pages waiting.
+  2. In the web app, in ANY workspace, press "Open in my browser".
+- **Expected:** the side panel opens by itself, on the Capture tab, in the workspace the web app
+  named; the receipt reads *"The Matrx panel just opened on the right — your browser is reading …
+  now, and you can watch the count go down."*
+- **Edge cases worth poking:**
+  - No extension installed: the button reads "Add the extension" instead; nothing here changed.
+  - Panel already open: it stays open and jumps to the page the web app pointed at.
+  - Signed in as someone who is not a member of that workspace: the panel still opens (it is our
+    own UI) and the web app shows the refusal sentence — it never claims the hand-off happened.
+- **🚨 The one way to break this in code:** `chrome.sidePanel.open()` must be INVOKED before the
+  RPC handler's first `await` — a single microtask is enough to lose the gesture, and Chrome then
+  says *"`sidePanel.open()` may only be called in response to a user gesture."* The rule, and the
+  sixteen measurements behind it, are in `src/lib/frontend-bridge/panel-gesture.ts`.
+- **The automated version:** `pnpm build && node tests/browser/side-panel-opens-on-our-click.mjs`
+  drives the real built extension from a real click in headless Chrome and asserts the panel
+  opened — and that the same call with no gesture is still refused. The full browser matrix behind
+  the design is `node tests/browser/side-panel-gesture-spike.mjs`.
