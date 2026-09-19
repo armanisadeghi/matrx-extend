@@ -13,8 +13,8 @@ import asyncpg
 from dotenv import load_dotenv
 
 
-async def main():
-    actor, organization, *raw_keys = sys.argv[1:]
+async def reconcile_receipts(actor: str, organization: str, raw_keys: list[str]) -> list[dict]:
+    """Return only receipt facts that establish an owned personal create."""
     actor = str(uuid.UUID(actor))
     organization = str(uuid.UUID(organization))
     keys = list(dict.fromkeys(str(uuid.UUID(key)) for key in raw_keys))
@@ -48,9 +48,14 @@ async def main():
                 raise ValueError('receipt_duplicates')
             if any(row['user_id'] != actor or row['organization_id'] is not None for row in rows):
                 raise ValueError('item_scope')
-            print(json.dumps({'results': [dict(row) for row in rows]}))
+            return [dict(row) for row in rows]
     finally:
         await connection.close()
+
+
+async def main():
+    actor, organization, *raw_keys = sys.argv[1:]
+    print(json.dumps({'results': await reconcile_receipts(actor, organization, raw_keys)}))
 
 
 if __name__ == '__main__':

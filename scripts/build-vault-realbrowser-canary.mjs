@@ -26,7 +26,7 @@ function run(command, args, options = {}) {
     child.on('error', reject);
     child.on('close', (code) => code === 0
       ? resolveRun({ stdout, stderr })
-      : reject(new Error(`${command} failed (${code}): ${stderr.trim() || stdout.trim()}`)));
+      : reject(new Error(`${command} failed (${code}): ${[stderr.trim(), stdout.trim()].filter(Boolean).join("\n")}`)));
   });
 }
 async function filesWithHashes(root) {
@@ -72,18 +72,43 @@ if (process.env.MATRX_REALBROWSER_VAULT_BUILD !== 'BUILD_UNDER_REVIEW')
   fail('set MATRX_REALBROWSER_VAULT_BUILD=BUILD_UNDER_REVIEW; this script never builds implicitly');
 const revision = process.env.MATRX_CANARY_COMMIT ?? 'HEAD';
 const sourceCommit = (await run('git', ['-C', repo, 'rev-parse', '--verify', `${revision}^{commit}`])).stdout.trim();
+const aidreamRepo = resolve(repo, '../aidream');
+const aidreamRevision = process.env.MATRX_CANARY_AIDREAM_COMMIT;
+if (!aidreamRevision) fail('set MATRX_CANARY_AIDREAM_COMMIT to the committed records-source revision');
+const aidreamCommit = (await run('git', ['-C', aidreamRepo, 'rev-parse', '--verify', `${aidreamRevision}^{commit}`])).stdout.trim();
 const runId = `${new Date().toISOString().replace(/[:.]/g, '-')}-${randomUUID()}`;
 const artifactRoot = join(repo, '.matrx', 'realbrowser-vault', runId);
 const scratch = await mkdtemp(join(tmpdir(), 'matrx-vault-realbrowser-'));
 try {
   const source = join(scratch, 'source');
+  const aidreamSource = join(scratch, 'aidream');
   const archive = join(scratch, 'source.tar');
+  const recordsArchive = join(scratch, 'records.tar');
   await mkdir(source);
+  await mkdir(aidreamSource);
   await run('git', ['-C', repo, 'archive', '--format=tar', `--output=${archive}`, sourceCommit]);
   await run('tar', ['-x', '-f', archive, '-C', source]);
+  // Repository gates enumerate tracked source. This disposable index represents
+  // only the frozen archive and never touches the caller checkout.
+  await run('git', ['init', '--quiet'], { cwd: source });
+  await run('git', ['add', '--all'], { cwd: source });
+  // tsconfig deliberately resolves this unpublished workspace source through
+  // ../aidream. Archive only its committed records package, never live WIP.
+  await run('git', [
+    '-C', aidreamRepo, 'archive', '--format=tar', `--output=${recordsArchive}`,
+    aidreamCommit, 'apps/shared/records',
+  ]);
+  await run('tar', ['-x', '-f', recordsArchive, '-C', aidreamSource]);
+  const recordsRoot = join(aidreamSource, 'apps', 'shared', 'records');
+  const recordsFiles = await filesWithHashes(recordsRoot).catch(() => fail('committed records source missing'));
+  if (!recordsFiles.length) fail('committed records source empty');
   const locked = await readFile(join(source, 'pnpm-lock.yaml'), 'utf8').catch(() => fail('revision has no lockfile'));
   if (!locked.includes('lockfileVersion:')) fail('lockfile is malformed');
   const env = { PATH: process.env.PATH ?? '', HOME: process.env.HOME ?? '', TMPDIR: tmpdir(), CI: '1', ...(await publicBuildEnv()) };
+  // Use the records package's own committed lockfile to materialize only its
+  // declared dependencies for TypeScript's source alias; no package metadata
+  // or extension dependency contract is changed.
+  await run('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts'], { cwd: recordsRoot, env });
   await run('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts'], { cwd: source, env });
   await run('pnpm', ['exec', 'wxt', 'prepare'], { cwd: source, env });
   await run('pnpm', ['build'], { cwd: source, env });
@@ -95,11 +120,12 @@ try {
   await mkdir(artifactRoot, { recursive: true, mode: 0o700 });
   await cp(extension, join(artifactRoot, 'extension'), { recursive: true });
   const receipt = {
-    schema: 2, kind: 'local-current-source-artifact', runId, sourceCommit,
+    schema: 2, kind: 'local-multi-repo-source-artifact', runId, sourceCommit,
     lockfileSha256: createHash('sha256').update(locked).digest('hex'),
     extensionDirectory: 'extension', extensionFiles, manifestVersion: manifest.version ?? null,
+    aidream: { sourceCommit: aidreamCommit, sourcePath: 'apps/shared/records', files: recordsFiles },
     publicEnvKeys: Object.keys(env).filter((key) => publicKeys.has(key)).sort(),
-    distributionProvenance: 'local-current-source-artifact; not a Store/release claim',
+    distributionProvenance: 'local-multi-repo-source-artifact; not a Store/release claim',
   };
   const manifestPath = join(artifactRoot, 'artifact-manifest.json');
   await writeFile(manifestPath, `${JSON.stringify(receipt, null, 2)}\n`, { mode: 0o600 });

@@ -7,7 +7,7 @@ const http = require('node:http');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { createRequire } = require('node:module');
-const { execFile } = require('node:child_process');
+const { execFile, spawn } = require('node:child_process');
 const { promisify } = require('node:util');
 // The extension deliberately does not ship Playwright.  Use an explicit test
 // runtime override or the documented workspace harness dependency.
@@ -37,6 +37,17 @@ const required = (key) => {
 };
 if (process.env.MATRX_REALBROWSER_VAULT_CANARY !== 'RUN_UNDER_REVIEW')
   throw new Error('inert_canary_requires_explicit_arm');
+const localCanonicalCleanupArmed = process.env.MATRX_VAULT_CANARY_LOCAL_CANONICAL_CLEANUP === 'RUN_LOCAL_CANONICAL_CLEANUP';
+const LOCAL_CLEANUP_MAX_BASELINE_IDS = 64;
+const LOCAL_CLEANUP_MAX_CREATED_IDS = 5;
+const LOCAL_CLEANUP_INPUT_MAX_BYTES = 32768;
+const LOCAL_ROUTER_SOURCE = '/Users/armanisadeghi/code/aidream/aidream/api/routers/vault.py';
+const LOCAL_SERVICE_SOURCE = '/Users/armanisadeghi/code/aidream/aidream/services/user_secrets/vault.py';
+if (localCanonicalCleanupArmed) {
+  const routerHash = required('MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256');
+  const serviceHash = required('MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256');
+  assert(/^[a-f0-9]{64}$/.test(routerHash) && /^[a-f0-9]{64}$/.test(serviceHash), 'local_cleanup_hash_shape');
+}
 
 const runId = crypto.randomUUID();
 const stateRoot = process.env.MATRX_VAULT_CANARY_STATE_ROOT || path.join(REPO, '.matrx', 'realbrowser-vault', 'canary-runs');
@@ -84,6 +95,35 @@ async function refuseUnreconciledPriorRun() {
 }
 async function sha256(file) {
   return crypto.createHash('sha256').update(await fs.readFile(file)).digest('hex');
+}
+function baselineMetadataSha256(entries) {
+  const metadata = entries
+    .map((entry) => ({
+      id: entry.id,
+      updated_at: entry.updated_at,
+      fields: (entry.fields || [])
+        .map((field) => ({ id: field.id, field_key: field.field_key, is_active: field.is_active, handling: field.handling }))
+        .sort((left, right) => left.id.localeCompare(right.id)),
+    }))
+    .sort((left, right) => left.id.localeCompare(right.id));
+  return crypto.createHash('sha256').update(JSON.stringify(metadata)).digest('hex');
+}
+async function prewriteLocalCanonicalPreflight() {
+  if (!localCanonicalCleanupArmed) return;
+  assert(baselineIds.size <= LOCAL_CLEANUP_MAX_BASELINE_IDS, 'local_cleanup_baseline_capacity');
+  const routerHash = required('MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256');
+  const serviceHash = required('MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256');
+  assert((await sha256(LOCAL_ROUTER_SOURCE)) === routerHash, 'local_cleanup_router_hash_mismatch');
+  assert((await sha256(LOCAL_SERVICE_SOURCE)) === serviceHash, 'local_cleanup_service_hash_mismatch');
+  const placeholderIds = Array.from({ length: LOCAL_CLEANUP_MAX_CREATED_IDS }, (_, index) =>
+    `00000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+  );
+  const payload = JSON.stringify({
+    token, userId, organizationId, createKeys: placeholderIds, baselineIds: [...baselineIds], provenIDs: placeholderIds,
+    expectedRouterSha256: routerHash, expectedServiceSha256: serviceHash,
+  });
+  assert(Buffer.byteLength(payload, 'utf8') < LOCAL_CLEANUP_INPUT_MAX_BYTES, 'local_cleanup_payload_capacity');
+  proof.checks.localCanonicalCleanupPreflight = true;
 }
 async function verifyArtifact() {
   const manifestPath = required('MATRX_VAULT_CANARY_MANIFEST');
@@ -218,6 +258,43 @@ async function reconcile() {
   }
   return ids;
 }
+async function localCanonicalCleanup(proven) {
+  assert(localCanonicalCleanupArmed, 'local_cleanup_not_armed');
+  const routerHash = required('MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256');
+  const serviceHash = required('MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256');
+  assert(/^[a-f0-9]{64}$/.test(routerHash) && /^[a-f0-9]{64}$/.test(serviceHash), 'local_cleanup_hash_shape');
+  const python = '/Users/armanisadeghi/code/aidream/.venv/bin/python';
+  const adapter = path.join(__dirname, 'cleanup-vault-canary.py');
+  const input = JSON.stringify({
+    token, userId, organizationId, createKeys: [...createKeys], baselineIds: [...baselineIds], provenIDs: [...proven],
+    expectedRouterSha256: routerHash, expectedServiceSha256: serviceHash,
+  });
+  assert(Buffer.byteLength(input, 'utf8') < LOCAL_CLEANUP_INPUT_MAX_BYTES, 'local_cleanup_payload_capacity');
+  const result = await new Promise((resolve, reject) => {
+    const child = spawn(python, [adapter], {
+      cwd: '/Users/armanisadeghi/code/aidream', stdio: ['pipe', 'pipe', 'ignore'],
+    });
+    let stdout = '';
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk;
+      if (stdout.length > 32768) child.kill();
+    });
+    child.once('error', () => reject(new Error('local_cleanup_spawn_refused')));
+    child.once('close', (code) => {
+      let parsed;
+      try { parsed = JSON.parse(stdout); } catch { return reject(new Error('local_cleanup_output_refused')); }
+      if (code !== 0 || parsed?.ok !== true) return reject(new Error('local_cleanup_refused'));
+      resolve(parsed);
+    });
+    child.stdin.once('error', () => reject(new Error('local_cleanup_stdin_refused')));
+    child.stdin.end(input);
+  });
+  assert(Array.isArray(result.attempts), 'local_cleanup_attempts_refused');
+  const attemptedIds = new Set(result.attempts.map((attempt) => attempt.id));
+  assert(result.route === 'local_canonical_authmiddleware' && result.provenance === 'local_router_and_service_hash_pinned' && result.receiptCount === proven.size && result.attempts.length === proven.size && attemptedIds.size === proven.size && [...proven].every((id) => attemptedIds.has(id)) && result.attempts.every((attempt) => ['already_cleaned', 'deleted_and_missing'].includes(attempt.terminal)), 'local_cleanup_proof_refused');
+  return result;
+}
 async function authenticate(extension) {
   dotenv.config({ path: '/Users/armanisadeghi/code/aidream/.env', quiet: true });
   const adminEmail = required('AI_ADMIN_USERNAME');
@@ -250,6 +327,7 @@ async function authenticate(extension) {
     context.waitForEvent('page', { timeout: 15000 }),
     popup.getByRole('button', { name: 'Sign in' }).click(),
   ]).then(([page]) => page);
+  await authPage.waitForURL((url) => url.origin === 'https://www.aimatrx.com', { timeout: 30000 });
   assert(new URL(authPage.url()).origin === 'https://www.aimatrx.com', 'oauth_origin');
   await authPage.locator('#email').fill(adminEmail);
   await authPage.locator('#password').fill(adminPassword);
@@ -317,17 +395,18 @@ async function materializedPassword(id) {
     await authenticate(extension);
     const baseline = await items();
     baselineIds = new Set(baseline.map((entry) => entry.id));
-    proof.baselineMetadataSha256 = crypto.createHash('sha256').update(JSON.stringify(baseline.map((entry) => ({ id: entry.id, updated_at: entry.updated_at, fields: entry.fields?.map((field) => ({ id: field.id, field_key: field.field_key, is_active: field.is_active, handling: field.handling })) })))).digest('hex');
+    proof.baselineMetadataSha256 = baselineMetadataSha256(baseline);
+    await prewriteLocalCanonicalPreflight();
     const suffix = crypto.randomUUID().slice(0, 8);
     const username = `canary-${suffix}@example.invalid`;
     const oldPassword = `old-${crypto.randomUUID()}`;
     const newPassword = `new-${crypto.randomUUID()}`;
-    const mfaSeed = `mfa-${crypto.randomUUID()}`;
+    const sealedFixtureValue = `mfa-${crypto.randomUUID()}`;
     const targetName = `Canary target ${suffix}`;
     const targetId = await createFixture(targetName, [
       { field_key: 'username', value: username, handling: 'revealable' },
       { field_key: 'password', value: oldPassword, handling: 'revealable' },
-      { field_key: 'totp_seed', value: mfaSeed, handling: 'sealed' },
+      { field_key: 'totp_seed', value: sealedFixtureValue, handling: 'sealed' },
     ]);
     const otherIds = [await createFixture(`Canary duplicate ${suffix}`, [
       { field_key: 'username', value: username, handling: 'revealable' },
@@ -340,8 +419,8 @@ async function materializedPassword(id) {
     ])];
     const otherBefore = await Promise.all(otherIds.map(item));
     const targetBefore = await item(targetId);
-    const mfaBefore = targetBefore.fields.find((field) => field.field_key === 'totp_seed' && field.is_active);
-    assert(mfaBefore?.id, 'fixture_mfa_missing');
+    const sealedFieldBefore = targetBefore.fields.find((field) => field.field_key === 'totp_seed' && field.is_active);
+    assert(sealedFieldBefore?.id, 'fixture_sealed_field_missing');
     website = await context.newPage();
     sidepanel = await context.newPage();
     await sidepanel.goto(`chrome-extension://${proof.extensionId}/sidepanel.html`);
@@ -367,15 +446,15 @@ async function materializedPassword(id) {
     await updatePrompt.getByText('Save this login to your Vault?', { exact: true }).waitFor({ state: 'detached', timeout: 10000 });
     assert(local.state.submits === submitsBeforeUpdateChoice, 'update_choice_submitted_site');
     const targetAfter = await item(targetId);
-    const mfaAfter = targetAfter.fields.find((field) => field.field_key === 'totp_seed' && field.is_active);
-    assert(mfaAfter?.id === mfaBefore.id, 'mfa_not_preserved');
+    const sealedFieldAfter = targetAfter.fields.find((field) => field.field_key === 'totp_seed' && field.is_active);
+    assert(sealedFieldAfter?.id === sealedFieldBefore.id, 'sealed_field_not_preserved');
     assert((await materializedPassword(targetId)) === newPassword, 'selected_target_password_not_updated');
     const otherAfter = await Promise.all(otherIds.map(item));
     assert(JSON.stringify(otherAfter) === JSON.stringify(otherBefore), 'unselected_fixture_changed');
     proof.checks.fourUpdateTargetsReachable = true;
     proof.checks.displayNameSearchSelectedExactTarget = true;
     proof.checks.selectedTargetOnlyUpdated = true;
-    proof.checks.mfaPreserved = true;
+    proof.checks.unrelatedSealedFieldPreserved = true;
     proof.checks.updateChoiceDidNotSubmit = true;
     const beforeSave = new Set((await items()).map((entry) => entry.id));
     await submitLogin(website, `save-${suffix}@example.invalid`, `save-${crypto.randomUUID()}`);
@@ -392,7 +471,7 @@ async function materializedPassword(id) {
     if (artifactAdmitted) persist();
     proof.checks.saveAsNewExactOne = true;
     proof.checks.saveChoiceDidNotSubmit = true;
-    proof.openProof = ['lost-response retry is not exercised by this canary', 'browser restart and distributed-release acceptance are separate gates'];
+    proof.openProof = ['canonical enrolled-MFA preservation is not exercised; the fixture only proves unrelated sealed-field preservation', 'lost-response retry is not exercised by this canary', 'browser restart and distributed-release acceptance are separate gates'];
   } catch (error) {
     failure = error;
     proof.failureCode = String(error?.message || 'canary_failure').match(/^[a-z0-9_]{1,100}$/)?.[0] || 'canary_failure';
@@ -407,13 +486,30 @@ async function materializedPassword(id) {
         const proven = await reconcile();
         for (const id of proven) {
           assert(createdIds.has(id) && !baselineIds.has(id), 'cleanup_ownership_refused');
-          await api(`${API}/api/vault/items/${encodeURIComponent(id)}`, { method: 'DELETE', label: 'cleanup_delete' });
         }
-        const remaining = new Set((await items()).map((entry) => entry.id));
-        proof.cleanup.receiptReconciled = proven.size === createdIds.size;
-        const baselineAfter = await items();
-        proof.cleanup.baselineUntouched = [...baselineIds].every((id) => remaining.has(id)) && proof.baselineMetadataSha256 === crypto.createHash('sha256').update(JSON.stringify(baselineAfter.filter((entry) => baselineIds.has(entry.id)).map((entry) => ({ id: entry.id, updated_at: entry.updated_at, fields: entry.fields?.map((field) => ({ id: field.id, field_key: field.field_key, is_active: field.is_active, handling: field.handling })) })))).digest('hex');
-        proof.cleanup.createdItemsGone = [...createdIds].every((id) => !remaining.has(id));
+        if (localCanonicalCleanupArmed) {
+          const localCleanup = await localCanonicalCleanup(proven);
+          proof.cleanup.localCanonical = {
+            route: localCleanup.route,
+            provenance: localCleanup.provenance,
+            sourceSha256: localCleanup.sourceSha256,
+            receiptCount: localCleanup.receiptCount,
+            attempts: localCleanup.attempts,
+          };
+          proof.cleanup.receiptReconciled = proven.size === createdIds.size;
+          const remaining = new Set((await items()).map((entry) => entry.id));
+          const baselineAfter = await items();
+          proof.cleanup.baselineUntouched = proof.baselineMetadataSha256 === baselineMetadataSha256(baselineAfter.filter((entry) => baselineIds.has(entry.id)));
+          proof.cleanup.createdItemsGone = [...createdIds].every((id) => !remaining.has(id));
+        } else {
+          for (const id of proven)
+            await api(`${API}/api/vault/items/${encodeURIComponent(id)}`, { method: 'DELETE', label: 'cleanup_delete' });
+          const remaining = new Set((await items()).map((entry) => entry.id));
+          proof.cleanup.receiptReconciled = proven.size === createdIds.size;
+          const baselineAfter = await items();
+          proof.cleanup.baselineUntouched = [...baselineIds].every((id) => remaining.has(id)) && proof.baselineMetadataSha256 === baselineMetadataSha256(baselineAfter.filter((entry) => baselineIds.has(entry.id)));
+          proof.cleanup.createdItemsGone = [...createdIds].every((id) => !remaining.has(id));
+        }
       }
     } catch {
       proof.cleanup.failure = 'cleanup_refused';
