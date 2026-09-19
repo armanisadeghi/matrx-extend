@@ -44,8 +44,17 @@ type OwnedRun = {
   admissionId: string;
   tabId: number | null;
   leaseExpiresAtMs: number | null;
-  admitted: Promise<'created' | 'cancelled' | 'failed'> | null;
+  grantDeadlineMs: number;
+  admitted: Promise<AdmissionOutcome> | null;
   expiryTimer: ReturnType<typeof setTimeout> | null;
+};
+type AdmissionOutcome =
+  | { receipt: 'created' | 'cancelled' | 'failed' }
+  | { reason: LocalBrowserRefusalReason };
+type CleanupReceipt = {
+  registration: Registration;
+  receipt: 'closed' | 'already_absent' | 'unconfirmed';
+  expiresAtMs: number;
 };
 
 export interface LocalBrowserControllerDeps {
@@ -134,9 +143,14 @@ function runKey(claims: Extract<LocalBrowserGrantClaims, { admission_id: string 
   ].join(':');
 }
 
+function cleanupKey(claims: Extract<LocalBrowserGrantClaims, { operation: 'cleanup' }>): string {
+  return `${runKey(claims)}:${claims.stop_id}`;
+}
+
 /** Private, background-only owner for tabs created by the lifecycle protocol. */
 export class LocalBrowserController {
   private readonly entries = new Map<string, OwnedRun>();
+  private readonly cleanupReceipts = new Map<string, CleanupReceipt>();
   private pendingRegistration: Registration | null = null;
   private activeRegistration: Registration | null = null;
   private contextGeneration = 0;
@@ -172,6 +186,7 @@ export class LocalBrowserController {
     this.activeRegistration = null;
     const retired = [...this.entries.values()];
     this.entries.clear();
+    this.cleanupReceipts.clear();
     for (const entry of retired) {
       if (entry.expiryTimer) clearTimeout(entry.expiryTimer);
       if (entry.tabId !== null) void this.closeTab(entry.tabId);
@@ -366,7 +381,9 @@ export class LocalBrowserController {
     if (existing) {
       if (!sameRegistration(existing.registration, registration))
         return { reason: 'retry_conflict' };
-      if (existing.admitted) return { receipt: await existing.admitted };
+      if (existing.admitted) return existing.admitted;
+      if (existing.tabId !== null && existing.leaseExpiresAtMs === null)
+        return this.acknowledgeAdmission(existing, frame, claims, deadlineMs, actor, context);
       return { receipt: existing.tabId === null ? 'cancelled' : 'created' };
     }
     if (this.entries.size >= MAX_OWNED_RUNS) return { reason: 'rate_limited' };
@@ -377,14 +394,15 @@ export class LocalBrowserController {
       admissionId: claims.admission_id,
       tabId: null,
       leaseExpiresAtMs: null,
+      grantDeadlineMs: deadlineMs,
       admitted: null,
       expiryTimer: null,
     };
     this.entries.set(key, entry);
     entry.admitted = this.createAndAcknowledge(entry, frame, claims, deadlineMs, actor, context);
-    const receipt = await entry.admitted;
+    const outcome = await entry.admitted;
     entry.admitted = null;
-    return { receipt };
+    return outcome;
   }
 
   private async createAndAcknowledge(
@@ -394,7 +412,7 @@ export class LocalBrowserController {
     deadlineMs: number,
     actor: PrivateExpectedActor,
     context: number,
-  ): Promise<'created' | 'cancelled' | 'failed'> {
+  ): Promise<AdmissionOutcome> {
     const verified = await this.deps.verify({
       grant: frame.grant,
       proof: { operation: 'admit', admission_id: claims.admission_id },
@@ -406,25 +424,39 @@ export class LocalBrowserController {
       !this.isCurrent(context, entry.registration, entry.registration.socketEpoch)
     ) {
       this.entries.delete(entry.key);
-      return 'cancelled';
+      return { reason: verified.ok ? 'binding_changed' : mapPrivateFailure(verified.error) };
     }
     let tab: chrome.tabs.Tab;
     try {
       tab = await this.deps.tabs.create({ url: 'about:blank', active: false });
     } catch {
       this.entries.delete(entry.key);
-      return 'failed';
+      return { receipt: 'failed' };
     }
     if (typeof tab.id !== 'number') {
       this.entries.delete(entry.key);
-      return 'failed';
+      return { receipt: 'failed' };
     }
     if (!this.isCurrent(context, entry.registration, entry.registration.socketEpoch)) {
       this.entries.delete(entry.key);
       await this.closeTab(tab.id);
-      return 'cancelled';
+      return { receipt: 'cancelled' };
     }
     entry.tabId = tab.id;
+    entry.grantDeadlineMs = deadlineMs;
+    this.armDeadline(entry);
+    return this.acknowledgeAdmission(entry, frame, claims, deadlineMs, actor, context);
+  }
+
+  private async acknowledgeAdmission(
+    entry: OwnedRun,
+    frame: LocalBrowserExecute,
+    claims: Extract<LocalBrowserGrantClaims, { operation: 'admit' }>,
+    deadlineMs: number,
+    actor: PrivateExpectedActor,
+    context: number,
+  ): Promise<AdmissionOutcome> {
+    if (entry.tabId === null) return { receipt: 'cancelled' };
     const acknowledged = await this.deps.acknowledge({
       grant: frame.grant,
       operation: 'admit',
@@ -433,8 +465,13 @@ export class LocalBrowserController {
       deadlineMs,
     });
     if (
-      !acknowledged.ok ||
       !this.isCurrent(context, entry.registration, entry.registration.socketEpoch) ||
+      this.entries.get(entry.key) !== entry
+    ) {
+      return { reason: 'binding_changed' };
+    }
+    if (!acknowledged.ok) return { reason: mapPrivateFailure(acknowledged.error) };
+    if (
       acknowledged.data.status !== 'accepted' ||
       acknowledged.data.operation !== 'admit' ||
       acknowledged.data.receipt.status !== 'created' ||
@@ -442,12 +479,12 @@ export class LocalBrowserController {
       acknowledged.data.lease_expires_at_ms <= Date.now()
     ) {
       this.entries.delete(entry.key);
-      await this.closeTab(tab.id);
-      return 'cancelled';
+      await this.closeTab(entry.tabId);
+      return { receipt: 'cancelled' };
     }
     entry.leaseExpiresAtMs = acknowledged.data.lease_expires_at_ms;
     this.armExpiry(entry);
-    return 'created';
+    return { receipt: 'created' };
   }
 
   private async renew(
@@ -507,8 +544,12 @@ export class LocalBrowserController {
   ): Promise<
     { receipt: 'closed' | 'already_absent' | 'unconfirmed' } | { reason: LocalBrowserRefusalReason }
   > {
+    this.purgeCleanupReceipts();
     const entry = this.entries.get(runKey(claims));
-    if (!entry || !sameRegistration(entry.registration, registration))
+    const prior = this.cleanupReceipts.get(cleanupKey(claims));
+    if (!entry && (!prior || !sameRegistration(prior.registration, registration)))
+      return { reason: 'authority_refused' };
+    if (entry && !sameRegistration(entry.registration, registration))
       return { reason: 'authority_refused' };
     const verified = await this.deps.verify({
       grant: frame.grant,
@@ -519,9 +560,13 @@ export class LocalBrowserController {
     if (!verified.ok) return { reason: mapPrivateFailure(verified.error) };
     if (
       !this.isCurrent(context, registration, registration.socketEpoch) ||
-      this.entries.get(entry.key) !== entry
+      (entry !== undefined && this.entries.get(entry.key) !== entry)
     )
       return { reason: 'binding_changed' };
+    if (!entry && prior) {
+      return this.acknowledgeCleanup(frame, claims, deadlineMs, actor, prior.receipt);
+    }
+    if (!entry) return { reason: 'authority_refused' };
     this.entries.delete(entry.key);
     if (entry.expiryTimer) clearTimeout(entry.expiryTimer);
     let receipt: 'closed' | 'already_absent' | 'unconfirmed' = 'already_absent';
@@ -533,6 +578,27 @@ export class LocalBrowserController {
         receipt = 'unconfirmed';
       }
     }
+    const outcome = await this.acknowledgeCleanup(frame, claims, deadlineMs, actor, receipt);
+    if ('reason' in outcome) return outcome;
+    if (this.cleanupReceipts.size < MAX_OWNED_RUNS) {
+      this.cleanupReceipts.set(cleanupKey(claims), {
+        registration,
+        receipt: outcome.receipt,
+        expiresAtMs: deadlineMs,
+      });
+    }
+    return outcome;
+  }
+
+  private async acknowledgeCleanup(
+    frame: LocalBrowserExecute,
+    claims: Extract<LocalBrowserGrantClaims, { operation: 'cleanup' }>,
+    deadlineMs: number,
+    actor: PrivateExpectedActor,
+    receipt: 'closed' | 'already_absent' | 'unconfirmed',
+  ): Promise<
+    { receipt: 'closed' | 'already_absent' | 'unconfirmed' } | { reason: LocalBrowserRefusalReason }
+  > {
     const acknowledged = await this.deps.acknowledge({
       grant: frame.grant,
       operation: 'cleanup',
@@ -546,6 +612,13 @@ export class LocalBrowserController {
     return { receipt: acknowledged.data.receipt.status };
   }
 
+  private purgeCleanupReceipts(): void {
+    const now = Date.now();
+    for (const [key, receipt] of this.cleanupReceipts) {
+      if (receipt.expiresAtMs <= now) this.cleanupReceipts.delete(key);
+    }
+  }
+
   private armExpiry(entry: OwnedRun): void {
     if (entry.expiryTimer) clearTimeout(entry.expiryTimer);
     if (!entry.leaseExpiresAtMs) return;
@@ -556,6 +629,18 @@ export class LocalBrowserController {
         void this.closeTab(entry.tabId);
       },
       Math.max(0, entry.leaseExpiresAtMs - Date.now()),
+    );
+  }
+
+  private armDeadline(entry: OwnedRun): void {
+    if (entry.expiryTimer) clearTimeout(entry.expiryTimer);
+    entry.expiryTimer = setTimeout(
+      () => {
+        if (this.entries.get(entry.key) !== entry || entry.tabId === null) return;
+        this.entries.delete(entry.key);
+        void this.closeTab(entry.tabId);
+      },
+      Math.max(0, entry.grantDeadlineMs - Date.now()),
     );
   }
 

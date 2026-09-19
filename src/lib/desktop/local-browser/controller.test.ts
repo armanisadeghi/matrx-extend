@@ -40,6 +40,7 @@ const ids = {
   admission: '00000000-0000-4000-8000-000000000012',
 };
 const actor = { userId: ids.user, organizationId: ids.org, sessionId: 'session' };
+const stopId = '00000000-0000-4000-8000-000000000015';
 
 function opaqueAdmitGrant(extensionGeneration: string, connectionId: string): string {
   const payload = {
@@ -70,6 +71,35 @@ function opaqueAdmitGrant(extensionGeneration: string, connectionId: string): st
   return `header.${encoded}.signature`;
 }
 
+function opaqueCleanupGrant(extensionGeneration: string, connectionId: string): string {
+  const payload = {
+    v: 1,
+    aud: 'browser-local-executor',
+    sub: ids.user,
+    organization_id: ids.org,
+    app_instance_id: ids.app,
+    run_id: ids.run,
+    profile_id: ids.profile,
+    jti: ids.jti,
+    iat: 1,
+    exp: Math.floor(Date.now() / 1000) + 30,
+    iss: 'https://server.example',
+    tier_policy: 'none',
+    scopes: [],
+    operation: 'cleanup',
+    admission_id: ids.admission,
+    stop_id: stopId,
+    extension_generation: extensionGeneration,
+    connection_id: connectionId,
+    controller_revision: 0,
+  };
+  const encoded = btoa(JSON.stringify(payload))
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+  return `header.${encoded}.signature`;
+}
+
 function harness() {
   let lifecycle: ((payload: unknown, socketEpoch: string) => void) | null = null;
   let invalidated: (() => void) | null = null;
@@ -77,17 +107,21 @@ function harness() {
   const create = vi.fn(async () => ({ id: 42 }) as chrome.tabs.Tab);
   const remove = vi.fn(async () => undefined);
   const deps: LocalBrowserControllerDeps = {
-    getExpectedActor: vi.fn(async () => ({ ok: true, data: actor })),
+    getExpectedActor: vi.fn(async () => ({ ok: true as const, data: actor })),
     verify: vi.fn(async () => ({
-      ok: true,
-      data: { status: 'accepted', admission_id: ids.admission, deadline_ms: Date.now() + 10_000 },
+      ok: true as const,
+      data: {
+        status: 'accepted' as const,
+        admission_id: ids.admission,
+        deadline_ms: Date.now() + 10_000,
+      },
     })),
     acknowledge: vi.fn(async () => ({
-      ok: true,
+      ok: true as const,
       data: {
-        status: 'accepted',
-        operation: 'admit',
-        receipt: { admission_id: ids.admission, status: 'created' },
+        status: 'accepted' as const,
+        operation: 'admit' as const,
+        receipt: { admission_id: ids.admission, status: 'created' as const },
         lease_expires_at_ms: Date.now() + 10_000,
       },
     })),
@@ -140,6 +174,8 @@ async function register(
     false,
   );
   const registration = h.sent[0] as Record<string, string>;
+  if (!registration.extension_generation || !registration.connection_id)
+    throw new Error('registration was not sent');
   await h.emit(
     {
       type: 'local_browser.registration',
@@ -208,5 +244,103 @@ describe('owned local-browser tab controller', () => {
     release({ id: 43 } as chrome.tabs.Tab);
     await vi.waitFor(() => expect(h.remove).toHaveBeenCalledWith(43));
     expect(h.deps.acknowledge).not.toHaveBeenCalled();
+  });
+
+  it('retries a lost admission acknowledgement on the same owned tab', async () => {
+    const h = harness();
+    const registration = await register(h);
+    h.deps.acknowledge = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: false as const, error: 'network_error' })
+      .mockResolvedValueOnce({
+        ok: true as const,
+        data: {
+          status: 'accepted' as const,
+          operation: 'admit' as const,
+          receipt: { admission_id: ids.admission, status: 'created' as const },
+          lease_expires_at_ms: Date.now() + 10_000,
+        },
+      });
+    const grant = opaqueAdmitGrant(registration.generation, registration.connection);
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant,
+    });
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: '00000000-0000-4000-8000-000000000014',
+      operation: 'admit',
+      grant,
+    });
+    expect(h.create).toHaveBeenCalledTimes(1);
+    expect(h.deps.acknowledge).toHaveBeenCalledTimes(2);
+    expect(h.sent.at(-1)).toMatchObject({ status: 'acknowledged', receipt: 'created' });
+  });
+
+  it('replays a cleanup receipt without adopting or closing a second tab', async () => {
+    const h = harness();
+    const registration = await register(h);
+    h.deps.verify = vi.fn(async (request) =>
+      request.proof.operation === 'cleanup'
+        ? { ok: true as const, data: { status: 'accepted' as const, stop_id: stopId } }
+        : {
+            ok: true as const,
+            data: {
+              status: 'accepted' as const,
+              admission_id: ids.admission,
+              deadline_ms: Date.now() + 10_000,
+            },
+          },
+    );
+    h.deps.acknowledge = vi.fn(async (request) =>
+      request.operation === 'cleanup'
+        ? {
+            ok: true as const,
+            data: {
+              status: 'accepted' as const,
+              operation: 'cleanup' as const,
+              receipt: { stop_id: stopId, status: 'closed' as const },
+            },
+          }
+        : {
+            ok: true as const,
+            data: {
+              status: 'accepted' as const,
+              operation: 'admit' as const,
+              receipt: { admission_id: ids.admission, status: 'created' as const },
+              lease_expires_at_ms: Date.now() + 10_000,
+            },
+          },
+    );
+    const admission = opaqueAdmitGrant(registration.generation, registration.connection);
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: admission,
+    });
+    const cleanup = opaqueCleanupGrant(registration.generation, registration.connection);
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: '00000000-0000-4000-8000-000000000016',
+      operation: 'cleanup',
+      grant: cleanup,
+    });
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: '00000000-0000-4000-8000-000000000017',
+      operation: 'cleanup',
+      grant: cleanup,
+    });
+    expect(h.create).toHaveBeenCalledTimes(1);
+    expect(h.remove).toHaveBeenCalledTimes(1);
+    expect(h.sent.at(-1)).toMatchObject({ operation: 'cleanup', receipt: 'closed' });
   });
 });
