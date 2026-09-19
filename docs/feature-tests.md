@@ -2851,3 +2851,11 @@ Every entry follows this shape:
     live subscription moves with the workspace instead of staying on the one you left.
 - **The automated version:** `pnpm vitest run tests/unit/capture-queue-org-switch.test.ts` — it
   sets the poll floor to ten minutes, so it can only pass by actually hearing about the change.
+
+### Isolated Vault browser acceptance and cleanup
+
+- `tests/browser/vault-realbrowser-acceptance.cjs` checks a hash-pinned extension artifact in a new owned profile. Explicit read-only admission verifies real OAuth, independent admin identity, Settings organization selection, baseline listing and session/profile cleanup; its top-level acceptance remains false.
+- Real capture decisions require a genuine extension side panel. A `sidepanel.html` browser tab is a different sender and cannot certify the capture journey. The real-panel harness correction remains open.
+- Mutation runs journal owned create keys and all Vault mutation requests. A failed journey may retry only after verified cleanup; failure never becomes acceptance.
+- Optional local canonical cleanup can use a frozen committed backend source root with pinned router/service hashes and checked import paths. It keeps the existing dependency runtime and canonical secret location; it does not copy credentials. The adapter emits one strict JSON result and preserves identity, receipt, baseline-exclusion and per-item deletion checks.
+- September 19 evidence: read-only admission passed; a later failed capture run cleaned all four owned fixtures with GET 200 → DELETE 204 → GET 404, preserved the baseline, logged out and removed the profile. Save/Update and distributed-artifact acceptance remain open.

@@ -107,6 +107,10 @@ function persist() {
   syncFs.writeFileSync(temporary, `${JSON.stringify(proof, null, 2)}\n`, { mode: 0o600 });
   syncFs.renameSync(temporary, proofPath);
 }
+function checkpoint(phase) {
+  proof.phase = phase;
+  persist();
+}
 async function refuseUnreconciledPriorRun() {
   const entries = await fs.readdir(stateRoot, { withFileTypes: true }).catch((error) =>
     error.code === 'ENOENT' ? [] : Promise.reject(error),
@@ -146,7 +150,36 @@ async function refuseUnreconciledPriorRun() {
       && entry.name === '96760964-bf3f-465a-9452-a566c98c8c00'
       && priorRaw !== null
       && crypto.createHash('sha256').update(priorRaw).digest('hex') === '9e4c99d7a5041aafcece85f3a6d8d3f176fcaab975ea6633cdd962c8b4a0e46b';
-    assert(completedAcceptance || vaultMutationFreeCleanup || reviewedHistoricalException || reviewedLaunchFailure, 'previous_run_unreconciled');
+    // Cleanup is independent of the tested outcome: a failed journey may
+    // retry after its receipt-backed cleanup has completed successfully.
+    const completedMutationCleanup = prior?.schema === 3 && prior.mode === 'full_acceptance'
+      && prior.cleanup?.receiptReconciled === true && prior.cleanup?.baselineUntouched === true
+      && prior.cleanup?.createdItemsGone === true && prior.cleanup?.localAuthLogoutStatus === 204
+      && prior.cleanup?.browserClosed === true && prior.cleanup?.profileRemoved === true;
+    let reviewedRecovery = false;
+    if (stateRoot === REVIEWED_HISTORICAL_ADMISSION_ROOT
+      && entry.name === 'acd31810-d74b-450a-bf39-d85e830b872a'
+      && priorRaw !== null
+      && crypto.createHash('sha256').update(priorRaw).digest('hex') === '88bce524d50c182db12c1307c306ff99f516714f2ca87bdcd7de5095d9a07678') {
+      const recoveryRaw = await fs.readFile(path.join(stateRoot, entry.name, 'recovery-1789807360922.json'), 'utf8').catch(() => null);
+      if (recoveryRaw !== null && crypto.createHash('sha256').update(recoveryRaw).digest('hex') === '7f10f75e3d5e35214867874d050d53691db23208bf2dce68fd7bbe1ac4b17337') {
+        const recovery = JSON.parse(recoveryRaw);
+        const attempts = recovery.adapter?.attempts || [];
+        const recoveredIds = new Set(attempts.map((attempt) => attempt.id));
+        reviewedRecovery = prior.ok === false && recovery.ok === true
+          && recovery.runId === prior.runId
+          && recovery.originalProofSha256 === crypto.createHash('sha256').update(priorRaw).digest('hex')
+          && recovery.adminVerified === true && recovery.baselineUnchangedBefore === true
+          && recovery.baselineUnchangedAfter === true && recovery.createdItemsGone === true
+          && recovery.logoutStatus === 204 && recovery.adapterProcess?.exitCode === 0
+          && recovery.adapterProcess?.strictJson === true && recovery.adapter?.ok === true
+          && recovery.adapter?.route === 'local_canonical_authmiddleware'
+          && recovery.adapter?.receiptCount === 4 && attempts.length === 4 && recoveredIds.size === 4
+          && prior.ownedFixtureIds?.length === 4 && prior.ownedFixtureIds.every((id) => recoveredIds.has(id))
+          && attempts.every((attempt) => attempt.initialGetStatus === 404 && attempt.terminal === 'already_cleaned');
+      }
+    }
+    assert(completedAcceptance || completedMutationCleanup || vaultMutationFreeCleanup || reviewedHistoricalException || reviewedLaunchFailure || reviewedRecovery, 'previous_run_unreconciled');
   }
 }
 async function sha256(file) {
@@ -506,6 +539,24 @@ async function authenticate(extension) {
 }
 async function submitLogin(page, username, password) {
   await page.goto(localUrl, { waitUntil: 'domcontentloaded' });
+  // The manifest loads the real bridge at document_idle. Observe readiness
+  // in its isolated world before typing, without injecting a replacement.
+  let ready = false;
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    ready = await worker.evaluate(async (url) => {
+      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+      const tab = tabs.find((entry) => entry.url === url);
+      if (!tab?.id) return false;
+      const results = await chrome.scripting.executeScript({
+        target: { tabId: tab.id, frameIds: [0] },
+        func: () => window.__matrx_bridge_mounted === true,
+      });
+      return results[0]?.result === true;
+    }, localUrl);
+    if (ready) break;
+    await wait(100);
+  }
+  assert(ready, 'site_capture_bridge_not_ready');
   await page.locator('#email').fill(username);
   await page.locator('#password').fill(password);
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
@@ -517,7 +568,13 @@ async function prompt(page) {
 }
 async function pendingCard() {
   const card = sidepanel.getByText('Save this login to your Vault?', { exact: true });
-  await card.waitFor({ state: 'visible', timeout: 15000 });
+  try {
+    await card.waitFor({ state: 'visible', timeout: 15000 });
+  } catch {
+    proof.captureDiagnostics = { candidatePresent: await hasPendingCapture() };
+    persist();
+    throw new Error('pending_capture_card_not_visible');
+  }
   return sidepanel;
 }
 async function materializedPassword(id) {
@@ -563,6 +620,7 @@ async function materializedPassword(id) {
     const newPassword = `new-${crypto.randomUUID()}`;
     const sealedFixtureValue = `mfa-${crypto.randomUUID()}`;
     const targetName = `Canary target ${suffix}`;
+    checkpoint('fixture_creation');
     const targetId = await createFixture(targetName, [
       { field_key: 'username', value: username, handling: 'revealable' },
       { field_key: 'password', value: oldPassword, handling: 'revealable' },
@@ -581,16 +639,20 @@ async function materializedPassword(id) {
     const targetBefore = await item(targetId);
     const sealedFieldBefore = targetBefore.fields.find((field) => field.field_key === 'totp_seed' && field.is_active);
     assert(sealedFieldBefore?.id, 'fixture_sealed_field_missing');
+    checkpoint('open_vault');
     website = await context.newPage();
     sidepanel = await context.newPage();
     await sidepanel.goto(`chrome-extension://${proof.extensionId}/sidepanel.html`);
     await sidepanel.getByTitle('Vault', { exact: true }).click();
     await website.bringToFront();
+    checkpoint('submit_login');
     await submitLogin(website, username, newPassword);
     assert((await website.locator('#matrx-login-capture-host').count()) === 0, 'quiet_default_overlay');
+    checkpoint('await_capture');
     const updatePrompt = await pendingCard();
     assert((await updatePrompt.getByRole('button', { name: /^Update/ }).count()) >= 4, 'four_update_targets_not_reachable');
     assert((await website.locator('#matrx-login-capture-host').count()) === 0, 'quiet_delayed_overlay');
+    checkpoint('filter_update_target');
     const search = updatePrompt.getByRole('textbox', { name: 'Search saved logins to update' });
     await search.fill(targetName);
     const targetButton = updatePrompt.getByRole('button', { name: new RegExp(`Update.*${targetName}`, 'i') });
@@ -598,13 +660,16 @@ async function materializedPassword(id) {
     assert((await updatePrompt.getByRole('button', { name: /^Update/ }).count()) === 1, 'search_target_not_unique');
     const cardSurface = sidepanel.getByText('Save this login to your Vault?', { exact: true }).locator('xpath=../../..');
     const cardScreenshot = path.join(root, 'synthetic-update-choices.png');
+    checkpoint('capture_screenshot');
     await cardSurface.screenshot({ path: cardScreenshot });
     proof.choiceScreenshot = { path: 'synthetic-update-choices.png', sha256: await sha256(cardScreenshot) };
 
     const submitsBeforeUpdateChoice = local.state.submits;
+    checkpoint('update_decision');
     await targetButton.click();
     await updatePrompt.getByText('Save this login to your Vault?', { exact: true }).waitFor({ state: 'detached', timeout: 10000 });
     assert(local.state.submits === submitsBeforeUpdateChoice, 'update_choice_submitted_site');
+    checkpoint('verify_update');
     const targetAfter = await item(targetId);
     const sealedFieldAfter = targetAfter.fields.find((field) => field.field_key === 'totp_seed' && field.is_active);
     assert(sealedFieldAfter?.id === sealedFieldBefore.id, 'sealed_field_not_preserved');
@@ -616,6 +681,7 @@ async function materializedPassword(id) {
     proof.checks.selectedTargetOnlyUpdated = true;
     proof.checks.unrelatedSealedFieldPreserved = true;
     proof.checks.updateChoiceDidNotSubmit = true;
+    checkpoint('save_as_new');
     const beforeSave = new Set((await items()).map((entry) => entry.id));
     await submitLogin(website, `save-${suffix}@example.invalid`, `save-${crypto.randomUUID()}`);
     const savePrompt = await pendingCard();
@@ -635,6 +701,8 @@ async function materializedPassword(id) {
     }
   } catch (error) {
     failure = error;
+    proof.failurePhase = proof.phase;
+    proof.failureType = /^[A-Za-z]+$/.test(error?.name || '') ? error.name : 'Error';
     proof.failureCode = String(error?.message || 'canary_failure').match(/^[a-z0-9_]{1,100}$/)?.[0] || 'canary_failure';
   } finally {
     try {

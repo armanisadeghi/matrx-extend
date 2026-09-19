@@ -214,12 +214,15 @@ async def run(data: dict[str, Any], hashes: dict[str, str]) -> dict[str, Any]:
 def main() -> int:
     try:
         data = parse_stdin()
-        hashes = verify_sources(data)
-        result = asyncio.run(run(data, hashes))
+        # Runtime request handlers can emit console output after bootstrap.
+        # Keep the whole operation off the JSON result channel.
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            hashes = verify_sources(data)
+            result = asyncio.run(run(data, hashes))
     except Refused as exc:
         result = {"ok": False, "code": exc.code}
-    except Exception:
-        result = {"ok": False, "code": "internal_refused"}
+    except Exception as exc:
+        result = {"ok": False, "code": "internal_refused", "errorType": type(exc).__name__}
     sys.stdout.write(json.dumps(result, separators=(",", ":")) + "\n")
     return 0 if result["ok"] else 1
 
