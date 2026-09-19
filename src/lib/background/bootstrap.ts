@@ -660,7 +660,17 @@ function registerFrontendRpcExternalListener(): void {
       return false;
     }
 
-    handleFrontendRpc(parsed.data, { url: senderUrl, origin: sender.origin })
+    // GESTURE-CRITICAL: `sender.tab` is read here, synchronously, and handed
+    // down. handleFrontendRpc uses it to invoke chrome.sidePanel.open() before
+    // its first `await` — the `chrome.tabs.query()` that used to answer the
+    // same question was an await, and spent the gesture Chrome gave us.
+    // src/lib/frontend-bridge/panel-gesture.ts.
+    handleFrontendRpc(parsed.data, {
+      url: senderUrl,
+      origin: sender.origin,
+      tabId: sender.tab?.id,
+      windowId: sender.tab?.windowId,
+    })
       .then((response) => {
         // Optional Debug-tab buffer (no-op when disabled).
         recordBridgeTraffic({

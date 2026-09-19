@@ -40,7 +40,18 @@ import {
 
 const AI_MATRX = '5dc930e9-bd65-44a1-8369-af773f6e1a5b';
 const WORKSPACE = '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f';
-const allowedSender = { url: 'https://demos.aimatrx.com/demos/tests/extension-bridge' };
+/**
+ * The sender the real listener builds. `tabId`/`windowId` come from
+ * `sender.tab` and are GESTURE-CRITICAL: they are what lets the handler call
+ * `chrome.sidePanel.open()` before its first `await`. A sender without them is
+ * the Broadcast path, which has no gesture — see
+ * `tests/unit/frontend-bridge-panel-gesture.test.ts`.
+ */
+const allowedSender = {
+  url: 'https://demos.aimatrx.com/demos/tests/extension-bridge',
+  tabId: 41,
+  windowId: 7,
+};
 
 const sent: unknown[] = [];
 
@@ -129,9 +140,10 @@ describe('captureHandoff.pickUp', () => {
 
   it('never pretends the panel opened when Chrome refused', async () => {
     (globalThis.chrome as typeof chrome).sidePanel = {
-      open: async () => {
-        throw new Error('sidePanel.open() may only be called in response to a user gesture.');
-      },
+      open: () =>
+        Promise.reject(
+          new Error('sidePanel.open() may only be called in response to a user gesture.'),
+        ),
     } as unknown as typeof chrome.sidePanel;
 
     const response = await handleFrontendRpc(envelope({ organizationId: AI_MATRX }), allowedSender);
