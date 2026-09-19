@@ -165,6 +165,41 @@ describe('generated password DOM primitive', () => {
     expect(replay).toEqual({ status: 'refused_unchanged', reason: 'already_used_or_changed' });
   });
 
+  it('refuses a caller-supplied subset of an offered confirmation group', () => {
+    mount('<form><input type=password autocomplete=new-password><input type=password autocomplete=new-password aria-label="confirm password"></form>');
+    mountGenerationTargetRegistry();
+    const expiry = expiresAt();
+    const targets = discover(expiry).groups[0]?.targets ?? [];
+    expect(dispatcher({ operation: 'fill_new_password_group', documentId, expiresAt: expiry, targets: targets.slice(0, 1), value: 'abcdEFGH1234' }))
+      .toEqual({ status: 'refused_unchanged', reason: 'already_used_or_changed' });
+  });
+
+  it('offers explicit password groups separately and refuses an added member after discovery', () => {
+    mount('<form><fieldset><input type=password autocomplete=new-password></fieldset><fieldset><input type=password autocomplete=new-password></fieldset></form>');
+    mountGenerationTargetRegistry();
+    const expiry = expiresAt();
+    const groups = discover(expiry).groups;
+    expect(groups).toHaveLength(2);
+    const added = document.createElement('input'); added.type = 'password'; added.autocomplete = 'new-password'; visible(added);
+    document.querySelector('fieldset')?.append(added);
+    expect(dispatcher({ operation: 'fill_new_password_group', documentId, expiresAt: expiry, targets: groups[0]?.targets ?? [], value: 'abcdEFGH1234' }))
+      .toEqual({ status: 'refused_unchanged', reason: 'ambiguous_group' });
+  });
+
+  it('does not read a password value while discovering metadata', () => {
+    mount('<form><input id=new type=password autocomplete=new-password></form>');
+    const input = document.querySelector('#new') as HTMLInputElement;
+    Object.defineProperty(input, 'value', { configurable: true, get: () => { throw new Error('forbidden_value_read'); }, set: () => undefined });
+    mountGenerationTargetRegistry();
+    expect(discover().groups).toHaveLength(1);
+  });
+
+  it('refuses an expiry beyond the generator TTL ceiling', () => {
+    mount('<form><input type=password autocomplete=new-password></form>');
+    mountGenerationTargetRegistry();
+    expect(discover(Date.now() + GENERATED_SECRET_TTL_MS + 1)).toMatchObject({ groups: [], reason: 'registry_unavailable' });
+  });
+
   it('refuses expiry before any write', () => {
     mount('<form><input id=new type=password autocomplete=new-password></form>');
     mountGenerationTargetRegistry();
