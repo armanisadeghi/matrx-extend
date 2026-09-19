@@ -35,7 +35,7 @@ afterEach(() => {
 describe('generated password DOM primitive', () => {
   it('offers only a new-password field and its unambiguous confirmation without reading values', () => {
     mount(`
-      <form><input id=current type=password autocomplete=current-password value=old>
+      <form method=post action="/change"><input id=current type=password autocomplete=current-password value=old>
       <input id=new type=password autocomplete=new-password minlength=12 maxlength=32 pattern="[A-Za-z0-9]+">
       <input id=confirm type=password autocomplete=new-password aria-label="Confirm new password"></form>
     `);
@@ -57,13 +57,71 @@ describe('generated password DOM primitive', () => {
 
   it('refuses current-password, OTP, and contradictory password groups', () => {
     mount(`
-      <form><input type=password autocomplete=current-password>
+      <form method=post action="/change"><input type=password autocomplete=current-password>
       <input type=password autocomplete=one-time-code>
       <input type=password autocomplete=new-password>
       <input type=password aria-label="mystery password"></form>
     `);
     mountGenerationTargetRegistry();
     expect(discover().groups).toEqual([]);
+  });
+
+  it('refuses generated-password offers for unsafe form destinations and submitter overrides', () => {
+    for (const html of [
+      '<form><input type=password autocomplete=new-password></form>',
+      '<form method=post action="https://elsewhere.example/change"><input type=password autocomplete=new-password></form>',
+      '<form method=post action="/change"><input type=password autocomplete=new-password><button type=submit formaction="https://elsewhere.example/change">Save</button></form>',
+    ]) {
+      mount(html);
+      mountGenerationTargetRegistry();
+      expect(discover().groups, html).toEqual([]);
+      window.__matrx_generation_target_registry__?.invalidate();
+    }
+    mount('<form id=visual method=post action="/change"><fieldset><input id=new type=password autocomplete=new-password form=external></fieldset></form><form id=external method=post action="https://elsewhere.example/change"></form>');
+    const associated = document.querySelector('#external') as HTMLFormElement;
+    const externallyAssociated = document.querySelector('#new') as HTMLInputElement;
+    Object.defineProperty(externallyAssociated, 'form', { configurable: true, get: () => associated });
+    mountGenerationTargetRegistry();
+    expect(discover().groups).toEqual([]);
+  });
+
+  it('allows safe POST and React Action destinations', () => {
+    for (const html of [
+      '<form method=post action="/change"><input type=password autocomplete=new-password></form>',
+      "<form action=\"javascript:throw new Error('React form unexpectedly submitted.')\"><input type=password autocomplete=new-password></form>",
+    ]) {
+      mount(html);
+      mountGenerationTargetRegistry();
+      const expiry = expiresAt();
+      const targets = discover(expiry).groups[0]?.targets ?? [];
+      expect(targets).toHaveLength(1);
+      expect(dispatcher({ operation: 'fill_new_password_group', documentId, expiresAt: expiry, targets, value: 'abcdEFGH1234' }))
+        .toEqual({ status: 'filled' });
+      window.__matrx_generation_target_registry__?.invalidate();
+    }
+  });
+
+  it('refuses an action changed after offer and rolls back when an input event changes the form association', () => {
+    const form = mount('<form id=safe method=post action="/change"><fieldset><input id=new type=password autocomplete=new-password><input id=confirm type=password autocomplete=new-password aria-label="confirm password"></fieldset></form><form id=unsafe method=post action="https://elsewhere.example/change"></form>');
+    mountGenerationTargetRegistry();
+    const expiry = expiresAt();
+    const targets = discover(expiry).groups[0]?.targets ?? [];
+    form.action = 'https://elsewhere.example/change';
+    expect(dispatcher({ operation: 'fill_new_password_group', documentId, expiresAt: expiry, targets, value: 'abcdEFGH1234' }))
+      .toEqual({ status: 'refused_unchanged', reason: 'ambiguous_group' });
+
+    form.action = '/change';
+    const nextExpiry = expiresAt();
+    const nextTargets = discover(nextExpiry).groups[0]?.targets ?? [];
+    const first = document.querySelector('#new') as HTMLInputElement;
+    const unsafe = document.querySelector('#unsafe') as HTMLFormElement;
+    let associated: HTMLFormElement = form;
+    Object.defineProperty(first, 'form', { configurable: true, get: () => associated });
+    first.addEventListener('input', () => { associated = unsafe; }, { once: true });
+    expect(dispatcher({ operation: 'fill_new_password_group', documentId, expiresAt: nextExpiry, targets: nextTargets, value: 'abcdEFGH1234' }))
+      .toEqual({ status: 'rolled_back' });
+    expect(first.value).toBe('');
+    expect((document.querySelector('#confirm') as HTMLInputElement).value).toBe('');
   });
 
   it('keeps open-shadow targets as original weak identities across dispatcher calls', () => {
@@ -86,7 +144,7 @@ describe('generated password DOM primitive', () => {
   });
 
   it('prevalidates native constraints and does not truncate a generated value', () => {
-    mount('<form><input id=new type=password autocomplete=new-password maxlength=8></form>');
+    mount('<form method=post action="/change"><input id=new type=password autocomplete=new-password maxlength=8></form>');
     mountGenerationTargetRegistry();
     const expiry = expiresAt();
     const target = discover(expiry).groups[0]?.targets[0];
@@ -98,7 +156,7 @@ describe('generated password DOM primitive', () => {
   });
 
   it('treats an empty native pattern as a constraint instead of silently ignoring it', () => {
-    mount('<form><input id=new type=password autocomplete=new-password pattern=""></form>');
+    mount('<form method=post action="/change"><input id=new type=password autocomplete=new-password pattern=""></form>');
     mountGenerationTargetRegistry();
     const expiry = expiresAt();
     const target = discover(expiry).groups[0]?.targets[0];
@@ -108,7 +166,7 @@ describe('generated password DOM primitive', () => {
   });
 
   it('rolls back only its own write when an event changes constraints before the next target', () => {
-    mount('<form><input id=new type=password autocomplete=new-password><input id=confirm type=password autocomplete=new-password aria-label="confirm password"></form>');
+    mount('<form method=post action="/change"><input id=new type=password autocomplete=new-password><input id=confirm type=password autocomplete=new-password aria-label="confirm password"></form>');
     mountGenerationTargetRegistry();
     const expiry = expiresAt();
     const targets = discover(expiry).groups[0]?.targets ?? [];
@@ -122,7 +180,7 @@ describe('generated password DOM primitive', () => {
   });
 
   it('does not erase a reentrant replacement value during rollback', () => {
-    mount('<form><input id=new type=password autocomplete=new-password><input id=confirm type=password autocomplete=new-password aria-label="confirm password"></form>');
+    mount('<form method=post action="/change"><input id=new type=password autocomplete=new-password><input id=confirm type=password autocomplete=new-password aria-label="confirm password"></form>');
     mountGenerationTargetRegistry();
     const expiry = expiresAt();
     const targets = discover(expiry).groups[0]?.targets ?? [];
@@ -138,7 +196,7 @@ describe('generated password DOM primitive', () => {
   });
 
   it('refuses a moved original node and a changed confirmation role after synchronous events', () => {
-    const form = mount('<form><fieldset id=group><input id=new type=password autocomplete=new-password><input id=confirm type=password autocomplete=new-password aria-label="confirm password"></fieldset></form>');
+    const form = mount('<form method=post action="/change"><fieldset id=group><input id=new type=password autocomplete=new-password><input id=confirm type=password autocomplete=new-password aria-label="confirm password"></fieldset></form>');
     mountGenerationTargetRegistry();
     const expiry = expiresAt();
     const targets = discover(expiry).groups[0]?.targets ?? [];
@@ -155,7 +213,7 @@ describe('generated password DOM primitive', () => {
   });
 
   it('claims target identities before the first write so a replay cannot fill', () => {
-    mount('<form><input id=new type=password autocomplete=new-password></form>');
+    mount('<form method=post action="/change"><input id=new type=password autocomplete=new-password></form>');
     mountGenerationTargetRegistry();
     const expiry = expiresAt();
     const targets = discover(expiry).groups[0]?.targets ?? [];
@@ -166,7 +224,7 @@ describe('generated password DOM primitive', () => {
   });
 
   it('refuses a caller-supplied subset of an offered confirmation group', () => {
-    mount('<form><input type=password autocomplete=new-password><input type=password autocomplete=new-password aria-label="confirm password"></form>');
+    mount('<form method=post action="/change"><input type=password autocomplete=new-password><input type=password autocomplete=new-password aria-label="confirm password"></form>');
     mountGenerationTargetRegistry();
     const expiry = expiresAt();
     const targets = discover(expiry).groups[0]?.targets ?? [];
@@ -175,7 +233,7 @@ describe('generated password DOM primitive', () => {
   });
 
   it('offers explicit password groups separately and refuses an added member after discovery', () => {
-    mount('<form><fieldset><input type=password autocomplete=new-password></fieldset><fieldset><input type=password autocomplete=new-password></fieldset></form>');
+    mount('<form method=post action="/change"><fieldset><input type=password autocomplete=new-password></fieldset><fieldset><input type=password autocomplete=new-password></fieldset></form>');
     mountGenerationTargetRegistry();
     const expiry = expiresAt();
     const groups = discover(expiry).groups;
@@ -187,7 +245,7 @@ describe('generated password DOM primitive', () => {
   });
 
   it('does not read a password value while discovering metadata', () => {
-    mount('<form><input id=new type=password autocomplete=new-password></form>');
+    mount('<form method=post action="/change"><input id=new type=password autocomplete=new-password></form>');
     const input = document.querySelector('#new') as HTMLInputElement;
     Object.defineProperty(input, 'value', { configurable: true, get: () => { throw new Error('forbidden_value_read'); }, set: () => undefined });
     mountGenerationTargetRegistry();
@@ -195,13 +253,13 @@ describe('generated password DOM primitive', () => {
   });
 
   it('refuses an expiry beyond the generator TTL ceiling', () => {
-    mount('<form><input type=password autocomplete=new-password></form>');
+    mount('<form method=post action="/change"><input type=password autocomplete=new-password></form>');
     mountGenerationTargetRegistry();
     expect(discover(Date.now() + GENERATED_SECRET_TTL_MS * 2)).toMatchObject({ groups: [], reason: 'registry_unavailable' });
   });
 
   it('refuses expiry before any write', () => {
-    mount('<form><input id=new type=password autocomplete=new-password></form>');
+    mount('<form method=post action="/change"><input id=new type=password autocomplete=new-password></form>');
     mountGenerationTargetRegistry();
     const target = discover(expiresAt()).groups[0]?.targets[0];
     expect(
@@ -211,7 +269,7 @@ describe('generated password DOM primitive', () => {
   });
 
   it('stops before change when input removes the target and emits one event per phase', () => {
-    mount('<form><input id=new type=password autocomplete=new-password></form>');
+    mount('<form method=post action="/change"><input id=new type=password autocomplete=new-password></form>');
     mountGenerationTargetRegistry();
     const expiry = expiresAt(); const targets = discover(expiry).groups[0]?.targets ?? [];
     const input = document.querySelector('#new') as HTMLInputElement;
@@ -224,7 +282,7 @@ describe('generated password DOM primitive', () => {
   });
 
   it('rolls back an operation value when the native controlled setter writes then throws', () => {
-    mount('<form><input id=new type=password autocomplete=new-password value="original"></form>');
+    mount('<form method=post action="/change"><input id=new type=password autocomplete=new-password value="original"></form>');
     mountGenerationTargetRegistry();
     const expiry = expiresAt(); const targets = discover(expiry).groups[0]?.targets ?? [];
     const input = document.querySelector('#new') as HTMLInputElement;
@@ -240,7 +298,7 @@ describe('generated password DOM primitive', () => {
   });
 
   it('preserves a site-owned replacement supplied by a rollback input reaction', () => {
-    mount('<form><input id=new type=password autocomplete=new-password><input id=confirm type=password autocomplete=new-password aria-label="confirm password"></form>');
+    mount('<form method=post action="/change"><input id=new type=password autocomplete=new-password><input id=confirm type=password autocomplete=new-password aria-label="confirm password"></form>');
     mountGenerationTargetRegistry();
     const expiry = expiresAt(); const targets = discover(expiry).groups[0]?.targets ?? [];
     const input = document.querySelector('#new') as HTMLInputElement;

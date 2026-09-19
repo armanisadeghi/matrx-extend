@@ -501,9 +501,15 @@ export function credentialDomSource(
         confirmations.some((candidate) => candidate.autocomplete.toLowerCase() === 'current-password')
       )
         continue;
+      // The selected controls may be explicitly associated with a different
+      // form than their visual group. Every destination must therefore be
+      // admitted through the same classifier used by saved-login fill.
+      const selectedInputs = [primaries[0], ...confirmations].filter(
+        (input): input is HTMLInputElement => Boolean(input),
+      );
+      if (selectedInputs.some((input) => classify(input.form, null).kind === 'unsafe')) continue;
       const targets: GeneratedPasswordTarget[] = [];
-      for (const input of [primaries[0], ...confirmations]) {
-        if (!input) continue;
+      for (const input of selectedInputs) {
         const targetId = registry.register(input, scope, documentId, expiresAt);
         if (!targetId) {
           registry.invalidate(targets.map((target) => target.id));
@@ -577,6 +583,8 @@ export function credentialDomSource(
     const samePath = (left: string[], right: string[]) =>
       left.length === right.length && left.every((part, index) => part === right[index]);
     const group = scopeFor(inputs[0]!);
+    const destinationsValid = () =>
+      inputs.every((input) => classify(input.form, null).kind !== 'unsafe');
     const wholeGroupValid = () => {
       if (!group) return false;
       const currentMembers = group
@@ -596,7 +604,8 @@ export function credentialDomSource(
       ) &&
       targets.filter((target) => target.constraint.roleEvidence === 'new_password').length === 1;
     };
-    if (!wholeGroupValid()) return { status: 'refused_unchanged', reason: 'ambiguous_group' };
+    if (!wholeGroupValid() || !destinationsValid())
+      return { status: 'refused_unchanged', reason: 'ambiguous_group' };
     const visibleEditable = (input: HTMLInputElement) => {
       const rect = input.getBoundingClientRect();
       const style = getComputedStyle(input);
@@ -657,18 +666,19 @@ export function credentialDomSource(
     };
     for (let index = 0; index < inputs.length; index++) {
       const input = inputs[index];
-      if (!input || current()[index] !== input || !wholeGroupValid() || !inputs.every(compatible))
+      if (!input || current()[index] !== input || !wholeGroupValid() || !destinationsValid() || !inputs.every(compatible))
         return attempted.length ? { status: rollback() } : { status: 'refused_unchanged', reason: 'target_changed' };
       // Record before the setter: a controlled setter may mutate then throw.
       attempted.push(index);
-      if (!setValue(input, value) || current()[index] !== input || !wholeGroupValid() || !inputs.every(compatible) || input.value !== value)
+      if (!setValue(input, value) || current()[index] !== input || !wholeGroupValid() || !destinationsValid() || !inputs.every(compatible) || input.value !== value)
         return { status: rollback() };
-      if (!dispatchOne(input, 'input') || current()[index] !== input || !wholeGroupValid() || !inputs.every(compatible) || attempted.some((attemptedIndex) => inputs[attemptedIndex]?.value !== value))
+      if (!dispatchOne(input, 'input') || current()[index] !== input || !wholeGroupValid() || !destinationsValid() || !inputs.every(compatible) || attempted.some((attemptedIndex) => inputs[attemptedIndex]?.value !== value))
         return { status: rollback() };
       if (!dispatchOne(input, 'change')) return { status: rollback() };
       if (
         current()[index] !== input ||
         !wholeGroupValid() ||
+        !destinationsValid() ||
         !inputs.every(compatible) ||
         attempted.some((attemptedIndex) => inputs[attemptedIndex]?.value !== value)
       )
