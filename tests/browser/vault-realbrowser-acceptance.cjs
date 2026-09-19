@@ -20,7 +20,6 @@ try {
 } catch {
   throw new Error('playwright_runtime_unavailable');
 }
-const dotenv = require('dotenv');
 const execFileAsync = promisify(execFile);
 
 const API = 'https://server.app.matrxserver.com';
@@ -38,11 +37,17 @@ const required = (key) => {
 if (process.env.MATRX_REALBROWSER_VAULT_CANARY !== 'RUN_UNDER_REVIEW')
   throw new Error('inert_canary_requires_explicit_arm');
 const localCanonicalCleanupArmed = process.env.MATRX_VAULT_CANARY_LOCAL_CANONICAL_CLEANUP === 'RUN_LOCAL_CANONICAL_CLEANUP';
+// This is deliberately a separate, explicitly armed mode.  It proves that a
+// fresh extension can authenticate and establish its tenant context without
+// making a Vault mutation; it is not a Save/Update acceptance result.
+const readOnlyAdmissionMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
 const LOCAL_CLEANUP_MAX_BASELINE_IDS = 64;
 const LOCAL_CLEANUP_MAX_CREATED_IDS = 5;
 const LOCAL_CLEANUP_INPUT_MAX_BYTES = 32768;
-const LOCAL_ROUTER_SOURCE = '/Users/armanisadeghi/code/aidream/aidream/api/routers/vault.py';
-const LOCAL_SERVICE_SOURCE = '/Users/armanisadeghi/code/aidream/aidream/services/user_secrets/vault.py';
+const AIDREAM_ENV_ROOT = '/Users/armanisadeghi/code/aidream';
+const LOCAL_SOURCE_ROOT = process.env.MATRX_VAULT_CANARY_LOCAL_SOURCE_ROOT || AIDREAM_ENV_ROOT;
+const LOCAL_ROUTER_RELATIVE = 'aidream/api/routers/vault.py';
+const LOCAL_SERVICE_RELATIVE = 'aidream/services/user_secrets/vault.py';
 if (localCanonicalCleanupArmed) {
   const routerHash = required('MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256');
   const serviceHash = required('MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256');
@@ -51,17 +56,36 @@ if (localCanonicalCleanupArmed) {
 
 const runId = crypto.randomUUID();
 const stateRoot = process.env.MATRX_VAULT_CANARY_STATE_ROOT || path.join(REPO, '.matrx', 'realbrowser-vault', 'canary-runs');
+const REVIEWED_HISTORICAL_ADMISSION_ROOT = path.join(REPO, '.matrx', 'realbrowser-vault', 'readonly-admission');
+const REVIEWED_HISTORICAL_ADMISSION_RUN = '3bef7a5b-c78e-497e-b936-f7f53a2e9ac1';
+const REVIEWED_HISTORICAL_ADMISSION_SHA256 = 'd0c7c4b7b9c1de1b5af600e8678a5f2921e231d6346521f9f7d72e944e47cb42';
 const root = path.join(stateRoot, runId);
 const profile = path.join(root, 'owned-profile');
 const proofPath = path.join(root, 'proof.json');
 const proof = {
-  schema: 2,
+  schema: 3,
+  runnerSha256: crypto.createHash('sha256').update(syncFs.readFileSync(__filename)).digest('hex'),
   scope: 'owned localhost real-extension Vault Save/Update acceptance',
+  mode: readOnlyAdmissionMode ? 'read_only_admission' : 'full_acceptance',
+  phase: 'artifact_admission',
+  authenticationAttempted: false,
   runId,
   profileKind: 'new disposable owned profile',
   artifact: null,
+  ownedCreateMutationKeys: [],
+  ownedFixtureIds: [],
   checks: {},
   cleanup: {},
+  vaultMutationRequests: 0,
+  vaultItemPosts: {
+    total: 0,
+    withIdempotencyHeader: 0,
+    missingIdempotencyHeader: 0,
+    invalidIdempotencyHeader: 0,
+  },
+  ...(readOnlyAdmissionMode
+    ? { admission: { mode: 'read_only', fixtureWrites: 0, noFixtureWrites: false } }
+    : {}),
   openProof: [],
 };
 let context;
@@ -89,12 +113,50 @@ async function refuseUnreconciledPriorRun() {
   );
   for (const entry of entries) {
     if (!entry.isDirectory() || entry.name === runId) continue;
-    const prior = await fs.readFile(path.join(stateRoot, entry.name, 'proof.json'), 'utf8').then(JSON.parse).catch(() => null);
-    assert(prior?.ok === true && prior.cleanup?.receiptReconciled === true && prior.cleanup?.createdItemsGone === true, 'previous_run_unreconciled');
+    const priorProofPath = path.join(stateRoot, entry.name, 'proof.json');
+    const priorRaw = await fs.readFile(priorProofPath, 'utf8').catch(() => null);
+    const prior = priorRaw ? JSON.parse(priorRaw) : null;
+    const completedAcceptance = prior?.ok === true
+      && prior.cleanup?.receiptReconciled === true
+      && prior.cleanup?.createdItemsGone === true;
+    // A read-only run is retryable when its cleanup records zero observed Vault mutation requests. That stays independent of an admission UI outcome.
+    const vaultMutationFreeCleanup = prior?.schema === 3
+      && prior?.mode === 'read_only_admission'
+      && prior.cleanup?.vaultMutationFree === true
+      && prior.vaultMutationRequests === 0
+      && prior.vaultItemPosts?.total === 0
+      && prior.ownedCreateMutationKeys?.length === 0
+      && prior.ownedFixtureIds?.length === 0
+      && (prior.cleanup?.localAuthLogoutStatus === 204 || prior.authenticationAttempted === false)
+      && prior.cleanup?.browserClosed === true
+      && prior.cleanup?.profileRemoved === true;
+    // Exact reviewed reconciliation only. It neither edits nor promotes the
+    // old proof: runner bc9c32dec3ace7d974163fa153d83a6ff51c8dcb differed only
+    // by native-env loader c909455b77b16144ff463dc4ca314edfda0c2d50f4f7b2c149bf9610f861a7b2.
+    // Independent review confirmed organization_not_selected before baseline
+    // or fixtures and no Save/Update request; no other sidecar is accepted.
+    const reviewedHistoricalException = stateRoot === REVIEWED_HISTORICAL_ADMISSION_ROOT
+      && entry.name === REVIEWED_HISTORICAL_ADMISSION_RUN
+      && priorProofPath === path.join(REVIEWED_HISTORICAL_ADMISSION_ROOT, REVIEWED_HISTORICAL_ADMISSION_RUN, 'proof.json')
+      && priorRaw !== null
+      && crypto.createHash('sha256').update(priorRaw).digest('hex') === REVIEWED_HISTORICAL_ADMISSION_SHA256;
+    // Reproduced launch-only failure: default headless shell never loaded the
+    // extension worker; no OAuth interaction was reachable. Preserve failure.
+    const reviewedLaunchFailure = stateRoot === REVIEWED_HISTORICAL_ADMISSION_ROOT
+      && entry.name === '96760964-bf3f-465a-9452-a566c98c8c00'
+      && priorRaw !== null
+      && crypto.createHash('sha256').update(priorRaw).digest('hex') === '9e4c99d7a5041aafcece85f3a6d8d3f176fcaab975ea6633cdd962c8b4a0e46b';
+    assert(completedAcceptance || vaultMutationFreeCleanup || reviewedHistoricalException || reviewedLaunchFailure, 'previous_run_unreconciled');
   }
 }
 async function sha256(file) {
   return crypto.createHash('sha256').update(await fs.readFile(file)).digest('hex');
+}
+async function resolveLocalSourceRoot() {
+  assert(path.isAbsolute(LOCAL_SOURCE_ROOT), 'local_source_root_must_be_absolute');
+  const sourceRoot = await fs.realpath(LOCAL_SOURCE_ROOT).catch(() => null);
+  assert(sourceRoot !== null && (await fs.stat(sourceRoot)).isDirectory(), 'local_source_root_refused');
+  return sourceRoot;
 }
 function baselineMetadataSha256(entries) {
   const metadata = entries
@@ -111,16 +173,19 @@ function baselineMetadataSha256(entries) {
 async function prewriteLocalCanonicalPreflight() {
   if (!localCanonicalCleanupArmed) return;
   assert(baselineIds.size <= LOCAL_CLEANUP_MAX_BASELINE_IDS, 'local_cleanup_baseline_capacity');
+  const sourceRoot = await resolveLocalSourceRoot();
+  const routerSource = path.join(sourceRoot, LOCAL_ROUTER_RELATIVE);
+  const serviceSource = path.join(sourceRoot, LOCAL_SERVICE_RELATIVE);
   const routerHash = required('MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256');
   const serviceHash = required('MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256');
-  assert((await sha256(LOCAL_ROUTER_SOURCE)) === routerHash, 'local_cleanup_router_hash_mismatch');
-  assert((await sha256(LOCAL_SERVICE_SOURCE)) === serviceHash, 'local_cleanup_service_hash_mismatch');
+  assert((await sha256(routerSource)) === routerHash, 'local_cleanup_router_hash_mismatch');
+  assert((await sha256(serviceSource)) === serviceHash, 'local_cleanup_service_hash_mismatch');
   const placeholderIds = Array.from({ length: LOCAL_CLEANUP_MAX_CREATED_IDS }, (_, index) =>
     `00000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
   );
   const payload = JSON.stringify({
     token, userId, organizationId, createKeys: placeholderIds, baselineIds: [...baselineIds], provenIDs: placeholderIds,
-    expectedRouterSha256: routerHash, expectedServiceSha256: serviceHash,
+    expectedRouterSha256: routerHash, expectedServiceSha256: serviceHash, sourceRoot,
   });
   assert(Buffer.byteLength(payload, 'utf8') < LOCAL_CLEANUP_INPUT_MAX_BYTES, 'local_cleanup_payload_capacity');
   proof.checks.localCanonicalCleanupPreflight = true;
@@ -198,9 +263,38 @@ async function hasPendingCapture() {
     return !!value && typeof value === 'object' && Object.keys(value).length > 0;
   });
 }
+function journalVaultMutationRequest(url, method, headers) {
+  let parsed;
+  try { parsed = new URL(url); } catch { return; }
+  const isVaultMutation = parsed.origin === API
+    && parsed.pathname.startsWith('/api/vault/')
+    && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
+  const isItemCreate = method === 'POST' && parsed.origin === API && parsed.pathname === '/api/vault/items';
+  if (!isVaultMutation && !isItemCreate) return;
+  if (isVaultMutation) proof.vaultMutationRequests += 1;
+  if (!isItemCreate) {
+    persist();
+    return;
+  }
+  const key = headers['idempotency-key'] ?? headers['Idempotency-Key'];
+  proof.vaultItemPosts.total += 1;
+  if (typeof key === 'string' && /^[0-9a-f-]{36}$/i.test(key)) {
+    proof.vaultItemPosts.withIdempotencyHeader += 1;
+    createKeys.add(key);
+    proof.ownedCreateMutationKeys = [...createKeys];
+  } else if (typeof key === 'string' && key.length > 0) {
+    proof.vaultItemPosts.invalidIdempotencyHeader += 1;
+  } else {
+    proof.vaultItemPosts.missingIdempotencyHeader += 1;
+  }
+  persist();
+}
 async function api(url, options = {}) {
   const headers = { ...(options.headers || {}), Authorization: `Bearer ${token}` };
   if (organizationId) headers['X-Organization-Id'] = organizationId;
+  // Node-side fixture calls do not pass through Playwright's browser request
+  // observer, so they must share the same durable journal as extension calls.
+  journalVaultMutationRequest(url, options.method || 'GET', headers);
   const response = await fetch(url, { ...options, headers });
   assert(response.ok, `http_${response.status}_${options.label || 'request'}`);
   return response.status === 204 ? null : response.json();
@@ -260,6 +354,7 @@ async function reconcile() {
 }
 async function localCanonicalCleanup(proven) {
   assert(localCanonicalCleanupArmed, 'local_cleanup_not_armed');
+  const sourceRoot = await resolveLocalSourceRoot();
   const routerHash = required('MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256');
   const serviceHash = required('MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256');
   assert(/^[a-f0-9]{64}$/.test(routerHash) && /^[a-f0-9]{64}$/.test(serviceHash), 'local_cleanup_hash_shape');
@@ -267,12 +362,12 @@ async function localCanonicalCleanup(proven) {
   const adapter = path.join(__dirname, 'cleanup-vault-canary.py');
   const input = JSON.stringify({
     token, userId, organizationId, createKeys: [...createKeys], baselineIds: [...baselineIds], provenIDs: [...proven],
-    expectedRouterSha256: routerHash, expectedServiceSha256: serviceHash,
+    expectedRouterSha256: routerHash, expectedServiceSha256: serviceHash, sourceRoot,
   });
   assert(Buffer.byteLength(input, 'utf8') < LOCAL_CLEANUP_INPUT_MAX_BYTES, 'local_cleanup_payload_capacity');
   const result = await new Promise((resolve, reject) => {
     const child = spawn(python, [adapter], {
-      cwd: '/Users/armanisadeghi/code/aidream', stdio: ['pipe', 'pipe', 'ignore'],
+      cwd: sourceRoot, stdio: ['pipe', 'pipe', 'ignore'],
     });
     let stdout = '';
     child.stdout.setEncoding('utf8');
@@ -295,32 +390,68 @@ async function localCanonicalCleanup(proven) {
   assert(result.route === 'local_canonical_authmiddleware' && result.provenance === 'local_router_and_service_hash_pinned' && result.receiptCount === proven.size && result.attempts.length === proven.size && attemptedIds.size === proven.size && [...proven].every((id) => attemptedIds.has(id)) && result.attempts.every((attempt) => ['already_cleaned', 'deleted_and_missing'].includes(attempt.terminal)), 'local_cleanup_proof_refused');
   return result;
 }
+async function chooseAuthorizedOrganization(extensionId) {
+  const settingsPage = await context.newPage();
+  try {
+    await settingsPage.goto(`chrome-extension://${extensionId}/sidepanel.html`);
+    // These are the actual sidepanel navigation and Settings controls. Do not
+    // write matrx.org.active here: selection must traverse the UI and its
+    // membership-verifying resolver.
+    await settingsPage.getByTitle('Settings', { exact: true }).click();
+    const organizationSection = settingsPage.getByRole('button', { name: 'Organization', exact: true });
+    const actingAs = settingsPage.getByText('Acting as', { exact: true });
+    if (!(await actingAs.isVisible())) await organizationSection.click();
+    const organizationRow = actingAs.locator('xpath=../..');
+    const selector = organizationRow.getByRole('combobox');
+    await selector.click();
+    const authorizedOption = settingsPage.getByRole('option', { name: 'AI Matrx', exact: true });
+    assert(await authorizedOption.count() === 1, 'authorized_organization_option_missing_or_ambiguous');
+    await authorizedOption.click();
+    // The selection verifies membership asynchronously in this page. Keep its
+    // realm alive until the canonical resolver has persisted the choice.
+    await waitForActiveOrganization();
+  } finally {
+    await settingsPage.close();
+  }
+}
+async function waitForActiveOrganization() {
+  let active;
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    active = (await storage(['matrx.org.active']))['matrx.org.active'];
+    if (active?.name === 'AI Matrx' && typeof active.id === 'string' && active.id.length > 10) return active;
+    await wait(500);
+  }
+  throw new Error('authorized_organization_not_persisted');
+}
 async function authenticate(extension) {
-  dotenv.config({ path: '/Users/armanisadeghi/code/aidream/.env', quiet: true });
+  assert(typeof process.loadEnvFile === 'function', 'node_env_loader_unavailable');
+  process.loadEnvFile('/Users/armanisadeghi/code/aidream/.env');
   const adminEmail = required('AI_ADMIN_USERNAME');
   const adminPassword = required('AI_ADMIN_PASSWORD');
   assert(adminEmail === 'admin@admin.com', 'admin_identity_configuration');
+  proof.phase = 'browser_launch';
+  persist();
   context = await chromium.launchPersistentContext(profile, {
     headless: true,
-    ...(process.env.MATRX_VAULT_CANARY_CHROME_EXECUTABLE
-      ? { executablePath: process.env.MATRX_VAULT_CANARY_CHROME_EXECUTABLE }
-      : {}),
+    // Playwright's default headless shell does not load this extension.
+    executablePath: process.env.MATRX_VAULT_CANARY_CHROME_EXECUTABLE || chromium.executablePath(),
     args: [`--disable-extensions-except=${extension}`, `--load-extension=${extension}`],
   });
+  proof.phase = 'extension_worker';
+  persist();
   worker = context.serviceWorkers()[0] || await context.waitForEvent('serviceworker', { timeout: 15000 });
   const extensionId = await worker.evaluate(() => chrome.runtime.id);
   assert(typeof extensionId === 'string' && extensionId.length > 10, 'extension_runtime_identity');
-  // Track value-free create metadata before OAuth. A login password is never a
-  // website fixture and must not appear in a pending candidate before writes.
+  // Journal every item create attempt before OAuth starts. In particular, a
+  // missing idempotency header is evidence, not a reason to omit the request.
   context.on('request', (request) => {
-    if (request.method() !== 'POST' || request.url() !== `${API}/api/vault/items`) return;
-    const key = request.headers()['idempotency-key'];
-    if (typeof key === 'string' && /^[0-9a-f-]{36}$/i.test(key)) {
-      createKeys.add(key);
-      proof.ownedCreateMutationKeys = [...createKeys];
-      persist();
-    }
+    journalVaultMutationRequest(request.url(), request.method(), request.headers());
   });
+  // Persist the zeroed journal before OAuth so an interruption still shows
+  // whether the run had admitted any Vault POST before authentication.
+  persist();
+  proof.phase = 'oauth_ui';
+  persist();
   const popup = await context.newPage();
   await popup.goto(`chrome-extension://${extensionId}/popup.html`);
   const authPage = await Promise.all([
@@ -331,6 +462,9 @@ async function authenticate(extension) {
   assert(new URL(authPage.url()).origin === 'https://www.aimatrx.com', 'oauth_origin');
   await authPage.locator('#email').fill(adminEmail);
   await authPage.locator('#password').fill(adminPassword);
+  proof.authenticationAttempted = true;
+  proof.phase = 'oauth_sign_in';
+  persist();
   await authPage.getByRole('button', { name: 'Sign in', exact: true }).click();
   await authPage.waitForURL(/\/oauth\/consent/, { timeout: 30000 });
   await authPage.getByRole('button', { name: 'Authorize', exact: true }).click().catch((error) => {
@@ -346,12 +480,28 @@ async function authenticate(extension) {
   userId = session['matrx.user.profile'].id;
   token = session['matrx.auth.accessToken'];
   assert(typeof token === 'string' && token.length > 20, 'extension_token');
-  organizationId = session['matrx.org.active']?.id;
-  assert(typeof organizationId === 'string' && organizationId.length > 10, 'organization_not_selected');
+  // This deliberately happens before reading or choosing an organization.
+  // /auth/v1/user is independent token evidence and must remain so for a
+  // fresh profile that has not selected its tenant yet.
   const identity = await api(`${DB}/auth/v1/user`, { headers: { apikey: process.env.SUPABASE_MATRIX_PUBLISHABLE_KEY }, label: 'identity' });
   assert(identity.id === userId && identity.email === adminEmail, 'independent_admin_identity');
   proof.checks.independentAdminIdentity = true;
+  proof.identityProof = { extensionProfileEmail: adminEmail, independentUserIdMatchesProfile: true };
   proof.extensionId = extensionId;
+  // Retain independent identity evidence even if organization selection fails.
+  persist();
+  let active = session['matrx.org.active'];
+  if (!active?.id) {
+    proof.phase = 'organization_selection';
+    persist();
+    await chooseAuthorizedOrganization(extensionId);
+    active = await waitForActiveOrganization();
+  }
+  organizationId = active?.id;
+  assert(active?.name === 'AI Matrx' && typeof organizationId === 'string' && organizationId.length > 10, 'organization_not_selected');
+  proof.organizationProof = { label: 'AI Matrx', activeStorageObserved: true };
+  // Both identity and organization evidence exist before the first fixture.
+  persist();
   assert(!(await hasPendingCapture()), 'admin_password_pending_before_writes');
 }
 async function submitLogin(page, username, password) {
@@ -390,13 +540,23 @@ async function materializedPassword(id) {
     // so a safe negative test cannot create a fictional cleanup obligation.
     artifactAdmitted = true;
     persist();
-    local = await startLocalSite();
-    localUrl = local.url;
     await authenticate(extension);
+    proof.phase = 'vault_baseline';
+    persist();
     const baseline = await items();
     baselineIds = new Set(baseline.map((entry) => entry.id));
     proof.baselineMetadataSha256 = baselineMetadataSha256(baseline);
     await prewriteLocalCanonicalPreflight();
+    if (readOnlyAdmissionMode) {
+      proof.admission.baselineRead = true;
+      proof.admission.prewriteLocalCanonicalPreflight = localCanonicalCleanupArmed;
+      proof.admission.noFixtureWrites = proof.vaultMutationRequests === 0 && proof.vaultItemPosts.total === 0
+        && createKeys.size === 0 && createdIds.size === 0;
+      assert(proof.admission.noFixtureWrites, 'admission_fixture_write_refused');
+      persist();
+    } else {
+      local = await startLocalSite();
+      localUrl = local.url;
     const suffix = crypto.randomUUID().slice(0, 8);
     const username = `canary-${suffix}@example.invalid`;
     const oldPassword = `old-${crypto.randomUUID()}`;
@@ -472,6 +632,7 @@ async function materializedPassword(id) {
     proof.checks.saveAsNewExactOne = true;
     proof.checks.saveChoiceDidNotSubmit = true;
     proof.openProof = ['canonical enrolled-MFA preservation is not exercised; the fixture only proves unrelated sealed-field preservation', 'lost-response retry is not exercised by this canary', 'browser restart and distributed-release acceptance are separate gates'];
+    }
   } catch (error) {
     failure = error;
     proof.failureCode = String(error?.message || 'canary_failure').match(/^[a-z0-9_]{1,100}$/)?.[0] || 'canary_failure';
@@ -531,12 +692,38 @@ async function materializedPassword(id) {
     try { if (local) await new Promise((resolve) => local.server.close(resolve)); } catch {}
     await fs.rm(profile, { recursive: true, force: true });
     proof.cleanup.profileRemoved = !(await fs.stat(profile).then(() => true, () => false));
-    proof.ok = !failure && proof.cleanup.receiptReconciled && proof.cleanup.baselineUntouched && proof.cleanup.createdItemsGone && proof.cleanup.profileRemoved && proof.cleanup.localAuthLogoutStatus === 204 && proof.cleanup.browserClosed === true;
+    proof.cleanup.vaultMutationFree = proof.vaultMutationRequests === 0
+      && proof.vaultItemPosts.total === 0
+      && createKeys.size === 0
+      && createdIds.size === 0
+      && proof.cleanup.browserClosed === true;
+    if (readOnlyAdmissionMode) {
+      proof.admission.noFixtureWrites = proof.vaultMutationRequests === 0 && proof.vaultItemPosts.total === 0
+        && createKeys.size === 0 && createdIds.size === 0;
+      proof.admission.cleanup = {
+        noVaultMutationRequests: proof.cleanup.vaultMutationFree,
+        localAuthLogoutStatus: proof.cleanup.localAuthLogoutStatus,
+        browserClosed: proof.cleanup.browserClosed,
+        profileRemoved: proof.cleanup.profileRemoved,
+      };
+      proof.admission.ok = !failure && proof.admission.baselineRead === true
+        && proof.admission.noFixtureWrites === true
+        && proof.cleanup.vaultMutationFree === true
+        && proof.cleanup.localAuthLogoutStatus === 204
+        && proof.cleanup.browserClosed === true
+        && proof.cleanup.profileRemoved === true;
+      // `ok` remains reserved for a full Save/Update acceptance proof.
+      proof.ok = false;
+    } else {
+      proof.ok = !failure && proof.cleanup.receiptReconciled && proof.cleanup.baselineUntouched && proof.cleanup.createdItemsGone && proof.cleanup.profileRemoved && proof.cleanup.localAuthLogoutStatus === 204 && proof.cleanup.browserClosed === true;
+    }
+    const succeeded = readOnlyAdmissionMode ? proof.admission.ok : proof.ok;
     // Persist outside the disposable profile only as a value-free, caller-chosen path.
     persist();
     if (process.env.MATRX_VAULT_CANARY_PROOF) await fs.writeFile(process.env.MATRX_VAULT_CANARY_PROOF, `${JSON.stringify(proof, null, 2)}\n`, { mode: 0o600 });
-    if (!proof.ok) process.stderr.write(`Acceptance refused: ${proof.failureCode || 'cleanup'}\n`);
+    if (!succeeded) process.stderr.write(`Acceptance refused: ${proof.failureCode || 'cleanup'}\n`);
+    else if (readOnlyAdmissionMode) process.stdout.write('PASS: read-only extension Vault admission and mutation-free Vault cleanup\n');
     else process.stdout.write('PASS: real extension Vault Save/Update acceptance and receipt-backed cleanup\n');
   }
-  if (!proof.ok) process.exitCode = 1;
+  if (!(readOnlyAdmissionMode ? proof.admission?.ok : proof.ok)) process.exitCode = 1;
 })();

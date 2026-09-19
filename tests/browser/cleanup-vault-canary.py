@@ -22,9 +22,11 @@ import httpx
 
 
 REPO = Path("/Users/armanisadeghi/code")
-AIDREAM = REPO / "aidream"
-ROUTER_SOURCE = AIDREAM / "aidream/api/routers/vault.py"
-SERVICE_SOURCE = AIDREAM / "aidream/services/user_secrets/vault.py"
+# Secrets remain in the canonical working checkout. The optionally pinned
+# source tree is import-only; it never receives a copied .env or dependencies.
+AIDREAM_ENV_ROOT = REPO / "aidream"
+ROUTER_RELATIVE = Path("aidream/api/routers/vault.py")
+SERVICE_RELATIVE = Path("aidream/services/user_secrets/vault.py")
 ADMIN_EMAIL = "admin@admin.com"
 
 
@@ -66,7 +68,7 @@ def parse_stdin() -> dict[str, Any]:
         raise Refused("input_refused") from None
     refuse(isinstance(data, dict) and set(data) == {
         "token", "userId", "organizationId", "createKeys", "baselineIds", "provenIDs",
-        "expectedRouterSha256", "expectedServiceSha256",
+        "expectedRouterSha256", "expectedServiceSha256", "sourceRoot",
     }, "input_shape_refused")
     token = data["token"]
     refuse(isinstance(token, str) and 20 <= len(token) <= 8192 and "\n" not in token and "\r" not in token, "token_refused")
@@ -80,12 +82,18 @@ def parse_stdin() -> dict[str, Any]:
     for key in ("expectedRouterSha256", "expectedServiceSha256"):
         value = data[key]
         refuse(isinstance(value, str) and len(value) == 64 and all(char in "0123456789abcdef" for char in value), "source_hash_refused")
+    source_root = data["sourceRoot"]
+    refuse(isinstance(source_root, str), "source_root_refused")
+    source_path = Path(source_root)
+    refuse(source_path.is_absolute() and source_path.is_dir(), "source_root_refused")
+    data["sourceRoot"] = str(source_path.resolve())
     return data
 
 
 def verify_sources(data: dict[str, Any]) -> dict[str, str]:
-    router_hash = sha256(ROUTER_SOURCE)
-    service_hash = sha256(SERVICE_SOURCE)
+    source_root = Path(data["sourceRoot"])
+    router_hash = sha256(source_root / ROUTER_RELATIVE)
+    service_hash = sha256(source_root / SERVICE_RELATIVE)
     refuse(router_hash == data["expectedRouterSha256"], "router_hash_mismatch")
     refuse(service_hash == data["expectedServiceSha256"], "service_hash_mismatch")
     return {"router": router_hash, "service": service_hash}
@@ -101,12 +109,16 @@ def load_reconciler():
     return module.reconcile_receipts
 
 
-def build_local_app():
+def build_local_app(data: dict[str, Any]):
     # The same minimal app setup as the Task 3 canonical-route proof.  Bootstrap
     # output is intentionally discarded; the Node parent never receives stderr.
     with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
         from dotenv import load_dotenv
-        load_dotenv(AIDREAM / ".env")
+        # The source root takes precedence before the first aidream import;
+        # the runtime and secrets deliberately remain the existing checkout.
+        source_root = Path(data["sourceRoot"])
+        sys.path.insert(0, str(source_root))
+        load_dotenv(AIDREAM_ENV_ROOT / ".env")
         from matrx_orm import register_platform_db
         register_platform_db("supabase_automation_matrix", package="vault_canary_cleanup", additional_schemas=["auth"])
         from aidream.package_integration import configure_packages
@@ -115,6 +127,9 @@ def build_local_app():
         from aidream.api.errors import register_error_handlers
         from aidream.api.middleware.auth import AuthMiddleware
         from aidream.api.routers import vault as vault_router
+        from aidream.services.user_secrets import vault as vault_service
+        refuse(Path(vault_router.__file__).resolve() == (source_root / ROUTER_RELATIVE).resolve(), "router_import_refused")
+        refuse(Path(vault_service.__file__).resolve() == (source_root / SERVICE_RELATIVE).resolve(), "service_import_refused")
         app = FastAPI()
         register_error_handlers(app, capture_system_errors=False)
         app.include_router(vault_router.router, prefix="/api/vault")
@@ -152,7 +167,7 @@ async def run(data: dict[str, Any], hashes: dict[str, str]) -> dict[str, Any]:
     # The pinned source is checked once before the app imports and again with
     # no await between the check and each local DELETE.
     hashes = verify_sources(data)
-    app = build_local_app()
+    app = build_local_app(data)
     headers = {"Authorization": f"Bearer {data['token']}", "X-Organization-Id": data["organizationId"]}
     attempts: list[dict[str, str | int]] = []
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://vault-canary-local", timeout=30) as client:
