@@ -1,14 +1,14 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-09-17T07:16:39.921Z
+Generated: 2026-09-19T01:07:45.839Z
 
-- **Total tools:** 167
-- **Assistant bundle:** 74 tools (read-only)
-- **Pilot bundle:** 141 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 167 tools
+- **Total tools:** 169
+- **Assistant bundle:** 75 tools (read-only)
+- **Pilot bundle:** 143 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 169 tools
 
 
-## Tier: read (74)
+## Tier: read (75)
 
 ### `list_chrome_categories`
 
@@ -281,6 +281,21 @@ Generated: 2026-09-17T07:16:39.921Z
 ```
 
 ### `list_productivity_tools`
+
+- **Required permissions:** (none)
+- **Surface bundles:** assistant, pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "default": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `list_records_tools`
 
 - **Required permissions:** (none)
 - **Surface bundles:** assistant, pilot, pilot+privileged
@@ -1981,7 +1996,7 @@ Generated: 2026-09-17T07:16:39.921Z
 }
 ```
 
-## Tier: action (63)
+## Tier: action (64)
 
 ### `navigate_active_tab`
 
@@ -3634,6 +3649,105 @@ Generated: 2026-09-17T07:16:39.921Z
   "required": [
     "action",
     "tab_id"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+### `records`
+
+- **Required permissions:** (none)
+- **Surface bundles:** pilot, pilot+privileged
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "table_list",
+        "metadata_search",
+        "record_read",
+        "record_aggregate",
+        "record_write",
+        "record_delete",
+        "field_propose",
+        "table_propose"
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 500,
+      "default": 50
+    },
+    "query": {
+      "type": "string"
+    },
+    "record_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "id_keyed": {
+      "type": "boolean",
+      "default": false
+    },
+    "table_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "measure": {
+      "type": "string",
+      "default": "count"
+    },
+    "group_by": {
+      "type": "string"
+    },
+    "field_key": {
+      "type": "string"
+    },
+    "values": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "expected_version": {
+      "type": "integer"
+    },
+    "undo": {
+      "type": "boolean",
+      "default": false
+    },
+    "name": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "default": ""
+    },
+    "field_type": {
+      "type": "string",
+      "default": "text"
+    },
+    "sensitivity": {
+      "type": "string",
+      "default": "internal"
+    },
+    "context_policy": {
+      "type": "string",
+      "default": "include"
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": {}
+    }
+  },
+  "required": [
+    "action"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

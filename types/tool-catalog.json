@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T07:16:39.921Z",
+  "generated_at": "2026-09-19T01:07:45.839Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_chrome_categories",
@@ -21,6 +21,7 @@
     "list_crm_tools",
     "list_education_tools",
     "list_productivity_tools",
+    "list_records_tools",
     "chrome_batch",
     "parallel_for_each_tab"
   ],
@@ -44,6 +45,7 @@
     "list_crm_tools",
     "list_education_tools",
     "list_productivity_tools",
+    "list_records_tools",
     "chrome_batch",
     "read_page",
     "find",
@@ -120,6 +122,7 @@
     "list_crm_tools",
     "list_education_tools",
     "list_productivity_tools",
+    "list_records_tools",
     "chrome_batch",
     "read_page",
     "find",
@@ -208,6 +211,7 @@
     "user_todos",
     "parallel_for_each_tab",
     "chrome_record_gif",
+    "records",
     "chrome_record_tab_video",
     "record_demo",
     "list_demos",
@@ -263,6 +267,7 @@
     "list_crm_tools",
     "list_education_tools",
     "list_productivity_tools",
+    "list_records_tools",
     "chrome_batch",
     "read_page",
     "find",
@@ -372,6 +377,7 @@
     "desktop_run_command",
     "parallel_for_each_tab",
     "chrome_record_gif",
+    "records",
     "chrome_record_tab_video",
     "record_demo",
     "list_demos",
@@ -439,6 +445,7 @@
         "list_crm_tools",
         "list_education_tools",
         "list_productivity_tools",
+        "list_records_tools",
         "chrome_batch",
         "parallel_for_each_tab"
       ]
@@ -740,6 +747,16 @@
       "admin_only": false,
       "tool_names": [
         "google_email_send"
+      ]
+    },
+    {
+      "category": "records",
+      "label": "The organization's records",
+      "description": "Read and write this organization's own custom records — the Tables a person defined for their work (clients, jobs, properties, whatever they keep). `records` is ONE tool with eight actions: list the Tables, search their metadata, read a record, aggregate over a Table, write or update a record, delete or restore one, and propose a new Field or Table. It acts with exactly the authority of the person operating you, in their active organization, and every value the store decided you may not see comes back with the reason instead of a silent blank. The store is switched on per organization: when it is off, every action says so and says who turns it on.",
+      "list_tool": "list_records_tools",
+      "admin_only": false,
+      "tool_names": [
+        "records"
       ]
     }
   ],
@@ -1196,6 +1213,31 @@
     },
     {
       "name": "list_productivity_tools",
+      "tier": "read",
+      "category": "core",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "default": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "assistant",
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
+      ]
+    },
+    {
+      "name": "list_records_tools",
       "tier": "read",
       "category": "core",
       "input_schema": {
@@ -6116,6 +6158,114 @@
       ],
       "supported_browsers": [
         "chrome"
+      ]
+    },
+    {
+      "name": "records",
+      "tier": "action",
+      "category": "records",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "table_list",
+              "metadata_search",
+              "record_read",
+              "record_aggregate",
+              "record_write",
+              "record_delete",
+              "field_propose",
+              "table_propose"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500,
+            "default": 50
+          },
+          "query": {
+            "type": "string"
+          },
+          "record_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id_keyed": {
+            "type": "boolean",
+            "default": false
+          },
+          "table_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "measure": {
+            "type": "string",
+            "default": "count"
+          },
+          "group_by": {
+            "type": "string"
+          },
+          "field_key": {
+            "type": "string"
+          },
+          "values": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "expected_version": {
+            "type": "integer"
+          },
+          "undo": {
+            "type": "boolean",
+            "default": false
+          },
+          "name": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "default": ""
+          },
+          "field_type": {
+            "type": "string",
+            "default": "text"
+          },
+          "sensitivity": {
+            "type": "string",
+            "default": "internal"
+          },
+          "context_policy": {
+            "type": "string",
+            "default": "include"
+          },
+          "spec": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "required_permissions": [],
+      "required_optional_permissions": [],
+      "admin_only": false,
+      "surface_bundles": [
+        "pilot",
+        "pilot+privileged"
+      ],
+      "supported_browsers": [
+        "chrome",
+        "firefox",
+        "safari"
       ]
     },
     {

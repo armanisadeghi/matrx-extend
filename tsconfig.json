@@ -31,7 +31,11 @@
     "types": ["chrome", "node"],
     "paths": {
       "@/*": ["./src/*"],
-      "@gen/*": ["./types/python-generated/*"]
+      "@gen/*": ["./types/python-generated/*"],
+      // TEMPORARY (campaign lane W6-EXT) — see the note in wxt.config.ts.
+      // THE SWAP: "@ai-matrx/records": "latest" in package.json, these gone.
+      "@ai-matrx/records": ["../aidream/apps/shared/records/src/index.ts"],
+      "@ai-matrx/records/core": ["../aidream/apps/shared/records/src/core/index.ts"]
     }
   },
   "include": [

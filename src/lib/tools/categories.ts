@@ -74,7 +74,8 @@ export type ToolCategory =
   | 'credentials'
   | 'crm'
   | 'education'
-  | 'productivity';
+  | 'productivity'
+  | 'records';
 
 export interface CategoryMeta {
   category: ToolCategory;
@@ -217,6 +218,13 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     description:
       "Work with the user's own connected Google account. `google_email_send` proposes ONE email and stops: the user sees the sender, recipient, subject and body, edits anything they like, and the message is sent only when they press Send — there is no way for you to send without that click, and no argument that stands in for it. Reading and writing the user's picked Docs and Sheets is the separate server-side `google_workspace` tool.",
     list_tool_name: 'list_productivity_tools',
+  },
+  records: {
+    category: 'records',
+    label: "The organization's records",
+    description:
+      "Read and write this organization's own custom records — the Tables a person defined for their work (clients, jobs, properties, whatever they keep). `records` is ONE tool with eight actions: list the Tables, search their metadata, read a record, aggregate over a Table, write or update a record, delete or restore one, and propose a new Field or Table. It acts with exactly the authority of the person operating you, in their active organization, and every value the store decided you may not see comes back with the reason instead of a silent blank. The store is switched on per organization: when it is off, every action says so and says who turns it on.",
+    list_tool_name: 'list_records_tools',
   },
 };
 
@@ -415,6 +423,8 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
 
   // ─── crm (prospect capture — IC-10) ───────────────────────────────────
   capture_prospect: 'crm',
+  // ─── records (the custom record store — CUT-N-11) ──────────────────────
+  records: 'records',
   // ─── education (study-set capture — IC-11) ────────────────────────────
   capture_study_set: 'education',
   // ─── productivity (Google Workspace) ──────────────────────────────────
@@ -543,6 +553,8 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'capture_study_set',
   // ─── productivity (the reviewed Gmail send — no server executor exists) ──
   'google_email_send',
+  // ─── records (the custom record store, in the browser — CUT-N-11) ───────
+  'records',
 ]);
 
 export function isCanonicalSurface(toolName: string): boolean {

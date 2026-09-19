@@ -6,6 +6,13 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@gen': path.resolve(__dirname, './types/python-generated'),
+      // TEMPORARY (campaign lane W6-EXT) — see the note in wxt.config.ts.
+      // THE SWAP: "@ai-matrx/records": "latest" in package.json, these gone.
+      '@ai-matrx/records/core': path.resolve(
+        __dirname,
+        '../aidream/apps/shared/records/src/core/index.ts',
+      ),
+      '@ai-matrx/records': path.resolve(__dirname, '../aidream/apps/shared/records/src/index.ts'),
     },
   },
   test: {

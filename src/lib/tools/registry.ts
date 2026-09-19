@@ -58,6 +58,7 @@ import { privileged_handlers, privileged_read_handlers } from '@/lib/tools/handl
 import { prospect_handlers } from '@/lib/tools/handlers/prospects';
 import { read_handlers } from '@/lib/tools/handlers/read';
 import { record_handlers } from '@/lib/tools/handlers/record';
+import { records_handlers } from '@/lib/tools/handlers/records';
 import { tab_action_handlers, tab_read_handlers } from '@/lib/tools/handlers/tabs';
 import { user_handlers } from '@/lib/tools/handlers/user';
 import { video_handlers } from '@/lib/tools/handlers/video';
@@ -118,6 +119,7 @@ const ALL: AnyToolHandler[] = [
   ...parallel_handlers,
   // ─── recording ─────────────────────────────────────────────────────────
   ...record_handlers,
+  ...records_handlers,
   // ─── tab video recording (TASK-003) ───────────────────────────────────
   ...video_handlers,
   // ─── demos (record & replay) ───────────────────────────────────────────

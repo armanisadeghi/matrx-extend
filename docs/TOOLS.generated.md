@@ -7,8 +7,8 @@
 > common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-09-17T07:16:57.360Z
-Total tools: 81
+Generated: 2026-09-19T01:07:50.508Z
+Total tools: 82
 
 ## ai
 
@@ -649,6 +649,16 @@ _read_
 Extract text and structure from a PDF — either one loaded in a browser tab, or one already in cld_files (pass file_id). Returns text by page with optional page range. Use file_id when you have a MediaRef in hand (e.g. from a prior download); use tab_id when the PDF is open in the browser.
 
 **Parameters:** `file_id` (string); `max_chars` (integer); `page_end` (integer); `page_start` (integer); `tab_id` (string)
+
+## records
+
+### `records`
+
+_action_
+
+Read and write this organization's custom records. One tool, eight actions: table_list (what tables exist), metadata_search (search structure, not rows), record_read (one record with its field versions), record_aggregate (count/sum/bucket inside the query), record_write (create or patch), record_delete (soft delete, undo=true restores), field_propose (propose a new field), table_propose (propose a new table). Every call runs under your own authority — it can read and change exactly what you could, and values you are not cleared to see come back masked and named rather than dropped.
+
+**Parameters:** `action` (string, required) = ["table_list","metadata_search","record_read","record_aggregate","record_write","record_delete","field_propose","table_propose"]; `context_policy` (string); `description` (string); `expected_version` (integer); `field_key` (string); `field_type` (string); `group_by` (string); `id_keyed` (boolean); `label` (string); `limit` (integer); `measure` (string); `name` (string); `query` (string); `record_id` (string); `sensitivity` (string); `spec` (object); `table_id` (string); `undo` (boolean); `values` (object)
 
 ## tabs
 
