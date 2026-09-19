@@ -9,11 +9,10 @@ const native = {
   }),
   send: vi.fn(),
 };
+const debugLog = { info: vi.fn(), warn: vi.fn(), error: vi.fn(), success: vi.fn() };
 
 vi.mock('@/lib/messaging/native', () => native);
-vi.mock('@/lib/debug/log', () => ({
-  log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), success: vi.fn() },
-}));
+vi.mock('@/lib/debug/log', () => ({ log: debugLog }));
 vi.mock('@/lib/stream/offscreen-proxy', () => ({ ensureOffscreen: vi.fn() }));
 vi.mock('@/lib/desktop/discovery', () => ({ getEngineBaseUrl: vi.fn() }));
 vi.mock('@/lib/desktop/http', () => ({ ensurePairToken: vi.fn() }));
@@ -22,6 +21,7 @@ let chromeMessageListener: ((message: unknown) => boolean) | undefined;
 
 function installChrome(): void {
   chromeMessageListener = undefined;
+  vi.stubGlobal('crypto', { randomUUID: () => 'current-background-boot' });
   vi.stubGlobal('chrome', {
     runtime: {
       onMessage: {
@@ -86,6 +86,7 @@ describe('private local-browser socket epochs', () => {
     native.broadcast.mockReset();
     native.on.mockClear();
     native.send.mockReset();
+    debugLog.error.mockReset();
     vi.resetModules();
     vi.unstubAllGlobals();
   });
@@ -94,8 +95,10 @@ describe('private local-browser socket epochs', () => {
     installChrome();
     const ws = await import('@/lib/desktop/ws-client');
     const frames: unknown[] = [];
+    const genericFrames: unknown[] = [];
     const invalidations: Array<string | null> = [];
     ws.onLocalBrowserLifecycle((payload) => frames.push(payload));
+    ws.onWsMessage((payload) => genericFrames.push(payload));
     ws.onLocalBrowserEpochInvalidated((epoch) => invalidations.push(epoch));
 
     wsMessage({
@@ -106,7 +109,15 @@ describe('private local-browser socket epochs', () => {
     expect(frames).toEqual([]);
 
     const handshake = handlers.get('ws:epoch-handshake');
-    expect(handshake?.({ socketEpoch: 'epoch-1', backgroundBootId: 'boot-1' })).toEqual({
+    expect(
+      handshake?.({ socketEpoch: 'stale', backgroundBootId: 'prior-background-boot' }),
+    ).toEqual({
+      ok: false,
+    });
+    expect(ws.getLocalBrowserSocketEpoch()).toBeNull();
+    expect(
+      handshake?.({ socketEpoch: 'epoch-1', backgroundBootId: 'current-background-boot' }),
+    ).toEqual({
       ok: true,
       socketEpoch: 'epoch-1',
     });
@@ -117,6 +128,29 @@ describe('private local-browser socket epochs', () => {
       payload: { type: 'local_browser.register_required' },
     });
     expect(frames).toEqual([{ type: 'local_browser.register_required' }]);
+    wsMessage({
+      __matrxLocalBrowserLifecycle: true,
+      socketEpoch: 'stale',
+      payload: { type: 'local_browser.result' },
+    });
+    expect(frames).toHaveLength(1);
+    expect(genericFrames).toEqual([]);
+    ws.onLocalBrowserLifecycle(() => {
+      throw new Error('vault-grant-sentinel');
+    });
+    wsMessage({
+      __matrxLocalBrowserLifecycle: true,
+      socketEpoch: 'epoch-1',
+      payload: { type: 'local_browser.result' },
+    });
+    expect(JSON.stringify(debugLog.error.mock.calls)).not.toContain('vault-grant-sentinel');
+    chromeMessageListener?.({
+      __matrx: true,
+      kind: 'ws:state',
+      payload: { state: 'closed', socketEpoch: 'epoch-1' },
+    });
+    expect(ws.getLocalBrowserSocketEpoch()).toBeNull();
+    expect(invalidations).toEqual(['epoch-1', null]);
   });
 
   it('rejects a replaced socket epoch in both inbound and reverse directions', async () => {
@@ -125,8 +159,14 @@ describe('private local-browser socket epochs', () => {
     const frames: unknown[] = [];
     ws.onLocalBrowserLifecycle((payload) => frames.push(payload));
     const handshake = handlers.get('ws:epoch-handshake');
-    handshake?.({ socketEpoch: 'epoch-1', backgroundBootId: 'boot-1' });
-    handshake?.({ socketEpoch: 'epoch-2', backgroundBootId: 'boot-1' });
+    handshake?.({ socketEpoch: 'epoch-1', backgroundBootId: 'current-background-boot' });
+    handshake?.({ socketEpoch: 'epoch-2', backgroundBootId: 'current-background-boot' });
+    chromeMessageListener?.({
+      __matrx: true,
+      kind: 'ws:state',
+      payload: { state: 'closed', socketEpoch: 'epoch-1' },
+    });
+    expect(ws.getLocalBrowserSocketEpoch()).toBe('epoch-2');
 
     wsMessage({
       __matrxLocalBrowserLifecycle: true,
@@ -182,12 +222,6 @@ describe('private local-browser socket epochs', () => {
     FakeWebSocket.instances[0]?.open();
     await Promise.resolve();
     expect(FakeWebSocket.instances[0]?.sent).toEqual([]);
-    releaseFirstHandshake?.({ ok: true, socketEpoch: firstEpoch ?? '' });
-    await firstOpen;
-    expect(FakeWebSocket.instances[0]?.sent).toContain(
-      JSON.stringify({ type: 'local_browser.ready', version: 1 }),
-    );
-
     const secondOpen = start?.({
       wsUrl: 'ws://example.test',
       backgroundBootId: 'boot-2',
@@ -198,6 +232,8 @@ describe('private local-browser socket epochs', () => {
     expect(FakeWebSocket.instances[1]?.sent).toContain(
       JSON.stringify({ type: 'local_browser.ready', version: 1 }),
     );
+    releaseFirstHandshake?.({ ok: true, socketEpoch: firstEpoch ?? '' });
+    await firstOpen;
 
     FakeWebSocket.instances[1]?.message(JSON.stringify({ type: 'pong', timestamp: 1 }));
     expect(native.broadcast).toHaveBeenCalledWith('ws:message', { type: 'pong', timestamp: 1 });

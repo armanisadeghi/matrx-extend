@@ -45,6 +45,7 @@ export type WsState = 'open' | 'closed' | 'unknown';
 
 interface WsStateMessage {
   state: WsState;
+  socketEpoch?: string;
 }
 
 interface LocalBrowserForward {
@@ -77,6 +78,17 @@ let activeLocalBrowserSocketEpoch: string | null = null;
 // worker restart. Supplying this boot id on WS_START makes it reconnect and
 // perform a fresh epoch handshake.
 const backgroundBootId = crypto.randomUUID();
+
+function retireLocalBrowserEpoch(expectedSocketEpoch: string | null): void {
+  if (
+    activeLocalBrowserSocketEpoch === null ||
+    activeLocalBrowserSocketEpoch !== expectedSocketEpoch
+  ) {
+    return;
+  }
+  for (const invalidate of localBrowserEpochInvalidators) invalidate(null);
+  activeLocalBrowserSocketEpoch = null;
+}
 
 // ─── Public API ─────────────────────────────────────────────────────────────
 
@@ -179,6 +191,7 @@ export async function connectWs(): Promise<WsControlResult> {
  */
 export async function disconnectWs(): Promise<WsControlResult> {
   try {
+    retireLocalBrowserEpoch(activeLocalBrowserSocketEpoch);
     await send<unknown, { ok: boolean }>(CHANNELS.WS_STOP, {});
     log.info('desktop', 'ws disconnectWs requested');
     lastKnownState = 'closed';
@@ -281,7 +294,12 @@ function installRouterIfNeeded(): void {
   on<WsEpochHandshake, { ok: boolean; socketEpoch?: string }>(
     CHANNELS.WS_EPOCH_HANDSHAKE,
     (handshake) => {
-      if (!handshake || typeof handshake.socketEpoch !== 'string' || !handshake.socketEpoch) {
+      if (
+        !handshake ||
+        typeof handshake.socketEpoch !== 'string' ||
+        !handshake.socketEpoch ||
+        handshake.backgroundBootId !== backgroundBootId
+      ) {
         return { ok: false };
       }
       if (handshake.socketEpoch !== activeLocalBrowserSocketEpoch) {
@@ -312,21 +330,28 @@ function installRouterIfNeeded(): void {
           lastStateChangeAt = Date.now();
         }
         lastKnownState = next;
+        if (next === 'closed' && typeof (m.payload as WsStateMessage)?.socketEpoch === 'string') {
+          retireLocalBrowserEpoch((m.payload as WsStateMessage).socketEpoch ?? null);
+        }
       }
       return false;
     }
     if (m.kind === CHANNELS.WS_MESSAGE) {
       const local = m.payload as Partial<LocalBrowserForward> | null;
-      if (
-        local?.__matrxLocalBrowserLifecycle === true &&
-        typeof local.socketEpoch === 'string' &&
-        local.socketEpoch === activeLocalBrowserSocketEpoch
-      ) {
+      if (local?.__matrxLocalBrowserLifecycle === true) {
+        if (
+          typeof local.socketEpoch !== 'string' ||
+          local.socketEpoch !== activeLocalBrowserSocketEpoch
+        ) {
+          return false;
+        }
         for (const h of localBrowserLifecycleHandlers) {
           try {
             h(local.payload, local.socketEpoch);
-          } catch (err) {
-            log.error('desktop', 'local-browser lifecycle handler threw', err);
+          } catch {
+            // Lifecycle frames can carry private grant material. Do not let a
+            // consumer's error text turn that material into a debug payload.
+            log.error('desktop', 'local-browser lifecycle handler threw');
           }
         }
         return false;

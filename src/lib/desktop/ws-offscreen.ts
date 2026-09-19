@@ -133,6 +133,7 @@ export function startWsOffscreenRuntime(): void {
       // MV3 may retain this document while replacing the service worker.
       // The old epoch and any lifecycle binding belong to that old worker.
       closeWebSocket('background restarted');
+      abandonConnectingAttempt();
     }
     if (state.ws && state.ws.readyState === WebSocket.OPEN) {
       return { ok: true };
@@ -189,6 +190,15 @@ export function startWsOffscreenRuntime(): void {
 // ─── WS lifecycle ───────────────────────────────────────────────────────────
 
 let connectingPromise: Promise<void> | null = null;
+let activeConnectingAttemptId: number | null = null;
+let nextConnectingAttemptId = 0;
+
+function abandonConnectingAttempt(): void {
+  // A new background boot owns a new connection attempt. The old promise may
+  // settle later, but must never prevent or clear the new attempt.
+  connectingPromise = null;
+  activeConnectingAttemptId = null;
+}
 
 function redactToken(url: string): string {
   return url.replace(/([?&])token=[^&]+/, '$1token=***');
@@ -196,7 +206,8 @@ function redactToken(url: string): string {
 
 async function openWebSocket(): Promise<void> {
   if (connectingPromise) return connectingPromise;
-  connectingPromise = (async () => {
+  const attemptId = ++nextConnectingAttemptId;
+  const attempt = (async () => {
     try {
       const wsUrl = state.wsUrl;
       if (!wsUrl) {
@@ -265,10 +276,15 @@ async function openWebSocket(): Promise<void> {
         });
       });
     } finally {
-      connectingPromise = null;
+      if (activeConnectingAttemptId === attemptId) {
+        connectingPromise = null;
+        activeConnectingAttemptId = null;
+      }
     }
   })();
-  return connectingPromise;
+  connectingPromise = attempt;
+  activeConnectingAttemptId = attemptId;
+  return attempt;
 }
 
 function wsCloseCodeHint(code: number): string | null {
@@ -304,6 +320,7 @@ function closeWebSocket(reason: string): void {
   cancelReconnect();
   if (state.ws) {
     const ws = state.ws;
+    const socketEpoch = state.acknowledgedEpoch;
     // Clear ownership before closing so a synchronous or late close event
     // from the retired socket cannot schedule a reconnect for its epoch.
     state.ws = null;
@@ -312,6 +329,12 @@ function closeWebSocket(reason: string): void {
     } catch {
       /* ignore */
     }
+    state.acknowledgedEpoch = null;
+    broadcast<{ state: 'closed'; socketEpoch?: string }>(CHANNELS.WS_STATE, {
+      state: 'closed',
+      ...(socketEpoch !== null && { socketEpoch }),
+    });
+    return;
   }
   state.acknowledgedEpoch = null;
   broadcast<{ state: 'closed' }>(CHANNELS.WS_STATE, { state: 'closed' });
@@ -320,9 +343,13 @@ function closeWebSocket(reason: string): void {
 function handleClose(code: number, reason: string): void {
   log.info('desktop-ws-offscreen', `ws close ${code} ${reason}`);
   stopHeartbeat();
+  const socketEpoch = state.acknowledgedEpoch;
   state.ws = null;
   state.acknowledgedEpoch = null;
-  broadcast<{ state: 'closed' }>(CHANNELS.WS_STATE, { state: 'closed' });
+  broadcast<{ state: 'closed'; socketEpoch?: string }>(CHANNELS.WS_STATE, {
+    state: 'closed',
+    ...(socketEpoch !== null && { socketEpoch }),
+  });
   if (state.stopped) return;
 
   // Schedule reconnect with exponential backoff.
