@@ -132,6 +132,13 @@ component, so all four must show identical rows in identical order.
 - **Expected:** The side panel names the sign-in failure instead of silently returning to guest state. **Try again** starts a new sign-in attempt, and a successful attempt clears the error.
 - **Covered by:** `tests/unit/auth-gate.test.tsx`, `tests/unit/use-auth-race.test.tsx`, and the PKCE/401 regressions under `tests/unit/auth-repro-*.test.ts`.
 
+### Vault password and passphrase generator
+- **What it does:** Generates a masked local value on explicit request and fills only the selected new-password/confirmation group after **Use**. It never submits or saves automatically.
+- **Where to test:** Vault in the genuine side panel, in an isolated admin-owned Chrome profile, with a disposable POST password-change page. Canonical organization generator limits must exist.
+- **Steps:** Expand **Password generator**; generate, reveal/hide, regenerate and use both a password and a passphrase. Test Copy separately and verify its clipboard disclosure. With permitted embedded forms, explicitly select a target group. Change options, collapse, press Escape, navigate, change account/organization and wait30seconds before reuse.
+- **Expected:** Values remain masked until Reveal; Regenerate produces a new value; Use fills only the intended new and confirmation fields and clears the panel value. Current-password/OTP fields and other frames remain unchanged; no submit occurs. Stale, replaced, unsafe-destination and expired targets refuse safely; context loss clears plaintext. Missing limits explain why generation is unavailable.
+- **Covered by:** Focused generator engine, DOM, host, limits, component and generated-field redaction tests. The opt-in generator branch of `tests/browser/vault-realbrowser-acceptance.cjs` exercises genuine side-panel transport and controls against a declared frozen artifact; an unexecuted or failed run is not browser acceptance. Clipboard, keyboard and distributed/browser coverage are tracked separately in the campaign register.
+
 ### Inline saved-login suggestions
 - **What it does:** On an eligible top-frame sign-in field, shows a Matrx control; choosing an account fills available login fields without submitting.
 - **Where to test:** An admin-owned disposable login page with the installed extension.

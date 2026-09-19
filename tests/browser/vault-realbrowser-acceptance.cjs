@@ -41,6 +41,8 @@ const localCanonicalCleanupArmed = process.env.MATRX_VAULT_CANARY_LOCAL_CANONICA
 // fresh extension can authenticate and establish its tenant context without
 // making a Vault mutation; it is not a Save/Update acceptance result.
 const readOnlyAdmissionMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
+const generatorTransportMode = process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
+assert(!generatorTransportMode || readOnlyAdmissionMode, 'generator_requires_mutation_free_admission');
 const LOCAL_CLEANUP_MAX_BASELINE_IDS = 64;
 const LOCAL_CLEANUP_MAX_CREATED_IDS = 5;
 const LOCAL_CLEANUP_INPUT_MAX_BYTES = 32768;
@@ -110,6 +112,21 @@ function persist() {
 function checkpoint(phase) {
   proof.phase = phase;
   persist();
+}
+async function generatorSessionLocked() {
+  if (process.platform !== 'darwin') return false;
+  // This value can include account/session metadata. Keep it bounded in
+  // process memory, derive only the lock bit, and never persist or print it.
+  let stdout;
+  try {
+    ({ stdout } = await execFileAsync('/usr/sbin/ioreg', ['-l', '-w', '0', '-d', '1', '-n', 'IOConsoleUsers'], { timeout: 5000, maxBuffer: 128 * 1024 }));
+  } catch {
+    throw new Error('generator_focus_session_state_unavailable');
+  }
+  const hasSessionContainer = /"IOConsoleUsers"\s*=\s*\(\{/.test(stdout);
+  const lockValues = [...stdout.matchAll(/CGSSessionScreenIsLocked"=(Yes|No)/g)].map((match) => match[1]);
+  assert(hasSessionContainer && lockValues.length > 0 && lockValues.every((value) => value === lockValues[0]), 'generator_focus_session_state_unavailable');
+  return lockValues[0] === 'Yes';
 }
 async function refuseUnreconciledPriorRun() {
   const entries = await fs.readdir(stateRoot, { withFileTypes: true }).catch((error) =>
@@ -473,7 +490,7 @@ async function openGenuineSidePanel(extensionId, popup) {
   assert(target?.type === 'page', 'real_side_panel_target_missing');
   const panel = await attachPanelSession(cdp, target.targetId);
   const evaluate = async (expression) => {
-    const result = await panel.send('Runtime.evaluate', { expression, returnByValue: true });
+    const result = await panel.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
     assert(!result.exceptionDetails, 'real_side_panel_eval_refused');
     return result.result.value;
   };
@@ -630,6 +647,21 @@ async function authenticate(extension) {
   persist();
   assert(!(await hasPendingCapture()), 'admin_password_pending_before_writes');
 }
+async function focusOwnedBrowser() {
+  if (process.platform !== 'darwin') return;
+  const { stdout } = await execFileAsync('ps', ['-axo', 'pid=,command='], { timeout: 5000, maxBuffer: 4 * 1024 * 1024 });
+  const matches = stdout.split('\n').filter((line) => line.includes(`--user-data-dir=${profile}`) && !line.includes('--type='));
+  assert(matches.length === 1, 'owned_browser_process_not_unique');
+  const pid = Number(matches[0].trim().split(/\s+/, 1)[0]);
+  assert(Number.isSafeInteger(pid) && pid > 1, 'owned_browser_process_missing');
+  await execFileAsync('osascript', ['-e', `tell application "System Events" to set frontmost of (first process whose unix id is ${pid}) to true`], { timeout: 5000 });
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const { stdout } = await execFileAsync('osascript', ['-l', 'JavaScript', '-e', `ObjC.import('AppKit'); Number($.NSWorkspace.sharedWorkspace.frontmostApplication.processIdentifier)`], { timeout: 5000, maxBuffer: 1024 });
+    if (Number(stdout.trim()) === pid) return;
+    await wait(100);
+  }
+  throw new Error('owned_browser_not_frontmost');
+}
 async function verifyRealVaultPanel() {
   assert(realPanel, 'real_side_panel_unavailable');
   const vaultControl = 'document.querySelector(`[title="Vault"]`)';
@@ -715,7 +747,20 @@ async function materializedPassword(id) {
 (async () => {
   let failure;
   let artifactAdmitted = false;
+  // Generator mode starts non-durable and becomes durable only after a
+  // successful unlocked-session probe, before any artifact/browser/auth work.
+  let generatorFocusPreflightRefused = generatorTransportMode;
   try {
+    // This must precede artifact admission and persistence. A locked desktop
+    // cannot produce compositor focus, so recording it as an acceptance run
+    // would create a false durable cleanup obligation without any browser or
+    // credential activity.
+    if (generatorTransportMode) {
+      const sessionLocked = await generatorSessionLocked();
+      proof.generatorFocusPreflight = { screenLocked: sessionLocked };
+      if (sessionLocked) throw new Error('generator_session_locked');
+      generatorFocusPreflightRefused = false;
+    }
     await refuseUnreconciledPriorRun();
     const extension = await verifyArtifact();
     // An invalid/tampered artifact is rejected before a durable run record,
@@ -737,6 +782,10 @@ async function materializedPassword(id) {
         && createKeys.size === 0 && createdIds.size === 0;
       assert(proof.admission.noFixtureWrites, 'admission_fixture_write_refused');
       persist();
+      if (generatorTransportMode) {
+        proof.generatorHarnessSha256 = await sha256(path.join(__dirname, 'vault-generator-acceptance.cjs'));
+        await require('./vault-generator-acceptance.cjs').runGeneratorChecks({ context, worker, panel: realPanel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath: path.join(root, 'generator-masked.png') });
+      }
     } else {
       local = await startLocalSite();
       localUrl = local.url;
@@ -921,8 +970,10 @@ async function materializedPassword(id) {
     }
     const succeeded = readOnlyAdmissionMode ? proof.admission.ok : proof.ok;
     // Persist outside the disposable profile only as a value-free, caller-chosen path.
-    persist();
-    if (process.env.MATRX_VAULT_CANARY_PROOF) await fs.writeFile(process.env.MATRX_VAULT_CANARY_PROOF, `${JSON.stringify(proof, null, 2)}\n`, { mode: 0o600 });
+    if (!generatorFocusPreflightRefused) {
+      persist();
+      if (process.env.MATRX_VAULT_CANARY_PROOF) await fs.writeFile(process.env.MATRX_VAULT_CANARY_PROOF, `${JSON.stringify(proof, null, 2)}\n`, { mode: 0o600 });
+    }
     if (!succeeded) process.stderr.write(`Acceptance refused: ${proof.failureCode || 'cleanup'}\n`);
     else if (readOnlyAdmissionMode) process.stdout.write('PASS: read-only extension Vault admission and mutation-free Vault cleanup\n');
     else process.stdout.write('PASS: real extension Vault Save/Update acceptance and receipt-backed cleanup\n');
