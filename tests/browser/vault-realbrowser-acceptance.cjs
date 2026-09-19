@@ -96,7 +96,6 @@ let organizationId;
 let local;
 let localUrl;
 let website;
-let sidepanel;
 let realPanel;
 const createKeys = new Set();
 const createdIds = new Set();
@@ -435,15 +434,23 @@ async function attachPanelSession(cdp, targetId) {
     const waiter = pending.get(envelope.id);
     if (!waiter) return;
     pending.delete(envelope.id);
-    envelope.error ? waiter.reject(new Error(envelope.error.message)) : waiter.resolve(envelope.result);
+    clearTimeout(waiter.timer);
+    envelope.error ? waiter.reject(new Error('panel_protocol_refused')) : waiter.resolve(envelope.result);
   };
   cdp.on('Target.receivedMessageFromTarget', onMessage);
   return {
+    dispose() {
+      cdp.off('Target.receivedMessageFromTarget', onMessage);
+      for (const waiter of pending.values()) { clearTimeout(waiter.timer); waiter.reject(new Error('panel_session_closed')); }
+      pending.clear();
+    },
     send(method, params = {}) {
       return new Promise((resolve, reject) => {
         const id = ++nextId;
-        pending.set(id, { resolve, reject });
-        cdp.send('Target.sendMessageToTarget', { sessionId, message: JSON.stringify({ id, method, params }) }).catch(reject);
+        const fail = () => { clearTimeout(pending.get(id)?.timer); pending.delete(id); reject(new Error('panel_protocol_refused')); };
+        const timer = setTimeout(fail, 10000);
+        pending.set(id, { resolve, reject, timer });
+        cdp.send('Target.sendMessageToTarget', { sessionId, message: JSON.stringify({ id, method, params }) }).catch(fail);
       });
     },
   };
@@ -482,7 +489,30 @@ async function openGenuineSidePanel(extensionId, popup) {
     await panel.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: box.x, y: box.y, button: 'left', clickCount: 1 });
     await panel.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: box.x, y: box.y, button: 'left', clickCount: 1 });
   };
-  return { evaluate, click };
+  const waitFor = async (expression, expected = true, timeout = 15000) => {
+    const deadline = Date.now() + timeout;
+    do { if ((await evaluate(expression)) === expected) return; await wait(100); } while (Date.now() < deadline);
+    throw new Error('panel_condition_timeout');
+  };
+  const fill = async (expression, value) => {
+    await click(expression);
+    assert(await evaluate(`document.activeElement === (${expression})`), 'panel_input_not_focused');
+    const modifiers = process.platform === 'darwin' ? 4 : 2;
+    await panel.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'a', code: 'KeyA', modifiers, windowsVirtualKeyCode: 65 });
+    await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'a', code: 'KeyA', modifiers, windowsVirtualKeyCode: 65 });
+    await panel.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Backspace', code: 'Backspace', windowsVirtualKeyCode: 8 });
+    await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Backspace', code: 'Backspace', windowsVirtualKeyCode: 8 });
+    await panel.send('Input.insertText', { text: value });
+    await waitFor(`(${expression})?.value === ${JSON.stringify(value)}`);
+  };
+  const screenshot = async (expression, destination) => {
+    const clip = await evaluate(`(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest' }); const r = element.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.x >= 0 && r.y >= 0 && r.right <= innerWidth && r.bottom <= innerHeight ? { x: r.x, y: r.y, width: r.width, height: r.height, scale: 1 } : null; })()`);
+    assert(clip, 'panel_screenshot_not_visible');
+    const captured = await panel.send('Page.captureScreenshot', { format: 'png', clip });
+    assert(typeof captured.data === 'string', 'panel_screenshot_refused');
+    await fs.writeFile(destination, Buffer.from(captured.data, 'base64'), { mode: 0o600 });
+  };
+  return { evaluate, click, waitFor, fill, screenshot, dispose: panel.dispose };
 }
 async function chooseAuthorizedOrganization(extensionId) {
   const settingsPage = await context.newPage();
@@ -530,6 +560,17 @@ async function authenticate(extension) {
   // missing idempotency header is evidence, not a reason to omit the request.
   context.on('request', (request) => {
     journalVaultMutationRequest(request.url(), request.method(), request.headers());
+  });
+  context.on('response', (response) => {
+    const url = new URL(response.url());
+    if (url.origin !== API || !url.pathname.startsWith('/api/vault/')) return;
+    // Only fixed route classes/statuses: never response bodies, IDs or values.
+    const route = url.pathname.endsWith('/matches') ? 'matches'
+      : /\/fields\/[^/]+$/.test(url.pathname) ? 'field'
+      : /\/items\/[^/]+$/.test(url.pathname) ? 'item'
+      : url.pathname.endsWith('/items') ? 'items' : 'other';
+    (proof.apiResponses ||= []).push({ route, method: response.request().method(), status: response.status(), phase: proof.phase });
+    persist();
   });
   // Persist the zeroed journal before OAuth so an interruption still shows
   // whether the run had admitted any Vault POST before authentication.
@@ -632,16 +673,34 @@ async function prompt(page) {
   await host.waitFor({ state: 'visible', timeout: 15000 });
   return host;
 }
+const captureHeading = 'Array.from(document.querySelectorAll("p")).find((element) => element.textContent.trim() === "Save this login to your Vault?")';
+const captureCard = `(${captureHeading})?.parentElement?.parentElement?.parentElement`;
+const updateButtons = `Array.from((${captureCard})?.querySelectorAll('button') || []).filter((element) => /^Update/.test(element.textContent.trim()))`;
+function uniqueCaptureButton(name, prefix = false) {
+  return `(() => { const matches = Array.from((${captureCard})?.querySelectorAll('button') || []).filter((element) => { const text = element.textContent.trim().replace(/\\s+/g, ' '); return ${prefix ? `text.startsWith('Update') && text.includes(${JSON.stringify(name)})` : `text === ${JSON.stringify(name)}`}; }); return matches.length === 1 ? matches[0] : null; })()`;
+}
 async function pendingCard() {
-  const card = sidepanel.getByText('Save this login to your Vault?', { exact: true });
   try {
-    await card.waitFor({ state: 'visible', timeout: 15000 });
+    await realPanel.waitFor(`!!(${captureHeading}) && (${captureHeading}).getBoundingClientRect().height > 0`);
   } catch {
     proof.captureDiagnostics = { candidatePresent: await hasPendingCapture() };
     persist();
     throw new Error('pending_capture_card_not_visible');
   }
-  return sidepanel;
+}
+async function waitForCaptureDecision() {
+  try {
+    await realPanel.waitFor(`!!(${captureHeading})`, false, 10000);
+  } catch {
+    proof.decisionDiagnostics = await realPanel.evaluate(`({
+      cardPresent: !!(${captureCard}),
+      busy: Array.from((${captureCard})?.querySelectorAll('button') || []).some((button) => button.disabled),
+      vaultError: document.body.innerText.includes('The Vault could not save that. Try again from the Vault tab.'),
+      noAnswer: document.body.innerText.includes('Matrx did not answer. Try again.')
+    })`);
+    persist();
+    throw new Error('capture_decision_not_completed');
+  }
 }
 async function materializedPassword(id) {
   const response = await api(`${API}/api/vault/browser-login/${encodeURIComponent(id)}/materialize`, {
@@ -708,33 +767,39 @@ async function materializedPassword(id) {
     assert(sealedFieldBefore?.id, 'fixture_sealed_field_missing');
     checkpoint('open_vault');
     website = await context.newPage();
-    sidepanel = await context.newPage();
-    await sidepanel.goto(`chrome-extension://${proof.extensionId}/sidepanel.html`);
-    await sidepanel.getByTitle('Vault', { exact: true }).click();
+    await verifyRealVaultPanel();
     await website.bringToFront();
     checkpoint('submit_login');
     await submitLogin(website, username, newPassword);
     assert((await website.locator('#matrx-login-capture-host').count()) === 0, 'quiet_default_overlay');
     checkpoint('await_capture');
-    const updatePrompt = await pendingCard();
-    assert((await updatePrompt.getByRole('button', { name: /^Update/ }).count()) >= 4, 'four_update_targets_not_reachable');
+    await pendingCard();
+    // The card can mount before the asynchronous matching response arrives.
+    // Require all four choices after bounded UI settlement, not its first render.
+    try {
+      await realPanel.waitFor(`${updateButtons}.length >= 4`);
+    } catch {
+      proof.captureDiagnostics = {
+        updateButtonCount: await realPanel.evaluate(`${updateButtons}.length`),
+        cardPresent: await realPanel.evaluate(`!!(${captureCard})`),
+      };
+      persist();
+      throw new Error('four_update_targets_not_reachable');
+    }
     assert((await website.locator('#matrx-login-capture-host').count()) === 0, 'quiet_delayed_overlay');
     checkpoint('filter_update_target');
-    const search = updatePrompt.getByRole('textbox', { name: 'Search saved logins to update' });
-    await search.fill(targetName);
-    const targetButton = updatePrompt.getByRole('button', { name: new RegExp(`Update.*${targetName}`, 'i') });
-    await targetButton.waitFor({ state: 'visible', timeout: 5000 });
-    assert((await updatePrompt.getByRole('button', { name: /^Update/ }).count()) === 1, 'search_target_not_unique');
-    const cardSurface = sidepanel.getByText('Save this login to your Vault?', { exact: true }).locator('xpath=../../..');
+    await realPanel.fill(`document.querySelector('[aria-label="Search saved logins to update"]')`, targetName);
+    const targetButton = uniqueCaptureButton(targetName, true);
+    await realPanel.waitFor(`!!(${targetButton}) && ${updateButtons}.length === 1`);
     const cardScreenshot = path.join(root, 'synthetic-update-choices.png');
     checkpoint('capture_screenshot');
-    await cardSurface.screenshot({ path: cardScreenshot });
+    await realPanel.screenshot(captureCard, cardScreenshot);
     proof.choiceScreenshot = { path: 'synthetic-update-choices.png', sha256: await sha256(cardScreenshot) };
 
     const submitsBeforeUpdateChoice = local.state.submits;
     checkpoint('update_decision');
-    await targetButton.click();
-    await updatePrompt.getByText('Save this login to your Vault?', { exact: true }).waitFor({ state: 'detached', timeout: 10000 });
+    await realPanel.click(targetButton);
+    await waitForCaptureDecision();
     assert(local.state.submits === submitsBeforeUpdateChoice, 'update_choice_submitted_site');
     checkpoint('verify_update');
     const targetAfter = await item(targetId);
@@ -751,10 +816,10 @@ async function materializedPassword(id) {
     checkpoint('save_as_new');
     const beforeSave = new Set((await items()).map((entry) => entry.id));
     await submitLogin(website, `save-${suffix}@example.invalid`, `save-${crypto.randomUUID()}`);
-    const savePrompt = await pendingCard();
+    await pendingCard();
     const submitsBeforeSaveChoice = local.state.submits;
-    await savePrompt.getByRole('button', { name: 'Save as new', exact: true }).click();
-    await savePrompt.getByText('Save this login to your Vault?', { exact: true }).waitFor({ state: 'detached', timeout: 10000 });
+    await realPanel.click(uniqueCaptureButton('Save as new'));
+    await waitForCaptureDecision();
     assert(local.state.submits === submitsBeforeSaveChoice, 'save_choice_submitted_site');
     const afterSave = await items();
     const delta = afterSave.filter((entry) => !beforeSave.has(entry.id));
@@ -771,6 +836,7 @@ async function materializedPassword(id) {
     proof.failurePhase = proof.phase;
     proof.failureType = /^[A-Za-z]+$/.test(error?.name || '') ? error.name : 'Error';
     proof.failureCode = String(error?.message || 'canary_failure').match(/^[a-z0-9_]{1,100}$/)?.[0] || 'canary_failure';
+    if (artifactAdmitted) persist();
   } finally {
     try {
       if (website && !website.isClosed()) {
@@ -823,6 +889,7 @@ async function materializedPassword(id) {
         proof.cleanup.localAuthLogoutFailure = true;
       }
     }
+    realPanel?.dispose();
     try { if (context) await context.close(); proof.cleanup.browserClosed = true; } catch { proof.cleanup.browserClosed = false; }
     try { if (local) await new Promise((resolve) => local.server.close(resolve)); } catch {}
     await fs.rm(profile, { recursive: true, force: true });
