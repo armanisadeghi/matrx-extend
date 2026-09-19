@@ -5,13 +5,17 @@ const state = vi.hoisted(() => ({
   org: '00000000-0000-4000-8000-000000000002',
   user: '00000000-0000-4000-8000-000000000001',
   verificationHook: null as null | (() => Promise<void>),
+  tokenReadHook: null as null | (() => void),
 }));
 const token = (session: string): string => `x.${btoa(JSON.stringify({ session_id: session }))}.y`;
 state.token = token('session-a');
 
 vi.mock('@/config/backend', () => ({ getBackendUrl: async () => 'https://private.example' }));
 vi.mock('@/lib/auth/flow', () => ({
-  getAccessToken: async () => state.token,
+  getAccessToken: async () => {
+    state.tokenReadHook?.();
+    return state.token;
+  },
   getVerifiedCurrentUser: async () => {
     await state.verificationHook?.();
     return { id: state.user };
@@ -38,6 +42,35 @@ const stopId = '00000000-0000-4000-8000-000000000004';
 const noStore = { headers: { 'cache-control': 'no-store' } };
 
 describe('private lifecycle transport', () => {
+  it('does not dispatch when the deadline passes during the final identity await', async () => {
+    const now = vi.spyOn(Date, 'now').mockReturnValue(100_000);
+    let reads = 0;
+    state.tokenReadHook = () => {
+      reads += 1;
+      if (reads === 4) now.mockReturnValue(120_000);
+    };
+    const fetchMock = vi.fn(
+      async () => new Response('{"status":"accepted","challenge_id":"c"}', noStore),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    try {
+      await expect(
+        privatePost({
+          path: '/browser-manager/local/verify',
+          body: {},
+          expectedActor,
+          deadlineMs: 110_000,
+          schema,
+        }),
+      ).resolves.toEqual({ ok: false, error: 'deadline_exceeded' });
+      expect(reads).toBeGreaterThanOrEqual(4);
+      expect(fetchMock).not.toHaveBeenCalled();
+    } finally {
+      state.tokenReadHook = null;
+      now.mockRestore();
+    }
+  });
+
   it('resolves a verified private actor without exposing the bearer', async () => {
     await expect(getPrivateExpectedActor()).resolves.toEqual({ ok: true, data: expectedActor });
   });

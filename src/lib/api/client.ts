@@ -587,6 +587,7 @@ export async function privatePost<T>(opts: PrivatePostOptions<T>): Promise<Priva
   } catch {
     return privateFailure(timeout.aborted ? 'deadline_exceeded' : 'identity_changed');
   }
+  if (timeout.aborted || Date.now() >= deadline) return privateFailure('deadline_exceeded');
   let response: Response;
   try {
     response = await bounded(
