@@ -117,9 +117,11 @@ if (await btn.count()) {
   await btn.click();
   await web.waitForTimeout(6000);
   await web.screenshot({ path: join(SHOTS, 'web-after-press.png') });
-  const toast = await web.evaluate(() => document.body.innerText);
-  const line = toast.split('\n').find((l) => /reading|Matrx icon|workspace|not installed/i.test(l));
-  console.log('TOAST/RESULT:', line ?? '(none found)');
+  const toastText = await web.evaluate(() => {
+    const el = document.querySelector('[data-sonner-toast]') || document.querySelector('[role="status"]');
+    return el ? el.textContent : null;
+  });
+  console.log('TOAST:', JSON.stringify(toastText));
 }
 
 await panel.reload();
@@ -129,5 +131,19 @@ console.log('AFTER facebook listed?', /facebook/i.test(after));
 console.log('AFTER still on the seeded wrong workspace?', after.includes('ZZZ G2'));
 const stored = await panel.evaluate(async () => (await chrome.storage.local.get('matrx.org.active'))['matrx.org.active']);
 console.log('extension active org now:', JSON.stringify(stored));
+
+// The definitive answer to "does the panel actually open?" — ask the bridge
+// directly and print what it reports, rather than inferring it from a toast.
+const probe = await web.evaluate(async (extensionId) => {
+  return await new Promise((resolve) => {
+    chrome.runtime.sendMessage(
+      extensionId,
+      { channel: 'FRONTEND_RPC', action: 'captureHandoff.pickUp', requestId: crypto.randomUUID(),
+        payload: { organizationId: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f' } },
+      (r) => resolve(chrome.runtime.lastError ? { lastError: chrome.runtime.lastError.message } : r),
+    );
+  });
+}, extId);
+console.log('PICKUP RPC RESULT:', JSON.stringify(probe));
 
 await ctx.close();
