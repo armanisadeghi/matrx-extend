@@ -19,6 +19,7 @@ import type {
   CapturePromptMeta,
   CaptureUnavailableReason,
 } from './capture-types';
+import { filterCaptureUpdateTargets } from './capture-update-targets';
 
 const HOST_ID = 'matrx-login-capture-host';
 /** Leave the toast alone after this long — the side-panel card still offers it. */
@@ -158,6 +159,7 @@ export function showCapturePrompt(meta: CapturePromptMeta): void {
     status.textContent = pendingCopy;
     for (const b of Array.from(actions.querySelectorAll('button'))) b.disabled = true;
     const result = await decide(decision);
+    if (current?.candidateId !== decision.candidateId) return;
     status.textContent = result.message;
     if (result.ok || result.status === 'expired') {
       window.setTimeout(dismissCapturePrompt, 1800);
@@ -168,19 +170,46 @@ export function showCapturePrompt(meta: CapturePromptMeta): void {
   };
 
   if (meta.existing.length > 0) {
-    // One existing login → "Update <name>"; several → one button each.
-    for (const item of meta.existing.slice(0, 3)) {
-      const b = el('button', BTN_PRIMARY, `Update ${item.display_name}`);
-      b.addEventListener(
-        'click',
-        () =>
-          void finish(
-            { candidateId: meta.candidateId, action: 'update', itemId: item.item_id },
-            'Updating…',
-          ),
+    const targetList = el(
+      'div',
+      'display:flex;flex-direction:column;gap:6px;max-height:128px;overflow-y:auto;padding-right:2px;width:100%;',
+    );
+    const renderTargets = (query = '') => {
+      targetList.replaceChildren();
+      const targets = filterCaptureUpdateTargets(meta.existing, query);
+      if (targets.length === 0) {
+        targetList.appendChild(el('div', 'color:#555;font-size:12px;', 'No saved logins match.'));
+        return;
+      }
+      for (const item of targets) {
+        const label = item.username
+          ? `Update ${item.display_name} · ${item.username}`
+          : `Update ${item.display_name}`;
+        const b = el('button', BTN_PRIMARY, label);
+        b.addEventListener(
+          'click',
+          () =>
+            void finish(
+              { candidateId: meta.candidateId, action: 'update', itemId: item.item_id },
+              'Updating…',
+            ),
+        );
+        targetList.appendChild(b);
+      }
+    };
+    if (meta.existing.length > 1) {
+      const search = el(
+        'input',
+        'box-sizing:border-box;width:100%;padding:7px 10px;border-radius:6px;border:1px solid rgba(0,0,0,.2);font:12px system-ui,-apple-system,Segoe UI,sans-serif;',
       );
-      actions.appendChild(b);
+      search.type = 'search';
+      search.placeholder = 'Search saved logins';
+      search.setAttribute('aria-label', 'Search saved logins to update');
+      search.addEventListener('input', () => renderTargets(search.value));
+      actions.appendChild(search);
     }
+    renderTargets();
+    actions.appendChild(targetList);
     const asNew = el('button', BTN, 'Save as new');
     asNew.addEventListener(
       'click',

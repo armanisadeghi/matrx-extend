@@ -9,9 +9,11 @@
 export interface CaptureExistingLogin {
   item_id: string;
   display_name: string;
+  /** Metadata-only username, when the authorized match exposes one. */
+  username?: string | null;
 }
 
-/** What a tab / the side panel is told about a pending candidate. Value-free. */
+/** What a tab / the side panel is told about a pending candidate. Secret-free metadata only. */
 export interface CapturePromptMeta {
   candidateId: string;
   tabId: number;
