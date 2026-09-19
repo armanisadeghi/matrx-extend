@@ -187,6 +187,9 @@ export const CHANNELS = {
   WS_STATE: 'ws:state', // offscreen → SW: open / closed transitions
   WS_START: 'ws:start', // SW → offscreen: open the WS (idempotent)
   WS_STOP: 'ws:stop', // SW → offscreen: close the WS
+  // Private local-browser lifecycle fencing. These never cross the desktop
+  // socket unchanged: socket_epoch exists only between the SW and offscreen.
+  WS_EPOCH_HANDSHAKE: 'ws:epoch-handshake', // offscreen → SW: invalidate then acknowledge epoch
 
   // Agenda (SW → sidepanel)
   AGENDA_RUN_NOW: 'agenda:run-now', // SW alarm fired an auto task; sidepanel should switch + run

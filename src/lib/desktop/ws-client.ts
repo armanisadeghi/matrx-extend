@@ -35,7 +35,7 @@
 import { log } from '@/lib/debug/log';
 import { getEngineBaseUrl } from '@/lib/desktop/discovery';
 import { ensurePairToken } from '@/lib/desktop/http';
-import { broadcast, send } from '@/lib/messaging/native';
+import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { ensureOffscreen } from '@/lib/stream/offscreen-proxy';
 
@@ -45,6 +45,17 @@ export type WsState = 'open' | 'closed' | 'unknown';
 
 interface WsStateMessage {
   state: WsState;
+}
+
+interface LocalBrowserForward {
+  __matrxLocalBrowserLifecycle: true;
+  socketEpoch: string;
+  payload: unknown;
+}
+
+interface WsEpochHandshake {
+  socketEpoch: string;
+  backgroundBootId: string;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -58,7 +69,14 @@ function redactToken(url: string): string {
 let lastKnownState: WsState = 'unknown';
 let lastStateChangeAt: number | null = null;
 const messageHandlers = new Set<(payload: unknown) => void>();
+const localBrowserLifecycleHandlers = new Set<(payload: unknown, socketEpoch: string) => void>();
+const localBrowserEpochInvalidators = new Set<(nextSocketEpoch: string | null) => void>();
 let listenerInstalled = false;
+let activeLocalBrowserSocketEpoch: string | null = null;
+// A retained offscreen document must not keep a socket alive across a service
+// worker restart. Supplying this boot id on WS_START makes it reconnect and
+// perform a fresh epoch handshake.
+const backgroundBootId = crypto.randomUUID();
 
 // ─── Public API ─────────────────────────────────────────────────────────────
 
@@ -106,7 +124,7 @@ export async function connectWs(): Promise<WsControlResult> {
         stage: 'auth',
       };
     }
-    wsUrl = baseUrl.replace(/^http/, 'ws') + `/extension/ws?token=${encodeURIComponent(token)}`;
+    wsUrl = `${baseUrl.replace(/^http/, 'ws')}/extension/ws?token=${encodeURIComponent(token)}`;
   } catch (err) {
     const error = (err as Error).message;
     log.warn('desktop', 'ws connectWs discovery failed', error);
@@ -129,6 +147,7 @@ export async function connectWs(): Promise<WsControlResult> {
       {
         wsUrl: string;
         identity: { extensionId: string; version: string; name: string };
+        backgroundBootId: string;
       },
       { ok: boolean; error?: string }
     >(CHANNELS.WS_START, {
@@ -138,6 +157,7 @@ export async function connectWs(): Promise<WsControlResult> {
         version: manifest.version,
         name: manifest.name,
       },
+      backgroundBootId,
     });
     if (r && r.ok === false) {
       const error = r.error ?? 'unknown error';
@@ -185,6 +205,49 @@ export async function sendWs(payload: unknown): Promise<void> {
   await send<unknown, { ok: boolean; error?: string }>(CHANNELS.WS_SEND, payload);
 }
 
+/** Current private lifecycle epoch, if the offscreen socket acknowledged it. */
+export function getLocalBrowserSocketEpoch(): string | null {
+  return activeLocalBrowserSocketEpoch;
+}
+
+/**
+ * Send a local-browser lifecycle frame only over the exact acknowledged
+ * socket. A stale caller is refused locally; frames are never queued.
+ */
+export async function sendLocalBrowserLifecycle(
+  socketEpoch: string,
+  payload: unknown,
+): Promise<boolean> {
+  installRouterIfNeeded();
+  if (socketEpoch !== activeLocalBrowserSocketEpoch) return false;
+  const result = await send<LocalBrowserForward, { ok: boolean }>(CHANNELS.WS_SEND, {
+    __matrxLocalBrowserLifecycle: true,
+    socketEpoch,
+    payload,
+  });
+  return result?.ok === true && socketEpoch === activeLocalBrowserSocketEpoch;
+}
+
+/** Subscribe to private local-browser lifecycle frames for the current epoch. */
+export function onLocalBrowserLifecycle(
+  handler: (payload: unknown, socketEpoch: string) => void,
+): () => void {
+  installRouterIfNeeded();
+  localBrowserLifecycleHandlers.add(handler);
+  return () => localBrowserLifecycleHandlers.delete(handler);
+}
+
+/**
+ * Runs synchronously before an epoch is acknowledged. Consumers use this to
+ * clear private maps and waiters before any frame for the new epoch can flow.
+ */
+export function onLocalBrowserEpochInvalidated(
+  handler: (nextSocketEpoch: string | null) => void,
+): () => void {
+  localBrowserEpochInvalidators.add(handler);
+  return () => localBrowserEpochInvalidators.delete(handler);
+}
+
 /**
  * Subscribe to inbound WS frames. Returns an unsubscribe fn.
  *
@@ -215,6 +278,22 @@ function installRouterIfNeeded(): void {
   if (listenerInstalled) return;
   listenerInstalled = true;
 
+  on<WsEpochHandshake, { ok: boolean; socketEpoch?: string }>(
+    CHANNELS.WS_EPOCH_HANDSHAKE,
+    (handshake) => {
+      if (!handshake || typeof handshake.socketEpoch !== 'string' || !handshake.socketEpoch) {
+        return { ok: false };
+      }
+      if (handshake.socketEpoch !== activeLocalBrowserSocketEpoch) {
+        // This is intentionally synchronous: offscreen does not receive the
+        // acknowledgement until all lifecycle owners have dropped old state.
+        for (const invalidate of localBrowserEpochInvalidators) invalidate(handshake.socketEpoch);
+        activeLocalBrowserSocketEpoch = handshake.socketEpoch;
+      }
+      return { ok: true, socketEpoch: handshake.socketEpoch };
+    },
+  );
+
   // chrome.runtime.onMessage delivers the broadcasts from the offscreen
   // document. We use the underlying chrome.runtime.* API rather than the
   // higher-level on() helper because we want to OBSERVE these events
@@ -237,6 +316,21 @@ function installRouterIfNeeded(): void {
       return false;
     }
     if (m.kind === CHANNELS.WS_MESSAGE) {
+      const local = m.payload as Partial<LocalBrowserForward> | null;
+      if (
+        local?.__matrxLocalBrowserLifecycle === true &&
+        typeof local.socketEpoch === 'string' &&
+        local.socketEpoch === activeLocalBrowserSocketEpoch
+      ) {
+        for (const h of localBrowserLifecycleHandlers) {
+          try {
+            h(local.payload, local.socketEpoch);
+          } catch (err) {
+            log.error('desktop', 'local-browser lifecycle handler threw', err);
+          }
+        }
+        return false;
+      }
       for (const h of messageHandlers) {
         try {
           h(m.payload);

@@ -28,7 +28,7 @@
  */
 
 import { log } from '@/lib/debug/log';
-import { broadcast, on } from '@/lib/messaging/native';
+import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
@@ -79,6 +79,16 @@ interface RuntimeState {
    * this is true, we do not auto-reconnect on close.
    */
   stopped: boolean;
+  /** Service-worker instance that most recently controlled this socket. */
+  backgroundBootId: string | null;
+  /** Epoch acknowledged by that service worker; local-browser frames gate on it. */
+  acknowledgedEpoch: string | null;
+}
+
+interface LocalBrowserForward {
+  __matrxLocalBrowserLifecycle: true;
+  socketEpoch: string;
+  payload: unknown;
 }
 
 const state: RuntimeState = {
@@ -93,6 +103,8 @@ const state: RuntimeState = {
   lastCatalogHash: null,
   initialized: false,
   stopped: false,
+  backgroundBootId: null,
+  acknowledgedEpoch: null,
 };
 
 // ─── Public bootstrap (called from offscreen entrypoints) ───────────────────
@@ -104,23 +116,34 @@ export function startWsOffscreenRuntime(): void {
   if (state.initialized) return;
   state.initialized = true;
 
-  on<{ wsUrl?: string; identity?: RuntimeState['identity'] }, { ok: boolean; error?: string }>(
-    CHANNELS.WS_START,
-    async (payload) => {
-      state.stopped = false;
-      if (payload?.wsUrl) state.wsUrl = payload.wsUrl;
-      if (payload?.identity) state.identity = payload.identity;
-      if (state.ws && state.ws.readyState === WebSocket.OPEN) {
-        return { ok: true };
-      }
-      try {
-        await openWebSocket();
-        return { ok: true };
-      } catch (err) {
-        return { ok: false, error: (err as Error).message };
-      }
-    },
-  );
+  on<
+    { wsUrl?: string; identity?: RuntimeState['identity']; backgroundBootId?: string },
+    { ok: boolean; error?: string }
+  >(CHANNELS.WS_START, async (payload) => {
+    state.stopped = false;
+    if (payload?.wsUrl) state.wsUrl = payload.wsUrl;
+    if (payload?.identity) state.identity = payload.identity;
+    const backgroundChanged =
+      typeof payload?.backgroundBootId === 'string' &&
+      state.backgroundBootId !== null &&
+      payload.backgroundBootId !== state.backgroundBootId;
+    if (typeof payload?.backgroundBootId === 'string')
+      state.backgroundBootId = payload.backgroundBootId;
+    if (backgroundChanged) {
+      // MV3 may retain this document while replacing the service worker.
+      // The old epoch and any lifecycle binding belong to that old worker.
+      closeWebSocket('background restarted');
+    }
+    if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+      return { ok: true };
+    }
+    try {
+      await openWebSocket();
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, error: (err as Error).message };
+    }
+  });
 
   on<unknown, { ok: boolean }>(CHANNELS.WS_STOP, () => {
     state.stopped = true;
@@ -140,8 +163,19 @@ export function startWsOffscreenRuntime(): void {
     if (!state.ws || state.ws.readyState !== WebSocket.OPEN) {
       return { ok: false, error: 'ws not open after connect attempt' };
     }
+    const lifecycle = payload as Partial<LocalBrowserForward> | null;
+    if (lifecycle?.__matrxLocalBrowserLifecycle === true) {
+      if (
+        typeof lifecycle.socketEpoch !== 'string' ||
+        lifecycle.socketEpoch !== state.acknowledgedEpoch
+      ) {
+        return { ok: false, error: 'stale local-browser socket epoch' };
+      }
+    }
+    const wirePayload =
+      lifecycle?.__matrxLocalBrowserLifecycle === true ? lifecycle.payload : payload;
     try {
-      state.ws.send(JSON.stringify(payload));
+      state.ws.send(JSON.stringify(wirePayload));
       bumpActivity();
       return { ok: true };
     } catch (err) {
@@ -195,17 +229,15 @@ async function openWebSocket(): Promise<void> {
         ws.addEventListener('open', () => {
           clearTimeout(openTimeout);
           state.ws = ws;
+          state.acknowledgedEpoch = null;
           state.reconnectAttempt = 0;
           bumpActivity();
-          startHeartbeat();
-          startIdleWatchdog();
-          broadcast<{ state: 'open' }>(CHANNELS.WS_STATE, { state: 'open' });
-          log.success('desktop-ws-offscreen', 'ws open');
-          settle(null);
+          const socketEpoch = crypto.randomUUID();
+          void acknowledgeEpoch(ws, socketEpoch, settle, openTimeout);
         });
 
         ws.addEventListener('message', (ev) => {
-          handleInboundFrame(ev.data);
+          if (state.ws === ws) handleInboundFrame(ev.data, ws);
         });
 
         ws.addEventListener('close', (ev) => {
@@ -217,7 +249,7 @@ async function openWebSocket(): Promise<void> {
           // optional reason string when the server *does* speak the protocol
           // and rejects with text.
           const codeMeaning = wsCloseCodeHint(ev.code);
-          handleClose(ev.code, ev.reason);
+          if (state.ws === ws) handleClose(ev.code, ev.reason);
           settle(
             new Error(
               `ws closed before open: ${safeUrl} — code=${ev.code}${codeMeaning ? ` (${codeMeaning})` : ''}${ev.reason ? ` reason="${ev.reason}"` : ''}`,
@@ -271,13 +303,17 @@ function closeWebSocket(reason: string): void {
   stopIdleWatchdog();
   cancelReconnect();
   if (state.ws) {
+    const ws = state.ws;
+    // Clear ownership before closing so a synchronous or late close event
+    // from the retired socket cannot schedule a reconnect for its epoch.
+    state.ws = null;
     try {
-      state.ws.close(1000, reason);
+      ws.close(1000, reason);
     } catch {
       /* ignore */
     }
-    state.ws = null;
   }
+  state.acknowledgedEpoch = null;
   broadcast<{ state: 'closed' }>(CHANNELS.WS_STATE, { state: 'closed' });
 }
 
@@ -285,6 +321,7 @@ function handleClose(code: number, reason: string): void {
   log.info('desktop-ws-offscreen', `ws close ${code} ${reason}`);
   stopHeartbeat();
   state.ws = null;
+  state.acknowledgedEpoch = null;
   broadcast<{ state: 'closed' }>(CHANNELS.WS_STATE, { state: 'closed' });
   if (state.stopped) return;
 
@@ -313,7 +350,52 @@ function cancelReconnect(): void {
 
 // ─── Inbound frame handling ─────────────────────────────────────────────────
 
-function handleInboundFrame(raw: unknown): void {
+async function acknowledgeEpoch(
+  ws: WebSocket,
+  socketEpoch: string,
+  settle: (err: Error | null) => void,
+  openTimeout: ReturnType<typeof setTimeout>,
+): Promise<void> {
+  try {
+    const ack = await send<
+      { socketEpoch: string; backgroundBootId: string | null },
+      { ok: boolean; socketEpoch?: string }
+    >(CHANNELS.WS_EPOCH_HANDSHAKE, { socketEpoch, backgroundBootId: state.backgroundBootId });
+    if (state.ws !== ws || ack?.ok !== true || ack.socketEpoch !== socketEpoch) {
+      throw new Error('socket epoch acknowledgement rejected');
+    }
+    state.acknowledgedEpoch = socketEpoch;
+    ws.send(JSON.stringify({ type: 'local_browser.ready', version: 1 }));
+    bumpActivity();
+    startHeartbeat();
+    startIdleWatchdog();
+    broadcast<{ state: 'open' }>(CHANNELS.WS_STATE, { state: 'open' });
+    log.success('desktop-ws-offscreen', 'ws open');
+    settle(null);
+  } catch (err) {
+    clearTimeout(openTimeout);
+    if (state.ws === ws) {
+      state.acknowledgedEpoch = null;
+      try {
+        ws.close(1000, 'epoch acknowledgement failed');
+      } catch {
+        /* ignore */
+      }
+    }
+    settle(err as Error);
+  }
+}
+
+function isLocalBrowserFrame(payload: unknown): boolean {
+  return (
+    typeof payload === 'object' &&
+    payload !== null &&
+    typeof (payload as { type?: unknown }).type === 'string' &&
+    (payload as { type: string }).type.startsWith('local_browser.')
+  );
+}
+
+function handleInboundFrame(raw: unknown, socket: WebSocket): void {
   bumpActivity();
   let payload: unknown;
   if (typeof raw === 'string') {
@@ -372,6 +454,17 @@ function handleInboundFrame(raw: unknown): void {
         log.warn('desktop-ws-offscreen', 'failed to send extension identity', err);
       }
     }
+  }
+
+  if (isLocalBrowserFrame(payload)) {
+    const socketEpoch = state.acknowledgedEpoch;
+    if (!socketEpoch || state.ws !== socket) return;
+    broadcast(CHANNELS.WS_MESSAGE, {
+      __matrxLocalBrowserLifecycle: true,
+      socketEpoch,
+      payload,
+    });
+    return;
   }
 
   broadcast(CHANNELS.WS_MESSAGE, payload);
