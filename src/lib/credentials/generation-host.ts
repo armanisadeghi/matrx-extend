@@ -10,6 +10,7 @@ import { GENERATED_SECRET_TTL_MS } from '@/lib/credentials/generation-targets';
 import {
   GENERATION_INVALIDATED,
   type GenerationDiscoveryResponse,
+  type GenerationInvalidationMessage,
   type GenerationOffer,
   type GenerationRequest,
   type GenerationUseResponse,
@@ -158,18 +159,30 @@ function clearRegistry(offer: InternalOffer): void {
     args: [offer.targets.map((target) => target.id)] as unknown as never[],
   }).catch(() => undefined);
 }
+function consume(offer: InternalOffer): void {
+  if (OFFERS.get(offer.id) === offer) OFFERS.delete(offer.id);
+  CLAIMS.delete(offer.id);
+  clearRegistry(offer);
+}
 function invalidate(offers: Iterable<InternalOffer>): void {
-  const byDocument = new Map<string, InternalOffer>();
+  const affected: InternalOffer[] = [];
   for (const offer of offers) {
-    if (OFFERS.get(offer.id) === offer) OFFERS.delete(offer.id);
+    if (OFFERS.get(offer.id) !== offer) continue;
+    affected.push(offer);
+    OFFERS.delete(offer.id);
     CLAIMS.delete(offer.id);
-    byDocument.set(`${offer.tabId}:${offer.documentId}`, offer);
     clearRegistry(offer);
   }
-  if (byDocument.size > 0)
+  if (affected.length > 0) {
+    const message: GenerationInvalidationMessage = {
+      __matrxCredentialGeneration: true,
+      operation: GENERATION_INVALIDATED,
+      offerIds: affected.map((offer) => offer.id),
+    };
     void chrome.runtime
-      .sendMessage({ __matrxCredentialGeneration: true, operation: GENERATION_INVALIDATED })
+      .sendMessage(message)
       .catch(() => undefined);
+  }
 }
 function invalidateTab(tabId?: number): void {
   lifecycleEpoch++;
@@ -252,15 +265,16 @@ async function discover(tabId: number, senderWindowId: number, requestEpoch: num
   }
   for (const offer of created) OFFERS.set(offer.id, offer);
   if (created.length === 0) return generationResponse('no_targets');
-  globalThis.setTimeout(() => invalidate([...created].filter((offer) => offer.expiresAt <= Date.now())), GENERATED_SECRET_TTL_MS + 1);
+  globalThis.setTimeout(() => {
+    // A claimed use owns its own cleanup. An old timer must not invalidate a
+    // newer offer or emit a page-changed event after successful use/discard.
+    invalidate(created.filter((offer) => !CLAIMS.has(offer.id) && offer.expiresAt <= Date.now()));
+  }, GENERATED_SECRET_TTL_MS + 1);
   return { status: 'ready', offers: created.map(offerProjection) };
 }
-async function use(offerId: string, value: string, senderWindowId: number): Promise<GenerationUseResponse> {
-  const offer = OFFERS.get(offerId);
-  if (!offer || CLAIMS.has(offerId)) return useResponse('stale');
-  CLAIMS.add(offerId); // claim synchronously, before any await
+async function use(offer: InternalOffer, value: string, senderWindowId: number): Promise<GenerationUseResponse> {
   if (value.length > MAX_VALUE_LENGTH || offer.windowId !== senderWindowId || offer.expiresAt <= Date.now()) {
-    invalidate([offer]);
+    consume(offer);
     return useResponse('stale');
   }
   try {
@@ -274,14 +288,14 @@ async function use(offerId: string, value: string, senderWindowId: number): Prom
     return result ? useResponse(result.status) : useResponse('unavailable');
   } finally {
     value = '';
-    invalidate([offer]);
+    consume(offer);
   }
 }
 function discard(ids: readonly string[], windowId: number): void {
   const offers = ids
     .map((id) => OFFERS.get(id))
     .filter((offer): offer is InternalOffer => !!offer && offer.windowId === windowId);
-  invalidate(offers);
+  for (const offer of offers) consume(offer);
 }
 
 export function registerGeneratedPasswordHost(): void {
@@ -291,13 +305,28 @@ export function registerGeneratedPasswordHost(): void {
     if (!validRequest(message) || !trustedSidepanel(sender)) return false;
     const requestEpoch = lifecycleEpoch;
     const tabEpoch = message.operation === 'discover' ? epoch(message.tabId) : 0;
+    // Use claims are reserved before getContexts: a competing click can never
+    // survive a delayed sidepanel-context lookup. Every later failure consumes
+    // this same object; it is never reinserted.
+    const claimed = message.operation === 'use' ? OFFERS.get(message.offerId) : undefined;
+    if (message.operation === 'use') {
+      if (!claimed || CLAIMS.has(claimed.id)) {
+        sendResponse(useResponse('stale'));
+        return true;
+      }
+      CLAIMS.add(claimed.id);
+    }
     void panelWindow(sender).then((windowId) => {
-      if (windowId === null) return undefined;
+      if (windowId === null) {
+        if (claimed) consume(claimed);
+        return message.operation === 'discover' ? generationResponse('unavailable') : useResponse('stale');
+      }
       if (message.operation === 'discover') return discover(message.tabId, windowId, requestEpoch, tabEpoch);
-      if (message.operation === 'use') return use(message.offerId, message.value, windowId);
+      if (message.operation === 'use') return use(claimed!, message.value, windowId);
       discard(message.offerIds, windowId);
       return { status: 'discarded' };
     }).then((response) => response !== undefined && sendResponse(response)).catch(() => {
+      if (claimed) consume(claimed);
       if (message.operation === 'discover') sendResponse(generationResponse('unavailable'));
       else if (message.operation === 'use') sendResponse(useResponse('unavailable'));
     });

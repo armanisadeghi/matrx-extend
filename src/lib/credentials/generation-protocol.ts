@@ -5,6 +5,12 @@ import type {
 
 export const GENERATION_INVALIDATED = 'invalidated' as const;
 
+export interface GenerationInvalidationMessage {
+  __matrxCredentialGeneration: true;
+  operation: typeof GENERATION_INVALIDATED;
+  offerIds: string[];
+}
+
 export type GenerationRequest =
   | { __matrxCredentialGeneration: true; operation: 'discover'; tabId: number }
   | { __matrxCredentialGeneration: true; operation: 'use'; offerId: string; value: string }

@@ -12,7 +12,9 @@ const state = vi.hoisted(() => ({
   topDocumentId: 'top-document',
   fillGate: null as Promise<void> | null,
   contextGate: null as Promise<void> | null,
+  contextAvailable: true,
   fills: 0,
+  discoveries: 0,
 }));
 const listeners: Array<(message: unknown, sender: chrome.runtime.MessageSender, reply: (value: unknown) => void) => boolean> = [];
 const activation: Array<(info: chrome.tabs.TabActiveInfo) => void> = [];
@@ -44,12 +46,12 @@ function request(operation: 'discover' | 'use' | 'discard', fields: Record<strin
 beforeEach(() => {
   listeners.length = 0; activation.length = 0; committed.length = 0; tabMessages.length = 0;
   state.user = USER; state.org = ORG; state.active = true; state.focused = true; state.permitted = true;
-  state.documentId = 'frame-document'; state.topDocumentId = 'top-document'; state.fillGate = null; state.contextGate = null; state.fills = 0;
+  state.documentId = 'frame-document'; state.topDocumentId = 'top-document'; state.fillGate = null; state.contextGate = null; state.contextAvailable = true; state.fills = 0; state.discoveries = 0;
   (globalThis as unknown as { chrome: unknown }).chrome = {
     runtime: {
       id: 'extension-id', getURL: (path: string) => `chrome-extension://extension-id/${path}`,
       sendMessage: async (message: unknown) => { tabMessages.push(message); },
-      getContexts: async () => { await state.contextGate; return [{ contextType: 'SIDE_PANEL', documentId: 'panel-document', documentUrl: 'chrome-extension://extension-id/sidepanel.html', windowId: 1 }]; },
+      getContexts: async () => { await state.contextGate; return state.contextAvailable ? [{ contextType: 'SIDE_PANEL', documentId: 'panel-document', documentUrl: 'chrome-extension://extension-id/sidepanel.html', windowId: 1 }] : []; },
       onMessage: { addListener: (listener: (message: unknown, from: chrome.runtime.MessageSender, reply: (value: unknown) => void) => boolean) => listeners.push(listener) },
     },
     tabs: {
@@ -75,7 +77,7 @@ beforeEach(() => {
         expect(target).toMatchObject({ tabId: 7, documentIds: expect.any(Array) });
         if (Array.isArray(args?.[0])) return [{ result: undefined }];
         const operation = (args?.[0] as { operation: string }).operation;
-        if (operation === 'discover_new_password_groups') return [{ result: { groups: [{ targets: [{ id: 'opaque-field', openShadowPath: [], constraint: { minLength: 12, maxLength: 64, pattern: null, autocomplete: 'new-password', roleEvidence: 'new_password' } }] }] } }];
+        if (operation === 'discover_new_password_groups') return [{ result: { groups: [{ targets: [{ id: `opaque-field-${++state.discoveries}`, openShadowPath: [], constraint: { minLength: 12, maxLength: 64, pattern: null, autocomplete: 'new-password', roleEvidence: 'new_password' } }] }] } }];
         state.fills++;
         await state.fillGate;
         return [{ result: { status: 'filled' } }];
@@ -129,7 +131,7 @@ describe('generated password host', () => {
     const pending = ask(request('use', { offerId: offer.id, value: 'A-generated-password-12' }));
     committed.forEach((listener) => listener({ tabId: 7 } as chrome.webNavigation.WebNavigationFramedCallbackDetails));
     await expect(pending).resolves.toMatchObject({ status: 'stale' });
-    expect(tabMessages).toContainEqual({ __matrxCredentialGeneration: true, operation: 'invalidated' });
+    expect(tabMessages).toContainEqual(expect.objectContaining({ __matrxCredentialGeneration: true, operation: 'invalidated', offerIds: expect.any(Array) }));
   });
 
   it('invalidates offers when the active tab changes in the sidepanel window', async () => {
@@ -172,6 +174,36 @@ describe('generated password host', () => {
     await expect(ask(request('use', { offerId: found.offers[0]!.id, value: 'A-generated-password-12' }))).resolves.toMatchObject({ status: 'stale' });
   });
 
+  it('claims use before deferred getContexts and consumes the replay', async () => {
+    const { registerGeneratedPasswordHost } = await import('@/lib/credentials/generation-host');
+    registerGeneratedPasswordHost();
+    const found = await ask(request('discover', { tabId: 7 })) as { offers: Array<{ id: string; frameId: number }> };
+    let release!: () => void;
+    state.contextGate = new Promise<void>((resolve) => { release = resolve; });
+    const offer = found.offers.find((candidate) => candidate.frameId === 3)!;
+    const first = ask(request('use', { offerId: offer.id, value: 'A-generated-password-12' }));
+    await expect(ask(request('use', { offerId: offer.id, value: 'A-generated-password-12' }))).resolves.toMatchObject({ status: 'stale' });
+    release();
+    await expect(first).resolves.toMatchObject({ status: 'filled' });
+    expect(state.fills).toBe(1);
+  });
+
+  it('returns a fixed refusal when the real sidepanel context cannot be found', async () => {
+    state.contextAvailable = false;
+    const { registerGeneratedPasswordHost } = await import('@/lib/credentials/generation-host');
+    registerGeneratedPasswordHost();
+    await expect(ask(request('discover', { tabId: 7 }))).resolves.toMatchObject({ status: 'unavailable' });
+  });
+
+  it('does not broadcast an invalidation after a successful use cleanup', async () => {
+    const { registerGeneratedPasswordHost } = await import('@/lib/credentials/generation-host');
+    registerGeneratedPasswordHost();
+    const found = await ask(request('discover', { tabId: 7 })) as { offers: Array<{ id: string; frameId: number }> };
+    const offer = found.offers.find((candidate) => candidate.frameId === 3)!;
+    await expect(ask(request('use', { offerId: offer.id, value: 'A-generated-password-12' }))).resolves.toMatchObject({ status: 'filled' });
+    expect(tabMessages.filter((message) => (message as { operation?: string }).operation === 'invalidated')).toEqual([]);
+  });
+
   it('expires a one-shot offer and broadcasts only a value-free invalidation', async () => {
     vi.useFakeTimers();
     const { registerGeneratedPasswordHost } = await import('@/lib/credentials/generation-host');
@@ -179,8 +211,23 @@ describe('generated password host', () => {
     const found = await ask(request('discover', { tabId: 7 })) as { offers: Array<{ id: string }> };
     await vi.advanceTimersByTimeAsync(30_001);
     await expect(ask(request('use', { offerId: found.offers[0]!.id, value: 'A-generated-password-12' }))).resolves.toMatchObject({ status: 'stale' });
-    expect(tabMessages).toContainEqual({ __matrxCredentialGeneration: true, operation: 'invalidated' });
+    expect(tabMessages).toContainEqual(expect.objectContaining({ __matrxCredentialGeneration: true, operation: 'invalidated', offerIds: expect.any(Array) }));
     expect(JSON.stringify(tabMessages)).not.toContain('A-generated-password-12');
     vi.useRealTimers();
+  });
+
+  it('does not let an old expiry timer invalidate a newer offer', async () => {
+    vi.useFakeTimers();
+    const { registerGeneratedPasswordHost } = await import('@/lib/credentials/generation-host');
+    registerGeneratedPasswordHost();
+    const older = await ask(request('discover', { tabId: 7 })) as { offers: Array<{ id: string }> };
+    await vi.advanceTimersByTimeAsync(10);
+    const newer = await ask(request('discover', { tabId: 7 })) as { offers: Array<{ id: string }> };
+    const newerIds = new Set(newer.offers.map((offer) => offer.id));
+    await vi.advanceTimersByTimeAsync(29_991);
+    const invalidated = tabMessages.filter((message) => (message as { operation?: string }).operation === 'invalidated') as Array<{ offerIds: string[] }>;
+    expect(invalidated.flatMap((message) => message.offerIds).some((id) => newerIds.has(id))).toBe(false);
+    await expect(ask(request('use', { offerId: newer.offers[0]!.id, value: 'A-generated-password-12' }))).resolves.toMatchObject({ status: 'filled' });
+    expect(older.offers).not.toEqual(newer.offers);
   });
 });
