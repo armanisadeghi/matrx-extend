@@ -118,7 +118,9 @@ component, so all four must show identical rows in identical order.
   and **Try again** re-asks.
 - **Covered by:** `src/lib/api/client-session-not-ready.test.ts` (signed-in +
   no bearer → wait, then refuse with `STATUS_SESSION_NOT_READY`; guest only
-  when nobody is signed in) and, in `@ai-matrx/agents` ≥ 0.13.0,
+  when nobody is signed in), `tests/unit/stream-session-not-ready.test.ts`
+  (the same rule for stream starts — a run is never started as a guest) and,
+  in `@ai-matrx/agents` ≥ 0.13.0,
   `catalog/__tests__/default-row.test.ts` (an errored default row is re-asked;
   `retryDefaultRow`).
 

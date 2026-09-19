@@ -5,8 +5,7 @@
  * our own broadcast and recurse forever).
  */
 
-import { getApiBaseUrl } from '@/lib/api/client';
-import { getAccessToken } from '@/lib/auth/flow';
+import { getApiBaseUrl, readSessionBearer } from '@/lib/api/client';
 import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
 import { log } from '@/lib/debug/log';
 import { send } from '@/lib/messaging/native';
@@ -118,7 +117,13 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
   // and ship the full request envelope to offscreen. Offscreen just executes.
   const baseUrl = await getApiBaseUrl();
   const url = `${baseUrl}${args.endpoint}`;
-  const token = await getAccessToken();
+  // A stream is a request too: the SAME session-bearer rule as every REST
+  // call. A signed-in install whose bearer is not readable yet waits for it
+  // and is then REFUSED (`SessionNotReadyError`, surfaced by the caller's
+  // stream error path) — never started as a guest, which is how a run would
+  // die on the server's 401 and read to the person as a broken agent
+  // (2026-09-19, sibling of the REST guest-downgrade defect).
+  const token = await readSessionBearer();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'text/event-stream',
@@ -130,6 +135,7 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
     // admission gate, which reads to the user as a hang.
     headers['X-Organization-Id'] = await requireActiveOrganizationId();
   } else {
+    // Nobody is signed in on this install (see readSessionBearer).
     headers['X-Fingerprint-ID'] = await getOrCreateGuestSignature();
   }
 

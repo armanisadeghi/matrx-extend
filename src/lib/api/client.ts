@@ -80,7 +80,7 @@ const SESSION_SETTLE_POLL_MS = 150;
  * install. When a profile is stored (signed in) but no bearer is readable, wait
  * for the session to settle; if it never does, throw `SessionNotReadyError`.
  */
-async function readSessionBearer(): Promise<string | null> {
+export async function readSessionBearer(): Promise<string | null> {
   const first = await getAccessToken();
   if (first) return first;
   const profile = await getCurrentUser();
