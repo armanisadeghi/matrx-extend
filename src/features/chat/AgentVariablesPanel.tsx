@@ -18,7 +18,7 @@ import {
   PopoverTrigger,
 } from '@ai-matrx/design-system';
 import { ChevronDown, Settings2 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export function AgentVariablesPanel({
   agentId,
@@ -31,24 +31,10 @@ export function AgentVariablesPanel({
   const variableValues = useChatStore((s) => s.variableValues);
   const [open, setOpen] = useState(false);
 
-  // Apply defaults the first time we see this agent's vars.
-  useEffect(() => {
-    if (defs.length === 0) return;
-    const prefix = `${agentId}.`;
-    const seen = new Set(
-      Object.keys(variableValues)
-        .filter((k) => k.startsWith(prefix))
-        .map((k) => k.slice(prefix.length)),
-    );
-    for (const def of defs) {
-      if (!seen.has(def.name) && def.defaultValue !== undefined) {
-        setVariable(agentId, def.name, def.defaultValue);
-      }
-    }
-    // intentionally only on agentId/defs — variableValues writes would loop.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [agentId, defs]);
-
+  // Saved defaults are NEVER copied into the sent values: the server applies them
+  // as the floor under explicit values AND scope-bound values. A seeded default
+  // looked like a typed value and beat a variable's scope binding (2026-09-18).
+  // The default shows as the input placeholder instead.
   const values = useMemo(() => {
     const prefix = `${agentId}.`;
     const out: Record<string, string> = {};
@@ -60,7 +46,9 @@ export function AgentVariablesPanel({
 
   if (defs.length === 0) return null;
 
-  const filled = defs.filter((d) => (values[d.name] ?? '').trim().length > 0).length;
+  const filled = defs.filter(
+    (d) => (values[d.name] || d.defaultValue || '').trim().length > 0,
+  ).length;
 
   return (
     <div className="flex shrink-0 items-center gap-2 px-3 pb-1.5">
