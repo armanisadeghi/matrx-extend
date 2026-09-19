@@ -235,7 +235,7 @@ describe('generated password DOM primitive', () => {
     Object.defineProperty(layer, 'value', { set(next: string) { native.call(this, next); if (throws) { throws = false; throw new Error('setter_after_write'); } }, get() { return nativeDescriptor.get!.call(this); } });
     Object.setPrototypeOf(input, layer);
     const result = dispatcher({ operation: 'fill_new_password_group', documentId, expiresAt: expiry, targets, value: 'abcdEFGH1234' });
-    expect(['rolled_back', 'partial_manual_check']).toContain(result.status);
+    expect(result).toEqual({ status: 'rolled_back' });
     expect(input.value).toBe('original');
   });
 

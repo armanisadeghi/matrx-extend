@@ -2855,10 +2855,10 @@ Every entry follows this shape:
 ### Isolated Vault browser acceptance and cleanup
 
 - `tests/browser/vault-realbrowser-acceptance.cjs` checks a hash-pinned extension artifact in a new owned profile. Explicit read-only admission verifies real OAuth, independent admin identity, Settings organization selection, baseline listing and session/profile cleanup; its top-level acceptance remains false.
-- Real capture decisions require a genuine extension side panel. A `sidepanel.html` browser tab is a different sender and cannot certify the capture journey. The real-panel harness correction remains open.
+- Real capture decisions require a genuine extension side panel. A `sidepanel.html` browser tab is a different sender and cannot certify the capture journey. The accepted harness uses trusted browser input through the actual side-panel target; normal-tab substitution is refused.
 - Mutation runs journal owned create keys and all Vault mutation requests. A failed journey may retry only after verified cleanup; failure never becomes acceptance.
 - Optional local canonical cleanup can use a frozen committed backend source root with pinned router/service hashes and checked import paths. It keeps the existing dependency runtime and canonical secret location; it does not copy credentials. The adapter emits one strict JSON result and preserves identity, receipt, baseline-exclusion and per-item deletion checks.
-- September 19 evidence: read-only admission passed; a later failed capture run cleaned all four owned fixtures with GET 200 → DELETE 204 → GET 404, preserved the baseline, logged out and removed the profile. Save/Update and distributed-artifact acceptance remain open.
+- September 19 evidence: genuine-panel run `d02225ac-a08c-40fd-9674-668fce930b3c` independently passed exact-target Update among four accounts and Save as new without website submission. All five owned fixtures completed GET 200 → DELETE 204 → GET 404; baseline, logout and profile cleanup passed. Committed runner `0e5a2e6` matches the proof hash. Enrolled-MFA semantics, lost-response recovery, restart and distributed-artifact acceptance remain open. Durable sanitized evidence lives in common-docs/projects/credential-sharing-browser-login/evidence/task1-save-update-2026-09-19.json.
 
 ### Browser version required for Vault panel controls
 
