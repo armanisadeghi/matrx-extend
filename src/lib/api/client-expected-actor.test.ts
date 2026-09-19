@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 const state = vi.hoisted(() => ({
   token: 'token-a',
-  organizationId: '00000000-0000-4000-8000-000000000002',
+  organizationId: '00000000-0000-4000-8000-000000000002' as string | null,
   userId: '00000000-0000-4000-8000-000000000001',
   verified: null as Promise<void> | null,
   verificationStarted: null as (() => void) | null,
@@ -93,5 +93,26 @@ describe('expectedActor transport binding', () => {
     state.organizationId = actor.organizationId;
     state.verified = null;
     state.verificationStarted = null;
+  });
+
+  it('refuses a malformed or missing organization before fetch', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    state.organizationId = 'not-a-uuid';
+    await expect(apiPost('/api/vault/items', {})).resolves.toMatchObject({
+      ok: false,
+      status: -2,
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    state.organizationId = null;
+    await expect(apiPost('/api/vault/items', {})).resolves.toMatchObject({
+      ok: false,
+      status: -2,
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    state.organizationId = actor.organizationId;
   });
 });
