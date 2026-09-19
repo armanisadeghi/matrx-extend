@@ -11,6 +11,7 @@ const state = vi.hoisted(() => ({
 vi.mock('@/config/backend', () => ({ getBackendUrl: async () => 'https://example.invalid' }));
 vi.mock('@/lib/auth/flow', () => ({
   getAccessToken: async () => state.token,
+  getCurrentUser: async () => ({ id: state.userId }),
   refreshAccessToken: async () => null,
   getVerifiedCurrentUser: async () => {
     state.verificationStarted?.();

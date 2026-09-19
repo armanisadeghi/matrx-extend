@@ -42,6 +42,12 @@ import {
 const catalogTransport: AgentCatalogTransport = {
   async fetch(path, init) {
     const baseUrl = await getApiBaseUrl();
+    // A signed-in session with no readable bearer THROWS here
+    // (`SessionNotReadyError`) instead of sending as a guest — the 2026-09-19
+    // defect was exactly this door going out with a guest fingerprint and
+    // pinning a 401 on the default agent. The package records the thrown
+    // error on the default row and re-asks on the next `ensureDefaultRow`
+    // (@ai-matrx/agents ≥ 0.13.0), so the refusal is transient, never sticky.
     const headers = await buildHeaders(init.headers);
     return fetch(`${baseUrl}${path}`, {
       method: init.method,

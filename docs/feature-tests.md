@@ -97,6 +97,31 @@ component, so all four must show identical rows in identical order.
   `pnpm check:canonical-pickers` (no second picker may exist). The list logic
   itself is tested in the package's 295-case parity matrix.
 
+### First sign-in resolves the default agent (no guest downgrade)
+
+- **What it does:** on a fresh install, the very first calls after sign-in (the
+  default agent's mandate resolution, compute targets) used to race the bearer
+  and go out as a GUEST fingerprint; the server answered 401 and the picker
+  showed "the server refused to resolve it" until the panel was reloaded
+  (2026-09-19). Now a signed-in surface never speaks as a guest: the request
+  waits briefly for the bearer, and if it never comes it is refused with a
+  plain remedy instead of being downgraded. If a refusal still happens, the
+  package re-asks on the next open and the error banner has **Try again**.
+- **Where to test:** load the unpacked build in a fresh Chrome profile (or
+  remove + re-add the extension), open the side panel signed out, sign in as
+  `admin@admin.com`, choose an organization if asked, open **Chat**.
+- **Expected:** the header shows **Matrx Browser Agent** (the real Holder of
+  `extend.browser_chat`) within a couple of seconds, with no error banner in
+  the picker and no reload. The server request log shows
+  `GET /mandates/extend.browser_chat/resolution` with `auth_type=token`, never
+  `fingerprint`. If the network is down, the picker banner names the failure
+  and **Try again** re-asks.
+- **Covered by:** `src/lib/api/client-session-not-ready.test.ts` (signed-in +
+  no bearer → wait, then refuse with `STATUS_SESSION_NOT_READY`; guest only
+  when nobody is signed in) and, in `@ai-matrx/agents` ≥ 0.13.0,
+  `catalog/__tests__/default-row.test.ts` (an errored default row is re-asked;
+  `retryDefaultRow`).
+
 ### The archive filter on the agent picker (THE ARCHIVED-ITEMS LAW)
 
 - **What it does:** the picker's filter bar carries an Archive chip — three

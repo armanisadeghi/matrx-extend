@@ -9,6 +9,7 @@
 import { getBackendUrl } from '@/config/backend';
 import {
   getAccessToken,
+  getCurrentUser,
   getStoredAccessToken,
   getVerifiedCurrentUser,
   refreshAccessToken,
@@ -42,6 +43,62 @@ export const STATUS_INVALID_BODY = -1;
  * UI a remedy instead (law 4: nothing fails silently).
  */
 export const STATUS_NO_ORGANIZATION = -2;
+
+/**
+ * Status sentinel for "this request was never sent, because a signed-in
+ * session has no readable bearer yet". 🚨 THE GUEST-DOWNGRADE DEFECT
+ * (2026-09-19): a fresh install signed in, the side panel mounted its chat
+ * surfaces, and the FIRST calls (`/mandates/extend.browser_chat/resolution`,
+ * `/api/compute-targets/`) went out a beat before the bearer was readable.
+ * `buildHeaders` silently fell back to the GUEST fingerprint, the server
+ * correctly answered 401, and the agent picker showed "the server refused to
+ * resolve it" for the whole session. A signed-in surface never speaks as a
+ * guest: when the stored profile says signed in and no bearer can be read,
+ * the request waits briefly for the session to settle and is then REFUSED
+ * with this status and a remedy — never downgraded.
+ */
+export const STATUS_SESSION_NOT_READY = -3;
+
+export class SessionNotReadyError extends Error {
+  readonly remedy = 'Wait a moment and try again. If this keeps happening, sign out and back in.';
+  constructor() {
+    super('You are signed in, but your session is not ready yet, so this request was not sent.');
+    this.name = 'SessionNotReadyError';
+  }
+}
+
+/**
+ * How long a signed-in request waits for a readable bearer before refusing.
+ * Internal hydration timing (the sign-in commit writes profile and tokens in
+ * ONE storage write; a refresh in flight is the other case) — not a knob.
+ */
+const SESSION_SETTLE_DEADLINE_MS = 5_000;
+const SESSION_SETTLE_POLL_MS = 150;
+
+/**
+ * The bearer for this request, or `null` ONLY when nobody is signed in on this
+ * install. When a profile is stored (signed in) but no bearer is readable, wait
+ * for the session to settle; if it never does, throw `SessionNotReadyError`.
+ */
+async function readSessionBearer(): Promise<string | null> {
+  const first = await getAccessToken();
+  if (first) return first;
+  const profile = await getCurrentUser();
+  if (!profile) return null;
+  const deadline = Date.now() + SESSION_SETTLE_DEADLINE_MS;
+  while (Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, SESSION_SETTLE_POLL_MS));
+    const token = await getAccessToken();
+    if (token) return token;
+    if (!(await getCurrentUser())) return null; // signed out while waiting
+  }
+  const failure = new SessionNotReadyError();
+  log.error('api', 'signed in, but no bearer became readable — refusing to send as a guest', {
+    userId: profile.id,
+    remedy: failure.remedy,
+  });
+  throw failure;
+}
 
 /**
  * The only paths an authenticated caller may reach without an organization —
@@ -110,7 +167,7 @@ export async function buildHeaders(
   extra: Record<string, string> = {},
   bound?: { token: string | null; organizationId: string | null },
 ): Promise<Record<string, string>> {
-  const token = bound?.token ?? (await getAccessToken());
+  const token = bound?.token ?? (await readSessionBearer());
   // Authorization context belongs to this transport. HTTP header names are
   // case-insensitive, so filtering only the canonical spellings would let a
   // caller make fetch use a different bearer/org than the one we verified.
@@ -164,8 +221,10 @@ export async function buildHeaders(
       }
     }
   } else {
-    // No signed-in session — fall back to guest fingerprint so the server's
-    // AuthMiddleware can resolve us to a stable anonymous auth.users row.
+    // Nobody is signed in on this install (readSessionBearer refuses, rather
+    // than returning null, for a signed-in session without a bearer) — fall
+    // back to the guest fingerprint so the server's AuthMiddleware can resolve
+    // us to a stable anonymous auth.users row.
     const sig = await getOrCreateGuestSignature();
     headers['X-Fingerprint-ID'] = sig;
   }
@@ -227,9 +286,21 @@ async function buildExpectedActorHeaders(
 async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   const baseUrl = await getApiBaseUrl();
   const url = `${baseUrl}${opts.path}`;
-  const headers = opts.expectedActor
-    ? await buildExpectedActorHeaders(opts.expectedActor, opts.headers)
-    : await buildHeaders(opts.headers);
+  let headers: Record<string, string> | null;
+  try {
+    headers = opts.expectedActor
+      ? await buildExpectedActorHeaders(opts.expectedActor, opts.headers)
+      : await buildHeaders(opts.headers);
+  } catch (err) {
+    if (err instanceof SessionNotReadyError) {
+      return {
+        ok: false,
+        status: STATUS_SESSION_NOT_READY,
+        error: `${err.message} ${err.remedy}`,
+      };
+    }
+    throw err;
+  }
   if (!headers) return { ok: false, status: 403, error: 'expected_actor_mismatch' };
   const hasAuth = !!headers.Authorization;
   if (hasAuth && !headers[ORGANIZATION_CONTEXT_HEADER] && !isOrgExemptPath(opts.path)) {
