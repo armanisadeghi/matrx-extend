@@ -240,10 +240,10 @@ describe('PasswordGenerator', () => {
     render(<PasswordGenerator tabId={12} actor={actor} admission={discoveryLost} />);
     open();
     fireEvent.click(screen.getByRole('button', { name: 'Generate' }));
-    await waitFor(() =>
-      expect(screen.queryByRole('button', { name: 'Reveal generated value' })).toBeNull(),
-    );
-    expect(screen.getByText(/page or account changed/i)).toBeTruthy();
+    await screen.findByText(/page or account changed/i);
+    expect(screen.queryByRole('button', { name: 'Reveal generated value' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Copy' })).toBeNull();
+    expect(document.querySelector('code')).toBeNull();
     expect(mocks.sendMessage).not.toHaveBeenCalled();
   });
 
