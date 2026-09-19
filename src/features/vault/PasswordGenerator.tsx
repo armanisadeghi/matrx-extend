@@ -107,6 +107,8 @@ export function PasswordGenerator({
       clear();
       setSelectedOfferId(null);
       setRevealed(false);
+      busyRef.current = false;
+      setBusy(false);
       if (message !== undefined) setStatus(message);
     },
     [clear, discard, replaceOffers],
@@ -158,21 +160,19 @@ export function PasswordGenerator({
       clearGenerated('Password generation is unavailable. Check your sign-in and try again.');
       return;
     }
+    clearGenerated();
+    const operationEpoch = generationEpoch.current;
     busyRef.current = true;
     setBusy(true);
-    clearGenerated();
     try {
       const limits = await resolveGeneratedCredentialLimits(actor, admission);
+      if (generationEpoch.current !== operationEpoch || !admission.current()) return;
       if (!limits.ok) {
         clearGenerated(
           limits.reason === 'configuration_unavailable'
             ? 'Password generation is unavailable because this organization’s secure limits could not be loaded. Try again later.'
             : 'The page changed. Generate a new value to continue.',
         );
-        return;
-      }
-      if (!admission.current()) {
-        clearGenerated('The page changed. Generate a new value to continue.');
         return;
       }
       const options: CredentialGenerationOptions =
@@ -182,10 +182,9 @@ export function PasswordGenerator({
         clearGenerated('A secure value could not be generated. Check the options and try again.');
         return;
       }
-      const epoch = generationEpoch.current;
       hold(generated.value);
       expiryTimer.current = setTimeout(() => {
-        if (generationEpoch.current === epoch)
+        if (generationEpoch.current === operationEpoch)
           clearGenerated('This generated value expired. Generate a new value to continue.');
       }, GENERATED_SECRET_TTL_MS);
       setStatus('Finding compatible new-password fields…');
@@ -197,10 +196,7 @@ export function PasswordGenerator({
             tabId,
           }) as Promise<GenerationDiscoveryResponse>,
       );
-      if (!admission.current() || !discovery || generationEpoch.current !== epoch) {
-        clearGenerated('The page changed. Generate a new value to continue.');
-        return;
-      }
+      if (generationEpoch.current !== operationEpoch || !admission.current() || !discovery) return;
       setRevealed(false);
       if (discovery.status !== 'ready') {
         setStatus(`${discovery.message} You can still copy the generated value manually.`);
@@ -215,8 +211,10 @@ export function PasswordGenerator({
           : 'Generated. Choose the password fields before using it.',
       );
     } finally {
-      if (admission.current()) setBusy(false);
-      busyRef.current = false;
+      if (generationEpoch.current === operationEpoch) {
+        busyRef.current = false;
+        if (admission.current()) setBusy(false);
+      }
     }
   }, [actor, admission, clearGenerated, hold, kind, passphrase, password, replaceOffers, tabId]);
 
@@ -244,6 +242,12 @@ export function PasswordGenerator({
     if (busyRef.current || !offerId || !value) return;
     busyRef.current = true;
     setBusy(true);
+    const useEpoch = generationEpoch.current + 1;
+    generationEpoch.current = useEpoch;
+    if (expiryTimer.current !== null) {
+      clearTimeout(expiryTimer.current);
+      expiryTimer.current = null;
+    }
     const otherIds = offersRef.current.map((offer) => offer.id).filter((id) => id !== offerId);
     // Claim in this UI before any await. The host separately claims its offer.
     replaceOffers([]);
@@ -261,10 +265,13 @@ export function PasswordGenerator({
             value,
           }) as Promise<GenerationUseResponse>,
       );
-      setStatus(result?.message ?? 'The page changed. Generate a new value to continue.');
+      if (generationEpoch.current === useEpoch && admission.current())
+        setStatus(result?.message ?? 'The page changed. Generate a new value to continue.');
     } finally {
-      busyRef.current = false;
-      if (admission.current()) setBusy(false);
+      if (generationEpoch.current === useEpoch) {
+        busyRef.current = false;
+        if (admission.current()) setBusy(false);
+      }
     }
   }, [admission, clear, discard, generatedValue, replaceOffers, selectedOfferId]);
 

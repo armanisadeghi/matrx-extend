@@ -187,6 +187,38 @@ describe('PasswordGenerator', () => {
     expect(screen.getByText(/page changed/i)).toBeTruthy();
   });
 
+  it.each(['collapse', 'escape', 'options'] as const)(
+    'does not generate after deferred limits resolve following %s',
+    async (action) => {
+      let resolveLimit!: (value: { data: number; error: null }) => void;
+      mocks.rpc.mockReset();
+      mocks.rpc
+        .mockImplementationOnce(
+          () =>
+            new Promise((resolve) => {
+              resolveLimit = resolve as typeof resolveLimit;
+            }),
+        )
+        .mockResolvedValueOnce({ data: 64, error: null });
+      renderGenerator();
+      open();
+      fireEvent.click(screen.getByRole('button', { name: 'Generate' }));
+      await waitFor(() => expect(mocks.rpc).toHaveBeenCalledTimes(2));
+      if (action === 'collapse')
+        fireEvent.click(screen.getByRole('button', { name: /password generator/i }));
+      if (action === 'escape') fireEvent.keyDown(window, { key: 'Escape' });
+      if (action === 'options')
+        fireEvent.change(screen.getByLabelText('Password length'), { target: { value: '25' } });
+      resolveLimit({ data: 1024, error: null });
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+      expect(mocks.sendMessage).not.toHaveBeenCalled();
+      expect(screen.queryByRole('button', { name: 'Reveal generated value' })).toBeNull();
+    },
+  );
+
   it('does not resolve settings or generate after admission becomes stale', async () => {
     const stale = {
       current: () => false,
@@ -216,5 +248,33 @@ describe('PasswordGenerator', () => {
     await waitFor(() =>
       expect(screen.queryByRole('button', { name: 'Reveal generated value' })).toBeNull(),
     );
+  });
+
+  it('keeps the Filled result after the former secret TTL elapses', async () => {
+    vi.useFakeTimers();
+    try {
+      renderGenerator();
+      open();
+      fireEvent.click(screen.getByRole('button', { name: 'Generate' }));
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+      mocks.sendMessage.mockResolvedValueOnce({
+        status: 'filled',
+        message: 'Filled. Matrx did not submit the form.',
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Use' }));
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+      expect(screen.getByText('Filled. Matrx did not submit the form.')).toBeTruthy();
+      await vi.advanceTimersByTimeAsync(30_000);
+      expect(screen.getByText('Filled. Matrx did not submit the form.')).toBeTruthy();
+      expect(screen.queryByText(/expired/i)).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
