@@ -67,20 +67,6 @@ const EXPIRY_ALARM = 'matrx.credentials.capture.expiry';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 type Actor = { userId: string; organizationId: string };
 
-/** Keep the update chooser restricted to permitted metadata while distinguishing duplicate names. */
-function captureExistingLogin(match: {
-  item_id: string;
-  display_name: string;
-  non_secret_fields?: Array<{ key: string; value: string }>;
-}): CaptureExistingLogin {
-  const username = match.non_secret_fields?.find((field) => field.key === 'username')?.value;
-  return {
-    item_id: match.item_id,
-    display_name: match.display_name,
-    ...(username ? { username } : {}),
-  };
-}
-
 type MutationCommand =
   | { kind: 'create_item'; key: string; body: Parameters<typeof createVaultItem>[0] }
   | { kind: 'update_field'; key: string; itemId: string; fieldId: string; body: { value: string } }
@@ -502,17 +488,15 @@ async function refreshMatches(candidate: Candidate): Promise<void> {
   if (!candidate.actor || candidate.stage !== 'password') return;
   const baseline = epoch(candidate.tabId);
   const global = globalEpoch;
-  const matched = await fetchBrowserLoginMatches(
-    candidate.loginUrl,
-    { includeFieldInventory: true },
-    {
-      expectedActor: candidate.actor,
-    },
-  );
+  const matched = await fetchBrowserLoginMatches(candidate.loginUrl, undefined, {
+    expectedActor: candidate.actor,
+  });
   const [actor, enabled] = await Promise.all([currentActor(), readCaptureLoginsEnabled()]);
   if (!sameEpoch(candidate, baseline, global) || !sameActor(candidate.actor, actor) || !enabled)
     return;
-  const existing = matched.ok ? matched.data.matches.map(captureExistingLogin) : [];
+  const existing = matched.ok
+    ? matched.data.matches.map((m) => ({ item_id: m.item_id, display_name: m.display_name }))
+    : [];
   await queued(async () => {
     if (!sameEpoch(candidate, baseline, global)) return;
     candidate.existing = existing;
@@ -742,16 +726,14 @@ export async function holdCandidate(
   if (candidate.stage === 'username_first') return true;
   if (PENDING.get(tabId) !== candidate || candidate.expiresAt <= now()) return false;
   setCaptureAssistance(tabId, 'save_pending');
-  // Which saved logins already cover this site? IDs, names and optional usernames only.
+  // Which saved logins already cover this site? Server-approved IDs and display names only.
   const resolveMatches =
     deps.matches ??
     (async (loginUrl: string) => {
-      const r = await fetchBrowserLoginMatches(
-        loginUrl,
-        { includeFieldInventory: true },
-        { expectedActor: actor },
-      );
-      return r.ok ? r.data.matches.map(captureExistingLogin) : [];
+      const r = await fetchBrowserLoginMatches(loginUrl, undefined, { expectedActor: actor });
+      return r.ok
+        ? r.data.matches.map((m) => ({ item_id: m.item_id, display_name: m.display_name }))
+        : [];
     });
   const baseline = epoch(tabId);
   const global = globalEpoch;

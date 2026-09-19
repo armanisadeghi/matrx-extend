@@ -19,7 +19,7 @@ import type {
   CapturePromptMeta,
   CaptureUnavailableReason,
 } from './capture-types';
-import { filterCaptureUpdateTargets } from './capture-update-targets';
+import { captureUpdateTargetLabel, filterCaptureUpdateTargets } from './capture-update-targets';
 
 const HOST_ID = 'matrx-login-capture-host';
 /** Leave the toast alone after this long — the side-panel card still offers it. */
@@ -162,7 +162,7 @@ export function showCapturePrompt(meta: CapturePromptMeta): void {
     if (current?.candidateId !== decision.candidateId) return;
     status.textContent = result.message;
     if (result.ok || result.status === 'expired') {
-      window.setTimeout(dismissCapturePrompt, 1800);
+      window.setTimeout(() => dismissCapturePrompt(decision.candidateId), 1800);
     } else {
       busy = false;
       for (const b of Array.from(actions.querySelectorAll('button'))) b.disabled = false;
@@ -182,10 +182,14 @@ export function showCapturePrompt(meta: CapturePromptMeta): void {
         return;
       }
       for (const item of targets) {
-        const label = item.username
-          ? `Update ${item.display_name} · ${item.username}`
-          : `Update ${item.display_name}`;
-        const b = el('button', BTN_PRIMARY, label);
+        const label = captureUpdateTargetLabel(item, meta.existing);
+        const b = el(
+          'button',
+          BTN_PRIMARY,
+          label.secondary
+            ? `Update ${label.primary} · ${label.secondary}`
+            : `Update ${label.primary}`,
+        );
         b.addEventListener(
           'click',
           () =>

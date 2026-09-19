@@ -37,15 +37,12 @@ interface Call {
 const calls: Call[] = [];
 const broadcasts: unknown[] = [];
 const tabMessages: unknown[] = [];
+const panelDecisions: unknown[] = [];
 const logCalls: unknown[] = [];
 const localStorage = new Map<string, unknown>();
 const sessionStorage = new Map<string, unknown>();
 let signedIn = true;
-let matches: Array<{
-  item_id: string;
-  display_name: string;
-  non_secret_fields?: Array<{ key: string; value: string }>;
-}> = [];
+let matches: Array<{ item_id: string; display_name: string }> = [];
 let itemFields: Array<{ id: string; field_key: string; is_active: boolean }> = [];
 let createGate: Promise<void> | null = null;
 let createResult: unknown = { ok: true, data: { id: 'new-item' } };
@@ -58,6 +55,7 @@ let onSessionSetAwait: (() => void) | null = null;
 let panelMeta: CapturePromptMeta | null = null;
 let panelChanged: ((payload: { tabId: number }) => void) | null = null;
 let decisionGate: Promise<{ ok: boolean; status: 'updated'; message: string }> | null = null;
+let statusGateForTab7: Promise<CapturePromptMeta | null> | null = null;
 
 Object.assign(chrome, {
   storage: {
@@ -142,9 +140,16 @@ vi.mock('@/lib/messaging/native', () => ({
     if (kind === 'credential-capture:changed') panelChanged = handler;
     return () => undefined;
   },
-  send: async (kind: string) => {
-    if (kind === 'credential-capture:status') return panelMeta;
-    if (kind === 'credential-capture:decision' && decisionGate) return decisionGate;
+  send: async (kind: string, payload: { tabId?: number } | unknown) => {
+    if (kind === 'credential-capture:status') {
+      if ((payload as { tabId?: number }).tabId === 7 && statusGateForTab7)
+        return statusGateForTab7;
+      return panelMeta;
+    }
+    if (kind === 'credential-capture:decision') {
+      panelDecisions.push(payload);
+      if (decisionGate) return decisionGate;
+    }
     return { ok: true, status: 'updated', message: 'Updated.' };
   },
   broadcast: (kind: string, payload: unknown) => {
@@ -176,6 +181,7 @@ beforeEach(() => {
   broadcasts.length = 0;
   logCalls.length = 0;
   tabMessages.length = 0;
+  panelDecisions.length = 0;
   signedIn = true;
   matches = [];
   itemFields = [];
@@ -190,6 +196,7 @@ beforeEach(() => {
   panelMeta = null;
   panelChanged = null;
   decisionGate = null;
+  statusGateForTab7 = null;
   vi.useFakeTimers();
 });
 afterEach(async () => {
@@ -437,28 +444,6 @@ describe('host — hold, status, prompt', () => {
     expect(JSON.stringify(logCalls)).not.toContain(SENTINEL);
   });
 
-  it('projects only an authorized username from match metadata into the chooser', async () => {
-    const host = await import('@/lib/credentials/capture-candidates');
-    matches = [
-      {
-        item_id: 'item-1',
-        display_name: 'Example',
-        non_secret_fields: [
-          { key: 'username', value: USER },
-          { key: 'password', value: SENTINEL },
-          { key: 'totp', value: '123456' },
-        ],
-      },
-    ];
-    await host.holdCandidate(8, WIRE, DEPS);
-    const meta = host.pendingCaptureForTab(8);
-    expect(meta?.existing).toEqual([
-      { item_id: 'item-1', display_name: 'Example', username: USER },
-    ]);
-    expect(JSON.stringify(meta)).not.toContain(SENTINEL);
-    expect(JSON.stringify(meta)).not.toContain('123456');
-  });
-
   it('a second submit on the same tab replaces the first', async () => {
     const host = await import('@/lib/credentials/capture-candidates');
     await host.holdCandidate(3, WIRE, DEPS);
@@ -502,10 +487,10 @@ describe('content prompt — page overlay', () => {
       host: 'app.example.com',
       username: USER,
       existing: [
-        { item_id: 'item-1', display_name: 'Example', username: 'first@example.com' },
-        { item_id: 'item-2', display_name: 'Example', username: 'second@example.com' },
-        { item_id: 'item-3', display_name: 'Example', username: 'third@example.com' },
-        { item_id: 'item-4', display_name: 'Example', username: 'fourth@example.com' },
+        { item_id: 'same-prefix-a', display_name: 'Example' },
+        { item_id: 'same-prefix-b', display_name: 'Example' },
+        { item_id: 'same-prefix-c', display_name: 'Example' },
+        { item_id: 'same-prefix-d', display_name: 'Example' },
       ],
     });
 
@@ -514,7 +499,7 @@ describe('content prompt — page overlay', () => {
     expect(
       rendered.querySelector('input[aria-label="Search saved logins to update"]'),
     ).not.toBeNull();
-    expect(rendered.textContent).toContain('fourth@example.com');
+    expect(rendered.textContent).toContain('ID same-prefix-d');
     expect(
       Array.from(rendered.querySelectorAll('button')).filter((button) =>
         button.textContent?.startsWith('Update'),
@@ -524,13 +509,13 @@ describe('content prompt — page overlay', () => {
       'input[aria-label="Search saved logins to update"]',
     );
     if (!search) throw new Error('Capture prompt did not mount target search');
-    search.value = 'fourth';
+    search.value = 'example';
     search.dispatchEvent(new Event('input', { bubbles: true }));
     expect(
       Array.from(rendered.querySelectorAll('button')).filter((button) =>
         button.textContent?.startsWith('Update'),
       ),
-    ).toHaveLength(1);
+    ).toHaveLength(4);
 
     dismissCapturePrompt();
     spy.mockRestore();
@@ -543,10 +528,10 @@ describe('content prompt — page overlay', () => {
       host: 'app.example.com',
       username: USER,
       existing: [
-        { item_id: 'item-1', display_name: 'Example', username: 'first@example.com' },
-        { item_id: 'item-2', display_name: 'Example', username: 'second@example.com' },
-        { item_id: 'item-3', display_name: 'Example', username: 'third@example.com' },
-        { item_id: 'item-4', display_name: 'Example', username: 'fourth@example.com' },
+        { item_id: 'same-prefix-a', display_name: 'Example' },
+        { item_id: 'same-prefix-b', display_name: 'Example' },
+        { item_id: 'same-prefix-c', display_name: 'Example' },
+        { item_id: 'same-prefix-d', display_name: 'Example' },
       ],
     };
     const { PendingCaptureCard } = await import('@/features/vault/PendingCaptureCard');
@@ -556,12 +541,61 @@ describe('content prompt — page overlay', () => {
     });
 
     expect(screen.getByLabelText('Search saved logins to update')).toBeTruthy();
-    expect(screen.getByRole('button', { name: /fourth@example\.com/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /ID same-prefix-d/i })).toBeTruthy();
     expect(screen.getAllByRole('button', { name: /update/i })).toHaveLength(4);
     fireEvent.change(screen.getByLabelText('Search saved logins to update'), {
-      target: { value: 'fourth' },
+      target: { value: 'example' },
     });
-    expect(screen.getAllByRole('button', { name: /update/i })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: /update/i })).toHaveLength(4);
+    fireEvent.click(screen.getByRole('button', { name: /ID same-prefix-d/i }));
+    expect(panelDecisions.at(-1)).toEqual({
+      candidateId: 'cap-panel-four-targets',
+      action: 'update',
+      itemId: 'same-prefix-d',
+    });
+  });
+
+  it('does not let an earlier completion timer dismiss a replacement prompt', async () => {
+    const { dismissCapturePrompt, showCapturePrompt } = await import(
+      '@/lib/credentials/capture-prompt'
+    );
+    const attachShadow = HTMLElement.prototype.attachShadow;
+    const captured: { shadow: ShadowRoot | null } = { shadow: null };
+    const spy = vi.spyOn(HTMLElement.prototype, 'attachShadow').mockImplementation(function (
+      this: HTMLElement,
+      init: ShadowRootInit,
+    ) {
+      captured.shadow = attachShadow.call(this, init);
+      return captured.shadow;
+    });
+    Object.assign(chrome, {
+      runtime: {
+        id: 'test-extension',
+        sendMessage: async () => ({ ok: true, status: 'saved', message: 'Saved.' }),
+      },
+    });
+    showCapturePrompt({
+      candidateId: 'cap-a',
+      tabId: 7,
+      host: 'app.example.com',
+      username: USER,
+      existing: [],
+    });
+    const save = captured.shadow?.querySelector('button');
+    if (!save) throw new Error('Capture prompt did not mount Save');
+    save.click();
+    await Promise.resolve();
+    showCapturePrompt({
+      candidateId: 'cap-b',
+      tabId: 7,
+      host: 'app.example.com',
+      username: USER,
+      existing: [],
+    });
+    await vi.advanceTimersByTimeAsync(1800);
+    expect(document.getElementById('matrx-login-capture-host')).not.toBeNull();
+    dismissCapturePrompt();
+    spy.mockRestore();
   });
 
   it('drops an old decision result when a newer pending candidate replaces it', async () => {
@@ -570,7 +604,7 @@ describe('content prompt — page overlay', () => {
       tabId: 7,
       host: 'app.example.com',
       username: USER,
-      existing: [{ item_id: 'item-old', display_name: 'Old', username: 'old@example.com' }],
+      existing: [{ item_id: 'item-old', display_name: 'Old' }],
     };
     let releaseDecision!: (result: { ok: boolean; status: 'updated'; message: string }) => void;
     decisionGate = new Promise((resolve) => {
@@ -581,20 +615,20 @@ describe('content prompt — page overlay', () => {
     await act(async () => {
       await Promise.resolve();
     });
-    fireEvent.click(screen.getByRole('button', { name: /old@example\.com/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Old/i }));
 
     panelMeta = {
       candidateId: 'cap-new',
       tabId: 7,
       host: 'app.example.com',
       username: USER,
-      existing: [{ item_id: 'item-new', display_name: 'New', username: 'new@example.com' }],
+      existing: [{ item_id: 'item-new', display_name: 'New' }],
     };
     await act(async () => {
       panelChanged?.({ tabId: 7 });
       await Promise.resolve();
     });
-    const newer = screen.getByRole('button', { name: /new@example\.com/i });
+    const newer = screen.getByRole('button', { name: /^Update New$/i });
     expect(newer).toHaveProperty('disabled', false);
 
     releaseDecision({ ok: true, status: 'updated', message: 'Updated old login.' });
@@ -602,6 +636,27 @@ describe('content prompt — page overlay', () => {
       await Promise.resolve();
     });
     expect(screen.queryByText('Updated old login.')).toBeNull();
+  });
+
+  it('refuses a delayed status response after the panel switches tabs', async () => {
+    let release!: (meta: CapturePromptMeta | null) => void;
+    statusGateForTab7 = new Promise((resolve) => {
+      release = resolve;
+    });
+    const { PendingCaptureCard } = await import('@/features/vault/PendingCaptureCard');
+    const view = render(createElement(PendingCaptureCard, { tabId: 7, onSaved: () => undefined }));
+    view.rerender(createElement(PendingCaptureCard, { tabId: 8, onSaved: () => undefined }));
+    release({
+      candidateId: 'cap-stale-tab',
+      tabId: 7,
+      host: 'app.example.com',
+      username: USER,
+      existing: [{ item_id: 'item-stale', display_name: 'Stale' }],
+    });
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(screen.queryByRole('button', { name: /Stale/i })).toBeNull();
   });
 
   it('resets page styles before applying the fixed top-right position', async () => {

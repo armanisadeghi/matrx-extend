@@ -2405,7 +2405,7 @@ Every entry follows this shape:
   3. Sign out of the site and sign in again with a DIFFERENT password → the card now
      offers **Update &lt;item name&gt;** and **Save as new**. With four or more same-site
      logins, search the compact scrollable Update list and choose one by its display name
-     and available username; every saved target remains reachable. Click Update → reveal the
+     and its shown stable ID suffix when names collide; every saved target remains reachable. Click Update → reveal the
      password field in the Vault tab → it is the new value.
   4. Dismiss the on-page card (**Not now**) → nothing saved; the Vault-tab card is
      gone too. Sign in again, this time open the side panel first → the same offer sits

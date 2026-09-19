@@ -13,7 +13,10 @@ import type {
   CapturePromptMeta,
   CaptureStatusQuery,
 } from '@/lib/credentials/capture-types';
-import { filterCaptureUpdateTargets } from '@/lib/credentials/capture-update-targets';
+import {
+  captureUpdateTargetLabel,
+  filterCaptureUpdateTargets,
+} from '@/lib/credentials/capture-update-targets';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
@@ -33,7 +36,9 @@ export function PendingCaptureCard({
   const [notice, setNotice] = useState<string | null>(null);
   const [targetQuery, setTargetQuery] = useState('');
   const currentCandidateId = useRef<string | null>(null);
+  const currentTabId = useRef<number | null>(tabId);
   const refreshEpoch = useRef(0);
+  currentTabId.current = tabId;
   currentCandidateId.current = meta?.candidateId ?? null;
   const updateTargets = useMemo(
     () => (meta ? filterCaptureUpdateTargets(meta.existing, targetQuery) : []),
@@ -56,7 +61,7 @@ export function PendingCaptureCard({
         CHANNELS.CREDENTIAL_CAPTURE_STATUS,
         { tabId },
       );
-      if (requestEpoch !== refreshEpoch.current) return;
+      if (requestEpoch !== refreshEpoch.current || currentTabId.current !== tabId) return;
       if (currentCandidateId.current !== (next?.candidateId ?? null)) {
         currentCandidateId.current = next?.candidateId ?? null;
         setBusy(false);
@@ -65,7 +70,7 @@ export function PendingCaptureCard({
       }
       setMeta(next ?? null);
     } catch {
-      if (requestEpoch !== refreshEpoch.current) return;
+      if (requestEpoch !== refreshEpoch.current || currentTabId.current !== tabId) return;
       currentCandidateId.current = null;
       setMeta(null);
       setBusy(false);
@@ -85,6 +90,8 @@ export function PendingCaptureCard({
     async (decision: Omit<CaptureDecision, 'candidateId'>) => {
       if (!meta) return;
       const candidateId = meta.candidateId;
+      const decisionTabId = tabId;
+      if (meta.tabId !== decisionTabId) return;
       setBusy(true);
       setNotice(null);
       try {
@@ -92,26 +99,30 @@ export function PendingCaptureCard({
           CHANNELS.CREDENTIAL_CAPTURE_DECISION,
           { candidateId, ...decision },
         );
-        if (currentCandidateId.current !== candidateId) return;
+        if (currentCandidateId.current !== candidateId || currentTabId.current !== decisionTabId)
+          return;
         setNotice(r.message);
         if (r.status === 'saved' || r.status === 'updated') onSaved();
         if (r.ok || r.status === 'expired') setTimeout(() => setNotice(null), 2500);
       } catch {
-        if (currentCandidateId.current !== candidateId) return;
+        if (currentCandidateId.current !== candidateId || currentTabId.current !== decisionTabId)
+          return;
         setNotice('Matrx did not answer. Try again.');
       } finally {
-        if (currentCandidateId.current === candidateId) setBusy(false);
+        if (currentCandidateId.current === candidateId && currentTabId.current === decisionTabId)
+          setBusy(false);
       }
     },
-    [meta, onSaved],
+    [meta, onSaved, tabId],
   );
 
-  if (!meta && !notice) return null;
+  const visibleMeta = meta?.tabId === tabId ? meta : null;
+  if (!visibleMeta && !notice) return null;
 
   return (
     <div className="mx-2 mb-2 rounded-md border border-primary/30 bg-primary/5 p-2">
-      {meta ? (
-        meta.unavailable ? (
+      {visibleMeta ? (
+        visibleMeta.unavailable ? (
           <p className="text-[11px] text-muted-foreground">
             Temporary browser memory is unavailable. Reopen the extension, then save this login from
             the Vault.
@@ -123,7 +134,9 @@ export function PendingCaptureCard({
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-medium">Save this login to your Vault?</p>
                 <p className="truncate text-[11px] text-muted-foreground">
-                  {meta.username ? `${meta.host} · ${meta.username}` : meta.host}
+                  {visibleMeta.username
+                    ? `${visibleMeta.host} · ${visibleMeta.username}`
+                    : visibleMeta.host}
                 </p>
               </div>
               <button
@@ -136,9 +149,9 @@ export function PendingCaptureCard({
                 <X className="size-3.5" />
               </button>
             </div>
-            {meta.existing.length > 0 && (
+            {visibleMeta.existing.length > 0 && (
               <div className="mb-1.5 space-y-1">
-                {meta.existing.length > 1 && (
+                {visibleMeta.existing.length > 1 && (
                   <Input
                     aria-label="Search saved logins to update"
                     className="h-7 text-[11px]"
@@ -148,23 +161,26 @@ export function PendingCaptureCard({
                   />
                 )}
                 <div className="max-h-28 space-y-1 overflow-y-auto pr-1">
-                  {updateTargets.map((item) => (
-                    <Button
-                      key={item.item_id}
-                      size="sm"
-                      className="h-auto min-h-6 w-full justify-start px-2 py-1 text-left text-[11px]"
-                      disabled={busy}
-                      onClick={() => void decide({ action: 'update', itemId: item.item_id })}
-                    >
-                      {busy ? <Loader2 className="size-3 animate-spin" /> : 'Update'}
-                      <span className="ml-1 min-w-0 truncate">{item.display_name}</span>
-                      {item.username && (
-                        <span className="ml-1 min-w-0 truncate text-muted-foreground">
-                          · {item.username}
-                        </span>
-                      )}
-                    </Button>
-                  ))}
+                  {updateTargets.map((item) => {
+                    const label = captureUpdateTargetLabel(item, visibleMeta.existing);
+                    return (
+                      <Button
+                        key={item.item_id}
+                        size="sm"
+                        className="h-auto min-h-6 w-full justify-start px-2 py-1 text-left text-[11px]"
+                        disabled={busy}
+                        onClick={() => void decide({ action: 'update', itemId: item.item_id })}
+                      >
+                        {busy ? <Loader2 className="size-3 animate-spin" /> : 'Update'}
+                        <span className="ml-1 min-w-0 truncate">{label.primary}</span>
+                        {label.secondary && (
+                          <span className="ml-1 min-w-0 truncate text-muted-foreground">
+                            · {label.secondary}
+                          </span>
+                        )}
+                      </Button>
+                    );
+                  })}
                   {updateTargets.length === 0 && (
                     <p className="px-1 text-[11px] text-muted-foreground">No saved logins match.</p>
                   )}
@@ -174,14 +190,14 @@ export function PendingCaptureCard({
             <div className="flex flex-wrap gap-1">
               <Button
                 size="sm"
-                variant={meta.existing.length > 0 ? 'outline' : 'default'}
+                variant={visibleMeta.existing.length > 0 ? 'outline' : 'default'}
                 className="h-6 px-2 text-[11px]"
                 disabled={busy}
                 onClick={() => void decide({ action: 'save' })}
               >
                 {busy ? (
                   <Loader2 className="size-3 animate-spin" />
-                ) : meta.existing.length > 0 ? (
+                ) : visibleMeta.existing.length > 0 ? (
                   'Save as new'
                 ) : (
                   'Save'
