@@ -37,7 +37,7 @@
 import { STORAGE_KEYS } from '@/config/env';
 import { getCurrentUser } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
-import { getOne, setOne } from '@/lib/storage/chrome-local';
+import { getOne, onChange, setOne } from '@/lib/storage/chrome-local';
 import { getSupabase } from '@/lib/supabase/client';
 import { iamDb, usersDb } from '@/lib/supabase/schemas';
 
@@ -251,6 +251,41 @@ export async function setActiveOrganization(organizationId: string): Promise<Mem
   }
   await selectActiveOrganization(match);
   return match;
+}
+
+/**
+ * Tell me when this install changes workspace.
+ *
+ * ## The defect this closes
+ *
+ * A person pressed "Switch to {workspace}" in the Capture panel. The stored
+ * selection changed instantly and correctly — and the screen sat there for
+ * eight seconds, until an unrelated poll happened to come round. A control
+ * that has already worked and shows nothing is worse than one that is absent:
+ * it teaches the person the button is broken, and the honest fix is not a
+ * faster poll, it is the screen hearing about the change (law 4).
+ *
+ * ## Why it lives HERE and not in that view
+ *
+ * Every org-scoped surface has the same problem the moment somebody switches
+ * workspace — the capture queue, the vault's admission, anything that filters
+ * by organization. So the answer belongs to the ONE resolver that owns the
+ * selection, not to the screen that noticed first (law 5). A surface that
+ * reads `getActiveOrganizationId()` subscribes here and re-reads; it never
+ * watches `chrome.storage` for this key itself.
+ *
+ * Fires in EVERY context (panel, service worker, options) because
+ * `chrome.storage.onChanged` is global — which is the point: the switch may be
+ * made by the frontend bridge in the service worker while the panel is open.
+ *
+ * @returns an unsubscribe function.
+ */
+export function onActiveOrganizationChange(
+  cb: (organizationId: string | null) => void,
+): () => void {
+  return onChange<StoredActiveOrganization | null>(STORAGE_KEYS.ACTIVE_ORGANIZATION, (next) => {
+    cb(next && typeof next.id === 'string' ? next.id : null);
+  });
 }
 
 /** Forget this install's selection (sign-out). */

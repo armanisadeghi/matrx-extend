@@ -21,11 +21,19 @@
 
 import { type Handoff, NEEDS_YOU_STATUSES, handoffSchema } from '@/lib/capture-ladder/types';
 import { log } from '@/lib/debug/log';
-import { getActiveOrganizationId, listMemberOrganizations } from '@/lib/org/active-org';
+import {
+  getActiveOrganizationId,
+  listMemberOrganizations,
+  onActiveOrganizationChange,
+} from '@/lib/org/active-org';
 import { failDbCall } from '@/lib/supabase/db-failure';
 import { mediaDb } from '@/lib/supabase/schemas';
 import type { ChannelHandle } from '@ai-matrx/realtime';
-import { defineChannelNamespace, onRealtimeManagerChange } from '@ai-matrx/realtime';
+import {
+  type RealtimeManager,
+  defineChannelNamespace,
+  onRealtimeManagerChange,
+} from '@ai-matrx/realtime';
 
 /**
  * ONE PLACE NAMES THE CHANNEL. supabase-js dedupes channels by topic, so two
@@ -299,7 +307,12 @@ export function subscribeNeedsYou(
     );
   };
 
-  const stopManagerWatch = onRealtimeManagerChange((manager) => {
+  /**
+   * Re-open the live subscription against whatever organization is now
+   * active. Extracted because TWO things can change it: the realtime manager
+   * coming or going, and the person switching workspace.
+   */
+  const openForActiveOrganization = (manager: RealtimeManager | null): void => {
     if (handle) {
       handle.close();
       handle = null;
@@ -339,6 +352,28 @@ export function subscribeNeedsYou(
         },
       });
     });
+  };
+
+  let currentManager: RealtimeManager | null = null;
+  const stopManagerWatch = onRealtimeManagerChange((manager) => {
+    currentManager = manager;
+    openForActiveOrganization(manager);
+  });
+
+  /**
+   * 🚨 THE SWITCH MUST BE INSTANT. Pressing "Switch to {workspace}" changed
+   * the stored selection immediately and then the screen sat there until the
+   * next poll — up to `pollMs`, eight seconds and more in practice. A control
+   * that has already worked and shows nothing reads as a dead click, which is
+   * worse than no control at all (law 4). The list re-reads the moment the ONE
+   * resolver says the workspace changed, and the live subscription moves to
+   * the new organization's topic with it — a subscription left on the old
+   * topic would have gone quiet for good.
+   */
+  const stopOrganizationWatch = onActiveOrganizationChange(() => {
+    if (stopped) return;
+    openForActiveOrganization(currentManager);
+    refresh();
   });
 
   const timer = setInterval(refresh, pollMs);
@@ -348,6 +383,7 @@ export function subscribeNeedsYou(
     stopped = true;
     clearInterval(timer);
     stopManagerWatch();
+    stopOrganizationWatch();
     if (handle) {
       handle.close();
       handle = null;

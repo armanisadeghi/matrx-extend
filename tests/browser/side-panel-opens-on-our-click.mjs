@@ -17,7 +17,14 @@
  *      handler (it refuses for an unsigned-in browser, in plain English, which
  *      is the correct answer here) WITHOUT Chrome's gesture refusal appearing
  *      anywhere — the panel open is not what failed;
- *   3. the control: the same `chrome.sidePanel.open()` with NO gesture is
+ *   3. the SAME click from `acquisition-frontier.localhost` — the per-session
+ *      preview host convention matrx-frontend runs every agent's dev server
+ *      on. Until 2026-09-19 the manifest allowed only the bare `localhost`, so
+ *      `chrome.runtime.sendMessage` was undefined there and the web app could
+ *      not see the extension at all. This is the line that proves Chrome
+ *      really accepts `http://*.localhost/*`, rather than our reading of its
+ *      match-pattern grammar;
+ *   4. the control: the same `chrome.sidePanel.open()` with NO gesture is
  *      refused. Without this line the run could pass in a browser that had
  *      stopped enforcing gestures at all, and would be proving nothing.
  *
@@ -155,7 +162,37 @@ try {
     pickedText,
   );
 
-  // 3 — the control
+  // 3 — the per-session preview host. Chrome resolves any `*.localhost` label
+  // to loopback itself, so this reaches the same server on the same port; what
+  // differs is the ORIGIN Chrome judges against externally_connectable.
+  const previewPage = await ctx.newPage();
+  await previewPage.goto(`http://acquisition-frontier.localhost:${PORT}/?ext=${extId}`);
+  await previewPage.waitForTimeout(500);
+  const reachable = await previewPage.evaluate(
+    () => typeof chrome !== 'undefined' && typeof chrome?.runtime?.sendMessage === 'function',
+  );
+  check(
+    reachable,
+    'the extension is reachable from a *.localhost preview host at all',
+    'chrome.runtime.sendMessage is undefined there — the manifest does not admit the origin',
+  );
+  if (reachable) {
+    await previewPage.click('#openPanel');
+    await previewPage
+      .waitForFunction(() => document.getElementById('out').textContent.length > 0, {
+        timeout: 15000,
+      })
+      .catch(() => {});
+    const fromPreview = JSON.parse((await previewPage.locator('#out').textContent()) || '{}');
+    check(
+      fromPreview?.ok === true && fromPreview?.result?.opened === true,
+      'a click on a *.localhost preview host opens the side panel too',
+      JSON.stringify(fromPreview),
+    );
+  }
+  await previewPage.close().catch(() => {});
+
+  // 4 — the control
   const noGesture = await worker.evaluate(async () => {
     const [t] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
     try {

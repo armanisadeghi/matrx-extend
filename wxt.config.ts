@@ -166,12 +166,26 @@ export default defineConfig({
     // wildcards (`http://localhost:*/*`). Bare-host patterns implicitly
     // match any port, so `http://localhost/*` covers
     // `http://localhost:3000/*`, `http://localhost:3001/*`, etc.
+    // 🚨 KEEP IN STEP WITH src/lib/origin-allowlist.ts. That list is the rule;
+    // this one is the platform gate that must be a SUPERSET of it, and the
+    // guard `tests/unit/origin-allowlist-manifest.test.ts` fails when it is
+    // not. Chrome's `*.host` form matches the bare host too, so
+    // `https://*.aimatrx.com/*` covers `aimatrx.com`, `www.`, `app.` and
+    // anything else the web app is served from.
+    //
+    // `http://*.localhost/*` is NOT decoration: matrx-frontend gives every
+    // agent session its own dev server at `<session>.localhost` so the
+    // sessions do not share a cookie jar, and without this line
+    // `chrome.runtime.sendMessage` is undefined on every one of those hosts —
+    // the web app cannot even detect the extension. Found by a cold walk on
+    // 2026-09-19 at `acquisition-frontier.localhost:3001`.
     externally_connectable: {
       matches: [
         'https://*.vercel.app/*',
         'https://*.aimatrx.com/*',
         'https://*.mymatrx.com/*',
         'http://localhost/*',
+        'http://*.localhost/*',
         'http://127.0.0.1/*',
       ],
     },
@@ -196,10 +210,7 @@ export default defineConfig({
           __dirname,
           '../aidream/apps/shared/records/src/core/index.ts',
         ),
-        '@ai-matrx/records': path.resolve(
-          __dirname,
-          '../aidream/apps/shared/records/src/index.ts',
-        ),
+        '@ai-matrx/records': path.resolve(__dirname, '../aidream/apps/shared/records/src/index.ts'),
       },
     },
     build: {

@@ -2811,3 +2811,43 @@ Every entry follows this shape:
   drives the real built extension from a real click in headless Chrome and asserts the panel
   opened — and that the same call with no gesture is still refused. The full browser matrix behind
   the design is `node tests/browser/side-panel-gesture-spike.mjs`.
+
+### The extension is reachable from every host the web app runs on
+
+- **What it does:** the web app can see and talk to this extension from production, from a plain
+  local dev server, AND from the per-session preview hosts matrx-frontend gives each agent
+  (`<session>.localhost:<port>`) so those sessions do not share one cookie jar.
+- **Where to test:** any AI Matrx page with an extension-dependent button — `/capture/needs-you`,
+  or `/settings/extension` which says outright whether it is installed in this browser.
+- **Steps:** open the page on `acquisition-frontier.localhost:3001` (or any other
+  `<session>.localhost`) and look at whether the extension is detected.
+- **Expected:** it says the extension IS installed and offers "Open in my browser". Until
+  2026-09-19 it always said "Add the extension" there, for a browser that had it — the manifest
+  admitted only the bare `localhost`, and a host glob matches labels, not the bare name, so Chrome
+  never delivered the message and `chrome.runtime.sendMessage` was undefined on the page.
+- **Edge cases worth poking:** a lookalike host (`aimatrx.com.evil.test`, `notlocalhost`) must
+  still be refused — the wildcard is for labels under `localhost`, not for anything that contains
+  the word.
+- **The automated version:** `pnpm vitest run tests/unit/origin-allowlist-manifest.test.ts` holds
+  the manifest and `src/lib/origin-allowlist.ts` together against a named table of the origins the
+  web app is really served from, and `node tests/browser/side-panel-opens-on-our-click.mjs` proves
+  a real Chrome actually honours `http://*.localhost/*` by clicking from one.
+
+### Switching workspace in the Capture panel is instant
+
+- **What it does:** when the Capture panel says pages are waiting in another of your workspaces
+  and you press "Switch to {workspace}", the list changes immediately.
+- **Where to test:** the extension's Capture tab, signed in as someone with waiting pages in more
+  than one workspace.
+- **Steps:** open the Capture tab in a workspace with none waiting; press "Switch to {workspace}".
+- **Expected:** the list and the workspace name change at once. Before 2026-09-19 the stored
+  selection changed instantly and the screen did not, for eight seconds or more — a dead-looking
+  click on a button that had already worked.
+- **Edge cases worth poking:**
+  - Let the web app switch it for you (press "Open in my browser" over there while the panel is
+    open): the panel must react the same way — the switch comes from the service worker, not a
+    button in the panel.
+  - After switching, a page queued in the NEW workspace must appear live, without a reload: the
+    live subscription moves with the workspace instead of staying on the one you left.
+- **The automated version:** `pnpm vitest run tests/unit/capture-queue-org-switch.test.ts` — it
+  sets the poll floor to ten minutes, so it can only pass by actually hearing about the change.

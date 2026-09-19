@@ -20,6 +20,17 @@ export const ALLOWED_ORIGIN_PATTERNS: readonly string[] = [
   'https://*-armani-sadeghis-projects.vercel.app/*',
   'http://localhost/*',
   'http://localhost:*/*',
+  // 🚨 EVERY per-session preview host. matrx-frontend runs each agent's dev
+  // server at its own `<session>.localhost` label so the sessions do not share
+  // one cookie jar (its next.config.js `allowedDevOrigins: ["*.localhost"]`).
+  // Without these two lines `chrome.runtime.sendMessage` is simply UNDEFINED on
+  // `acquisition-frontier.localhost:3001`, so the web app cannot see the
+  // extension at all and every button that needs it reads "Add the extension"
+  // — which is how a cold walk on 2026-09-19 found the hand-off untestable on
+  // the very host the whole preview convention runs on. `http://localhost/*`
+  // does NOT cover them: a host glob matches labels, not the bare name.
+  'http://*.localhost/*',
+  'http://*.localhost:*/*',
   'http://127.0.0.1/*',
   'http://127.0.0.1:*/*',
 ] as const;
