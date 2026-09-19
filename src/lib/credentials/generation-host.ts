@@ -88,19 +88,14 @@ function trustedSidepanel(sender: chrome.runtime.MessageSender): boolean {
   return sender.id === chrome.runtime.id && !sender.tab && sender.url === chrome.runtime.getURL('sidepanel.html');
 }
 async function panelWindow(sender: chrome.runtime.MessageSender): Promise<number | null> {
-  if (!trustedSidepanel(sender) || typeof sender.documentId !== 'string' || !chrome.runtime.getContexts) return null;
+  if (!trustedSidepanel(sender)) return null;
   try {
-    const contexts = (await chrome.runtime.getContexts({
-      contextTypes: ['SIDE_PANEL' as chrome.runtime.ContextType],
-    })) as Array<{ contextType?: string; documentId?: string; documentUrl?: string; windowId?: number }>;
-    const context = contexts.find(
-      (candidate) =>
-        candidate.contextType === 'SIDE_PANEL' &&
-        candidate.documentId === sender.documentId &&
-        candidate.documentUrl === chrome.runtime.getURL('sidepanel.html') &&
-        Number.isInteger(candidate.windowId),
-    );
-    return context?.windowId ?? null;
+    // Chrome 153 side-panel MessageSender has no documentId, while
+    // runtime.getContexts reports SIDE_PANEL windowId/tabId as -1. The exact
+    // extension sender boundary remains the authority; derive destination from
+    // the focused normal window and bind the requested active tab to it.
+    const window = await chrome.windows.getLastFocused({ windowTypes: ['normal'] });
+    return window.focused === true && Number.isInteger(window.id) ? window.id ?? null : null;
   } catch {
     return null;
   }

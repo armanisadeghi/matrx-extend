@@ -11,8 +11,8 @@ const state = vi.hoisted(() => ({
   documentId: 'frame-document',
   topDocumentId: 'top-document',
   fillGate: null as Promise<void> | null,
-  contextGate: null as Promise<void> | null,
-  contextAvailable: true,
+  focusedWindowGate: null as Promise<void> | null,
+  focusedWindowAvailable: true,
   fills: 0,
   discoveries: 0,
 }));
@@ -46,12 +46,11 @@ function request(operation: 'discover' | 'use' | 'discard', fields: Record<strin
 beforeEach(() => {
   listeners.length = 0; activation.length = 0; committed.length = 0; tabMessages.length = 0;
   state.user = USER; state.org = ORG; state.active = true; state.focused = true; state.permitted = true;
-  state.documentId = 'frame-document'; state.topDocumentId = 'top-document'; state.fillGate = null; state.contextGate = null; state.contextAvailable = true; state.fills = 0; state.discoveries = 0;
+  state.documentId = 'frame-document'; state.topDocumentId = 'top-document'; state.fillGate = null; state.focusedWindowGate = null; state.focusedWindowAvailable = true; state.fills = 0; state.discoveries = 0;
   (globalThis as unknown as { chrome: unknown }).chrome = {
     runtime: {
       id: 'extension-id', getURL: (path: string) => `chrome-extension://extension-id/${path}`,
       sendMessage: async (message: unknown) => { tabMessages.push(message); },
-      getContexts: async () => { await state.contextGate; return state.contextAvailable ? [{ contextType: 'SIDE_PANEL', documentId: 'panel-document', documentUrl: 'chrome-extension://extension-id/sidepanel.html', windowId: 1 }] : []; },
       onMessage: { addListener: (listener: (message: unknown, from: chrome.runtime.MessageSender, reply: (value: unknown) => void) => boolean) => listeners.push(listener) },
     },
     tabs: {
@@ -60,7 +59,11 @@ beforeEach(() => {
       onRemoved: { addListener: () => undefined }, onUpdated: { addListener: () => undefined },
       onActivated: { addListener: (listener: (info: chrome.tabs.TabActiveInfo) => void) => activation.push(listener) },
     },
-    windows: { get: async () => ({ focused: state.focused }), onRemoved: { addListener: () => undefined }, onFocusChanged: { addListener: () => undefined } },
+    windows: {
+      get: async () => ({ focused: state.focused }),
+      getLastFocused: async () => { await state.focusedWindowGate; return state.focusedWindowAvailable ? { id: 1, focused: state.focused } : { id: undefined, focused: false }; },
+      onRemoved: { addListener: () => undefined }, onFocusChanged: { addListener: () => undefined },
+    },
     permissions: { contains: async () => state.permitted },
     webNavigation: {
       getAllFrames: async () => [
@@ -144,9 +147,9 @@ describe('generated password host', () => {
     expect(state.fills).toBe(0);
   });
 
-  it('refuses discovery when activation changes away and back while sidepanel binding awaits', async () => {
+  it('refuses discovery when activation changes away and back while focused-window binding awaits', async () => {
     let release!: () => void;
-    state.contextGate = new Promise<void>((resolve) => { release = resolve; });
+    state.focusedWindowGate = new Promise<void>((resolve) => { release = resolve; });
     const { registerGeneratedPasswordHost } = await import('@/lib/credentials/generation-host');
     registerGeneratedPasswordHost();
     const pending = ask(request('discover', { tabId: 7 }));
@@ -174,12 +177,12 @@ describe('generated password host', () => {
     await expect(ask(request('use', { offerId: found.offers[0]!.id, value: 'A-generated-password-12' }))).resolves.toMatchObject({ status: 'stale' });
   });
 
-  it('claims use before deferred getContexts and consumes the replay', async () => {
+  it('claims use before deferred focused-window lookup and consumes the replay', async () => {
     const { registerGeneratedPasswordHost } = await import('@/lib/credentials/generation-host');
     registerGeneratedPasswordHost();
     const found = await ask(request('discover', { tabId: 7 })) as { offers: Array<{ id: string; frameId: number }> };
     let release!: () => void;
-    state.contextGate = new Promise<void>((resolve) => { release = resolve; });
+    state.focusedWindowGate = new Promise<void>((resolve) => { release = resolve; });
     const offer = found.offers.find((candidate) => candidate.frameId === 3)!;
     const first = ask(request('use', { offerId: offer.id, value: 'A-generated-password-12' }));
     await expect(ask(request('use', { offerId: offer.id, value: 'A-generated-password-12' }))).resolves.toMatchObject({ status: 'stale' });
@@ -188,8 +191,8 @@ describe('generated password host', () => {
     expect(state.fills).toBe(1);
   });
 
-  it('returns a fixed refusal when the real sidepanel context cannot be found', async () => {
-    state.contextAvailable = false;
+  it('returns a fixed refusal when no focused normal window can be found', async () => {
+    state.focusedWindowAvailable = false;
     const { registerGeneratedPasswordHost } = await import('@/lib/credentials/generation-host');
     registerGeneratedPasswordHost();
     await expect(ask(request('discover', { tabId: 7 }))).resolves.toMatchObject({ status: 'unavailable' });
