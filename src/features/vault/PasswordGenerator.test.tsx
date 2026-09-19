@@ -231,6 +231,22 @@ describe('PasswordGenerator', () => {
     expect(mocks.sendMessage).not.toHaveBeenCalled();
   });
 
+  it('clears a current generated value when discovery loses admission', async () => {
+    let runs = 0;
+    const discoveryLost = {
+      current: () => true,
+      run: async <T,>(work: () => Promise<T>) => (++runs === 1 ? work() : null),
+    };
+    render(<PasswordGenerator tabId={12} actor={actor} admission={discoveryLost} />);
+    open();
+    fireEvent.click(screen.getByRole('button', { name: 'Generate' }));
+    await waitFor(() =>
+      expect(screen.queryByRole('button', { name: 'Reveal generated value' })).toBeNull(),
+    );
+    expect(screen.getByText(/page or account changed/i)).toBeTruthy();
+    expect(mocks.sendMessage).not.toHaveBeenCalled();
+  });
+
   it('never restores a late discovery after collapse', async () => {
     let resolveDiscovery!: (response: { status: 'ready'; offers: (typeof offer)[] }) => void;
     mocks.sendMessage.mockImplementation(
@@ -248,6 +264,32 @@ describe('PasswordGenerator', () => {
     await waitFor(() =>
       expect(screen.queryByRole('button', { name: 'Reveal generated value' })).toBeNull(),
     );
+  });
+
+  it('does not let an old discovery clear a newer generated value', async () => {
+    let resolveOld!: (response: { status: 'ready'; offers: (typeof offer)[] }) => void;
+    mocks.sendMessage
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolveOld = resolve as typeof resolveOld;
+          }),
+      )
+      .mockResolvedValue({ status: 'ready', offers: [offer] });
+    renderGenerator();
+    open();
+    fireEvent.click(screen.getByRole('button', { name: 'Generate' }));
+    await waitFor(() => expect(mocks.sendMessage).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByRole('button', { name: /password generator/i }));
+    open();
+    mocks.rpc.mockResolvedValue({ data: 1024, error: null });
+    await generate();
+    resolveOld({ status: 'ready', offers: [offer] });
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(screen.getByRole('button', { name: 'Reveal generated value' })).toBeTruthy();
   });
 
   it('keeps the Filled result after the former secret TTL elapses', async () => {

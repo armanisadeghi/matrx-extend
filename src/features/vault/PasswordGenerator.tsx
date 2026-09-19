@@ -196,7 +196,16 @@ export function PasswordGenerator({
             tabId,
           }) as Promise<GenerationDiscoveryResponse>,
       );
-      if (generationEpoch.current !== operationEpoch || !admission.current() || !discovery) return;
+      // A newer panel operation owns the screen now. It may have generated a
+      // different value, so an old continuation must be a true no-op.
+      if (generationEpoch.current !== operationEpoch) return;
+      // This is still our operation, but admission failed after plaintext was
+      // created. Drop it rather than leaving a value usable in an unverified
+      // tab/actor context.
+      if (!admission.current() || !discovery) {
+        clearGenerated('The page or account changed. Generate a new value to continue.');
+        return;
+      }
       setRevealed(false);
       if (discovery.status !== 'ready') {
         setStatus(`${discovery.message} You can still copy the generated value manually.`);
