@@ -1,0 +1,546 @@
+import { copyToClipboard } from '@/lib/clipboard/copy';
+import { resolveGeneratedCredentialLimits } from '@/lib/credentials/generation-limits';
+import type {
+  GenerationDiscoveryResponse,
+  GenerationOffer,
+  GenerationUseResponse,
+} from '@/lib/credentials/generation-protocol';
+import { GENERATION_INVALIDATED } from '@/lib/credentials/generation-protocol';
+import { GENERATED_SECRET_TTL_MS } from '@/lib/credentials/generation-targets';
+import { useTransientSecret } from '@/lib/credentials/transient-secret';
+import { cn } from '@/lib/utils';
+import { Button, BasicInput as Input, Switch } from '@ai-matrx/design-system';
+import {
+  type CredentialGenerationOptions,
+  generateCredentialSecret,
+} from '@ai-matrx/kit/credential-generator';
+import {
+  ChevronDown,
+  ChevronRight,
+  Copy,
+  Eye,
+  EyeOff,
+  Loader2,
+  WandSparkles,
+  X,
+} from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { PanelActionAdmission } from './usePanelAdmission';
+
+type GeneratorKind = 'password' | 'passphrase';
+
+const PASSWORD_DEFAULTS = {
+  length: 24,
+  lowercase: true,
+  uppercase: true,
+  digits: true,
+  symbols: true,
+  excludeAmbiguous: true,
+};
+const PASSPHRASE_DEFAULTS: {
+  wordCount: number;
+  separator: '-' | ' ' | '.';
+  capitalize: boolean;
+  appendDigit: boolean;
+} = {
+  wordCount: 6,
+  separator: '-' as const,
+  capitalize: false,
+  appendDigit: false,
+};
+
+export function PasswordGenerator({
+  tabId,
+  actor,
+  admission,
+}: {
+  tabId: number | null;
+  actor: { userId: string; organizationId: string } | null;
+  admission: PanelActionAdmission;
+}) {
+  const [open, setOpen] = useState(false);
+  const [kind, setKind] = useState<GeneratorKind>('password');
+  const [password, setPassword] = useState(PASSWORD_DEFAULTS);
+  const [passphrase, setPassphrase] = useState(PASSPHRASE_DEFAULTS);
+  const [offers, setOffers] = useState<GenerationOffer[]>([]);
+  const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null);
+  const [revealed, setRevealed] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
+  const opener = useRef<HTMLButtonElement>(null);
+  const { value: generatedValue, hold, clear } = useTransientSecret(GENERATED_SECRET_TTL_MS);
+  const busyRef = useRef(false);
+  const offersRef = useRef<GenerationOffer[]>([]);
+  const generationEpoch = useRef(0);
+  const expiryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  offersRef.current = offers;
+
+  const discard = useCallback((ids: string[]) => {
+    if (ids.length === 0) return;
+    void chrome.runtime
+      .sendMessage({
+        __matrxCredentialGeneration: true,
+        operation: 'discard',
+        offerIds: ids,
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const clearGenerated = useCallback(
+    (message?: string) => {
+      generationEpoch.current += 1;
+      if (expiryTimer.current !== null) {
+        clearTimeout(expiryTimer.current);
+        expiryTimer.current = null;
+      }
+      discard(offersRef.current.map((offer) => offer.id));
+      clear();
+      setOffers([]);
+      setSelectedOfferId(null);
+      setRevealed(false);
+      if (message !== undefined) setStatus(message);
+    },
+    [clear, discard],
+  );
+
+  useEffect(() => () => clearGenerated(), [clearGenerated]);
+  useEffect(() => {
+    if (!admission.current()) clearGenerated('The page changed. Generate a new value to continue.');
+  }, [admission, clearGenerated]);
+  useEffect(() => {
+    const invalidated = (message: {
+      __matrxCredentialGeneration?: boolean;
+      operation?: string;
+    }) => {
+      if (message.__matrxCredentialGeneration && message.operation === GENERATION_INVALIDATED)
+        clearGenerated('The page changed. Generate a new value to continue.');
+    };
+    chrome.runtime.onMessage.addListener(invalidated);
+    return () => chrome.runtime.onMessage.removeListener(invalidated);
+  }, [clearGenerated]);
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || !open) return;
+      event.preventDefault();
+      setOpen(false);
+      clearGenerated();
+      opener.current?.focus();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [clearGenerated, open]);
+
+  const changeOptions = useCallback(
+    (change: () => void) => {
+      change();
+      clearGenerated('Options changed. Generate a new value to use it.');
+    },
+    [clearGenerated],
+  );
+
+  const generate = useCallback(async () => {
+    if (busyRef.current || tabId === null || !actor) {
+      clearGenerated('Password generation is unavailable. Check your sign-in and try again.');
+      return;
+    }
+    busyRef.current = true;
+    setBusy(true);
+    clearGenerated();
+    try {
+      const limits = await resolveGeneratedCredentialLimits(actor, admission);
+      if (!limits.ok) {
+        clearGenerated(
+          limits.reason === 'configuration_unavailable'
+            ? 'Password generation is unavailable because this organization’s secure limits could not be loaded. Try again later.'
+            : 'The page changed. Generate a new value to continue.',
+        );
+        return;
+      }
+      if (!admission.current()) {
+        clearGenerated('The page changed. Generate a new value to continue.');
+        return;
+      }
+      const options: CredentialGenerationOptions =
+        kind === 'password' ? { kind, ...password } : { kind, ...passphrase };
+      const generated = generateCredentialSecret(options, limits.limits);
+      if (!generated.ok) {
+        clearGenerated('A secure value could not be generated. Check the options and try again.');
+        return;
+      }
+      const epoch = generationEpoch.current;
+      hold(generated.value);
+      expiryTimer.current = setTimeout(() => {
+        if (generationEpoch.current === epoch)
+          clearGenerated('This generated value expired. Generate a new value to continue.');
+      }, GENERATED_SECRET_TTL_MS);
+      setStatus('Finding compatible new-password fields…');
+      const discovery = await admission.run(
+        async () =>
+          chrome.runtime.sendMessage({
+            __matrxCredentialGeneration: true,
+            operation: 'discover',
+            tabId,
+          }) as Promise<GenerationDiscoveryResponse>,
+      );
+      if (!admission.current() || !discovery || generationEpoch.current !== epoch) {
+        clearGenerated('The page changed. Generate a new value to continue.');
+        return;
+      }
+      setRevealed(false);
+      if (discovery.status !== 'ready') {
+        setStatus(`${discovery.message} You can still copy the generated value manually.`);
+        return;
+      }
+      setOffers(discovery.offers);
+      const oneTopFrameOffer = discovery.offers.length === 1 && discovery.offers[0]?.frameId === 0;
+      setSelectedOfferId(oneTopFrameOffer ? (discovery.offers[0]?.id ?? null) : null);
+      setStatus(
+        oneTopFrameOffer
+          ? 'Generated. Select Use to fill the new-password fields.'
+          : 'Generated. Choose the password fields before using it.',
+      );
+    } finally {
+      if (admission.current()) setBusy(false);
+      busyRef.current = false;
+    }
+  }, [actor, admission, clearGenerated, hold, kind, passphrase, password, tabId]);
+
+  const copy = useCallback(async () => {
+    if (busyRef.current || !generatedValue) return;
+    busyRef.current = true;
+    setBusy(true);
+    try {
+      const copied = await copyToClipboard(generatedValue);
+      if (admission.current())
+        setStatus(
+          copied
+            ? 'Copied. Clipboard is not cleared automatically.'
+            : 'Could not copy. Select Reveal and copy it manually.',
+        );
+    } finally {
+      busyRef.current = false;
+      if (admission.current()) setBusy(false);
+    }
+  }, [admission, generatedValue]);
+
+  const useGenerated = useCallback(async () => {
+    const offerId = selectedOfferId;
+    const value = generatedValue;
+    if (busyRef.current || !offerId || !value) return;
+    busyRef.current = true;
+    setBusy(true);
+    const otherIds = offersRef.current.map((offer) => offer.id).filter((id) => id !== offerId);
+    // Claim in this UI before any await. The host separately claims its offer.
+    setOffers([]);
+    setSelectedOfferId(null);
+    setRevealed(false);
+    clear();
+    discard(otherIds);
+    try {
+      const result = await admission.run(
+        async () =>
+          chrome.runtime.sendMessage({
+            __matrxCredentialGeneration: true,
+            operation: 'use',
+            offerId,
+            value,
+          }) as Promise<GenerationUseResponse>,
+      );
+      setStatus(result?.message ?? 'The page changed. Generate a new value to continue.');
+    } finally {
+      busyRef.current = false;
+      if (admission.current()) setBusy(false);
+    }
+  }, [admission, clear, discard, generatedValue, selectedOfferId]);
+
+  const hasValue = generatedValue !== null;
+  return (
+    <section className="border-b px-2 py-1.5" aria-label="Password generator">
+      <button
+        ref={opener}
+        type="button"
+        className="flex w-full items-center gap-1.5 rounded px-0.5 py-1 text-left text-xs font-medium hover:bg-muted/60"
+        aria-expanded={open}
+        onClick={() =>
+          setOpen((current) => {
+            if (current) clearGenerated();
+            return !current;
+          })
+        }
+      >
+        {open ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
+        <WandSparkles className="size-3 text-muted-foreground" /> Password generator
+      </button>
+      {open && (
+        <div className="space-y-2 px-0.5 pb-1 pt-1.5">
+          <div className="grid grid-cols-2 gap-1">
+            {(['password', 'passphrase'] as const).map((option) => (
+              <Button
+                key={option}
+                type="button"
+                size="sm"
+                variant={kind === option ? 'default' : 'outline'}
+                className="h-6 text-[11px]"
+                disabled={busy}
+                onClick={() => changeOptions(() => setKind(option))}
+              >
+                {option === 'password' ? 'Password' : 'Passphrase'}
+              </Button>
+            ))}
+          </div>
+          {kind === 'password' ? (
+            <PasswordOptions
+              value={password}
+              disabled={busy}
+              onChange={(next) => changeOptions(() => setPassword(next))}
+            />
+          ) : (
+            <PassphraseOptions
+              value={passphrase}
+              disabled={busy}
+              onChange={(next) => changeOptions(() => setPassphrase(next))}
+            />
+          )}
+          <div className="flex gap-1">
+            <Button
+              type="button"
+              size="sm"
+              className="h-7 flex-1 gap-1 text-[11px]"
+              disabled={busy}
+              onClick={() => void generate()}
+            >
+              {busy ? (
+                <Loader2 className="size-3 animate-spin" />
+              ) : (
+                <WandSparkles className="size-3" />
+              )}
+              {hasValue ? 'Regenerate' : 'Generate'}
+            </Button>
+            {hasValue && (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="h-7 px-2 text-[11px]"
+                disabled={busy}
+                onClick={() => clearGenerated()}
+              >
+                <X className="size-3" />
+                <span className="sr-only">Clear generated value</span>
+              </Button>
+            )}
+          </div>
+          {hasValue && (
+            <>
+              <div className="flex min-w-0 items-center gap-1 rounded border bg-muted/30 px-2 py-1.5">
+                <code className="min-w-0 flex-1 truncate text-[11px]">
+                  {revealed ? generatedValue : '••••••••••••••••••••••••'}
+                </code>
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-foreground"
+                  aria-label={revealed ? 'Hide generated value' : 'Reveal generated value'}
+                  disabled={busy}
+                  onClick={() => setRevealed((current) => !current)}
+                >
+                  {revealed ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
+                </button>
+              </div>
+              <div className="flex gap-1">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="h-7 flex-1 gap-1 text-[11px]"
+                  disabled={busy}
+                  onClick={() => void copy()}
+                >
+                  <Copy className="size-3" /> Copy
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  className="h-7 flex-1 text-[11px]"
+                  disabled={busy || !selectedOfferId}
+                  onClick={() => void useGenerated()}
+                >
+                  Use
+                </Button>
+              </div>
+              {offers.length > 0 && (
+                <OfferPicker
+                  offers={offers}
+                  selectedId={selectedOfferId}
+                  disabled={busy}
+                  onSelect={setSelectedOfferId}
+                />
+              )}
+            </>
+          )}
+          {status && (
+            <p aria-live="polite" className="text-[11px] leading-relaxed text-muted-foreground">
+              {status}
+            </p>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function PasswordOptions({
+  value,
+  disabled,
+  onChange,
+}: {
+  value: typeof PASSWORD_DEFAULTS;
+  disabled: boolean;
+  onChange: (next: typeof PASSWORD_DEFAULTS) => void;
+}) {
+  return (
+    <div className="space-y-1.5 text-[11px]">
+      <div className="flex items-center gap-2">
+        Length{' '}
+        <Input
+          aria-label="Password length"
+          type="number"
+          min={1}
+          value={value.length}
+          disabled={disabled}
+          onChange={(event) => onChange({ ...value, length: Number(event.target.value) })}
+          className="ml-auto h-6 w-16 text-xs"
+        />
+      </div>
+      <ToggleGrid disabled={disabled} value={value} onChange={onChange} />
+    </div>
+  );
+}
+function ToggleGrid({
+  value,
+  disabled,
+  onChange,
+}: {
+  value: typeof PASSWORD_DEFAULTS;
+  disabled: boolean;
+  onChange: (next: typeof PASSWORD_DEFAULTS) => void;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-x-2 gap-y-1">
+      {(
+        [
+          ['lowercase', 'Lowercase'],
+          ['uppercase', 'Uppercase'],
+          ['digits', 'Digits'],
+          ['symbols', 'Symbols'],
+          ['excludeAmbiguous', 'Exclude ambiguous'],
+        ] as const
+      ).map(([key, label]) => (
+        <div key={key} className="flex items-center gap-1.5">
+          <Switch
+            aria-label={label}
+            checked={value[key]}
+            disabled={disabled}
+            onCheckedChange={(checked) => onChange({ ...value, [key]: checked })}
+          />
+          <span>{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+function PassphraseOptions({
+  value,
+  disabled,
+  onChange,
+}: {
+  value: typeof PASSPHRASE_DEFAULTS;
+  disabled: boolean;
+  onChange: (next: typeof PASSPHRASE_DEFAULTS) => void;
+}) {
+  return (
+    <div className="space-y-1.5 text-[11px]">
+      <div className="flex items-center gap-2">
+        Words{' '}
+        <Input
+          aria-label="Passphrase word count"
+          type="number"
+          min={1}
+          value={value.wordCount}
+          disabled={disabled}
+          onChange={(event) => onChange({ ...value, wordCount: Number(event.target.value) })}
+          className="ml-auto h-6 w-16 text-xs"
+        />
+      </div>
+      <div className="flex items-center gap-2">
+        Separator{' '}
+        <select
+          aria-label="Passphrase separator"
+          className="ml-auto h-6 rounded border bg-background px-1 text-[11px]"
+          value={value.separator}
+          disabled={disabled}
+          onChange={(event) =>
+            onChange({ ...value, separator: event.target.value as '-' | ' ' | '.' })
+          }
+        >
+          <option value="-">Hyphen</option>
+          <option value=" ">Space</option>
+          <option value=".">Dot</option>
+        </select>
+      </div>
+      {(
+        [
+          ['capitalize', 'Capitalize'],
+          ['appendDigit', 'Append digit'],
+        ] as const
+      ).map(([key, label]) => (
+        <div key={key} className="flex items-center gap-1.5">
+          <Switch
+            aria-label={label}
+            checked={value[key]}
+            disabled={disabled}
+            onCheckedChange={(checked) => onChange({ ...value, [key]: checked })}
+          />
+          <span>{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+function OfferPicker({
+  offers,
+  selectedId,
+  disabled,
+  onSelect,
+}: {
+  offers: GenerationOffer[];
+  selectedId: string | null;
+  disabled: boolean;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <fieldset className="space-y-1">
+      <legend className="text-[11px] text-muted-foreground">Choose password fields</legend>
+      {offers.map((offer, index) => (
+        <label
+          key={offer.id}
+          className={cn(
+            'flex cursor-pointer items-center gap-1.5 rounded border px-2 py-1 text-[11px]',
+            selectedId === offer.id && 'border-primary',
+          )}
+        >
+          <input
+            type="radio"
+            name="generated-password-target"
+            checked={selectedId === offer.id}
+            disabled={disabled}
+            onChange={() => onSelect(offer.id)}
+          />
+          <span className="truncate">
+            {offer.origin} · {offer.fieldCount} {offer.fieldCount === 1 ? 'field' : 'fields'}
+            {offers.length > 1 ? ` · ${index + 1}` : ''}
+          </span>
+        </label>
+      ))}
+    </fieldset>
+  );
+}

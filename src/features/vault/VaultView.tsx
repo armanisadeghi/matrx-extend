@@ -75,6 +75,7 @@ import {
   X,
 } from 'lucide-react';
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { PasswordGenerator } from './PasswordGenerator';
 import { PendingCaptureCard } from './PendingCaptureCard';
 import { type PanelActionAdmission, usePanelAdmission } from './usePanelAdmission';
 import { useCredentialLogin, useVault } from './useVault';
@@ -209,6 +210,7 @@ function VaultSession({
           onDismissOutcome={login.dismiss}
           onCreateFromPage={() => setCreating(true)}
         />
+        <PasswordGenerator tabId={tab.id} actor={actor} admission={admission} />
 
         {vault.error && (
           <div className="mx-2 mb-2 flex items-start gap-1.5 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-1.5 text-xs">
