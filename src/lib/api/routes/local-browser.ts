@@ -113,9 +113,6 @@ export const localBrowserAckRequestSchema = z
       context.addIssue({ code: z.ZodIssueCode.custom, message: 'operation must match receipt' });
   });
 
-const admitReceipt = z
-  .object({ admission_id: uuid, status: z.enum(['created', 'cancelled', 'failed']) })
-  .strict();
 const cleanupReceipt = z
   .object({ stop_id: uuid, status: z.enum(['closed', 'already_absent', 'unconfirmed']) })
   .strict();
@@ -124,8 +121,16 @@ const ackResponseSchema = z.union([
     .object({
       status: z.literal('accepted'),
       operation: z.literal('admit'),
-      receipt: admitReceipt,
+      receipt: z.object({ admission_id: uuid, status: z.literal('created') }).strict(),
       lease_expires_at_ms: safeMilliseconds.nullable(),
+    })
+    .strict(),
+  z
+    .object({
+      status: z.literal('accepted'),
+      operation: z.literal('admit'),
+      receipt: z.object({ admission_id: uuid, status: z.enum(['cancelled', 'failed']) }).strict(),
+      lease_expires_at_ms: z.null(),
     })
     .strict(),
   z
@@ -166,7 +171,7 @@ export function acknowledgeLocalBrowser(request: {
       const receipt = z
         .object({
           admission_id: z.literal(request.receipt.admission_id),
-          status: z.enum(['created', 'cancelled', 'failed']),
+          status: z.literal(request.receipt.status),
         })
         .strict();
       return z.union([
@@ -175,7 +180,8 @@ export function acknowledgeLocalBrowser(request: {
             status: z.literal('accepted'),
             operation: z.literal('admit'),
             receipt,
-            lease_expires_at_ms: safeMilliseconds.nullable(),
+            lease_expires_at_ms:
+              request.receipt.status === 'created' ? safeMilliseconds.nullable() : z.null(),
           })
           .strict(),
         z
@@ -203,7 +209,7 @@ export function acknowledgeLocalBrowser(request: {
           receipt: z
             .object({
               stop_id: z.literal(request.receipt.stop_id),
-              status: z.enum(['closed', 'already_absent', 'unconfirmed']),
+              status: z.literal(request.receipt.status),
             })
             .strict(),
         })

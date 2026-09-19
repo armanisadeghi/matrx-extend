@@ -4,6 +4,7 @@ const state = vi.hoisted(() => ({
   token: '',
   org: '00000000-0000-4000-8000-000000000002',
   user: '00000000-0000-4000-8000-000000000001',
+  verificationHook: null as null | (() => Promise<void>),
 }));
 const token = (session: string): string => `x.${btoa(JSON.stringify({ session_id: session }))}.y`;
 state.token = token('session-a');
@@ -11,7 +12,10 @@ state.token = token('session-a');
 vi.mock('@/config/backend', () => ({ getBackendUrl: async () => 'https://private.example' }));
 vi.mock('@/lib/auth/flow', () => ({
   getAccessToken: async () => state.token,
-  getVerifiedCurrentUser: async () => ({ id: state.user }),
+  getVerifiedCurrentUser: async () => {
+    await state.verificationHook?.();
+    return { id: state.user };
+  },
 }));
 vi.mock('@/lib/org/active-org', () => ({
   getActiveOrganizationId: async () => state.org,
@@ -24,7 +28,7 @@ vi.mock('@/lib/debug/log', () => ({
 vi.mock('@/lib/messaging/native', () => ({ broadcast: vi.fn() }));
 
 import { z } from 'zod';
-import { parseStrictPrivateJson, privatePost } from './client';
+import { getPrivateExpectedActor, parseStrictPrivateJson, privatePost } from './client';
 import { acknowledgeLocalBrowser, verifyLocalBrowser } from './routes/local-browser';
 
 const expectedActor = { userId: state.user, organizationId: state.org, sessionId: 'session-a' };
@@ -34,6 +38,214 @@ const stopId = '00000000-0000-4000-8000-000000000004';
 const noStore = { headers: { 'cache-control': 'no-store' } };
 
 describe('private lifecycle transport', () => {
+  it('resolves a verified private actor without exposing the bearer', async () => {
+    await expect(getPrivateExpectedActor()).resolves.toEqual({ ok: true, data: expectedActor });
+  });
+
+  it('refuses a session change during actor verification', async () => {
+    state.verificationHook = async () => {
+      state.token = token('session-b');
+    };
+    try {
+      await expect(getPrivateExpectedActor()).resolves.toEqual({
+        ok: false,
+        error: 'identity_changed',
+      });
+    } finally {
+      state.verificationHook = null;
+      state.token = token('session-a');
+    }
+  });
+
+  it('bounds a stalled actor verification without leaking its failure', async () => {
+    state.verificationHook = () => new Promise(() => {});
+    try {
+      await expect(getPrivateExpectedActor(Date.now() + 20)).resolves.toEqual({
+        ok: false,
+        error: 'deadline_exceeded',
+      });
+    } finally {
+      state.verificationHook = null;
+    }
+  });
+
+  it('returns oversize refusal even when response cancellation never settles', async () => {
+    const cancel = vi.fn(() => new Promise<void>(() => {}));
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new Uint8Array(4097));
+      },
+      cancel,
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(stream, noStore)),
+    );
+    await expect(
+      privatePost({
+        path: '/browser-manager/local/verify',
+        body: {},
+        expectedActor,
+        deadlineMs: Date.now() + 100,
+        schema,
+      }),
+    ).resolves.toEqual({ ok: false, error: 'response_too_large' });
+    expect(cancel).toHaveBeenCalledOnce();
+  });
+
+  it('bounds a stalled response body and cancels its reader', async () => {
+    const cancel = vi.fn();
+    const stream = new ReadableStream<Uint8Array>({ cancel });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(stream, noStore)),
+    );
+    await expect(
+      privatePost({
+        path: '/browser-manager/local/verify',
+        body: {},
+        expectedActor,
+        deadlineMs: Date.now() + 20,
+        schema,
+      }),
+    ).resolves.toEqual({ ok: false, error: 'deadline_exceeded' });
+    expect(cancel).toHaveBeenCalledOnce();
+  });
+
+  it.each(['no-storehouse', 'x-no-store=1', 'no-store=1', 'custom="x,no-store,y"'])(
+    'refuses non-directive cache header %s',
+    async (cacheControl) => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(
+          async () =>
+            new Response('{"status":"accepted","challenge_id":"c"}', {
+              headers: { 'cache-control': cacheControl },
+            }),
+        ),
+      );
+      await expect(
+        privatePost({
+          path: '/browser-manager/local/verify',
+          body: {},
+          expectedActor,
+          deadlineMs: Date.now() + 10_000,
+          schema,
+        }),
+      ).resolves.toEqual({ ok: false, error: 'invalid_response' });
+    },
+  );
+
+  it('recognizes a real no-store directive among quoted cache extensions', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response('{"status":"accepted","challenge_id":"c"}', {
+            headers: { 'cache-control': 'custom="one,two", No-StOrE, max-age=0' },
+          }),
+      ),
+    );
+    await expect(
+      privatePost({
+        path: '/browser-manager/local/verify',
+        body: {},
+        expectedActor,
+        deadlineMs: Date.now() + 10_000,
+        schema,
+      }),
+    ).resolves.toEqual({ ok: true, data: { status: 'accepted', challenge_id: 'c' } });
+  });
+
+  it.each(['created', 'cancelled', 'failed'] as const)(
+    'accepts only the submitted admission receipt status %s',
+    async (submitted) => {
+      for (const returned of ['created', 'cancelled', 'failed'] as const) {
+        const response = {
+          status: 'accepted',
+          operation: 'admit',
+          receipt: { admission_id: admissionId, status: returned },
+          lease_expires_at_ms: null,
+        };
+        vi.stubGlobal(
+          'fetch',
+          vi.fn(async () => new Response(JSON.stringify(response), noStore)),
+        );
+        const result = await acknowledgeLocalBrowser({
+          grant: 'grant',
+          operation: 'admit',
+          receipt: { admission_id: admissionId, status: submitted },
+          expectedActor,
+          deadlineMs: Date.now() + 10_000,
+        });
+        expect(result).toEqual(
+          submitted === returned
+            ? { ok: true, data: response }
+            : { ok: false, error: 'invalid_response' },
+        );
+      }
+    },
+  );
+
+  it.each(['closed', 'already_absent', 'unconfirmed'] as const)(
+    'accepts only the submitted cleanup receipt status %s',
+    async (submitted) => {
+      for (const returned of ['closed', 'already_absent', 'unconfirmed'] as const) {
+        const response = {
+          status: 'accepted',
+          operation: 'cleanup',
+          receipt: { stop_id: stopId, status: returned },
+        };
+        vi.stubGlobal(
+          'fetch',
+          vi.fn(async () => new Response(JSON.stringify(response), noStore)),
+        );
+        const result = await acknowledgeLocalBrowser({
+          grant: 'grant',
+          operation: 'cleanup',
+          receipt: { stop_id: stopId, status: submitted },
+          expectedActor,
+          deadlineMs: Date.now() + 10_000,
+        });
+        expect(result).toEqual(
+          submitted === returned
+            ? { ok: true, data: response }
+            : { ok: false, error: 'invalid_response' },
+        );
+      }
+    },
+  );
+
+  it.each(['cancelled', 'failed'] as const)(
+    'refuses a live lease for %s admission',
+    async (status) => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(
+          async () =>
+            new Response(
+              JSON.stringify({
+                status: 'accepted',
+                operation: 'admit',
+                receipt: { admission_id: admissionId, status },
+                lease_expires_at_ms: Date.now() + 30_000,
+              }),
+              noStore,
+            ),
+        ),
+      );
+      await expect(
+        acknowledgeLocalBrowser({
+          grant: 'grant',
+          operation: 'admit',
+          receipt: { admission_id: admissionId, status },
+          expectedActor,
+          deadlineMs: Date.now() + 10_000,
+        }),
+      ).resolves.toEqual({ ok: false, error: 'invalid_response' });
+    },
+  );
+
   it('serializes the closed verify body and uses sealed fetch controls', async () => {
     const fetchMock = vi.fn(
       async () =>
