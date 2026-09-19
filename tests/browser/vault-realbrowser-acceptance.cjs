@@ -115,20 +115,32 @@ function checkpoint(phase) {
 }
 async function generatorSessionLocked() {
   if (process.platform !== 'darwin') return false;
-  // This value can include account/session metadata. Keep it bounded in
-  // process memory, derive only the lock bit, and never persist or print it.
+  // IOConsoleUsers carries account/session metadata. plistlib keeps it inside
+  // the child process and emits only one derived lock bit for its sole active
+  // console record; raw session values are never printed or persisted.
+  const probe = [
+    'import json, plistlib, subprocess, sys',
+    "p = subprocess.run(['/usr/sbin/ioreg', '-a', '-l', '-d', '1', '-n', 'IOConsoleUsers'], capture_output=True, timeout=5)",
+    "root = plistlib.loads(p.stdout) if p.returncode == 0 else None",
+    "sessions = root.get('IOConsoleUsers') if isinstance(root, dict) else None",
+    "active = [entry for entry in sessions if isinstance(entry, dict) and entry.get('kCGSSessionOnConsoleKey') is True and entry.get('kCGSessionLoginDoneKey') is True] if isinstance(sessions, list) else []",
+    "locked = active[0].get('CGSSessionScreenIsLocked') if len(active) == 1 else None",
+    "valid = len(active) == 1 and (locked is None or type(locked) is bool)",
+    "print(json.dumps({'screenLocked': bool(locked)}) if valid else 'unavailable')",
+  ].join('; ');
   let stdout;
   try {
-    ({ stdout } = await execFileAsync('/usr/sbin/ioreg', ['-l', '-w', '0', '-d', '1', '-n', 'IOConsoleUsers'], { timeout: 5000, maxBuffer: 128 * 1024 }));
+    ({ stdout } = await execFileAsync('/usr/bin/python3', ['-c', probe], { timeout: 7000, maxBuffer: 1024 }));
   } catch {
     throw new Error('generator_focus_session_state_unavailable');
   }
-  const hasSessionContainer = /"IOConsoleUsers"\s*=\s*\(\{/.test(stdout);
-  const lockValues = [...stdout.matchAll(/CGSSessionScreenIsLocked"=(Yes|No)/g)].map((match) => match[1]);
-  assert(hasSessionContainer && lockValues.length > 0 && lockValues.every((value) => value === lockValues[0]), 'generator_focus_session_state_unavailable');
-  return lockValues[0] === 'Yes';
+  let parsed;
+  try { parsed = JSON.parse(stdout); } catch { throw new Error('generator_focus_session_state_unavailable'); }
+  assert(typeof parsed?.screenLocked === 'boolean', 'generator_focus_session_state_unavailable');
+  return parsed.screenLocked;
 }
 async function refuseUnreconciledPriorRun() {
+  const retryingAuthFailures = [];
   const entries = await fs.readdir(stateRoot, { withFileTypes: true }).catch((error) =>
     error.code === 'ENOENT' ? [] : Promise.reject(error),
   );
@@ -149,6 +161,24 @@ async function refuseUnreconciledPriorRun() {
       && prior.ownedCreateMutationKeys?.length === 0
       && prior.ownedFixtureIds?.length === 0
       && (prior.cleanup?.localAuthLogoutStatus === 204 || prior.authenticationAttempted === false)
+      && prior.cleanup?.browserClosed === true
+      && prior.cleanup?.profileRemoved === true;
+    // A failed OAuth attempt is retryable only when it never crossed the
+    // independent identity boundary, never read a Vault baseline or created
+    // fixtures, and its disposable browser/profile were conclusively gone.
+    // It does not assert a remote auth revocation: a prior proof without a
+    // captured bearer cannot safely revoke an unknown session.
+    const authFailureBeforeWrites = prior?.schema === 3
+      && prior?.mode === 'read_only_admission'
+      && prior.authenticationAttempted === true
+      && ['oauth_ui', 'oauth_sign_in'].includes(prior.failurePhase)
+      && prior.checks?.independentAdminIdentity !== true
+      && prior.identityProof === undefined
+      && prior.baselineMetadataSha256 === undefined
+      && prior.vaultMutationRequests === 0
+      && prior.vaultItemPosts?.total === 0
+      && prior.ownedCreateMutationKeys?.length === 0
+      && prior.ownedFixtureIds?.length === 0
       && prior.cleanup?.browserClosed === true
       && prior.cleanup?.profileRemoved === true;
     // Exact reviewed reconciliation only. It neither edits nor promotes the
@@ -196,8 +226,17 @@ async function refuseUnreconciledPriorRun() {
           && attempts.every((attempt) => attempt.initialGetStatus === 404 && attempt.terminal === 'already_cleaned');
       }
     }
-    assert(completedAcceptance || completedMutationCleanup || vaultMutationFreeCleanup || reviewedHistoricalException || reviewedLaunchFailure || reviewedRecovery, 'previous_run_unreconciled');
+    if (authFailureBeforeWrites) {
+      retryingAuthFailures.push({
+        runId: prior.runId,
+        proofSha256: crypto.createHash('sha256').update(priorRaw).digest('hex'),
+        localCredentialDisposal: 'profile_removed',
+        remoteAuthRevocation: 'unknown',
+      });
+    }
+    assert(completedAcceptance || completedMutationCleanup || vaultMutationFreeCleanup || authFailureBeforeWrites || reviewedHistoricalException || reviewedLaunchFailure || reviewedRecovery, 'previous_run_unreconciled');
   }
+  if (retryingAuthFailures.length) proof.priorAuthRetryJournal = retryingAuthFailures;
 }
 async function sha256(file) {
   return crypto.createHash('sha256').update(await fs.readFile(file)).digest('hex');
@@ -491,7 +530,7 @@ async function openGenuineSidePanel(extensionId, popup) {
   const panel = await attachPanelSession(cdp, target.targetId);
   const evaluate = async (expression) => {
     const result = await panel.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
-    assert(!result.exceptionDetails, 'real_side_panel_eval_refused');
+    if (result.exceptionDetails) { proof.panelEvalFailure = { exceptionClass: result.exceptionDetails.exception?.className ?? 'unknown', stackLocations: new Error().stack.split('\n').filter(line => line.includes('vault-') && /:\d+:\d+/.test(line)).map(line => line.replace(/.*(vault-[^/ ]+\.cjs:\d+:\d+).*/, '$1')) }; persist(); throw new Error('real_side_panel_eval_refused'); }
     return result.result.value;
   };
   const click = async (expression) => {
@@ -560,13 +599,21 @@ async function authenticate(extension) {
   assert(adminEmail === 'admin@admin.com', 'admin_identity_configuration');
   proof.phase = 'browser_launch';
   persist();
+  const placementPath = process.env.MATRX_VAULT_CANARY_WINDOW_PLACEMENT;
+  const placementArgs = placementPath ? (() => {
+    const bounds = JSON.parse(syncFs.readFileSync(placementPath, 'utf8'));
+    const coordinate = (value) => Number.isInteger(value) && value >= -2147483648 && value <= 2147483647;
+    assert(coordinate(bounds.left) && coordinate(bounds.top) && Number.isInteger(bounds.width) && Number.isInteger(bounds.height) && bounds.width > 0 && bounds.width <= 2147483647 && bounds.height > 0 && bounds.height <= 2147483647, 'window_placement_invalid');
+    return [`--window-position=${bounds.left},${bounds.top}`, `--window-size=${bounds.width},${bounds.height}`];
+  })() : [];
   context = await chromium.launchPersistentContext(profile, {
     // Chrome does not give SIDE_PANEL a compositor surface in headless mode.
     // This is the disposable, agent-owned Chrome-for-Testing profile only.
     headless: false,
     // Playwright's default headless shell does not load this extension.
     executablePath: process.env.MATRX_VAULT_CANARY_CHROME_EXECUTABLE || chromium.executablePath(),
-    args: [`--disable-extensions-except=${extension}`, `--load-extension=${extension}`],
+    args: [`--disable-extensions-except=${extension}`, `--load-extension=${extension}`, ...placementArgs],
+    ...(placementPath && { viewport: null }),
   });
   proof.phase = 'extension_worker';
   persist();
@@ -580,6 +627,10 @@ async function authenticate(extension) {
   });
   context.on('response', (response) => {
     const url = new URL(response.url());
+    if (url.origin === DB && ['/auth/v1/oauth/token', '/auth/v1/user'].includes(url.pathname)) {
+      (proof.authTransport ||= []).push({ route: url.pathname.endsWith('/token') ? 'oauth_token' : 'user', status: response.status(), phase: proof.phase });
+      persist();
+    }
     if (url.origin !== API || !url.pathname.startsWith('/api/vault/')) return;
     // Only fixed route classes/statuses: never response bodies, IDs or values.
     const route = url.pathname.endsWith('/matches') ? 'matches'
@@ -618,6 +669,20 @@ async function authenticate(extension) {
     if (session['matrx.user.profile']?.email && session['matrx.auth.accessToken']) break;
     await wait(500);
   }
+  proof.authStorage = {
+    profilePresent: !!session?.['matrx.user.profile'],
+    accessTokenPresent: typeof session?.['matrx.auth.accessToken'] === 'string',
+    activeOrganizationPresent: !!session?.['matrx.org.active'],
+  };
+  // OAuth/UI text can include provider details. Retain only a fixed category
+  // that distinguishes a visible failure from an unfinished callback.
+  const popupText = await popup.locator('body').innerText().catch(() => '');
+  proof.authUiOutcome = /authorization page could not be loaded/i.test(popupText)
+    ? 'authorization_page_unavailable'
+    : /sign in to start using the extension/i.test(popupText)
+      ? 'signed_out'
+      : 'no_classified_popup_error';
+  persist();
   assert(session?.['matrx.user.profile']?.email === adminEmail, 'extension_identity');
   userId = session['matrx.user.profile'].id;
   token = session['matrx.auth.accessToken'];
@@ -784,7 +849,7 @@ async function materializedPassword(id) {
       persist();
       if (generatorTransportMode) {
         proof.generatorHarnessSha256 = await sha256(path.join(__dirname, 'vault-generator-acceptance.cjs'));
-        await require('./vault-generator-acceptance.cjs').runGeneratorChecks({ context, worker, panel: realPanel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath: path.join(root, 'generator-masked.png') });
+        await require('./vault-generator-acceptance.cjs').runGeneratorChecks({ context, worker, panel: realPanel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath: path.join(root, 'generator-masked.png'), verifyRealVaultPanel });
       }
     } else {
       local = await startLocalSite();
@@ -925,24 +990,47 @@ async function materializedPassword(id) {
     } catch {
       proof.cleanup.failure = 'cleanup_refused';
     }
-    // Authentication cleanup is independent of mutation cleanup: even a run
-    // that failed before its first write, or failed reconciliation, revokes its
-    // own local auth session. Never let an item-cleanup exception skip this.
+    // Authentication cleanup is independent of mutation cleanup. If identity
+    // failed before assigning `token`, read the still-live disposable profile
+    // once for a bearer presence bit and revoke only that exact local session.
+    // No profile/token values leave memory or enter proof.
+    if (!token && worker) {
+      try {
+        const stored = await storage(['matrx.user.profile', 'matrx.auth.accessToken']);
+        const observedToken = stored['matrx.auth.accessToken'];
+        proof.cleanup.authStorageAtCleanup = {
+          profilePresent: !!stored['matrx.user.profile'],
+          accessTokenPresent: typeof observedToken === 'string',
+        };
+        if (typeof observedToken === 'string' && observedToken.length > 20) token = observedToken;
+      } catch {
+        proof.cleanup.authStorageAtCleanup = { unavailable: true };
+      }
+    }
+    // Revocation is safe for the exact bearer recovered from this disposable
+    // profile and requires no broader account/session lookup.
     if (token) {
       try {
         const logout = await fetch(`${DB}/auth/v1/logout?scope=local`, {
           method: 'POST', headers: { apikey: process.env.SUPABASE_MATRIX_PUBLISHABLE_KEY, Authorization: `Bearer ${token}` },
         });
         proof.cleanup.localAuthLogoutStatus = logout.status;
+        proof.cleanup.remoteAuthRevocationStatus = logout.status;
       } catch {
         proof.cleanup.localAuthLogoutFailure = true;
+        proof.cleanup.remoteAuthRevocation = 'failed';
       }
+    } else if (proof.authenticationAttempted) {
+      proof.cleanup.remoteAuthRevocation = 'not_observed';
+    } else {
+      proof.cleanup.remoteAuthRevocation = 'not_applicable';
     }
     realPanel?.dispose();
     try { if (context) await context.close(); proof.cleanup.browserClosed = true; } catch { proof.cleanup.browserClosed = false; }
     try { if (local) await new Promise((resolve) => local.server.close(resolve)); } catch {}
     await fs.rm(profile, { recursive: true, force: true });
     proof.cleanup.profileRemoved = !(await fs.stat(profile).then(() => true, () => false));
+    proof.cleanup.localCredentialDisposal = proof.cleanup.profileRemoved ? 'profile_removed' : 'profile_removal_failed';
     proof.cleanup.vaultMutationFree = proof.vaultMutationRequests === 0
       && proof.vaultItemPosts.total === 0
       && createKeys.size === 0

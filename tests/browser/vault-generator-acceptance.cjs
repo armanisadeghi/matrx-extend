@@ -28,7 +28,7 @@ async function fixture(childUrl = null) {
   return { state, url: `http://127.0.0.1:${server.address().port}/password`, close: () => new Promise((resolve) => server.close(resolve)) };
 }
 
-exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath }) => {
+exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath, verifyRealVaultPanel }) => {
   const child = await fixture();
   let top;
   let page;
@@ -41,6 +41,7 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     await page.bringToFront();
     const tabId = await worker.evaluate(async (url) => (await chrome.tabs.query({})).find((tab) => tab.url === url)?.id, top.url);
     assert(Number.isInteger(tabId), 'generator_fixture_tab_missing');
+    for (let focusAttempt = 0; focusAttempt < 5; focusAttempt++) {
     await focusOwnedBrowser();
     evidence.focusDiagnostic = await worker.evaluate(async (id) => {
       const tab = await chrome.tabs.get(id);
@@ -49,6 +50,9 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
       const focused = await chrome.windows.getLastFocused({ windowTypes: ['normal'] });
       return { focused: focused.focused, type: focused.type, selectedWindowMatches: focused.id === tab.windowId, tabActive: tab.active };
     }, tabId);
+    if (evidence.focusDiagnostic.focused && evidence.focusDiagnostic.selectedWindowMatches && evidence.focusDiagnostic.tabActive) break;
+    await wait(250);
+    }
     assert(evidence.focusDiagnostic.focused && evidence.focusDiagnostic.selectedWindowMatches && evidence.focusDiagnostic.tabActive, 'generator_owned_window_not_focused');
 
     evidence.runtimeVersion = context.browser()?.version() ?? null;
@@ -164,7 +168,11 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     evidence.checks.expiryRefusedUnchanged = true;
 
     checkpoint('generator_navigation_refusal');
+    await focusOwnedBrowser();
+    await page.bringToFront();
     const fourth = await discover();
+    evidence.navigationDiscovery = { status: fourth?.status, offerCount: fourth?.offers?.length ?? 0, focus: await worker.evaluate(async (id) => { const tab = await chrome.tabs.get(id); const win = await chrome.windows.get(tab.windowId); return { focused: win.focused, active: tab.active }; }, tabId) };
+    checkpoint('generator_navigation_discovery');
     const oldDocumentOffer = fourth?.offers?.find((offer) => offer.frameId === 0);
     assert(oldDocumentOffer, 'generator_navigation_offer_missing');
     await page.reload();
@@ -198,6 +206,8 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     evidence.checks.noWebsiteSubmission = true;
     evidence.hostTransportOk = true;
     checkpoint('generator_positive_ui');
+    await verifyRealVaultPanel();
+    await panel.waitFor(`!!document.querySelector('[aria-label="Password generator"]')`);
     await page.evaluate(() => {
       document.querySelectorAll('iframe').forEach((frame) => frame.remove());
       document.querySelector('#new').value = '';
@@ -209,14 +219,17 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     for (const kind of ['Password', 'Passphrase']) {
       await panel.click(button(kind));
       await panel.click(button('Generate'));
-      await panel.waitFor(`!!(${section}).querySelector('[aria-label="Reveal generated value"]') && /Generated\\./.test((${section}).innerText)`);
+      await wait(1000);
+      evidence.uiAfterGenerate = await panel.evaluate(`({ generatorPresent: !!(${section}), selectedVault: document.querySelector('[title="Vault"]')?.getAttribute('aria-selected'), generatedCodePresent: !!(${section})?.querySelector('code'), signInPresent: /Sign in/.test(document.body.innerText), loadingPresent: !!document.querySelector('.animate-spin') })`);
+      checkpoint('generator_ui_after_generate');
+      await panel.waitFor(`!!(${section})?.querySelector('[aria-label="Reveal generated value"]') && (${section})?.innerText.includes('Generated.')`);
       assert(await panel.evaluate(`(${section}).querySelector('code').textContent === '••••••••••••••••••••••••'`), 'generator_value_not_masked');
       await panel.click(`(${section}).querySelector('[aria-label="Reveal generated value"]')`);
       synthetic = await panel.evaluate(`(${section}).querySelector('code').textContent`);
       assert(typeof synthetic === 'string' && (kind === 'Password' ? synthetic.length === 24 : synthetic.length >= 11 && synthetic.includes('-')), 'generator_default_value_invalid');
       await panel.click(`(${section}).querySelector('[aria-label="Hide generated value"]')`);
       await panel.click(button('Regenerate'));
-      await panel.waitFor(`!!(${section}).querySelector('[aria-label="Reveal generated value"]') && /Generated\\./.test((${section}).innerText)`);
+      await panel.waitFor(`!!(${section})?.querySelector('[aria-label="Reveal generated value"]') && (${section})?.innerText.includes('Generated.')`);
       await panel.click(`(${section}).querySelector('[aria-label="Reveal generated value"]')`);
       const regenerated = await panel.evaluate(`(${section}).querySelector('code').textContent`);
       assert(regenerated !== synthetic, 'generator_regenerate_reused_value');
