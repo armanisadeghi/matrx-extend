@@ -2,6 +2,7 @@ import { copyToClipboard } from '@/lib/clipboard/copy';
 import { resolveGeneratedCredentialLimits } from '@/lib/credentials/generation-limits';
 import type {
   GenerationDiscoveryResponse,
+  GenerationInvalidationMessage,
   GenerationOffer,
   GenerationUseResponse,
 } from '@/lib/credentials/generation-protocol';
@@ -75,6 +76,13 @@ export function PasswordGenerator({
   const expiryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   offersRef.current = offers;
 
+  const replaceOffers = useCallback((next: GenerationOffer[]) => {
+    // The invalidation listener and a Use click can arrive before React has
+    // rendered state. Keep the authoritative panel projection in sync first.
+    offersRef.current = next;
+    setOffers(next);
+  }, []);
+
   const discard = useCallback((ids: string[]) => {
     if (ids.length === 0) return;
     void chrome.runtime
@@ -93,14 +101,15 @@ export function PasswordGenerator({
         clearTimeout(expiryTimer.current);
         expiryTimer.current = null;
       }
-      discard(offersRef.current.map((offer) => offer.id));
+      const ids = offersRef.current.map((offer) => offer.id);
+      replaceOffers([]);
+      discard(ids);
       clear();
-      setOffers([]);
       setSelectedOfferId(null);
       setRevealed(false);
       if (message !== undefined) setStatus(message);
     },
-    [clear, discard],
+    [clear, discard, replaceOffers],
   );
 
   useEffect(() => () => clearGenerated(), [clearGenerated]);
@@ -108,11 +117,17 @@ export function PasswordGenerator({
     if (!admission.current()) clearGenerated('The page changed. Generate a new value to continue.');
   }, [admission, clearGenerated]);
   useEffect(() => {
-    const invalidated = (message: {
-      __matrxCredentialGeneration?: boolean;
-      operation?: string;
-    }) => {
-      if (message.__matrxCredentialGeneration && message.operation === GENERATION_INVALIDATED)
+    const invalidated = (message: unknown) => {
+      const invalidation = message as Partial<GenerationInvalidationMessage>;
+      if (
+        invalidation.__matrxCredentialGeneration &&
+        invalidation.operation === GENERATION_INVALIDATED &&
+        Array.isArray(invalidation.offerIds) &&
+        invalidation.offerIds.some(
+          (offerId): offerId is string =>
+            typeof offerId === 'string' && offersRef.current.some((offer) => offer.id === offerId),
+        )
+      )
         clearGenerated('The page changed. Generate a new value to continue.');
     };
     chrome.runtime.onMessage.addListener(invalidated);
@@ -191,7 +206,7 @@ export function PasswordGenerator({
         setStatus(`${discovery.message} You can still copy the generated value manually.`);
         return;
       }
-      setOffers(discovery.offers);
+      replaceOffers(discovery.offers);
       const oneTopFrameOffer = discovery.offers.length === 1 && discovery.offers[0]?.frameId === 0;
       setSelectedOfferId(oneTopFrameOffer ? (discovery.offers[0]?.id ?? null) : null);
       setStatus(
@@ -203,7 +218,7 @@ export function PasswordGenerator({
       if (admission.current()) setBusy(false);
       busyRef.current = false;
     }
-  }, [actor, admission, clearGenerated, hold, kind, passphrase, password, tabId]);
+  }, [actor, admission, clearGenerated, hold, kind, passphrase, password, replaceOffers, tabId]);
 
   const copy = useCallback(async () => {
     if (busyRef.current || !generatedValue) return;
@@ -231,7 +246,7 @@ export function PasswordGenerator({
     setBusy(true);
     const otherIds = offersRef.current.map((offer) => offer.id).filter((id) => id !== offerId);
     // Claim in this UI before any await. The host separately claims its offer.
-    setOffers([]);
+    replaceOffers([]);
     setSelectedOfferId(null);
     setRevealed(false);
     clear();
@@ -251,7 +266,7 @@ export function PasswordGenerator({
       busyRef.current = false;
       if (admission.current()) setBusy(false);
     }
-  }, [admission, clear, discard, generatedValue, selectedOfferId]);
+  }, [admission, clear, discard, generatedValue, replaceOffers, selectedOfferId]);
 
   const hasValue = generatedValue !== null;
   return (
