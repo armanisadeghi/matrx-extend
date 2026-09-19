@@ -631,45 +631,46 @@ export function credentialDomSource(
         return true;
       } catch { return false; }
     };
-    const events = (input: HTMLInputElement, includeChange: boolean): boolean => {
+    const dispatchOne = (input: HTMLInputElement, type: 'input' | 'change'): boolean => {
       try {
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-        if (includeChange) input.dispatchEvent(new Event('change', { bubbles: true }));
+        input.dispatchEvent(new Event(type, { bubbles: true }));
         return true;
       } catch {
         return false;
       }
     };
     const current = () => targets.map((target) => registry.resolve(target.id, documentId, expiresAt));
-    const written: number[] = [];
+    const attempted: number[] = [];
     const rollback = (): GeneratedPasswordFillStatus => {
       let complete = true;
-      for (const index of written) {
+      for (const index of attempted) {
         const input = inputs[index];
         const original = originals[index];
         if (!input || original === undefined || current()[index] !== input || input.value !== value) {
           complete = false;
           continue;
         }
-        if (!setValue(input, original) || input.value !== original || !events(input, false) || current()[index] !== input || input.value !== original || !events(input, true) || current()[index] !== input || input.value !== original) complete = false;
+        if (!setValue(input, original) || input.value !== original || !dispatchOne(input, 'input') || current()[index] !== input || input.value !== original || !dispatchOne(input, 'change') || current()[index] !== input || input.value !== original) complete = false;
       }
+      if (attempted.some((index) => current()[index] !== inputs[index] || inputs[index]?.value !== originals[index])) complete = false;
       return complete ? 'rolled_back' : 'partial_manual_check';
     };
     for (let index = 0; index < inputs.length; index++) {
       const input = inputs[index];
       if (!input || current()[index] !== input || !wholeGroupValid() || !inputs.every(compatible))
-        return written.length ? { status: rollback() } : { status: 'refused_unchanged', reason: 'target_changed' };
+        return attempted.length ? { status: rollback() } : { status: 'refused_unchanged', reason: 'target_changed' };
+      // Record before the setter: a controlled setter may mutate then throw.
+      attempted.push(index);
       if (!setValue(input, value) || current()[index] !== input || !wholeGroupValid() || !inputs.every(compatible) || input.value !== value)
-        return written.length ? { status: rollback() } : { status: 'refused_unchanged', reason: 'write_failed' };
-      written.push(index);
-      if (!events(input, false) || current()[index] !== input || !wholeGroupValid() || !inputs.every(compatible) || written.some((writtenIndex) => inputs[writtenIndex]?.value !== value))
         return { status: rollback() };
-      if (!events(input, true)) return { status: rollback() };
+      if (!dispatchOne(input, 'input') || current()[index] !== input || !wholeGroupValid() || !inputs.every(compatible) || attempted.some((attemptedIndex) => inputs[attemptedIndex]?.value !== value))
+        return { status: rollback() };
+      if (!dispatchOne(input, 'change')) return { status: rollback() };
       if (
         current()[index] !== input ||
         !wholeGroupValid() ||
         !inputs.every(compatible) ||
-        written.some((writtenIndex) => inputs[writtenIndex]?.value !== value)
+        attempted.some((attemptedIndex) => inputs[attemptedIndex]?.value !== value)
       )
         return { status: rollback() };
     }

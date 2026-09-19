@@ -209,4 +209,17 @@ describe('generated password DOM primitive', () => {
     ).toEqual({ status: 'refused_unchanged', reason: 'expired_or_unavailable' });
     expect((document.querySelector('#new') as HTMLInputElement).value).toBe('');
   });
+
+  it('stops before change when input removes the target and emits one event per phase', () => {
+    mount('<form><input id=new type=password autocomplete=new-password></form>');
+    mountGenerationTargetRegistry();
+    const expiry = expiresAt(); const targets = discover(expiry).groups[0]?.targets ?? [];
+    const input = document.querySelector('#new') as HTMLInputElement;
+    let inputs = 0; let changes = 0;
+    input.addEventListener('input', () => { inputs++; input.remove(); });
+    input.addEventListener('change', () => changes++);
+    expect(dispatcher({ operation: 'fill_new_password_group', documentId, expiresAt: expiry, targets, value: 'abcdEFGH1234' }).status)
+      .toBe('partial_manual_check');
+    expect({ inputs, changes }).toEqual({ inputs: 1, changes: 0 });
+  });
 });
