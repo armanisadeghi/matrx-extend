@@ -7,6 +7,8 @@
  * message boundary.  The caller still supplies Chrome's documentId on every
  * operation; a matching selector is deliberately not an identity.
  */
+import { SENSITIVE_ATTR } from '@/lib/credentials/sensitive-fields';
+
 export const GENERATED_SECRET_TTL_MS = 30_000;
 
 export interface GenerationTargetRegistry {
@@ -15,6 +17,8 @@ export interface GenerationTargetRegistry {
   belongsTo(id: string, input: HTMLInputElement, group: Element): boolean;
   bindGroup(ids: readonly string[]): boolean;
   claim(ids: readonly string[], documentId: string, expiresAt: number): boolean;
+  markSensitive(input: HTMLInputElement): boolean;
+  isSensitive(element: Element): boolean;
   invalidate(ids?: readonly string[]): void;
 }
 
@@ -39,6 +43,9 @@ export function mountGenerationTargetRegistry(): GenerationTargetRegistry {
   if (window.__matrx_generation_target_registry__) return window.__matrx_generation_target_registry__;
 
   const documentRef = document;
+  // Generated-secret redaction is document-lifetime identity memory. Offers
+  // expire, but a page may later expose the same filled node as text.
+  const sensitiveInputs = new WeakSet<Element>();
   const entries = new Map<
     string,
     { node: WeakRef<HTMLInputElement>; group: WeakRef<Element>; hosts: WeakRef<Element>[]; documentId: string; expiresAt: number; claimed: boolean; members: string[] | null }
@@ -111,6 +118,19 @@ export function mountGenerationTargetRegistry(): GenerationTargetRegistry {
       if (selected.some((entry) => !entry || entry.claimed || entry.documentId !== documentId || entry.expiresAt !== expiresAt || !entry.members || entry.members.length !== ids.length || entry.members.some((id, index) => id !== ids[index]))) return false;
       for (const entry of selected) entry!.claimed = true;
       return true;
+    },
+    markSensitive(input) {
+      if (input.ownerDocument !== documentRef || !input.isConnected) return false;
+      try {
+        sensitiveInputs.add(input);
+        input.setAttribute(SENSITIVE_ATTR, '');
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    isSensitive(element) {
+      return element.ownerDocument === documentRef && sensitiveInputs.has(element);
     },
     invalidate(ids) {
       if (!ids) {

@@ -20,6 +20,11 @@
 
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { credentialDomSource } from '@/lib/credentials/fill-primitive';
+import {
+  GENERATED_SECRET_TTL_MS,
+  mountGenerationTargetRegistry,
+} from '@/lib/credentials/generation-targets';
 import {
   SENSITIVE_ATTR,
   _resetSensitiveFieldMemory,
@@ -41,6 +46,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 const SECRET = 'ZZREDACTIONSENTINELZZ';
 const PUBLIC_VALUE = 'ordinary-search-term';
 const TAB_ID = 99;
+const documentId = 'credential-redaction-test';
+const dispatcher = new Function(`return (${credentialDomSource.toString()});`)() as typeof credentialDomSource;
 
 const ctx: ToolContext = {
   conversationId: null,
@@ -89,7 +96,7 @@ function render(): void {
 }
 
 /** Run every redaction site and return one searchable blob. */
-async function readEverything(): Promise<string> {
+async function readEverything(secretSelector = '#secretfield'): Promise<string> {
   const results: unknown[] = [];
   results.push(await read_page.run(read_page.argsSchema.parse({}), ctx));
   results.push(await get_form_fields.run(get_form_fields.argsSchema.parse({}), ctx));
@@ -97,12 +104,12 @@ async function readEverything(): Promise<string> {
     await query_elements.run(query_elements.argsSchema.parse({ selector: 'input' }), ctx),
   );
   results.push(
-    await inspect_element.run(inspect_element.argsSchema.parse({ selector: '#secretfield' }), ctx),
+    await inspect_element.run(inspect_element.argsSchema.parse({ selector: secretSelector }), ctx),
   );
   results.push(
     await get_element_at_point.run(get_element_at_point.argsSchema.parse({ x: 1, y: 1 }), ctx),
   );
-  const ref = document.getElementById('secretfield')?.getAttribute('data-matrx-ref');
+  const ref = document.querySelector(secretSelector)?.getAttribute('data-matrx-ref');
   if (ref) {
     results.push(
       await get_element_details.run(
@@ -177,6 +184,28 @@ describe('page-read redaction — each signal defends on its own', () => {
     el.setAttribute('type', 'password');
     const blob = await readEverything();
     expect(blob).not.toContain(SECRET);
+  });
+
+  it('keeps a generated target redacted by identity after the page removes every DOM hint', async () => {
+    const input = document.getElementById('secretfield') as HTMLInputElement;
+    input.type = 'password';
+    input.autocomplete = 'new-password';
+    const registry = mountGenerationTargetRegistry();
+    const expiresAt = Date.now() + GENERATED_SECRET_TTL_MS;
+    const targets = dispatcher({ operation: 'discover_new_password_groups', documentId, expiresAt }).groups[0]?.targets ?? [];
+    expect(targets).toHaveLength(1);
+    expect(dispatcher({ operation: 'fill_new_password_group', documentId, expiresAt, targets, value: SECRET }))
+      .toEqual({ status: 'filled' });
+
+    input.type = 'text';
+    input.removeAttribute(SENSITIVE_ATTR);
+    input.id = 'page-renamed';
+    input.name = 'page-renamed';
+    registry.invalidate();
+
+    const blob = await readEverything('#page-renamed');
+    expect(blob).not.toContain(SECRET);
+    expect(blob).toContain(PUBLIC_VALUE);
   });
 });
 

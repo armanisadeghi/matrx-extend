@@ -308,6 +308,7 @@ export const get_element_at_point: ToolHandler<ElementAtPointArgs, unknown> = {
         const isPassword =
           el.hasAttribute(sensitiveAttr) ||
           sensitiveEls.has(el) ||
+          window.__matrx_generation_target_registry__?.isSensitive(el) === true ||
           (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password');
         const attrs: Record<string, string> = {};
         for (const a of Array.from(el.attributes)) {
@@ -357,6 +358,7 @@ export const inspect_element: ToolHandler<InspectArgs, unknown> = {
         const isPassword =
           el.hasAttribute(sensitiveAttr) ||
           sensitiveEls.has(el) ||
+          window.__matrx_generation_target_registry__?.isSensitive(el) === true ||
           (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password');
         const attrs: Record<string, string> = {};
         for (const a of Array.from(el.attributes)) {
@@ -450,6 +452,7 @@ export const get_element_details: ToolHandler<ElementDetailsArgs, unknown> = {
         const isSensitiveEl = (e: Element): boolean =>
           e.hasAttribute(sensitiveAttr) ||
           sensitiveEls.has(e) ||
+          window.__matrx_generation_target_registry__?.isSensitive(e) === true ||
           (e.tagName === 'INPUT' && (e as HTMLInputElement).type === 'password');
         const el = document.querySelector(selector) as HTMLElement | null;
         if (!el) return { ok: false, reason: `No element for ${selector}` };

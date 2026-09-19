@@ -223,6 +223,39 @@ describe('generated password DOM primitive', () => {
     expect(replay).toEqual({ status: 'refused_unchanged', reason: 'already_used_or_changed' });
   });
 
+  it('refuses generated fill when the isolated registry cannot mark the target sensitive', () => {
+    mount('<form method=post action="/change"><input id=new type=password autocomplete=new-password></form>');
+    const registry = mountGenerationTargetRegistry();
+    const expiry = expiresAt();
+    const targets = discover(expiry).groups[0]?.targets ?? [];
+    const markSensitive = registry.markSensitive;
+    Object.defineProperty(registry, 'markSensitive', { configurable: true, value: undefined });
+    const result = dispatcher({ operation: 'fill_new_password_group', documentId, expiresAt: expiry, targets, value: 'abcdEFGH1234' });
+    Object.defineProperty(registry, 'markSensitive', { configurable: true, value: markSensitive });
+    expect(result)
+      .toEqual({ status: 'refused_unchanged', reason: 'registry_unavailable' });
+    expect((document.querySelector('#new') as HTMLInputElement).value).toBe('');
+  });
+
+  it('keeps sensitive node identity after an offer expires or is discarded', async () => {
+    const form = mount('<form method=post action="/change"><input id=new type=password autocomplete=new-password></form>');
+    const input = document.querySelector('#new') as HTMLInputElement;
+    const registry = mountGenerationTargetRegistry();
+    const expiry = Date.now() + 5;
+    const offer = registry.register(input, form, documentId, expiry);
+    if (!offer) throw new Error('expected an offer');
+    expect(registry.markSensitive(input)).toBe(true);
+    registry.invalidate([offer]);
+    expect(registry.isSensitive(input)).toBe(true);
+
+    const expiringAt = Date.now() + 5;
+    const expiringOffer = registry.register(input, form, documentId, expiringAt);
+    if (!expiringOffer) throw new Error('expected an expiring offer');
+    await new Promise((resolve) => window.setTimeout(resolve, 15));
+    expect(registry.resolve(expiringOffer, documentId, expiringAt)).toBeNull();
+    expect(registry.isSensitive(input)).toBe(true);
+  });
+
   it('refuses a caller-supplied subset of an offered confirmation group', () => {
     mount('<form method=post action="/change"><input type=password autocomplete=new-password><input type=password autocomplete=new-password aria-label="confirm password"></form>');
     mountGenerationTargetRegistry();

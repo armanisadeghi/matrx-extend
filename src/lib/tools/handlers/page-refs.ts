@@ -248,6 +248,7 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
           const isSensitive = (el: Element): boolean =>
             el.hasAttribute(sensitiveAttr) ||
             sensitiveEls.has(el) ||
+            window.__matrx_generation_target_registry__?.isSensitive(el) === true ||
             (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password');
 
           const INTERACTIVE = [

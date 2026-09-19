@@ -546,6 +546,8 @@ export function credentialDomSource(
       return { status: 'refused_unchanged', reason: 'expired_or_unavailable' };
     if (!value || !Array.isArray(targets) || targets.length === 0)
       return { status: 'refused_unchanged', reason: 'invalid_request' };
+    if (typeof registry.markSensitive !== 'function')
+      return { status: 'refused_unchanged', reason: 'registry_unavailable' };
     if (!registry.claim(targets.map((target) => target.id), documentId, expiresAt))
       return { status: 'refused_unchanged', reason: 'already_used_or_changed' };
     const resolved = targets.map((target) => registry.resolve(target.id, documentId, expiresAt));
@@ -668,6 +670,8 @@ export function credentialDomSource(
       const input = inputs[index];
       if (!input || current()[index] !== input || !wholeGroupValid() || !destinationsValid() || !inputs.every(compatible))
         return attempted.length ? { status: rollback() } : { status: 'refused_unchanged', reason: 'target_changed' };
+      if (!registry.markSensitive(input))
+        return attempted.length ? { status: rollback() } : { status: 'refused_unchanged', reason: 'registry_unavailable' };
       // Record before the setter: a controlled setter may mutate then throw.
       attempted.push(index);
       if (!setValue(input, value) || current()[index] !== input || !wholeGroupValid() || !destinationsValid() || !inputs.every(compatible) || input.value !== value)

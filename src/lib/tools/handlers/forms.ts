@@ -61,6 +61,7 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
         const isSensitive = (el: Element): boolean =>
           el.hasAttribute(sensitiveAttr) ||
           sensitiveEls.has(el) ||
+          window.__matrx_generation_target_registry__?.isSensitive(el) === true ||
           (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password');
 
         function uniqueSelector(el: Element): string {
