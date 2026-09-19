@@ -10,7 +10,11 @@ const ALL_TABS = Object.keys(SIDEPANEL_TAB_AUDIENCE) as SidepanelTab[];
 
 describe('sidepanel visibility', () => {
   it('keeps the launch configuration exhaustive and explicit', () => {
-    expect(ALL_TABS).toHaveLength(20);
+    // 21 since the Capture tab landed (d2564c3). This number is a tripwire,
+    // not a fact to be kept in sync silently: adding a tab to the panel has to
+    // be a deliberate act somebody signs. It sat at 20 with 21 tabs live, so
+    // the whole suite was red for every lane that ran it.
+    expect(ALL_TABS).toHaveLength(21);
     expect(SIDEPANEL_TAB_AUDIENCE.chat).toBe('everyone');
     expect(SIDEPANEL_TAB_AUDIENCE.profile).toBe('signed-in');
     expect(SIDEPANEL_TAB_AUDIENCE.debug).toBe('admin');

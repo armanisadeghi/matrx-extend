@@ -3,9 +3,11 @@ import { NoticeHost } from '@/components/NoticeHost';
 import { PermissionPromptModal } from '@/components/PermissionPromptModal';
 import { UserMenu } from '@/components/UserMenu';
 import { canAccessSidepanelTab, firstAccessibleSidepanelTab } from '@/config/sidepanel-visibility';
+import { captureTabShortLabel } from '@/features/capture-ladder/queue-sentences';
+import { useCapturePickup } from '@/features/capture-ladder/use-capture-pickup';
+import { useNeedsYouCount } from '@/features/capture-ladder/use-needs-you-count';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAgendaListener } from '@/hooks/use-agenda-listener';
-import { useNeedsYouCount } from '@/features/capture-ladder/use-needs-you-count';
 import { useAuth } from '@/hooks/use-auth';
 import { useAutoExtract } from '@/hooks/use-auto-extract';
 import { useAutoScrape } from '@/hooks/use-auto-scrape';
@@ -37,10 +39,10 @@ import {
   Database,
   Files,
   Highlighter,
+  Inbox,
   KeyRound,
   ListChecks,
   ListTodo,
-  Inbox,
   Loader2,
   MessageSquare,
   NotebookPen,
@@ -51,7 +53,7 @@ import {
   Vault,
   Wrench,
 } from 'lucide-react';
-import { type ComponentType, Suspense, lazy, useEffect, useState } from 'react';
+import { type ComponentType, Suspense, lazy, useEffect, useRef, useState } from 'react';
 
 // Per-tab dynamic imports. Single source of truth for module paths so each
 // view ships in its own chunk and the eager sidepanel bundle stays small.
@@ -138,6 +140,20 @@ export function App() {
   // The capture-ladder badge. Subscribed at App level so the count is right the
   // first time the person looks, without having opened the tab.
   const needsYou = useNeedsYouCount(signedIn);
+  // When the web app hands this browser a page (frontend bridge action
+  // `captureHandoff.pickUp`), the panel lands on the capture tab — whether it
+  // was already open or is opening because of that call. Acted on ONCE per
+  // pointer, so it never fights the person switching tabs afterwards.
+  const capturePickup = useCapturePickup();
+  const actedPickupAt = useRef<number | null>(null);
+  const captureShortLabel = captureTabShortLabel(needsYou.count, needsYou.elsewhereTotal);
+
+  useEffect(() => {
+    if (!capturePickup) return;
+    if (actedPickupAt.current === capturePickup.at) return;
+    actedPickupAt.current = capturePickup.at;
+    setTab('capture');
+  }, [capturePickup, setTab]);
   const canAccess = (candidate: SidepanelTab) =>
     canAccessSidepanelTab(candidate, { signedIn, isAdmin });
 
@@ -320,23 +336,33 @@ export function App() {
                   {canAccess('capture') && (
                     <TabsTrigger
                       value="capture"
-                      className="relative size-7 p-0"
+                      // FINDABILITY. Among ~20 icon-only triggers an Inbox icon
+                      // is a needle: the owner went hunting in Scrape and
+                      // concluded the system was broken. While there is work
+                      // the trigger grows a two-word label beside the icon; with
+                      // nothing waiting it collapses back to the same 28px
+                      // square as every other tab, so the row's scroll and the
+                      // other tabs' behaviour are untouched.
+                      className={
+                        captureShortLabel
+                          ? 'relative h-7 shrink-0 gap-1 px-1.5'
+                          : 'relative size-7 p-0'
+                      }
                       // An icon-only tab with only a `title` has no accessible
                       // name: a screen reader announces "tab" and the count in
                       // the corner is invisible to it. The label carries the
-                      // count for the same reason the badge does.
-                      aria-label={
-                        needsYou.count > 0
-                          ? `${needsYou.count} page${needsYou.count === 1 ? '' : 's'} need your browser`
-                          : 'Pages that need your browser'
-                      }
-                      title={
-                        needsYou.count > 0
-                          ? `${needsYou.count} page${needsYou.count === 1 ? '' : 's'} need your browser`
-                          : 'Pages that need your browser'
-                      }
+                      // count for the same reason the badge does — AND the
+                      // "waiting in another workspace" fact, which the number
+                      // alone can never say.
+                      aria-label={needsYou.label}
+                      title={needsYou.label}
                     >
                       <Inbox className="size-3.5" />
+                      {captureShortLabel && (
+                        <span className="text-[10px] font-medium leading-none">
+                          {captureShortLabel}
+                        </span>
+                      )}
                       {needsYou.count > 0 && (
                         <span className="absolute -right-0.5 -top-0.5 min-w-3.5 rounded-full bg-primary px-0.5 text-[9px] font-semibold leading-3.5 text-primary-foreground">
                           {needsYou.count > 9 ? '9+' : needsYou.count}

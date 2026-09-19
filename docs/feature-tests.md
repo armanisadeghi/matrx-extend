@@ -2723,6 +2723,47 @@ Every entry follows this shape:
   - Press "This one won't work": the item is dismissed with your note and stops asking.
   - A rung this organization has turned off: the tab says so in a sentence, and no item silently disappears.
 
+### The capture tab never says a lying zero, and the web app can hand it a page
+
+- **What it does:** The web app's tray and this extension resolve their active organization
+  independently, and one person's waiting pages routinely sit in several of their own
+  organizations at once — so the extension could show a calm "Nothing needs your browser"
+  while the web app was shouting about a page. Now the empty state names the workspace it
+  looked in and, when other memberships hold waiting pages, says so in one line with a
+  "Switch to …" button. The web app can also hand a specific page over: it calls the
+  frontend-bridge action `captureHandoff.pickUp`, which switches this browser to that
+  organization, opens the panel on the Capture tab, and puts that page first.
+- **Where to test:** Sidepanel → Capture tab (signed in), plus the web app's capture tray.
+- **Prereq:** `admin@admin.com`, who is a member of more than one organization, with waiting
+  `media.capture_handoff` rows in at least two of them.
+- **Steps:**
+  1. In Settings, pick a workspace that has NO waiting pages. Open the Capture tab.
+  2. Read the empty state, then press "Switch to …".
+  3. Hover the Capture tab in the sidepanel header with nothing waiting in the active
+     workspace but pages waiting in another.
+  4. From the web app's capture tray, press the control that hands a page to your browser.
+- **Expected:**
+  1. The header says "Nothing needs your browser in <workspace name>" — never a bare
+     "Nothing needs your browser".
+  2. One line says how many pages wait in the other workspace, with a button that switches
+     to it; the list refills after the switch.
+  3. The tab's tooltip says "Nothing needs your browser here — N waiting in another
+     workspace". The badge NUMBER stays the actionable (active-workspace) count; the two
+     numbers are never added together.
+  4. The panel lands on the Capture tab with that page first, under the line "Sent from AI
+     Matrx just now."
+- **Edge cases worth poking:**
+  - The page the web app pointed at was already captured: the tab says so in one line
+    instead of silently showing an ordinary list.
+  - Chrome refuses to open the side panel (cross-extension messaging is not a user
+    gesture): the web app gets `panelOpened: false` and the real reason, never a claim that
+    a panel is open.
+  - Sign the extension in as someone who is not a member of the organization the web app
+    named: the call is refused with a sentence about signing in as the right person, and
+    nothing switches.
+  - Wait more than ten minutes after the web app pointed at a page, then open the panel:
+    the pointer has expired and no row is pinned to the top.
+
 ### The organization's records (the `records` tool)
 
 - **What it does:** Lets the browser agent read and write the organization's own custom records — the Tables a person defined for their work — through the record store's doors. One tool, eight actions: list the Tables, search their metadata, read a record, aggregate over a Table, write or update a record, delete or restore one, propose a Field or a Table. It carries exactly the authority of the person operating it, in their active organization.

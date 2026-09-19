@@ -114,6 +114,12 @@ export const STORAGE_KEYS = {
   // it. Set only by an explicit user choice or the canonical resolver in
   // src/lib/org/active-org.ts — never guessed at a call site.
   ACTIVE_ORGANIZATION: 'matrx.org.active',
+  // "The web app just sent you here — put THIS page first." Written by the
+  // frontend-bridge `captureHandoff.pickUp` action, read once by the side
+  // panel. Deliberately short-lived (see CAPTURE_PICKUP_MAX_AGE_MS in
+  // src/lib/capture-ladder/pickup.ts): a pointer that outlived its moment
+  // would pin the wrong row at the top of the list forever.
+  CAPTURE_PICKUP: 'matrx.capture.pickup',
 } as const;
 
 export const ALARMS = {

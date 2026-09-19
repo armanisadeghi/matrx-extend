@@ -18,13 +18,21 @@
  * showing a possibly-stale list as if it were live (law 4).
  */
 
+import { queueSentences } from '@/features/capture-ladder/queue-sentences';
+import { useCapturePickup } from '@/features/capture-ladder/use-capture-pickup';
 import { getCapturePolicy } from '@/lib/capture-ladder/api';
 import { dismissHandoff } from '@/lib/capture-ladder/api';
-import { type NeedsYouUpdate, subscribeNeedsYou } from '@/lib/capture-ladder/queue';
+import { clearCapturePickup, orderForPickup, pickupMissWhy } from '@/lib/capture-ladder/pickup';
+import {
+  type ElsewhereWaiting,
+  type NeedsYouUpdate,
+  subscribeNeedsYou,
+} from '@/lib/capture-ladder/queue';
 import { type RunPhase, captureDrivenTab, runBatch } from '@/lib/capture-ladder/runner';
 import type { Handoff } from '@/lib/capture-ladder/types';
-import { Badge, BasicTextarea as Textarea, Button } from '@ai-matrx/design-system';
-import { ExternalLink, Loader2, RefreshCw } from 'lucide-react';
+import { listMemberOrganizations, selectActiveOrganization } from '@/lib/org/active-org';
+import { Badge, Button, BasicTextarea as Textarea } from '@ai-matrx/design-system';
+import { ArrowRightLeft, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 const PHASE_LABEL: Record<RunPhase, string> = {
@@ -67,7 +75,10 @@ export function NeedsYourBrowserView(): React.JSX.Element {
   const [driving, setDriving] = useState<Driving | null>(null);
   const [dismissNote, setDismissNote] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [switching, setSwitching] = useState(false);
+  const [switchProblem, setSwitchProblem] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const pickup = useCapturePickup();
 
   useEffect(() => {
     const off = subscribeNeedsYou(setUpdate);
@@ -77,9 +88,60 @@ export function NeedsYourBrowserView(): React.JSX.Element {
     };
   }, []);
 
-  const items = update?.items ?? [];
+  const rawItems = useMemo(() => update?.items ?? [], [update]);
+  // The row the web app pointed at goes first — in its own section, so the
+  // ordering rule does not have to fight the waiting/you-drive split.
+  const picked = useMemo(() => orderForPickup(rawItems, pickup), [rawItems, pickup]);
+  const items = picked.items;
+  const pickedId = picked.pickedId;
   const waiting = useMemo(() => items.filter((i) => i.status === 'waiting'), [items]);
   const needsDrive = useMemo(() => items.filter((i) => i.status === 'needs_drive'), [items]);
+  const sentences = useMemo(
+    () =>
+      queueSentences({
+        itemCount: items.length,
+        organizationName: update?.organizationName ?? null,
+        elsewhere: update?.elsewhere ?? [],
+        elsewhereError: update?.elsewhereError ?? null,
+      }),
+    [items.length, update?.organizationName, update?.elsewhere, update?.elsewhereError],
+  );
+  // A pointer we could not honour is SAID, not swallowed: one line naming the
+  // page and the likeliest reason it is gone (law 4).
+  const pickupMiss =
+    pickup && !picked.matched ? pickupMissWhy(pickup, update?.organizationName ?? null) : null;
+
+  /**
+   * Switch to the workspace that actually holds the waiting pages. Goes
+   * through `selectActiveOrganization` in the ONE resolver — this view never
+   * writes the stored selection itself — and only ever with a row that came
+   * out of the person's own membership read.
+   */
+  const switchTo = useCallback(async (target: ElsewhereWaiting): Promise<void> => {
+    setSwitching(true);
+    setSwitchProblem(null);
+    try {
+      const organizations = await listMemberOrganizations();
+      const match = organizations.find((o) => o.id === target.organizationId);
+      if (!match) {
+        setSwitchProblem(
+          `You are no longer a member of ${target.organizationName}, so AI Matrx cannot open its list. Ask an admin of that workspace to add you back.`,
+        );
+        return;
+      }
+      await selectActiveOrganization(match);
+      // The subscription's own poll re-reads under the new organization; this
+      // clears the now-meaningless pointer so nothing gets pinned in the
+      // workspace we just left.
+      await clearCapturePickup();
+    } catch (err) {
+      setSwitchProblem(
+        `AI Matrx could not switch workspaces: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    } finally {
+      setSwitching(false);
+    }
+  }, []);
 
   const onProgress = useCallback((handoffId: string, phase: RunPhase, detail?: string): void => {
     setStatuses((cur) => ({
@@ -201,11 +263,7 @@ export function NeedsYourBrowserView(): React.JSX.Element {
     <div className="flex h-full flex-col">
       <header className="shrink-0 border-b border-zinc-200 px-4 py-2 dark:border-zinc-800">
         <div className="flex items-center justify-between gap-2">
-          <h1 className="text-sm font-semibold">
-            {items.length === 0
-              ? 'Nothing needs your browser'
-              : `${items.length} page${items.length === 1 ? '' : 's'} need your browser`}
-          </h1>
+          <h1 className="text-sm font-semibold">{sentences.headline}</h1>
           {update.health === 'degraded' && (
             <Badge variant="outline" className="gap-1 text-[10px]">
               <RefreshCw className="size-3" /> Refreshing on a timer
@@ -220,15 +278,57 @@ export function NeedsYourBrowserView(): React.JSX.Element {
             This list may be out of date: {update.error}
           </p>
         )}
-        {policyNote && <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">{policyNote}</p>}
+        {policyNote && (
+          <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">{policyNote}</p>
+        )}
       </header>
 
       <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3">
-        {items.length === 0 && (
-          <p className="text-sm text-zinc-500">
-            When a page will not open for our servers, it shows up here so your own signed-in
-            browser can read it.
+        {/* THE EMPTY STATE IS NEVER A BARE "NOTHING". It names the workspace it
+          looked in, and when the person's other memberships hold waiting pages
+          it says so in one sentence with a real control — the exact lie that
+          sent the owner hunting through the wrong tab. */}
+        {items.length === 0 && <p className="text-sm text-zinc-500">{sentences.emptyLine}</p>}
+
+        {sentences.elsewhereLine && (
+          <div className="mt-2 flex flex-wrap items-center gap-2 rounded border border-zinc-200 px-2 py-1.5 dark:border-zinc-800">
+            <p className="text-sm">{sentences.elsewhereLine}</p>
+            {sentences.switchTo && sentences.switchLabel && (
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={switching}
+                onClick={() => {
+                  const target = sentences.switchTo;
+                  if (target) void switchTo(target);
+                }}
+              >
+                {switching ? (
+                  <>
+                    <Loader2 className="mr-1 size-3.5 animate-spin" /> Switching…
+                  </>
+                ) : (
+                  <>
+                    <ArrowRightLeft className="mr-1 size-3.5" /> {sentences.switchLabel}
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+        )}
+
+        {sentences.elsewhereProblem && (
+          <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">
+            {sentences.elsewhereProblem}
           </p>
+        )}
+
+        {switchProblem && (
+          <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">{switchProblem}</p>
+        )}
+
+        {pickupMiss && (
+          <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">{pickupMiss}</p>
         )}
 
         {waiting.length > 0 && (
@@ -257,6 +357,9 @@ export function NeedsYourBrowserView(): React.JSX.Element {
                   <div className="truncate text-xs text-zinc-500" title={item.url}>
                     {item.url}
                   </div>
+                  {item.id === pickedId && (
+                    <p className="text-xs text-primary">Sent from AI Matrx just now.</p>
+                  )}
                   {item.reason_note && (
                     <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
                       {item.reason_note}
@@ -297,6 +400,9 @@ export function NeedsYourBrowserView(): React.JSX.Element {
                     <div className="truncate text-xs text-zinc-500" title={item.url}>
                       {item.url}
                     </div>
+                    {item.id === pickedId && (
+                      <p className="text-xs text-primary">Sent from AI Matrx just now.</p>
+                    )}
                     {item.reason_note && (
                       <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
                         {item.reason_note}
@@ -311,11 +417,7 @@ export function NeedsYourBrowserView(): React.JSX.Element {
                     )}
 
                     {!isDriving ? (
-                      <Button
-                        size="sm"
-                        className="mt-2"
-                        onClick={() => void startDriving(item)}
-                      >
+                      <Button size="sm" className="mt-2" onClick={() => void startDriving(item)}>
                         <ExternalLink className="mr-1 size-3.5" /> Open it
                       </Button>
                     ) : (
@@ -326,9 +428,9 @@ export function NeedsYourBrowserView(): React.JSX.Element {
                           </p>
                         ) : (
                           <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                            The page is open in its own tab. Sign in, click through, scroll —
-                            AI Matrx will not touch it. Press the button below when what you want
-                            saved is on the screen.
+                            The page is open in its own tab. Sign in, click through, scroll — AI
+                            Matrx will not touch it. Press the button below when what you want saved
+                            is on the screen.
                           </p>
                         )}
                         <div className="mt-2 flex flex-wrap gap-2">

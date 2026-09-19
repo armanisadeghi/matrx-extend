@@ -220,6 +220,25 @@ export async function requireActiveOrganizationId(): Promise<string> {
 }
 
 /**
+ * Make an ALREADY-VERIFIED membership the active organization.
+ *
+ * The narrow door for callers that have just read `listMemberOrganizations()`
+ * themselves and hold the matching row (the frontend-bridge pick-up, the
+ * "switch to the workspace that has the waiting pages" button). It exists so
+ * those call sites never write `STORAGE_KEYS.ACTIVE_ORGANIZATION` by hand:
+ * this module stays the ONE resolver, and the storage key has exactly one
+ * writer.
+ *
+ * It does NOT re-verify membership — the caller must pass a row that came out
+ * of `listMemberOrganizations()`. When you only have an id, use
+ * `setActiveOrganization()`, which verifies first.
+ */
+export async function selectActiveOrganization(org: MemberOrganization): Promise<void> {
+  await persistSelection(org);
+  log.info('auth', 'active organization set', { organization_id: org.id, name: org.name });
+}
+
+/**
  * Record an explicit user choice. Verified against live membership first —
  * this extension never stores an organization the user cannot actually act
  * in.
@@ -230,8 +249,7 @@ export async function setActiveOrganization(organizationId: string): Promise<Mem
   if (!match) {
     throw new Error('You are not a member of that organization.');
   }
-  await persistSelection(match);
-  log.info('auth', 'active organization set', { organization_id: match.id, name: match.name });
+  await selectActiveOrganization(match);
   return match;
 }
 
