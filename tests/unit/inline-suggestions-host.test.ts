@@ -8,6 +8,7 @@ const state = vi.hoisted(() => ({
   authenticated: true,
   organization: '00000000-0000-0000-0000-000000000002',
   enabled: true,
+  settingsReadFailure: false,
   matches: [
     {
       item_id: '00000000-0000-0000-0000-000000000003',
@@ -87,7 +88,10 @@ vi.mock('@/lib/org/active-org', () => ({
   getActiveOrganizationId: async () => state.organization,
 }));
 vi.mock('@/lib/settings/persisted', () => ({
-  readOfferSavedLoginsEnabled: async () => state.enabled,
+  readOfferSavedLoginsEnabled: async () => {
+    if (state.settingsReadFailure) throw new Error('settings unavailable');
+    return state.enabled;
+  },
   readCredentialAssistancePresentation: async () => 'on_page',
 }));
 vi.mock('@/lib/credentials/sensitive-fields', () => ({
@@ -161,6 +165,7 @@ beforeEach(() => {
   state.authenticated = true;
   state.organization = ORG;
   state.enabled = true;
+  state.settingsReadFailure = false;
   state.documentId = 'doc-7';
   state.matchGate = null;
   state.matchStarted = null;
@@ -396,6 +401,44 @@ describe('inline saved-login host', () => {
         ),
       );
     expect(replies).not.toContain(true);
+  });
+
+  it('fails a panel-status dependency error closed without consuming the valid offer', async () => {
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    const query = (await replyFor({
+      __matrx: true,
+      kind: 'credential-suggestions:query',
+      payload: { field: registeredField('#password') },
+    })) as { status: string; offerId: string };
+    expect(query.status).toBe('ready');
+
+    state.settingsReadFailure = true;
+    await expect(
+      replyForPanel({
+        __matrx: true,
+        kind: 'credential-suggestions:panel-status',
+        payload: { tabId: 7 },
+      }),
+    ).resolves.toEqual({ status: 'unavailable', itemIds: [] });
+
+    state.settingsReadFailure = false;
+    await expect(
+      replyForPanel({
+        __matrx: true,
+        kind: 'credential-suggestions:panel-status',
+        payload: { tabId: 7 },
+      }),
+    ).resolves.toEqual({
+      status: 'ready',
+      offerId: query.offerId,
+      itemIds: [ITEM],
+      matches: [{ item_id: ITEM, display_name: 'Work account' }],
+      pageUrl: `${location.origin}${location.pathname}`,
+      frameId: 0,
+    });
   });
 
   it('does not write after activation changes away and back while panel materialization waits', async () => {
