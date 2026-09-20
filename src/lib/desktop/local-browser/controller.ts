@@ -422,7 +422,10 @@ export class LocalBrowserController {
     actor: PrivateExpectedActor,
     registration: Registration,
     context: number,
-  ): Promise<{ receipt: string } | { reason: LocalBrowserRefusalReason }> {
+  ): Promise<
+    | { receipt: unknown; document?: { url: string; document_id: string } }
+    | { reason: LocalBrowserRefusalReason }
+  > {
     switch (claims.operation) {
       case 'discover':
         return this.discover(frame, claims, deadlineMs, actor, registration, context);
@@ -450,7 +453,10 @@ export class LocalBrowserController {
     actor: PrivateExpectedActor,
     registration: Registration,
     context: number,
-  ): Promise<{ receipt: string } | { reason: LocalBrowserRefusalReason }> {
+  ): Promise<
+    | { receipt: LocalCommandResult; document?: { url: string; document_id: string } }
+    | { reason: LocalBrowserRefusalReason }
+  > {
     const port = this.deps.command;
     if (!port || !frame.command_json) return { reason: 'authority_refused' };
     const entry = this.entries.get(runKey(claims));
@@ -592,7 +598,17 @@ export class LocalBrowserController {
       });
       if (!completed.ok || completed.data.status !== 'completed')
         return { reason: completed.ok ? 'authority_refused' : mapPrivateFailure(completed.error) };
-      return { receipt: JSON.stringify(completed.data.result) };
+      return {
+        receipt: completed.data.result,
+        ...(command.operation === 'inspect_login'
+          ? {
+              document: {
+                url: new URL(doc.url).origin + new URL(doc.url).pathname,
+                document_id: doc.documentId,
+              },
+            }
+          : {}),
+      };
     } finally {
       abort.abort();
     }
@@ -1166,7 +1182,9 @@ export class LocalBrowserController {
   private async respond(
     frame: LocalBrowserExecute,
     socketEpoch: string,
-    outcome: { receipt: string } | { reason: LocalBrowserRefusalReason },
+    outcome:
+      | { receipt: unknown; document?: { url: string; document_id: string } }
+      | { reason: LocalBrowserRefusalReason },
   ): Promise<void> {
     const payload =
       'reason' in outcome
@@ -1185,7 +1203,8 @@ export class LocalBrowserController {
               call_id: frame.call_id,
               operation: 'approve',
               status: 'acknowledged',
-              terminal_receipt: JSON.parse(outcome.receipt),
+              terminal_receipt: outcome.receipt,
+              ...(outcome.document ? { document: outcome.document } : {}),
             })
           : localBrowserResult({
               type: 'local_browser.result',
