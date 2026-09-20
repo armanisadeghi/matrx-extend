@@ -374,6 +374,83 @@ describe('detector — snapshotLogin', () => {
     expect(sent).toEqual([]);
     dispose();
   });
+
+  it.each(['Enter', 'click'] as const)(
+    'routes a test-harness trusted composed gesture from two nested open roots to its coherent login only',
+    async (gesture) => {
+      const { mountCaptureDetector } = await import('@/lib/credentials/capture-detector');
+      const sent: unknown[] = [];
+      Object.assign(chrome, {
+        runtime: { id: 'test-extension', sendMessage: async (message: unknown) => void sent.push(message) },
+      });
+      const listeners = new Map<string, EventListener>();
+      const add = document.addEventListener.bind(document);
+      const remove = document.removeEventListener.bind(document);
+      vi.spyOn(document, 'addEventListener').mockImplementation((type, listener, options) => {
+        if (type === 'keydown' || type === 'click') listeners.set(type, listener as EventListener);
+        return add(type, listener, options);
+      });
+      vi.spyOn(document, 'removeEventListener').mockImplementation(remove);
+      document.body.innerHTML = '';
+      const outerHost = document.createElement('div');
+      const outerRoot = outerHost.attachShadow({ mode: 'open' });
+      const innerHost = document.createElement('div');
+      const root = innerHost.attachShadow({ mode: 'open' });
+      outerRoot.append(innerHost);
+      root.innerHTML = `<form method="post"><input autocomplete="username" value="${USER}"><input type="password" autocomplete="current-password" value="${SENTINEL}"><button type="submit"><span>Sign in</span></button></form>`;
+      const unrelated = document.createElement('form');
+      unrelated.method = 'post';
+      unrelated.innerHTML = '<input type=password value="unrelated-password"><button type=submit>Other</button>';
+      document.body.append(outerHost, unrelated);
+      const form = root.querySelector('form') as HTMLFormElement;
+      const password = root.querySelector('input[type=password]') as HTMLInputElement;
+      const button = root.querySelector('button') as HTMLButtonElement;
+      const clickTarget = button.querySelector('span') as HTMLSpanElement;
+      for (const input of [password, root.querySelector('input[autocomplete=username]') as HTMLInputElement])
+        input.getBoundingClientRect = () => ({ width: 100, height: 20 }) as DOMRect;
+      const dispose = mountCaptureDetector(document);
+      const path = gesture === 'Enter' ? [password, form, root, innerHost, outerRoot, outerHost, document, window] : [clickTarget, button, form, root, innerHost, outerRoot, outerHost, document, window];
+      const event = {
+        isTrusted: true,
+        key: gesture === 'Enter' ? 'Enter' : undefined,
+        composedPath: () => path,
+      } as unknown as Event;
+      listeners.get(gesture === 'Enter' ? 'keydown' : 'click')?.(event);
+      await Promise.resolve();
+      expect(sent).toEqual([
+        {
+          __matrx: true,
+          kind: 'credential-capture:candidate',
+          payload: { stage: 'password', loginUrl: document.location.href, username: USER, password: SENTINEL },
+        },
+      ]);
+      dispose();
+    },
+  );
+
+  it('refuses a trusted composed open-shadow gesture when its effective action is unsafe', async () => {
+    const { mountCaptureDetector } = await import('@/lib/credentials/capture-detector');
+    const sent: unknown[] = [];
+    Object.assign(chrome, { runtime: { id: 'test-extension', sendMessage: async (message: unknown) => void sent.push(message) } });
+    const listeners = new Map<string, EventListener>();
+    const add = document.addEventListener.bind(document);
+    vi.spyOn(document, 'addEventListener').mockImplementation((type, listener, options) => {
+      if (type === 'keydown') listeners.set(type, listener as EventListener);
+      return add(type, listener, options);
+    });
+    document.body.innerHTML = '';
+    const host = document.createElement('div');
+    const root = host.attachShadow({ mode: 'open' });
+    root.innerHTML = `<form method="post" action="https://attacker.invalid"><input type="password" value="${SENTINEL}"></form>`;
+    document.body.append(host);
+    const password = root.querySelector('input') as HTMLInputElement;
+    password.getBoundingClientRect = () => ({ width: 100, height: 20 }) as DOMRect;
+    const dispose = mountCaptureDetector(document);
+    listeners.get('keydown')?.({ isTrusted: true, key: 'Enter', composedPath: () => [password, root, host, document, window] } as unknown as Event);
+    await Promise.resolve();
+    expect(sent).toEqual([]);
+    dispose();
+  });
 });
 
 // ── 2. SW host ──────────────────────────────────────────────────────────────

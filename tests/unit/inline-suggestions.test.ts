@@ -8,6 +8,8 @@ let queryResponse: unknown;
 let pendingQueryResolve: ((response: unknown) => void) | null = null;
 let openVaultCount = 0;
 let unmount: (() => void) | null = null;
+let presentation: 'quiet' | 'on_page' = 'on_page';
+let storageChanged: ((changes: Record<string, chrome.storage.StorageChange>, area: string) => void) | null = null;
 const originalAttachShadow = HTMLElement.prototype.attachShadow;
 const originalInnerHeight = window.innerHeight;
 
@@ -18,6 +20,8 @@ beforeEach(() => {
   queryResponse = undefined;
   pendingQueryResolve = null;
   openVaultCount = 0;
+  presentation = 'on_page';
+  storageChanged = null;
   document.body.innerHTML =
     '<form><input id="password" type="password" autocomplete="current-password"><input id="plain-text" type="text"><input id="search" type="search"><input id="contact" type="email"><button>Continue</button></form>';
   const input = document.querySelector('#password') as HTMLInputElement;
@@ -35,10 +39,11 @@ beforeEach(() => {
       local: {
         get: async () => ({
           'matrx.settings.v1': JSON.stringify({
-            state: { credentialAssistancePresentation: 'on_page' },
+            state: { credentialAssistancePresentation: presentation },
           }),
         }),
       },
+      onChanged: { addListener: (listener: typeof storageChanged) => { storageChanged = listener; }, removeListener: () => { storageChanged = null; } },
     },
     runtime: {
       sendMessage: async (message: { kind: string }) => {
@@ -108,7 +113,82 @@ async function mountReadyChooser(): Promise<{
   };
 }
 
+function mountNestedOpenPassword(): HTMLInputElement {
+  document.body.innerHTML = '';
+  const outer = document.createElement('div');
+  const outerRoot = outer.attachShadow({ mode: 'open' });
+  const inner = document.createElement('div');
+  const innerRoot = inner.attachShadow({ mode: 'open' });
+  innerRoot.innerHTML = '<form><input id="nested-password" type="password" autocomplete="current-password"><button>Continue</button></form>';
+  outerRoot.append(inner);
+  document.body.append(outer);
+  const input = innerRoot.querySelector('#nested-password') as HTMLInputElement;
+  Object.defineProperty(input, 'getBoundingClientRect', { value: () => ({ width: 120, height: 24, top: 10, left: 10, bottom: 34 }) });
+  return input;
+}
+
 describe('inline saved-login chooser', () => {
+  it('requeries a focused nested open-shadow password when opt-in changes to on-page', async () => {
+    presentation = 'quiet';
+    const target = mountNestedOpenPassword();
+    const { mountInlineCredentialSuggestions } = await import('@/lib/credentials/inline-suggestions');
+    unmount = mountInlineCredentialSuggestions();
+    target.focus();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(queryCount).toBeGreaterThan(0);
+    expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
+    presentation = 'on_page';
+    const beforeOptIn = queryCount;
+    storageChanged?.({ 'matrx.settings.v1': { newValue: '{}' } }, 'local');
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(queryCount).toBe(beforeOptIn + 1);
+    expect(document.querySelector('#matrx-inline-login-suggestion')).not.toBeNull();
+  });
+
+  it('keeps nested open-shadow chooser focus, input, pointer, ArrowDown, and Escape lifecycle local', async () => {
+    matches = [
+      { item_id: 'item-1', display_name: 'Work account' },
+      { item_id: 'item-2', display_name: 'Personal account' },
+    ];
+    const target = mountNestedOpenPassword();
+    const captured: { listener?: (event: KeyboardEvent) => void } = {};
+    const add = target.addEventListener.bind(target);
+    vi.spyOn(target, 'addEventListener').mockImplementation((type, listener, options) => {
+      if (type === 'keydown' && options === true) captured.listener = listener as (event: KeyboardEvent) => void;
+      add(type, listener, options);
+    });
+    const { mountInlineCredentialSuggestions } = await import('@/lib/credentials/inline-suggestions');
+    unmount = mountInlineCredentialSuggestions();
+    target.focus();
+    for (let index = 0; index < 4; index++) await Promise.resolve();
+    let host = document.querySelector('#matrx-inline-login-suggestion') as HTMLElement;
+    expect(host).not.toBeNull();
+    let prevented = false;
+    captured.listener?.({ isTrusted: true, key: 'ArrowDown', preventDefault: () => { prevented = true; } } as KeyboardEvent);
+    expect(prevented).toBe(true);
+    expect(host.shadowRoot?.querySelectorAll('button')[1]).not.toHaveProperty('hidden', true);
+    target.dispatchEvent(new InputEvent('input', { bubbles: true, composed: true, data: 'x', inputType: 'insertText' }));
+    expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
+    (target.form?.querySelector('button') as HTMLButtonElement).focus();
+    target.focus();
+    for (let index = 0; index < 4; index++) await Promise.resolve();
+    document.body.dispatchEvent(new Event('pointerdown', { bubbles: true, composed: true }));
+    expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
+    (target.form?.querySelector('button') as HTMLButtonElement).focus();
+    target.focus();
+    for (let index = 0; index < 4; index++) await Promise.resolve();
+    host = document.querySelector('#matrx-inline-login-suggestion') as HTMLElement;
+    expect(host).not.toBeNull();
+    target.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true }));
+    expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
+  });
+
   it.each([
     { status: 'no_matches', message: 'No saved login is available for this form.' },
     { status: 'sign_in_required', message: 'Sign in to Matrx to use saved logins.' },

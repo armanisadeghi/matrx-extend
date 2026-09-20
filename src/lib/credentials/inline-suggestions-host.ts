@@ -7,6 +7,7 @@ import { getCurrentUser } from '@/lib/auth/flow';
 import { setSavedLoginAssistance } from '@/lib/credentials/assistance-status';
 import {
   type BoundLoginGroup,
+  type CredentialFieldRef,
   type CredentialDomInjectedRequest,
   type CredentialDomResult,
   credentialDomSource,
@@ -27,7 +28,6 @@ import { readOfferSavedLoginsEnabled } from '@/lib/settings/persisted';
  */
 
 const OFFER_TTL_MS = 60_000;
-const MAX_SELECTOR_LENGTH = 800;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type QueryResponse =
@@ -88,6 +88,11 @@ const PANEL_COPY = {
 function response(status: keyof typeof COPY): QueryResponse {
   return { status: status as Exclude<QueryResponse['status'], 'ready'>, message: COPY[status] };
 }
+function sameFieldRef(left: CredentialFieldRef | null, right: CredentialFieldRef | null): boolean {
+  if (left === null || right === null) return left === right;
+  if (typeof left === 'string' || typeof right === 'string') return left === right;
+  return left.kind === right.kind && left.id === right.id;
+}
 function fillResponse(status: FillResponse['status']): FillResponse {
   return { status, message: COPY[status] };
 }
@@ -126,15 +131,10 @@ function randomOfferId(): string {
   crypto.getRandomValues(bytes);
   return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 }
-function validQuery(payload: unknown): payload is { fieldSelector: string } {
-  return (
-    !!payload &&
-    typeof payload === 'object' &&
-    typeof (payload as { fieldSelector?: unknown }).fieldSelector === 'string' &&
-    (payload as { fieldSelector: string }).fieldSelector.length > 0 &&
-    (payload as { fieldSelector: string }).fieldSelector.length <= MAX_SELECTOR_LENGTH &&
-    Object.keys(payload).length === 1
-  );
+function validQuery(payload: unknown): payload is { field: CredentialFieldRef } {
+  if (!payload || typeof payload !== 'object' || Object.keys(payload).length !== 1) return false;
+  const field = (payload as { field?: unknown }).field;
+  return !!field && typeof field === 'object' && (field as { kind?: unknown }).kind === 'registered_input' && typeof (field as { id?: unknown }).id === 'string' && (field as { id: string }).id.length === 36;
 }
 function validFill(payload: unknown): payload is { offerId: string; itemId: string } {
   return (
@@ -222,7 +222,7 @@ async function isCurrentTopDocument(tabId: number, documentId: string): Promise<
   }
 }
 
-async function query(tabId: number, documentId: string, selector: string): Promise<QueryResponse> {
+async function query(tabId: number, documentId: string, selector: CredentialFieldRef): Promise<QueryResponse> {
   const generation = nextGeneration(tabId, documentId);
   // Window identity arrives asynchronously; retain each window's epoch from
   // query entry so activation during any earlier await cannot mint an offer.
@@ -235,7 +235,8 @@ async function query(tabId: number, documentId: string, selector: string): Promi
   if (!actor) return response('organization_required');
   const group = await injectCredentialDom(tabId, documentId, {
     operation: 'focused_group',
-    selector,
+    field: selector,
+    documentId,
   }).catch(() => null);
   if (!group) return response('unsafe_destination');
   const tab = await chrome.tabs.get(tabId).catch(() => null);
@@ -356,13 +357,14 @@ async function fill(
     return fillResponse('stale');
   const current = await injectCredentialDom(tabId, documentId, {
     operation: 'focused_group',
-    selector: offer.anchor,
+    field: offer.anchor,
+    documentId,
   }).catch(() => null);
   if (
     !current ||
     current.pageUrl !== offer.pageUrl ||
-    current.username !== offer.username ||
-    current.password !== offer.password
+    !sameFieldRef(current.username, offer.username) ||
+    !sameFieldRef(current.password, offer.password)
   )
     return fillResponse('stale');
   const materialized = await materializeBrowserLogin(
@@ -414,15 +416,15 @@ async function fill(
   }
   const username = data.fields?.username ?? data.username;
   const password = data.fields?.password ?? data.password;
-  const sensitive = [offer.username, offer.password].filter((x): x is string => !!x);
+  const sensitive = [offer.username, offer.password].filter((x): x is string => typeof x === 'string');
   rememberSensitiveFields(tabId, sensitive);
   try {
     const done = await injectCredentialDom(tabId, documentId, {
       operation: 'fill',
       expected: offer,
       requested: [
-        ...(offer.username ? [{ selector: offer.username, value: username ?? null }] : []),
-        ...(offer.password ? [{ selector: offer.password, value: password ?? null }] : []),
+        ...(offer.username ? [{ field: offer.username, value: username ?? null }] : []),
+        ...(offer.password ? [{ field: offer.password, value: password ?? null }] : []),
       ],
       sensitiveAttr: SENSITIVE_ATTR,
       preserveLegacyFieldBehavior: false,
@@ -475,15 +477,16 @@ async function panelFill(tabId: number, itemId: string): Promise<FillResponse> {
     return { status: 'stale', message: PANEL_COPY.stale };
   const current = await injectCredentialDom(offer.tabId, offer.documentId, {
     operation: 'focused_group',
-    selector: offer.anchor,
+    field: offer.anchor,
+    documentId: offer.documentId,
     requirePanelFocus: true,
   }).catch(() => null);
   if (
     !(await fence()) ||
     !current ||
     current.pageUrl !== offer.pageUrl ||
-    current.username !== offer.username ||
-    current.password !== offer.password
+    !sameFieldRef(current.username, offer.username) ||
+    !sameFieldRef(current.password, offer.password)
   )
     return { status: 'stale', message: PANEL_COPY.stale };
   const materialized = await materializeBrowserLogin(
@@ -517,17 +520,17 @@ async function panelFill(tabId: number, itemId: string): Promise<FillResponse> {
       return { status: 'stale', message: PANEL_COPY.stale };
     rememberSensitiveFields(
       offer.tabId,
-      [offer.username, offer.password].filter((x): x is string => !!x),
+      [offer.username, offer.password].filter((x): x is string => typeof x === 'string'),
     );
     const done = await injectCredentialDom(offer.tabId, offer.documentId, {
       operation: 'fill',
       expected: offer,
       requested: [
         ...(offer.username
-          ? [{ selector: offer.username, value: data.fields?.username ?? data.username ?? null }]
+          ? [{ field: offer.username, value: data.fields?.username ?? data.username ?? null }]
           : []),
         ...(offer.password
-          ? [{ selector: offer.password, value: data.fields?.password ?? data.password ?? null }]
+          ? [{ field: offer.password, value: data.fields?.password ?? data.password ?? null }]
           : []),
       ],
       sensitiveAttr: SENSITIVE_ATTR,
@@ -634,7 +637,7 @@ export function registerInlineCredentialSuggestionHost(): void {
         sendResponse(response('unsafe_destination'));
         return false;
       }
-      void query(tabId, documentId, env.payload.fieldSelector)
+      void query(tabId, documentId, env.payload.field)
         .then(sendResponse)
         .catch(() => sendResponse(response('unavailable')));
       return true;

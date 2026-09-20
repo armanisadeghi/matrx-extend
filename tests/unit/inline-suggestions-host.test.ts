@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mountGenerationTargetRegistry } from '@/lib/credentials/generation-targets';
 
 const USER = '00000000-0000-0000-0000-000000000001';
 const ORG = '00000000-0000-0000-0000-000000000002';
@@ -106,6 +107,13 @@ function replyForPanel(
     const kept = runtimeListeners.map((listener) => listener(message, panel, resolve));
     expect(kept).toContain(true);
   });
+}
+function registeredField(selector: string): { kind: 'registered_input'; id: string } {
+  const input = document.querySelector(selector);
+  if (!(input instanceof HTMLInputElement)) throw new Error(`Missing registered input: ${selector}`);
+  const id = mountGenerationTargetRegistry().registerInput(input);
+  if (!id) throw new Error(`Could not register input: ${selector}`);
+  return { kind: 'registered_input', id };
 }
 
 beforeEach(() => {
@@ -252,7 +260,7 @@ describe('inline saved-login host', () => {
       const query = (await replyFor({
         __matrx: true,
         kind: 'credential-suggestions:query',
-        payload: { fieldSelector: '#password' },
+        payload: { field: registeredField('#password') },
       })) as { status: string; offerId: string };
       expect(query.status).toBe('ready');
       const original = chrome.scripting.executeScript;
@@ -281,7 +289,7 @@ describe('inline saved-login host', () => {
     const query = await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
-      payload: { fieldSelector: '#password' },
+      payload: { field: registeredField('#password') },
     });
     expect((query as { status: string }).status).toBe('ready');
     const status = await replyForPanel({
@@ -314,7 +322,7 @@ describe('inline saved-login host', () => {
     await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
-      payload: { fieldSelector: '#password' },
+      payload: { field: registeredField('#password') },
     });
     let release!: () => void;
     state.materializeGate = new Promise((resolve) => {
@@ -351,7 +359,7 @@ describe('inline saved-login host', () => {
     await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
-      payload: { fieldSelector: '#password' },
+      payload: { field: registeredField('#password') },
     });
     let release!: () => void;
     state.materializeGate = new Promise((resolve) => {
@@ -387,7 +395,7 @@ describe('inline saved-login host', () => {
     await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
-      payload: { fieldSelector: '#password' },
+      payload: { field: registeredField('#password') },
     });
     let release!: () => void;
     let reached!: () => void;
@@ -445,7 +453,7 @@ describe('inline saved-login host', () => {
       const query = replyFor({
         __matrx: true,
         kind: 'credential-suggestions:query',
-        payload: { fieldSelector: '#password' },
+        payload: { field: registeredField('#password') },
       });
       await started;
       for (const tabId of [8, 7])
@@ -471,7 +479,7 @@ describe('inline saved-login host', () => {
     await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
-      payload: { fieldSelector: '#password' },
+      payload: { field: registeredField('#password') },
     });
     let release!: () => void;
     let reached!: () => void;
@@ -529,7 +537,7 @@ describe('inline saved-login host', () => {
       await replyFor({
         __matrx: true,
         kind: 'credential-suggestions:query',
-        payload: { fieldSelector: '#password' },
+        payload: { field: registeredField('#password') },
       });
       const alter = () => {
         if (mode.startsWith('hidden'))
@@ -617,7 +625,7 @@ describe('inline saved-login host', () => {
     const query = (await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
-      payload: { fieldSelector: '#password' },
+      payload: { field: registeredField('#password') },
     })) as { status: string; offerId: string; matches: Array<{ item_id: string }> };
     expect(query.status).toBe('ready');
     expect(query.matches).toEqual([{ item_id: ITEM, display_name: 'Work account' }]);
@@ -736,7 +744,7 @@ describe('inline saved-login host', () => {
     const query = (await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
-      payload: { fieldSelector: '#username' },
+      payload: { field: registeredField('#username') },
     })) as { status: string; offerId: string };
     expect(query.status).toBe('ready');
     const fill = (await replyFor({
@@ -756,7 +764,7 @@ describe('inline saved-login host', () => {
     const result = (await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
-      payload: { fieldSelector: '#password', url: 'https://attacker.invalid' },
+      payload: { field: registeredField('#password'), url: 'https://attacker.invalid' },
     })) as { status: string };
     expect(result.status).toBe('unsafe_destination');
   });
@@ -770,7 +778,7 @@ describe('inline saved-login host', () => {
     const result = (await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
-      payload: { fieldSelector: '#password' },
+      payload: { field: registeredField('#password') },
     })) as { status: string };
     expect(result.status).toBe('unavailable');
   });
@@ -793,7 +801,7 @@ describe('inline saved-login host', () => {
     const result = (await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
-      payload: { fieldSelector: `#${input.id}` },
+      payload: { field: registeredField(`#${input.id}`) },
     })) as { status: string };
     expect(result.status).toBe('unsafe_destination');
   });
@@ -806,7 +814,7 @@ describe('inline saved-login host', () => {
     const query = (await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
-      payload: { fieldSelector: '#password' },
+      payload: { field: registeredField('#password') },
     })) as { status: string; offerId: string };
     state.documentId = 'replacement-document';
     const result = (await replyFor({
@@ -835,7 +843,7 @@ describe('inline saved-login host', () => {
     const first = replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
-      payload: { fieldSelector: '#password' },
+      payload: { field: registeredField('#password') },
     });
     await firstFetch;
     state.matchGate = null;
@@ -843,7 +851,7 @@ describe('inline saved-login host', () => {
     const second = (await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
-      payload: { fieldSelector: '#username' },
+      payload: { field: registeredField('#username') },
     })) as { status: string };
     release();
     const older = (await first) as { status: string };
@@ -861,7 +869,7 @@ describe('inline saved-login host', () => {
       const query = (await replyFor({
         __matrx: true,
         kind: 'credential-suggestions:query',
-        payload: { fieldSelector: '#password' },
+        payload: { field: registeredField('#password') },
       })) as { status: string; offerId: string };
       let release!: () => void;
       state.materializeGate = new Promise((resolve) => {
@@ -891,7 +899,7 @@ describe('inline saved-login host', () => {
     const query = (await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
-      payload: { fieldSelector: '#password' },
+      payload: { field: registeredField('#password') },
     })) as { status: string; offerId: string };
     let releaseFrame!: () => void;
     let finalFrameReached!: () => void;
@@ -965,7 +973,7 @@ describe('inline saved-login host', () => {
       {
         __matrx: true,
         kind: 'credential-suggestions:query',
-        payload: { fieldSelector: '#password' },
+        payload: { field: registeredField('#password') },
       },
       7,
       'doc-7',
@@ -975,7 +983,7 @@ describe('inline saved-login host', () => {
       {
         __matrx: true,
         kind: 'credential-suggestions:query',
-        payload: { fieldSelector: '#password' },
+        payload: { field: registeredField('#password') },
       },
       8,
       'doc-8',

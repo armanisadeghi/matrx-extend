@@ -3,17 +3,20 @@
  * Chrome serializes this function verbatim; runtime helpers intentionally live
  * inside it so injected operations cannot drift apart.
  */
+export type CredentialFieldRef = string | { kind: 'registered_input'; id: string };
+
 export interface BoundLoginGroup {
-  anchor: string;
-  username: string | null;
-  password: string | null;
+  anchor: CredentialFieldRef;
+  username: CredentialFieldRef | null;
+  password: CredentialFieldRef | null;
   usernameOnly: boolean;
   pageUrl: string;
+  /** Exact Chrome document identity when any member is registry-backed. */
+  documentId?: string;
 }
-export interface ControlledCredentialField {
-  selector: string;
-  value: string | null;
-}
+export type ControlledCredentialField =
+  | { selector: string; value: string | null }
+  | { field: CredentialFieldRef; value: string | null };
 export interface GeneratedPasswordConstraint {
   minLength: number | null;
   maxLength: number | null;
@@ -61,7 +64,7 @@ export interface CredentialDomRequestMap {
     currentUrl: string;
     baseUri: string;
   };
-  focused_group: { selector: string; requirePanelFocus?: boolean };
+  focused_group: { selector?: string; field?: CredentialFieldRef; documentId?: string; requirePanelFocus?: boolean };
   attempt_probe: { fieldSelectors: string[]; controlSelectors: string[] };
   auto_probe: {};
   fill: {
@@ -170,7 +173,13 @@ export function credentialDomSource(
     }
     return primary;
   }
-  function focused(selector: string, requirePanelFocus = false): BoundLoginGroup | null {
+  function focused(ref: CredentialFieldRef, documentId?: string, requirePanelFocus = false): BoundLoginGroup | null {
+    const selector = typeof ref === 'string' ? ref : null;
+    const deepActive = (): Element | null => {
+      let active: Element | null = document.activeElement;
+      while (active instanceof HTMLElement && active.shadowRoot?.mode === 'open') active = active.shadowRoot.activeElement;
+      return active;
+    };
     function visibleEditable(input: HTMLInputElement): boolean {
       const r = input.getBoundingClientRect();
       const style = getComputedStyle(input);
@@ -212,9 +221,14 @@ export function credentialDomSource(
     }
     let anchor: HTMLInputElement | null = null;
     try {
-      const matches = document.querySelectorAll(selector);
-      if (matches.length !== 1 || !(matches[0] instanceof HTMLInputElement)) return null;
-      anchor = matches[0];
+      if (selector) {
+        const matches = document.querySelectorAll(selector);
+        if (matches.length !== 1 || !(matches[0] instanceof HTMLInputElement)) return null;
+        anchor = matches[0];
+      } else {
+        anchor = documentId ? window.__matrx_generation_target_registry__?.resolveInput((ref as { id: string }).id, documentId) ?? null : null;
+        if (!anchor) return null;
+      }
     } catch {
       return null;
     }
@@ -228,9 +242,17 @@ export function credentialDomSource(
     )
       return null;
     const scope = anchor.form ?? anchor.parentElement ?? document.body;
-    const inputs = Array.from(scope.querySelectorAll<HTMLInputElement>('input')).filter(
-      visibleEditable,
-    );
+    const inputs = (scope instanceof HTMLFormElement
+      ? Array.from(scope.elements).filter(
+          (node): node is HTMLInputElement =>
+            node instanceof HTMLInputElement &&
+            node.form === scope &&
+            node.ownerDocument === document &&
+            node.isConnected &&
+            node.getRootNode() === scope.getRootNode(),
+        )
+      : Array.from(scope.querySelectorAll<HTMLInputElement>('input'))
+    ).filter(visibleEditable);
     const password =
       inputs.find(
         (i) =>
@@ -252,16 +274,26 @@ export function credentialDomSource(
     if (!anchorIsPassword && !anchorIsUsername) return null;
     // A username-only step is valid when its autocomplete is explicit; the
     // host requires a canonical saved-origin match before it displays a choice.
-    const anchorSelector = selectorFor(anchor);
-    if (!anchorSelector) return null;
-    const usernameSelector = username ? selectorFor(username) : null;
-    const passwordSelector = password ? selectorFor(password) : null;
+    const registry = window.__matrx_generation_target_registry__;
+    const refFor = (input: HTMLInputElement | null): CredentialFieldRef | null => {
+      if (!input) return null;
+      if (input === anchor) return ref;
+      if (typeof ref !== 'string') {
+        const id = registry?.registerInput(input);
+        return id ? { kind: 'registered_input', id } : null;
+      }
+      const selector = selectorFor(input);
+      return selector;
+    };
+    const anchorSelector: CredentialFieldRef = ref;
+    const usernameSelector = refFor(username);
+    const passwordSelector = refFor(password);
     if ((username && !usernameSelector) || (password && !passwordSelector)) return null;
     if (
       requirePanelFocus &&
-      document.activeElement !== anchor &&
-      document.activeElement !== username &&
-      document.activeElement !== password
+      deepActive() !== anchor &&
+      deepActive() !== username &&
+      deepActive() !== password
     )
       return null;
     const confirmation = inputs.filter(
@@ -275,6 +307,7 @@ export function credentialDomSource(
       password: passwordSelector,
       usernameOnly: !passwordSelector,
       pageUrl: `${location.origin}${location.pathname}`,
+      ...(typeof ref !== 'string' && documentId ? { documentId } : {}),
     };
   }
   function autoProbe(): LoginFormProbe {
@@ -709,14 +742,10 @@ export function credentialDomSource(
         style.visibility !== 'hidden'
       );
     }
-    function inputFor(selector: string | null): HTMLInputElement | null {
-      if (!selector) return null;
-      try {
-        const node = document.querySelector(selector);
-        return node instanceof HTMLInputElement ? node : null;
-      } catch {
-        return null;
-      }
+    function inputFor(ref: CredentialFieldRef | null, documentId?: string): HTMLInputElement | null {
+      if (!ref) return null;
+      if (typeof ref !== 'string') return documentId ? window.__matrx_generation_target_registry__?.resolveInput(ref.id, documentId) ?? null : null;
+      try { const node = document.querySelector(ref); return node instanceof HTMLInputElement ? node : null; } catch { return null; }
     }
     function write(input: HTMLInputElement, value: string): void {
       const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')?.set;
@@ -730,7 +759,7 @@ export function credentialDomSource(
       const field = requested[0];
       if (requested.length !== 1 || !field || field.value === null) return { ok: false };
       const value = field.value;
-      const input = inputFor(field.selector);
+      const input = inputFor('field' in field ? field.field : field.selector);
       if (!visibleEditable(input)) return { ok: false, reason: 'field_not_fillable' };
       // Preserve credential_login's established controlled-field behavior.
       if (sensitiveAttr) input.setAttribute(sensitiveAttr, '');
@@ -747,19 +776,17 @@ export function credentialDomSource(
     }
 
     const group = expected;
-    const anchor = inputFor(group.anchor);
-    const username = inputFor(group.username);
-    const password = inputFor(group.password);
+    const documentId = group.documentId;
+    const anchor = inputFor(group.anchor, documentId);
+    const username = inputFor(group.username, documentId);
+    const password = inputFor(group.password, documentId);
     const originals = { anchor, username, password };
 
-    function sameNode(selector: string | null, node: HTMLInputElement | null): boolean {
-      try {
-        return selector === null
-          ? node === null
-          : !!node && node.isConnected && document.querySelector(selector) === node;
-      } catch {
-        return false;
-      }
+    function sameNode(ref: CredentialFieldRef | null, node: HTMLInputElement | null): boolean {
+      if (ref === null) return node === null;
+      if (!node?.isConnected) return false;
+      if (typeof ref !== 'string') return !!documentId && window.__matrx_generation_target_registry__?.isRegisteredInput(ref.id, node) === true;
+      try { return document.querySelector(ref) === node; } catch { return false; }
     }
     const originalScope = anchor?.form ?? anchor?.parentElement ?? document.body;
     function safeGroup(): boolean {
@@ -790,20 +817,30 @@ export function credentialDomSource(
       // A selector can continue to resolve after a site moves the same node.
       // Its original group root is part of the bound ownership contract.
       if (scope !== originalScope) return false;
-      const inputs = Array.from(scope.querySelectorAll('input')).filter(
-        (node): node is HTMLInputElement =>
-          node instanceof HTMLInputElement && visibleEditable(node),
-      );
+      const inputs = (scope instanceof HTMLFormElement
+        ? Array.from(scope.elements).filter(
+            (node): node is HTMLInputElement =>
+              node instanceof HTMLInputElement &&
+              node.form === scope &&
+              node.ownerDocument === document &&
+              node.isConnected &&
+              node.getRootNode() === scope.getRootNode(),
+          )
+        : Array.from(scope.querySelectorAll('input'))
+      ).filter((node): node is HTMLInputElement => node instanceof HTMLInputElement && visibleEditable(node));
       const passwords = inputs.filter((node) => (node.type || '').toLowerCase() === 'password');
       if (passwords.length !== (group.password ? 1 : 0)) return false;
       if (passwords.some((node) => node.autocomplete.toLowerCase() === 'new-password'))
         return false;
       if (group.password && passwords[0] !== originals.password) return false;
+      let active: Element | null = document.activeElement;
+      while (active instanceof HTMLElement && active.shadowRoot?.mode === 'open')
+        active = active.shadowRoot.activeElement;
       if (
         requirePanelFocus &&
-        document.activeElement !== originals.anchor &&
-        document.activeElement !== originals.username &&
-        document.activeElement !== originals.password
+        active !== originals.anchor &&
+        active !== originals.username &&
+        active !== originals.password
       )
         return false;
       const form = currentAnchor.form;
@@ -811,16 +848,17 @@ export function credentialDomSource(
       return true;
     }
 
-    const requestedBySelector = new Map(requested.map((field) => [field.selector, field.value]));
+    const refKey = (ref: CredentialFieldRef) => typeof ref === 'string' ? `selector:${ref}` : `registered:${ref.id}`;
+    const requestedBySelector = new Map(requested.map((field) => [refKey('field' in field ? field.field : field.selector), field.value]));
     const fields: Array<{
       input: HTMLInputElement;
-      selector: string;
+      selector: CredentialFieldRef;
       value: string;
       original: string;
       attempted: boolean;
     }> = [];
-    const usernameValue = group.username ? requestedBySelector.get(group.username) : undefined;
-    const passwordValue = group.password ? requestedBySelector.get(group.password) : undefined;
+    const usernameValue = group.username ? requestedBySelector.get(refKey(group.username)) : undefined;
+    const passwordValue = group.password ? requestedBySelector.get(refKey(group.password)) : undefined;
     if (
       group.username &&
       usernameValue !== undefined &&
@@ -849,7 +887,12 @@ export function credentialDomSource(
       });
     if (!safeGroup() || fields.length === 0 || (group.password && passwordValue == null))
       return { ok: false };
-    for (const field of fields) if (sensitiveAttr) field.input.setAttribute(sensitiveAttr, '');
+    const registry = window.__matrx_generation_target_registry__;
+    for (const field of fields) {
+      if (typeof field.selector !== 'string' && !registry?.markSensitive(field.input))
+        return { ok: false };
+      if (sensitiveAttr) field.input.setAttribute(sensitiveAttr, '');
+    }
 
     const safely = (predicate: () => boolean): boolean => {
       try {
@@ -1013,7 +1056,7 @@ export function credentialDomSource(
       ) as CredentialDomResultMap[CredentialDomOperation];
     case 'focused_group':
       return result(
-        focused(request.selector, request.requirePanelFocus),
+        request.field ? focused(request.field, request.documentId, request.requirePanelFocus) : request.selector ? focused(request.selector, request.documentId, request.requirePanelFocus) : null,
       ) as CredentialDomResultMap[CredentialDomOperation];
     case 'attempt_probe':
       return result(

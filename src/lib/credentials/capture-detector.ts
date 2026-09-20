@@ -69,7 +69,7 @@ function isOneTimeCode(input: HTMLInputElement): boolean {
  * fall back to the document: unrelated password boxes must not join a capture.
  */
 function coherentGroup(anchor: Element | null): HTMLElement | null {
-  const form = anchor?.closest('form');
+  const form = anchor instanceof HTMLFormElement ? anchor : anchor instanceof HTMLInputElement || anchor instanceof HTMLButtonElement ? anchor.form : anchor?.closest('form');
   if (form) return form;
   for (
     let node = anchor instanceof HTMLElement ? anchor : null, depth = 0;
@@ -83,8 +83,22 @@ function coherentGroup(anchor: Element | null): HTMLElement | null {
   return null;
 }
 
+function groupInputs(group: HTMLElement): HTMLInputElement[] {
+  return (group instanceof HTMLFormElement
+    ? Array.from(group.elements).filter(
+        (node): node is HTMLInputElement =>
+          node instanceof HTMLInputElement &&
+          node.form === group &&
+          node.ownerDocument === group.ownerDocument &&
+          node.isConnected &&
+          node.getRootNode() === group.getRootNode(),
+      )
+    : Array.from(group.querySelectorAll<HTMLInputElement>('input'))
+  );
+}
+
 function findUsername(group: HTMLElement): string | null {
-  const inputs = Array.from(group.querySelectorAll<HTMLInputElement>('input')).filter(
+  const inputs = groupInputs(group).filter(
     (input) =>
       isVisibleEditable(input) &&
       input.value.trim().length > 0 &&
@@ -134,11 +148,11 @@ export function snapshotLogin(
   if (!group) return null;
   const form = group instanceof HTMLFormElement ? group : null;
   if (!safeAction(form, anchor, doc)) return null;
-  const passwords = Array.from(
-    group.querySelectorAll<HTMLInputElement>('input[type="password"]'),
-  ).filter((input) => isVisibleEditable(input) && input.value.length > 0 && !isOneTimeCode(input));
+  const passwords = groupInputs(group).filter(
+    (input) => input.type === 'password' && isVisibleEditable(input) && input.value.length > 0 && !isOneTimeCode(input),
+  );
   if (passwords.length === 0) {
-    const username = Array.from(group.querySelectorAll<HTMLInputElement>('input')).find(
+    const username = groupInputs(group).find(
       (input) =>
         isVisibleEditable(input) &&
         input.autocomplete.toLowerCase() === 'username' &&
@@ -206,6 +220,24 @@ function postCandidate(
 /**
  * Install the listeners. Idempotent per document. Returns a disposer (tests).
  */
+function composedElement(event: Event): Element | null {
+  for (const node of event.composedPath()) {
+    if (!(node instanceof Element)) continue;
+    const root = node.getRootNode();
+    if (root === document || (root instanceof ShadowRoot && root.mode === 'open')) return node;
+  }
+  return null;
+}
+
+function composedInput(event: Event): HTMLInputElement | null {
+  for (const node of event.composedPath()) {
+    if (!(node instanceof HTMLInputElement)) continue;
+    const root = node.getRootNode();
+    if (root === document || (root instanceof ShadowRoot && root.mode === 'open')) return node;
+  }
+  return null;
+}
+
 export function mountCaptureDetector(doc: Document = document): () => void {
   const transactions = new WeakMap<HTMLElement, { id: number; at: number }>();
   let nextTransactionId = 0;
@@ -257,23 +289,21 @@ export function mountCaptureDetector(doc: Document = document): () => void {
   const onSubmit = (e: Event) => {
     if (!e.isTrusted) return;
     const submitter = (e as SubmitEvent).submitter;
-    consider(
-      submitter instanceof Element ? submitter : e.target instanceof Element ? e.target : null,
-      false,
-    );
+    consider(composedInput(e) ?? (submitter instanceof Element ? submitter : e.target instanceof Element ? e.target : null), false);
   };
   // Enter inside a password box — SPA logins often have no <form>.
   const onKeyDown = (e: KeyboardEvent) => {
     if (!e.isTrusted || e.key !== 'Enter') return;
-    if (isPasswordInput(e.target as Element | null)) consider(e.target as Element, true);
+    const input = composedInput(e);
+    if (isPasswordInput(input)) consider(input, true);
   };
   // A submit-looking control clicked near a filled password box.
   const onClick = (e: MouseEvent) => {
     if (!e.isTrusted) return;
-    const target = e.target instanceof Element ? e.target : null;
+    const target = composedElement(e);
     const control = target?.closest('button, input[type="submit"]') ?? null;
     if (!control) return;
-    const form = control.closest('form');
+    const form = control instanceof HTMLButtonElement || control instanceof HTMLInputElement ? control.form : control.closest('form');
     if (form) {
       consider(control, true);
       return;

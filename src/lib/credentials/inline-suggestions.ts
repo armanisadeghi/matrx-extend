@@ -1,5 +1,6 @@
 /** Metadata-only, closed-shadow chooser for eligible focused login controls. */
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { mountGenerationTargetRegistry } from '@/lib/credentials/generation-targets';
 import { readCredentialAssistancePresentation } from '@/lib/settings/persisted';
 
 type QueryResponse =
@@ -23,32 +24,18 @@ let presentation: 'quiet' | 'on_page' = 'quiet';
 let focusEntry: { target: HTMLInputElement; listener: (event: KeyboardEvent) => void } | null =
   null;
 
-function selectorFor(input: HTMLInputElement): string | null {
-  const escapeSelector = (value: string) =>
-    globalThis.CSS?.escape?.(value) ?? value.replace(/[^a-zA-Z0-9_-]/g, '\\$&');
-  if (input.id) {
-    const selector = `#${escapeSelector(input.id)}`;
-    if (document.querySelectorAll(selector).length === 1) return selector;
+function deepActive(root: Document | ShadowRoot = document): Element | null {
+  let active: Element | null = root.activeElement;
+  while (active instanceof HTMLElement && active.shadowRoot?.mode === 'open') active = active.shadowRoot.activeElement;
+  return active;
+}
+function openComposedInput(event: Event): HTMLInputElement | null {
+  for (const node of event.composedPath()) {
+    if (!(node instanceof HTMLInputElement)) continue;
+    const root = node.getRootNode();
+    if (root === document || (root instanceof ShadowRoot && root.mode === 'open')) return node;
   }
-  const name = input.getAttribute('name');
-  if (name) {
-    const selector = `input[name="${escapeSelector(name)}"]`;
-    if (document.querySelectorAll(selector).length === 1) return selector;
-  }
-  const parts: string[] = [];
-  let node: Element | null = input;
-  while (node && node !== document.body && parts.length < 8) {
-    const parent: Element | null = node.parentElement;
-    if (!parent) return null;
-    const current = node;
-    const siblings = Array.from(parent.children).filter(
-      (child: Element) => child.tagName === current.tagName,
-    );
-    parts.unshift(`${node.tagName.toLowerCase()}:nth-of-type(${siblings.indexOf(node) + 1})`);
-    node = parent;
-  }
-  const selector = parts.join(' > ');
-  return selector && document.querySelectorAll(selector).length === 1 ? selector : null;
+  return null;
 }
 
 function dismiss(): void {
@@ -94,11 +81,11 @@ function place(target: HTMLInputElement): void {
 function requestFor(target: HTMLInputElement): void {
   focused = target;
   dismiss();
-  const selector = selectorFor(target);
-  if (!selector) return;
+  const id = mountGenerationTargetRegistry().registerInput(target);
+  if (!id) return;
   const token = ++generation;
   const requestUrl = location.href;
-  void send(CHANNELS.CREDENTIAL_SUGGESTIONS_QUERY, { fieldSelector: selector })
+  void send(CHANNELS.CREDENTIAL_SUGGESTIONS_QUERY, { field: { kind: 'registered_input', id } })
     .then((raw) => render(target, raw as QueryResponse, token, requestUrl))
     .catch(() => undefined);
 }
@@ -112,7 +99,7 @@ function render(
   if (
     token !== generation ||
     focused !== target ||
-    document.activeElement !== target ||
+    deepActive() !== target ||
     location.href !== requestUrl
   ) {
     return;
@@ -194,7 +181,7 @@ function render(
     if (
       !event.isTrusted ||
       event.key !== 'ArrowDown' ||
-      document.activeElement !== target ||
+      deepActive() !== target ||
       focused !== target ||
       host?.id !== HOST_ID
     ) {
@@ -229,29 +216,29 @@ export function mountInlineCredentialSuggestions(): () => void {
   const navigationApi = (globalThis as typeof globalThis & { navigation?: EventTarget }).navigation;
   void readCredentialAssistancePresentation().then((value) => {
     presentation = value;
-    const target = document.activeElement;
+    const target = deepActive();
     if (target instanceof HTMLInputElement) requestFor(target);
   });
   const onFocusIn = (event: FocusEvent): void => {
-    const target = event.target;
-    if (!(target instanceof HTMLInputElement) || (target === focused && host)) return;
+    const target = openComposedInput(event);
+    if (!target || (target === focused && host)) return;
     requestFor(target);
   };
   const onFocusOut = (): void => {
     window.setTimeout(() => {
-      const active = document.activeElement;
+      const active = deepActive();
       if (active !== focused && !focusIsInChooser()) invalidate();
     }, 0);
   };
   const onInput = (event: Event): void => {
-    if (event.target === focused) invalidate();
+    if (openComposedInput(event) === focused) invalidate();
   };
   const onPointerDown = (event: PointerEvent): void => {
-    if (event.target === focused || event.composedPath().includes(host as EventTarget)) return;
+    if (openComposedInput(event) === focused || event.composedPath().includes(host as EventTarget)) return;
     invalidate();
   };
   const onKeyDown = (event: KeyboardEvent): void => {
-    if (event.key === 'Escape' && (document.activeElement === focused || focusIsInChooser())) {
+    if (event.key === 'Escape' && (deepActive() === focused || focusIsInChooser())) {
       invalidate();
     }
   };
@@ -270,7 +257,7 @@ export function mountInlineCredentialSuggestions(): () => void {
       if (
         env.payload?.requery !== false &&
         target?.isConnected &&
-        document.activeElement === target
+        deepActive() === target
       )
         requestFor(target);
     }
@@ -302,7 +289,7 @@ export function mountInlineCredentialSuggestions(): () => void {
     void readCredentialAssistancePresentation().then((value) => {
       presentation = value;
       invalidate();
-      const target = document.activeElement;
+      const target = deepActive();
       if (target instanceof HTMLInputElement) requestFor(target);
     });
   };

@@ -3,7 +3,7 @@ import {
   GENERATED_SECRET_TTL_MS,
   mountGenerationTargetRegistry,
 } from '@/lib/credentials/generation-targets';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 // Execute the exact closure-free source Chrome receives. The registry is the
 // only persistent isolated-world dependency, mounted exactly as bridge.ts does.
@@ -345,5 +345,239 @@ describe('generated password DOM primitive', () => {
     expect(result.status).toBe('partial_manual_check');
     expect(input.value).toBe('site-owned-replacement');
     expect((document.querySelector('#confirm') as HTMLInputElement).value).toBe('');
+  });
+});
+
+describe('registered input references', () => {
+  it('binds an open-shadow input only to its exact document and refuses a moved host', () => {
+    const host = document.createElement('div');
+    document.body.append(host);
+    const root = host.attachShadow({ mode: 'open' });
+    const input = document.createElement('input');
+    input.type = 'password';
+    root.append(input);
+    const registry = mountGenerationTargetRegistry();
+    const id = registry.registerInput(input);
+    expect(id).toBeTruthy();
+    expect(registry.resolveInput(id!, documentId)).toBe(input);
+    // Repeated focus/query registration must reuse the same short-lived
+    // identity; otherwise post-materialization revalidation sees a new ref.
+    expect(registry.registerInput(input)).toBe(id);
+    const replacement = document.createElement('div');
+    document.body.append(replacement);
+    replacement.attachShadow({ mode: 'open' }).append(input);
+    expect(registry.resolveInput(id!, documentId)).toBeNull();
+  });
+
+  it('expires a repeated registered input identity at its original bounded TTL', async () => {
+    vi.useFakeTimers();
+    const host = document.createElement('div');
+    const root = host.attachShadow({ mode: 'open' });
+    const input = document.createElement('input');
+    root.append(input);
+    document.body.append(host);
+    const registry = mountGenerationTargetRegistry();
+    const id = registry.registerInput(input);
+    expect(registry.registerInput(input)).toBe(id);
+    await vi.advanceTimersByTimeAsync(60_001);
+    expect(registry.resolveInput(id!, documentId)).toBeNull();
+    vi.useRealTimers();
+  });
+
+  it('invalidates an old reference when its intact open-shadow host moves to another document parent', () => {
+    const parent = document.createElement('section');
+    const nextParent = document.createElement('section');
+    const host = document.createElement('div');
+    const root = host.attachShadow({ mode: 'open' });
+    const input = document.createElement('input');
+    root.append(input);
+    parent.append(host);
+    document.body.append(parent, nextParent);
+    const registry = mountGenerationTargetRegistry();
+    const id = registry.registerInput(input);
+    expect(registry.resolveInput(id!, documentId)).toBe(input);
+    nextParent.append(host);
+    expect(registry.resolveInput(id!, documentId)).toBeNull();
+  });
+
+  function nestedOpenLogin(): {
+    outer: HTMLDivElement;
+    inner: HTMLDivElement;
+    form: HTMLFormElement;
+    username: HTMLInputElement;
+    password: HTMLInputElement;
+  } {
+    const outer = document.createElement('div');
+    const outerRoot = outer.attachShadow({ mode: 'open' });
+    const inner = document.createElement('div');
+    const innerRoot = inner.attachShadow({ mode: 'open' });
+    const form = document.createElement('form');
+    form.method = 'post';
+    form.action = '/login';
+    const username = document.createElement('input');
+    username.autocomplete = 'username';
+    const password = document.createElement('input');
+    password.type = 'password';
+    password.autocomplete = 'current-password';
+    form.append(username, password);
+    innerRoot.append(form);
+    outerRoot.append(inner);
+    document.body.append(outer);
+    visible(username);
+    visible(password);
+    return { outer, inner, form, username, password };
+  }
+
+  it('fills a nested open-shadow saved-login group through serialized registered references without submit', () => {
+    const { form, username, password } = nestedOpenLogin();
+    const registry = mountGenerationTargetRegistry();
+    const anchorId = registry.registerInput(password);
+    expect(anchorId).toBeTruthy();
+    const group = dispatcher({
+      operation: 'focused_group',
+      field: { kind: 'registered_input', id: anchorId! },
+      documentId,
+    });
+    expect(group).not.toBeNull();
+    if (!group) throw new Error('The nested open-shadow login group was not bound');
+    let submits = 0;
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      submits++;
+    });
+    expect(
+      dispatcher({
+        operation: 'fill',
+        expected: group,
+        requested: [
+          { field: group.username!, value: 'nested-user@example.test' },
+          { field: group.password!, value: 'N3sted!Password' },
+        ],
+        sensitiveAttr: 'data-matrx-sensitive',
+        preserveLegacyFieldBehavior: false,
+      }),
+    ).toEqual({ ok: true });
+    expect(username.value).toBe('nested-user@example.test');
+    expect(password.value).toBe('N3sted!Password');
+    expect(submits).toBe(0);
+  });
+
+  it('binds a nested open-shadow focused input when panel focus is required', () => {
+    const { password } = nestedOpenLogin();
+    const registry = mountGenerationTargetRegistry();
+    const id = registry.registerInput(password);
+    password.focus();
+    expect(
+      dispatcher({
+        operation: 'focused_group',
+        field: { kind: 'registered_input', id: id! },
+        documentId,
+        requirePanelFocus: true,
+      }),
+    ).toMatchObject({ anchor: { kind: 'registered_input', id } });
+  });
+
+  it('binds form-associated siblings in the same open root and excludes a separate form', () => {
+    const host = document.createElement('div');
+    const root = host.attachShadow({ mode: 'open' });
+    const form = document.createElement('form');
+    form.id = 'login-form';
+    form.method = 'post';
+    form.action = '/login';
+    const username = document.createElement('input');
+    username.autocomplete = 'username';
+    username.setAttribute('form', form.id);
+    const password = document.createElement('input');
+    password.type = 'password';
+    password.autocomplete = 'current-password';
+    password.setAttribute('form', form.id);
+    const unrelated = document.createElement('form');
+    unrelated.method = 'post';
+    unrelated.append(Object.assign(document.createElement('input'), { type: 'password' }));
+    root.append(form, username, password, unrelated);
+    document.body.append(host);
+    // happy-dom does not implement cross-shadow `form=` association. Model
+    // the platform's native form association at the DOM boundary; the
+    // dispatcher still owns enumeration, exact-root filtering, and binding.
+    Object.defineProperty(username, 'form', { configurable: true, value: form });
+    Object.defineProperty(password, 'form', { configurable: true, value: form });
+    Object.defineProperty(form, 'elements', { configurable: true, value: [username, password] });
+    visible(username);
+    visible(password);
+    visible(unrelated.querySelector('input') as HTMLInputElement);
+    const registry = mountGenerationTargetRegistry();
+    const id = registry.registerInput(password);
+    const group = dispatcher({
+      operation: 'focused_group',
+      field: { kind: 'registered_input', id: id! },
+      documentId,
+    });
+    expect(group).toMatchObject({
+      anchor: { kind: 'registered_input', id },
+      username: { kind: 'registered_input' },
+      password: { kind: 'registered_input', id },
+      usernameOnly: false,
+    });
+  });
+
+  it.each(['replacement', 'moved-host', 'extra-password', 'unsafe-action'] as const)(
+    'refuses a nested open-shadow group after %s without writing either field',
+    (mutation) => {
+      const { inner, form, username, password } = nestedOpenLogin();
+      const registry = mountGenerationTargetRegistry();
+      const anchorId = registry.registerInput(password);
+      const group = dispatcher({
+        operation: 'focused_group',
+        field: { kind: 'registered_input', id: anchorId! },
+        documentId,
+      });
+      if (!group) throw new Error('The nested open-shadow login group was not bound');
+      if (mutation === 'replacement') {
+        const replacement = document.createElement('input');
+        replacement.autocomplete = 'username';
+        visible(replacement);
+        username.replaceWith(replacement);
+      } else if (mutation === 'moved-host') {
+        const replacementHost = document.createElement('div');
+        replacementHost.attachShadow({ mode: 'open' }).append(inner);
+        document.body.append(replacementHost);
+      } else if (mutation === 'extra-password') {
+        const extra = document.createElement('input');
+        extra.type = 'password';
+        extra.autocomplete = 'current-password';
+        visible(extra);
+        form.append(extra);
+      } else {
+        form.action = 'https://attacker.invalid/login';
+      }
+      expect(
+        dispatcher({
+          operation: 'fill',
+          expected: group,
+          requested: [
+            { field: group.username!, value: 'nested-user@example.test' },
+            { field: group.password!, value: 'N3sted!Password' },
+          ],
+          sensitiveAttr: 'data-matrx-sensitive',
+          preserveLegacyFieldBehavior: false,
+        }),
+      ).toEqual({ ok: false });
+      expect(username.value).toBe('');
+      expect(password.value).toBe('');
+    },
+  );
+
+  it('refuses a registered input inside a closed shadow root without writing it', () => {
+    const host = document.createElement('div');
+    const root = host.attachShadow({ mode: 'closed' });
+    const input = document.createElement('input');
+    input.type = 'password';
+    input.autocomplete = 'current-password';
+    root.append(input);
+    document.body.append(host);
+    visible(input);
+    const id = mountGenerationTargetRegistry().registerInput(input);
+    expect(id).toBeNull();
+    expect(input.value).toBe('');
   });
 });
