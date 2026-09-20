@@ -14,9 +14,10 @@ describe('sidepanel visibility', () => {
     // not a fact to be kept in sync silently: adding a tab to the panel has to
     // be a deliberate act somebody signs. It sat at 20 with 21 tabs live, so
     // the whole suite was red for every lane that ran it.
-    expect(ALL_TABS).toHaveLength(21);
+    expect(ALL_TABS).toHaveLength(22);
     expect(SIDEPANEL_TAB_AUDIENCE.chat).toBe('everyone');
     expect(SIDEPANEL_TAB_AUDIENCE.profile).toBe('signed-in');
+    expect(SIDEPANEL_TAB_AUDIENCE['saved-captures']).toBe('signed-in');
     expect(SIDEPANEL_TAB_AUDIENCE.debug).toBe('admin');
   });
 

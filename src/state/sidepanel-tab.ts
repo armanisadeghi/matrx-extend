@@ -12,6 +12,7 @@ export type SidepanelTab =
   | 'agenda'
   | 'lists'
   | 'scrape'
+  | 'saved-captures'
   | 'capture'
   | 'data'
   | 'highlight'

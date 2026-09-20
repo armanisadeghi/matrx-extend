@@ -43,6 +43,7 @@ import {
   Highlighter,
   Inbox,
   KeyRound,
+  Library,
   ListChecks,
   ListTodo,
   Loader2,
@@ -72,6 +73,10 @@ const VIEW_LOADERS: Record<SidepanelTab, () => Promise<{ default: ComponentType 
   lists: () => import('@/features/lists/ListsHubView').then((m) => ({ default: m.ListsHubView })),
   agenda: () => import('@/features/agenda/AgendaView').then((m) => ({ default: m.AgendaView })),
   scrape: () => import('@/features/scrape/ScrapeView').then((m) => ({ default: m.ScrapeView })),
+  'saved-captures': () =>
+    import('@/features/saved-captures/SavedCapturesView').then((m) => ({
+      default: m.SavedCapturesView,
+    })),
   capture: () =>
     import('@/features/capture-ladder/NeedsYourBrowserView').then((m) => ({
       default: m.NeedsYourBrowserView,
@@ -105,6 +110,7 @@ const TasksView = lazy(VIEW_LOADERS.tasks);
 const ListsHubView = lazy(VIEW_LOADERS.lists);
 const AgendaView = lazy(VIEW_LOADERS.agenda);
 const ScrapeView = lazy(VIEW_LOADERS.scrape);
+const SavedCapturesView = lazy(VIEW_LOADERS['saved-captures']);
 const NeedsYourBrowserView = lazy(VIEW_LOADERS.capture);
 const DataView = lazy(VIEW_LOADERS.data);
 const HighlightView = lazy(VIEW_LOADERS.highlight);
@@ -342,6 +348,15 @@ export function App() {
                       <ScanLine className="size-3.5" />
                     </TabsTrigger>
                   )}
+                  {canAccess('saved-captures') && (
+                    <TabsTrigger
+                      value="saved-captures"
+                      className="size-7 p-0"
+                      title="Saved captures"
+                    >
+                      <Library className="size-3.5" />
+                    </TabsTrigger>
+                  )}
                   {canAccess('capture') && (
                     <TabsTrigger
                       value="capture"
@@ -532,6 +547,13 @@ export function App() {
                 <TabsContent value="scrape" className="flex-1 min-h-0">
                   <Suspense fallback={TabFallback}>
                     <ScrapeView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('saved-captures') && (
+                <TabsContent value="saved-captures" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <SavedCapturesView />
                   </Suspense>
                 </TabsContent>
               )}

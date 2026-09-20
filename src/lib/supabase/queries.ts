@@ -642,6 +642,151 @@ export async function saveCapture(p: SaveCapturePayload): Promise<{ id: string }
   return data as { id: string };
 }
 
+export const SavedCaptureSummarySchema = z.object({
+  id: z.string().uuid(),
+  url: z.string(),
+  captured_at: z.string(),
+  updated_at: z.string(),
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  media_count: z.number().int(),
+  deleted_at: z.string().nullable(),
+  version: z.number().int(),
+});
+export type SavedCaptureSummary = z.infer<typeof SavedCaptureSummarySchema>;
+
+export const SavedCaptureSchema = SavedCaptureSummarySchema.extend({
+  lang: z.string().nullable(),
+  soup: z.unknown(),
+  markdown: z.string().nullable(),
+  metadata: z.unknown().nullable(),
+  ld_json: z.unknown().nullable(),
+  pattern_id: z.string().uuid().nullable(),
+  created_at: z.string(),
+});
+export type SavedCapture = z.infer<typeof SavedCaptureSchema>;
+
+const CAPTURE_SUMMARY_COLUMNS =
+  'id, url, captured_at, updated_at, title, description, media_count, deleted_at, version';
+const CAPTURE_DETAIL_COLUMNS = `${CAPTURE_SUMMARY_COLUMNS}, lang, soup, markdown, metadata, ld_json, pattern_id, created_at`;
+
+export async function listSavedCaptures(
+  options: {
+    limit?: number;
+    search?: string;
+    before?: Pick<SavedCaptureSummary, 'captured_at' | 'id'>;
+  } = {},
+): Promise<SavedCaptureSummary[]> {
+  const limit = options.limit ?? 40;
+  const organizationId = await requireRequestOrganizationId();
+  let query = getSupabase()
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_capture')
+    .select(CAPTURE_SUMMARY_COLUMNS)
+    .order('captured_at', { ascending: false })
+    .order('id', { ascending: false })
+    .eq('organization_id', organizationId)
+    .is('deleted_at', null);
+  const search = options.search?.trim();
+  if (search) {
+    // PostgREST's raw `or` grammar requires quoted values. Escape the two
+    // characters that are meaningful inside those quoted filter values so a
+    // title search cannot alter the filter expression.
+    const escaped = search.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    const pattern = `"%${escaped}%"`;
+    query = query.or(`title.ilike.${pattern},url.ilike.${pattern},description.ilike.${pattern}`);
+  }
+  if (options.before) {
+    query = query.or(
+      `captured_at.lt.${options.before.captured_at},and(captured_at.eq.${options.before.captured_at},id.lt.${options.before.id})`,
+    );
+  }
+  const { data, error } = await query.limit(limit);
+  if (error) throw new Error(`Could not load saved captures: ${error.message}`);
+  const parsed = parseRowsSafe(
+    SavedCaptureSummarySchema,
+    (data ?? []) as unknown[],
+    'listSavedCaptures',
+  );
+  if (parsed.badCount > 0) {
+    throw new Error(
+      `${parsed.badCount} saved capture${parsed.badCount === 1 ? '' : 's'} could not be read. Refresh to try again.`,
+    );
+  }
+  return parsed.rows;
+}
+
+export async function getSavedCapture(captureId: string): Promise<SavedCapture | null> {
+  const organizationId = await requireRequestOrganizationId();
+  const { data, error } = await getSupabase()
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_capture')
+    .select(CAPTURE_DETAIL_COLUMNS)
+    .eq('id', captureId)
+    .eq('organization_id', organizationId)
+    .maybeSingle();
+  if (error) throw new Error(`Could not load saved capture: ${error.message}`);
+  if (!data) return null;
+  const parsed = SavedCaptureSchema.safeParse(data);
+  if (!parsed.success) {
+    log.error('supabase', 'getSavedCapture: row failed validation', parsed.error.issues);
+    throw new Error('This saved capture has an invalid data shape.');
+  }
+  return parsed.data;
+}
+
+export async function updateSavedCapture(input: {
+  id: string;
+  expectedVersion: number;
+  title: string | null;
+  description: string | null;
+  markdown: string | null;
+  soup: unknown;
+  metadata: unknown;
+}): Promise<SavedCapture> {
+  const organizationId = await requireRequestOrganizationId();
+  const { data, error } = await getSupabase()
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_capture')
+    .update({
+      title: input.title,
+      description: input.description,
+      markdown: input.markdown,
+      soup: input.soup,
+      metadata: input.metadata,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', input.id)
+    .eq('organization_id', organizationId)
+    .eq('version', input.expectedVersion)
+    .is('deleted_at', null)
+    .select(CAPTURE_DETAIL_COLUMNS)
+    .maybeSingle();
+  if (error) throw new Error(`Could not update saved capture: ${error.message}`);
+  if (!data) {
+    throw new Error('This capture changed elsewhere. Reload it before saving your edits.');
+  }
+  const parsed = SavedCaptureSchema.safeParse(data);
+  if (!parsed.success) throw new Error('The updated capture returned an invalid data shape.');
+  return parsed.data;
+}
+
+export async function setSavedCaptureDeleted(captureId: string, deleted: boolean): Promise<void> {
+  const organizationId = await requireRequestOrganizationId();
+  const { data, error } = await getSupabase()
+    .schema(EXTEND_SCHEMA)
+    .from('wbx_capture')
+    .update({ deleted_at: deleted ? new Date().toISOString() : null })
+    .eq('id', captureId)
+    .eq('organization_id', organizationId)
+    .select('id')
+    .maybeSingle();
+  if (error) {
+    throw new Error(`${deleted ? 'Delete' : 'Restore'} failed: ${error.message}`);
+  }
+  if (!data) throw new Error('This capture no longer exists or could not be changed.');
+}
+
 // ─── wbx_pattern (extraction patterns) ──────────────────────────────────────
 export const PATTERN_KINDS = [
   'manual_css',
