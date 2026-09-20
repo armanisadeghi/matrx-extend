@@ -35,6 +35,8 @@ vi.mock('@/lib/org/active-org', () => ({
   holdForActiveOrganizationId: async () => state.organizationId,
   isOrganizationNotSelectedError: (e: unknown) =>
     e instanceof Error && e.name === 'OrganizationNotSelectedError',
+  isOrganizationNoMembershipsError: (e: unknown) =>
+    e instanceof Error && e.name === 'OrganizationNoMembershipsError',
   OrganizationNotSelectedError: class OrganizationNotSelectedError extends Error {
     override name = 'OrganizationNotSelectedError';
     remedy = 'Choose an organization.';

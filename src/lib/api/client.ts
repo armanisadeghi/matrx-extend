@@ -23,6 +23,7 @@ import {
   OrganizationNotSelectedError,
   getActiveOrganizationId,
   holdForActiveOrganizationId,
+  isOrganizationNoMembershipsError,
   isOrganizationNotSelectedError,
 } from '@/lib/org/active-org';
 import { applyOrganizationContextHeader } from '@ai-matrx/agents/matrx';
@@ -700,9 +701,10 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
       // here: nobody answered the picker in time, and a chosen id the header
       // kernel refuses as malformed. Both are the same sentence to the
       // person — this request has no organization, here is how to give it one.
-      const failure = isOrganizationNotSelectedError(err)
-        ? err
-        : new OrganizationNotSelectedError();
+      const failure =
+        isOrganizationNotSelectedError(err) || isOrganizationNoMembershipsError(err)
+          ? err
+          : new OrganizationNotSelectedError();
       log.error('api', `✗ ${opts.method} ${opts.path} — no organization was set`, {
         remedy: failure.remedy,
       });
