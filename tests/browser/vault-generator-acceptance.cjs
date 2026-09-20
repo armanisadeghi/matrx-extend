@@ -14,8 +14,22 @@ function windowSwitchUiCleared(state) {
     && ['codePresent', 'revealPresent', 'hidePresent', 'offerPresent', 'copyPresent', 'usePresent', 'regeneratePresent'].every((key) => state[key] === false)
     && state.actionLabel === 'generate' && state.actionReady === true;
 }
+function hasIsolatedHeadlessClipboardProof(proof) {
+  return proof?.clipboardIsolation?.runtime === 'Chrome/153.0.8010.12'
+    && proof.clipboardIsolation.ownedHeadlessProcess === true
+    && proof.clipboardIsolation.sourceAndProbe === 'd37f9103-bbb3-4eb3-9cf2-537eb75c7339'
+    && proof.generator?.displayMode === 'HEADLESS_NO_CLIPBOARD'
+    && proof.generator?.positiveGeneratorUi === true
+    && proof.generator?.clipboard?.freshProcessClipboardEmpty === true
+    && proof.generator.clipboard.copyAttempted === true
+    && proof.generator.clipboard.disposition === 'owned_value_replaced'
+    && proof.generator?.checks?.passwordCopyNativePasteAndOwnedGeneratedClipboardReplacementVerified === true
+    && proof.generator.checks.passwordCopyControlledFailureCustody === true
+    && proof.generator.ownedFixtureServersClosed === true;
+}
 exports.lifecycleButtonExpression = lifecycleButtonExpression;
 exports.windowSwitchUiCleared = windowSwitchUiCleared;
+exports.hasIsolatedHeadlessClipboardProof = hasIsolatedHeadlessClipboardProof;
 
 async function fixture(childUrl = null) {
   const state = { submits: 0 };
@@ -39,17 +53,20 @@ async function fixture(childUrl = null) {
     server.once('error', reject);
     server.listen(0, '127.0.0.1', resolve);
   });
-  return { state, url: `http://127.0.0.1:${server.address().port}/password`, close: () => new Promise((resolve) => server.close(resolve)) };
+  return { state, url: `http://127.0.0.1:${server.address().port}/password`, close: () => new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve())) };
 }
 
-exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath, verifyRealVaultPanel, displayMode, panelCloseLifecycleMode = false, workerRestartLifecycleMode = false, windowSwitchLifecycleMode = false, reopenPanelFromAction, refreshWorker }) => {
+exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath, verifyRealVaultPanel, displayMode, panelCloseLifecycleMode = false, workerRestartLifecycleMode = false, windowSwitchLifecycleMode = false, reopenPanelFromAction, refreshWorker, isolatedHeadlessClipboard = false }) => {
   assert(displayMode === 'HEADLESS_NO_CLIPBOARD' || displayMode === 'HEADED', 'generator_display_mode_required');
-  const child = await fixture();
+  let child;
   let top;
   let page;
   let synthetic = `generated-${crypto.randomUUID()}`;
   let copiedSyntheticValue = null;
+  let replaceOwnedCopiedClipboard = async () => 'unknown';
   const headlessNoClipboardMode = displayMode === 'HEADLESS_NO_CLIPBOARD';
+  assert(!isolatedHeadlessClipboard || (headlessNoClipboardMode && proof.clipboardIsolation?.ownedHeadlessProcess === true && proof.clipboardIsolation?.runtime === 'Chrome/153.0.8010.12'), 'generator_clipboard_isolation_not_admitted');
+  const copyEnabled = !headlessNoClipboardMode || isolatedHeadlessClipboard;
   const evidence = proof.generator = {
     scope: 'real side-panel host transport and password/passphrase controls',
     displayMode,
@@ -59,13 +76,24 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
   };
   const clipboardCustody = evidence.clipboard = {
     copyAttempted: false,
-    disposition: headlessNoClipboardMode ? 'not_run_requires_isolated_clipboard' : 'unknown',
+    disposition: copyEnabled ? 'unknown' : 'not_run_requires_isolated_clipboard',
   };
   try {
+    child = await fixture();
     top = await fixture(child.url);
     page = await context.newPage();
     await page.goto(top.url);
     await page.bringToFront();
+    if (isolatedHeadlessClipboard) {
+      await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(top.url).origin });
+      await page.locator('#clipboard-fixture').focus();
+      assert(await page.evaluate(async () => document.hasFocus()
+        && document.visibilityState === 'visible'
+        && document.activeElement?.id === 'clipboard-fixture'
+        && document.activeElement.matches(':focus-visible')
+        && (await navigator.clipboard.readText()) === ''), 'generator_isolated_clipboard_not_fresh');
+      evidence.clipboard.freshProcessClipboardEmpty = true;
+    }
     const tabId = await worker.evaluate(async (url) => (await chrome.tabs.query({})).find((tab) => tab.url === url)?.id, top.url);
     assert(Number.isInteger(tabId), 'generator_fixture_tab_missing');
     for (let focusAttempt = 0; focusAttempt < 5; focusAttempt++) {
@@ -879,19 +907,31 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
         knobResolve.stop();
       }
     };
-    const replaceOwnedCopiedClipboard = async (expectedValue) => {
-      assert(!headlessNoClipboardMode, 'headless_clipboard_path_refused');
+    replaceOwnedCopiedClipboard = async (expectedValue) => {
+      assert(copyEnabled, 'headless_clipboard_path_refused');
       if (!page || page.isClosed() || typeof expectedValue !== 'string') return 'unknown';
       const target = page.locator('#clipboard-fixture');
       try {
+        await page.bringToFront();
         await target.focus();
-        await page.keyboard.press(`${nativeModifier}+V`);
-        const owned = await page.evaluate((value) => {
-          const textarea = document.querySelector('#clipboard-fixture');
-          const matchesValue = textarea?.value === value;
-          if (textarea) textarea.value = '';
-          return matchesValue;
-        }, expectedValue);
+        if (!(await page.evaluate(() => document.hasFocus() && document.visibilityState === 'visible' && document.activeElement?.id === 'clipboard-fixture'))) return 'unknown';
+        const nativePasteMatches = async (expected) => {
+          const deadline = Date.now() + 2000;
+          do {
+            await page.evaluate(() => { document.querySelector('#clipboard-fixture').value = ''; });
+            await page.keyboard.press(`${nativeModifier}+V`);
+            const matches = await page.evaluate((value) => {
+              const textarea = document.querySelector('#clipboard-fixture');
+              const same = textarea?.value === value;
+              if (textarea) textarea.value = '';
+              return same;
+            }, expected);
+            if (matches) return true;
+            await wait(25);
+          } while (Date.now() < deadline);
+          return false;
+        };
+        const owned = await nativePasteMatches(expectedValue);
         // A mismatch can also be a failed native paste. Leave the clipboard
         // untouched unless the exact copied value was positively observed.
         if (!owned) return 'unknown';
@@ -904,15 +944,8 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
         // Replace only the generated value just proven by native paste. The
         // marker is harmless fixture data and the following paste verifies it.
         await page.keyboard.press(`${nativeModifier}+C`);
-        await page.evaluate(() => { document.querySelector('#clipboard-fixture').value = ''; });
         await target.focus();
-        await page.keyboard.press(`${nativeModifier}+V`);
-        const markerVerified = await page.evaluate((marker) => {
-          const textarea = document.querySelector('#clipboard-fixture');
-          const matchesMarker = textarea?.value === marker;
-          if (textarea) textarea.value = '';
-          return matchesMarker;
-        }, clipboardMarker);
+        const markerVerified = await nativePasteMatches(clipboardMarker);
         return markerVerified ? 'owned_value_replaced' : 'unknown';
       } catch {
         return 'unknown';
@@ -934,7 +967,7 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
       await panel.click(`(${section}).querySelector('[aria-label="Reveal generated value"]')`);
       synthetic = await panel.evaluate(`(${section}).querySelector('code').textContent`);
       assert(typeof synthetic === 'string' && (kind === 'Password' ? synthetic.length === 24 : synthetic.length >= 11 && synthetic.includes('-')), 'generator_default_value_invalid');
-      if (kind === 'Password' && !headlessNoClipboardMode) {
+      if (kind === 'Password' && copyEnabled) {
         copiedSyntheticValue = synthetic;
         clipboardCustody.copyAttempted = true;
         await panel.click(button('Copy'));
@@ -1040,7 +1073,7 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     evidence.positiveGeneratorUi = true;
     evidence.remaining = [
       ...(evidence.remaining || []),
-      ...(headlessNoClipboardMode ? ['clipboard acceptance requires an isolated clipboard session'] : []),
+      ...(!copyEnabled ? ['clipboard acceptance requires an isolated clipboard session'] : []),
       ...(!workerRestartLifecycleMode ? ['worker restart needs a separate real-browser case'] : []),
       ...(!windowSwitchLifecycleMode ? ['normal-window switch needs a separate real-browser case'] : []),
       ...(windowSwitchLifecycleMode ? ['two-open-normal-window return focus remains untested in the headless runtime'] : []),
@@ -1048,7 +1081,7 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
       'distributed artifact and other browsers remain separate acceptance',
     ];
   } finally {
-    if (!headlessNoClipboardMode && clipboardCustody.copyAttempted && clipboardCustody.disposition !== 'owned_value_replaced') {
+    if (copyEnabled && clipboardCustody.copyAttempted && clipboardCustody.disposition !== 'owned_value_replaced') {
       try {
         clipboardCustody.disposition = await replaceOwnedCopiedClipboard(copiedSyntheticValue);
       } catch {
@@ -1057,9 +1090,14 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     }
     copiedSyntheticValue = null;
     synthetic = '';
-    if (page && !page.isClosed()) await page.close();
-    if (top) await top.close();
-    await child.close();
-    evidence.ownedFixtureServersClosed = true;
+    const cleanup = await Promise.allSettled([
+      Promise.resolve().then(async () => { if (page && !page.isClosed()) await page.close(); }),
+      Promise.resolve().then(async () => { if (top) await top.close(); }),
+      Promise.resolve().then(async () => { if (child) await child.close(); }),
+    ]);
+    evidence.ownedFixturePageClosed = cleanup[0].status === 'fulfilled' && (!page || page.isClosed());
+    evidence.ownedFixtureServersClosed = !!top && !!child && cleanup[1].status === 'fulfilled' && cleanup[2].status === 'fulfilled';
+    if (cleanup.some((result) => result.status === 'rejected') || !evidence.ownedFixturePageClosed)
+      throw new Error('generator_fixture_cleanup_failed');
   }
 };

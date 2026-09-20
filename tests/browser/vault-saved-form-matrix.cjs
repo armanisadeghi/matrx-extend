@@ -118,7 +118,19 @@ exports.runSavedFormMatrix = async ({ context, worker, realPanel, targetName, us
   const fill = async () => {
     const selector = await panelFillAvailable();
     await realPanel.click(selector);
-    try { await realPanel.waitFor(`Array.from(document.querySelectorAll('p')).some((node)=>node.textContent?.trim()==='Filled. Review the form, then sign in.')`, true, 15000); } catch { throw new Error('saved_matrix_panel_fill_incomplete'); }
+    try { await realPanel.waitFor(`Array.from(document.querySelectorAll('p')).some((node)=>node.textContent?.trim()==='Filled. Review the form, then sign in.')`, true, 15000); } catch {
+      evidence.fillFailure = await realPanel.evaluate(`(() => {
+        const text = document.body.innerText;
+        return {
+          staleRemedy: text.includes('Click the username or password box on the website, then choose Fill.'),
+          unavailableRemedy: text.includes('Saved logins are unavailable right now.'),
+          partialRemedy: text.includes('Matrx could not fully restore the login fields. Review them before signing in.'),
+          signInRequired: text.includes('Sign in to Matrx'),
+          actionableFill: !!(${fillButton(targetName)})
+        };
+      })()`);
+      throw new Error('saved_matrix_panel_fill_incomplete');
+    }
   };
   const noActionableFill = async () => {
     await verifyRealVaultPanel();
@@ -132,10 +144,10 @@ exports.runSavedFormMatrix = async ({ context, worker, realPanel, targetName, us
   try {
     checkpoint('saved_matrix_username_first');
     const first = await open('username_first');
-    await focusTop(first, '#username'); await stableQuiet(first.page); await fill();
+    await focusTop(first, '#username'); await stableQuiet(first.page); checkpoint('saved_matrix_username_only_fill'); await fill();
     assert(await first.page.locator('#username').inputValue() === username, 'saved_matrix_username_first_username');
     assert(await first.page.locator('#password').count() === 0, 'saved_matrix_username_first_automatic_continue');
-    await first.page.locator('#continue').click(); await focusTop(first, '#password'); await stableQuiet(first.page); await fill();
+    checkpoint('saved_matrix_explicit_continue'); await first.page.locator('#continue').click(); await focusTop(first, '#password'); await stableQuiet(first.page); checkpoint('saved_matrix_second_step_fill'); await fill();
     assert(await first.page.locator('#password').inputValue() === password, 'saved_matrix_username_first_password');
     assert(await first.page.locator('#username').inputValue() === username && await first.page.locator('#decoy').inputValue() === 'unchanged', 'saved_matrix_username_first_collateral_write');
     evidence.usernameFirstFilled = true;

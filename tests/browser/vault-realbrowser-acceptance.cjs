@@ -98,6 +98,9 @@ const generatorTransportMode = process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN
 const displayMode = process.env.MATRX_VAULT_CANARY_DISPLAY;
 const headlessNoClipboardMode = displayMode === 'HEADLESS_NO_CLIPBOARD';
 const headedMode = displayMode === 'HEADED';
+const isolatedHeadlessClipboard = process.env.MATRX_VAULT_CANARY_CLIPBOARD === 'RUN_ISOLATED_HEADLESS_CLIPBOARD';
+assert(!process.env.MATRX_VAULT_CANARY_CLIPBOARD || isolatedHeadlessClipboard, 'clipboard_mode_invalid');
+assert(!isolatedHeadlessClipboard || (headlessNoClipboardMode && generatorTransportMode && readOnlyAdmissionMode), 'clipboard_requires_headless_generator_admission');
 const panelCloseLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_PANEL_CLOSE === 'RUN_PANEL_CLOSE_LIFECYCLE';
 const workerRestartLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART === 'RUN_WORKER_RESTART_LIFECYCLE';
 const windowSwitchLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH === 'RUN_WINDOW_SWITCH_LIFECYCLE';
@@ -1046,6 +1049,7 @@ async function authenticate(extension) {
     executablePath,
     args: [
       ...(headlessNoClipboardMode ? ['--headless=new'] : []),
+      ...(isolatedHeadlessClipboard ? ['--enable-automation'] : []),
       '--remote-debugging-address=127.0.0.1',
       '--remote-debugging-port=0',
       `--disable-extensions-except=${extension}`,
@@ -1055,6 +1059,13 @@ async function authenticate(extension) {
     ...(placementPath && { viewport: null }),
   });
   rawCdp = await connectOwnedCdp({ preparedProfile: preparedOwnedProfile, chromeExecutable: executablePath });
+  if (isolatedHeadlessClipboard) {
+    const version = await rawCdp.send('Browser.getVersion');
+    const command = await rawCdp.send('Browser.getBrowserCommandLine');
+    assert(version.product === 'Chrome/153.0.8010.12', 'clipboard_runtime_not_reviewed');
+    assert(command.arguments.includes('--headless=new') && command.arguments.includes('--user-data-dir=' + profile), 'clipboard_process_not_owned_headless');
+    proof.clipboardIsolation = { runtime: version.product, ownedHeadlessProcess: true, sourceAndProbe: 'd37f9103-bbb3-4eb3-9cf2-537eb75c7339' };
+  }
   networkJournal = createVaultNetworkJournal({
     cdp: rawCdp,
     apiOrigin: API,
@@ -1426,10 +1437,11 @@ async function materializedPassword(id) {
       persist();
       if (generatorTransportMode) {
         proof.generatorHarnessSha256 = await sha256(path.join(__dirname, 'vault-generator-acceptance.cjs'));
-        await require('./vault-generator-acceptance.cjs').runGeneratorChecks({
+        const generatorHarness = require('./vault-generator-acceptance.cjs');
+        await generatorHarness.runGeneratorChecks({
           context, worker, panel: realPanel, assert, wait, checkpoint, proof, focusOwnedBrowser,
           screenshotPath: path.join(root, 'generator-masked.png'), verifyRealVaultPanel, displayMode, panelCloseLifecycleMode,
-          workerRestartLifecycleMode, windowSwitchLifecycleMode,
+          workerRestartLifecycleMode, windowSwitchLifecycleMode, isolatedHeadlessClipboard,
           refreshWorker: async (previous, { cdp, workerUrl }) => {
             const diagnostic = proof.generatorWorkerRefresh = {
               disposition: 'in_progress',
@@ -1476,6 +1488,9 @@ async function materializedPassword(id) {
             return reopened;
           },
         });
+        if (isolatedHeadlessClipboard) {
+          assert(generatorHarness.hasIsolatedHeadlessClipboardProof(proof), 'generator_isolated_clipboard_proof_incomplete');
+        }
         assertRequestedLifecycleVerdicts({
           panelCloseRequested: panelCloseLifecycleMode,
           workerRestartRequested: workerRestartLifecycleMode,

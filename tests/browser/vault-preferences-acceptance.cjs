@@ -55,7 +55,7 @@ exports.runVaultPreferencesChecks = async ({
   const evidence = {
     matchingDisabledNoActionableFill: false, matchingDisabledNoOverlay: false,
     matchingEnabledQuietFill: false, onPageFocusedCredentialOnly: false,
-    onPageDisabledQuiet: false, privacyAccessibleNames: false,
+    onPageDisabledQuiet: false, privacyAccessibleNames: false, keyboardSwitchReachableAndOperable: false,
     noWebsiteSubmission: false, receiptStateUnchanged: false, settingsRestored: false, pageClosed: false,
   };
   let page; let tabId; let primaryFailure; let originalMatching; let originalOnPage; let receiptBefore;
@@ -91,6 +91,26 @@ exports.runVaultPreferencesChecks = async ({
     const result = await realPanel.evaluate('(() => { const labels = ' + JSON.stringify([SAVED_MATCHING, ON_PAGE]) + '; return labels.every((label) => { const nodes = Array.from(document.querySelectorAll("span")).filter((node) => node.textContent?.trim() === label); const row = nodes.length === 1 ? nodes[0].parentElement?.parentElement : null; const controls = row ? Array.from(row.querySelectorAll("[role=switch]")) : []; return controls.length === 1 && controls[0].getAttribute("aria-label") === label; }); })()');
     assert(result === true, 'preferences_privacy_accessible_name_missing');
     evidence.privacyAccessibleNames = true;
+  };
+  const keyboardSwitch = async () => {
+    assert(typeof realPanel.key === 'function', 'preferences_native_keyboard_unavailable');
+    await ensurePrivacyOpen();
+    const original = await stateOf(SAVED_MATCHING);
+    await realPanel.evaluate('(' + privacyControl() + ')?.focus()');
+    await realPanel.waitFor('document.activeElement === (' + privacyControl() + ')');
+    let reached = false;
+    for (let attempt = 0; attempt < 16; attempt += 1) {
+      await realPanel.key({ key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+      reached = await realPanel.evaluate('document.activeElement === (' + switchFor(SAVED_MATCHING) + ') && document.activeElement.matches(":focus-visible")');
+      if (reached) break;
+    }
+    assert(reached === true, 'preferences_switch_not_keyboard_reachable');
+    for (const expected of [!original, original]) {
+      await realPanel.key({ key: ' ', code: 'Space', windowsVirtualKeyCode: 32, text: ' ' });
+      await realPanel.waitFor('(' + switchFor(SAVED_MATCHING) + ')?.getAttribute("aria-checked") === ' + JSON.stringify(String(expected)));
+      assert(await realPanel.evaluate('document.activeElement === (' + switchFor(SAVED_MATCHING) + ')'), 'preferences_switch_lost_keyboard_focus');
+    }
+    evidence.keyboardSwitchReachableAndOperable = true;
   };
   const noOverlay = async () => (await page.locator('#matrx-inline-login-suggestion').count()) === 0;
   const focus = async (selector) => {
@@ -135,6 +155,7 @@ exports.runVaultPreferencesChecks = async ({
     await page.bringToFront(); await focusOwnedBrowser(tabId);
     await ensurePrivacyOpen(); originalMatching = await stateOf(SAVED_MATCHING); originalOnPage = await stateOf(ON_PAGE);
     await accessibility();
+    checkpoint('preferences_keyboard_switch'); await keyboardSwitch();
 
     checkpoint('preferences_disable_saved_matching');
     await ensure(SAVED_MATCHING, false); await focusCredential(); await verifyRealVaultPanel();
