@@ -1334,7 +1334,7 @@ const captureHeading = 'Array.from(document.querySelectorAll("p")).find((element
 const captureCard = `(${captureHeading})?.parentElement?.parentElement?.parentElement`;
 const updateButtons = `Array.from((${captureCard})?.querySelectorAll('button') || []).filter((element) => /^Update/.test(element.textContent.trim()))`;
 function uniqueCaptureButton(name, prefix = false) {
-  return `(() => { const matches = Array.from((${captureCard})?.querySelectorAll('button') || []).filter((element) => { const text = element.textContent.trim().replace(/\\s+/g, ' '); return ${prefix ? `text.startsWith('Update') && text.includes(${JSON.stringify(name)})` : `text === ${JSON.stringify(name)}`}; }); return matches.length === 1 ? matches[0] : null; })()`;
+  return `(() => { const matches = Array.from((${captureCard})?.querySelectorAll('button') || []).filter((element) => { const text = element.textContent.trim().replace(/\\s+/g, ' '); return ${prefix ? `text.startsWith('Update') && text.includes(${JSON.stringify(name)})` : `text === ${JSON.stringify(name)} || (text.length === 0 && element.getAttribute('title') === ${JSON.stringify(name)})`}; }); return matches.length === 1 ? matches[0] : null; })()`;
 }
 async function pendingCard() {
   try {

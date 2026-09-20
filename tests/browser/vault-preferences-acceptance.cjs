@@ -159,9 +159,9 @@ exports.runVaultPreferencesChecks = async ({
 
     checkpoint('preferences_disable_saved_matching');
     await ensure(SAVED_MATCHING, false); await focusCredential(); await verifyRealVaultPanel();
-    const actionable = await realPanel.evaluate('(() => { const control = (' + fillFor(targetName) + '); return !!control && !control.disabled; })()');
-    const disabledRemedy = await realPanel.evaluate('Array.from(document.querySelectorAll("p")).some((node) => node.textContent?.trim() === "Turn on saved-login matching in extension settings to use Fill.")');
-    assert(actionable === false && disabledRemedy === true, 'preferences_matching_disabled_panel_remedy_missing');
+    const disabledState = '(() => { const control = (' + fillFor(targetName) + '); const remedy = Array.from(document.querySelectorAll("p")).some((node) => node.textContent?.trim() === "Turn on saved-login matching in extension settings to use Fill."); return (!control || control.disabled) && remedy; })()';
+    try { await realPanel.waitFor(disabledState, true, 15000); }
+    catch { throw new Error('preferences_matching_disabled_panel_remedy_missing'); }
     await focusCredential();
     await stableAbsence(noOverlay, 'preferences_matching_disabled_overlay_present');
     evidence.matchingDisabledNoActionableFill = true; evidence.matchingDisabledNoOverlay = true;
