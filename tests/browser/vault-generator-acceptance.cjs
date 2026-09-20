@@ -462,6 +462,37 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
       };
       try {
         baselineWindowIds = await worker.evaluate(async () => (await chrome.windows.getAll({ windowTypes: ['normal'] })).map((window) => window.id).filter(Number.isInteger).sort((left, right) => left - right));
+        // Install before creating the target: background:false can focus the
+        // new normal window before Target.createTarget resolves. Keep IDs only
+        // in the worker realm and project them to a boolean after discovery.
+        windowFocusProbeKey = `__vaultCanaryWindowFocus_${crypto.randomUUID().replaceAll('-', '')}`;
+        await worker.evaluate((key) => {
+          const state = { eventCount: 0, observedWindowIds: new Set() };
+          const listener = (windowId) => {
+            state.eventCount += 1;
+            if (Number.isInteger(windowId)) state.observedWindowIds.add(windowId);
+          };
+          globalThis[key] = { state, listener };
+          chrome.windows.onFocusChanged.addListener(listener);
+        }, windowFocusProbeKey);
+        panelMessageProbeInstalled = true;
+        lifecycle.generatorPortPresent = await panel.evaluate(`(() => {
+          const offerId = ${JSON.stringify(oldOffer.id)};
+          const state = { invalidationMessageCount: 0, invalidationForOldOfferReceived: false, generatorPortPresent: false, generatorPortDisconnected: false };
+          const listener = (message) => {
+            if (message?.__matrxCredentialGeneration === true && message.operation === 'invalidated') {
+              state.invalidationMessageCount += 1;
+              if (Array.isArray(message.offerIds) && message.offerIds.includes(offerId)) state.invalidationForOldOfferReceived = true;
+            }
+          };
+          const port = globalThis.__vaultCanaryGeneratorPort;
+          const disconnected = () => { state.generatorPortDisconnected = true; };
+          state.generatorPortPresent = !!port;
+          chrome.runtime.onMessage.addListener(listener);
+          port?.onDisconnect.addListener(disconnected);
+          globalThis.__vaultCanaryWindowSwitchProbe = { state, listener, port, disconnected };
+          return state.generatorPortPresent;
+        })()`);
         const created = await cdp.send('Target.createTarget', { url: 'about:blank', newWindow: true, background: false });
         createdTargetId = typeof created.targetId === 'string' ? created.targetId : null;
         lifecycle.ownedNormalWindowBaselineCount = baselineWindowIds.length;
@@ -477,36 +508,6 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
         if (!Number.isInteger(extraWindowId)) {
           lifecycle.disposition = 'not_tested_second_normal_window_unavailable';
         } else {
-          // These probes record only lifecycle booleans. They never read the
-          // generated value or send a product request, so a failed UI wait can
-          // distinguish a missing focus event from a retained candidate.
-          windowFocusProbeKey = `__vaultCanaryWindowFocus_${crypto.randomUUID().replaceAll('-', '')}`;
-          await worker.evaluate(({ key, expectedWindowId }) => {
-            const state = { eventCount: 0, focusedOtherObserved: false };
-            const listener = (windowId) => {
-              state.eventCount += 1;
-              if (windowId === expectedWindowId) state.focusedOtherObserved = true;
-            };
-            globalThis[key] = { state, listener };
-            chrome.windows.onFocusChanged.addListener(listener);
-          }, { key: windowFocusProbeKey, expectedWindowId: extraWindowId });
-          panelMessageProbeInstalled = await panel.evaluate(`(() => {
-            const offerId = ${JSON.stringify(oldOffer.id)};
-            const state = { invalidationMessageCount: 0, invalidationForOldOfferReceived: false, generatorPortPresent: false, generatorPortDisconnected: false };
-            const listener = (message) => {
-              if (message?.__matrxCredentialGeneration === true && message.operation === 'invalidated') {
-                state.invalidationMessageCount += 1;
-                if (Array.isArray(message.offerIds) && message.offerIds.includes(offerId)) state.invalidationForOldOfferReceived = true;
-              }
-            };
-            const port = globalThis.__vaultCanaryGeneratorPort;
-            const disconnected = () => { state.generatorPortDisconnected = true; };
-            state.generatorPortPresent = !!port;
-            chrome.runtime.onMessage.addListener(listener);
-            port?.onDisconnect.addListener(disconnected);
-            globalThis.__vaultCanaryWindowSwitchProbe = { state, listener, port, disconnected };
-            return state.generatorPortPresent;
-          })()`);
           lifecycle.transition = await worker.evaluate(async ({ originalWindowId, otherWindowId, expectedTabId }) => {
             const waitForFocusedWindow = async (windowId) => {
               for (let attempt = 0; attempt < 20; attempt += 1) {
@@ -567,7 +568,12 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
             throw error;
           } finally {
             lifecycle.uiWaitElapsedMs = Date.now() - uiWaitStartedAt;
-            lifecycle.focusEvent = await worker.evaluate((key) => globalThis[key]?.state ?? { unavailable: true }, windowFocusProbeKey).catch(() => ({ unavailable: true }));
+            lifecycle.focusEvent = await worker.evaluate(({ key, expectedWindowId }) => {
+              const state = globalThis[key]?.state;
+              return state
+                ? { eventCount: state.eventCount, focusedOtherObserved: state.observedWindowIds.has(expectedWindowId) }
+                : { unavailable: true };
+            }, { key: windowFocusProbeKey, expectedWindowId: extraWindowId }).catch(() => ({ unavailable: true }));
             lifecycle.panelLifecycleSignal = await panel.evaluate(`globalThis.__vaultCanaryWindowSwitchProbe?.state ?? { unavailable: true }`).catch(() => ({ unavailable: true }));
           }
           lifecycle.uiAfterClearWait = await windowSwitchUiState();

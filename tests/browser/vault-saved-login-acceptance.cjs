@@ -74,6 +74,39 @@ const exactFillButton = (targetName) => `(() => {
   return buttons.length === 1 ? buttons[0] : null;
 })()`;
 
+// Never return page text, display names, URLs, field values, or errors.  This
+// is enough to distinguish a matching/card readiness problem from a withheld
+// or disabled Fill control after a production run fails.
+const panelReadinessDiagnostics = (targetName) => `(() => {
+  const cap = (value) => Math.min(99, value);
+  const cards = Array.from(document.querySelectorAll('li'));
+  const targetCards = cards.filter((card) =>
+    card.querySelector('span')?.textContent?.trim() === ${JSON.stringify(targetName)});
+  const fillButtons = cards.flatMap((card) => Array.from(card.querySelectorAll('button')))
+    .filter((button) => button.textContent?.trim() === 'Fill');
+  const targetFillButtons = targetCards.flatMap((card) => Array.from(card.querySelectorAll('button')))
+    .filter((button) => button.textContent?.trim() === 'Fill');
+  const hasKnownStatus = (value) => Array.from(document.querySelectorAll('p'))
+    .some((node) => node.textContent?.trim() === value);
+  return {
+    panelPresent: document.querySelector('[role="tabpanel"]') !== null,
+    cardCount: cap(cards.length),
+    targetCardCount: cap(targetCards.length),
+    fillButtonCount: cap(fillButtons.length),
+    enabledFillButtonCount: cap(fillButtons.filter((button) => !button.disabled).length),
+    disabledFillButtonCount: cap(fillButtons.filter((button) => button.disabled).length),
+    targetFillButtonCount: cap(targetFillButtons.length),
+    targetEnabledFillButtonCount: cap(targetFillButtons.filter((button) => !button.disabled).length),
+    targetDisabledFillButtonCount: cap(targetFillButtons.filter((button) => button.disabled).length),
+    knownStatus: {
+      noSavedLoginForPage: hasKnownStatus('No saved login fills this page.'),
+      fillFocusRequired: hasKnownStatus('Click the username or password box on the website, then choose Fill.'),
+      savedLoginsUnavailable: hasKnownStatus('Saved logins are unavailable right now.'),
+      matchingDisabled: hasKnownStatus('Turn on saved-login matching in extension settings to use Fill.'),
+    },
+  };
+})()`;
+
 async function waitForBridge(worker, tabId, wait) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
     const ready = await worker.evaluate(async (id) => {
@@ -168,6 +201,8 @@ exports.runSavedLoginChecks = async ({
       try {
         await realPanel.waitFor(`!!(${fill})`, true, 15000);
       } catch {
+        evidence.readinessDiagnostics = await realPanel.evaluate(panelReadinessDiagnostics(targetName))
+          .catch(() => ({ unavailable: true }));
         throw new Error(`saved_login_${kind}_panel_fill_not_ready`);
       }
       const quiet = await page.evaluate(() => !document.querySelector('#matrx-inline-login-suggestion'));

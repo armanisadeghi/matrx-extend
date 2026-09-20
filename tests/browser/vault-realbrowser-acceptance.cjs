@@ -10,6 +10,7 @@ const { createRequire } = require('node:module');
 const { execFile, spawn } = require('node:child_process');
 const { promisify } = require('node:util');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
+const { runSavedLoginChecks } = require('./vault-saved-login-acceptance.cjs');
 // The extension deliberately does not ship Playwright.  Use an explicit test
 // runtime override or the documented workspace harness dependency.
 const playwrightRequire = createRequire(
@@ -1003,18 +1004,62 @@ async function authenticate(extension) {
   // Persist the zeroed journal before OAuth so an interruption still shows
   // whether the run had admitted any Vault POST before authentication.
   persist();
-  proof.phase = 'oauth_ui';
+  proof.oauthUi = {
+    popupNavigated: false,
+    popupSignInClicked: false,
+    authPageOpened: false,
+    expectedOrigin: false,
+    loginFieldsReady: false,
+  };
+  const oauthUiStep = async (phase, failureCategory, operation) => {
+    checkpoint(phase);
+    try {
+      return await operation();
+    } catch {
+      proof.oauthUi.failureCategory = failureCategory;
+      persist();
+      throw new Error(failureCategory);
+    }
+  };
+  const popup = await oauthUiStep('oauth_popup_navigation', 'oauth_popup_navigation_failed', async () => {
+    const page = await context.newPage();
+    await page.goto(`chrome-extension://${extensionId}/popup.html`);
+    return page;
+  });
+  proof.oauthUi.popupNavigated = true;
   persist();
-  const popup = await context.newPage();
-  await popup.goto(`chrome-extension://${extensionId}/popup.html`);
-  const authPage = await Promise.all([
-    context.waitForEvent('page', { timeout: 15000 }),
-    popup.getByRole('button', { name: 'Sign in' }).click(),
-  ]).then(([page]) => page);
-  await authPage.waitForURL((url) => url.origin === 'https://www.aimatrx.com', { timeout: 30000 });
-  assert(new URL(authPage.url()).origin === 'https://www.aimatrx.com', 'oauth_origin');
-  await authPage.locator('#email').fill(adminEmail);
-  await authPage.locator('#password').fill(adminPassword);
+  const authPagePromise = context.waitForEvent('page', { timeout: 15000 });
+  // Keep the wait observed if the click itself fails; its classified result is
+  // still awaited on the successful-click path below.
+  void authPagePromise.catch(() => {});
+  await oauthUiStep('oauth_popup_sign_in_click', 'oauth_popup_sign_in_click_failed', () =>
+    popup.getByRole('button', { name: 'Sign in' }).click());
+  proof.oauthUi.popupSignInClicked = true;
+  persist();
+  const authPage = await oauthUiStep('oauth_auth_page_opened', 'oauth_auth_page_open_failed', () => authPagePromise);
+  proof.oauthUi.authPageOpened = true;
+  persist();
+  await oauthUiStep('oauth_auth_expected_origin', 'oauth_auth_expected_origin_timeout', () =>
+    authPage.waitForURL((url) => url.origin === 'https://www.aimatrx.com', { timeout: 30000 }));
+  try {
+    assert(new URL(authPage.url()).origin === 'https://www.aimatrx.com', 'oauth_origin');
+  } catch {
+    proof.oauthUi.failureCategory = 'oauth_auth_expected_origin_mismatch';
+    persist();
+    throw new Error('oauth_auth_expected_origin_mismatch');
+  }
+  proof.oauthUi.expectedOrigin = true;
+  persist();
+  await oauthUiStep('oauth_login_fields_ready', 'oauth_login_fields_unavailable', () => Promise.all([
+    authPage.locator('#email').waitFor({ state: 'visible', timeout: 30000 }),
+    authPage.locator('#password').waitFor({ state: 'visible', timeout: 30000 }),
+  ]));
+  proof.oauthUi.loginFieldsReady = true;
+  persist();
+  await oauthUiStep('oauth_login_form_fill', 'oauth_login_form_fill_failed', async () => {
+    await authPage.locator('#email').fill(adminEmail);
+    await authPage.locator('#password').fill(adminPassword);
+  });
   proof.authenticationAttempted = true;
   proof.phase = 'oauth_sign_in';
   persist();
@@ -1405,6 +1450,45 @@ async function materializedPassword(id) {
     proof.checks.selectedTargetOnlyUpdated = true;
     proof.checks.unrelatedSealedFieldPreserved = true;
     proof.checks.updateChoiceDidNotSubmit = true;
+    if (receiptBackedSaveUpdateMode) {
+      // This helper exercises Fill with the updated, receipt-owned target. It
+      // may start disposable localhost pages, but it must never create a
+      // second Vault fixture or a sixth receipt-owned item.
+      const parentLocalHost = new URL(localUrl).hostname;
+      assert(parentLocalHost === '127.0.0.1', 'saved_login_parent_host_refused');
+      const fixtureIdsBeforeSavedLogin = new Set(createdIds);
+      const fixtureKeysBeforeSavedLogin = new Set(createKeys);
+      const itemPostsBeforeSavedLogin = proof.vaultItemPosts.total;
+      proof.savedLoginHarnessSha256 = await sha256(path.join(__dirname, 'vault-saved-login-acceptance.cjs'));
+      checkpoint('saved_login_fill');
+      await runSavedLoginChecks({
+        context,
+        worker,
+        realPanel,
+        targetName,
+        username,
+        password: newPassword,
+        prepareFixture: ({ loginUrl, nestedUrl, externalUrl }) => {
+          for (const fixtureUrl of [loginUrl, nestedUrl, externalUrl]) {
+            assert(new URL(fixtureUrl).hostname === parentLocalHost, 'saved_login_fixture_host_mismatch');
+          }
+        },
+        assert,
+        wait,
+        checkpoint,
+        proof,
+        focusOwnedBrowser,
+        verifyRealVaultPanel,
+      });
+      assert(createdIds.size === fixtureIdsBeforeSavedLogin.size
+        && [...fixtureIdsBeforeSavedLogin].every((id) => createdIds.has(id)), 'saved_login_helper_created_fixture');
+      assert(createKeys.size === fixtureKeysBeforeSavedLogin.size
+        && [...fixtureKeysBeforeSavedLogin].every((key) => createKeys.has(key)), 'saved_login_helper_created_fixture_key');
+      assert(proof.vaultItemPosts.total === itemPostsBeforeSavedLogin, 'saved_login_helper_item_post');
+      assert(proof.savedLoginFill?.fixtureClosed === true, 'saved_login_helper_fixture_not_closed');
+      proof.checks.savedLoginUsesReceiptOwnedFixture = true;
+      proof.checks.savedLoginNoAdditionalVaultFixture = true;
+    }
     checkpoint('save_as_new');
     const beforeSave = new Set((await items()).map((entry) => entry.id));
     await submitLogin(website, `save-${suffix}@example.invalid`, `save-${crypto.randomUUID()}`);
