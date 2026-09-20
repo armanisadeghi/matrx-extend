@@ -24,6 +24,11 @@ const state = vi.hoisted(() => ({
   materializeGate: null as Promise<void> | null,
   materializeStarted: null as (() => void) | null,
   materializeCalls: 0,
+  materializeRequest: null as { fieldKeys: string[] } | null,
+  materializedFields: { username: 'INLINE_USER_SENTINEL', password: 'INLINE_PASSWORD_SENTINEL' } as {
+    username: 'INLINE_USER_SENTINEL';
+    password?: 'INLINE_PASSWORD_SENTINEL';
+  },
   finalFrameGate: null as Promise<void> | null,
   finalFrameStarted: null as (() => void) | null,
   getFrameCalls: 0,
@@ -60,8 +65,9 @@ vi.mock('@/lib/api/routes/vault', () => ({
     await state.matchGate;
     return { ok: true, data: { count: state.matches.length, matches: state.matches } };
   },
-  materializeBrowserLogin: async () => {
+  materializeBrowserLogin: async (_itemId: string, request: { fieldKeys: string[] }) => {
     state.materializeCalls++;
+    state.materializeRequest = { fieldKeys: request.fieldKeys };
     state.materializeStarted?.();
     await state.materializeGate;
     return {
@@ -69,7 +75,7 @@ vi.mock('@/lib/api/routes/vault', () => ({
       data: {
         item_id: ITEM,
         origin: globalThis.location.origin,
-        fields: { username: 'INLINE_USER_SENTINEL', password: 'INLINE_PASSWORD_SENTINEL' },
+        fields: state.materializedFields,
       },
     };
   },
@@ -156,6 +162,11 @@ beforeEach(() => {
   state.materializeGate = null;
   state.materializeStarted = null;
   state.materializeCalls = 0;
+  state.materializeRequest = null;
+  state.materializedFields = {
+    username: 'INLINE_USER_SENTINEL',
+    password: 'INLINE_PASSWORD_SENTINEL',
+  };
   state.finalFrameGate = null;
   state.finalFrameStarted = null;
   state.getFrameCalls = 0;
@@ -181,6 +192,7 @@ beforeEach(() => {
   activationListeners.length = 0;
   history.replaceState({}, '', '/');
   vi.spyOn(document, 'hasFocus').mockReturnValue(true);
+  vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
   document.body.innerHTML =
     '<form method="post"><input id="username" autocomplete="username"><input id="password" type="password" autocomplete="current-password"><button type="submit">Sign in</button></form>';
   for (const input of Array.from(document.querySelectorAll('input'))) {
@@ -815,6 +827,42 @@ describe('inline saved-login host', () => {
     })) as { status: string };
     expect(fill.status).toBe('filled');
     expect(input.value).toBe('INLINE_USER_SENTINEL');
+  });
+
+  it('fills a panel-selected username-only continuation from the named-field materialization response', async () => {
+    document.body.innerHTML =
+      '<form method="post" action="/submitted"><input id="username" autocomplete="username"><button id="continue" type="button">Continue</button></form>';
+    const input = document.querySelector('#username') as HTMLInputElement;
+    Object.defineProperty(input, 'getBoundingClientRect', {
+      value: () => ({ width: 120, height: 24, top: 10, left: 10, bottom: 34 }),
+    });
+    state.matches = [
+      {
+        item_id: ITEM,
+        display_name: 'Work account',
+        available_fields: [{ field_key: 'username', fillable: true }],
+      },
+    ];
+    state.materializedFields = { username: 'INLINE_USER_SENTINEL' };
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    const query = (await replyFor({
+      __matrx: true,
+      kind: 'credential-suggestions:query',
+      payload: { field: registeredField('#username') },
+    })) as { status: string };
+    expect(query.status).toBe('ready');
+    const fill = (await replyForPanel({
+      __matrx: true,
+      kind: 'credential-suggestions:panel-fill',
+      payload: { tabId: 7, itemId: ITEM },
+    })) as { status: string };
+    expect(state.materializeRequest).toEqual({ fieldKeys: ['username'] });
+    expect(fill.status).toBe('filled');
+    expect(input.value).toBe('INLINE_USER_SENTINEL');
+    expect(document.querySelector('#password')).toBeNull();
   });
 
   it('rejects payloads that carry an extra selector or URL', async () => {
