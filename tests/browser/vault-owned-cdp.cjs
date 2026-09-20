@@ -47,11 +47,12 @@ async function connectOwnedCdp({ preparedProfile, chromeExecutable, fileSystem =
   const hasProfile = new RegExp(`(?:^|[\\s\\0])--user-data-dir=${escapedProfile}(?=$|[\\s\\0])`).test(String(owner?.args ?? ''));
   if (owner?.executable !== chromeExecutable || !hasProfile) throw new Error('owned_cdp_owner_refused');
 
-  let socket; let fatal = false; let deliberateClose = false; let closing = false; let closeStatus = 'open'; let nextId = 0;
+  let socket; let fatal = false; let failureClass = 'none'; let deliberateClose = false; let closing = false; let closeStatus = 'open'; let nextId = 0;
   const pending = new Map(); const listeners = new Map();
-  const fail = () => {
+  const fail = (category = 'protocol_shape') => {
     if (fatal) return;
     fatal = true;
+    failureClass = category;
     for (const entry of pending.values()) { clearTimeout(entry.timer); entry.reject(new Error('owned_cdp_transport_failed')); }
     pending.clear();
   };
@@ -62,13 +63,13 @@ async function connectOwnedCdp({ preparedProfile, chromeExecutable, fileSystem =
     if (Object.hasOwn(message, 'id')) {
       if (!Number.isSafeInteger(message.id)) return fail();
       const entry = pending.get(message.id);
-      if (!entry) return fail();
+      if (!entry) return fail('unknown_response');
       const actual = Object.hasOwn(message, 'sessionId') ? message.sessionId : undefined;
-      if (actual !== entry.sessionId || message.error || Object.hasOwn(message, 'method') || !Object.hasOwn(message, 'result') || !message.result || typeof message.result !== 'object' || Array.isArray(message.result)) { clearTimeout(entry.timer); pending.delete(message.id); entry.reject(new Error('owned_cdp_transport_failed')); return fail(); }
+      if (actual !== entry.sessionId || message.error || Object.hasOwn(message, 'method') || !Object.hasOwn(message, 'result') || !message.result || typeof message.result !== 'object' || Array.isArray(message.result)) { clearTimeout(entry.timer); pending.delete(message.id); entry.reject(new Error('owned_cdp_transport_failed')); return fail(message.error ? 'protocol_error' : 'response_shape'); }
       clearTimeout(entry.timer); pending.delete(message.id); entry.resolve(message.result); return;
     }
     if (typeof message.method !== 'string' || (Object.hasOwn(message, 'sessionId') && typeof message.sessionId !== 'string')) return fail();
-    try { for (const listener of listeners.get(message.method) ?? []) listener(message.params ?? {}, message.sessionId); } catch { fail(); }
+    try { for (const listener of listeners.get(message.method) ?? []) listener(message.params ?? {}, message.sessionId); } catch { fail('listener'); }
   };
   socket = new WebSocketCtor(`ws://127.0.0.1:${port}${lines[1]}`);
   const closeSocket = () => new Promise((resolve) => {
@@ -82,21 +83,22 @@ async function connectOwnedCdp({ preparedProfile, chromeExecutable, fileSystem =
     socket.onerror = () => { clearTimeout(timer); reject(new Error('owned_cdp_open_failed')); };
   }).catch(async () => { deliberateClose = true; await closeSocket(); throw new Error('owned_cdp_open_failed'); });
   socket.onmessage = (event) => dispatch(event.data);
-  socket.onerror = () => fail();
-  socket.onclose = () => { closeStatus = 'closed'; if (!deliberateClose) fail(); };
+  socket.onerror = () => fail('socket_error');
+  socket.onclose = () => { closeStatus = 'closed'; if (!deliberateClose) fail('unexpected_close'); };
   return {
     ownerVerified: true,
     get fatal() { return fatal; },
+    get failureClass() { return failureClass; },
     get closeStatus() { return closeStatus; },
     on(method, listener) { const set = listeners.get(method) ?? new Set(); set.add(listener); listeners.set(method, set); },
     off(method, listener) { listeners.get(method)?.delete(listener); },
     send(method, params = {}, sessionId) {
-      if (fatal || closing || nextId >= Number.MAX_SAFE_INTEGER) { fail(); return Promise.reject(new Error('owned_cdp_transport_failed')); }
+      if (fatal || closing || nextId >= Number.MAX_SAFE_INTEGER) { fail('send_after_close'); return Promise.reject(new Error('owned_cdp_transport_failed')); }
       const id = ++nextId;
       return new Promise((resolve, reject) => {
-        const timer = setTimeout(() => { pending.delete(id); fail(); reject(new Error('owned_cdp_transport_failed')); }, timeoutMs);
+        const timer = setTimeout(() => { pending.delete(id); fail('command_timeout'); reject(new Error('owned_cdp_transport_failed')); }, timeoutMs);
         pending.set(id, { resolve, reject, timer, sessionId });
-        try { socket.send(JSON.stringify(sessionId === undefined ? { id, method, params } : { id, method, params, sessionId })); } catch { clearTimeout(timer); pending.delete(id); fail(); reject(new Error('owned_cdp_transport_failed')); }
+        try { socket.send(JSON.stringify(sessionId === undefined ? { id, method, params } : { id, method, params, sessionId })); } catch { clearTimeout(timer); pending.delete(id); fail('send_exception'); reject(new Error('owned_cdp_transport_failed')); }
       });
     },
     async detach() {
@@ -110,7 +112,7 @@ async function connectOwnedCdp({ preparedProfile, chromeExecutable, fileSystem =
         const timer = setTimeout(() => reject(new Error('owned_cdp_close_timeout')), timeoutMs);
         socket.onclose = () => { closeStatus = 'closed'; clearTimeout(timer); resolve(); };
         try { socket.close(); } catch { clearTimeout(timer); reject(new Error('owned_cdp_close_failed')); }
-      }).catch((error) => { fail(); throw error; });
+      }).catch((error) => { fail('close_failure'); throw error; });
       if (fatal || hadPending) throw new Error('owned_cdp_transport_failed');
     },
   };
