@@ -184,6 +184,34 @@ export function userMessageFor(kind: DbFailureKind, site: DbCallSite): string {
   }
 }
 
+/**
+ * Map a call site's `table` (schema.table or `rpc:function_name`, exactly as
+ * used in `DbCallSite.table`) to its registered `source_feature` slug.
+ *
+ * `client-unmapped` is the LOUD fallback: it means the client could not map
+ * the failing surface to a feature. It is NEVER a silent default — seeing it
+ * in the error dashboard means this map below needs an entry for the table
+ * that produced it.
+ */
+export function sourceFeatureForTable(table: string): string {
+  switch (table) {
+    case 'extend.wbx_capture':
+    case 'capture_handoff':
+    case 'media.capture_handoff':
+    case 'extend.wbx_highlight':
+      return 'web-capture';
+    case 'workbench.udt_datasets':
+    case 'workbench.udt_dataset_fields':
+    case 'rpc:append_rows_to_user_table':
+    case 'rpc:create_user_table_with_fields':
+      return 'udt';
+    case 'agent_task':
+      return 'agents-other';
+    default:
+      return 'client-unmapped';
+  }
+}
+
 /** Recursion guard — a failure of the reporting RPC never reports itself. */
 let reporting = false;
 
@@ -213,6 +241,7 @@ export async function recordDbFailure(
       // against a closed list inside the database — a typo comes back as a 400
       // with a sentence, never as a quietly mislabelled row.
       p_source_app: 'matrx-extend',
+      p_source_feature: sourceFeatureForTable(site.table),
       p_source: 'chrome-extension',
       p_message: `${site.operation} ${site.table} ${kind}: ${error?.message ?? 'no rows returned'}`,
       p_code: error?.code ?? kind,
