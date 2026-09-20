@@ -17,12 +17,13 @@
  * here first — that keeps the matrix complete and the auto-generated
  * `docs/browser-feature-matrix.md` accurate.
  *
- * Background: WXT defaults Safari + Firefox builds to MV2. We override to
- * MV3 for Safari in `wxt.config.ts` to avoid forking the codebase between
- * service-worker (MV3) and background-page (MV2) lifecycles. So all three
- * browsers run the same MV3 service worker today.
+ * Background: WXT defaults Safari + Firefox builds to MV2. Firefox commands
+ * explicitly request MV3, while the current Safari manifest command
+ * (`pnpm build:safari`) intentionally retains MV2 at `.output/safari-mv2/`.
+ * Safari therefore uses its MV2 background-page lifecycle rather than the
+ * MV3 service-worker lifecycle.
  *   See node_modules/wxt/dist/core/resolve-config.mjs:45 for the WXT
- *   default; the override sits in wxt.config.ts.
+ *   default; Firefox's MV3 commands are in package.json.
  */
 
 import { ALL_BROWSERS, type BrowserSet, type SupportedBrowser } from '@/lib/browser/types';
