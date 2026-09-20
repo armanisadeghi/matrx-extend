@@ -722,3 +722,115 @@ it('refuses discovery when its original deadline passes during verification', as
     h.controller.stop();
   }
 });
+// Append inside src/lib/desktop/local-browser/controller.test.ts.
+// Both cases passed against extension commit 2e3c33bc33983b4ce3599709eb1a182d48d12b1a.
+
+it('refuses both cleanup joiners when registration changes during shared acknowledgement', async () => {
+  const h = harness();
+  const r = await register(h);
+  await h.emit({
+    type: 'local_browser.execute',
+    version: 1,
+    call_id: ids.call,
+    operation: 'admit',
+    grant: opaqueAdmitGrant(r.generation, r.connection),
+  });
+  h.deps.verify = vi.fn(async () => ({
+    ok: true as const,
+    data: { status: 'accepted' as const, stop_id: stopId },
+  }));
+  let release!: () => void;
+  h.deps.acknowledge = vi.fn(
+    () =>
+      new Promise<Awaited<ReturnType<LocalBrowserControllerDeps['acknowledge']>>>((resolve) => {
+        release = () =>
+          resolve({
+            ok: true,
+            data: {
+              status: 'accepted',
+              operation: 'cleanup',
+              receipt: { stop_id: stopId, status: 'closed' },
+            },
+          });
+      }),
+  );
+  const grant = opaqueCleanupGrant(r.generation, r.connection);
+  const first = h.emit({
+    type: 'local_browser.execute',
+    version: 1,
+    call_id: ids.call,
+    operation: 'cleanup',
+    grant,
+  });
+  await vi.waitFor(() => expect(release).toBeTypeOf('function'));
+  const second = h.emit({
+    type: 'local_browser.execute',
+    version: 1,
+    call_id: '00000000-0000-4000-8000-000000000020',
+    operation: 'cleanup',
+    grant,
+  });
+  await Promise.resolve();
+  h.invalidated();
+  release();
+  await Promise.all([first, second]);
+  expect(h.sent.slice(-2)).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        operation: 'cleanup',
+        status: 'refused',
+        reason: 'binding_changed',
+      }),
+      expect.objectContaining({
+        operation: 'cleanup',
+        status: 'refused',
+        reason: 'binding_changed',
+      }),
+    ]),
+  );
+  h.controller.stop();
+});
+
+it('rejects changed cleanup bytes while the original cleanup is in flight', async () => {
+  const h = harness();
+  const r = await register(h);
+  await h.emit({
+    type: 'local_browser.execute',
+    version: 1,
+    call_id: ids.call,
+    operation: 'admit',
+    grant: opaqueAdmitGrant(r.generation, r.connection),
+  });
+  let releaseVerify!: () => void;
+  h.deps.verify = vi.fn(
+    () =>
+      new Promise<Awaited<ReturnType<LocalBrowserControllerDeps['verify']>>>((resolve) => {
+        releaseVerify = () => resolve({ ok: true, data: { status: 'accepted', stop_id: stopId } });
+      }),
+  );
+  const grant = opaqueCleanupGrant(r.generation, r.connection);
+  const first = h.emit({
+    type: 'local_browser.execute',
+    version: 1,
+    call_id: ids.call,
+    operation: 'cleanup',
+    grant,
+  });
+  await vi.waitFor(() => expect(releaseVerify).toBeTypeOf('function'));
+  await h.emit({
+    type: 'local_browser.execute',
+    version: 1,
+    call_id: '00000000-0000-4000-8000-000000000021',
+    operation: 'cleanup',
+    grant: `${grant}changed`,
+  });
+  expect(h.sent.at(-1)).toMatchObject({
+    operation: 'cleanup',
+    status: 'refused',
+    reason: 'retry_conflict',
+  });
+  releaseVerify();
+  await first;
+  expect(h.remove).toHaveBeenCalledTimes(1);
+  h.controller.stop();
+});
