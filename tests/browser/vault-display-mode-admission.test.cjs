@@ -48,6 +48,28 @@ try {
   rejectBeforeCustody('headed-foreground', 'headed_canary_requires_foreground_allow', {
     MATRX_VAULT_CANARY_DISPLAY: 'HEADED',
   });
+  rejectBeforeCustody('worker-restart-headed', 'worker_restart_lifecycle_requires_headless_no_clipboard', {
+    MATRX_VAULT_CANARY_DISPLAY: 'HEADED',
+    MATRX_VAULT_CANARY_FOREGROUND: 'ALLOW_FOREGROUND_TEST',
+    MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART: 'RUN_WORKER_RESTART_LIFECYCLE',
+  });
+  rejectBeforeCustody('window-switch-headed', 'window_switch_lifecycle_requires_headless_no_clipboard', {
+    MATRX_VAULT_CANARY_DISPLAY: 'HEADED',
+    MATRX_VAULT_CANARY_FOREGROUND: 'ALLOW_FOREGROUND_TEST',
+    MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH: 'RUN_WINDOW_SWITCH_LIFECYCLE',
+  });
+  rejectBeforeCustody('worker-restart-invalid', 'worker_restart_lifecycle_mode_invalid', {
+    MATRX_VAULT_CANARY_DISPLAY: 'HEADLESS_NO_CLIPBOARD',
+    MATRX_VAULT_CANARY_GENERATOR: 'RUN_GENERATOR_TRANSPORT',
+    MATRX_VAULT_CANARY_ADMISSION: 'RUN_READ_ONLY_ADMISSION',
+    MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART: 'RESTART',
+  });
+  rejectBeforeCustody('window-switch-invalid', 'window_switch_lifecycle_mode_invalid', {
+    MATRX_VAULT_CANARY_DISPLAY: 'HEADLESS_NO_CLIPBOARD',
+    MATRX_VAULT_CANARY_GENERATOR: 'RUN_GENERATOR_TRANSPORT',
+    MATRX_VAULT_CANARY_ADMISSION: 'RUN_READ_ONLY_ADMISSION',
+    MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH: 'SWITCH',
+  });
   process.stdout.write('PASS: display modes refuse before profile/browser/auth custody\n');
 } finally {
   fs.rmSync(root, { recursive: true, force: true });

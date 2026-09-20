@@ -29,7 +29,7 @@ async function fixture(childUrl = null) {
   return { state, url: `http://127.0.0.1:${server.address().port}/password`, close: () => new Promise((resolve) => server.close(resolve)) };
 }
 
-exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath, verifyRealVaultPanel, displayMode, panelCloseLifecycleMode = false, reopenPanelFromAction }) => {
+exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath, verifyRealVaultPanel, displayMode, panelCloseLifecycleMode = false, workerRestartLifecycleMode = false, windowSwitchLifecycleMode = false, reopenPanelFromAction, refreshWorker }) => {
   assert(displayMode === 'HEADLESS_NO_CLIPBOARD' || displayMode === 'HEADED', 'generator_display_mode_required');
   const child = await fixture();
   let top;
@@ -247,6 +247,239 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     assert(top.state.submits === 0 && child.state.submits === 0, 'generator_submitted_website');
     evidence.checks.noWebsiteSubmission = true;
     evidence.hostTransportOk = true;
+    // Lifecycle cases require one unambiguous top-frame group. The preceding
+    // transport matrix owns the three-frame coverage; remove only its owned
+    // fixture frames before creating any UI candidate or lifecycle offer.
+    await page.evaluate(() => document.querySelectorAll('iframe').forEach((frame) => frame.remove()));
+    const lifecycleSection = `document.querySelector('[aria-label="Password generator"]')`;
+    const lifecycleButton = (label) => `Array.from((${lifecycleSection}).querySelectorAll("button")).find((button) => button.textContent.trim() === ${JSON.stringify(label)})`;
+    const uiCandidateState = () => panel.evaluate(`(() => {
+      const root = ${lifecycleSection};
+      const generate = ${lifecycleButton('Generate')};
+      return {
+        regionPresent: !!root,
+        generatedCandidatePresent: !!root?.querySelector('[aria-label="Reveal generated value"]'),
+        offerPresent: !!root?.querySelector('[name="generated-password-target"]'),
+        generateReady: !!generate && !generate.disabled,
+        connectionChanged: root?.innerText.includes('generator connection changed') === true,
+      };
+    })()`);
+    const panelIdentity = async () => {
+      const context = await worker.evaluate(() => chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }));
+      assert(typeof panel.targetId === 'string' && panel.targetId.length > 0
+        && context.length === 1 && typeof context[0].documentId === 'string'
+        && context[0].documentId.length > 0, 'lifecycle_panel_identity_unavailable');
+      return { targetId: panel.targetId, documentId: context[0].documentId };
+    };
+    const generateUiOffer = async () => {
+      await verifyRealVaultPanel();
+      await panel.waitFor(`!!${lifecycleSection}`);
+      if (await panel.evaluate(`(${lifecycleButton('Password generator')})?.getAttribute('aria-expanded') !== 'true'`))
+        await panel.click(lifecycleButton('Password generator'));
+      await panel.click(lifecycleButton('Password'));
+      // Start before the action: observation latency must never extend the TTL.
+      const startedAt = Date.now();
+      await panel.click(lifecycleButton('Generate'));
+      await panel.waitFor(`!!(${lifecycleSection})?.querySelector('[aria-label="Reveal generated value"]') && (${lifecycleSection})?.innerText.includes('Generated.')`);
+      const state = await uiCandidateState();
+      assert(state.regionPresent && state.generatedCandidatePresent && state.offerPresent, 'lifecycle_ui_candidate_missing');
+      const completedAt = Date.now();
+      return { state, completedAt, expiresAt: startedAt + 30_000, identity: await panelIdentity() };
+    };
+    const freshUiGenerateUse = async (code) => {
+      await panel.click(lifecycleButton('Generate'));
+      await panel.waitFor(`!!(${lifecycleSection})?.querySelector('[aria-label="Reveal generated value"]') && (${lifecycleSection})?.innerText.includes('Generated.')`);
+      await panel.click(`(${lifecycleSection}).querySelector('[aria-label="Reveal generated value"]')`);
+      const uiValue = await panel.evaluate(`(${lifecycleSection}).querySelector('code')?.textContent`);
+      assert(typeof uiValue === 'string' && uiValue.length > 0 && uiValue !== '••••••••••••••••••••••••', 'lifecycle_ui_reveal_missing');
+      await panel.click(`(${lifecycleSection}).querySelector('[aria-label="Hide generated value"]')`);
+      await panel.click(lifecycleButton('Use'));
+      await panel.waitFor(`!(${lifecycleSection})?.querySelector('code') && /Filled/.test((${lifecycleSection})?.innerText ?? '')`);
+      const uiFilled = await page.evaluate((value) => document.querySelector('#new').value === value && document.querySelector('#confirm').value === value && document.querySelector('#current').value === 'owned-current-fixture', uiValue);
+      assert(uiFilled && top.state.submits === 0 && child.state.submits === 0, code);
+      await page.evaluate(() => { document.querySelector('#new').value = ''; document.querySelector('#confirm').value = ''; });
+    };
+    if (workerRestartLifecycleMode) {
+      const lifecycle = evidence.workerRestartLifecycle = { disposition: 'in_progress' };
+      checkpoint('generator_worker_restart_offer');
+      const uiCandidate = await generateUiOffer();
+      const oldDiscovery = await discover();
+      const oldOffer = oldDiscovery?.offers?.find((offer) => offer.frameId === 0);
+      assert(oldOffer && oldOffer.expiresAt >= Date.now() + 10_000, 'worker_restart_old_offer_missing_or_near_expiry');
+      const previousWorker = worker;
+      const workerUrl = previousWorker.url();
+      const cdp = await context.newCDPSession(page);
+      try {
+        const targetSnapshot = await cdp.send('Target.getTargets');
+        const oldTarget = targetSnapshot.targetInfos.find((target) => target.type === 'service_worker' && target.url === workerUrl);
+        if (!oldTarget || typeof refreshWorker !== 'function') {
+          lifecycle.disposition = 'not_tested_worker_target_or_refresh_unavailable';
+        } else {
+          const versions = [];
+          cdp.on('ServiceWorker.workerVersionUpdated', (event) => versions.push(...(event.versions || [])));
+          await cdp.send('ServiceWorker.enable');
+          let oldVersion;
+          for (let attempt = 0; attempt < 20; attempt += 1) {
+            oldVersion = versions.find((version) => version.scriptURL === workerUrl && version.targetId === oldTarget.targetId && typeof version.versionId === 'string');
+            if (oldVersion) break;
+            await wait(100);
+          }
+          if (!oldVersion) {
+            lifecycle.disposition = 'not_tested_service_worker_version_unavailable';
+          } else {
+            lifecycle.uiCandidatePreStop = await uiCandidateState();
+            lifecycle.uiCandidateObservedAt = Date.now();
+            lifecycle.oldOfferRemainingMs = oldOffer.expiresAt - Date.now();
+            lifecycle.uiCandidateBeforeTtl = uiCandidate.expiresAt > lifecycle.uiCandidateObservedAt + 10_000;
+            assert(lifecycle.uiCandidatePreStop.regionPresent && lifecycle.uiCandidatePreStop.generatedCandidatePresent && lifecycle.uiCandidatePreStop.offerPresent && lifecycle.uiCandidateBeforeTtl && lifecycle.oldOfferRemainingMs >= 10_000, 'worker_restart_ui_candidate_not_live_before_stop');
+            await cdp.send('ServiceWorker.stopWorker', { versionId: oldVersion.versionId });
+            let oldTargetGone = false;
+            for (let attempt = 0; attempt < 30; attempt += 1) {
+              const targets = await cdp.send('Target.getTargets');
+              if (!targets.targetInfos.some((target) => target.targetId === oldTarget.targetId)) { oldTargetGone = true; break; }
+              await wait(100);
+            }
+            lifecycle.oldWorkerTargetGone = oldTargetGone;
+            if (!oldTargetGone) {
+              lifecycle.disposition = 'not_tested_worker_stop_not_observed';
+            } else {
+              await panel.waitFor(`!!(${lifecycleSection}) && !(${lifecycleSection})?.querySelector('code') && !(${lifecycleSection})?.querySelector('[name="generated-password-target"]') && !!(${lifecycleButton('Generate')}) && !(${lifecycleButton('Generate')}).disabled && (${lifecycleSection})?.innerText.includes('generator connection changed')`);
+              lifecycle.uiCandidateClearedOnDisconnect = true;
+              lifecycle.uiCandidateClearedAt = Date.now();
+              assert(lifecycle.uiCandidateClearedAt < uiCandidate.expiresAt, 'worker_restart_ui_clear_after_expiry');
+              // A real panel Port wakes the worker; do not depend on unrelated alarms.
+              // Keep the old connection ID for the stale-offer refusal below.
+              const restartedConnectionId = await openGeneratorConnection();
+              worker = await refreshWorker(previousWorker);
+              const afterPanel = await panelIdentity();
+              lifecycle.samePanelTargetAndDocument = afterPanel.targetId === uiCandidate.identity.targetId && afterPanel.documentId === uiCandidate.identity.documentId;
+              assert(lifecycle.samePanelTargetAndDocument, 'worker_restart_panel_identity_changed');
+              const targets = await cdp.send('Target.getTargets');
+              lifecycle.newWorkerTargetDistinct = targets.targetInfos.some((target) => target.type === 'service_worker' && target.url === workerUrl && target.targetId !== oldTarget.targetId);
+              assert(lifecycle.newWorkerTargetDistinct, 'worker_restart_new_target_missing');
+              lifecycle.oldOfferRemainingMs = oldOffer.expiresAt - Date.now();
+              assert(lifecycle.oldOfferRemainingMs >= 10_000, 'worker_restart_old_offer_insufficient_ttl_headroom');
+              const oldUse = await use(oldOffer.id);
+              lifecycle.oldOfferStatus = oldUse?.status ?? 'missing_response';
+              lifecycle.oldOfferCompletedBeforeExpiry = Date.now() < oldOffer.expiresAt;
+              assert(lifecycle.oldOfferCompletedBeforeExpiry, 'worker_restart_old_offer_refusal_after_expiry');
+              lifecycle.oldOfferFieldsUnchanged = await unchanged(page);
+              assert(lifecycle.oldOfferStatus === 'stale' && lifecycle.oldOfferFieldsUnchanged, 'worker_restart_old_offer_survived');
+              connectionId = restartedConnectionId;
+              await freshUiGenerateUse('worker_restart_fresh_ui_recovery_failed');
+              lifecycle.freshUiGenerateUse = true;
+              lifecycle.disposition = 'passed';
+            }
+          }
+        }
+      } finally {
+        await cdp.send('ServiceWorker.disable').catch(() => {});
+      }
+      if (lifecycle.disposition !== 'passed') {
+        (evidence.remaining ||= []).push(`worker-restart lifecycle ${lifecycle.disposition}`);
+        return;
+      }
+    }
+    if (windowSwitchLifecycleMode) {
+      const lifecycle = evidence.windowSwitchLifecycle = { disposition: 'in_progress' };
+      checkpoint('generator_window_switch_offer');
+      const uiCandidate = await generateUiOffer();
+      const oldDiscovery = await discover();
+      const oldOffer = oldDiscovery?.offers?.find((offer) => offer.frameId === 0);
+      assert(oldOffer && oldOffer.expiresAt >= Date.now() + 10_000, 'window_switch_old_offer_missing_or_near_expiry');
+      lifecycle.uiCandidatePreSwitch = await uiCandidateState();
+      lifecycle.uiCandidateObservedAt = Date.now();
+      lifecycle.uiCandidateBeforeTtl = uiCandidate.expiresAt > lifecycle.uiCandidateObservedAt + 10_000;
+      assert(lifecycle.uiCandidatePreSwitch.regionPresent && lifecycle.uiCandidatePreSwitch.generatedCandidatePresent && lifecycle.uiCandidatePreSwitch.offerPresent && lifecycle.uiCandidateBeforeTtl, 'window_switch_ui_candidate_missing');
+      const before = await worker.evaluate(async (id) => {
+        const tab = await chrome.tabs.get(id); const focused = await chrome.windows.getLastFocused({ windowTypes: ['normal'] });
+        return { windowId: tab.windowId, tabActive: tab.active === true, focusedWindowId: focused.id, focused: focused.focused === true };
+      }, tabId);
+      let extraWindowId = null;
+      let createdTargetId = null;
+      let baselineWindowIds = [];
+      const cdp = await context.newCDPSession(page);
+      try {
+        baselineWindowIds = await worker.evaluate(async () => (await chrome.windows.getAll({ windowTypes: ['normal'] })).map((window) => window.id).filter(Number.isInteger).sort((left, right) => left - right));
+        const created = await cdp.send('Target.createTarget', { url: 'about:blank', newWindow: true, background: false });
+        createdTargetId = typeof created.targetId === 'string' ? created.targetId : null;
+        lifecycle.ownedNormalWindowBaselineCount = baselineWindowIds.length;
+        for (let attempt = 0; attempt < 20; attempt += 1) {
+          const delta = await worker.evaluate(async (baseline) => (await chrome.windows.getAll({ windowTypes: ['normal'] })).map((window) => window.id).filter((id) => Number.isInteger(id) && !baseline.includes(id)), baselineWindowIds);
+          lifecycle.ownedNormalWindowDeltaCount = delta.length;
+          if (delta.length === 1) {
+            extraWindowId = delta[0];
+            break;
+          }
+          await wait(100);
+        }
+        if (!Number.isInteger(extraWindowId)) {
+          lifecycle.disposition = 'not_tested_second_normal_window_unavailable';
+        } else {
+          lifecycle.transition = await worker.evaluate(async ({ originalWindowId, otherWindowId, expectedTabId }) => {
+            await chrome.windows.update(otherWindowId, { focused: true });
+            const away = await chrome.windows.getLastFocused({ windowTypes: ['normal'] });
+            await chrome.windows.update(originalWindowId, { focused: true });
+            await chrome.tabs.update(expectedTabId, { active: true });
+            const back = await chrome.windows.getLastFocused({ windowTypes: ['normal'] });
+            const tab = await chrome.tabs.get(expectedTabId);
+            return { awayFocusedOther: away.id === otherWindowId && away.focused === true, backFocusedOriginal: back.id === originalWindowId && back.focused === true, originalTabActive: tab.active === true && tab.windowId === originalWindowId };
+          }, { originalWindowId: before.windowId, otherWindowId: extraWindowId, expectedTabId: tabId });
+          assert(lifecycle.transition.awayFocusedOther && lifecycle.transition.backFocusedOriginal && lifecycle.transition.originalTabActive, 'window_switch_chrome_focus_transition_unproven');
+          await panel.waitFor(`!!(${lifecycleSection}) && !(${lifecycleSection})?.querySelector('code') && !(${lifecycleSection})?.querySelector('[name="generated-password-target"]') && !!(${lifecycleButton('Generate')}) && !(${lifecycleButton('Generate')}).disabled && (${lifecycleSection})?.innerText.includes('page changed')`);
+          lifecycle.uiCandidateClearedOnWindowSwitch = true;
+          lifecycle.uiCandidateClearedAt = Date.now();
+          assert(lifecycle.uiCandidateClearedAt < uiCandidate.expiresAt, 'window_switch_ui_clear_after_expiry');
+          const afterPanel = await panelIdentity();
+          lifecycle.samePanelTargetAndDocument = afterPanel.targetId === uiCandidate.identity.targetId && afterPanel.documentId === uiCandidate.identity.documentId;
+          assert(lifecycle.samePanelTargetAndDocument, 'window_switch_panel_identity_changed');
+          lifecycle.oldOfferRemainingMs = oldOffer.expiresAt - Date.now();
+          assert(lifecycle.oldOfferRemainingMs >= 10_000, 'window_switch_old_offer_insufficient_ttl_headroom');
+          const oldUse = await use(oldOffer.id);
+          lifecycle.oldOfferStatus = oldUse?.status ?? 'missing_response';
+          lifecycle.oldOfferCompletedBeforeExpiry = Date.now() < oldOffer.expiresAt;
+          assert(lifecycle.oldOfferCompletedBeforeExpiry, 'window_switch_old_offer_refusal_after_expiry');
+          lifecycle.oldOfferFieldsUnchanged = await unchanged(page);
+          assert(lifecycle.oldOfferStatus === 'stale' && lifecycle.oldOfferFieldsUnchanged, 'window_switch_old_offer_survived');
+          await freshUiGenerateUse('window_switch_fresh_ui_recovery_failed');
+          lifecycle.freshUiGenerateUse = true;
+          lifecycle.disposition = 'passed';
+        }
+      } finally {
+        let cleanupVerified = false;
+        if (Number.isInteger(extraWindowId)) {
+          const removed = await worker.evaluate(async (id) => {
+            try { await chrome.windows.remove(id); return true; }
+            catch { return false; }
+          }, extraWindowId);
+          for (let attempt = 0; attempt < 20; attempt += 1) {
+            const windows = await worker.evaluate(async () => (await chrome.windows.getAll({ windowTypes: ['normal'] })).map((window) => window.id).filter(Number.isInteger).sort((left, right) => left - right));
+            const targets = await cdp.send('Target.getTargets').catch(() => null);
+            cleanupVerified = removed === true && !windows.includes(extraWindowId) && windows.length === baselineWindowIds.length && baselineWindowIds.every((id) => windows.includes(id)) && Array.isArray(targets?.targetInfos) && !targets.targetInfos.some((target) => target.targetId === createdTargetId);
+            if (cleanupVerified) break;
+            await wait(100);
+          }
+          lifecycle.ownedExtraWindowCleanup = cleanupVerified ? 'verified_chrome_window_removed' : 'failed_chrome_window_removal_verification';
+        } else if (createdTargetId) {
+          const closed = await cdp.send('Target.closeTarget', { targetId: createdTargetId }).catch(() => ({ success: false }));
+          for (let attempt = 0; attempt < 20; attempt += 1) {
+            const windows = await worker.evaluate(async () => (await chrome.windows.getAll({ windowTypes: ['normal'] })).map((window) => window.id).filter(Number.isInteger));
+            const targets = await cdp.send('Target.getTargets').catch(() => null);
+            cleanupVerified = closed.success === true && windows.length === baselineWindowIds.length && baselineWindowIds.every((id) => windows.includes(id)) && Array.isArray(targets?.targetInfos) && !targets.targetInfos.some((target) => target.targetId === createdTargetId);
+            if (cleanupVerified) break;
+            await wait(100);
+          }
+          lifecycle.ownedExtraWindowCleanup = cleanupVerified ? 'verified_created_target_closed' : 'failed_created_target_cleanup_verification';
+        } else {
+          lifecycle.ownedExtraWindowCleanup = 'not_created_or_unidentified';
+        }
+        if (!cleanupVerified && lifecycle.disposition === 'passed') lifecycle.disposition = 'failed_owned_extra_window_cleanup_unverified';
+      }
+      if (lifecycle.disposition !== 'passed') {
+        (evidence.remaining ||= []).push(`window-switch lifecycle ${lifecycle.disposition}`);
+        return;
+      }
+    }
     if (panelCloseLifecycleMode) {
       const lifecycle = evidence.panelCloseLifecycle = { disposition: 'in_progress', offerKind: 'raw_discover_offer' };
       checkpoint('generator_panel_close_offer');
@@ -596,7 +829,9 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     evidence.remaining = [
       ...(evidence.remaining || []),
       ...(headlessNoClipboardMode ? ['clipboard acceptance requires an isolated clipboard session'] : []),
-      'window/actor/organization switches and restart need separate real-browser cases',
+      ...(!workerRestartLifecycleMode ? ['worker restart needs a separate real-browser case'] : []),
+      ...(!windowSwitchLifecycleMode ? ['normal-window switch needs a separate real-browser case'] : []),
+      'actor and organization switches need separate real-browser cases',
       'distributed artifact and other browsers remain separate acceptance',
     ];
   } finally {

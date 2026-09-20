@@ -44,6 +44,8 @@ const displayMode = process.env.MATRX_VAULT_CANARY_DISPLAY;
 const headlessNoClipboardMode = displayMode === 'HEADLESS_NO_CLIPBOARD';
 const headedMode = displayMode === 'HEADED';
 const panelCloseLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_PANEL_CLOSE === 'RUN_PANEL_CLOSE_LIFECYCLE';
+const workerRestartLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART === 'RUN_WORKER_RESTART_LIFECYCLE';
+const windowSwitchLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH === 'RUN_WINDOW_SWITCH_LIFECYCLE';
 assert(typeof displayMode === 'string' && displayMode.length > 0, 'canary_display_mode_required');
 assert(headlessNoClipboardMode || headedMode, 'canary_display_mode_invalid');
 assert(!headedMode || process.env.MATRX_VAULT_CANARY_FOREGROUND === 'ALLOW_FOREGROUND_TEST', 'headed_canary_requires_foreground_allow');
@@ -51,6 +53,10 @@ assert(!headlessNoClipboardMode || generatorTransportMode, 'headless_requires_ge
 assert(!headlessNoClipboardMode || readOnlyAdmissionMode, 'headless_requires_read_only_admission');
 assert(!headlessNoClipboardMode || !process.env.MATRX_VAULT_CANARY_WINDOW_PLACEMENT, 'headless_refuses_window_placement');
 assert(!panelCloseLifecycleMode || headlessNoClipboardMode, 'panel_close_lifecycle_requires_headless_no_clipboard');
+assert(!process.env.MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART || workerRestartLifecycleMode, 'worker_restart_lifecycle_mode_invalid');
+assert(!process.env.MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH || windowSwitchLifecycleMode, 'window_switch_lifecycle_mode_invalid');
+assert(!workerRestartLifecycleMode || headlessNoClipboardMode, 'worker_restart_lifecycle_requires_headless_no_clipboard');
+assert(!windowSwitchLifecycleMode || headlessNoClipboardMode, 'window_switch_lifecycle_requires_headless_no_clipboard');
 if (process.env.MATRX_REALBROWSER_VAULT_CANARY !== 'RUN_UNDER_REVIEW')
   throw new Error('inert_canary_requires_explicit_arm');
 assert(!generatorTransportMode || readOnlyAdmissionMode, 'generator_requires_mutation_free_admission');
@@ -1153,6 +1159,12 @@ async function materializedPassword(id) {
         await require('./vault-generator-acceptance.cjs').runGeneratorChecks({
           context, worker, panel: realPanel, assert, wait, checkpoint, proof, focusOwnedBrowser,
           screenshotPath: path.join(root, 'generator-masked.png'), verifyRealVaultPanel, displayMode, panelCloseLifecycleMode,
+          workerRestartLifecycleMode, windowSwitchLifecycleMode,
+          refreshWorker: async (previous) => {
+            const next = context.serviceWorkers().find((candidate) => candidate !== previous) || await context.waitForEvent('serviceworker', { timeout: 15000 });
+            worker = next;
+            return worker;
+          },
           reopenPanelFromAction: async (fixturePage, fixtureWindowId) => {
             const reopened = await openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWindowId);
             if (reopened.opened) {
