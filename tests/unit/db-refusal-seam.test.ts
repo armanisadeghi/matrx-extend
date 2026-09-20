@@ -34,6 +34,7 @@ const mocks = vi.hoisted(() => ({
   getActiveOrganizationId: vi.fn(),
   rpc: vi.fn(),
   logError: vi.fn(),
+  mayReportExternalTelemetry: vi.fn(),
 }));
 
 vi.mock('@/lib/debug/log', () => ({
@@ -49,6 +50,9 @@ vi.mock('@/lib/api/routes/auth', () => ({
   requireRequestOrganizationId: mocks.requireRequestOrganizationId,
 }));
 vi.mock('@/lib/supabase/client', () => ({ getSupabase: mocks.getSupabase }));
+vi.mock('@/lib/telemetry/external-reporting', () => ({
+  mayReportExternalTelemetry: mocks.mayReportExternalTelemetry,
+}));
 vi.mock('@/lib/supabase/schemas', () => ({
   workbenchDb: mocks.workbenchDb,
   extendDb: mocks.extendDb,
@@ -121,6 +125,7 @@ beforeEach(() => {
   mocks.requireRequestOrganizationId.mockResolvedValue(ORG_ID);
   mocks.getActiveOrganizationId.mockResolvedValue(ORG_ID);
   mocks.rpc.mockResolvedValue({ data: 'err-id', error: null });
+  mocks.mayReportExternalTelemetry.mockResolvedValue(true);
 });
 
 describe('a refused write is never swallowed', () => {
@@ -174,6 +179,20 @@ describe('a refused write is never swallowed', () => {
       }),
     ).rejects.toSatisfy(isDbFailureError);
     expect(lastNotice()?.title).toBe('Highlight not saved');
+  });
+
+  it('keeps the refusal visible but does not export it when Firefox diagnostics are denied', async () => {
+    mocks.mayReportExternalTelemetry.mockResolvedValue(false);
+    mocks.getSupabase.mockReturnValue(builder({ data: null, error: RLS_REFUSAL }));
+
+    await expect(saveCapture({ url: 'https://example.com', soup: {} })).rejects.toMatchObject({
+      kind: 'refused',
+    });
+
+    expect(lastNotice()?.title).toBe('Page capture not saved');
+    expect(lastNotice()?.message).not.toContain('reported automatically');
+    await vi.waitFor(() => expect(mocks.mayReportExternalTelemetry).toHaveBeenCalled());
+    expect(mocks.rpc).not.toHaveBeenCalled();
   });
 
   it('deleteHighlight: an RLS-empty delete (no error, zero rows) is treated as a refusal', async () => {
@@ -329,6 +348,19 @@ describe('classification', () => {
       // A remedy sentence — an instruction the user can act on — is mandatory.
       expect(/try again|sign in again|pick a workspace|ours to fix/i.test(msg)).toBe(true);
       expect(msg.length).toBeGreaterThan(80);
+    }
+  });
+
+  it('never claims a failure was automatically reported before consent is known', () => {
+    const site = {
+      table: 'extend.wbx_capture',
+      operation: 'insert' as const,
+      what: 'save this page capture',
+      title: 'Page capture not saved',
+    };
+
+    for (const kind of ['missing_relation', 'failed'] as const) {
+      expect(userMessageFor(kind, site)).not.toContain('reported automatically');
     }
   });
 });

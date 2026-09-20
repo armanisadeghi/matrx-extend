@@ -54,6 +54,7 @@
 
 import { log } from '@/lib/debug/log';
 import { getSupabase } from '@/lib/supabase/client';
+import { mayReportExternalTelemetry } from '@/lib/telemetry/external-reporting';
 import { pushNotice } from '@/state/notices';
 
 /** What kind of failure the database actually reported. */
@@ -172,7 +173,7 @@ export function userMessageFor(kind: DbFailureKind, site: DbCallSite): string {
     case 'refused':
       return `AI Matrx could not ${site.what}: the database refused the request because your account is not allowed to do it in this workspace. ${outcome} Check that you are in the right workspace from the account menu, then try again — if it keeps happening, ask a workspace admin for access.`;
     case 'missing_relation':
-      return `AI Matrx could not ${site.what}: the data table this feature needs is not available in the database. ${outcome} Retrying will not help — this one is ours to fix, and it has been reported automatically.`;
+      return `AI Matrx could not ${site.what}: the data table this feature needs is not available in the database. ${outcome} Retrying will not help — this one is ours to fix. Please contact support if you need help.`;
     case 'no_workspace':
       return `AI Matrx could not ${site.what}: no workspace is selected, so the request was never sent. ${outcome} Pick a workspace from the account menu and try again.`;
     case 'not_authenticated':
@@ -180,7 +181,7 @@ export function userMessageFor(kind: DbFailureKind, site: DbCallSite): string {
     case 'unreachable':
       return `AI Matrx could not ${site.what}: the database could not be reached. ${outcome} Check your internet connection and try again.`;
     default:
-      return `AI Matrx could not ${site.what}: the database rejected the request. ${outcome} Try again — if it keeps happening, it has already been reported to us automatically.`;
+      return `AI Matrx could not ${site.what}: the database rejected the request. ${outcome} Try again — if it keeps happening, please contact support.`;
   }
 }
 
@@ -228,6 +229,9 @@ export async function recordDbFailure(
   if (reporting) return;
   reporting = true;
   try {
+    // Firefox errors stay in the local log and notice path. Only their export
+    // to the platform store depends on the person's current diagnostics grant.
+    if (!(await mayReportExternalTelemetry())) return;
     let organizationId: string | undefined;
     try {
       const { getActiveOrganizationId } = await import('@/lib/org/active-org');

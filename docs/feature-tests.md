@@ -186,6 +186,13 @@ component, so all four must show identical rows in identical order.
 - **Expected:** A successful native open closes the popup or clears the Agenda notification. A refusal names a next step and leaves its originating surface visible; drafts from context-menu actions still reach an already-open or cold-open panel. The login-capture card remains quiet until its own **Open Vault** button is clicked and does not create a separate overlay.
 - **Covered by:** `tests/unit/frontend-bridge-panel-gesture.test.ts`, `tests/unit/context-menu-panel-remedy.test.ts`, `tests/unit/agenda-panel-remedy.test.ts`, `tests/unit/inline-suggestions-host.test.ts`, `tests/unit/credential-capture-prompt.test.ts`, and `tests/unit/background-panel-startup.test.ts`.
 
+### Firefox diagnostics collection consent
+- **What it does:** Firefox records client and audio failures locally, but sends either error report externally only when the current `technicalAndInteraction` collection grant is present.
+- **Where to test:** A Firefox 153+ profile with the generated Firefox MV3 artifact, using the browser's extension permissions UI.
+- **Steps:** Allow diagnostics, cause a disposable database or audio error, then revoke or deny diagnostics and repeat. Also test when the permission API is unavailable or rejects its lookup.
+- **Expected:** The browser asks with Firefox's `data_collection: ['technicalAndInteraction']` shape. Granting allows the existing external error sink; revocation, denial, a missing API, or lookup error sends no external report. Database failures still show their normal visible error and never say that they were automatically reported.
+- **Covered by:** `tests/unit/external-reporting.test.ts`, `tests/unit/db-refusal-seam.test.ts`, and `tests/unit/audio-external-reporting.test.ts`; `pnpm check:firefox-manifest` checks the generated manifest contract.
+
 Every entry follows this shape:
 
 ```
