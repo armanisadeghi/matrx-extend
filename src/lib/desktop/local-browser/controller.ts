@@ -180,6 +180,13 @@ function deadlineFromClaims(claims: LocalBrowserGrantClaims): number | null {
   return deadline > Date.now() ? deadline : null;
 }
 
+/** Server projections can retain milliseconds; JWT expiry authority is whole seconds. */
+export function canonicalGrantDeadlineMs(deadlineMs: number): number | null {
+  if (!Number.isFinite(deadlineMs) || deadlineMs < 0) return null;
+  const second = Math.floor(deadlineMs / 1000);
+  return second <= Math.floor(Number.MAX_SAFE_INTEGER / 1000) ? second * 1000 : null;
+}
+
 function mapPrivateFailure(error: string): LocalBrowserRefusalReason {
   switch (error) {
     case 'identity_changed':
@@ -608,8 +615,8 @@ export class LocalBrowserController {
         projection.app_instance_id !== claims.app_instance_id ||
         projection.controller_revision !== registration.revision ||
         projection.jti !== claims.jti ||
-        Math.floor(projection.deadline_ms) !== deadlineMs ||
-        Math.floor(projection.expires_at_ms) !== deadlineMs ||
+        canonicalGrantDeadlineMs(projection.deadline_ms) !== deadlineMs ||
+        canonicalGrantDeadlineMs(projection.expires_at_ms) !== deadlineMs ||
         projection.extension_generation !== registration.extensionGeneration ||
         projection.connection_id !== registration.connectionId ||
         !isCurrent()

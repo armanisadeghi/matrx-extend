@@ -23,7 +23,11 @@ vi.mock('@/lib/desktop/ws-client', () => ({
 vi.mock('@/lib/messaging/native', () => ({ on: vi.fn() }));
 vi.mock('@/lib/org/active-org', () => ({ onActiveOrganizationChange: vi.fn() }));
 
-import { LocalBrowserController, type LocalBrowserControllerDeps } from './controller';
+import {
+  canonicalGrantDeadlineMs,
+  LocalBrowserController,
+  type LocalBrowserControllerDeps,
+} from './controller';
 
 const ids = {
   boot: '00000000-0000-4000-8000-000000000001',
@@ -240,6 +244,11 @@ async function register(
 }
 
 describe('owned local-browser tab controller', () => {
+  it('canonicalizes server millisecond projections to the grant expiry second', () => {
+    // The server's projection is millisecond precision; the signed `exp` claim is seconds.
+    expect(canonicalGrantDeadlineMs(1_700_000_000_999)).toBe(1_700_000_000_000);
+    expect(canonicalGrantDeadlineMs(1_700_000_001_000)).toBe(1_700_000_001_000);
+  });
   it('re-registers with fresh private binding after an organization change on a healthy socket', async () => {
     const h = harness();
     const first = await register(h);
