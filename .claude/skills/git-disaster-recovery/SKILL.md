@@ -4,7 +4,7 @@ type: Skill
 title: "git-disaster-recovery — stacked leftover recovery (living, unproven)"
 description: "Stacked-git recovery when a checkout looks like a second product line. Use when ahead/behind is huge, worktrees/PRs/stashes stacked, the shared checkout is dirty, or you are tempted to reset, force-push, or commit the dirty tree. NOT for a 30-minute integration sweep (use integration-maintainer)."
 tags: [operations, git, worktrees, branches, pull-requests, recovery]
-timestamp: 2026-09-19T00:00:00Z
+timestamp: 2026-09-20T00:00:00Z
 ---
 
 <!-- SYNCED COPY — do not edit here.
@@ -102,8 +102,10 @@ Count with ordinary git: extra worktrees, local branches, remote branches beside
 `main`, open PRs, stashes, dirty and untracked files, `HEAD` vs `origin/main`
 left-right. If an official audit script goes silent, drop it.
 
-- A handful of leftovers already on `origin/main` → this is not a disaster. Junior
-  leftover pass. This skill stands down.
+- A handful of leftovers whose unique patches are already on `origin/main` → this
+  is not a disaster. **Finish Stage 1 first.** `HEAD` matching `origin/main` can
+  still hide leftover branches, a rejected prototype, or skill companions that
+  sync wrote and nobody committed. Then stand Size 2 down. Junior leftover pass.
 - A pile like the 2026-09-19 aidream example (dozens of worktrees, diverged local
   `main`, dirty shared checkout, stacked PRs or stashes) → stop other writers on
   this checkout, then only safe repair. Continue.
@@ -115,12 +117,16 @@ The status line is usually a liar. The hygiene pile is usually not.
 **1a. The two mains as patches.** Record GitHub `main` SHA, local `HEAD`,
 merge-base, last push age. Then `git cherry origin/main HEAD`. Same-message
 commits on GitHub usually mean "already landed under a new hash." Report unique
-local commits, not the ahead count.
+local commits, not the ahead count. Then cherry **every leftover branch** the
+same way. `HEAD == origin/main` does not mean the leftover branches are empty.
 
 **1b. Dirty checkout vs GitHub, not vs stale local `main`.** For each modified or
 untracked path: already matches `origin/main`, already exists on `origin/main`,
 generated/lockfile/`.wt` noise, or truly unique. Untracked often only looks new
-because local `main` froze.
+because local `main` froze. If `SKILL.md` is on GitHub and its companions
+(`evals.md`, `field-log.md`, `owner-park.md`, or any other file in that skill
+directory) are only untracked here, that is a sync-commit miss — land the
+canonical copies. It is not unique product.
 
 **1c. Bucket every leftover** — every worktree, local branch, remote branch, PR,
 and stash gets one letter:
@@ -496,6 +502,8 @@ Rows from the 2026-09-19 transcript, not imagined.
 | "The first release is out, so we are done" | Stage 8 is the point. Pull main, fix fast, fan out, commit, release again. |
 | "Wait for the subagent plan before touching anything" | Do what you can now. Fan the rest. Do not sit. |
 | "pnpm db-types will clear three missing RPCs" | Only at `origin/main`. On a behind checkout it imports the whole live schema and explodes tsc. Splice the missing functions, or pull first. |
+| "HEAD equals origin/main, so stand down now" | Finish Stage 1. Leftover branches can still hold a unique rejected commit. |
+| "The skill file is on GitHub, so the skill landed" | Companions are part of the skill. Untracked companions after a `SKILL.md` commit are a sync-commit miss. Land the canonical copies. |
 
 ## Red flags
 
@@ -514,6 +522,8 @@ Rows from the 2026-09-19 transcript, not imagined.
 - "The first release shipped, so we can slow down."
 - "I'll wait for the subagent roster before I pull."
 - "I'll just run `pnpm db-types` on this behind checkout."
+- "HEAD matches GitHub, so there is nothing left."
+- "SKILL.md synced, so I can ignore the untracked companions."
 
 ## Trigger relocation
 
