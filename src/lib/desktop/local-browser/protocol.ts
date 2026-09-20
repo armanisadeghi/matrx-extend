@@ -57,10 +57,19 @@ const execute = z
     type: z.literal('local_browser.execute'),
     version: z.literal(1),
     call_id: uuid,
-    operation: z.enum(['discover', 'admit', 'renew', 'cleanup']),
+    operation: z.enum(['discover', 'admit', 'renew', 'cleanup', 'approve']),
     grant,
+    command_json: z
+      .string()
+      .min(1)
+      .max(16 * 1024)
+      .optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((value, context) => {
+    if ((value.operation === 'approve') !== 'command_json' in value)
+      context.addIssue({ code: z.ZodIssueCode.custom, message: 'approve requires exact command' });
+  });
 
 const invalidate = z
   .object({
@@ -90,6 +99,17 @@ const result = z.union([
       operation: z.literal('discover'),
       status: z.literal('acknowledged'),
       receipt: z.literal('accepted'),
+    })
+    .strict(),
+  z
+    .object({
+      type: z.literal('local_browser.result'),
+      version: z.literal(1),
+      call_id: uuid,
+      operation: z.literal('approve'),
+      status: z.literal('acknowledged'),
+      terminal_receipt: z.unknown(),
+      document: z.object({ url: z.string().url(), document_id: uuid }).strict().optional(),
     })
     .strict(),
   z
@@ -127,7 +147,7 @@ const result = z.union([
       type: z.literal('local_browser.result'),
       version: z.literal(1),
       call_id: uuid,
-      operation: z.enum(['discover', 'admit', 'renew', 'cleanup']),
+      operation: z.enum(['discover', 'admit', 'renew', 'cleanup', 'approve']),
       status: z.literal('refused'),
       reason: localBrowserRefusalReason,
     })
@@ -192,6 +212,19 @@ const grantClaims = z.discriminatedUnion('operation', [
       extension_generation: uuid,
       connection_id: uuid,
       controller_revision: safeInteger,
+    })
+    .strict(),
+  z
+    .object({
+      ...commonGrantClaims,
+      operation: z.literal('approve'),
+      admission_id: uuid,
+      extension_generation: uuid,
+      connection_id: uuid,
+      controller_revision: safeInteger,
+      command_id: uuid,
+      sequence: nonZeroSafeInteger,
+      command_digest: z.string().regex(/^[a-f0-9]{64}$/),
     })
     .strict(),
   z

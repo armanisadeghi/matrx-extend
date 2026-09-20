@@ -101,6 +101,15 @@ describe('local browser closed protocol', () => {
         reason: 'server said: secret',
       } as never),
     ).toThrow();
+    expect(
+      parseLocalBrowserFrame({
+        type: 'local_browser.execute',
+        version: 1,
+        call_id: ids.call,
+        operation: 'approve',
+        grant: 'opaque',
+      }),
+    ).toBeNull();
   });
 
   it('projects only strict routing claims from an opaque signed grant', () => {
@@ -131,6 +140,33 @@ describe('local browser closed protocol', () => {
       admission_id: ids.admission,
     });
     expect(parseLocalBrowserGrantClaims(opaqueGrant({ ...claim, injected: 'nope' }))).toBeNull();
+    expect(
+      parseLocalBrowserGrantClaims(
+        opaqueGrant({
+          v: 1,
+          aud: 'browser-local-executor',
+          sub: ids.user,
+          organization_id: ids.org,
+          app_instance_id: ids.app,
+          run_id: ids.run,
+          profile_id: ids.profile,
+          jti: ids.jti,
+          iat: 1,
+          exp: Math.floor(Date.now() / 1000) + 30,
+          iss: 'https://server.example',
+          tier_policy: 'none',
+          scopes: [],
+          operation: 'approve',
+          admission_id: ids.admission,
+          extension_generation: ids.generation,
+          connection_id: ids.connection,
+          controller_revision: 0,
+          command_id: ids.call,
+          sequence: 1,
+          command_digest: 'a'.repeat(64),
+        }),
+      ),
+    ).toMatchObject({ operation: 'approve', command_id: ids.call, sequence: 1 });
     const duplicate = '{"v":1,"v":1}';
     expect(parseLocalBrowserGrantClaims(`header.${btoa(duplicate)}.signature`)).toBeNull();
   });

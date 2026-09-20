@@ -3,12 +3,23 @@ import {
   type PrivateExpectedActor,
   getPrivateExpectedActor,
 } from '@/lib/api/client';
+import { parseStrictPrivateJson } from '@/lib/api/client';
 import {
   type LocalBrowserAckResponse,
   type LocalVerifyResponse,
   acknowledgeLocalBrowser,
   verifyLocalBrowser,
 } from '@/lib/api/routes/local-browser';
+import {
+  type LocalCommandResult,
+  approveLocalCommand,
+  claimLocalCommand,
+  completeLocalCommand,
+  verifyLocalCommandTransport,
+} from '@/lib/api/routes/local-browser-commands';
+import { credentialDomSource } from '@/lib/credentials/fill-primitive';
+import { requestLocalBrowserApproval } from '@/lib/desktop/local-browser/approvals';
+import type { LocalCommand } from '@/lib/desktop/local-browser/command-policy';
 import {
   getLocalBrowserSocketEpoch,
   onLocalBrowserEpochInvalidated,
@@ -18,6 +29,10 @@ import {
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { onActiveOrganizationChange } from '@/lib/org/active-org';
+import {
+  runAdmittedAuthenticatorAttempt,
+  runAdmittedCredentialAttempt,
+} from '@/lib/tools/handlers/credential-login';
 import {
   type LocalBrowserExecute,
   type LocalBrowserGrantClaims,
@@ -91,6 +106,14 @@ export interface LocalBrowserControllerDeps {
     get: (tabId: number) => Promise<chrome.tabs.Tab>;
     onRemoved: (handler: (tabId: number) => void) => () => void;
   };
+  /** Optional in tests; production is the only owner of command execution. */
+  command?: {
+    verify: typeof verifyLocalCommandTransport;
+    approve: typeof approveLocalCommand;
+    claim: typeof claimLocalCommand;
+    complete: typeof completeLocalCommand;
+    currentDocument: (tabId: number) => Promise<{ documentId: string; url: string } | null>;
+  };
 }
 
 function productionDeps(): LocalBrowserControllerDeps {
@@ -111,6 +134,21 @@ function productionDeps(): LocalBrowserControllerDeps {
       onRemoved: (handler) => {
         chrome.tabs.onRemoved.addListener(handler);
         return () => chrome.tabs.onRemoved.removeListener(handler);
+      },
+    },
+    command: {
+      verify: verifyLocalCommandTransport,
+      approve: approveLocalCommand,
+      claim: claimLocalCommand,
+      complete: completeLocalCommand,
+      currentDocument: async (tabId) => {
+        const frame = (await chrome.webNavigation.getFrame({ tabId, frameId: 0 })) as unknown as {
+          documentId?: unknown;
+          url?: unknown;
+        } | null;
+        return typeof frame?.documentId === 'string' && typeof frame.url === 'string'
+          ? { documentId: frame.documentId, url: frame.url }
+          : null;
       },
     },
   };
@@ -394,7 +432,323 @@ export class LocalBrowserController {
         return this.renew(frame, claims, deadlineMs, actor, registration, context);
       case 'cleanup':
         return this.cleanup(frame, claims, deadlineMs, actor, registration, context);
+      case 'approve':
+        return this.approve(frame, claims, deadlineMs, actor, registration, context);
     }
+  }
+
+  /**
+   * The sole local command executor. It is deliberately reached only from the
+   * registered owned-tab lifecycle, and uses the admitted helpers for every
+   * secret-bearing action. No normal tool dispatcher or Vault materializer is
+   * reachable from this path.
+   */
+  private async approve(
+    frame: LocalBrowserExecute,
+    claims: Extract<LocalBrowserGrantClaims, { operation: 'approve' }>,
+    deadlineMs: number,
+    actor: PrivateExpectedActor,
+    registration: Registration,
+    context: number,
+  ): Promise<{ receipt: string } | { reason: LocalBrowserRefusalReason }> {
+    const port = this.deps.command;
+    if (!port || !frame.command_json) return { reason: 'authority_refused' };
+    const entry = this.entries.get(runKey(claims));
+    if (!entry || entry.tabId === null || entry.leaseExpiresAtMs === null)
+      return { reason: 'authority_refused' };
+    let command: LocalCommand;
+    try {
+      const parsed = parseStrictPrivateJson(frame.command_json);
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+        return { reason: 'invalid_request' };
+      command = parsed as LocalCommand;
+    } catch {
+      return { reason: 'invalid_request' };
+    }
+    const abort = new AbortController();
+    const isCurrent = () =>
+      !abort.signal.aborted &&
+      this.canMutate(context, registration, deadlineMs) &&
+      this.entries.get(entry.key) === entry &&
+      entry.tabId !== null &&
+      entry.leaseExpiresAtMs !== null &&
+      Date.now() < entry.leaseExpiresAtMs;
+    try {
+      // A signed grant is routing data only. Reconstruct every immutable field
+      // through the server before showing policy UI or touching the tab.
+      const verified = await port.verify({
+        grant: frame.grant,
+        operation: 'approve',
+        app_instance_id: claims.app_instance_id,
+        command_json: frame.command_json,
+        expectedActor: actor,
+        deadlineMs,
+        isCurrent,
+        signal: abort.signal,
+      });
+      if (!verified.ok || verified.data.status !== 'accepted')
+        return { reason: verified.ok ? 'authority_refused' : mapPrivateFailure(verified.error) };
+      const projection = verified.data as unknown as {
+        operation: 'approve';
+        actor_id: string;
+        organization_id: string;
+        profile_id: string;
+        admission_id: string;
+        command_id: string;
+        sequence: number;
+        command_digest: string;
+        approval_id: string;
+        deadline_ms: number;
+        extension_generation: string;
+        connection_id: string;
+      };
+      if (projection.operation !== 'approve') return { reason: 'authority_refused' };
+      if (
+        projection.actor_id !== actor.userId ||
+        projection.organization_id !== actor.organizationId ||
+        projection.profile_id !== claims.profile_id ||
+        projection.admission_id !== entry.admissionId ||
+        projection.command_id !== claims.command_id ||
+        projection.sequence !== claims.sequence ||
+        projection.command_digest !== claims.command_digest ||
+        projection.deadline_ms !== deadlineMs ||
+        projection.extension_generation !== registration.extensionGeneration ||
+        projection.connection_id !== registration.connectionId ||
+        !isCurrent()
+      )
+        return { reason: 'binding_changed' };
+      const decision = await requestLocalBrowserApproval({
+        binding: {
+          actorId: actor.userId,
+          organizationId: actor.organizationId,
+          deviceId: claims.app_instance_id,
+          runId: claims.run_id,
+          profileId: claims.profile_id,
+          extensionGeneration: registration.extensionGeneration,
+          connectionId: registration.connectionId,
+          controllerRevision: registration.revision,
+          admissionId: entry.admissionId,
+          commandSequence: claims.sequence,
+          commandId: claims.command_id,
+          commandDigest: claims.command_digest,
+        },
+        command,
+        ownedTabId: entry.tabId,
+        deadlineMs,
+        isBindingCurrent: () => isCurrent(),
+      });
+      if (decision.decision !== 'allow' || !isCurrent()) {
+        if (isCurrent())
+          await port.approve({
+            grant: frame.grant,
+            approval_id: projection.approval_id,
+            decision: decision.decision === 'deny' ? 'deny' : 'cancel',
+            expectedActor: actor,
+            deadlineMs,
+            isCurrent,
+            signal: abort.signal,
+          });
+        return { reason: 'authority_refused' };
+      }
+      const allowed = await port.approve({
+        grant: frame.grant,
+        approval_id: projection.approval_id,
+        decision: 'allow',
+        expectedActor: actor,
+        deadlineMs,
+        isCurrent,
+        signal: abort.signal,
+      });
+      if (!allowed.ok || allowed.data.status !== 'allowed' || !isCurrent())
+        return { reason: allowed.ok ? 'authority_refused' : mapPrivateFailure(allowed.error) };
+      const doc = await port.currentDocument(entry.tabId);
+      if (!doc || !isCurrent()) return { reason: 'binding_changed' };
+      const claimed = await port.claim({
+        grant: allowed.data.claim_grant,
+        command_json: frame.command_json,
+        document: { url: doc.url, document_id: doc.documentId },
+        expectedActor: actor,
+        deadlineMs: allowed.data.deadline_ms,
+        isCurrent,
+        signal: abort.signal,
+      });
+      if (!claimed.ok || claimed.data.status !== 'claimed' || !isCurrent())
+        return { reason: claimed.ok ? 'authority_refused' : mapPrivateFailure(claimed.error) };
+      const result = await this.performClaimedCommand(
+        command,
+        entry.tabId,
+        doc,
+        claimed.data,
+        isCurrent,
+      );
+      if (!isCurrent()) return { reason: 'binding_changed' };
+      const completed = await port.complete({
+        grant: claimed.data.completion_grant,
+        result,
+        expectedActor: actor,
+        deadlineMs: claimed.data.deadline_ms,
+        isCurrent,
+        signal: abort.signal,
+      });
+      if (!completed.ok || completed.data.status !== 'completed')
+        return { reason: completed.ok ? 'authority_refused' : mapPrivateFailure(completed.error) };
+      return { receipt: JSON.stringify(completed.data.result) };
+    } finally {
+      abort.abort();
+    }
+  }
+
+  private async performClaimedCommand(
+    command: LocalCommand,
+    tabId: number,
+    document: { documentId: string; url: string },
+    claimed: Extract<Awaited<ReturnType<typeof claimLocalCommand>>, { ok: true }>['data'] & {
+      status: 'claimed';
+    },
+    isCurrent: () => boolean,
+  ): Promise<LocalCommandResult> {
+    const terminal = (
+      reason:
+        | 'unsafe_destination'
+        | 'field_unavailable'
+        | 'form_changed'
+        | 'needs_mfa'
+        | 'captcha_or_takeover'
+        | 'credentials_rejected'
+        | 'deadline_exceeded'
+        | 'binding_changed'
+        | 'tab_lost'
+        | 'configuration_error',
+    ): LocalCommandResult => ({
+      command_id: claimed.command_id,
+      operation: command.operation,
+      outcome: 'outcome_unknown',
+      reason,
+    });
+    if (!isCurrent()) return terminal('binding_changed');
+    if (command.operation === 'navigate') {
+      try {
+        const target = new URL(command.url);
+        if (target.protocol !== 'https:') return terminal('unsafe_destination');
+        await chrome.tabs.update(tabId, { url: target.toString() });
+        return {
+          command_id: claimed.command_id,
+          operation: 'navigate',
+          outcome: 'completed',
+          reason: 'none',
+          data: { origin: target.origin },
+        };
+      } catch {
+        return terminal('configuration_error');
+      }
+    }
+    if (command.operation === 'inspect_login') {
+      try {
+        const [probe] = await chrome.scripting.executeScript({
+          target: { tabId, documentIds: [document.documentId] },
+          func: credentialDomSource as never,
+          args: [{ operation: 'auto_probe' }] as never,
+        });
+        const value = probe?.result as
+          | { form?: string; mfa?: boolean; captcha?: boolean; origin?: string }
+          | undefined;
+        const origin = new URL(document.url).origin;
+        if (!value || value.origin !== origin) return terminal('unsafe_destination');
+        return {
+          command_id: claimed.command_id,
+          operation: 'inspect_login',
+          outcome: 'completed',
+          reason: 'none',
+          data: {
+            origin,
+            form:
+              value.form === 'login' ||
+              value.form === 'username_first' ||
+              value.form === 'password_change' ||
+              value.form === 'ambiguous'
+                ? value.form
+                : 'none',
+            challenge: value.captcha ? 'captcha' : value.mfa ? 'mfa' : 'none',
+          },
+        };
+      } catch {
+        return terminal('tab_lost');
+      }
+    }
+    const result =
+      command.operation === 'vault_login'
+        ? await runAdmittedCredentialAttempt(command, tabId, document.url, {
+            commandId: claimed.command_id,
+            documentId: document.documentId,
+            deadlineMs: claimed.deadline_ms,
+            isCurrent,
+            assertCurrent: async () => {
+              if (!isCurrent()) throw new Error('binding_changed');
+            },
+            materialize: async () =>
+              claimed.injection && 'fields' in claimed.injection
+                ? {
+                    ok: true,
+                    data: {
+                      item_id: command.credential_item_id as string,
+                      origin: claimed.injection.origin,
+                      fields: claimed.injection.fields,
+                    },
+                  }
+                : { ok: false, failure: { kind: 'forbidden' } },
+            report: async () => undefined,
+          })
+        : await runAdmittedAuthenticatorAttempt(command, tabId, document.url, {
+            commandId: claimed.command_id,
+            documentId: document.documentId,
+            deadlineMs: claimed.deadline_ms,
+            isCurrent,
+            assertCurrent: async () => {
+              if (!isCurrent()) throw new Error('binding_changed');
+            },
+            materialize: async () =>
+              claimed.injection && 'code' in claimed.injection
+                ? {
+                    ok: true,
+                    data: {
+                      injection_id: claimed.command_id,
+                      origin: claimed.injection.origin,
+                      code: claimed.injection.code,
+                      expires_at: claimed.injection.expires_at,
+                    },
+                  }
+                : { ok: false, failure: { kind: 'forbidden' } },
+            report: async () => undefined,
+          });
+    const verification =
+      result.status === 'authenticated'
+        ? 'verified'
+        : result.status === 'needs_mfa'
+          ? 'needs_mfa'
+          : result.status === 'credentials_rejected'
+            ? 'credentials_rejected'
+            : result.status === 'captcha_or_takeover'
+              ? 'captcha_or_takeover'
+              : 'unverified';
+    return command.operation === 'vault_login'
+      ? {
+          command_id: claimed.command_id,
+          operation: 'vault_login',
+          outcome: 'completed',
+          reason: 'none',
+          data: { filled: result.status !== 'no_matching_login', submitted: true, verification },
+        }
+      : {
+          command_id: claimed.command_id,
+          operation: 'authenticator',
+          outcome: 'completed',
+          reason: 'none',
+          data: {
+            filled: result.status !== 'unknown',
+            submitted: true,
+            challenge_detected: result.status === 'needs_mfa',
+          },
+        };
   }
 
   private async discover(
@@ -824,14 +1178,23 @@ export class LocalBrowserController {
             status: 'refused',
             reason: outcome.reason,
           })
-        : localBrowserResult({
-            type: 'local_browser.result',
-            version: 1,
-            call_id: frame.call_id,
-            operation: frame.operation,
-            status: 'acknowledged',
-            receipt: outcome.receipt,
-          } as never);
+        : frame.operation === 'approve'
+          ? localBrowserResult({
+              type: 'local_browser.result',
+              version: 1,
+              call_id: frame.call_id,
+              operation: 'approve',
+              status: 'acknowledged',
+              terminal_receipt: JSON.parse(outcome.receipt),
+            })
+          : localBrowserResult({
+              type: 'local_browser.result',
+              version: 1,
+              call_id: frame.call_id,
+              operation: frame.operation,
+              status: 'acknowledged',
+              receipt: outcome.receipt,
+            } as never);
     try {
       await this.deps.send(socketEpoch, payload);
     } catch {

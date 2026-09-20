@@ -100,12 +100,28 @@ const transportAccepted = (request: z.infer<typeof transportRequest>) =>
         operation: z.literal(request.operation),
         app_instance_id: z.literal(request.app_instance_id),
       })
-    : transportAcceptedBase.extend({
-        operation: z.literal(request.operation),
-        app_instance_id: z.literal(request.app_instance_id),
-        extension_generation: uuid,
-        connection_id: uuid,
-      });
+    : request.operation === 'approve'
+      ? transportAcceptedBase.extend({
+          operation: z.literal('approve'),
+          app_instance_id: z.literal(request.app_instance_id),
+          extension_generation: uuid,
+          connection_id: uuid,
+          actor_id: uuid,
+          organization_id: uuid,
+          profile_id: uuid,
+          admission_id: uuid,
+          command_id: uuid,
+          sequence: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER),
+          command_digest: z.string().regex(/^[a-f0-9]{64}$/),
+          approval_id: uuid,
+          deadline_ms: safeMilliseconds,
+        })
+      : transportAcceptedBase.extend({
+          operation: z.literal(request.operation),
+          app_instance_id: z.literal(request.app_instance_id),
+          extension_generation: uuid,
+          connection_id: uuid,
+        });
 export type LocalCommandTransportResponse =
   | z.infer<typeof transportAcceptedBase>
   | z.infer<typeof refusal>;
