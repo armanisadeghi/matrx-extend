@@ -42,7 +42,7 @@ type QueryResponse =
       message: string;
     };
 type FillResponse = {
-  status: 'filled' | 'stale' | 'unavailable' | 'unsafe_destination';
+  status: 'filled' | 'stale' | 'unavailable' | 'unsafe_destination' | 'partial_manual_check';
   message: string;
 };
 
@@ -74,11 +74,15 @@ const COPY = {
   unsafe_destination: 'Matrx will not fill this page.',
   stale: 'That sign-in form changed. Focus it again to choose a saved login.',
   filled: 'Filled. Matrx did not submit the form.',
+  partial_manual_check:
+    'Matrx could not fully restore the login fields. Review them before signing in.',
 } as const;
 const PANEL_COPY = {
   stale: 'Click the username or password box on the website, then choose Fill.',
   disabled: 'Turn on saved-login matching in extension settings to use Fill.',
   filled: 'Filled. Review the form, then sign in.',
+  partial_manual_check:
+    'Matrx could not fully restore the login fields. Review them before signing in.',
 } as const;
 
 function response(status: keyof typeof COPY): QueryResponse {
@@ -423,7 +427,11 @@ async function fill(
       sensitiveAttr: SENSITIVE_ATTR,
       preserveLegacyFieldBehavior: false,
     }).catch(() => null);
-    return done?.ok ? fillResponse('filled') : fillResponse('stale');
+    return done?.ok
+      ? fillResponse('filled')
+      : done?.reason === 'partial_manual_check'
+        ? fillResponse('partial_manual_check')
+        : fillResponse('stale');
   } finally {
     clearMaterialized();
   }
@@ -528,7 +536,9 @@ async function panelFill(tabId: number, itemId: string): Promise<FillResponse> {
     }).catch(() => null);
     return done?.ok
       ? { status: 'filled', message: PANEL_COPY.filled }
-      : { status: 'stale', message: PANEL_COPY.stale };
+      : done?.reason === 'partial_manual_check'
+        ? { status: 'partial_manual_check', message: PANEL_COPY.partial_manual_check }
+        : { status: 'stale', message: PANEL_COPY.stale };
   } finally {
     clear();
   }

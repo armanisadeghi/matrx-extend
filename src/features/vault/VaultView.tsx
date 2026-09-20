@@ -575,9 +575,11 @@ function usePanelFill(
           setOutcome(
             result?.status === 'filled'
               ? 'Filled. Review the form, then sign in.'
-              : result?.status === 'stale'
-                ? 'Click the username or password box on the website, then choose Fill.'
-                : 'Saved logins are unavailable right now.',
+              : result?.status === 'partial_manual_check'
+                ? 'Matrx could not fully restore the login fields. Review them before signing in.'
+                : result?.status === 'stale'
+                  ? 'Click the username or password box on the website, then choose Fill.'
+                  : 'Saved logins are unavailable right now.',
           );
         } catch {
           if (mounted.current && admission.current())

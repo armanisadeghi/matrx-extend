@@ -222,6 +222,57 @@ afterEach(() => {
 });
 
 describe('inline saved-login host', () => {
+  it.each([
+    [
+      'inline',
+      async (offerId: string) =>
+        replyFor({
+          __matrx: true,
+          kind: 'credential-suggestions:fill',
+          payload: { offerId, itemId: ITEM },
+        }),
+    ],
+    [
+      'panel',
+      async () =>
+        replyForPanel({
+          __matrx: true,
+          kind: 'credential-suggestions:panel-fill',
+          payload: { tabId: 7, itemId: ITEM },
+        }),
+    ],
+  ])(
+    'reports manual review from the bound dispatcher through the %s result map',
+    async (_surface, invoke) => {
+      const { registerInlineCredentialSuggestionHost } = await import(
+        '@/lib/credentials/inline-suggestions-host'
+      );
+      registerInlineCredentialSuggestionHost();
+      (document.querySelector('#password') as HTMLInputElement).focus();
+      const query = (await replyFor({
+        __matrx: true,
+        kind: 'credential-suggestions:query',
+        payload: { fieldSelector: '#password' },
+      })) as { status: string; offerId: string };
+      expect(query.status).toBe('ready');
+      const original = chrome.scripting.executeScript;
+      chrome.scripting.executeScript = (async (details) => {
+        const request = (details as { args?: Array<{ operation?: string }> }).args?.[0];
+        if (request?.operation === 'fill')
+          return [{ result: { ok: false, reason: 'partial_manual_check' } }];
+        return original(details);
+      }) as typeof chrome.scripting.executeScript;
+      const result = await invoke(query.offerId);
+      expect(result).toEqual({
+        status: 'partial_manual_check',
+        message: 'Matrx could not fully restore the login fields. Review them before signing in.',
+      });
+      expect(state.materializeCalls).toBe(1);
+      expect((document.querySelector('#username') as HTMLInputElement).value).toBe('');
+      expect((document.querySelector('#password') as HTMLInputElement).value).toBe('');
+    },
+  );
+
   it('refuses forged panel callers and projects only eligible IDs to the sidepanel', async () => {
     const { registerInlineCredentialSuggestionHost } = await import(
       '@/lib/credentials/inline-suggestions-host'
@@ -629,7 +680,7 @@ describe('inline saved-login host', () => {
       sensitiveAttr: 'data-matrx-sensitive',
       preserveLegacyFieldBehavior: false,
     });
-    expect(result).toEqual({ ok: false });
+    expect(result).toEqual({ ok: false, reason: 'partial_manual_check' });
     expect((document.querySelector('#username') as HTMLInputElement).value).toBe('');
     expect((document.querySelector('#password') as HTMLInputElement).value).toBe('');
   });

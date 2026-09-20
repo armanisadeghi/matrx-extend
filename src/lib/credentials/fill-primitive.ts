@@ -753,10 +753,15 @@ export function credentialDomSource(
     const originals = { anchor, username, password };
 
     function sameNode(selector: string | null, node: HTMLInputElement | null): boolean {
-      return selector === null
-        ? node === null
-        : !!node && node.isConnected && document.querySelector(selector) === node;
+      try {
+        return selector === null
+          ? node === null
+          : !!node && node.isConnected && document.querySelector(selector) === node;
+      } catch {
+        return false;
+      }
     }
+    const originalScope = anchor?.form ?? anchor?.parentElement ?? document.body;
     function safeGroup(): boolean {
       if (`${location.origin}${location.pathname}` !== group.pageUrl) return false;
       const currentAnchor = originals.anchor;
@@ -782,6 +787,9 @@ export function credentialDomSource(
       )
         return false;
       const scope = currentAnchor.form ?? currentAnchor.parentElement ?? document.body;
+      // A selector can continue to resolve after a site moves the same node.
+      // Its original group root is part of the bound ownership contract.
+      if (scope !== originalScope) return false;
       const inputs = Array.from(scope.querySelectorAll('input')).filter(
         (node): node is HTMLInputElement =>
           node instanceof HTMLInputElement && visibleEditable(node),
@@ -802,18 +810,15 @@ export function credentialDomSource(
       if (classify(form, null).kind === 'unsafe') return false;
       return true;
     }
-    function clearOwned(written: HTMLInputElement[]): void {
-      for (const input of written) {
-        const selector = input === originals.username ? group.username : group.password;
-        // A history mutation is still the same document, so clear the exact
-        // connected node we wrote. Never clear a replacement control.
-        if (!sameNode(selector, input)) continue;
-        write(input, '');
-      }
-    }
 
     const requestedBySelector = new Map(requested.map((field) => [field.selector, field.value]));
-    const fields: Array<[HTMLInputElement, string]> = [];
+    const fields: Array<{
+      input: HTMLInputElement;
+      selector: string;
+      value: string;
+      original: string;
+      attempted: boolean;
+    }> = [];
     const usernameValue = group.username ? requestedBySelector.get(group.username) : undefined;
     const passwordValue = group.password ? requestedBySelector.get(group.password) : undefined;
     if (
@@ -822,29 +827,140 @@ export function credentialDomSource(
       usernameValue !== null &&
       originals.username
     )
-      fields.push([originals.username, usernameValue]);
+      fields.push({
+        input: originals.username,
+        selector: group.username,
+        value: usernameValue,
+        original: originals.username.value,
+        attempted: false,
+      });
     if (
       group.password &&
       passwordValue !== undefined &&
       passwordValue !== null &&
       originals.password
     )
-      fields.push([originals.password, passwordValue]);
+      fields.push({
+        input: originals.password,
+        selector: group.password,
+        value: passwordValue,
+        original: originals.password.value,
+        attempted: false,
+      });
     if (!safeGroup() || fields.length === 0 || (group.password && passwordValue == null))
       return { ok: false };
-    for (const [input] of fields) if (sensitiveAttr) input.setAttribute(sensitiveAttr, '');
-    const written: HTMLInputElement[] = [];
-    for (const [input, value] of fields) {
-      if (!safeGroup()) {
-        clearOwned(written);
-        return { ok: false };
+    for (const field of fields) if (sensitiveAttr) field.input.setAttribute(sensitiveAttr, '');
+
+    const safely = (predicate: () => boolean): boolean => {
+      try {
+        return predicate();
+      } catch {
+        return false;
       }
-      write(input, value);
-      written.push(input);
+    };
+    const safeGroupNow = () => safely(safeGroup);
+    const sameField = (field: (typeof fields)[number]) =>
+      safely(
+        () =>
+          field.input.isConnected &&
+          (field.input.form ?? field.input.parentElement ?? document.body) === originalScope &&
+          sameNode(field.selector, field.input),
+      );
+    const exactWritten = (field: (typeof fields)[number]) =>
+      safely(() => sameField(field) && field.input.value === field.value);
+    const exactOriginal = (field: (typeof fields)[number]) =>
+      safely(() => sameField(field) && field.input.value === field.original);
+    const setBoundValue = (input: HTMLInputElement, value: string): boolean => {
+      try {
+        const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')?.set;
+        if (setter) setter.call(input, value);
+        else input.value = value;
+        return true;
+      } catch {
+        return false;
+      }
+    };
+    const dispatchBound = (input: HTMLInputElement, type: 'input' | 'change'): boolean => {
+      try {
+        input.dispatchEvent(new Event(type, { bubbles: true }));
+        return true;
+      } catch {
+        return false;
+      }
+    };
+    const stillWritten = () => fields.filter((field) => field.attempted).every(exactWritten);
+    let unattemptedChanged = false;
+    const unattemptedOriginal = () => {
+      const unchanged = fields.filter((field) => !field.attempted).every(exactOriginal);
+      if (!unchanged) unattemptedChanged = true;
+      return unchanged;
+    };
+    const writeField = (field: (typeof fields)[number]): boolean => {
+      if (!unattemptedOriginal()) return false;
+      // Set this before the setter: a controlled setter may mutate then throw.
+      field.attempted = true;
+      if (
+        !setBoundValue(field.input, field.value) ||
+        !safeGroupNow() ||
+        !exactWritten(field) ||
+        !stillWritten() ||
+        !unattemptedOriginal()
+      )
+        return false;
+      if (
+        !dispatchBound(field.input, 'input') ||
+        !safeGroupNow() ||
+        !exactWritten(field) ||
+        !stillWritten() ||
+        !unattemptedOriginal()
+      )
+        return false;
+      return (
+        dispatchBound(field.input, 'change') &&
+        safeGroupNow() &&
+        exactWritten(field) &&
+        stillWritten() &&
+        unattemptedOriginal()
+      );
+    };
+    const rollback = (): { ok: false; reason?: string } => {
+      let complete = true;
+      for (const field of fields.filter((candidate) => candidate.attempted)) {
+        // A replacement or a site edit is no longer extension-owned. Preserve it.
+        if (!exactWritten(field)) {
+          complete = false;
+          continue;
+        }
+        const setterRestored = setBoundValue(field.input, field.original);
+        if (!setterRestored || !exactOriginal(field)) {
+          complete = false;
+          continue;
+        }
+        const inputRestored = dispatchBound(field.input, 'input');
+        if (!inputRestored || !exactOriginal(field)) {
+          complete = false;
+          continue;
+        }
+        const changeRestored = dispatchBound(field.input, 'change');
+        if (!changeRestored || !exactOriginal(field)) complete = false;
+      }
+      if (
+        unattemptedChanged ||
+        fields.some((field) => !exactOriginal(field))
+      )
+        complete = false;
+      return complete ? { ok: false } : { ok: false, reason: 'partial_manual_check' };
+    };
+    for (const field of fields) {
+      if (
+        !safeGroupNow() ||
+        !stillWritten() ||
+        !unattemptedOriginal() ||
+        !writeField(field)
+      )
+        return rollback();
     }
-    if (safeGroup()) return { ok: true };
-    clearOwned(written);
-    return { ok: false };
+    return safeGroupNow() && stillWritten() ? { ok: true } : rollback();
   }
   function submitAuto(selector: string | null): { ok: boolean; mode: string } {
     let el: Element | null = null;

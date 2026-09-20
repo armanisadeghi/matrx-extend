@@ -138,6 +138,15 @@ it('fills without invoking Sign in and uses fixed result copy', async () => {
   expect(deps.login).not.toHaveBeenCalled();
   expect(node.textContent).toContain('Filled. Review the form, then sign in.');
 });
+it('shows manual review when the bound fill cannot fully restore the form', async () => {
+  deps.fill.mockResolvedValueOnce({ status: 'partial_manual_check' });
+  await act(async () => button('Fill').click());
+  expect(deps.fill).toHaveBeenCalledTimes(1);
+  expect(deps.login).not.toHaveBeenCalled();
+  expect(node.textContent).toContain(
+    'Matrx could not fully restore the login fields. Review them before signing in.',
+  );
+});
 it.each(['tab', 'url', 'user', 'org'])(
   'drops results through %s away/back and retains shared admission',
   async (dimension) => {
