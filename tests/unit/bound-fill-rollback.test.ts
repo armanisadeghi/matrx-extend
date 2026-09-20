@@ -59,6 +59,54 @@ function mutatingThrow(input: HTMLInputElement, once = false) {
 }
 
 describe('bound credential fill rollback', () => {
+  it('treats an omitted optional password reference as a username-only bound form', () => {
+    document.body.innerHTML =
+      '<form method="post" action="/login"><input id="username" autocomplete="username"><button type="button">Continue</button></form>';
+    const username = document.querySelector('#username') as HTMLInputElement;
+    Object.defineProperty(username, 'getBoundingClientRect', {
+      configurable: true,
+      value: () => ({ width: 120, height: 24, top: 0, left: 0, bottom: 24 }),
+    });
+    expect(serialized({
+      operation: 'fill',
+      expected: {
+        anchor: '#username',
+        username: '#username',
+        password: undefined as never,
+        usernameOnly: true,
+        pageUrl: `${location.origin}${location.pathname}`,
+      },
+      requested: [{ selector: '#username', value: 'credential-user-fixture' }],
+      sensitiveAttr: '',
+      preserveLegacyFieldBehavior: false,
+    })).toEqual({ ok: true });
+    expect(username.value).toBe('credential-user-fixture');
+  });
+
+  it('treats an omitted optional username reference as a password-only bound form', () => {
+    document.body.innerHTML =
+      '<form method="post" action="/login"><input id="password" type="password" autocomplete="current-password"><button type="submit">Sign in</button></form>';
+    const password = document.querySelector('#password') as HTMLInputElement;
+    Object.defineProperty(password, 'getBoundingClientRect', {
+      configurable: true,
+      value: () => ({ width: 120, height: 24, top: 0, left: 0, bottom: 24 }),
+    });
+    expect(serialized({
+      operation: 'fill',
+      expected: {
+        anchor: '#password',
+        username: undefined as never,
+        password: '#password',
+        usernameOnly: false,
+        pageUrl: `${location.origin}${location.pathname}`,
+      },
+      requested: [{ selector: '#password', value: 'credential-password-fixture' }],
+      sensitiveAttr: '',
+      preserveLegacyFieldBehavior: false,
+    })).toEqual({ ok: true });
+    expect(password.value).toBe('credential-password-fixture');
+  });
+
   it('restores non-empty originals when the first setter throws only for the attempted write', () => {
     const { form, username, password } = mount();
     username.value = 'original-username';

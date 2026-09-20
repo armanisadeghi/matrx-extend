@@ -792,8 +792,11 @@ export function credentialDomSource(
       if (`${location.origin}${location.pathname}` !== group.pageUrl) return false;
       const currentAnchor = originals.anchor;
       if (!sameNode(group.anchor, currentAnchor)) return false;
-      if (!sameNode(group.username, originals.username)) return false;
-      if (!sameNode(group.password, originals.password)) return false;
+      // Optional field references can be absent at the injected boundary. An
+      // absent reference has the same one-field shape as null; the anchor
+      // remains strict and every resolved field is still bound to its node.
+      if (!sameNode(group.username ?? null, originals.username)) return false;
+      if (!sameNode(group.password ?? null, originals.password)) return false;
       if (!visibleEditable(currentAnchor)) return false;
       if (requirePanelFocus && document.visibilityState !== 'visible') return false;
       if (group.username && !visibleEditable(originals.username)) return false;
