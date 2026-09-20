@@ -29,6 +29,7 @@ import {
 import { failDbCall } from '@/lib/supabase/db-failure';
 import { mediaDb } from '@/lib/supabase/schemas';
 import type { ChannelHandle } from '@ai-matrx/realtime';
+import { formatDurationMs } from '@ai-matrx/kit/format';
 import {
   type RealtimeManager,
   defineChannelNamespace,
@@ -257,7 +258,7 @@ export function subscribeNeedsYou(
 
   const degradedNote = (): string =>
     'Live updates are not connected right now, so this list refreshes about every ' +
-    `${Math.round(pollMs / 1000)} seconds instead of instantly. Anything already here is real.`;
+    `${formatDurationMs(pollMs, { style: 'long' })} instead of instantly. Anything already here is real.`;
 
   const emit = (error: string | null): void => {
     if (stopped) return;

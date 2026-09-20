@@ -32,6 +32,7 @@ import { type RunPhase, captureDrivenTab, runBatch } from '@/lib/capture-ladder/
 import type { Handoff } from '@/lib/capture-ladder/types';
 import { listMemberOrganizations, selectActiveOrganization } from '@/lib/org/active-org';
 import { Badge, Button, BasicTextarea as Textarea } from '@ai-matrx/design-system';
+import { formatDurationSeconds } from '@ai-matrx/kit/format';
 import { ArrowRightLeft, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -411,8 +412,12 @@ export function NeedsYourBrowserView(): React.JSX.Element {
                     {item.what_to_do && <p className="mt-1 text-sm">{item.what_to_do}</p>}
                     {item.estimated_seconds !== null && (
                       <p className="mt-1 text-xs text-zinc-500">
-                        About {Math.max(1, Math.round(item.estimated_seconds / 60))} minute
-                        {Math.max(1, Math.round(item.estimated_seconds / 60)) === 1 ? '' : 's'}.
+                        About{' '}
+                        {formatDurationSeconds(item.estimated_seconds, {
+                          style: 'long',
+                          round: 'nearest',
+                        })}
+                        .
                       </p>
                     )}
 
