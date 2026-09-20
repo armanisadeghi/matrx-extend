@@ -38,12 +38,30 @@ export const RUNGS = ['http', 'browser', 'own_browser', 'human_drive'] as const;
 export type Rung = (typeof RUNGS)[number];
 
 /**
+ * Entries a trail may carry that the ladder ORDER does not reason about —
+ * `matrx_scraper.ladder.OPTIONAL_RUNGS`. Residential egress is the person's own
+ * computer used as the internet exit: the same `http` work run again from a
+ * different address, not a fifth rung. A trail may contain one; a trail without
+ * one is complete; nothing about which rung may follow changes.
+ *
+ * It is listed here because the trail SCHEMA below validates every entry, and a
+ * row carrying a legal optional entry must not be rejected as a shape error —
+ * which is what happened to every caption hand-off until this existed.
+ */
+export const OPTIONAL_RUNGS = ['residential'] as const;
+export type TrailRung = Rung | (typeof OPTIONAL_RUNGS)[number];
+
+/**
  * The two rungs a browser can be sitting on. A `media.capture_handoff` row
  * only ever exists for these — rungs 1 and 2 are the server's and never
  * produce a queue row.
  */
 export const CLIENT_RUNGS = ['own_browser', 'human_drive'] as const;
 export type ClientRung = (typeof CLIENT_RUNGS)[number];
+
+/** What the person's browser is being asked to fetch. */
+export const HANDOFF_KINDS = ['web_page', 'youtube_captions'] as const;
+export type HandoffKind = (typeof HANDOFF_KINDS)[number];
 
 /** §3. The row's lifecycle. */
 export const HANDOFF_STATUSES = [
@@ -96,7 +114,7 @@ export const MIN_CAPTURED_CHARS = 600;
 
 /** §2. One entry per rung attempted. */
 export const rungTrailEntrySchema = z.object({
-  rung: z.enum(RUNGS),
+  rung: z.enum([...RUNGS, ...OPTIONAL_RUNGS]),
   ok: z.boolean(),
   reason: z.string().nullable().default(null),
   note: z.string().nullable().default(null),
@@ -118,6 +136,16 @@ export const handoffSchema = z.object({
   url: z.string(),
   title: z.string().default(''),
   rung: z.enum(CLIENT_RUNGS),
+  /**
+   * WHAT this browser is being asked to fetch. `web_page` is the original kind
+   * — read the article. `youtube_captions` is the same ladder, the same queue
+   * and the same laws, but the thing YouTube refuses our servers is a timed
+   * caption track, and a page reader pointed at a watch page would file the
+   * video's description as its transcript.
+   *
+   * Defaulted, because every row written before this column existed is a page.
+   */
+  handoff_kind: z.enum(HANDOFF_KINDS).default('web_page'),
   status: z.enum(HANDOFF_STATUSES),
   reason: z.string().nullable().default(null),
   reason_note: z.string().nullable().default(null),

@@ -42,7 +42,29 @@ export interface ClaimBody {
   ttl_seconds?: number;
 }
 
-/** `POST …/result` — THE one door a captured page enters the platform through. */
+/** One timed caption line, for a `youtube_captions` hand-off. */
+export interface CaptionLineBody {
+  start: number;
+  end: number;
+  text: string;
+}
+
+/**
+ * The caption track a `youtube_captions` hand-off comes back with.
+ *
+ * `available_languages` is every language this browser could SEE a track for.
+ * It becomes `research.youtube_video.caption_languages`, which outranks
+ * YouTube's own `has_captions` claim for every later decision about this video
+ * — so it is what a browser YouTube trusts was actually shown, never a guess.
+ */
+export interface CaptionTrackBody {
+  language: string;
+  is_auto_generated: boolean;
+  available_languages: string[];
+  segments: CaptionLineBody[];
+}
+
+/** `POST …/result` — THE one door a capture enters the platform through. */
 export interface ResultBody {
   ok: boolean;
   captured_by_rung: 'own_browser' | 'human_drive';
@@ -52,6 +74,12 @@ export interface ResultBody {
   html?: string;
   final_url?: string;
   note?: string;
+  /**
+   * Present for a `youtube_captions` hand-off, absent for a page. WHICH ONE the
+   * server expects is the ROW's own kind, not this field's presence — sending
+   * the wrong one is refused rather than quietly converted.
+   */
+  caption_track?: CaptionTrackBody;
 }
 
 export interface ResultResponse {

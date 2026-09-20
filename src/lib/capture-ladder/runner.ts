@@ -27,6 +27,7 @@
  */
 
 import { claimHandoff, postCaptureResult, postNeedsDrive } from '@/lib/capture-ladder/api';
+import { captureCaptions } from '@/lib/capture-ladder/captions';
 import {
   type Handoff,
   MIN_CAPTURED_CHARS,
@@ -148,6 +149,9 @@ export async function runOne(
   const report = (phase: RunPhase, detail?: string): void =>
     options.onProgress?.(handoff.id, phase, detail);
 
+  // WHAT this row is for decides WHICH reader runs, and the row says so. A
+  // watch page read by the article extractor would file the video's description
+  // and sidebar as its transcript — confidently, and wrongly.
   const outcome: RunnerOutcome = {
     handoffId: handoff.id,
     // A pass that is handed an already-claimed row owns it from the first line.
@@ -199,6 +203,19 @@ export async function runOne(
         return outcome;
       }
       outcome.claimed = true;
+    }
+
+    // THE ROW SAYS WHAT TO READ. Dispatched AFTER the claim, so the caption
+    // reader owns the row exactly as the page reader would, and BEFORE a tab is
+    // opened, so only one reader ever touches the page.
+    if (handoff.handoff_kind === 'youtube_captions') {
+      report('reading');
+      const read = await captureCaptions(handoff, {
+        rung: 'own_browser',
+        ...(options.signal ? { signal: options.signal } : {}),
+      });
+      report(read.ok ? 'done' : 'refused', read.note);
+      return { ...read, claimed: outcome.claimed };
     }
 
     report('opening');
@@ -367,6 +384,16 @@ export async function captureDrivenTab(
   };
   try {
     assertRungMatches(handoff, 'human_drive');
+    // Same dispatch as the unattended runner: the row's kind decides the reader.
+    // The person drove to a watch page; what is wanted from it is the caption
+    // track, read from the tab they already have open.
+    if (handoff.handoff_kind === 'youtube_captions') {
+      return await captureCaptions(handoff, {
+        rung: 'human_drive',
+        tabId,
+        ...(signal ? { signal } : {}),
+      });
+    }
     const tab = await chrome.tabs.get(tabId).catch(() => null);
     const finalUrl = tab?.url ?? handoff.url;
     const captured = await captureWithFallback(tabId, finalUrl);
