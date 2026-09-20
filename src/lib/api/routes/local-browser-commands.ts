@@ -300,23 +300,61 @@ function parseCommand(source: string): CommandShape | null {
   }
 }
 
-function claimResponseSchema(command: CommandShape): z.ZodType<LocalClaimResponse> {
+function claimResponseSchema(
+  command: CommandShape,
+  origin: string,
+  deadlineMs: number,
+): z.ZodType<LocalClaimResponse> {
   if (command.operation === 'vault_login') {
     const expectedKeys = new Set<string>(command.fields.map((field) => field.field_key));
     const injection = passwordInjection.superRefine((value, context) => {
+      if (
+        value.origin !== origin ||
+        value.expires_at_ms > deadlineMs ||
+        value.expires_at_ms <= Date.now()
+      )
+        context.addIssue({ code: z.ZodIssueCode.custom, message: 'unbound injection' });
       const keys = Object.keys(value.fields);
       if (keys.length !== expectedKeys.size || keys.some((key) => !expectedKeys.has(key)))
         context.addIssue({ code: z.ZodIssueCode.custom, message: 'invalid injection' });
     });
-    return z.union([claimedBase.extend({ injection }), alreadyClaimed, refusal]);
-  }
-  if (command.operation === 'authenticator')
     return z.union([
-      claimedBase.extend({ injection: authenticatorInjection }),
+      claimedBase.extend({ injection }).superRefine((value, context) => {
+        if (value.deadline_ms > deadlineMs || value.deadline_ms <= Date.now())
+          context.addIssue({ code: z.ZodIssueCode.custom, message: 'unbound claim deadline' });
+      }),
       alreadyClaimed,
       refusal,
     ]);
-  return z.union([claimedBase, alreadyClaimed, refusal]);
+  }
+  if (command.operation === 'authenticator')
+    return z.union([
+      claimedBase
+        .extend({
+          injection: authenticatorInjection.superRefine((value, context) => {
+            if (
+              value.origin !== origin ||
+              value.expires_at_ms > deadlineMs ||
+              value.expires_at_ms <= Date.now()
+            )
+              context.addIssue({ code: z.ZodIssueCode.custom, message: 'unbound injection' });
+          }),
+        })
+        .superRefine((value, context) => {
+          if (value.deadline_ms > deadlineMs || value.deadline_ms <= Date.now())
+            context.addIssue({ code: z.ZodIssueCode.custom, message: 'unbound claim deadline' });
+        }),
+      alreadyClaimed,
+      refusal,
+    ]);
+  return z.union([
+    claimedBase.superRefine((value, context) => {
+      if (value.deadline_ms > deadlineMs || value.deadline_ms <= Date.now())
+        context.addIssue({ code: z.ZodIssueCode.custom, message: 'unbound claim deadline' });
+    }),
+    alreadyClaimed,
+    refusal,
+  ]);
 }
 
 export type LocalClaimResponse =
@@ -342,7 +380,7 @@ export function claimLocalCommand(
     request,
     '/browser-manager/local/commands/claim',
     body,
-    claimResponseSchema(command),
+    claimResponseSchema(command, new URL(request.document.url).origin, request.deadlineMs),
   );
 }
 

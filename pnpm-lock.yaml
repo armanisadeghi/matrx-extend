@@ -26,6 +26,9 @@ importers:
       '@ai-matrx/realtime':
         specifier: latest
         version: 0.8.6(react@19.2.5)
+      '@ai-matrx/records':
+        specifier: ^0.17.0
+        version: 0.17.0(react@19.2.5)
       '@ai-matrx/tap-target':
         specifier: latest
         version: 0.2.13(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -244,8 +247,8 @@ packages:
     resolution: {integrity: sha512-wAPmHwOv+uy15Ff6FGXnMCQef6yEz9BzL9qdhrvS9soZjCSOOA0QEecvgVhsL9NIWmI/T909XH/q9FhaQMIuFA==}
     engines: {node: '>=20'}
 
-  '@ai-matrx/data@0.16.2':
-    resolution: {integrity: sha512-haXjgWsYOlR8XUO8/hrjTAqm9dkNLKCv2fO6Su5faujf0whT2A88I6sFcNUAdR7zjx5+0HPzbzqhtH0H6YMeJw==}
+  '@ai-matrx/data@0.17.0':
+    resolution: {integrity: sha512-YBOVTirfuSfM0jk0grx3kWG0Qo1JuQiX1BufYSt2FGj1sGjBns5u/uag6RF3Pdr0Wi4t9t1MbNA05ii1EbLBOg==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -276,6 +279,15 @@ packages:
       react:
         optional: true
       react-native:
+        optional: true
+
+  '@ai-matrx/records@0.17.0':
+    resolution: {integrity: sha512-7tVgNYwiXSZrqqELGwEykSJ04cAPLr8StR7rPKDFR1ttCMNkBxmAoQPY+ZJRvdrXCkMCAxBi66KJUXWMx83BDg==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      react: '>=18.0.0'
+    peerDependenciesMeta:
+      react:
         optional: true
 
   '@ai-matrx/tap-target@0.2.13':
@@ -5734,7 +5746,7 @@ snapshots:
 
   '@ai-matrx/agents@0.13.1(@supabase/supabase-js@2.116.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
-      '@ai-matrx/data': 0.16.2(@supabase/supabase-js@2.116.0)(react@19.2.5)
+      '@ai-matrx/data': 0.17.0(@supabase/supabase-js@2.116.0)(react@19.2.5)
       '@ai-matrx/design-system': 0.21.13(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@ai-matrx/kit': 0.15.6(react@19.2.5)
     optionalDependencies:
@@ -5754,7 +5766,7 @@ snapshots:
     dependencies:
       ajv: 8.20.0
 
-  '@ai-matrx/data@0.16.2(@supabase/supabase-js@2.116.0)(react@19.2.5)':
+  '@ai-matrx/data@0.17.0(@supabase/supabase-js@2.116.0)(react@19.2.5)':
     dependencies:
       '@ai-matrx/realtime': 0.8.6(react@19.2.5)
       '@supabase/ssr': 0.12.7(@supabase/supabase-js@2.116.0)
@@ -5816,6 +5828,12 @@ snapshots:
       react: 19.2.5
 
   '@ai-matrx/realtime@0.8.6(react@19.2.5)':
+    optionalDependencies:
+      react: 19.2.5
+
+  '@ai-matrx/records@0.17.0(react@19.2.5)':
+    dependencies:
+      xlsx: 0.18.5
     optionalDependencies:
       react: 19.2.5
 

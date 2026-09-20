@@ -199,18 +199,6 @@ export default defineConfig({
       alias: {
         '@': path.resolve(__dirname, './src'),
         '@gen': path.resolve(__dirname, './types/python-generated'),
-        // TEMPORARY (campaign lane W6-EXT). `@ai-matrx/records` is not on npm
-        // yet — a brand-new package needs the one-time 2FA bootstrap publish.
-        // Until then the record-store client resolves to the package's source
-        // in the sibling aidream checkout. THE SWAP is one line in package.json,
-        //     "@ai-matrx/records": "latest",
-        // and these two entries (plus the twins in tsconfig.json and
-        // vitest.config.ts) are deleted. Nothing else changes.
-        '@ai-matrx/records/core': path.resolve(
-          __dirname,
-          '../aidream/apps/shared/records/src/core/index.ts',
-        ),
-        '@ai-matrx/records': path.resolve(__dirname, '../aidream/apps/shared/records/src/index.ts'),
       },
     },
     build: {

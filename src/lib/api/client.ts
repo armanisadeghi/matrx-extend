@@ -75,7 +75,9 @@ export interface PrivatePostOptions<T> {
   signal?: AbortSignal;
 }
 const PRIVATE_RESPONSE_CAP_BYTES = 4 * 1024;
-const PRIVATE_MAX_REQUEST_MS = 5_000;
+// Local-browser callbacks may wait for a deliberate human approval or desktop
+// bridge hop. The original grant deadline remains the hard upper bound.
+const PRIVATE_MAX_REQUEST_MS = 30_000;
 const PRIVATE_JSON_MAX_DEPTH = 8;
 const PRIVATE_PATHS = new Set([
   '/browser-manager/local/verify',

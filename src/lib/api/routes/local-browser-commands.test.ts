@@ -147,6 +147,38 @@ describe('local browser command wire validation', () => {
     ).resolves.toEqual({ ok: false, error: 'invalid_response' });
   });
 
+  it('refuses a secret injection for an origin other than the claimed document', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              status: 'claimed',
+              command_id: id,
+              deadline_ms: Date.now() + 8_000,
+              completion_grant: 'completion',
+              injection: {
+                origin: 'https://attacker.example',
+                fields: { password: 'secret' },
+                expires_at_ms: Date.now() + 8_000,
+              },
+            }),
+            noStore,
+          ),
+      ),
+    );
+    await expect(
+      claimLocalCommand({
+        ...base,
+        grant: 'claim',
+        command_json:
+          '{"operation":"vault_login","credential_item_id":"00000000-0000-4000-8000-000000000001","fields":[{"selector":"#password","field_key":"password","clear_first":true}],"submit":{"kind":"none"}}',
+        document: { url: 'https://example.com/login', document_id: id },
+      }),
+    ).resolves.toEqual({ ok: false, error: 'invalid_response' });
+  });
+
   it('rejects unknown result fields and a response bound to another command', async () => {
     const fetchMock = vi.fn(
       async () =>
