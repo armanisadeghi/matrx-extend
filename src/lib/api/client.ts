@@ -19,7 +19,12 @@ import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
 import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { OrganizationNotSelectedError, getActiveOrganizationId } from '@/lib/org/active-org';
+import {
+  OrganizationNotSelectedError,
+  getActiveOrganizationId,
+  holdForActiveOrganizationId,
+  isOrganizationNotSelectedError,
+} from '@/lib/org/active-org';
 import { applyOrganizationContextHeader } from '@ai-matrx/agents/matrx';
 import type { z } from 'zod';
 
@@ -668,17 +673,45 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
     throw err;
   }
   if (!headers) return { ok: false, status: 403, error: 'expected_actor_mismatch' };
-  const hasAuth = !!headers.Authorization;
+  let hasAuth = !!headers.Authorization;
+  // THE HOLD. An authenticated request with no organization is not a failure
+  // — it is a question nobody has asked yet. Raise the picker, wait for the
+  // person to SET one, then rebuild the headers with what they chose and send
+  // the SAME request. A guessed or defaulted organization would write their
+  // work into the wrong tenant (Arman, 2026-09-19); a bare refusal would
+  // train them that the extension is broken.
+  //
+  // WHY AFTER THE HEADER BUILD, AND NOT ON THE expectedActor PATH.
+  // `hasAuth` is only knowable once the headers exist — a guest request must
+  // never raise this question. And `buildExpectedActorHeaders` never reaches
+  // here without the header: it binds the organization the CALLER already
+  // pinned, and returns null (→ 403 expected_actor_mismatch) the moment the
+  // live organization stops matching that pin. Holding inside it would mean
+  // pausing a request whose whole contract is "fail closed if the actor
+  // changed", so that path is untouched: it fails closed exactly as before.
   if (hasAuth && !headers[ORGANIZATION_CONTEXT_HEADER] && !isOrgExemptPath(opts.path)) {
-    const failure = new OrganizationNotSelectedError();
-    log.error('api', `✗ ${opts.method} ${opts.path} — no organization selected`, {
-      remedy: failure.remedy,
-    });
-    return {
-      ok: false,
-      status: STATUS_NO_ORGANIZATION,
-      error: `${failure.message} ${failure.remedy}`,
-    };
+    try {
+      const held = await holdForActiveOrganizationId();
+      headers = applyOrganizationContextHeader(await buildHeaders(opts.headers), held);
+      hasAuth = !!headers.Authorization;
+    } catch (err) {
+      // NOTHING may escape rawRequest: callers read ApiResult, and an
+      // exception here wedges every one of them (audit P1-3). Two throws land
+      // here: nobody answered the picker in time, and a chosen id the header
+      // kernel refuses as malformed. Both are the same sentence to the
+      // person — this request has no organization, here is how to give it one.
+      const failure = isOrganizationNotSelectedError(err)
+        ? err
+        : new OrganizationNotSelectedError();
+      log.error('api', `✗ ${opts.method} ${opts.path} — no organization was set`, {
+        remedy: failure.remedy,
+      });
+      return {
+        ok: false,
+        status: STATUS_NO_ORGANIZATION,
+        error: `${failure.message} ${failure.remedy}`,
+      };
+    }
   }
   log.info('api', `→ ${opts.method} ${opts.path}`, { url, auth: hasAuth });
   const start = performance.now();

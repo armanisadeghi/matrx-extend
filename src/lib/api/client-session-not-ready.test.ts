@@ -32,7 +32,15 @@ vi.mock('@/lib/auth/flow', () => ({
 }));
 vi.mock('@/lib/org/active-org', () => ({
   getActiveOrganizationId: async () => '00000000-0000-4000-8000-000000000002',
+  // An organization IS set here, so the hold returns immediately and this
+  // file keeps testing what it is about (the bearer). Provided rather than
+  // omitted because client.ts imports it: a missing export would fail the
+  // module, which is not the same thing as passing.
+  holdForActiveOrganizationId: async () => '00000000-0000-4000-8000-000000000002',
+  isOrganizationNotSelectedError: (e: unknown) =>
+    e instanceof Error && e.name === 'OrganizationNotSelectedError',
   OrganizationNotSelectedError: class OrganizationNotSelectedError extends Error {
+    override name = 'OrganizationNotSelectedError';
     remedy = 'Choose an organization.';
   },
 }));

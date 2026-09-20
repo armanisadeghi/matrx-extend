@@ -6,6 +6,7 @@ import { canAccessSidepanelTab, firstAccessibleSidepanelTab } from '@/config/sid
 import { captureTabShortLabel } from '@/features/capture-ladder/queue-sentences';
 import { useCapturePickup } from '@/features/capture-ladder/use-capture-pickup';
 import { useNeedsYouCount } from '@/features/capture-ladder/use-needs-you-count';
+import { OrganizationPickerDialog } from '@/features/org/OrganizationPickerDialog';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAgendaListener } from '@/hooks/use-agenda-listener';
 import { useAuth } from '@/hooks/use-auth';
@@ -289,6 +290,12 @@ export function App() {
           be able to appear over any surface. Renders nothing until something
           asks. Guarded by tests/unit/destructive-confirm-guard.ts. */}
         <ConfirmDialogHost />
+        {/* THE organization question. Mounted at App root, outside AuthGate,
+          for the same reason as the three above: a request held for want of
+          an organization can be raised from the service worker while the
+          person is anywhere in the panel. Renders nothing until something
+          asks; see lib/org/active-org.ts § holdForActiveOrganizationId. */}
+        <OrganizationPickerDialog />
         <div className="flex h-full flex-col bg-background text-foreground">
           <AuthGate>
             <Tabs

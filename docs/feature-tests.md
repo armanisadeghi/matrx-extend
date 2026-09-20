@@ -2592,16 +2592,24 @@ Every entry follows this shape:
   the organization you chose. The Debug entry for the request shows it going out
   with an organization; `GET /auth/whoami` is NOT part of the path any more.
 - **Edge cases worth poking:**
-  - BEFORE choosing (multi-org account, no default): a chat send must fail with
-    "No organization is selected for this browser. Choose your organization in
-    Settings, then try again." — a remedy, never a silent hang and never a
-    generic error. The request must not leave the browser at all (no 400 in the
-    Debug log, because nothing was sent).
+  - BEFORE choosing (multi-org account, nothing set on this browser): the chat
+    send does NOT fail. It is HELD, and the panel raises "Which organization
+    are you working in?" on its own. Pick one and the SAME send goes out
+    carrying it — check the Debug entry for the request. Nothing leaves the
+    browser before you pick (no 400 in the Debug log, because nothing was
+    sent).
+  - Close the panel without picking, then reopen it: it asks again. The
+    question is remembered on the device, so a request held while the panel
+    was shut is not a question nobody was asked.
+  - Never answer at all: after two minutes the held request gives up with
+    "No organization is selected for this browser. Open the AI Matrx panel and
+    choose your organization, then try again." — a remedy, never a silent hang.
   - Sign out and back in as a different user: the previous user's organization
     must NOT be inherited — Settings shows "Choose…" again.
   - If you belong to exactly ONE organization, it is selected for you with no
-    prompt (there is nothing to choose). If you have set a default organization
-    in the web app, that one is used.
+    prompt (there is nothing to choose). A preference saved on your account in
+    the web app changes NOTHING here: only what you set on this browser counts
+    (Arman, 2026-09-19).
   - Leave an organization in the web app, then act in the extension: the stale
     selection is dropped with a warning in the Debug log rather than sent.
 

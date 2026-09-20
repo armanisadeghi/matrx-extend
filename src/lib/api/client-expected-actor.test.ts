@@ -27,7 +27,16 @@ vi.mock('@/lib/auth/flow', () => ({
 }));
 vi.mock('@/lib/org/active-org', () => ({
   getActiveOrganizationId: async () => state.organizationId,
+  // The expectedActor path never holds — it binds the organization the caller
+  // already pinned and fails closed when the live one stops matching. This
+  // double would return the CURRENT organization if the hold were ever
+  // reached, so a hold wired into that path would show up as a test that no
+  // longer fails closed.
+  holdForActiveOrganizationId: async () => state.organizationId,
+  isOrganizationNotSelectedError: (e: unknown) =>
+    e instanceof Error && e.name === 'OrganizationNotSelectedError',
   OrganizationNotSelectedError: class OrganizationNotSelectedError extends Error {
+    override name = 'OrganizationNotSelectedError';
     remedy = 'Choose an organization.';
   },
 }));

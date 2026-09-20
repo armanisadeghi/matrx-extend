@@ -114,6 +114,12 @@ export const STORAGE_KEYS = {
   // it. Set only by an explicit user choice or the canonical resolver in
   // src/lib/org/active-org.ts — never guessed at a call site.
   ACTIVE_ORGANIZATION: 'matrx.org.active',
+  // "Somebody's request is waiting for this person to say which organization
+  // they are acting in." Durable ON PURPOSE: MV3 kills the service worker and
+  // the side panel is usually closed, so a runtime message alone is a question
+  // nobody was asked. The flag survives both, so the next panel to open asks.
+  // Written only by src/lib/org/active-org.ts.
+  ORGANIZATION_PICKER_PENDING: 'matrx.org.picker-pending',
   // "The web app just sent you here — put THIS page first." Written by the
   // frontend-bridge `captureHandoff.pickUp` action, read once by the side
   // panel. Deliberately short-lived (see CAPTURE_PICKUP_MAX_AGE_MS in

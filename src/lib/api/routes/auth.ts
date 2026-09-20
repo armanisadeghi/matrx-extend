@@ -11,9 +11,12 @@ import { requireActiveOrganizationId } from '@/lib/org/active-org';
  * Resolution — and the refusal to invent one — lives in
  * `src/lib/org/active-org.ts`.
  *
- * Throws `OrganizationNotSelectedError` (with a user-facing remedy) when the
- * user must pick. Callers keep their existing failure handling: this function
- * has always thrown rather than returned a fallback.
+ * When this device has not been told which organization to act in, this does
+ * NOT fail — it HOLDS: the picker is raised wherever it can be shown and this
+ * resolves with what the person sets (Arman, 2026-09-19). It throws
+ * `OrganizationNotSelectedError`, with a user-facing remedy, only when nobody
+ * answers. Callers keep their existing failure handling; it has never
+ * returned a fallback and never will.
  */
 export async function requireRequestOrganizationId(): Promise<string> {
   return requireActiveOrganizationId();

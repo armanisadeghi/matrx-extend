@@ -85,7 +85,10 @@ the same id. The server refuses an authenticated request without one at the top
 [src/lib/org/active-org.ts](./src/lib/org/active-org.ts) — never resolve an org at a call
 site, never fall back to first/personal/system, and never re-add a `whoami` round trip to
 ask the server which org it "carried". A new sink attaches the header or refuses to send.
-Register row EX-T05: `../common-docs/projects/no-db-assigned-org/PLAN.md`.
+Only what the person set ON THIS DEVICE counts — a saved account-level default never builds a
+request and the personal org is never a fallback (Arman, 2026-09-19); with nothing set the request
+HOLDS on `holdForActiveOrganizationId()`, the picker opens, and it resumes with their choice.
+Guard: `pnpm check:org-default-ban`. Register row EX-T05: `../common-docs/projects/no-db-assigned-org/PLAN.md`.
 
 **Tool system.**
 - Canonical vocabulary (Tool / Registered / Inline / Executor / Binding / Surface /

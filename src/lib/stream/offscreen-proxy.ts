@@ -132,7 +132,9 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
     headers.Authorization = `Bearer ${token}`;
     // A stream is a request too. It carries the organization or it does not
     // start — a run that opens without one dies mid-flight on the server's
-    // admission gate, which reads to the user as a hang.
+    // admission gate, which reads to the user as a hang. With nothing set on
+    // this device the start HOLDS while the person is asked, then proceeds
+    // with what they chose (src/lib/org/active-org.ts).
     headers['X-Organization-Id'] = await requireActiveOrganizationId();
   } else {
     // Nobody is signed in on this install (see readSessionBearer).

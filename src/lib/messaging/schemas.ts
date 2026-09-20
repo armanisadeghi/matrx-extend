@@ -15,6 +15,12 @@ export const CHANNELS = {
   // Auth — broadcast only (no request/response)
   AUTH_STATE_CHANGED: 'auth:state-changed',
 
+  // Organization — a request is held and needs the person to set the
+  // organization it acts in. Broadcast from any context (usually the service
+  // worker) so an OPEN side panel raises the picker immediately; the durable
+  // STORAGE_KEYS.ORGANIZATION_PICKER_PENDING flag covers a closed one.
+  ORGANIZATION_PICKER_REQUESTED: 'org:picker-requested',
+
   // Streaming
   STREAM_START: 'stream:start', // sidepanel → SW: start a new stream
   STREAM_RUN: 'stream:run', // SW → offscreen: actually run the fetch
