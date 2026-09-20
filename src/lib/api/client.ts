@@ -79,6 +79,7 @@ const PRIVATE_MAX_REQUEST_MS = 5_000;
 const PRIVATE_JSON_MAX_DEPTH = 8;
 const PRIVATE_PATHS = new Set([
   '/browser-manager/local/verify',
+  '/browser-manager/local/transport/verify',
   '/browser-manager/local/ack',
   '/browser-manager/local/approval',
   '/browser-manager/local/commands/claim',
