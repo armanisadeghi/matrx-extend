@@ -309,6 +309,8 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
       const previousWorker = worker;
       const workerUrl = previousWorker.url();
       const cdp = await context.newCDPSession(page);
+      const realmMarkerProperty = `__vaultCanaryWorkerRealm_${crypto.randomUUID().replaceAll('-', '')}`;
+      let realmMarkerSet = false;
       try {
         const targetSnapshot = await cdp.send('Target.getTargets');
         const oldTarget = targetSnapshot.targetInfos.find((target) => target.type === 'service_worker' && target.url === workerUrl);
@@ -327,6 +329,13 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
           if (!oldVersion) {
             lifecycle.disposition = 'not_tested_service_worker_version_unavailable';
           } else {
+            const workerRuntimeId = await previousWorker.evaluate(() => chrome.runtime.id);
+            lifecycle.workerRealmMarkerPresentBeforeStop = await previousWorker.evaluate((property) => {
+              globalThis[property] = true;
+              return globalThis[property] === true;
+            }, realmMarkerProperty);
+            realmMarkerSet = lifecycle.workerRealmMarkerPresentBeforeStop === true;
+            assert(realmMarkerSet && typeof workerRuntimeId === 'string' && workerRuntimeId.length > 0, 'worker_restart_realm_marker_not_set');
             lifecycle.uiCandidatePreStop = await uiCandidateState();
             lifecycle.uiCandidateObservedAt = Date.now();
             lifecycle.oldOfferRemainingMs = oldOffer.expiresAt - Date.now();
@@ -350,13 +359,25 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
               // A real panel Port wakes the worker; do not depend on unrelated alarms.
               // Keep the old connection ID for the stale-offer refusal below.
               const restartedConnectionId = await openGeneratorConnection();
-              worker = await refreshWorker(previousWorker);
+              checkpoint('generator_worker_restart_port_woke');
+              worker = await refreshWorker(previousWorker, {
+                cdp,
+                workerUrl,
+              });
               const afterPanel = await panelIdentity();
               lifecycle.samePanelTargetAndDocument = afterPanel.targetId === uiCandidate.identity.targetId && afterPanel.documentId === uiCandidate.identity.documentId;
               assert(lifecycle.samePanelTargetAndDocument, 'worker_restart_panel_identity_changed');
               const targets = await cdp.send('Target.getTargets');
-              lifecycle.newWorkerTargetDistinct = targets.targetInfos.some((target) => target.type === 'service_worker' && target.url === workerUrl && target.targetId !== oldTarget.targetId);
-              assert(lifecycle.newWorkerTargetDistinct, 'worker_restart_new_target_missing');
+              const currentTarget = targets.targetInfos.find((target) => target.type === 'service_worker' && target.url === workerUrl);
+              assert(currentTarget, 'worker_restart_current_target_missing');
+              lifecycle.targetIdReused = currentTarget.targetId === oldTarget.targetId;
+              const realm = await worker.evaluate(({ property, runtimeId, url }) => ({
+                markerAbsent: !(property in globalThis),
+                exactRuntime: chrome.runtime.id === runtimeId,
+                exactWorkerUrl: location.href === url,
+              }), { property: realmMarkerProperty, runtimeId: workerRuntimeId, url: workerUrl });
+              lifecycle.workerRealmReset = realm?.markerAbsent === true && realm?.exactRuntime === true && realm?.exactWorkerUrl === true;
+              assert(lifecycle.workerRealmReset, 'worker_restart_realm_not_reset');
               lifecycle.oldOfferRemainingMs = oldOffer.expiresAt - Date.now();
               assert(lifecycle.oldOfferRemainingMs >= 10_000, 'worker_restart_old_offer_insufficient_ttl_headroom');
               const oldUse = await use(oldOffer.id);
@@ -373,6 +394,11 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
           }
         }
       } finally {
+        if (realmMarkerSet) {
+          try {
+            await previousWorker.evaluate((property) => { delete globalThis[property]; }, realmMarkerProperty);
+          } catch {}
+        }
         await cdp.send('ServiceWorker.disable').catch(() => {});
       }
       if (lifecycle.disposition !== 'passed') {
@@ -395,57 +421,13 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
         const tab = await chrome.tabs.get(id); const focused = await chrome.windows.getLastFocused({ windowTypes: ['normal'] });
         return { windowId: tab.windowId, tabActive: tab.active === true, focusedWindowId: focused.id, focused: focused.focused === true };
       }, tabId);
+      assert(before.focused && before.focusedWindowId === before.windowId && before.tabActive, 'window_switch_fixture_not_focused_before_transition');
       let extraWindowId = null;
       let createdTargetId = null;
       let baselineWindowIds = [];
+      let extraWindowClosed = false;
       const cdp = await context.newCDPSession(page);
-      try {
-        baselineWindowIds = await worker.evaluate(async () => (await chrome.windows.getAll({ windowTypes: ['normal'] })).map((window) => window.id).filter(Number.isInteger).sort((left, right) => left - right));
-        const created = await cdp.send('Target.createTarget', { url: 'about:blank', newWindow: true, background: false });
-        createdTargetId = typeof created.targetId === 'string' ? created.targetId : null;
-        lifecycle.ownedNormalWindowBaselineCount = baselineWindowIds.length;
-        for (let attempt = 0; attempt < 20; attempt += 1) {
-          const delta = await worker.evaluate(async (baseline) => (await chrome.windows.getAll({ windowTypes: ['normal'] })).map((window) => window.id).filter((id) => Number.isInteger(id) && !baseline.includes(id)), baselineWindowIds);
-          lifecycle.ownedNormalWindowDeltaCount = delta.length;
-          if (delta.length === 1) {
-            extraWindowId = delta[0];
-            break;
-          }
-          await wait(100);
-        }
-        if (!Number.isInteger(extraWindowId)) {
-          lifecycle.disposition = 'not_tested_second_normal_window_unavailable';
-        } else {
-          lifecycle.transition = await worker.evaluate(async ({ originalWindowId, otherWindowId, expectedTabId }) => {
-            await chrome.windows.update(otherWindowId, { focused: true });
-            const away = await chrome.windows.getLastFocused({ windowTypes: ['normal'] });
-            await chrome.windows.update(originalWindowId, { focused: true });
-            await chrome.tabs.update(expectedTabId, { active: true });
-            const back = await chrome.windows.getLastFocused({ windowTypes: ['normal'] });
-            const tab = await chrome.tabs.get(expectedTabId);
-            return { awayFocusedOther: away.id === otherWindowId && away.focused === true, backFocusedOriginal: back.id === originalWindowId && back.focused === true, originalTabActive: tab.active === true && tab.windowId === originalWindowId };
-          }, { originalWindowId: before.windowId, otherWindowId: extraWindowId, expectedTabId: tabId });
-          assert(lifecycle.transition.awayFocusedOther && lifecycle.transition.backFocusedOriginal && lifecycle.transition.originalTabActive, 'window_switch_chrome_focus_transition_unproven');
-          await panel.waitFor(`!!(${lifecycleSection}) && !(${lifecycleSection})?.querySelector('code') && !(${lifecycleSection})?.querySelector('[name="generated-password-target"]') && !!(${lifecycleButton('Generate')}) && !(${lifecycleButton('Generate')}).disabled && (${lifecycleSection})?.innerText.includes('page changed')`);
-          lifecycle.uiCandidateClearedOnWindowSwitch = true;
-          lifecycle.uiCandidateClearedAt = Date.now();
-          assert(lifecycle.uiCandidateClearedAt < uiCandidate.expiresAt, 'window_switch_ui_clear_after_expiry');
-          const afterPanel = await panelIdentity();
-          lifecycle.samePanelTargetAndDocument = afterPanel.targetId === uiCandidate.identity.targetId && afterPanel.documentId === uiCandidate.identity.documentId;
-          assert(lifecycle.samePanelTargetAndDocument, 'window_switch_panel_identity_changed');
-          lifecycle.oldOfferRemainingMs = oldOffer.expiresAt - Date.now();
-          assert(lifecycle.oldOfferRemainingMs >= 10_000, 'window_switch_old_offer_insufficient_ttl_headroom');
-          const oldUse = await use(oldOffer.id);
-          lifecycle.oldOfferStatus = oldUse?.status ?? 'missing_response';
-          lifecycle.oldOfferCompletedBeforeExpiry = Date.now() < oldOffer.expiresAt;
-          assert(lifecycle.oldOfferCompletedBeforeExpiry, 'window_switch_old_offer_refusal_after_expiry');
-          lifecycle.oldOfferFieldsUnchanged = await unchanged(page);
-          assert(lifecycle.oldOfferStatus === 'stale' && lifecycle.oldOfferFieldsUnchanged, 'window_switch_old_offer_survived');
-          await freshUiGenerateUse('window_switch_fresh_ui_recovery_failed');
-          lifecycle.freshUiGenerateUse = true;
-          lifecycle.disposition = 'passed';
-        }
-      } finally {
+      const closeOwnedExtraWindow = async () => {
         let cleanupVerified = false;
         if (Number.isInteger(extraWindowId)) {
           const removed = await worker.evaluate(async (id) => {
@@ -473,7 +455,102 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
         } else {
           lifecycle.ownedExtraWindowCleanup = 'not_created_or_unidentified';
         }
-        if (!cleanupVerified && lifecycle.disposition === 'passed') lifecycle.disposition = 'failed_owned_extra_window_cleanup_unverified';
+        extraWindowClosed = cleanupVerified;
+        return cleanupVerified;
+      };
+      try {
+        baselineWindowIds = await worker.evaluate(async () => (await chrome.windows.getAll({ windowTypes: ['normal'] })).map((window) => window.id).filter(Number.isInteger).sort((left, right) => left - right));
+        const created = await cdp.send('Target.createTarget', { url: 'about:blank', newWindow: true, background: false });
+        createdTargetId = typeof created.targetId === 'string' ? created.targetId : null;
+        lifecycle.ownedNormalWindowBaselineCount = baselineWindowIds.length;
+        for (let attempt = 0; attempt < 20; attempt += 1) {
+          const delta = await worker.evaluate(async (baseline) => (await chrome.windows.getAll({ windowTypes: ['normal'] })).map((window) => window.id).filter((id) => Number.isInteger(id) && !baseline.includes(id)), baselineWindowIds);
+          lifecycle.ownedNormalWindowDeltaCount = delta.length;
+          if (delta.length === 1) {
+            extraWindowId = delta[0];
+            break;
+          }
+          await wait(100);
+        }
+        if (!Number.isInteger(extraWindowId)) {
+          lifecycle.disposition = 'not_tested_second_normal_window_unavailable';
+        } else {
+          lifecycle.transition = await worker.evaluate(async ({ originalWindowId, otherWindowId, expectedTabId }) => {
+            const waitForFocusedWindow = async (windowId) => {
+              for (let attempt = 0; attempt < 20; attempt += 1) {
+                const [focused, window] = await Promise.all([
+                  chrome.windows.getLastFocused({ windowTypes: ['normal'] }),
+                  chrome.windows.get(windowId),
+                ]);
+                if (focused.id === windowId && focused.focused === true && window.focused === true)
+                  return true;
+                await new Promise((resolve) => setTimeout(resolve, 50));
+              }
+              return false;
+            };
+            await chrome.windows.update(otherWindowId, { focused: true });
+            const awayFocusedOther = await waitForFocusedWindow(otherWindowId);
+            const tab = await chrome.tabs.get(expectedTabId);
+            return {
+              awayFocusedOther,
+              originalTabActive: tab.active === true && tab.windowId === originalWindowId,
+            };
+          }, { originalWindowId: before.windowId, otherWindowId: extraWindowId, expectedTabId: tabId });
+          lifecycle.transitionKind = 'switch_away_then_close_other_window';
+          lifecycle.twoOpenWindowReturnFocus = 'not_tested_headless_runtime_limitation';
+          assert(lifecycle.transition.awayFocusedOther && lifecycle.transition.originalTabActive, 'window_switch_away_focus_transition_unproven');
+          await panel.waitFor(`!!(${lifecycleSection}) && !(${lifecycleSection})?.querySelector('code') && !(${lifecycleSection})?.querySelector('[name="generated-password-target"]') && !!(${lifecycleButton('Generate')}) && !(${lifecycleButton('Generate')}).disabled && (${lifecycleSection})?.innerText.includes('page changed')`);
+          lifecycle.uiCandidateClearedOnWindowSwitch = true;
+          lifecycle.uiCandidateClearedAt = Date.now();
+          assert(lifecycle.uiCandidateClearedAt < uiCandidate.expiresAt, 'window_switch_ui_clear_after_expiry');
+          const afterPanel = await panelIdentity();
+          lifecycle.samePanelTargetAndDocument = afterPanel.targetId === uiCandidate.identity.targetId && afterPanel.documentId === uiCandidate.identity.documentId;
+          assert(lifecycle.samePanelTargetAndDocument, 'window_switch_panel_identity_changed');
+          lifecycle.oldOfferRemainingMs = oldOffer.expiresAt - Date.now();
+          assert(lifecycle.oldOfferRemainingMs >= 10_000, 'window_switch_old_offer_insufficient_ttl_headroom');
+          lifecycle.otherWindowFocusedBeforeOldUse = await worker.evaluate(async (id) => {
+            const [focused, window] = await Promise.all([
+              chrome.windows.getLastFocused({ windowTypes: ['normal'] }),
+              chrome.windows.get(id),
+            ]);
+            return focused.id === id && focused.focused === true && window.focused === true;
+          }, extraWindowId);
+          assert(lifecycle.otherWindowFocusedBeforeOldUse, 'window_switch_other_window_not_focused_before_old_use');
+          const oldUse = await use(oldOffer.id);
+          lifecycle.oldOfferStatus = oldUse?.status ?? 'missing_response';
+          lifecycle.oldOfferCompletedBeforeExpiry = Date.now() < oldOffer.expiresAt;
+          assert(lifecycle.oldOfferCompletedBeforeExpiry, 'window_switch_old_offer_refusal_after_expiry');
+          lifecycle.otherWindowFocusedThroughOldUse = await worker.evaluate(async (id) => {
+            try {
+              const [focused, window] = await Promise.all([
+                chrome.windows.getLastFocused({ windowTypes: ['normal'] }),
+                chrome.windows.get(id),
+              ]);
+              return focused.id === id && focused.focused === true && window.focused === true;
+            } catch {
+              return false;
+            }
+          }, extraWindowId);
+          assert(lifecycle.otherWindowFocusedThroughOldUse, 'window_switch_other_window_lost_focus_during_old_use');
+          lifecycle.oldOfferFieldsUnchanged = await unchanged(page);
+          assert(lifecycle.oldOfferStatus === 'stale' && lifecycle.oldOfferFieldsUnchanged, 'window_switch_old_offer_survived');
+          assert(await closeOwnedExtraWindow(), 'window_switch_owned_extra_window_cleanup_unverified');
+          lifecycle.originalFocusedAfterClose = await worker.evaluate(async ({ windowId, expectedTabId }) => {
+            const [focused, window, tab] = await Promise.all([
+              chrome.windows.getLastFocused({ windowTypes: ['normal'] }),
+              chrome.windows.get(windowId),
+              chrome.tabs.get(expectedTabId),
+            ]);
+            return focused.id === windowId && focused.focused === true && window.focused === true && tab.active === true && tab.windowId === windowId;
+          }, { windowId: before.windowId, expectedTabId: tabId });
+          assert(lifecycle.originalFocusedAfterClose, 'window_switch_original_focus_not_restored_after_close');
+          await freshUiGenerateUse('window_switch_fresh_ui_recovery_failed');
+          lifecycle.freshUiGenerateUse = true;
+          lifecycle.disposition = 'passed';
+        }
+      } finally {
+        if (!extraWindowClosed && (Number.isInteger(extraWindowId) || createdTargetId)) await closeOwnedExtraWindow();
+        if (!extraWindowClosed && lifecycle.disposition === 'passed') lifecycle.disposition = 'failed_owned_extra_window_cleanup_unverified';
       }
       if (lifecycle.disposition !== 'passed') {
         (evidence.remaining ||= []).push(`window-switch lifecycle ${lifecycle.disposition}`);
@@ -831,6 +908,7 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
       ...(headlessNoClipboardMode ? ['clipboard acceptance requires an isolated clipboard session'] : []),
       ...(!workerRestartLifecycleMode ? ['worker restart needs a separate real-browser case'] : []),
       ...(!windowSwitchLifecycleMode ? ['normal-window switch needs a separate real-browser case'] : []),
+      ...(windowSwitchLifecycleMode ? ['two-open-normal-window return focus remains untested in the headless runtime'] : []),
       'actor and organization switches need separate real-browser cases',
       'distributed artifact and other browsers remain separate acceptance',
     ];
