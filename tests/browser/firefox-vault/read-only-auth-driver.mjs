@@ -573,10 +573,11 @@ try {
     }
     proof.organizationSelection.actingAsVisible = true;
     await persist();
+    const dismissSetupNotice = async () => {
     const setupNoticeDismiss = await adapter.evaluate(document => {
       const notices = [...document.querySelectorAll('[role="alert"]')].filter(node =>
         node.querySelector('.font-medium')?.textContent?.trim() === 'Capture list unavailable'
-        && node.textContent.includes('NO_ORGANIZATION'));
+        && (node.textContent.includes('NO_ORGANIZATION') || node.textContent.includes('no workspace is selected')));
       if (notices.length !== 1) return null;
       const button = notices[0].querySelector('button[aria-label="Dismiss"]');
       if (!button) return null;
@@ -590,21 +591,34 @@ try {
       }
       return `body > ${segments.join(' > ')}`;
     });
-    proof.organizationSelection.initialMissingOrganizationNotice = !!setupNoticeDismiss;
     if (setupNoticeDismiss) {
       await adapter.trustedClick(setupNoticeDismiss, {
         outcome: document => ![...document.querySelectorAll('[role="alert"]')].some(node =>
           node.querySelector('.font-medium')?.textContent?.trim() === 'Capture list unavailable'
-          && node.textContent.includes('NO_ORGANIZATION')),
+          && (node.textContent.includes('NO_ORGANIZATION') || node.textContent.includes('no workspace is selected'))),
       });
-      proof.organizationSelection.initialNoticeDismissedForSetup = true;
     }
+    return !!setupNoticeDismiss;
+    };
+    const initialNoticeDismissed = await dismissSetupNotice();
+    proof.organizationSelection.initialMissingOrganizationNotice = initialNoticeDismissed;
+    proof.organizationSelection.initialNoticeDismissedForSetup = initialNoticeDismissed;
     await persist();
     const organizationComboboxSelector = organizationState.comboboxSelector;
     try {
-      const press = await adapter.trustedPress(organizationComboboxSelector, {
-        outcome: document => document.querySelector('[role="listbox"]') !== null,
-      });
+      let press;
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        try {
+          press = await adapter.trustedPress(organizationComboboxSelector, {
+            outcome: document => document.querySelector('[role="listbox"]') !== null,
+          });
+          break;
+        } catch (error) {
+          if (attempt !== 0 || error?.message !== 'trusted_press_target_occluded' || !(await dismissSetupNotice())) throw error;
+          proof.organizationSelection.lateSetupNoticeDismissed = true;
+          await persist();
+        }
+      }
       proof.organizationSelection.comboboxTrustedPress = press.diagnostic;
       await persist();
     } catch (error) {
