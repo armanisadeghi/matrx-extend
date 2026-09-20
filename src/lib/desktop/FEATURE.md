@@ -36,6 +36,14 @@ profile.
 Never send the user's Supabase access token to a probed localhost port. Never
 probe authenticated `/extension/*` routes; discovery uses public `/health`.
 
+## Private owned-browser retries
+
+The background controller binds admission and cleanup retries to both the original
+operation JTI and exact grant bytes. Only identical retries join or replay. Cleanup
+acknowledgements recheck the original deadline, registration and receipt-map identity
+after the private request completes, including saved-receipt and concurrent callers.
+Discovery applies the same deadline fence before returning acceptance.
+
 ## Verification floor
 
 Run `tests/unit/desktop-discovery.test.ts`, `tests/unit/ws-invoke.test.ts`, the

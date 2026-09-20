@@ -42,6 +42,8 @@ type OwnedRun = {
   registration: Registration;
   runId: string;
   admissionId: string;
+  grantJti: string;
+  grant: string;
   actor: PrivateExpectedActor;
   tabId: number | null;
   leaseExpiresAtMs: number | null;
@@ -58,6 +60,7 @@ type AdmissionOutcome =
   | { receipt: 'created' | 'cancelled' | 'failed' }
   | { reason: LocalBrowserRefusalReason };
 type CleanupReceipt = {
+  grant: string;
   registration: Registration;
   grantJti: string;
   receipt: 'closed' | 'already_absent' | 'unconfirmed' | null;
@@ -414,8 +417,7 @@ export class LocalBrowserController {
     });
     if (!result.ok) return { reason: mapPrivateFailure(result.error) };
     if (result.data.status !== 'accepted') return { reason: 'authority_refused' };
-    if (!this.isCurrent(context, registration, registration.socketEpoch))
-      return { reason: 'binding_changed' };
+    if (!this.canMutate(context, registration, deadlineMs)) return { reason: 'binding_changed' };
     return { receipt: 'accepted' };
   }
 
@@ -432,7 +434,11 @@ export class LocalBrowserController {
     const key = runKey(claims);
     const existing = this.entries.get(key);
     if (existing) {
-      if (!sameRegistration(existing.registration, registration))
+      if (
+        !sameRegistration(existing.registration, registration) ||
+        existing.grantJti !== claims.jti ||
+        existing.grant !== frame.grant
+      )
         return { reason: 'retry_conflict' };
       if (
         existing.actor.userId !== actor.userId ||
@@ -452,6 +458,8 @@ export class LocalBrowserController {
       registration,
       runId: claims.run_id,
       admissionId: claims.admission_id,
+      grantJti: claims.jti,
+      grant: frame.grant,
       actor,
       tabId: null,
       leaseExpiresAtMs: null,
@@ -622,12 +630,21 @@ export class LocalBrowserController {
     if (existing) {
       if (
         !sameRegistration(existing.registration, registration) ||
-        existing.grantJti !== claims.jti
+        existing.grantJti !== claims.jti ||
+        existing.grant !== frame.grant
       )
         return { reason: 'retry_conflict' };
       if (existing.inFlight) return existing.inFlight;
       if (existing.receipt !== null)
-        return this.acknowledgeCleanup(frame, claims, deadlineMs, actor, existing.receipt);
+        return this.acknowledgeCleanup(
+          frame,
+          claims,
+          deadlineMs,
+          actor,
+          existing.receipt,
+          existing,
+          context,
+        );
     }
     if (entry?.cleanup) {
       return entry.cleanupStopId === claims.stop_id ? entry.cleanup : { reason: 'retry_conflict' };
@@ -635,6 +652,7 @@ export class LocalBrowserController {
     if (!entry) return { reason: 'authority_refused' };
     if (this.cleanupReceipts.size >= MAX_OWNED_RUNS) return { reason: 'rate_limited' };
     const record: CleanupReceipt = {
+      grant: frame.grant,
       registration,
       grantJti: claims.jti,
       receipt: null,
@@ -719,7 +737,15 @@ export class LocalBrowserController {
     entry.tabId = null;
     entry.leaseExpiresAtMs = null;
     entry.terminalAdmissionReceipt ??= 'cancelled';
-    const outcome = await this.acknowledgeCleanup(frame, claims, deadlineMs, actor, receipt);
+    const outcome = await this.acknowledgeCleanup(
+      frame,
+      claims,
+      deadlineMs,
+      actor,
+      receipt,
+      record,
+      context,
+    );
     if ('reason' in outcome) return outcome;
     return outcome;
   }
@@ -730,6 +756,8 @@ export class LocalBrowserController {
     deadlineMs: number,
     actor: PrivateExpectedActor,
     receipt: 'closed' | 'already_absent' | 'unconfirmed',
+    record: CleanupReceipt,
+    context: number,
   ): Promise<
     { receipt: 'closed' | 'already_absent' | 'unconfirmed' } | { reason: LocalBrowserRefusalReason }
   > {
@@ -740,6 +768,11 @@ export class LocalBrowserController {
       expectedActor: actor,
       deadlineMs,
     });
+    if (
+      !this.canMutate(context, record.registration, deadlineMs) ||
+      this.cleanupReceipts.get(cleanupKey(claims)) !== record
+    )
+      return { reason: 'binding_changed' };
     if (!acknowledged.ok) return { reason: mapPrivateFailure(acknowledged.error) };
     if (acknowledged.data.status !== 'accepted' || acknowledged.data.operation !== 'cleanup')
       return { reason: 'authority_refused' };

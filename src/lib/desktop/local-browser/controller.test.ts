@@ -623,3 +623,102 @@ describe('owned local-browser tab controller', () => {
     expect(h.deps.tabs.remove).toHaveBeenCalledTimes(1);
   });
 });
+
+it.each(['jti', 'bytes'])('refuses an admission retry with changed %s', async (change) => {
+  const h = harness();
+  const r = await register(h);
+  const grant = opaqueAdmitGrant(r.generation, r.connection);
+  const frame = {
+    type: 'local_browser.execute',
+    version: 1,
+    call_id: ids.call,
+    operation: 'admit',
+    grant,
+  };
+  await h.emit(frame);
+  let altered = `${grant}changed`;
+  if (change === 'jti') {
+    const parts = grant.split('.');
+    if (!parts[1]) throw new Error('fixture payload missing');
+    const claims = JSON.parse(atob(parts[1]));
+    claims.jti = stopId;
+    altered = `header.${btoa(JSON.stringify(claims)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')}.signature`;
+  }
+  await h.emit({ ...frame, grant: altered });
+  expect(h.sent.at(-1)).toMatchObject({ status: 'refused', reason: 'retry_conflict' });
+  expect(h.create).toHaveBeenCalledTimes(1);
+  h.controller.stop();
+});
+
+it('fences a saved cleanup receipt when registration changes during replay acknowledgement', async () => {
+  const h = harness();
+  const r = await register(h);
+  await h.emit({
+    type: 'local_browser.execute',
+    version: 1,
+    call_id: ids.call,
+    operation: 'admit',
+    grant: opaqueAdmitGrant(r.generation, r.connection),
+  });
+  h.deps.verify = vi.fn(async () => ({
+    ok: true as const,
+    data: { status: 'accepted' as const, stop_id: stopId },
+  }));
+  h.deps.acknowledge = vi.fn(async () => ({ ok: false as const, error: 'network_error' as const }));
+  const frame = {
+    type: 'local_browser.execute',
+    version: 1,
+    call_id: ids.call,
+    operation: 'cleanup',
+    grant: opaqueCleanupGrant(r.generation, r.connection),
+  };
+  await h.emit(frame);
+  let release!: () => void;
+  h.deps.acknowledge = vi.fn(
+    () =>
+      new Promise<Awaited<ReturnType<LocalBrowserControllerDeps['acknowledge']>>>((resolve) => {
+        release = () =>
+          resolve({
+            ok: true,
+            data: {
+              status: 'accepted',
+              operation: 'cleanup',
+              receipt: { stop_id: stopId, status: 'closed' },
+            },
+          });
+      }),
+  );
+  const replay = h.emit(frame);
+  await vi.waitFor(() => expect(release).toBeTypeOf('function'));
+  h.invalidated();
+  release();
+  await replay;
+  expect(h.sent.at(-1)).toMatchObject({ status: 'refused', reason: 'binding_changed' });
+  h.controller.stop();
+});
+
+it('refuses discovery when its original deadline passes during verification', async () => {
+  const h = harness();
+  await register(h);
+  const now = Date.now();
+  h.deps.verify = vi.fn(async () => {
+    vi.spyOn(Date, 'now').mockReturnValue(now + 31_000);
+    return {
+      ok: true as const,
+      data: { status: 'accepted' as const, challenge_id: ids.challenge },
+    };
+  });
+  try {
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'discover',
+      grant: opaqueDiscoverGrant(),
+    });
+    expect(h.sent.at(-1)).toMatchObject({ status: 'refused' });
+  } finally {
+    vi.restoreAllMocks();
+    h.controller.stop();
+  }
+});
