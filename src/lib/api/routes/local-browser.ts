@@ -172,16 +172,18 @@ export function acknowledgeLocalBrowser(request: {
           status: z.literal(request.receipt.status),
         })
         .strict();
+      const accepted = z
+        .object({
+          status: z.literal('accepted'),
+          operation: z.literal('admit'),
+          receipt,
+          lease_expires_at_ms:
+            request.receipt.status === 'created' ? safeMilliseconds.nullable() : z.null(),
+        })
+        .strict();
+      if (request.receipt.status !== 'created') return z.union([accepted, refusalSchema]);
       return z.union([
-        z
-          .object({
-            status: z.literal('accepted'),
-            operation: z.literal('admit'),
-            receipt,
-            lease_expires_at_ms:
-              request.receipt.status === 'created' ? safeMilliseconds.nullable() : z.null(),
-          })
-          .strict(),
+        accepted,
         z
           .object({
             status: z.literal('cancelled'),
