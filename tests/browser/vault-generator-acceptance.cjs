@@ -4,6 +4,19 @@
 const http = require('node:http');
 const crypto = require('node:crypto');
 
+const lifecycleSectionExpression = `document.querySelector('[aria-label="Password generator"]')`;
+function lifecycleButtonExpression(label) {
+  return `Array.from((${lifecycleSectionExpression})?.querySelectorAll("button") ?? []).find((button) => button.textContent?.trim() === ${JSON.stringify(label)})`;
+}
+function windowSwitchUiCleared(state) {
+  if (state?.sectionPresent === false) return true;
+  return state?.sectionPresent === true
+    && ['codePresent', 'revealPresent', 'hidePresent', 'offerPresent', 'copyPresent', 'usePresent', 'regeneratePresent'].every((key) => state[key] === false)
+    && state.actionLabel === 'generate' && state.actionReady === true;
+}
+exports.lifecycleButtonExpression = lifecycleButtonExpression;
+exports.windowSwitchUiCleared = windowSwitchUiCleared;
+
 async function fixture(childUrl = null) {
   const state = { submits: 0 };
   const server = http.createServer((request, response) => {
@@ -251,8 +264,8 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     // transport matrix owns the three-frame coverage; remove only its owned
     // fixture frames before creating any UI candidate or lifecycle offer.
     await page.evaluate(() => document.querySelectorAll('iframe').forEach((frame) => frame.remove()));
-    const lifecycleSection = `document.querySelector('[aria-label="Password generator"]')`;
-    const lifecycleButton = (label) => `Array.from((${lifecycleSection}).querySelectorAll("button")).find((button) => button.textContent.trim() === ${JSON.stringify(label)})`;
+    const lifecycleSection = lifecycleSectionExpression;
+    const lifecycleButton = lifecycleButtonExpression;
     const uiCandidateState = () => panel.evaluate(`(() => {
       const root = ${lifecycleSection};
       const generate = ${lifecycleButton('Generate')};
@@ -287,6 +300,10 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
       return { state, completedAt, expiresAt: startedAt + 30_000, identity: await panelIdentity() };
     };
     const freshUiGenerateUse = async (code) => {
+      await panel.waitFor(`!!${lifecycleSection}`);
+      if (await panel.evaluate(`(${lifecycleButton('Password generator')})?.getAttribute('aria-expanded') !== 'true'`))
+        await panel.click(lifecycleButton('Password generator'));
+      await panel.waitFor(`!!(${lifecycleButton('Generate')}) && !(${lifecycleButton('Generate')}).disabled`);
       await panel.click(lifecycleButton('Generate'));
       await panel.waitFor(`!!(${lifecycleSection})?.querySelector('[aria-label="Reveal generated value"]') && (${lifecycleSection})?.innerText.includes('Generated.')`);
       await panel.click(`(${lifecycleSection}).querySelector('[aria-label="Reveal generated value"]')`);
@@ -544,6 +561,8 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
               generatorOpen: opener?.getAttribute('aria-expanded') === 'true',
               codePresent: !!root?.querySelector('code'),
               revealPresent: !!root?.querySelector('[aria-label="Reveal generated value"]'),
+              hidePresent: !!root?.querySelector('[aria-label="Hide generated value"]'),
+              regeneratePresent: !!regenerate,
               offerPresent: !!root?.querySelector('[name="generated-password-target"]'),
               copyPresent: Array.from(root?.querySelectorAll('button') ?? []).some((button) => button.textContent.trim() === 'Copy'),
               usePresent: Array.from(root?.querySelectorAll('button') ?? []).some((button) => button.textContent.trim() === 'Use'),
@@ -556,7 +575,14 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
           lifecycle.panelIdentityBeforeUiWait = await panelIdentity();
           const uiWaitStartedAt = Date.now();
           try {
-            await panel.waitFor(`!!(${lifecycleSection}) && !(${lifecycleSection})?.querySelector('code') && !(${lifecycleSection})?.querySelector('[name="generated-password-target"]') && !!(${lifecycleButton('Generate')}) && !(${lifecycleButton('Generate')}).disabled && (${lifecycleSection})?.innerText.includes('page changed')`);
+            const clearDeadline = Math.min(uiCandidate.expiresAt, Date.now() + 10_000);
+            let clearedState = lifecycle.uiBeforeClearWait;
+            while (!windowSwitchUiCleared(clearedState) && Date.now() < clearDeadline) {
+              await wait(50);
+              clearedState = await windowSwitchUiState();
+            }
+            assert(windowSwitchUiCleared(clearedState), 'window_switch_ui_not_cleared');
+            lifecycle.uiClearingDisposition = clearedState.sectionPresent ? 'present_cleared' : 'absent';
             lifecycle.uiWaitOutcome = 'cleared';
           } catch (error) {
             lifecycle.uiWaitOutcome = error instanceof Error ? error.message : 'unknown_error';
@@ -877,7 +903,8 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
         return 'unknown';
       }
     };
-    await panel.click(button('Password generator'));
+    if (await panel.evaluate(`(${button('Password generator')})?.getAttribute('aria-expanded') !== 'true'`))
+      await panel.click(button('Password generator'));
     for (const kind of ['Password', 'Passphrase']) {
       await panel.click(button(kind));
       const phase = `generator_${kind.toLowerCase()}_generated_value_wait`;
@@ -995,6 +1022,7 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     evidence.checks.keyboardEnterSpaceAndTabNativeFocus = true;
     await dispatchAndWaitForKeyboard('escape_final', { key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }, `(${section})?.querySelector('[aria-expanded="false"]') && document.activeElement === (${button('Password generator')})`);
     evidence.positiveGenerateRevealUse = true;
+    evidence.positiveGeneratorUi = true;
     evidence.remaining = [
       ...(evidence.remaining || []),
       ...(headlessNoClipboardMode ? ['clipboard acceptance requires an isolated clipboard session'] : []),
