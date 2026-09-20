@@ -34,7 +34,7 @@
  *      product.
  *
  * WHAT IT CANNOT SEE — say so; never let green imply more than it proves.
- * It is a text scan over `src/`. A preference fetched through a helper that
+ * It is a text scan over `src/`, `scripts/` and `tests/`. A preference fetched through a helper that
  * spells nothing out (`prefs.organization[KEY]`) reads green here, and so
  * does the same rung re-added in another repo. What proves the behaviour is
  * `tests/unit/auth-route.test.ts` (the resolver ignores a live saved
@@ -49,11 +49,28 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
-const SCAN_ROOT = 'src';
+/**
+ * Every root a request can be built from. `src/` was the original scan, which
+ * left `scripts/` and `tests/` — both of which build real requests and both of
+ * which a re-introduction can hide in — unguarded. A guard that only watches
+ * the directory the last regression happened in is a guard for that
+ * regression, not for the class.
+ */
+const SCAN_ROOTS = ['src', 'scripts', 'tests'];
 const ORG_RESOLVER_DIR = 'src/lib/org/';
 
 /** This guard and its planted fixtures name the banned shapes on purpose. */
 const SELF = ['scripts/check-org-default-ban.ts'];
+
+/**
+ * The ONE declared escape: `org-default-exempt: <reason, 20+ characters>` on
+ * the offending line or the line above it. A test that has to PLANT the banned
+ * preference in order to prove the resolver ignores it is the intended use;
+ * "it was noisy" is not, which is what the 20-character reason is for. Same
+ * spelling as matrx-local's `desktop/scripts/check-org-default-ban.mjs`, so one
+ * sentence works in both repos.
+ */
+const EXEMPT = /org-default-exempt:\s*\S.{19,}/;
 
 /**
  * Case-insensitive AND unanchored on purpose. An earlier draft required a word
@@ -91,9 +108,21 @@ function stripComments(text: string): string {
     );
 }
 
+/**
+ * Blank out lines carrying a declared, reasoned exemption (and the line the
+ * exemption comment sits above), preserving line count so reported numbers
+ * still point at the real line.
+ */
+function dropExempt(source: string): string {
+  const lines = source.split('\n');
+  return lines
+    .map((line, i) => (EXEMPT.test(line) || EXEMPT.test(lines[i - 1] ?? '') ? '' : line))
+    .join('\n');
+}
+
 export function findingsIn(source: string, file: string): Finding[] {
   const out: Finding[] = [];
-  const lines = stripComments(source).split('\n');
+  const lines = stripComments(dropExempt(source)).split('\n');
   lines.forEach((line, index) => {
     const at = index + 1;
     if (SAVED_DEFAULT.test(line)) {
@@ -148,7 +177,7 @@ function sourceFiles(): string[] {
       out.push(next);
     }
   };
-  walk(SCAN_ROOT);
+  for (const root of SCAN_ROOTS) walk(root);
   return out.filter((f) => !SELF.includes(f));
 }
 
@@ -219,6 +248,25 @@ function selfTest(): number {
       '  if (organizations.length === 1) return organizations[0];',
       0,
       'the sole-membership rung (allowed)',
+    ],
+    [
+      'src/lib/brand/new-sink.ts',
+      '  const org = prefs.organization.defaultOrganizationId;',
+      1,
+      'the rung re-added in a file that did not exist before',
+    ],
+    [
+      'tests/unit/auth-route.test.ts',
+      '// org-default-exempt: planted on purpose to prove the resolver ignores it\n' +
+        '  preferences: { organization: { defaultOrganizationId: ORG_A } },',
+      0,
+      'a declared, reasoned exemption on the line above',
+    ],
+    [
+      'tests/unit/auth-route.test.ts',
+      '  preferences: { defaultOrganizationId: ORG_A }, // org-default-exempt: noisy',
+      1,
+      'an exemption with no real reason',
     ],
   ];
   let bad = 0;

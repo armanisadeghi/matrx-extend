@@ -87,6 +87,8 @@ function membershipsFor(...ids: string[]) {
 /** The user-level saved preference — present, readable, and irrelevant. */
 function savedPreference(id: string | null) {
   mocks.prefsSelect.mockResolvedValue({
+    // The tests below PLANT this preference to prove the resolver never reads it.
+    // org-default-exempt: a fixture that has to name the banned rung to refuse it
     data: { preferences: { organization: { defaultOrganizationId: id } } },
     error: null,
   });

@@ -388,6 +388,19 @@ else
     fail "A list hides archived rows with no way to reveal them (see above). Agent lists use @ai-matrx/agents/catalog's archFilter; anything else uses @ai-matrx/design-system <ArchiveFilter> with its value passed to the READER, never a client-side sieve."
 fi
 
+# THE ORGANIZATION IS WHAT THE USER SET — BLOCKING. Nothing that builds a
+# request may read a saved "default organization" preference, and the personal
+# organization is never a fallback (Arman, 2026-09-19). It also rides in
+# `prebuild`/`prezip`, but `pnpm zip:store` above runs FIRST and fires no
+# `prezip` hook, so without this step the store artifact is already built before
+# anything checks. A gate that runs after the thing it guards is not a gate.
+CURRENT_STEP="org-default-ban"
+if pnpm check:org-default-ban:self-test && pnpm check:org-default-ban; then
+    ok "the organization is still what the person set on this device"
+else
+    fail "A default organization is back (see above). Nothing that builds a request may read a saved default-organization preference, and the personal organization is never a fallback. With nothing set on this device, HOLD the request and ask: holdForActiveOrganizationId() in src/lib/org/active-org.ts."
+fi
+
 # MANDATE REFERENCES — LOUD AND DELIBERATELY NON-BLOCKING (ruling D23,
 # common-docs/projects/mandate-declaration-reporting/REGISTER.md law 1).
 #
