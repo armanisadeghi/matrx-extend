@@ -246,48 +246,103 @@ const alreadyClaimed = z
   .object({ status: z.literal('already_claimed'), command_id: uuid })
   .strict();
 
+const boundedText = (maximum: number) =>
+  z
+    .string()
+    .min(1)
+    .refine((value) => bytes(value) <= maximum && !/[\uD800-\uDFFF]/u.test(value));
+const selector = boundedText(2048);
+const httpsDestination = boundedText(4096).refine((value) => {
+  try {
+    const parsed = new URL(value);
+    return (
+      !/\s/u.test(value) &&
+      !Array.from(value).some((character) => character.charCodeAt(0) < 32) &&
+      parsed.protocol === 'https:' &&
+      !!parsed.hostname &&
+      !parsed.username &&
+      !parsed.password &&
+      parsed.port !== '0'
+    );
+  } catch {
+    return false;
+  }
+});
+const localSubmit = z
+  .object({
+    kind: z.enum(['click', 'press_enter', 'none']),
+    selector: selector.optional(),
+  })
+  .strict()
+  .superRefine((value, context) => {
+    if ((value.kind === 'none') !== (value.selector === undefined))
+      context.addIssue({ code: z.ZodIssueCode.custom, message: 'invalid submit selector' });
+  });
+const localWait = z
+  .object({
+    selector,
+    timeout_ms: z.number().int().min(250).max(60000).default(15000),
+  })
+  .strict();
+const localStep = z
+  .object({
+    fields: z.array(selector).min(1),
+    submit: localSubmit,
+    wait_for: localWait.optional(),
+  })
+  .strict();
+const localExpect = z
+  .object({
+    success_url_prefix: httpsDestination.optional(),
+    success_selector: selector.optional(),
+    failure_selector: selector.optional(),
+    challenge_selector: selector.optional(),
+    timeout_ms: z.number().int().min(1000).max(60000).default(30000),
+  })
+  .strict();
 const commandField = z
   .object({
-    selector: z.string().min(1).max(2048),
+    selector,
     field_key: z.enum(['username', 'password']),
     clear_first: z.boolean(),
   })
   .strict();
-const commandShape = z
-  .union([
-    z.object({ operation: z.literal('navigate'), url: z.string().url() }).strict(),
-    z.object({ operation: z.literal('inspect_login') }).strict(),
-    z
-      .object({
-        operation: z.literal('vault_login'),
-        credential_item_id: uuid,
-        fields: z.array(commandField).min(1).max(12),
-        submit: z.unknown().optional(),
-        steps: z.array(z.unknown()).min(1).max(4).optional(),
-        expect: z.unknown().optional(),
-      })
-      .strict()
-      .superRefine((value, ctx) => {
-        if ((value.submit === undefined) === (value.steps === undefined))
-          ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'invalid command' });
-      }),
-    z
-      .object({
-        operation: z.literal('authenticator'),
-        credential_item_id: uuid,
-        code_selector: z.string().min(1).max(2048),
-        submit: z.unknown(),
-        expect: z.unknown().optional(),
-      })
-      .strict(),
-  ])
-  .superRefine((value, ctx) => {
-    if (
-      value.operation === 'vault_login' &&
-      (value.submit === undefined) === (value.steps === undefined)
-    )
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'invalid command' });
-  });
+const commandShape = z.union([
+  z.object({ operation: z.literal('navigate'), url: httpsDestination }).strict(),
+  z.object({ operation: z.literal('inspect_login') }).strict(),
+  z
+    .object({
+      operation: z.literal('vault_login'),
+      credential_item_id: uuid,
+      fields: z.array(commandField).min(1).max(12),
+      submit: localSubmit.optional(),
+      steps: z.array(localStep).min(1).max(4).optional(),
+      expect: localExpect.optional(),
+    })
+    .strict()
+    .superRefine((value, context) => {
+      const selectors = new Set(value.fields.map((field) => field.selector));
+      const waits =
+        (value.steps ?? []).reduce((total, step) => total + (step.wait_for?.timeout_ms ?? 0), 0) +
+        (value.expect?.timeout_ms ?? 0);
+      if (
+        (value.submit === undefined) === (value.steps === undefined) ||
+        selectors.size !== value.fields.length ||
+        waits > 60000 ||
+        value.steps?.some((step) => step.fields.some((field) => !selectors.has(field)))
+      )
+        context.addIssue({ code: z.ZodIssueCode.custom, message: 'invalid complete attempt' });
+    }),
+  z
+    .object({
+      operation: z.literal('authenticator'),
+      credential_item_id: uuid,
+      code_selector: selector,
+      submit: localSubmit,
+      expect: localExpect.optional(),
+    })
+    .strict(),
+]);
 type CommandShape = z.infer<typeof commandShape>;
 
 function parseCommand(source: string): CommandShape | null {
@@ -365,7 +420,7 @@ export type LocalClaimResponse =
   | z.infer<typeof refusal>;
 
 export function claimLocalCommand(
-  request: PrivateCommandRequest & z.infer<typeof claimRequest>,
+  request: PrivateCommandRequest & z.infer<typeof claimRequest> & { commandId: string },
 ): Promise<PrivateApiResult<LocalClaimResponse>> {
   const blocked = preflight<LocalClaimResponse>(request);
   if (blocked) return blocked;
@@ -375,12 +430,20 @@ export function claimLocalCommand(
     document: request.document,
   };
   const command = claimRequest.safeParse(body).success ? parseCommand(request.command_json) : null;
-  if (!command) return Promise.resolve({ ok: false, error: 'invalid_response' });
+  if (!command || !uuid.safeParse(request.commandId).success)
+    return Promise.resolve({ ok: false, error: 'invalid_response' });
   return privateRequest(
     request,
     '/browser-manager/local/commands/claim',
     body,
-    claimResponseSchema(command, new URL(request.document.url).origin, request.deadlineMs),
+    claimResponseSchema(
+      command,
+      new URL(request.document.url).origin,
+      request.deadlineMs,
+    ).superRefine((value, context) => {
+      if (value.status !== 'refused' && value.command_id !== request.commandId)
+        context.addIssue({ code: z.ZodIssueCode.custom, message: 'unbound command' });
+    }),
   );
 }
 
@@ -468,6 +531,18 @@ const commandResult = z.union([terminalResult, completedResults]);
 export type LocalCommandResult = z.infer<typeof commandResult>;
 const completeRequest = z.object({ grant, result: commandResult }).strict();
 
+function stableJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
+  if (value !== null && typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    return `{${Object.keys(record)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${stableJson(record[key])}`)
+      .join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
 export function completeLocalCommand(
   request: PrivateCommandRequest & z.infer<typeof completeRequest>,
 ): Promise<
@@ -484,7 +559,7 @@ export function completeLocalCommand(
     .object({ status: z.literal('completed'), result: commandResult })
     .strict()
     .superRefine((value, context) => {
-      if (JSON.stringify(value.result) !== JSON.stringify(body.result))
+      if (stableJson(value.result) !== stableJson(body.result))
         context.addIssue({ code: z.ZodIssueCode.custom, message: 'receipt mismatch' });
     });
   return privateRequest(

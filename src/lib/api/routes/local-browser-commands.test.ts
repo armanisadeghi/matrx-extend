@@ -34,6 +34,7 @@ const id = '00000000-0000-4000-8000-000000000001';
 const secondId = '00000000-0000-4000-8000-000000000002';
 const actor = { userId: id, organizationId: secondId, sessionId: 'session-a' };
 const base = {
+  commandId: id,
   expectedActor: actor,
   deadlineMs: Date.now() + 10_000,
   isCurrent: () => true,
@@ -244,4 +245,119 @@ describe('local browser command wire validation', () => {
     ).resolves.toEqual({ ok: false, error: 'identity_changed' });
     expect(fetchMock).not.toHaveBeenCalled();
   });
+});
+
+it('refuses malformed nested login contracts before a private request', async () => {
+  const fetchMock = vi.fn(
+    async () => new Response(JSON.stringify({ status: 'refused', reason: 'unavailable' }), noStore),
+  );
+  vi.stubGlobal('fetch', fetchMock);
+  for (const command of [
+    { operation: 'authenticator', credential_item_id: id, code_selector: '#code', submit: 'click' },
+    {
+      operation: 'authenticator',
+      credential_item_id: id,
+      code_selector: '#code',
+      submit: { kind: 'none', secret: 'unexpected' },
+    },
+    {
+      operation: 'vault_login',
+      credential_item_id: id,
+      fields: [{ selector: '#pw', field_key: 'password', clear_first: true }],
+      steps: [{ fields: ['#other'], submit: { kind: 'none' } }],
+    },
+    {
+      operation: 'vault_login',
+      credential_item_id: id,
+      fields: [{ selector: '#pw', field_key: 'password', clear_first: true }],
+      steps: [
+        {
+          fields: ['#pw'],
+          submit: { kind: 'none' },
+          wait_for: { selector: '#next', timeout_ms: 60000 },
+        },
+      ],
+      expect: { timeout_ms: 1000 },
+    },
+  ]) {
+    await expect(
+      claimLocalCommand({
+        ...base,
+        commandId: id,
+        grant: 'claim',
+        command_json: JSON.stringify(command),
+        document: { url: 'https://example.com/login', document_id: id },
+      }),
+    ).resolves.toEqual({ ok: false, error: 'invalid_response' });
+  }
+  expect(fetchMock).not.toHaveBeenCalled();
+});
+
+it('refuses a claimed secret belonging to another command', async () => {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            status: 'claimed',
+            command_id: secondId,
+            deadline_ms: Date.now() + 5000,
+            completion_grant: 'completion',
+            injection: {
+              origin: 'https://example.com',
+              fields: { password: 'private-test-value' },
+              expires_at_ms: Date.now() + 5000,
+            },
+          }),
+          noStore,
+        ),
+    ),
+  );
+  await expect(
+    claimLocalCommand({
+      ...base,
+      commandId: id,
+      grant: 'claim',
+      command_json: JSON.stringify({
+        operation: 'vault_login',
+        credential_item_id: id,
+        fields: [{ selector: '#pw', field_key: 'password', clear_first: true }],
+        submit: { kind: 'none' },
+      }),
+      document: { url: 'https://example.com/login', document_id: id },
+    }),
+  ).resolves.toEqual({ ok: false, error: 'invalid_response' });
+});
+
+it('accepts an exact completion receipt independently of object key order', async () => {
+  const result = {
+    data: { origin: 'https://example.com' },
+    reason: 'none' as const,
+    outcome: 'completed' as const,
+    operation: 'navigate' as const,
+    command_id: id,
+  };
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            status: 'completed',
+            result: {
+              command_id: id,
+              operation: 'navigate',
+              outcome: 'completed',
+              reason: 'none',
+              data: { origin: 'https://example.com' },
+            },
+          }),
+          noStore,
+        ),
+    ),
+  );
+  await expect(
+    completeLocalCommand({ ...base, grant: 'completion', result }),
+  ).resolves.toMatchObject({ ok: true });
 });
