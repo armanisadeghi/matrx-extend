@@ -81,3 +81,6 @@ lib64/
 # reported UNMEASURED with an `incomplete` verdict, which would mean the check
 # spoiled its own report just by running.
 .cache/
+
+# Local Vault browser artifacts and receipts; source harness lives in tests/browser.
+.matrx/task1-active/
