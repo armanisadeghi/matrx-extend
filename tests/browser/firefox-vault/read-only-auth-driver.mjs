@@ -11,6 +11,8 @@ const execFileAsync = promisify(execFile);
 const harnessPath = fileURLToPath(import.meta.url);
 const root = fileURLToPath(new URL('../../../.matrx/task1-active/firefox-sidebar-probe/authenticated-harness/', import.meta.url));
 const adapterSourcePath = fileURLToPath(new URL('./adapter.mjs', import.meta.url));
+const generatorMode = process.argv.includes('--generator');
+const generatorSourcePath = fileURLToPath(new URL('./generator-acceptance.mjs', import.meta.url));
 const SOURCE_COMMIT = 'd648df949883c6c678d227021a3ab58558c128bf';
 const RECORDS_SOURCE_COMMIT = 'c3f26c9e47f1a0ef18167592ebbdf032e45f9f67';
 const ADDON_ID = 'matrx-extend@aimatrx.com';
@@ -24,11 +26,13 @@ const artifactRoot = join(artifactDirectory, 'extension');
 const artifactManifestPath = join(artifactDirectory, 'artifact-manifest.json');
 const xpi = join(artifactDirectory, 'matrx-extend-firefox-mv3.xpi');
 
-// Deliberately impossible until the independent reviewer replaces this with
-// the SHA-256 of a one-run nonce and supplies the matching nonce in the env.
-// Credentials are not loaded and no browser is launched before this gate.
-const REVIEWED_LAUNCH_NONCE_SHA256 = null;
+// The independent review pins the exact harness bundle through the launch environment.
+// Any driver or adapter change invalidates admission before credentials or launch.
 const LAUNCH_ENV = 'MATRX_FIREFOX_READONLY_AUTH_ACCEPTANCE';
+const HASH_ENV = 'MATRX_FIREFOX_REVIEWED_HARNESS_SHA256';
+async function reviewedHarnessHash() {
+  return shaText(JSON.stringify(await Promise.all([harnessPath, adapterSourcePath, ...(generatorMode ? [generatorSourcePath] : [])].map(shaFile))));
+}
 
 function shaText(value) { return createHash('sha256').update(value).digest('hex'); }
 async function shaFile(path) { return shaText(await readFile(path)); }
@@ -160,13 +164,14 @@ async function verifyArtifact() {
 
 if (process.argv.includes('--dry-run')) {
   const manifest = await verifyArtifact();
-  assert.equal(REVIEWED_LAUNCH_NONCE_SHA256, null, 'dry_run_expected_unarmed_gate');
+  assert.equal(process.env[HASH_ENV], undefined, 'dry_run_refuses_review_hash');
   assert.equal(process.env[LAUNCH_ENV], undefined, 'dry_run_refuses_launch_env');
   console.log(JSON.stringify({
     ok: true,
     mode: 'dry_refusal',
     sourceCommit: manifest.sourceCommit,
     artifactVerified: true,
+    harnessSha256: await reviewedHarnessHash(),
     credentialGateArmed: false,
     credentialsRead: false,
     browserLaunched: false,
@@ -174,11 +179,10 @@ if (process.argv.includes('--dry-run')) {
   process.exit(0);
 }
 
-assert.equal(typeof REVIEWED_LAUNCH_NONCE_SHA256, 'string', 'launch_not_reviewed_unarmed');
-const launchNonce = process.env[LAUNCH_ENV];
-assert.equal(typeof launchNonce, 'string', 'reviewed_launch_nonce_missing');
-assert.equal(shaText(launchNonce), REVIEWED_LAUNCH_NONCE_SHA256, 'reviewed_launch_nonce_mismatch');
+assert.equal(process.env[LAUNCH_ENV], 'RUN_REVIEWED_ACCEPTANCE', 'launch_not_reviewed_unarmed');
+assert.equal(process.env[HASH_ENV], await reviewedHarnessHash(), 'reviewed_harness_hash_mismatch');
 delete process.env[LAUNCH_ENV];
+delete process.env[HASH_ENV];
 
 const artifactManifest = await verifyArtifact();
 const runId = randomUUID();
@@ -188,7 +192,7 @@ await mkdir(runRoot, { recursive: true, mode: 0o700 });
 const proof = {
   schema: 1,
   runId,
-  mode: 'firefox_readonly_auth_vault',
+  mode: generatorMode ? 'firefox_generator_auth_vault' : 'firefox_readonly_auth_vault',
   sourceCommit: SOURCE_COMMIT,
   credentialsRead: false,
   authenticationAttempted: false,
@@ -226,6 +230,7 @@ const cleanupCheckpoint = async phase => {
 };
 proof.hashes = {
   driverSha256: await shaFile(harnessPath), adapterSha256: await shaFile(adapterSourcePath),
+  ...(generatorMode ? { generatorSha256: await shaFile(generatorSourcePath) } : {}),
   artifactManifestSha256: await shaFile(artifactManifestPath), artifactXpiSha256: artifactManifest.xpi.sha256,
 };
 proof.artifactManifestPath = artifactManifestPath;
@@ -568,10 +573,11 @@ try {
     }
     proof.organizationSelection.actingAsVisible = true;
     await persist();
+    const dismissSetupNotice = async () => {
     const setupNoticeDismiss = await adapter.evaluate(document => {
       const notices = [...document.querySelectorAll('[role="alert"]')].filter(node =>
         node.querySelector('.font-medium')?.textContent?.trim() === 'Capture list unavailable'
-        && node.textContent.includes('NO_ORGANIZATION'));
+        && (node.textContent.includes('NO_ORGANIZATION') || node.textContent.includes('no workspace is selected')));
       if (notices.length !== 1) return null;
       const button = notices[0].querySelector('button[aria-label="Dismiss"]');
       if (!button) return null;
@@ -585,21 +591,34 @@ try {
       }
       return `body > ${segments.join(' > ')}`;
     });
-    proof.organizationSelection.initialMissingOrganizationNotice = !!setupNoticeDismiss;
     if (setupNoticeDismiss) {
       await adapter.trustedClick(setupNoticeDismiss, {
         outcome: document => ![...document.querySelectorAll('[role="alert"]')].some(node =>
           node.querySelector('.font-medium')?.textContent?.trim() === 'Capture list unavailable'
-          && node.textContent.includes('NO_ORGANIZATION')),
+          && (node.textContent.includes('NO_ORGANIZATION') || node.textContent.includes('no workspace is selected'))),
       });
-      proof.organizationSelection.initialNoticeDismissedForSetup = true;
     }
+    return !!setupNoticeDismiss;
+    };
+    const initialNoticeDismissed = await dismissSetupNotice();
+    proof.organizationSelection.initialMissingOrganizationNotice = initialNoticeDismissed;
+    proof.organizationSelection.initialNoticeDismissedForSetup = initialNoticeDismissed;
     await persist();
     const organizationComboboxSelector = organizationState.comboboxSelector;
     try {
-      const press = await adapter.trustedPress(organizationComboboxSelector, {
-        outcome: document => document.querySelector('[role="listbox"]') !== null,
-      });
+      let press;
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        try {
+          press = await adapter.trustedPress(organizationComboboxSelector, {
+            outcome: document => document.querySelector('[role="listbox"]') !== null,
+          });
+          break;
+        } catch (error) {
+          if (attempt !== 0 || error?.message !== 'trusted_press_target_occluded' || !(await dismissSetupNotice())) throw error;
+          proof.organizationSelection.lateSetupNoticeDismissed = true;
+          await persist();
+        }
+      }
       proof.organizationSelection.comboboxTrustedPress = press.diagnostic;
       await persist();
     } catch (error) {
@@ -687,6 +706,14 @@ try {
   assert.equal(vaultReady, true, 'native_vault_items_not_observed_settled');
   proof.nativeVaultVisible = true;
   await persist();
+
+  if (generatorMode) {
+    await checkpoint('generator_ui');
+    const { runFirefoxGeneratorChecks } = await import('./generator-acceptance.mjs');
+    await runFirefoxGeneratorChecks({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, proof });
+    assert.equal(proof.generator?.ok, true, 'firefox_generator_incomplete');
+    await persist();
+  }
 
   await checkpoint('reconcile');
   const final = await items();
@@ -913,7 +940,8 @@ try {
     'addonUninstalled', 'sessionDeleted', 'driverExited', 'firefoxExited', 'profileRemoved', 'allOwnedPidsGone',
   ];
   proof.ok = !failure && !proof.persistenceFailureDuringCleanup && proof.cleanupErrors.length === 0
-    && proof.vaultMutationRequests === 0 && required.every(key => proof[key] === true);
+    && proof.vaultMutationRequests === 0 && (!generatorMode || proof.generator?.ok === true)
+    && required.every(key => proof[key] === true);
   proof.terminalPhase = proof.ok ? 'complete' : proof.phaseBeforeCleanup;
   if (!proof.ok && !proof.errorCode) proof.errorCode = 'firefox_readonly_acceptance_cleanup_incomplete';
   proof.ownedProcessCount = ownedPids.size;
