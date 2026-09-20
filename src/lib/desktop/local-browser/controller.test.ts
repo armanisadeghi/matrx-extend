@@ -71,6 +71,31 @@ function opaqueAdmitGrant(extensionGeneration: string, connectionId: string): st
   return `header.${encoded}.signature`;
 }
 
+function opaqueDiscoverGrant(): string {
+  const payload = {
+    v: 1,
+    aud: 'browser-local-executor',
+    sub: ids.user,
+    organization_id: ids.org,
+    app_instance_id: ids.app,
+    run_id: ids.run,
+    profile_id: ids.profile,
+    jti: ids.jti,
+    iat: 1,
+    exp: Math.floor(Date.now() / 1000) + 30,
+    iss: 'https://server.example',
+    tier_policy: 'none',
+    scopes: [],
+    operation: 'discover',
+    challenge_id: ids.challenge,
+  };
+  const encoded = btoa(JSON.stringify(payload))
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+  return `header.${encoded}.signature`;
+}
+
 function opaqueCleanupGrant(extensionGeneration: string, connectionId: string): string {
   const payload = {
     v: 1,
@@ -211,6 +236,23 @@ describe('owned local-browser tab controller', () => {
     });
     expect(h.create).not.toHaveBeenCalled();
     expect(h.sent.at(-1)).toMatchObject({ status: 'refused' });
+  });
+
+  it('does not acknowledge a discovery whose verification was refused', async () => {
+    const h = harness();
+    await register(h);
+    h.deps.verify = vi.fn(async () => ({
+      ok: true as const,
+      data: { status: 'refused' as const, reason: 'forbidden' as const },
+    }));
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'discover',
+      grant: opaqueDiscoverGrant(),
+    });
+    expect(h.sent.at(-1)).toMatchObject({ operation: 'discover', status: 'refused' });
   });
 
   it('creates one inactive blank tab for a duplicated admitted execution and acks the original receipt', async () => {
@@ -421,5 +463,163 @@ describe('owned local-browser tab controller', () => {
     });
     expect(h.remove).toHaveBeenCalledTimes(1);
     expect(h.sent.at(-1)).toMatchObject({ operation: 'cleanup', receipt: 'closed' });
+  });
+
+  it('never closes a tab when cleanup verification is HTTP-successful but refused', async () => {
+    const h = harness();
+    const registration = await register(h);
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: opaqueAdmitGrant(registration.generation, registration.connection),
+    });
+    h.deps.verify = vi.fn(async () => ({
+      ok: true as const,
+      data: { status: 'refused' as const, reason: 'forbidden' as const },
+    }));
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: '00000000-0000-4000-8000-000000000022',
+      operation: 'cleanup',
+      grant: opaqueCleanupGrant(registration.generation, registration.connection),
+    });
+    expect(h.remove).not.toHaveBeenCalled();
+    expect(h.sent.at(-1)).toMatchObject({ operation: 'cleanup', status: 'refused' });
+  });
+
+  it('does not acknowledge a cleanup when its registration is invalidated during ack', async () => {
+    const h = harness();
+    const registration = await register(h);
+    h.deps.verify = vi.fn(async (request) =>
+      request.proof.operation === 'cleanup'
+        ? { ok: true as const, data: { status: 'accepted' as const, stop_id: stopId } }
+        : {
+            ok: true as const,
+            data: {
+              status: 'accepted' as const,
+              admission_id: ids.admission,
+              deadline_ms: Date.now() + 10_000,
+            },
+          },
+    );
+    let releaseCleanupAck!: () => void;
+    h.deps.acknowledge = vi.fn((request) => {
+      if (request.operation === 'cleanup') {
+        return new Promise<Awaited<ReturnType<LocalBrowserControllerDeps['acknowledge']>>>(
+          (resolve) => {
+            releaseCleanupAck = () =>
+              resolve({
+                ok: true as const,
+                data: {
+                  status: 'accepted' as const,
+                  operation: 'cleanup' as const,
+                  receipt: { stop_id: stopId, status: 'closed' as const },
+                },
+              });
+          },
+        );
+      }
+      return Promise.resolve({
+        ok: true as const,
+        data: {
+          status: 'accepted' as const,
+          operation: 'admit' as const,
+          receipt: { admission_id: ids.admission, status: 'created' as const },
+          lease_expires_at_ms: Date.now() + 10_000,
+        },
+      });
+    });
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: opaqueAdmitGrant(registration.generation, registration.connection),
+    });
+    const cleanup = h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: '00000000-0000-4000-8000-000000000023',
+      operation: 'cleanup',
+      grant: opaqueCleanupGrant(registration.generation, registration.connection),
+    });
+    await vi.waitFor(() => expect(releaseCleanupAck).toBeTypeOf('function'));
+    h.invalidated();
+    releaseCleanupAck();
+    await cleanup;
+    expect(h.sent.at(-1)).toMatchObject({ operation: 'cleanup', status: 'refused' });
+  });
+
+  it('serializes two concurrent cleanup calls behind one exact close', async () => {
+    const h = harness();
+    const registration = await register(h);
+    h.deps.verify = vi.fn(async (request) =>
+      request.proof.operation === 'cleanup'
+        ? { ok: true as const, data: { status: 'accepted' as const, stop_id: stopId } }
+        : {
+            ok: true as const,
+            data: {
+              status: 'accepted' as const,
+              admission_id: ids.admission,
+              deadline_ms: Date.now() + 10_000,
+            },
+          },
+    );
+    h.deps.acknowledge = vi.fn(async (request) =>
+      request.operation === 'cleanup'
+        ? {
+            ok: true as const,
+            data: {
+              status: 'accepted' as const,
+              operation: 'cleanup' as const,
+              receipt: { stop_id: stopId, status: 'closed' as const },
+            },
+          }
+        : {
+            ok: true as const,
+            data: {
+              status: 'accepted' as const,
+              operation: 'admit' as const,
+              receipt: { admission_id: ids.admission, status: 'created' as const },
+              lease_expires_at_ms: Date.now() + 10_000,
+            },
+          },
+    );
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: opaqueAdmitGrant(registration.generation, registration.connection),
+    });
+    let release!: () => void;
+    h.deps.tabs.remove = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          release = resolve;
+        }),
+    );
+    const grant = opaqueCleanupGrant(registration.generation, registration.connection);
+    const first = h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: '00000000-0000-4000-8000-000000000020',
+      operation: 'cleanup',
+      grant,
+    });
+    await vi.waitFor(() => expect(h.deps.tabs.remove).toHaveBeenCalledTimes(1));
+    const second = h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: '00000000-0000-4000-8000-000000000021',
+      operation: 'cleanup',
+      grant,
+    });
+    release();
+    await Promise.all([first, second]);
+    expect(h.deps.tabs.remove).toHaveBeenCalledTimes(1);
   });
 });

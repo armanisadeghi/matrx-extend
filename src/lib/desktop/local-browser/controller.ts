@@ -59,9 +59,14 @@ type AdmissionOutcome =
   | { reason: LocalBrowserRefusalReason };
 type CleanupReceipt = {
   registration: Registration;
-  receipt: 'closed' | 'already_absent' | 'unconfirmed';
+  grantJti: string;
+  receipt: 'closed' | 'already_absent' | 'unconfirmed' | null;
   expiresAtMs: number;
+  inFlight: Promise<CleanupOutcome> | null;
 };
+type CleanupOutcome =
+  | { receipt: 'closed' | 'already_absent' | 'unconfirmed' }
+  | { reason: LocalBrowserRefusalReason };
 
 export interface LocalBrowserControllerDeps {
   getExpectedActor: (deadlineMs: number) => Promise<PrivateApiResult<PrivateExpectedActor>>;
@@ -204,10 +209,10 @@ export class LocalBrowserController {
   private forgetRemovedTab(tabId: number): void {
     for (const [_key, entry] of this.entries) {
       if (entry.tabId !== tabId) continue;
-      if (entry.expiryTimer) clearTimeout(entry.expiryTimer);
-      entry.tabId = null;
-      entry.leaseExpiresAtMs = null;
-      entry.terminalAdmissionReceipt ??= 'cancelled';
+      // A browser close is terminal for this exact admission. Keep its
+      // identity-fenced tombstone through the original grant deadline so a
+      // delayed retry cannot replace it with another tab.
+      this.terminalize(entry, entry.terminalAdmissionReceipt ?? 'cancelled', null);
     }
   }
 
@@ -408,6 +413,7 @@ export class LocalBrowserController {
       deadlineMs,
     });
     if (!result.ok) return { reason: mapPrivateFailure(result.error) };
+    if (result.data.status !== 'accepted') return { reason: 'authority_refused' };
     if (!this.isCurrent(context, registration, registration.socketEpoch))
       return { reason: 'binding_changed' };
     return { receipt: 'accepted' };
@@ -608,24 +614,62 @@ export class LocalBrowserController {
     actor: PrivateExpectedActor,
     registration: Registration,
     context: number,
-  ): Promise<
-    { receipt: 'closed' | 'already_absent' | 'unconfirmed' } | { reason: LocalBrowserRefusalReason }
-  > {
+  ): Promise<CleanupOutcome> {
+    this.purgeCleanupReceipts();
     const entry = this.entries.get(runKey(claims));
+    const key = cleanupKey(claims);
+    const existing = this.cleanupReceipts.get(key);
+    if (existing) {
+      if (
+        !sameRegistration(existing.registration, registration) ||
+        existing.grantJti !== claims.jti
+      )
+        return { reason: 'retry_conflict' };
+      if (existing.inFlight) return existing.inFlight;
+      if (existing.receipt !== null)
+        return this.acknowledgeCleanup(frame, claims, deadlineMs, actor, existing.receipt);
+    }
     if (entry?.cleanup) {
       return entry.cleanupStopId === claims.stop_id ? entry.cleanup : { reason: 'retry_conflict' };
     }
-    if (!entry) return this.performCleanup(frame, claims, deadlineMs, actor, registration, context);
+    if (!entry) return { reason: 'authority_refused' };
+    if (this.cleanupReceipts.size >= MAX_OWNED_RUNS) return { reason: 'rate_limited' };
+    const record: CleanupReceipt = {
+      registration,
+      grantJti: claims.jti,
+      receipt: null,
+      expiresAtMs: deadlineMs,
+      inFlight: null,
+    };
+    this.cleanupReceipts.set(key, record);
     entry.cleanupStopId = claims.stop_id;
-    const work = this.performCleanup(frame, claims, deadlineMs, actor, registration, context);
+    let resolveWork!: (outcome: CleanupOutcome) => void;
+    const work = new Promise<CleanupOutcome>((resolve) => {
+      resolveWork = resolve;
+    });
+    record.inFlight = work;
     entry.cleanup = work;
+    void this.performCleanup(
+      frame,
+      claims,
+      deadlineMs,
+      actor,
+      registration,
+      context,
+      entry,
+      record,
+    ).then(resolveWork, () => resolveWork({ reason: 'authority_refused' }));
     try {
-      return await work;
+      const outcome = await work;
+      return 'receipt' in outcome && !this.canMutate(context, registration, deadlineMs)
+        ? { reason: 'binding_changed' }
+        : outcome;
     } finally {
       if (entry.cleanup === work) {
         entry.cleanup = null;
         entry.cleanupStopId = null;
       }
+      if (record.inFlight === work) record.inFlight = null;
     }
   }
 
@@ -636,16 +680,10 @@ export class LocalBrowserController {
     actor: PrivateExpectedActor,
     registration: Registration,
     context: number,
-  ): Promise<
-    { receipt: 'closed' | 'already_absent' | 'unconfirmed' } | { reason: LocalBrowserRefusalReason }
-  > {
-    this.purgeCleanupReceipts();
-    const entry = this.entries.get(runKey(claims));
-    const prior = this.cleanupReceipts.get(cleanupKey(claims));
-    if (!entry && (!prior || !sameRegistration(prior.registration, registration)))
-      return { reason: 'authority_refused' };
-    if (entry && !sameRegistration(entry.registration, registration))
-      return { reason: 'authority_refused' };
+    entry: OwnedRun,
+    record: CleanupReceipt,
+  ): Promise<CleanupOutcome> {
+    if (!sameRegistration(entry.registration, registration)) return { reason: 'authority_refused' };
     if (entry?.admitted) await entry.admitted;
     const verified = await this.deps.verify({
       grant: frame.grant,
@@ -654,15 +692,13 @@ export class LocalBrowserController {
       deadlineMs,
     });
     if (!verified.ok) return { reason: mapPrivateFailure(verified.error) };
+    if (verified.data.status !== 'accepted') return { reason: 'authority_refused' };
     if (
-      !this.isCurrent(context, registration, registration.socketEpoch) ||
-      (entry !== undefined && this.entries.get(entry.key) !== entry)
+      !this.canMutate(context, registration, deadlineMs) ||
+      this.entries.get(entry.key) !== entry ||
+      this.cleanupReceipts.get(cleanupKey(claims)) !== record
     )
       return { reason: 'binding_changed' };
-    if (prior) {
-      return this.acknowledgeCleanup(frame, claims, deadlineMs, actor, prior.receipt);
-    }
-    if (!entry) return { reason: 'authority_refused' };
     if (entry.expiryTimer) clearTimeout(entry.expiryTimer);
     let receipt: 'closed' | 'already_absent' | 'unconfirmed' = 'already_absent';
     if (entry.tabId !== null) {
@@ -673,11 +709,13 @@ export class LocalBrowserController {
         receipt = 'unconfirmed';
       }
     }
-    this.cleanupReceipts.set(cleanupKey(claims), {
-      registration,
-      receipt,
-      expiresAtMs: deadlineMs,
-    });
+    if (
+      !this.canMutate(context, registration, deadlineMs) ||
+      this.entries.get(entry.key) !== entry ||
+      this.cleanupReceipts.get(cleanupKey(claims)) !== record
+    )
+      return { reason: 'binding_changed' };
+    record.receipt = receipt;
     entry.tabId = null;
     entry.leaseExpiresAtMs = null;
     entry.terminalAdmissionReceipt ??= 'cancelled';
@@ -732,8 +770,7 @@ export class LocalBrowserController {
     entry.expiryTimer = setTimeout(
       () => {
         if (this.entries.get(entry.key) !== entry || entry.tabId === null) return;
-        this.entries.delete(entry.key);
-        void this.closeTab(entry.tabId);
+        this.terminalize(entry, 'cancelled');
       },
       Math.max(0, entry.grantDeadlineMs - Date.now()),
     );

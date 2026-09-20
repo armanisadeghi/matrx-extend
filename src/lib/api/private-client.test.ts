@@ -284,6 +284,36 @@ describe('private lifecycle transport', () => {
     },
   );
 
+  it.each(['cancelled', 'failed'] as const)(
+    'rejects a cancelled directive after a %s admission submission',
+    async (submitted) => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(
+          async () =>
+            new Response(
+              JSON.stringify({
+                status: 'cancelled',
+                operation: 'admit',
+                receipt: { admission_id: admissionId, status: 'cancelled' },
+                lease_expires_at_ms: null,
+              }),
+              noStore,
+            ),
+        ),
+      );
+      await expect(
+        acknowledgeLocalBrowser({
+          grant: 'grant',
+          operation: 'admit',
+          receipt: { admission_id: admissionId, status: submitted },
+          expectedActor,
+          deadlineMs: Date.now() + 10_000,
+        }),
+      ).resolves.toEqual({ ok: false, error: 'invalid_response' });
+    },
+  );
+
   it('serializes the closed verify body and uses sealed fetch controls', async () => {
     const fetchMock = vi.fn(
       async () =>
