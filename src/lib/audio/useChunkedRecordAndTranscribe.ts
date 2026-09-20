@@ -20,6 +20,7 @@ import { getAccessToken } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { base64ToBlob } from '@/lib/messaging/binary-transport';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { mayReportExternalTelemetry } from '@/lib/telemetry/external-reporting';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { audioSafetyStore } from './audioSafetyStore';
 import { AUDIO_API_ROUTES, AUDIO_LIMITS, GROQ_LIMITS, RETRY_CONFIG } from './constants';
@@ -58,13 +59,14 @@ async function sendMicRequest(payload: MicRequestPayload): Promise<void> {
   }
 }
 
-async function logClientError(entry: {
+export async function logAudioClientError(entry: {
   errorCode: string;
   errorMessage: string;
   fileSizeBytes?: number;
   chunkIndex?: number;
   apiRoute?: string;
 }): Promise<void> {
+  if (!(await mayReportExternalTelemetry())) return;
   try {
     const token = await getAccessToken();
     if (!token) return;
@@ -376,7 +378,7 @@ export function useChunkedRecordAndTranscribe({
             /* ignore */
           }
         }
-        await logClientError({
+        await logAudioClientError({
           errorCode: 'CHUNK_FAILED',
           errorMessage: msg,
           fileSizeBytes: blobToSend.size,

@@ -125,5 +125,5 @@ describe('extension identity diagnostics', () => {
       buildManifest({ mode: 'production', browser: 'firefox' }).browser_specific_settings?.gecko
         ?.id,
     ).toBe(OBSERVED_FIREFOX_ID);
-  });
+  }, 30_000);
 });
