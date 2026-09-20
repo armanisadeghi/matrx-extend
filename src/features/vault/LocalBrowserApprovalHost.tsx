@@ -41,9 +41,12 @@ export function LocalBrowserApprovalHost({ signedIn }: { signedIn: boolean }) {
     };
   }, [signedIn, show, remove, clear]);
   useEffect(() => {
-    const timers = Object.values(approvals).map((approval) => setTimeout(
-      () => remove(approval.approvalContextId), Math.max(0, approval.deadlineMs - Date.now()),
-    ));
+    const timers = Object.values(approvals).map((approval) =>
+      setTimeout(
+        () => remove(approval.approvalContextId),
+        Math.max(0, approval.deadlineMs - Date.now()),
+      ),
+    );
     return () => timers.forEach(clearTimeout);
   }, [approvals, remove]);
   if (!signedIn) return null;

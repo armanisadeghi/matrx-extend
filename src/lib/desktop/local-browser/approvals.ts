@@ -56,6 +56,13 @@ type Waiter = {
 const waiters = new Map<string, Waiter>();
 let permissionGeneration = 0;
 let installed = false;
+let permissionReader = readDefaultPermissionMode;
+
+export function setLocalBrowserApprovalPermissionReaderForTest(
+  reader: (() => Promise<'ask' | 'act'>) | null,
+): void {
+  permissionReader = reader ?? readDefaultPermissionMode;
+}
 
 function finish(contextId: string, result: LocalBrowserApprovalResult): void {
   const waiter = waiters.get(contextId);
@@ -109,9 +116,12 @@ async function authorize(contextId: string, waiter: Waiter, userConfirmed: boole
     finish(contextId, { decision: 'refused', reason: 'binding_or_schema_changed' });
     return;
   }
-  const mode = await readDefaultPermissionMode();
+  const mode = await permissionReader();
   // No await between this fence and transition: settings must not auto-allow stale act mode.
-  if (waiter.generation !== permissionGeneration || !waiter.proposal.isBindingCurrent(waiter.proposal.binding)) {
+  if (
+    waiter.generation !== permissionGeneration ||
+    !waiter.proposal.isBindingCurrent(waiter.proposal.binding)
+  ) {
     finish(contextId, { decision: 'cancel', reason: 'permission_changed' });
     return;
   }
@@ -135,14 +145,27 @@ function toRequest(
   waiter: Waiter,
   policy: PolicyResolution,
 ): LocalBrowserApprovalRequest {
-  const rawOrigin = waiter.proposal.command.operation === 'navigate' ? waiter.proposal.command.url : undefined;
+  const rawOrigin =
+    waiter.proposal.command.operation === 'navigate' ? waiter.proposal.command.url : undefined;
   let origin: string | undefined;
-  try { origin = rawOrigin ? new URL(rawOrigin).origin : undefined; } catch { origin = undefined; }
+  try {
+    origin = rawOrigin ? new URL(rawOrigin).origin : undefined;
+  } catch {
+    origin = undefined;
+  }
   const rawFields = (waiter.proposal.command as { fields?: unknown }).fields;
-  const names = Array.isArray(rawFields) ? rawFields.map((field) =>
-    typeof field === 'object' && field !== null && typeof (field as { field_key?: unknown }).field_key === 'string'
-      ? (field as { field_key: string }).field_key : null,
-  ).filter((field): field is string => field !== null).slice(0, 12) : [];
+  const names = Array.isArray(rawFields)
+    ? rawFields
+        .map((field) =>
+          typeof field === 'object' &&
+          field !== null &&
+          typeof (field as { field_key?: unknown }).field_key === 'string'
+            ? (field as { field_key: string }).field_key
+            : null,
+        )
+        .filter((field): field is string => field !== null)
+        .slice(0, 12)
+    : [];
   return {
     approvalContextId: contextId,
     operation: waiter.proposal.command.operation,

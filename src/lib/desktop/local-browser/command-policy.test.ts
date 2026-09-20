@@ -37,11 +37,18 @@ describe('resolveLocalCommandPolicy', () => {
   });
 
   it.each(['attempt', 'discover'])('refuses forged authenticator action %s', (action) => {
-    expect(resolveLocalCommandPolicy({
-      operation: 'authenticator', action,
-      credential_item_id: '00000000-0000-4000-8000-000000000001',
-      code_selector: '#code', submit: { kind: 'none' },
-    } as never, 1)).toBeNull();
+    expect(
+      resolveLocalCommandPolicy(
+        {
+          operation: 'authenticator',
+          action,
+          credential_item_id: '00000000-0000-4000-8000-000000000001',
+          code_selector: '#code',
+          submit: { kind: 'none' },
+        } as never,
+        1,
+      ),
+    ).toBeNull();
   });
 
   it('refuses schema-invalid commands before policy', () => {
