@@ -138,6 +138,7 @@ exports.runSavedLoginChecks = async ({
     scope: 'quiet real side-panel Fill against disposable nested open-root and native external-form controls',
     nestedOpenRootFilled: false,
     sameRootExternalFormFilled: false,
+    quietNoInlineLoginSuggestion: false,
     noWebsiteSubmission: false,
     fixtureClosed: false,
   };
@@ -156,8 +157,8 @@ exports.runSavedLoginChecks = async ({
       await page.goto(url, { waitUntil: 'domcontentloaded' });
       const tabId = await tabFor(worker, url, wait);
       await waitForBridge(worker, tabId, wait);
-      if (typeof focusOwnedBrowser === 'function') await focusOwnedBrowser(tabId);
       await page.bringToFront();
+      if (typeof focusOwnedBrowser === 'function') await focusOwnedBrowser(tabId);
       const passwordId = `#${kind}-password`;
       const inner = page.locator('x-saved-login-outer').locator('x-saved-login-inner');
       await inner.locator(passwordId).focus();
@@ -169,6 +170,8 @@ exports.runSavedLoginChecks = async ({
       } catch {
         throw new Error(`saved_login_${kind}_panel_fill_not_ready`);
       }
+      const quiet = await page.evaluate(() => !document.querySelector('#matrx-inline-login-suggestion'));
+      assert(quiet, `saved_login_${kind}_inline_suggestion_present`);
       checkpoint(`saved_login_${kind}_panel_fill`);
       await realPanel.click(fill);
       const outcome = `Array.from(document.querySelectorAll('p')).some((node) => node.textContent?.trim() === 'Filled. Review the form, then sign in.')`;
@@ -199,6 +202,7 @@ exports.runSavedLoginChecks = async ({
     evidence.nestedOpenRootFilled = true;
     await runCase('external', fixture.externalUrl);
     evidence.sameRootExternalFormFilled = true;
+    evidence.quietNoInlineLoginSuggestion = true;
     assert(fixture.state.submits === 0, 'saved_login_submitted_website');
     evidence.noWebsiteSubmission = true;
     if (proof) proof.savedLoginFill = evidence;
