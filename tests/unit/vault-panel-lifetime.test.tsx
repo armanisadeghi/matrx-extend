@@ -108,6 +108,11 @@ beforeEach(async () => {
     },
     windows: { onFocusChanged: event },
     runtime: {
+      connect: vi.fn(() => ({
+        onMessage: { addListener: vi.fn(), removeListener: vi.fn() },
+        onDisconnect: { addListener: vi.fn(), removeListener: vi.fn() },
+        disconnect: vi.fn(),
+      })),
       sendMessage: (message: { kind: string }) =>
         message.kind.endsWith('panel-status') ? deps.status(message) : deps.fill(message),
       onMessage: {

@@ -379,7 +379,7 @@ describe('owned local-browser tab controller', () => {
       claim,
       complete,
       currentDocument: vi.fn(async () => currentDocument),
-    } as LocalBrowserControllerDeps['command'];
+    } satisfies NonNullable<LocalBrowserControllerDeps['command']>;
 
     await h.emit({
       type: 'local_browser.execute',
@@ -436,7 +436,7 @@ describe('owned local-browser tab controller', () => {
       claim: vi.fn(),
       complete: vi.fn(),
       currentDocument: vi.fn(async () => ({ documentId: ids.challenge, url: 'https://example.test/before' })),
-    } as LocalBrowserControllerDeps['command'];
+    } satisfies NonNullable<LocalBrowserControllerDeps['command']>;
     await mismatch.emit({
       type: 'local_browser.execute',
       version: 1,

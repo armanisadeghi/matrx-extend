@@ -63,7 +63,7 @@
     "@ai-matrx/design-system": "latest",
     "@ai-matrx/kit": "latest",
     "@ai-matrx/realtime": "latest",
-    "@ai-matrx/records": "^0.17.0",
+    "@ai-matrx/records": "latest",
     "@ai-matrx/tap-target": "latest",
     "@cartesia/cartesia-js": "^2.2.9",
     "@hookform/resolvers": "^3.10.0",

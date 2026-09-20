@@ -7,7 +7,7 @@
 > common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-09-19T10:02:30.692Z
+Generated: 2026-09-20T18:39:48.160Z
 Total tools: 82
 
 ## ai
@@ -656,9 +656,31 @@ Extract text and structure from a PDF — either one loaded in a browser tab, or
 
 _action_
 
-Read and write this organization's custom records. One tool, eight actions: table_list (what tables exist), metadata_search (search structure, not rows), record_read (one record with its field versions), record_aggregate (count/sum/bucket inside the query), record_write (create or patch), record_delete (soft delete, undo=true restores), field_propose (propose a new field), table_propose (propose a new table). Every call runs under your own authority — it can read and change exactly what you could, and values you are not cleared to see come back masked and named rather than dropped.
+Read and write this organization's custom records — tables, their fields and their rows — and publish a form that people with no account can answer. One tool, nine actions.
 
-**Parameters:** `action` (string, required) = ["table_list","metadata_search","record_read","record_aggregate","record_write","record_delete","field_propose","table_propose"]; `context_policy` (string); `description` (string); `expected_version` (integer); `field_key` (string); `field_type` (string); `group_by` (string); `id_keyed` (boolean); `label` (string); `limit` (integer); `measure` (string); `name` (string); `query` (string); `record_id` (string); `sensitivity` (string); `spec` (object); `table_id` (string); `undo` (boolean); `values` (object)
+DO A WHOLE INTENT IN ONE CALL. Each action takes everything it needs at once; calling one per field or one per row is the single thing that makes this tool slow, and it is never necessary.
+
+A table and all its fields — ONE call: {"action": "table_propose", "name": "Field Crews", "fields": [{"name": "crew name", "type": "text"}, {"name": "region", "type": "text"}, {"name": "day rate", "type": "currency", "unit": "USD"}]}. It answers with table_id and every field's key and field_id. Never follow it with field_propose for a field you already named here.
+
+Every row — ONE call: {"action": "record_write", "table_id": "<id>", "records": [{"crew_name": "North Crew", "region": "North", "day_rate": 1200}, {...}, {...}]} — up to 200 rows in one call, in one transaction. Each entry IS the field map; do not wrap it in `values` and do not call record_write in a loop.
+
+Read them all back — ONE call: {"action": "record_read", "table_id": "<id>"} returns every record of that table. `record_id` instead of `table_id` reads exactly one, with its field versions.
+
+A PUBLIC FORM, whole, in ONE call. When somebody asks for a form, an intake, a sign-up sheet, an application or a way for people to send something in, that is form_propose — never a table plus a plan to build a form later. It makes the table, the typed fields, the rule that says what counts as a complete answer, the rule that says who to tell, and the published link, and it answers with that link:
+{"action": "form_propose", "title": "New patient intake", "table": "New Patients", "fields": [{"name": "full name", "type": "text", "required": true}, {"name": "date of birth", "type": "date", "required": true}, {"name": "mobile", "type": "phone", "required": true}, {"name": "reason for visit", "type": "text", "help": "In your own words"}], "notify": true}.
+Anyone with the link can answer it and nobody can guess it; the answers arrive as ordinary records in that table, stamped with the form they came through. Pass table_id instead of table to put a form on a table that already exists.
+
+The other four: table_list (what tables and homes exist), metadata_search (search structure, not rows), record_aggregate (count/sum/avg/min/max, grouped, computed inside the query), record_delete (soft delete; undo=true restores), field_propose (add ONE field to a table that already exists).
+
+Field names: you may write a field by its key or by its display label, in any casing — both are resolved, and a name that is no field at all is refused with the real ones listed rather than written into nowhere.
+
+WHERE THE WORK WENT — read it, never guess it. Every answer that puts something somewhere carries `where`, with the organization's name, the home's name and a ready-made sentence in `where.say`. Tell the person that sentence, with those exact names. Never say the work went to a default workspace, a sandbox, a fallback, or anywhere you were not told: you are always working inside one organization, and if a name could not be read the answer says so in the same place.
+
+WHEN A CHANGE WAITS FOR A PERSON. An organization can ask a person before an agent changes a table that already existed — whether that change is a new column or new rows. The answer then says `awaiting_approval` with `approval_id`, `approvers` and `not_done`. Say plainly that it did NOT happen, name the people who can approve it, and stop: do not retry it, do not work around it, do not call it queued unless the answer gave you an `approval_id`, and do not claim it is done. A table you made yourself in this conversation never waits.
+
+Every call runs under your own authority: it reads and changes exactly what you could, values you are not cleared to see come back masked and named rather than dropped, and anything that could not be done is said in the answer.
+
+**Parameters:** `$variants` (any); `action` (string, required) = ["table_list","metadata_search","record_read","record_aggregate","record_write","record_delete","field_propose","table_propose","form_propose"]; `config` (object); `context_policy` (string); `description` (string); `expected_version` (integer); `field_key` (string); `field_type` (string); `fields` (array); `flow` (string); `group_by` (string); `home` (string); `id_keyed` (boolean); `intro` (string); `label` (string); `limit` (integer); `match` (object); `measure` (string); `name` (string); `notify` (object); `options_table_id` (string); `publish` (boolean); `query` (string); `questions` (array); `record_id` (string); `records` (array); `relation_target` (string); `sensitivity` (string); `spec` (object); `submission_cap` (integer); `submit_label` (string); `table` (string); `table_id` (string); `thank_you` (object); `title` (string); `undo` (boolean); `unit` (string); `values` (object)
 
 ## tabs
 
