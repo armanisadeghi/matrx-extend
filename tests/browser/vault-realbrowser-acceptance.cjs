@@ -10,7 +10,7 @@ const { createRequire } = require('node:module');
 const { execFile, spawn } = require('node:child_process');
 const { promisify } = require('node:util');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
-const { runSavedLoginChecks } = require('./vault-saved-login-acceptance.cjs');
+const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
 // The extension deliberately does not ship Playwright.  Use an explicit test
 // runtime override or the documented workspace harness dependency.
 const playwrightRequire = createRequire(
@@ -443,6 +443,13 @@ function startLocalSite() {
     if (request.url === '/submitted' && request.method === 'POST') {
       state.submits += 1;
       response.writeHead(204).end();
+      return;
+    }
+    const savedLoginKind = request.url === '/saved-login-nested' ? 'nested'
+      : request.url === '/saved-login-external' ? 'external' : null;
+    if (savedLoginKind) {
+      response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+      response.end(renderSavedLoginFixtureHTML(savedLoginKind));
       return;
     }
     response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
@@ -1452,10 +1459,11 @@ async function materializedPassword(id) {
     proof.checks.updateChoiceDidNotSubmit = true;
     if (receiptBackedSaveUpdateMode) {
       // This helper exercises Fill with the updated, receipt-owned target. It
-      // may start disposable localhost pages, but it must never create a
-      // second Vault fixture or a sixth receipt-owned item.
-      const parentLocalHost = new URL(localUrl).hostname;
-      assert(parentLocalHost === '127.0.0.1', 'saved_login_parent_host_refused');
+      // shares the parent's exact origin and never creates another Vault
+      // fixture or a sixth receipt-owned item.
+      const parentLogin = new URL(localUrl);
+      const parentOrigin = parentLogin.origin;
+      assert(parentLogin.hostname === '127.0.0.1', 'saved_login_parent_host_refused');
       const fixtureIdsBeforeSavedLogin = new Set(createdIds);
       const fixtureKeysBeforeSavedLogin = new Set(createKeys);
       const itemPostsBeforeSavedLogin = proof.vaultItemPosts.total;
@@ -1468,11 +1476,9 @@ async function materializedPassword(id) {
         targetName,
         username,
         password: newPassword,
-        prepareFixture: ({ loginUrl, nestedUrl, externalUrl }) => {
-          for (const fixtureUrl of [loginUrl, nestedUrl, externalUrl]) {
-            assert(new URL(fixtureUrl).hostname === parentLocalHost, 'saved_login_fixture_host_mismatch');
-          }
-        },
+        parentLoginUrl: localUrl,
+        parentOrigin,
+        getSubmitCount: () => local.state.submits,
         assert,
         wait,
         checkpoint,
@@ -1485,7 +1491,7 @@ async function materializedPassword(id) {
       assert(createKeys.size === fixtureKeysBeforeSavedLogin.size
         && [...fixtureKeysBeforeSavedLogin].every((key) => createKeys.has(key)), 'saved_login_helper_created_fixture_key');
       assert(proof.vaultItemPosts.total === itemPostsBeforeSavedLogin, 'saved_login_helper_item_post');
-      assert(proof.savedLoginFill?.fixtureClosed === true, 'saved_login_helper_fixture_not_closed');
+      assert(proof.savedLoginFill?.pagesClosed === true, 'saved_login_helper_pages_not_closed');
       proof.checks.savedLoginUsesReceiptOwnedFixture = true;
       proof.checks.savedLoginNoAdditionalVaultFixture = true;
     }

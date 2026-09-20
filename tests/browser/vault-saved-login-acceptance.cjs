@@ -4,24 +4,15 @@
  * Values supplied by the caller stay in process/page evaluation and never enter
  * the returned proof object, logs, screenshots or a message seam.
  */
-const http = require('node:http');
+const SAVED_LOGIN_FIXTURE_PATHS = Object.freeze({
+  nested: '/saved-login-nested',
+  external: '/saved-login-external',
+});
 
-function startFixture() {
-  const state = { submits: 0, requests: 0 };
-  const server = http.createServer((request, response) => {
-    state.requests += 1;
-    if (request.method === 'POST') {
-      state.submits += 1;
-      response.writeHead(204).end();
-      return;
-    }
-    const external = request.url?.startsWith('/external') === true;
-    const kind = external ? 'external' : 'nested';
-    response.writeHead(200, {
-      'content-type': 'text/html; charset=utf-8',
-      'cache-control': 'no-store',
-    });
-    response.end(`<!doctype html><html><body>
+function renderSavedLoginFixtureHTML(kind) {
+  if (kind !== 'nested' && kind !== 'external') throw new Error('saved_login_fixture_kind_invalid');
+  const external = kind === 'external';
+  return `<!doctype html><html><body>
       <main><h1>Disposable saved-login ${kind} form</h1><x-saved-login-outer></x-saved-login-outer></main>
       <script>
         (() => {
@@ -31,8 +22,8 @@ function startFixture() {
           const root = inner.attachShadow({ mode: 'open' });
           outerRoot.append(inner);
           const form = document.createElement('form');
-          form.id = 'saved-login-form'; form.method = 'post'; form.action = '/submit';
-          form.addEventListener('submit', (event) => { event.preventDefault(); fetch('/submit', { method: 'POST' }); });
+          form.id = 'saved-login-form'; form.method = 'post'; form.action = '/submitted';
+          form.addEventListener('submit', (event) => { event.preventDefault(); fetch('/submitted', { method: 'POST' }); });
           const username = document.createElement('input');
           username.id = '${kind}-username'; username.type = 'email'; username.name = 'email'; username.autocomplete = 'username';
           const password = document.createElement('input');
@@ -48,21 +39,19 @@ function startFixture() {
           }
         })();
       </script>
-    </body></html>`);
-  });
-  return new Promise((resolve, reject) => {
-    server.once('error', reject);
-    server.listen(0, '127.0.0.1', () => {
-      const address = server.address();
-      if (!address || typeof address === 'string') return reject(new Error('saved_login_fixture_address_unavailable'));
-      resolve({
-        state,
-        nestedUrl: `http://127.0.0.1:${address.port}/nested`,
-        externalUrl: `http://127.0.0.1:${address.port}/external`,
-        close: () => new Promise((done) => server.close(done)),
-      });
-    });
-  });
+    </body></html>`;
+}
+
+function fixtureUrlsForParent(parentLoginUrl, parentOrigin) {
+  const login = new URL(parentLoginUrl);
+  if (typeof parentOrigin !== 'string' || login.origin !== parentOrigin)
+    throw new Error('saved_login_parent_origin_mismatch');
+  const urls = Object.fromEntries(Object.entries(SAVED_LOGIN_FIXTURE_PATHS).map(([kind, pathname]) =>
+    [kind, new URL(pathname, login.origin).href],
+  ));
+  if (Object.values(urls).some((url) => new URL(url).origin !== login.origin))
+    throw new Error('saved_login_fixture_origin_mismatch');
+  return urls;
 }
 
 const exactFillButton = (targetName) => `(() => {
@@ -139,9 +128,8 @@ async function tabFor(worker, url, wait) {
  * replacement credential engine is introduced by this helper.
  */
 /**
- * `prepareFixture` receives the fixture URLs before either page is opened. It
- * lets the caller create its already-receipt-owned website-login record with
- * `loginUrl`; the helper never reads or writes Vault data itself.
+ * The parent owns the exact-origin fixture routes and the website submit
+ * counter. The helper never reads or writes Vault data itself.
  */
 exports.runSavedLoginChecks = async ({
   context,
@@ -150,7 +138,9 @@ exports.runSavedLoginChecks = async ({
   targetName,
   username,
   password,
-  prepareFixture,
+  parentLoginUrl,
+  parentOrigin,
+  getSubmitCount,
   assert,
   wait,
   checkpoint = () => {},
@@ -164,29 +154,29 @@ exports.runSavedLoginChecks = async ({
   assert(typeof password === 'string' && password.length > 0, 'saved_login_helper_password_missing');
   assert(typeof wait === 'function' && typeof assert === 'function', 'saved_login_helper_controls_missing');
   assert(typeof verifyRealVaultPanel === 'function', 'saved_login_helper_panel_verifier_missing');
-  assert(typeof prepareFixture === 'function', 'saved_login_helper_prepare_missing');
+  assert(typeof getSubmitCount === 'function', 'saved_login_helper_submit_counter_missing');
 
-  const fixture = await startFixture();
+  // Resolve and reject an origin mismatch before creating any browser page.
+  const fixtureUrls = fixtureUrlsForParent(parentLoginUrl, parentOrigin);
+  const submitCountBaseline = getSubmitCount();
+  assert(Number.isInteger(submitCountBaseline) && submitCountBaseline >= 0, 'saved_login_submit_counter_invalid');
+
   const evidence = {
     scope: 'quiet real side-panel Fill against disposable nested open-root and native external-form controls',
     nestedOpenRootFilled: false,
     sameRootExternalFormFilled: false,
     quietNoInlineLoginSuggestion: false,
     noWebsiteSubmission: false,
-    fixtureClosed: false,
+    pagesClosed: false,
   };
   let page;
+  const ownedPages = new Set();
+  let primaryFailure;
   try {
-    // The parent creates its receipt-owned Vault fixture only after it receives
-    // this local host. `host` matching is intentionally shared by both routes.
-    await prepareFixture({
-      loginUrl: fixture.nestedUrl,
-      nestedUrl: fixture.nestedUrl,
-      externalUrl: fixture.externalUrl,
-    });
     const runCase = async (kind, url) => {
       checkpoint(`saved_login_${kind}_navigate`);
       page = await context.newPage();
+      ownedPages.add(page);
       await page.goto(url, { waitUntil: 'domcontentloaded' });
       const tabId = await tabFor(worker, url, wait);
       await waitForBridge(worker, tabId, wait);
@@ -228,25 +218,45 @@ exports.runSavedLoginChecks = async ({
         expectedUsername: username, expectedPassword: password,
       });
       assert(values.usernameMatches && values.passwordMatches && values.unrelatedUnchanged, `saved_login_${kind}_values_mismatch`);
-      assert(fixture.state.submits === 0, `saved_login_${kind}_submitted_website`);
+      assert(getSubmitCount() === submitCountBaseline, `saved_login_${kind}_submitted_website`);
       await page.close();
       page = null;
     };
 
-    await runCase('nested', fixture.nestedUrl);
+    await runCase('nested', fixtureUrls.nested);
     evidence.nestedOpenRootFilled = true;
-    await runCase('external', fixture.externalUrl);
+    await runCase('external', fixtureUrls.external);
     evidence.sameRootExternalFormFilled = true;
     evidence.quietNoInlineLoginSuggestion = true;
-    assert(fixture.state.submits === 0, 'saved_login_submitted_website');
+    assert(getSubmitCount() === submitCountBaseline, 'saved_login_submitted_website');
     evidence.noWebsiteSubmission = true;
     if (proof) proof.savedLoginFill = evidence;
     return evidence;
+  } catch (error) {
+    primaryFailure = error;
+    throw error;
   } finally {
-    try { if (page && !page.isClosed()) await page.close(); } finally {
-      await fixture.close();
-      evidence.fixtureClosed = true;
-      if (proof) proof.savedLoginFill = evidence;
+    const cleanupFailures = [];
+    for (const ownedPage of ownedPages) {
+      let closed = false;
+      try { closed = ownedPage.isClosed() === true; } catch (error) { cleanupFailures.push(error); }
+      if (!closed) {
+        try { await ownedPage.close(); } catch (error) { cleanupFailures.push(error); }
+      }
+      try {
+        if (ownedPage.isClosed() !== true) cleanupFailures.push(new Error('saved_login_owned_page_not_closed'));
+      } catch (error) {
+        cleanupFailures.push(error);
+      }
     }
+    evidence.pagesClosed = cleanupFailures.length === 0;
+    if (!evidence.pagesClosed) evidence.pageCleanupFailure = true;
+    if (proof) proof.savedLoginFill = evidence;
+    // A cleanup failure is itself the result when the interaction passed, but
+    // it remains evidence only when a prior interaction error already exists.
+    if (!evidence.pagesClosed && !primaryFailure) throw new Error('saved_login_helper_page_cleanup_failed');
   }
 };
+
+exports.renderSavedLoginFixtureHTML = renderSavedLoginFixtureHTML;
+exports.fixtureUrlsForParent = fixtureUrlsForParent;
