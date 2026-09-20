@@ -98,15 +98,30 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     const openGeneratorConnection = async () => {
       const next = await panel.evaluate(`new Promise((resolve) => {
         const port = chrome.runtime.connect({ name: 'matrx-generation-panel-v1' });
-        const timer = setTimeout(() => resolve(null), 1500);
-        const listener = (message) => {
-          if (message?.__matrxCredentialGeneration !== true || message.operation !== 'connected' || typeof message.connectionId !== 'string') return;
+        let settled = false;
+        let timer;
+        const finish = (connectionId) => {
+          if (settled) return;
+          settled = true;
           clearTimeout(timer);
           port.onMessage.removeListener(listener);
-          globalThis.__vaultCanaryGeneratorPort = port;
-          resolve(message.connectionId);
+          port.onDisconnect.removeListener(disconnected);
+          if (connectionId) globalThis.__vaultCanaryGeneratorPort = port;
+          else {
+            if (globalThis.__vaultCanaryGeneratorPort === port) delete globalThis.__vaultCanaryGeneratorPort;
+            try { port.disconnect(); } catch {}
+          }
+          resolve(connectionId);
         };
+        const listener = (message) => {
+          if (message?.__matrxCredentialGeneration !== true || message.operation !== 'connected') return;
+          if (typeof message.connectionId !== 'string' || !/^[a-f0-9]{36}$/.test(message.connectionId)) { finish(null); return; }
+          finish(message.connectionId);
+        };
+        const disconnected = () => finish(null);
         port.onMessage.addListener(listener);
+        port.onDisconnect.addListener(disconnected);
+        timer = setTimeout(() => finish(null), 10000);
       })`);
       assert(typeof next === 'string' && /^[a-f0-9]{36}$/.test(next), 'generator_panel_port_handshake_missing');
       return next;

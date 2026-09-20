@@ -10,7 +10,11 @@ const { createRequire } = require('node:module');
 const { execFile, spawn } = require('node:child_process');
 const { promisify } = require('node:util');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
+const { hasObservedReadOnlyCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
+const { runSavedFormMatrix, renderSavedFormMatrixHTML } = require('./vault-saved-form-matrix.cjs');
+const { runVaultPreferencesChecks } = require('./vault-preferences-acceptance.cjs');
+const { runPasswordChangeCaptureChecks, renderPasswordChangeFixtureHTML } = require('./vault-password-change-acceptance.cjs');
 const { classifyVaultRequest, createVaultNetworkJournal } = require('./vault-network-journal.cjs');
 const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
 const { runCaptureDecisionChecks } = require('./vault-capture-decisions-acceptance.cjs');
@@ -87,7 +91,7 @@ const localCanonicalCleanupArmed = process.env.MATRX_VAULT_CANARY_LOCAL_CANONICA
 // making a Vault mutation; it is not a Save/Update acceptance result.
 const readOnlyAdmissionMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
 const receiptBackedSaveUpdateMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_RECEIPT_BACKED_SAVE_UPDATE';
-const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = '551cffbacfadab521afdfaaa9e595c2020108567';
+const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = '3f9119167298c2b3206632fb6fffdebf1ff65ef4';
 const RECEIPT_BACKED_ROUTER_SHA256 = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
 const RECEIPT_BACKED_SERVICE_SHA256 = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
 const generatorTransportMode = process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
@@ -349,6 +353,35 @@ async function refuseUnreconciledPriorRun() {
           && attempts.every((attempt) => attempt.initialGetStatus === 404 && attempt.terminal === 'already_cleaned');
       }
     }
+    // Independently reviewed cleanup reconciliation only. The original failed
+    // panel observation remains failed; this admits a new run, never upgrades it.
+    let reviewedGeneratorCleanup = false;
+    const generatorRecoveryRoot = path.join(REPO, '.matrx', 'realbrowser-vault', 'generator-admission');
+    if (stateRoot === generatorRecoveryRoot
+      && entry.name === '773b5e06-70c4-488a-be6e-02f7d4cc10ee'
+      && priorRaw !== null
+      && crypto.createHash('sha256').update(priorRaw).digest('hex') === '113fb4a7cb9f65b3149c2b57b251d657e8182852d6d72cd0b15a90caf1cd8409') {
+      const sidecarRaw = await fs.readFile(path.join(generatorRecoveryRoot, entry.name, 'cleanup-reconciliation.json'), 'utf8').catch(() => null);
+      const freshPath = path.join(REPO, '.matrx', 'realbrowser-vault', 'save-update-headless', '6bb55156-4b9a-4a45-af35-0fa2feb7d171', 'proof.json');
+      const freshRaw = await fs.readFile(freshPath, 'utf8').catch(() => null);
+      if (sidecarRaw && freshRaw
+        && crypto.createHash('sha256').update(sidecarRaw).digest('hex') === '449f3432c09166ce482cdb7b74ea495da03a768c31bee051194c10e737a8a73b'
+        && crypto.createHash('sha256').update(freshRaw).digest('hex') === '511703aef98dd4ce2229740196e792b827a913e3b0a3a65080b78b8d48d9de21') {
+        const sidecar = JSON.parse(sidecarRaw), fresh = JSON.parse(freshRaw);
+        const cleanZeroWrite = (record) => record.vaultMutationRequests === 0 && record.vaultItemPosts?.total === 0
+          && record.ownedCreateMutationKeys?.length === 0 && record.ownedFixtureIds?.length === 0
+          && record.cleanup?.localAuthLogoutStatus === 204 && record.cleanup?.browserClosed === true && record.cleanup?.profileRemoved === true;
+        reviewedGeneratorCleanup = prior.mode === 'read_only_admission' && prior.ok === false
+          && prior.failureCode === 'vault_panel_items_read_sentinel_missing'
+          && typeof prior.baselineMetadataSha256 === 'string' && cleanZeroWrite(prior)
+          && fresh.checks?.independentAdminIdentity === true && cleanZeroWrite(fresh)
+          && fresh.baselineMetadataSha256 === prior.baselineMetadataSha256
+          && fresh.cleanup?.finalBaselineIdSetMatches === true && fresh.cleanup?.finalBaselineMetadataMatches === true
+          && sidecar.freshAdminProofPath === freshPath
+          && sidecar.scope === 'cleanup and retry reconciliation only; original failed coverage verdict unchanged'
+          && sidecar.historicalNetworkAcceptance === false;
+      }
+    }
     if (authFailureBeforeWrites) {
       retryingAuthFailures.push({
         runId: prior.runId,
@@ -360,7 +393,7 @@ async function refuseUnreconciledPriorRun() {
     const receiptMode = prior?.mode === 'receipt_backed_save_update';
     assert(receiptMode
       ? completedMutationCleanup || receiptModeZeroWriteCleanup
-      : completedAcceptance || completedMutationCleanup || vaultMutationFreeCleanup || authFailureBeforeWrites || reviewedHistoricalException || reviewedLaunchFailure || reviewedRecovery,
+      : completedAcceptance || completedMutationCleanup || vaultMutationFreeCleanup || authFailureBeforeWrites || reviewedHistoricalException || reviewedLaunchFailure || reviewedRecovery || reviewedGeneratorCleanup || hasObservedReadOnlyCleanup(prior) || hasPreBaselineAuthenticatedCleanup(prior),
     'previous_run_unreconciled');
   }
   if (retryingAuthFailures.length) proof.priorAuthRetryJournal = retryingAuthFailures;
@@ -460,6 +493,18 @@ function startLocalSite() {
     if (request.url === '/submitted' && request.method === 'POST') {
       state.submits += 1;
       response.writeHead(204).end();
+      return;
+    }
+    const requestPath = new URL(request.url, 'http://127.0.0.1').pathname;
+    if (requestPath === '/signup' || requestPath === '/change-password') {
+      response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+      response.end(renderPasswordChangeFixtureHTML(requestPath === '/signup' ? 'signup' : 'change_password'));
+      return;
+    }
+    const matrixKind = requestPath.startsWith('/saved-matrix/') ? requestPath.slice('/saved-matrix/'.length) : null;
+    if (matrixKind && ['username_first', 'late_spa', 'same_origin_frame', 'two_same_origin_frames', 'cross_origin_parent', 'frame_login'].includes(matrixKind)) {
+      response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+      response.end(renderSavedFormMatrixHTML(matrixKind));
       return;
     }
     const savedLoginKind = request.url === '/saved-login-nested' ? 'nested'
@@ -1340,6 +1385,9 @@ async function materializedPassword(id) {
       capture: await sha256(path.join(__dirname, 'vault-capture-decisions-acceptance.cjs')),
       authenticator: await sha256(path.join(__dirname, 'vault-authenticator-preservation.cjs')),
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
+      savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
+      preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
     };
     // A known local canonical-cleanup drift cannot create a durable run or
     // spend authentication work. Recheck it again with the baseline payload
@@ -1364,6 +1412,9 @@ async function materializedPassword(id) {
       capture: await sha256(path.join(__dirname, 'vault-capture-decisions-acceptance.cjs')),
       authenticator: await sha256(path.join(__dirname, 'vault-authenticator-preservation.cjs')),
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
+      savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
+      preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
     };
     assert(JSON.stringify(helperHashesBeforeWrites) === JSON.stringify(proof.helperSha256), 'helper_source_changed_before_writes');
     if (readOnlyAdmissionMode) {
@@ -1458,6 +1509,9 @@ async function materializedPassword(id) {
           capture: await sha256(path.join(__dirname, 'vault-capture-decisions-acceptance.cjs')),
           authenticator: await sha256(path.join(__dirname, 'vault-authenticator-preservation.cjs')),
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
+      savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
+      preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
         };
         assert(JSON.stringify(helperHashesAfterCapture) === JSON.stringify(proof.helperSha256), 'helper_source_changed_after_capture');
       }
@@ -1597,6 +1651,41 @@ async function materializedPassword(id) {
         proof,
         focusOwnedBrowser,
         verifyRealVaultPanel,
+      });
+      await runSavedFormMatrix({
+        context, worker, realPanel, targetName, username, password: newPassword,
+        parentOrigin, getSubmitCount: () => local.state.submits,
+        assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
+      });
+      await runVaultPreferencesChecks({
+        context, worker, realPanel, targetName, username, password: newPassword,
+        parentLoginUrl: localUrl, getSubmitCount: () => local.state.submits,
+        assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
+        snapshotOwnedReceiptState: () => ({
+          vaultItemPosts: { ...proof.vaultItemPosts },
+          ownedCreateMutationKeys: [...createKeys],
+          ownedFixtureIds: [...createdIds],
+        }),
+      });
+      await runPasswordChangeCaptureChecks({
+        context, worker, realPanel, parentOrigin, targetName, username,
+        currentPassword: newPassword, nextPassword: `changed-${crypto.randomUUID()}`,
+        assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
+        pendingCard, waitForCaptureDecision, captureButton: uniqueCaptureButton,
+        pendingCapturePresent: hasPendingCapture,
+        getSubmitCount: () => local.state.submits,
+        getVaultWriteCount: () => proof.vaultMutationRequests,
+        snapshotOwnedReceiptState: () => ({
+          vaultItemPosts: { ...proof.vaultItemPosts },
+          ownedCreateMutationKeys: [...createKeys].sort(),
+          ownedFixtureIds: [...createdIds].sort(),
+        }),
+        verifySelectedUpdate: async (expectedPassword) => {
+          assert((await materializedPassword(targetId)) === expectedPassword, 'password_change_target_mismatch');
+          assert(JSON.stringify(await Promise.all(otherIds.map(item))) === JSON.stringify(otherBefore), 'password_change_unselected_changed');
+          assert(await authenticator.afterUpdate(authenticatorHandle) === true, 'password_change_authenticator_changed');
+          return true;
+        },
       });
       assert(createdIds.size === fixtureIdsBeforeSavedLogin.size
         && [...fixtureIdsBeforeSavedLogin].every((id) => createdIds.has(id)), 'saved_login_helper_created_fixture');
