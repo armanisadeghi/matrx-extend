@@ -10,7 +10,16 @@ const { createRequire } = require('node:module');
 const { execFile, spawn } = require('node:child_process');
 const { promisify } = require('node:util');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
+const { hasObservedReadOnlyCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
+const { runSavedFormMatrix, renderSavedFormMatrixHTML } = require('./vault-saved-form-matrix.cjs');
+const { runVaultPreferencesChecks } = require('./vault-preferences-acceptance.cjs');
+const { runPasswordChangeCaptureChecks, renderPasswordChangeFixtureHTML } = require('./vault-password-change-acceptance.cjs');
+const { classifyVaultRequest, createVaultNetworkJournal } = require('./vault-network-journal.cjs');
+const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
+const { runCaptureDecisionChecks } = require('./vault-capture-decisions-acceptance.cjs');
+const { createAuthenticatorPreservation } = require('./vault-authenticator-preservation.cjs');
+const { createVaultSaveResponseLoss } = require('./vault-save-response-loss.cjs');
 // The extension deliberately does not ship Playwright.  Use an explicit test
 // runtime override or the documented workspace harness dependency.
 const playwrightRequire = createRequire(
@@ -24,6 +33,9 @@ try {
 }
 const execFileAsync = promisify(execFile);
 
+const EDGE_BROWSER_MODE = 'EDGE_153_OWNED_HEADLESS';
+const edgeBrowserMode = process.env.MATRX_VAULT_CANARY_BROWSER === EDGE_BROWSER_MODE;
+if (process.env.MATRX_VAULT_CANARY_BROWSER && !edgeBrowserMode) throw new Error('browser_mode_invalid');
 const API = 'https://server.app.matrxserver.com';
 const DB = 'https://db.matrxserver.com';
 const REPO = path.resolve(__dirname, '../..');
@@ -82,13 +94,17 @@ const localCanonicalCleanupArmed = process.env.MATRX_VAULT_CANARY_LOCAL_CANONICA
 // making a Vault mutation; it is not a Save/Update acceptance result.
 const readOnlyAdmissionMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
 const receiptBackedSaveUpdateMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_RECEIPT_BACKED_SAVE_UPDATE';
-const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = '551cffbacfadab521afdfaaa9e595c2020108567';
+const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = 'abf1e889f78cb38927d1912515dd0b40064526b6';
 const RECEIPT_BACKED_ROUTER_SHA256 = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
 const RECEIPT_BACKED_SERVICE_SHA256 = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
 const generatorTransportMode = process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
 const displayMode = process.env.MATRX_VAULT_CANARY_DISPLAY;
 const headlessNoClipboardMode = displayMode === 'HEADLESS_NO_CLIPBOARD';
 const headedMode = displayMode === 'HEADED';
+const isolatedHeadlessClipboard = process.env.MATRX_VAULT_CANARY_CLIPBOARD === 'RUN_ISOLATED_HEADLESS_CLIPBOARD';
+assert(!process.env.MATRX_VAULT_CANARY_CLIPBOARD || isolatedHeadlessClipboard, 'clipboard_mode_invalid');
+assert(!isolatedHeadlessClipboard || (headlessNoClipboardMode && generatorTransportMode && readOnlyAdmissionMode), 'clipboard_requires_headless_generator_admission');
+assert(!edgeBrowserMode || (headlessNoClipboardMode && !isolatedHeadlessClipboard), 'edge_requires_owned_headless_without_clipboard');
 const panelCloseLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_PANEL_CLOSE === 'RUN_PANEL_CLOSE_LIFECYCLE';
 const workerRestartLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART === 'RUN_WORKER_RESTART_LIFECYCLE';
 const windowSwitchLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH === 'RUN_WINDOW_SWITCH_LIFECYCLE';
@@ -181,6 +197,18 @@ let localUrl;
 let website;
 let realPanel;
 let extensionId;
+let rawCdp;
+let networkJournal;
+let authenticator;
+let authenticatorHandle;
+let responseLoss;
+let responseLossInstalled = false;
+let responseLossKey;
+let responseLossPostsBefore;
+let responseLossKeysBefore;
+const rejectedBeforeForwardKeys = new Set();
+const responseLossFixtureKeys = new Set();
+const receiptItemByKey = new Map();
 const createKeys = new Set();
 const createdIds = new Set();
 let baselineIds = new Set();
@@ -332,6 +360,35 @@ async function refuseUnreconciledPriorRun() {
           && attempts.every((attempt) => attempt.initialGetStatus === 404 && attempt.terminal === 'already_cleaned');
       }
     }
+    // Independently reviewed cleanup reconciliation only. The original failed
+    // panel observation remains failed; this admits a new run, never upgrades it.
+    let reviewedGeneratorCleanup = false;
+    const generatorRecoveryRoot = path.join(REPO, '.matrx', 'realbrowser-vault', 'generator-admission');
+    if (stateRoot === generatorRecoveryRoot
+      && entry.name === '773b5e06-70c4-488a-be6e-02f7d4cc10ee'
+      && priorRaw !== null
+      && crypto.createHash('sha256').update(priorRaw).digest('hex') === '113fb4a7cb9f65b3149c2b57b251d657e8182852d6d72cd0b15a90caf1cd8409') {
+      const sidecarRaw = await fs.readFile(path.join(generatorRecoveryRoot, entry.name, 'cleanup-reconciliation.json'), 'utf8').catch(() => null);
+      const freshPath = path.join(REPO, '.matrx', 'realbrowser-vault', 'save-update-headless', '6bb55156-4b9a-4a45-af35-0fa2feb7d171', 'proof.json');
+      const freshRaw = await fs.readFile(freshPath, 'utf8').catch(() => null);
+      if (sidecarRaw && freshRaw
+        && crypto.createHash('sha256').update(sidecarRaw).digest('hex') === '449f3432c09166ce482cdb7b74ea495da03a768c31bee051194c10e737a8a73b'
+        && crypto.createHash('sha256').update(freshRaw).digest('hex') === '511703aef98dd4ce2229740196e792b827a913e3b0a3a65080b78b8d48d9de21') {
+        const sidecar = JSON.parse(sidecarRaw), fresh = JSON.parse(freshRaw);
+        const cleanZeroWrite = (record) => record.vaultMutationRequests === 0 && record.vaultItemPosts?.total === 0
+          && record.ownedCreateMutationKeys?.length === 0 && record.ownedFixtureIds?.length === 0
+          && record.cleanup?.localAuthLogoutStatus === 204 && record.cleanup?.browserClosed === true && record.cleanup?.profileRemoved === true;
+        reviewedGeneratorCleanup = prior.mode === 'read_only_admission' && prior.ok === false
+          && prior.failureCode === 'vault_panel_items_read_sentinel_missing'
+          && typeof prior.baselineMetadataSha256 === 'string' && cleanZeroWrite(prior)
+          && fresh.checks?.independentAdminIdentity === true && cleanZeroWrite(fresh)
+          && fresh.baselineMetadataSha256 === prior.baselineMetadataSha256
+          && fresh.cleanup?.finalBaselineIdSetMatches === true && fresh.cleanup?.finalBaselineMetadataMatches === true
+          && sidecar.freshAdminProofPath === freshPath
+          && sidecar.scope === 'cleanup and retry reconciliation only; original failed coverage verdict unchanged'
+          && sidecar.historicalNetworkAcceptance === false;
+      }
+    }
     if (authFailureBeforeWrites) {
       retryingAuthFailures.push({
         runId: prior.runId,
@@ -343,7 +400,7 @@ async function refuseUnreconciledPriorRun() {
     const receiptMode = prior?.mode === 'receipt_backed_save_update';
     assert(receiptMode
       ? completedMutationCleanup || receiptModeZeroWriteCleanup
-      : completedAcceptance || completedMutationCleanup || vaultMutationFreeCleanup || authFailureBeforeWrites || reviewedHistoricalException || reviewedLaunchFailure || reviewedRecovery,
+      : completedAcceptance || completedMutationCleanup || vaultMutationFreeCleanup || authFailureBeforeWrites || reviewedHistoricalException || reviewedLaunchFailure || reviewedRecovery || reviewedGeneratorCleanup || hasObservedReadOnlyCleanup(prior) || hasPreBaselineAuthenticatedCleanup(prior),
     'previous_run_unreconciled');
   }
   if (retryingAuthFailures.length) proof.priorAuthRetryJournal = retryingAuthFailures;
@@ -445,6 +502,18 @@ function startLocalSite() {
       response.writeHead(204).end();
       return;
     }
+    const requestPath = new URL(request.url, 'http://127.0.0.1').pathname;
+    if (requestPath === '/signup' || requestPath === '/change-password') {
+      response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+      response.end(renderPasswordChangeFixtureHTML(requestPath === '/signup' ? 'signup' : 'change_password'));
+      return;
+    }
+    const matrixKind = requestPath.startsWith('/saved-matrix/') ? requestPath.slice('/saved-matrix/'.length) : null;
+    if (matrixKind && ['username_first', 'late_spa', 'same_origin_frame', 'two_same_origin_frames', 'cross_origin_parent', 'frame_login'].includes(matrixKind)) {
+      response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+      response.end(renderSavedFormMatrixHTML(matrixKind));
+      return;
+    }
     const savedLoginKind = request.url === '/saved-login-nested' ? 'nested'
       : request.url === '/saved-login-external' ? 'external' : null;
     if (savedLoginKind) {
@@ -477,15 +546,11 @@ async function hasPendingCapture() {
   });
 }
 function journalVaultMutationRequest(url, method, headers) {
-  let parsed;
-  try { parsed = new URL(url); } catch { return; }
-  const isVaultMutation = parsed.origin === API
-    && parsed.pathname.startsWith('/api/vault/')
-    && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
-  const isItemCreate = method === 'POST' && parsed.origin === API && parsed.pathname === '/api/vault/items';
-  if (!isVaultMutation && !isItemCreate) return;
-  if (isVaultMutation) proof.vaultMutationRequests += 1;
-  if (!isItemCreate) {
+  const classified = classifyVaultRequest({ url, method, apiOrigin: API });
+  if (!classified.inVault) return;
+  if (classified.mutation) proof.vaultMutationRequests += 1;
+  // browser-login matching is a POST metadata read, never a Vault mutation.
+  if (!classified.itemCreate) {
     persist();
     return;
   }
@@ -543,18 +608,27 @@ async function createFixture(displayName, fields) {
   persist();
   return response.id;
 }
+function receiptKeys() {
+  for (const key of rejectedBeforeForwardKeys)
+    assert(!responseLossFixtureKeys.has(key) && key !== responseLossKey, 'response_loss_excluded_owned_key');
+  return [...createKeys].filter((key) => !rejectedBeforeForwardKeys.has(key));
+}
 async function reconcile() {
   const python = '/Users/armanisadeghi/code/aidream/.venv/bin/python';
   const { stdout } = await execFileAsync(
     python,
-    [path.join(__dirname, 'reconcile-vault-canary.py'), userId, organizationId, ...createKeys],
+    [path.join(__dirname, 'reconcile-vault-canary.py'), userId, organizationId, ...receiptKeys()],
     { cwd: '/Users/armanisadeghi/code/aidream', timeout: 15000, maxBuffer: 32768 },
   );
   const result = JSON.parse(stdout);
   assert(Array.isArray(result.results), 'receipt_shape');
-  assert(result.results.length === createKeys.size, 'receipt_incomplete');
+  assert(result.results.length === receiptKeys().length, 'receipt_incomplete');
   const ids = new Set(result.results.map((row) => row.result_item_id));
-  assert(ids.size === createKeys.size, 'receipt_duplicate_item');
+  assert(ids.size === receiptKeys().length, 'receipt_duplicate_item');
+  for (const row of result.results) {
+    assert(receiptKeys().includes(row.mutation_id), 'receipt_unexpected_key');
+    receiptItemByKey.set(row.mutation_id, row.result_item_id);
+  }
   for (const row of result.results)
     assert(row.user_id === userId && row.organization_id === null && !row.retired, 'receipt_scope');
   // A response may be lost after the server commits. Receipt truth, rather than
@@ -574,7 +648,7 @@ async function localCanonicalCleanup(proven) {
   const python = '/Users/armanisadeghi/code/aidream/.venv/bin/python';
   const adapter = path.join(__dirname, 'cleanup-vault-canary.py');
   const input = JSON.stringify({
-    token, userId, organizationId, createKeys: [...createKeys], baselineIds: [...baselineIds], provenIDs: [...proven],
+    token, userId, organizationId, createKeys: receiptKeys(), baselineIds: [...baselineIds], provenIDs: [...proven],
     expectedRouterSha256: routerHash, expectedServiceSha256: serviceHash, sourceRoot,
   });
   assert(Buffer.byteLength(input, 'utf8') < LOCAL_CLEANUP_INPUT_MAX_BYTES, 'local_cleanup_payload_capacity');
@@ -768,7 +842,7 @@ async function openGenuineSidePanel(extensionId, popup) {
     assert(typeof captured.data === 'string', 'panel_screenshot_refused');
     await fs.writeFile(destination, Buffer.from(captured.data, 'base64'), { mode: 0o600 });
   };
-  return { targetId: target.targetId, evaluate, click, waitFor, fill, key, startKnobResolveProbe, screenshot, dispose: panel.dispose };
+  return { targetId: target.targetId, send: (method, params) => panel.send(method, params), evaluate, click, waitFor, fill, key, startKnobResolveProbe, screenshot, dispose: panel.dispose };
 }
 async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWindowId) {
   // This is intentionally not a normal popup.html tab. The action popup is
@@ -881,7 +955,7 @@ async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWin
     assert(typeof captured.data === 'string', 'reopened_panel_screenshot_refused');
     await fs.writeFile(destination, Buffer.from(captured.data, 'base64'), { mode: 0o600 });
   };
-  return { opened: true, panel: { targetId: target.targetId, evaluate, click, waitFor, key, startKnobResolveProbe, screenshot, dispose: panel.dispose } };
+  return { opened: true, panel: { targetId: target.targetId, send: (method, params) => panel.send(method, params), evaluate, click, waitFor, key, startKnobResolveProbe, screenshot, dispose: panel.dispose } };
 }
 async function chooseAuthorizedOrganization(extensionId) {
   const settingsPage = await context.newPage();
@@ -956,7 +1030,11 @@ async function authenticate(extension) {
   const placementPath = process.env.MATRX_VAULT_CANARY_WINDOW_PLACEMENT;
   const configuredExecutable = process.env.MATRX_VAULT_CANARY_CHROME_EXECUTABLE;
   const executablePath = configuredExecutable || chromium.executablePath();
-  if (headlessNoClipboardMode) {
+  if (edgeBrowserMode) {
+    assert(headlessNoClipboardMode && !isolatedHeadlessClipboard, 'edge_requires_owned_headless_without_clipboard');
+    assert(configuredExecutable === '/Users/armanisadeghi/Library/Caches/matrx-vault-test/edge-153.0.4234.48/Microsoft Edge.app/Contents/MacOS/Microsoft Edge', 'edge_requires_reviewed_runtime');
+  }
+  if (headlessNoClipboardMode && !edgeBrowserMode) {
     // `chromium.executablePath()` can identify Playwright's headless shell;
     // extension/SIDE_PANEL acceptance needs the complete Chrome-for-Testing app.
     assert(typeof configuredExecutable === 'string' && configuredExecutable.length > 0, 'headless_requires_explicit_chrome_for_testing');
@@ -970,30 +1048,64 @@ async function authenticate(extension) {
     assert(coordinate(bounds.left) && coordinate(bounds.top) && Number.isInteger(bounds.width) && Number.isInteger(bounds.height) && bounds.width > 0 && bounds.width <= 2147483647 && bounds.height > 0 && bounds.height <= 2147483647, 'window_placement_invalid');
     return [`--window-position=${bounds.left},${bounds.top}`, `--window-size=${bounds.width},${bounds.height}`];
   })() : [];
+  await fs.mkdir(profile, { recursive: true, mode: 0o700 });
+  const preparedOwnedProfile = await prepareOwnedProfile(profile);
   context = await chromium.launchPersistentContext(profile, {
     // This is the disposable, agent-owned Chrome-for-Testing profile only.
     // Headless mode still uses the full browser, never Playwright's shell.
     headless: headlessNoClipboardMode,
     executablePath,
+    ...(edgeBrowserMode ? { ignoreDefaultArgs: ['--disable-extensions'] } : {}),
     args: [
       ...(headlessNoClipboardMode ? ['--headless=new'] : []),
+      ...(isolatedHeadlessClipboard || edgeBrowserMode ? ['--enable-automation'] : []),
+      ...(edgeBrowserMode ? ['--enable-extensions'] : []),
+      '--remote-debugging-address=127.0.0.1',
+      '--remote-debugging-port=0',
       `--disable-extensions-except=${extension}`,
       `--load-extension=${extension}`,
       ...placementArgs,
     ],
     ...(placementPath && { viewport: null }),
   });
+  rawCdp = await connectOwnedCdp({ preparedProfile: preparedOwnedProfile, chromeExecutable: executablePath });
+  if (edgeBrowserMode) {
+    const version = await rawCdp.send('Browser.getVersion');
+    const command = await rawCdp.send('Browser.getBrowserCommandLine');
+    assert(version.product === 'Edg/153.0.4234.48', 'edge_runtime_not_reviewed');
+    assert(command.arguments.includes('--headless=new') && command.arguments.includes('--user-data-dir=' + profile) && !command.arguments.includes('--disable-extensions'), 'edge_process_not_owned_headless');
+    proof.browserRuntime = { product: version.product, ownedHeadlessProcess: true, clipboardTested: false };
+  }
+  if (isolatedHeadlessClipboard) {
+    const version = await rawCdp.send('Browser.getVersion');
+    const command = await rawCdp.send('Browser.getBrowserCommandLine');
+    assert(version.product === 'Chrome/153.0.8010.12', 'clipboard_runtime_not_reviewed');
+    assert(command.arguments.includes('--headless=new') && command.arguments.includes('--user-data-dir=' + profile), 'clipboard_process_not_owned_headless');
+    proof.clipboardIsolation = { runtime: version.product, ownedHeadlessProcess: true, sourceAndProbe: 'd37f9103-bbb3-4eb3-9cf2-537eb75c7339' };
+  }
+  networkJournal = createVaultNetworkJournal({
+    cdp: rawCdp,
+    apiOrigin: API,
+    onVaultRequest: ({ method, pathname, headers }) => journalVaultMutationRequest(`${API}${pathname}`, method, headers),
+  });
+  await networkJournal.start();
+  proof.networkJournal = { ownerVerified: rawCdp.ownerVerified === true, journalSemanticVersion: 2 };
   proof.phase = 'extension_worker';
   persist();
   worker = context.serviceWorkers()[0] || await context.waitForEvent('serviceworker', { timeout: 15000 });
   extensionId = await worker.evaluate(() => chrome.runtime.id);
   assert(typeof extensionId === 'string' && extensionId.length > 10, 'extension_runtime_identity');
-  // Journal every item create attempt before OAuth starts. In particular, a
-  // missing idempotency header is evidence, not a reason to omit the request.
+  // The flattened owned-browser journal accounts for page traffic. Playwright
+  // observes only service-worker traffic, preventing page request duplicates.
+  const requestStartedAt = new WeakMap();
   context.on('request', (request) => {
-    journalVaultMutationRequest(request.url(), request.method(), request.headers());
+    if (request.serviceWorker()) {
+      requestStartedAt.set(request, Date.now());
+      journalVaultMutationRequest(request.url(), request.method(), request.headers());
+    }
   });
   context.on('response', (response) => {
+    if (!response.request().serviceWorker()) return;
     const url = new URL(response.url());
     if (url.origin === DB && ['/auth/v1/oauth/token', '/auth/v1/user'].includes(url.pathname)) {
       (proof.authTransport ||= []).push({ route: url.pathname.endsWith('/token') ? 'oauth_token' : 'user', status: response.status(), phase: proof.phase });
@@ -1005,7 +1117,7 @@ async function authenticate(extension) {
       : /\/fields\/[^/]+$/.test(url.pathname) ? 'field'
       : /\/items\/[^/]+$/.test(url.pathname) ? 'item'
       : url.pathname.endsWith('/items') ? 'items' : 'other';
-    (proof.apiResponses ||= []).push({ route, method: response.request().method(), status: response.status(), phase: proof.phase });
+    (proof.apiResponses ||= []).push({ route, method: response.request().method(), status: response.status(), phase: proof.phase, elapsedMs: requestStartedAt.has(response.request()) ? Date.now() - requestStartedAt.get(response.request()) : null });
     persist();
   });
   // Persist the zeroed journal before OAuth so an interruption still shows
@@ -1110,6 +1222,7 @@ async function authenticate(extension) {
   // Retain independent identity evidence even if organization selection fails.
   persist();
   realPanel = await openGenuineSidePanel(extensionId, popup);
+  await networkJournal.bindPanelTarget(realPanel.targetId);
   // The initial auth popup was an ordinary setup tab. It must not remain as a
   // same-URL target when a lifecycle probe later opens the declared action popup.
   await popup.close();
@@ -1242,7 +1355,7 @@ const captureHeading = 'Array.from(document.querySelectorAll("p")).find((element
 const captureCard = `(${captureHeading})?.parentElement?.parentElement?.parentElement`;
 const updateButtons = `Array.from((${captureCard})?.querySelectorAll('button') || []).filter((element) => /^Update/.test(element.textContent.trim()))`;
 function uniqueCaptureButton(name, prefix = false) {
-  return `(() => { const matches = Array.from((${captureCard})?.querySelectorAll('button') || []).filter((element) => { const text = element.textContent.trim().replace(/\\s+/g, ' '); return ${prefix ? `text.startsWith('Update') && text.includes(${JSON.stringify(name)})` : `text === ${JSON.stringify(name)}`}; }); return matches.length === 1 ? matches[0] : null; })()`;
+  return `(() => { const matches = Array.from((${captureCard})?.querySelectorAll('button') || []).filter((element) => { const text = element.textContent.trim().replace(/\\s+/g, ' '); return ${prefix ? `text.startsWith('Update') && text.includes(${JSON.stringify(name)})` : `text === ${JSON.stringify(name)} || (text.length === 0 && element.getAttribute('title') === ${JSON.stringify(name)})`}; }); return matches.length === 1 ? matches[0] : null; })()`;
 }
 async function pendingCard() {
   try {
@@ -1263,6 +1376,18 @@ async function waitForCaptureDecision() {
       vaultError: document.body.innerText.includes('The Vault could not save that. Try again from the Vault tab.'),
       noAnswer: document.body.innerText.includes('Matrx did not answer. Try again.')
     })`);
+    persist();
+    // Preserve the original failed verdict while allowing the already-dispatched
+    // mutation to settle before cleanup. Observe only UI booleans, never values.
+    const diagnosticStarted = Date.now();
+    try {
+      await realPanel.waitFor(`!(${captureHeading}) || Array.from((${captureCard})?.querySelectorAll('button') || []).every((button) => !button.disabled)`, true, 90000);
+      proof.decisionDiagnostics.settledAfterFailure = true;
+    } catch {
+      proof.decisionDiagnostics.settledAfterFailure = false;
+    }
+    proof.decisionDiagnostics.additionalObservationMs = Date.now() - diagnosticStarted;
+    proof.decisionDiagnostics.pendingAfterObservation = await hasPendingCapture();
     persist();
     throw new Error('capture_decision_not_completed');
   }
@@ -1298,6 +1423,17 @@ async function materializedPassword(id) {
     }
     await refuseUnreconciledPriorRun();
     const extension = await verifyArtifact();
+    proof.helperSha256 = {
+      rawAdapter: await sha256(path.join(__dirname, 'vault-owned-cdp.cjs')),
+      journal: await sha256(path.join(__dirname, 'vault-network-journal.cjs')),
+      capture: await sha256(path.join(__dirname, 'vault-capture-decisions-acceptance.cjs')),
+      authenticator: await sha256(path.join(__dirname, 'vault-authenticator-preservation.cjs')),
+      responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
+      savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
+      preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
+      passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
+    };
     // A known local canonical-cleanup drift cannot create a durable run or
     // spend authentication work. Recheck it again with the baseline payload
     // immediately before fixture writes.
@@ -1315,6 +1451,18 @@ async function materializedPassword(id) {
     proof.baselineMetadataSha256 = baselineMetadataSha256(baseline);
     await verifyRealVaultPanel();
     await prewriteLocalCanonicalPreflight();
+    const helperHashesBeforeWrites = {
+      rawAdapter: await sha256(path.join(__dirname, 'vault-owned-cdp.cjs')),
+      journal: await sha256(path.join(__dirname, 'vault-network-journal.cjs')),
+      capture: await sha256(path.join(__dirname, 'vault-capture-decisions-acceptance.cjs')),
+      authenticator: await sha256(path.join(__dirname, 'vault-authenticator-preservation.cjs')),
+      responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
+      savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
+      preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
+      passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
+    };
+    assert(JSON.stringify(helperHashesBeforeWrites) === JSON.stringify(proof.helperSha256), 'helper_source_changed_before_writes');
     if (readOnlyAdmissionMode) {
       proof.admission.baselineRead = true;
       proof.admission.prewriteLocalCanonicalPreflight = localCanonicalCleanupArmed;
@@ -1324,10 +1472,11 @@ async function materializedPassword(id) {
       persist();
       if (generatorTransportMode) {
         proof.generatorHarnessSha256 = await sha256(path.join(__dirname, 'vault-generator-acceptance.cjs'));
-        await require('./vault-generator-acceptance.cjs').runGeneratorChecks({
+        const generatorHarness = require('./vault-generator-acceptance.cjs');
+        await generatorHarness.runGeneratorChecks({
           context, worker, panel: realPanel, assert, wait, checkpoint, proof, focusOwnedBrowser,
           screenshotPath: path.join(root, 'generator-masked.png'), verifyRealVaultPanel, displayMode, panelCloseLifecycleMode,
-          workerRestartLifecycleMode, windowSwitchLifecycleMode,
+          workerRestartLifecycleMode, windowSwitchLifecycleMode, isolatedHeadlessClipboard,
           refreshWorker: async (previous, { cdp, workerUrl }) => {
             const diagnostic = proof.generatorWorkerRefresh = {
               disposition: 'in_progress',
@@ -1369,10 +1518,14 @@ async function materializedPassword(id) {
             if (reopened.opened) {
               realPanel?.dispose();
               realPanel = reopened.panel;
+              await networkJournal.bindPanelTarget(realPanel.targetId);
             }
             return reopened;
           },
         });
+        if (isolatedHeadlessClipboard) {
+          assert(generatorHarness.hasIsolatedHeadlessClipboardProof(proof), 'generator_isolated_clipboard_proof_incomplete');
+        }
         assertRequestedLifecycleVerdicts({
           panelCloseRequested: panelCloseLifecycleMode,
           workerRestartRequested: workerRestartLifecycleMode,
@@ -1381,6 +1534,38 @@ async function materializedPassword(id) {
         });
       }
     } else {
+      // Capture-decision coverage deliberately precedes this runner's local
+      // server and all receipt fixtures. Its callback sees only the central
+      // metadata-safe mutation count, never Vault rows or request payloads.
+      if (receiptBackedSaveUpdateMode) {
+        assert((await hasPendingCapture()) === false, 'capture_decision_pending_before_fixture');
+        assert(proof.vaultMutationRequests === 0 && proof.vaultItemPosts.total === 0
+          && createKeys.size === 0 && createdIds.size === 0, 'capture_decision_write_before_fixture');
+        proof.captureHarnessSha256 = await sha256(path.join(__dirname, 'vault-capture-decisions-acceptance.cjs'));
+        await runCaptureDecisionChecks({
+          context, worker, realPanel, assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
+          vaultWriteCount: () => proof.vaultMutationRequests,
+          pendingCapturePresent: hasPendingCapture,
+        });
+        assert(proof.captureDecisions?.noVaultWriteRequests === true
+          && proof.captureDecisions?.pagesClosed === true
+          && proof.captureDecisions?.fixtureServersClosed === true, 'capture_decision_cleanup_unverified');
+        assert((await hasPendingCapture()) === false, 'capture_decision_pending_after_fixture');
+        assert(proof.vaultMutationRequests === 0 && proof.vaultItemPosts.total === 0
+          && createKeys.size === 0 && createdIds.size === 0, 'capture_decision_write_after_fixture');
+        const helperHashesAfterCapture = {
+          rawAdapter: await sha256(path.join(__dirname, 'vault-owned-cdp.cjs')),
+          journal: await sha256(path.join(__dirname, 'vault-network-journal.cjs')),
+          capture: await sha256(path.join(__dirname, 'vault-capture-decisions-acceptance.cjs')),
+          authenticator: await sha256(path.join(__dirname, 'vault-authenticator-preservation.cjs')),
+      responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
+      savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
+      preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
+      passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
+        };
+        assert(JSON.stringify(helperHashesAfterCapture) === JSON.stringify(proof.helperSha256), 'helper_source_changed_after_capture');
+      }
       local = await startLocalSite();
       localUrl = local.url;
     await prewriteVaultPanelScreenshot();
@@ -1388,14 +1573,39 @@ async function materializedPassword(id) {
     const username = `canary-${suffix}@example.invalid`;
     const oldPassword = `old-${crypto.randomUUID()}`;
     const newPassword = `new-${crypto.randomUUID()}`;
-    const sealedFixtureValue = `mfa-${crypto.randomUUID()}`;
     const targetName = `Canary target ${suffix}`;
     checkpoint('fixture_creation');
-    const targetId = await createFixture(targetName, [
+    const targetFields = [
       { field_key: 'username', value: username, handling: 'revealable' },
       { field_key: 'password', value: oldPassword, handling: 'revealable' },
-      { field_key: 'totp_seed', value: sealedFixtureValue, handling: 'sealed' },
-    ]);
+      ...(!receiptBackedSaveUpdateMode ? [{ field_key: 'totp_seed', value: `mfa-${crypto.randomUUID()}`, handling: 'sealed' }] : []),
+    ];
+    const targetId = await createFixture(targetName, targetFields);
+    if (receiptBackedSaveUpdateMode) {
+      const authenticatorRequest = async ({ method, path: route, body }) => {
+        const url = `${API}/api/authenticator${route}`;
+        const headers = { Authorization: `Bearer ${token}`, 'X-Organization-Id': organizationId };
+        if (body !== undefined) headers['content-type'] = 'application/json';
+        journalVaultMutationRequest(url, method, headers);
+        try {
+          const response = await fetch(url, {
+            method, headers, signal: AbortSignal.timeout(15_000),
+            ...(body !== undefined && { body: JSON.stringify(body) }),
+          });
+          let responseBody = null;
+          if (response.status !== 204) responseBody = await response.json().catch(() => null);
+          return { status: response.status, body: responseBody };
+        } catch { return { status: 'transport' }; }
+      };
+      authenticator = createAuthenticatorPreservation({
+        request: authenticatorRequest,
+        markCleanupObligation: async (handle) => { authenticatorHandle = handle; proof.authenticator = { cleanupObligationArmed: true }; persist(); },
+        journal: ({ method, route, status }) => { (proof.authenticatorJournal ||= []).push({ method, route, status }); persist(); },
+      });
+      checkpoint('authenticator_enroll_before_update');
+      authenticatorHandle = await authenticator.beforeUpdate({ credentialItemId: targetId });
+      assert(authenticatorHandle?.enrolled === true && authenticatorHandle.acceptanceFailed !== true, 'authenticator_enrollment_failed');
+    }
     const otherIds = [await createFixture(`Canary duplicate ${suffix}`, [
       { field_key: 'username', value: username, handling: 'revealable' },
       { field_key: 'password', value: `other-${crypto.randomUUID()}`, handling: 'revealable' },
@@ -1407,8 +1617,9 @@ async function materializedPassword(id) {
     ])];
     const otherBefore = await Promise.all(otherIds.map(item));
     const targetBefore = await item(targetId);
-    const sealedFieldBefore = targetBefore.fields.find((field) => field.field_key === 'totp_seed' && field.is_active);
-    assert(sealedFieldBefore?.id, 'fixture_sealed_field_missing');
+    const sealedFieldBefore = !receiptBackedSaveUpdateMode
+      ? targetBefore.fields.find((field) => field.field_key === 'totp_seed' && field.is_active) : null;
+    if (!receiptBackedSaveUpdateMode) assert(sealedFieldBefore?.id, 'fixture_sealed_field_missing');
     checkpoint('open_vault');
     website = await context.newPage();
     await verifyRealVaultPanel();
@@ -1447,15 +1658,21 @@ async function materializedPassword(id) {
     assert(local.state.submits === submitsBeforeUpdateChoice, 'update_choice_submitted_site');
     checkpoint('verify_update');
     const targetAfter = await item(targetId);
-    const sealedFieldAfter = targetAfter.fields.find((field) => field.field_key === 'totp_seed' && field.is_active);
-    assert(sealedFieldAfter?.id === sealedFieldBefore.id, 'sealed_field_not_preserved');
+    const sealedFieldAfter = !receiptBackedSaveUpdateMode
+      ? targetAfter.fields.find((field) => field.field_key === 'totp_seed' && field.is_active) : null;
+    if (!receiptBackedSaveUpdateMode) assert(sealedFieldAfter?.id === sealedFieldBefore.id, 'sealed_field_not_preserved');
+    if (receiptBackedSaveUpdateMode) {
+      checkpoint('authenticator_verify_after_update');
+      assert(await authenticator.afterUpdate(authenticatorHandle) === true, 'authenticator_not_preserved');
+      proof.checks.enrolledAuthenticatorPreserved = true;
+    }
     assert((await materializedPassword(targetId)) === newPassword, 'selected_target_password_not_updated');
     const otherAfter = await Promise.all(otherIds.map(item));
     assert(JSON.stringify(otherAfter) === JSON.stringify(otherBefore), 'unselected_fixture_changed');
     proof.checks.fourUpdateTargetsReachable = true;
     proof.checks.displayNameSearchSelectedExactTarget = true;
     proof.checks.selectedTargetOnlyUpdated = true;
-    proof.checks.unrelatedSealedFieldPreserved = true;
+    if (!receiptBackedSaveUpdateMode) proof.checks.unrelatedSealedFieldPreserved = true;
     proof.checks.updateChoiceDidNotSubmit = true;
     if (receiptBackedSaveUpdateMode) {
       // This helper exercises Fill with the updated, receipt-owned target. It
@@ -1486,6 +1703,42 @@ async function materializedPassword(id) {
         focusOwnedBrowser,
         verifyRealVaultPanel,
       });
+      await runSavedFormMatrix({
+        context, worker, realPanel, targetName, username, password: newPassword,
+        parentOrigin, getSubmitCount: () => local.state.submits,
+        assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
+      });
+      await runVaultPreferencesChecks({
+        context, worker, realPanel, targetName, username, password: newPassword,
+        parentLoginUrl: localUrl, getSubmitCount: () => local.state.submits,
+        assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
+        snapshotOwnedReceiptState: () => ({
+          vaultItemPosts: { ...proof.vaultItemPosts },
+          ownedCreateMutationKeys: [...createKeys],
+          ownedFixtureIds: [...createdIds],
+        }),
+      });
+      const changedPassword = `changed-${crypto.randomUUID()}`;
+      await runPasswordChangeCaptureChecks({
+        context, worker, realPanel, parentOrigin, targetName, username,
+        currentPassword: newPassword, nextPassword: changedPassword,
+        assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
+        pendingCard, waitForCaptureDecision, captureButton: uniqueCaptureButton,
+        pendingCapturePresent: hasPendingCapture,
+        getSubmitCount: () => local.state.submits,
+        getVaultWriteCount: () => proof.vaultMutationRequests,
+        snapshotOwnedReceiptState: () => ({
+          vaultItemPosts: { ...proof.vaultItemPosts },
+          ownedCreateMutationKeys: [...createKeys].sort(),
+          ownedFixtureIds: [...createdIds].sort(),
+        }),
+        verifySelectedUpdate: async (expectedPassword) => {
+          assert((await materializedPassword(targetId)) === expectedPassword, 'password_change_target_mismatch');
+          assert(JSON.stringify(await Promise.all(otherIds.map(item))) === JSON.stringify(otherBefore), 'password_change_unselected_changed');
+          assert(await authenticator.afterUpdate(authenticatorHandle) === true, 'password_change_authenticator_changed');
+          return true;
+        },
+      });
       assert(createdIds.size === fixtureIdsBeforeSavedLogin.size
         && [...fixtureIdsBeforeSavedLogin].every((id) => createdIds.has(id)), 'saved_login_helper_created_fixture');
       assert(createKeys.size === fixtureKeysBeforeSavedLogin.size
@@ -1500,8 +1753,54 @@ async function materializedPassword(id) {
     await submitLogin(website, `save-${suffix}@example.invalid`, `save-${crypto.randomUUID()}`);
     await pendingCard();
     const submitsBeforeSaveChoice = local.state.submits;
+    const postsBeforeSave = proof.vaultItemPosts.total;
+    const keysBeforeSave = new Set(createKeys);
+    responseLossPostsBefore = postsBeforeSave;
+    responseLossKeysBefore = keysBeforeSave;
+    if (receiptBackedSaveUpdateMode) {
+      for (const key of keysBeforeSave) responseLossFixtureKeys.add(key);
+      assert(await worker.evaluate(async () => {
+        const rows = Object.values((await chrome.storage.session.get('matrx.credentials.capture.pending.v1'))['matrx.credentials.capture.pending.v1'] || {});
+        if (rows.length !== 1) return false;
+        const c = rows[0];
+        if (typeof c.id !== 'string' || !Number.isInteger(c.tabId) || typeof c.sourceDocumentId !== 'string') return false;
+        globalThis.__vaultCanaryPendingIdentity = JSON.stringify([c.id, c.tabId, c.sourceDocumentId]);
+        return true;
+      }), 'response_loss_candidate_identity_missing');
+      responseLoss = createVaultSaveResponseLoss({
+        context, apiOrigin: API, exactExtensionWorkerUrl: worker.url(), existingFixtureKeys: keysBeforeSave,
+        onRejectedBeforeForwardKey: (key) => {
+          rejectedBeforeForwardKeys.add(key);
+          proof.rejectedBeforeForwardCreateKeys = [...rejectedBeforeForwardKeys];
+          persist();
+        },
+      });
+      await responseLoss.install();
+      responseLossInstalled = true;
+    }
     await realPanel.click(uniqueCaptureButton('Save as new'));
+    if (responseLoss) {
+      await responseLoss.waitForFirstLoss();
+      await realPanel.waitFor(`Array.from((${captureCard})?.querySelectorAll('p') || []).filter((p) => p.textContent?.trim() === 'The Vault could not save that. Try again from the Vault tab.').length === 1 && !!(${uniqueCaptureButton('Save as new')}) && !(${uniqueCaptureButton('Save as new')}).disabled`, true, 15000);
+      const identityPreserved = await worker.evaluate(async () => {
+        const rows = Object.values((await chrome.storage.session.get('matrx.credentials.capture.pending.v1'))['matrx.credentials.capture.pending.v1'] || {});
+        const c = rows.length === 1 ? rows[0] : null;
+        return !!c && globalThis.__vaultCanaryPendingIdentity === JSON.stringify([c.id, c.tabId, c.sourceDocumentId]);
+      });
+      assert(identityPreserved, 'response_loss_candidate_changed');
+      const newKeys = [...createKeys].filter((key) => !keysBeforeSave.has(key));
+      assert(proof.vaultItemPosts.total === postsBeforeSave + 1 && newKeys.length === 1, 'response_loss_automatic_retry_or_missing_key');
+      responseLossKey = newKeys[0];
+      proof.checks.lostResponsePreservesCandidate = true;
+      responseLoss.allowExplicitRetry();
+      await realPanel.click(uniqueCaptureButton('Save as new'));
+    }
     await waitForCaptureDecision();
+    if (responseLoss) {
+      responseLoss.assertCompleted();
+      assert(proof.vaultItemPosts.total === postsBeforeSave + 2 && createKeys.size === keysBeforeSave.size + 1, 'response_loss_retry_key_or_count');
+      proof.responseLoss = responseLoss.snapshot();
+    }
     assert(local.state.submits === submitsBeforeSaveChoice, 'save_choice_submitted_site');
     const afterSave = await items();
     const delta = afterSave.filter((entry) => !beforeSave.has(entry.id));
@@ -1509,10 +1808,31 @@ async function materializedPassword(id) {
     createdIds.add(delta[0].id);
     proof.ownedFixtureIds = [...createdIds];
     if (artifactAdmitted) persist();
+    if (responseLoss) {
+      await responseLoss.dispose();
+      proof.responseLoss = responseLoss.snapshot();
+      proof.cleanup.responseLossRouteRemoved = proof.responseLoss.unrouteSucceeded && proof.responseLoss.handlerCount === 0;
+      assert(proof.cleanup.responseLossRouteRemoved, 'response_loss_route_cleanup_unproven');
+      persist();
+      await reconcile();
+      assert(receiptKeys().length === 5 && receiptItemByKey.get(responseLossKey) === delta[0].id, 'response_loss_receipt_result_mismatch');
+      proof.checks.lostResponseRetryExactlyOne = true;
+    }
     proof.checks.saveAsNewExactOne = true;
     proof.checks.saveChoiceDidNotSubmit = true;
-    proof.openProof = ['canonical enrolled-MFA preservation is not exercised; the fixture only proves unrelated sealed-field preservation', 'lost-response retry is not exercised by this canary', 'browser restart and distributed-release acceptance are separate gates'];
+    proof.openProof = [...(!responseLoss ? ['lost-response retry is not exercised by this canary'] : []), 'browser restart and distributed-release acceptance are separate gates'];
     }
+    if (responseLoss) {
+      assert(proof.vaultItemPosts.total === responseLossPostsBefore + 2
+        && createKeys.size === responseLossKeysBefore.size + 1
+        && [...responseLossKeysBefore].every((key) => createKeys.has(key))
+        && createKeys.has(responseLossKey), 'response_loss_terminal_attempt_or_key_count');
+    }
+    proof.networkJournal.preDisposalSnapshot = networkJournal.snapshot();
+    persist();
+    await networkJournal.assertCoverage();
+    proof.networkJournal.preDisposalCoverage = true;
+    persist();
   } catch (error) {
     failure = error;
     proof.failurePhase = proof.phase;
@@ -1520,6 +1840,30 @@ async function materializedPassword(id) {
     proof.failureCode = String(error?.message || 'canary_failure').match(/^[a-z0-9_]{1,100}$/)?.[0] || 'canary_failure';
     if (artifactAdmitted) persist();
   } finally {
+    if (responseLoss && responseLossInstalled) {
+      try { await responseLoss.dispose(); }
+      catch (error) {
+        if (!failure) { failure = error; proof.failurePhase ||= 'response_loss_cleanup'; proof.failureCode ||= 'response_loss_cleanup_failed'; }
+      }
+      proof.responseLoss = responseLoss.snapshot();
+      proof.cleanup.responseLossRouteRemoved = proof.responseLoss.unrouteSucceeded && proof.responseLoss.handlerCount === 0;
+    }
+    // The enrolled authenticator is an independent receipt-owned resource. Its
+    // cleanup must run before item deletion and must not suppress that deletion.
+    if (authenticatorHandle) {
+      try {
+        const cleaned = await authenticator.cleanup(authenticatorHandle);
+        proof.cleanup.authenticator = { cleanupProven: cleaned === true };
+        if (cleaned !== true) throw new Error('authenticator_cleanup_unproven');
+      } catch (error) {
+        proof.cleanup.authenticator = { cleanupProven: authenticatorHandle.cleanupProven === true };
+        if (!failure) {
+          failure = error;
+          proof.failurePhase ||= 'authenticator_cleanup';
+          proof.failureCode ||= 'authenticator_cleanup_failed';
+        }
+      }
+    }
     try {
       if (website && !website.isClosed()) {
         await website.goto(localUrl, { waitUntil: 'domcontentloaded', timeout: 10000 }).catch(() => {});
@@ -1563,7 +1907,7 @@ async function materializedPassword(id) {
     // A receipt-mode run that observed a baseline must prove its own cleanup
     // left that exact baseline intact, even when it failed before any create.
     // Do not invent this evidence when baseline capture never occurred.
-    if (receiptBackedSaveUpdateMode && typeof proof.baselineMetadataSha256 === 'string') {
+    if ((receiptBackedSaveUpdateMode || readOnlyAdmissionMode) && typeof proof.baselineMetadataSha256 === 'string') {
       try {
         const baselineAfterFailure = await items();
         const finalIds = new Set(baselineAfterFailure.map((entry) => entry.id));
@@ -1611,6 +1955,32 @@ async function materializedPassword(id) {
     } else {
       proof.cleanup.remoteAuthRevocation = 'not_applicable';
     }
+    try {
+      if (networkJournal) {
+        proof.networkJournal.beforeCleanupSnapshot = networkJournal.snapshot();
+        if (artifactAdmitted) persist();
+        await networkJournal.dispose();
+        const snapshot = networkJournal.snapshot();
+        proof.networkJournal = {
+          ...(proof.networkJournal || {}),
+          postDisposalSnapshot: snapshot,
+          disposalSucceeded: snapshot.cleanupPhase === 'complete' && snapshot.observerError === false
+            && snapshot.transportFatal === false && snapshot.remainingOwnedSessionCount === 0
+            && snapshot.pendingSetupCount === 0,
+        };
+        if (proof.networkJournal.disposalSucceeded !== true) throw new Error('vault_network_disposal_unproven');
+      } else if (rawCdp) {
+        await rawCdp.detach();
+        proof.cleanup.networkJournal = 'adapter_closed_before_journal_start';
+      }
+    } catch (error) {
+      proof.cleanup.networkJournal = 'failed';
+      if (!failure) {
+        failure = error;
+        proof.failurePhase ||= 'network_journal_cleanup';
+        proof.failureCode ||= 'vault_network_cleanup_failed';
+      }
+    }
     realPanel?.dispose();
     try { if (context) await context.close(); proof.cleanup.browserClosed = true; } catch { proof.cleanup.browserClosed = false; }
     try {
@@ -1626,7 +1996,11 @@ async function materializedPassword(id) {
       && proof.vaultItemPosts.total === 0
       && createKeys.size === 0
       && createdIds.size === 0
-      && proof.cleanup.browserClosed === true;
+      && proof.cleanup.browserClosed === true
+      && proof.networkJournal?.preDisposalCoverage === true
+      && proof.networkJournal?.disposalSucceeded === true
+      && proof.networkJournal?.postDisposalSnapshot?.observerError === false
+      && proof.networkJournal?.postDisposalSnapshot?.transportFatal === false;
     if (readOnlyAdmissionMode) {
       proof.admission.noFixtureWrites = proof.vaultMutationRequests === 0 && proof.vaultItemPosts.total === 0
         && createKeys.size === 0 && createdIds.size === 0;
@@ -1641,7 +2015,9 @@ async function materializedPassword(id) {
         && proof.cleanup.vaultMutationFree === true
         && proof.cleanup.localAuthLogoutStatus === 204
         && proof.cleanup.browserClosed === true
-        && proof.cleanup.profileRemoved === true;
+        && proof.cleanup.profileRemoved === true
+        && proof.networkJournal?.preDisposalCoverage === true
+        && proof.networkJournal?.disposalSucceeded === true;
       // `ok` remains reserved for a full Save/Update acceptance proof.
       proof.ok = false;
     } else {
@@ -1649,9 +2025,13 @@ async function materializedPassword(id) {
         && proof.cleanup.createdItemsGone && proof.cleanup.finalItemIdsMatchBaseline === true
         && proof.cleanup.profileRemoved && proof.cleanup.localAuthLogoutStatus === 204
         && proof.cleanup.browserClosed === true
+        && proof.networkJournal?.preDisposalCoverage === true
+        && proof.networkJournal?.disposalSucceeded === true
         && (!receiptBackedSaveUpdateMode || (proof.cleanup.localFixtureServerClosed === true
           && proof.cleanup.finalBaselineIdSetMatches === true
-          && proof.cleanup.finalBaselineMetadataMatches === true));
+          && proof.cleanup.finalBaselineMetadataMatches === true
+          && proof.cleanup.authenticator?.cleanupProven === true
+          && proof.checks.enrolledAuthenticatorPreserved === true));
     }
     const succeeded = readOnlyAdmissionMode ? proof.admission.ok : proof.ok;
     // Persist outside the disposable profile only as a value-free, caller-chosen path.
