@@ -118,11 +118,12 @@ async function authorize(contextId: string, waiter: Waiter, userConfirmed: boole
   }
   const mode = await permissionReader();
   // No await between this fence and transition: settings must not auto-allow stale act mode.
-  if (
-    waiter.generation !== permissionGeneration ||
-    !waiter.proposal.isBindingCurrent(waiter.proposal.binding)
-  ) {
+  if (waiter.generation !== permissionGeneration) {
     finish(contextId, { decision: 'cancel', reason: 'permission_changed' });
+    return;
+  }
+  if (!waiter.proposal.isBindingCurrent(waiter.proposal.binding)) {
+    finish(contextId, { decision: 'refused', reason: 'binding_or_schema_changed' });
     return;
   }
   if (Date.now() >= waiter.proposal.deadlineMs) {

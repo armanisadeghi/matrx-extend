@@ -36,15 +36,33 @@ describe('resolveLocalCommandPolicy', () => {
     expect(result?.tier).toBe('privileged');
   });
 
-  it.each(['attempt', 'discover'])('refuses forged authenticator action %s', (action) => {
+  it.each(['attempt', 'discover'])(
+    'refuses valid attempt smuggled as authenticator action %s',
+    (action) => {
+      expect(
+        resolveLocalCommandPolicy(
+          {
+            operation: 'authenticator',
+            action,
+            credential_item_id: '00000000-0000-4000-8000-000000000001',
+            fields: [{ selector: '#password', field_key: 'password' }],
+            submit: { kind: 'none' },
+          } as never,
+          1,
+        ),
+      ).toBeNull();
+    },
+  );
+
+  it('refuses unrelated authenticator keys even when its canonical fields parse', () => {
     expect(
       resolveLocalCommandPolicy(
         {
           operation: 'authenticator',
-          action,
           credential_item_id: '00000000-0000-4000-8000-000000000001',
           code_selector: '#code',
           submit: { kind: 'none' },
+          unexpected: 'secret',
         } as never,
         1,
       ),

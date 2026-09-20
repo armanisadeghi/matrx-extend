@@ -5,6 +5,7 @@ import {
   type LocalBrowserApprovalProposal,
   localBrowserApprovalWaiterCount,
   requestLocalBrowserApproval,
+  setLocalBrowserApprovalPermissionReaderForTest,
 } from './approvals';
 
 // native.on also registers a runtime listener; the behavior under test is its
@@ -42,6 +43,7 @@ const proposal = (suffix: string): LocalBrowserApprovalProposal => ({
 const flush = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 
 afterEach(() => {
+  setLocalBrowserApprovalPermissionReaderForTest(null);
   // Each test explicitly settles its waiter; this assertion catches a secret-bearing waiter leak.
   expect(localBrowserApprovalWaiterCount()).toBe(0);
 });
@@ -67,6 +69,50 @@ describe('local browser private approvals', () => {
     expect(contextId).not.toBe('');
     broadcast(CHANNELS.LOCAL_BROWSER_APPROVAL_CANCEL, { approvalContextId: contextId });
     await expect(pending).resolves.toMatchObject({ decision: 'cancel' });
+    off();
+  });
+
+  it('refuses if binding changes while the final permission read is pending', async () => {
+    let release!: (value: 'act') => void;
+    setLocalBrowserApprovalPermissionReaderForTest(
+      () =>
+        new Promise((resolve) => {
+          release = resolve;
+        }),
+    );
+    let current = true;
+    const pending = requestLocalBrowserApproval({
+      ...proposal('race'),
+      isBindingCurrent: () => current,
+    });
+    await flush();
+    current = false;
+    release('act');
+    await expect(pending).resolves.toMatchObject({ decision: 'refused' });
+  });
+
+  it('broadcasts canonical origin only and ignores malicious proposal metadata', async () => {
+    let request: unknown;
+    const off = on(CHANNELS.LOCAL_BROWSER_APPROVAL_REQUEST, (value) => {
+      request = value;
+      return { ack: true };
+    });
+    const pending = requestLocalBrowserApproval({
+      ...proposal('privacy'),
+      command: {
+        operation: 'navigate',
+        url: 'https://user:pass@example.com/private?token=secret#fragment',
+      },
+      origin: 'https://bad/path',
+      fieldSummary: 'hunter2',
+    } as unknown as LocalBrowserApprovalProposal);
+    await flush();
+    expect(request).toMatchObject({ origin: 'https://example.com' });
+    expect(JSON.stringify(request)).not.toMatch(/user|pass|private|token|secret|hunter2/);
+    broadcast(CHANNELS.LOCAL_BROWSER_APPROVAL_CANCEL, {
+      approvalContextId: (request as { approvalContextId: string }).approvalContextId,
+    });
+    await pending;
     off();
   });
 
