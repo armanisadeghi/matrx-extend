@@ -97,6 +97,7 @@ export const CHANNELS = {
   CREDENTIAL_SUGGESTIONS_PANEL_FILL: 'credential-suggestions:panel-fill', // sidepanel → SW (raw)
   CREDENTIAL_SUGGESTIONS_CONTEXT_CHANGED: 'credential-suggestions:context-changed', // SW → content
   CREDENTIAL_SUGGESTIONS_OPEN_VAULT: 'credential-suggestions:open-vault', // content → SW
+  CREDENTIAL_SUGGESTIONS_FOCUS_OWNER: 'credential-suggestions:focus-owner', // content → SW (metadata only)
   TOOL_TIMELINE_EVENT: 'tool:timeline-event', // SW → sidepanel: render in the chat (started / completed / error)
   // sidepanel → SW: re-dispatch a persisted client-delegated call on conversation
   // open (cold-resume). The conversation was left paused waiting on the call; the

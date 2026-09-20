@@ -64,7 +64,7 @@ export interface CredentialDomRequestMap {
     currentUrl: string;
     baseUri: string;
   };
-  focused_group: { selector?: string; field?: CredentialFieldRef; documentId?: string; requirePanelFocus?: boolean };
+  focused_group: { selector?: string; field?: CredentialFieldRef; documentId?: string; requirePanelFocus?: boolean; requireDocumentFocus?: boolean };
   attempt_probe: { fieldSelectors: string[]; controlSelectors: string[] };
   auto_probe: {};
   fill: {
@@ -173,7 +173,7 @@ export function credentialDomSource(
     }
     return primary;
   }
-  function focused(ref: CredentialFieldRef, documentId?: string, requirePanelFocus = false): BoundLoginGroup | null {
+  function focused(ref: CredentialFieldRef, documentId?: string, requirePanelFocus = false, requireDocumentFocus = false): BoundLoginGroup | null {
     const selector = typeof ref === 'string' ? ref : null;
     const deepActive = (): Element | null => {
       let active: Element | null = document.activeElement;
@@ -291,11 +291,10 @@ export function credentialDomSource(
     if ((username && !usernameSelector) || (password && !passwordSelector)) return null;
     if (
       requirePanelFocus &&
-      deepActive() !== anchor &&
-      deepActive() !== username &&
-      deepActive() !== password
+      (deepActive() !== anchor && deepActive() !== username && deepActive() !== password)
     )
       return null;
+    if (requireDocumentFocus && !document.hasFocus()) return null;
     const confirmation = inputs.filter(
       (i) => (i.type || '').toLowerCase() === 'password' && i !== password,
     );
@@ -1056,7 +1055,7 @@ export function credentialDomSource(
       ) as CredentialDomResultMap[CredentialDomOperation];
     case 'focused_group':
       return result(
-        request.field ? focused(request.field, request.documentId, request.requirePanelFocus) : request.selector ? focused(request.selector, request.documentId, request.requirePanelFocus) : null,
+        request.field ? focused(request.field, request.documentId, request.requirePanelFocus, request.requireDocumentFocus) : request.selector ? focused(request.selector, request.documentId, request.requirePanelFocus, request.requireDocumentFocus) : null,
       ) as CredentialDomResultMap[CredentialDomOperation];
     case 'attempt_probe':
       return result(

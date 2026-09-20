@@ -23,6 +23,9 @@ let focused: HTMLInputElement | null = null;
 let presentation: 'quiet' | 'on_page' = 'quiet';
 let focusEntry: { target: HTMLInputElement; listener: (event: KeyboardEvent) => void } | null =
   null;
+let focusSequence = 0;
+let lastFocusedTarget: HTMLInputElement | null = null;
+let lastFocusReport: Promise<void> | null = null;
 
 function deepActive(root: Document | ShadowRoot = document): Element | null {
   let active: Element | null = root.activeElement;
@@ -78,14 +81,35 @@ function place(target: HTMLInputElement): void {
   );
 }
 
-function requestFor(target: HTMLInputElement): void {
+function reportFocus(event?: Event, target?: HTMLInputElement): Promise<void> {
+  const stamp = performance.timeOrigin + (event?.timeStamp ?? performance.now());
+  const sequence = ++focusSequence;
+  const reported = send(CHANNELS.CREDENTIAL_SUGGESTIONS_FOCUS_OWNER, { stamp, sequence })
+    .then(() => undefined)
+    .catch(() => undefined);
+  if (target) {
+    lastFocusedTarget = target;
+    lastFocusReport = reported;
+  }
+  return reported;
+}
+function requestFor(target: HTMLInputElement, reported?: Promise<void>): void {
   focused = target;
   dismiss();
+  const ownerReport =
+    reported ??
+    (lastFocusedTarget === target
+      ? lastFocusReport
+      : document.hasFocus() && deepActive() === target
+        ? reportFocus(undefined, target)
+        : null);
+  if (!ownerReport) return;
   const id = mountGenerationTargetRegistry().registerInput(target);
   if (!id) return;
   const token = ++generation;
   const requestUrl = location.href;
-  void send(CHANNELS.CREDENTIAL_SUGGESTIONS_QUERY, { field: { kind: 'registered_input', id } })
+  void ownerReport
+    .then(() => send(CHANNELS.CREDENTIAL_SUGGESTIONS_QUERY, { field: { kind: 'registered_input', id } }))
     .then((raw) => render(target, raw as QueryResponse, token, requestUrl))
     .catch(() => undefined);
 }
@@ -217,12 +241,31 @@ export function mountInlineCredentialSuggestions(): () => void {
   void readCredentialAssistancePresentation().then((value) => {
     presentation = value;
     const target = deepActive();
-    if (target instanceof HTMLInputElement) requestFor(target);
+    if (target instanceof HTMLInputElement && target !== focused) requestFor(target);
   });
   const onFocusIn = (event: FocusEvent): void => {
+    if (!event.isTrusted || !document.hasFocus()) return;
     const target = openComposedInput(event);
+    if (event.target === host) return;
+    const reported = reportFocus(event, target ?? undefined);
     if (!target || (target === focused && host)) return;
-    requestFor(target);
+    requestFor(target, reported);
+  };
+  const onWindowFocus = (event: FocusEvent): void => {
+    if (!event.isTrusted || !document.hasFocus()) return;
+    const target = deepActive();
+    if (!(target instanceof HTMLInputElement)) {
+      reportFocus(event);
+      return;
+    }
+    const reported = reportFocus(event, target);
+    // A browser can restore window focus without another focusin. Wait one
+    // report turn so a following focusin wins; otherwise mint a fresh offer
+    // for this still-focused credential control.
+    void reported.then(() => {
+      if (lastFocusReport === reported && document.hasFocus() && deepActive() === target)
+        requestFor(target, reported);
+    });
   };
   const onFocusOut = (): void => {
     window.setTimeout(() => {
@@ -234,7 +277,8 @@ export function mountInlineCredentialSuggestions(): () => void {
     if (openComposedInput(event) === focused) invalidate();
   };
   const onPointerDown = (event: PointerEvent): void => {
-    if (openComposedInput(event) === focused || event.composedPath().includes(host as EventTarget)) return;
+    if ((focused !== null && openComposedInput(event) === focused) || (host !== null && event.composedPath().includes(host))) return;
+    if (event.isTrusted && document.hasFocus()) reportFocus(event);
     invalidate();
   };
   const onKeyDown = (event: KeyboardEvent): void => {
@@ -268,6 +312,7 @@ export function mountInlineCredentialSuggestions(): () => void {
   });
 
   document.addEventListener('focusin', onFocusIn, true);
+  window.addEventListener('focus', onWindowFocus, true);
   document.addEventListener('focusout', onFocusOut, true);
   document.addEventListener('input', onInput, true);
   document.addEventListener('pointerdown', onPointerDown, true);
@@ -297,7 +342,10 @@ export function mountInlineCredentialSuggestions(): () => void {
 
   return () => {
     invalidate();
+    lastFocusedTarget = null;
+    lastFocusReport = null;
     document.removeEventListener('focusin', onFocusIn, true);
+    window.removeEventListener('focus', onWindowFocus, true);
     document.removeEventListener('focusout', onFocusOut, true);
     document.removeEventListener('input', onInput, true);
     document.removeEventListener('pointerdown', onPointerDown, true);

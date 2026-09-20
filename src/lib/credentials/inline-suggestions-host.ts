@@ -13,6 +13,11 @@ import {
   credentialDomSource,
 } from '@/lib/credentials/fill-primitive';
 import { isSafeDestination, normalizeLoginUrl } from '@/lib/credentials/login-urls';
+import {
+  credentialFrameBindingCurrent,
+  readCredentialFrameBinding,
+  type CredentialFrameBinding,
+} from '@/lib/credentials/frame-binding';
 import { SENSITIVE_ATTR, rememberSensitiveFields } from '@/lib/credentials/sensitive-fields';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
@@ -53,11 +58,21 @@ interface Offer extends FormGroup {
   tabId: number;
   windowId: number;
   documentId: string;
+  frameId: number;
+  binding: CredentialFrameBinding;
+  focusEpoch: string;
   organizationId: string;
   userId: string;
   itemIds: Set<string>;
   expiresAt: number;
   generation: number;
+}
+interface FocusOwner {
+  frameId: number;
+  documentId: string;
+  stamp: number;
+  sequence: number;
+  ambiguous: boolean;
 }
 
 const OFFERS = new Map<string, Offer>();
@@ -65,6 +80,7 @@ const GENERATIONS = new Map<string, number>();
 // This fence deliberately outlives an offer claim. A claimed fill can still be
 // awaiting materialization when a person changes tabs and comes back.
 const ACTIVATION_EPOCHS = new Map<number, number>();
+const FOCUS_OWNERS = new Map<number, FocusOwner>();
 let registered = false;
 
 const COPY = {
@@ -131,6 +147,48 @@ function randomOfferId(): string {
   const bytes = new Uint8Array(18);
   crypto.getRandomValues(bytes);
   return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+}
+function focusEpoch(owner: FocusOwner): string {
+  return `${owner.stamp}:${owner.sequence}`;
+}
+function currentFocusOwner(tabId: number, frameId: number, documentId: string): FocusOwner | null {
+  const owner = FOCUS_OWNERS.get(tabId);
+  return owner && !owner.ambiguous && owner.frameId === frameId && owner.documentId === documentId
+    ? owner
+    : null;
+}
+function focusOwnerCurrent(offer: Offer): boolean {
+  const owner = currentFocusOwner(offer.tabId, offer.frameId, offer.documentId);
+  return !!owner && focusEpoch(owner) === offer.focusEpoch;
+}
+function validFocusOwnerPayload(payload: unknown): payload is { stamp: number; sequence: number } {
+  return (
+    !!payload &&
+    typeof payload === 'object' &&
+    Object.keys(payload).length === 2 &&
+    typeof (payload as { stamp?: unknown }).stamp === 'number' &&
+    Number.isFinite((payload as { stamp: number }).stamp) &&
+    typeof (payload as { sequence?: unknown }).sequence === 'number' &&
+    Number.isSafeInteger((payload as { sequence: number }).sequence) &&
+    (payload as { sequence: number }).sequence >= 0
+  );
+}
+function recordFocusOwner(tabId: number, frameId: number, documentId: string, payload: { stamp: number; sequence: number }): void {
+  const incoming: FocusOwner = { ...payload, frameId, documentId, ambiguous: false };
+  const previous = FOCUS_OWNERS.get(tabId);
+  if (previous) {
+    if (incoming.stamp < previous.stamp) return;
+    if (incoming.stamp === previous.stamp && previous.ambiguous) return;
+    if (incoming.stamp === previous.stamp && (incoming.frameId !== previous.frameId || incoming.documentId !== previous.documentId)) {
+      FOCUS_OWNERS.set(tabId, { ...previous, ambiguous: true });
+      purge(tabId);
+      return;
+    }
+    if (incoming.stamp === previous.stamp && incoming.sequence <= previous.sequence) return;
+  }
+  FOCUS_OWNERS.set(tabId, incoming);
+  if (!previous || focusEpoch(previous) !== focusEpoch(incoming) || previous.frameId !== frameId || previous.documentId !== documentId)
+    purge(tabId);
 }
 function validQuery(payload: unknown): payload is { field: CredentialFieldRef } {
   if (!payload || typeof payload !== 'object' || Object.keys(payload).length !== 1) return false;
@@ -217,20 +275,13 @@ async function context(): Promise<{ userId: string; organizationId: string } | n
 }
 
 /** Chrome 106+ document targeting is mandatory; never fall back to tab-only injection. */
-async function isCurrentTopDocument(tabId: number, documentId: string): Promise<boolean> {
-  if (!canTargetCurrentDocument()) return false;
-  try {
-    const frame = (await chrome.webNavigation.getFrame({ tabId, frameId: 0 })) as unknown as {
-      documentId?: unknown;
-    } | null;
-    return frame?.documentId === documentId;
-  } catch {
-    return false;
-  }
+async function isCurrentDocument(binding: CredentialFrameBinding): Promise<boolean> {
+  return canTargetCurrentDocument() && credentialFrameBindingCurrent(binding);
 }
 
 async function query(
   tabId: number,
+  frameId: number,
   documentId: string,
   selector: CredentialFieldRef,
 ): Promise<QueryResponse> {
@@ -239,7 +290,10 @@ async function query(
   // query entry so activation during any earlier await cannot mint an offer.
   const activationAtStart = new Map(ACTIVATION_EPOCHS);
   if (!canTargetCurrentDocument()) return response('unavailable');
-  if (!(await isCurrentTopDocument(tabId, documentId))) return response('unavailable');
+  const owner = currentFocusOwner(tabId, frameId, documentId);
+  if (!owner) return response('unsafe_destination');
+  const binding = await readCredentialFrameBinding(tabId, frameId, documentId);
+  if (!binding || !(await isCurrentDocument(binding))) return response('unavailable');
   if (!(await readOfferSavedLoginsEnabled())) return response('unavailable');
   if (!(await hasRealUserToken())) return response('sign_in_required');
   const actor = await context();
@@ -248,6 +302,8 @@ async function query(
     operation: 'focused_group',
     field: selector,
     documentId,
+    requirePanelFocus: true,
+    requireDocumentFocus: true,
   }).catch(() => null);
   if (!group) return response('unsafe_destination');
   const tab = await chrome.tabs.get(tabId).catch(() => null);
@@ -288,15 +344,23 @@ async function query(
   if (eligible.length === 0) return response('no_matches');
   if (
     GENERATIONS.get(generationKey(tabId, documentId)) !== generation ||
-    activationEpoch(tab.windowId) !== queryEpoch
+    activationEpoch(tab.windowId) !== queryEpoch ||
+    !(await isCurrentDocument(binding)) ||
+    (() => {
+      const currentOwner = currentFocusOwner(tabId, frameId, documentId);
+      return !currentOwner || focusEpoch(currentOwner) !== focusEpoch(owner);
+    })()
   )
     return response('unsafe_destination');
   const id = randomOfferId();
   OFFERS.set(id, {
     id,
     tabId,
+    frameId,
     windowId: tab.windowId,
     documentId,
+    binding,
+    focusEpoch: focusEpoch(owner),
     organizationId: actor.organizationId,
     userId: actor.userId,
     itemIds: new Set(eligible.map((m) => m.item_id)),
@@ -328,8 +392,9 @@ async function panelStatus(tabId: number): Promise<PanelStatus> {
   if (offers.length !== 1) return { status: 'none', itemIds: [] };
   const offer = offers[0];
   if (!offer) return { status: 'none', itemIds: [] };
-  if (!(await isCurrentTopDocument(offer.tabId, offer.documentId)))
+  if (!(await isCurrentDocument(offer.binding)))
     return { status: 'none', itemIds: [] };
+  if (!focusOwnerCurrent(offer)) return { status: 'none', itemIds: [] };
   const actor = await context();
   if (!actor || actor.userId !== offer.userId || actor.organizationId !== offer.organizationId)
     return { status: 'none', itemIds: [] };
@@ -344,6 +409,7 @@ async function panelStatus(tabId: number): Promise<PanelStatus> {
 
 async function fill(
   tabId: number,
+  frameId: number,
   documentId: string,
   payload: { offerId: string; itemId: string },
 ): Promise<FillResponse> {
@@ -353,13 +419,15 @@ async function fill(
   if (!offer) return fillResponse('stale');
   if (
     offer.tabId !== tabId ||
+    offer.frameId !== frameId ||
     offer.documentId !== documentId ||
     offer.expiresAt <= Date.now() ||
     !offer.itemIds.has(payload.itemId)
   )
     return fillResponse('stale');
   if (!canTargetCurrentDocument()) return fillResponse('unavailable');
-  if (!(await isCurrentTopDocument(tabId, documentId))) return fillResponse('unavailable');
+  if (!(await isCurrentDocument(offer.binding))) return fillResponse('unavailable');
+  if (!focusOwnerCurrent(offer)) return fillResponse('stale');
   if (GENERATIONS.get(generationKey(tabId, documentId)) !== offer.generation)
     return fillResponse('stale');
   if (!(await readOfferSavedLoginsEnabled())) return fillResponse('unavailable');
@@ -410,7 +478,11 @@ async function fill(
     clearMaterialized();
     return fillResponse('stale');
   }
-  if (!(await isCurrentTopDocument(tabId, documentId))) {
+  if (!(await isCurrentDocument(offer.binding))) {
+    clearMaterialized();
+    return fillResponse('stale');
+  }
+  if (!focusOwnerCurrent(offer)) {
     clearMaterialized();
     return fillResponse('stale');
   }
@@ -418,6 +490,14 @@ async function fill(
   // invalidation can happen while Chrome resolves getFrame, so re-check the
   // current actor/settings and synchronous offer generation before injection.
   if (!(await stillAuthorized())) {
+    clearMaterialized();
+    return fillResponse('stale');
+  }
+  if (!(await isCurrentDocument(offer.binding))) {
+    clearMaterialized();
+    return fillResponse('stale');
+  }
+  if (!focusOwnerCurrent(offer)) {
     clearMaterialized();
     return fillResponse('stale');
   }
@@ -469,7 +549,8 @@ async function panelFill(tabId: number, itemId: string): Promise<FillResponse> {
     return { status: 'unavailable', message: PANEL_COPY.disabled };
   if (
     !(await currentActiveTab(offer.tabId, offer.windowId)) ||
-    !(await isCurrentTopDocument(offer.tabId, offer.documentId))
+    !(await isCurrentDocument(offer.binding)) ||
+    !focusOwnerCurrent(offer)
   )
     return { status: 'stale', message: PANEL_COPY.stale };
   const valid = (): boolean =>
@@ -479,8 +560,8 @@ async function panelFill(tabId: number, itemId: string): Promise<FillResponse> {
   const fence = async (): Promise<boolean> => {
     if (!valid()) return false;
     if (!(await currentActiveTab(offer.tabId, offer.windowId)) || !valid()) return false;
-    if (!(await isCurrentTopDocument(offer.tabId, offer.documentId))) return false;
-    return valid();
+    if (!(await isCurrentDocument(offer.binding))) return false;
+    return valid() && focusOwnerCurrent(offer);
   };
   if (!(await fence())) return { status: 'stale', message: PANEL_COPY.stale };
   if (GENERATIONS.get(generationKey(offer.tabId, offer.documentId)) !== offer.generation)
@@ -640,17 +721,29 @@ export function registerInlineCredentialSuggestionHost(): void {
     const tabId = sender.tab?.id;
     const documentId = (sender as chrome.runtime.MessageSender & { documentId?: unknown })
       .documentId;
+    if (env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_FOCUS_OWNER) {
+      if (
+        tabId == null ||
+        !Number.isInteger(sender.frameId) || sender.frameId! < 0 ||
+        typeof documentId !== 'string' ||
+        !validFocusOwnerPayload(env.payload)
+      )
+        return false;
+      recordFocusOwner(tabId, sender.frameId!, documentId, env.payload);
+      sendResponse({ ok: true });
+      return false;
+    }
     if (env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_QUERY) {
       if (
         tabId == null ||
-        sender.frameId !== 0 ||
+        !Number.isInteger(sender.frameId) || sender.frameId! < 0 ||
         typeof documentId !== 'string' ||
         !validQuery(env.payload)
       ) {
         sendResponse(response('unsafe_destination'));
         return false;
       }
-      void query(tabId, documentId, env.payload.field)
+      void query(tabId, sender.frameId!, documentId, env.payload.field)
         .then(sendResponse)
         .catch(() => sendResponse(response('unavailable')));
       return true;
@@ -658,14 +751,14 @@ export function registerInlineCredentialSuggestionHost(): void {
     if (env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_FILL) {
       if (
         tabId == null ||
-        sender.frameId !== 0 ||
+        !Number.isInteger(sender.frameId) || sender.frameId! < 0 ||
         typeof documentId !== 'string' ||
         !validFill(env.payload)
       ) {
         sendResponse(fillResponse('stale'));
         return false;
       }
-      void fill(tabId, documentId, env.payload)
+      void fill(tabId, sender.frameId!, documentId, env.payload)
         .then(sendResponse)
         .catch(() => sendResponse(fillResponse('unavailable')));
       return true;

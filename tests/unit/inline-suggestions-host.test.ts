@@ -28,6 +28,9 @@ const state = vi.hoisted(() => ({
   finalFrameStarted: null as (() => void) | null,
   getFrameCalls: 0,
   activeTabId: 7,
+  frames: new Map<number, { documentId: string; url: string; parentFrameId: number }>(),
+  autoOwnerReport: true,
+  focusSequence: 0,
 }));
 const runtimeListeners: Array<
   (
@@ -83,13 +86,38 @@ vi.mock('@/lib/credentials/sensitive-fields', () => ({
   rememberSensitiveFields: vi.fn(),
 }));
 
-function replyFor(message: unknown, tabId = 7, documentId = state.documentId): Promise<unknown> {
+function dispatchRuntime(
+  message: unknown,
+  sender: chrome.runtime.MessageSender,
+): { kept: boolean[]; replies: unknown[] } {
+  const replies: unknown[] = [];
+  const kept = runtimeListeners.map((listener) => listener(message, sender, (value) => replies.push(value)));
+  return { kept, replies };
+}
+function replyFor(
+  message: unknown,
+  tabId = 7,
+  documentId = state.documentId,
+  frameId = 0,
+): Promise<unknown> {
   return new Promise((resolve) => {
     const sender = {
       tab: { id: tabId },
-      frameId: 0,
+      frameId,
       documentId,
     } as chrome.runtime.MessageSender;
+    if (
+      state.autoOwnerReport &&
+      (message as { kind?: unknown }).kind === 'credential-suggestions:query'
+    )
+      dispatchRuntime(
+        {
+          __matrx: true,
+          kind: 'credential-suggestions:focus-owner',
+          payload: { stamp: 100, sequence: ++state.focusSequence },
+        },
+        sender,
+      );
     const kept = runtimeListeners.map((listener) => listener(message, sender, resolve));
     expect(kept).toContain(true);
   });
@@ -112,6 +140,7 @@ function registeredField(selector: string): { kind: 'registered_input'; id: stri
   const input = document.querySelector(selector);
   if (!(input instanceof HTMLInputElement))
     throw new Error(`Missing registered input: ${selector}`);
+  input.focus();
   const id = mountGenerationTargetRegistry().registerInput(input);
   if (!id) throw new Error(`Could not register input: ${selector}`);
   return { kind: 'registered_input', id };
@@ -131,6 +160,11 @@ beforeEach(() => {
   state.finalFrameStarted = null;
   state.getFrameCalls = 0;
   state.activeTabId = 7;
+  state.frames = new Map([
+    [0, { documentId: state.documentId, url: 'https://login.example.test/', parentFrameId: -1 }],
+  ]);
+  state.autoOwnerReport = true;
+  state.focusSequence = 0;
   state.matches = [
     {
       item_id: ITEM,
@@ -146,6 +180,7 @@ beforeEach(() => {
   runtimeListeners.length = 0;
   activationListeners.length = 0;
   history.replaceState({}, '', '/');
+  vi.spyOn(document, 'hasFocus').mockReturnValue(true);
   document.body.innerHTML =
     '<form method="post"><input id="username" autocomplete="username"><input id="password" type="password" autocomplete="current-password"><button type="submit">Sign in</button></form>';
   for (const input of Array.from(document.querySelectorAll('input'))) {
@@ -209,15 +244,16 @@ beforeEach(() => {
       },
     },
     webNavigation: {
-      getFrame: async () => {
+      getFrame: async ({ frameId }: chrome.webNavigation.GetFrameDetails) => {
         state.getFrameCalls++;
         if (state.finalFrameGate && state.getFrameCalls >= 3) {
           state.finalFrameStarted?.();
           await state.finalFrameGate;
         }
-        return { documentId: state.documentId };
+        return state.frames.get(frameId) ?? null;
       },
     },
+    permissions: { contains: async () => true },
     storage: { onChanged: { addListener: () => undefined } },
     sidePanel: { open: async () => undefined },
   };
@@ -849,6 +885,198 @@ describe('inline saved-login host', () => {
     })) as { status: string };
     expect(result.status).toBe('stale');
     expect((document.querySelector('#password') as HTMLInputElement).value).toBe('');
+  });
+
+  it('refuses a selected child after a same-URL sibling replaces its frozen document identity', async () => {
+    state.documentId = 'child-a';
+    state.frames = new Map([
+      [0, { documentId: 'top-document', url: 'https://login.example.test/', parentFrameId: -1 }],
+      [11, { documentId: 'child-a', url: 'https://login.example.test/embed', parentFrameId: 0 }],
+      [12, { documentId: 'child-b', url: 'https://login.example.test/embed', parentFrameId: 0 }],
+    ]);
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    const query = (await replyFor(
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:query',
+        payload: { field: registeredField('#password') },
+      },
+      7,
+      'child-a',
+      11,
+    )) as { status: string; offerId: string };
+    expect(query.status).toBe('ready');
+
+    // The URL is deliberately unchanged. Only Chrome's document identity is
+    // allowed to bind an offer to the selected sibling.
+    state.frames.set(11, {
+      documentId: 'child-b',
+      url: 'https://login.example.test/embed',
+      parentFrameId: 0,
+    });
+    const fill = (await replyFor(
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:fill',
+        payload: { offerId: query.offerId, itemId: ITEM },
+      },
+      7,
+      'child-a',
+      11,
+    )) as { status: string };
+    expect(fill.status).not.toBe('filled');
+    expect(state.materializeCalls).toBe(0);
+    expect((document.querySelector('#username') as HTMLInputElement).value).toBe('');
+    expect((document.querySelector('#password') as HTMLInputElement).value).toBe('');
+  });
+
+  it('rejects a child offer after its parent becomes the newer focus owner', async () => {
+    state.documentId = 'child-a';
+    state.frames = new Map([
+      [0, { documentId: 'top-document', url: 'https://login.example.test/', parentFrameId: -1 }],
+      [11, { documentId: 'child-a', url: 'https://login.example.test/embed', parentFrameId: 0 }],
+    ]);
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    const query = (await replyFor(
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:query',
+        payload: { field: registeredField('#password') },
+      },
+      7,
+      'child-a',
+      11,
+    )) as { status: string };
+    expect(query.status).toBe('ready');
+    dispatchRuntime(
+      { __matrx: true, kind: 'credential-suggestions:focus-owner', payload: { stamp: 200, sequence: 1 } },
+      { tab: { id: 7 }, frameId: 0, documentId: 'top-document' } as chrome.runtime.MessageSender,
+    );
+    await expect(replyForPanel({
+      __matrx: true,
+      kind: 'credential-suggestions:panel-status',
+      payload: { tabId: 7 },
+    })).resolves.toEqual({ status: 'none', itemIds: [] });
+    await expect(replyForPanel({
+      __matrx: true,
+      kind: 'credential-suggestions:panel-fill',
+      payload: { tabId: 7, itemId: ITEM },
+    })).resolves.toMatchObject({ status: 'stale' });
+    expect(state.materializeCalls).toBe(0);
+  });
+
+  it('ignores a delayed old child focus report and preserves the newer parent owner', async () => {
+    state.documentId = 'child-a';
+    state.frames = new Map([
+      [0, { documentId: 'top-document', url: 'https://login.example.test/', parentFrameId: -1 }],
+      [11, { documentId: 'child-a', url: 'https://login.example.test/embed', parentFrameId: 0 }],
+    ]);
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    const query = await replyFor(
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:query',
+        payload: { field: registeredField('#password') },
+      },
+      7,
+      'child-a',
+      11,
+    );
+    expect((query as { status: string }).status).toBe('ready');
+    dispatchRuntime(
+      { __matrx: true, kind: 'credential-suggestions:focus-owner', payload: { stamp: 200, sequence: 1 } },
+      { tab: { id: 7 }, frameId: 0, documentId: 'top-document' } as chrome.runtime.MessageSender,
+    );
+    dispatchRuntime(
+      { __matrx: true, kind: 'credential-suggestions:focus-owner', payload: { stamp: 100, sequence: 99 } },
+      { tab: { id: 7 }, frameId: 11, documentId: 'child-a' } as chrome.runtime.MessageSender,
+    );
+    await expect(replyForPanel({
+      __matrx: true,
+      kind: 'credential-suggestions:panel-status',
+      payload: { tabId: 7 },
+    })).resolves.toEqual({ status: 'none', itemIds: [] });
+  });
+
+  it('does not mint an offer when focus ownership changes during matching', async () => {
+    state.documentId = 'child-a';
+    state.frames = new Map([
+      [0, { documentId: 'top-document', url: 'https://login.example.test/', parentFrameId: -1 }],
+      [11, { documentId: 'child-a', url: 'https://login.example.test/embed', parentFrameId: 0 }],
+    ]);
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    let release!: () => void;
+    let matching!: () => void;
+    state.matchGate = new Promise((resolve) => { release = resolve; });
+    const started = new Promise<void>((resolve) => { matching = resolve; });
+    state.matchStarted = matching;
+    const query = replyFor(
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:query',
+        payload: { field: registeredField('#password') },
+      },
+      7,
+      'child-a',
+      11,
+    );
+    await started;
+    dispatchRuntime(
+      { __matrx: true, kind: 'credential-suggestions:focus-owner', payload: { stamp: 200, sequence: 1 } },
+      { tab: { id: 7 }, frameId: 0, documentId: 'top-document' } as chrome.runtime.MessageSender,
+    );
+    release();
+    await expect(query).resolves.toMatchObject({ status: 'unsafe_destination' });
+  });
+
+  it('fails closed for equal-stamp cross-frame focus conflicts until a strictly newer owner report', async () => {
+    state.documentId = 'child-a';
+    state.autoOwnerReport = false;
+    state.frames = new Map([
+      [0, { documentId: 'top-document', url: 'https://login.example.test/', parentFrameId: -1 }],
+      [11, { documentId: 'child-a', url: 'https://login.example.test/embed', parentFrameId: 0 }],
+    ]);
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    const owner = (frameId: number, documentId: string, stamp: number, sequence: number) =>
+      dispatchRuntime(
+        { __matrx: true, kind: 'credential-suggestions:focus-owner', payload: { stamp, sequence } },
+        { tab: { id: 7 }, frameId, documentId } as chrome.runtime.MessageSender,
+      );
+    owner(11, 'child-a', 100, 10);
+    const initial = (await replyFor(
+      { __matrx: true, kind: 'credential-suggestions:query', payload: { field: registeredField('#password') } },
+      7, 'child-a', 11,
+    )) as { status: string };
+    expect(initial.status).toBe('ready');
+    owner(0, 'top-document', 100, 1);
+    owner(11, 'child-a', 100, 11);
+    await expect(replyForPanel({
+      __matrx: true,
+      kind: 'credential-suggestions:panel-fill',
+      payload: { tabId: 7, itemId: ITEM },
+    })).resolves.toMatchObject({ status: 'stale' });
+    expect(state.materializeCalls).toBe(0);
+    owner(11, 'child-a', 101, 1);
+    const fresh = (await replyFor(
+      { __matrx: true, kind: 'credential-suggestions:query', payload: { field: registeredField('#password') } },
+      7, 'child-a', 11,
+    )) as { status: string };
+    expect(fresh.status).toBe('ready');
   });
 
   it('rejects an older query when a newer focused query wins the race', async () => {
