@@ -4,7 +4,7 @@ export type LocalBrowserApprovalView = {
   approvalContextId: string;
   operation: 'navigate' | 'inspect_login' | 'vault_login' | 'authenticator';
   origin?: string;
-  fieldSummary?: string;
+  fields?: Readonly<{ names: string[]; count: number }>;
   tier: 'read' | 'action' | 'ask-user' | 'privileged';
   deadlineMs: number;
 };

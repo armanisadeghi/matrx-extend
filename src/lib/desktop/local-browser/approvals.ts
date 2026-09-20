@@ -27,8 +27,6 @@ export type LocalBrowserApprovalProposal = Readonly<{
   command: LocalCommand;
   ownedTabId: number;
   deadlineMs: number;
-  origin?: string;
-  fieldSummary?: string;
   /** Synchronous controller fence over the exact actor/device/run/tab binding. */
   isBindingCurrent: (binding: LocalBrowserApprovalBinding) => boolean;
 }>;
@@ -42,7 +40,7 @@ export type LocalBrowserApprovalRequest = Readonly<{
   approvalContextId: string;
   operation: LocalCommand['operation'];
   origin?: string;
-  fieldSummary?: string;
+  fields?: Readonly<{ names: string[]; count: number }>;
   tier: PolicyResolution['tier'];
   deadlineMs: number;
 }>;
@@ -113,7 +111,7 @@ async function authorize(contextId: string, waiter: Waiter, userConfirmed: boole
   }
   const mode = await readDefaultPermissionMode();
   // No await between this fence and transition: settings must not auto-allow stale act mode.
-  if (waiter.generation !== permissionGeneration) {
+  if (waiter.generation !== permissionGeneration || !waiter.proposal.isBindingCurrent(waiter.proposal.binding)) {
     finish(contextId, { decision: 'cancel', reason: 'permission_changed' });
     return;
   }
@@ -137,11 +135,19 @@ function toRequest(
   waiter: Waiter,
   policy: PolicyResolution,
 ): LocalBrowserApprovalRequest {
+  const rawOrigin = waiter.proposal.command.operation === 'navigate' ? waiter.proposal.command.url : undefined;
+  let origin: string | undefined;
+  try { origin = rawOrigin ? new URL(rawOrigin).origin : undefined; } catch { origin = undefined; }
+  const rawFields = (waiter.proposal.command as { fields?: unknown }).fields;
+  const names = Array.isArray(rawFields) ? rawFields.map((field) =>
+    typeof field === 'object' && field !== null && typeof (field as { field_key?: unknown }).field_key === 'string'
+      ? (field as { field_key: string }).field_key : null,
+  ).filter((field): field is string => field !== null).slice(0, 12) : [];
   return {
     approvalContextId: contextId,
     operation: waiter.proposal.command.operation,
-    ...(waiter.proposal.origin && { origin: waiter.proposal.origin }),
-    ...(waiter.proposal.fieldSummary && { fieldSummary: waiter.proposal.fieldSummary }),
+    ...(origin && { origin }),
+    ...(names.length && { fields: { names: [...new Set(names)], count: names.length } }),
     tier: policy.tier,
     deadlineMs: waiter.proposal.deadlineMs,
   };

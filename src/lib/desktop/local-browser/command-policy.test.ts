@@ -36,6 +36,14 @@ describe('resolveLocalCommandPolicy', () => {
     expect(result?.tier).toBe('privileged');
   });
 
+  it.each(['attempt', 'discover'])('refuses forged authenticator action %s', (action) => {
+    expect(resolveLocalCommandPolicy({
+      operation: 'authenticator', action,
+      credential_item_id: '00000000-0000-4000-8000-000000000001',
+      code_selector: '#code', submit: { kind: 'none' },
+    } as never, 1)).toBeNull();
+  });
+
   it('refuses schema-invalid commands before policy', () => {
     expect(resolveLocalCommandPolicy({ operation: 'navigate', url: 3 } as never, 1)).toBeNull();
   });

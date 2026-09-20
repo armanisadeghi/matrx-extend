@@ -26,11 +26,13 @@ export function resolveLocalCommandPolicy(
         return { toolName: 'credential_login', args: { action: 'discover' } };
       case 'vault_login': {
         const { operation: _operation, ...args } = command;
-        return { toolName: 'credential_login', args: { action: 'attempt', ...args } };
+        if ('action' in args) return null;
+        return { toolName: 'credential_login', args: { ...args, action: 'attempt' } };
       }
       case 'authenticator': {
         const { operation: _operation, ...args } = command;
-        return { toolName: 'credential_login', args: { action: 'authenticator', ...args } };
+        if ('action' in args) return null;
+        return { toolName: 'credential_login', args: { ...args, action: 'authenticator' } };
       }
     }
   })();

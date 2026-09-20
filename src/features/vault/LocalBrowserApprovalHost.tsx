@@ -40,6 +40,12 @@ export function LocalBrowserApprovalHost({ signedIn }: { signedIn: boolean }) {
         broadcast(CHANNELS.LOCAL_BROWSER_APPROVAL_VIEW_CLOSED, { approvalContextId: id });
     };
   }, [signedIn, show, remove, clear]);
+  useEffect(() => {
+    const timers = Object.values(approvals).map((approval) => setTimeout(
+      () => remove(approval.approvalContextId), Math.max(0, approval.deadlineMs - Date.now()),
+    ));
+    return () => timers.forEach(clearTimeout);
+  }, [approvals, remove]);
   if (!signedIn) return null;
   return (
     <div className="space-y-2 px-3 py-2">
@@ -49,7 +55,7 @@ export function LocalBrowserApprovalHost({ signedIn }: { signedIn: boolean }) {
           toolName: `Owned browser: ${approval.operation}`,
           args: {
             ...(approval.origin && { origin: approval.origin }),
-            ...(approval.fieldSummary && { fields: approval.fieldSummary }),
+            ...(approval.fields && { fields: approval.fields }),
           },
           tier: approval.tier,
           description: 'This affects the browser tab assigned to this local session.',
