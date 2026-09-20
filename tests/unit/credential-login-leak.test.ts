@@ -996,3 +996,92 @@ describe('credential_login — flow variants', () => {
     expectNoSentinels(await egressBlob(result), 'stalled submission');
   }, 30_000);
 });
+
+describe('admitted credential execution', () => {
+  beforeEach(resetRecorders);
+  const input = {
+    action: 'attempt',
+    credential_item_id: ITEM_ID,
+    fields: [
+      { selector: '#username', field_key: 'username', clear_first: true },
+      { selector: '#password', field_key: 'password', clear_first: true },
+    ],
+    submit: { kind: 'click', selector: '#submit' },
+    expect: { success_selector: 'a[href="/logout"]', timeout_ms: 1_000 },
+  };
+  async function setup() {
+    const { runAdmittedCredentialAttempt } = await import('@/lib/tools/handlers/credential-login');
+    const data = {
+      item_id: ITEM_ID,
+      origin: PAGE_ORIGIN,
+      fields: { username: SENTINEL_USER, password: SENTINEL_PASSWORD },
+    };
+    const ports = {
+      commandId: 'command-fixture',
+      documentId: 'document-fixture',
+      deadlineMs: Date.now() + 10_000,
+      assertCurrent: vi.fn(async () => {}),
+      isCurrent: vi.fn(() => true),
+      materialize: vi.fn(async () => ({ ok: true as const, data })),
+      report: vi.fn(async () => {}),
+    };
+    return { run: () => runAdmittedCredentialAttempt(input, TAB_ID, PAGE_URL, ports), ports, data };
+  }
+  it('uses the private claim only, document-pins mutations and clears received fields', async () => {
+    const { run, ports, data } = await setup();
+    const targets: chrome.scripting.InjectionTarget[] = [];
+    const execute = chrome.scripting.executeScript;
+    vi.spyOn(chrome.scripting, 'executeScript').mockImplementation(async (request) => {
+      targets.push(request.target);
+      return execute(request);
+    });
+    const result = await run();
+    expect(result.status).toBe('authenticated');
+    expect((document.getElementById('username') as HTMLInputElement).value).toBe(SENTINEL_USER);
+    expect(targets.some((target) => target.documentIds?.[0] === 'document-fixture')).toBe(true);
+    expect(ports.materialize).toHaveBeenCalledTimes(1);
+    expect(ports.materialize).toHaveBeenCalledWith(ITEM_ID, ['username', 'password']);
+    expect(posts).toEqual([]);
+    expect(data.fields).toEqual({ username: '', password: '' });
+    expectNoSentinels(
+      JSON.stringify({ result, reports: ports.report.mock.calls }),
+      'admitted result',
+    );
+  });
+  it('revocation during private materialization prevents all typing and clears values', async () => {
+    const { run, ports, data } = await setup();
+    ports.materialize.mockImplementation(async () => {
+      ports.isCurrent.mockReturnValue(false);
+      return { ok: true as const, data };
+    });
+    expect((await run()).status).toBe('unknown');
+    expect((document.getElementById('username') as HTMLInputElement).value).toBe('');
+    expect(data.fields).toEqual({ username: '', password: '' });
+    expect(posts).toEqual([]);
+  });
+  it('a replaced Chrome document cannot receive the claim', async () => {
+    const { run, ports, data } = await setup();
+    const execute = chrome.scripting.executeScript;
+    ports.materialize.mockImplementation(async () => {
+      vi.spyOn(chrome.scripting, 'executeScript').mockImplementation(async (request) => {
+        if (request.target.documentIds?.[0] === 'document-fixture')
+          throw new Error('document gone');
+        return execute(request);
+      });
+      return { ok: true as const, data };
+    });
+    expect((await run()).status).toBe('unknown');
+    expect((document.getElementById('username') as HTMLInputElement).value).toBe('');
+    expect(data.fields).toEqual({ username: '', password: '' });
+  });
+  it('missing selection never falls back to ordinary matching or materialization', async () => {
+    const { runAdmittedCredentialAttempt } = await import('@/lib/tools/handlers/credential-login');
+    const { ports } = await setup();
+    const { credential_item_id: _id, ...unselected } = input;
+    expect((await runAdmittedCredentialAttempt(unselected, TAB_ID, PAGE_URL, ports)).status).toBe(
+      'unknown',
+    );
+    expect(ports.materialize).not.toHaveBeenCalled();
+    expect(posts).toEqual([]);
+  });
+});

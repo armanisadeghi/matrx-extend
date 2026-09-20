@@ -785,15 +785,70 @@ function failureResult(failure: VaultCallFailure, op: string): CredentialLoginRe
   return safeResult('unknown', { reason: `vault_${op}_failed_${failure.status}` });
 }
 
+/** Private admitted execution ports. No ordinary Vault fallback is permitted. */
+export interface AdmittedCredentialExecution {
+  commandId: string;
+  /** Chrome's top-frame documentId, captured by the owned controller. */
+  documentId: string;
+  deadlineMs: number;
+  assertCurrent: () => Promise<void>;
+  isCurrent: () => boolean;
+  materialize: (itemId: string, fieldKeys: string[]) => ReturnType<typeof materializeBrowserLogin>;
+  report: (result: CredentialLoginResult) => Promise<void>;
+}
+
+async function fenceAdmitted(execution?: AdmittedCredentialExecution): Promise<void> {
+  if (!execution) return;
+  await execution.assertCurrent();
+  if (!execution.isCurrent() || Date.now() >= execution.deadlineMs)
+    throw new Error('admitted_execution_changed');
+}
+
+/** Uses the shared complete-attempt engine with mandatory private claim ports. */
+export async function runAdmittedCredentialAttempt(
+  input: unknown,
+  tabId: number,
+  pageUrl: string,
+  execution: AdmittedCredentialExecution,
+): Promise<CredentialLoginResult> {
+  try {
+    const args = AttemptArgs.parse(input);
+    if (
+      !args.credential_item_id ||
+      !execution.documentId ||
+      typeof execution.materialize !== 'function' ||
+      typeof execution.report !== 'function'
+    )
+      return safeResult('unknown', { reason: 'admitted_binding_missing' });
+    const url = new URL(pageUrl);
+    if (!isSafeDestination(url)) return safeResult('unsafe_destination');
+    await fenceAdmitted(execution);
+    return await runCompleteAttempt(
+      args,
+      { callId: execution.commandId },
+      tabId,
+      url,
+      url.origin + url.pathname,
+      execution,
+    );
+  } catch {
+    return safeResult('unknown', { reason: 'admitted_execution_refused' });
+  }
+}
+
 async function injectTopFrame<T>(
   tabId: number,
   func: (...args: never[]) => T,
   args: unknown[],
+  execution?: AdmittedCredentialExecution,
 ): Promise<T | null> {
+  await fenceAdmitted(execution);
+  if (execution && (!execution.isCurrent() || Date.now() >= execution.deadlineMs))
+    throw new Error('admitted_execution_changed');
   const [first] = await chrome.scripting.executeScript({
     // frameIds: [0] is the top frame. Never fill inside a cross-origin
     // iframe — the tab URL the vault authorized against is the TOP frame's.
-    target: { tabId, frameIds: [0] },
+    target: execution ? { tabId, documentIds: [execution.documentId] } : { tabId, frameIds: [0] },
     func: func as (...a: unknown[]) => T,
     args,
   });
@@ -803,22 +858,27 @@ async function injectTopFrame<T>(
 async function injectCredentialDom<O extends CredentialDomInjectedRequest['operation']>(
   tabId: number,
   request: Extract<CredentialDomInjectedRequest, { operation: O }>,
+  execution?: AdmittedCredentialExecution,
 ): Promise<CredentialDomResult<O> | null> {
   return await injectTopFrame<CredentialDomResult<O>>(
     tabId,
     credentialDomSource as unknown as (...args: never[]) => CredentialDomResult<O>,
     [request] as unknown as never[],
+    execution,
   );
 }
 
 async function runCompleteAttempt(
   args: CompleteAttemptArgs,
-  ctx: Parameters<typeof getAssignedTab>[0],
+  ctx: { callId: string },
   tabId: number,
   pageUrl: URL,
   normalizedPageUrl: string,
+  execution?: AdmittedCredentialExecution,
 ): Promise<CredentialLoginResult> {
+  await fenceAdmitted(execution);
   let itemId = args.credential_item_id ?? null;
+  if (execution && !itemId) return safeResult('selection_required');
   if (!itemId) {
     const matches = await fetchBrowserLoginMatches(normalizedPageUrl, {
       includeFieldInventory: true,
@@ -862,11 +922,15 @@ async function runCompleteAttempt(
     return safeResult('spec_incomplete', { reason: 'attempt_has_no_steps' });
   }
   const firstControl = firstStep.submit.kind === 'none' ? null : firstStep.submit.selector;
-  const firstProbe = await injectCredentialDom(tabId, {
-    operation: 'attempt_probe',
-    fieldSelectors: firstStep.fields,
-    controlSelectors: firstControl ? [firstControl] : [],
-  }).catch(() => null);
+  const firstProbe = await injectCredentialDom(
+    tabId,
+    {
+      operation: 'attempt_probe',
+      fieldSelectors: firstStep.fields,
+      controlSelectors: firstControl ? [firstControl] : [],
+    },
+    execution,
+  ).catch(() => null);
   if (!firstProbe || !firstProbe.is_top_frame || firstProbe.origin !== pageUrl.origin) {
     return safeResult('unsafe_destination', { reason: 'origin_changed_before_attempt' });
   }
@@ -886,12 +950,15 @@ async function runCompleteAttempt(
 
   // Resolve every named field as one atomic authorization request BEFORE any
   // page mutation. A missing/inactive/sealed field refuses the whole attempt.
-  const materialized = await materializeBrowserLogin(itemId, {
-    pageUrl: normalizedPageUrl,
-    toolInvocationId: ctx.callId,
-    clientBuild: chrome.runtime.getManifest().version,
-    fieldKeys,
-  });
+  await fenceAdmitted(execution);
+  const materialized = execution
+    ? await execution.materialize(itemId, fieldKeys)
+    : await materializeBrowserLogin(itemId, {
+        pageUrl: normalizedPageUrl,
+        toolInvocationId: ctx.callId,
+        clientBuild: chrome.runtime.getManifest().version,
+        fieldKeys,
+      });
   if (!materialized.ok) {
     const failed = failureResult(materialized.failure, 'materialize');
     return safeResult('spec_incomplete', {
@@ -900,154 +967,186 @@ async function runCompleteAttempt(
     });
   }
   const credential = materialized.data;
-  if (credential.origin !== pageUrl.origin || !credential.fields) {
-    return safeResult('unsafe_destination', { reason: 'origin_or_field_map_mismatch' });
-  }
-
-  const before = await injectTopFrame<PageStateProbe>(tabId, pageStateSource, []).catch(() => null);
-  if (!before) return safeResult('unknown', { reason: 'before_evidence_failed' });
-  const filledSelectors: string[] = [];
-  const finish = async (
-    result: CredentialLoginResult,
-    clear = false,
-  ): Promise<CredentialLoginResult> => {
-    if (clear && filledSelectors.length > 0) {
-      await injectTopFrame(tabId, clearSensitiveSource, [filledSelectors, SENSITIVE_ATTR]).catch(
-        () => null,
-      );
-      forgetSensitiveFields(tabId);
-    }
-    const auditableStatus: BrowserLoginResultStatus = [
-      'authenticated',
-      'needs_mfa',
-      'captcha_or_takeover',
-      'credentials_rejected',
-      'selection_required',
-      'no_matching_login',
-      'unsafe_destination',
-      'unknown',
-    ].includes(result.status)
-      ? (result.status as BrowserLoginResultStatus)
-      : 'unknown';
-    await reportBrowserLoginResult(itemId, {
-      status: auditableStatus,
-      pageUrl: normalizedPageUrl,
-      toolInvocationId: ctx.callId,
-    });
-    return result;
-  };
-
-  for (const [stepIndex, step] of steps.entries()) {
-    const specs = step.fields.map((selector) => fieldBySelector.get(selector));
-    if (specs.some((entry) => !entry)) {
-      return await finish(
-        safeResult('spec_incomplete', {
-          reason: 'step_references_undeclared_field',
-          message: 'A step referenced a field that was not declared. Nothing else was typed.',
-        }),
-        true,
-      );
-    }
-    const controlSelector = step.submit.kind === 'none' ? null : step.submit.selector;
-    const probe = await injectCredentialDom(tabId, {
-      operation: 'attempt_probe',
-      fieldSelectors: step.fields,
-      controlSelectors: controlSelector ? [controlSelector] : [],
-    }).catch(() => null);
-    if (!probe || !probe.is_top_frame || probe.origin !== pageUrl.origin) {
-      return await finish(
-        safeResult('unsafe_destination', { reason: 'origin_changed_during_attempt' }),
-        true,
-      );
-    }
-    const missing = step.fields.filter((selector) => !probe.fields[selector]?.exists);
-    if (controlSelector && !probe.controls[controlSelector]) missing.push(controlSelector);
-    if (missing.length > 0) {
-      return await finish(
-        safeResult('spec_incomplete', {
-          reason: 'selector_not_found',
-          message: `The complete step could not be found (${missing.length} selector${missing.length === 1 ? '' : 's'} missing).`,
-        }),
-        true,
-      );
-    }
-    if (step.fields.some((selector) => probe.fields[selector]?.destination_safe === false)) {
-      return await finish(safeResult('unsafe_destination', { reason: 'unsafe_get_form' }), true);
+  try {
+    await fenceAdmitted(execution);
+    if (credential.origin !== pageUrl.origin || !credential.fields) {
+      return safeResult('unsafe_destination', { reason: 'origin_or_field_map_mismatch' });
     }
 
-    for (const spec of specs) {
-      if (!spec) continue;
-      const value = spec.field_key ? credential.fields[spec.field_key] : spec.literal;
-      if (typeof value !== 'string') {
+    const before = await injectTopFrame<PageStateProbe>(
+      tabId,
+      pageStateSource,
+      [],
+      execution,
+    ).catch(() => null);
+    if (!before) return safeResult('unknown', { reason: 'before_evidence_failed' });
+    const filledSelectors: string[] = [];
+    const finish = async (
+      result: CredentialLoginResult,
+      clear = false,
+    ): Promise<CredentialLoginResult> => {
+      if (clear && filledSelectors.length > 0) {
+        await injectTopFrame(
+          tabId,
+          clearSensitiveSource,
+          [filledSelectors, SENSITIVE_ATTR],
+          execution,
+        ).catch(() => null);
+        forgetSensitiveFields(tabId);
+      }
+      const auditableStatus: BrowserLoginResultStatus = [
+        'authenticated',
+        'needs_mfa',
+        'captcha_or_takeover',
+        'credentials_rejected',
+        'selection_required',
+        'no_matching_login',
+        'unsafe_destination',
+        'unknown',
+      ].includes(result.status)
+        ? (result.status as BrowserLoginResultStatus)
+        : 'unknown';
+      await fenceAdmitted(execution);
+      if (execution) await execution.report(result);
+      else
+        await reportBrowserLoginResult(itemId, {
+          status: auditableStatus,
+          pageUrl: normalizedPageUrl,
+          toolInvocationId: ctx.callId,
+        });
+      return result;
+    };
+
+    for (const [stepIndex, step] of steps.entries()) {
+      const specs = step.fields.map((selector) => fieldBySelector.get(selector));
+      if (specs.some((entry) => !entry)) {
         return await finish(
           safeResult('spec_incomplete', {
-            reason: 'materialized_field_missing',
-            message: 'The server did not return every authorized field. Nothing else was typed.',
+            reason: 'step_references_undeclared_field',
+            message: 'A step referenced a field that was not declared. Nothing else was typed.',
           }),
           true,
         );
       }
-      if (spec.field_key) {
-        rememberSensitiveFields(tabId, [spec.selector]);
-        filledSelectors.push(spec.selector);
-      }
-      const filled = await injectCredentialDom(tabId, {
-        operation: 'fill',
-        expected: null,
-        requested: [{ selector: spec.selector, value }],
-        sensitiveAttr: spec.field_key ? SENSITIVE_ATTR : '',
-        preserveLegacyFieldBehavior: true,
-      }).catch(() => null);
-      if (!filled?.ok) {
-        return await finish(
-          safeResult('unknown', { reason: `step_${stepIndex}_fill_failed` }),
-          true,
-        );
-      }
-    }
-
-    const submitted = await injectCredentialDom(tabId, {
-      operation: 'submit_explicit',
-      kind: step.submit.kind,
-      selector: controlSelector,
-    }).catch(() => null);
-    if (!submitted?.ok) {
-      return await finish(
-        safeResult(submitted?.mode === 'unsafe_destination' ? 'unsafe_destination' : 'unknown', {
-          reason: submitted?.mode === 'unsafe_destination' ? 'unsafe_get_form' : 'submit_failed',
-        }),
-        true,
-      );
-    }
-    if (step.wait_for) {
-      const appeared = await waitForSelector(
+      const controlSelector = step.submit.kind === 'none' ? null : step.submit.selector;
+      const probe = await injectCredentialDom(
         tabId,
-        step.wait_for.selector,
-        step.wait_for.timeout_ms,
-      );
-      if (!appeared) {
+        {
+          operation: 'attempt_probe',
+          fieldSelectors: step.fields,
+          controlSelectors: controlSelector ? [controlSelector] : [],
+        },
+        execution,
+      ).catch(() => null);
+      if (!probe || !probe.is_top_frame || probe.origin !== pageUrl.origin) {
         return await finish(
-          safeResult('unknown', { reason: `step_${stepIndex}_wait_timed_out` }),
+          safeResult('unsafe_destination', { reason: 'origin_changed_during_attempt' }),
           true,
         );
       }
-    }
-  }
+      const missing = step.fields.filter((selector) => !probe.fields[selector]?.exists);
+      if (controlSelector && !probe.controls[controlSelector]) missing.push(controlSelector);
+      if (missing.length > 0) {
+        return await finish(
+          safeResult('spec_incomplete', {
+            reason: 'selector_not_found',
+            message: `The complete step could not be found (${missing.length} selector${missing.length === 1 ? '' : 's'} missing).`,
+          }),
+          true,
+        );
+      }
+      if (step.fields.some((selector) => probe.fields[selector]?.destination_safe === false)) {
+        return await finish(safeResult('unsafe_destination', { reason: 'unsafe_get_form' }), true);
+      }
 
-  const classified = await classifyExplicitAttempt(
-    tabId,
-    pageUrl,
-    args.expect ?? DEFAULT_EXPECT,
-    before,
-    startedAt,
-  );
-  return await finish(
-    safeResult(classified.status, {
-      ...(classified.confidence !== undefined ? { confidence: classified.confidence } : {}),
-      ...(classified.signals !== undefined ? { signals: classified.signals } : {}),
-      ...(classified.evidence !== undefined ? { evidence: classified.evidence } : {}),
-    }),
-  );
+      for (const spec of specs) {
+        if (!spec) continue;
+        const value = spec.field_key ? credential.fields[spec.field_key] : spec.literal;
+        if (typeof value !== 'string') {
+          return await finish(
+            safeResult('spec_incomplete', {
+              reason: 'materialized_field_missing',
+              message: 'The server did not return every authorized field. Nothing else was typed.',
+            }),
+            true,
+          );
+        }
+        if (spec.field_key) {
+          rememberSensitiveFields(tabId, [spec.selector]);
+          filledSelectors.push(spec.selector);
+        }
+        const filled = await injectCredentialDom(
+          tabId,
+          {
+            operation: 'fill',
+            expected: null,
+            requested: [{ selector: spec.selector, value }],
+            sensitiveAttr: spec.field_key ? SENSITIVE_ATTR : '',
+            preserveLegacyFieldBehavior: true,
+          },
+          execution,
+        ).catch(() => null);
+        if (!filled?.ok) {
+          return await finish(
+            safeResult('unknown', { reason: `step_${stepIndex}_fill_failed` }),
+            true,
+          );
+        }
+      }
+
+      const submitted = await injectCredentialDom(
+        tabId,
+        {
+          operation: 'submit_explicit',
+          kind: step.submit.kind,
+          selector: controlSelector,
+        },
+        execution,
+      ).catch(() => null);
+      if (!submitted?.ok) {
+        return await finish(
+          safeResult(submitted?.mode === 'unsafe_destination' ? 'unsafe_destination' : 'unknown', {
+            reason: submitted?.mode === 'unsafe_destination' ? 'unsafe_get_form' : 'submit_failed',
+          }),
+          true,
+        );
+      }
+      if (step.wait_for) {
+        const appeared = await waitForSelector(
+          tabId,
+          step.wait_for.selector,
+          step.wait_for.timeout_ms,
+        );
+        if (!appeared) {
+          return await finish(
+            safeResult('unknown', { reason: `step_${stepIndex}_wait_timed_out` }),
+            true,
+          );
+        }
+      }
+    }
+
+    await fenceAdmitted(execution);
+    const classified = await classifyExplicitAttempt(
+      tabId,
+      pageUrl,
+      args.expect ?? DEFAULT_EXPECT,
+      before,
+      startedAt,
+    );
+    return await finish(
+      safeResult(classified.status, {
+        ...(classified.confidence !== undefined ? { confidence: classified.confidence } : {}),
+        ...(classified.signals !== undefined ? { signals: classified.signals } : {}),
+        ...(classified.evidence !== undefined ? { evidence: classified.evidence } : {}),
+      }),
+    );
+  } finally {
+    if (credential.fields)
+      for (const key of Object.keys(credential.fields)) credential.fields[key] = '';
+    if (credential.username !== undefined) credential.username = '';
+    if (credential.password !== undefined) credential.password = '';
+  }
 }
 
 async function runAuthenticatorAttempt(
