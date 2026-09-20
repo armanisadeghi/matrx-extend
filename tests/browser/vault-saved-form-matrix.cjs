@@ -118,10 +118,34 @@ exports.runSavedFormMatrix = async ({ context, worker, realPanel, targetName, us
     try { await realPanel.waitFor(`!!(${selector})`, true, 15000); } catch { throw new Error('saved_matrix_panel_fill_unavailable'); }
     return selector;
   };
+  const focusedFieldsMatch = async () => {
+    assert(focusedFixture, 'saved_matrix_focused_fixture_missing');
+    return focusedFixture.locator('body').evaluate((body, expected) => {
+      const fields = [['#username', expected.username], ['#password', expected.password]]
+        .map(([selector, value]) => ({ input: body.ownerDocument.querySelector(selector), value }))
+        .filter(({ input }) => !!input);
+      return fields.length > 0 && fields.every(({ input, value }) => input.value === value);
+    }, { username, password });
+  };
   const fill = async () => {
     const selector = await panelFillAvailable();
+    assert(!(await focusedFieldsMatch()), 'saved_matrix_fields_already_filled_before_click');
     await realPanel.click(selector);
-    try { await realPanel.waitFor(`Array.from(document.querySelectorAll('p')).some((node)=>node.textContent?.trim()==='Filled. Review the form, then sign in.')`, true, 15000); } catch {
+    try {
+      // The previous step's success paragraph can remain visible while a new
+      // fill is pending. Require this owned frame's values as well as feedback.
+      const deadline = Date.now() + 15000;
+      let completed = false;
+      do {
+        const [feedback, fieldsMatch] = await Promise.all([
+          realPanel.evaluate(`Array.from(document.querySelectorAll('p')).some((node)=>node.textContent?.trim()==='Filled. Review the form, then sign in.')`),
+          focusedFieldsMatch(),
+        ]);
+        if (feedback && fieldsMatch) { completed = true; break; }
+        await wait(Math.min(100, Math.max(0, deadline - Date.now())));
+      } while (Date.now() < deadline);
+      assert(completed, 'saved_matrix_current_fill_not_completed');
+    } catch {
       evidence.fillFailure = await realPanel.evaluate(`(() => {
         const text = document.body.innerText;
         return {

@@ -91,7 +91,7 @@ const localCanonicalCleanupArmed = process.env.MATRX_VAULT_CANARY_LOCAL_CANONICA
 // making a Vault mutation; it is not a Save/Update acceptance result.
 const readOnlyAdmissionMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
 const receiptBackedSaveUpdateMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_RECEIPT_BACKED_SAVE_UPDATE';
-const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = '3f9119167298c2b3206632fb6fffdebf1ff65ef4';
+const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = '18d6c03e69e49ffd9c4e158f7b9623d7f8c5dad0';
 const RECEIPT_BACKED_ROUTER_SHA256 = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
 const RECEIPT_BACKED_SERVICE_SHA256 = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
 const generatorTransportMode = process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
@@ -1080,8 +1080,12 @@ async function authenticate(extension) {
   assert(typeof extensionId === 'string' && extensionId.length > 10, 'extension_runtime_identity');
   // The flattened owned-browser journal accounts for page traffic. Playwright
   // observes only service-worker traffic, preventing page request duplicates.
+  const requestStartedAt = new WeakMap();
   context.on('request', (request) => {
-    if (request.serviceWorker()) journalVaultMutationRequest(request.url(), request.method(), request.headers());
+    if (request.serviceWorker()) {
+      requestStartedAt.set(request, Date.now());
+      journalVaultMutationRequest(request.url(), request.method(), request.headers());
+    }
   });
   context.on('response', (response) => {
     if (!response.request().serviceWorker()) return;
@@ -1096,7 +1100,7 @@ async function authenticate(extension) {
       : /\/fields\/[^/]+$/.test(url.pathname) ? 'field'
       : /\/items\/[^/]+$/.test(url.pathname) ? 'item'
       : url.pathname.endsWith('/items') ? 'items' : 'other';
-    (proof.apiResponses ||= []).push({ route, method: response.request().method(), status: response.status(), phase: proof.phase });
+    (proof.apiResponses ||= []).push({ route, method: response.request().method(), status: response.status(), phase: proof.phase, elapsedMs: requestStartedAt.has(response.request()) ? Date.now() - requestStartedAt.get(response.request()) : null });
     persist();
   });
   // Persist the zeroed journal before OAuth so an interruption still shows
@@ -1355,6 +1359,18 @@ async function waitForCaptureDecision() {
       vaultError: document.body.innerText.includes('The Vault could not save that. Try again from the Vault tab.'),
       noAnswer: document.body.innerText.includes('Matrx did not answer. Try again.')
     })`);
+    persist();
+    // Preserve the original failed verdict while allowing the already-dispatched
+    // mutation to settle before cleanup. Observe only UI booleans, never values.
+    const diagnosticStarted = Date.now();
+    try {
+      await realPanel.waitFor(`!(${captureHeading}) || Array.from((${captureCard})?.querySelectorAll('button') || []).every((button) => !button.disabled)`, true, 90000);
+      proof.decisionDiagnostics.settledAfterFailure = true;
+    } catch {
+      proof.decisionDiagnostics.settledAfterFailure = false;
+    }
+    proof.decisionDiagnostics.additionalObservationMs = Date.now() - diagnosticStarted;
+    proof.decisionDiagnostics.pendingAfterObservation = await hasPendingCapture();
     persist();
     throw new Error('capture_decision_not_completed');
   }
