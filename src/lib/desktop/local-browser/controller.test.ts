@@ -343,4 +343,65 @@ describe('owned local-browser tab controller', () => {
     expect(h.remove).toHaveBeenCalledTimes(1);
     expect(h.sent.at(-1)).toMatchObject({ operation: 'cleanup', receipt: 'closed' });
   });
+
+  it('keeps the truthful close receipt before a lost cleanup acknowledgement', async () => {
+    const h = harness();
+    const registration = await register(h);
+    h.deps.verify = vi.fn(async (request) =>
+      request.proof.operation === 'cleanup'
+        ? { ok: true as const, data: { status: 'accepted' as const, stop_id: stopId } }
+        : {
+            ok: true as const,
+            data: {
+              status: 'accepted' as const,
+              admission_id: ids.admission,
+              deadline_ms: Date.now() + 10_000,
+            },
+          },
+    );
+    h.deps.acknowledge = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true as const,
+        data: {
+          status: 'accepted' as const,
+          operation: 'admit' as const,
+          receipt: { admission_id: ids.admission, status: 'created' as const },
+          lease_expires_at_ms: Date.now() + 10_000,
+        },
+      })
+      .mockResolvedValueOnce({ ok: false as const, error: 'network_error' })
+      .mockResolvedValueOnce({
+        ok: true as const,
+        data: {
+          status: 'accepted' as const,
+          operation: 'cleanup' as const,
+          receipt: { stop_id: stopId, status: 'closed' as const },
+        },
+      });
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: opaqueAdmitGrant(registration.generation, registration.connection),
+    });
+    const cleanup = opaqueCleanupGrant(registration.generation, registration.connection);
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: '00000000-0000-4000-8000-000000000018',
+      operation: 'cleanup',
+      grant: cleanup,
+    });
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: '00000000-0000-4000-8000-000000000019',
+      operation: 'cleanup',
+      grant: cleanup,
+    });
+    expect(h.remove).toHaveBeenCalledTimes(1);
+    expect(h.sent.at(-1)).toMatchObject({ operation: 'cleanup', receipt: 'closed' });
+  });
 });

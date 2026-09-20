@@ -51,6 +51,24 @@ describe('local browser closed protocol', () => {
         reason: 'registration_unavailable',
       }),
     ).toMatchObject({ status: 'refused' });
+    expect(
+      parseLocalBrowserFrame({
+        type: 'local_browser.register_required',
+        version: 1,
+        status: 'refused',
+        reason: 'context_unavailable',
+      }),
+    ).toMatchObject({ reason: 'context_unavailable' });
+    expect(
+      parseLocalBrowserFrame({
+        type: 'local_browser.invalidate',
+        version: 1,
+        reason: 'binding_changed',
+      }),
+    ).toMatchObject({ type: 'local_browser.invalidate' });
+    expect(
+      parseLocalBrowserFrame({ ...registration, engine_boot_id: `${ids.boot.slice(0, -1)}A` }),
+    ).toBeNull();
   });
 
   it('rejects malformed or reflected lifecycle frames and keeps results closed', () => {
