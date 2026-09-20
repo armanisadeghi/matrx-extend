@@ -1154,3 +1154,91 @@ describe('admitted authenticator execution', () => {
     expect(posts).toEqual([]);
   });
 });
+
+describe('admitted post-submit document binding', () => {
+  beforeEach(resetRecorders);
+  it.each(['password', 'authenticator'])(
+    'refuses replacement-document evidence for %s',
+    async (kind) => {
+      const helpers = await import('@/lib/tools/handlers/credential-login');
+      if (kind === 'authenticator') renderAuthenticatorPage();
+      let submitted = false;
+      const execute = chrome.scripting.executeScript;
+      vi.spyOn(chrome.scripting, 'executeScript').mockImplementation(async (request) => {
+        if (submitted && request.target.documentIds?.[0] === 'document-fixture')
+          throw new Error('the authorized document no longer exists');
+        const answer = await execute(request);
+        if (
+          ('args' in request
+            ? (request.args?.[0] as { operation?: string } | undefined)
+            : undefined
+          )?.operation === 'submit_explicit'
+        )
+          submitted = true;
+        return answer;
+      });
+      const binding = {
+        commandId: 'command-fixture',
+        documentId: 'document-fixture',
+        deadlineMs: Date.now() + 10_000,
+        assertCurrent: async () => {},
+        isCurrent: () => true,
+        report: vi.fn(async () => {}),
+      };
+      const result =
+        kind === 'password'
+          ? await helpers.runAdmittedCredentialAttempt(
+              {
+                action: 'attempt',
+                credential_item_id: ITEM_ID,
+                fields: [
+                  { selector: '#username', field_key: 'username' },
+                  { selector: '#password', field_key: 'password' },
+                ],
+                submit: { kind: 'click', selector: '#submit' },
+                expect: { success_selector: 'a[href="/logout"]', timeout_ms: 1000 },
+              },
+              TAB_ID,
+              PAGE_URL,
+              {
+                ...binding,
+                materialize: async () => ({
+                  ok: true as const,
+                  data: {
+                    item_id: ITEM_ID,
+                    origin: PAGE_ORIGIN,
+                    fields: { username: SENTINEL_USER, password: SENTINEL_PASSWORD },
+                  },
+                }),
+              },
+            )
+          : await helpers.runAdmittedAuthenticatorAttempt(
+              {
+                action: 'authenticator',
+                credential_item_id: ITEM_ID,
+                code_selector: '#otp',
+                submit: { kind: 'click', selector: '#verify' },
+                expect: { success_selector: 'a[href="/logout"]', timeout_ms: 1000 },
+              },
+              TAB_ID,
+              PAGE_URL,
+              {
+                ...binding,
+                materialize: async () => ({
+                  ok: true as const,
+                  data: {
+                    injection_id: 'fixture',
+                    origin: PAGE_ORIGIN,
+                    code: SENTINEL_TOTP,
+                    expires_at: new Date(Date.now() + 20000).toISOString(),
+                  },
+                }),
+              },
+            );
+      expect(submitted).toBe(true);
+      expect(result.status).not.toBe('authenticated');
+      expect(binding.report).not.toHaveBeenCalled();
+      expect(posts).toEqual([]);
+    },
+  );
+});

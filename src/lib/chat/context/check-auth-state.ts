@@ -34,7 +34,11 @@ export interface AuthState {
   };
 }
 
-export async function checkAuthState(tabId: number, url: string): Promise<AuthState | null> {
+export async function checkAuthState(
+  tabId: number,
+  url: string,
+  admitted?: { documentId: string; isCurrent: () => boolean },
+): Promise<AuthState | null> {
   let domain = '';
   try {
     domain = new URL(url).hostname;
@@ -44,8 +48,9 @@ export async function checkAuthState(tabId: number, url: string): Promise<AuthSt
   if (!domain) return null;
 
   try {
+    if (admitted && !admitted.isCurrent()) return null;
     const [first] = await chrome.scripting.executeScript({
-      target: { tabId },
+      target: admitted ? { tabId, documentIds: [admitted.documentId] } : { tabId },
       func: (hostname: string): AuthState => {
         // Visible-only: dropdowns and side menus may have these as
         // hidden text — that doesn't count as "signed in" signal.
@@ -202,9 +207,10 @@ export async function checkAuthState(tabId: number, url: string): Promise<AuthSt
       },
       args: [domain],
     });
+    if (admitted && !admitted.isCurrent()) return null;
     return (first?.result as AuthState | undefined) ?? null;
   } catch (err) {
-    log.warn('scrape', 'checkAuthState failed', err);
+    if (!admitted) log.warn('scrape', 'checkAuthState failed', err);
     return null;
   }
 }

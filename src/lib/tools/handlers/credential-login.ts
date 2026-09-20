@@ -636,6 +636,7 @@ async function waitForSelector(
   tabId: number,
   selector: string,
   timeoutMs: number,
+  execution?: AdmittedExecutionBinding,
 ): Promise<boolean> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
@@ -649,7 +650,9 @@ async function waitForSelector(
         }
       }) as (...args: never[]) => boolean,
       [selector],
-    ).catch(() => false);
+      execution,
+    ).catch(() => (execution ? null : false));
+    if (execution && found === null) throw new Error('admitted_document_lost');
     if (found) return true;
     await sleep(POLL_INTERVAL_MS);
   }
@@ -662,12 +665,16 @@ async function classifyExplicitAttempt(
   expect: z.infer<typeof ExpectSpec>,
   before: PageStateProbe,
   startedAt: number,
+  execution?: AdmittedExecutionBinding,
 ): Promise<Pick<CredentialLoginResult, 'status' | 'confidence' | 'signals' | 'evidence'>> {
   const deadline = Date.now() + expect.timeout_ms;
   let after: PageStateProbe | null = null;
   while (Date.now() < deadline) {
     await sleep(POLL_INTERVAL_MS);
-    after = await injectTopFrame<PageStateProbe>(tabId, pageStateSource, []).catch(() => null);
+    after = await injectTopFrame<PageStateProbe>(tabId, pageStateSource, [], execution).catch(
+      () => null,
+    );
+    if (execution && !after) throw new Error('admitted_document_lost');
     if (!after) continue;
     if (
       after.href !== before.href ||
@@ -699,12 +706,24 @@ async function classifyExplicitAttempt(
   ] as const;
   for (const [kind, selector, direction, weight] of expectationSelectors) {
     if (!selector) continue;
-    const present = await waitForSelector(tabId, selector, 250);
+    const present = await waitForSelector(tabId, selector, 250, execution);
     if (present) signals.push(signal(kind, direction, weight, 'agent_expectation'));
   }
   const currentTab = await chrome.tabs.get(tabId).catch(() => null);
   const currentUrl = currentTab?.url ?? after.href ?? pageUrl.href;
-  const auth = await checkAuthState(tabId, currentUrl);
+  await fenceAdmitted(execution);
+  const auth = await checkAuthState(
+    tabId,
+    currentUrl,
+    execution
+      ? {
+          documentId: execution.documentId,
+          isCurrent: () => execution.isCurrent() && Date.now() < execution.deadlineMs,
+        }
+      : undefined,
+  );
+  await fenceAdmitted(execution);
+  if (execution && !auth) throw new Error('admitted_document_lost');
   if (auth?.signed_in === 'yes') signals.push(signal('auth_state_yes', 'authenticated', 0.8));
   if (auth?.signed_in === 'likely') {
     signals.push(signal('auth_state_likely', 'authenticated', 0.55));
@@ -1154,6 +1173,7 @@ async function runCompleteAttempt(
           tabId,
           step.wait_for.selector,
           step.wait_for.timeout_ms,
+          execution,
         );
         if (!appeared) {
           return await finish(
@@ -1171,6 +1191,7 @@ async function runCompleteAttempt(
       args.expect ?? DEFAULT_EXPECT,
       before,
       startedAt,
+      execution,
     );
     return await finish(
       safeResult(classified.status, {
@@ -1302,6 +1323,7 @@ async function runAuthenticatorAttempt(
       args.expect ?? DEFAULT_EXPECT,
       before,
       startedAt,
+      execution,
     );
     clear = classified.status !== 'authenticated';
     const result = safeResult(classified.status, {
