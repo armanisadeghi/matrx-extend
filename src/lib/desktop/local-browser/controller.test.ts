@@ -22,6 +22,11 @@ vi.mock('@/lib/desktop/ws-client', () => ({
 }));
 vi.mock('@/lib/messaging/native', () => ({ on: vi.fn() }));
 vi.mock('@/lib/org/active-org', () => ({ onActiveOrganizationChange: vi.fn() }));
+vi.mock('./approvals', () => ({
+  localBrowserApprovalGeneration: () => 0,
+  onLocalBrowserApprovalGenerationChange: () => () => undefined,
+  requestLocalBrowserApproval: vi.fn(async () => ({ decision: 'allow', policy: {} })),
+}));
 
 import {
   canonicalGrantDeadlineMs,
@@ -121,6 +126,41 @@ function opaqueCleanupGrant(extensionGeneration: string, connectionId: string): 
     extension_generation: extensionGeneration,
     connection_id: connectionId,
     controller_revision: 0,
+  };
+  const encoded = btoa(JSON.stringify(payload))
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+  return `header.${encoded}.signature`;
+}
+
+function opaqueApproveGrant(
+  extensionGeneration: string,
+  connectionId: string,
+  expiresAtSecond: number,
+): string {
+  const payload = {
+    v: 1,
+    aud: 'browser-local-executor',
+    sub: ids.user,
+    organization_id: ids.org,
+    app_instance_id: ids.app,
+    run_id: ids.run,
+    profile_id: ids.profile,
+    jti: ids.jti,
+    iat: 1,
+    exp: expiresAtSecond,
+    iss: 'https://server.example',
+    tier_policy: 'none',
+    scopes: [],
+    operation: 'approve',
+    admission_id: ids.admission,
+    extension_generation: extensionGeneration,
+    connection_id: connectionId,
+    controller_revision: 0,
+    command_id: ids.call,
+    sequence: 1,
+    command_digest: 'a'.repeat(64),
   };
   const encoded = btoa(JSON.stringify(payload))
     .replace(/=/g, '')
@@ -249,6 +289,175 @@ describe('owned local-browser tab controller', () => {
     expect(canonicalGrantDeadlineMs(1_700_000_000_999)).toBe(1_700_000_000_000);
     expect(canonicalGrantDeadlineMs(1_700_000_001_000)).toBe(1_700_000_001_000);
   });
+
+  it('accepts a sub-second verified command projection, but refuses its next-second mismatch', async () => {
+    const expiresAtSecond = Math.floor(Date.now() / 1000) + 30;
+    const projectedDeadlineMs = expiresAtSecond * 1000 + 999;
+    const commandJson = JSON.stringify({ operation: 'navigate', url: 'https://example.test/after' });
+    const h = harness();
+    const registration = await register(h);
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: opaqueAdmitGrant(registration.generation, registration.connection),
+    });
+
+    let currentDocument = {
+      documentId: ids.challenge,
+      url: 'https://example.test/before',
+    };
+    let onUpdated: ((tabId: number, changeInfo: { status?: string }) => void) | undefined;
+    h.deps.tabs.onUpdated = (handler) => {
+      onUpdated = handler;
+      return () => undefined;
+    };
+    h.deps.tabs.update = vi.fn(async () => {
+      currentDocument = { documentId: ids.admission, url: 'https://example.test/after' };
+      onUpdated?.(42, { status: 'complete' });
+      return { id: 42 } as chrome.tabs.Tab;
+    });
+    const approve = vi.fn(async () => ({
+      ok: true as const,
+      data: {
+        status: 'allowed' as const,
+        approval_id: ids.jti,
+        command_id: ids.call,
+        claim_grant: 'claim-grant',
+        deadline_ms: expiresAtSecond * 1000,
+      },
+    }));
+    const claim = vi.fn(async () => ({
+      ok: true as const,
+      data: {
+        status: 'claimed' as const,
+        command_id: ids.call,
+        deadline_ms: expiresAtSecond * 1000,
+        completion_grant: 'completion-grant',
+      },
+    }));
+    const complete = vi.fn(async () => ({
+      ok: true as const,
+      data: {
+        status: 'completed' as const,
+        result: {
+          command_id: ids.call,
+          operation: 'navigate' as const,
+          outcome: 'completed' as const,
+          reason: 'none' as const,
+          data: { origin: 'https://example.test' },
+        },
+      },
+    }));
+    h.deps.command = {
+      verify: vi.fn(async () =>
+        ({
+          ok: true,
+          data: {
+            status: 'accepted',
+            operation: 'approve',
+            actor_id: ids.user,
+            organization_id: ids.org,
+            profile_id: ids.profile,
+            admission_id: ids.admission,
+            command_id: ids.call,
+            sequence: 1,
+            command_digest: 'a'.repeat(64),
+            approval_id: ids.jti,
+            deadline_ms: projectedDeadlineMs,
+            expires_at_ms: projectedDeadlineMs,
+            extension_generation: registration.generation,
+            connection_id: registration.connection,
+            run_id: ids.run,
+            app_instance_id: ids.app,
+            controller_revision: 0,
+            jti: ids.jti,
+          },
+        }) as never),
+      approve,
+      claim,
+      complete,
+      currentDocument: vi.fn(async () => currentDocument),
+    } as LocalBrowserControllerDeps['command'];
+
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'approve',
+      grant: opaqueApproveGrant(registration.generation, registration.connection, expiresAtSecond),
+      command_json: commandJson,
+    });
+    expect(approve).toHaveBeenCalledOnce();
+    expect(claim).toHaveBeenCalledWith(
+      expect.objectContaining({ commandId: ids.call, command_json: commandJson }),
+    );
+    expect(complete).toHaveBeenCalledOnce();
+    expect(h.sent.at(-1)).toMatchObject({ operation: 'approve', status: 'acknowledged' });
+    h.controller.stop();
+
+    const mismatch = harness();
+    const mismatchRegistration = await register(mismatch);
+    await mismatch.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: opaqueAdmitGrant(mismatchRegistration.generation, mismatchRegistration.connection),
+    });
+    const mismatchApprove = vi.fn();
+    mismatch.deps.command = {
+      verify: vi.fn(async () =>
+        ({
+          ok: true,
+          data: {
+            status: 'accepted',
+            operation: 'approve',
+            actor_id: ids.user,
+            organization_id: ids.org,
+            profile_id: ids.profile,
+            admission_id: ids.admission,
+            command_id: ids.call,
+            sequence: 1,
+            command_digest: 'a'.repeat(64),
+            approval_id: ids.jti,
+            deadline_ms: expiresAtSecond * 1000 + 1000,
+            expires_at_ms: expiresAtSecond * 1000 + 1000,
+            extension_generation: mismatchRegistration.generation,
+            connection_id: mismatchRegistration.connection,
+            run_id: ids.run,
+            app_instance_id: ids.app,
+            controller_revision: 0,
+            jti: ids.jti,
+          },
+        }) as never),
+      approve: mismatchApprove,
+      claim: vi.fn(),
+      complete: vi.fn(),
+      currentDocument: vi.fn(async () => ({ documentId: ids.challenge, url: 'https://example.test/before' })),
+    } as LocalBrowserControllerDeps['command'];
+    await mismatch.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'approve',
+      grant: opaqueApproveGrant(
+        mismatchRegistration.generation,
+        mismatchRegistration.connection,
+        expiresAtSecond,
+      ),
+      command_json: commandJson,
+    });
+    expect(mismatchApprove).not.toHaveBeenCalled();
+    expect(mismatch.sent.at(-1)).toMatchObject({
+      operation: 'approve',
+      status: 'refused',
+      reason: 'binding_changed',
+    });
+    mismatch.controller.stop();
+  });
+
   it('re-registers with fresh private binding after an organization change on a healthy socket', async () => {
     const h = harness();
     const first = await register(h);
