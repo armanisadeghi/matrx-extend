@@ -26,6 +26,8 @@
  * package hides the control rather than rendering a dead one.
  */
 
+import { OpenUrl } from '@/components/OpenUrl';
+import { ENV } from '@/config/env';
 import {
   type MemberOrganization,
   clearOrganizationPickerRequest,
@@ -145,8 +147,15 @@ export function OrganizationPickerDialog() {
         {nothingToChoose ? (
           <div className="space-y-3 text-sm text-muted-foreground">
             <p>
-              You are not a member of any organization yet, so there is nothing to pick. Ask whoever
-              runs your workspace to add you, then reopen this panel.
+              You are not a member of any organization yet, so there is nothing to pick. Any request
+              that needed one has already stopped waiting — create an organization or ask whoever
+              runs your workspace to invite you, then try again.
+            </p>
+            <p>
+              <OpenUrl
+                url={`${ENV.FRONTEND_URL}/organizations`}
+                label="Create or join an organization"
+              />
             </p>
             <Button size="sm" variant="outline" onClick={dismiss}>
               Close

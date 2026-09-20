@@ -42,7 +42,7 @@
  *      (common-docs/projects/no-db-assigned-org).
  */
 
-import { STORAGE_KEYS } from '@/config/env';
+import { ENV, STORAGE_KEYS } from '@/config/env';
 import { getCurrentUser } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
@@ -86,6 +86,32 @@ export class OrganizationNotSelectedError extends Error {
 /** True when `err` is the no-organization-selected failure. */
 export function isOrganizationNotSelectedError(err: unknown): err is OrganizationNotSelectedError {
   return err instanceof OrganizationNotSelectedError;
+}
+
+/**
+ * Thrown when a held request settles because the signed-in user belongs to NO
+ * organization at all — there is nothing to pick, so waiting out the picker
+ * timeout would just be a 120s stall for a person the picker can never help.
+ * Distinct from {@link OrganizationNotSelectedError} (which means "you have
+ * organizations but never chose one"): this one names the actual remedy —
+ * create or join an organization — with the link the app already has for it.
+ */
+export class OrganizationNoMembershipsError extends Error {
+  readonly code = 'organization_no_memberships';
+  readonly remedy =
+    `You do not belong to any organization yet. Create or join one at ${ENV.FRONTEND_URL}/organizations, then try again.`;
+
+  constructor(message = 'You do not belong to any organization yet.') {
+    super(message);
+    this.name = 'OrganizationNoMembershipsError';
+  }
+}
+
+/** True when `err` is the no-memberships-at-all failure. */
+export function isOrganizationNoMembershipsError(
+  err: unknown,
+): err is OrganizationNoMembershipsError {
+  return err instanceof OrganizationNoMembershipsError;
 }
 
 interface MembershipRow {
@@ -286,6 +312,19 @@ export async function holdForActiveOrganizationId(
 ): Promise<string> {
   const resolved = await getActiveOrganizationId();
   if (resolved) return resolved;
+
+  // Zero memberships means there is nothing the picker can ever produce —
+  // settle NOW with the typed refusal instead of holding for the full
+  // timeout on a person the picker cannot help. Still raise the picker (it
+  // shows the same "you have no organization" message in the panel, for
+  // whoever is looking), but never make them, or a silent 120s clock, be the
+  // thing that ends the hold.
+  const organizations = await listMemberOrganizations();
+  if (organizations.length === 0) {
+    await requestOrganizationPicker();
+    log.error('auth', 'held request settled immediately — user has no organization memberships');
+    throw new OrganizationNoMembershipsError();
+  }
 
   await requestOrganizationPicker();
   log.info('auth', 'request held — waiting for the person to set an organization');

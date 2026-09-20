@@ -26,6 +26,8 @@ vi.mock('@/lib/org/active-org', () => ({
   holdForActiveOrganizationId: async () => state.org,
   isOrganizationNotSelectedError: (e: unknown) =>
     e instanceof Error && e.name === 'OrganizationNotSelectedError',
+  isOrganizationNoMembershipsError: (e: unknown) =>
+    e instanceof Error && e.name === 'OrganizationNoMembershipsError',
   OrganizationNotSelectedError: class extends Error {},
 }));
 vi.mock('@/lib/auth/guest-signature', () => ({ getOrCreateGuestSignature: async () => 'guest' }));
