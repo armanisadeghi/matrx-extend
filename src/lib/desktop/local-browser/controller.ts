@@ -23,7 +23,10 @@ import {
   onLocalBrowserApprovalGenerationChange,
   requestLocalBrowserApproval,
 } from '@/lib/desktop/local-browser/approvals';
-import type { LocalCommand } from '@/lib/desktop/local-browser/command-policy';
+import {
+  mapLocalCommandToHandler,
+  type LocalCommand,
+} from '@/lib/desktop/local-browser/command-policy';
 import {
   getLocalBrowserSocketEpoch,
   onLocalBrowserEpochInvalidated,
@@ -583,6 +586,7 @@ export class LocalBrowserController {
         command_digest: string;
         approval_id: string;
         deadline_ms: number;
+        expires_at_ms: number;
         extension_generation: string;
         connection_id: string;
         run_id: string;
@@ -604,7 +608,8 @@ export class LocalBrowserController {
         projection.app_instance_id !== claims.app_instance_id ||
         projection.controller_revision !== registration.revision ||
         projection.jti !== claims.jti ||
-        projection.deadline_ms !== deadlineMs ||
+        Math.floor(projection.deadline_ms) !== deadlineMs ||
+        Math.floor(projection.expires_at_ms) !== deadlineMs ||
         projection.extension_generation !== registration.extensionGeneration ||
         projection.connection_id !== registration.connectionId ||
         !isCurrent()
@@ -820,13 +825,21 @@ export class LocalBrowserController {
         return terminal('tab_lost');
       }
     }
+    let filled = false;
+    let submitted = false;
+    const mapped = mapLocalCommandToHandler(command, tabId);
+    if (!mapped || mapped.toolName !== 'credential_login') return terminal('configuration_error');
     const result =
       command.operation === 'vault_login'
-        ? await runAdmittedCredentialAttempt(command, tabId, document.url, {
+        ? await runAdmittedCredentialAttempt(mapped.args, tabId, document.url, {
             commandId: claimed.command_id,
             documentId: document.documentId,
             deadlineMs: claimed.deadline_ms,
             isCurrent,
+            onProgress: (event) => {
+              if (event === 'filled') filled = true;
+              else submitted = true;
+            },
             assertCurrent: async () => {
               if (!isCurrent() || !(await assertCurrentDocument()))
                 throw new Error('binding_changed');
@@ -844,11 +857,15 @@ export class LocalBrowserController {
                 : { ok: false, failure: { kind: 'forbidden' } },
             report: async () => undefined,
           })
-        : await runAdmittedAuthenticatorAttempt(command, tabId, document.url, {
+        : await runAdmittedAuthenticatorAttempt(mapped.args, tabId, document.url, {
             commandId: claimed.command_id,
             documentId: document.documentId,
             deadlineMs: claimed.deadline_ms,
             isCurrent,
+            onProgress: (event) => {
+              if (event === 'filled') filled = true;
+              else submitted = true;
+            },
             assertCurrent: async () => {
               if (!isCurrent() || !(await assertCurrentDocument()))
                 throw new Error('binding_changed');
@@ -883,7 +900,7 @@ export class LocalBrowserController {
           operation: 'vault_login',
           outcome: 'completed',
           reason: 'none',
-          data: { filled: result.status !== 'no_matching_login', submitted: true, verification },
+          data: { filled, submitted, verification },
         }
       : {
           command_id: claimed.command_id,
@@ -891,8 +908,8 @@ export class LocalBrowserController {
           outcome: 'completed',
           reason: 'none',
           data: {
-            filled: result.status !== 'unknown',
-            submitted: true,
+            filled,
+            submitted,
             challenge_detected: result.status === 'needs_mfa',
           },
         };
@@ -920,7 +937,12 @@ export class LocalBrowserController {
         void (async () => {
           if (!isCurrent() || Date.now() >= deadlineMs) return settle(false);
           const current = await this.deps.command?.currentDocument(tabId);
-          settle(!!current && isCurrent() && current.documentId !== original.documentId);
+          settle(
+            !!current &&
+              isCurrent() &&
+              current.documentId !== original.documentId &&
+              new URL(current.url).origin === target.origin,
+          );
         })();
       });
       const timeout = setTimeout(() => settle(false), Math.max(0, deadlineMs - Date.now()));

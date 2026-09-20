@@ -1048,6 +1048,19 @@ describe('admitted credential execution', () => {
       'admitted result',
     );
   });
+  it('maps a wire vault command into the real admitted handler without ordinary materialization', async () => {
+    renderOneStepLoginPage();
+    const { runAdmittedCredentialAttempt } = await import('@/lib/tools/handlers/credential-login');
+    const { mapLocalCommandToHandler } = await import('@/lib/desktop/local-browser/command-policy');
+    const { ports } = await setup();
+    const { action: _action, ...wire } = input;
+    const mapped = mapLocalCommandToHandler({ operation: 'vault_login', ...wire }, TAB_ID);
+    expect(mapped?.toolName).toBe('credential_login');
+    const result = await runAdmittedCredentialAttempt(mapped?.args, TAB_ID, PAGE_URL, ports);
+    expect(result.status).toBe('authenticated');
+    expect(ports.materialize).toHaveBeenCalledWith(ITEM_ID, ['username', 'password']);
+    expect(posts).toEqual([]);
+  });
   it('revocation during private materialization prevents all typing and clears values', async () => {
     const { run, ports, data } = await setup();
     ports.materialize.mockImplementation(async () => {
@@ -1133,6 +1146,22 @@ describe('admitted authenticator execution', () => {
     expect(JSON.stringify({ result, reports: ports.report.mock.calls })).not.toContain(
       SENTINEL_TOTP,
     );
+  });
+  it('maps a wire authenticator command into the real admitted handler without ordinary materialization', async () => {
+    renderAuthenticatorPage();
+    const { runAdmittedAuthenticatorAttempt } = await import(
+      '@/lib/tools/handlers/credential-login'
+    );
+    const { mapLocalCommandToHandler } = await import('@/lib/desktop/local-browser/command-policy');
+    const { data, ports } = await setup();
+    const { action: _action, ...wire } = input;
+    const mapped = mapLocalCommandToHandler({ operation: 'authenticator', ...wire }, TAB_ID);
+    expect(mapped?.toolName).toBe('credential_login');
+    const result = await runAdmittedAuthenticatorAttempt(mapped?.args, TAB_ID, PAGE_URL, ports);
+    expect(result.status).toBe('authenticated');
+    expect(ports.materialize).toHaveBeenCalledTimes(1);
+    expect(data.code).toBe('');
+    expect(posts).toEqual([]);
   });
   it('refuses revocation after materialization and clears the received code', async () => {
     const { run, data, ports } = await setup();

@@ -812,6 +812,8 @@ export interface AdmittedExecutionBinding {
   deadlineMs: number;
   assertCurrent: () => Promise<void>;
   isCurrent: () => boolean;
+  /** Value-free, process-local progress for the owning command receipt. */
+  onProgress?: (event: 'filled' | 'submitted') => void;
 }
 
 export interface AdmittedCredentialExecution extends AdmittedExecutionBinding {
@@ -1149,6 +1151,7 @@ async function runCompleteAttempt(
             true,
           );
         }
+        execution?.onProgress?.('filled');
       }
 
       const submitted = await injectCredentialDom(
@@ -1168,6 +1171,7 @@ async function runCompleteAttempt(
           true,
         );
       }
+      if (step.submit.kind !== 'none') execution?.onProgress?.('submitted');
       if (step.wait_for) {
         const appeared = await waitForSelector(
           tabId,
@@ -1295,6 +1299,7 @@ async function runAuthenticatorAttempt(
     // before submission/classification. Neither can reach a result, log,
     // receipt, capture, or persistent store.
     if (!filled?.ok) return safeResult('unknown', { reason: 'authenticator_fill_failed' });
+    execution?.onProgress?.('filled');
 
     const submitted = await injectCredentialDom(
       tabId,
@@ -1316,6 +1321,7 @@ async function runAuthenticatorAttempt(
         },
       );
     }
+    if (args.submit.kind !== 'none') execution?.onProgress?.('submitted');
 
     const classified = await classifyExplicitAttempt(
       tabId,
