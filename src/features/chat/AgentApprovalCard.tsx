@@ -27,7 +27,17 @@ const EXTERNAL_INITIATOR_LABELS: Partial<Record<ConfirmInitiator, string>> = {
   desktop: 'Requested by the Matrx desktop app — NOT by your agent in this chat.',
 };
 
-export function AgentApprovalCard({ req }: { req: PendingConfirmRequest }) {
+export function AgentApprovalCard({
+  req,
+  onResponse,
+  suppressRemember = false,
+}: {
+  req: PendingConfirmRequest;
+  /** Injected for private approval surfaces; the normal chat path is unchanged. */
+  onResponse?: (decision: 'allow' | 'deny') => void;
+  /** Local-browser approvals cannot create conversational trust. */
+  suppressRemember?: boolean;
+}) {
   const [remember, setRemember] = useState(false);
 
   const host = useMemo(() => {
@@ -105,7 +115,7 @@ export function AgentApprovalCard({ req }: { req: PendingConfirmRequest }) {
 
       {/* Domain-trust is agent-path + non-privileged only — the dispatcher
           ignores rememberFor on every other combination, so don't offer it. */}
-      {host && req.tier !== 'privileged' && !externalLabel && (
+      {!suppressRemember && host && req.tier !== 'privileged' && !externalLabel && (
         <label className="mt-2 flex items-center gap-2 text-[11px] text-muted-foreground">
           <input
             type="checkbox"
@@ -122,7 +132,9 @@ export function AgentApprovalCard({ req }: { req: PendingConfirmRequest }) {
           size="sm"
           className="h-7 gap-1"
           onClick={() =>
-            respondToConfirm(req.callId, 'allow', remember ? 'conversation' : undefined)
+            onResponse
+              ? onResponse('allow')
+              : respondToConfirm(req.callId, 'allow', remember ? 'conversation' : undefined)
           }
         >
           <Check className="size-3.5" />
@@ -132,7 +144,7 @@ export function AgentApprovalCard({ req }: { req: PendingConfirmRequest }) {
           size="sm"
           variant="outline"
           className="h-7 gap-1"
-          onClick={() => respondToConfirm(req.callId, 'deny')}
+          onClick={() => (onResponse ? onResponse('deny') : respondToConfirm(req.callId, 'deny'))}
         >
           <X className="size-3.5" />
           Deny
