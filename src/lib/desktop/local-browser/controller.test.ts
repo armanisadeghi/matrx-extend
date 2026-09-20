@@ -195,6 +195,24 @@ async function register(
 }
 
 describe('owned local-browser tab controller', () => {
+  it('never creates a tab for an HTTP-successful authority refusal', async () => {
+    const h = harness();
+    const registration = await register(h);
+    h.deps.verify = vi.fn(async () => ({
+      ok: true as const,
+      data: { status: 'refused' as const, reason: 'forbidden' as const },
+    }));
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: opaqueAdmitGrant(registration.generation, registration.connection),
+    });
+    expect(h.create).not.toHaveBeenCalled();
+    expect(h.sent.at(-1)).toMatchObject({ status: 'refused' });
+  });
+
   it('creates one inactive blank tab for a duplicated admitted execution and acks the original receipt', async () => {
     const h = harness();
     const registration = await register(h);

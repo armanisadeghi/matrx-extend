@@ -357,7 +357,9 @@ export class LocalBrowserController {
     entry.leaseExpiresAtMs = null;
     if (entry.expiryTimer) clearTimeout(entry.expiryTimer);
     entry.expiryTimer = setTimeout(
-      () => this.entries.delete(entry.key),
+      () => {
+        if (this.entries.get(entry.key) === entry) this.entries.delete(entry.key);
+      },
       Math.max(0, entry.grantDeadlineMs - Date.now()),
     );
     if (tabId !== null) void this.closeTab(tabId);
@@ -465,11 +467,18 @@ export class LocalBrowserController {
     });
     if (
       !verified.ok ||
-      !this.isCurrent(context, entry.registration, entry.registration.socketEpoch)
+      verified.data.status !== 'accepted' ||
+      !this.canMutate(context, entry.registration, deadlineMs) ||
+      this.entries.get(entry.key) !== entry
     ) {
       this.terminalize(entry, 'cancelled');
       return { reason: verified.ok ? 'binding_changed' : mapPrivateFailure(verified.error) };
     }
+    if (
+      !this.canMutate(context, entry.registration, deadlineMs) ||
+      this.entries.get(entry.key) !== entry
+    )
+      return { reason: 'binding_changed' };
     let tab: chrome.tabs.Tab;
     try {
       tab = await this.deps.tabs.create({ url: 'about:blank', active: false });
@@ -549,7 +558,7 @@ export class LocalBrowserController {
     try {
       await this.deps.tabs.get(entry.tabId);
     } catch {
-      this.entries.delete(entry.key);
+      this.terminalize(entry, 'cancelled');
       return { reason: 'authority_refused' };
     }
     const verified = await this.deps.verify({
@@ -564,7 +573,7 @@ export class LocalBrowserController {
     });
     if (!verified.ok) return { reason: mapPrivateFailure(verified.error) };
     if (
-      !this.isCurrent(context, registration, registration.socketEpoch) ||
+      !this.canMutate(context, registration, deadlineMs) ||
       this.entries.get(entry.key) !== entry ||
       verified.data.status !== 'accepted' ||
       !('expires_at_ms' in verified.data) ||
@@ -672,8 +681,7 @@ export class LocalBrowserController {
     entry.expiryTimer = setTimeout(
       () => {
         if (this.entries.get(entry.key) !== entry || entry.tabId === null) return;
-        this.entries.delete(entry.key);
-        void this.closeTab(entry.tabId);
+        this.terminalize(entry, 'cancelled');
       },
       Math.max(0, entry.leaseExpiresAtMs - Date.now()),
     );
