@@ -250,6 +250,7 @@ export function SettingsView() {
                 hint="lets the agent see your visible username on sites and Gmail subjects/excerpts"
                 control={
                   <Switch
+                    aria-label="Share page identity & email content"
                     checked={settings.sharePageIdentity}
                     onCheckedChange={settings.setSharePageIdentity}
                   />
@@ -260,6 +261,7 @@ export function SettingsView() {
                 hint="after you sign in to a site, ask whether to save that login — nothing is saved without your click"
                 control={
                   <Switch
+                    aria-label="Offer to save logins to the Vault"
                     checked={settings.captureLoginsEnabled}
                     onCheckedChange={settings.setCaptureLoginsEnabled}
                   />
@@ -270,6 +272,7 @@ export function SettingsView() {
                 hint="allows matching saved logins; choose where suggestions appear below"
                 control={
                   <Switch
+                    aria-label="Offer saved logins on sign-in forms"
                     checked={settings.offerSavedLoginsEnabled}
                     onCheckedChange={settings.setOfferSavedLoginsEnabled}
                   />
@@ -280,6 +283,7 @@ export function SettingsView() {
                 hint="Off keeps websites quiet. Pin Matrx to see toolbar assistance, then open Vault to review Save or Update; nothing is saved automatically."
                 control={
                   <Switch
+                    aria-label="Show password suggestions on websites"
                     checked={settings.credentialAssistancePresentation === 'on_page'}
                     onCheckedChange={(checked) =>
                       settings.setCredentialAssistancePresentation(checked ? 'on_page' : 'quiet')
@@ -298,6 +302,7 @@ export function SettingsView() {
                 hint="coming soon"
                 control={
                   <Switch
+                    aria-label="Deep clean"
                     checked={settings.scrapeDeepClean}
                     onCheckedChange={settings.setScrapeDeepClean}
                   />
@@ -308,6 +313,7 @@ export function SettingsView() {
                 hint="capture page content in the background after each load"
                 control={
                   <Switch
+                    aria-label="Auto-scrape on load"
                     checked={settings.scrapeAutoOnLoad}
                     onCheckedChange={settings.setScrapeAutoOnLoad}
                   />
