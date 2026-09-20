@@ -57,6 +57,7 @@
  */
 
 import { log } from '@/lib/debug/log';
+import { type PanelOpenAttempt, hasFirefoxSidebarAction, openPanel } from '@/lib/panel/adapter';
 
 /** What the RPC listener knows about where the click happened. */
 export interface GestureSender {
@@ -70,10 +71,7 @@ export interface GestureSender {
  * A panel open already in flight. `promise` is null when there was nothing to
  * open against, and `reason` then already says why.
  */
-export interface PanelOpenAttempt {
-  promise: Promise<unknown> | null;
-  reason: string;
-}
+export type { PanelOpenAttempt } from '@/lib/panel/adapter';
 
 /** The settled truth about the attempt, exactly as reported over the wire. */
 export interface PanelOpenOutcome {
@@ -92,6 +90,16 @@ export interface PanelOpenOutcome {
  * the person is standing on.
  */
 export function openPanelInGesture(sender: GestureSender): PanelOpenAttempt {
+  // Firefox sidebarAction.open() is valid only for browser-owned toolbar and
+  // context-menu gestures. A page-relayed external message is not one of
+  // those proven routes, so do not claim it opened the sidebar.
+  if (hasFirefoxSidebarAction()) {
+    return {
+      promise: null,
+      reason:
+        'Firefox cannot open Matrx from this page. Open Matrx from the toolbar or right-click menu.',
+    };
+  }
   if (sender.windowId === undefined && sender.tabId === undefined) {
     // The Supabase Broadcast path has no tab and therefore no gesture. Nothing
     // is attempted and the reason says so, rather than throwing a Chrome error
@@ -101,18 +109,19 @@ export function openPanelInGesture(sender: GestureSender): PanelOpenAttempt {
       reason: 'no-gesture-sender',
     };
   }
-  try {
-    const promise =
-      sender.windowId !== undefined
-        ? chrome.sidePanel.open({ windowId: sender.windowId })
-        : chrome.sidePanel.open({ tabId: sender.tabId as number });
-    return { promise, reason: 'pending' };
-  } catch (err) {
-    // A synchronous throw (no `sidePanel` permission, extension shutting down).
-    const reason = (err as Error)?.message ?? 'open-failed';
+  const attempt = openPanel(
+    sender.windowId !== undefined
+      ? { windowId: sender.windowId }
+      : { tabId: sender.tabId as number },
+  );
+  if (
+    !attempt.promise &&
+    attempt.reason !== 'panel-unavailable: Open Matrx from the browser toolbar.'
+  ) {
+    const reason = attempt.reason;
     log.warn('frontend-bridge', 'sidePanel.open refused synchronously', reason);
-    return { promise: null, reason };
   }
+  return attempt;
 }
 
 /**

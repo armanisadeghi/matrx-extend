@@ -28,6 +28,12 @@
 import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import {
+  type PanelOpenAttempt,
+  openFirefoxSidebarFromGesture,
+  openPanel,
+  panelOpenRemedy,
+} from '@/lib/panel/adapter';
 
 const MENU_ID_ASK_SELECTION = 'matrx.menu.ask-selection';
 const MENU_ID_OPEN_PANEL = 'matrx.menu.open-panel';
@@ -67,28 +73,39 @@ export function setupContextMenus(): void {
   }
 
   chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+    // Refuse unowned/empty events before spending Firefox's browser gesture.
+    // For owned actions, native open is invoked before the durable write so
+    // Chromium and Firefox retain their respective user-gesture custody.
+    if (
+      info.menuItemId !== MENU_ID_ASK_SELECTION &&
+      info.menuItemId !== MENU_ID_CAPTURE_PROSPECT &&
+      info.menuItemId !== MENU_ID_CAPTURE_STUDY_SET &&
+      info.menuItemId !== MENU_ID_OPEN_PANEL
+    )
+      return;
+    const text = (info.selectionText ?? '').trim();
+    if (info.menuItemId === MENU_ID_ASK_SELECTION && !text) return;
+    const panelAttempt = openSidepanelFromClick(tab?.windowId);
     if (info.menuItemId === MENU_ID_ASK_SELECTION) {
-      const text = (info.selectionText ?? '').trim();
-      if (!text) return;
       await stashDraft(text);
-      await openSidepanel(tab?.windowId);
+      await settleContextPanelOpen(panelAttempt);
       broadcast(CHANNELS.CHAT_DRAFT_FROM_SELECTION, { text });
       return;
     }
     if (info.menuItemId === MENU_ID_CAPTURE_PROSPECT) {
       await stashDraft(CAPTURE_PROSPECT_DRAFT);
-      await openSidepanel(tab?.windowId);
+      await settleContextPanelOpen(panelAttempt);
       broadcast(CHANNELS.CHAT_DRAFT_FROM_SELECTION, { text: CAPTURE_PROSPECT_DRAFT });
       return;
     }
     if (info.menuItemId === MENU_ID_CAPTURE_STUDY_SET) {
       await stashDraft(CAPTURE_STUDY_SET_DRAFT);
-      await openSidepanel(tab?.windowId);
+      await settleContextPanelOpen(panelAttempt);
       broadcast(CHANNELS.CHAT_DRAFT_FROM_SELECTION, { text: CAPTURE_STUDY_SET_DRAFT });
       return;
     }
     if (info.menuItemId === MENU_ID_OPEN_PANEL) {
-      await openSidepanel(tab?.windowId);
+      await settleContextPanelOpen(panelAttempt);
     }
   });
 }
@@ -131,16 +148,38 @@ async function stashDraft(text: string): Promise<void> {
   }
 }
 
-async function openSidepanel(windowId?: number): Promise<void> {
-  if (!chrome.sidePanel?.open) return;
+function openSidepanelFromClick(windowId: number | undefined): PanelOpenAttempt {
+  const firefoxAttempt = openFirefoxSidebarFromGesture();
+  if (firefoxAttempt) return firefoxAttempt;
+  if (windowId != null) return openPanel({ windowId });
+  return { promise: null, reason: 'Matrx could not find this browser window.' };
+}
+
+async function settleContextPanelOpen(attempt: PanelOpenAttempt): Promise<void> {
   try {
-    if (windowId != null) {
-      await chrome.sidePanel.open({ windowId });
+    if (!attempt.promise) {
+      await showPanelOpenRemedy(panelOpenRemedy(attempt.reason));
       return;
     }
-    const win = await chrome.windows.getCurrent();
-    if (win.id != null) await chrome.sidePanel.open({ windowId: win.id });
+    await attempt.promise;
   } catch (err) {
     log.warn('sw', 'sidePanel.open failed for context menu', err);
+    await showPanelOpenRemedy(panelOpenRemedy((err as Error)?.message ?? 'open-failed'));
+  }
+}
+
+/** A context-menu click has no page UI to update; use the existing browser notification surface. */
+async function showPanelOpenRemedy(message: string): Promise<void> {
+  try {
+    await chrome.notifications?.create('matrx-panel-open-remedy', {
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('icon-128.png'),
+      title: 'Open Matrx from the toolbar',
+      message,
+      priority: 1,
+      requireInteraction: false,
+    });
+  } catch (err) {
+    log.warn('sw', 'could not show panel-open remedy', err);
   }
 }

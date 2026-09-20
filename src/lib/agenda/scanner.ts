@@ -22,6 +22,7 @@ import { ALARMS } from '@/config/env';
 import { log } from '@/lib/debug/log';
 import { send as msgSend } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { hasFirefoxSidebarAction, openPanel, panelOpenRemedy } from '@/lib/panel/adapter';
 import { cooldownElapsed, tabMatchesTask } from './context-match';
 import {
   type AgendaTask,
@@ -224,13 +225,42 @@ export function registerAgendaNotificationClicks(): void {
     }
     // Open the sidepanel — chrome.sidePanel.open requires a windowId in MV3.
     try {
-      const win = await chrome.windows.getCurrent();
-      if (win.id != null && chrome.sidePanel?.open) {
-        await chrome.sidePanel.open({ windowId: win.id });
+      if (hasFirefoxSidebarAction()) {
+        await showAgendaPanelRemedy(notificationId);
+        return;
       }
+      const win = await chrome.windows.getCurrent();
+      if (win.id == null) {
+        await showAgendaPanelRemedy(notificationId);
+        return;
+      }
+      const attempt = openPanel({ windowId: win.id });
+      if (!attempt.promise) {
+        await showAgendaPanelRemedy(notificationId, attempt.reason);
+        return;
+      }
+      await attempt.promise;
+      chrome.notifications.clear(notificationId);
     } catch (err) {
       log.warn('sw', 'sidePanel.open failed on notification click', err);
+      await showAgendaPanelRemedy(
+        notificationId,
+        panelOpenRemedy((err as Error)?.message ?? 'open-failed'),
+      );
     }
-    chrome.notifications.clear(notificationId);
   });
+}
+
+/** Keep the clicked notification visible and turn it into the Firefox remedy. */
+async function showAgendaPanelRemedy(notificationId: string, reason?: string): Promise<void> {
+  const message = reason ?? 'Open Matrx from the toolbar or right-click menu.';
+  try {
+    await chrome.notifications.update(notificationId, {
+      title: 'Matrx needs the toolbar to open',
+      message,
+      requireInteraction: true,
+    });
+  } catch (err) {
+    log.warn('sw', 'could not keep agenda remedy visible', err);
+  }
 }

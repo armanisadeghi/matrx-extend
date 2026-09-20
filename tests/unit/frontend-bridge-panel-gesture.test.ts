@@ -222,6 +222,18 @@ describe('the side panel opens on the gesture the web app hands us', () => {
     expect(callOrder.some((c) => c.startsWith('sidePanel.open'))).toBe(false);
   });
 
+  it('refuses Firefox page-relayed opens with the toolbar/context-menu remedy', () => {
+    globalThis.chrome = {
+      sidebarAction: { open: async () => undefined },
+    } as unknown as typeof chrome;
+
+    expect(openPanelInGesture({ windowId: 7 })).toEqual({
+      promise: null,
+      reason:
+        'Firefox cannot open Matrx from this page. Open Matrx from the toolbar or right-click menu.',
+    });
+  });
+
   it('reports Chrome’s refusal verbatim rather than inventing one', async () => {
     gestureSpent = true; // as if an await had already happened
     const outcome = await settlePanelOpen(openPanelInGesture({ windowId: 7 }));

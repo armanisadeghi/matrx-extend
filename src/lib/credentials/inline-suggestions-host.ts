@@ -7,15 +7,16 @@ import { getCurrentUser } from '@/lib/auth/flow';
 import { setSavedLoginAssistance } from '@/lib/credentials/assistance-status';
 import {
   type BoundLoginGroup,
-  type CredentialFieldRef,
   type CredentialDomInjectedRequest,
   type CredentialDomResult,
+  type CredentialFieldRef,
   credentialDomSource,
 } from '@/lib/credentials/fill-primitive';
 import { isSafeDestination, normalizeLoginUrl } from '@/lib/credentials/login-urls';
 import { SENSITIVE_ATTR, rememberSensitiveFields } from '@/lib/credentials/sensitive-fields';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
+import { hasFirefoxSidebarAction, openPanel, panelOpenRemedy } from '@/lib/panel/adapter';
 import { readOfferSavedLoginsEnabled } from '@/lib/settings/persisted';
 
 /**
@@ -134,7 +135,13 @@ function randomOfferId(): string {
 function validQuery(payload: unknown): payload is { field: CredentialFieldRef } {
   if (!payload || typeof payload !== 'object' || Object.keys(payload).length !== 1) return false;
   const field = (payload as { field?: unknown }).field;
-  return !!field && typeof field === 'object' && (field as { kind?: unknown }).kind === 'registered_input' && typeof (field as { id?: unknown }).id === 'string' && (field as { id: string }).id.length === 36;
+  return (
+    !!field &&
+    typeof field === 'object' &&
+    (field as { kind?: unknown }).kind === 'registered_input' &&
+    typeof (field as { id?: unknown }).id === 'string' &&
+    (field as { id: string }).id.length === 36
+  );
 }
 function validFill(payload: unknown): payload is { offerId: string; itemId: string } {
   return (
@@ -222,7 +229,11 @@ async function isCurrentTopDocument(tabId: number, documentId: string): Promise<
   }
 }
 
-async function query(tabId: number, documentId: string, selector: CredentialFieldRef): Promise<QueryResponse> {
+async function query(
+  tabId: number,
+  documentId: string,
+  selector: CredentialFieldRef,
+): Promise<QueryResponse> {
   const generation = nextGeneration(tabId, documentId);
   // Window identity arrives asynchronously; retain each window's epoch from
   // query entry so activation during any earlier await cannot mint an offer.
@@ -416,7 +427,9 @@ async function fill(
   }
   const username = data.fields?.username ?? data.username;
   const password = data.fields?.password ?? data.password;
-  const sensitive = [offer.username, offer.password].filter((x): x is string => typeof x === 'string');
+  const sensitive = [offer.username, offer.password].filter(
+    (x): x is string => typeof x === 'string',
+  );
   rememberSensitiveFields(tabId, sensitive);
   try {
     const done = await injectCredentialDom(tabId, documentId, {
@@ -658,9 +671,34 @@ export function registerInlineCredentialSuggestionHost(): void {
       return true;
     }
     if (env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_OPEN_VAULT) {
-      if (tabId != null) void chrome.sidePanel.open({ tabId }).catch(() => undefined);
-      sendResponse({ ok: tabId != null });
-      return false;
+      if (hasFirefoxSidebarAction()) {
+        sendResponse({
+          ok: false,
+          reason: panelOpenRemedy('Firefox cannot open Matrx from a page prompt.'),
+        });
+        return false;
+      }
+      if (tabId == null) {
+        sendResponse({
+          ok: false,
+          reason: panelOpenRemedy('Matrx could not find this tab.'),
+        });
+        return false;
+      }
+      const attempt = openPanel({ tabId });
+      if (!attempt.promise) {
+        sendResponse({ ok: false, reason: panelOpenRemedy(attempt.reason) });
+        return false;
+      }
+      void attempt.promise.then(
+        () => sendResponse({ ok: true }),
+        (err) =>
+          sendResponse({
+            ok: false,
+            reason: panelOpenRemedy((err as Error)?.message ?? 'open-failed'),
+          }),
+      );
+      return true;
     }
     return false;
   });
