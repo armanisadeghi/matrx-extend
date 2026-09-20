@@ -44,9 +44,18 @@ import { VaultView } from '@/features/vault/VaultView';
 import { type VaultData, useVault } from '@/features/vault/useVault';
 
 const id = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
+const offerId = '111111112222333344445555555555555555';
 const match = {
   ok: true,
   data: { matches: [{ item_id: id, display_name: 'Saved example', username_hint: 'a…' }] },
+};
+const readyPanelStatus = {
+  status: 'ready',
+  offerId,
+  itemIds: [id],
+  matches: [{ item_id: id, display_name: 'Saved example' }],
+  pageUrl: 'https://example.com/login',
+  frameId: 0,
 };
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -93,7 +102,7 @@ beforeEach(async () => {
   storageListeners.clear();
   deps.mine.mockResolvedValue({ ok: true, data: [] });
   deps.matches.mockResolvedValue(match);
-  deps.status.mockResolvedValue({ status: 'ready', itemIds: [id] });
+  deps.status.mockResolvedValue(readyPanelStatus);
   deps.fill.mockResolvedValue({ status: 'filled' });
   deps.login.mockResolvedValue({ status: 'authenticated' });
   const event = { addListener: vi.fn(), removeListener: vi.fn() };
@@ -197,7 +206,7 @@ it('ignores reordered status responses and does not show old matching rows after
     for (const fn of listeners)
       fn({ __matrx: true, kind: 'credential-assistance:changed', payload: { tabId: 7 } });
   });
-  deps.status.mockResolvedValueOnce({ status: 'none', itemIds: [] });
+  deps.status.mockResolvedValue({ status: 'none', itemIds: [] });
   await act(async () => {
     for (const fn of listeners)
       fn({ __matrx: true, kind: 'credential-assistance:changed', payload: { tabId: 7 } });
@@ -206,6 +215,7 @@ it('ignores reordered status responses and does not show old matching rows after
   expect([...node.querySelectorAll('button')].some((b) => b.textContent === 'Fill')).toBe(false);
   const newMatches = deferred<unknown>();
   deps.matches.mockReturnValueOnce(newMatches.promise);
+  deps.status.mockResolvedValueOnce({ status: 'none', itemIds: [] });
   deps.tab = { id: 8, url: 'https://other.example/login' };
   await render();
   expect(node.textContent).not.toContain('Saved example');
