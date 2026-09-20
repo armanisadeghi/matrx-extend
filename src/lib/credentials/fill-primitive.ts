@@ -312,7 +312,8 @@ export function credentialDomSource(
     if ((username && !usernameSelector) || (password && !passwordSelector)) return null;
     if (
       requirePanelFocus &&
-      deepActive() !== anchor && deepActive() !== username &&
+      deepActive() !== anchor &&
+      deepActive() !== username &&
       deepActive() !== password
     )
       return null;
