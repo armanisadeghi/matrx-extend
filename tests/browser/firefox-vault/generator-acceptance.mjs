@@ -158,7 +158,7 @@ async function runKind({ adapter, fixture, driver, kind }) {
   await waitForGenerated(adapter);
   const masked = await adapter.evaluate((document, rootSelector) => {
     const code = document.querySelector(rootSelector)?.querySelector('code')?.textContent;
-    return typeof code === 'string' && /^•+$/.test(code);
+    return typeof code === 'string' && code.length > 0 && [...code].every(character => character.charCodeAt(0) === 0x2022);
   }, [GENERATOR]);
   assert.equal(masked, true, 'generator_value_not_masked');
 

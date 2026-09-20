@@ -42,7 +42,7 @@ async function exists(path) {
 }
 function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 function safeErrorCode(error) {
-  const value = String(error?.message || 'firefox_readonly_acceptance_failed');
+  const value = String(error?.message || 'firefox_readonly_acceptance_failed').split('\n', 1)[0];
   return /^[a-z0-9_]{1,120}$/.test(value) ? value : 'firefox_readonly_acceptance_failed';
 }
 function baselineMetadataSha256(entries) {
