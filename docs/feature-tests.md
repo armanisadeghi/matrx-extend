@@ -179,6 +179,13 @@ component, so all four must show identical rows in identical order.
 - **Compatibility:** The extension requires Chrome 116 or later. The chooser refuses to query or fill when top-document identity or `documentIds` targeting is unavailable; it never falls back to tab-wide injection.
 - **Privacy disclosure:** Focus-time matching sends only the current page origin/path and a generated field selector to the extension service worker. No field value is read, captured, or materialized until an account is explicitly selected.
 
+### Panel-opening remedies from explicit clicks
+- **What it does:** Every explicit request to open Matrx reports the actual browser result. A toolbar-popup refusal stays visible in the popup; a context-menu refusal appears in a browser notification; a clicked Agenda notification remains visible with its toolbar remedy; and a clicked login-capture recovery card shows its remedy inside that same card.
+- **Where to test:** A current unpacked Chrome artifact and a Firefox 153+ artifact, each in an isolated profile. This recipe does not establish Firefox support by itself.
+- **Steps:** Trigger **Open chat** from the toolbar popup, **Open Matrx side panel** from a page context menu, click an Agenda notification, and click **Open Vault** from an existing login-capture recovery card. Exercise each route with a browser/API refusal where possible.
+- **Expected:** A successful native open closes the popup or clears the Agenda notification. A refusal names a next step and leaves its originating surface visible; drafts from context-menu actions still reach an already-open or cold-open panel. The login-capture card remains quiet until its own **Open Vault** button is clicked and does not create a separate overlay.
+- **Covered by:** `tests/unit/frontend-bridge-panel-gesture.test.ts`, `tests/unit/context-menu-panel-remedy.test.ts`, `tests/unit/agenda-panel-remedy.test.ts`, `tests/unit/inline-suggestions-host.test.ts`, `tests/unit/credential-capture-prompt.test.ts`, and `tests/unit/background-panel-startup.test.ts`.
+
 Every entry follows this shape:
 
 ```

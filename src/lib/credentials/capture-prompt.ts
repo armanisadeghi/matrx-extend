@@ -53,14 +53,35 @@ export function dismissCapturePrompt(candidateId?: string): void {
   current = null;
 }
 
-function openVault(): void {
+interface OpenVaultResponse {
+  ok: boolean;
+  reason?: string;
+}
+
+async function openVault(): Promise<OpenVaultResponse> {
   try {
-    if (!chrome.runtime?.id) return;
-    chrome.runtime
-      .sendMessage({ __matrx: true, kind: CHANNELS.CREDENTIAL_SUGGESTIONS_OPEN_VAULT, payload: {} })
-      .catch(() => undefined);
+    if (!chrome.runtime?.id) {
+      return {
+        ok: false,
+        reason: 'Matrx could not reach the extension. Reopen it from the toolbar, then try again.',
+      };
+    }
+    const response = (await chrome.runtime.sendMessage({
+      __matrx: true,
+      kind: CHANNELS.CREDENTIAL_SUGGESTIONS_OPEN_VAULT,
+      payload: {},
+    })) as OpenVaultResponse | undefined;
+    return (
+      response ?? {
+        ok: false,
+        reason: 'Matrx did not open. Reopen it from the toolbar, then try again.',
+      }
+    );
   } catch {
-    // The same disconnected-extension case as the candidate sender is quiet.
+    return {
+      ok: false,
+      reason: 'Matrx could not reach the extension. Reopen it from the toolbar, then try again.',
+    };
   }
 }
 
@@ -95,12 +116,21 @@ export function showCaptureUnavailable(
   );
   card.appendChild(el('div', 'color:#555;font-size:12px;margin-bottom:10px;', copy));
   const actions = el('div', 'display:flex;gap:6px;');
+  const status = el('div', 'margin-top:8px;color:#555;font-size:12px;min-height:0;');
   const vault = el('button', BTN_PRIMARY, 'Open Vault');
-  vault.addEventListener('click', openVault);
+  vault.addEventListener('click', () => {
+    void openVault().then((result) => {
+      // This card exists because the person explicitly chose a recovery action.
+      // Keep its remedy here; never create a separate unsolicited overlay.
+      if (!result.ok)
+        status.textContent = result.reason ?? 'Matrx did not open. Try again from the toolbar.';
+    });
+  });
   const dismiss = el('button', BTN_GHOST, 'Dismiss');
   dismiss.addEventListener('click', () => dismissCapturePrompt());
   actions.append(vault, dismiss);
   card.appendChild(actions);
+  card.appendChild(status);
   shadow.appendChild(card);
   document.body.appendChild(host);
   current = { candidateId: '', host, timer: window.setTimeout(dismissCapturePrompt, AUTO_HIDE_MS) };

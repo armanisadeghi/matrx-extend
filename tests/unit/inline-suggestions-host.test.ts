@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mountGenerationTargetRegistry } from '@/lib/credentials/generation-targets';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const USER = '00000000-0000-0000-0000-000000000001';
 const ORG = '00000000-0000-0000-0000-000000000002';
@@ -110,7 +110,8 @@ function replyForPanel(
 }
 function registeredField(selector: string): { kind: 'registered_input'; id: string } {
   const input = document.querySelector(selector);
-  if (!(input instanceof HTMLInputElement)) throw new Error(`Missing registered input: ${selector}`);
+  if (!(input instanceof HTMLInputElement))
+    throw new Error(`Missing registered input: ${selector}`);
   const id = mountGenerationTargetRegistry().registerInput(input);
   if (!id) throw new Error(`Could not register input: ${selector}`);
   return { kind: 'registered_input', id };
@@ -230,6 +231,30 @@ afterEach(() => {
 });
 
 describe('inline saved-login host', () => {
+  it('returns the settled panel refusal to the clicked capture card', async () => {
+    (globalThis.chrome as unknown as { sidePanel: { open: () => Promise<void> } }).sidePanel = {
+      open: async () => {
+        throw new Error('`sidePanel.open()` may only be called in response to a user gesture.');
+      },
+    };
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+
+    await expect(
+      replyFor({
+        __matrx: true,
+        kind: 'credential-suggestions:open-vault',
+        payload: {},
+      }),
+    ).resolves.toEqual({
+      ok: false,
+      reason:
+        '`sidePanel.open()` may only be called in response to a user gesture. Open Matrx from the browser toolbar and try again.',
+    });
+  });
+
   it.each([
     [
       'inline',

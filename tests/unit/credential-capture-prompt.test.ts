@@ -381,7 +381,10 @@ describe('detector — snapshotLogin', () => {
       const { mountCaptureDetector } = await import('@/lib/credentials/capture-detector');
       const sent: unknown[] = [];
       Object.assign(chrome, {
-        runtime: { id: 'test-extension', sendMessage: async (message: unknown) => void sent.push(message) },
+        runtime: {
+          id: 'test-extension',
+          sendMessage: async (message: unknown) => void sent.push(message),
+        },
       });
       const listeners = new Map<string, EventListener>();
       const add = document.addEventListener.bind(document);
@@ -400,16 +403,23 @@ describe('detector — snapshotLogin', () => {
       root.innerHTML = `<form method="post"><input autocomplete="username" value="${USER}"><input type="password" autocomplete="current-password" value="${SENTINEL}"><button type="submit"><span>Sign in</span></button></form>`;
       const unrelated = document.createElement('form');
       unrelated.method = 'post';
-      unrelated.innerHTML = '<input type=password value="unrelated-password"><button type=submit>Other</button>';
+      unrelated.innerHTML =
+        '<input type=password value="unrelated-password"><button type=submit>Other</button>';
       document.body.append(outerHost, unrelated);
       const form = root.querySelector('form') as HTMLFormElement;
       const password = root.querySelector('input[type=password]') as HTMLInputElement;
       const button = root.querySelector('button') as HTMLButtonElement;
       const clickTarget = button.querySelector('span') as HTMLSpanElement;
-      for (const input of [password, root.querySelector('input[autocomplete=username]') as HTMLInputElement])
+      for (const input of [
+        password,
+        root.querySelector('input[autocomplete=username]') as HTMLInputElement,
+      ])
         input.getBoundingClientRect = () => ({ width: 100, height: 20 }) as DOMRect;
       const dispose = mountCaptureDetector(document);
-      const path = gesture === 'Enter' ? [password, form, root, innerHost, outerRoot, outerHost, document, window] : [clickTarget, button, form, root, innerHost, outerRoot, outerHost, document, window];
+      const path =
+        gesture === 'Enter'
+          ? [password, form, root, innerHost, outerRoot, outerHost, document, window]
+          : [clickTarget, button, form, root, innerHost, outerRoot, outerHost, document, window];
       const event = {
         isTrusted: true,
         key: gesture === 'Enter' ? 'Enter' : undefined,
@@ -421,7 +431,12 @@ describe('detector — snapshotLogin', () => {
         {
           __matrx: true,
           kind: 'credential-capture:candidate',
-          payload: { stage: 'password', loginUrl: document.location.href, username: USER, password: SENTINEL },
+          payload: {
+            stage: 'password',
+            loginUrl: document.location.href,
+            username: USER,
+            password: SENTINEL,
+          },
         },
       ]);
       dispose();
@@ -431,7 +446,12 @@ describe('detector — snapshotLogin', () => {
   it('refuses a trusted composed open-shadow gesture when its effective action is unsafe', async () => {
     const { mountCaptureDetector } = await import('@/lib/credentials/capture-detector');
     const sent: unknown[] = [];
-    Object.assign(chrome, { runtime: { id: 'test-extension', sendMessage: async (message: unknown) => void sent.push(message) } });
+    Object.assign(chrome, {
+      runtime: {
+        id: 'test-extension',
+        sendMessage: async (message: unknown) => void sent.push(message),
+      },
+    });
     const listeners = new Map<string, EventListener>();
     const add = document.addEventListener.bind(document);
     vi.spyOn(document, 'addEventListener').mockImplementation((type, listener, options) => {
@@ -446,7 +466,11 @@ describe('detector — snapshotLogin', () => {
     const password = root.querySelector('input') as HTMLInputElement;
     password.getBoundingClientRect = () => ({ width: 100, height: 20 }) as DOMRect;
     const dispose = mountCaptureDetector(document);
-    listeners.get('keydown')?.({ isTrusted: true, key: 'Enter', composedPath: () => [password, root, host, document, window] } as unknown as Event);
+    listeners.get('keydown')?.({
+      isTrusted: true,
+      key: 'Enter',
+      composedPath: () => [password, root, host, document, window],
+    } as unknown as Event);
     await Promise.resolve();
     expect(sent).toEqual([]);
     dispose();
@@ -544,6 +568,42 @@ describe('host — hold, status, prompt', () => {
 });
 
 describe('content prompt — page overlay', () => {
+  it('shows a panel-opening refusal only in the clicked recovery card', async () => {
+    const { dismissCapturePrompt, showCaptureUnavailable } = await import(
+      '@/lib/credentials/capture-prompt'
+    );
+    const attachShadow = HTMLElement.prototype.attachShadow;
+    const captured: { shadow: ShadowRoot | null } = { shadow: null };
+    vi.spyOn(HTMLElement.prototype, 'attachShadow').mockImplementation(function (
+      this: HTMLElement,
+      init: ShadowRootInit,
+    ) {
+      captured.shadow = attachShadow.call(this, init);
+      return captured.shadow;
+    });
+    Object.assign(chrome, {
+      runtime: {
+        id: 'test-extension',
+        sendMessage: async () => ({
+          ok: false,
+          reason: 'Native Chrome refusal Open Matrx from the browser toolbar and try again.',
+        }),
+      },
+    });
+
+    showCaptureUnavailable('capture_unavailable');
+    const rendered = captured.shadow;
+    if (!rendered) throw new Error('Capture recovery card did not mount');
+    expect(rendered.textContent).not.toContain('Native Chrome refusal');
+    (rendered.querySelector('button') as HTMLButtonElement).click();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(rendered.textContent).toContain(
+      'Native Chrome refusal Open Matrx from the browser toolbar and try again.',
+    );
+    dismissCapturePrompt();
+  });
+
   it('keeps every same-site update target reachable and distinguishable', async () => {
     const { dismissCapturePrompt, showCapturePrompt } = await import(
       '@/lib/credentials/capture-prompt'
