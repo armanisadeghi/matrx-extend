@@ -67,19 +67,21 @@ describe('bound credential fill rollback', () => {
       configurable: true,
       value: () => ({ width: 120, height: 24, top: 0, left: 0, bottom: 24 }),
     });
-    expect(serialized({
-      operation: 'fill',
-      expected: {
-        anchor: '#username',
-        username: '#username',
-        password: undefined as never,
-        usernameOnly: true,
-        pageUrl: `${location.origin}${location.pathname}`,
-      },
-      requested: [{ selector: '#username', value: 'credential-user-fixture' }],
-      sensitiveAttr: '',
-      preserveLegacyFieldBehavior: false,
-    })).toEqual({ ok: true });
+    expect(
+      serialized({
+        operation: 'fill',
+        expected: {
+          anchor: '#username',
+          username: '#username',
+          password: undefined as never,
+          usernameOnly: true,
+          pageUrl: `${location.origin}${location.pathname}`,
+        },
+        requested: [{ selector: '#username', value: 'credential-user-fixture' }],
+        sensitiveAttr: '',
+        preserveLegacyFieldBehavior: false,
+      }),
+    ).toEqual({ ok: true });
     expect(username.value).toBe('credential-user-fixture');
   });
 
@@ -91,19 +93,21 @@ describe('bound credential fill rollback', () => {
       configurable: true,
       value: () => ({ width: 120, height: 24, top: 0, left: 0, bottom: 24 }),
     });
-    expect(serialized({
-      operation: 'fill',
-      expected: {
-        anchor: '#password',
-        username: undefined as never,
-        password: '#password',
-        usernameOnly: false,
-        pageUrl: `${location.origin}${location.pathname}`,
-      },
-      requested: [{ selector: '#password', value: 'credential-password-fixture' }],
-      sensitiveAttr: '',
-      preserveLegacyFieldBehavior: false,
-    })).toEqual({ ok: true });
+    expect(
+      serialized({
+        operation: 'fill',
+        expected: {
+          anchor: '#password',
+          username: undefined as never,
+          password: '#password',
+          usernameOnly: false,
+          pageUrl: `${location.origin}${location.pathname}`,
+        },
+        requested: [{ selector: '#password', value: 'credential-password-fixture' }],
+        sensitiveAttr: '',
+        preserveLegacyFieldBehavior: false,
+      }),
+    ).toEqual({ ok: true });
     expect(password.value).toBe('credential-password-fixture');
   });
 

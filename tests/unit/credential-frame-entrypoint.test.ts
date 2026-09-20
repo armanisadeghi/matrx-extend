@@ -1,7 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const state = vi.hoisted(() => ({
-  config: null as { matches?: unknown; allFrames?: unknown; runAt?: unknown; main?: () => void } | null,
+  config: null as {
+    matches?: unknown;
+    allFrames?: unknown;
+    runAt?: unknown;
+    main?: () => void;
+  } | null,
   registryMounts: 0,
   inlineMounts: 0,
 }));
@@ -13,14 +18,19 @@ vi.mock('wxt/utils/define-content-script', () => ({
   },
 }));
 vi.mock('@/lib/credentials/generation-targets', () => ({
-  mountGenerationTargetRegistry: () => { state.registryMounts += 1; },
+  mountGenerationTargetRegistry: () => {
+    state.registryMounts += 1;
+  },
 }));
 vi.mock('@/lib/credentials/inline-suggestions', () => ({
-  mountInlineCredentialSuggestions: () => { state.inlineMounts += 1; },
+  mountInlineCredentialSuggestions: () => {
+    state.inlineMounts += 1;
+  },
 }));
 
 const topDescriptor = Object.getOwnPropertyDescriptor(window, 'top');
-const setTop = (value: Window) => Object.defineProperty(window, 'top', { configurable: true, value });
+const setTop = (value: Window) =>
+  Object.defineProperty(window, 'top', { configurable: true, value });
 
 afterEach(() => {
   state.config = null;

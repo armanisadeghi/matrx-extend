@@ -740,7 +740,7 @@ export function registerInlineCredentialSuggestionHost(): void {
         return false;
       void panelStatus(env.payload.tabId)
         .then(sendResponse)
-        .catch(() => sendResponse({ status: 'none', itemIds: [] }));
+        .catch(() => sendResponse({ status: 'unavailable', itemIds: [] }));
       return true;
     }
     if (env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_PANEL_FILL) {

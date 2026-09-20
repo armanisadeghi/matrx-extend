@@ -1,6 +1,6 @@
+import { mountGenerationTargetRegistry } from '@/lib/credentials/generation-targets';
 /** Metadata-only, closed-shadow chooser for eligible focused login controls. */
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { mountGenerationTargetRegistry } from '@/lib/credentials/generation-targets';
 import { readCredentialAssistancePresentation } from '@/lib/settings/persisted';
 
 type QueryResponse =
@@ -29,7 +29,8 @@ let lastFocusReport: Promise<void> | null = null;
 
 function deepActive(root: Document | ShadowRoot = document): Element | null {
   let active: Element | null = root.activeElement;
-  while (active instanceof HTMLElement && active.shadowRoot?.mode === 'open') active = active.shadowRoot.activeElement;
+  while (active instanceof HTMLElement && active.shadowRoot?.mode === 'open')
+    active = active.shadowRoot.activeElement;
   return active;
 }
 function openComposedInput(event: Event): HTMLInputElement | null {
@@ -109,7 +110,9 @@ function requestFor(target: HTMLInputElement, reported?: Promise<void>): void {
   const token = ++generation;
   const requestUrl = location.href;
   void ownerReport
-    .then(() => send(CHANNELS.CREDENTIAL_SUGGESTIONS_QUERY, { field: { kind: 'registered_input', id } }))
+    .then(() =>
+      send(CHANNELS.CREDENTIAL_SUGGESTIONS_QUERY, { field: { kind: 'registered_input', id } }),
+    )
     .then((raw) => render(target, raw as QueryResponse, token, requestUrl))
     .catch(() => undefined);
 }
@@ -277,7 +280,11 @@ export function mountInlineCredentialSuggestions(): () => void {
     if (openComposedInput(event) === focused) invalidate();
   };
   const onPointerDown = (event: PointerEvent): void => {
-    if ((focused !== null && openComposedInput(event) === focused) || (host !== null && event.composedPath().includes(host))) return;
+    if (
+      (focused !== null && openComposedInput(event) === focused) ||
+      (host !== null && event.composedPath().includes(host))
+    )
+      return;
     if (event.isTrusted && document.hasFocus()) reportFocus(event);
     invalidate();
   };
@@ -298,11 +305,7 @@ export function mountInlineCredentialSuggestions(): () => void {
     if (env?.__matrx === true && env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_CONTEXT_CHANGED) {
       const target = focused;
       invalidate();
-      if (
-        env.payload?.requery !== false &&
-        target?.isConnected &&
-        deepActive() === target
-      )
+      if (env.payload?.requery !== false && target?.isConnected && deepActive() === target)
         requestFor(target);
     }
     return false;
