@@ -361,3 +361,30 @@ it('accepts an exact completion receipt independently of object key order', asyn
     completeLocalCommand({ ...base, grant: 'completion', result }),
   ).resolves.toMatchObject({ ok: true });
 });
+
+it('requires an observed authenticator verification before accepting completion', async () => {
+  const result = {
+    command_id: id,
+    operation: 'authenticator' as const,
+    outcome: 'completed' as const,
+    reason: 'none' as const,
+    data: {
+      filled: true,
+      submitted: true,
+      challenge_detected: false,
+      verification: 'unverified' as const,
+    },
+  };
+  const fetchMock = vi.fn(
+    async () => new Response(JSON.stringify({ status: 'completed', result }), noStore),
+  );
+  vi.stubGlobal('fetch', fetchMock);
+  const { verification: _verification, ...incomplete } = result.data;
+  await expect(
+    completeLocalCommand({ ...base, grant: 'g', result: { ...result, data: incomplete } as never }),
+  ).resolves.toEqual({ ok: false, error: 'invalid_response' });
+  expect(fetchMock).not.toHaveBeenCalled();
+  await expect(completeLocalCommand({ ...base, grant: 'g', result })).resolves.toMatchObject({
+    ok: true,
+  });
+});

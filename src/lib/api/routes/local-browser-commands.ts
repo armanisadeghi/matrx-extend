@@ -522,7 +522,18 @@ const completedResults = z.discriminatedUnion('operation', [
       outcome: z.literal('completed'),
       reason: z.literal('none'),
       data: z
-        .object({ filled: z.boolean(), submitted: z.boolean(), challenge_detected: z.boolean() })
+        .object({
+          filled: z.boolean(),
+          submitted: z.boolean(),
+          challenge_detected: z.boolean(),
+          verification: z.enum([
+            'unverified',
+            'verified',
+            'needs_mfa',
+            'credentials_rejected',
+            'captcha_or_takeover',
+          ]),
+        })
         .strict(),
     })
     .strict(),
