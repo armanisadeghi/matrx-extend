@@ -1,4 +1,9 @@
-import { type PrivateApiResult, type PrivateExpectedActor, privatePost } from '@/lib/api/client';
+import {
+  type PrivateApiResult,
+  type PrivateExpectedActor,
+  parseStrictPrivateJson,
+  privatePost,
+} from '@/lib/api/client';
 import { z } from 'zod';
 
 const MAX_GRANT_BYTES = 8 * 1024;
@@ -217,8 +222,8 @@ const claimedBase = z
   .object({
     status: z.literal('claimed'),
     command_id: uuid,
-    deadline_ms: safeMilliseconds.optional(),
-    completion_grant: grant.optional(),
+    deadline_ms: safeMilliseconds,
+    completion_grant: grant,
   })
   .strict();
 const alreadyClaimed = z
@@ -232,21 +237,48 @@ const commandField = z
     clear_first: z.boolean(),
   })
   .strict();
-const commandShape = z.discriminatedUnion('operation', [
-  z.object({ operation: z.literal('navigate'), url: z.string().url() }).strict(),
-  z.object({ operation: z.literal('inspect_login') }).strict(),
-  z
-    .object({ operation: z.literal('vault_login'), fields: z.array(commandField).min(1).max(12) })
-    .passthrough(),
-  z.object({ operation: z.literal('authenticator') }).passthrough(),
-]);
+const commandShape = z
+  .union([
+    z.object({ operation: z.literal('navigate'), url: z.string().url() }).strict(),
+    z.object({ operation: z.literal('inspect_login') }).strict(),
+    z
+      .object({
+        operation: z.literal('vault_login'),
+        credential_item_id: uuid,
+        fields: z.array(commandField).min(1).max(12),
+        submit: z.unknown().optional(),
+        steps: z.array(z.unknown()).min(1).max(4).optional(),
+        expect: z.unknown().optional(),
+      })
+      .strict()
+      .superRefine((value, ctx) => {
+        if ((value.submit === undefined) === (value.steps === undefined))
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'invalid command' });
+      }),
+    z
+      .object({
+        operation: z.literal('authenticator'),
+        credential_item_id: uuid,
+        code_selector: z.string().min(1).max(2048),
+        submit: z.unknown(),
+        expect: z.unknown().optional(),
+      })
+      .strict(),
+  ])
+  .superRefine((value, ctx) => {
+    if (
+      value.operation === 'vault_login' &&
+      (value.submit === undefined) === (value.steps === undefined)
+    )
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'invalid command' });
+  });
 type CommandShape = z.infer<typeof commandShape>;
 
 function parseCommand(source: string): CommandShape | null {
   try {
-    return commandShape.safeParse(JSON.parse(source)).success
-      ? commandShape.parse(JSON.parse(source))
-      : null;
+    const value = parseStrictPrivateJson(source);
+    const parsed = value === null ? null : commandShape.safeParse(value);
+    return parsed?.success ? parsed.data : null;
   } catch {
     return null;
   }
