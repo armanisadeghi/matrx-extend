@@ -46,6 +46,7 @@ import {
   safeParseUrl,
   withPageAdded,
 } from '@/lib/credentials/login-urls';
+import { parsePanelSavedLoginStatus, type PanelSavedLoginSnapshot } from '@/lib/credentials/panel-saved-login-status';
 import { useTransientSecret } from '@/lib/credentials/transient-secret';
 import { confirmDestructive } from '@/lib/destructive/confirm';
 import { cn } from '@/lib/utils';
@@ -138,6 +139,8 @@ function VaultSession({
 
   const host = useMemo(() => safeParseUrl(pageUrl)?.host ?? null, [pageUrl]);
   const fillable = isFillablePageUrl(pageUrl);
+  const childOffer = panel.status === 'ready' && panel.frameId > 0;
+  const panelUnavailable = panel.status === 'loading' || panel.status === 'unavailable';
 
   const list = scope === 'mine' ? vault.mine : vault.shared;
   const filtered = useMemo(() => {
@@ -188,21 +191,25 @@ function VaultSession({
         <PendingCaptureCard tabId={tab.id} onSaved={() => void vault.reload()} />
         <SiteSection
           key={tab.id ?? 'no-tab'}
-          host={host}
+          host={panel.status === 'ready' ? safeParseUrl(panel.pageUrl)?.host ?? null : host}
+          allowAutomaticLogin={!panelUnavailable && !childOffer && login.supported}
           blockedReason={
-            !login.supported
+            panelUnavailable
+              ? panel.status === 'loading' ? 'Checking saved logins…' : 'Saved logins are unavailable right now. Focus the login field to try again.'
+              : !login.supported && panel.status !== 'ready'
               ? 'Browser login is not available in this browser yet.'
               : !fillable
                 ? 'Browser login only runs on https pages.'
                 : null
           }
-          pageUrl={pageUrl}
-          matches={vault.matches}
-          matchesLoading={vault.matchesLoading}
+          pageUrl={panel.status === 'ready' ? panel.pageUrl : pageUrl}
+          matches={panel.status === 'ready' ? panel.matches : vault.matches}
+          matchesLoading={panel.status === 'loading' || (panel.status !== 'ready' && vault.matchesLoading)}
           running={login.running}
-          outcome={login.outcome}
+          outcome={!panelUnavailable && !childOffer ? login.outcome : null}
           panelStatus={panel.status}
-          panelOutcome={panel.outcome}
+          panelOutcome={!panelUnavailable ? panel.outcome : null}
+          panelOutcomeHost={panel.outcomeHost}
           panelRunning={panel.running}
           panelItemIds={panel.itemIds}
           onFill={(id) => void panel.fill(id)}
@@ -368,8 +375,10 @@ interface SiteSectionProps {
   matchesLoading: boolean;
   running: string | null;
   outcome: { status: string; message: string } | null;
-  panelStatus: 'ready' | 'none' | 'disabled';
+  panelStatus: PanelSavedLoginSnapshot['status'];
+  allowAutomaticLogin: boolean;
   panelOutcome: string | null;
+  panelOutcomeHost: string | null;
   panelRunning: string | null;
   panelItemIds: string[];
   onFill: (itemId: string) => void;
@@ -426,7 +435,7 @@ function SiteSection(props: SiteSectionProps) {
                   )}
                 </Button>
               )}
-              <Button
+              {props.allowAutomaticLogin && <Button
                 size="sm"
                 variant="outline"
                 className="h-6 px-2 text-[11px]"
@@ -438,7 +447,7 @@ function SiteSection(props: SiteSectionProps) {
                 ) : (
                   'Sign in'
                 )}
-              </Button>
+              </Button>}
             </li>
           ))}
         </ul>
@@ -480,7 +489,10 @@ function SiteSection(props: SiteSectionProps) {
         </p>
       )}
       {props.panelOutcome && (
-        <p className="mt-1.5 text-[11px] text-muted-foreground">{props.panelOutcome}</p>
+        <div className="mt-1.5 text-[11px] text-muted-foreground">
+          {props.panelOutcomeHost && <span>{props.panelOutcomeHost}</span>}
+          <p>{props.panelOutcome}</p>
+        </div>
       )}
     </div>
   );
@@ -490,18 +502,15 @@ function usePanelFill(
   tabId: number | null,
   admission: PanelActionAdmission,
 ): {
-  status: 'ready' | 'none' | 'disabled';
-  itemIds: string[];
   running: string | null;
   outcome: string | null;
+  outcomeHost: string | null;
   fill: (itemId: string) => Promise<void>;
-} {
-  const [snapshot, setSnapshot] = useState<{
-    status: 'ready' | 'none' | 'disabled';
-    itemIds: string[];
-  }>({ status: 'none', itemIds: [] });
+} & PanelSavedLoginSnapshot {
+  const [snapshot, setSnapshot] = useState<PanelSavedLoginSnapshot>({ status: 'loading', itemIds: [] });
   const [running, setRunning] = useState<string | null>(null);
   const [outcome, setOutcome] = useState<string | null>(null);
+  const [outcomeHost, setOutcomeHost] = useState<string | null>(null);
   const mounted = useRef(false);
   useLayoutEffect(() => {
     mounted.current = true;
@@ -513,33 +522,30 @@ function usePanelFill(
     let live = true;
     let request = 0;
     setOutcome(null);
+    setOutcomeHost(null);
     setRunning(null);
-    setSnapshot({ status: 'none', itemIds: [] });
+    setSnapshot({ status: 'loading', itemIds: [] });
     const read = (): void => {
       if (tabId == null) return;
       const ticket = ++request;
+      setSnapshot({ status: 'loading', itemIds: [] });
       void chrome.runtime
         .sendMessage({
           __matrx: true,
           kind: 'credential-suggestions:panel-status',
           payload: { tabId },
         })
-        .then((value: { status?: unknown; itemIds?: unknown }) => {
+        .then((value: unknown) => {
           if (!admission.current() || !mounted.current || !live || ticket !== request) return;
-          setSnapshot(
-            value.status === 'ready' || value.status === 'disabled'
-              ? {
-                  status: value.status,
-                  itemIds: Array.isArray(value.itemIds)
-                    ? value.itemIds.filter((id): id is string => typeof id === 'string')
-                    : [],
-                }
-              : { status: 'none', itemIds: [] },
-          );
+          const next = parsePanelSavedLoginStatus(value);
+          setSnapshot(next);
+          if (next.status === 'unavailable') { setOutcome(null); setOutcomeHost(null); }
         })
         .catch(() => {
-          if (admission.current() && mounted.current && live && ticket === request)
-            setSnapshot({ status: 'none', itemIds: [] });
+          if (admission.current() && mounted.current && live && ticket === request) {
+            setSnapshot({ status: 'unavailable', itemIds: [] });
+            setOutcome(null); setOutcomeHost(null);
+          }
         });
     };
     read();
@@ -560,16 +566,17 @@ function usePanelFill(
   }, [admission, tabId]);
   const fill = useCallback(
     async (itemId: string) => {
-      if (tabId == null || running !== null || !snapshot.itemIds.includes(itemId)) return;
+      if (tabId == null || running !== null || snapshot.status !== 'ready' || !snapshot.itemIds.includes(itemId)) return;
       if (!mounted.current || !admission.current()) return;
       await admission.run(async () => {
         setRunning(itemId);
         setOutcome(null);
+        setOutcomeHost(safeParseUrl(snapshot.pageUrl)?.host ?? null);
         try {
           const result = (await chrome.runtime.sendMessage({
             __matrx: true,
             kind: 'credential-suggestions:panel-fill',
-            payload: { tabId, itemId },
+            payload: { tabId, offerId: snapshot.offerId, itemId },
           })) as { status?: unknown };
           if (!mounted.current || !admission.current()) return;
           setOutcome(
@@ -587,14 +594,15 @@ function usePanelFill(
         } finally {
           if (mounted.current && admission.current()) {
             setRunning(null);
-            setSnapshot({ status: 'none', itemIds: [] });
+            setSnapshot(current => current.status === 'ready' && current.offerId === snapshot.offerId
+              ? { status: 'none', itemIds: [] } : current);
           }
         }
       });
     },
-    [admission, running, snapshot.itemIds, tabId],
+    [admission, running, snapshot, tabId],
   );
-  return { ...snapshot, running, outcome, fill };
+  return { ...snapshot, running, outcome, outcomeHost, fill };
 }
 
 // ── One saved login ─────────────────────────────────────────────────────────

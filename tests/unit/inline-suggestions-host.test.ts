@@ -25,7 +25,10 @@ const state = vi.hoisted(() => ({
   materializeStarted: null as (() => void) | null,
   materializeCalls: 0,
   materializeRequest: null as { fieldKeys: string[] } | null,
-  materializedFields: { username: 'INLINE_USER_SENTINEL', password: 'INLINE_PASSWORD_SENTINEL' } as {
+  materializedFields: {
+    username: 'INLINE_USER_SENTINEL',
+    password: 'INLINE_PASSWORD_SENTINEL',
+  } as {
     username: 'INLINE_USER_SENTINEL';
     password?: 'INLINE_PASSWORD_SENTINEL';
   },
@@ -97,7 +100,9 @@ function dispatchRuntime(
   sender: chrome.runtime.MessageSender,
 ): { kept: boolean[]; replies: unknown[] } {
   const replies: unknown[] = [];
-  const kept = runtimeListeners.map((listener) => listener(message, sender, (value) => replies.push(value)));
+  const kept = runtimeListeners.map((listener) =>
+    listener(message, sender, (value) => replies.push(value)),
+  );
   return { kept, replies };
 }
 function replyFor(
@@ -315,11 +320,11 @@ describe('inline saved-login host', () => {
     ],
     [
       'panel',
-      async () =>
+      async (offerId: string) =>
         replyForPanel({
           __matrx: true,
           kind: 'credential-suggestions:panel-fill',
-          payload: { tabId: 7, itemId: ITEM },
+          payload: { tabId: 7, offerId, itemId: ITEM },
         }),
     ],
   ])(
@@ -359,18 +364,25 @@ describe('inline saved-login host', () => {
       '@/lib/credentials/inline-suggestions-host'
     );
     registerInlineCredentialSuggestionHost();
-    const query = await replyFor({
+    const query = (await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
       payload: { field: registeredField('#password') },
-    });
-    expect((query as { status: string }).status).toBe('ready');
+    })) as { status: string; offerId: string };
+    expect(query.status).toBe('ready');
     const status = await replyForPanel({
       __matrx: true,
       kind: 'credential-suggestions:panel-status',
       payload: { tabId: 7 },
     });
-    expect(status).toEqual({ status: 'ready', itemIds: [ITEM] });
+    expect(status).toEqual({
+      status: 'ready',
+      offerId: query.offerId,
+      itemIds: [ITEM],
+      matches: [{ item_id: ITEM, display_name: 'Work account' }],
+      pageUrl: `${location.origin}${location.pathname}`,
+      frameId: 0,
+    });
     const replies: unknown[] = [];
     for (const listener of runtimeListeners)
       replies.push(
@@ -392,11 +404,11 @@ describe('inline saved-login host', () => {
     );
     registerInlineCredentialSuggestionHost();
     (document.querySelector('#password') as HTMLInputElement).focus();
-    await replyFor({
+    const query = (await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
       payload: { field: registeredField('#password') },
-    });
+    })) as { offerId: string };
     let release!: () => void;
     state.materializeGate = new Promise((resolve) => {
       release = resolve;
@@ -409,7 +421,7 @@ describe('inline saved-login host', () => {
     const filling = replyForPanel({
       __matrx: true,
       kind: 'credential-suggestions:panel-fill',
-      payload: { tabId: 7, itemId: ITEM },
+      payload: { tabId: 7, offerId: query.offerId, itemId: ITEM },
     });
     await materializingNow;
     state.activeTabId = 8;
@@ -429,11 +441,11 @@ describe('inline saved-login host', () => {
     );
     registerInlineCredentialSuggestionHost();
     (document.querySelector('#password') as HTMLInputElement).focus();
-    await replyFor({
+    const query = (await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
       payload: { field: registeredField('#password') },
-    });
+    })) as { offerId: string };
     let release!: () => void;
     state.materializeGate = new Promise((resolve) => {
       release = resolve;
@@ -441,12 +453,12 @@ describe('inline saved-login host', () => {
     const first = replyForPanel({
       __matrx: true,
       kind: 'credential-suggestions:panel-fill',
-      payload: { tabId: 7, itemId: ITEM },
+      payload: { tabId: 7, offerId: query.offerId, itemId: ITEM },
     });
     const second = replyForPanel({
       __matrx: true,
       kind: 'credential-suggestions:panel-fill',
-      payload: { tabId: 7, itemId: ITEM },
+      payload: { tabId: 7, offerId: query.offerId, itemId: ITEM },
     });
     await vi.waitFor(() => expect(state.materializeCalls).toBe(1));
     release();
@@ -459,17 +471,149 @@ describe('inline saved-login host', () => {
       'INLINE_PASSWORD_SENTINEL',
     );
   });
+
+  it('refuses a wrong tab and unknown item without consuming the valid panel offer', async () => {
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    const query = (await replyFor({
+      __matrx: true,
+      kind: 'credential-suggestions:query',
+      payload: { field: registeredField('#password') },
+    })) as { status: string; offerId: string };
+    expect(query.status).toBe('ready');
+
+    await expect(
+      replyForPanel({
+        __matrx: true,
+        kind: 'credential-suggestions:panel-fill',
+        payload: { tabId: 8, offerId: query.offerId, itemId: ITEM },
+      }),
+    ).resolves.toMatchObject({ status: 'stale' });
+    await expect(
+      replyForPanel({
+        __matrx: true,
+        kind: 'credential-suggestions:panel-fill',
+        payload: {
+          tabId: 7,
+          offerId: query.offerId,
+          itemId: '00000000-0000-0000-0000-000000000004',
+        },
+      }),
+    ).resolves.toMatchObject({ status: 'stale' });
+    expect(state.materializeCalls).toBe(0);
+
+    await expect(
+      replyForPanel({
+        __matrx: true,
+        kind: 'credential-suggestions:panel-fill',
+        payload: { tabId: 7, offerId: query.offerId, itemId: ITEM },
+      }),
+    ).resolves.toMatchObject({ status: 'filled' });
+    expect(state.materializeCalls).toBe(1);
+  });
+
+  it('refuses an old panel offer after the same account is rebound to a newly focused frame', async () => {
+    state.autoOwnerReport = false;
+    document.body.innerHTML = [
+      '<form method="post"><input id="username-a" autocomplete="username"><input id="password-a" type="password" autocomplete="current-password"></form>',
+      '<form method="post"><input id="username-b" autocomplete="username"><input id="password-b" type="password" autocomplete="current-password"></form>',
+    ].join('');
+    for (const input of Array.from(document.querySelectorAll('input'))) {
+      Object.defineProperty(input, 'getBoundingClientRect', {
+        value: () => ({ width: 120, height: 24, top: 10, left: 10, bottom: 34 }),
+      });
+    }
+    const usernameA = document.querySelector('#username-a') as HTMLInputElement;
+    const passwordA = document.querySelector('#password-a') as HTMLInputElement;
+    const usernameB = document.querySelector('#username-b') as HTMLInputElement;
+    const passwordB = document.querySelector('#password-b') as HTMLInputElement;
+    state.frames = new Map([
+      [0, { documentId: 'top-document', url: 'https://login.example.test/', parentFrameId: -1 }],
+      [11, { documentId: 'child-a', url: 'https://login.example.test/embed-a', parentFrameId: 0 }],
+      [12, { documentId: 'child-b', url: 'https://login.example.test/embed-b', parentFrameId: 0 }],
+    ]);
+    const { registerInlineCredentialSuggestionHost } = await import(
+      '@/lib/credentials/inline-suggestions-host'
+    );
+    registerInlineCredentialSuggestionHost();
+    const focus = (frameId: number, documentId: string, stamp: number) =>
+      dispatchRuntime(
+        {
+          __matrx: true,
+          kind: 'credential-suggestions:focus-owner',
+          payload: { stamp, sequence: 1 },
+        },
+        { tab: { id: 7 }, frameId, documentId } as chrome.runtime.MessageSender,
+      );
+
+    focus(11, 'child-a', 100);
+    const offerA = (await replyFor(
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:query',
+        payload: { field: registeredField('#password-a') },
+      },
+      7,
+      'child-a',
+      11,
+    )) as { status: string; offerId: string };
+    expect(offerA.status).toBe('ready');
+    expect(offerA.offerId).toMatch(/^[0-9a-f]{36}$/);
+
+    focus(12, 'child-b', 200);
+    const offerB = (await replyFor(
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:query',
+        payload: { field: registeredField('#password-b') },
+      },
+      7,
+      'child-b',
+      12,
+    )) as { status: string; offerId: string };
+    expect(offerB.status).toBe('ready');
+    expect(offerB.offerId).not.toBe(offerA.offerId);
+
+    await expect(
+      replyForPanel({
+        __matrx: true,
+        kind: 'credential-suggestions:panel-fill',
+        payload: { tabId: 7, offerId: offerA.offerId, itemId: ITEM },
+      }),
+    ).resolves.toMatchObject({ status: 'stale' });
+    expect(state.materializeCalls).toBe(0);
+    expect(usernameA.value).toBe('');
+    expect(passwordA.value).toBe('');
+    expect(usernameB.value).toBe('');
+    expect(passwordB.value).toBe('');
+
+    await expect(
+      replyForPanel({
+        __matrx: true,
+        kind: 'credential-suggestions:panel-fill',
+        payload: { tabId: 7, offerId: offerB.offerId, itemId: ITEM },
+      }),
+    ).resolves.toMatchObject({ status: 'filled' });
+    expect(state.materializeCalls).toBe(1);
+    expect(usernameA.value).toBe('');
+    expect(passwordA.value).toBe('');
+    expect(usernameB.value).toBe('INLINE_USER_SENTINEL');
+    expect(passwordB.value).toBe('INLINE_PASSWORD_SENTINEL');
+  });
+
   it('refuses a same-actor auth invalidation after the panel offer was claimed', async () => {
     const { registerInlineCredentialSuggestionHost } = await import(
       '@/lib/credentials/inline-suggestions-host'
     );
     registerInlineCredentialSuggestionHost();
     (document.querySelector('#password') as HTMLInputElement).focus();
-    await replyFor({
+    const query = (await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
       payload: { field: registeredField('#password') },
-    });
+    })) as { offerId: string };
     let release!: () => void;
     let reached!: () => void;
     state.materializeGate = new Promise((r) => {
@@ -482,7 +626,7 @@ describe('inline saved-login host', () => {
     const fill = replyForPanel({
       __matrx: true,
       kind: 'credential-suggestions:panel-fill',
-      payload: { tabId: 7, itemId: ITEM },
+      payload: { tabId: 7, offerId: query.offerId, itemId: ITEM },
     });
     await started;
     for (const listener of runtimeListeners)
@@ -549,11 +693,11 @@ describe('inline saved-login host', () => {
     );
     registerInlineCredentialSuggestionHost();
     (document.querySelector('#password') as HTMLInputElement).focus();
-    await replyFor({
+    const query = (await replyFor({
       __matrx: true,
       kind: 'credential-suggestions:query',
       payload: { field: registeredField('#password') },
-    });
+    })) as { offerId: string };
     let release!: () => void;
     let reached!: () => void;
     const gate = new Promise<void>((r) => {
@@ -585,7 +729,7 @@ describe('inline saved-login host', () => {
     const fill = replyForPanel({
       __matrx: true,
       kind: 'credential-suggestions:panel-fill',
-      payload: { tabId: 7, itemId: ITEM },
+      payload: { tabId: 7, offerId: query.offerId, itemId: ITEM },
     });
     await started;
     for (const tabId of [8, 7])
@@ -607,11 +751,11 @@ describe('inline saved-login host', () => {
       const other = document.createElement('input');
       document.body.append(other);
       password.focus();
-      await replyFor({
+      const query = (await replyFor({
         __matrx: true,
         kind: 'credential-suggestions:query',
         payload: { field: registeredField('#password') },
-      });
+      })) as { offerId: string };
       const alter = () => {
         if (mode.startsWith('hidden'))
           vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
@@ -623,7 +767,7 @@ describe('inline saved-login host', () => {
         await replyForPanel({
           __matrx: true,
           kind: 'credential-suggestions:panel-fill',
-          payload: { tabId: 7, itemId: ITEM },
+          payload: { tabId: 7, offerId: query.offerId, itemId: ITEM },
         }),
       ).toMatchObject({ status: 'stale' });
       expect(username.value).toBe('');
@@ -706,7 +850,7 @@ describe('inline saved-login host', () => {
       __matrx: true,
       kind: 'credential-suggestions:fill',
       payload: { offerId: query.offerId, itemId: ITEM },
-    })) as { status: string };
+    })) as { status: string; offerId: string };
     expect(fill.status).toBe('filled');
     expect((document.querySelector('#username') as HTMLInputElement).value).toBe(
       'INLINE_USER_SENTINEL',
@@ -720,7 +864,7 @@ describe('inline saved-login host', () => {
       __matrx: true,
       kind: 'credential-suggestions:fill',
       payload: { offerId: query.offerId, itemId: ITEM },
-    })) as { status: string };
+    })) as { status: string; offerId: string };
     expect(duplicate.status).toBe('stale');
   });
 
@@ -824,7 +968,7 @@ describe('inline saved-login host', () => {
       __matrx: true,
       kind: 'credential-suggestions:fill',
       payload: { offerId: query.offerId, itemId: ITEM },
-    })) as { status: string };
+    })) as { status: string; offerId: string };
     expect(fill.status).toBe('filled');
     expect(input.value).toBe('INLINE_USER_SENTINEL');
   });
@@ -852,12 +996,12 @@ describe('inline saved-login host', () => {
       __matrx: true,
       kind: 'credential-suggestions:query',
       payload: { field: registeredField('#username') },
-    })) as { status: string };
+    })) as { status: string; offerId: string };
     expect(query.status).toBe('ready');
     const fill = (await replyForPanel({
       __matrx: true,
       kind: 'credential-suggestions:panel-fill',
-      payload: { tabId: 7, itemId: ITEM },
+      payload: { tabId: 7, offerId: query.offerId, itemId: ITEM },
     })) as { status: string };
     expect(state.materializeRequest).toEqual({ fieldKeys: ['username'] });
     expect(fill.status).toBe('filled');
@@ -974,7 +1118,7 @@ describe('inline saved-login host', () => {
       7,
       'child-a',
       11,
-    )) as { status: string };
+    )) as { status: string; offerId: string };
     expect(fill.status).not.toBe('filled');
     expect(state.materializeCalls).toBe(0);
     expect((document.querySelector('#username') as HTMLInputElement).value).toBe('');
@@ -1000,22 +1144,30 @@ describe('inline saved-login host', () => {
       7,
       'child-a',
       11,
-    )) as { status: string };
+    )) as { status: string; offerId: string };
     expect(query.status).toBe('ready');
     dispatchRuntime(
-      { __matrx: true, kind: 'credential-suggestions:focus-owner', payload: { stamp: 200, sequence: 1 } },
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:focus-owner',
+        payload: { stamp: 200, sequence: 1 },
+      },
       { tab: { id: 7 }, frameId: 0, documentId: 'top-document' } as chrome.runtime.MessageSender,
     );
-    await expect(replyForPanel({
-      __matrx: true,
-      kind: 'credential-suggestions:panel-status',
-      payload: { tabId: 7 },
-    })).resolves.toEqual({ status: 'none', itemIds: [] });
-    await expect(replyForPanel({
-      __matrx: true,
-      kind: 'credential-suggestions:panel-fill',
-      payload: { tabId: 7, itemId: ITEM },
-    })).resolves.toMatchObject({ status: 'stale' });
+    await expect(
+      replyForPanel({
+        __matrx: true,
+        kind: 'credential-suggestions:panel-status',
+        payload: { tabId: 7 },
+      }),
+    ).resolves.toEqual({ status: 'none', itemIds: [] });
+    await expect(
+      replyForPanel({
+        __matrx: true,
+        kind: 'credential-suggestions:panel-fill',
+        payload: { tabId: 7, offerId: query.offerId, itemId: ITEM },
+      }),
+    ).resolves.toMatchObject({ status: 'stale' });
     expect(state.materializeCalls).toBe(0);
   });
 
@@ -1041,18 +1193,28 @@ describe('inline saved-login host', () => {
     );
     expect((query as { status: string }).status).toBe('ready');
     dispatchRuntime(
-      { __matrx: true, kind: 'credential-suggestions:focus-owner', payload: { stamp: 200, sequence: 1 } },
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:focus-owner',
+        payload: { stamp: 200, sequence: 1 },
+      },
       { tab: { id: 7 }, frameId: 0, documentId: 'top-document' } as chrome.runtime.MessageSender,
     );
     dispatchRuntime(
-      { __matrx: true, kind: 'credential-suggestions:focus-owner', payload: { stamp: 100, sequence: 99 } },
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:focus-owner',
+        payload: { stamp: 100, sequence: 99 },
+      },
       { tab: { id: 7 }, frameId: 11, documentId: 'child-a' } as chrome.runtime.MessageSender,
     );
-    await expect(replyForPanel({
-      __matrx: true,
-      kind: 'credential-suggestions:panel-status',
-      payload: { tabId: 7 },
-    })).resolves.toEqual({ status: 'none', itemIds: [] });
+    await expect(
+      replyForPanel({
+        __matrx: true,
+        kind: 'credential-suggestions:panel-status',
+        payload: { tabId: 7 },
+      }),
+    ).resolves.toEqual({ status: 'none', itemIds: [] });
   });
 
   it('does not mint an offer when focus ownership changes during matching', async () => {
@@ -1067,8 +1229,12 @@ describe('inline saved-login host', () => {
     registerInlineCredentialSuggestionHost();
     let release!: () => void;
     let matching!: () => void;
-    state.matchGate = new Promise((resolve) => { release = resolve; });
-    const started = new Promise<void>((resolve) => { matching = resolve; });
+    state.matchGate = new Promise((resolve) => {
+      release = resolve;
+    });
+    const started = new Promise<void>((resolve) => {
+      matching = resolve;
+    });
     state.matchStarted = matching;
     const query = replyFor(
       {
@@ -1082,7 +1248,11 @@ describe('inline saved-login host', () => {
     );
     await started;
     dispatchRuntime(
-      { __matrx: true, kind: 'credential-suggestions:focus-owner', payload: { stamp: 200, sequence: 1 } },
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:focus-owner',
+        payload: { stamp: 200, sequence: 1 },
+      },
       { tab: { id: 7 }, frameId: 0, documentId: 'top-document' } as chrome.runtime.MessageSender,
     );
     release();
@@ -1107,22 +1277,36 @@ describe('inline saved-login host', () => {
       );
     owner(11, 'child-a', 100, 10);
     const initial = (await replyFor(
-      { __matrx: true, kind: 'credential-suggestions:query', payload: { field: registeredField('#password') } },
-      7, 'child-a', 11,
-    )) as { status: string };
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:query',
+        payload: { field: registeredField('#password') },
+      },
+      7,
+      'child-a',
+      11,
+    )) as { status: string; offerId: string };
     expect(initial.status).toBe('ready');
     owner(0, 'top-document', 100, 1);
     owner(11, 'child-a', 100, 11);
-    await expect(replyForPanel({
-      __matrx: true,
-      kind: 'credential-suggestions:panel-fill',
-      payload: { tabId: 7, itemId: ITEM },
-    })).resolves.toMatchObject({ status: 'stale' });
+    await expect(
+      replyForPanel({
+        __matrx: true,
+        kind: 'credential-suggestions:panel-fill',
+        payload: { tabId: 7, offerId: initial.offerId, itemId: ITEM },
+      }),
+    ).resolves.toMatchObject({ status: 'stale' });
     expect(state.materializeCalls).toBe(0);
     owner(11, 'child-a', 101, 1);
     const fresh = (await replyFor(
-      { __matrx: true, kind: 'credential-suggestions:query', payload: { field: registeredField('#password') } },
-      7, 'child-a', 11,
+      {
+        __matrx: true,
+        kind: 'credential-suggestions:query',
+        payload: { field: registeredField('#password') },
+      },
+      7,
+      'child-a',
+      11,
     )) as { status: string };
     expect(fresh.status).toBe('ready');
   });

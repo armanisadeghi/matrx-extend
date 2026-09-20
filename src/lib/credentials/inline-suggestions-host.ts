@@ -64,6 +64,7 @@ interface Offer extends FormGroup {
   organizationId: string;
   userId: string;
   itemIds: Set<string>;
+  matches: Array<{ item_id: string; display_name: string }>;
   expiresAt: number;
   generation: number;
 }
@@ -210,13 +211,14 @@ function validFill(payload: unknown): payload is { offerId: string; itemId: stri
     Object.keys(payload).length === 2
   );
 }
-function validPanelPayload(payload: unknown): payload is { tabId: number; itemId?: string } {
+function validPanelPayload(payload: unknown): payload is { tabId: number; offerId?: string; itemId?: string } {
   return (
     !!payload &&
     typeof payload === 'object' &&
     Number.isInteger((payload as { tabId?: unknown }).tabId) &&
     (payload as { tabId: number }).tabId >= 0 &&
-    Object.keys(payload).every((key) => key === 'tabId' || key === 'itemId') &&
+    Object.keys(payload).every((key) => key === 'tabId' || key === 'offerId' || key === 'itemId') &&
+    (!('offerId' in payload) || (typeof (payload as { offerId?: unknown }).offerId === 'string' && /^[0-9a-f]{36}$/.test((payload as { offerId: string }).offerId))) &&
     (!('itemId' in payload) ||
       (typeof (payload as { itemId?: unknown }).itemId === 'string' &&
         UUID.test((payload as { itemId: string }).itemId)))
@@ -364,6 +366,7 @@ async function query(
     organizationId: actor.organizationId,
     userId: actor.userId,
     itemIds: new Set(eligible.map((m) => m.item_id)),
+    matches: eligible.map(({ item_id, display_name }) => ({ item_id, display_name })),
     expiresAt: Date.now() + OFFER_TTL_MS,
     generation,
     ...group,
@@ -379,7 +382,9 @@ async function query(
   };
 }
 
-type PanelStatus = { status: 'ready' | 'none' | 'disabled'; itemIds: string[] };
+type PanelStatus =
+  | { status: 'ready'; offerId: string; itemIds: string[]; matches: Array<{ item_id: string; display_name: string }>; pageUrl: string; frameId: number }
+  | { status: 'none' | 'disabled'; itemIds: [] };
 async function panelStatus(tabId: number): Promise<PanelStatus> {
   purgeExpired();
   if (!(await readOfferSavedLoginsEnabled())) return { status: 'disabled', itemIds: [] };
@@ -404,7 +409,7 @@ async function panelStatus(tabId: number): Promise<PanelStatus> {
     offer.expiresAt <= Date.now()
   )
     return { status: 'none', itemIds: [] };
-  return { status: 'ready', itemIds: [...offer.itemIds] };
+  return { status: 'ready', offerId: offer.id, itemIds: [...offer.itemIds], matches: offer.matches, pageUrl: offer.pageUrl, frameId: offer.frameId };
 }
 
 async function fill(
@@ -532,17 +537,13 @@ async function fill(
   }
 }
 
-async function panelFill(tabId: number, itemId: string): Promise<FillResponse> {
+async function panelFill(tabId: number, offerId: string, itemId: string): Promise<FillResponse> {
   purgeExpired();
-  const candidates = [...OFFERS.values()].filter(
-    (offer) => offer.tabId === tabId && offer.itemIds.has(itemId) && offer.expiresAt > Date.now(),
-  );
-  if (candidates.length !== 1) return { status: 'stale', message: PANEL_COPY.stale };
-  const offer = candidates[0];
-  if (!offer) return { status: 'stale', message: PANEL_COPY.stale };
+  const offer = OFFERS.get(offerId);
+  if (!offer || offer.tabId !== tabId || !offer.itemIds.has(itemId)) return { status: 'stale', message: PANEL_COPY.stale };
   // Claim synchronously before any await. This is the only admission point for
   // competing panel clicks and survives later validation failure.
-  OFFERS.delete(offer.id);
+  OFFERS.delete(offerId);
   setSavedLoginAssistance(offer.tabId, false);
   const capturedEpoch = activationEpoch(offer.windowId);
   if (!(await readOfferSavedLoginsEnabled()))
@@ -699,7 +700,7 @@ export function registerInlineCredentialSuggestionHost(): void {
       return false;
     }
     if (env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_PANEL_STATUS) {
-      if (!trustedSidepanel(sender) || !validPanelPayload(env.payload) || 'itemId' in env.payload)
+      if (!trustedSidepanel(sender) || !validPanelPayload(env.payload) || 'itemId' in env.payload || 'offerId' in env.payload)
         return false;
       void panelStatus(env.payload.tabId)
         .then(sendResponse)
@@ -710,10 +711,10 @@ export function registerInlineCredentialSuggestionHost(): void {
       if (
         !trustedSidepanel(sender) ||
         !validPanelPayload(env.payload) ||
-        typeof env.payload.itemId !== 'string'
+        typeof env.payload.itemId !== 'string' || typeof env.payload.offerId !== 'string'
       )
         return false;
-      void panelFill(env.payload.tabId, env.payload.itemId)
+      void panelFill(env.payload.tabId, env.payload.offerId, env.payload.itemId)
         .then(sendResponse)
         .catch(() => sendResponse(fillResponse('unavailable')));
       return true;
