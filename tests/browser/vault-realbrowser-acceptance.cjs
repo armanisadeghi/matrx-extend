@@ -33,6 +33,9 @@ try {
 }
 const execFileAsync = promisify(execFile);
 
+const EDGE_BROWSER_MODE = 'EDGE_153_OWNED_HEADLESS';
+const edgeBrowserMode = process.env.MATRX_VAULT_CANARY_BROWSER === EDGE_BROWSER_MODE;
+if (process.env.MATRX_VAULT_CANARY_BROWSER && !edgeBrowserMode) throw new Error('browser_mode_invalid');
 const API = 'https://server.app.matrxserver.com';
 const DB = 'https://db.matrxserver.com';
 const REPO = path.resolve(__dirname, '../..');
@@ -91,7 +94,7 @@ const localCanonicalCleanupArmed = process.env.MATRX_VAULT_CANARY_LOCAL_CANONICA
 // making a Vault mutation; it is not a Save/Update acceptance result.
 const readOnlyAdmissionMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
 const receiptBackedSaveUpdateMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_RECEIPT_BACKED_SAVE_UPDATE';
-const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = '3f9119167298c2b3206632fb6fffdebf1ff65ef4';
+const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = '264417b41778326b8ac095095c8d90d5a783946a';
 const RECEIPT_BACKED_ROUTER_SHA256 = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
 const RECEIPT_BACKED_SERVICE_SHA256 = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
 const generatorTransportMode = process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
@@ -101,6 +104,7 @@ const headedMode = displayMode === 'HEADED';
 const isolatedHeadlessClipboard = process.env.MATRX_VAULT_CANARY_CLIPBOARD === 'RUN_ISOLATED_HEADLESS_CLIPBOARD';
 assert(!process.env.MATRX_VAULT_CANARY_CLIPBOARD || isolatedHeadlessClipboard, 'clipboard_mode_invalid');
 assert(!isolatedHeadlessClipboard || (headlessNoClipboardMode && generatorTransportMode && readOnlyAdmissionMode), 'clipboard_requires_headless_generator_admission');
+assert(!edgeBrowserMode || (headlessNoClipboardMode && !isolatedHeadlessClipboard), 'edge_requires_owned_headless_without_clipboard');
 const panelCloseLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_PANEL_CLOSE === 'RUN_PANEL_CLOSE_LIFECYCLE';
 const workerRestartLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART === 'RUN_WORKER_RESTART_LIFECYCLE';
 const windowSwitchLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH === 'RUN_WINDOW_SWITCH_LIFECYCLE';
@@ -1026,7 +1030,11 @@ async function authenticate(extension) {
   const placementPath = process.env.MATRX_VAULT_CANARY_WINDOW_PLACEMENT;
   const configuredExecutable = process.env.MATRX_VAULT_CANARY_CHROME_EXECUTABLE;
   const executablePath = configuredExecutable || chromium.executablePath();
-  if (headlessNoClipboardMode) {
+  if (edgeBrowserMode) {
+    assert(headlessNoClipboardMode && !isolatedHeadlessClipboard, 'edge_requires_owned_headless_without_clipboard');
+    assert(configuredExecutable === '/Users/armanisadeghi/Library/Caches/matrx-vault-test/edge-153.0.4234.48/Microsoft Edge.app/Contents/MacOS/Microsoft Edge', 'edge_requires_reviewed_runtime');
+  }
+  if (headlessNoClipboardMode && !edgeBrowserMode) {
     // `chromium.executablePath()` can identify Playwright's headless shell;
     // extension/SIDE_PANEL acceptance needs the complete Chrome-for-Testing app.
     assert(typeof configuredExecutable === 'string' && configuredExecutable.length > 0, 'headless_requires_explicit_chrome_for_testing');
@@ -1047,9 +1055,11 @@ async function authenticate(extension) {
     // Headless mode still uses the full browser, never Playwright's shell.
     headless: headlessNoClipboardMode,
     executablePath,
+    ...(edgeBrowserMode ? { ignoreDefaultArgs: ['--disable-extensions'] } : {}),
     args: [
       ...(headlessNoClipboardMode ? ['--headless=new'] : []),
-      ...(isolatedHeadlessClipboard ? ['--enable-automation'] : []),
+      ...(isolatedHeadlessClipboard || edgeBrowserMode ? ['--enable-automation'] : []),
+      ...(edgeBrowserMode ? ['--enable-extensions'] : []),
       '--remote-debugging-address=127.0.0.1',
       '--remote-debugging-port=0',
       `--disable-extensions-except=${extension}`,
@@ -1059,6 +1069,13 @@ async function authenticate(extension) {
     ...(placementPath && { viewport: null }),
   });
   rawCdp = await connectOwnedCdp({ preparedProfile: preparedOwnedProfile, chromeExecutable: executablePath });
+  if (edgeBrowserMode) {
+    const version = await rawCdp.send('Browser.getVersion');
+    const command = await rawCdp.send('Browser.getBrowserCommandLine');
+    assert(version.product === 'Edg/153.0.4234.48', 'edge_runtime_not_reviewed');
+    assert(command.arguments.includes('--headless=new') && command.arguments.includes('--user-data-dir=' + profile) && !command.arguments.includes('--disable-extensions'), 'edge_process_not_owned_headless');
+    proof.browserRuntime = { product: version.product, ownedHeadlessProcess: true, clipboardTested: false };
+  }
   if (isolatedHeadlessClipboard) {
     const version = await rawCdp.send('Browser.getVersion');
     const command = await rawCdp.send('Browser.getBrowserCommandLine');
@@ -1080,8 +1097,12 @@ async function authenticate(extension) {
   assert(typeof extensionId === 'string' && extensionId.length > 10, 'extension_runtime_identity');
   // The flattened owned-browser journal accounts for page traffic. Playwright
   // observes only service-worker traffic, preventing page request duplicates.
+  const requestStartedAt = new WeakMap();
   context.on('request', (request) => {
-    if (request.serviceWorker()) journalVaultMutationRequest(request.url(), request.method(), request.headers());
+    if (request.serviceWorker()) {
+      requestStartedAt.set(request, Date.now());
+      journalVaultMutationRequest(request.url(), request.method(), request.headers());
+    }
   });
   context.on('response', (response) => {
     if (!response.request().serviceWorker()) return;
@@ -1096,7 +1117,7 @@ async function authenticate(extension) {
       : /\/fields\/[^/]+$/.test(url.pathname) ? 'field'
       : /\/items\/[^/]+$/.test(url.pathname) ? 'item'
       : url.pathname.endsWith('/items') ? 'items' : 'other';
-    (proof.apiResponses ||= []).push({ route, method: response.request().method(), status: response.status(), phase: proof.phase });
+    (proof.apiResponses ||= []).push({ route, method: response.request().method(), status: response.status(), phase: proof.phase, elapsedMs: requestStartedAt.has(response.request()) ? Date.now() - requestStartedAt.get(response.request()) : null });
     persist();
   });
   // Persist the zeroed journal before OAuth so an interruption still shows
@@ -1334,7 +1355,7 @@ const captureHeading = 'Array.from(document.querySelectorAll("p")).find((element
 const captureCard = `(${captureHeading})?.parentElement?.parentElement?.parentElement`;
 const updateButtons = `Array.from((${captureCard})?.querySelectorAll('button') || []).filter((element) => /^Update/.test(element.textContent.trim()))`;
 function uniqueCaptureButton(name, prefix = false) {
-  return `(() => { const matches = Array.from((${captureCard})?.querySelectorAll('button') || []).filter((element) => { const text = element.textContent.trim().replace(/\\s+/g, ' '); return ${prefix ? `text.startsWith('Update') && text.includes(${JSON.stringify(name)})` : `text === ${JSON.stringify(name)}`}; }); return matches.length === 1 ? matches[0] : null; })()`;
+  return `(() => { const matches = Array.from((${captureCard})?.querySelectorAll('button') || []).filter((element) => { const text = element.textContent.trim().replace(/\\s+/g, ' '); return ${prefix ? `text.startsWith('Update') && text.includes(${JSON.stringify(name)})` : `text === ${JSON.stringify(name)} || (text.length === 0 && element.getAttribute('title') === ${JSON.stringify(name)})`}; }); return matches.length === 1 ? matches[0] : null; })()`;
 }
 async function pendingCard() {
   try {
@@ -1355,6 +1376,18 @@ async function waitForCaptureDecision() {
       vaultError: document.body.innerText.includes('The Vault could not save that. Try again from the Vault tab.'),
       noAnswer: document.body.innerText.includes('Matrx did not answer. Try again.')
     })`);
+    persist();
+    // Preserve the original failed verdict while allowing the already-dispatched
+    // mutation to settle before cleanup. Observe only UI booleans, never values.
+    const diagnosticStarted = Date.now();
+    try {
+      await realPanel.waitFor(`!(${captureHeading}) || Array.from((${captureCard})?.querySelectorAll('button') || []).every((button) => !button.disabled)`, true, 90000);
+      proof.decisionDiagnostics.settledAfterFailure = true;
+    } catch {
+      proof.decisionDiagnostics.settledAfterFailure = false;
+    }
+    proof.decisionDiagnostics.additionalObservationMs = Date.now() - diagnosticStarted;
+    proof.decisionDiagnostics.pendingAfterObservation = await hasPendingCapture();
     persist();
     throw new Error('capture_decision_not_completed');
   }
@@ -1682,9 +1715,10 @@ async function materializedPassword(id) {
           ownedFixtureIds: [...createdIds],
         }),
       });
+      const changedPassword = `changed-${crypto.randomUUID()}`;
       await runPasswordChangeCaptureChecks({
         context, worker, realPanel, parentOrigin, targetName, username,
-        currentPassword: newPassword, nextPassword: `changed-${crypto.randomUUID()}`,
+        currentPassword: newPassword, nextPassword: changedPassword,
         assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
         pendingCard, waitForCaptureDecision, captureButton: uniqueCaptureButton,
         pendingCapturePresent: hasPendingCapture,

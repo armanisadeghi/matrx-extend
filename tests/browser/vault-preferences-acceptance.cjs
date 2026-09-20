@@ -138,12 +138,101 @@ exports.runVaultPreferencesChecks = async ({
       await wait(Math.min(200, remaining));
     }
   };
+  const recordQuietFillFailure = async (disposition) => {
+    let diagnostic = {
+      disposition,
+      collected: false,
+      ui: null,
+      panelStatus: null,
+    };
+    try {
+      diagnostic = await realPanel.evaluate(`(async () => {
+        const targetCards = Array.from(document.querySelectorAll('li')).filter((card) =>
+          card.querySelector('span')?.textContent?.trim() === ${JSON.stringify(targetName)}
+        );
+        const fillControls = targetCards.length === 1
+          ? Array.from(targetCards[0].querySelectorAll('button')).filter((button) => button.textContent?.trim() === 'Fill')
+          : [];
+        const paragraphs = Array.from(document.querySelectorAll('p')).map((node) => node.textContent?.trim());
+        const ui = {
+          targetCardCount: targetCards.length,
+          fillControlCount: fillControls.length,
+          fillControlDisabled: fillControls.length === 1 ? fillControls[0].disabled === true : null,
+          unavailable: paragraphs.includes('Saved logins are unavailable right now. Focus the login field to try again.'),
+          loading: paragraphs.includes('Checking saved logins…'),
+          noOffer: paragraphs.includes('Click the username or password box on the website, then choose Fill.'),
+          disabledRemedy: paragraphs.includes('Turn on saved-login matching in extension settings to use Fill.'),
+          filledFeedback: paragraphs.includes('Filled. Review the form, then sign in.'),
+        };
+        let panelStatus;
+        try {
+          const value = await chrome.runtime.sendMessage({
+            __matrx: true,
+            kind: 'credential-suggestions:panel-status',
+            payload: { tabId: ${JSON.stringify(tabId)} },
+          });
+          const record = !!value && typeof value === 'object' && !Array.isArray(value);
+          const keys = record ? Object.keys(value) : [];
+          const status = record && ['ready', 'none', 'disabled', 'loading', 'unavailable'].includes(value.status)
+            ? value.status : 'other';
+          let safePageUrl = false;
+          let normalizedPageUrl = false;
+          let pageUrlHasCredentials = null;
+          if (record && typeof value.pageUrl === 'string') {
+            try {
+              const url = new URL(value.pageUrl);
+              safePageUrl = url.protocol === 'https:' || (url.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]', '::1'].includes(url.hostname));
+              normalizedPageUrl = value.pageUrl === url.origin + url.pathname;
+              pageUrlHasCredentials = !!url.username || !!url.password;
+            } catch {}
+          }
+          panelStatus = {
+            requestSucceeded: true,
+            record,
+            keyCount: keys.length,
+            status,
+            exactReadyKeys: record && keys.length === 6 && ['status', 'offerId', 'itemIds', 'matches', 'pageUrl', 'frameId'].every((key) => Object.hasOwn(value, key)),
+            exactEmptyKeys: record && keys.length === 2 && ['status', 'itemIds'].every((key) => Object.hasOwn(value, key)),
+            offerIdValid: record && typeof value.offerId === 'string' && /^[0-9a-f]{36}$/.test(value.offerId),
+            itemIdsArray: record && Array.isArray(value.itemIds),
+            itemCount: record && Array.isArray(value.itemIds) ? value.itemIds.length : null,
+            uniqueItemCount: record && Array.isArray(value.itemIds) ? new Set(value.itemIds).size : null,
+            matchesArray: record && Array.isArray(value.matches),
+            matchCount: record && Array.isArray(value.matches) ? value.matches.length : null,
+            frameIdValid: record && Number.isSafeInteger(value.frameId) && value.frameId >= 0,
+            childFrame: record && Number.isSafeInteger(value.frameId) ? value.frameId > 0 : null,
+            pageUrlPresent: record && typeof value.pageUrl === 'string',
+            safePageUrl,
+            normalizedPageUrl,
+            pageUrlHasCredentials,
+          };
+        } catch {
+          panelStatus = { requestSucceeded: false };
+        }
+        return { disposition: ${JSON.stringify(disposition)}, collected: true, ui, panelStatus };
+      })()`);
+    } catch {
+      // The diagnostic must never replace the original acceptance failure.
+    }
+    if (proof) proof.preferencesQuietFillFailure = diagnostic;
+    checkpoint('preferences_quiet_fill_diagnostic');
+  };
   const fill = async () => {
     await verifyRealVaultPanel();
     const control = fillFor(targetName);
-    await realPanel.waitFor('!!(' + control + ') && !(' + control + ').disabled', true, 15000);
+    try {
+      await realPanel.waitFor('!!(' + control + ') && !(' + control + ').disabled', true, 15000);
+    } catch {
+      await recordQuietFillFailure('control_absent_or_disabled');
+      throw new Error('preferences_quiet_fill_control_unavailable');
+    }
     await realPanel.click(control);
-    await realPanel.waitFor('Array.from(document.querySelectorAll("p")).some((node) => node.textContent?.trim() === "Filled. Review the form, then sign in.")', true, 15000);
+    try {
+      await realPanel.waitFor('Array.from(document.querySelectorAll("p")).some((node) => node.textContent?.trim() === "Filled. Review the form, then sign in.")', true, 15000);
+    } catch {
+      await recordQuietFillFailure('feedback_timeout_after_click');
+      throw new Error('preferences_quiet_fill_feedback_timeout');
+    }
   };
   try {
     receiptBefore = await snapshotOwnedReceiptState();
@@ -159,9 +248,9 @@ exports.runVaultPreferencesChecks = async ({
 
     checkpoint('preferences_disable_saved_matching');
     await ensure(SAVED_MATCHING, false); await focusCredential(); await verifyRealVaultPanel();
-    const actionable = await realPanel.evaluate('(() => { const control = (' + fillFor(targetName) + '); return !!control && !control.disabled; })()');
-    const disabledRemedy = await realPanel.evaluate('Array.from(document.querySelectorAll("p")).some((node) => node.textContent?.trim() === "Turn on saved-login matching in extension settings to use Fill.")');
-    assert(actionable === false && disabledRemedy === true, 'preferences_matching_disabled_panel_remedy_missing');
+    const disabledState = '(() => { const control = (' + fillFor(targetName) + '); const remedy = Array.from(document.querySelectorAll("p")).some((node) => node.textContent?.trim() === "Turn on saved-login matching in extension settings to use Fill."); return (!control || control.disabled) && remedy; })()';
+    try { await realPanel.waitFor(disabledState, true, 15000); }
+    catch { throw new Error('preferences_matching_disabled_panel_remedy_missing'); }
     await focusCredential();
     await stableAbsence(noOverlay, 'preferences_matching_disabled_overlay_present');
     evidence.matchingDisabledNoActionableFill = true; evidence.matchingDisabledNoOverlay = true;

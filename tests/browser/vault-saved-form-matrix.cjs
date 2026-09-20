@@ -32,6 +32,7 @@ exports.runSavedFormMatrix = async ({ context, worker, realPanel, targetName, us
   const baseline = getSubmitCount();
   assert(Number.isInteger(baseline) && baseline >= 0, 'saved_matrix_submit_counter_invalid');
   let primaryFailure;
+  let focusedFixture;
   const url = (kind, origin = parentOrigin) => `${origin}/saved-matrix/${kind}?case=${crypto.randomUUID()}`;
   const tabFor = async (expected) => {
     for (let i = 0; i < READY_ATTEMPTS; i += 1) {
@@ -87,6 +88,7 @@ exports.runSavedFormMatrix = async ({ context, worker, realPanel, targetName, us
     assert(await activeNormalWindow(tabId), 'saved_matrix_owned_normal_window_not_focused');
     await page.locator(selector).focus();
     assert(await page.evaluate((id) => document.hasFocus() && document.activeElement?.id === id, selector.slice(1)), 'saved_matrix_top_document_focus_invalid');
+    focusedFixture = page;
   };
   const focusChild = async ({ page, tabId }, frameElement, expectedUrl, selector) => {
     await page.bringToFront();
@@ -98,6 +100,7 @@ exports.runSavedFormMatrix = async ({ context, worker, realPanel, targetName, us
     await frame.locator(selector).focus();
     assert(await frame.locator(selector).evaluate((element) => document.hasFocus() && document.activeElement === element), 'saved_matrix_child_document_focus_invalid');
     assert(await page.locator(frameElement).count() === 1, 'saved_matrix_child_frame_element_missing');
+    focusedFixture = frame;
     return frame;
   };
   const stableQuiet = async (frame) => {
@@ -115,20 +118,50 @@ exports.runSavedFormMatrix = async ({ context, worker, realPanel, targetName, us
     try { await realPanel.waitFor(`!!(${selector})`, true, 15000); } catch { throw new Error('saved_matrix_panel_fill_unavailable'); }
     return selector;
   };
+  const focusedFieldsMatch = async () => {
+    assert(focusedFixture, 'saved_matrix_focused_fixture_missing');
+    return focusedFixture.locator('body').evaluate((body, expected) => {
+      const fields = [['#username', expected.username], ['#password', expected.password]]
+        .map(([selector, value]) => ({ input: body.ownerDocument.querySelector(selector), value }))
+        .filter(({ input }) => !!input);
+      return fields.length > 0 && fields.every(({ input, value }) => input.value === value);
+    }, { username, password });
+  };
   const fill = async () => {
     const selector = await panelFillAvailable();
+    assert(!(await focusedFieldsMatch()), 'saved_matrix_fields_already_filled_before_click');
     await realPanel.click(selector);
-    try { await realPanel.waitFor(`Array.from(document.querySelectorAll('p')).some((node)=>node.textContent?.trim()==='Filled. Review the form, then sign in.')`, true, 15000); } catch {
+    try {
+      // The previous step's success paragraph can remain visible while a new
+      // fill is pending. Require this owned frame's values as well as feedback.
+      const deadline = Date.now() + 15000;
+      let completed = false;
+      do {
+        const [feedback, fieldsMatch] = await Promise.all([
+          realPanel.evaluate(`Array.from(document.querySelectorAll('p')).some((node)=>node.textContent?.trim()==='Filled. Review the form, then sign in.')`),
+          focusedFieldsMatch(),
+        ]);
+        if (feedback && fieldsMatch) { completed = true; break; }
+        await wait(Math.min(100, Math.max(0, deadline - Date.now())));
+      } while (Date.now() < deadline);
+      assert(completed, 'saved_matrix_current_fill_not_completed');
+    } catch {
       evidence.fillFailure = await realPanel.evaluate(`(() => {
         const text = document.body.innerText;
         return {
           staleRemedy: text.includes('Click the username or password box on the website, then choose Fill.'),
+          staleParagraphCount: Array.from(document.querySelectorAll('p')).filter(node => node.textContent?.trim() === 'Click the username or password box on the website, then choose Fill.').length,
           unavailableRemedy: text.includes('Saved logins are unavailable right now.'),
           partialRemedy: text.includes('Matrx could not fully restore the login fields. Review them before signing in.'),
           signInRequired: text.includes('Sign in to Matrx'),
           actionableFill: !!(${fillButton(targetName)})
         };
       })()`);
+      if (focusedFixture) evidence.fillFailure.fields = await focusedFixture.locator('body').evaluate((body, expected) => {
+        const user = body.ownerDocument.querySelector('#username');
+        const pass = body.ownerDocument.querySelector('#password');
+        return { usernamePresent: !!user, usernameMatches: user?.value === expected.username, passwordPresent: !!pass, passwordMatches: pass?.value === expected.password };
+      }, { username, password });
       throw new Error('saved_matrix_panel_fill_incomplete');
     }
   };
