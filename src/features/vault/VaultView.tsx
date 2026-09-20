@@ -46,7 +46,10 @@ import {
   safeParseUrl,
   withPageAdded,
 } from '@/lib/credentials/login-urls';
-import { parsePanelSavedLoginStatus, type PanelSavedLoginSnapshot } from '@/lib/credentials/panel-saved-login-status';
+import {
+  type PanelSavedLoginSnapshot,
+  parsePanelSavedLoginStatus,
+} from '@/lib/credentials/panel-saved-login-status';
 import { useTransientSecret } from '@/lib/credentials/transient-secret';
 import { confirmDestructive } from '@/lib/destructive/confirm';
 import { cn } from '@/lib/utils';
@@ -191,20 +194,24 @@ function VaultSession({
         <PendingCaptureCard tabId={tab.id} onSaved={() => void vault.reload()} />
         <SiteSection
           key={tab.id ?? 'no-tab'}
-          host={panel.status === 'ready' ? safeParseUrl(panel.pageUrl)?.host ?? null : host}
+          host={panel.status === 'ready' ? (safeParseUrl(panel.pageUrl)?.host ?? null) : host}
           allowAutomaticLogin={!panelUnavailable && !childOffer && login.supported}
           blockedReason={
             panelUnavailable
-              ? panel.status === 'loading' ? 'Checking saved logins…' : 'Saved logins are unavailable right now. Focus the login field to try again.'
+              ? panel.status === 'loading'
+                ? 'Checking saved logins…'
+                : 'Saved logins are unavailable right now. Focus the login field to try again.'
               : !login.supported && panel.status !== 'ready'
-              ? 'Browser login is not available in this browser yet.'
-              : !fillable
-                ? 'Browser login only runs on https pages.'
-                : null
+                ? 'Browser login is not available in this browser yet.'
+                : !fillable
+                  ? 'Browser login only runs on https pages.'
+                  : null
           }
           pageUrl={panel.status === 'ready' ? panel.pageUrl : pageUrl}
           matches={panel.status === 'ready' ? panel.matches : vault.matches}
-          matchesLoading={panel.status === 'loading' || (panel.status !== 'ready' && vault.matchesLoading)}
+          matchesLoading={
+            panel.status === 'loading' || (panel.status !== 'ready' && vault.matchesLoading)
+          }
           running={login.running}
           outcome={!panelUnavailable && !childOffer ? login.outcome : null}
           panelStatus={panel.status}
@@ -435,19 +442,21 @@ function SiteSection(props: SiteSectionProps) {
                   )}
                 </Button>
               )}
-              {props.allowAutomaticLogin && <Button
-                size="sm"
-                variant="outline"
-                className="h-6 px-2 text-[11px]"
-                disabled={running !== null || props.panelRunning !== null}
-                onClick={() => props.onUseHere(match.item_id)}
-              >
-                {running === match.item_id ? (
-                  <Loader2 className="size-3 animate-spin" />
-                ) : (
-                  'Sign in'
-                )}
-              </Button>}
+              {props.allowAutomaticLogin && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-6 px-2 text-[11px]"
+                  disabled={running !== null || props.panelRunning !== null}
+                  onClick={() => props.onUseHere(match.item_id)}
+                >
+                  {running === match.item_id ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    'Sign in'
+                  )}
+                </Button>
+              )}
             </li>
           ))}
         </ul>
@@ -507,7 +516,10 @@ function usePanelFill(
   outcomeHost: string | null;
   fill: (itemId: string) => Promise<void>;
 } & PanelSavedLoginSnapshot {
-  const [snapshot, setSnapshot] = useState<PanelSavedLoginSnapshot>({ status: 'loading', itemIds: [] });
+  const [snapshot, setSnapshot] = useState<PanelSavedLoginSnapshot>({
+    status: 'loading',
+    itemIds: [],
+  });
   const [running, setRunning] = useState<string | null>(null);
   const [outcome, setOutcome] = useState<string | null>(null);
   const [outcomeHost, setOutcomeHost] = useState<string | null>(null);
@@ -539,12 +551,16 @@ function usePanelFill(
           if (!admission.current() || !mounted.current || !live || ticket !== request) return;
           const next = parsePanelSavedLoginStatus(value);
           setSnapshot(next);
-          if (next.status === 'unavailable') { setOutcome(null); setOutcomeHost(null); }
+          if (next.status === 'unavailable') {
+            setOutcome(null);
+            setOutcomeHost(null);
+          }
         })
         .catch(() => {
           if (admission.current() && mounted.current && live && ticket === request) {
             setSnapshot({ status: 'unavailable', itemIds: [] });
-            setOutcome(null); setOutcomeHost(null);
+            setOutcome(null);
+            setOutcomeHost(null);
           }
         });
     };
@@ -566,7 +582,13 @@ function usePanelFill(
   }, [admission, tabId]);
   const fill = useCallback(
     async (itemId: string) => {
-      if (tabId == null || running !== null || snapshot.status !== 'ready' || !snapshot.itemIds.includes(itemId)) return;
+      if (
+        tabId == null ||
+        running !== null ||
+        snapshot.status !== 'ready' ||
+        !snapshot.itemIds.includes(itemId)
+      )
+        return;
       if (!mounted.current || !admission.current()) return;
       await admission.run(async () => {
         setRunning(itemId);
@@ -594,8 +616,11 @@ function usePanelFill(
         } finally {
           if (mounted.current && admission.current()) {
             setRunning(null);
-            setSnapshot(current => current.status === 'ready' && current.offerId === snapshot.offerId
-              ? { status: 'none', itemIds: [] } : current);
+            setSnapshot((current) =>
+              current.status === 'ready' && current.offerId === snapshot.offerId
+                ? { status: 'none', itemIds: [] }
+                : current,
+            );
           }
         }
       });

@@ -12,12 +12,12 @@ import {
   type CredentialFieldRef,
   credentialDomSource,
 } from '@/lib/credentials/fill-primitive';
-import { isSafeDestination, normalizeLoginUrl } from '@/lib/credentials/login-urls';
 import {
+  type CredentialFrameBinding,
   credentialFrameBindingCurrent,
   readCredentialFrameBinding,
-  type CredentialFrameBinding,
 } from '@/lib/credentials/frame-binding';
+import { isSafeDestination, normalizeLoginUrl } from '@/lib/credentials/login-urls';
 import { SENSITIVE_ATTR, rememberSensitiveFields } from '@/lib/credentials/sensitive-fields';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
@@ -174,13 +174,21 @@ function validFocusOwnerPayload(payload: unknown): payload is { stamp: number; s
     (payload as { sequence: number }).sequence >= 0
   );
 }
-function recordFocusOwner(tabId: number, frameId: number, documentId: string, payload: { stamp: number; sequence: number }): void {
+function recordFocusOwner(
+  tabId: number,
+  frameId: number,
+  documentId: string,
+  payload: { stamp: number; sequence: number },
+): void {
   const incoming: FocusOwner = { ...payload, frameId, documentId, ambiguous: false };
   const previous = FOCUS_OWNERS.get(tabId);
   if (previous) {
     if (incoming.stamp < previous.stamp) return;
     if (incoming.stamp === previous.stamp && previous.ambiguous) return;
-    if (incoming.stamp === previous.stamp && (incoming.frameId !== previous.frameId || incoming.documentId !== previous.documentId)) {
+    if (
+      incoming.stamp === previous.stamp &&
+      (incoming.frameId !== previous.frameId || incoming.documentId !== previous.documentId)
+    ) {
       FOCUS_OWNERS.set(tabId, { ...previous, ambiguous: true });
       purge(tabId);
       return;
@@ -188,7 +196,12 @@ function recordFocusOwner(tabId: number, frameId: number, documentId: string, pa
     if (incoming.stamp === previous.stamp && incoming.sequence <= previous.sequence) return;
   }
   FOCUS_OWNERS.set(tabId, incoming);
-  if (!previous || focusEpoch(previous) !== focusEpoch(incoming) || previous.frameId !== frameId || previous.documentId !== documentId)
+  if (
+    !previous ||
+    focusEpoch(previous) !== focusEpoch(incoming) ||
+    previous.frameId !== frameId ||
+    previous.documentId !== documentId
+  )
     purge(tabId);
 }
 function validQuery(payload: unknown): payload is { field: CredentialFieldRef } {
@@ -211,14 +224,18 @@ function validFill(payload: unknown): payload is { offerId: string; itemId: stri
     Object.keys(payload).length === 2
   );
 }
-function validPanelPayload(payload: unknown): payload is { tabId: number; offerId?: string; itemId?: string } {
+function validPanelPayload(
+  payload: unknown,
+): payload is { tabId: number; offerId?: string; itemId?: string } {
   return (
     !!payload &&
     typeof payload === 'object' &&
     Number.isInteger((payload as { tabId?: unknown }).tabId) &&
     (payload as { tabId: number }).tabId >= 0 &&
     Object.keys(payload).every((key) => key === 'tabId' || key === 'offerId' || key === 'itemId') &&
-    (!('offerId' in payload) || (typeof (payload as { offerId?: unknown }).offerId === 'string' && /^[0-9a-f]{36}$/.test((payload as { offerId: string }).offerId))) &&
+    (!('offerId' in payload) ||
+      (typeof (payload as { offerId?: unknown }).offerId === 'string' &&
+        /^[0-9a-f]{36}$/.test((payload as { offerId: string }).offerId))) &&
     (!('itemId' in payload) ||
       (typeof (payload as { itemId?: unknown }).itemId === 'string' &&
         UUID.test((payload as { itemId: string }).itemId)))
@@ -383,7 +400,14 @@ async function query(
 }
 
 type PanelStatus =
-  | { status: 'ready'; offerId: string; itemIds: string[]; matches: Array<{ item_id: string; display_name: string }>; pageUrl: string; frameId: number }
+  | {
+      status: 'ready';
+      offerId: string;
+      itemIds: string[];
+      matches: Array<{ item_id: string; display_name: string }>;
+      pageUrl: string;
+      frameId: number;
+    }
   | { status: 'none' | 'disabled'; itemIds: [] };
 async function panelStatus(tabId: number): Promise<PanelStatus> {
   purgeExpired();
@@ -397,8 +421,7 @@ async function panelStatus(tabId: number): Promise<PanelStatus> {
   if (offers.length !== 1) return { status: 'none', itemIds: [] };
   const offer = offers[0];
   if (!offer) return { status: 'none', itemIds: [] };
-  if (!(await isCurrentDocument(offer.binding)))
-    return { status: 'none', itemIds: [] };
+  if (!(await isCurrentDocument(offer.binding))) return { status: 'none', itemIds: [] };
   if (!focusOwnerCurrent(offer)) return { status: 'none', itemIds: [] };
   const actor = await context();
   if (!actor || actor.userId !== offer.userId || actor.organizationId !== offer.organizationId)
@@ -409,7 +432,14 @@ async function panelStatus(tabId: number): Promise<PanelStatus> {
     offer.expiresAt <= Date.now()
   )
     return { status: 'none', itemIds: [] };
-  return { status: 'ready', offerId: offer.id, itemIds: [...offer.itemIds], matches: offer.matches, pageUrl: offer.pageUrl, frameId: offer.frameId };
+  return {
+    status: 'ready',
+    offerId: offer.id,
+    itemIds: [...offer.itemIds],
+    matches: offer.matches,
+    pageUrl: offer.pageUrl,
+    frameId: offer.frameId,
+  };
 }
 
 async function fill(
@@ -540,7 +570,8 @@ async function fill(
 async function panelFill(tabId: number, offerId: string, itemId: string): Promise<FillResponse> {
   purgeExpired();
   const offer = OFFERS.get(offerId);
-  if (!offer || offer.tabId !== tabId || !offer.itemIds.has(itemId)) return { status: 'stale', message: PANEL_COPY.stale };
+  if (!offer || offer.tabId !== tabId || !offer.itemIds.has(itemId))
+    return { status: 'stale', message: PANEL_COPY.stale };
   // Claim synchronously before any await. This is the only admission point for
   // competing panel clicks and survives later validation failure.
   OFFERS.delete(offerId);
@@ -700,7 +731,12 @@ export function registerInlineCredentialSuggestionHost(): void {
       return false;
     }
     if (env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_PANEL_STATUS) {
-      if (!trustedSidepanel(sender) || !validPanelPayload(env.payload) || 'itemId' in env.payload || 'offerId' in env.payload)
+      if (
+        !trustedSidepanel(sender) ||
+        !validPanelPayload(env.payload) ||
+        'itemId' in env.payload ||
+        'offerId' in env.payload
+      )
         return false;
       void panelStatus(env.payload.tabId)
         .then(sendResponse)
@@ -711,7 +747,8 @@ export function registerInlineCredentialSuggestionHost(): void {
       if (
         !trustedSidepanel(sender) ||
         !validPanelPayload(env.payload) ||
-        typeof env.payload.itemId !== 'string' || typeof env.payload.offerId !== 'string'
+        typeof env.payload.itemId !== 'string' ||
+        typeof env.payload.offerId !== 'string'
       )
         return false;
       void panelFill(env.payload.tabId, env.payload.offerId, env.payload.itemId)
@@ -725,7 +762,8 @@ export function registerInlineCredentialSuggestionHost(): void {
     if (env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_FOCUS_OWNER) {
       if (
         tabId == null ||
-        !Number.isInteger(sender.frameId) || sender.frameId! < 0 ||
+        !Number.isInteger(sender.frameId) ||
+        sender.frameId! < 0 ||
         typeof documentId !== 'string' ||
         !validFocusOwnerPayload(env.payload)
       )
@@ -737,7 +775,8 @@ export function registerInlineCredentialSuggestionHost(): void {
     if (env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_QUERY) {
       if (
         tabId == null ||
-        !Number.isInteger(sender.frameId) || sender.frameId! < 0 ||
+        !Number.isInteger(sender.frameId) ||
+        sender.frameId! < 0 ||
         typeof documentId !== 'string' ||
         !validQuery(env.payload)
       ) {
@@ -752,7 +791,8 @@ export function registerInlineCredentialSuggestionHost(): void {
     if (env.kind === CHANNELS.CREDENTIAL_SUGGESTIONS_FILL) {
       if (
         tabId == null ||
-        !Number.isInteger(sender.frameId) || sender.frameId! < 0 ||
+        !Number.isInteger(sender.frameId) ||
+        sender.frameId! < 0 ||
         typeof documentId !== 'string' ||
         !validFill(env.payload)
       ) {
