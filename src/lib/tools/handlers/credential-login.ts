@@ -786,18 +786,56 @@ function failureResult(failure: VaultCallFailure, op: string): CredentialLoginRe
 }
 
 /** Private admitted execution ports. No ordinary Vault fallback is permitted. */
-export interface AdmittedCredentialExecution {
+export interface AdmittedExecutionBinding {
   commandId: string;
   /** Chrome's top-frame documentId, captured by the owned controller. */
   documentId: string;
   deadlineMs: number;
   assertCurrent: () => Promise<void>;
   isCurrent: () => boolean;
+}
+
+export interface AdmittedCredentialExecution extends AdmittedExecutionBinding {
   materialize: (itemId: string, fieldKeys: string[]) => ReturnType<typeof materializeBrowserLogin>;
   report: (result: CredentialLoginResult) => Promise<void>;
 }
 
-async function fenceAdmitted(execution?: AdmittedCredentialExecution): Promise<void> {
+export interface AdmittedAuthenticatorExecution extends AdmittedExecutionBinding {
+  materialize: () => ReturnType<typeof materializeBrowserAuthenticator>;
+  report: (result: CredentialLoginResult) => Promise<void>;
+}
+
+export async function runAdmittedAuthenticatorAttempt(
+  input: unknown,
+  tabId: number,
+  pageUrl: string,
+  execution: AdmittedAuthenticatorExecution,
+): Promise<CredentialLoginResult> {
+  try {
+    const args = AuthenticatorArgs.parse(input);
+    if (
+      !execution.documentId ||
+      typeof execution.materialize !== 'function' ||
+      typeof execution.report !== 'function'
+    )
+      return safeResult('unknown', { reason: 'admitted_binding_missing' });
+    const url = new URL(pageUrl);
+    if (!isSafeDestination(url)) return safeResult('unsafe_destination');
+    await fenceAdmitted(execution);
+    return await runAuthenticatorAttempt(
+      args,
+      { callId: execution.commandId },
+      tabId,
+      url,
+      url.origin + url.pathname,
+      execution,
+    );
+  } catch {
+    return safeResult('unknown', { reason: 'admitted_execution_refused' });
+  }
+}
+
+async function fenceAdmitted(execution?: AdmittedExecutionBinding): Promise<void> {
   if (!execution) return;
   await execution.assertCurrent();
   if (!execution.isCurrent() || Date.now() >= execution.deadlineMs)
@@ -840,7 +878,7 @@ async function injectTopFrame<T>(
   tabId: number,
   func: (...args: never[]) => T,
   args: unknown[],
-  execution?: AdmittedCredentialExecution,
+  execution?: AdmittedExecutionBinding,
 ): Promise<T | null> {
   await fenceAdmitted(execution);
   if (execution && (!execution.isCurrent() || Date.now() >= execution.deadlineMs))
@@ -858,7 +896,7 @@ async function injectTopFrame<T>(
 async function injectCredentialDom<O extends CredentialDomInjectedRequest['operation']>(
   tabId: number,
   request: Extract<CredentialDomInjectedRequest, { operation: O }>,
-  execution?: AdmittedCredentialExecution,
+  execution?: AdmittedExecutionBinding,
 ): Promise<CredentialDomResult<O> | null> {
   return await injectTopFrame<CredentialDomResult<O>>(
     tabId,
@@ -1151,20 +1189,26 @@ async function runCompleteAttempt(
 
 async function runAuthenticatorAttempt(
   args: z.infer<typeof AuthenticatorArgs>,
-  ctx: Parameters<typeof getAssignedTab>[0],
+  ctx: { callId: string; conversationId?: string | null | undefined },
   tabId: number,
   pageUrl: URL,
   normalizedPageUrl: string,
+  execution?: AdmittedAuthenticatorExecution,
 ): Promise<CredentialLoginResult> {
-  if (!ctx.conversationId) {
+  await fenceAdmitted(execution);
+  if (!execution && !ctx.conversationId) {
     return safeResult('unknown', { reason: 'conversation_binding_missing' });
   }
   const controlSelector = args.submit.kind === 'none' ? null : args.submit.selector;
-  const probe = await injectCredentialDom(tabId, {
-    operation: 'attempt_probe',
-    fieldSelectors: [args.code_selector],
-    controlSelectors: controlSelector ? [controlSelector] : [],
-  }).catch(() => null);
+  const probe = await injectCredentialDom(
+    tabId,
+    {
+      operation: 'attempt_probe',
+      fieldSelectors: [args.code_selector],
+      controlSelectors: controlSelector ? [controlSelector] : [],
+    },
+    execution,
+  ).catch(() => null);
   if (!probe || !probe.is_top_frame || probe.origin !== pageUrl.origin) {
     return safeResult('unsafe_destination', { reason: 'origin_changed_before_authenticator' });
   }
@@ -1181,48 +1225,65 @@ async function runAuthenticatorAttempt(
     return safeResult('unsafe_destination', { reason: 'unsafe_get_form' });
   }
 
-  const before = await injectTopFrame<PageStateProbe>(tabId, pageStateSource, []).catch(() => null);
+  const before = await injectTopFrame<PageStateProbe>(tabId, pageStateSource, [], execution).catch(
+    () => null,
+  );
   if (!before) return safeResult('unknown', { reason: 'before_evidence_failed' });
   const startedAt = Date.now();
 
-  const materialized = await materializeBrowserAuthenticator(args.credential_item_id, {
-    conversationId: ctx.conversationId,
-    toolInvocationId: ctx.callId,
-    pageUrl: normalizedPageUrl,
-    codeSelector: args.code_selector,
-    submit: args.submit,
-    extensionInstanceId: chrome.runtime.id,
-    clientBuild: chrome.runtime.getManifest().version,
-  });
+  await fenceAdmitted(execution);
+  const materialized = execution
+    ? await execution.materialize()
+    : await materializeBrowserAuthenticator(args.credential_item_id, {
+        conversationId: ctx.conversationId ?? '',
+        toolInvocationId: ctx.callId,
+        pageUrl: normalizedPageUrl,
+        codeSelector: args.code_selector,
+        submit: args.submit,
+        extensionInstanceId: chrome.runtime.id,
+        clientBuild: chrome.runtime.getManifest().version,
+      });
   if (!materialized.ok) return failureResult(materialized.failure, 'authenticator');
   const transient = materialized.data;
-  if (transient.origin !== pageUrl.origin || Date.parse(transient.expires_at) <= Date.now()) {
-    return safeResult('unsafe_destination', { reason: 'authenticator_origin_or_expiry_mismatch' });
-  }
-
-  rememberSensitiveFields(tabId, [args.code_selector]);
   let clear = true;
-  let code = transient.code;
-  transient.code = '';
+  let code = '';
   try {
-    const filled = await injectCredentialDom(tabId, {
-      operation: 'fill',
-      expected: null,
-      requested: [{ selector: args.code_selector, value: code }],
-      sensitiveAttr: SENSITIVE_ATTR,
-      preserveLegacyFieldBehavior: true,
-    }).catch(() => null);
+    await fenceAdmitted(execution);
+    if (transient.origin !== pageUrl.origin || Date.parse(transient.expires_at) <= Date.now()) {
+      return safeResult('unsafe_destination', {
+        reason: 'authenticator_origin_or_expiry_mismatch',
+      });
+    }
+
+    rememberSensitiveFields(tabId, [args.code_selector]);
+    code = transient.code;
+    transient.code = '';
+    const filled = await injectCredentialDom(
+      tabId,
+      {
+        operation: 'fill',
+        expected: null,
+        requested: [{ selector: args.code_selector, value: code }],
+        sensitiveAttr: SENSITIVE_ATTR,
+        preserveLegacyFieldBehavior: true,
+      },
+      execution,
+    ).catch(() => null);
     code = '';
     // The transient response and the only local code reference are cleared
     // before submission/classification. Neither can reach a result, log,
     // receipt, capture, or persistent store.
     if (!filled?.ok) return safeResult('unknown', { reason: 'authenticator_fill_failed' });
 
-    const submitted = await injectCredentialDom(tabId, {
-      operation: 'submit_explicit',
-      kind: args.submit.kind,
-      selector: controlSelector,
-    }).catch(() => null);
+    const submitted = await injectCredentialDom(
+      tabId,
+      {
+        operation: 'submit_explicit',
+        kind: args.submit.kind,
+        selector: controlSelector,
+      },
+      execution,
+    ).catch(() => null);
     if (!submitted?.ok) {
       return safeResult(
         submitted?.mode === 'unsafe_destination' ? 'unsafe_destination' : 'unknown',
@@ -1248,27 +1309,32 @@ async function runAuthenticatorAttempt(
       ...(classified.signals !== undefined ? { signals: classified.signals } : {}),
       ...(classified.evidence !== undefined ? { evidence: classified.evidence } : {}),
     });
-    await reportBrowserLoginResult(args.credential_item_id, {
-      status:
-        result.status === 'authenticated'
-          ? 'authenticated'
-          : result.status === 'unsafe_destination'
-            ? 'unsafe_destination'
-            : result.status === 'credentials_rejected'
-              ? 'credentials_rejected'
-              : 'needs_mfa',
-      pageUrl: normalizedPageUrl,
-      toolInvocationId: ctx.callId,
-    });
+    await fenceAdmitted(execution);
+    if (execution) await execution.report(result);
+    else
+      await reportBrowserLoginResult(args.credential_item_id, {
+        status:
+          result.status === 'authenticated'
+            ? 'authenticated'
+            : result.status === 'unsafe_destination'
+              ? 'unsafe_destination'
+              : result.status === 'credentials_rejected'
+                ? 'credentials_rejected'
+                : 'needs_mfa',
+        pageUrl: normalizedPageUrl,
+        toolInvocationId: ctx.callId,
+      });
     return result;
   } finally {
     code = '';
     transient.code = '';
     if (clear) {
-      await injectTopFrame(tabId, clearSensitiveSource, [
-        [args.code_selector],
-        SENSITIVE_ATTR,
-      ]).catch(() => null);
+      await injectTopFrame(
+        tabId,
+        clearSensitiveSource,
+        [[args.code_selector], SENSITIVE_ATTR],
+        execution,
+      ).catch(() => null);
       forgetSensitiveFields(tabId);
     }
   }

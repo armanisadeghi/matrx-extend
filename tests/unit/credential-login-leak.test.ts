@@ -1085,3 +1085,72 @@ describe('admitted credential execution', () => {
     expect(posts).toEqual([]);
   });
 });
+
+describe('admitted authenticator execution', () => {
+  beforeEach(() => {
+    resetRecorders();
+    renderAuthenticatorPage();
+  });
+  const input = {
+    action: 'authenticator',
+    credential_item_id: ITEM_ID,
+    code_selector: '#otp',
+    submit: { kind: 'click', selector: '#verify' },
+    expect: { success_selector: 'a[href="/logout"]', timeout_ms: 1_000 },
+  };
+  async function setup() {
+    const { runAdmittedAuthenticatorAttempt } = await import(
+      '@/lib/tools/handlers/credential-login'
+    );
+    const data = {
+      injection_id: 'fixture-injection',
+      origin: PAGE_ORIGIN,
+      code: SENTINEL_TOTP,
+      expires_at: new Date(Date.now() + 20_000).toISOString(),
+    };
+    const ports = {
+      commandId: 'command-fixture',
+      documentId: 'document-fixture',
+      deadlineMs: Date.now() + 10_000,
+      assertCurrent: vi.fn(async () => {}),
+      isCurrent: vi.fn(() => true),
+      materialize: vi.fn(async () => ({ ok: true as const, data })),
+      report: vi.fn(async () => {}),
+    };
+    return {
+      run: () => runAdmittedAuthenticatorAttempt(input, TAB_ID, PAGE_URL, ports),
+      data,
+      ports,
+    };
+  }
+  it('uses the admitted claim without a fabricated conversation and erases its code', async () => {
+    const { run, data, ports } = await setup();
+    const result = await run();
+    expect(result.status).toBe('authenticated');
+    expect(data.code).toBe('');
+    expect(posts).toEqual([]);
+    expect(ports.materialize).toHaveBeenCalledTimes(1);
+    expect(JSON.stringify({ result, reports: ports.report.mock.calls })).not.toContain(
+      SENTINEL_TOTP,
+    );
+  });
+  it('refuses revocation after materialization and clears the received code', async () => {
+    const { run, data, ports } = await setup();
+    ports.materialize.mockImplementation(async () => {
+      ports.isCurrent.mockReturnValue(false);
+      return { ok: true as const, data };
+    });
+    expect((await run()).status).toBe('unknown');
+    expect((document.getElementById('otp') as HTMLInputElement).value).toBe('');
+    expect(data.code).toBe('');
+    expect(posts).toEqual([]);
+  });
+  it('erases an origin-mismatched code without typing or ordinary API fallback', async () => {
+    const { run, data } = await setup();
+    data.origin = 'https://other.example';
+    expect((await run()).status).toBe('unsafe_destination');
+    expect((document.getElementById('otp') as HTMLInputElement).value).toBe('');
+    expect(data.code).toBe('');
+    expect(posts).toEqual([]);
+  });
+});
