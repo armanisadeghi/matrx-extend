@@ -24,9 +24,9 @@ import {
   requestLocalBrowserApproval,
 } from '@/lib/desktop/local-browser/approvals';
 import {
-  mapLocalCommandToHandler,
   type LocalCommand,
-} from '@/lib/desktop/local-browser/command-policy';
+  mapLocalCommandToHandler,
+} from '@/lib/desktop/local-browser/command-mapping';
 import {
   getLocalBrowserSocketEpoch,
   onLocalBrowserEpochInvalidated,
@@ -911,6 +911,7 @@ export class LocalBrowserController {
             filled,
             submitted,
             challenge_detected: result.status === 'needs_mfa',
+            verification,
           },
         };
   }

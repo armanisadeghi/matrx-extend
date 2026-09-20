@@ -1011,6 +1011,9 @@ describe('admitted credential execution', () => {
   };
   async function setup() {
     const { runAdmittedCredentialAttempt } = await import('@/lib/tools/handlers/credential-login');
+    const { mapLocalCommandToHandler } = await import(
+      '@/lib/desktop/local-browser/command-mapping'
+    );
     const data = {
       item_id: ITEM_ID,
       origin: PAGE_ORIGIN,
@@ -1025,7 +1028,14 @@ describe('admitted credential execution', () => {
       materialize: vi.fn(async () => ({ ok: true as const, data })),
       report: vi.fn(async () => {}),
     };
-    return { run: () => runAdmittedCredentialAttempt(input, TAB_ID, PAGE_URL, ports), ports, data };
+    const { action: _action, ...wire } = input;
+    const mapped = mapLocalCommandToHandler({ operation: 'vault_login', ...wire }, TAB_ID);
+    if (!mapped || mapped.toolName !== 'credential_login') throw new Error('wire mapping refused');
+    return {
+      run: () => runAdmittedCredentialAttempt(mapped.args, TAB_ID, PAGE_URL, ports),
+      ports,
+      data,
+    };
   }
   it('uses the private claim only, document-pins mutations and clears received fields', async () => {
     const { run, ports, data } = await setup();
@@ -1047,19 +1057,6 @@ describe('admitted credential execution', () => {
       JSON.stringify({ result, reports: ports.report.mock.calls }),
       'admitted result',
     );
-  });
-  it('maps a wire vault command into the real admitted handler without ordinary materialization', async () => {
-    renderOneStepLoginPage();
-    const { runAdmittedCredentialAttempt } = await import('@/lib/tools/handlers/credential-login');
-    const { mapLocalCommandToHandler } = await import('@/lib/desktop/local-browser/command-policy');
-    const { ports } = await setup();
-    const { action: _action, ...wire } = input;
-    const mapped = mapLocalCommandToHandler({ operation: 'vault_login', ...wire }, TAB_ID);
-    expect(mapped?.toolName).toBe('credential_login');
-    const result = await runAdmittedCredentialAttempt(mapped?.args, TAB_ID, PAGE_URL, ports);
-    expect(result.status).toBe('authenticated');
-    expect(ports.materialize).toHaveBeenCalledWith(ITEM_ID, ['username', 'password']);
-    expect(posts).toEqual([]);
   });
   it('revocation during private materialization prevents all typing and clears values', async () => {
     const { run, ports, data } = await setup();
@@ -1115,6 +1112,9 @@ describe('admitted authenticator execution', () => {
     const { runAdmittedAuthenticatorAttempt } = await import(
       '@/lib/tools/handlers/credential-login'
     );
+    const { mapLocalCommandToHandler } = await import(
+      '@/lib/desktop/local-browser/command-mapping'
+    );
     const data = {
       injection_id: 'fixture-injection',
       origin: PAGE_ORIGIN,
@@ -1130,8 +1130,11 @@ describe('admitted authenticator execution', () => {
       materialize: vi.fn(async () => ({ ok: true as const, data })),
       report: vi.fn(async () => {}),
     };
+    const { action: _action, ...wire } = input;
+    const mapped = mapLocalCommandToHandler({ operation: 'authenticator', ...wire }, TAB_ID);
+    if (!mapped || mapped.toolName !== 'credential_login') throw new Error('wire mapping refused');
     return {
-      run: () => runAdmittedAuthenticatorAttempt(input, TAB_ID, PAGE_URL, ports),
+      run: () => runAdmittedAuthenticatorAttempt(mapped.args, TAB_ID, PAGE_URL, ports),
       data,
       ports,
     };
@@ -1146,22 +1149,6 @@ describe('admitted authenticator execution', () => {
     expect(JSON.stringify({ result, reports: ports.report.mock.calls })).not.toContain(
       SENTINEL_TOTP,
     );
-  });
-  it('maps a wire authenticator command into the real admitted handler without ordinary materialization', async () => {
-    renderAuthenticatorPage();
-    const { runAdmittedAuthenticatorAttempt } = await import(
-      '@/lib/tools/handlers/credential-login'
-    );
-    const { mapLocalCommandToHandler } = await import('@/lib/desktop/local-browser/command-policy');
-    const { data, ports } = await setup();
-    const { action: _action, ...wire } = input;
-    const mapped = mapLocalCommandToHandler({ operation: 'authenticator', ...wire }, TAB_ID);
-    expect(mapped?.toolName).toBe('credential_login');
-    const result = await runAdmittedAuthenticatorAttempt(mapped?.args, TAB_ID, PAGE_URL, ports);
-    expect(result.status).toBe('authenticated');
-    expect(ports.materialize).toHaveBeenCalledTimes(1);
-    expect(data.code).toBe('');
-    expect(posts).toEqual([]);
   });
   it('refuses revocation after materialization and clears the received code', async () => {
     const { run, data, ports } = await setup();
