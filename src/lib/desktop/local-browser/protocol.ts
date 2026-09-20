@@ -88,6 +88,7 @@ export const localBrowserRefusalReason = z.enum([
   'binding_changed',
   'invalid_request',
   'retry_conflict',
+  'discovery_refresh_required',
 ]);
 
 const result = z.union([

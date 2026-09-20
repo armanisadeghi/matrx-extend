@@ -129,6 +129,8 @@ function harness() {
   let lifecycle: ((payload: unknown, socketEpoch: string) => void) | null = null;
   let invalidated: (() => void) | null = null;
   const sent: unknown[] = [];
+  let authChanged: (() => void) | null = null;
+  let organizationChanged: (() => void) | null = null;
   const create = vi.fn(async () => ({ id: 42 }) as chrome.tabs.Tab);
   const remove = vi.fn(async () => undefined);
   const deps: LocalBrowserControllerDeps = {
@@ -163,12 +165,20 @@ function harness() {
       invalidated = () => handler(null);
       return () => undefined;
     },
-    onAuthChanged: () => () => undefined,
-    onOrganizationChanged: () => () => undefined,
+    onAuthChanged: (handler) => {
+      authChanged = handler;
+      return () => undefined;
+    },
+    onOrganizationChanged: (handler) => {
+      organizationChanged = handler;
+      return () => undefined;
+    },
     tabs: {
       create,
       remove,
       get: vi.fn(async () => ({ id: 42 }) as chrome.tabs.Tab),
+      update: vi.fn(async () => ({ id: 42 }) as chrome.tabs.Tab),
+      onUpdated: () => () => undefined,
       onRemoved: () => () => undefined,
     },
   };
@@ -183,7 +193,17 @@ function harness() {
     }
     await vi.waitFor(() => expect(sent.length).toBeGreaterThan(sentBefore));
   };
-  return { controller, create, deps, emit, invalidated: () => invalidated?.(), remove, sent };
+  return {
+    controller,
+    create,
+    deps,
+    emit,
+    invalidated: () => invalidated?.(),
+    authChanged: () => authChanged?.(),
+    organizationChanged: () => organizationChanged?.(),
+    remove,
+    sent,
+  };
 }
 
 async function register(
@@ -220,6 +240,16 @@ async function register(
 }
 
 describe('owned local-browser tab controller', () => {
+  it('re-registers with fresh private binding after an organization change on a healthy socket', async () => {
+    const h = harness();
+    const first = await register(h);
+    h.organizationChanged();
+    await vi.waitFor(() => expect(h.sent).toHaveLength(2));
+    const second = h.sent[1] as Record<string, string>;
+    expect(second.extension_generation).not.toBe(first.generation);
+    expect(second.connection_id).not.toBe(first.connection);
+    h.controller.stop();
+  });
   it('never creates a tab for an HTTP-successful authority refusal', async () => {
     const h = harness();
     const registration = await register(h);

@@ -57,6 +57,22 @@ const waiters = new Map<string, Waiter>();
 let permissionGeneration = 0;
 let installed = false;
 let permissionReader = readDefaultPermissionMode;
+const generationSubscribers = new Set<(generation: number) => void>();
+
+/** The controller captures this before transport verification. */
+export function localBrowserApprovalGeneration(): number {
+  install();
+  return permissionGeneration;
+}
+
+/** Invalidates command work without creating a second settings authority. */
+export function onLocalBrowserApprovalGenerationChange(
+  subscriber: (generation: number) => void,
+): () => void {
+  install();
+  generationSubscribers.add(subscriber);
+  return () => generationSubscribers.delete(subscriber);
+}
 
 export function setLocalBrowserApprovalPermissionReaderForTest(
   reader: (() => Promise<'ask' | 'act'>) | null,
@@ -79,6 +95,7 @@ function install(): void {
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== 'local' || !('matrx.settings.v1' in changes)) return;
     permissionGeneration += 1;
+    for (const subscriber of generationSubscribers) subscriber(permissionGeneration);
     for (const contextId of [...waiters.keys()])
       finish(contextId, { decision: 'cancel', reason: 'permission_changed' });
   });

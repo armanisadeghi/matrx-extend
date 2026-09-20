@@ -17,8 +17,12 @@ import {
   completeLocalCommand,
   verifyLocalCommandTransport,
 } from '@/lib/api/routes/local-browser-commands';
-import { credentialDomSource } from '@/lib/credentials/fill-primitive';
-import { requestLocalBrowserApproval } from '@/lib/desktop/local-browser/approvals';
+import { type LoginFormProbe, credentialDomSource } from '@/lib/credentials/fill-primitive';
+import {
+  localBrowserApprovalGeneration,
+  onLocalBrowserApprovalGenerationChange,
+  requestLocalBrowserApproval,
+} from '@/lib/desktop/local-browser/approvals';
 import type { LocalCommand } from '@/lib/desktop/local-browser/command-policy';
 import {
   getLocalBrowserSocketEpoch,
@@ -85,6 +89,10 @@ type CleanupReceipt = {
 type CleanupOutcome =
   | { receipt: 'closed' | 'already_absent' | 'unconfirmed' }
   | { reason: LocalBrowserRefusalReason };
+type CommandOutcome =
+  | { receipt: LocalCommandResult; document?: { url: string; document_id: string } }
+  | { reason: LocalBrowserRefusalReason };
+type InspectReplay = { deadlineMs: number; inFlight: Promise<CommandOutcome> | null };
 
 export interface LocalBrowserControllerDeps {
   getExpectedActor: (deadlineMs: number) => Promise<PrivateApiResult<PrivateExpectedActor>>;
@@ -104,6 +112,10 @@ export interface LocalBrowserControllerDeps {
     create: (properties: chrome.tabs.CreateProperties) => Promise<chrome.tabs.Tab>;
     remove: (tabId: number) => Promise<void>;
     get: (tabId: number) => Promise<chrome.tabs.Tab>;
+    update: (tabId: number, properties: chrome.tabs.UpdateProperties) => Promise<chrome.tabs.Tab>;
+    onUpdated: (
+      handler: (tabId: number, changeInfo: { status?: string | undefined }) => void,
+    ) => () => void;
     onRemoved: (handler: (tabId: number) => void) => () => void;
   };
   /** Optional in tests; production is the only owner of command execution. */
@@ -131,6 +143,11 @@ function productionDeps(): LocalBrowserControllerDeps {
       create: (properties) => chrome.tabs.create(properties),
       remove: (tabId) => chrome.tabs.remove(tabId),
       get: (tabId) => chrome.tabs.get(tabId),
+      update: (tabId, properties) => chrome.tabs.update(tabId, properties),
+      onUpdated: (handler) => {
+        chrome.tabs.onUpdated.addListener(handler);
+        return () => chrome.tabs.onUpdated.removeListener(handler);
+      },
       onRemoved: (handler) => {
         chrome.tabs.onRemoved.addListener(handler);
         return () => chrome.tabs.onRemoved.removeListener(handler);
@@ -203,8 +220,14 @@ function cleanupKey(claims: Extract<LocalBrowserGrantClaims, { operation: 'clean
 export class LocalBrowserController {
   private readonly entries = new Map<string, OwnedRun>();
   private readonly cleanupReceipts = new Map<string, CleanupReceipt>();
+  /** Consumed inspect requests retain identity only; their transient document is never retained. */
+  private readonly inspectReplays = new Map<string, InspectReplay>();
   private pendingRegistration: Registration | null = null;
   private activeRegistration: Registration | null = null;
+  private lastRegistrationRequired: Extract<
+    ReturnType<typeof parseLocalBrowserFrame>,
+    { type: 'local_browser.register_required'; engine_boot_id: string; revision: number }
+  > | null = null;
   private contextGeneration = 0;
   private readonly unsubscribe: Array<() => void> = [];
 
@@ -223,8 +246,8 @@ export class LocalBrowserController {
         });
       }),
       this.deps.onEpochInvalidated(() => this.invalidate()),
-      this.deps.onAuthChanged(() => this.invalidate()),
-      this.deps.onOrganizationChanged(() => this.invalidate()),
+      this.deps.onAuthChanged(() => this.invalidateAndReregister()),
+      this.deps.onOrganizationChanged(() => this.invalidateAndReregister()),
       this.deps.tabs.onRemoved((tabId) => this.forgetRemovedTab(tabId)),
     );
   }
@@ -241,10 +264,19 @@ export class LocalBrowserController {
     const retired = [...this.entries.values()];
     this.entries.clear();
     this.cleanupReceipts.clear();
+    this.inspectReplays.clear();
     for (const entry of retired) {
       if (entry.expiryTimer) clearTimeout(entry.expiryTimer);
       if (entry.tabId !== null) void this.closeTab(entry.tabId);
     }
+  }
+
+  private invalidateAndReregister(): void {
+    const required = this.lastRegistrationRequired;
+    this.invalidate();
+    const socketEpoch = this.deps.getSocketEpoch();
+    if (!required || !socketEpoch) return;
+    void this.register(required, socketEpoch);
   }
 
   private forgetRemovedTab(tabId: number): void {
@@ -286,6 +318,7 @@ export class LocalBrowserController {
         this.invalidate();
         return;
       }
+      this.lastRegistrationRequired = frame;
       await this.register(frame, socketEpoch);
       return;
     }
@@ -453,10 +486,45 @@ export class LocalBrowserController {
     actor: PrivateExpectedActor,
     registration: Registration,
     context: number,
-  ): Promise<
-    | { receipt: LocalCommandResult; document?: { url: string; document_id: string } }
-    | { reason: LocalBrowserRefusalReason }
-  > {
+  ): Promise<CommandOutcome> {
+    const parsed = frame.command_json ? parseStrictPrivateJson(frame.command_json) : null;
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+      return { reason: 'invalid_request' };
+    if ((parsed as { operation?: unknown }).operation !== 'inspect_login')
+      return this.executeApprove(frame, claims, deadlineMs, actor, registration, context);
+    this.purgeInspectReplays();
+    const key = [
+      claims.run_id,
+      claims.app_instance_id,
+      claims.command_id,
+      claims.sequence,
+      claims.command_digest,
+      claims.jti,
+    ].join(':');
+    const prior = this.inspectReplays.get(key);
+    if (prior) {
+      if (prior.inFlight) return await prior.inFlight;
+      return { reason: 'discovery_refresh_required' };
+    }
+    const inFlight = this.executeApprove(frame, claims, deadlineMs, actor, registration, context);
+    const replay: InspectReplay = { deadlineMs, inFlight };
+    this.inspectReplays.set(key, replay);
+    try {
+      return await inFlight;
+    } finally {
+      // Transition before publish/settlement: later callers cannot join a completed future.
+      replay.inFlight = null;
+    }
+  }
+
+  private async executeApprove(
+    frame: LocalBrowserExecute,
+    claims: Extract<LocalBrowserGrantClaims, { operation: 'approve' }>,
+    deadlineMs: number,
+    actor: PrivateExpectedActor,
+    registration: Registration,
+    context: number,
+  ): Promise<CommandOutcome> {
     const port = this.deps.command;
     if (!port || !frame.command_json) return { reason: 'authority_refused' };
     const entry = this.entries.get(runKey(claims));
@@ -472,8 +540,18 @@ export class LocalBrowserController {
       return { reason: 'invalid_request' };
     }
     const abort = new AbortController();
+    const permissionGeneration = localBrowserApprovalGeneration();
+    const unsubscribePermission = onLocalBrowserApprovalGenerationChange((generation) => {
+      if (generation !== permissionGeneration) abort.abort();
+    });
     const isCurrent = () =>
       !abort.signal.aborted &&
+      this.canMutate(context, registration, deadlineMs) &&
+      this.entries.get(entry.key) === entry &&
+      entry.tabId !== null &&
+      entry.leaseExpiresAtMs !== null &&
+      Date.now() < entry.leaseExpiresAtMs;
+    const isBindingCurrent = () =>
       this.canMutate(context, registration, deadlineMs) &&
       this.entries.get(entry.key) === entry &&
       entry.tabId !== null &&
@@ -507,6 +585,10 @@ export class LocalBrowserController {
         deadline_ms: number;
         extension_generation: string;
         connection_id: string;
+        run_id: string;
+        app_instance_id: string;
+        controller_revision: number;
+        jti: string;
       };
       if (projection.operation !== 'approve') return { reason: 'authority_refused' };
       if (
@@ -517,6 +599,11 @@ export class LocalBrowserController {
         projection.command_id !== claims.command_id ||
         projection.sequence !== claims.sequence ||
         projection.command_digest !== claims.command_digest ||
+        projection.approval_id !== claims.jti ||
+        projection.run_id !== claims.run_id ||
+        projection.app_instance_id !== claims.app_instance_id ||
+        projection.controller_revision !== registration.revision ||
+        projection.jti !== claims.jti ||
         projection.deadline_ms !== deadlineMs ||
         projection.extension_generation !== registration.extensionGeneration ||
         projection.connection_id !== registration.connectionId ||
@@ -544,14 +631,14 @@ export class LocalBrowserController {
         isBindingCurrent: () => isCurrent(),
       });
       if (decision.decision !== 'allow' || !isCurrent()) {
-        if (isCurrent())
+        if (isBindingCurrent())
           await port.approve({
             grant: frame.grant,
             approval_id: projection.approval_id,
             decision: decision.decision === 'deny' ? 'deny' : 'cancel',
             expectedActor: actor,
             deadlineMs,
-            isCurrent,
+            isCurrent: isBindingCurrent,
             signal: abort.signal,
           });
         return { reason: 'authority_refused' };
@@ -575,6 +662,7 @@ export class LocalBrowserController {
         document: { url: doc.url, document_id: doc.documentId },
         expectedActor: actor,
         deadlineMs: allowed.data.deadline_ms,
+        commandId: claims.command_id,
         isCurrent,
         signal: abort.signal,
       });
@@ -586,15 +674,29 @@ export class LocalBrowserController {
         doc,
         claimed.data,
         isCurrent,
+        async () => await this.documentStillCurrent(entry.tabId as number, doc, isCurrent),
       );
-      if (!isCurrent()) return { reason: 'binding_changed' };
+      // A permission generation can withdraw injection authority after the claim. It must not
+      // mint authority in a new context, but the original completion grant may still close the
+      // exact claimed row while the actor/org/controller binding remains current.
+      const completionCurrent = isBindingCurrent;
+      if (!completionCurrent()) return { reason: 'binding_changed' };
+      const completionResult: LocalCommandResult = isCurrent()
+        ? result
+        : {
+            command_id: claimed.data.command_id,
+            operation: command.operation,
+            outcome: 'cancelled',
+            reason: 'binding_changed',
+          };
+      const completionAbort = new AbortController();
       const completed = await port.complete({
         grant: claimed.data.completion_grant,
-        result,
+        result: completionResult,
         expectedActor: actor,
         deadlineMs: claimed.data.deadline_ms,
-        isCurrent,
-        signal: abort.signal,
+        isCurrent: completionCurrent,
+        signal: completionAbort.signal,
       });
       if (!completed.ok || completed.data.status !== 'completed')
         return { reason: completed.ok ? 'authority_refused' : mapPrivateFailure(completed.error) };
@@ -611,7 +713,23 @@ export class LocalBrowserController {
       };
     } finally {
       abort.abort();
+      unsubscribePermission();
     }
+  }
+
+  private async documentStillCurrent(
+    tabId: number,
+    expected: { documentId: string; url: string },
+    isCurrent: () => boolean,
+  ): Promise<boolean> {
+    if (!isCurrent() || !this.deps.command) return false;
+    const current = await this.deps.command.currentDocument(tabId);
+    return (
+      isCurrent() &&
+      current?.documentId === expected.documentId &&
+      current.url === expected.url &&
+      new URL(current.url).origin === new URL(expected.url).origin
+    );
   }
 
   private async performClaimedCommand(
@@ -622,6 +740,7 @@ export class LocalBrowserController {
       status: 'claimed';
     },
     isCurrent: () => boolean,
+    assertCurrentDocument: () => Promise<boolean>,
   ): Promise<LocalCommandResult> {
     const terminal = (
       reason:
@@ -641,12 +760,19 @@ export class LocalBrowserController {
       outcome: 'outcome_unknown',
       reason,
     });
-    if (!isCurrent()) return terminal('binding_changed');
+    if (!isCurrent() || !(await assertCurrentDocument())) return terminal('binding_changed');
     if (command.operation === 'navigate') {
       try {
         const target = new URL(command.url);
         if (target.protocol !== 'https:') return terminal('unsafe_destination');
-        await chrome.tabs.update(tabId, { url: target.toString() });
+        const completed = await this.navigateOwnedTab(
+          tabId,
+          document,
+          target,
+          claimed.deadline_ms,
+          isCurrent,
+        );
+        if (!completed) return terminal('tab_lost');
         return {
           command_id: claimed.command_id,
           operation: 'navigate',
@@ -662,14 +788,19 @@ export class LocalBrowserController {
       try {
         const [probe] = await chrome.scripting.executeScript({
           target: { tabId, documentIds: [document.documentId] },
-          func: credentialDomSource as never,
-          args: [{ operation: 'auto_probe' }] as never,
+          func: credentialDomSource,
+          args: [{ operation: 'auto_probe' }],
         });
-        const value = probe?.result as
-          | { form?: string; mfa?: boolean; captcha?: boolean; origin?: string }
-          | undefined;
+        const value = probe?.result as LoginFormProbe | undefined;
         const origin = new URL(document.url).origin;
-        if (!value || value.origin !== origin) return terminal('unsafe_destination');
+        if (
+          !value ||
+          !value.is_top_frame ||
+          value.origin !== origin ||
+          !value.destination_safe ||
+          !(await assertCurrentDocument())
+        )
+          return terminal('unsafe_destination');
         return {
           command_id: claimed.command_id,
           operation: 'inspect_login',
@@ -677,14 +808,12 @@ export class LocalBrowserController {
           reason: 'none',
           data: {
             origin,
-            form:
-              value.form === 'login' ||
-              value.form === 'username_first' ||
-              value.form === 'password_change' ||
-              value.form === 'ambiguous'
-                ? value.form
+            form: value.password_selector
+              ? 'login'
+              : value.username_selector
+                ? 'username_first'
                 : 'none',
-            challenge: value.captcha ? 'captcha' : value.mfa ? 'mfa' : 'none',
+            challenge: 'unknown',
           },
         };
       } catch {
@@ -699,7 +828,8 @@ export class LocalBrowserController {
             deadlineMs: claimed.deadline_ms,
             isCurrent,
             assertCurrent: async () => {
-              if (!isCurrent()) throw new Error('binding_changed');
+              if (!isCurrent() || !(await assertCurrentDocument()))
+                throw new Error('binding_changed');
             },
             materialize: async () =>
               claimed.injection && 'fields' in claimed.injection
@@ -720,7 +850,8 @@ export class LocalBrowserController {
             deadlineMs: claimed.deadline_ms,
             isCurrent,
             assertCurrent: async () => {
-              if (!isCurrent()) throw new Error('binding_changed');
+              if (!isCurrent() || !(await assertCurrentDocument()))
+                throw new Error('binding_changed');
             },
             materialize: async () =>
               claimed.injection && 'code' in claimed.injection
@@ -765,6 +896,36 @@ export class LocalBrowserController {
             challenge_detected: result.status === 'needs_mfa',
           },
         };
+  }
+
+  private async navigateOwnedTab(
+    tabId: number,
+    original: { documentId: string; url: string },
+    target: URL,
+    deadlineMs: number,
+    isCurrent: () => boolean,
+  ): Promise<boolean> {
+    if (!isCurrent() || Date.now() >= deadlineMs) return false;
+    return await new Promise<boolean>((resolve) => {
+      let settled = false;
+      const settle = (value: boolean) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeout);
+        off();
+        resolve(value);
+      };
+      const off = this.deps.tabs.onUpdated((updatedTabId, changeInfo) => {
+        if (updatedTabId !== tabId || changeInfo.status !== 'complete') return;
+        void (async () => {
+          if (!isCurrent() || Date.now() >= deadlineMs) return settle(false);
+          const current = await this.deps.command?.currentDocument(tabId);
+          settle(!!current && isCurrent() && current.documentId !== original.documentId);
+        })();
+      });
+      const timeout = setTimeout(() => settle(false), Math.max(0, deadlineMs - Date.now()));
+      void this.deps.tabs.update(tabId, { url: target.toString() }).catch(() => settle(false));
+    });
   }
 
   private async discover(
@@ -1153,6 +1314,13 @@ export class LocalBrowserController {
     const now = Date.now();
     for (const [key, receipt] of this.cleanupReceipts) {
       if (receipt.expiresAtMs <= now) this.cleanupReceipts.delete(key);
+    }
+  }
+
+  private purgeInspectReplays(): void {
+    const now = Date.now();
+    for (const [key, replay] of this.inspectReplays) {
+      if (replay.deadlineMs <= now && replay.inFlight === null) this.inspectReplays.delete(key);
     }
   }
 
