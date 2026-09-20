@@ -43,12 +43,14 @@ const generatorTransportMode = process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN
 const displayMode = process.env.MATRX_VAULT_CANARY_DISPLAY;
 const headlessNoClipboardMode = displayMode === 'HEADLESS_NO_CLIPBOARD';
 const headedMode = displayMode === 'HEADED';
+const panelCloseLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_PANEL_CLOSE === 'RUN_PANEL_CLOSE_LIFECYCLE';
 assert(typeof displayMode === 'string' && displayMode.length > 0, 'canary_display_mode_required');
 assert(headlessNoClipboardMode || headedMode, 'canary_display_mode_invalid');
 assert(!headedMode || process.env.MATRX_VAULT_CANARY_FOREGROUND === 'ALLOW_FOREGROUND_TEST', 'headed_canary_requires_foreground_allow');
 assert(!headlessNoClipboardMode || generatorTransportMode, 'headless_requires_generator_transport');
 assert(!headlessNoClipboardMode || readOnlyAdmissionMode, 'headless_requires_read_only_admission');
 assert(!headlessNoClipboardMode || !process.env.MATRX_VAULT_CANARY_WINDOW_PLACEMENT, 'headless_refuses_window_placement');
+assert(!panelCloseLifecycleMode || headlessNoClipboardMode, 'panel_close_lifecycle_requires_headless_no_clipboard');
 if (process.env.MATRX_REALBROWSER_VAULT_CANARY !== 'RUN_UNDER_REVIEW')
   throw new Error('inert_canary_requires_explicit_arm');
 assert(!generatorTransportMode || readOnlyAdmissionMode, 'generator_requires_mutation_free_admission');
@@ -109,6 +111,7 @@ let local;
 let localUrl;
 let website;
 let realPanel;
+let extensionId;
 const createKeys = new Set();
 const createdIds = new Set();
 let baselineIds = new Set();
@@ -654,7 +657,120 @@ async function openGenuineSidePanel(extensionId, popup) {
     assert(typeof captured.data === 'string', 'panel_screenshot_refused');
     await fs.writeFile(destination, Buffer.from(captured.data, 'base64'), { mode: 0o600 });
   };
-  return { evaluate, click, waitFor, fill, key, startKnobResolveProbe, screenshot, dispose: panel.dispose };
+  return { targetId: target.targetId, evaluate, click, waitFor, fill, key, startKnobResolveProbe, screenshot, dispose: panel.dispose };
+}
+async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWindowId) {
+  // This is intentionally not a normal popup.html tab. The action popup is
+  // opened for the already-focused fixture window, then its existing product
+  // control receives real target-directed CDP input.
+  const cdp = await context.newCDPSession(fixturePage);
+  const targetUrl = `chrome-extension://${extensionId}/popup.html`;
+  const before = await cdp.send('Target.getTargets');
+  const knownPopupTargets = new Set(before.targetInfos.filter((target) => target.url === targetUrl).map((target) => target.targetId));
+  const result = await worker.evaluate(async (windowId) => {
+    if (typeof chrome.action?.openPopup !== 'function') return { outcome: 'api_unavailable' };
+    try {
+      await chrome.action.openPopup({ windowId });
+      return { outcome: 'requested' };
+    } catch (error) {
+      return { outcome: 'refused', error: error?.name === 'Error' ? 'error' : 'other' };
+    }
+  }, fixtureWindowId);
+  if (result?.outcome !== 'requested') return { opened: false, reason: result?.outcome ?? 'action_popup_not_requested' };
+  let popupTarget;
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    const targets = await cdp.send('Target.getTargets');
+    popupTarget = targets.targetInfos.find((target) => target.url === targetUrl && target.type === 'page' && !knownPopupTargets.has(target.targetId));
+    if (popupTarget) break;
+    await wait(100);
+  }
+  if (!popupTarget) return { opened: false, reason: 'action_popup_target_missing' };
+  const popup = await attachPanelSession(cdp, popupTarget.targetId);
+  try {
+    let box;
+    let attempts = 0;
+    for (; attempts < 30; attempts += 1) {
+      const response = await popup.send('Runtime.evaluate', {
+        expression: `(() => { const control = Array.from(document.querySelectorAll('button')).find((button) => button.textContent.trim() === 'Open chat'); if (!control) return { control: false }; control.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = control.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { control: true, x, y, width: rect.width, height: rect.height, visible: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === control || control.contains(hit)) }; })()`,
+        returnByValue: true,
+      });
+      box = response.result?.value;
+      if (box?.control && box.width > 0 && box.height > 0 && box.visible && box.hit) break;
+      await wait(100);
+    }
+    if (!(box?.control && box.width > 0 && box.height > 0 && box.visible && box.hit)) {
+      return {
+        opened: false,
+        reason: 'action_popup_open_chat_not_actionable',
+        readiness: { attempts, controlPresent: box?.control === true, positiveSize: box?.width > 0 && box?.height > 0, viewportHit: box?.visible === true && box?.hit === true },
+      };
+    }
+    await popup.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: box.x, y: box.y });
+    await popup.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: box.x, y: box.y, button: 'left', clickCount: 1 });
+    await popup.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: box.x, y: box.y, button: 'left', clickCount: 1 });
+  } finally {
+    popup.dispose();
+  }
+  let contexts = [];
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    contexts = await worker.evaluate(() => chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }));
+    if (contexts.length === 1 && contexts[0].documentUrl === `chrome-extension://${extensionId}/sidepanel.html` && contexts[0].tabId === -1) break;
+    await wait(100);
+  }
+  if (!(contexts.length === 1 && contexts[0].tabId === -1)) return { opened: false, reason: 'reopened_side_panel_context_missing' };
+  const targets = await cdp.send('Target.getTargets');
+  const target = targets.targetInfos.find((candidate) => candidate.url === `chrome-extension://${extensionId}/sidepanel.html` && candidate.type === 'page');
+  if (!target) return { opened: false, reason: 'reopened_side_panel_target_missing' };
+  const panel = await attachPanelSession(cdp, target.targetId);
+  await panel.send('Network.enable');
+  const evaluate = async (expression) => {
+    const evaluation = await panel.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
+    if (evaluation.exceptionDetails) throw new Error('reopened_side_panel_eval_refused');
+    return evaluation.result.value;
+  };
+  const click = async (expression) => {
+    const box = await evaluate(`(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = element.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { x, y, width: rect.width, height: rect.height, visible: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === element || element.contains(hit)) }; })()`);
+    assert(box?.width > 0 && box?.height > 0 && box.visible && box.hit, 'reopened_side_panel_control_not_actionable');
+    await panel.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: box.x, y: box.y });
+    await panel.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: box.x, y: box.y, button: 'left', clickCount: 1 });
+    await panel.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: box.x, y: box.y, button: 'left', clickCount: 1 });
+  };
+  const waitFor = async (expression, expected = true, timeout = 15000) => {
+    const deadline = Date.now() + timeout;
+    do { if ((await evaluate(expression)) === expected) return; await wait(100); } while (Date.now() < deadline);
+    throw new Error('reopened_panel_condition_timeout');
+  };
+  const key = async ({ key, code, windowsVirtualKeyCode, modifiers = 0, text }) => {
+    const effectiveText = text ?? (key === 'Enter' ? '\r' : undefined);
+    const params = { key, code, windowsVirtualKeyCode, nativeVirtualKeyCode: windowsVirtualKeyCode, modifiers };
+    if (effectiveText !== undefined) { params.text = effectiveText; params.unmodifiedText = effectiveText; }
+    await panel.send('Input.dispatchKeyEvent', { type: 'keyDown', ...params });
+    await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', ...params });
+  };
+  const startKnobResolveProbe = () => {
+    const calls = new Map();
+    const stop = panel.onEvent((method, params) => {
+      if (method === 'Network.requestWillBeSent') {
+        let pathname;
+        try { pathname = new URL(params.request?.url).pathname; } catch { return; }
+        if (pathname === '/rest/v1/rpc/knob_resolve') calls.set(params.requestId, { startedAt: Date.now(), status: null, completedAt: null });
+      }
+      if (method === 'Network.responseReceived' && calls.has(params.requestId)) {
+        const call = calls.get(params.requestId);
+        call.status = Number.isInteger(params.response?.status) ? params.response.status : null;
+        call.completedAt = Date.now();
+      }
+    });
+    return { snapshot: () => { const entries = [...calls.values()]; return { requestCount: entries.length, responseCount: entries.filter((call) => call.completedAt !== null).length, pendingCount: entries.filter((call) => call.completedAt === null).length, statuses: entries.map((call) => call.status), elapsedMs: entries.map((call) => (call.completedAt ?? Date.now()) - call.startedAt) }; }, stop };
+  };
+  const screenshot = async (expression, destination) => {
+    const clip = await evaluate(`(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest' }); const r = element.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.x >= 0 && r.y >= 0 && r.right <= innerWidth && r.bottom <= innerHeight ? { x: r.x, y: r.y, width: r.width, height: r.height, scale: 1 } : null; })()`);
+    assert(clip, 'reopened_panel_screenshot_not_visible');
+    const captured = await panel.send('Page.captureScreenshot', { format: 'png', clip });
+    assert(typeof captured.data === 'string', 'reopened_panel_screenshot_refused');
+    await fs.writeFile(destination, Buffer.from(captured.data, 'base64'), { mode: 0o600 });
+  };
+  return { opened: true, panel: { targetId: target.targetId, evaluate, click, waitFor, key, startKnobResolveProbe, screenshot, dispose: panel.dispose } };
 }
 async function chooseAuthorizedOrganization(extensionId) {
   const settingsPage = await context.newPage();
@@ -759,7 +875,7 @@ async function authenticate(extension) {
   proof.phase = 'extension_worker';
   persist();
   worker = context.serviceWorkers()[0] || await context.waitForEvent('serviceworker', { timeout: 15000 });
-  const extensionId = await worker.evaluate(() => chrome.runtime.id);
+  extensionId = await worker.evaluate(() => chrome.runtime.id);
   assert(typeof extensionId === 'string' && extensionId.length > 10, 'extension_runtime_identity');
   // Journal every item create attempt before OAuth starts. In particular, a
   // missing idempotency header is evidence, not a reason to omit the request.
@@ -839,6 +955,9 @@ async function authenticate(extension) {
   // Retain independent identity evidence even if organization selection fails.
   persist();
   realPanel = await openGenuineSidePanel(extensionId, popup);
+  // The initial auth popup was an ordinary setup tab. It must not remain as a
+  // same-URL target when a lifecycle probe later opens the declared action popup.
+  await popup.close();
   let active = session['matrx.org.active'];
   if (!active?.id) {
     proof.phase = 'organization_selection';
@@ -1031,7 +1150,18 @@ async function materializedPassword(id) {
       persist();
       if (generatorTransportMode) {
         proof.generatorHarnessSha256 = await sha256(path.join(__dirname, 'vault-generator-acceptance.cjs'));
-        await require('./vault-generator-acceptance.cjs').runGeneratorChecks({ context, worker, panel: realPanel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath: path.join(root, 'generator-masked.png'), verifyRealVaultPanel, displayMode });
+        await require('./vault-generator-acceptance.cjs').runGeneratorChecks({
+          context, worker, panel: realPanel, assert, wait, checkpoint, proof, focusOwnedBrowser,
+          screenshotPath: path.join(root, 'generator-masked.png'), verifyRealVaultPanel, displayMode, panelCloseLifecycleMode,
+          reopenPanelFromAction: async (fixturePage, fixtureWindowId) => {
+            const reopened = await openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWindowId);
+            if (reopened.opened) {
+              realPanel?.dispose();
+              realPanel = reopened.panel;
+            }
+            return reopened;
+          },
+        });
       }
     } else {
       local = await startLocalSite();

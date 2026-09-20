@@ -15,14 +15,20 @@ const state = vi.hoisted(() => ({
   focusedWindowAvailable: true,
   fills: 0,
   discoveries: 0,
+  actorCalls: 0,
+  actorGate: null as Promise<void> | null,
+  registryInvalidations: [] as string[][],
 }));
 const listeners: Array<(message: unknown, sender: chrome.runtime.MessageSender, reply: (value: unknown) => void) => boolean> = [];
+const connects: Array<(port: chrome.runtime.Port) => void> = [];
+const disconnects = new Set<() => void>();
+let connectionId: string | null = null;
 const activation: Array<(info: chrome.tabs.TabActiveInfo) => void> = [];
 const committed: Array<(details: chrome.webNavigation.WebNavigationFramedCallbackDetails) => void> = [];
 const tabMessages: unknown[] = [];
 
 vi.mock('@/lib/auth/flow', () => ({
-  getCurrentUser: async () => state.user ? { id: state.user } : null,
+  getCurrentUser: async () => { state.actorCalls += 1; if (state.actorCalls > 1) await state.actorGate; return state.user ? { id: state.user } : null; },
 }));
 vi.mock('@/lib/api/routes/vault', () => ({ hasRealUserToken: async () => !!state.user }));
 vi.mock('@/lib/org/active-org', () => ({ getActiveOrganizationId: async () => state.org }));
@@ -33,8 +39,23 @@ function sender(overrides: Partial<chrome.runtime.MessageSender> = {}): chrome.r
     ...overrides,
   } as chrome.runtime.MessageSender;
 }
+function openConnection(from = sender()) {
+  let id: string | null = null;
+  const localDisconnects = new Set<() => void>();
+  const port = {
+    name: 'matrx-generation-panel-v1', sender: from,
+    postMessage: (handshake: { connectionId?: string }) => { id = handshake.connectionId ?? null; },
+    disconnect: () => localDisconnects.forEach((listener) => listener()),
+    onDisconnect: { addListener: (listener: () => void) => localDisconnects.add(listener) },
+  } as unknown as chrome.runtime.Port;
+  connects.forEach((listener) => listener(port));
+  expect(id).toMatch(/^[a-f0-9]{36}$/);
+  return { id: id!, disconnect: () => localDisconnects.forEach((listener) => listener()) };
+}
 function ask(message: unknown, from = sender()): Promise<unknown> {
   return new Promise((resolve) => {
+    if (!connectionId) connectionId = openConnection(from).id;
+    if (message && typeof message === 'object' && !('connectionId' in message)) Object.assign(message, { connectionId });
     const returns = listeners.map((listener) => listener(message, from, resolve));
     expect(returns).toContain(true);
   });
@@ -44,14 +65,15 @@ function request(operation: 'discover' | 'use' | 'discard', fields: Record<strin
 }
 
 beforeEach(() => {
-  listeners.length = 0; activation.length = 0; committed.length = 0; tabMessages.length = 0;
+  listeners.length = 0; connects.length = 0; disconnects.clear(); connectionId = null; activation.length = 0; committed.length = 0; tabMessages.length = 0;
   state.user = USER; state.org = ORG; state.active = true; state.focused = true; state.permitted = true;
-  state.documentId = 'frame-document'; state.topDocumentId = 'top-document'; state.fillGate = null; state.focusedWindowGate = null; state.focusedWindowAvailable = true; state.fills = 0; state.discoveries = 0;
+  state.documentId = 'frame-document'; state.topDocumentId = 'top-document'; state.fillGate = null; state.focusedWindowGate = null; state.focusedWindowAvailable = true; state.fills = 0; state.discoveries = 0; state.actorCalls = 0; state.actorGate = null; state.registryInvalidations = [];
   (globalThis as unknown as { chrome: unknown }).chrome = {
     runtime: {
       id: 'extension-id', getURL: (path: string) => `chrome-extension://extension-id/${path}`,
       sendMessage: async (message: unknown) => { tabMessages.push(message); },
       onMessage: { addListener: (listener: (message: unknown, from: chrome.runtime.MessageSender, reply: (value: unknown) => void) => boolean) => listeners.push(listener) },
+      onConnect: { addListener: (listener: (port: chrome.runtime.Port) => void) => connects.push(listener) },
     },
     tabs: {
       get: async (tabId: number) => ({ id: tabId, windowId: 1, active: state.active }),
@@ -78,7 +100,7 @@ beforeEach(() => {
     scripting: {
       executeScript: async ({ target, args }: { target: chrome.scripting.InjectionTarget; args?: unknown[] }) => {
         expect(target).toMatchObject({ tabId: 7, documentIds: expect.any(Array) });
-        if (Array.isArray(args?.[0])) return [{ result: undefined }];
+        if (Array.isArray(args?.[0])) { state.registryInvalidations.push(args[0] as string[]); return [{ result: undefined }]; }
         const operation = (args?.[0] as { operation: string }).operation;
         if (operation === 'discover_new_password_groups') return [{ result: { groups: [{ targets: [{ id: `opaque-field-${++state.discoveries}`, openShadowPath: [], constraint: { minLength: 12, maxLength: 64, pattern: null, autocomplete: 'new-password', roleEvidence: 'new_password' } }] }] } }];
         state.fills++;
@@ -115,6 +137,74 @@ describe('generated password host', () => {
     const raw = listeners[0]!;
     expect(raw(request('discover', { tabId: 7 }), sender({ tab: { id: 7 } as chrome.tabs.Tab }), () => undefined)).toBe(false);
     expect(raw(request('discover', { tabId: 7 }), sender({ url: 'chrome-extension://extension-id/options.html' }), () => undefined)).toBe(false);
+  });
+
+  it('refuses tokenless generation messages before discovery', async () => {
+    const { registerGeneratedPasswordHost } = await import('@/lib/credentials/generation-host');
+    registerGeneratedPasswordHost();
+    expect(listeners[0]!(request('discover', { tabId: 7 }), sender(), () => undefined)).toBe(false);
+    expect(state.discoveries).toBe(0);
+  });
+
+  it('leaves unrelated extension ports untouched', async () => {
+    const { registerGeneratedPasswordHost } = await import('@/lib/credentials/generation-host');
+    registerGeneratedPasswordHost();
+    const disconnect = vi.fn();
+    const port = { name: 'matrx-mic-channel', sender: sender(), disconnect } as unknown as chrome.runtime.Port;
+    connects.forEach((listener) => listener(port));
+    expect(disconnect).not.toHaveBeenCalled();
+  });
+
+  it('invalidates only the disconnected panel connection and refuses its old offer', async () => {
+    const { registerGeneratedPasswordHost } = await import('@/lib/credentials/generation-host');
+    registerGeneratedPasswordHost();
+    const owner = openConnection();
+    const found = await ask({ ...request('discover', { tabId: 7 }), connectionId: owner.id }) as { offers: Array<{ id: string; frameId: number }> };
+    const offer = found.offers.find((candidate) => candidate.frameId === 3)!;
+    owner.disconnect();
+    await expect(ask({ ...request('use', { offerId: offer.id, value: 'A-generated-password-12' }), connectionId: owner.id })).resolves.toMatchObject({ status: 'stale' });
+    expect(state.fills).toBe(0);
+  });
+
+  it('refuses a second panel token without claiming the owner offer', async () => {
+    const { registerGeneratedPasswordHost } = await import('@/lib/credentials/generation-host');
+    registerGeneratedPasswordHost();
+    const owner = openConnection();
+    const other = openConnection();
+    const found = await ask({ ...request('discover', { tabId: 7 }), connectionId: owner.id }) as { offers: Array<{ id: string; frameId: number }> };
+    const offer = found.offers.find((candidate) => candidate.frameId === 3)!;
+    await expect(ask({ ...request('use', { offerId: offer.id, value: 'A-generated-password-12' }), connectionId: other.id })).resolves.toMatchObject({ status: 'stale' });
+    await expect(ask({ ...request('use', { offerId: offer.id, value: 'A-generated-password-12' }), connectionId: owner.id })).resolves.toMatchObject({ status: 'filled' });
+    expect(state.fills).toBe(1);
+  });
+
+  it('clears injected registry targets when its connection dies before discovery publication', async () => {
+    const { registerGeneratedPasswordHost } = await import('@/lib/credentials/generation-host');
+    registerGeneratedPasswordHost();
+    const owner = openConnection();
+    let release!: () => void;
+    state.actorGate = new Promise<void>((resolve) => { release = resolve; });
+    const pending = ask({ ...request('discover', { tabId: 7 }), connectionId: owner.id });
+    await vi.waitFor(() => expect(state.discoveries).toBeGreaterThan(0));
+    owner.disconnect();
+    release();
+    await expect(pending).resolves.toMatchObject({ status: 'stale' });
+    expect(state.registryInvalidations.flat()).toContain('opaque-field-1');
+  });
+
+  it('refuses a disconnected use before DOM dispatch', async () => {
+    const { registerGeneratedPasswordHost } = await import('@/lib/credentials/generation-host');
+    registerGeneratedPasswordHost();
+    const owner = openConnection();
+    const found = await ask({ ...request('discover', { tabId: 7 }), connectionId: owner.id }) as { offers: Array<{ id: string; frameId: number }> };
+    const offer = found.offers.find((candidate) => candidate.frameId === 3)!;
+    let release!: () => void;
+    state.focusedWindowGate = new Promise<void>((resolve) => { release = resolve; });
+    const pending = ask({ ...request('use', { offerId: offer.id, value: 'A-generated-password-12' }), connectionId: owner.id });
+    owner.disconnect();
+    release();
+    await expect(pending).resolves.toMatchObject({ status: 'stale' });
+    expect(state.fills).toBe(0);
   });
 
   it('refuses absent host permission without executing the DOM primitive', async () => {

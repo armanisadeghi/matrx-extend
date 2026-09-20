@@ -9,6 +9,7 @@ import {
 import { GENERATED_SECRET_TTL_MS } from '@/lib/credentials/generation-targets';
 import {
   GENERATION_INVALIDATED,
+  GENERATION_PANEL_PORT,
   type GenerationDiscoveryResponse,
   type GenerationInvalidationMessage,
   type GenerationOffer,
@@ -31,6 +32,7 @@ const COPY = {
 } as const;
 
 interface InternalOffer extends GenerationOffer {
+  connectionId: string;
   tabId: number;
   windowId: number;
   topDocumentId: string;
@@ -50,6 +52,7 @@ interface FrameState {
 
 const OFFERS = new Map<string, InternalOffer>();
 const CLAIMS = new Set<string>();
+const CONNECTIONS = new Map<string, { port: chrome.runtime.Port; alive: boolean }>();
 const EPOCHS = new Map<number, number>();
 let lifecycleEpoch = 0;
 let registered = false;
@@ -78,11 +81,12 @@ function validRequest(value: unknown): value is GenerationRequest {
   if (!value || typeof value !== 'object') return false;
   const request = value as Partial<GenerationRequest>;
   if (request.__matrxCredentialGeneration !== true || typeof request.operation !== 'string') return false;
+  if (typeof request.connectionId !== 'string' || !/^[a-f0-9]{36}$/.test(request.connectionId)) return false;
   if (request.operation === 'discover')
-    return Object.keys(request).length === 3 && Number.isInteger(request.tabId) && request.tabId! >= 0;
+    return Object.keys(request).length === 4 && Number.isInteger(request.tabId) && request.tabId! >= 0;
   if (request.operation === 'use')
-    return Object.keys(request).length === 4 && typeof request.offerId === 'string' && request.offerId.length > 0 && typeof request.value === 'string';
-  return request.operation === 'discard' && Object.keys(request).length === 3 && Array.isArray(request.offerIds) && request.offerIds.every((id) => typeof id === 'string');
+    return Object.keys(request).length === 5 && typeof request.offerId === 'string' && request.offerId.length > 0 && typeof request.value === 'string';
+  return request.operation === 'discard' && Object.keys(request).length === 4 && Array.isArray(request.offerIds) && request.offerIds.every((id) => typeof id === 'string');
 }
 function trustedSidepanel(sender: chrome.runtime.MessageSender): boolean {
   return sender.id === chrome.runtime.id && !sender.tab && sender.url === chrome.runtime.getURL('sidepanel.html');
@@ -144,7 +148,7 @@ async function inject<O extends CredentialDomInjectedRequest['operation']>(
   return (result?.result as CredentialDomResult<O> | undefined) ?? null;
 }
 function offerProjection(offer: InternalOffer): GenerationOffer {
-  const { tabId: _tabId, windowId: _windowId, topDocumentId: _topDocumentId, documentId: _documentId, topOrigin: _topOrigin, frameOrigin: _frameOrigin, userId: _userId, organizationId: _organizationId, targets: _targets, epoch: _epoch, ...projection } = offer;
+  const { connectionId: _connectionId, tabId: _tabId, windowId: _windowId, topDocumentId: _topDocumentId, documentId: _documentId, topOrigin: _topOrigin, frameOrigin: _frameOrigin, userId: _userId, organizationId: _organizationId, targets: _targets, epoch: _epoch, ...projection } = offer;
   return projection;
 }
 function clearRegistry(offer: InternalOffer): void {
@@ -153,6 +157,9 @@ function clearRegistry(offer: InternalOffer): void {
     func: ((ids: string[]) => window.__matrx_generation_target_registry__?.invalidate(ids)) as unknown as (...args: never[]) => unknown,
     args: [offer.targets.map((target) => target.id)] as unknown as never[],
   }).catch(() => undefined);
+}
+function clearUnpublished(offers: Iterable<InternalOffer>): void {
+  for (const offer of offers) clearRegistry(offer);
 }
 function consume(offer: InternalOffer): void {
   if (OFFERS.get(offer.id) === offer) OFFERS.delete(offer.id);
@@ -190,8 +197,14 @@ function invalidateWindow(windowId: number): void {
   for (const offer of affected) EPOCHS.set(offer.tabId, epoch(offer.tabId) + 1);
   invalidate(affected);
 }
+function invalidateConnection(connectionId: string): void {
+  invalidate([...OFFERS.values()].filter((offer) => offer.connectionId === connectionId));
+}
+function connectionLive(connectionId: string): boolean {
+  return CONNECTIONS.get(connectionId)?.alive === true;
+}
 function isLive(offer: InternalOffer): boolean {
-  return OFFERS.get(offer.id) === offer && offer.expiresAt > Date.now() && epoch(offer.tabId) === offer.epoch;
+  return OFFERS.get(offer.id) === offer && connectionLive(offer.connectionId) && offer.expiresAt > Date.now() && epoch(offer.tabId) === offer.epoch;
 }
 async function currentBinding(offer: InternalOffer): Promise<boolean> {
   if (!isLive(offer) || !(await activeFocused(offer.tabId, offer.windowId))) return false;
@@ -207,11 +220,13 @@ async function currentBinding(offer: InternalOffer): Promise<boolean> {
   if (currentActor.userId !== offer.userId || currentActor.organizationId !== offer.organizationId) return false;
   return (await permitted(new URL(top.url))) && (await permitted(new URL(selected.url))) && isLive(offer);
 }
-async function discover(tabId: number, senderWindowId: number, requestEpoch: number, tabEpoch: number): Promise<GenerationDiscoveryResponse> {
-  const live = (): boolean => lifecycleEpoch === requestEpoch && epoch(tabId) === tabEpoch;
-  if (!(await activeFocused(tabId, senderWindowId)) || !live()) return generationResponse('stale');
+async function discover(tabId: number, senderWindowId: number, connectionId: string, requestEpoch: number, tabEpoch: number): Promise<GenerationDiscoveryResponse> {
+  const created: InternalOffer[] = [];
+  const live = (): boolean => connectionLive(connectionId) && lifecycleEpoch === requestEpoch && epoch(tabId) === tabEpoch;
+  const stale = (): GenerationDiscoveryResponse => { clearUnpublished(created); invalidate(created); return generationResponse('stale'); };
+  if (!(await activeFocused(tabId, senderWindowId)) || !live()) return stale();
   const initialActor = await actor();
-  if (!initialActor) return live() ? generationResponse('unavailable') : generationResponse('stale');
+  if (!initialActor) return live() ? generationResponse('unavailable') : stale();
   let frames: Array<{ frameId: number; documentId?: string; url?: string }>;
   try {
     frames = (await chrome.webNavigation.getAllFrames({ tabId })) ?? [];
@@ -220,31 +235,30 @@ async function discover(tabId: number, senderWindowId: number, requestEpoch: num
   }
   const topListed = frames.find((entry) => entry.frameId === 0);
   const top = await frame(tabId, 0);
-  if (!live() || !topListed || !top || topListed.documentId !== top.documentId || topListed.url !== top.url) return generationResponse('stale');
+  if (!live() || !topListed || !top || topListed.documentId !== top.documentId || topListed.url !== top.url) return stale();
   let topUrl: URL;
   try { topUrl = new URL(top.url); } catch { return generationResponse('unsafe_destination'); }
   if (!(await permitted(topUrl))) return generationResponse('unsafe_destination');
-  const created: InternalOffer[] = [];
   const now = Date.now();
   const expiresAt = now + GENERATED_SECRET_TTL_MS;
   for (const listed of frames) {
     if (!Number.isInteger(listed.frameId) || typeof listed.documentId !== 'string' || typeof listed.url !== 'string') continue;
     const current = await frame(tabId, listed.frameId);
-    if (!live()) return generationResponse('stale');
+    if (!live()) return stale();
     if (!current || current.documentId !== listed.documentId || current.url !== listed.url) continue;
     let frameUrl: URL;
     try { frameUrl = new URL(current.url); } catch { continue; }
     if (!(await permitted(frameUrl))) continue;
-    if (!live()) return generationResponse('stale');
+    if (!live()) return stale();
     const discovered = await inject(tabId, current.documentId, {
       operation: 'discover_new_password_groups', documentId: current.documentId, expiresAt,
     }).catch(() => null);
-    if (!live()) return generationResponse('stale');
     if (!discovered) continue;
     for (const group of discovered.groups) {
       const id = randomId();
       if (!id || group.targets.length === 0) continue;
       const offer: InternalOffer = {
+        connectionId,
         id, origin: frameUrl.origin, frameId: listed.frameId, fieldCount: group.targets.length,
         constraints: group.targets.map((target) => target.constraint), expiresAt,
         tabId, windowId: senderWindowId, topDocumentId: top.documentId, documentId: current.documentId, topOrigin: topUrl.origin,
@@ -253,10 +267,11 @@ async function discover(tabId: number, senderWindowId: number, requestEpoch: num
       };
       created.push(offer);
     }
+    if (!live()) return stale();
   }
   const finalActor = await actor();
   if (!live() || !finalActor || finalActor.userId !== initialActor.userId || finalActor.organizationId !== initialActor.organizationId || !(await activeFocused(tabId, senderWindowId)) || !live()) {
-    return generationResponse('stale');
+    return stale();
   }
   for (const offer of created) OFFERS.set(offer.id, offer);
   if (created.length === 0) return generationResponse('no_targets');
@@ -296,8 +311,30 @@ function discard(ids: readonly string[], windowId: number): void {
 export function registerGeneratedPasswordHost(): void {
   if (registered) return;
   registered = true;
+  chrome.runtime.onConnect.addListener((port) => {
+    if (port.name !== GENERATION_PANEL_PORT) return;
+    if (!trustedSidepanel(port.sender ?? {})) {
+      port.disconnect();
+      return;
+    }
+    const connectionId = randomId();
+    if (!connectionId) { port.disconnect(); return; }
+    CONNECTIONS.set(connectionId, { port, alive: true });
+    port.onDisconnect.addListener(() => {
+      const connection = CONNECTIONS.get(connectionId);
+      if (!connection || connection.port !== port) return;
+      connection.alive = false;
+      invalidateConnection(connectionId);
+      CONNECTIONS.delete(connectionId);
+    });
+    port.postMessage({ __matrxCredentialGeneration: true, operation: 'connected', connectionId });
+  });
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (!validRequest(message) || !trustedSidepanel(sender)) return false;
+    if (!connectionLive(message.connectionId)) {
+      sendResponse(message.operation === 'discover' ? generationResponse('stale') : useResponse('stale'));
+      return true;
+    }
     const requestEpoch = lifecycleEpoch;
     const tabEpoch = message.operation === 'discover' ? epoch(message.tabId) : 0;
     // Use claims are reserved before getContexts: a competing click can never
@@ -305,7 +342,7 @@ export function registerGeneratedPasswordHost(): void {
     // this same object; it is never reinserted.
     const claimed = message.operation === 'use' ? OFFERS.get(message.offerId) : undefined;
     if (message.operation === 'use') {
-      if (!claimed || CLAIMS.has(claimed.id)) {
+      if (!claimed || claimed.connectionId !== message.connectionId || CLAIMS.has(claimed.id)) {
         sendResponse(useResponse('stale'));
         return true;
       }
@@ -316,8 +353,12 @@ export function registerGeneratedPasswordHost(): void {
         if (claimed) consume(claimed);
         return message.operation === 'discover' ? generationResponse('unavailable') : useResponse('stale');
       }
-      if (message.operation === 'discover') return discover(message.tabId, windowId, requestEpoch, tabEpoch);
-      if (message.operation === 'use') return use(claimed!, message.value, windowId);
+      if (message.operation === 'discover') return discover(message.tabId, windowId, message.connectionId, requestEpoch, tabEpoch);
+      if (message.operation === 'use') {
+        return use(claimed!, message.value, windowId);
+      }
+      const offers = message.offerIds.map((id) => OFFERS.get(id));
+      if (offers.some((offer) => offer?.connectionId !== message.connectionId)) return useResponse('stale');
       discard(message.offerIds, windowId);
       return { status: 'discarded' };
     }).then((response) => response !== undefined && sendResponse(response)).catch(() => {

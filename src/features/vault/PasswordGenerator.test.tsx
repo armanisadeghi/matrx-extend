@@ -7,6 +7,11 @@ const mocks = vi.hoisted(() => ({
   copy: vi.fn(),
   sendMessage: vi.fn(),
   listeners: new Set<(message: unknown) => void>(),
+  portListeners: new Set<(message: unknown) => void>(),
+  portDisconnects: new Set<() => void>(),
+  connectionCount: 0,
+  autoHandshake: true,
+  ports: [] as Array<{ handshake: () => void; disconnect: () => void }>,
 }));
 vi.mock('@/lib/supabase/schemas', () => ({ platformDb: () => ({ rpc: mocks.rpc }) }));
 vi.mock('@/lib/clipboard/copy', () => ({ copyToClipboard: mocks.copy }));
@@ -35,6 +40,7 @@ beforeEach(() => {
   mocks.copy.mockReset().mockResolvedValue(true);
   mocks.sendMessage.mockReset();
   mocks.listeners.clear();
+  mocks.portListeners.clear(); mocks.portDisconnects.clear(); mocks.connectionCount = 0; mocks.autoHandshake = true; mocks.ports = [];
   mocks.rpc
     .mockResolvedValueOnce({ data: 1024, error: null })
     .mockResolvedValueOnce({ data: 64, error: null });
@@ -42,6 +48,20 @@ beforeEach(() => {
   (globalThis as unknown as { chrome: unknown }).chrome = {
     runtime: {
       sendMessage: mocks.sendMessage,
+      connect: () => {
+        const connectionId = (++mocks.connectionCount).toString(16).padStart(36, '0');
+        const messageListeners = new Set<(message: unknown) => void>();
+        const disconnectListeners = new Set<() => void>();
+        const handshake = () => messageListeners.forEach((listener) => listener({ __matrxCredentialGeneration: true, operation: 'connected', connectionId }));
+        const disconnect = () => disconnectListeners.forEach((listener) => listener());
+        const port = {
+          onMessage: { addListener: (listener: (message: unknown) => void) => { mocks.portListeners.add(listener); messageListeners.add(listener); if (mocks.autoHandshake) handshake(); }, removeListener: (listener: (message: unknown) => void) => { mocks.portListeners.delete(listener); messageListeners.delete(listener); } },
+          onDisconnect: { addListener: (listener: () => void) => { mocks.portDisconnects.add(listener); disconnectListeners.add(listener); }, removeListener: (listener: () => void) => { mocks.portDisconnects.delete(listener); disconnectListeners.delete(listener); } },
+          disconnect,
+        };
+        mocks.ports.push({ handshake, disconnect });
+        return port;
+      },
       onMessage: {
         addListener: (listener: (message: unknown) => void) => mocks.listeners.add(listener),
         removeListener: (listener: (message: unknown) => void) => mocks.listeners.delete(listener),
@@ -52,6 +72,38 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe('PasswordGenerator', () => {
+  it('clears a mounted panel on disconnect and uses a fresh connection for a later Generate', async () => {
+    renderGenerator();
+    open();
+    await generate();
+    const first = (mocks.sendMessage.mock.calls[0]?.[0] as { connectionId: string }).connectionId;
+    mocks.ports[0]!.disconnect();
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Reveal generated value' })).toBeNull());
+    mocks.rpc.mockReset()
+      .mockResolvedValueOnce({ data: 1024, error: null })
+      .mockResolvedValueOnce({ data: 64, error: null });
+    await generate();
+    const last = mocks.sendMessage.mock.calls.at(-1)?.[0] as { connectionId: string; operation: string };
+    expect(last.operation).toBe('discover');
+    expect(last.connectionId).not.toBe(first);
+    mocks.sendMessage.mockResolvedValueOnce({ status: 'filled', message: 'Filled. Matrx did not submit the form.' });
+    fireEvent.click(screen.getByRole('button', { name: 'Use' }));
+    await screen.findByText('Filled. Matrx did not submit the form.');
+  });
+
+  it('ignores a late handshake from a disconnected port', async () => {
+    renderGenerator();
+    open();
+    const staleListener = [...mocks.portListeners][0]!;
+    mocks.autoHandshake = false;
+    mocks.ports[0]!.disconnect();
+    staleListener({ __matrxCredentialGeneration: true, operation: 'connected', connectionId: 'f'.repeat(36) });
+    fireEvent.click(screen.getByRole('button', { name: 'Generate' }));
+    await act(async () => { await Promise.resolve(); });
+    expect(mocks.sendMessage).not.toHaveBeenCalled();
+    mocks.ports[1]!.disconnect();
+  });
+
   it('is closed and inert until explicitly opened and generated', () => {
     renderGenerator();
     expect(screen.queryByLabelText('Password length')).toBeNull();
@@ -71,6 +123,7 @@ describe('PasswordGenerator', () => {
     expect(mocks.sendMessage).toHaveBeenCalledWith({
       __matrxCredentialGeneration: true,
       operation: 'discover',
+      connectionId: expect.any(String),
       tabId: 12,
     });
     expect(screen.getByText('••••••••••••••••••••••••')).toBeTruthy();
@@ -131,6 +184,7 @@ describe('PasswordGenerator', () => {
     expect(mocks.sendMessage).toHaveBeenLastCalledWith({
       __matrxCredentialGeneration: true,
       operation: 'discard',
+      connectionId: expect.any(String),
       offerIds: ['offer-1'],
     });
     mocks.rpc.mockResolvedValue({ data: 1024, error: null });

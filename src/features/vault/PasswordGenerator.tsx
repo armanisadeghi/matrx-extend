@@ -6,7 +6,7 @@ import type {
   GenerationOffer,
   GenerationUseResponse,
 } from '@/lib/credentials/generation-protocol';
-import { GENERATION_INVALIDATED } from '@/lib/credentials/generation-protocol';
+import { GENERATION_INVALIDATED, GENERATION_PANEL_PORT, type GenerationPanelConnectedMessage } from '@/lib/credentials/generation-protocol';
 import { GENERATED_SECRET_TTL_MS } from '@/lib/credentials/generation-targets';
 import { useTransientSecret } from '@/lib/credentials/transient-secret';
 import { cn } from '@/lib/utils';
@@ -68,11 +68,19 @@ export function PasswordGenerator({
   const [revealed, setRevealed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [reconnectEpoch, setReconnectEpoch] = useState(0);
   const opener = useRef<HTMLButtonElement>(null);
   const { value: generatedValue, hold, clear } = useTransientSecret(GENERATED_SECRET_TTL_MS);
   const busyRef = useRef(false);
   const offersRef = useRef<GenerationOffer[]>([]);
   const generationEpoch = useRef(0);
+  const connectionId = useRef<string | null>(null);
+  const connectionPort = useRef<chrome.runtime.Port | null>(null);
+  const connectionWaiter = useRef<{
+    promise: Promise<string | null>;
+    settle: (connection: string | null) => void;
+    timeout: ReturnType<typeof setTimeout>;
+  } | null>(null);
   const expiryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   offersRef.current = offers;
 
@@ -85,10 +93,13 @@ export function PasswordGenerator({
 
   const discard = useCallback((ids: string[]) => {
     if (ids.length === 0) return;
+    const currentConnectionId = connectionId.current;
+    if (!currentConnectionId) return;
     void chrome.runtime
       .sendMessage({
         __matrxCredentialGeneration: true,
         operation: 'discard',
+        connectionId: currentConnectionId,
         offerIds: ids,
       })
       .catch(() => undefined);
@@ -115,6 +126,66 @@ export function PasswordGenerator({
   );
 
   useEffect(() => () => clearGenerated(), [clearGenerated]);
+  useEffect(() => {
+    let disposed = false;
+    const port = chrome.runtime.connect({ name: GENERATION_PANEL_PORT });
+    connectionPort.current = port;
+    const connected = (message: unknown) => {
+      const handshake = message as Partial<GenerationPanelConnectedMessage>;
+      if (
+        !disposed &&
+        connectionPort.current === port &&
+        handshake.__matrxCredentialGeneration === true &&
+        handshake.operation === 'connected' &&
+        typeof handshake.connectionId === 'string' &&
+        /^[a-f0-9]{36}$/.test(handshake.connectionId)
+      ) {
+        connectionId.current = handshake.connectionId;
+        connectionWaiter.current?.settle(handshake.connectionId);
+      }
+    };
+    const disconnected = () => {
+      if (connectionPort.current !== port) return;
+      connectionPort.current = null;
+      connectionId.current = null;
+      connectionWaiter.current?.settle(null);
+      generationEpoch.current += 1;
+      if (!disposed) clearGenerated('The generator connection changed. Generate a new value to continue.');
+    };
+    port.onMessage.addListener(connected);
+    port.onDisconnect.addListener(disconnected);
+    return () => {
+      disposed = true;
+      port.onMessage.removeListener(connected);
+      port.onDisconnect.removeListener(disconnected);
+      if (connectionPort.current === port) connectionPort.current = null;
+      connectionId.current = null;
+      port.disconnect();
+    };
+  }, [clearGenerated, reconnectEpoch]);
+
+  const waitForConnection = useCallback((): Promise<string | null> => {
+    if (connectionId.current && connectionPort.current) return Promise.resolve(connectionId.current);
+    if (connectionWaiter.current) return connectionWaiter.current.promise;
+    let resolve!: (connection: string | null) => void;
+    const promise = new Promise<string | null>((next) => {
+      resolve = next;
+    });
+    const waiter = {
+      promise,
+      settle: (connection: string | null) => {
+        if (connectionWaiter.current !== waiter) return;
+        clearTimeout(waiter.timeout);
+        connectionWaiter.current = null;
+        resolve(connection);
+      },
+      timeout: undefined as unknown as ReturnType<typeof setTimeout>,
+    };
+    waiter.timeout = setTimeout(() => waiter.settle(null), 1_500);
+    connectionWaiter.current = waiter;
+    setReconnectEpoch((current) => current + 1);
+    return promise;
+  }, []);
   useEffect(() => {
     if (!admission.current()) clearGenerated('The page changed. Generate a new value to continue.');
   }, [admission, clearGenerated]);
@@ -160,6 +231,11 @@ export function PasswordGenerator({
       clearGenerated('Password generation is unavailable. Check your sign-in and try again.');
       return;
     }
+    const currentConnectionId = await waitForConnection();
+    if (!currentConnectionId || connectionId.current !== currentConnectionId || !connectionPort.current) {
+      clearGenerated('Password generation is unavailable. Check your sign-in and try again.');
+      return;
+    }
     clearGenerated();
     const operationEpoch = generationEpoch.current;
     busyRef.current = true;
@@ -193,6 +269,7 @@ export function PasswordGenerator({
           chrome.runtime.sendMessage({
             __matrxCredentialGeneration: true,
             operation: 'discover',
+            connectionId: currentConnectionId,
             tabId,
           }) as Promise<GenerationDiscoveryResponse>,
       );
@@ -225,7 +302,7 @@ export function PasswordGenerator({
         if (admission.current()) setBusy(false);
       }
     }
-  }, [actor, admission, clearGenerated, hold, kind, passphrase, password, replaceOffers, tabId]);
+  }, [actor, admission, clearGenerated, hold, kind, passphrase, password, replaceOffers, tabId, waitForConnection]);
 
   const copy = useCallback(async () => {
     if (busyRef.current || !generatedValue) return;
@@ -248,7 +325,8 @@ export function PasswordGenerator({
   const useGenerated = useCallback(async () => {
     const offerId = selectedOfferId;
     const value = generatedValue;
-    if (busyRef.current || !offerId || !value) return;
+    const currentConnectionId = connectionId.current;
+    if (busyRef.current || !offerId || !value || !currentConnectionId) return;
     busyRef.current = true;
     setBusy(true);
     const useEpoch = generationEpoch.current + 1;
@@ -270,6 +348,7 @@ export function PasswordGenerator({
           chrome.runtime.sendMessage({
             __matrxCredentialGeneration: true,
             operation: 'use',
+            connectionId: currentConnectionId,
             offerId,
             value,
           }) as Promise<GenerationUseResponse>,

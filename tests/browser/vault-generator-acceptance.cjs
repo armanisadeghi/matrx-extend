@@ -29,7 +29,7 @@ async function fixture(childUrl = null) {
   return { state, url: `http://127.0.0.1:${server.address().port}/password`, close: () => new Promise((resolve) => server.close(resolve)) };
 }
 
-exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath, verifyRealVaultPanel, displayMode }) => {
+exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath, verifyRealVaultPanel, displayMode, panelCloseLifecycleMode = false, reopenPanelFromAction }) => {
   assert(displayMode === 'HEADLESS_NO_CLIPBOARD' || displayMode === 'HEADED', 'generator_display_mode_required');
   const child = await fixture();
   let top;
@@ -81,9 +81,31 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
       await wait(100);
     }
     assert(ready, 'generator_frame_registry_not_mounted');
-    const request = (payload) => panel.evaluate(`chrome.runtime.sendMessage(${JSON.stringify({ __matrxCredentialGeneration: true, ...payload })})`);
+    let connectionId = null;
+    const openGeneratorConnection = async () => {
+      const next = await panel.evaluate(`new Promise((resolve) => {
+        const port = chrome.runtime.connect({ name: 'matrx-generation-panel-v1' });
+        const timer = setTimeout(() => resolve(null), 1500);
+        const listener = (message) => {
+          if (message?.__matrxCredentialGeneration !== true || message.operation !== 'connected' || typeof message.connectionId !== 'string') return;
+          clearTimeout(timer);
+          port.onMessage.removeListener(listener);
+          globalThis.__vaultCanaryGeneratorPort = port;
+          resolve(message.connectionId);
+        };
+        port.onMessage.addListener(listener);
+      })`);
+      assert(typeof next === 'string' && /^[a-f0-9]{36}$/.test(next), 'generator_panel_port_handshake_missing');
+      return next;
+    };
+    connectionId = await openGeneratorConnection();
+    const request = (payload) => {
+      assert(typeof connectionId === 'string', 'generator_panel_port_not_connected');
+      return panel.evaluate(`chrome.runtime.sendMessage(${JSON.stringify({ __matrxCredentialGeneration: true, connectionId, ...payload })})`);
+    };
     const discover = () => request({ operation: 'discover', tabId });
     const use = (offerId) => request({ operation: 'use', offerId, value: synthetic });
+    const discard = (offerIds) => request({ operation: 'discard', offerIds });
     const unchanged = async (frame) => frame.evaluate(() => document.querySelector('#new').value === '' && document.querySelector('#confirm').value === '' && document.querySelector('#current').value === 'owned-current-fixture');
     const matches = async (frame) => frame.evaluate((value) => document.querySelector('#new').value === value && document.querySelector('#confirm').value === value && document.querySelector('#current').value === 'owned-current-fixture', synthetic);
     const embedded = () => page.frames().find((frame) => frame.url() === child.url);
@@ -131,6 +153,12 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     assert(await unchanged(embedded()), 'generator_unselected_frame_changed');
     assert((await use(topOffer.id))?.status === 'stale', 'generator_offer_replayed');
     evidence.checks.exactTopFillAndReplayRefusal = true;
+    const discardedDiscovery = await discover();
+    const discardedOffer = discardedDiscovery?.offers?.find((offer) => offer.frameId === 0);
+    assert(discardedOffer, 'generator_discard_offer_missing');
+    assert((await discard([discardedOffer.id]))?.status === 'discarded', 'generator_discard_refused');
+    assert((await use(discardedOffer.id))?.status === 'stale', 'generator_discarded_offer_survived');
+    evidence.checks.rawPortDiscardRefusedReplay = true;
     checkpoint('generator_child_fill');
     // A fresh discovery avoids assuming one request preserves sibling offers.
     const second = await discover();
@@ -219,6 +247,126 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     assert(top.state.submits === 0 && child.state.submits === 0, 'generator_submitted_website');
     evidence.checks.noWebsiteSubmission = true;
     evidence.hostTransportOk = true;
+    if (panelCloseLifecycleMode) {
+      const lifecycle = evidence.panelCloseLifecycle = { disposition: 'in_progress', offerKind: 'raw_discover_offer' };
+      checkpoint('generator_panel_close_offer');
+      const lifecycleDiscovery = await discover();
+      const oldOffer = lifecycleDiscovery?.offers?.find((offer) => offer.frameId === 0);
+      assert(oldOffer && oldOffer.expiresAt > Date.now() + 1000, 'panel_close_old_offer_missing_or_near_expiry');
+      const intervalId = crypto.randomUUID();
+      const before = await worker.evaluate(async (id) => {
+        const tab = await chrome.tabs.get(id);
+        const focused = await chrome.windows.getLastFocused({ windowTypes: ['normal'] });
+        return { tabId: tab.id, windowId: tab.windowId, tabActive: tab.active === true, focusedWindowId: focused.id, focused: focused.focused === true };
+      }, tabId);
+      assert(before.tabActive && before.focused && before.windowId === before.focusedWindowId, 'panel_close_fixture_not_active_before_transition');
+      await worker.evaluate((id) => {
+        const state = { activated: 0, focusChanged: 0 };
+        const onActivated = () => { state.activated += 1; };
+        const onFocusChanged = () => { state.focusChanged += 1; };
+        globalThis.__vaultPanelCloseLifecycle = { id, state, onActivated, onFocusChanged };
+        chrome.tabs.onActivated.addListener(onActivated);
+        chrome.windows.onFocusChanged.addListener(onFocusChanged);
+      }, intervalId);
+      const cdp = await context.newCDPSession(page);
+      try {
+        const supportsClose = await worker.evaluate(() => typeof chrome.sidePanel?.close === 'function');
+        if (!supportsClose || typeof reopenPanelFromAction !== 'function') {
+          lifecycle.disposition = !supportsClose ? 'not_tested_side_panel_close_unavailable' : 'not_tested_action_popup_reopen_unavailable';
+        } else {
+          const oldTargetId = panel.targetId;
+          const beforeContexts = await worker.evaluate(() => chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }));
+          assert(beforeContexts.length === 1, 'panel_close_initial_context_missing');
+          lifecycle.initialContextWasGlobal = beforeContexts[0].windowId === -1;
+          const closeResult = await worker.evaluate(async (windowId) => {
+            try { await chrome.sidePanel.close({ windowId }); return 'requested'; }
+            catch { return 'refused'; }
+          }, before.windowId);
+          if (closeResult !== 'requested') {
+            lifecycle.disposition = 'not_tested_side_panel_close_refused';
+          } else {
+            let closed = false;
+            for (let attempt = 0; attempt < 30; attempt += 1) {
+              const contexts = await worker.evaluate(() => chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }));
+              const targets = await cdp.send('Target.getTargets');
+              if (contexts.length === 0 && !targets.targetInfos.some((target) => target.targetId === oldTargetId)) { closed = true; break; }
+              await wait(100);
+            }
+            if (!closed) {
+              lifecycle.disposition = 'not_tested_panel_destruction_unproven';
+            } else {
+              panel.dispose();
+              const reopened = await reopenPanelFromAction(page, before.windowId);
+              if (!reopened.opened) {
+                lifecycle.disposition = `not_tested_${reopened.reason}`;
+                lifecycle.actionPopupReadiness = reopened.readiness ?? null;
+              } else {
+                panel = reopened.panel;
+                const afterContexts = await worker.evaluate(() => chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }));
+                assert(afterContexts.length === 1 && afterContexts[0].documentId !== beforeContexts[0].documentId && panel.targetId !== oldTargetId, 'panel_close_reopen_not_new_document');
+                lifecycle.oldTargetDestroyed = true;
+                lifecycle.reopenedNewDocument = true;
+                // This case owns a raw host offer, not a generated UI value. A
+                // UI-value-disposal claim needs a separate positive Generate
+                // transition before close and must not be inferred here.
+                lifecycle.reopenedUiValueDisposal = 'not_claimed_raw_offer_only';
+                const oldConnectionId = connectionId;
+                connectionId = await openGeneratorConnection();
+                lifecycle.reopenedConnectionDistinct = connectionId !== oldConnectionId;
+                assert(lifecycle.reopenedConnectionDistinct, 'panel_close_reopened_connection_reused');
+                checkpoint('generator_panel_close_old_offer');
+                lifecycle.oldOfferRemainingMs = oldOffer.expiresAt - Date.now();
+                assert(lifecycle.oldOfferRemainingMs >= 10_000, 'panel_close_old_offer_insufficient_ttl_headroom');
+                const oldUse = await use(oldOffer.id);
+                lifecycle.oldOfferStatus = oldUse?.status ?? 'missing_response';
+                lifecycle.oldOfferCompletedBeforeExpiry = Date.now() < oldOffer.expiresAt;
+                assert(lifecycle.oldOfferCompletedBeforeExpiry, 'panel_close_old_offer_refusal_after_expiry');
+                lifecycle.oldOfferFieldsUnchanged = await unchanged(page);
+                const after = await worker.evaluate(async (id) => {
+                  const tab = await chrome.tabs.get(id);
+                  const focused = await chrome.windows.getLastFocused({ windowTypes: ['normal'] });
+                  const tracker = globalThis.__vaultPanelCloseLifecycle;
+                  return { tabId: tab.id, windowId: tab.windowId, tabActive: tab.active === true, focusedWindowId: focused.id, focused: focused.focused === true, activated: tracker?.state?.activated ?? -1, focusChanged: tracker?.state?.focusChanged ?? -1 };
+                }, tabId);
+                lifecycle.transitionCounters = after;
+                assert(after.tabId === before.tabId && after.windowId === before.windowId && after.tabActive && after.focused && after.focusedWindowId === before.focusedWindowId && after.activated === 0 && after.focusChanged === 0, 'panel_close_transition_changed_tab_or_window');
+                lifecycle.noTabOrWindowInvalidation = true;
+                if (lifecycle.oldOfferStatus !== 'stale') {
+                  lifecycle.disposition = 'failed_old_offer_survived';
+                  throw new Error('panel_close_old_offer_survived');
+                }
+                if (!lifecycle.oldOfferFieldsUnchanged) {
+                  lifecycle.disposition = 'failed_old_offer_wrote_value';
+                  throw new Error('panel_close_old_offer_wrote_value');
+                }
+                const freshDiscovery = await discover();
+                const freshOffer = freshDiscovery?.offers?.find((offer) => offer.frameId === 0);
+                assert(freshOffer, 'panel_close_fresh_offer_missing');
+                assert((await use(freshOffer.id))?.status === 'filled', 'panel_close_fresh_offer_refused');
+                assert(await matches(page), 'panel_close_fresh_offer_value_mismatch');
+                await page.evaluate(() => { document.querySelector('#new').value = ''; document.querySelector('#confirm').value = ''; });
+                lifecycle.disposition = 'passed';
+                lifecycle.oldOfferRefusedUnchanged = true;
+                lifecycle.freshRecoveryFilled = true;
+              }
+            }
+          }
+        }
+      } finally {
+        await worker.evaluate((id) => {
+          const tracker = globalThis.__vaultPanelCloseLifecycle;
+          if (tracker?.id === id) {
+            chrome.tabs.onActivated.removeListener(tracker.onActivated);
+            chrome.windows.onFocusChanged.removeListener(tracker.onFocusChanged);
+            delete globalThis.__vaultPanelCloseLifecycle;
+          }
+        }, intervalId).catch(() => {});
+      }
+      if (lifecycle.disposition !== 'passed') {
+        (evidence.remaining ||= []).push(`panel-close lifecycle ${lifecycle.disposition}`);
+        return;
+      }
+    }
     checkpoint('generator_positive_ui');
     await verifyRealVaultPanel();
     await panel.waitFor(`!!document.querySelector('[aria-label="Password generator"]')`);
@@ -446,6 +594,7 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     await dispatchAndWaitForKeyboard('escape_final', { key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }, `(${section})?.querySelector('[aria-expanded="false"]') && document.activeElement === (${button('Password generator')})`);
     evidence.positiveGenerateRevealUse = true;
     evidence.remaining = [
+      ...(evidence.remaining || []),
       ...(headlessNoClipboardMode ? ['clipboard acceptance requires an isolated clipboard session'] : []),
       'window/actor/organization switches and restart need separate real-browser cases',
       'distributed artifact and other browsers remain separate acceptance',
