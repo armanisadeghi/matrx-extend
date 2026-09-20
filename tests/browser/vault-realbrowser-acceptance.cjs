@@ -34,14 +34,23 @@ const required = (key) => {
   assert(typeof value === 'string' && value.length > 0, `missing_${key.toLowerCase()}`);
   return value;
 };
-if (process.env.MATRX_REALBROWSER_VAULT_CANARY !== 'RUN_UNDER_REVIEW')
-  throw new Error('inert_canary_requires_explicit_arm');
 const localCanonicalCleanupArmed = process.env.MATRX_VAULT_CANARY_LOCAL_CANONICAL_CLEANUP === 'RUN_LOCAL_CANONICAL_CLEANUP';
 // This is deliberately a separate, explicitly armed mode.  It proves that a
 // fresh extension can authenticate and establish its tenant context without
 // making a Vault mutation; it is not a Save/Update acceptance result.
 const readOnlyAdmissionMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
 const generatorTransportMode = process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
+const displayMode = process.env.MATRX_VAULT_CANARY_DISPLAY;
+const headlessNoClipboardMode = displayMode === 'HEADLESS_NO_CLIPBOARD';
+const headedMode = displayMode === 'HEADED';
+assert(typeof displayMode === 'string' && displayMode.length > 0, 'canary_display_mode_required');
+assert(headlessNoClipboardMode || headedMode, 'canary_display_mode_invalid');
+assert(!headedMode || process.env.MATRX_VAULT_CANARY_FOREGROUND === 'ALLOW_FOREGROUND_TEST', 'headed_canary_requires_foreground_allow');
+assert(!headlessNoClipboardMode || generatorTransportMode, 'headless_requires_generator_transport');
+assert(!headlessNoClipboardMode || readOnlyAdmissionMode, 'headless_requires_read_only_admission');
+assert(!headlessNoClipboardMode || !process.env.MATRX_VAULT_CANARY_WINDOW_PLACEMENT, 'headless_refuses_window_placement');
+if (process.env.MATRX_REALBROWSER_VAULT_CANARY !== 'RUN_UNDER_REVIEW')
+  throw new Error('inert_canary_requires_explicit_arm');
 assert(!generatorTransportMode || readOnlyAdmissionMode, 'generator_requires_mutation_free_admission');
 const LOCAL_CLEANUP_MAX_BASELINE_IDS = 64;
 const LOCAL_CLEANUP_MAX_CREATED_IDS = 5;
@@ -69,6 +78,7 @@ const proof = {
   runnerSha256: crypto.createHash('sha256').update(syncFs.readFileSync(__filename)).digest('hex'),
   scope: 'owned localhost real-extension Vault Save/Update acceptance',
   mode: readOnlyAdmissionMode ? 'read_only_admission' : 'full_acceptance',
+  displayMode,
   phase: 'artifact_admission',
   authenticationAttempted: false,
   runId,
@@ -550,11 +560,30 @@ async function openGenuineSidePanel(extensionId, popup) {
   const click = async (expression) => {
     let box;
     for (let attempt = 0; attempt < 30; attempt += 1) {
-      box = await evaluate(`(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = element.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { x, y, width: rect.width, height: rect.height, viewport: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === element || element.contains(hit)) }; })()`);
+      box = await evaluate(`(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = element.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { x, y, width: rect.width, height: rect.height, viewportWidth: innerWidth, viewportHeight: innerHeight, targetTag: element.tagName, hitTag: hit?.tagName ?? null, hitPath: (() => { const nodes = []; for (let node = hit; node && nodes.length < 4; node = node.parentElement) nodes.push({ tag: node.tagName, role: node.getAttribute('role'), classes: typeof node.className === 'string' ? node.className.slice(0, 240) : '', pointerEvents: getComputedStyle(node).pointerEvents }); return nodes; })(), disabled: element.disabled === true, viewport: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === element || element.contains(hit)) }; })()`);
       if (box?.width > 0 && box?.height > 0 && box.viewport && box.hit) break;
       await wait(250);
     }
-    assert(box?.width > 0 && box?.height > 0 && box.viewport && box.hit, 'real_side_panel_control_not_actionable');
+    if (!(box?.width > 0 && box?.height > 0 && box.viewport && box.hit)) {
+      proof.panelControlFailure = {
+        geometry: box,
+        callerLocations: new Error().stack.split('\n').filter(line => line.includes('vault-') && /:\d+:\d+/.test(line)).map(line => line.replace(/.*(vault-[^/ ]+\.cjs:\d+:\d+).*/, '$1')),
+      };
+      try {
+        // Failure-only diagnostic: mask generated DOM values before any image.
+        // This does not alter product state or turn a failed click into a pass.
+        await evaluate(`(() => { const style = document.createElement('style'); style.textContent = '[aria-label="Password generator"] code { visibility: hidden !important; }'; document.head.append(style); return true; })()`);
+        const captured = await panel.send('Page.captureScreenshot', { format: 'png' });
+        if (typeof captured.data === 'string') {
+          await fs.writeFile(path.join(root, 'panel-failure-masked.png'), Buffer.from(captured.data, 'base64'), { mode: 0o600 });
+          proof.panelControlFailure.maskedScreenshot = true;
+        }
+      } catch {
+        proof.panelControlFailure.maskedScreenshot = false;
+      }
+      persist();
+      throw new Error('real_side_panel_control_not_actionable');
+    }
     await panel.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: box.x, y: box.y });
     await panel.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: box.x, y: box.y, button: 'left', clickCount: 1 });
     await panel.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: box.x, y: box.y, button: 'left', clickCount: 1 });
@@ -698,6 +727,16 @@ async function authenticate(extension) {
   proof.phase = 'browser_launch';
   persist();
   const placementPath = process.env.MATRX_VAULT_CANARY_WINDOW_PLACEMENT;
+  const configuredExecutable = process.env.MATRX_VAULT_CANARY_CHROME_EXECUTABLE;
+  const executablePath = configuredExecutable || chromium.executablePath();
+  if (headlessNoClipboardMode) {
+    // `chromium.executablePath()` can identify Playwright's headless shell;
+    // extension/SIDE_PANEL acceptance needs the complete Chrome-for-Testing app.
+    assert(typeof configuredExecutable === 'string' && configuredExecutable.length > 0, 'headless_requires_explicit_chrome_for_testing');
+    assert(/Google Chrome for Testing\.app\/Contents\/MacOS\/Google Chrome for Testing$/.test(configuredExecutable), 'headless_requires_full_chrome_for_testing');
+    const executable = await fs.stat(configuredExecutable).catch(() => null);
+    assert(executable?.isFile(), 'headless_chrome_for_testing_missing');
+  }
   const placementArgs = placementPath ? (() => {
     const bounds = JSON.parse(syncFs.readFileSync(placementPath, 'utf8'));
     const coordinate = (value) => Number.isInteger(value) && value >= -2147483648 && value <= 2147483647;
@@ -705,12 +744,16 @@ async function authenticate(extension) {
     return [`--window-position=${bounds.left},${bounds.top}`, `--window-size=${bounds.width},${bounds.height}`];
   })() : [];
   context = await chromium.launchPersistentContext(profile, {
-    // Chrome does not give SIDE_PANEL a compositor surface in headless mode.
     // This is the disposable, agent-owned Chrome-for-Testing profile only.
-    headless: false,
-    // Playwright's default headless shell does not load this extension.
-    executablePath: process.env.MATRX_VAULT_CANARY_CHROME_EXECUTABLE || chromium.executablePath(),
-    args: [`--disable-extensions-except=${extension}`, `--load-extension=${extension}`, ...placementArgs],
+    // Headless mode still uses the full browser, never Playwright's shell.
+    headless: headlessNoClipboardMode,
+    executablePath,
+    args: [
+      ...(headlessNoClipboardMode ? ['--headless=new'] : []),
+      `--disable-extensions-except=${extension}`,
+      `--load-extension=${extension}`,
+      ...placementArgs,
+    ],
     ...(placementPath && { viewport: null }),
   });
   proof.phase = 'extension_worker';
@@ -810,13 +853,35 @@ async function authenticate(extension) {
   persist();
   assert(!(await hasPendingCapture()), 'admin_password_pending_before_writes');
 }
-async function focusOwnedBrowser() {
-  if (process.platform !== 'darwin') return;
+async function focusOwnedBrowser(expectedTabId) {
+  if (!headlessNoClipboardMode && process.platform !== 'darwin') return;
   const { stdout } = await execFileAsync('ps', ['-axo', 'pid=,command='], { timeout: 5000, maxBuffer: 4 * 1024 * 1024 });
   const matches = stdout.split('\n').filter((line) => line.includes(`--user-data-dir=${profile}`) && !line.includes('--type='));
   assert(matches.length === 1, 'owned_browser_process_not_unique');
   const pid = Number(matches[0].trim().split(/\s+/, 1)[0]);
   assert(Number.isSafeInteger(pid) && pid > 1, 'owned_browser_process_missing');
+  if (headlessNoClipboardMode) {
+    assert(matches[0].includes('--headless=new'), 'owned_headless_browser_process_missing');
+    const chromeFocus = await worker.evaluate(async (tabId) => {
+      const focused = await chrome.windows.getLastFocused({ windowTypes: ['normal'], populate: true });
+      const windows = await chrome.windows.getAll({ windowTypes: ['normal'], populate: true });
+      const targetTab = Number.isInteger(tabId) ? await chrome.tabs.get(tabId) : null;
+      return {
+        normalWindowCount: windows.length,
+        focused: focused.focused === true,
+        focusedType: focused.type,
+        focusedWindowHasActiveTab: Array.isArray(focused.tabs) && focused.tabs.some((tab) => tab.active === true),
+        expectedTabActive: targetTab?.active === true,
+        expectedTabWindowMatchesFocused: targetTab?.windowId === focused.id,
+      };
+    }, expectedTabId);
+    assert(chromeFocus.normalWindowCount >= 1 && chromeFocus.focused && chromeFocus.focusedType === 'normal'
+      && chromeFocus.focusedWindowHasActiveTab && chromeFocus.expectedTabActive && chromeFocus.expectedTabWindowMatchesFocused,
+    'headless_chrome_normal_window_not_focused');
+    proof.headlessChromeFocus = chromeFocus;
+    persist();
+    return;
+  }
   await execFileAsync('osascript', ['-e', `tell application "System Events" to set frontmost of (first process whose unix id is ${pid}) to true`], { timeout: 5000 });
   for (let attempt = 0; attempt < 20; attempt += 1) {
     const { stdout } = await execFileAsync('osascript', ['-l', 'JavaScript', '-e', `ObjC.import('AppKit'); Number($.NSWorkspace.sharedWorkspace.frontmostApplication.processIdentifier)`], { timeout: 5000, maxBuffer: 1024 });
@@ -838,6 +903,22 @@ async function verifyRealVaultPanel() {
     await wait(250);
   }
   throw new Error('real_side_panel_vault_not_visible');
+}
+async function dismissResolvedInitialOrganizationNotice() {
+  // A fresh profile can announce its missing workspace before the normal
+  // Settings selection finishes. Acknowledge only that resolved setup notice
+  // through its real Dismiss control; never clear stores or dismiss other errors.
+  const active = (await storage(['matrx.org.active']))['matrx.org.active'];
+  assert(proof.checks.independentAdminIdentity && active?.id === organizationId, 'setup_notice_context_not_verified');
+  const notice = `Array.from(document.querySelectorAll('[role="alert"]')).find(node => node.querySelector('.font-medium')?.textContent?.trim() === 'Capture list unavailable' && node.textContent.includes('NO_ORGANIZATION'))`;
+  const observed = await realPanel.evaluate(`!!(${notice})`);
+  proof.initialOrganizationNotice = { observed, dismissed: false, currentOrganizationVerified: true };
+  if (observed) {
+    await realPanel.click(`(${notice}).querySelector('button[aria-label="Dismiss"]')`);
+    await realPanel.waitFor(`!(${notice})`);
+    proof.initialOrganizationNotice.dismissed = true;
+  }
+  persist();
 }
 async function submitLogin(page, username, password) {
   await page.goto(localUrl, { waitUntil: 'domcontentloaded' });
@@ -912,17 +993,19 @@ async function materializedPassword(id) {
   let artifactAdmitted = false;
   // Generator mode starts non-durable and becomes durable only after a
   // successful unlocked-session probe, before any artifact/browser/auth work.
-  let generatorFocusPreflightRefused = generatorTransportMode;
+  let generatorFocusPreflightRefused = generatorTransportMode && headedMode;
   try {
     // This must precede artifact admission and persistence. A locked desktop
     // cannot produce compositor focus, so recording it as an acceptance run
     // would create a false durable cleanup obligation without any browser or
     // credential activity.
-    if (generatorTransportMode) {
+    if (generatorTransportMode && headedMode) {
       const sessionLocked = await generatorSessionLocked();
       proof.generatorFocusPreflight = { screenLocked: sessionLocked };
       if (sessionLocked) throw new Error('generator_session_locked');
       generatorFocusPreflightRefused = false;
+    } else if (generatorTransportMode) {
+      proof.generatorFocusPreflight = { disposition: 'not_run_headless_no_clipboard' };
     }
     await refuseUnreconciledPriorRun();
     const extension = await verifyArtifact();
@@ -931,6 +1014,7 @@ async function materializedPassword(id) {
     artifactAdmitted = true;
     persist();
     await authenticate(extension);
+    await dismissResolvedInitialOrganizationNotice();
     proof.phase = 'vault_baseline';
     persist();
     const baseline = await items();
@@ -947,7 +1031,7 @@ async function materializedPassword(id) {
       persist();
       if (generatorTransportMode) {
         proof.generatorHarnessSha256 = await sha256(path.join(__dirname, 'vault-generator-acceptance.cjs'));
-        await require('./vault-generator-acceptance.cjs').runGeneratorChecks({ context, worker, panel: realPanel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath: path.join(root, 'generator-masked.png'), verifyRealVaultPanel });
+        await require('./vault-generator-acceptance.cjs').runGeneratorChecks({ context, worker, panel: realPanel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath: path.join(root, 'generator-masked.png'), verifyRealVaultPanel, displayMode });
       }
     } else {
       local = await startLocalSite();

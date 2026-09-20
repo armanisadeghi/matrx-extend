@@ -29,14 +29,25 @@ async function fixture(childUrl = null) {
   return { state, url: `http://127.0.0.1:${server.address().port}/password`, close: () => new Promise((resolve) => server.close(resolve)) };
 }
 
-exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath, verifyRealVaultPanel }) => {
+exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, checkpoint, proof, focusOwnedBrowser, screenshotPath, verifyRealVaultPanel, displayMode }) => {
+  assert(displayMode === 'HEADLESS_NO_CLIPBOARD' || displayMode === 'HEADED', 'generator_display_mode_required');
   const child = await fixture();
   let top;
   let page;
   let synthetic = `generated-${crypto.randomUUID()}`;
   let copiedSyntheticValue = null;
-  const evidence = proof.generator = { scope: 'real side-panel host transport and password/passphrase controls', hostTransportOk: false, positiveGeneratorUi: false, checks: {} };
-  const clipboardCustody = evidence.clipboard = { copyAttempted: false, disposition: 'unknown' };
+  const headlessNoClipboardMode = displayMode === 'HEADLESS_NO_CLIPBOARD';
+  const evidence = proof.generator = {
+    scope: 'real side-panel host transport and password/passphrase controls',
+    displayMode,
+    hostTransportOk: false,
+    positiveGeneratorUi: false,
+    checks: {},
+  };
+  const clipboardCustody = evidence.clipboard = {
+    copyAttempted: false,
+    disposition: headlessNoClipboardMode ? 'not_run_requires_isolated_clipboard' : 'unknown',
+  };
   try {
     top = await fixture(child.url);
     page = await context.newPage();
@@ -45,7 +56,7 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     const tabId = await worker.evaluate(async (url) => (await chrome.tabs.query({})).find((tab) => tab.url === url)?.id, top.url);
     assert(Number.isInteger(tabId), 'generator_fixture_tab_missing');
     for (let focusAttempt = 0; focusAttempt < 5; focusAttempt++) {
-    await focusOwnedBrowser();
+    await focusOwnedBrowser(tabId);
     evidence.focusDiagnostic = await worker.evaluate(async (id) => {
       const tab = await chrome.tabs.get(id);
       await chrome.windows.update(tab.windowId, { focused: true });
@@ -171,7 +182,7 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     evidence.checks.expiryRefusedUnchanged = true;
 
     checkpoint('generator_navigation_refusal');
-    await focusOwnedBrowser();
+    await focusOwnedBrowser(tabId);
     await page.bringToFront();
     const fourth = await discover();
     evidence.navigationDiscovery = { status: fourth?.status, offerCount: fourth?.offers?.length ?? 0, focus: await worker.evaluate(async (id) => { const tab = await chrome.tabs.get(id); const win = await chrome.windows.get(tab.windowId); return { focused: win.focused, active: tab.active }; }, tabId) };
@@ -278,6 +289,7 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
       }
     };
     const replaceOwnedCopiedClipboard = async (expectedValue) => {
+      assert(!headlessNoClipboardMode, 'headless_clipboard_path_refused');
       if (!page || page.isClosed() || typeof expectedValue !== 'string') return 'unknown';
       const target = page.locator('#clipboard-fixture');
       try {
@@ -330,7 +342,7 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
       await panel.click(`(${section}).querySelector('[aria-label="Reveal generated value"]')`);
       synthetic = await panel.evaluate(`(${section}).querySelector('code').textContent`);
       assert(typeof synthetic === 'string' && (kind === 'Password' ? synthetic.length === 24 : synthetic.length >= 11 && synthetic.includes('-')), 'generator_default_value_invalid');
-      if (kind === 'Password') {
+      if (kind === 'Password' && !headlessNoClipboardMode) {
         copiedSyntheticValue = synthetic;
         clipboardCustody.copyAttempted = true;
         await panel.click(button('Copy'));
@@ -346,7 +358,11 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
         assert(clipboardCustody.disposition === 'owned_value_replaced', 'generator_copy_native_paste_or_owned_replacement_mismatch');
         evidence.checks.passwordCopyNativePasteAndOwnedGeneratedClipboardReplacementVerified = true;
         evidence.checks.passwordCopyControlledFailureCustody = true;
-        await focusOwnedBrowser();
+        await focusOwnedBrowser(tabId);
+      } else if (kind === 'Password') {
+        // Clipboard custody requires an isolated native clipboard surface.
+        // This narrow headless mode deliberately leaves the host clipboard untouched.
+        clipboardCustody.disposition = 'not_run_requires_isolated_clipboard';
       }
       await panel.click(`(${section}).querySelector('[aria-label="Hide generated value"]')`);
       await panel.click(button('Regenerate'));
@@ -356,7 +372,16 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
       assert(regenerated !== synthetic, 'generator_regenerate_reused_value');
       synthetic = regenerated;
       await panel.click(`(${section}).querySelector('[aria-label="Hide generated value"]')`);
-      if (kind === 'Password') await panel.screenshot(section, screenshotPath);
+      if (kind === 'Password') {
+        try {
+          await panel.screenshot(section, screenshotPath);
+          evidence.maskedUiScreenshot = true;
+        } catch (error) {
+          if (!headlessNoClipboardMode) throw error;
+          evidence.maskedUiScreenshot = false;
+          evidence.maskedUiVisualEvidence = 'unverified_headless_capture_refused';
+        }
+      }
       await panel.click(button('Use'));
       await panel.waitFor(`!(${section}).querySelector('code') && /Filled/.test((${section}).innerText)`);
       assert(await matches(page), 'generator_ui_fill_mismatch');
@@ -420,10 +445,13 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
     evidence.checks.keyboardEnterSpaceAndTabNativeFocus = true;
     await dispatchAndWaitForKeyboard('escape_final', { key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }, `(${section})?.querySelector('[aria-expanded="false"]') && document.activeElement === (${button('Password generator')})`);
     evidence.positiveGenerateRevealUse = true;
-    evidence.maskedUiScreenshot = true;
-    evidence.remaining = ['window/actor/organization switches and restart need separate real-browser cases', 'distributed artifact and other browsers remain separate acceptance'];
+    evidence.remaining = [
+      ...(headlessNoClipboardMode ? ['clipboard acceptance requires an isolated clipboard session'] : []),
+      'window/actor/organization switches and restart need separate real-browser cases',
+      'distributed artifact and other browsers remain separate acceptance',
+    ];
   } finally {
-    if (clipboardCustody.copyAttempted && clipboardCustody.disposition !== 'owned_value_replaced') {
+    if (!headlessNoClipboardMode && clipboardCustody.copyAttempted && clipboardCustody.disposition !== 'owned_value_replaced') {
       try {
         clipboardCustody.disposition = await replaceOwnedCopiedClipboard(copiedSyntheticValue);
       } catch {
