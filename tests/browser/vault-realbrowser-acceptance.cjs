@@ -1667,11 +1667,6 @@ async function materializedPassword(id) {
         focusOwnedBrowser,
         verifyRealVaultPanel,
       });
-      await runSavedFormMatrix({
-        context, worker, realPanel, targetName, username, password: newPassword,
-        parentOrigin, getSubmitCount: () => local.state.submits,
-        assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
-      });
       await runVaultPreferencesChecks({
         context, worker, realPanel, targetName, username, password: newPassword,
         parentLoginUrl: localUrl, getSubmitCount: () => local.state.submits,
@@ -1682,9 +1677,10 @@ async function materializedPassword(id) {
           ownedFixtureIds: [...createdIds],
         }),
       });
+      const changedPassword = `changed-${crypto.randomUUID()}`;
       await runPasswordChangeCaptureChecks({
         context, worker, realPanel, parentOrigin, targetName, username,
-        currentPassword: newPassword, nextPassword: `changed-${crypto.randomUUID()}`,
+        currentPassword: newPassword, nextPassword: changedPassword,
         assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
         pendingCard, waitForCaptureDecision, captureButton: uniqueCaptureButton,
         pendingCapturePresent: hasPendingCapture,
@@ -1701,6 +1697,11 @@ async function materializedPassword(id) {
           assert(await authenticator.afterUpdate(authenticatorHandle) === true, 'password_change_authenticator_changed');
           return true;
         },
+      });
+      await runSavedFormMatrix({
+        context, worker, realPanel, targetName, username, password: changedPassword,
+        parentOrigin, getSubmitCount: () => local.state.submits,
+        assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
       });
       assert(createdIds.size === fixtureIdsBeforeSavedLogin.size
         && [...fixtureIdsBeforeSavedLogin].every((id) => createdIds.has(id)), 'saved_login_helper_created_fixture');
