@@ -426,6 +426,8 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
       let createdTargetId = null;
       let baselineWindowIds = [];
       let extraWindowClosed = false;
+      let windowFocusProbeKey = null;
+      let panelMessageProbeInstalled = false;
       const cdp = await context.newCDPSession(page);
       const closeOwnedExtraWindow = async () => {
         let cleanupVerified = false;
@@ -475,6 +477,36 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
         if (!Number.isInteger(extraWindowId)) {
           lifecycle.disposition = 'not_tested_second_normal_window_unavailable';
         } else {
+          // These probes record only lifecycle booleans. They never read the
+          // generated value or send a product request, so a failed UI wait can
+          // distinguish a missing focus event from a retained candidate.
+          windowFocusProbeKey = `__vaultCanaryWindowFocus_${crypto.randomUUID().replaceAll('-', '')}`;
+          await worker.evaluate(({ key, expectedWindowId }) => {
+            const state = { eventCount: 0, focusedOtherObserved: false };
+            const listener = (windowId) => {
+              state.eventCount += 1;
+              if (windowId === expectedWindowId) state.focusedOtherObserved = true;
+            };
+            globalThis[key] = { state, listener };
+            chrome.windows.onFocusChanged.addListener(listener);
+          }, { key: windowFocusProbeKey, expectedWindowId: extraWindowId });
+          panelMessageProbeInstalled = await panel.evaluate(`(() => {
+            const offerId = ${JSON.stringify(oldOffer.id)};
+            const state = { invalidationMessageCount: 0, invalidationForOldOfferReceived: false, generatorPortPresent: false, generatorPortDisconnected: false };
+            const listener = (message) => {
+              if (message?.__matrxCredentialGeneration === true && message.operation === 'invalidated') {
+                state.invalidationMessageCount += 1;
+                if (Array.isArray(message.offerIds) && message.offerIds.includes(offerId)) state.invalidationForOldOfferReceived = true;
+              }
+            };
+            const port = globalThis.__vaultCanaryGeneratorPort;
+            const disconnected = () => { state.generatorPortDisconnected = true; };
+            state.generatorPortPresent = !!port;
+            chrome.runtime.onMessage.addListener(listener);
+            port?.onDisconnect.addListener(disconnected);
+            globalThis.__vaultCanaryWindowSwitchProbe = { state, listener, port, disconnected };
+            return state.generatorPortPresent;
+          })()`);
           lifecycle.transition = await worker.evaluate(async ({ originalWindowId, otherWindowId, expectedTabId }) => {
             const waitForFocusedWindow = async (windowId) => {
               for (let attempt = 0; attempt < 20; attempt += 1) {
@@ -499,7 +531,46 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
           lifecycle.transitionKind = 'switch_away_then_close_other_window';
           lifecycle.twoOpenWindowReturnFocus = 'not_tested_headless_runtime_limitation';
           assert(lifecycle.transition.awayFocusedOther && lifecycle.transition.originalTabActive, 'window_switch_away_focus_transition_unproven');
-          await panel.waitFor(`!!(${lifecycleSection}) && !(${lifecycleSection})?.querySelector('code') && !(${lifecycleSection})?.querySelector('[name="generated-password-target"]') && !!(${lifecycleButton('Generate')}) && !(${lifecycleButton('Generate')}).disabled && (${lifecycleSection})?.innerText.includes('page changed')`);
+          const windowSwitchUiState = () => panel.evaluate(`(() => {
+            const root = ${lifecycleSection};
+            const opener = Array.from(root?.querySelectorAll('button') ?? []).find((button) => button.textContent.trim() === 'Password generator');
+            const generate = ${lifecycleButton('Generate')};
+            const regenerate = ${lifecycleButton('Regenerate')};
+            const action = generate || regenerate;
+            const text = root?.innerText ?? '';
+            return {
+              sectionPresent: !!root,
+              generatorOpen: opener?.getAttribute('aria-expanded') === 'true',
+              codePresent: !!root?.querySelector('code'),
+              revealPresent: !!root?.querySelector('[aria-label="Reveal generated value"]'),
+              offerPresent: !!root?.querySelector('[name="generated-password-target"]'),
+              copyPresent: Array.from(root?.querySelectorAll('button') ?? []).some((button) => button.textContent.trim() === 'Copy'),
+              usePresent: Array.from(root?.querySelectorAll('button') ?? []).some((button) => button.textContent.trim() === 'Use'),
+              actionLabel: action?.textContent?.trim() === 'Generate' ? 'generate' : action?.textContent?.trim() === 'Regenerate' ? 'regenerate' : 'missing',
+              actionReady: !!action && !action.disabled,
+              notice: text.includes('page changed') ? 'page_changed' : text.includes('generator connection changed') ? 'connection_changed' : text.includes('Generated.') ? 'generated' : text === '' ? 'none' : 'other',
+            };
+          })()`);
+          lifecycle.uiBeforeClearWait = await windowSwitchUiState();
+          lifecycle.panelIdentityBeforeUiWait = await panelIdentity();
+          const uiWaitStartedAt = Date.now();
+          try {
+            await panel.waitFor(`!!(${lifecycleSection}) && !(${lifecycleSection})?.querySelector('code') && !(${lifecycleSection})?.querySelector('[name="generated-password-target"]') && !!(${lifecycleButton('Generate')}) && !(${lifecycleButton('Generate')}).disabled && (${lifecycleSection})?.innerText.includes('page changed')`);
+            lifecycle.uiWaitOutcome = 'cleared';
+          } catch (error) {
+            lifecycle.uiWaitOutcome = error instanceof Error ? error.message : 'unknown_error';
+            lifecycle.uiAfterClearWait = await windowSwitchUiState().catch(() => ({ unavailable: true }));
+            const panelAfterFailedWait = await panelIdentity().catch(() => null);
+            lifecycle.samePanelTargetAndDocumentAfterFailedWait = panelAfterFailedWait !== null
+              && panelAfterFailedWait.targetId === uiCandidate.identity.targetId
+              && panelAfterFailedWait.documentId === uiCandidate.identity.documentId;
+            throw error;
+          } finally {
+            lifecycle.uiWaitElapsedMs = Date.now() - uiWaitStartedAt;
+            lifecycle.focusEvent = await worker.evaluate((key) => globalThis[key]?.state ?? { unavailable: true }, windowFocusProbeKey).catch(() => ({ unavailable: true }));
+            lifecycle.panelLifecycleSignal = await panel.evaluate(`globalThis.__vaultCanaryWindowSwitchProbe?.state ?? { unavailable: true }`).catch(() => ({ unavailable: true }));
+          }
+          lifecycle.uiAfterClearWait = await windowSwitchUiState();
           lifecycle.uiCandidateClearedOnWindowSwitch = true;
           lifecycle.uiCandidateClearedAt = Date.now();
           assert(lifecycle.uiCandidateClearedAt < uiCandidate.expiresAt, 'window_switch_ui_clear_after_expiry');
@@ -549,6 +620,21 @@ exports.runGeneratorChecks = async ({ context, worker, panel, assert, wait, chec
           lifecycle.disposition = 'passed';
         }
       } finally {
+        if (windowFocusProbeKey) {
+          await worker.evaluate((key) => {
+            const probe = globalThis[key];
+            if (probe?.listener) chrome.windows.onFocusChanged.removeListener(probe.listener);
+            delete globalThis[key];
+          }, windowFocusProbeKey).catch(() => {});
+        }
+        if (panelMessageProbeInstalled) {
+          await panel.evaluate(`(() => {
+            const probe = globalThis.__vaultCanaryWindowSwitchProbe;
+            if (probe?.listener) chrome.runtime.onMessage.removeListener(probe.listener);
+            probe?.port?.onDisconnect.removeListener(probe.disconnected);
+            delete globalThis.__vaultCanaryWindowSwitchProbe;
+          })()`).catch(() => {});
+        }
         if (!extraWindowClosed && (Number.isInteger(extraWindowId) || createdTargetId)) await closeOwnedExtraWindow();
         if (!extraWindowClosed && lifecycle.disposition === 'passed') lifecycle.disposition = 'failed_owned_extra_window_cleanup_unverified';
       }
