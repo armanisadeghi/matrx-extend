@@ -2,6 +2,8 @@ import path from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'wxt';
 
+import { FIREFOX_GECKO_ID } from './src/config/identity';
+
 const devExtensionKey =
   'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1+MJD71hyTGZT40a/vRzeM9dz80VyHsiTm7zq8Yz0NxqVcl9nBx8GELq+FS0GUo1fUQBjqm17zPYtD/w4Y7TAzRY+AFu2wEzaP78b49gir3FEPw9liAhowraluj13Pg5tNPKTH1znL6rAsMi9VTrYm+WDJtj+nKI5CoKKKq0rQTUf/ChGn4Db1CrCnv7H33v9czYHZOBkksvni65uczSnDkx3x0+xH9ApJjiL5ADa2a9IUFwfBWML4AW+Q7jM7ZcegIBxsDtyzStgL7PR67cniI34An6Xsm+VVSyfP2uBP9eZr8FWfdehAmFo4v9WmxuVXAukJ+TuRAczbExT59FpQIDAQAB';
 const isChromeWebStoreBuild = process.env.MATRX_CWS_BUILD === '1';
@@ -55,8 +57,8 @@ export default defineConfig({
       // published item is hnfolienncfklkgmdjjmhhegglimlamg. They never
       // converge.
       //
-      // Both IDs live in src/config/identity.ts; both redirect URIs are in
-      // Supabase Auth. Full incident: .research/v0.1.4-auth-incident.md.
+      // The Chrome IDs and their exact callbacks live in src/config/identity.ts.
+      // Full incident: .research/v0.1.4-auth-incident.md.
       ...(!isFirefox && !isChromeWebStoreBuild ? { key: devExtensionKey } : {}),
       permissions: [
         'storage',
@@ -189,7 +191,7 @@ export default defineConfig({
         ? {
             browser_specific_settings: {
               gecko: {
-                id: 'matrx-extend@aimatrx.com',
+                id: FIREFOX_GECKO_ID,
                 strict_min_version: '153.0',
                 data_collection_permissions: {
                   required: [

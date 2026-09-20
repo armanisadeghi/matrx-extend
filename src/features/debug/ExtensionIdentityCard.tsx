@@ -2,9 +2,9 @@
  * Extension identity card for the Debug tab.
  *
  * Shows the auth-critical "who am I" facts: runtime ID, redirect URI sent to
- * Supabase, OAuth client, Supabase URL, and whether the runtime ID matches
- * EXPECTED_EXTENSION_IDS. Surfaces in seconds whether sign-in has any chance
- * of working — without us having to ask the user to dig through DevTools.
+ * Supabase, OAuth client, Supabase URL, and whether the runtime ID and actual
+ * callback both match a configured identity. It does not make a claim about
+ * the OAuth client's live redirect configuration.
  *
  * This card is the on-device companion to the v0.1.4 incident: future ID
  * drift will be visible at a glance, not after a confused user reports
@@ -65,11 +65,8 @@ export function ExtensionIdentityCard() {
           </div>
           {!ok && (
             <div className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
-              Runtime ID is not on the EXPECTED_EXTENSION_IDS list. Sign-in will fail unless{' '}
-              <code className="rounded bg-secondary px-1 py-px text-[10px]">
-                https://{identity.runtime_id}.chromiumapp.org/
-              </code>{' '}
-              is registered in Supabase's redirect-URI allowlist.
+              The runtime ID or redirect URI differs from this build's configured identity. Confirm
+              this exact runtime redirect URI on the OAuth client.
             </div>
           )}
         </div>
@@ -87,7 +84,18 @@ export function ExtensionIdentityCard() {
 
       <dl className="mt-2 grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1 text-[11px]">
         <Field label="runtime id" value={identity.runtime_id} mono highlight={!ok} />
-        <Field label="redirect uri" value={identity.redirect_uri} mono highlight={!ok} />
+        <Field
+          label="runtime redirect uri"
+          value={identity.redirect_uri || '(unavailable)'}
+          mono
+          highlight={!ok}
+        />
+        <Field
+          label="expected redirect uri"
+          value={identity.expected_redirect_uri || '(unknown runtime id)'}
+          mono
+          highlight={!identity.redirect_matches_expected}
+        />
         <Field label="version" value={identity.extension_version} mono />
         <Field label="oauth client" value={identity.oauth_client_id} mono />
         <Field label="supabase" value={identity.supabase_url} mono />
@@ -95,12 +103,10 @@ export function ExtensionIdentityCard() {
       </dl>
 
       <div className="mt-2 text-[10px] leading-snug text-muted-foreground">
-        Hotfix when DRIFT: in the Matrx Supabase project → Authentication → URL Configuration, add
-        the redirect URI above to the allowlist. Save. Sign-in works within seconds. To prevent
-        recurrence, add the runtime id to{' '}
-        <code className="rounded bg-secondary px-1 py-px">EXPECTED_EXTENSION_IDS</code> in{' '}
-        <code className="rounded bg-secondary px-1 py-px">src/config/identity.ts</code> so the
-        warning clears.
+        When identity needs attention, confirm the exact runtime redirect URI above on the OAuth
+        client. To recognize a new build identity, add its stable runtime ID and exact callback to{' '}
+        <code className="rounded bg-secondary px-1 py-px">EXPECTED_EXTENSION_IDENTITIES</code> in{' '}
+        <code className="rounded bg-secondary px-1 py-px">src/config/identity.ts</code>.
       </div>
     </div>
   );
@@ -118,7 +124,11 @@ function Field({
   highlight?: boolean;
 }) {
   // Mark drift-relevant rows so the eye lands on them.
-  const checkDrift = highlight && (label === 'runtime id' || label === 'redirect uri');
+  const checkDrift =
+    highlight &&
+    (label === 'runtime id' ||
+      label === 'runtime redirect uri' ||
+      label === 'expected redirect uri');
   return (
     <>
       <dt className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</dt>
