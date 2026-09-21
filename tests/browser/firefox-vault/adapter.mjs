@@ -342,7 +342,7 @@ const key = '__matrxOwnedVaultCreateReceiptObserverV1';
 const windows = [...Services.wm.getEnumerator('navigator:browser')];
 if (windows.some(candidate => candidate[key])) return { ok: false, code: 'receipt_observer_already_started' };
 const win = Services.wm.getMostRecentWindow('navigator:browser');
-const state = { requests: [], responses: [], keys: [], dropped: 0, observerErrors: 0, disposed: false };
+const state = { requests: [], responses: [], keys: [], dropped: 0, observerErrors: 0, frozen: false, disposed: false };
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const observer = { observe(subject, topic) {
   try {
@@ -381,7 +381,24 @@ const matches = [...Services.wm.getEnumerator('navigator:browser')].filter(candi
 if (matches.length !== 1) return { ok: false, code: 'receipt_observer_not_unique' };
 const owned = matches[0][key];
 return { ok: true, requests: owned.state.requests, responses: owned.state.responses, keys: owned.state.keys,
-  dropped: owned.state.dropped, observerErrors: owned.state.observerErrors, disposed: owned.state.disposed,
+  dropped: owned.state.dropped, observerErrors: owned.state.observerErrors, frozen: owned.state.frozen, disposed: owned.state.disposed,
+  captureContract: 'exact_addon_post_items_uuid_idempotency_only' };
+`;
+
+const FREEZE_VAULT_CREATE_RECEIPT_OBSERVER_SCRIPT = String.raw`
+const key = '__matrxOwnedVaultCreateReceiptObserverV1';
+const matches = [...Services.wm.getEnumerator('navigator:browser')].filter(candidate => candidate[key]);
+if (matches.length !== 1) return { ok: false, code: 'receipt_observer_not_unique' };
+const owned = matches[0][key];
+if (!owned.state.frozen) {
+  const remainingTopics = [];
+  for (const topic of owned.topics) { try { Services.obs.removeObserver(owned.observer, topic); } catch { remainingTopics.push(topic); } }
+  owned.topics = remainingTopics;
+  if (remainingTopics.length > 0) return { ok: false, code: 'receipt_observer_freeze_failed', removalFailures: remainingTopics.length };
+  owned.state.frozen = true;
+}
+return { ok: true, requests: owned.state.requests, responses: owned.state.responses, keys: owned.state.keys,
+  dropped: owned.state.dropped, observerErrors: owned.state.observerErrors, frozen: true, disposed: owned.state.disposed,
   captureContract: 'exact_addon_post_items_uuid_idempotency_only' };
 `;
 
@@ -389,13 +406,13 @@ const DISPOSE_VAULT_CREATE_RECEIPT_OBSERVER_SCRIPT = String.raw`
 const key = '__matrxOwnedVaultCreateReceiptObserverV1';
 const matches = [...Services.wm.getEnumerator('navigator:browser')].filter(candidate => candidate[key]);
 if (matches.length !== 1) return { ok: false, code: 'receipt_observer_not_unique' };
-const win = matches[0]; const owned = win[key]; let removalFailures = 0;
-for (const topic of owned.topics) { try { Services.obs.removeObserver(owned.observer, topic); } catch { removalFailures += 1; } }
-owned.state.disposed = removalFailures === 0;
-const result = { ok: removalFailures === 0, requests: owned.state.requests, responses: owned.state.responses,
+const win = matches[0]; const owned = win[key];
+if (!owned.state.frozen) return { ok: false, code: 'receipt_observer_not_frozen' };
+owned.state.disposed = true;
+const result = { ok: true, requests: owned.state.requests, responses: owned.state.responses,
   keys: owned.state.keys, dropped: owned.state.dropped, observerErrors: owned.state.observerErrors,
   disposed: owned.state.disposed, captureContract: 'exact_addon_post_items_uuid_idempotency_only' };
-if (owned.state.disposed) delete win[key]; return result;
+delete win[key]; return result;
 `;
 
 function sourceOf(fn, label, { readOnly = false } = {}) {
@@ -432,6 +449,7 @@ export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAs
   assert.ok(typeof addonId === 'string' && addonId.length > 3, 'addon_id_invalid');
   let observerStarted = false;
   let vaultCreateReceiptObserverStarted = false;
+  let vaultCreateReceiptObserverFrozen = false;
 
   const remote = async request => {
     const bounded = { ...request, deadlineAt: Date.now() + request.timeoutMs };
@@ -620,6 +638,7 @@ export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAs
       const result = await executeChromeSync(START_VAULT_CREATE_RECEIPT_OBSERVER_SCRIPT, [addonId, normalized[0]]);
       assert.equal(result?.ok, true, result?.code ?? 'receipt_observer_start_failed');
       vaultCreateReceiptObserverStarted = true;
+      vaultCreateReceiptObserverFrozen = false;
       return result;
     },
     async readVaultCreateReceiptObserver() {
@@ -630,12 +649,24 @@ export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAs
       assert.equal(result.observerErrors, 0, 'receipt_observer_internal_error');
       return result;
     },
+    async freezeVaultCreateReceiptObserver() {
+      assert.equal(vaultCreateReceiptObserverStarted, true, 'receipt_observer_not_started_locally');
+      const result = await executeChromeSync(FREEZE_VAULT_CREATE_RECEIPT_OBSERVER_SCRIPT, []);
+      assert.equal(result?.ok, true, result?.code ?? 'receipt_observer_freeze_failed');
+      assert.equal(result.frozen, true, 'receipt_observer_not_frozen');
+      assert.equal(result.dropped, 0, 'receipt_observer_capacity_exceeded');
+      assert.equal(result.observerErrors, 0, 'receipt_observer_internal_error');
+      vaultCreateReceiptObserverFrozen = true;
+      return result;
+    },
     async disposeVaultCreateReceiptObserver() {
       assert.equal(vaultCreateReceiptObserverStarted, true, 'receipt_observer_not_started_locally');
+      assert.equal(vaultCreateReceiptObserverFrozen, true, 'receipt_observer_not_frozen_locally');
       const result = await executeChromeSync(DISPOSE_VAULT_CREATE_RECEIPT_OBSERVER_SCRIPT, []);
       assert.equal(result?.ok, true, result?.code ?? 'receipt_observer_dispose_failed');
       assert.equal(result.disposed, true, 'receipt_observer_not_disposed');
       vaultCreateReceiptObserverStarted = false;
+      vaultCreateReceiptObserverFrozen = false;
       assert.equal(result.dropped, 0, 'receipt_observer_capacity_exceeded');
       assert.equal(result.observerErrors, 0, 'receipt_observer_internal_error');
       return result;

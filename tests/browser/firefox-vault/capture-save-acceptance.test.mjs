@@ -14,12 +14,20 @@ function receipt(keys, requests = [{ requestId: 'save-request' }]) {
   };
 }
 
-function harness({ receipts, saveClick, persistFailure = false }) {
+function harness({ receipts, frozenReceipt, freezeFailure, saveClick, persistFailures = 0 }) {
   let fixtureUrl = null;
   let read = 0;
+  let frozen = false;
+  let persistAttempts = 0;
   const calls = [];
   const proof = {};
   const persisted = [];
+  const persistOwnedCreateMutationKeys = async keys => {
+    persistAttempts += 1;
+    if (persistAttempts <= persistFailures) throw new Error('durable proof unavailable');
+    persisted.push([...keys]);
+    calls.push(`persist:${keys.length}`);
+  };
   const adapter = {
     trustedClick: async selector => {
       calls.push(`click:${selector}`);
@@ -28,12 +36,20 @@ function harness({ receipts, saveClick, persistFailure = false }) {
     waitFor: async () => '#save',
     startVaultCreateReceiptObserver: async () => calls.push('start'),
     readVaultCreateReceiptObserver: async () => {
+      if (frozen) return { ...(frozenReceipt ?? receipts.at(-1)), frozen: true };
       const value = receipts[Math.min(read++, receipts.length - 1)];
       if (value instanceof Error) throw value;
       return value;
     },
+    freezeVaultCreateReceiptObserver: async () => {
+      calls.push('freeze');
+      if (freezeFailure) throw freezeFailure;
+      frozen = true;
+      return { ...(frozenReceipt ?? receipts.at(-1)), frozen: true };
+    },
     disposeVaultCreateReceiptObserver: async () => {
       calls.push('dispose');
+      assert.equal(frozen, true, 'receipt_must_freeze_before_dispose');
       assert.ok(calls.some(call => call.startsWith('persist:')), 'receipt_must_persist_before_dispose');
       return { disposed: true };
     },
@@ -55,6 +71,13 @@ function harness({ receipts, saveClick, persistFailure = false }) {
     calls,
     persisted,
     proof,
+    readFrozenReceipt: () => adapter.readVaultCreateReceiptObserver(),
+    retryFrozenPersistence: async () => {
+      const retryReceipt = await adapter.readVaultCreateReceiptObserver();
+      const keys = [...new Set(retryReceipt.keys)];
+      await persistOwnedCreateMutationKeys(keys);
+      await adapter.disposeVaultCreateReceiptObserver();
+    },
     run: () =>
       runFirefoxCaptureSaveCheck({
         adapter,
@@ -67,11 +90,7 @@ function harness({ receipts, saveClick, persistFailure = false }) {
         getContext: async () => undefined,
         probeFixtureBridge: async () => true,
         verifySavedLogin: async () => undefined,
-        persistOwnedCreateMutationKeys: async keys => {
-          if (persistFailure) throw new Error('durable proof unavailable');
-          persisted.push([...keys]);
-          calls.push(`persist:${keys.length}`);
-        },
+        persistOwnedCreateMutationKeys,
         proof,
       }),
   };
@@ -99,21 +118,24 @@ test('reports an empty receipt as an acceptance failure instead of dereferencing
   assert.equal(subject.calls.at(-1), 'dispose');
 });
 
-test('fails acceptance but persists a later second observed key before disposal', async () => {
+test('freezes and persists a late receipt key before disposal', async () => {
   const subject = harness({
-    receipts: [receipt([FIRST_KEY]), receipt([FIRST_KEY, SECOND_KEY])],
-    saveClick: async () => undefined,
+    receipts: [receipt([FIRST_KEY])],
+    frozenReceipt: receipt([FIRST_KEY, SECOND_KEY]),
+    saveClick: async () => { throw new Error('trusted_click_timeout_after_commit'); },
   });
 
-  await assert.rejects(subject.run(), /capture_save_idempotency_key_count/);
-  assert.deepEqual(subject.persisted, [[FIRST_KEY], [FIRST_KEY, SECOND_KEY]]);
+  await assert.rejects(subject.run(), /trusted_click_timeout_after_commit/);
+  assert.deepEqual(subject.persisted, [[FIRST_KEY, SECOND_KEY]]);
   assert.deepEqual(subject.proof.ownedCreateMutationKeys, [FIRST_KEY, SECOND_KEY]);
+  assert.equal(subject.calls.indexOf('freeze') < subject.calls.indexOf('persist:2'), true);
   assert.equal(subject.calls.at(-1), 'dispose');
 });
 
-test('retains the observer when the final receipt read fails after a trusted-click timeout', async () => {
+test('retains the observer when the final receipt freeze fails after a trusted-click timeout', async () => {
   const subject = harness({
-    receipts: [new Error('receipt read unavailable')],
+    receipts: [receipt([FIRST_KEY])],
+    freezeFailure: new Error('receipt freeze unavailable'),
     saveClick: async () => {
       throw new Error('trusted_click_timeout_after_commit');
     },
@@ -124,14 +146,18 @@ test('retains the observer when the final receipt read fails after a trusted-cli
   assert.equal(subject.proof.captureSave.receiptObserverDisposed, false);
 });
 
-test('retains the observer when receipt-key persistence fails', async () => {
+test('leaves a frozen receipt readable for persistence retry', async () => {
   const subject = harness({
     receipts: [receipt([FIRST_KEY])],
     saveClick: async () => undefined,
-    persistFailure: true,
+    persistFailures: 2,
   });
 
   await assert.rejects(subject.run(), /capture_save_receipt_persist_failed/);
   assert.equal(subject.calls.includes('dispose'), false);
   assert.equal(subject.proof.captureSave.receiptObserverDisposed, false);
+  assert.deepEqual((await subject.readFrozenReceipt()).keys, [FIRST_KEY]);
+  await subject.retryFrozenPersistence();
+  assert.deepEqual(subject.persisted, [[FIRST_KEY]]);
+  assert.equal(subject.calls.at(-1), 'dispose');
 });
