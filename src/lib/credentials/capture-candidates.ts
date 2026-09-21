@@ -34,6 +34,7 @@ import {
   updateVaultFieldValue,
 } from '@/lib/api/routes/vault';
 import { getCurrentUser } from '@/lib/auth/flow';
+import { usesNativeTrustedSessionStorage } from '@/lib/browser/detect';
 import { setCaptureAssistance } from '@/lib/credentials/assistance-status';
 import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';
@@ -429,8 +430,24 @@ async function ensureSession(): Promise<boolean> {
   if (!initialization)
     initialization = queued(async () => {
       try {
-        await chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
-        const stored = (await chrome.storage.session.get(SESSION_KEY))[SESSION_KEY];
+        const session = chrome.storage?.session;
+        if (
+          !session ||
+          typeof session.get !== 'function' ||
+          typeof session.set !== 'function' ||
+          typeof session.remove !== 'function'
+        )
+          throw new Error('trusted session storage is unavailable');
+
+        const setter = session.setAccessLevel;
+        if (typeof setter === 'function') {
+          await setter.call(session, { accessLevel: 'TRUSTED_CONTEXTS' });
+        } else if (
+          !usesNativeTrustedSessionStorage(chrome.runtime?.getURL?.('') ?? '')
+        ) {
+          throw new Error('trusted session access level is unavailable');
+        }
+        const stored = (await session.get(SESSION_KEY))[SESSION_KEY];
         if (!stored || typeof stored !== 'object') return true;
         const actor = await currentActor();
         if (!actor || !(await readCaptureLoginsEnabled())) {

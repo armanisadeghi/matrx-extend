@@ -59,6 +59,14 @@ export const BROWSER: SupportedBrowser = ((): SupportedBrowser => {
  * picks up the change automatically.
  */
 export interface BrowserCapabilities {
+  /**
+   * How `chrome.storage.session` is kept out of content scripts.
+   *
+   * Chromium and Safari require an explicit `setAccessLevel(TRUSTED_CONTEXTS)`
+   * call. Firefox's bundled session storage is already trusted-context-only
+   * and does not implement that setter.
+   */
+  hasNativeTrustedSessionStorage: boolean;
   /** Has `chrome.sidePanel` — the side-panel UI surface. */
   hasSidePanel: boolean;
   /** Has `chrome.offscreen` — long-running background documents. */
@@ -90,6 +98,7 @@ export interface BrowserCapabilities {
 }
 
 const CHROME: BrowserCapabilities = {
+  hasNativeTrustedSessionStorage: false,
   hasSidePanel: true,
   hasOffscreen: true,
   hasDebugger: true,
@@ -105,6 +114,7 @@ const CHROME: BrowserCapabilities = {
 };
 
 const FIREFOX: BrowserCapabilities = {
+  hasNativeTrustedSessionStorage: true,
   hasSidePanel: true, // sidebar_action; WXT polyfills the manifest field
   hasOffscreen: false, // critical: streams must move to a UI-surface host on FF
   hasDebugger: false,
@@ -120,6 +130,7 @@ const FIREFOX: BrowserCapabilities = {
 };
 
 const SAFARI: BrowserCapabilities = {
+  hasNativeTrustedSessionStorage: false,
   hasSidePanel: false, // Safari has no sidepanel API; popup-as-primary instead
   hasOffscreen: false, // streams hosted in popup surface
   hasDebugger: false,
@@ -147,6 +158,26 @@ export const CAPABILITIES_BY_BROWSER: Record<SupportedBrowser, BrowserCapabiliti
 
 /** Capability matrix for the *current* build target. */
 export const BROWSER_FEATURES: BrowserCapabilities = CAPABILITIES_BY_BROWSER[BROWSER];
+
+/**
+ * Firefox may omit `storage.session.setAccessLevel` only for a Firefox build
+ * running from its real extension origin. A forged or misconfigured runtime
+ * must continue down the explicit-setter path and fail closed.
+ */
+export function usesNativeTrustedSessionStorage(
+  extensionRoot: string,
+  browser: SupportedBrowser = BROWSER,
+  capabilities: BrowserCapabilities = BROWSER_FEATURES,
+): boolean {
+  if (browser !== 'firefox' || !capabilities.hasNativeTrustedSessionStorage)
+    return false;
+  try {
+    const parsed = new URL(extensionRoot);
+    return parsed.protocol === 'moz-extension:' && parsed.pathname === '/';
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Does the current browser appear in this support set?
