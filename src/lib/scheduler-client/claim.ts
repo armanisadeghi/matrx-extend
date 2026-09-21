@@ -19,10 +19,16 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 
 import { SchedulerClientError, TaskClaimRaceError, isClaimRaceLoss } from './errors';
-import type { Json, OutputRef, RunStatus, SchRunInsert, SchRunRow, SchTaskRow } from './types';
+import type { Json, OutputRef, RunStatus, SchRunRow, SchTaskRow } from './types';
 
 /** Default claim lease — matches Python scanner.DEFAULT_LEASE_SECONDS. */
 const DEFAULT_LEASE_SECONDS = 600;
+/**
+ * Kept as a READ-ONLY constant for callers that still assert on the marker. The DOOR writes it
+ * now (`scheduler.sch_run_claim`), so the value can no longer drift out of lockstep with
+ * `matrx_scheduler/queries.py::CLAIM_PROTOCOL` — which it once did, silently failing every
+ * claim against the two CHECK constraints.
+ */
 export const SCHEDULER_CLAIM_PROTOCOL = 2;
 const OrganizationIdSchema = z.string().uuid();
 
@@ -45,7 +51,7 @@ export interface ClaimTaskOptions {
 }
 
 /**
- * Atomic claim: INSERT into sch_run with status='claimed'. The partial
+ * Atomic claim THROUGH THE DOOR (`scheduler.sch_run_claim`). The partial
  * unique index sch_run_unique_active_per_task fires for the loser of
  * any race, which we catch and re-throw as TaskClaimRaceError.
  *
@@ -63,32 +69,23 @@ export async function claimTask(
     );
   }
 
-  const claimToken = crypto.randomUUID();
-  const now = new Date();
-  const lease = opts.leaseSeconds ?? DEFAULT_LEASE_SECONDS;
-  const expires = new Date(now.getTime() + lease * 1000);
-
-  const row: SchRunInsert = {
-    task_id: opts.task.id,
-    trigger_id: opts.triggerId ?? null,
-    user_id: opts.task.user_id,
-    organization_id: organizationId.data,
-    status: 'claimed' satisfies RunStatus,
-    surface: opts.surface,
-    queue: opts.queue ?? null,
-    due_at: opts.task.next_due_at ?? now.toISOString(),
-    claimed_at: now.toISOString(),
-    claim_token: claimToken,
-    claim_expires_at: expires.toISOString(),
-    metadata: { claim_protocol: SCHEDULER_CLAIM_PROTOCOL },
-  };
-
-  const { data, error } = await supabase
-    .schema('scheduler')
-    .from('sch_run')
-    .insert(row)
-    .select()
-    .single();
+  // 🚨 THE TOKEN IS NOT MINTED HERE ANY MORE. (SECURITY-SWEEP, 2026-09-21.)
+  // This used to call `crypto.randomUUID()` in the extension and INSERT the result — and
+  // holding a run's claim token IS holding the run (`completeRun`, `failRun` and
+  // `markRunRunning` all gate their UPDATE on it), so a client that chose the token could
+  // write one it already knew onto somebody else's run and then finish, fail or re-point
+  // their scheduled work. `scheduler.sch_run_claim` (SECURITY DEFINER) mints it, takes
+  // `organization_id` / `user_id` / `due_at` / `queue` from the PERSISTED task, writes
+  // `metadata.claim_protocol = 2` itself, and lets the unique-violation race propagate so the
+  // classifier below still sees its 23505. A trigger on `scheduler.sch_run` refuses any client
+  // INSERT that carries a token at all.
+  const { data, error } = await supabase.schema('scheduler').rpc('sch_run_claim', {
+    p_task_id: opts.task.id,
+    p_surface: opts.surface,
+    p_trigger_id: opts.triggerId ?? null,
+    p_queue: opts.queue ?? null,
+    p_lease_seconds: opts.leaseSeconds ?? DEFAULT_LEASE_SECONDS,
+  }).single();
 
   if (error) {
     if (isClaimRaceLoss(error)) {

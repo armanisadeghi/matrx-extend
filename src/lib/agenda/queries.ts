@@ -18,7 +18,6 @@
  *   4. no active sch_run is currently claimed (claim_token IS NULL or expired)
  */
 
-import { SCHEDULER_CLAIM_PROTOCOL } from '@/lib/scheduler-client/claim';
 import { getSupabase } from '@/lib/supabase/client';
 import { schedulerDb, schedulerMachineryDb } from '@/lib/supabase/schemas';
 import { z } from 'zod';
@@ -663,27 +662,26 @@ export async function claimRun(
     return null;
   }
 
+  // 🚨 THE SECOND CLAIM IMPLEMENTATION, AND IT MINTED ITS OWN LEASE TOO.
+  // (SECURITY-SWEEP, 2026-09-21.) Holding a run's claim_token IS holding the run, so a client
+  // that chose it could write one it already knew onto somebody else's run. Both claim paths
+  // — this one and `scheduler-client/claim.ts::claimTask` — now go through
+  // `scheduler.sch_run_claim` (SECURITY DEFINER), which mints the token, takes
+  // `organization_id` / `user_id` / `due_at` / `queue` from the PERSISTED task and writes
+  // `metadata.claim_protocol` itself. A trigger on `scheduler.sch_run` refuses any client
+  // INSERT carrying a token at all, so there is no second way back in.
+  //
+  // `due_at` is no longer forced to `now()` here: the door uses the task's own `next_due_at`
+  // when it has one, which is what the Python scanner has always done and what the run history
+  // is read against.
   const c = schedulerDb();
-  const claimToken = crypto.randomUUID();
-  const claimExpiresAt = new Date(Date.now() + (opts.lease_seconds ?? 600) * 1000).toISOString();
-  const now = new Date().toISOString();
-
-  const { data, error } = await c
-    .from('sch_run')
-    .insert({
-      task_id: task.id,
-      organization_id: organizationId.data,
-      status: 'claimed',
-      surface,
-      queue: 'default',
-      due_at: now,
-      claimed_at: now,
-      claim_token: claimToken,
-      claim_expires_at: claimExpiresAt,
-      metadata: { claim_protocol: SCHEDULER_CLAIM_PROTOCOL },
-    })
-    .select('*')
-    .single();
+  const { data, error } = await c.rpc('sch_run_claim', {
+    p_task_id: task.id,
+    p_surface: surface,
+    p_trigger_id: null,
+    p_queue: 'default',
+    p_lease_seconds: opts.lease_seconds ?? 600,
+  }).single();
   if (error) {
     console.warn('[matrx-extend] claimRun error', error.message);
     return null;
