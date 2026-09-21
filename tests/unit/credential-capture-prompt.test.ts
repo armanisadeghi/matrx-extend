@@ -16,6 +16,21 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+const captureBuild = vi.hoisted(() => ({ browser: 'chrome' as 'chrome' | 'firefox' | 'safari' }));
+
+vi.mock('@/lib/browser/detect', async (importOriginal) => {
+  const actual = (await importOriginal()) as typeof import('@/lib/browser/detect');
+  return {
+    ...actual,
+    usesNativeTrustedSessionStorage: (extensionRoot: string) =>
+      actual.usesNativeTrustedSessionStorage(
+        extensionRoot,
+        captureBuild.browser,
+        actual.CAPABILITIES_BY_BROWSER[captureBuild.browser],
+      ),
+  };
+});
+
 const SENTINEL = 'Tr0ub4dor&3-sentinel';
 const USER = 'arman@example.com';
 const ACTOR = {
@@ -182,6 +197,7 @@ const DEPS = {
 };
 
 beforeEach(() => {
+  captureBuild.browser = 'chrome';
   localStorage.clear();
   sessionStorage.clear();
   calls.length = 0;
@@ -1097,6 +1113,87 @@ describe('host — registered worker listeners and session continuity', () => {
     expect(reply).toEqual({ status: 'held' });
     expect(JSON.stringify(reply)).not.toContain(SENTINEL);
     expect(JSON.stringify(reply)).not.toContain(USER);
+  });
+
+  it('admits a Firefox native trusted-only session when the setter is absent', async () => {
+    captureBuild.browser = 'firefox';
+    (chrome.storage.session as unknown as { setAccessLevel?: unknown }).setAccessLevel = undefined;
+    const host = await import('@/lib/credentials/capture-candidates');
+
+    expect(await host.holdCandidate(33, WIRE, DEPS)).toBe(true);
+    expect(host.pendingCaptureForTab(33)).not.toBeNull();
+  });
+
+  it('still invokes TRUSTED_CONTEXTS when Firefox exposes the setter', async () => {
+    captureBuild.browser = 'firefox';
+    const setAccessLevel = vi.fn(async () => undefined);
+    Object.assign(chrome.storage.session, { setAccessLevel });
+    const host = await import('@/lib/credentials/capture-candidates');
+
+    expect(await host.holdCandidate(33, WIRE, DEPS)).toBe(true);
+    expect(setAccessLevel).toHaveBeenCalledTimes(1);
+    expect(setAccessLevel).toHaveBeenCalledWith({ accessLevel: 'TRUSTED_CONTEXTS' });
+  });
+
+  it.each([
+    {
+      name: 'a Chromium build',
+      browser: 'chrome' as const,
+      root: 'chrome-extension://test-extension/',
+    },
+    {
+      name: 'a Firefox build at a non-Firefox extension root',
+      browser: 'firefox' as const,
+      root: 'chrome-extension://test-extension/',
+    },
+  ])('fails closed without the setter for $name', async ({ browser, root }) => {
+    captureBuild.browser = browser;
+    Object.assign(chrome.runtime, { getURL: (path: string) => `${root}${path}` });
+    (chrome.storage.session as unknown as { setAccessLevel?: unknown }).setAccessLevel = undefined;
+    const host = await import('@/lib/credentials/capture-candidates');
+
+    expect(await host.holdCandidate(33, WIRE, DEPS)).toBe(false);
+    expect(host.pendingCaptureForTab(33)).toBeNull();
+  });
+
+  it.each(['get', 'set', 'remove'] as const)(
+    'fails closed when Firefox native session storage is missing %s',
+    async (method) => {
+      captureBuild.browser = 'firefox';
+      (chrome.storage.session as unknown as Record<string, unknown>)[method] = undefined;
+      (chrome.storage.session as unknown as { setAccessLevel?: unknown }).setAccessLevel =
+        undefined;
+      const host = await import('@/lib/credentials/capture-candidates');
+
+      expect(await host.holdCandidate(33, WIRE, DEPS)).toBe(false);
+      expect(host.pendingCaptureForTab(33)).toBeNull();
+    },
+  );
+
+  it.each([
+    {
+      name: 'get',
+      install: () =>
+        Object.assign(chrome.storage.session, {
+          get: async () => {
+            throw new Error('session read rejected');
+          },
+        }),
+    },
+    {
+      name: 'set',
+      install: () => {
+        sessionSetFailure = new Error('session write rejected');
+      },
+    },
+  ])('fails closed when Firefox native session storage $name rejects', async ({ install }) => {
+    captureBuild.browser = 'firefox';
+    (chrome.storage.session as unknown as { setAccessLevel?: unknown }).setAccessLevel = undefined;
+    install();
+    const host = await import('@/lib/credentials/capture-candidates');
+
+    expect(await host.holdCandidate(33, WIRE, DEPS)).toBe(false);
+    expect(host.pendingCaptureForTab(33)).toBeNull();
   });
 
   it('keeps disabled and Never capture requests quiet, but names a valid signed-out request', async () => {
