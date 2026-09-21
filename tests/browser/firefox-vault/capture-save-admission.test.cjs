@@ -60,3 +60,11 @@ test('capture-save cleanup kills a hung child before reporting its fixed timeout
   assert.equal(result.status, 0);
   assert.match(`${result.stdout}${result.stderr}`, /capture_save_cleanup_timeout_self_test_passed/);
 });
+
+ test('core Update/Fill requires its own explicit admission before credential custody', () => {
+  const result = spawnSync(process.execPath, [join(__dirname, 'read-only-auth-driver.mjs'), '--core-update-fill'], {
+    env: { PATH: process.env.PATH }, encoding: 'utf8', timeout: 10_000,
+  });
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}${result.stderr}`, /core_update_fill_admission_unarmed/);
+});

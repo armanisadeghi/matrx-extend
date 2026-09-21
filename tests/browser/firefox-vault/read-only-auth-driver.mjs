@@ -17,7 +17,11 @@ const generatorMode = process.argv.includes('--generator');
 const generatorSourcePath = fileURLToPath(new URL('./generator-acceptance.mjs', import.meta.url));
 const captureMode = process.argv.includes('--capture');
 const captureSourcePath = fileURLToPath(new URL('./capture-decisions.mjs', import.meta.url));
-const captureSaveMode = process.argv.includes('--capture-save');
+const coreUpdateFillMode = process.argv.includes('--core-update-fill');
+assert.ok(!(coreUpdateFillMode && process.argv.includes('--capture-save')), 'one_firefox_journey_per_run');
+if (coreUpdateFillMode) assert.equal(process.env.MATRX_FIREFOX_CORE_UPDATE_FILL_ADMISSION, 'RUN_RECEIPT_BACKED_CORE_UPDATE_FILL', 'core_update_fill_admission_unarmed');
+const captureSaveMode = process.argv.includes('--capture-save') || coreUpdateFillMode;
+const coreUpdateFillSourcePath = fileURLToPath(new URL('./core-update-fill-acceptance.mjs', import.meta.url));
 const captureSaveSourcePath = fileURLToPath(new URL('./capture-save-acceptance.mjs', import.meta.url));
 const cleanupSourcePath = fileURLToPath(new URL('../cleanup-vault-canary.py', import.meta.url));
 const reconcileSourcePath = fileURLToPath(new URL('../reconcile-vault-canary.py', import.meta.url));
@@ -81,7 +85,7 @@ if (captureSaveMode) {
   for (const key of ['MATRX_FIREFOX_GENERATOR', 'MATRX_FIREFOX_CAPTURE_RESPONSE_LOSS']) assert.equal(process.env[key], undefined, 'capture_save_incompatible_flag');
 }
 async function reviewedHarnessHash() {
-  return shaText(JSON.stringify(await Promise.all([harnessPath, adapterSourcePath, leaseSourcePath, ...(generatorMode ? [generatorSourcePath] : []), ...(captureMode ? [captureSourcePath] : []), ...(captureSaveMode ? [captureSaveSourcePath, cleanupSourcePath, reconcileSourcePath] : [])].map(shaFile))));
+  return shaText(JSON.stringify(await Promise.all([harnessPath, adapterSourcePath, leaseSourcePath, ...(generatorMode ? [generatorSourcePath] : []), ...(captureMode ? [captureSourcePath] : []), ...(captureSaveMode ? [captureSaveSourcePath, coreUpdateFillSourcePath, cleanupSourcePath, reconcileSourcePath] : [])].map(shaFile))));
 }
 
 function shaText(value) { return createHash('sha256').update(value).digest('hex'); }
@@ -253,7 +257,7 @@ await mkdir(runRoot, { recursive: true, mode: 0o700 });
 const proof = {
   schema: 1,
   runId,
-  mode: reconciliationMode ? 'firefox_readonly_chrome_reconciliation' : generatorMode ? 'firefox_generator_auth_vault' : captureMode ? 'firefox_capture_decisions' : captureSaveMode ? 'firefox_capture_save' : 'firefox_readonly_auth_vault',
+  mode: reconciliationMode ? 'firefox_readonly_chrome_reconciliation' : generatorMode ? 'firefox_generator_auth_vault' : captureMode ? 'firefox_capture_decisions' : coreUpdateFillMode ? 'firefox_core_update_fill' : captureSaveMode ? 'firefox_capture_save' : 'firefox_readonly_auth_vault',
   sourceCommit: SOURCE_COMMIT,
   credentialsRead: false,
   authenticationAttempted: false,
@@ -294,7 +298,7 @@ proof.hashes = {
   leaseSha256: await shaFile(leaseSourcePath),
   ...(generatorMode ? { generatorSha256: await shaFile(generatorSourcePath) } : {}),
   ...(captureMode ? { captureSha256: await shaFile(captureSourcePath) } : {}),
-  ...(captureSaveMode ? { captureSaveSha256: await shaFile(captureSaveSourcePath), cleanupSha256: await shaFile(cleanupSourcePath), reconcileSha256: await shaFile(reconcileSourcePath) } : {}),
+  ...(captureSaveMode ? { captureSaveSha256: await shaFile(captureSaveSourcePath), coreUpdateFillSha256: await shaFile(coreUpdateFillSourcePath), cleanupSha256: await shaFile(cleanupSourcePath), reconcileSha256: await shaFile(reconcileSourcePath) } : {}),
   artifactManifestSha256: await shaFile(artifactManifestPath), artifactXpiSha256: artifactManifest.xpi.sha256,
 };
 if (captureSaveMode) {
@@ -594,6 +598,14 @@ function runBoundedCaptureSaveCleanupChild({ command, args, cwd, input, timeoutM
     child.stdin.end(input);
   });
 }
+const coreUpdateFillOptions = coreUpdateFillMode ? {
+  verifyOwnedItemValues: async ({ itemId, username, password, pageUrl }) => {
+    assert.ok(proof.ownedFixtureIds?.length === 1 && proof.ownedFixtureIds[0] === itemId, 'core_update_fill_readback_item_not_owned');
+    const checked = await verifySavedLogin({ username, password, pageUrl });
+    assert.equal(checked.itemId, itemId, 'core_update_fill_readback_item_changed');
+    return true;
+  },
+} : undefined;
 async function verifySavedLogin({ username, password, pageUrl }) {
   assert.ok(captureSaveMode && new URL(pageUrl).origin.startsWith('http://127.0.0.1:'), 'capture_save_readback_scope_invalid');
   const ids = await reconcileCaptureSaveReceipts(proof.ownedCreateMutationKeys);
@@ -608,6 +620,13 @@ async function verifySavedLogin({ username, password, pageUrl }) {
   assert.equal(response.status, 200, 'capture_save_readback_failed');
   const value = await response.json();
   assert.ok(value?.username === username && value?.password === password, 'capture_save_readback_values_mismatch');
+  let targetName;
+  if (coreUpdateFillMode) {
+    const metadata = await api(`${API}/api/vault/items/${encodeURIComponent(ids[0])}`);
+    assert.ok(metadata?.id === ids[0] && typeof metadata.display_name === 'string' && metadata.display_name.length > 0, 'core_update_fill_metadata_invalid');
+    targetName = metadata.display_name;
+  }
+  return { itemId: ids[0], targetName };
 }
 
 try {
@@ -1009,7 +1028,7 @@ try {
       baselineIds, provenIDs: placeholders, expectedRouterSha256: localRouterHash,
       expectedServiceSha256: localServiceHash, sourceRoot: localSourceRoot })) < 32768, 'capture_save_cleanup_input_capacity');
     const { runFirefoxCaptureSaveCheck } = await import('./capture-save-acceptance.mjs');
-    await runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, persistOwnedCreateMutationKeys, verifySavedLogin, proof });
+    await runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, persistOwnedCreateMutationKeys, verifySavedLogin, coreUpdateFill: coreUpdateFillOptions, proof });
     const keys = proof.ownedCreateMutationKeys;
     const proven = await reconcileCaptureSaveReceipts(keys);
     const cleanup = await canonicalCleanupCaptureSave(keys, proven);
@@ -1103,7 +1122,7 @@ try {
   await checkpoint('network_observer_final');
   const observed = await readOwnedNetworkObserver();
   recordObservedNetwork(observed);
-  assert.equal(proof.vaultMutationRequests, captureSaveMode ? 1 : 0, 'vault_mutation_count_unexpected');
+  assert.equal(proof.vaultMutationRequests, coreUpdateFillMode ? 2 : captureSaveMode ? 1 : 0, 'vault_mutation_count_unexpected');
   assert.equal(observed.dropped, 0, 'network_observer_dropped_events');
   assert.equal(observed.observerErrors, 0, 'network_observer_errors');
   const disposed = await disposeOwnedNetworkObserver();
@@ -1288,7 +1307,7 @@ try {
   ];
   proof.ok = !failure && !proof.persistenceFailureDuringCleanup && proof.cleanupErrors.length === 0
     && (captureSaveMode
-      ? proof.vaultMutationRequests === 1 && proof.captureSave?.ok === true && proof.captureSave?.cleanup?.receiptReconciled === true
+      ? proof.vaultMutationRequests === (coreUpdateFillMode ? 2 : 1) && (!coreUpdateFillMode || proof.coreUpdateFill?.ok === true) && proof.captureSave?.ok === true && proof.captureSave?.cleanup?.receiptReconciled === true
       : proof.vaultMutationRequests === 0)
     && (!generatorMode || proof.generator?.ok === true)
     && (!captureMode || proof.captureDecisions?.ok === true)

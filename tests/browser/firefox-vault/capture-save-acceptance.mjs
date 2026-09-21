@@ -90,7 +90,7 @@ export async function runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdP
   assert.equal(typeof persistOwnedCreateMutationKeys, 'function', 'capture_save_receipt_persist_contract_invalid');
   assert.equal(typeof verifySavedLogin, 'function', 'capture_save_readback_contract_invalid');
   if (coreUpdateFill !== undefined) {
-    assert.ok(coreUpdateFill && typeof coreUpdateFill.targetName === 'string' && coreUpdateFill.targetName.length > 0 && typeof coreUpdateFill.verifyOwnedItemValues === 'function', 'capture_save_core_update_fill_contract_invalid');
+    assert.ok(coreUpdateFill && typeof coreUpdateFill.verifyOwnedItemValues === 'function', 'capture_save_core_update_fill_contract_invalid');
   }
   const server = await fixture(); let original = null; let tab = null; let primary; let cleanup; let observerStarted = false;
   const persistedKeys = new Set();
@@ -123,9 +123,10 @@ export async function runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdP
     proof.captureSave.savedValuesVerified = true;
     if (coreUpdateFill !== undefined) {
       assert.equal(typeof savedLogin?.itemId, 'string', 'capture_save_core_update_fill_item_missing');
+      assert.ok(typeof savedLogin.targetName === 'string' && savedLogin.targetName.length > 0, 'capture_save_core_update_fill_name_missing');
       await runFirefoxCoreUpdateFillChecks({
         adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge,
-        ownedItemId: savedLogin.itemId, targetName: coreUpdateFill.targetName, username, password,
+        ownedItemId: savedLogin.itemId, targetName: savedLogin.targetName, username, password,
         verifyOwnedItemValues: coreUpdateFill.verifyOwnedItemValues, fixture: { baseUrl: server.url, state: server.state }, proof,
       });
       proof.captureSave.coreUpdateFillCompleted = true;

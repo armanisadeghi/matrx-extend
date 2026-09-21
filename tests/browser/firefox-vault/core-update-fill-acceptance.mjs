@@ -154,6 +154,7 @@ export async function runFirefoxCoreUpdateFillChecks({
     proof.coreUpdateFill.filledExactValues = true;
     assert.equal(fixture.state.updateSubmissions, 1, 'core_update_fill_update_submission_changed');
     assert.equal(fixture.state.fillSubmissions, 0, 'core_update_fill_fill_submitted_fixture');
+    assert.equal(fixture.state.submissions, 1, 'core_update_fill_original_submission_changed');
     proof.coreUpdateFill.noExtraSubmission = true;
   } catch (error) { primary = error; } finally {
     for (const [key, tab] of [['fillTabClosed', fillTab], ['updateTabClosed', updateTab]]) if (tab) try {
