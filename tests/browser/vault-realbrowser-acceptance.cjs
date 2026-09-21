@@ -9,6 +9,7 @@ const crypto = require('node:crypto');
 const { createRequire } = require('node:module');
 const { execFile, spawn } = require('node:child_process');
 const { promisify } = require('node:util');
+const { acquireVaultAcceptanceLease } = require('./vault-acceptance-lease.cjs');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
 const { hasObservedReadOnlyCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
@@ -1403,12 +1404,15 @@ async function materializedPassword(id) {
 }
 
 (async () => {
+  let acceptanceLease;
   let failure;
   let artifactAdmitted = false;
   // Generator mode starts non-durable and becomes durable only after a
   // successful unlocked-session probe, before any artifact/browser/auth work.
   let generatorFocusPreflightRefused = generatorTransportMode && headedMode;
   try {
+    acceptanceLease = await acquireVaultAcceptanceLease({ runId, kind: edgeBrowserMode ? 'edge' : 'chrome' });
+    proof.acceptanceLeaseAcquired = true;
     // This must precede artifact admission and persistence. A locked desktop
     // cannot produce compositor focus, so recording it as an acceptance run
     // would create a false durable cleanup obligation without any browser or
@@ -1431,6 +1435,7 @@ async function materializedPassword(id) {
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
     };
@@ -1449,6 +1454,7 @@ async function materializedPassword(id) {
     const baseline = await items();
     baselineIds = new Set(baseline.map((entry) => entry.id));
     proof.baselineMetadataSha256 = baselineMetadataSha256(baseline);
+    proof.baselineItems = baseline.map(entry => ({ id: entry.id, metadataSha256: baselineMetadataSha256([entry]) })).sort((a, b) => a.id.localeCompare(b.id));
     await verifyRealVaultPanel();
     await prewriteLocalCanonicalPreflight();
     const helperHashesBeforeWrites = {
@@ -1459,6 +1465,7 @@ async function materializedPassword(id) {
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
     };
@@ -1561,6 +1568,7 @@ async function materializedPassword(id) {
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
         };
@@ -1911,6 +1919,12 @@ async function materializedPassword(id) {
       try {
         const baselineAfterFailure = await items();
         const finalIds = new Set(baselineAfterFailure.map((entry) => entry.id));
+        proof.cleanup.finalItems = baselineAfterFailure.map(entry => ({ id: entry.id, metadataSha256: baselineMetadataSha256([entry]) })).sort((a, b) => a.id.localeCompare(b.id));
+        proof.cleanup.baselineDifference = {
+          addedIds: [...finalIds].filter(id => !baselineIds.has(id)),
+          removedIds: [...baselineIds].filter(id => !finalIds.has(id)),
+          changedIds: proof.baselineItems.filter(before => finalIds.has(before.id) && proof.cleanup.finalItems.find(after => after.id === before.id)?.metadataSha256 !== before.metadataSha256).map(entry => entry.id),
+        };
         proof.cleanup.finalBaselineIdSetMatches = finalIds.size === baselineIds.size
           && [...baselineIds].every((id) => finalIds.has(id));
         proof.cleanup.finalBaselineMetadataMatches = proof.baselineMetadataSha256
@@ -2032,6 +2046,26 @@ async function materializedPassword(id) {
           && proof.cleanup.finalBaselineMetadataMatches === true
           && proof.cleanup.authenticator?.cleanupProven === true
           && proof.checks.enrolledAuthenticatorPreserved === true));
+    }
+    if (acceptanceLease) {
+      const vaultCleanupProven = proof.cleanup.vaultMutationFree === true
+        || (proof.cleanup.receiptReconciled === true && proof.cleanup.createdItemsGone === true
+          && proof.cleanup.finalItemIdsMatchBaseline === true && proof.cleanup.baselineUntouched === true
+          && (!receiptBackedSaveUpdateMode || (proof.cleanup.finalBaselineIdSetMatches === true
+            && proof.cleanup.finalBaselineMetadataMatches === true)));
+      const safeToRelease = vaultCleanupProven && proof.cleanup.browserClosed === true && proof.cleanup.profileRemoved === true
+        && [true, 'not_started'].includes(proof.cleanup.localFixtureServerClosed)
+        && (!proof.authenticationAttempted || proof.cleanup.remoteAuthRevocationStatus === 204);
+      try {
+        assert(safeToRelease, 'vault_acceptance_lease_retained_for_cleanup');
+        await acceptanceLease.release();
+        proof.acceptanceLeaseReleased = true;
+      } catch {
+        proof.acceptanceLeaseReleased = false;
+        proof.ok = false;
+        if (proof.admission) proof.admission.ok = false;
+        proof.failureCode ||= 'vault_acceptance_lease_cleanup_failed';
+      }
     }
     const succeeded = readOnlyAdmissionMode ? proof.admission.ok : proof.ok;
     // Persist outside the disposable profile only as a value-free, caller-chosen path.

@@ -6,16 +6,35 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { createFirefoxSidebarAdapter, EXPECTED_RUNTIME } from './adapter.mjs';
+import { acquireVaultAcceptanceLease } from '../vault-acceptance-lease.cjs';
 
 const execFileAsync = promisify(execFile);
 const harnessPath = fileURLToPath(import.meta.url);
 const root = fileURLToPath(new URL('../../../.matrx/task1-active/firefox-sidebar-probe/authenticated-harness/', import.meta.url));
 const adapterSourcePath = fileURLToPath(new URL('./adapter.mjs', import.meta.url));
+const leaseSourcePath = fileURLToPath(new URL('../vault-acceptance-lease.cjs', import.meta.url));
 const generatorMode = process.argv.includes('--generator');
 const generatorSourcePath = fileURLToPath(new URL('./generator-acceptance.mjs', import.meta.url));
 const captureMode = process.argv.includes('--capture');
 const captureSourcePath = fileURLToPath(new URL('./capture-decisions.mjs', import.meta.url));
-assert.ok(!(captureMode && generatorMode), 'one_firefox_journey_per_run');
+const reconciliationMode = process.argv.includes('--reconcile-chrome');
+assert.ok([captureMode, generatorMode, reconciliationMode].filter(Boolean).length <= 1, 'one_firefox_journey_per_run');
+const FAILED_CHROME_RUN = 'b208d813-9a59-4d87-b437-772ee05eb3b7';
+const FAILED_CHROME_PROOF_SHA256 = '317bbc4724038577ec023b5ea797b559d9c91fb9cb4e4210f1a0768d1ec90d86';
+const CLEAN_BASELINE_SHA256 = '0b18f97a9727116b746ea4bc4432fcbd6bb1821f5449b0a219062e69b2726bab';
+const failedChromeProofPath = fileURLToPath(new URL('../../../.matrx/realbrowser-vault/save-update-headless/' + FAILED_CHROME_RUN + '/proof.json', import.meta.url));
+async function verifiedFailedChromeProof() {
+  const raw = await readFile(failedChromeProofPath);
+  assert.equal(shaText(raw), FAILED_CHROME_PROOF_SHA256, 'historical_chrome_proof_changed');
+  const value = JSON.parse(raw);
+  assert.equal(value.runId, FAILED_CHROME_RUN, 'historical_chrome_run_mismatch');
+  assert.equal(value.ok, false, 'historical_chrome_failure_required');
+  assert.equal(value.failureCode, 'preferences_quiet_fill_feedback_timeout', 'historical_chrome_failure_mismatch');
+  const ids = value.ownedFixtureIds;
+  assert.ok(Array.isArray(ids) && ids.length === 4 && new Set(ids).size === 4 && ids.every(id => typeof id === 'string' && /^[0-9a-f-]{36}$/.test(id)), 'historical_chrome_fixture_ids_invalid');
+  assert.ok(value.cleanup.receiptReconciled && value.cleanup.createdItemsGone && value.cleanup.profileRemoved && value.cleanup.browserClosed && value.cleanup.localAuthLogoutStatus === 204 && value.cleanup.remoteAuthRevocationStatus === 204, 'historical_chrome_owned_cleanup_missing');
+  return ids;
+}
 const SOURCE_COMMIT = 'd648df949883c6c678d227021a3ab58558c128bf';
 const RECORDS_SOURCE_COMMIT = 'c3f26c9e47f1a0ef18167592ebbdf032e45f9f67';
 const ADDON_ID = 'matrx-extend@aimatrx.com';
@@ -34,7 +53,7 @@ const xpi = join(artifactDirectory, 'matrx-extend-firefox-mv3.xpi');
 const LAUNCH_ENV = 'MATRX_FIREFOX_READONLY_AUTH_ACCEPTANCE';
 const HASH_ENV = 'MATRX_FIREFOX_REVIEWED_HARNESS_SHA256';
 async function reviewedHarnessHash() {
-  return shaText(JSON.stringify(await Promise.all([harnessPath, adapterSourcePath, ...(generatorMode ? [generatorSourcePath] : []), ...(captureMode ? [captureSourcePath] : [])].map(shaFile))));
+  return shaText(JSON.stringify(await Promise.all([harnessPath, adapterSourcePath, leaseSourcePath, ...(generatorMode ? [generatorSourcePath] : []), ...(captureMode ? [captureSourcePath] : [])].map(shaFile))));
 }
 
 function shaText(value) { return createHash('sha256').update(value).digest('hex'); }
@@ -167,6 +186,7 @@ async function verifyArtifact() {
 
 if (process.argv.includes('--dry-run')) {
   const manifest = await verifyArtifact();
+  if (reconciliationMode) await verifiedFailedChromeProof();
   assert.equal(process.env[HASH_ENV], undefined, 'dry_run_refuses_review_hash');
   assert.equal(process.env[LAUNCH_ENV], undefined, 'dry_run_refuses_launch_env');
   console.log(JSON.stringify({
@@ -188,6 +208,7 @@ delete process.env[LAUNCH_ENV];
 delete process.env[HASH_ENV];
 
 const artifactManifest = await verifyArtifact();
+const historicalFixtureIds = reconciliationMode ? await verifiedFailedChromeProof() : [];
 const runId = randomUUID();
 const runRoot = join(root, 'auth-runs', runId);
 const proofPath = join(runRoot, 'proof.json');
@@ -195,7 +216,7 @@ await mkdir(runRoot, { recursive: true, mode: 0o700 });
 const proof = {
   schema: 1,
   runId,
-  mode: generatorMode ? 'firefox_generator_auth_vault' : captureMode ? 'firefox_capture_decisions' : 'firefox_readonly_auth_vault',
+  mode: reconciliationMode ? 'firefox_readonly_chrome_reconciliation' : generatorMode ? 'firefox_generator_auth_vault' : captureMode ? 'firefox_capture_decisions' : 'firefox_readonly_auth_vault',
   sourceCommit: SOURCE_COMMIT,
   credentialsRead: false,
   authenticationAttempted: false,
@@ -233,6 +254,7 @@ const cleanupCheckpoint = async phase => {
 };
 proof.hashes = {
   driverSha256: await shaFile(harnessPath), adapterSha256: await shaFile(adapterSourcePath),
+  leaseSha256: await shaFile(leaseSourcePath),
   ...(generatorMode ? { generatorSha256: await shaFile(generatorSourcePath) } : {}),
   ...(captureMode ? { captureSha256: await shaFile(captureSourcePath) } : {}),
   artifactManifestSha256: await shaFile(artifactManifestPath), artifactXpiSha256: artifactManifest.xpi.sha256,
@@ -240,6 +262,7 @@ proof.hashes = {
 proof.artifactManifestPath = artifactManifestPath;
 await checkpoint('admitted_before_credentials');
 
+let acceptanceLease;
 let adminEmail, adminPassword, publishableKey, base, driver;
 const ownedPids = new Set();
 let sessionId;
@@ -355,6 +378,8 @@ const items = async () => {
 };
 
 try {
+  acceptanceLease = await acquireVaultAcceptanceLease({ runId, kind: 'firefox' });
+  proof.acceptanceLeaseAcquired = true;
   assert(typeof process.loadEnvFile === 'function', 'node_env_loader_unavailable');
   process.loadEnvFile('/Users/armanisadeghi/code/aidream/.env');
   adminEmail = process.env.AI_ADMIN_USERNAME;
@@ -669,6 +694,19 @@ try {
   baselineIds = baseline.map(item => item.id).sort();
   baselineHash = baselineMetadataSha256(baseline);
   proof.baseline = { itemCount: baselineIds.length, metadataSha256: baselineHash };
+  proof.baselineItems = baseline.map(entry => ({ id: entry.id, metadataSha256: baselineMetadataSha256([entry]) }));
+  if (reconciliationMode) {
+    assert.equal(baselineIds.length, 34, 'reconciliation_clean_baseline_count_changed');
+    assert.equal(baselineHash, CLEAN_BASELINE_SHA256, 'reconciliation_clean_baseline_metadata_changed');
+    proof.historicalReconciliation = { failedRunId: FAILED_CHROME_RUN, failedProofSha256: FAILED_CHROME_PROOF_SHA256, ownedFixtureStatuses: [], cleanBaselineBefore: true, cleanBaselineAfter: false };
+    for (const id of historicalFixtureIds) {
+      assert.ok(!baselineIds.includes(id), 'historical_fixture_in_current_baseline');
+      const response = await fetch(`${API}/api/vault/items/${id}`, { headers: { Authorization: `Bearer ${token}`, 'X-Organization-Id': organizationId }, signal: AbortSignal.timeout(30_000) });
+      proof.historicalReconciliation.ownedFixtureStatuses.push({ id, status: response.status });
+      await persist();
+      assert.equal(response.status, 404, 'historical_fixture_still_present');
+    }
+  }
   await persist();
 
   await checkpoint('native_vault');
@@ -732,6 +770,7 @@ try {
   assert.deepEqual(final.map(item => item.id).sort(), baselineIds, 'vault_baseline_ids_changed');
   assert.equal(baselineMetadataSha256(final), baselineHash, 'vault_baseline_metadata_changed');
   proof.baselineReconciled = true;
+  if (reconciliationMode) proof.historicalReconciliation.cleanBaselineAfter = true;
   await persist();
 
   await checkpoint('native_sign_out');
@@ -944,7 +983,16 @@ try {
     proof.firefoxExited = !profile || (await pidsContaining(profile)).length === 0;
   });
   await cleanupCheckpoint('owned_process_profile_cleanup_finished');
+  if (acceptanceLease) {
+    await cleanupStep('vault_acceptance_lease_cleanup_failed', async () => {
+      assert.ok(proof.allOwnedPidsGone && proof.profileRemoved && proof.firefoxExited && proof.driverExited
+        && (!proof.authenticationAttempted || proof.remoteSessionRevoked), 'vault_acceptance_lease_retained_for_cleanup');
+      await acceptanceLease.release();
+      proof.acceptanceLeaseReleased = true;
+    });
+  }
   const required = [
+    'acceptanceLeaseAcquired', 'acceptanceLeaseReleased',
     'runtimeAttested', 'freshProfileAuthStorageEmpty', 'popupSignInTrusted', 'oauthExpectedOrigin',
     'oauthConsentAuthorized', 'independentAdminIdentity', 'organizationSelectedByUiOrSingleMembership',
     'nativeSidebarOpenedByPopupGesture', 'nativeVaultVisible', 'baselineReconciled',
@@ -954,6 +1002,7 @@ try {
   proof.ok = !failure && !proof.persistenceFailureDuringCleanup && proof.cleanupErrors.length === 0
     && proof.vaultMutationRequests === 0 && (!generatorMode || proof.generator?.ok === true)
     && (!captureMode || proof.captureDecisions?.ok === true)
+    && (!reconciliationMode || (proof.historicalReconciliation?.cleanBaselineBefore === true && proof.historicalReconciliation?.cleanBaselineAfter === true && proof.historicalReconciliation.ownedFixtureStatuses.length === 4 && proof.historicalReconciliation.ownedFixtureStatuses.every(item => item.status === 404)))
     && required.every(key => proof[key] === true);
   proof.terminalPhase = proof.ok ? 'complete' : proof.phaseBeforeCleanup;
   if (!proof.ok && !proof.errorCode) proof.errorCode = 'firefox_readonly_acceptance_cleanup_incomplete';

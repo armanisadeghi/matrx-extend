@@ -179,6 +179,11 @@ component, so all four must show identical rows in identical order.
 - **Compatibility:** The extension requires Chrome 116 or later. The chooser refuses to query or fill when top-document identity or `documentIds` targeting is unavailable; it never falls back to tab-wide injection.
 - **Privacy disclosure:** Focus-time matching sends only the current page origin/path and a generated field selector to the extension service worker. No field value is read, captured, or materialized until an account is explicitly selected.
 
+### Vault Fill admission refusal
+- **Steps:** Open the Vault on a login page, then make its active-tab identity unavailable before clicking **Fill**.
+- **Expected:** The panel says “Could not start filling. Focus the login field, then try Fill again.” and sends no fill request.
+- **Covered by:** `src/features/vault/VaultView.focused-frame.test.tsx`.
+
 ### Panel-opening remedies from explicit clicks
 - **What it does:** Every explicit request to open Matrx reports the actual browser result. A toolbar-popup refusal stays visible in the popup; a context-menu refusal appears in a browser notification; a clicked Agenda notification remains visible with its toolbar remedy; and a clicked login-capture recovery card shows its remedy inside that same card.
 - **Where to test:** A current unpacked Chrome artifact and a Firefox 153+ artifact, each in an isolated profile. This recipe does not establish Firefox support by itself.
@@ -2925,3 +2930,10 @@ Every entry follows this shape:
 - Chrome builds declare a minimum of116: document-bound injection needs106, but the user-gesture panel opener needs116. Source: [Chrome Side Panel API](https://developer.chrome.com/docs/extensions/reference/api/sidePanel).
 - Check the emitted Chrome manifest has `minimum_chrome_version: "116"`; in an isolated supported Chrome profile, open the extension from its toolbar and exercise the Vault tab. A successful build alone does not establish that interaction.
 - Firefox uses a distinct sidebar API and needs separate runtime acceptance; its build script is not a support claim.
+
+### Agent-owned local Vault commands
+
+- **Where to test:** an isolated admin extension profile paired to an isolated source desktop engine, through `cloud_browser.start_local` and the returned session. Requires the matching server, desktop, and extension command implementation; a connected device alone is not proof of readiness.
+- **Steps:** start a fresh activation and confirm it creates only its own blank tab. Navigate that tab to a disposable POST login page, discover eligible Vault accounts, select a disposable account, and complete password, multi-step, and authenticator attempts. Exercise both Allow and Deny on the existing approval card. Check a rejected password and a remaining challenge as well as a successful authenticated session.
+- **Recovery checks:** change the selected organization or sign out while approval is pending; restart the extension; expire the lease; close the owned tab; cancel an attempt; replay a consumed discovery result. Confirm stale commands cannot fill or submit, discovery requests a fresh observation when needed, and cleanup only closes the owned tab.
+- **Expected:** passwords and authenticator codes stay out of tool results and logs. Filled fields do not imply successful login. Results distinguish observed verification, rejection, and challenges. Both millisecond projection deadlines are compared to the signed expiry second without extending authority. These are acceptance instructions; component tests alone do not establish installed or end-to-end acceptance.
