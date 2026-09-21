@@ -7,7 +7,7 @@ const SETTLED_CAPTURE_BOUND_MS = 6_200;
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-function assertDependencies({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, proof }) {
+function assertDependencies({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, proof }) {
   assert.ok(adapter && typeof adapter.evaluate === 'function' && typeof adapter.waitFor === 'function'
     && typeof adapter.trustedClick === 'function', 'capture_adapter_contract_invalid');
   assert.ok(typeof base === 'string' && base.startsWith('http'), 'capture_webdriver_base_invalid');
@@ -16,6 +16,7 @@ function assertDependencies({ adapter, base, sessionId, wdPost, wdGet, wdDelete,
   assert.equal(typeof wdGet, 'function', 'capture_webdriver_get_missing');
   assert.equal(typeof wdDelete, 'function', 'capture_webdriver_delete_missing');
   assert.equal(typeof getContext, 'function', 'capture_context_helper_missing');
+  assert.equal(typeof probeFixtureBridge, 'function', 'capture_bridge_probe_missing');
   assert.ok(proof && typeof proof === 'object' && !Array.isArray(proof), 'capture_proof_missing');
 }
 
@@ -67,6 +68,34 @@ async function fillNative(driver, selector, value) {
   await driver.wdPost(driver.base, `/session/${driver.sessionId}/element/${encodeURIComponent(id)}/value`, { text: value, value: [...value] });
 }
 
+async function waitForFixtureBridge(probeFixtureBridge, fixtureUrl) {
+  const deadline = Date.now() + 15_000;
+  while (true) {
+    const mounted = await probeFixtureBridge(fixtureUrl);
+    if (mounted === true) return;
+    if (Date.now() >= deadline) throw new Error('capture_fixture_bridge_not_ready');
+    await delay(Math.min(100, deadline - Date.now()));
+  }
+}
+
+async function pendingPromptDiagnostic(adapter) {
+  return adapter.evaluate(document => {
+    const headings = [...document.querySelectorAll('p')]
+      .filter((node) => node.textContent?.trim() === 'Save this login to your Vault?');
+    const visibleHeadings = headings.filter((node) => node.getBoundingClientRect().height > 0);
+    const card = visibleHeadings.length === 1
+      ? visibleHeadings[0].parentElement?.parentElement?.parentElement
+      : null;
+    return {
+      vaultSelected: document.querySelector('button[title="Vault"]')?.getAttribute('aria-selected') === 'true',
+      captureHeadingCount: headings.length,
+      visibleCaptureHeadingCount: visibleHeadings.length,
+      cardNotNowControlCount: card ? card.querySelectorAll('button[title="Not now"]').length : 0,
+      panelBusyControlCount: document.querySelectorAll('button:disabled').length,
+    };
+  });
+}
+
 async function ensureVault(adapter) {
   await adapter.trustedClick('button[title="Vault"]', {
     outcome: document => document.querySelector('button[title="Vault"]')?.getAttribute('aria-selected') === 'true'
@@ -87,7 +116,7 @@ async function assertSettledNoCapture(adapter) {
 
 export async function runFirefoxCaptureDecisionChecks(dependencies) {
   assertDependencies(dependencies);
-  const { adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, proof } = dependencies;
+  const { adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, proof } = dependencies;
   const driver = { base, sessionId, wdPost };
   const fixture = await createFixture();
   let originalHandle = null;
@@ -98,6 +127,7 @@ export async function runFirefoxCaptureDecisionChecks(dependencies) {
   proof.captureDecisions = {
     ok: false,
     quietDefaultNoOverlay: false,
+    fixtureBridgeMounted: false,
     nativeFixtureSubmittedOnce: false,
     pendingPromptObserved: false,
     dismissedThroughTrustedSidebarControl: false,
@@ -117,8 +147,12 @@ export async function runFirefoxCaptureDecisionChecks(dependencies) {
     tabHandle = (await wdPost(base, `/session/${sessionId}/window/new`, { type: 'tab' }))?.handle;
     assert.ok(typeof tabHandle === 'string' && tabHandle.length > 0, 'capture_fixture_tab_missing');
     await wdPost(base, `/session/${sessionId}/window`, { handle: tabHandle });
-    await wdPost(base, `/session/${sessionId}/url`, { url: `${fixture.url}?case=${randomUUID()}` });
+    const fixtureUrl = `${fixture.url}?case=${randomUUID()}`;
+    await wdPost(base, `/session/${sessionId}/url`, { url: fixtureUrl });
+    await waitForFixtureBridge(probeFixtureBridge, fixtureUrl);
+    proof.captureDecisions.fixtureBridgeMounted = true;
 
+    await getContext('content');
     await fillNative(driver, '#username', `capture-${randomUUID()}@example.invalid`);
     await fillNative(driver, '#password', `capture-${randomUUID()}`);
     const quietDeadline = Date.now() + SETTLED_CAPTURE_BOUND_MS;
@@ -140,21 +174,27 @@ export async function runFirefoxCaptureDecisionChecks(dependencies) {
 
     await getContext('chrome');
     await ensureVault(adapter);
-    const notNowSelector = await adapter.waitFor(document => {
-      const headings = [...document.querySelectorAll('p')]
-        .filter((node) => node.textContent?.trim() === 'Save this login to your Vault?' && node.getBoundingClientRect().height > 0);
-      if (headings.length !== 1) return null;
-      const card = headings[0].parentElement?.parentElement?.parentElement;
-      const controls = [...card?.querySelectorAll('button[title="Not now"]') ?? []];
-      if (controls.length !== 1) return null;
-      const path = [];
-      for (let node = controls[0]; node && node !== document.documentElement; node = node.parentElement) {
-        const index = [...node.parentElement.children].indexOf(node) + 1;
-        if (index < 1) return null;
-        path.unshift(`> ${node.tagName.toLowerCase()}:nth-child(${index})`);
-      }
-      return path.length > 0 ? `html ${path.join(' ')}` : null;
-    }, [], { timeoutMs: 15_000 });
+    let notNowSelector;
+    try {
+      notNowSelector = await adapter.waitFor(document => {
+        const headings = [...document.querySelectorAll('p')]
+          .filter((node) => node.textContent?.trim() === 'Save this login to your Vault?' && node.getBoundingClientRect().height > 0);
+        if (headings.length !== 1) return null;
+        const card = headings[0].parentElement?.parentElement?.parentElement;
+        const controls = [...card?.querySelectorAll('button[title="Not now"]') ?? []];
+        if (controls.length !== 1) return null;
+        const path = [];
+        for (let node = controls[0]; node && node !== document.documentElement; node = node.parentElement) {
+          const index = [...node.parentElement.children].indexOf(node) + 1;
+          if (index < 1) return null;
+          path.unshift(`> ${node.tagName.toLowerCase()}:nth-child(${index})`);
+        }
+        return path.length > 0 ? `html ${path.join(' ')}` : null;
+      }, [], { timeoutMs: 15_000 });
+    } catch (error) {
+      proof.captureDecisions.pendingPromptDiagnostic = await pendingPromptDiagnostic(adapter).catch(() => ({ collected: false }));
+      throw error;
+    }
     assert.ok(typeof notNowSelector === 'string' && notNowSelector.length > 0, 'capture_not_now_control_not_unique');
     proof.captureDecisions.pendingPromptObserved = true;
     await adapter.trustedClick(notNowSelector, {
