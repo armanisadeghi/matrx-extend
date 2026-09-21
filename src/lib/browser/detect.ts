@@ -169,8 +169,7 @@ export function usesNativeTrustedSessionStorage(
   browser: SupportedBrowser = BROWSER,
   capabilities: BrowserCapabilities = BROWSER_FEATURES,
 ): boolean {
-  if (browser !== 'firefox' || !capabilities.hasNativeTrustedSessionStorage)
-    return false;
+  if (browser !== 'firefox' || !capabilities.hasNativeTrustedSessionStorage) return false;
   try {
     const parsed = new URL(extensionRoot);
     return parsed.protocol === 'moz-extension:' && parsed.pathname === '/';
