@@ -907,6 +907,32 @@ export class LocalBrowserController {
     }
     let filled = false;
     let submitted = false;
+    let replacementDocument: { documentId: string; url: string } | null = null;
+    const observePostSubmitDocument = async (): Promise<{
+      documentId: string;
+      url: string;
+    } | null> => {
+      // Observation begins only after the already-bound original document has
+      // submitted. It never grants mutation authority to a replacement page.
+      if (!submitted || !isCurrent() || Date.now() >= claimed.deadline_ms) return null;
+      const current = await this.deps.command?.currentDocument(tabId);
+      if (!current || !isCurrent() || Date.now() >= claimed.deadline_ms) return null;
+      try {
+        const original = new URL(document.url);
+        const observed = new URL(current.url);
+        if (
+          original.protocol !== 'https:' ||
+          observed.protocol !== 'https:' ||
+          observed.origin !== original.origin
+        )
+          return null;
+      } catch {
+        return null;
+      }
+      if (replacementDocument && current.documentId !== replacementDocument.documentId) return null;
+      if (current.documentId !== document.documentId) replacementDocument ??= current;
+      return current;
+    };
     const mapped = mapLocalCommandToHandler(command, tabId);
     if (!mapped || mapped.toolName !== 'credential_login') return terminal('configuration_error');
     const result =
@@ -920,6 +946,7 @@ export class LocalBrowserController {
               if (event === 'filled') filled = true;
               else submitted = true;
             },
+            observePostSubmitDocument,
             assertCurrent: async () => {
               if (!isCurrent() || !(await assertCurrentDocument()))
                 throw new Error('binding_changed');
@@ -946,6 +973,7 @@ export class LocalBrowserController {
               if (event === 'filled') filled = true;
               else submitted = true;
             },
+            observePostSubmitDocument,
             assertCurrent: async () => {
               if (!isCurrent() || !(await assertCurrentDocument()))
                 throw new Error('binding_changed');

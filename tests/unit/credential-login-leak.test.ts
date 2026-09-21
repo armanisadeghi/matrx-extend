@@ -1025,6 +1025,10 @@ describe('admitted credential execution', () => {
       deadlineMs: Date.now() + 10_000,
       assertCurrent: vi.fn(async () => {}),
       isCurrent: vi.fn(() => true),
+      observePostSubmitDocument: vi.fn(async () => ({
+        documentId: 'document-fixture',
+        url: PAGE_URL,
+      })),
       materialize: vi.fn(async () => ({ ok: true as const, data })),
       report: vi.fn(async () => {}),
     };
@@ -1127,6 +1131,10 @@ describe('admitted authenticator execution', () => {
       deadlineMs: Date.now() + 10_000,
       assertCurrent: vi.fn(async () => {}),
       isCurrent: vi.fn(() => true),
+      observePostSubmitDocument: vi.fn(async () => ({
+        documentId: 'document-fixture',
+        url: PAGE_URL,
+      })),
       materialize: vi.fn(async () => ({ ok: true as const, data })),
       report: vi.fn(async () => {}),
     };
@@ -1173,6 +1181,102 @@ describe('admitted authenticator execution', () => {
 
 describe('admitted post-submit document binding', () => {
   beforeEach(resetRecorders);
+  it.each(['password', 'authenticator'])(
+    'observes same-origin replacement evidence for %s without moving secret writes',
+    async (kind) => {
+      const helpers = await import('@/lib/tools/handlers/credential-login');
+      if (kind === 'authenticator') renderAuthenticatorPage();
+      let submitted = false;
+      const calls: Array<{ documentId: string | undefined; operation: string | undefined }> = [];
+      const execute = chrome.scripting.executeScript;
+      vi.spyOn(chrome.scripting, 'executeScript').mockImplementation(async (request) => {
+        calls.push({
+          documentId: request.target.documentIds?.[0],
+          operation: ('args' in request
+            ? (request.args?.[0] as { operation?: string } | undefined)
+            : undefined)?.operation,
+        });
+        const answer = await execute(request);
+        if (
+          ('args' in request
+            ? (request.args?.[0] as { operation?: string } | undefined)
+            : undefined)?.operation === 'submit_explicit'
+        )
+          submitted = true;
+        return answer;
+      });
+      const binding = {
+        commandId: 'command-fixture',
+        documentId: 'document-fixture',
+        deadlineMs: Date.now() + 10_000,
+        assertCurrent: async () => {},
+        isCurrent: () => true,
+        observePostSubmitDocument: async () =>
+          submitted
+            ? { documentId: 'replacement-fixture', url: `${PAGE_ORIGIN}/home` }
+            : { documentId: 'document-fixture', url: PAGE_URL },
+        report: vi.fn(async () => {}),
+      };
+      const result =
+        kind === 'password'
+          ? await helpers.runAdmittedCredentialAttempt(
+              {
+                action: 'attempt',
+                credential_item_id: ITEM_ID,
+                fields: [
+                  { selector: '#username', field_key: 'username' },
+                  { selector: '#password', field_key: 'password' },
+                ],
+                submit: { kind: 'click', selector: '#submit' },
+                expect: { success_selector: 'a[href="/logout"]', timeout_ms: 1000 },
+              },
+              TAB_ID,
+              PAGE_URL,
+              {
+                ...binding,
+                materialize: async () => ({
+                  ok: true as const,
+                  data: {
+                    item_id: ITEM_ID,
+                    origin: PAGE_ORIGIN,
+                    fields: { username: SENTINEL_USER, password: SENTINEL_PASSWORD },
+                  },
+                }),
+              },
+            )
+          : await helpers.runAdmittedAuthenticatorAttempt(
+              {
+                action: 'authenticator',
+                credential_item_id: ITEM_ID,
+                code_selector: '#otp',
+                submit: { kind: 'click', selector: '#verify' },
+                expect: { success_selector: 'a[href="/logout"]', timeout_ms: 1000 },
+              },
+              TAB_ID,
+              PAGE_URL,
+              {
+                ...binding,
+                materialize: async () => ({
+                  ok: true as const,
+                  data: {
+                    injection_id: 'fixture',
+                    origin: PAGE_ORIGIN,
+                    code: SENTINEL_TOTP,
+                    expires_at: new Date(Date.now() + 20_000).toISOString(),
+                  },
+                }),
+              },
+            );
+      expect(result.status).toBe('authenticated');
+      expect(calls.some((call) => call.documentId === 'replacement-fixture')).toBe(true);
+      expect(
+        calls.filter((call) => call.documentId === 'replacement-fixture').map((call) => call.operation),
+      ).not.toContain('fill');
+      expect(
+        calls.filter((call) => call.documentId === 'replacement-fixture').map((call) => call.operation),
+      ).not.toContain('submit_explicit');
+    },
+  );
   it.each(['password', 'authenticator'])(
     'refuses replacement-document evidence for %s',
     async (kind) => {

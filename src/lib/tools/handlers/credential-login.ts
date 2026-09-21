@@ -637,20 +637,20 @@ async function waitForSelector(
   selector: string,
   timeoutMs: number,
   execution?: AdmittedExecutionBinding,
+  observePostSubmit = false,
 ): Promise<boolean> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
-    const found = await injectTopFrame<boolean>(
-      tabId,
-      ((sel: string) => {
-        try {
-          return document.querySelector(sel) !== null;
-        } catch {
-          return false;
-        }
-      }) as (...args: never[]) => boolean,
-      [selector],
-      execution,
+    const probe = ((sel: string) => {
+      try {
+        return document.querySelector(sel) !== null;
+      } catch {
+        return false;
+      }
+    }) as (...args: never[]) => boolean;
+    const found = await (observePostSubmit && execution
+      ? injectPostSubmitObservation<boolean>(tabId, probe, [selector], execution)
+      : injectTopFrame<boolean>(tabId, probe, [selector], execution)
     ).catch(() => (execution ? null : false));
     if (execution && found === null) throw new Error('admitted_document_lost');
     if (found) return true;
@@ -666,14 +666,16 @@ async function classifyExplicitAttempt(
   before: PageStateProbe,
   startedAt: number,
   execution?: AdmittedExecutionBinding,
+  observePostSubmit = false,
 ): Promise<Pick<CredentialLoginResult, 'status' | 'confidence' | 'signals' | 'evidence'>> {
   const deadline = Date.now() + expect.timeout_ms;
   let after: PageStateProbe | null = null;
   while (Date.now() < deadline) {
     await sleep(POLL_INTERVAL_MS);
-    after = await injectTopFrame<PageStateProbe>(tabId, pageStateSource, [], execution).catch(
-      () => null,
-    );
+    after = await (observePostSubmit && execution
+      ? injectPostSubmitObservation<PageStateProbe>(tabId, pageStateSource, [], execution)
+      : injectTopFrame<PageStateProbe>(tabId, pageStateSource, [], execution)
+    ).catch(() => null);
     if (execution && !after) throw new Error('admitted_document_lost');
     if (!after) continue;
     if (
@@ -706,23 +708,53 @@ async function classifyExplicitAttempt(
   ] as const;
   for (const [kind, selector, direction, weight] of expectationSelectors) {
     if (!selector) continue;
-    const present = await waitForSelector(tabId, selector, 250, execution);
+    const present = await waitForSelector(tabId, selector, 250, execution, observePostSubmit);
     if (present) signals.push(signal(kind, direction, weight, 'agent_expectation'));
   }
+  const observingPostSubmit = observePostSubmit && execution !== undefined;
+  const observed = observingPostSubmit
+    ? await execution.observePostSubmitDocument?.()
+    : null;
+  if (observingPostSubmit && !observed) throw new Error('admitted_document_lost');
   const currentTab = await chrome.tabs.get(tabId).catch(() => null);
-  const currentUrl = currentTab?.url ?? after.href ?? pageUrl.href;
-  await fenceAdmitted(execution);
+  const currentUrl = observed?.url ?? currentTab?.url ?? after.href ?? pageUrl.href;
+  if (observingPostSubmit && execution) {
+    const final = await execution.observePostSubmitDocument?.();
+    if (
+      !final ||
+      final.documentId !== observed?.documentId ||
+      final.url !== observed?.url
+    )
+      throw new Error('admitted_document_lost');
+  } else {
+    await fenceAdmitted(execution);
+  }
   const auth = await checkAuthState(
     tabId,
     currentUrl,
-    execution
+    observed
       ? {
-          documentId: execution.documentId,
-          isCurrent: () => execution.isCurrent() && Date.now() < execution.deadlineMs,
+          documentId: observed.documentId,
+          isCurrent: () => execution!.isCurrent() && Date.now() < execution!.deadlineMs,
         }
+      : execution
+        ? {
+            documentId: execution.documentId,
+            isCurrent: () => execution.isCurrent() && Date.now() < execution.deadlineMs,
+          }
       : undefined,
   );
-  await fenceAdmitted(execution);
+  if (observingPostSubmit && execution) {
+    const final = await execution.observePostSubmitDocument?.();
+    if (
+      !final ||
+      final.documentId !== observed?.documentId ||
+      final.url !== observed?.url
+    )
+      throw new Error('admitted_document_lost');
+  } else {
+    await fenceAdmitted(execution);
+  }
   if (execution && !auth) throw new Error('admitted_document_lost');
   if (auth?.signed_in === 'yes') signals.push(signal('auth_state_yes', 'authenticated', 0.8));
   if (auth?.signed_in === 'likely') {
@@ -814,6 +846,12 @@ export interface AdmittedExecutionBinding {
   isCurrent: () => boolean;
   /** Value-free, process-local progress for the owning command receipt. */
   onProgress?: (event: 'filled' | 'submitted') => void;
+  /**
+   * Read-only document observation after an approved submit. The controller
+   * owns the one-transition and current-binding fences; this is never a
+   * materialization or DOM-mutation target.
+   */
+  observePostSubmitDocument?: () => Promise<{ documentId: string; url: string } | null>;
 }
 
 export interface AdmittedCredentialExecution extends AdmittedExecutionBinding {
@@ -914,6 +952,24 @@ async function injectTopFrame<T>(
   return (first?.result as T | undefined) ?? null;
 }
 
+async function injectPostSubmitObservation<T>(
+  tabId: number,
+  func: (...args: never[]) => T,
+  args: unknown[],
+  execution: AdmittedExecutionBinding,
+): Promise<T | null> {
+  const document = await execution.observePostSubmitDocument?.();
+  if (!document || !execution.isCurrent() || Date.now() >= execution.deadlineMs) return null;
+  const [first] = await chrome.scripting.executeScript({
+    target: { tabId, documentIds: [document.documentId] },
+    func: func as (...a: unknown[]) => T,
+    args,
+  });
+  const final = await execution.observePostSubmitDocument?.();
+  if (!final || final.documentId !== document.documentId) return null;
+  return (first?.result as T | undefined) ?? null;
+}
+
 async function injectCredentialDom<O extends CredentialDomInjectedRequest['operation']>(
   tabId: number,
   request: Extract<CredentialDomInjectedRequest, { operation: O }>,
@@ -972,6 +1028,7 @@ async function runCompleteAttempt(
     },
   ];
   const startedAt = Date.now();
+  let submittedForObservation = false;
 
   // Refuse a malformed first step before asking the Vault to decrypt anything.
   // Later-step selectors may legitimately appear only after the first submit,
@@ -1065,7 +1122,12 @@ async function runCompleteAttempt(
       ].includes(result.status)
         ? (result.status as BrowserLoginResultStatus)
         : 'unknown';
-      await fenceAdmitted(execution);
+      if (submittedForObservation && execution) {
+        if (!(await execution.observePostSubmitDocument?.()))
+          throw new Error('admitted_document_lost');
+      } else {
+        await fenceAdmitted(execution);
+      }
       if (execution) await execution.report(result);
       else
         await reportBrowserLoginResult(itemId, {
@@ -1171,13 +1233,17 @@ async function runCompleteAttempt(
           true,
         );
       }
-      if (step.submit.kind !== 'none') execution?.onProgress?.('submitted');
+      if (step.submit.kind !== 'none') {
+        submittedForObservation = true;
+        execution?.onProgress?.('submitted');
+      }
       if (step.wait_for) {
         const appeared = await waitForSelector(
           tabId,
           step.wait_for.selector,
           step.wait_for.timeout_ms,
           execution,
+          submittedForObservation,
         );
         if (!appeared) {
           return await finish(
@@ -1188,7 +1254,12 @@ async function runCompleteAttempt(
       }
     }
 
-    await fenceAdmitted(execution);
+    if (submittedForObservation && execution) {
+      if (!(await execution.observePostSubmitDocument?.()))
+        throw new Error('admitted_document_lost');
+    } else {
+      await fenceAdmitted(execution);
+    }
     const classified = await classifyExplicitAttempt(
       tabId,
       pageUrl,
@@ -1196,6 +1267,7 @@ async function runCompleteAttempt(
       before,
       startedAt,
       execution,
+      submittedForObservation,
     );
     return await finish(
       safeResult(classified.status, {
@@ -1321,7 +1393,8 @@ async function runAuthenticatorAttempt(
         },
       );
     }
-    if (args.submit.kind !== 'none') execution?.onProgress?.('submitted');
+    const submittedForObservation = args.submit.kind !== 'none';
+    if (submittedForObservation) execution?.onProgress?.('submitted');
 
     const classified = await classifyExplicitAttempt(
       tabId,
@@ -1330,6 +1403,7 @@ async function runAuthenticatorAttempt(
       before,
       startedAt,
       execution,
+      submittedForObservation,
     );
     clear = classified.status !== 'authenticated';
     const result = safeResult(classified.status, {
@@ -1337,7 +1411,12 @@ async function runAuthenticatorAttempt(
       ...(classified.signals !== undefined ? { signals: classified.signals } : {}),
       ...(classified.evidence !== undefined ? { evidence: classified.evidence } : {}),
     });
-    await fenceAdmitted(execution);
+    if (submittedForObservation && execution) {
+      if (!(await execution.observePostSubmitDocument?.()))
+        throw new Error('admitted_document_lost');
+    } else {
+      await fenceAdmitted(execution);
+    }
     if (execution) await execution.report(result);
     else
       await reportBrowserLoginResult(args.credential_item_id, {
