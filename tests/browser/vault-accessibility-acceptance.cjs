@@ -82,16 +82,18 @@ async function ensureGeneratorOpen(realPanel) {
   }
 }
 
-async function runInlineChooserEscape({ context, fixturePage, targetName, getSubmitCount, assert, wait, focusCredential }) {
+async function runInlineChooserEscape({ context, fixturePage, targetName, getSubmitCount, assert, wait, focusCredential, focusUnrelated }) {
   assert(fixturePage && typeof fixturePage.locator === 'function', 'vault_accessibility_fixture_page_missing');
   assert(typeof getSubmitCount === 'function', 'vault_accessibility_submit_counter_missing');
-  assert(typeof focusCredential === 'function', 'vault_accessibility_focus_credential_missing');
+  assert(typeof focusCredential === 'function' && typeof focusUnrelated === 'function', 'vault_accessibility_focus_credential_missing');
   const baselineSubmits = getSubmitCount();
   assert(Number.isInteger(baselineSubmits) && baselineSubmits >= 0, 'vault_accessibility_submit_counter_invalid');
   const fixtureCdp = await context.newCDPSession(fixturePage);
   try {
+    await focusUnrelated();
     await focusCredential();
     await fixturePage.waitForFunction(() => document.hasFocus() && document.activeElement?.id === 'password');
+    await fixturePage.locator('#matrx-inline-login-suggestion').waitFor({ state: 'attached', timeout: 15000 });
     await dispatchNativeKey(fixtureCdp, { key: 'ArrowDown', code: 'ArrowDown', windowsVirtualKeyCode: 40 });
     let chooserNodes = await waitForFixtureAX(fixtureCdp, wait, nodes => {
       const buttons = chooserButtons(nodes);
@@ -125,7 +127,7 @@ async function runInlineChooserEscape({ context, fixturePage, targetName, getSub
 
 exports.runVaultAccessibilityChecks = async ({
   realPanel, context, worker, fixturePage, targetName, assert, wait, checkpoint = () => {}, proof,
-  verifyRealVaultPanel, getSubmitCount, focusCredential,
+  verifyRealVaultPanel, getSubmitCount, focusCredential, focusUnrelated,
 }) => {
   assert(realPanel && typeof realPanel.send === 'function' && typeof realPanel.evaluate === 'function'
     && typeof realPanel.waitFor === 'function' && typeof realPanel.click === 'function', 'vault_accessibility_panel_contract_missing');
@@ -197,7 +199,7 @@ exports.runVaultAccessibilityChecks = async ({
 
     checkpoint('vault_accessibility_inline_chooser_escape');
     const chooser = await runInlineChooserEscape({
-      context, fixturePage, targetName, getSubmitCount, assert, wait, focusCredential,
+      context, fixturePage, targetName, getSubmitCount, assert, wait, focusCredential, focusUnrelated,
     });
     evidence.inlineChooserDialogAndTargetAX = chooser.exactTargetActionableAX;
     evidence.inlineChooserEscapeReturnsFocusWithoutSubmit = chooser.escapeReturnedFocusWithoutSubmit;
@@ -219,7 +221,7 @@ exports.runVaultAccessibilityChecks = async ({
     assert(actualZoom === 2, 'vault_accessibility_actual_zoom_not_200');
     evidence.actualBrowserZoom200 = true;
     const zoomedChooser = await runInlineChooserEscape({
-      context, fixturePage, targetName, getSubmitCount, assert, wait, focusCredential,
+      context, fixturePage, targetName, getSubmitCount, assert, wait, focusCredential, focusUnrelated,
     });
     evidence.zoomedChooserKeyboardAndEscape = zoomedChooser.exactTargetActionableAX
       && zoomedChooser.escapeReturnedFocusWithoutSubmit;
