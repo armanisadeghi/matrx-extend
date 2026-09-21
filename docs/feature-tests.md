@@ -2949,3 +2949,34 @@ Every entry follows this shape:
 - **Steps:** start a fresh activation and confirm it creates only its own blank tab. Navigate that tab to a disposable POST login page, discover eligible Vault accounts, select a disposable account, and complete password, multi-step, and authenticator attempts. Exercise both Allow and Deny on the existing approval card. Check a rejected password and a remaining challenge as well as a successful authenticated session.
 - **Recovery checks:** change the selected organization or sign out while approval is pending; restart the extension; expire the lease; close the owned tab; cancel an attempt; replay a consumed discovery result. Confirm stale commands cannot fill or submit, discovery requests a fresh observation when needed, and cleanup only closes the owned tab.
 - **Expected:** passwords and authenticator codes stay out of tool results and logs. Filled fields do not imply successful login. Results distinguish observed verification, rejection, and challenges. Both millisecond projection deadlines are compared to the signed expiry second without extending authority. These are acceptance instructions; component tests alone do not establish installed or end-to-end acceptance.
+
+### Desktop bridge recovers on its own and stops manufacturing errors
+
+- **What it does:** the extension finds the matrx-local engine and holds one
+  WebSocket to it. Neither the search nor the socket may turn "the desktop app
+  isn't running" — a perfectly normal state — into a stream of console errors,
+  and both must recover without a browser restart.
+- **Where to test:** Debug → Bridges, plus the service-worker console
+  (`chrome://extensions` → Matrx → "service worker") and the Debug → Logs feed
+  (source `desktop`, `desktop-ws-offscreen`).
+- **Steps:**
+  1. With the desktop app CLOSED, open the SW console and leave it for five
+     minutes. Expect a short burst of refused connections, then quiet: no
+     twenty-port sweep every thirty seconds, no repeating `ws open timeout`
+     warning. One `engine not found on 127.0.0.1:22140-22159 — next full scan
+     in …s` line per backoff rung is correct.
+  2. Launch the desktop app. Within ~30 seconds Debug → Bridges shows the
+     engine connected and the WS state goes to open, with no manual action.
+  3. Quit the desktop app while connected, wait a minute, relaunch it. The
+     bridge comes back on its own.
+  4. With the desktop app closed, press Debug → Bridges → Re-discover. It must
+     scan IMMEDIATELY (a visible burst of probes) rather than waiting out the
+     backoff.
+  5. Force a port change: with the engine running, occupy its port and restart
+     the engine so it lands on a different one in 22140-22159. The bridge must
+     find it again without reloading the extension.
+- **Expected:** no permanent red in the SW console when the desktop app is
+  absent; recovery in step 2/3/5 is automatic; step 4 is instant.
+- **Covered by:** `tests/unit/desktop-discovery.test.ts`,
+  `tests/unit/ws-reconnect-rediscovers.test.ts`,
+  `tests/unit/desktop-native-probe-backoff.test.ts`.
