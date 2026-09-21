@@ -31,7 +31,7 @@ import { onCapturedEvent } from '@/lib/demos/recorder';
 import { desktopRpc, probeDesktop, startDesktopProbeAlarm } from '@/lib/desktop/bridge';
 import { startLocalBrowserController } from '@/lib/desktop/local-browser/controller';
 import { desktopHealthSnapshotKey } from '@/lib/desktop/types';
-import { connectWs } from '@/lib/desktop/ws-client';
+import { connectWs, getWsState, installWsRouter } from '@/lib/desktop/ws-client';
 import { registerWsReverseInvocationHandler } from '@/lib/desktop/ws-invoke';
 import { connectBroadcast, disconnectBroadcast } from '@/lib/frontend-bridge/broadcast';
 import {
@@ -107,6 +107,10 @@ export function bootstrapBackground(): void {
 
   // ── 1. Register message handlers SYNCHRONOUSLY so they're ready immediately.
   registerHandlers();
+  // The WS router belongs in this synchronous block for the same reason: a
+  // retained offscreen document can wake this worker with an epoch
+  // handshake or a URL re-resolve before any async boot step has run.
+  installWsRouter();
 
   // ── 1a. Token broker — the SW owns the canonical in-memory credential
   //        cache; sidepanel/offscreen mint + consume through these channels
@@ -287,6 +291,14 @@ function setupAlarms(): void {
         if (state.transport === 'http' && prev !== 'http') {
           void connectWs();
         }
+      }
+      // A healthy engine with a dead socket used to be a permanent state:
+      // the block above only fires on a TRANSPORT CHANGE, and the offscreen
+      // stops retrying once its backoff ceiling is reached. This probe is
+      // the recovery path — it re-resolves the URL and reopens whenever the
+      // engine is reachable but the socket is not up.
+      if (state.transport === 'http' && getWsState() !== 'open') {
+        void connectWs();
       }
     } else if (alarm.name === ALARMS.AGENDA_SCAN) {
       await scanAndNotify();

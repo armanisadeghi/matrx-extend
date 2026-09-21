@@ -33,7 +33,7 @@
  */
 
 import { log } from '@/lib/debug/log';
-import { getEngineBaseUrl } from '@/lib/desktop/discovery';
+import { getEngineBaseUrl, invalidateEnginePortCache } from '@/lib/desktop/discovery';
 import { ensurePairToken } from '@/lib/desktop/http';
 import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -112,6 +112,47 @@ export interface WsControlResult {
   stage?: 'discover' | 'auth' | 'ensure-offscreen' | 'send' | 'open';
 }
 
+interface ResolvedWsUrl {
+  wsUrl?: string;
+  error?: string;
+  stage?: WsControlResult['stage'];
+}
+
+/**
+ * Resolve the full ws:// URL (discovered port + pair token).
+ *
+ * This lives in the SW because the offscreen document has no
+ * chrome.storage: neither the discovery cache nor the pair token is
+ * readable there. `forceRediscover` drops the cached port first — the same
+ * self-heal `rpcHttp` performs on a 5xx — so an engine that restarted onto
+ * a different port in the 22140-22159 scan range is found again instead of
+ * being retried forever at its old address.
+ */
+async function resolveWsUrl(forceRediscover: boolean): Promise<ResolvedWsUrl> {
+  try {
+    if (forceRediscover) await invalidateEnginePortCache();
+    const baseUrl = await getEngineBaseUrl();
+    if (!baseUrl) {
+      return { error: 'engine base URL unresolved (matrx-local offline?)', stage: 'discover' };
+    }
+    // Browsers don't allow custom headers on WebSocket — engine reads the
+    // bearer from a `?token=` query param instead of an Authorization header.
+    const token = await ensurePairToken(baseUrl);
+    if (!token) {
+      return {
+        error:
+          'desktop not paired — auto-pairing failed (engine offline or pre-pairing version); or paste the pair code in Settings → Desktop Bridge',
+        stage: 'auth',
+      };
+    }
+    return {
+      wsUrl: `${baseUrl.replace(/^http/, 'ws')}/extension/ws?token=${encodeURIComponent(token)}`,
+    };
+  } catch (err) {
+    return { error: (err as Error).message, stage: 'discover' };
+  }
+}
+
 /**
  * Lazily ensure the offscreen document exists, then ask it to open the WS.
  * Idempotent — the offscreen-side handler tracks "is the WS already open?"
@@ -128,33 +169,17 @@ export interface WsControlResult {
  */
 export async function connectWs(): Promise<WsControlResult> {
   installRouterIfNeeded();
-  let wsUrl: string;
-  try {
-    const baseUrl = await getEngineBaseUrl();
-    if (!baseUrl) {
-      return {
-        ok: false,
-        error: 'engine base URL unresolved (matrx-local offline?)',
-        stage: 'discover',
-      };
-    }
-    // Browsers don't allow custom headers on WebSocket — engine reads the
-    // bearer from a `?token=` query param instead of an Authorization header.
-    const token = await ensurePairToken(baseUrl);
-    if (!token) {
-      return {
-        ok: false,
-        error:
-          'desktop not paired — auto-pairing failed (engine offline or pre-pairing version); or paste the pair code in Settings → Desktop Bridge',
-        stage: 'auth',
-      };
-    }
-    wsUrl = `${baseUrl.replace(/^http/, 'ws')}/extension/ws?token=${encodeURIComponent(token)}`;
-  } catch (err) {
-    const error = (err as Error).message;
-    log.warn('desktop', 'ws connectWs discovery failed', error);
-    return { ok: false, error, stage: 'discover' };
+  const resolved = await resolveWsUrl(false);
+  if (!resolved.wsUrl) {
+    const result: WsControlResult = {
+      ok: false,
+      error: resolved.error ?? 'engine base URL unresolved',
+      ...(resolved.stage !== undefined && { stage: resolved.stage }),
+    };
+    if (resolved.stage === 'discover') log.info('desktop', 'ws connectWs: ' + result.error);
+    return result;
   }
+  const wsUrl = resolved.wsUrl;
   try {
     await ensureOffscreen();
   } catch (err) {
@@ -301,9 +326,45 @@ export function getWsStateChangedAt(): number | null {
 
 // ─── Internal — SW message router ───────────────────────────────────────────
 
+/**
+ * Register the SW-side WS router SYNCHRONOUSLY at background boot.
+ *
+ * MV3 dispatches a message to a freshly-woken service worker only against
+ * listeners registered during the synchronous top-level run of its script.
+ * Every other install site here is reached through an `await` chain, so a
+ * retained offscreen document that woke the worker with WS_EPOCH_HANDSHAKE
+ * or WS_RESOLVE_URL could find no listener and get `undefined` back —
+ * reading, to the offscreen, as a rejected handshake.
+ */
+export function installWsRouter(): void {
+  installRouterIfNeeded();
+}
+
 function installRouterIfNeeded(): void {
   if (listenerInstalled) return;
   listenerInstalled = true;
+
+  // offscreen → SW: the offscreen is about to retry and needs a FRESH URL.
+  // Without this the offscreen could only replay the URL it was handed at
+  // WS_START; when the engine restarted onto another port in the scan range
+  // that URL was dead forever and the retry loop could never recover — it
+  // just logged a failure every 30s until the browser was restarted.
+  on<{ failedUrl?: string }, { ok: boolean; wsUrl?: string; error?: string }>(
+    CHANNELS.WS_RESOLVE_URL,
+    async (payload) => {
+      const resolved = await resolveWsUrl(true);
+      if (!resolved.wsUrl) {
+        return { ok: false, ...(resolved.error !== undefined && { error: resolved.error }) };
+      }
+      if (payload?.failedUrl && payload.failedUrl !== resolved.wsUrl) {
+        log.info(
+          'desktop',
+          `ws endpoint moved → ${redactToken(resolved.wsUrl)} (was ${redactToken(payload.failedUrl)})`,
+        );
+      }
+      return { ok: true, wsUrl: resolved.wsUrl };
+    },
+  );
 
   on<WsEpochHandshake, { ok: boolean; socketEpoch?: string }>(
     CHANNELS.WS_EPOCH_HANDSHAKE,

@@ -201,6 +201,12 @@ export const CHANNELS = {
   WS_STATE: 'ws:state', // offscreen → SW: open / closed transitions
   WS_START: 'ws:start', // SW → offscreen: open the WS (idempotent)
   WS_STOP: 'ws:stop', // SW → offscreen: close the WS
+  // offscreen → SW: re-resolve a FRESH ws URL before a reconnect. The
+  // offscreen has no chrome.storage, so it cannot re-run discovery or read
+  // the pair token itself; without this it can only retry the URL it was
+  // handed at WS_START, which is dead the moment the engine restarts on a
+  // different port in the 22140-22159 scan range.
+  WS_RESOLVE_URL: 'ws:resolve-url',
   // Private local-browser lifecycle fencing. These never cross the desktop
   // socket unchanged: socket_epoch exists only between the SW and offscreen.
   WS_EPOCH_HANDSHAKE: 'ws:epoch-handshake', // offscreen → SW: invalidate then acknowledge epoch

@@ -21,7 +21,10 @@
  * Lifecycle:
  *   - Lazy connect on first WS_START or WS_SEND.
  *   - Heartbeat ping every 20s once open.
- *   - Reconnect with exponential backoff (1s, 2s, 4s, 8s, 16s, 30s cap).
+ *   - Reconnect with exponential backoff (1s, 2s, 4s, 8s, 16s, 30s), each
+ *     attempt re-resolving the URL through the SW (the port and pair token
+ *     move when the engine restarts). After the last delay, retries PAUSE —
+ *     the SW's 30s desktop probe owns recovery from there.
  *   - Idle disconnect after 5 min with no inbound or outbound traffic.
  *   - On `tool_catalog_hash` change between consecutive pongs, broadcast
  *     `ws:catalog-stale` so the SW can refetch capabilities.
@@ -40,6 +43,17 @@ import { formatDurationMs } from '@ai-matrx/kit/format';
 const HEARTBEAT_INTERVAL_MS = 20_000;
 const IDLE_DISCONNECT_MS = 5 * 60_000;
 const RECONNECT_DELAYS_MS = [1_000, 2_000, 4_000, 8_000, 16_000, 30_000] as const;
+const OPEN_TIMEOUT_MS = 5_000;
+/**
+ * Retries stop after this many consecutive failures (~1 minute of backoff).
+ *
+ * An unbounded loop is not resilience: with matrx-local simply not running —
+ * the normal state for most people — it retried a dead address every 30s for
+ * the life of the browser, logging a failure each time. The SW's desktop
+ * probe alarm runs every 30s and reopens the socket the moment the engine is
+ * reachable again, so giving up here costs no recovery time.
+ */
+const MAX_RECONNECT_ATTEMPTS = RECONNECT_DELAYS_MS.length;
 
 // ─── Module state ───────────────────────────────────────────────────────────
 
@@ -121,6 +135,9 @@ export function startWsOffscreenRuntime(): void {
     { ok: boolean; error?: string }
   >(CHANNELS.WS_START, async (payload) => {
     state.stopped = false;
+    // A fresh START is a fresh retry budget — otherwise a bridge that came
+    // back after a give-up would burn its first failure on a spent counter.
+    state.reconnectAttempt = 0;
     if (payload?.wsUrl) state.wsUrl = payload.wsUrl;
     if (payload?.identity) state.identity = payload.identity;
     const backgroundChanged =
@@ -248,10 +265,23 @@ async function openWebSocket(): Promise<void> {
         connectingSocket = ws;
         connectingBackgroundBootId = attemptBackgroundBootId;
 
-        const openTimeout = setTimeout(
-          () => settle(new Error(`ws open timeout (5s) — ${safeUrl} did not respond`)),
-          5_000,
-        );
+        const openTimeout = setTimeout(() => {
+          // Nothing closed this socket, so it is still CONNECTING: the TCP
+          // connect itself is hanging. That is exactly what a restarting
+          // engine looks like — the desktop shell holds the port bound while
+          // the sidecar is not yet accepting. Close it, or every backoff
+          // round leaves another half-open socket behind.
+          try {
+            ws.close(1000, 'open timeout');
+          } catch {
+            /* ignore */
+          }
+          settle(
+            new Error(
+              `ws open timeout (${OPEN_TIMEOUT_MS / 1_000}s) — ${safeUrl} did not respond (engine restarting or not accepting)`,
+            ),
+          );
+        }, OPEN_TIMEOUT_MS);
 
         ws.addEventListener('open', () => {
           clearTimeout(openTimeout);
@@ -393,7 +423,28 @@ function handleClose(code: number, reason: string): void {
   });
   if (state.stopped) return;
 
-  // Schedule reconnect with exponential backoff.
+  scheduleReconnect();
+}
+
+/**
+ * Back off, re-resolve, retry — then give up and let the SW take over.
+ *
+ * The give-up is deliberate. The offscreen cannot fix an engine that is not
+ * running; the service worker's 30s desktop probe re-opens the socket as
+ * soon as `/health` answers again (bootstrap.ts, DESKTOP_PROBE).
+ */
+function scheduleReconnect(): void {
+  if (state.stopped) return;
+  if (state.reconnectAttempt >= MAX_RECONNECT_ATTEMPTS) {
+    // Nothing fails silently: say what stopped, and what resumes it.
+    log.info(
+      'desktop-ws-offscreen',
+      `desktop bridge unreachable after ${state.reconnectAttempt} attempts — pausing retries; the service worker reopens it within 30s of the engine answering /health`,
+    );
+    state.reconnectAttempt = 0;
+    state.stopped = true;
+    return;
+  }
   const delayIdx = Math.min(state.reconnectAttempt, RECONNECT_DELAYS_MS.length - 1);
   const delay =
     RECONNECT_DELAYS_MS[delayIdx] ?? RECONNECT_DELAYS_MS[RECONNECT_DELAYS_MS.length - 1] ?? 30_000;
@@ -403,10 +454,55 @@ function handleClose(code: number, reason: string): void {
   state.reconnectTimer = setTimeout(() => {
     state.reconnectTimer = null;
     if (state.stopped) return;
-    void openWebSocket().catch((err) => {
-      log.warn('desktop-ws-offscreen', 'reconnect openWebSocket failed', err);
-    });
+    void reconnectOnce();
   }, delay);
+}
+
+async function reconnectOnce(): Promise<void> {
+  // Re-resolve BEFORE retrying. The cached URL carries a discovered port and
+  // a pair token; an engine that restarted may be on a different port in the
+  // 22140-22159 scan range, and replaying the old address can only ever fail.
+  // This is the same self-heal the HTTP transport performs (http.ts: drop the
+  // port cache, re-pair on 401) — the socket path had no equivalent, which is
+  // why a restarted engine left the bridge down until the browser restarted.
+  const refreshed = await refreshWsUrl();
+  if (!refreshed) {
+    // Engine genuinely unreachable (discovery found nothing). Count it as an
+    // attempt and back off rather than hammering a dead address.
+    scheduleReconnect();
+    return;
+  }
+  try {
+    await openWebSocket();
+  } catch (err) {
+    // Expected while the desktop app is closed or restarting — info, not a
+    // warning with a stack. The give-up line above is the one that matters.
+    log.info('desktop-ws-offscreen', `reconnect failed: ${(err as Error).message}`);
+    if (!state.ws) scheduleReconnect();
+  }
+}
+
+/**
+ * Ask the SW for a fresh ws URL. The offscreen document has no
+ * chrome.storage, so discovery and the pair token are only readable there.
+ * Returns false when the engine cannot be resolved at all.
+ */
+async function refreshWsUrl(): Promise<boolean> {
+  try {
+    const res = await send<{ failedUrl: string | null }, { ok: boolean; wsUrl?: string }>(
+      CHANNELS.WS_RESOLVE_URL,
+      { failedUrl: state.wsUrl },
+    );
+    if (res?.ok === true && typeof res.wsUrl === 'string' && res.wsUrl.length > 0) {
+      state.wsUrl = res.wsUrl;
+      return true;
+    }
+    return false;
+  } catch {
+    // The service worker is asleep or mid-restart. Fall back to the cached
+    // URL — it is usually still right, and a stale one just fails a retry.
+    return state.wsUrl !== null;
+  }
 }
 
 function cancelReconnect(): void {
