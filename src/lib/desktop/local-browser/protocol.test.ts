@@ -52,6 +52,15 @@ describe('local browser closed protocol', () => {
     expect(() =>
       localBrowserResult({ ...result, document: { ...result.document, document_id: 1 } as never }),
     ).toThrow();
+    expect(() =>
+      localBrowserResult({
+        ...result,
+        document: { ...result.document, document_id: '€'.repeat(43) },
+      }),
+    ).toThrow();
+    expect(() =>
+      localBrowserResult({ ...result, document: { ...result.document, document_id: '\ud800' } }),
+    ).toThrow();
   });
   it('accepts only the exact registration echo for a current request', () => {
     const registration = {
