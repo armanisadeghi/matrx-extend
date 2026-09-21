@@ -2980,3 +2980,25 @@ Every entry follows this shape:
 - **Covered by:** `tests/unit/desktop-discovery.test.ts`,
   `tests/unit/ws-reconnect-rediscovers.test.ts`,
   `tests/unit/desktop-native-probe-backoff.test.ts`.
+
+### DevTools console is not a firehose
+
+- **What it does:** the Debug → Logs feed keeps every event at every level,
+  always. The DevTools console only receives warnings and errors by default;
+  routine info/success chatter is mirrored there only when you ask for it.
+  Every cross-context hop, fetch and Supabase call logs, so mirroring all of
+  it buried real problems and made normal operation read as a wall of errors.
+- **Where to test:** Debug → Logs (the terminal icon in the toolbar), plus
+  `chrome://extensions` → Matrx → "service worker" console.
+- **Steps:**
+  1. With the toggle OFF (grey terminal icon), use the extension normally and
+     watch the SW console. Expect near-silence: no `→ send …` / `← … ok`
+     lines, no per-message payload dumps. Warnings and errors still appear.
+  2. Open Debug → Logs. Every one of those suppressed events is still listed
+     at its own level — nothing was thrown away.
+  3. Click the terminal icon (turns green). The console fills again.
+  4. Reload the extension. The setting persists, and it applies to logs
+     relayed from the service worker, offscreen document and content scripts,
+     not just the context you toggled it in.
+- **Expected:** off by default; nothing is ever hidden from the Debug tab.
+- **Covered by:** `tests/unit/debug-console-firehose.test.ts`.

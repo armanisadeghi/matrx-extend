@@ -20,6 +20,8 @@ import {
   type LogLevel,
   type LogSource,
   log,
+  readVerboseConsole,
+  setVerboseConsole,
   useDebugStore,
 } from '@/lib/debug/log';
 import { cn } from '@/lib/utils';
@@ -42,6 +44,7 @@ import {
   Eraser,
   Pause,
   Play,
+  Terminal,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -106,6 +109,10 @@ export function DebugView() {
   // event types appear automatically without us pre-enumerating every kind.
   const [hiddenTags, setHiddenTags] = useState<Set<string>>(new Set());
   const [paused, setPaused] = useState(false);
+  const [verboseConsole, setVerbose] = useState(false);
+  useEffect(() => {
+    void readVerboseConsole().then(setVerbose);
+  }, []);
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [copied, setCopied] = useState(false);
@@ -254,6 +261,29 @@ export function DebugView() {
               </IconBtn>
               <IconBtn title="Clear" onClick={clear}>
                 <Eraser className="size-3.5" />
+              </IconBtn>
+              {/*
+                This feed keeps every level no matter what. The toggle only
+                decides whether routine info/success ALSO goes to the
+                DevTools console — mirroring all of it by default buried
+                real problems and read as "the app is full of errors".
+                Warnings and errors always reach the console.
+              */}
+              <IconBtn
+                title={
+                  verboseConsole
+                    ? 'DevTools console: everything (click for warnings + errors only)'
+                    : 'DevTools console: warnings + errors only (click for everything)'
+                }
+                onClick={() => {
+                  const next = !verboseConsole;
+                  setVerbose(next);
+                  void setVerboseConsole(next);
+                }}
+              >
+                <Terminal
+                  className={cn('size-3.5', verboseConsole ? 'text-emerald-500' : 'opacity-50')}
+                />
               </IconBtn>
             </div>
             <Filters

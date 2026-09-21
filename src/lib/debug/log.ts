@@ -58,6 +58,18 @@ export interface DebugEvent {
 const MAX_EVENTS = 1500;
 const DEBUG_RELAY_KIND = '__matrx_debug_relay__';
 const IS_ADMIN_KEY = 'matrx.user.isAdmin';
+/**
+ * Mirror INFO and SUCCESS events to the DevTools console as well.
+ *
+ * Off by default. Every cross-context hop, every fetch, every Supabase call
+ * writes here — `send()` alone logs a line per internal message with its
+ * payload — so mirroring all of it unconditionally turned the console into
+ * a firehose in which a real problem was unfindable, and made routine
+ * chatter read as "the app is full of errors". Warnings and errors are
+ * ALWAYS mirrored; nothing is hidden from the Debug tab, which keeps every
+ * event at every level regardless of this flag.
+ */
+const VERBOSE_CONSOLE_KEY = 'matrx.debug.verboseConsole';
 
 /**
  * Cached admin flag. The cross-context relay and the Debug tab visibility
@@ -65,12 +77,14 @@ const IS_ADMIN_KEY = 'matrx.user.isAdmin';
  * and listen for changes so admin grants/revokes propagate live.
  */
 let isAdminCached: boolean | null = null;
+let verboseConsole = false;
 
 if (typeof chrome !== 'undefined' && chrome.storage?.local) {
   chrome.storage.local
-    .get([IS_ADMIN_KEY])
+    .get([IS_ADMIN_KEY, VERBOSE_CONSOLE_KEY])
     .then((r) => {
       isAdminCached = !!r[IS_ADMIN_KEY];
+      verboseConsole = r[VERBOSE_CONSOLE_KEY] === true;
     })
     .catch(() => {
       isAdminCached = false;
@@ -79,7 +93,24 @@ if (typeof chrome !== 'undefined' && chrome.storage?.local) {
     if (area !== 'local') return;
     const change = changes[IS_ADMIN_KEY];
     if (change) isAdminCached = !!change.newValue;
+    const verbose = changes[VERBOSE_CONSOLE_KEY];
+    if (verbose) verboseConsole = verbose.newValue === true;
   });
+}
+
+/** Turn the info/success console mirror on or off. Persisted; live. */
+export async function setVerboseConsole(enabled: boolean): Promise<void> {
+  verboseConsole = enabled;
+  await chrome.storage.local.set({ [VERBOSE_CONSOLE_KEY]: enabled });
+}
+
+export async function readVerboseConsole(): Promise<boolean> {
+  try {
+    const r = await chrome.storage.local.get([VERBOSE_CONSOLE_KEY]);
+    return r[VERBOSE_CONSOLE_KEY] === true;
+  } catch {
+    return false;
+  }
 }
 
 interface DebugState {
@@ -139,20 +170,27 @@ function emit(level: LogLevel, args: PushArgs): void {
   };
   useDebugStore.getState().push(event);
 
-  // Mirror to console — useful for inspecting context-local logs in DevTools.
-  const consoleFn =
-    level === 'error' ? console.error : level === 'warn' ? console.warn : console.log;
   // For error-level events with non-Error details, expand the detail so we
-  // capture name/message/stack/own-properties — `{}` is useless.
+  // capture name/message/stack/own-properties — `{}` is useless. Done before
+  // the console gate because the Debug tab and the relay want it too.
   if (level === 'error' && event.detail !== undefined) {
     event.detail = captureError(event.detail);
   }
-  if (event.detail !== undefined) {
-    consoleFn(
-      `[matrx-extend][${event.ctx}/${event.source}] ${event.message} ${formatConsoleDetail(event.detail)}`,
-    );
-  } else {
-    consoleFn(`[matrx-extend][${event.ctx}/${event.source}] ${event.message}`);
+
+  // Mirror to console. Warnings and errors always; the routine chatter only
+  // when someone asked for it (Settings → verbose console). See
+  // VERBOSE_CONSOLE_KEY — the Debug tab still shows every level either way.
+  const mirror = level === 'warn' || level === 'error' || verboseConsole;
+  if (mirror) {
+    const consoleFn =
+      level === 'error' ? console.error : level === 'warn' ? console.warn : console.log;
+    if (event.detail !== undefined) {
+      consoleFn(
+        `[matrx-extend][${event.ctx}/${event.source}] ${event.message} ${formatConsoleDetail(event.detail)}`,
+      );
+    } else {
+      consoleFn(`[matrx-extend][${event.ctx}/${event.source}] ${event.message}`);
+    }
   }
 
   // Cross-context relay: every non-sidepanel context forwards immediately.
@@ -280,7 +318,10 @@ export function startDebugRelay(): void {
 
     // SW mirror: print the relayed event to the SW console with the
     // original context/source prefix preserved. This is what makes the
-    // SW devtools window a single pane of glass.
+    // SW devtools window a single pane of glass — but it obeys the same
+    // gate as a local event, or every other context's routine chatter
+    // lands here in full while this context's own is suppressed.
+    if (remote.level !== 'warn' && remote.level !== 'error' && !verboseConsole) return false;
     const consoleFn =
       remote.level === 'error'
         ? console.error

@@ -94,7 +94,7 @@ Discovery in place today (see `src/lib/desktop/discovery.ts`):
 | `src/lib/desktop/ws-client.ts` | WS reverse-channel client; resolves base URL the same way |
 | `src/lib/desktop/types.ts` | RPC envelope and `DesktopHealthSchema` (the probe fingerprint) |
 | `src/lib/tools/handlers/privileged.ts` | `desktop_run_command` lives here (lines 212–226) |
-| `src/config/env.ts` | `ENV.DESKTOP_LOCAL_URL` — last-resort fallback when discovery fails |
+| `src/lib/desktop/discovery.ts` | Port discovery, its rate limits, and the last-good-port fast path. There is NO build-time fallback address: discovery returns `null` when the engine is offline, and callers degrade on that. |
 
 ## Engine-side reference (read-only from this repo)
 
