@@ -66,6 +66,13 @@ export const CHANNELS = {
   // { callId, reason }. Without this the card lingered after the dispatcher
   // had already failed the call closed, and a late click went nowhere.
   TOOL_CONFIRM_EXPIRED: 'tool:confirm-expired',
+  // Local owned-browser approvals never use the conversation-bound tool
+  // confirmation channel. Their context id is opaque and maps to a private
+  // SW waiter; payloads are deliberately display metadata only.
+  LOCAL_BROWSER_APPROVAL_REQUEST: 'local-browser:approval-request',
+  LOCAL_BROWSER_APPROVAL_RESPONSE: 'local-browser:approval-response',
+  LOCAL_BROWSER_APPROVAL_CANCEL: 'local-browser:approval-cancel',
+  LOCAL_BROWSER_APPROVAL_VIEW_CLOSED: 'local-browser:approval-view-closed',
   TOOL_ASK_USER_REQUEST: 'tool:ask-user-request', // SW → sidepanel: agent asked the user a question
   TOOL_ASK_USER_RESPONSE: 'tool:ask-user-response', // sidepanel → SW: user's answer
   // On-the-fly credential CAPTURE (D-11): the agent hit a login with no stored
@@ -97,6 +104,7 @@ export const CHANNELS = {
   CREDENTIAL_SUGGESTIONS_PANEL_FILL: 'credential-suggestions:panel-fill', // sidepanel → SW (raw)
   CREDENTIAL_SUGGESTIONS_CONTEXT_CHANGED: 'credential-suggestions:context-changed', // SW → content
   CREDENTIAL_SUGGESTIONS_OPEN_VAULT: 'credential-suggestions:open-vault', // content → SW
+  CREDENTIAL_SUGGESTIONS_FOCUS_OWNER: 'credential-suggestions:focus-owner', // content → SW (metadata only)
   TOOL_TIMELINE_EVENT: 'tool:timeline-event', // SW → sidepanel: render in the chat (started / completed / error)
   // sidepanel → SW: re-dispatch a persisted client-delegated call on conversation
   // open (cold-resume). The conversation was left paused waiting on the call; the
