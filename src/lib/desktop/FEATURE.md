@@ -10,15 +10,41 @@ same engine base URL and the same engine-issued pairing token.
 
 1. Explicit live-port override for development diagnostics.
 2. Cached local live-port discovery.
-3. Parallel `GET /health` probes across `127.0.0.1:22140-22159`.
-4. The signed-in user's freshest active `app_instances.tunnel_url` row,
+3. A single `GET /health` to the last port that ever answered. Never rate
+   limited, so an engine restarting on its usual port is found within one
+   alarm tick.
+4. Parallel `GET /health` probes across `127.0.0.1:22140-22159`.
+5. The signed-in user's freshest active `app_instances.tunnel_url` row,
    selected directly from Supabase under owner-only RLS.
-5. The build-time localhost URL as a legacy last resort.
+
+Nothing else. There is no build-time fallback address: it was always set, so
+discovery could never return `null` and an offline engine was handed back as
+a real URL — which made every graceful-degradation path below it dead code
+and left the WS runtime retrying a port nothing listens on.
 
 Local presence wins. Remote tunnel URLs are HTTPS-only, credentials in URLs
 are rejected, and the in-memory remote cache lasts 30 seconds so a changing
 Cloudflare quick-tunnel heals promptly without querying Supabase on every RPC.
 Any transport failure invalidates discovery caches.
+
+### The cost of a miss
+
+Steps 4 and 5 are rate limited (30s, then 1min, 5min, 15min after
+consecutive misses). The 30-second probe alarm used to re-run the whole
+sweep on every tick for anyone without the desktop app: twenty refused
+connections plus a Supabase round-trip, every thirty seconds, for the life
+of the browser. Chrome prints every refused connection to the console
+whether or not the fetch is caught, so a perfectly normal "no desktop app"
+state read as a wall of errors. `resetEngineDiscoveryBackoff()` clears the
+limit and is for explicit human actions only — never for a background poll.
+
+### Reconnecting the reverse channel
+
+The offscreen socket re-resolves its URL through the service worker
+(`WS_RESOLVE_URL`) before every retry, because the port and the pair token
+both live behind `chrome.storage`, which an offscreen document cannot read.
+Retries stop after the backoff ladder is spent; the 30-second desktop probe
+reopens the socket whenever the engine is reachable and the socket is not.
 
 The service worker must restore its Supabase session before RLS-backed remote
 discovery. A sign-in edge rehydrates, reconnects Broadcast, and re-probes the
