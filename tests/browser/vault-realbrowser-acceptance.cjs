@@ -842,7 +842,7 @@ async function openGenuineSidePanel(extensionId, popup) {
     assert(typeof captured.data === 'string', 'panel_screenshot_refused');
     await fs.writeFile(destination, Buffer.from(captured.data, 'base64'), { mode: 0o600 });
   };
-  return { targetId: target.targetId, evaluate, click, waitFor, fill, key, startKnobResolveProbe, screenshot, dispose: panel.dispose };
+  return { targetId: target.targetId, send: (method, params) => panel.send(method, params), evaluate, click, waitFor, fill, key, startKnobResolveProbe, screenshot, dispose: panel.dispose };
 }
 async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWindowId) {
   // This is intentionally not a normal popup.html tab. The action popup is
@@ -955,7 +955,7 @@ async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWin
     assert(typeof captured.data === 'string', 'reopened_panel_screenshot_refused');
     await fs.writeFile(destination, Buffer.from(captured.data, 'base64'), { mode: 0o600 });
   };
-  return { opened: true, panel: { targetId: target.targetId, evaluate, click, waitFor, key, startKnobResolveProbe, screenshot, dispose: panel.dispose } };
+  return { opened: true, panel: { targetId: target.targetId, send: (method, params) => panel.send(method, params), evaluate, click, waitFor, key, startKnobResolveProbe, screenshot, dispose: panel.dispose } };
 }
 async function chooseAuthorizedOrganization(extensionId) {
   const settingsPage = await context.newPage();
@@ -1431,6 +1431,7 @@ async function materializedPassword(id) {
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
     };
     // A known local canonical-cleanup drift cannot create a durable run or
@@ -1458,6 +1459,7 @@ async function materializedPassword(id) {
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
     };
     assert(JSON.stringify(helperHashesBeforeWrites) === JSON.stringify(proof.helperSha256), 'helper_source_changed_before_writes');
@@ -1559,6 +1561,7 @@ async function materializedPassword(id) {
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
         };
         assert(JSON.stringify(helperHashesAfterCapture) === JSON.stringify(proof.helperSha256), 'helper_source_changed_after_capture');

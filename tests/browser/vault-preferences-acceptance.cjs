@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('node:crypto');
+const { runVaultAccessibilityChecks } = require('./vault-accessibility-acceptance.cjs');
 const SAVED_MATCHING = 'Offer saved logins on sign-in forms';
 const ON_PAGE = 'Show password suggestions on websites';
 const STABLE_ABSENCE_MS = 6_200;
@@ -265,6 +266,12 @@ exports.runVaultPreferencesChecks = async ({
 
     checkpoint('preferences_enable_on_page');
     await ensure(ON_PAGE, true); await focusCredential();
+    await page.locator('#matrx-inline-login-suggestion').waitFor({ state: 'attached', timeout: 15000 });
+    await runVaultAccessibilityChecks({
+      realPanel, context, fixturePage: page, targetName, assert, wait, checkpoint, proof,
+      verifyRealVaultPanel, getSubmitCount, focusCredential,
+    });
+    await focusCredential();
     await page.locator('#matrx-inline-login-suggestion').waitFor({ state: 'attached', timeout: 15000 });
     await focusUnrelated();
     await page.locator('#matrx-inline-login-suggestion').waitFor({ state: 'detached', timeout: 15000 });
