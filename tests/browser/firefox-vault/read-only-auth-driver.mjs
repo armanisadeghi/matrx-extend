@@ -561,7 +561,20 @@ async function reconcileCaptureSaveReceipts(keys) {
   assert.ok(Array.isArray(keys) && keys.length >= 1 && keys.length <= 16 && new Set(keys).size === keys.length, 'capture_save_receipt_keys_invalid');
   const python = '/Users/armanisadeghi/code/aidream/.venv/bin/python';
   const reconciler = fileURLToPath(new URL('../reconcile-vault-canary.py', import.meta.url));
-  const result = JSON.parse((await execFileAsync(python, [reconciler, userId, organizationId, ...keys], { cwd: '/Users/armanisadeghi/code/aidream', timeout: 15_000, maxBuffer: 32_768 })).stdout);
+  let result;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      result = JSON.parse((await execFileAsync(python, [reconciler, userId, organizationId, ...keys], { cwd: '/Users/armanisadeghi/code/aidream', timeout: 15_000, maxBuffer: 32_768 })).stdout);
+      break;
+    } catch (error) {
+      let readError;
+      try { readError = JSON.parse(error?.stdout ?? '{}').error; } catch { /* Non-receipt failures are not retryable. */ }
+      if (readError !== 'LockNotAvailableError' || attempt === 2) throw error;
+      proof.receiptReadLockRetries = (proof.receiptReadLockRetries ?? 0) + 1;
+      await persist();
+      await delay(500 * (attempt + 1));
+    }
+  }
   assert.ok(Array.isArray(result.results) && result.results.length === keys.length, 'capture_save_receipt_incomplete');
   assert.ok(new Set(result.results.map(row => row.mutation_id)).size === keys.length
     && result.results.every(row => keys.includes(row.mutation_id) && row.user_id === userId

@@ -51,3 +51,62 @@ test('four incremental receipt reconciliations retain every owned item before MF
     'repeat reconciliation must not duplicate ownership',
   );
 });
+
+test('only transient receipt read locks retry, with a fixed attempt limit', async () => {
+  const driverUrl = new URL('./read-only-auth-driver.mjs', import.meta.url);
+  const source = await readFile(driverUrl, 'utf8');
+  const start = source.indexOf('async function reconcileCaptureSaveReceipts(keys) {');
+  const end = source.indexOf('async function canonicalCleanupCaptureSave', start);
+  const body = source
+    .slice(start, end)
+    .replaceAll('import.meta.url', JSON.stringify(driverUrl.href));
+  for (const scenario of ['transient', 'persistent', 'other']) {
+    let attempts = 0;
+    const waits = [];
+    const proof = {};
+    const context = {
+      assert,
+      URL,
+      fileURLToPath,
+      proof,
+      userId: 'admin-test',
+      organizationId: 'org-test',
+      baselineIds: [],
+      persist: async () => {},
+      delay: async (ms) => {
+        waits.push(ms);
+      },
+      execFileAsync: async () => {
+        attempts += 1;
+        if (scenario !== 'transient' || attempts < 3) {
+          const error = new Error('receipt_transport_failure');
+          error.stdout = JSON.stringify({
+            error: scenario === 'other' ? 'ValueError' : 'LockNotAvailableError',
+          });
+          throw error;
+        }
+        return {
+          stdout: JSON.stringify({
+            results: [
+              {
+                mutation_id: '1',
+                result_item_id: 'item-1',
+                user_id: 'admin-test',
+                organization_id: null,
+                retired: false,
+              },
+            ],
+          }),
+        };
+      },
+    };
+    vm.createContext(context);
+    vm.runInContext(`${body}\nglobalThis.reconcile = reconcileCaptureSaveReceipts;`, context);
+    if (scenario === 'transient')
+      assert.deepEqual([...(await context.reconcile(['1']))], ['item-1']);
+    else await assert.rejects(context.reconcile(['1']), /receipt_transport_failure/);
+    assert.equal(attempts, scenario === 'other' ? 1 : 3);
+    assert.deepEqual(waits, scenario === 'other' ? [] : [500, 1000]);
+    assert.equal(proof.receiptReadLockRetries ?? 0, scenario === 'other' ? 0 : 2);
+  }
+});
