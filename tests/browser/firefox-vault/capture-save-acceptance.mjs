@@ -10,7 +10,7 @@ async function fixture() {
   const server = createServer((request, response) => {
     if (request.method === 'POST' && request.url === '/submitted') { state.submissions += 1; response.writeHead(204).end(); return; }
     response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
-    response.end(`<!doctype html><form><label>Username <input id="username" autocomplete="username"></label><label>Password <input id="password" type="password" autocomplete="current-password"></label><button type="submit">Sign in</button></form><script>document.querySelector('form').addEventListener('submit', event => { event.preventDefault(); void fetch('/submitted', {method:'POST'}); });</script>`);
+    response.end(`<!doctype html><form method="post" action="/submitted"><label>Username <input id="username" autocomplete="username"></label><label>Password <input id="password" type="password" autocomplete="current-password"></label><button type="submit">Sign in</button></form><script>document.querySelector('form').addEventListener('submit', event => { event.preventDefault(); void fetch('/submitted', {method:'POST'}); });</script>`);
   });
   await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
   const address = server.address();
