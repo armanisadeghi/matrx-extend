@@ -21,6 +21,16 @@ const captureSaveMode = process.argv.includes('--capture-save');
 const captureSaveSourcePath = fileURLToPath(new URL('./capture-save-acceptance.mjs', import.meta.url));
 const cleanupSourcePath = fileURLToPath(new URL('../cleanup-vault-canary.py', import.meta.url));
 const reconcileSourcePath = fileURLToPath(new URL('../reconcile-vault-canary.py', import.meta.url));
+const CANONICAL_CLEANUP_SOURCE_COMMIT = 'bdb78b410b7436a6e51af0d725987257bc4e72a7';
+const CANONICAL_CLEANUP_SOURCE_ROOT = `/Users/armanisadeghi/code/matrx-extend/.matrx/task1-active/canonical-cleanup-source-${CANONICAL_CLEANUP_SOURCE_COMMIT}`;
+const CANONICAL_CLEANUP_SOURCE_IDENTITY = join(CANONICAL_CLEANUP_SOURCE_ROOT, 'SOURCE_IDENTITY.json');
+const CANONICAL_CLEANUP_SOURCE_IDENTITY_SHA256 = 'a7562526ebe6e29e0e0ab0b4e80bb1cb79e104dc70b000a8a6a9f39218a9a48c';
+const CANONICAL_CLEANUP_ARCHIVE_SHA256 = 'ea47e2262c18d814d3aa6b460163340cdfcb8207cc9b7de53ffacf75fd496b12';
+const CANONICAL_CLEANUP_ROUTER_SHA256 = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
+const CANONICAL_CLEANUP_SERVICE_SHA256 = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
+const CAPTURE_SAVE_CLEANUP_TIMEOUT_MS = 120_000;
+const CAPTURE_SAVE_CLEANUP_KILL_ESCALATION_MS = 2_000;
+const cleanupTimeoutSelfTestMode = process.argv.includes('--capture-save-cleanup-timeout-self-test');
 const reconciliationMode = process.argv.includes('--reconcile-chrome');
 assert.ok([captureMode, captureSaveMode, generatorMode, reconciliationMode].filter(Boolean).length <= 1, 'one_firefox_journey_per_run');
 const FAILED_CHROME_RUN = 'b208d813-9a59-4d87-b437-772ee05eb3b7';
@@ -65,8 +75,9 @@ if (captureSaveMode) {
   assert.equal(captureSaveAdmission, true, 'capture_save_admission_unarmed');
   assert.equal(localCanonicalCleanupArmed, true, 'capture_save_cleanup_unarmed');
   assert.equal(process.env.MATRX_FIREFOX_CAPTURE_SAVE_EXPECTED_COMMIT, SOURCE_COMMIT, 'capture_save_artifact_unpinned');
-  assert.ok(typeof localSourceRoot === 'string' && localSourceRoot.startsWith('/'), 'capture_save_source_root_invalid');
-  assert.ok(/^[a-f0-9]{64}$/.test(localRouterHash ?? '') && /^[a-f0-9]{64}$/.test(localServiceHash ?? ''), 'capture_save_cleanup_hash_invalid');
+  assert.equal(localSourceRoot, CANONICAL_CLEANUP_SOURCE_ROOT, 'capture_save_source_root_mismatch');
+  assert.equal(localRouterHash, CANONICAL_CLEANUP_ROUTER_SHA256, 'capture_save_router_hash_mismatch');
+  assert.equal(localServiceHash, CANONICAL_CLEANUP_SERVICE_SHA256, 'capture_save_service_hash_mismatch');
   for (const key of ['MATRX_FIREFOX_GENERATOR', 'MATRX_FIREFOX_CAPTURE_RESPONSE_LOSS']) assert.equal(process.env[key], undefined, 'capture_save_incompatible_flag');
 }
 async function reviewedHarnessHash() {
@@ -219,6 +230,15 @@ if (process.argv.includes('--dry-run')) {
   process.exit(0);
 }
 
+if (cleanupTimeoutSelfTestMode) {
+  await assert.rejects(
+    runBoundedCaptureSaveCleanupChild({ command: process.execPath, args: ['-e', 'setInterval(() => {}, 1000)'], cwd: process.cwd(), input: '', timeoutMs: 25 }),
+    /capture_save_cleanup_timeout/,
+  );
+  process.stdout.write('capture_save_cleanup_timeout_self_test_passed\n');
+  process.exit(0);
+}
+
 assert.equal(process.env[LAUNCH_ENV], 'RUN_REVIEWED_ACCEPTANCE', 'launch_not_reviewed_unarmed');
 assert.equal(process.env[HASH_ENV], await reviewedHarnessHash(), 'reviewed_harness_hash_mismatch');
 delete process.env[LAUNCH_ENV];
@@ -277,6 +297,27 @@ proof.hashes = {
   ...(captureSaveMode ? { captureSaveSha256: await shaFile(captureSaveSourcePath), cleanupSha256: await shaFile(cleanupSourcePath), reconcileSha256: await shaFile(reconcileSourcePath) } : {}),
   artifactManifestSha256: await shaFile(artifactManifestPath), artifactXpiSha256: artifactManifest.xpi.sha256,
 };
+if (captureSaveMode) {
+  assert.equal(await shaFile(CANONICAL_CLEANUP_SOURCE_IDENTITY), CANONICAL_CLEANUP_SOURCE_IDENTITY_SHA256, 'capture_save_source_identity_hash_mismatch');
+  assert.equal(await shaFile(join(CANONICAL_CLEANUP_SOURCE_ROOT, 'source.tar')), CANONICAL_CLEANUP_ARCHIVE_SHA256, 'capture_save_source_archive_hash_mismatch');
+  const sourceIdentity = JSON.parse(await readFile(CANONICAL_CLEANUP_SOURCE_IDENTITY, 'utf8'));
+  assert.equal(sourceIdentity?.schema, 1, 'capture_save_source_identity_schema_mismatch');
+  assert.equal(sourceIdentity?.kind, 'immutable-git-archive-source', 'capture_save_source_identity_kind_mismatch');
+  assert.equal(sourceIdentity?.sourceCommit, CANONICAL_CLEANUP_SOURCE_COMMIT, 'capture_save_source_identity_commit_mismatch');
+  assert.equal(sourceIdentity?.archivePath, 'source.tar', 'capture_save_source_identity_archive_path_mismatch');
+  assert.equal(sourceIdentity?.archiveSha256, CANONICAL_CLEANUP_ARCHIVE_SHA256, 'capture_save_source_identity_archive_mismatch');
+  assert.equal(sourceIdentity?.routerSha256, CANONICAL_CLEANUP_ROUTER_SHA256, 'capture_save_source_identity_router_mismatch');
+  assert.equal(sourceIdentity?.serviceSha256, CANONICAL_CLEANUP_SERVICE_SHA256, 'capture_save_source_identity_service_mismatch');
+  proof.captureSaveCleanupSource = {
+    sourceCommit: CANONICAL_CLEANUP_SOURCE_COMMIT,
+    sourceRoot: CANONICAL_CLEANUP_SOURCE_ROOT,
+    sourceIdentitySha256: CANONICAL_CLEANUP_SOURCE_IDENTITY_SHA256,
+    archiveSha256: CANONICAL_CLEANUP_ARCHIVE_SHA256,
+    routerSha256: CANONICAL_CLEANUP_ROUTER_SHA256,
+    serviceSha256: CANONICAL_CLEANUP_SERVICE_SHA256,
+    cleanupSourceSha256: await shaFile(cleanupSourcePath),
+  };
+}
 proof.artifactManifestPath = artifactManifestPath;
 await checkpoint('admitted_before_credentials');
 
@@ -508,17 +549,50 @@ async function canonicalCleanupCaptureSave(keys, ids) {
   assert.ok(Buffer.byteLength(input) < 32_768, 'capture_save_cleanup_input_capacity');
   const python = '/Users/armanisadeghi/code/aidream/.venv/bin/python';
   const cleanupPath = fileURLToPath(new URL('../cleanup-vault-canary.py', import.meta.url));
-  const result = await new Promise((resolve, reject) => {
-    const child = spawn(python, [cleanupPath], { cwd: sourceRoot, stdio: ['pipe', 'pipe', 'ignore'] }); let stdout = '';
-    child.stdout.setEncoding('utf8'); child.stdout.on('data', chunk => { stdout += chunk; if (stdout.length > 32_768) child.kill(); });
-    child.once('error', () => reject(new Error('capture_save_cleanup_spawn_refused')));
-    child.once('close', code => { try { const parsed = JSON.parse(stdout); if (code !== 0 || parsed?.ok !== true) reject(new Error('capture_save_cleanup_refused')); else resolve(parsed); } catch { reject(new Error('capture_save_cleanup_output_refused')); } });
-    child.stdin.once('error', () => reject(new Error('capture_save_cleanup_stdin_refused'))); child.stdin.end(input);
-  });
+  const result = await runBoundedCaptureSaveCleanupChild({ command: python, args: [cleanupPath], cwd: sourceRoot, input });
   assert.ok(Array.isArray(result.attempts) && result.attempts.length === ids.length && result.attempts.every(row => ['already_cleaned', 'deleted_and_missing'].includes(row.terminal)), 'capture_save_cleanup_result_invalid');
   assert.ok(new Set(result.attempts.map(row => row.id)).size === ids.length
     && result.attempts.every(row => ids.includes(row.id)), 'capture_save_cleanup_target_mismatch');
   return result;
+}
+function runBoundedCaptureSaveCleanupChild({ command, args, cwd, input, timeoutMs = CAPTURE_SAVE_CLEANUP_TIMEOUT_MS }) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, { cwd, stdio: ['pipe', 'pipe', 'ignore'] });
+    let stdout = ''; let terminalError = null; let closed = false;
+    const cleanupTimers = () => { clearTimeout(timeout); clearTimeout(killEscalation); };
+    const endAfterClose = (error, value) => {
+      if (closed) return;
+      terminalError ||= error;
+    };
+    const timeout = setTimeout(() => {
+      endAfterClose(new Error('capture_save_cleanup_timeout'));
+      child.kill('SIGTERM');
+    }, timeoutMs);
+    const killEscalation = setTimeout(() => {
+      if (terminalError?.message === 'capture_save_cleanup_timeout' && !closed) child.kill('SIGKILL');
+    }, timeoutMs + CAPTURE_SAVE_CLEANUP_KILL_ESCALATION_MS);
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', chunk => {
+      stdout += chunk;
+      if (stdout.length > 32_768) {
+        endAfterClose(new Error('capture_save_cleanup_output_refused'));
+        child.kill('SIGTERM');
+      }
+    });
+    child.once('error', () => endAfterClose(new Error('capture_save_cleanup_spawn_refused')));
+    child.once('close', code => {
+      closed = true;
+      cleanupTimers();
+      if (terminalError) return reject(terminalError);
+      try {
+        const parsed = JSON.parse(stdout);
+        if (code !== 0 || parsed?.ok !== true) reject(new Error('capture_save_cleanup_refused'));
+        else resolve(parsed);
+      } catch { reject(new Error('capture_save_cleanup_output_refused')); }
+    });
+    child.stdin.once('error', () => endAfterClose(new Error('capture_save_cleanup_stdin_refused')));
+    child.stdin.end(input);
+  });
 }
 async function verifySavedLogin({ username, password, pageUrl }) {
   assert.ok(captureSaveMode && new URL(pageUrl).origin.startsWith('http://127.0.0.1:'), 'capture_save_readback_scope_invalid');
@@ -1067,8 +1141,11 @@ try {
     && !proof.captureSave.receiptObserverDisposed) {
     try {
       await getContext('chrome');
-      const receipt = await adapter.readVaultCreateReceiptObserver();
+      const receipt = await adapter.freezeVaultCreateReceiptObserver();
+      assert.equal(receipt.frozen, true, 'capture_save_receipt_freeze_failed');
       await persistOwnedCreateMutationKeys(receipt.keys);
+      const readable = await adapter.readVaultCreateReceiptObserver();
+      assert.deepEqual(readable.keys, receipt.keys, 'capture_save_frozen_receipt_changed');
       const disposed = await adapter.disposeVaultCreateReceiptObserver();
       proof.captureSave.receiptObserverDisposed = disposed.disposed === true;
       proof.captureSave.receiptCustodyRecovered = true;
