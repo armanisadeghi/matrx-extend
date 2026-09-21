@@ -66,6 +66,7 @@ function harness({ receipts, saveClick, persistFailure = false }) {
         wdDelete: async () => ({}),
         getContext: async () => undefined,
         probeFixtureBridge: async () => true,
+        verifySavedLogin: async () => undefined,
         persistOwnedCreateMutationKeys: async keys => {
           if (persistFailure) throw new Error('durable proof unavailable');
           persisted.push([...keys]);

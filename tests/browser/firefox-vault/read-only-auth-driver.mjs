@@ -21,6 +21,8 @@ const captureSaveMode = process.argv.includes('--capture-save');
 // Checkpointed construction: this mode cannot take browser or credential custody yet.
 assert.ok(!captureSaveMode, 'capture_save_implementation_incomplete');
 const captureSaveSourcePath = fileURLToPath(new URL('./capture-save-acceptance.mjs', import.meta.url));
+const cleanupSourcePath = fileURLToPath(new URL('../cleanup-vault-canary.py', import.meta.url));
+const reconcileSourcePath = fileURLToPath(new URL('../reconcile-vault-canary.py', import.meta.url));
 const reconciliationMode = process.argv.includes('--reconcile-chrome');
 assert.ok([captureMode, captureSaveMode, generatorMode, reconciliationMode].filter(Boolean).length <= 1, 'one_firefox_journey_per_run');
 const FAILED_CHROME_RUN = 'b208d813-9a59-4d87-b437-772ee05eb3b7';
@@ -70,7 +72,7 @@ if (captureSaveMode) {
   for (const key of ['MATRX_FIREFOX_GENERATOR', 'MATRX_FIREFOX_CAPTURE_RESPONSE_LOSS']) assert.equal(process.env[key], undefined, 'capture_save_incompatible_flag');
 }
 async function reviewedHarnessHash() {
-  return shaText(JSON.stringify(await Promise.all([harnessPath, adapterSourcePath, leaseSourcePath, ...(generatorMode ? [generatorSourcePath] : []), ...(captureMode ? [captureSourcePath] : []), ...(captureSaveMode ? [captureSaveSourcePath] : [])].map(shaFile))));
+  return shaText(JSON.stringify(await Promise.all([harnessPath, adapterSourcePath, leaseSourcePath, ...(generatorMode ? [generatorSourcePath] : []), ...(captureMode ? [captureSourcePath] : []), ...(captureSaveMode ? [captureSaveSourcePath, cleanupSourcePath, reconcileSourcePath] : [])].map(shaFile))));
 }
 
 function shaText(value) { return createHash('sha256').update(value).digest('hex'); }
@@ -473,6 +475,17 @@ const items = async () => {
   return response.items;
 };
 const shaFileHex = async path => createHash('sha256').update(await readFile(path)).digest('hex');
+const persistOwnedCreateMutationKeys = async keys => {
+  const combined = [...new Set([...(proof.ownedCreateMutationKeys ?? []), ...keys])];
+  assert.ok(combined.length <= 16 && combined.every(key => typeof key === 'string'
+    && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(key)), 'capture_save_receipt_keys_invalid');
+  proof.ownedCreateMutationKeys = combined;
+  await persist();
+};
+async function verifyCaptureSaveCleanupSource() {
+  assert.equal(await shaFileHex(join(localSourceRoot, 'aidream/api/routers/vault.py')), localRouterHash, 'capture_save_router_hash_mismatch');
+  assert.equal(await shaFileHex(join(localSourceRoot, 'aidream/services/user_secrets/vault.py')), localServiceHash, 'capture_save_service_hash_mismatch');
+}
 async function reconcileCaptureSaveReceipts(keys) {
   assert.ok(Array.isArray(keys) && keys.length >= 1 && keys.length <= 16 && new Set(keys).size === keys.length, 'capture_save_receipt_keys_invalid');
   const python = '/Users/armanisadeghi/code/aidream/.venv/bin/python';
@@ -502,8 +515,24 @@ async function canonicalCleanupCaptureSave(keys, ids) {
   assert.ok(Array.isArray(result.attempts) && result.attempts.length === ids.length && result.attempts.every(row => ['already_cleaned', 'deleted_and_missing'].includes(row.terminal)), 'capture_save_cleanup_result_invalid');
   return result;
 }
+async function verifySavedLogin({ username, password, pageUrl }) {
+  assert.ok(captureSaveMode && new URL(pageUrl).origin.startsWith('http://127.0.0.1:'), 'capture_save_readback_scope_invalid');
+  const ids = await reconcileCaptureSaveReceipts(proof.ownedCreateMutationKeys);
+  assert.equal(ids.length, 1, 'capture_save_readback_item_count');
+  proof.ownedFixtureIds = ids;
+  await persist();
+  const response = await fetch(`${API}/api/vault/browser-login/${encodeURIComponent(ids[0])}/materialize`, {
+    method: 'POST', headers: { Authorization: `Bearer ${token}`, 'X-Organization-Id': organizationId, 'content-type': 'application/json' },
+    body: JSON.stringify({ page_url: pageUrl, tool_invocation_id: randomUUID(), client_build: 'vault-firefox-canary' }),
+    signal: AbortSignal.timeout(30_000),
+  });
+  assert.equal(response.status, 200, 'capture_save_readback_failed');
+  const value = await response.json();
+  assert.ok(value?.username === username && value?.password === password, 'capture_save_readback_values_mismatch');
+}
 
 try {
+  if (captureSaveMode) await verifyCaptureSaveCleanupSource();
   acceptanceLease = await acquireVaultAcceptanceLease({ runId, kind: 'firefox' });
   proof.acceptanceLeaseAcquired = true;
   assert(typeof process.loadEnvFile === 'function', 'node_env_loader_unavailable');
@@ -894,8 +923,14 @@ try {
 
   if (captureSaveMode) {
     await checkpoint('capture_save');
+    await verifyCaptureSaveCleanupSource();
+    assert.ok(baselineIds.length <= 64, 'capture_save_cleanup_baseline_capacity');
+    const placeholders = Array.from({ length: 16 }, () => randomUUID());
+    assert.ok(Buffer.byteLength(JSON.stringify({ token, userId, organizationId, createKeys: placeholders,
+      baselineIds, provenIDs: placeholders, expectedRouterSha256: localRouterHash,
+      expectedServiceSha256: localServiceHash, sourceRoot: localSourceRoot })) < 32768, 'capture_save_cleanup_input_capacity');
     const { runFirefoxCaptureSaveCheck } = await import('./capture-save-acceptance.mjs');
-    await runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, proof });
+    await runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, persistOwnedCreateMutationKeys, verifySavedLogin, proof });
     const keys = proof.ownedCreateMutationKeys;
     const proven = await reconcileCaptureSaveReceipts(keys);
     const cleanup = await canonicalCleanupCaptureSave(keys, proven);
@@ -1023,6 +1058,17 @@ try {
   }
     await cleanupCheckpoint('owned_auth_recovery_finished');
   }
+  if (captureSaveMode && adapter && proof.captureSave?.receiptObserverStarted
+    && !proof.captureSave.receiptObserverDisposed) {
+    try {
+      await getContext('chrome');
+      const receipt = await adapter.readVaultCreateReceiptObserver();
+      await persistOwnedCreateMutationKeys(receipt.keys);
+      const disposed = await adapter.disposeVaultCreateReceiptObserver();
+      proof.captureSave.receiptObserverDisposed = disposed.disposed === true;
+      proof.captureSave.receiptCustodyRecovered = true;
+    } catch { proof.captureSave.receiptCustodyRecovered = false; }
+  }
   if (captureSaveMode && !captureSaveCleanupAttempted && token && userId && organizationId
     && Array.isArray(proof.ownedCreateMutationKeys) && proof.ownedCreateMutationKeys.length > 0) {
     try {
@@ -1137,6 +1183,13 @@ try {
   await cleanupCheckpoint('owned_process_profile_cleanup_finished');
   if (acceptanceLease) {
     await cleanupStep('vault_acceptance_lease_cleanup_failed', async () => {
+      if (captureSaveMode && proof.captureSave?.receiptObserverStarted) {
+        assert.ok(proof.baselineReconciled && proof.networkObserverDisposed
+          && proof.captureSave.receiptObserverDisposed
+          && (proof.captureSave.cleanup?.receiptReconciled === true
+            || (proof.vaultMutationRequests === 0 && (proof.ownedCreateMutationKeys?.length ?? 0) === 0)),
+        'capture_save_lease_retained_for_cleanup');
+      }
       assert.ok(proof.allOwnedPidsGone && proof.profileRemoved && proof.firefoxExited && proof.driverExited
         && (!proof.authenticationAttempted || proof.remoteSessionRevoked), 'vault_acceptance_lease_retained_for_cleanup');
       await acceptanceLease.release();
