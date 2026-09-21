@@ -35,6 +35,7 @@ import type {
 } from '@/lib/api/routes/vault';
 import { WEBSITE_LOGIN_DEFINITION_KEY } from '@/lib/api/routes/vault';
 import { copyToClipboard } from '@/lib/clipboard/copy';
+import { captureUpdateTargetLabel } from '@/lib/credentials/capture-update-targets';
 import {
   type UriMatchMode,
   asUriMatchMode,
@@ -432,43 +433,51 @@ function SiteSection(props: SiteSectionProps) {
         </div>
       ) : (
         <ul className="space-y-1">
-          {matches.map((match) => (
-            <li
-              key={match.item_id}
-              className="flex items-center gap-2 rounded-md border bg-background px-2 py-1"
-            >
-              <span className="min-w-0 flex-1 truncate text-xs">{match.display_name}</span>
-              {props.panelStatus === 'ready' && props.panelItemIds.includes(match.item_id) && (
-                <Button
-                  size="sm"
-                  className="h-6 px-2 text-[11px]"
-                  disabled={running !== null || props.panelRunning !== null}
-                  onClick={() => props.onFill(match.item_id)}
-                >
-                  {props.panelRunning === match.item_id ? (
-                    <Loader2 className="size-3 animate-spin" />
-                  ) : (
-                    'Fill'
+          {matches.map((match) => {
+            const label = captureUpdateTargetLabel(match, matches);
+            return (
+              <li
+                key={match.item_id}
+                className="flex items-center gap-2 rounded-md border bg-background px-2 py-1"
+              >
+                <span className="min-w-0 flex-1 truncate text-xs">
+                  {label.primary}
+                  {label.secondary && (
+                    <span className="text-muted-foreground"> · {label.secondary}</span>
                   )}
-                </Button>
-              )}
-              {props.allowAutomaticLogin && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-6 px-2 text-[11px]"
-                  disabled={running !== null || props.panelRunning !== null}
-                  onClick={() => props.onUseHere(match.item_id)}
-                >
-                  {running === match.item_id ? (
-                    <Loader2 className="size-3 animate-spin" />
-                  ) : (
-                    'Sign in'
-                  )}
-                </Button>
-              )}
-            </li>
-          ))}
+                </span>
+                {props.panelStatus === 'ready' && props.panelItemIds.includes(match.item_id) && (
+                  <Button
+                    size="sm"
+                    className="h-6 px-2 text-[11px]"
+                    disabled={running !== null || props.panelRunning !== null}
+                    onClick={() => props.onFill(match.item_id)}
+                  >
+                    {props.panelRunning === match.item_id ? (
+                      <Loader2 className="size-3 animate-spin" />
+                    ) : (
+                      'Fill'
+                    )}
+                  </Button>
+                )}
+                {props.allowAutomaticLogin && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-6 px-2 text-[11px]"
+                    disabled={running !== null || props.panelRunning !== null}
+                    onClick={() => props.onUseHere(match.item_id)}
+                  >
+                    {running === match.item_id ? (
+                      <Loader2 className="size-3 animate-spin" />
+                    ) : (
+                      'Sign in'
+                    )}
+                  </Button>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
 

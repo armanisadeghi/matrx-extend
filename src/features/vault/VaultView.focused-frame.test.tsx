@@ -196,6 +196,33 @@ describe('VaultView focused child-frame projection', () => {
     expect(mocks.automaticLogin).not.toHaveBeenCalled();
   });
 
+  it('distinguishes duplicate saved-login names and fills the selected item id', async () => {
+    mocks.panelStatus = {
+      ...readyChildStatus,
+      matches: [
+        { item_id: PERSONAL_ID, display_name: 'Harbor Dental patient portal' },
+        { item_id: WORK_ID, display_name: 'Harbor Dental patient portal' },
+      ],
+    };
+    render(<VaultView />);
+
+    expect((await screen.findAllByText('Harbor Dental patient portal')).length).toBe(2);
+    expect(screen.getByText('· ID a')).toBeTruthy();
+    const selectedSuffix = screen.getByText('· ID b');
+    const selectedRow = selectedSuffix.closest('li');
+    expect(selectedRow).toBeTruthy();
+
+    fireEvent.click(within(selectedRow as HTMLLIElement).getByRole('button', { name: 'Fill' }));
+
+    await waitFor(() =>
+      expect(mocks.sendMessage).toHaveBeenCalledWith({
+        __matrx: true,
+        kind: 'credential-suggestions:panel-fill',
+        payload: { tabId: 47, offerId: OFFER_ID, itemId: WORK_ID },
+      }),
+    );
+  });
+
   it('sends the displayed child account with its exact offer id when Fill is clicked', async () => {
     render(<VaultView />);
     const account = await screen.findByText('Child personal');
