@@ -176,6 +176,7 @@ function opaqueApproveGrant(
 function harness() {
   let lifecycle: ((payload: unknown, socketEpoch: string) => void) | null = null;
   let invalidated: (() => void) | null = null;
+  let removed: ((tabId: number) => void) | null = null;
   const sent: unknown[] = [];
   let authChanged: (() => void) | null = null;
   let organizationChanged: (() => void) | null = null;
@@ -227,7 +228,10 @@ function harness() {
       get: vi.fn(async () => ({ id: 42 }) as chrome.tabs.Tab),
       update: vi.fn(async () => ({ id: 42 }) as chrome.tabs.Tab),
       onUpdated: () => () => undefined,
-      onRemoved: () => () => undefined,
+      onRemoved: (handler) => {
+        removed = handler;
+        return () => undefined;
+      },
     },
   };
   const controller = new LocalBrowserController(deps);
@@ -247,6 +251,7 @@ function harness() {
     deps,
     emit,
     invalidated: () => invalidated?.(),
+    removed: (tabId: number) => removed?.(tabId),
     authChanged: () => authChanged?.(),
     organizationChanged: () => organizationChanged?.(),
     remove,
@@ -915,6 +920,68 @@ describe('owned local-browser tab controller', () => {
       grant: cleanup,
     });
     expect(h.remove).toHaveBeenCalledTimes(1);
+    expect(h.sent.at(-1)).toMatchObject({ operation: 'cleanup', receipt: 'closed' });
+  });
+
+  it('acknowledges cleanup after Chrome reports the owned tab removed during close', async () => {
+    const h = harness();
+    const registration = await register(h);
+    h.deps.verify = vi.fn(async (request) =>
+      request.proof.operation === 'cleanup'
+        ? { ok: true as const, data: { status: 'accepted' as const, stop_id: stopId } }
+        : {
+            ok: true as const,
+            data: {
+              status: 'accepted' as const,
+              admission_id: ids.admission,
+              deadline_ms: Date.now() + 10_000,
+            },
+          },
+    );
+    h.deps.acknowledge = vi.fn(async (request) =>
+      request.operation === 'cleanup'
+        ? {
+            ok: true as const,
+            data: {
+              status: 'accepted' as const,
+              operation: 'cleanup' as const,
+              receipt: { stop_id: stopId, status: 'closed' as const },
+            },
+          }
+        : {
+            ok: true as const,
+            data: {
+              status: 'accepted' as const,
+              operation: 'admit' as const,
+              receipt: { admission_id: ids.admission, status: 'created' as const },
+              lease_expires_at_ms: Date.now() + 10_000,
+            },
+          },
+    );
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: opaqueAdmitGrant(registration.generation, registration.connection),
+    });
+    h.remove.mockImplementation(async () => {
+      h.removed(42);
+    });
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: '00000000-0000-4000-8000-000000000024',
+      operation: 'cleanup',
+      grant: opaqueCleanupGrant(registration.generation, registration.connection),
+    });
+    expect(h.remove).toHaveBeenCalledWith(42);
+    expect(h.deps.acknowledge).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        operation: 'cleanup',
+        receipt: { stop_id: stopId, status: 'closed' },
+      }),
+    );
     expect(h.sent.at(-1)).toMatchObject({ operation: 'cleanup', receipt: 'closed' });
   });
 
