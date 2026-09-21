@@ -13,6 +13,9 @@ const root = fileURLToPath(new URL('../../../.matrx/task1-active/firefox-sidebar
 const adapterSourcePath = fileURLToPath(new URL('./adapter.mjs', import.meta.url));
 const generatorMode = process.argv.includes('--generator');
 const generatorSourcePath = fileURLToPath(new URL('./generator-acceptance.mjs', import.meta.url));
+const captureMode = process.argv.includes('--capture');
+const captureSourcePath = fileURLToPath(new URL('./capture-decisions.mjs', import.meta.url));
+assert.ok(!(captureMode && generatorMode), 'one_firefox_journey_per_run');
 const SOURCE_COMMIT = 'd648df949883c6c678d227021a3ab58558c128bf';
 const RECORDS_SOURCE_COMMIT = 'c3f26c9e47f1a0ef18167592ebbdf032e45f9f67';
 const ADDON_ID = 'matrx-extend@aimatrx.com';
@@ -31,7 +34,7 @@ const xpi = join(artifactDirectory, 'matrx-extend-firefox-mv3.xpi');
 const LAUNCH_ENV = 'MATRX_FIREFOX_READONLY_AUTH_ACCEPTANCE';
 const HASH_ENV = 'MATRX_FIREFOX_REVIEWED_HARNESS_SHA256';
 async function reviewedHarnessHash() {
-  return shaText(JSON.stringify(await Promise.all([harnessPath, adapterSourcePath, ...(generatorMode ? [generatorSourcePath] : [])].map(shaFile))));
+  return shaText(JSON.stringify(await Promise.all([harnessPath, adapterSourcePath, ...(generatorMode ? [generatorSourcePath] : []), ...(captureMode ? [captureSourcePath] : [])].map(shaFile))));
 }
 
 function shaText(value) { return createHash('sha256').update(value).digest('hex'); }
@@ -192,7 +195,7 @@ await mkdir(runRoot, { recursive: true, mode: 0o700 });
 const proof = {
   schema: 1,
   runId,
-  mode: generatorMode ? 'firefox_generator_auth_vault' : 'firefox_readonly_auth_vault',
+  mode: generatorMode ? 'firefox_generator_auth_vault' : captureMode ? 'firefox_capture_decisions' : 'firefox_readonly_auth_vault',
   sourceCommit: SOURCE_COMMIT,
   credentialsRead: false,
   authenticationAttempted: false,
@@ -231,6 +234,7 @@ const cleanupCheckpoint = async phase => {
 proof.hashes = {
   driverSha256: await shaFile(harnessPath), adapterSha256: await shaFile(adapterSourcePath),
   ...(generatorMode ? { generatorSha256: await shaFile(generatorSourcePath) } : {}),
+  ...(captureMode ? { captureSha256: await shaFile(captureSourcePath) } : {}),
   artifactManifestSha256: await shaFile(artifactManifestPath), artifactXpiSha256: artifactManifest.xpi.sha256,
 };
 proof.artifactManifestPath = artifactManifestPath;
@@ -715,6 +719,14 @@ try {
     await persist();
   }
 
+  if (captureMode) {
+    await checkpoint('capture_decisions');
+    const { runFirefoxCaptureDecisionChecks } = await import('./capture-decisions.mjs');
+    await runFirefoxCaptureDecisionChecks({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, proof });
+    assert.equal(proof.captureDecisions?.ok, true, 'firefox_capture_decisions_incomplete');
+    await persist();
+  }
+
   await checkpoint('reconcile');
   const final = await items();
   assert.deepEqual(final.map(item => item.id).sort(), baselineIds, 'vault_baseline_ids_changed');
@@ -941,6 +953,7 @@ try {
   ];
   proof.ok = !failure && !proof.persistenceFailureDuringCleanup && proof.cleanupErrors.length === 0
     && proof.vaultMutationRequests === 0 && (!generatorMode || proof.generator?.ok === true)
+    && (!captureMode || proof.captureDecisions?.ok === true)
     && required.every(key => proof[key] === true);
   proof.terminalPhase = proof.ok ? 'complete' : proof.phaseBeforeCleanup;
   if (!proof.ok && !proof.errorCode) proof.errorCode = 'firefox_readonly_acceptance_cleanup_incomplete';
