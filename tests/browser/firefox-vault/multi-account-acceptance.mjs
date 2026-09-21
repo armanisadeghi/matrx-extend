@@ -1,0 +1,186 @@
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+
+const ELEMENT_KEY = 'element-6066-11e4-a52e-4f735466cecf';
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+function idPrefix(itemId, itemIds) {
+  for (let length = 1; length <= itemId.length; length += 1) {
+    const prefix = itemId.slice(0, length);
+    if (itemIds.filter(id => id.startsWith(prefix)).length === 1) return prefix;
+  }
+  throw new Error('multi_account_id_prefix_not_unique');
+}
+
+function expectedUpdateLabel(account, itemIds) {
+  return `Update${account.displayName} · ID ${idPrefix(account.itemId, itemIds)}`;
+}
+
+async function elementId({ base, sessionId, wdPost }, selector) {
+  const value = await wdPost(base, `/session/${sessionId}/element`, { using: 'css selector', value: selector });
+  const id = value?.[ELEMENT_KEY];
+  assert.equal(typeof id, 'string', 'multi_account_element_missing');
+  return id;
+}
+
+async function fill({ base, sessionId, wdPost }, selector, value) {
+  const id = await elementId({ base, sessionId, wdPost }, selector);
+  await wdPost(base, `/session/${sessionId}/element/${encodeURIComponent(id)}/clear`, {});
+  await wdPost(base, `/session/${sessionId}/element/${encodeURIComponent(id)}/value`, { text: value, value: [...value] });
+}
+
+async function submit(driver) {
+  const id = await elementId(driver, 'button[type="submit"]');
+  await driver.wdPost(driver.base, `/session/${driver.sessionId}/element/${encodeURIComponent(id)}/click`, {});
+}
+
+async function waitForCount(read, expected, code) {
+  const deadline = Date.now() + 10_000;
+  while (read() !== expected && Date.now() < deadline) await delay(50);
+  assert.equal(read(), expected, code);
+}
+
+async function waitForBridge(probeFixtureBridge, url) {
+  const deadline = Date.now() + 15_000;
+  while (!(await probeFixtureBridge(url))) {
+    if (Date.now() >= deadline) throw new Error('multi_account_bridge_not_ready');
+    await delay(100);
+  }
+}
+
+async function typeSearch(adapter, { base, sessionId, wdPost, wdDelete }, text) {
+  const selector = '[aria-label="Search saved logins to update"]';
+  await adapter.trustedPress(selector, {
+    outcome: document => document.activeElement?.getAttribute('aria-label') === 'Search saved logins to update',
+  });
+  try {
+    await wdPost(base, `/session/${sessionId}/actions`, {
+      actions: [{ type: 'key', id: 'multi-account-search', actions: [...text].flatMap(value => [{ type: 'keyDown', value }, { type: 'keyUp', value }]) }],
+    });
+  } finally {
+    await wdDelete(base, `/session/${sessionId}/actions`);
+  }
+  await adapter.waitFor((document, expected) => document.querySelector('[aria-label="Search saved logins to update"]')?.value === expected, [text]);
+}
+
+async function updateSelector(adapter, labels) {
+  return adapter.waitFor((document, expected) => {
+    const heading = [...document.querySelectorAll('p')].filter(node => node.textContent?.trim() === 'Save this login to your Vault?' && node.getBoundingClientRect().height > 0);
+    if (heading.length !== 1) return null;
+    const buttons = [...document.querySelectorAll('button')].filter(button => button.textContent?.trim().startsWith('Update'));
+    const text = buttons.map(button => button.textContent?.replace(/\s+/g, ' ').trim());
+    if (buttons.length !== 4 || new Set(text).size !== 4 || expected.length !== 4 || !expected.every(label => text.includes(label))) return null;
+    const chosen = buttons.filter(button => button.textContent?.replace(/\s+/g, ' ').trim() === expected[0]);
+    if (chosen.length !== 1) return null;
+    const parts = [];
+    for (let node = chosen[0]; node && node !== document.documentElement; node = node.parentElement) {
+      const parent = node.parentElement; const index = parent ? [...parent.children].indexOf(node) + 1 : 0;
+      if (index < 1) return null;
+      parts.unshift(`${node.tagName.toLowerCase()}:nth-child(${index})`);
+    }
+    return parts.length ? `html > ${parts.join(' > ')}` : null;
+  }, [labels]);
+}
+
+async function fillStableIdState(adapter, displayName, selectedPrefix) {
+  return adapter.waitFor((document, name, prefix) => {
+    const cards = [...document.querySelectorAll('li')].filter(card => card.querySelector('span')?.textContent?.trim() === name);
+    const fillCards = cards.filter(card => [...card.querySelectorAll('button')].some(button => button.textContent?.trim() === 'Fill' && !button.disabled));
+    const labels = fillCards.map(card => card.textContent?.replace(/\s+/g, ' ').trim() ?? '');
+    return {
+      matchingCards: cards.length,
+      enabledFillCards: fillCards.length,
+      selectedStableIdVisible: labels.some(label => label.includes(`ID ${prefix}`)),
+    };
+  }, [displayName, selectedPrefix]);
+}
+
+/**
+ * Four receipt-owned accounts at one origin. The caller owns creation,
+ * materialization and canonical cleanup. This helper never creates Vault data.
+ */
+export async function runFirefoxMultiAccountChecks({
+  adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge,
+  fixture, accounts, selectedIndex, verifyAccountValues, proof,
+}) {
+  assert.ok(adapter && typeof adapter.trustedClick === 'function' && typeof adapter.trustedPress === 'function' && typeof adapter.waitFor === 'function', 'multi_account_adapter_contract_invalid');
+  assert.equal(typeof probeFixtureBridge, 'function', 'multi_account_bridge_contract_invalid');
+  assert.equal(typeof verifyAccountValues, 'function', 'multi_account_readback_contract_invalid');
+  assert.ok(fixture && typeof fixture.baseUrl === 'string' && fixture.state, 'multi_account_fixture_contract_invalid');
+  assert.equal(accounts?.length, 4, 'multi_account_fixture_count_invalid');
+  assert.ok(Number.isInteger(selectedIndex) && selectedIndex >= 0 && selectedIndex < accounts.length, 'multi_account_selected_index_invalid');
+  assert.ok(accounts.every(account => typeof account?.itemId === 'string' && typeof account.displayName === 'string' && typeof account.username === 'string' && typeof account.password === 'string'), 'multi_account_metadata_invalid');
+  assert.equal(new Set(accounts.map(account => account.itemId)).size, 4, 'multi_account_item_ids_not_unique');
+  assert.equal(new Set(accounts.map(account => account.displayName)).size, 1, 'multi_account_duplicate_display_names_required');
+  assert.equal(fixture.state.submissions, 4, 'multi_account_four_saved_submissions_required');
+
+  const selected = accounts[selectedIndex];
+  const itemIds = accounts.map(account => account.itemId);
+  const selectedPrefix = idPrefix(selected.itemId, itemIds);
+  const labels = [expectedUpdateLabel(selected, itemIds), ...accounts.filter((_, index) => index !== selectedIndex).map(account => expectedUpdateLabel(account, itemIds))];
+  const driver = { base, sessionId, wdPost };
+  const nextPassword = `updated-${randomUUID()}`;
+  let original = null; let updateTab = null; let fillTab = null; let primary; let cleanup;
+  proof.multiAccount = { ok: false, fourSameSiteChoicesVisible: false, duplicateNamesHaveUniqueIdSuffixes: false, searchTypedNatively: false, selectedStableIdClicked: false, selectedValuesUpdated: false, unselectedValuesUnchanged: false, freshFillFocused: false, fillStableIdExposed: false, noExtraSubmission: false, updateTabClosed: false, fillTabClosed: false, originalWindowRestored: false };
+  try {
+    await getContext('content');
+    original = await wdGet(base, `/session/${sessionId}/window`);
+    updateTab = (await wdPost(base, `/session/${sessionId}/window/new`, { type: 'tab' }))?.handle;
+    assert.equal(typeof updateTab, 'string', 'multi_account_update_tab_missing');
+    await wdPost(base, `/session/${sessionId}/window`, { handle: updateTab });
+    const updateUrl = new URL(`/update?case=${randomUUID()}`, fixture.baseUrl).href;
+    await wdPost(base, `/session/${sessionId}/url`, { url: updateUrl });
+    await waitForBridge(probeFixtureBridge, updateUrl);
+    await fill(driver, '#username', selected.username);
+    await fill(driver, '#current-password', selected.password);
+    await fill(driver, '#new-password', nextPassword);
+    await fill(driver, '#confirm-password', nextPassword);
+    await submit(driver);
+    await waitForCount(() => fixture.state.updateSubmissions, 1, 'multi_account_update_submit_not_observed_once');
+
+    await getContext('chrome');
+    await adapter.trustedClick('button[title="Vault"]', { outcome: document => document.querySelector('button[title="Vault"]')?.getAttribute('aria-selected') === 'true' });
+    const selector = await updateSelector(adapter, labels);
+    assert.equal(typeof selector, 'string', 'multi_account_four_exact_update_choices_missing');
+    proof.multiAccount.fourSameSiteChoicesVisible = true;
+    proof.multiAccount.duplicateNamesHaveUniqueIdSuffixes = true;
+    await typeSearch(adapter, { base, sessionId, wdPost, wdDelete }, selected.displayName);
+    proof.multiAccount.searchTypedNatively = true;
+    await adapter.trustedClick(selector, { outcome: document => ![...document.querySelectorAll('p')].some(node => node.textContent?.trim() === 'Save this login to your Vault?' && node.getBoundingClientRect().height > 0), timeoutMs: 15_000 });
+    proof.multiAccount.selectedStableIdClicked = true;
+    assert.equal(fixture.state.updateSubmissions, 1, 'multi_account_update_choice_submitted_fixture');
+    const values = await verifyAccountValues({ selected, accounts, nextPassword, pageUrl: updateUrl });
+    assert.equal(values?.selectedUpdated, true, 'multi_account_selected_values_not_updated');
+    assert.equal(values?.unselectedUnchanged, true, 'multi_account_unselected_values_changed');
+    proof.multiAccount.selectedValuesUpdated = true;
+    proof.multiAccount.unselectedValuesUnchanged = true;
+
+    await getContext('content');
+    fillTab = (await wdPost(base, `/session/${sessionId}/window/new`, { type: 'tab' }))?.handle;
+    assert.equal(typeof fillTab, 'string', 'multi_account_fill_tab_missing');
+    await wdPost(base, `/session/${sessionId}/window`, { handle: fillTab });
+    const fillUrl = new URL(`/fill?case=${randomUUID()}`, fixture.baseUrl).href;
+    await wdPost(base, `/session/${sessionId}/url`, { url: fillUrl });
+    await waitForBridge(probeFixtureBridge, fillUrl);
+    const passwordId = await elementId(driver, '#password');
+    await wdPost(base, `/session/${sessionId}/element/${encodeURIComponent(passwordId)}/click`, {});
+    proof.multiAccount.freshFillFocused = true;
+    await getContext('chrome');
+    await adapter.trustedClick('button[title="Vault"]', { outcome: document => document.querySelector('button[title="Vault"]')?.getAttribute('aria-selected') === 'true' });
+    const fillState = await fillStableIdState(adapter, selected.displayName, selectedPrefix);
+    assert.equal(fillState.matchingCards, 4, 'multi_account_fill_card_count_invalid');
+    assert.equal(fillState.enabledFillCards, 4, 'multi_account_fill_action_count_invalid');
+    if (fillState.selectedStableIdVisible !== true) throw new Error('multi_account_fill_stable_id_not_exposed');
+    proof.multiAccount.fillStableIdExposed = true;
+    throw new Error('multi_account_fill_selection_not_implemented');
+  } catch (error) { primary = error; } finally {
+    for (const [key, tab] of [['fillTabClosed', fillTab], ['updateTabClosed', updateTab]]) if (tab) try {
+      await getContext('content'); await wdPost(base, `/session/${sessionId}/window`, { handle: tab }); await wdDelete(base, `/session/${sessionId}/window`);
+      assert.equal((await wdGet(base, `/session/${sessionId}/window/handles`)).includes(tab), false, 'multi_account_fixture_tab_still_open'); proof.multiAccount[key] = true;
+    } catch (error) { cleanup ||= error; }
+    if (original) try { await getContext('content'); await wdPost(base, `/session/${sessionId}/window`, { handle: original }); proof.multiAccount.originalWindowRestored = true; } catch (error) { cleanup ||= error; }
+  }
+  if (primary) throw primary;
+  if (cleanup) throw cleanup;
+  throw new Error('multi_account_unreachable');
+}
