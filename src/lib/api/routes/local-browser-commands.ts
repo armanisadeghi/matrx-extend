@@ -5,6 +5,7 @@ import {
   privatePost,
 } from '@/lib/api/client';
 import { z } from 'zod';
+import { localBrowserDocumentId } from './local-browser-document-id';
 
 const MAX_GRANT_BYTES = 8 * 1024;
 const MAX_COMMAND_BYTES = 16 * 1024;
@@ -196,7 +197,7 @@ export function approveLocalCommand(
   );
 }
 
-const document = z.object({ url: z.string().url(), document_id: uuid }).strict();
+const document = z.object({ url: z.string().url(), document_id: localBrowserDocumentId }).strict();
 const claimRequest = z
   .object({
     grant,

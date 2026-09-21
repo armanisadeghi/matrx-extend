@@ -105,7 +105,23 @@ describe('local browser command wire validation', () => {
         ...base,
         grant: 'g',
         command_json: '{"operation":"inspect_login"}',
-        document: { url: 'https://example.com', document_id: 'bad' },
+        document: { url: 'https://example.com', document_id: '' },
+      }),
+    ).resolves.toEqual({ ok: false, error: 'invalid_response' });
+    await expect(
+      claimLocalCommand({
+        ...base,
+        grant: 'g',
+        command_json: '{"operation":"inspect_login"}',
+        document: { url: 'https://example.com', document_id: 'x'.repeat(129) },
+      }),
+    ).resolves.toEqual({ ok: false, error: 'invalid_response' });
+    await expect(
+      claimLocalCommand({
+        ...base,
+        grant: 'g',
+        command_json: '{"operation":"inspect_login"}',
+        document: { url: 'https://example.com', document_id: 1 as never },
       }),
     ).resolves.toEqual({ ok: false, error: 'invalid_response' });
     await expect(
@@ -113,7 +129,7 @@ describe('local browser command wire validation', () => {
         ...base,
         grant: 'g',
         command_json: `{"operation":"navigate","url":"${'a'.repeat(17_000)}"}`,
-        document: { url: 'https://example.com', document_id: id },
+        document: { url: 'https://example.com', document_id: 'A'.repeat(32) },
       }),
     ).resolves.toEqual({ ok: false, error: 'invalid_response' });
     expect(fetchMock).not.toHaveBeenCalled();

@@ -1,4 +1,5 @@
 import { parseStrictPrivateJson } from '@/lib/api/client';
+import { localBrowserDocumentId } from '@/lib/api/routes/local-browser-document-id';
 import { z } from 'zod';
 
 const uuid = z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
@@ -110,7 +111,10 @@ const result = z.union([
       operation: z.literal('approve'),
       status: z.literal('acknowledged'),
       terminal_receipt: z.unknown(),
-      document: z.object({ url: z.string().url(), document_id: uuid }).strict().optional(),
+      document: z
+        .object({ url: z.string().url(), document_id: localBrowserDocumentId })
+        .strict()
+        .optional(),
     })
     .strict(),
   z

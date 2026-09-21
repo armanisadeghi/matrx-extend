@@ -29,6 +29,30 @@ function opaqueGrant(payload: Record<string, unknown>): string {
 }
 
 describe('local browser closed protocol', () => {
+  it('preserves opaque browser-native document ids while rejecting invalid bounds', () => {
+    const result = {
+      type: 'local_browser.result' as const,
+      version: 1 as const,
+      call_id: ids.call,
+      operation: 'approve' as const,
+      status: 'acknowledged' as const,
+      terminal_receipt: {},
+      document: { url: 'https://example.com/login', document_id: 'A'.repeat(32) },
+    };
+    expect(localBrowserResult(result)).toEqual(result);
+    expect(() =>
+      localBrowserResult({ ...result, document: { ...result.document, document_id: '' } }),
+    ).toThrow();
+    expect(() =>
+      localBrowserResult({
+        ...result,
+        document: { ...result.document, document_id: 'x'.repeat(129) },
+      }),
+    ).toThrow();
+    expect(() =>
+      localBrowserResult({ ...result, document: { ...result.document, document_id: 1 } as never }),
+    ).toThrow();
+  });
   it('accepts only the exact registration echo for a current request', () => {
     const registration = {
       type: 'local_browser.registration',
