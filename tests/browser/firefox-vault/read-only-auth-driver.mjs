@@ -18,10 +18,15 @@ const generatorSourcePath = fileURLToPath(new URL('./generator-acceptance.mjs', 
 const captureMode = process.argv.includes('--capture');
 const captureSourcePath = fileURLToPath(new URL('./capture-decisions.mjs', import.meta.url));
 const coreUpdateFillMode = process.argv.includes('--core-update-fill');
-assert.ok(!(coreUpdateFillMode && process.argv.includes('--capture-save')), 'one_firefox_journey_per_run');
+const multiAccountMode = process.argv.includes('--multi-account');
+assert.ok(!((coreUpdateFillMode ? 1 : 0) + (multiAccountMode ? 1 : 0) + (process.argv.includes('--capture-save') ? 1 : 0) > 1), 'one_firefox_journey_per_run');
 if (coreUpdateFillMode) assert.equal(process.env.MATRX_FIREFOX_CORE_UPDATE_FILL_ADMISSION, 'RUN_RECEIPT_BACKED_CORE_UPDATE_FILL', 'core_update_fill_admission_unarmed');
-const captureSaveMode = process.argv.includes('--capture-save') || coreUpdateFillMode;
+if (multiAccountMode) assert.equal(process.env.MATRX_FIREFOX_MULTI_ACCOUNT_ADMISSION, 'RUN_RECEIPT_BACKED_MULTI_ACCOUNT', 'multi_account_admission_unarmed');
+const captureSaveMode = process.argv.includes('--capture-save') || coreUpdateFillMode || multiAccountMode;
 const coreUpdateFillSourcePath = fileURLToPath(new URL('./core-update-fill-acceptance.mjs', import.meta.url));
+const multiAccountSourcePath = fileURLToPath(new URL('./multi-account-acceptance.mjs', import.meta.url));
+const authenticatorChecksSourcePath = fileURLToPath(new URL('./authenticator-checks.mjs', import.meta.url));
+const authenticatorSourcePath = fileURLToPath(new URL('../vault-authenticator-preservation.cjs', import.meta.url));
 const captureSaveSourcePath = fileURLToPath(new URL('./capture-save-acceptance.mjs', import.meta.url));
 const cleanupSourcePath = fileURLToPath(new URL('../cleanup-vault-canary.py', import.meta.url));
 const reconcileSourcePath = fileURLToPath(new URL('../reconcile-vault-canary.py', import.meta.url));
@@ -53,15 +58,15 @@ async function verifiedFailedChromeProof() {
   assert.ok(value.cleanup.receiptReconciled && value.cleanup.createdItemsGone && value.cleanup.profileRemoved && value.cleanup.browserClosed && value.cleanup.localAuthLogoutStatus === 204 && value.cleanup.remoteAuthRevocationStatus === 204, 'historical_chrome_owned_cleanup_missing');
   return ids;
 }
-const SOURCE_COMMIT = '07782a07148ccbaeae2357d3d77d8b206eba7de2';
-const RECORDS_SOURCE_COMMIT = 'c3f26c9e47f1a0ef18167592ebbdf032e45f9f67';
+const SOURCE_COMMIT = '4b4aafbd5e849fc30c87ee5b9207b8749858a317';
+const RECORDS_SOURCE_COMMIT = '44594d58e69e19d04335bbceb40eb2c1479d007f';
 const ADDON_ID = 'matrx-extend@aimatrx.com';
 const API = 'https://server.app.matrxserver.com';
 const DB = 'https://db.matrxserver.com';
 const AUTH_ORIGIN = 'https://www.aimatrx.com';
 const firefox = '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/Firefox.app/Contents/MacOS/firefox';
 const geckodriver = '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/geckodriver';
-const artifactDirectory = join(root, '..', '..', 'firefox-current-build', 'artifact-2026-09-21T02-03-18-109Z-4f049d1a-c135-4905-8256-a67698c9c3f7');
+const artifactDirectory = join(root, '..', '..', 'firefox-current-build', 'artifact-2026-09-21T22-26-05-805Z-4579bce7-05cf-4258-9983-72bc3a1d4dde');
 const artifactRoot = join(artifactDirectory, 'extension');
 const artifactManifestPath = join(artifactDirectory, 'artifact-manifest.json');
 const xpi = join(artifactDirectory, 'matrx-extend-firefox-mv3.xpi');
@@ -85,7 +90,7 @@ if (captureSaveMode) {
   for (const key of ['MATRX_FIREFOX_GENERATOR', 'MATRX_FIREFOX_CAPTURE_RESPONSE_LOSS']) assert.equal(process.env[key], undefined, 'capture_save_incompatible_flag');
 }
 async function reviewedHarnessHash() {
-  return shaText(JSON.stringify(await Promise.all([harnessPath, adapterSourcePath, leaseSourcePath, ...(generatorMode ? [generatorSourcePath] : []), ...(captureMode ? [captureSourcePath] : []), ...(captureSaveMode ? [captureSaveSourcePath, coreUpdateFillSourcePath, cleanupSourcePath, reconcileSourcePath] : [])].map(shaFile))));
+  return shaText(JSON.stringify(await Promise.all([harnessPath, adapterSourcePath, leaseSourcePath, ...(generatorMode ? [generatorSourcePath] : []), ...(captureMode ? [captureSourcePath] : []), ...(captureSaveMode ? [captureSaveSourcePath, coreUpdateFillSourcePath, multiAccountSourcePath, authenticatorChecksSourcePath, authenticatorSourcePath, cleanupSourcePath, reconcileSourcePath] : [])].map(shaFile))));
 }
 
 function shaText(value) { return createHash('sha256').update(value).digest('hex'); }
@@ -257,7 +262,7 @@ await mkdir(runRoot, { recursive: true, mode: 0o700 });
 const proof = {
   schema: 1,
   runId,
-  mode: reconciliationMode ? 'firefox_readonly_chrome_reconciliation' : generatorMode ? 'firefox_generator_auth_vault' : captureMode ? 'firefox_capture_decisions' : coreUpdateFillMode ? 'firefox_core_update_fill' : captureSaveMode ? 'firefox_capture_save' : 'firefox_readonly_auth_vault',
+  mode: reconciliationMode ? 'firefox_readonly_chrome_reconciliation' : generatorMode ? 'firefox_generator_auth_vault' : captureMode ? 'firefox_capture_decisions' : multiAccountMode ? 'firefox_multi_account' : coreUpdateFillMode ? 'firefox_core_update_fill' : captureSaveMode ? 'firefox_capture_save' : 'firefox_readonly_auth_vault',
   sourceCommit: SOURCE_COMMIT,
   credentialsRead: false,
   authenticationAttempted: false,
@@ -298,7 +303,7 @@ proof.hashes = {
   leaseSha256: await shaFile(leaseSourcePath),
   ...(generatorMode ? { generatorSha256: await shaFile(generatorSourcePath) } : {}),
   ...(captureMode ? { captureSha256: await shaFile(captureSourcePath) } : {}),
-  ...(captureSaveMode ? { captureSaveSha256: await shaFile(captureSaveSourcePath), coreUpdateFillSha256: await shaFile(coreUpdateFillSourcePath), cleanupSha256: await shaFile(cleanupSourcePath), reconcileSha256: await shaFile(reconcileSourcePath) } : {}),
+  ...(captureSaveMode ? { captureSaveSha256: await shaFile(captureSaveSourcePath), coreUpdateFillSha256: await shaFile(coreUpdateFillSourcePath), multiAccountSha256: await shaFile(multiAccountSourcePath), authenticatorChecksSha256: await shaFile(authenticatorChecksSourcePath), authenticatorSha256: await shaFile(authenticatorSourcePath), cleanupSha256: await shaFile(cleanupSourcePath), reconcileSha256: await shaFile(reconcileSourcePath) } : {}),
   artifactManifestSha256: await shaFile(artifactManifestPath), artifactXpiSha256: artifactManifest.xpi.sha256,
 };
 if (captureSaveMode) {
@@ -469,7 +474,7 @@ const recordObservedNetwork = observed => {
   const vaultEvents = observed.events.filter(event => event.origin === API && event.pathname.startsWith('/api/vault/'));
   const isMaterialize = event => event.method === 'POST' && /^\/api\/vault\/browser-login\/[0-9a-f-]{36}\/materialize$/i.test(event.pathname);
   const mutationEvents = vaultEvents.filter(event => ['PUT', 'PATCH', 'DELETE'].includes(event.method)
-    || (event.method === 'POST' && !(coreUpdateFillMode && isMaterialize(event)) && !['/api/vault/browser-login/matches', '/api/vault/browser-login/capture-context'].includes(event.pathname)));
+    || (event.method === 'POST' && !((coreUpdateFillMode || multiAccountMode) && isMaterialize(event)) && !['/api/vault/browser-login/matches', '/api/vault/browser-login/capture-context'].includes(event.pathname)));
   const mutationRequests = mutationEvents.filter(event => event.phase === 'request');
   proof.vaultMutationRequests = mutationRequests.length;
   const materializeRequests = vaultEvents.filter(event => event.phase === 'request' && isMaterialize(event));
@@ -482,6 +487,16 @@ const recordObservedNetwork = observed => {
     const successfulMaterialize = materialize.filter(request => vaultEvents.some(event => event.phase === 'response' && event.owner === 'addon_principal' && event.requestId === request.requestId && event.pathname === request.pathname && event.method === request.method && event.status >= 200 && event.status < 300));
     proof.coreNetwork = { createRequests: created.length, ownedUpdateRequests: updated.length, ownedMaterializeRequests: materialize.length, successfulMaterializeResponses: successfulMaterialize.length, unexpectedWrites: mutationRequests.length - created.length - updated.length, unexpectedMaterializeRequests: materializeRequests.length - materialize.length };
     proof.coreNetwork.ok = created.length === 1 && updated.length === 1 && materialize.length === 1 && successfulMaterialize.length === 1 && proof.coreNetwork.unexpectedWrites === 0 && proof.coreNetwork.unexpectedMaterializeRequests === 0;
+  }
+  if (multiAccountMode) {
+    const owned = new Set(proof.ownedFixtureIds ?? []);
+    const selectedId = proof.authenticator?.credentialItemId;
+    const created = mutationRequests.filter(event => event.owner === 'addon_principal' && event.method === 'POST' && event.pathname === '/api/vault/items');
+    const updated = mutationRequests.filter(event => event.owner === 'addon_principal' && event.method === 'PUT' && /^\/api\/vault\/items\/[0-9a-f-]{36}\/fields\/[0-9a-f-]{36}\/value$/i.test(event.pathname) && owned.has(selectedId) && event.pathname.split('/')[4] === selectedId);
+    const materialize = materializeRequests.filter(event => event.owner === 'addon_principal' && owned.has(selectedId) && event.pathname.split('/')[4] === selectedId);
+    const materialized2xx = materialize.filter(request => vaultEvents.some(event => event.phase === 'response' && event.owner === 'addon_principal' && event.requestId === request.requestId && event.method === request.method && event.pathname === request.pathname && event.status >= 200 && event.status < 300));
+    proof.multiNetwork = { createRequests: created.length, selectedUpdateRequests: updated.length, totalMaterializeRequests: materializeRequests.length, selectedMaterializeRequests: materialize.length, selectedMaterialize2xx: materialized2xx.length, unexpectedWrites: mutationRequests.length - created.length - updated.length };
+    proof.multiNetwork.ok = created.length === 4 && updated.length === 1 && materializeRequests.length === 1 && materialize.length === 1 && materialized2xx.length === 1 && proof.multiNetwork.unexpectedWrites === 0;
   }
   proof.networkObserver = {
     captureContract: observed.captureContract,
@@ -553,7 +568,8 @@ async function reconcileCaptureSaveReceipts(keys) {
       && row.organization_id === null && row.retired === false), 'capture_save_receipt_actor_mismatch');
   const ids = result.results.map(row => row.result_item_id);
   assert.ok(ids.every(id => typeof id === 'string') && new Set(ids).size === ids.length && ids.every(id => !baselineIds.includes(id)), 'capture_save_receipt_scope_invalid');
-  proof.ownedFixtureIds = ids;
+  proof.ownedFixtureIds = [...new Set([...(proof.ownedFixtureIds ?? []), ...ids])];
+  assert.ok(proof.ownedFixtureIds.length <= 16, 'capture_save_owned_item_capacity');
   await persist();
   return ids;
 }
@@ -613,33 +629,57 @@ function runBoundedCaptureSaveCleanupChild({ command, args, cwd, input, timeoutM
 }
 const coreUpdateFillOptions = coreUpdateFillMode ? {
   verifyOwnedItemValues: async ({ itemId, username, password, pageUrl }) => {
-    assert.ok(proof.ownedFixtureIds?.length === 1 && proof.ownedFixtureIds[0] === itemId, 'core_update_fill_readback_item_not_owned');
-    const checked = await verifySavedLogin({ username, password, pageUrl });
-    assert.equal(checked.itemId, itemId, 'core_update_fill_readback_item_changed');
-    return true;
+    const checked = await verifySavedLogin({ itemId, username, password, pageUrl });
+    return checked.itemId === itemId;
   },
 } : undefined;
-async function verifySavedLogin({ username, password, pageUrl }) {
+let multiAuthenticator;
+const multiAccountOptions = multiAccountMode ? {
+  selectedIndex: 1,
+  beforeUpdate: async ({ selected }) => {
+    const { createFirefoxAuthenticatorChecks } = await import('./authenticator-checks.mjs');
+    multiAuthenticator ??= createFirefoxAuthenticatorChecks({
+      request: async ({ method, path, body }) => {
+        const response = await fetch(`${API}/api/authenticator${path}`, {
+          method,
+          headers: { Authorization: `Bearer ${token}`, 'X-Organization-Id': organizationId, ...(body !== undefined && { 'content-type': 'application/json' }) },
+          ...(body !== undefined && { body: JSON.stringify(body) }), signal: AbortSignal.timeout(15_000),
+        });
+        return { status: response.status, body: response.status === 204 ? null : await response.json().catch(() => null) };
+      },
+      persist,
+      proof,
+      getOwnedItemIds: () => [...(proof.ownedFixtureIds ?? [])],
+    });
+    await multiAuthenticator.beforeUpdate({ selected });
+  },
+  afterUpdate: async () => multiAuthenticator?.afterUpdate(),
+  beforeCleanup: async () => multiAuthenticator?.cleanup(),
+  verifyAccountValues: async ({ selected, accounts, nextPassword, pageUrl }) => {
+    let selectedUpdated = false; let unselectedUnchanged = true;
+    for (const account of accounts) {
+      const checked = await verifySavedLogin({ itemId: account.itemId, username: account.username || null, password: account.itemId === selected.itemId ? nextPassword : account.password, pageUrl });
+      if (account.itemId === selected.itemId) selectedUpdated = checked.itemId === selected.itemId;
+      else unselectedUnchanged &&= checked.itemId === account.itemId;
+    }
+    return { selectedUpdated, unselectedUnchanged };
+  },
+} : undefined;
+async function verifySavedLogin({ createMutationKey, itemId, username, password, pageUrl }) {
   assert.ok(captureSaveMode && new URL(pageUrl).origin.startsWith('http://127.0.0.1:'), 'capture_save_readback_scope_invalid');
-  const ids = await reconcileCaptureSaveReceipts(proof.ownedCreateMutationKeys);
+  if (itemId) assert.ok(proof.ownedFixtureIds?.includes(itemId), 'capture_save_readback_item_not_owned');
+  else assert.ok(proof.ownedCreateMutationKeys?.includes(createMutationKey), 'capture_save_readback_key_not_owned');
+  const ids = itemId ? [itemId] : await reconcileCaptureSaveReceipts([createMutationKey]);
   assert.equal(ids.length, 1, 'capture_save_readback_item_count');
-  proof.ownedFixtureIds = ids;
+  const id = ids[0]; assert.equal(typeof id, 'string', 'capture_save_readback_item_invalid');
+  proof.ownedFixtureIds = [...new Set([...(proof.ownedFixtureIds ?? []), id])];
   await persist();
-  const response = await fetch(`${API}/api/vault/browser-login/${encodeURIComponent(ids[0])}/materialize`, {
-    method: 'POST', headers: { Authorization: `Bearer ${token}`, 'X-Organization-Id': organizationId, 'content-type': 'application/json' },
-    body: JSON.stringify({ page_url: pageUrl, tool_invocation_id: randomUUID(), client_build: 'vault-firefox-canary' }),
-    signal: AbortSignal.timeout(30_000),
-  });
+  const response = await fetch(`${API}/api/vault/browser-login/${encodeURIComponent(id)}/materialize`, { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'X-Organization-Id': organizationId, 'content-type': 'application/json' }, body: JSON.stringify({ page_url: pageUrl, tool_invocation_id: randomUUID(), client_build: 'vault-firefox-canary' }), signal: AbortSignal.timeout(30_000) });
   assert.equal(response.status, 200, 'capture_save_readback_failed');
-  const value = await response.json();
-  assert.ok(value?.username === username && value?.password === password, 'capture_save_readback_values_mismatch');
-  let targetName;
-  if (coreUpdateFillMode) {
-    const metadata = await api(`${API}/api/vault/items/${encodeURIComponent(ids[0])}`);
-    assert.ok(metadata?.id === ids[0] && typeof metadata.display_name === 'string' && metadata.display_name.length > 0, 'core_update_fill_metadata_invalid');
-    targetName = metadata.display_name;
-  }
-  return { itemId: ids[0], targetName };
+  const value = await response.json(); assert.ok((value?.username ?? '') === (username ?? '') && value?.password === password, 'capture_save_readback_values_mismatch');
+  const metadata = await api(`${API}/api/vault/items/${encodeURIComponent(id)}`);
+  assert.ok(metadata?.id === id && typeof metadata.display_name === 'string' && metadata.display_name.length > 0, 'capture_save_metadata_invalid');
+  return { itemId: id, targetName: metadata.display_name };
 }
 
 try {
@@ -1005,7 +1045,7 @@ try {
       && event.origin === API && event.pathname === '/api/vault/items' && event.method === 'GET');
     const response = requests.map(request => snapshot.events.find(event => event.sequence > request.sequence
       && event.phase === 'response' && event.owner === 'addon_principal'
-      && event.requestId === request.requestId && event.status >= 200 && event.status < 300)).find(Boolean);
+      && event.requestId === request.requestId && event.method === request.method && event.pathname === request.pathname && event.status >= 200 && event.status < 300)).find(Boolean);
     const ui = await adapter.evaluate(document => {
       const text = document.body.innerText;
       const heading = [...document.querySelectorAll('span')].some(node => node.textContent?.trim() === 'Vault');
@@ -1052,8 +1092,9 @@ try {
       baselineIds, provenIDs: placeholders, expectedRouterSha256: localRouterHash,
       expectedServiceSha256: localServiceHash, sourceRoot: localSourceRoot })) < 32768, 'capture_save_cleanup_input_capacity');
     const { runFirefoxCaptureSaveCheck } = await import('./capture-save-acceptance.mjs');
-    await runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, persistOwnedCreateMutationKeys, verifySavedLogin, coreUpdateFill: coreUpdateFillOptions, proof });
+    await runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, persistOwnedCreateMutationKeys, verifySavedLogin, coreUpdateFill: coreUpdateFillOptions, multiAccount: multiAccountOptions, proof });
     const keys = proof.ownedCreateMutationKeys;
+    if (multiAccountMode) await multiAccountOptions.beforeCleanup();
     const proven = await reconcileCaptureSaveReceipts(keys);
     const cleanup = await canonicalCleanupCaptureSave(keys, proven);
     captureSaveCleanupAttempted = true;
@@ -1147,7 +1188,8 @@ try {
   const observed = await readOwnedNetworkObserver();
   recordObservedNetwork(observed);
   if (coreUpdateFillMode) assert.equal(proof.coreNetwork?.ok, true, 'core_update_fill_network_contract_failed');
-  assert.equal(proof.vaultMutationRequests, coreUpdateFillMode ? 2 : captureSaveMode ? 1 : 0, 'vault_mutation_count_unexpected');
+  if (multiAccountMode) assert.equal(proof.multiNetwork?.ok, true, 'multi_account_network_contract_failed');
+  assert.equal(proof.vaultMutationRequests, multiAccountMode ? 5 : coreUpdateFillMode ? 2 : captureSaveMode ? 1 : 0, 'vault_mutation_count_unexpected');
   assert.equal(observed.dropped, 0, 'network_observer_dropped_events');
   assert.equal(observed.observerErrors, 0, 'network_observer_errors');
   const disposed = await disposeOwnedNetworkObserver();
@@ -1198,6 +1240,7 @@ try {
   if (captureSaveMode && !captureSaveCleanupAttempted && token && userId && organizationId
     && Array.isArray(proof.ownedCreateMutationKeys) && proof.ownedCreateMutationKeys.length > 0) {
     try {
+      if (multiAccountMode) await multiAccountOptions?.beforeCleanup();
       const proven = await reconcileCaptureSaveReceipts(proof.ownedCreateMutationKeys);
       const cleanup = await canonicalCleanupCaptureSave(proof.ownedCreateMutationKeys, proven);
       captureSaveCleanupAttempted = true;
@@ -1332,7 +1375,7 @@ try {
   ];
   proof.ok = !failure && !proof.persistenceFailureDuringCleanup && proof.cleanupErrors.length === 0
     && (captureSaveMode
-      ? proof.vaultMutationRequests === (coreUpdateFillMode ? 2 : 1) && (!coreUpdateFillMode || (proof.coreUpdateFill?.ok === true && proof.coreNetwork?.ok === true)) && proof.captureSave?.ok === true && proof.captureSave?.cleanup?.receiptReconciled === true
+      ? proof.vaultMutationRequests === (multiAccountMode ? 5 : coreUpdateFillMode ? 2 : 1) && (!coreUpdateFillMode || (proof.coreUpdateFill?.ok === true && proof.coreNetwork?.ok === true)) && (!multiAccountMode || (proof.multiAccount?.ok === true && proof.multiNetwork?.ok === true && proof.authenticator?.enrolled === true && proof.authenticator?.preserved === true && proof.authenticator?.cleanupProven === true)) && proof.captureSave?.ok === true && proof.captureSave?.cleanup?.receiptReconciled === true
       : proof.vaultMutationRequests === 0)
     && (!generatorMode || proof.generator?.ok === true)
     && (!captureMode || proof.captureDecisions?.ok === true)
