@@ -31,11 +31,30 @@ const isEnvelope = (m: unknown): m is Envelope => {
   );
 };
 
+export interface SendOptions {
+  /**
+   * "Nobody is listening" is a legitimate ANSWER for this channel, not a
+   * fault — so do not log it.
+   *
+   * Some callers use `send()` precisely because chrome.runtime rejects when
+   * no context has the handler registered: the agenda scanner asks whether
+   * the side panel is open and falls back to an OS notification when it is
+   * not. Logging that as an error painted a red line in the debug feed once
+   * a minute for a perfectly normal state — a closed side panel. A screen
+   * (and a log) is absent or honest, never alarmed about a non-event.
+   */
+  absenceIsAnAnswer?: boolean;
+}
+
 /**
  * Send a request and await a response.
  * Throws if the receiver returned an error envelope.
  */
-export async function send<TReq, TRes>(kind: string, payload: TReq): Promise<TRes> {
+export async function send<TReq, TRes>(
+  kind: string,
+  payload: TReq,
+  options: SendOptions = {},
+): Promise<TRes> {
   const env: Envelope<TReq> = { __matrx: true, kind, payload };
   log.info('msg', `→ send ${kind}`, payload);
   try {
@@ -49,14 +68,16 @@ export async function send<TReq, TRes>(kind: string, payload: TReq): Promise<TRe
       throw new Error(err);
     }
     if (response === undefined) {
-      log.warn('msg', `← ${kind} undefined response (no listener?)`);
+      if (!options.absenceIsAnAnswer) {
+        log.warn('msg', `← ${kind} undefined response (no listener?)`);
+      }
     } else {
       log.success('msg', `← ${kind} ok`);
     }
     return response as TRes;
   } catch (err) {
     const msg = (err as Error).message;
-    if (msg?.includes('Receiving end does not exist')) {
+    if (msg?.includes('Receiving end does not exist') && !options.absenceIsAnAnswer) {
       log.error('msg', `${kind} — no listener registered for this kind`);
     }
     throw err;

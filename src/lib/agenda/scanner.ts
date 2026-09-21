@@ -184,6 +184,9 @@ async function tryBroadcastRunNow(taskId: string): Promise<boolean> {
     const r = await msgSend<{ taskId: string }, { ack: true } | undefined>(
       CHANNELS.AGENDA_RUN_NOW,
       { taskId },
+      // A closed side panel is the answer this call is asking for, not a
+      // fault: we fall back to an OS notification below.
+      { absenceIsAnAnswer: true },
     );
     return !!r && (r as { ack?: boolean }).ack === true;
   } catch {
