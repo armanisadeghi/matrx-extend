@@ -68,9 +68,6 @@ export const ENV = {
   get EXTENSION_OAUTH_CLIENT_ID(): string {
     return safeRead(() => import.meta.env.WXT_EXTENSION_OAUTH_CLIENT_ID) ?? '';
   },
-  get DESKTOP_LOCAL_URL(): string {
-    return safeRead(() => import.meta.env.WXT_DESKTOP_LOCAL_URL) ?? 'http://127.0.0.1:22180';
-  },
   get DESKTOP_NATIVE_HOST(): string {
     return safeRead(() => import.meta.env.WXT_DESKTOP_NATIVE_HOST) ?? 'com.matrx.local';
   },

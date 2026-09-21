@@ -4,9 +4,6 @@ const mocks = vi.hoisted(() => ({
   getSupabase: vi.fn(),
 }));
 
-vi.mock('@/config/env', () => ({
-  ENV: { DESKTOP_LOCAL_URL: 'http://127.0.0.1:22180' },
-}));
 vi.mock('@/lib/debug/log', () => ({
   log: {
     info: vi.fn(),

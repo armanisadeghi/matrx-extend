@@ -13,7 +13,6 @@ const publicKeys = new Set([
   'WXT_SUPABASE_PUBLISHABLE_KEY',
   'WXT_EXTENSION_OAUTH_CLIENT_ID',
   'WXT_FRONTEND_URL',
-  'WXT_DESKTOP_LOCAL_URL',
   'WXT_DESKTOP_NATIVE_HOST',
 ]);
 const fail = (message) => { throw new Error(`Vault real-browser build refused: ${message}`); };

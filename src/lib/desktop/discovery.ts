@@ -24,8 +24,9 @@
  * `rpcHttp` returns the "start matrx-local" remedy, `connectWs` reports
  * stage 'discover'.
  *
- * There is deliberately NO build-time fallback address. `ENV.DESKTOP_LOCAL_URL`
- * used to be the last rung, and because it is always set (22180 — a port
+ * There is deliberately NO build-time fallback address. A build-time env var
+ * (`WXT_DESKTOP_LOCAL_URL`, now deleted) used to be the last rung, and
+ * because it was always set (22180 — a port
  * outside the scan range that the engine never binds) this function could
  * never return null: an offline engine was handed back as a real address.
  * Every graceful-degradation path above was therefore dead code, the bridge
