@@ -267,6 +267,40 @@ try {
   assert.deepEqual(chatClick.events.map(event => [event.type, event.trusted]), [['mousedown', true], ['mouseup', true], ['click', true]]);
   proof.trustedChatRestore = true;
 
+  proof.phase = 'stable_target_transient_overlay';
+  const overlayTarget = await adapter.evaluate(document => {
+    const button = document.createElement('button');
+    button.id = 'matrx-probe-covered-button'; button.type = 'button';
+    button.style.cssText = 'position:fixed;left:20px;top:20px;width:160px;height:40px;z-index:2147483646';
+    button.textContent = 'Disposable covered action';
+    button.addEventListener('click', event => { if (event.isTrusted) button.dataset.clicked = 'true'; });
+    const cover = document.createElement('div'); cover.id = 'matrx-probe-cover';
+    cover.style.cssText = 'position:fixed;left:0;top:0;width:220px;height:100px;z-index:2147483647';
+    document.body.append(button, cover);
+    document.defaultView.setTimeout(() => cover.remove(), 500);
+    return '#matrx-probe-covered-button';
+  });
+  const uncoveredClick = await adapter.trustedClick(overlayTarget, {
+    outcome: document => document.querySelector('#matrx-probe-covered-button')?.dataset.clicked === 'true',
+    timeoutMs: 3000,
+  });
+  assert.ok(uncoveredClick.diagnostic.actionability.settleMs >= 300);
+  assert.ok(uncoveredClick.events.every(event => event.trusted && ['exact', 'descendant'].includes(event.targetRelation)));
+  proof.transientOverlayWaitedWithoutClickThrough = true;
+  await adapter.evaluate(document => {
+    document.querySelector('#matrx-probe-covered-button').dataset.clicked = 'false';
+    const cover = document.createElement('div'); cover.id = 'matrx-probe-cover';
+    cover.style.cssText = 'position:fixed;left:0;top:0;width:220px;height:100px;z-index:2147483647';
+    document.body.append(cover);
+  });
+  await assert.rejects(() => adapter.trustedClick(overlayTarget, { timeoutMs: 750 }), /trusted_click_target_occluded/);
+  assert.equal(await adapter.evaluate(document => document.querySelector('#matrx-probe-covered-button')?.dataset.clicked), 'false');
+  proof.permanentOverlayRefusedWithoutClick = true;
+  await adapter.evaluate(document => {
+    document.querySelector('#matrx-probe-cover')?.remove();
+    document.querySelector('#matrx-probe-covered-button')?.remove();
+  });
+
   proof.phase = 'trusted_portal_combobox_press';
   const portalControl = await adapter.evaluate(document => {
     document.querySelector('[data-matrx-adapter-probe="trigger"]')?.remove();
@@ -407,6 +441,7 @@ try {
   proof.firefoxExited = !profile || (await pidsContaining(profile)).length === 0;
   const required = [
     'runtimeAttested', 'freshProfileAuthStorageEmpty', 'nativeSidebarControllerRoute',
+    'transientOverlayWaitedWithoutClickThrough', 'permanentOverlayRefusedWithoutClick',
     'trustedSettingsTransition', 'trustedChatRestore', 'trustedPortalComboboxPress', 'trustedKeyboardComboboxSelection', 'knownLocalhostRequestObserved',
     'metadataOnlyObserver', 'observerDisposed', 'addonUninstalled', 'sessionDeleted',
     'driverExited', 'firefoxExited', 'profileRemoved', 'localServerClosed', 'allOwnedPidsGone',

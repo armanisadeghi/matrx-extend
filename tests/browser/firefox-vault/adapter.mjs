@@ -89,14 +89,25 @@ function remoteFrameMain(envelope, operation, outcomePredicate) {
         let stableFrames = 0;
         let samples = 0;
         let current;
+        let x;
+        let y;
+        let actionability;
         while (true) {
           if (Date.now() >= request.deadlineAt) {
-            fail('trusted_click_target_not_stable', {
-              mode: request.kind,
-              actionability: { samples, stableFrames, settleMs: Date.now() - settleStartedAt },
-            }); return;
+            const code = stableFrames >= 3
+              ? (request.kind === 'trusted_press' ? 'trusted_press_target_occluded' : 'trusted_click_target_occluded')
+              : 'trusted_click_target_not_stable';
+            fail(code, { mode: request.kind, actionability: actionability ?? { samples, stableFrames, settleMs: Date.now() - settleStartedAt } }); return;
           }
           await new Promise(resolve => content.requestAnimationFrame(resolve));
+          const liveCandidates = [...document.querySelectorAll(request.selector)];
+          if (!target.isConnected || liveCandidates.length !== 1 || liveCandidates[0] !== target) {
+            fail('trusted_click_target_changed'); return;
+          }
+          const liveStyle = content.getComputedStyle(target);
+          if (target.disabled || target.getAttribute('aria-disabled') === 'true') {
+            fail('trusted_click_target_disabled'); return;
+          }
           current = target.getBoundingClientRect();
           samples += 1;
           const unchanged = previousRect !== null
@@ -107,28 +118,22 @@ function remoteFrameMain(envelope, operation, outcomePredicate) {
           const moving = ancestorAnimations.some(animation => animation.playState === 'running' || animation.pending === true);
           stableFrames = unchanged && !moving ? stableFrames + 1 : 0;
           previousRect = { left: current.left, top: current.top, width: current.width, height: current.height };
-          if (stableFrames >= 3) break;
-        }
-        const x = current.left + current.width / 2;
-        const y = current.top + current.height / 2;
-        const hit = document.elementFromPoint(x, y);
-        const hitExact = hit === target;
-        const hitInside = hitExact || (hit !== null && target.contains(hit));
-        const actionability = {
-          samples,
-          stableFrames,
-          settleMs: Date.now() - settleStartedAt,
-          targetTag: target.tagName.toLowerCase(),
-          targetRole: target.getAttribute('role'),
-          hitTag: typeof hit?.tagName === 'string' ? hit.tagName.toLowerCase() : null,
-          hitRole: hit?.getAttribute?.('role') ?? null,
-          hitRelation: hitExact ? 'exact' : hitInside ? 'descendant' : 'outside',
-          centerInViewport: x >= 0 && y >= 0 && x < content.innerWidth && y < content.innerHeight,
-        };
-        if (current.width <= 0 || current.height <= 0 || !actionability.centerInViewport || !hitInside) {
-          fail(request.kind === 'trusted_press'
-            ? 'trusted_press_target_occluded'
-            : 'trusted_click_target_occluded', { mode: request.kind, actionability }); return;
+          x = current.left + current.width / 2;
+          y = current.top + current.height / 2;
+          const hit = document.elementFromPoint(x, y);
+          const hitExact = hit === target;
+          const hitInside = hitExact || (hit !== null && target.contains(hit));
+          actionability = {
+            samples, stableFrames, settleMs: Date.now() - settleStartedAt,
+            targetTag: target.tagName.toLowerCase(), targetRole: target.getAttribute('role'),
+            hitTag: typeof hit?.tagName === 'string' ? hit.tagName.toLowerCase() : null,
+            hitRole: hit?.getAttribute?.('role') ?? null,
+            hitRelation: hitExact ? 'exact' : hitInside ? 'descendant' : 'outside',
+            centerInViewport: x >= 0 && y >= 0 && x < content.innerWidth && y < content.innerHeight,
+          };
+          if (stableFrames >= 3 && current.width > 0 && current.height > 0
+            && liveStyle.visibility !== 'hidden' && liveStyle.display !== 'none'
+            && actionability.centerInViewport && hitInside) break;
         }
         const events = [];
         const observe = event => {
