@@ -441,10 +441,8 @@ async function ensureSession(): Promise<boolean> {
 
         const setter = session.setAccessLevel;
         if (typeof setter === 'function') {
-          await setter.call(session, { accessLevel: 'TRUSTED_CONTEXTS' });
-        } else if (
-          !usesNativeTrustedSessionStorage(chrome.runtime?.getURL?.('') ?? '')
-        ) {
+          await session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
+        } else if (!usesNativeTrustedSessionStorage(chrome.runtime?.getURL?.('') ?? '')) {
           throw new Error('trusted session access level is unavailable');
         }
         const stored = (await session.get(SESSION_KEY))[SESSION_KEY];

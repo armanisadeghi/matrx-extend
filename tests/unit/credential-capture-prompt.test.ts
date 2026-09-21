@@ -1135,11 +1135,29 @@ describe('host — registered worker listeners and session continuity', () => {
     expect(setAccessLevel).toHaveBeenCalledWith({ accessLevel: 'TRUSTED_CONTEXTS' });
   });
 
+  it('fails closed when a Firefox-exposed access-level setter rejects', async () => {
+    captureBuild.browser = 'firefox';
+    Object.assign(chrome.storage.session, {
+      setAccessLevel: async () => {
+        throw new Error('access-level rejected');
+      },
+    });
+    const host = await import('@/lib/credentials/capture-candidates');
+
+    expect(await host.holdCandidate(33, WIRE, DEPS)).toBe(false);
+    expect(host.pendingCaptureForTab(33)).toBeNull();
+  });
+
   it.each([
     {
       name: 'a Chromium build',
       browser: 'chrome' as const,
       root: 'chrome-extension://test-extension/',
+    },
+    {
+      name: 'a Safari build',
+      browser: 'safari' as const,
+      root: 'safari-web-extension://test-extension/',
     },
     {
       name: 'a Firefox build at a non-Firefox extension root',
