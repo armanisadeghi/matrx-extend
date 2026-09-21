@@ -293,6 +293,35 @@ const getStorage = async keys => {
     const storage = globalThis.browser?.storage ?? globalThis.chrome?.storage;
     storage.local.get(keys).then(done, () => done(null));`, [keys]);
 };
+// Content-script globals are isolated from WebDriver's page-main realm. Read
+// the mount marker only through the extension's own options-page principal and
+// always return the caller to its original owned content tab.
+const probeFixtureBridge = async fixtureUrl => {
+  assert.ok(typeof fixtureUrl === 'string' && fixtureUrl.startsWith('http://127.0.0.1:'), 'capture_fixture_url_invalid');
+  assert.ok(storageHandle, 'storage_tab_handle_missing');
+  await getContext('content');
+  const originalHandle = await wdGet(base, `/session/${sessionId}/window`);
+  assert.ok(typeof originalHandle === 'string' && originalHandle.length > 0, 'capture_probe_original_window_missing');
+  try {
+    await wdPost(base, `/session/${sessionId}/window`, { handle: storageHandle });
+    await getContext('content');
+    return await executeContentAsync(`
+      const done = arguments[arguments.length - 1];
+      (async () => {
+        const api = globalThis.browser ?? globalThis.chrome;
+        const matches = (await api.tabs.query({})).filter(tab => tab.url === arguments[0] && Number.isInteger(tab.id));
+        if (matches.length !== 1) return false;
+        const result = await api.scripting.executeScript({
+          target: { tabId: matches[0].id, frameIds: [0] },
+          func: () => window.__matrx_bridge_mounted === true,
+        });
+        return result.length === 1 && result[0]?.result === true;
+      })().then(done, () => done(false));`, [fixtureUrl]);
+  } finally {
+    await getContext('content');
+    await wdPost(base, `/session/${sessionId}/window`, { handle: originalHandle });
+  }
+};
 const readOwnedNetworkObserver = async () => {
   assert.ok(adapter, 'network_observer_adapter_missing');
   await getContext('chrome');
@@ -760,7 +789,7 @@ try {
   if (captureMode) {
     await checkpoint('capture_decisions');
     const { runFirefoxCaptureDecisionChecks } = await import('./capture-decisions.mjs');
-    await runFirefoxCaptureDecisionChecks({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, proof });
+    await runFirefoxCaptureDecisionChecks({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, proof });
     assert.equal(proof.captureDecisions?.ok, true, 'firefox_capture_decisions_incomplete');
     await persist();
   }

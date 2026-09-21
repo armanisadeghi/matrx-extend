@@ -52,6 +52,26 @@ async function waitForFixtureAX(fixtureCdp, wait, predicate) {
   throw new Error('vault_accessibility_fixture_ax_condition_timeout');
 }
 
+function chooserButtons(nodes) {
+  const dialogs = nodes.filter(node => node?.ignored !== true && axRole(node) === 'dialog'
+    && axName(node) === 'Saved logins from Matrx Vault');
+  if (dialogs.length !== 1) return [];
+  const byId = new Map(nodes.map(node => [node.nodeId, node]));
+  const pending = [...(dialogs[0].childIds || [])];
+  const visited = new Set();
+  const buttons = [];
+  while (pending.length) {
+    const id = pending.pop();
+    if (visited.has(id)) continue;
+    visited.add(id);
+    const node = byId.get(id);
+    if (!node) continue;
+    if (node.ignored !== true && axRole(node) === 'button') buttons.push(node);
+    pending.push(...(node.childIds || []));
+  }
+  return buttons;
+}
+
 async function ensureGeneratorOpen(realPanel) {
   const opener = `Array.from(document.querySelector(${JSON.stringify(GENERATOR)})?.querySelectorAll('button') ?? [])
     .find((button) => button.textContent?.trim() === 'Password generator')`;
@@ -73,12 +93,26 @@ async function runInlineChooserEscape({ context, fixturePage, targetName, getSub
     await focusCredential();
     await fixturePage.waitForFunction(() => document.hasFocus() && document.activeElement?.id === 'password');
     await dispatchNativeKey(fixtureCdp, { key: 'ArrowDown', code: 'ArrowDown', windowsVirtualKeyCode: 40 });
-    const chooserNodes = await waitForFixtureAX(fixtureCdp, wait, (nodes) => hasAXName(nodes, 'dialog', 'Saved logins from Matrx Vault')
-      && nodes.filter((node) => node?.ignored !== true && axRole(node) === 'button' && axName(node) === targetName).length === 1
-      && nodes.some((node) => axRole(node) === 'button' && axName(node) === targetName && axFocused(node)));
-    assert(hasAXName(chooserNodes, 'dialog', 'Saved logins from Matrx Vault'), 'vault_accessibility_chooser_dialog_name_missing');
-    assert(chooserNodes.filter((node) => node?.ignored !== true && axRole(node) === 'button' && axName(node) === targetName).length === 1
-      && chooserNodes.some((node) => axRole(node) === 'button' && axName(node) === targetName && axFocused(node)), 'vault_accessibility_chooser_target_ax_name_or_focus_missing');
+    let chooserNodes = await waitForFixtureAX(fixtureCdp, wait, nodes => {
+      const buttons = chooserButtons(nodes);
+      return buttons.filter(node => axName(node) === targetName).length === 1
+        && buttons.filter(axFocused).length === 1;
+    });
+    // Arrow Down opens the list at its first account, not necessarily the
+    // requested fixture. Navigate real keyboard choices to the exact target.
+    const choiceBound = chooserButtons(chooserNodes).length;
+    for (let step = 0; step < choiceBound
+      && !chooserButtons(chooserNodes).some(node => axName(node) === targetName && axFocused(node)); step += 1) {
+      const previousFocus = chooserButtons(chooserNodes).find(axFocused)?.nodeId;
+      await dispatchNativeKey(fixtureCdp, { key: 'ArrowDown', code: 'ArrowDown', windowsVirtualKeyCode: 40 });
+      chooserNodes = await waitForFixtureAX(fixtureCdp, wait, nodes =>
+        chooserButtons(nodes).filter(axFocused).length === 1
+        && chooserButtons(nodes).some(node => axFocused(node) && node.nodeId !== previousFocus));
+    }
+    assert(chooserButtons(chooserNodes).filter(node => axName(node) === targetName).length === 1
+      && chooserButtons(chooserNodes).filter(axFocused).length === 1
+      && chooserButtons(chooserNodes).some(node => axName(node) === targetName && axFocused(node)),
+    'vault_accessibility_chooser_target_ax_name_or_focus_missing');
     await dispatchNativeKey(fixtureCdp, { key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
     await fixturePage.waitForFunction(() => !document.querySelector('#matrx-inline-login-suggestion')
       && document.hasFocus() && document.activeElement?.id === 'password');
