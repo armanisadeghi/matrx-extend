@@ -116,3 +116,58 @@ if (fs.existsSync(actualPath)) {
   assert.equal(JSON.stringify(proof), before);
 }
 process.stdout.write('PASS: pre-baseline authenticated cleanup admits only fully disposed zero-fixture runs\n');
+
+const crypto = require('node:crypto');
+const { hasPreAuthNoWriteCleanup } = require('./vault-readonly-cleanup.cjs');
+const preAuth = () => ({
+  schema: 3, mode: 'receipt_backed_save_update', ok: false,
+  authenticationAttempted: false, failurePhase: 'oauth_auth_page_opened', checks: {},
+  oauthUi: { popupNavigated: true, popupSignInClicked: true, authPageOpened: false,
+    expectedOrigin: false, loginFieldsReady: false, failureCategory: 'oauth_auth_page_open_failed' },
+  vaultMutationRequests: 0,
+  vaultItemPosts: { total: 0, withIdempotencyHeader: 0, missingIdempotencyHeader: 0, invalidIdempotencyHeader: 0 },
+  ownedCreateMutationKeys: [], ownedFixtureIds: [],
+  cleanup: { authStorageAtCleanup: { profilePresent: false, accessTokenPresent: false },
+    remoteAuthRevocation: 'not_applicable', localFixtureServerClosed: 'not_started',
+    browserClosed: true, profileRemoved: true, localCredentialDisposal: 'profile_removed' },
+  networkJournal: { ownerVerified: true, journalSemanticVersion: 2,
+    beforeCleanupSnapshot: { boundTargetAttached: false, boundTargetSessionCount: 0,
+      boundTargetCountingSessionCount: 0, boundTargetRequestCount: 0,
+      boundTargetVaultRequestCount: 0, boundTargetItemsAnyOriginCount: 0,
+      vaultMetadataReadRequests: 0, pageRequestCount: 1, enableSuccessBeforeResume: true,
+      panelItemsReadRequestSeen: false, panelItemsReadResponse2xxSeen: false,
+      vaultMutationRequests: 0, observerError: false, transportFatal: false,
+      sendFailureClass: 'none', pendingSetupCount: 0, cleanupPhase: 'idle',
+      transportCloseStatus: 'open', remainingOwnedSessionCount: 1 },
+    postDisposalSnapshot: { boundTargetAttached: false, boundTargetSessionCount: 0,
+      boundTargetCountingSessionCount: 0, boundTargetVaultRequestCount: 0,
+      vaultMutationRequests: 0, remainingOwnedSessionCount: 0, pendingSetupCount: 0,
+      cleanupPhase: 'complete', transportCloseStatus: 'closed', observerError: false,
+      transportFatal: false, sendFailureClass: 'none' }, disposalSucceeded: true },
+});
+assert.equal(hasPreAuthNoWriteCleanup(preAuth()), true);
+for (const mutate of [
+  p => { p.authenticationAttempted = true; }, p => { p.oauthUi.authPageOpened = true; },
+  p => { p.oauthUi.expectedOrigin = true; }, p => { p.oauthUi.loginFieldsReady = true; },
+  p => { p.oauthUi.failureCategory = 'unclassified'; }, p => { p.authStorage = {}; },
+  p => { p.identityProof = {}; }, p => { p.admission = { baselineRead: true }; },
+  p => { p.admission = { fixtureWrites: 1 }; }, p => { p.authenticator = {}; },
+  p => { p.cleanup.authenticator = {}; }, p => { p.checks.enrolledAuthenticatorPreserved = false; },
+  p => { p.vaultMutationRequests = 1; }, p => { p.ownedCreateMutationKeys.push('unexpected'); },
+  p => { p.cleanup.authStorageAtCleanup.accessTokenPresent = true; }, p => { p.cleanup.profileRemoved = false; },
+  p => { p.networkJournal.beforeCleanupSnapshot.boundTargetRequestCount = 1; },
+  p => { p.networkJournal.postDisposalSnapshot.vaultMutationRequests = 1; },
+  p => { p.networkJournal.postDisposalSnapshot.remainingOwnedSessionCount = 1; },
+]) {
+  const proof = preAuth(); mutate(proof);
+  assert.equal(hasPreAuthNoWriteCleanup(proof), false);
+}
+const immutablePreAuthPath = path.join(__dirname, '../../.matrx/realbrowser-vault/save-update-headless/f5c52828-418a-478e-996e-81bc01433efc/proof.json');
+if (fs.existsSync(immutablePreAuthPath)) {
+  const raw = fs.readFileSync(immutablePreAuthPath, 'utf8');
+  assert.equal(crypto.createHash('sha256').update(raw).digest('hex'), '631b77de422357f64bf877bb17eb2265f832936af09703c4bea74fc430cc9c85');
+  const proof = JSON.parse(raw), before = JSON.stringify(proof);
+  assert.equal(hasPreAuthNoWriteCleanup(proof), true);
+  assert.equal(JSON.stringify(proof), before);
+}
+process.stdout.write('PASS: pre-auth cleanup admits only a no-form, no-bearer, disposed zero-write proof\n');
