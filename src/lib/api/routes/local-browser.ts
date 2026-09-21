@@ -1,9 +1,7 @@
 import { type PrivateApiResult, type PrivateExpectedActor, privatePost } from '@/lib/api/client';
 import { z } from 'zod';
 
-const uuid = z
-  .string()
-  .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+const uuid = z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
 const grant = z
   .string()
   .min(1)
@@ -174,16 +172,18 @@ export function acknowledgeLocalBrowser(request: {
           status: z.literal(request.receipt.status),
         })
         .strict();
+      const accepted = z
+        .object({
+          status: z.literal('accepted'),
+          operation: z.literal('admit'),
+          receipt,
+          lease_expires_at_ms:
+            request.receipt.status === 'created' ? safeMilliseconds.nullable() : z.null(),
+        })
+        .strict();
+      if (request.receipt.status !== 'created') return z.union([accepted, refusalSchema]);
       return z.union([
-        z
-          .object({
-            status: z.literal('accepted'),
-            operation: z.literal('admit'),
-            receipt,
-            lease_expires_at_ms:
-              request.receipt.status === 'created' ? safeMilliseconds.nullable() : z.null(),
-          })
-          .strict(),
+        accepted,
         z
           .object({
             status: z.literal('cancelled'),

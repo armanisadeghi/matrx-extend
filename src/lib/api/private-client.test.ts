@@ -284,6 +284,36 @@ describe('private lifecycle transport', () => {
     },
   );
 
+  it.each(['cancelled', 'failed'] as const)(
+    'rejects a cancelled directive after a %s admission submission',
+    async (submitted) => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(
+          async () =>
+            new Response(
+              JSON.stringify({
+                status: 'cancelled',
+                operation: 'admit',
+                receipt: { admission_id: admissionId, status: 'cancelled' },
+                lease_expires_at_ms: null,
+              }),
+              noStore,
+            ),
+        ),
+      );
+      await expect(
+        acknowledgeLocalBrowser({
+          grant: 'grant',
+          operation: 'admit',
+          receipt: { admission_id: admissionId, status: submitted },
+          expectedActor,
+          deadlineMs: Date.now() + 10_000,
+        }),
+      ).resolves.toEqual({ ok: false, error: 'invalid_response' });
+    },
+  );
+
   it('serializes the closed verify body and uses sealed fetch controls', async () => {
     const fetchMock = vi.fn(
       async () =>
@@ -498,5 +528,92 @@ describe('private lifecycle transport', () => {
         deadlineMs: Date.now() + 10_000,
       }),
     ).resolves.toEqual({ ok: false, error: 'invalid_response' });
+  });
+});
+
+describe('private command transport fences', () => {
+  it('checks executor generation after asynchronous identity resolution before dispatch', async () => {
+    let current = true;
+    state.verificationHook = async () => {
+      current = false;
+    };
+    const request = vi.fn();
+    vi.stubGlobal('fetch', request);
+    try {
+      await expect(
+        privatePost({
+          path: '/browser-manager/local/approval',
+          body: {},
+          expectedActor,
+          deadlineMs: Date.now() + 10_000,
+          schema,
+          isCurrent: () => current,
+        }),
+      ).resolves.toEqual({ ok: false, error: 'identity_changed' });
+      expect(request).not.toHaveBeenCalled();
+    } finally {
+      state.verificationHook = null;
+    }
+  });
+  it('drops a claimed secret response when the executor is invalidated during fetch', async () => {
+    let current = true;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        current = false;
+        return new Response(JSON.stringify({ secret: 'private-sentinel' }), noStore);
+      }),
+    );
+    await expect(
+      privatePost({
+        path: '/browser-manager/local/commands/claim',
+        body: {},
+        expectedActor,
+        deadlineMs: Date.now() + 10_000,
+        schema: z.object({ secret: z.string() }),
+        isCurrent: () => current,
+      }),
+    ).resolves.toEqual({ ok: false, error: 'identity_changed' });
+  });
+  it('permits bounded claim payloads while retaining the smaller lifecycle cap', async () => {
+    const body = JSON.stringify({ value: 'x'.repeat(5000) });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(body, noStore)),
+    );
+    const opts = {
+      body: {},
+      expectedActor,
+      deadlineMs: Date.now() + 10_000,
+      schema: z.object({ value: z.string() }).strict(),
+    };
+    expect((await privatePost({ ...opts, path: '/browser-manager/local/commands/claim' })).ok).toBe(
+      true,
+    );
+    await expect(privatePost({ ...opts, path: '/browser-manager/local/verify' })).resolves.toEqual({
+      ok: false,
+      error: 'response_too_large',
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response('x'.repeat(48 * 1024 + 1), noStore)),
+    );
+    await expect(
+      privatePost({ ...opts, path: '/browser-manager/local/commands/claim' }),
+    ).resolves.toEqual({ ok: false, error: 'response_too_large' });
+  });
+  it('refuses overbound request data before any network operation', async () => {
+    const request = vi.fn();
+    vi.stubGlobal('fetch', request);
+    await expect(
+      privatePost({
+        path: '/browser-manager/local/commands/claim',
+        body: { value: 'x'.repeat(32768) },
+        expectedActor,
+        deadlineMs: Date.now() + 10_000,
+        schema,
+      }),
+    ).resolves.toEqual({ ok: false, error: 'invalid_response' });
+    expect(request).not.toHaveBeenCalled();
   });
 });

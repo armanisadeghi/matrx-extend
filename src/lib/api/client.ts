@@ -70,11 +70,25 @@ export interface PrivatePostOptions<T> {
   expectedActor: PrivateExpectedActor;
   deadlineMs: number;
   schema: z.ZodType<T>;
+  /** Synchronous owned-executor/policy generation fence; never an authorization substitute. */
+  isCurrent?: () => boolean;
+  signal?: AbortSignal;
 }
 const PRIVATE_RESPONSE_CAP_BYTES = 4 * 1024;
-const PRIVATE_MAX_REQUEST_MS = 5_000;
+// Local-browser callbacks may wait for a deliberate human approval or desktop
+// bridge hop. The original grant deadline remains the hard upper bound.
+const PRIVATE_MAX_REQUEST_MS = 30_000;
 const PRIVATE_JSON_MAX_DEPTH = 8;
-const PRIVATE_PATHS = new Set(['/browser-manager/local/verify', '/browser-manager/local/ack']);
+const PRIVATE_PATHS = new Set([
+  '/browser-manager/local/verify',
+  '/browser-manager/local/transport/verify',
+  '/browser-manager/local/ack',
+  '/browser-manager/local/approval',
+  '/browser-manager/local/commands/claim',
+  '/browser-manager/local/commands/complete',
+]);
+const PRIVATE_CLAIM_RESPONSE_CAP_BYTES = 48 * 1024;
+const PRIVATE_REQUEST_CAP_BYTES = 32 * 1024;
 
 /**
  * Status sentinel for "this request was never sent, because a signed-in
@@ -528,6 +542,7 @@ export function parseStrictPrivateJson(source: string): unknown | null {
 async function readPrivateResponse(
   response: Response,
   signal: AbortSignal,
+  capBytes: number,
 ): Promise<{ value: string } | { tooLarge: true } | null> {
   const reader = response.body?.getReader();
   if (!reader) return null;
@@ -538,7 +553,7 @@ async function readPrivateResponse(
       const item = await withPrivateAbort(reader.read(), signal);
       if (item.done) break;
       size += item.value.byteLength;
-      if (size > PRIVATE_RESPONSE_CAP_BYTES) {
+      if (size > capBytes) {
         return { tooLarge: true };
       }
       chunks.push(item.value);
@@ -569,7 +584,27 @@ export async function privatePost<T>(opts: PrivatePostOptions<T>): Promise<Priva
   )
     return privateFailure('deadline_exceeded');
   const deadline = Math.min(opts.deadlineMs, Date.now() + PRIVATE_MAX_REQUEST_MS);
-  const timeout = AbortSignal.timeout(Math.max(1, deadline - Date.now()));
+  const deadlineSignal = AbortSignal.timeout(Math.max(1, deadline - Date.now()));
+  const timeout = opts.signal ? AbortSignal.any([deadlineSignal, opts.signal]) : deadlineSignal;
+  const current = (): boolean => {
+    try {
+      return !opts.signal?.aborted && (opts.isCurrent?.() ?? true);
+    } catch {
+      return false;
+    }
+  };
+  if (!current()) return privateFailure('identity_changed');
+  let body: string;
+  try {
+    body = JSON.stringify(opts.body);
+    if (
+      typeof body !== 'string' ||
+      new TextEncoder().encode(body).byteLength > PRIVATE_REQUEST_CAP_BYTES
+    )
+      return privateFailure('invalid_response');
+  } catch {
+    return privateFailure('invalid_response');
+  }
   const bounded = <R>(work: Promise<R>): Promise<R> => withPrivateAbort(work, timeout);
   let headers: Record<string, string> | null;
   try {
@@ -594,13 +629,14 @@ export async function privatePost<T>(opts: PrivatePostOptions<T>): Promise<Priva
     return privateFailure(timeout.aborted ? 'deadline_exceeded' : 'identity_changed');
   }
   if (timeout.aborted || Date.now() >= deadline) return privateFailure('deadline_exceeded');
+  if (!current()) return privateFailure('identity_changed');
   let response: Response;
   try {
     response = await bounded(
       fetch(`${baseUrl}${opts.path}`, {
         method: 'POST',
         headers,
-        body: JSON.stringify(opts.body),
+        body,
         signal: timeout,
         redirect: 'error',
         cache: 'no-store',
@@ -618,7 +654,12 @@ export async function privatePost<T>(opts: PrivatePostOptions<T>): Promise<Priva
   if (!hasPrivateNoStore(response.headers.get('cache-control')))
     return privateFailure('invalid_response');
   if (!response.ok) return privateFailure('http_error');
-  const read = await readPrivateResponse(response, timeout);
+  if (!current()) return privateFailure('identity_changed');
+  const capBytes =
+    opts.path === '/browser-manager/local/commands/claim'
+      ? PRIVATE_CLAIM_RESPONSE_CAP_BYTES
+      : PRIVATE_RESPONSE_CAP_BYTES;
+  const read = await readPrivateResponse(response, timeout, capBytes);
   if (!read) return privateFailure(timeout.aborted ? 'deadline_exceeded' : 'invalid_response');
   if ('tooLarge' in read) return privateFailure('response_too_large');
   try {
@@ -628,6 +669,7 @@ export async function privatePost<T>(opts: PrivatePostOptions<T>): Promise<Priva
     return privateFailure(timeout.aborted ? 'deadline_exceeded' : 'identity_changed');
   }
   if (timeout.aborted || Date.now() >= deadline) return privateFailure('deadline_exceeded');
+  if (!current()) return privateFailure('identity_changed');
   const parsed = parseStrictPrivateJson(read.value);
   const checked = parsed === null ? null : opts.schema.safeParse(parsed);
   return checked?.success ? { ok: true, data: checked.data } : privateFailure('invalid_response');

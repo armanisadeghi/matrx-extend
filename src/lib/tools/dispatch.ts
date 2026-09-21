@@ -1,3 +1,4 @@
+import { resolveToolTier } from '@/lib/tools/tier-policy';
 /**
  * SW-side tool dispatcher.
  *
@@ -793,7 +794,7 @@ async function handleCall(
   // `left_click` stays 'action' under the same tool name. Resolved BEFORE
   // the pilot gate so both the sandbox and the confirm card see the tier
   // of THIS call, not the catalog default.
-  const effectiveTier = handler.tierFor ? handler.tierFor(parsed.data as never) : handler.tier;
+  const effectiveTier = resolveToolTier(handler, parsed.data);
 
   // Pilot group sandbox (roadmap item #9). When a Pilot session is active
   // every action-tier (or privileged) tool MUST target a tab that lives
@@ -1398,7 +1399,7 @@ export async function handleWebmcpCall(
 
   // Router tools can raise their tier for a particular action. Apply the
   // external-caller restriction to that parsed action before any execution.
-  const effectiveTier = handler.tierFor ? handler.tierFor(parsed.data as never) : handler.tier;
+  const effectiveTier = resolveToolTier(handler, parsed.data);
   if (effectiveTier === 'ask-user' || effectiveTier === 'privileged') {
     return {
       ok: false,

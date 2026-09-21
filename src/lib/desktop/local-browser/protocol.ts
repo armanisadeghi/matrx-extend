@@ -1,9 +1,7 @@
 import { parseStrictPrivateJson } from '@/lib/api/client';
 import { z } from 'zod';
 
-const uuid = z
-  .string()
-  .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+const uuid = z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
 const safeInteger = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const nonZeroSafeInteger = z.number().int().min(1).max(Number.MAX_SAFE_INTEGER);
 const grant = z
@@ -29,23 +27,6 @@ const registerRequired = z.union([
     })
     .strict(),
 ]);
-
-export const localBrowserRegistrationSchema = z
-  .object({
-    type: z.literal('local_browser.registration'),
-    version: z.literal(1),
-    status: z.enum(['acknowledged', 'refused']),
-    engine_boot_id: uuid,
-    expected_revision: safeInteger,
-    extension_generation: uuid,
-    connection_id: uuid,
-  })
-  .strict()
-  .superRefine((value, context) => {
-    if (value.status === 'refused' && !('reason' in value)) {
-      context.addIssue({ code: z.ZodIssueCode.custom, message: 'refusal reason required' });
-    }
-  });
 
 const registrationRefused = z
   .object({
@@ -76,8 +57,25 @@ const execute = z
     type: z.literal('local_browser.execute'),
     version: z.literal(1),
     call_id: uuid,
-    operation: z.enum(['discover', 'admit', 'renew', 'cleanup']),
+    operation: z.enum(['discover', 'admit', 'renew', 'cleanup', 'approve']),
     grant,
+    command_json: z
+      .string()
+      .min(1)
+      .max(16 * 1024)
+      .optional(),
+  })
+  .strict()
+  .superRefine((value, context) => {
+    if ((value.operation === 'approve') !== 'command_json' in value)
+      context.addIssue({ code: z.ZodIssueCode.custom, message: 'approve requires exact command' });
+  });
+
+const invalidate = z
+  .object({
+    type: z.literal('local_browser.invalidate'),
+    version: z.literal(1),
+    reason: z.literal('binding_changed'),
   })
   .strict();
 
@@ -90,6 +88,7 @@ export const localBrowserRefusalReason = z.enum([
   'binding_changed',
   'invalid_request',
   'retry_conflict',
+  'discovery_refresh_required',
 ]);
 
 const result = z.union([
@@ -101,6 +100,17 @@ const result = z.union([
       operation: z.literal('discover'),
       status: z.literal('acknowledged'),
       receipt: z.literal('accepted'),
+    })
+    .strict(),
+  z
+    .object({
+      type: z.literal('local_browser.result'),
+      version: z.literal(1),
+      call_id: uuid,
+      operation: z.literal('approve'),
+      status: z.literal('acknowledged'),
+      terminal_receipt: z.unknown(),
+      document: z.object({ url: z.string().url(), document_id: uuid }).strict().optional(),
     })
     .strict(),
   z
@@ -138,33 +148,38 @@ const result = z.union([
       type: z.literal('local_browser.result'),
       version: z.literal(1),
       call_id: uuid,
-      operation: z.enum(['discover', 'admit', 'renew', 'cleanup']),
+      operation: z.enum(['discover', 'admit', 'renew', 'cleanup', 'approve']),
       status: z.literal('refused'),
       reason: localBrowserRefusalReason,
     })
     .strict(),
 ]);
 
-export type LocalBrowserRegisterRequired = Extract<
-  z.infer<typeof registerRequired>,
-  { revision: number }
->;
+export type LocalBrowserRegisterRequired = z.infer<typeof registerRequired>;
 export type LocalBrowserRegistration =
   | z.infer<typeof registrationAcknowledged>
   | z.infer<typeof registrationRefused>;
 export type LocalBrowserExecute = z.infer<typeof execute>;
+export type LocalBrowserInvalidate = z.infer<typeof invalidate>;
 export type LocalBrowserResult = z.infer<typeof result>;
 export type LocalBrowserRefusalReason = z.infer<typeof localBrowserRefusalReason>;
 
 export function parseLocalBrowserFrame(
   value: unknown,
-): LocalBrowserRegisterRequired | LocalBrowserRegistration | LocalBrowserExecute | null {
+):
+  | LocalBrowserRegisterRequired
+  | LocalBrowserRegistration
+  | LocalBrowserExecute
+  | LocalBrowserInvalidate
+  | null {
   const required = registerRequired.safeParse(value);
-  if (required.success) return 'revision' in required.data ? required.data : null;
+  if (required.success) return required.data;
   const registration = z.union([registrationAcknowledged, registrationRefused]).safeParse(value);
   if (registration.success) return registration.data;
   const request = execute.safeParse(value);
-  return request.success ? request.data : null;
+  if (request.success) return request.data;
+  const invalidation = invalidate.safeParse(value);
+  return invalidation.success ? invalidation.data : null;
 }
 
 export function localBrowserResult(value: LocalBrowserResult): LocalBrowserResult {
@@ -203,13 +218,26 @@ const grantClaims = z.discriminatedUnion('operation', [
   z
     .object({
       ...commonGrantClaims,
+      operation: z.literal('approve'),
+      admission_id: uuid,
+      extension_generation: uuid,
+      connection_id: uuid,
+      controller_revision: safeInteger,
+      command_id: uuid,
+      sequence: nonZeroSafeInteger,
+      command_digest: z.string().regex(/^[a-f0-9]{64}$/),
+    })
+    .strict(),
+  z
+    .object({
+      ...commonGrantClaims,
       operation: z.literal('renew'),
       admission_id: uuid,
       renewal_id: uuid,
       extension_generation: uuid,
       connection_id: uuid,
       controller_revision: safeInteger,
-      prior_lease_expiry: nonZeroSafeInteger,
+      prior_lease_expiry_ms: nonZeroSafeInteger,
     })
     .strict(),
   z
