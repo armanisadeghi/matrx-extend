@@ -13,7 +13,7 @@ const { acquireVaultAcceptanceLease } = require('./vault-acceptance-lease.cjs');
 const { FAILED_PROOF_PATH: reconciledChromeProofPath, verifyHistoricalChromeReconciliation } = require('./vault-historical-reconciliation.cjs');
 const { FAILED_PROOF_PATH: recovered7356ProofPath, verify7356RecoveryAdmission, NO_COMMIT_PROOF_PATH, verifyNoCommitRecovery } = require('./vault-7356-reconciliation.cjs');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
-const { hasObservedReadOnlyCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
+const { hasObservedReadOnlyCleanup, hasPreAuthNoWriteCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
 const { runSavedFormMatrix, renderSavedFormMatrixHTML } = require('./vault-saved-form-matrix.cjs');
 const { runVaultPreferencesChecks } = require('./vault-preferences-acceptance.cjs');
@@ -300,6 +300,7 @@ async function refuseUnreconciledPriorRun() {
       && prior.ownedFixtureIds?.length === 0
       && prior.cleanup?.browserClosed === true
       && prior.cleanup?.profileRemoved === true;
+    const preAuthNoWriteCleanup = hasPreAuthNoWriteCleanup(prior);
     // Exact reviewed reconciliation only. It neither edits nor promotes the
     // old proof: runner bc9c32dec3ace7d974163fa153d83a6ff51c8dcb differed only
     // by native-env loader c909455b77b16144ff463dc4ca314edfda0c2d50f4f7b2c149bf9610f861a7b2.
@@ -428,8 +429,8 @@ async function refuseUnreconciledPriorRun() {
     }
     const receiptMode = prior?.mode === 'receipt_backed_save_update';
     assert(receiptMode
-      ? completedMutationCleanup || receiptModeZeroWriteCleanup || reviewedChromeReconciliation || reviewed7356Recovery || reviewedUncommittedRequest
-      : completedAcceptance || completedMutationCleanup || vaultMutationFreeCleanup || authFailureBeforeWrites || reviewedHistoricalException || reviewedLaunchFailure || reviewedRecovery || reviewedGeneratorCleanup || hasObservedReadOnlyCleanup(prior) || hasPreBaselineAuthenticatedCleanup(prior),
+      ? completedMutationCleanup || receiptModeZeroWriteCleanup || preAuthNoWriteCleanup || reviewedChromeReconciliation || reviewed7356Recovery || reviewedUncommittedRequest
+      : completedAcceptance || completedMutationCleanup || vaultMutationFreeCleanup || authFailureBeforeWrites || preAuthNoWriteCleanup || reviewedHistoricalException || reviewedLaunchFailure || reviewedRecovery || reviewedGeneratorCleanup || hasObservedReadOnlyCleanup(prior) || hasPreBaselineAuthenticatedCleanup(prior),
     'previous_run_unreconciled');
   }
   if (retryingAuthFailures.length) proof.priorAuthRetryJournal = retryingAuthFailures;
@@ -1184,6 +1185,7 @@ async function authenticate(extension) {
     authPageOpened: false,
     expectedOrigin: false,
     loginFieldsReady: false,
+    authPageOpenOutcome: 'not_attempted',
   };
   const oauthUiStep = async (phase, failureCategory, operation) => {
     checkpoint(phase);
@@ -1210,8 +1212,19 @@ async function authenticate(extension) {
     popup.getByRole('button', { name: 'Sign in' }).click());
   proof.oauthUi.popupSignInClicked = true;
   persist();
-  const authPage = await oauthUiStep('oauth_auth_page_opened', 'oauth_auth_page_open_failed', () => authPagePromise);
+  const authPage = await oauthUiStep('oauth_auth_page_opened', 'oauth_auth_page_open_failed', async () => {
+    try {
+      return await authPagePromise;
+    } catch (error) {
+      proof.oauthUi.authPageOpenOutcome = error?.name === 'TimeoutError'
+        ? 'page_not_observed_timeout'
+        : 'page_wait_refused';
+      persist();
+      throw error;
+    }
+  });
   proof.oauthUi.authPageOpened = true;
+  proof.oauthUi.authPageOpenOutcome = 'page_observed';
   persist();
   await oauthUiStep('oauth_auth_expected_origin', 'oauth_auth_expected_origin_timeout', () =>
     authPage.waitForURL((url) => url.origin === 'https://www.aimatrx.com', { timeout: 30000 }));
@@ -2145,6 +2158,7 @@ async function materializedPassword(id) {
     }
     if (acceptanceLease) {
       const vaultCleanupProven = proof.cleanup.vaultMutationFree === true
+        || hasPreAuthNoWriteCleanup(proof)
         || (proof.cleanup.receiptReconciled === true && proof.cleanup.createdItemsGone === true
           && proof.cleanup.finalItemIdsMatchBaseline === true && proof.cleanup.baselineUntouched === true
           && (!receiptBackedSaveUpdateMode || (proof.cleanup.finalBaselineIdSetMatches === true

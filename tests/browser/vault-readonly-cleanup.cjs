@@ -138,6 +138,13 @@ function preAuthSnapshotBefore(value) {
     && nonnegative(value, 'remainingOwnedSessionCount');
 }
 
+function preAuthOutcomeAllowed(oauthUi, phase) {
+  if (!own(oauthUi, 'authPageOpenOutcome')) return true;
+  if (phase === 'oauth_auth_page_opened')
+    return ['page_not_observed_timeout', 'page_wait_refused'].includes(oauthUi.authPageOpenOutcome);
+  return oauthUi.authPageOpenOutcome === 'not_attempted';
+}
+
 // Retry admission only. This proves a pre-form OAuth failure left no bearer,
 // Vault state, or owned resource; it does not claim complete panel coverage.
 function hasPreAuthNoWriteCleanup(proof) {
@@ -159,6 +166,7 @@ function hasPreAuthNoWriteCleanup(proof) {
     && bool(proof.oauthUi, 'expectedOrigin', false)
     && bool(proof.oauthUi, 'loginFieldsReady', false)
     && proof.oauthUi.failureCategory === oauthState.failureCategory
+    && preAuthOutcomeAllowed(proof.oauthUi, proof.failurePhase)
     && !own(proof, 'authStorage') && !own(proof, 'authTransport') && !own(proof, 'identityProof')
     && identityAbsent && admissionClear
     && !own(proof, 'baselineMetadataSha256') && !own(proof, 'baselineItems')

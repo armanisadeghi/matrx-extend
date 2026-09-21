@@ -146,6 +146,22 @@ const preAuth = () => ({
       transportFatal: false, sendFailureClass: 'none' }, disposalSucceeded: true },
 });
 assert.equal(hasPreAuthNoWriteCleanup(preAuth()), true);
+for (const outcome of ['page_not_observed_timeout', 'page_wait_refused']) {
+  const proof = preAuth(); proof.oauthUi.authPageOpenOutcome = outcome;
+  assert.equal(hasPreAuthNoWriteCleanup(proof), true, `accepted outcome ${outcome}`);
+}
+for (const outcome of ['not_attempted', 'page_observed', 'unclassified']) {
+  const proof = preAuth(); proof.oauthUi.authPageOpenOutcome = outcome;
+  assert.equal(hasPreAuthNoWriteCleanup(proof), false, `rejected auth-page outcome ${outcome}`);
+}
+const popupFailure = preAuth();
+popupFailure.failurePhase = 'oauth_popup_sign_in_click';
+popupFailure.oauthUi.popupSignInClicked = false;
+popupFailure.oauthUi.failureCategory = 'oauth_popup_sign_in_click_failed';
+popupFailure.oauthUi.authPageOpenOutcome = 'not_attempted';
+assert.equal(hasPreAuthNoWriteCleanup(popupFailure), true);
+popupFailure.oauthUi.authPageOpenOutcome = 'page_wait_refused';
+assert.equal(hasPreAuthNoWriteCleanup(popupFailure), false);
 for (const mutate of [
   p => { p.authenticationAttempted = true; }, p => { p.oauthUi.authPageOpened = true; },
   p => { p.oauthUi.expectedOrigin = true; }, p => { p.oauthUi.loginFieldsReady = true; },
