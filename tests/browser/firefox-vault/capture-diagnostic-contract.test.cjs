@@ -12,6 +12,9 @@ test('Firefox capture diagnostic is value-free and uses the public status projec
   assert.match(diagnostic, /credential-capture:status/);
   assert.match(diagnostic, /webNavigation\.getFrame/);
   assert.match(diagnostic, /captureLoginsEnabled/);
+  assert.match(diagnostic, /JSON\.parse\(blob\)/);
+  assert.match(diagnostic, /fixtureSelectedBeforeDiagnostic/);
+  assert.match(diagnostic, /sessionSetAccessLevelAvailable/);
   assert.match(diagnostic, /originalHandle/);
   assert.doesNotMatch(diagnostic, /capture\.pending|password|username|authorization|headers|body/i);
 });

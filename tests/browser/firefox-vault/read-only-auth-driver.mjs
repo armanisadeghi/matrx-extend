@@ -282,6 +282,7 @@ await checkpoint('admitted_before_credentials');
 
 let acceptanceLease;
 let adminEmail, adminPassword, publishableKey, base, driver;
+let executeChromeSync;
 const ownedPids = new Set();
 let sessionId;
 let profile;
@@ -347,6 +348,9 @@ const diagnoseFixtureCapture = async fixtureUrl => {
   await getContext('content');
   const originalHandle = await wdGet(base, `/session/${sessionId}/window`);
   assert.ok(typeof originalHandle === 'string' && originalHandle.length > 0, 'capture_diagnostic_original_window_missing');
+  const fixtureSelectedBeforeDiagnostic = await executeChromeSync(`
+    const win = Services.wm.getMostRecentWindow('navigator:browser');
+    return win?.gBrowser?.selectedBrowser?.currentURI?.spec === arguments[0];`, [fixtureUrl]);
   try {
     await wdPost(base, `/session/${sessionId}/window`, { handle: storageHandle });
     await getContext('content');
@@ -357,25 +361,27 @@ const diagnoseFixtureCapture = async fixtureUrl => {
         const expected = new URL(arguments[0]);
         const tabs = await api.tabs.query({});
         const fixture = tabs.filter(tab => tab.url === arguments[0] && Number.isInteger(tab.id));
-        if (fixture.length !== 1) return { fixtureTabFound: false, documentIdPresent: false, normalizedUrlMatch: false, fixtureTabActive: false, activeTabMatchesFixture: false, captureEnabled: null, statusType: 'absent', pendingIdPresent: false, pendingCount: 0 };
+        const selectedBefore = arguments[1] === true;
+        const sessionSetAccessLevelAvailable = typeof api.storage?.session?.setAccessLevel === 'function';
+        if (fixture.length !== 1) return { fixtureTabFound: false, documentIdPresent: false, normalizedUrlMatch: false, fixtureSelectedBeforeDiagnostic: selectedBefore, captureEnabled: true, sessionSetAccessLevelAvailable, statusType: 'absent', pendingIdPresent: false, pendingCount: 0 };
         const tab = fixture[0];
-        const [frame, active, settings] = await Promise.all([
+        const [frame, settings] = await Promise.all([
           api.webNavigation.getFrame({ tabId: tab.id, frameId: 0 }).catch(() => null),
-          api.tabs.query({ active: true, currentWindow: true }).catch(() => []),
           api.storage.local.get('matrx.settings.v1').catch(() => ({})),
         ]);
         let normalizedUrlMatch = false;
         try { const current = new URL(frame?.url || ''); normalizedUrlMatch = current.origin === expected.origin && current.pathname === expected.pathname && current.search === expected.search; } catch {}
         let response = null;
         try { response = await api.runtime.sendMessage({ __matrx: true, kind: 'credential-capture:status', payload: { tabId: tab.id } }); } catch {}
-        const state = settings?.['matrx.settings.v1']?.state;
-        const enabled = typeof state?.captureLoginsEnabled === 'boolean' ? state.captureLoginsEnabled : null;
+        let blob = settings?.['matrx.settings.v1'];
+        try { if (typeof blob === 'string') blob = JSON.parse(blob); } catch { blob = null; }
+        const enabled = blob?.state?.captureLoginsEnabled !== false;
         return { fixtureTabFound: true, documentIdPresent: typeof frame?.documentId === 'string' && frame.documentId.length > 0,
-          normalizedUrlMatch, fixtureTabActive: tab.active === true, activeTabMatchesFixture: active.length === 1 && active[0]?.id === tab.id,
-          captureEnabled: enabled, statusType: response === null ? 'null' : typeof response === 'object' ? 'object' : 'other',
+          normalizedUrlMatch, fixtureSelectedBeforeDiagnostic: selectedBefore,
+          captureEnabled: enabled, sessionSetAccessLevelAvailable, statusType: response === null ? 'null' : typeof response === 'object' ? 'object' : 'other',
           pendingIdPresent: typeof response?.candidateId === 'string' && response.candidateId.length > 0,
           pendingCount: response && typeof response === 'object' ? 1 : 0 };
-      })().then(done, () => done({ fixtureTabFound: false, documentIdPresent: false, normalizedUrlMatch: false, fixtureTabActive: false, activeTabMatchesFixture: false, captureEnabled: null, statusType: 'error', pendingIdPresent: false, pendingCount: 0 }));`, [fixtureUrl]);
+      })().then(done, () => done({ fixtureTabFound: false, documentIdPresent: false, normalizedUrlMatch: false, fixtureSelectedBeforeDiagnostic: false, captureEnabled: true, sessionSetAccessLevelAvailable: false, statusType: 'error', pendingIdPresent: false, pendingCount: 0 }));`, [fixtureUrl, fixtureSelectedBeforeDiagnostic]);
   } finally {
     await getContext('content');
     await wdPost(base, `/session/${sessionId}/window`, { handle: originalHandle });
@@ -534,7 +540,7 @@ try {
   assert.equal(created.capabilities?.browserVersion, EXPECTED_RUNTIME.firefoxVersion, 'webdriver_firefox_version_mismatch');
   for (const pid of await pidsContaining(profile)) ownedPids.add(pid);
   await getContext('chrome');
-  const executeChromeSync = (script, args = []) => wdPost(base, `/session/${sessionId}/execute/sync`, { script, args });
+  executeChromeSync = (script, args = []) => wdPost(base, `/session/${sessionId}/execute/sync`, { script, args });
   const executeChromeAsync = (script, args = []) => wdPost(base, `/session/${sessionId}/execute/async`, { script, args });
   const performKeyboardActions = async keys => {
     assert.ok(keys.length === 1 && ['\uE011', '\uE015', '\uE007'].includes(keys[0]), 'keyboard_action_sequence_not_reviewed');
