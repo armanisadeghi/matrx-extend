@@ -15,6 +15,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import tempfile
 import uuid
 from typing import Any
 
@@ -216,9 +217,18 @@ def main() -> int:
         data = parse_stdin()
         # Runtime request handlers can emit console output after bootstrap.
         # Keep the whole operation off the JSON result channel.
-        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-            hashes = verify_sources(data)
-            result = asyncio.run(run(data, hashes))
+        with tempfile.TemporaryDirectory(prefix="vault-canary-runtime-") as runtime_dir:
+            previous_temp_dir = os.environ.get("MATRX_TEMP_DIR")
+            os.environ["MATRX_TEMP_DIR"] = runtime_dir
+            try:
+                with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                    hashes = verify_sources(data)
+                    result = asyncio.run(run(data, hashes))
+            finally:
+                if previous_temp_dir is None:
+                    os.environ.pop("MATRX_TEMP_DIR", None)
+                else:
+                    os.environ["MATRX_TEMP_DIR"] = previous_temp_dir
     except Refused as exc:
         result = {"ok": False, "code": exc.code}
     except Exception as exc:
