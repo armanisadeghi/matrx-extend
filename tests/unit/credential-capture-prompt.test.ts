@@ -27,6 +27,13 @@ const FIELD_ID = '44444444-4444-4444-8444-444444444444';
 const SESSION_KEY = 'matrx.credentials.capture.pending.v1';
 const SETTINGS_KEY = 'matrx.settings.v1';
 const NEVER_KEY = 'matrx.credentials.captureNeverOrigins';
+const EXTENSION_ROOTS = [
+  { name: 'Chrome extension origin', root: 'chrome-extension://test-extension/' },
+  {
+    name: 'Firefox extension UUID origin',
+    root: 'moz-extension://a2f6b807-9e91-4c73-8d30-5cf4fae9158d/',
+  },
+] as const;
 
 // ── SW-side mocks ───────────────────────────────────────────────────────────
 
@@ -1012,6 +1019,7 @@ describe('host — registered worker listeners and session continuity', () => {
     (globalThis as unknown as { chrome: unknown }).chrome = {
       runtime: {
         id: 'test-extension',
+        getURL: (path: string) => `moz-extension://a2f6b807-9e91-4c73-8d30-5cf4fae9158d/${path}`,
         onMessage: { addListener: (listener: Listener) => listeners.push(listener) },
       },
       storage: {
@@ -1118,26 +1126,64 @@ describe('host — registered worker listeners and session continuity', () => {
     expect(JSON.stringify(reply)).not.toContain(ACTOR.userId);
   });
 
-  it('rehydrates before an extension-page status request and schedules idle expiry', async () => {
-    const host = await import('@/lib/credentials/capture-candidates');
-    await host.holdCandidate(33, WIRE, DEPS);
-    host._simulateCaptureWorkerRestartForTest();
-    host.registerCredentialCaptureHost();
-    const response = await ask(
-      { __matrx: true, kind: 'credential-capture:status', payload: { tabId: 33 } },
+  it.each(EXTENSION_ROOTS)(
+    'rehydrates before a $name status request and schedules idle expiry',
+    async ({ root }) => {
+      Object.assign(chrome.runtime, { getURL: (path: string) => `${root}${path}` });
+      const host = await import('@/lib/credentials/capture-candidates');
+      await host.holdCandidate(33, WIRE, DEPS);
+      host._simulateCaptureWorkerRestartForTest();
+      host.registerCredentialCaptureHost();
+      const response = await ask(
+        { __matrx: true, kind: 'credential-capture:status', payload: { tabId: 33 } },
+        {
+          id: 'test-extension',
+          url: `${root}sidepanel.html`,
+        } as chrome.runtime.MessageSender,
+      );
+      expect(response).toMatchObject({ tabId: 33, host: 'app.example.com' });
+      expect(
+        alarmCalls.some(
+          (call) => (call as { name: string }).name === 'matrx.credentials.capture.expiry',
+        ),
+      ).toBe(true);
+      for (const listener of alarms)
+        listener({ name: 'matrx.credentials.capture.expiry' } as chrome.alarms.Alarm);
+    },
+  );
+
+  it('refuses capture-status requests from wrong extension origins, IDs, and content tabs', () => {
+    const message = { __matrx: true, kind: 'credential-capture:status', payload: { tabId: 33 } };
+    for (const sender of [
+      { id: 'test-extension', url: 'moz-extension://wrong-uuid/sidepanel.html' },
       {
         id: 'test-extension',
-        url: 'chrome-extension://test-extension/sidepanel.html',
-      } as chrome.runtime.MessageSender,
-    );
-    expect(response).toMatchObject({ tabId: 33, host: 'app.example.com' });
-    expect(
-      alarmCalls.some(
-        (call) => (call as { name: string }).name === 'matrx.credentials.capture.expiry',
-      ),
-    ).toBe(true);
-    for (const listener of alarms)
-      listener({ name: 'matrx.credentials.capture.expiry' } as chrome.alarms.Alarm);
+        url: 'moz-extension://a2f6b807-9e91-4c73-8d30-5cf4fae9158d.invalid/sidepanel.html',
+      },
+      {
+        id: 'test-extension',
+        url: 'moz-extension://a2f6b807-9e91-4c73-8d30-5cf4fae9158d-lookalike/sidepanel.html',
+      },
+      {
+        id: 'other-extension',
+        url: 'moz-extension://a2f6b807-9e91-4c73-8d30-5cf4fae9158d/sidepanel.html',
+      },
+      {
+        id: 'test-extension',
+        tab: { id: 33 },
+        url: 'moz-extension://a2f6b807-9e91-4c73-8d30-5cf4fae9158d/sidepanel.html',
+      },
+    ]) {
+      let reply: unknown = 'untouched';
+      expect(
+        listeners.some((listener) =>
+          listener(message, sender as chrome.runtime.MessageSender, (value) => {
+            reply = value;
+          }),
+        ),
+      ).toBe(false);
+      expect(reply).toBeNull();
+    }
   });
 
   it('hydrates and removes an expired session record when the alarm is the first worker wake', async () => {
@@ -1384,7 +1430,7 @@ describe('host — registered worker listeners and session continuity', () => {
       { __matrx: true, kind: 'credential-capture:status', payload: { tabId: 33 } },
       {
         id: 'test-extension',
-        url: 'chrome-extension://test-extension/sidepanel.html',
+        url: 'moz-extension://a2f6b807-9e91-4c73-8d30-5cf4fae9158d/sidepanel.html',
       } as chrome.runtime.MessageSender,
     );
     expect(unavailableStatus).toBeNull();

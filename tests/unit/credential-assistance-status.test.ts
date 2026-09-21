@@ -13,6 +13,14 @@ let listener:
     ) => boolean)
   | null = null;
 
+const EXTENSION_ROOTS = [
+  { name: 'Chrome extension origin', root: 'chrome-extension://test-extension/' },
+  {
+    name: 'Firefox extension UUID origin',
+    root: 'moz-extension://a2f6b807-9e91-4c73-8d30-5cf4fae9158d/',
+  },
+] as const;
+
 beforeEach(() => {
   badgeWrites.length = 0;
   titleWrites.length = 0;
@@ -22,7 +30,12 @@ beforeEach(() => {
   Object.assign(chrome, {
     runtime: {
       id: 'test-extension',
-      onMessage: { addListener: (fn: typeof listener) => (listener = fn) },
+      getURL: (path: string) => `moz-extension://a2f6b807-9e91-4c73-8d30-5cf4fae9158d/${path}`,
+      onMessage: {
+        addListener: (fn: typeof listener) => {
+          listener = fn;
+        },
+      },
       sendMessage: () => Promise.resolve(),
     },
     action: {
@@ -45,39 +58,51 @@ beforeEach(() => {
 afterEach(() => vi.resetModules());
 
 describe('credential assistance status', () => {
-  it('uses capture precedence, clears both projections, and refuses content-tab snapshots', async () => {
-    const status = await import('@/lib/credentials/assistance-status');
-    status.registerCredentialAssistanceStatus();
-    status.setSavedLoginAssistance(7, true);
-    status.setCaptureAssistance(7, 'save_pending');
-    let reply: unknown;
-    listener?.(
-      { __matrx: true, kind: 'credential-assistance:status', payload: { tabId: 7 } },
-      {
+  it.each(EXTENSION_ROOTS)(
+    'uses capture precedence for $name and rejects forged senders',
+    async ({ root }) => {
+      Object.assign(chrome.runtime, { getURL: (path: string) => `${root}${path}` });
+      const status = await import('@/lib/credentials/assistance-status');
+      status.registerCredentialAssistanceStatus();
+      status.setSavedLoginAssistance(7, true);
+      status.setCaptureAssistance(7, 'save_pending');
+      const message = {
+        __matrx: true,
+        kind: 'credential-assistance:status',
+        payload: { tabId: 7 },
+      };
+      const request = (sender: chrome.runtime.MessageSender) => {
+        let reply: unknown = 'untouched';
+        const handled = listener?.(message, sender, (value) => {
+          reply = value;
+        });
+        return { handled, reply };
+      };
+      const trusted = request({
         id: 'test-extension',
-        url: 'chrome-extension://test-extension/sidepanel.html',
-      } as chrome.runtime.MessageSender,
-      (value) => (reply = value),
-    );
-    expect(reply).toEqual({ state: 'save_pending' });
-    status.clearCredentialAssistance(7);
-    listener?.(
-      { __matrx: true, kind: 'credential-assistance:status', payload: { tabId: 7 } },
-      {
-        id: 'test-extension',
-        url: 'chrome-extension://test-extension/sidepanel.html',
-      } as chrome.runtime.MessageSender,
-      (value) => (reply = value),
-    );
-    expect(reply).toEqual({ state: 'none' });
-    reply = 'untouched';
-    listener?.(
-      { __matrx: true, kind: 'credential-assistance:status', payload: { tabId: 7 } },
-      { id: 'test-extension', tab: { id: 7 } } as chrome.runtime.MessageSender,
-      (value) => (reply = value),
-    );
-    expect(reply).toBe('untouched');
-  });
+        url: `${root}sidepanel.html`,
+      } as chrome.runtime.MessageSender);
+      expect(trusted).toEqual({ handled: false, reply: { state: 'save_pending' } });
+      status.clearCredentialAssistance(7);
+      expect(
+        request({
+          id: 'test-extension',
+          url: `${root}sidepanel.html`,
+        } as chrome.runtime.MessageSender),
+      ).toEqual({ handled: false, reply: { state: 'none' } });
+      for (const sender of [
+        { id: 'test-extension', url: `${root.slice(0, -1)}.invalid/sidepanel.html` },
+        { id: 'test-extension', url: `${root.slice(0, -1)}-lookalike/sidepanel.html` },
+        { id: 'other-extension', url: `${root}sidepanel.html` },
+        { id: 'test-extension', tab: { id: 7 }, url: `${root}sidepanel.html` },
+      ]) {
+        expect(request(sender as chrome.runtime.MessageSender)).toEqual({
+          handled: false,
+          reply: 'untouched',
+        });
+      }
+    },
+  );
 
   it('does not let a boot clear overwrite a newer saved-login projection while Chrome writes are deferred', async () => {
     const status = await import('@/lib/credentials/assistance-status');

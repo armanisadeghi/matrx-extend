@@ -275,8 +275,9 @@ exports.runVaultPreferencesChecks = async ({
     await page.locator('#matrx-inline-login-suggestion').waitFor({ state: 'attached', timeout: 15000 });
     await runVaultAccessibilityChecks({
       realPanel, context, worker, fixturePage: page, targetName, assert, wait, checkpoint, proof,
-      verifyRealVaultPanel, getSubmitCount, focusCredential,
+      verifyRealVaultPanel, getSubmitCount, focusCredential, focusUnrelated,
     });
+    await focusUnrelated();
     await focusCredential();
     await page.locator('#matrx-inline-login-suggestion').waitFor({ state: 'attached', timeout: 15000 });
     await focusUnrelated();

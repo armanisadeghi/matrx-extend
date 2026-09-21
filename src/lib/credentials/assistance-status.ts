@@ -95,7 +95,7 @@ function trustedExtensionPage(sender: chrome.runtime.MessageSender): boolean {
     sender.id === chrome.runtime.id &&
     !sender.tab &&
     typeof sender.url === 'string' &&
-    sender.url.startsWith(`chrome-extension://${chrome.runtime.id}/`)
+    sender.url.startsWith(chrome.runtime.getURL(''))
   );
 }
 
