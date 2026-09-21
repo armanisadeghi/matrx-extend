@@ -335,6 +335,69 @@ if (owned.state.disposed) delete win[key];
 return result;
 `;
 
+const START_VAULT_CREATE_RECEIPT_OBSERVER_SCRIPT = String.raw`
+const addonId = arguments[0];
+const origin = arguments[1];
+const key = '__matrxOwnedVaultCreateReceiptObserverV1';
+const windows = [...Services.wm.getEnumerator('navigator:browser')];
+if (windows.some(candidate => candidate[key])) return { ok: false, code: 'receipt_observer_already_started' };
+const win = Services.wm.getMostRecentWindow('navigator:browser');
+const state = { requests: [], responses: [], keys: [], dropped: 0, observerErrors: 0, disposed: false };
+const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const observer = { observe(subject, topic) {
+  try {
+    const channel = subject.QueryInterface(Ci.nsIHttpChannel);
+    const uri = channel.URI;
+    if (channel.requestMethod !== 'POST' || uri.prePath !== origin || (uri.filePath || '/') !== '/api/vault/items') return;
+    const loadInfo = channel.loadInfo;
+    const principals = [loadInfo?.loadingPrincipal, loadInfo?.triggeringPrincipal, loadInfo?.principalToInherit];
+    if (!principals.some(principal => principal?.addonPolicy?.id === addonId)) return;
+    const requestId = String(channel.channelId);
+    if (topic === 'http-on-modify-request') {
+      let idempotencyKey = null;
+      channel.visitRequestHeaders({ visitHeader(name, value) {
+        if (String(name).toLowerCase() === 'idempotency-key' && uuid.test(String(value))) idempotencyKey = String(value).toLowerCase();
+      }});
+      if (state.requests.length >= 16) { state.dropped += 1; return; }
+      state.requests.push({ requestId });
+      if (idempotencyKey !== null && !state.keys.includes(idempotencyKey)) state.keys.push(idempotencyKey);
+      return;
+    }
+    if (state.responses.length >= 16) { state.dropped += 1; return; }
+    let status = null; try { status = channel.responseStatus; } catch {}
+    state.responses.push({ requestId, status });
+  } catch { state.observerErrors += 1; }
+}};
+const topics = ['http-on-modify-request', 'http-on-examine-response', 'http-on-examine-cached-response'];
+try { for (const topic of topics) Services.obs.addObserver(observer, topic); }
+catch { for (const topic of topics) { try { Services.obs.removeObserver(observer, topic); } catch {} } return { ok: false, code: 'receipt_observer_registration_failed' }; }
+win[key] = { addonId, origin, state, topics, observer };
+return { ok: true, captureContract: 'exact_addon_post_items_uuid_idempotency_only' };
+`;
+
+const READ_VAULT_CREATE_RECEIPT_OBSERVER_SCRIPT = String.raw`
+const key = '__matrxOwnedVaultCreateReceiptObserverV1';
+const matches = [...Services.wm.getEnumerator('navigator:browser')].filter(candidate => candidate[key]);
+if (matches.length !== 1) return { ok: false, code: 'receipt_observer_not_unique' };
+const owned = matches[0][key];
+return { ok: true, requests: owned.state.requests, responses: owned.state.responses, keys: owned.state.keys,
+  dropped: owned.state.dropped, observerErrors: owned.state.observerErrors, disposed: owned.state.disposed,
+  captureContract: 'exact_addon_post_items_uuid_idempotency_only' };
+`;
+
+const DISPOSE_VAULT_CREATE_RECEIPT_OBSERVER_SCRIPT = String.raw`
+const key = '__matrxOwnedVaultCreateReceiptObserverV1';
+const matches = [...Services.wm.getEnumerator('navigator:browser')].filter(candidate => candidate[key]);
+if (matches.length !== 1) return { ok: false, code: 'receipt_observer_not_unique' };
+const win = matches[0]; const owned = win[key]; let removalFailures = 0;
+for (const topic of owned.topics) { try { Services.obs.removeObserver(owned.observer, topic); } catch { removalFailures += 1; } }
+owned.state.disposed = removalFailures === 0;
+const result = { ok: removalFailures === 0, requests: owned.state.requests, responses: owned.state.responses,
+  keys: owned.state.keys, dropped: owned.state.dropped, observerErrors: owned.state.observerErrors,
+  disposed: owned.state.disposed, captureContract: 'exact_addon_post_items_uuid_idempotency_only' };
+if (owned.state.disposed) delete win[key]; return result;
+`;
+
 function sourceOf(fn, label, { readOnly = false } = {}) {
   assert.equal(typeof fn, 'function', `${label}_must_be_function`);
   const source = fn.toString();
@@ -368,6 +431,7 @@ export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAs
     assert.equal(typeof performKeyboardActions, 'function', 'perform_keyboard_actions_invalid');
   assert.ok(typeof addonId === 'string' && addonId.length > 3, 'addon_id_invalid');
   let observerStarted = false;
+  let vaultCreateReceiptObserverStarted = false;
 
   const remote = async request => {
     const bounded = { ...request, deadlineAt: Date.now() + request.timeoutMs };
@@ -548,6 +612,32 @@ export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAs
       observerStarted = false;
       assert.equal(result.dropped, 0, 'network_observer_capacity_exceeded');
       assert.equal(result.observerErrors, 0, 'network_observer_internal_error');
+      return result;
+    },
+    async startVaultCreateReceiptObserver({ origin }) {
+      assert.equal(vaultCreateReceiptObserverStarted, false, 'receipt_observer_already_started_locally');
+      const normalized = validateOrigins([origin]);
+      const result = await executeChromeSync(START_VAULT_CREATE_RECEIPT_OBSERVER_SCRIPT, [addonId, normalized[0]]);
+      assert.equal(result?.ok, true, result?.code ?? 'receipt_observer_start_failed');
+      vaultCreateReceiptObserverStarted = true;
+      return result;
+    },
+    async readVaultCreateReceiptObserver() {
+      assert.equal(vaultCreateReceiptObserverStarted, true, 'receipt_observer_not_started_locally');
+      const result = await executeChromeSync(READ_VAULT_CREATE_RECEIPT_OBSERVER_SCRIPT, []);
+      assert.equal(result?.ok, true, result?.code ?? 'receipt_observer_read_failed');
+      assert.equal(result.dropped, 0, 'receipt_observer_capacity_exceeded');
+      assert.equal(result.observerErrors, 0, 'receipt_observer_internal_error');
+      return result;
+    },
+    async disposeVaultCreateReceiptObserver() {
+      assert.equal(vaultCreateReceiptObserverStarted, true, 'receipt_observer_not_started_locally');
+      const result = await executeChromeSync(DISPOSE_VAULT_CREATE_RECEIPT_OBSERVER_SCRIPT, []);
+      assert.equal(result?.ok, true, result?.code ?? 'receipt_observer_dispose_failed');
+      assert.equal(result.disposed, true, 'receipt_observer_not_disposed');
+      vaultCreateReceiptObserverStarted = false;
+      assert.equal(result.dropped, 0, 'receipt_observer_capacity_exceeded');
+      assert.equal(result.observerErrors, 0, 'receipt_observer_internal_error');
       return result;
     },
   });

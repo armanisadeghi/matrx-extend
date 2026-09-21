@@ -1,0 +1,85 @@
+import assert from 'node:assert/strict';
+import { createServer } from 'node:http';
+import { randomUUID } from 'node:crypto';
+
+const ELEMENT_KEY = 'element-6066-11e4-a52e-4f735466cecf';
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function fixture() {
+  const state = { submissions: 0, closed: false };
+  const server = createServer((request, response) => {
+    if (request.method === 'POST' && request.url === '/submitted') { state.submissions += 1; response.writeHead(204).end(); return; }
+    response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+    response.end(`<!doctype html><form><label>Username <input id="username" autocomplete="username"></label><label>Password <input id="password" type="password" autocomplete="current-password"></label><button type="submit">Sign in</button></form><script>document.querySelector('form').addEventListener('submit', event => { event.preventDefault(); void fetch('/submitted', {method:'POST'}); });</script>`);
+  });
+  await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
+  const address = server.address();
+  assert.ok(address && typeof address !== 'string', 'capture_save_fixture_bind_failed');
+  return { state, url: `http://127.0.0.1:${address.port}/login`, close: async () => {
+    if (state.closed) return;
+    await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve())); state.closed = true;
+  }};
+}
+
+async function elementId({ base, sessionId, wdPost }, selector) {
+  const value = await wdPost(base, `/session/${sessionId}/element`, { using: 'css selector', value: selector });
+  const id = value?.[ELEMENT_KEY]; assert.ok(typeof id === 'string', 'capture_save_element_missing'); return id;
+}
+async function fill(driver, selector, value) {
+  const id = await elementId(driver, selector);
+  await driver.wdPost(driver.base, `/session/${driver.sessionId}/element/${encodeURIComponent(id)}/clear`, {});
+  await driver.wdPost(driver.base, `/session/${driver.sessionId}/element/${encodeURIComponent(id)}/value`, { text: value, value: [...value] });
+}
+async function waitForBridge(probe, url) {
+  const until = Date.now() + 15_000;
+  while (!(await probe(url))) { if (Date.now() >= until) throw new Error('capture_save_bridge_not_ready'); await delay(100); }
+}
+async function saveButton(adapter) {
+  return adapter.waitFor(document => {
+    const heading = [...document.querySelectorAll('p')].find(node => node.textContent?.trim() === 'Save this login to your Vault?' && node.getBoundingClientRect().height > 0);
+    const card = heading?.parentElement?.parentElement?.parentElement;
+    const buttons = [...card?.querySelectorAll('button') ?? []].filter(button => button.textContent?.trim() === 'Save as new');
+    if (buttons.length !== 1) return null;
+    const path = [];
+    for (let node = buttons[0]; node && node !== document.documentElement; node = node.parentElement) {
+      const index = [...node.parentElement.children].indexOf(node) + 1;
+      if (index < 1) return null;
+      path.unshift(`${node.tagName.toLowerCase()}:nth-child(${index})`);
+    }
+    return path.length > 0 ? `html > ${path.join(' > ')}` : null;
+  });
+}
+
+export async function runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, proof }) {
+  assert.ok(adapter && typeof adapter.trustedClick === 'function' && typeof adapter.startVaultCreateReceiptObserver === 'function', 'capture_save_adapter_contract_invalid');
+  const server = await fixture(); let original = null; let tab = null; let primary; let cleanup; let observerStarted = false;
+  proof.captureSave = { ok: false, nativeFixtureSubmittedOnce: false, pendingPromptObserved: false, trustedSaveClicked: false, pendingRemoved: false, fixtureTabClosed: false, originalWindowRestored: false, fixtureServerClosed: false, receiptObserverDisposed: false };
+  try {
+    await getContext('content'); original = await wdGet(base, `/session/${sessionId}/window`);
+    tab = (await wdPost(base, `/session/${sessionId}/window/new`, { type: 'tab' }))?.handle;
+    assert.ok(typeof tab === 'string', 'capture_save_fixture_tab_missing'); await wdPost(base, `/session/${sessionId}/window`, { handle: tab });
+    const url = `${server.url}?case=${randomUUID()}`; await wdPost(base, `/session/${sessionId}/url`, { url }); await waitForBridge(probeFixtureBridge, url);
+    const driver = { base, sessionId, wdPost }; await fill(driver, '#username', `save-${randomUUID()}@example.invalid`); await fill(driver, '#password', `save-${randomUUID()}`);
+    const submit = await elementId(driver, 'button[type="submit"]'); await wdPost(base, `/session/${sessionId}/element/${encodeURIComponent(submit)}/click`, {});
+    const until = Date.now() + 10_000; while (server.state.submissions !== 1 && Date.now() < until) await delay(50);
+    assert.equal(server.state.submissions, 1, 'capture_save_fixture_submit_not_observed_once'); proof.captureSave.nativeFixtureSubmittedOnce = true;
+    await getContext('chrome'); await adapter.trustedClick('button[title="Vault"]', { outcome: document => document.querySelector('button[title="Vault"]')?.getAttribute('aria-selected') === 'true' });
+    const selector = await saveButton(adapter); assert.ok(typeof selector === 'string', 'capture_save_button_missing'); proof.captureSave.pendingPromptObserved = true;
+    await adapter.startVaultCreateReceiptObserver({ origin: 'https://server.app.matrxserver.com' }); observerStarted = true;
+    await adapter.trustedClick(selector, { outcome: document => ![...document.querySelectorAll('p')].some(node => node.textContent?.trim() === 'Save this login to your Vault?' && node.getBoundingClientRect().height > 0), timeoutMs: 15_000 });
+    proof.captureSave.trustedSaveClicked = true; proof.captureSave.pendingRemoved = true; assert.equal(server.state.submissions, 1, 'capture_save_choice_submitted_fixture');
+    const receipt = await adapter.readVaultCreateReceiptObserver();
+    proof.ownedCreateMutationKeys = [...receipt.keys];
+    const response = receipt.responses.find(entry => entry.requestId === receipt.requests[0].requestId && entry.status >= 200 && entry.status < 300);
+    proof.captureSave.receipt = { requestCount: receipt.requests.length, keyCount: receipt.keys.length, responseStatus: response?.status ?? null };
+    assert.equal(receipt.requests.length, 1, 'capture_save_create_request_count'); assert.equal(receipt.keys.length, 1, 'capture_save_idempotency_key_count'); assert.ok(response, 'capture_save_create_response_missing');
+  } catch (error) { primary = error; } finally {
+    if (observerStarted) try { const disposed = await adapter.disposeVaultCreateReceiptObserver(); proof.captureSave.receiptObserverDisposed = disposed.disposed === true; } catch (error) { cleanup ||= error; }
+    if (tab) try { await getContext('content'); await wdPost(base, `/session/${sessionId}/window`, { handle: tab }); await wdDelete(base, `/session/${sessionId}/window`); assert.equal((await wdGet(base, `/session/${sessionId}/window/handles`)).includes(tab), false, 'capture_save_fixture_tab_still_open'); proof.captureSave.fixtureTabClosed = true; } catch (error) { cleanup ||= error; }
+    if (original) try { await getContext('content'); await wdPost(base, `/session/${sessionId}/window`, { handle: original }); proof.captureSave.originalWindowRestored = true; } catch (error) { cleanup ||= error; }
+    try { await server.close(); proof.captureSave.fixtureServerClosed = true; } catch (error) { cleanup ||= error; }
+  }
+  if (primary) throw primary; if (cleanup) throw cleanup;
+  proof.captureSave.ok = proof.captureSave.nativeFixtureSubmittedOnce && proof.captureSave.pendingPromptObserved && proof.captureSave.trustedSaveClicked && proof.captureSave.pendingRemoved && proof.captureSave.fixtureTabClosed && proof.captureSave.originalWindowRestored && proof.captureSave.fixtureServerClosed && proof.captureSave.receiptObserverDisposed;
+  assert.equal(proof.captureSave.ok, true, 'capture_save_evidence_incomplete'); return proof.captureSave;
+}
