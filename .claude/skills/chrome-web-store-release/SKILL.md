@@ -7,9 +7,28 @@ description: "Chrome Web Store release process for Matrx Extend. Use when checki
 
 Own the Matrx Extend Store release through approval or a genuine human-only
 blocker. Arman does not want routine questions, dashboard chores, packaging, or
-status checks handed back to him. Use existing credentials and authenticated
-browser state. Follow any confirmation requirements imposed by the active tool
-or environment; otherwise proceed autonomously.
+status checks handed back to him.
+
+## Standing authorization and account access
+
+Starting or assigning a Store release is blanket authorization to finish it.
+Do not ask Arman to approve packaging, versioning, login, dashboard edits,
+upload, submission, automatic publication, monitoring, or routine corrections.
+Discuss product bugs and improvement ideas when useful, but never turn that
+discussion into a request to approve the release work already assigned.
+
+Agents already have the Google-account access needed for this work. First use
+the available authenticated browser state, AI Matrx Vault, personal Vault, and
+stored credentials or verification codes. Never ask Arman for a password, a
+stored code, permission to use an account, a screenshot, or a dashboard status
+that the agent can obtain through those sources.
+
+The sole normal handoff is a live Google 2FA challenge that cannot be completed
+with the access or codes already in either Vault. Enter all available account
+details, reach the exact challenge screen, and only then ask Arman to complete
+that one challenge. Resume immediately afterward and finish the release. A
+login page, expired session, missing tab, or unfamiliar browser is not a
+blocker; recover access using the available browser and Vault tools.
 
 Read these before acting:
 
@@ -106,9 +125,11 @@ Never reuse or decrease a version. Do not write `0.2.00`; canonical SemVer is
    is requested. On publication, verify **Published - public**, update the
    approved baseline version/commit/policy surface, and close the record.
 
-Stop only for a CAPTCHA, a password/2FA step that the environment requires the
-human to perform, an unavailable authenticated publisher account, or a policy
-decision that cannot be resolved from the actual code and Store requirements.
+Do not stop for an approval. Stop only after reaching a live Google 2FA
+challenge that cannot be satisfied from either Vault. Ask Arman to complete
+that exact challenge, then resume and finish. Resolve Store-policy questions
+from the code, Google's requirements, and the canonical record; correct routine
+submission issues autonomously.
 
 ## Store marketing
 
