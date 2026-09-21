@@ -348,10 +348,12 @@ const diagnoseFixtureCapture = async fixtureUrl => {
   await getContext('content');
   const originalHandle = await wdGet(base, `/session/${sessionId}/window`);
   assert.ok(typeof originalHandle === 'string' && originalHandle.length > 0, 'capture_diagnostic_original_window_missing');
-  const fixtureSelectedBeforeDiagnostic = await executeChromeSync(`
-    const win = Services.wm.getMostRecentWindow('navigator:browser');
-    return win?.gBrowser?.selectedBrowser?.currentURI?.spec === arguments[0];`, [fixtureUrl]);
   try {
+    await getContext('chrome');
+    const fixtureSelectedBeforeDiagnostic = await executeChromeSync(`
+      const win = Services.wm.getMostRecentWindow('navigator:browser');
+      return win?.gBrowser?.selectedBrowser?.currentURI?.spec === arguments[0];`, [fixtureUrl]);
+    await getContext('content');
     await wdPost(base, `/session/${sessionId}/window`, { handle: storageHandle });
     await getContext('content');
     return await executeContentAsync(`
