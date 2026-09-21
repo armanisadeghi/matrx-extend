@@ -456,6 +456,20 @@ export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAs
   let vaultCreateReceiptObserverStarted = false;
   let vaultCreateReceiptObserverFrozen = false;
 
+  const focusOwnedSidebar = async () => {
+    const route = await executeChromeSync(`
+      const win = Services.wm.getMostRecentWindow('navigator:browser');
+      const [id] = [...win.SidebarController.sidebars.entries()].find(([,item]) => item.extensionId === arguments[0]) ?? [];
+      const host = win.SidebarController.browser;
+      const panel = host?.contentDocument?.getElementById('webext-panels-browser');
+      if (!id || win.SidebarController.currentID !== id || !panel) return false;
+      panel.focus();
+      return panel.ownerDocument.activeElement === panel && host.ownerDocument.activeElement === host;
+    `, [addonId]);
+    if (route !== true) throw new Error('keyboard_sidebar_focus_route_failed');
+    return true;
+  };
+
   const remote = async request => {
     const bounded = { ...request, deadlineAt: Date.now() + request.timeoutMs };
     const result = await executeChromeAsync(REMOTE_OPERATION_SCRIPT, [addonId, bounded, REMOTE_FRAME_MAIN_SOURCE]);
@@ -489,6 +503,7 @@ export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAs
       assert.ok(Array.isArray(args), 'remote_args_invalid');
       return remote({ kind: 'evaluate', source: sourceOf(fn, 'remote_evaluate'), args, timeoutMs, outerTimeoutMs: timeoutMs + 1_000 });
     },
+    focusOwnedSidebar,
     waitFor(fn, args = [], { timeoutMs = 15_000, pollMs = 100 } = {}) {
       validateTiming(timeoutMs, pollMs);
       assert.ok(Array.isArray(args), 'remote_args_invalid');
@@ -554,16 +569,7 @@ export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAs
           return { ok: true, index: options.indexOf(matches[0]), optionCount: options.length };
         }, 'keyboard_exact_setup'), args: [selector, expectedLabel, stateKey], timeoutMs, outerTimeoutMs: timeoutMs + 1000 });
         if (initial?.ok !== true) throw new Error(initial?.code ?? 'keyboard_exact_setup_failed');
-        const route = await executeChromeSync(`
-          const win = Services.wm.getMostRecentWindow('navigator:browser');
-          const [id] = [...win.SidebarController.sidebars.entries()].find(([,item]) => item.extensionId === arguments[0]) ?? [];
-          const host = win.SidebarController.browser;
-          const panel = host?.contentDocument?.getElementById('webext-panels-browser');
-          if (!id || win.SidebarController.currentID !== id || !panel) return false;
-          panel.focus();
-          return panel.ownerDocument.activeElement === panel && host.ownerDocument.activeElement === host;
-        `, [addonId]);
-        if (route !== true) throw new Error('keyboard_sidebar_focus_route_failed');
+        await focusOwnedSidebar();
         // Home and ArrowDown operate Radix's real roving focus. Never synthesize selection.
         const keys = ['\uE011', ...Array(initial.index).fill('\uE015')];
         for (const key of keys) {

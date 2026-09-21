@@ -37,6 +37,7 @@ const proof = {
   trustedChatRestore: false,
   trustedPortalComboboxPress: false,
   trustedKeyboardComboboxSelection: false,
+  trustedSidebarKeyboardInput: false,
   unicodeTransportVerified: false,
   knownLocalhostRequestObserved: false,
   metadataOnlyObserver: false,
@@ -186,7 +187,7 @@ try {
   const executeChromeSync = (script, args = []) => post(base, `/session/${sessionId}/execute/sync`, { script, args });
   const executeChromeAsync = (script, args = []) => post(base, `/session/${sessionId}/execute/async`, { script, args });
   const performKeyboardActions = async keys => {
-    assert.ok(keys.length === 1 && ['\uE011', '\uE015', '\uE007'].includes(keys[0]), 'keyboard_action_sequence_not_reviewed');
+    assert.ok(keys.length > 0 && keys.every(key => ['\uE011', '\uE015', '\uE007', 'x', 'p', 'r', 'o', 'b', 'e'].includes(key)), 'keyboard_action_sequence_not_reviewed');
     const actions = [];
     for (const value of keys) {
       actions.push({ type: 'keyDown', value }, { type: 'keyUp', value });
@@ -230,6 +231,64 @@ try {
     ready();`, [addonId]);
   assert.ok(typeof extensionBase === 'string' && extensionBase.startsWith('moz-extension://'), 'native_sidebar_open_failed');
   proof.nativeSidebarControllerRoute = true;
+
+  proof.phase = 'owned_sidebar_keyboard_focus';
+  const keyboardInput = await adapter.evaluate(document => {
+    document.querySelector('[data-matrx-adapter-probe="keyboard-input"]')?.remove();
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.setAttribute('data-matrx-adapter-probe', 'keyboard-input');
+    input.dataset.keydownAllTrusted = 'true';
+    input.dataset.inputAllTrusted = 'true';
+    input.addEventListener('keydown', event => {
+      input.dataset.keydownCount = String(Number(input.dataset.keydownCount || 0) + 1);
+      input.dataset.keydownAllTrusted = String(input.dataset.keydownAllTrusted === 'true' && event.isTrusted);
+    });
+    input.addEventListener('input', event => {
+      input.dataset.inputCount = String(Number(input.dataset.inputCount || 0) + 1);
+      input.dataset.inputAllTrusted = String(input.dataset.inputAllTrusted === 'true' && event.isTrusted);
+    });
+    document.body.append(input);
+    return '[data-matrx-adapter-probe="keyboard-input"]';
+  });
+  await adapter.trustedClick(keyboardInput, {
+    outcome: (document, selector) => document.querySelector(selector) === document.activeElement,
+    outcomeArgs: [keyboardInput],
+  });
+  await performKeyboardActions(['x']);
+  const beforeRoute = await adapter.evaluate((document, selector) => {
+    const input = document.querySelector(selector);
+    return { targetFocused: input === document.activeElement, valueLength: input?.value.length ?? null, inputCount: Number(input?.dataset.inputCount || 0) };
+  }, [keyboardInput]);
+  assert.deepEqual(beforeRoute, { targetFocused: true, valueLength: 0, inputCount: 0 }, 'keyboard_without_sidebar_focus_changed_target');
+  assert.equal(await adapter.focusOwnedSidebar(), true, 'keyboard_sidebar_focus_route_failed');
+  const afterFocusRoute = await adapter.evaluate((document, selector) => document.querySelector(selector) === document.activeElement, [keyboardInput]);
+  assert.equal(afterFocusRoute, true, 'keyboard_sidebar_focus_changed_target');
+  await performKeyboardActions(['p', 'r', 'o', 'b', 'e']);
+  const afterRoute = await adapter.evaluate((document, selector) => {
+    const input = document.querySelector(selector);
+    return {
+      exactValue: input?.value === 'probe',
+      targetFocused: input === document.activeElement,
+      inputCount: Number(input?.dataset.inputCount || 0),
+      inputAllTrusted: input?.dataset.inputAllTrusted === 'true',
+      keydownCount: Number(input?.dataset.keydownCount || 0),
+      keydownAllTrusted: input?.dataset.keydownAllTrusted === 'true',
+    };
+  }, [keyboardInput]);
+  assert.equal(afterRoute?.exactValue, true, 'keyboard_sidebar_focus_did_not_fill_exact_text');
+  assert.equal(afterRoute?.inputCount, 5, 'keyboard_sidebar_focus_input_count_invalid');
+  assert.equal(afterRoute?.targetFocused, true, 'keyboard_sidebar_focus_changed_target_after_input');
+  assert.equal(afterRoute?.inputAllTrusted, true, 'keyboard_sidebar_focus_input_untrusted');
+  assert.equal(afterRoute?.keydownCount, 5, 'keyboard_sidebar_focus_keydown_count_invalid');
+  assert.equal(afterRoute?.keydownAllTrusted, true, 'keyboard_sidebar_focus_keydown_untrusted');
+  const inputRemoved = await adapter.evaluate((document, selector) => {
+    document.querySelector(selector)?.remove();
+    return document.querySelector(selector) === null;
+  }, [keyboardInput]);
+  assert.equal(inputRemoved, true, 'keyboard_sidebar_input_remove_failed');
+  proof.keyboardInput = { beforeRoute, afterFocusRoute, afterRoute, inputRemoved };
+  proof.trustedSidebarKeyboardInput = true;
 
   proof.phase = 'unicode_remote_transport';
   const unicodeArgument = '· é 😀';
@@ -465,7 +524,7 @@ try {
   proof.allOwnedPidsGone = await waitForPidsGone(ownedPids);
   proof.firefoxExited = !profile || (await pidsContaining(profile)).length === 0;
   const required = [
-    'runtimeAttested', 'freshProfileAuthStorageEmpty', 'nativeSidebarControllerRoute', 'unicodeTransportVerified',
+    'runtimeAttested', 'freshProfileAuthStorageEmpty', 'nativeSidebarControllerRoute', 'unicodeTransportVerified', 'trustedSidebarKeyboardInput',
     'transientOverlayWaitedWithoutClickThrough', 'permanentOverlayRefusedWithoutClick',
     'trustedSettingsTransition', 'trustedChatRestore', 'trustedPortalComboboxPress', 'trustedKeyboardComboboxSelection', 'knownLocalhostRequestObserved',
     'metadataOnlyObserver', 'observerDisposed', 'addonUninstalled', 'sessionDeleted',

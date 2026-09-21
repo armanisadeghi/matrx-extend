@@ -67,6 +67,7 @@ async function typeSearch(adapter, { base, sessionId, wdPost, wdDelete }, text) 
     outcome: (document) =>
       document.activeElement?.getAttribute('aria-label') === 'Search saved logins to update',
   });
+  await adapter.focusOwnedSidebar();
   try {
     await wdPost(base, `/session/${sessionId}/actions`, {
       actions: [
@@ -250,7 +251,10 @@ export async function runFirefoxMultiAccountChecks({
   proof,
 }) {
   assert.ok(
-    adapter && typeof adapter.trustedClick === 'function' && typeof adapter.waitFor === 'function',
+    adapter &&
+      typeof adapter.trustedClick === 'function' &&
+      typeof adapter.waitFor === 'function' &&
+      typeof adapter.focusOwnedSidebar === 'function',
     'multi_account_adapter_contract_invalid',
   );
   assert.equal(typeof probeFixtureBridge, 'function', 'multi_account_bridge_contract_invalid');
