@@ -184,51 +184,85 @@ async function updateSelector(adapter, targets, proof) {
   }
 }
 
-async function exactFillSelector(adapter, expectedLabels, selectedLabel) {
-  return adapter.waitFor(
-    (document, labels, selected) => {
-      const cards = [...document.querySelectorAll('li')].filter((card) =>
-        labels.includes(card.querySelector('span')?.textContent?.replace(/\s+/g, ' ').trim()),
-      );
-      if (
-        cards.length !== 4 ||
-        new Set(
-          cards.map((card) => card.querySelector('span').textContent.replace(/\s+/g, ' ').trim()),
-        ).size !== 4
-      )
-        return null;
-      if (
-        !cards.every(
-          (card) =>
-            [...card.querySelectorAll('button')].filter(
-              (button) => button.textContent?.trim() === 'Fill' && !button.disabled,
-            ).length === 1,
-        )
-      )
-        return null;
-      const chosen = cards.filter(
-        (card) => card.querySelector('span').textContent.replace(/\s+/g, ' ').trim() === selected,
-      );
-      if (chosen.length !== 1) return null;
-      const buttons = [...chosen[0].querySelectorAll('button')].filter(
-        (button) => button.textContent?.trim() === 'Fill' && !button.disabled,
-      );
-      if (buttons.length !== 1) return null;
-      const parts = [];
-      for (
-        let node = buttons[0];
-        node && node !== document.documentElement;
-        node = node.parentElement
-      ) {
-        const parent = node.parentElement;
-        const index = parent ? [...parent.children].indexOf(node) + 1 : 0;
-        if (index < 1) return null;
-        parts.unshift(`${node.tagName.toLowerCase()}:nth-child(${index})`);
-      }
-      return parts.length ? `html > ${parts.join(' > ')}` : null;
-    },
-    [expectedLabels, selectedLabel],
+/** Serialization-safe exact selector for username-eligible VaultView Fill rows. */
+export function selectEligibleFillSelector(document, expected) {
+  if (!Array.isArray(expected) || expected.length !== 3) return null;
+  const enabledFillRows = [...document.querySelectorAll('li')].filter((card) =>
+    [...card.querySelectorAll('button')].some(
+      (button) => button.textContent?.trim() === 'Fill' && !button.disabled,
+    ),
   );
+  if (enabledFillRows.length !== 3) return null;
+  const cards = [...document.querySelectorAll('li')].filter((card) =>
+    expected.includes(card.querySelector('span')?.textContent?.replace(/\s+/g, ' ').trim()),
+  );
+  const labels = cards.map((card) =>
+    card.querySelector('span')?.textContent?.replace(/\s+/g, ' ').trim(),
+  );
+  if (
+    cards.length !== 3 ||
+    new Set(labels).size !== 3 ||
+    !expected.every((label) => labels.includes(label))
+  )
+    return null;
+  if (
+    !cards.every(
+      (card) =>
+        [...card.querySelectorAll('button')].filter(
+          (button) => button.textContent?.trim() === 'Fill' && !button.disabled,
+        ).length === 1,
+    )
+  )
+    return null;
+  const chosen = cards.filter(
+    (card) => card.querySelector('span')?.textContent?.replace(/\s+/g, ' ').trim() === expected[0],
+  );
+  if (chosen.length !== 1) return null;
+  const button = [...chosen[0].querySelectorAll('button')].find(
+    (candidate) => candidate.textContent?.trim() === 'Fill' && !candidate.disabled,
+  );
+  if (!button) return null;
+  const parts = [];
+  for (let node = button; node && node !== document.documentElement; node = node.parentElement) {
+    const parent = node.parentElement;
+    const index = parent ? [...parent.children].indexOf(node) + 1 : 0;
+    if (index < 1) return null;
+    parts.unshift(`${node.tagName.toLowerCase()}:nth-child(${index})`);
+  }
+  return parts.length ? `html > ${parts.join(' > ')}` : null;
+}
+
+export function eligibleFillDiagnostic(document, expected) {
+  const rows = [...document.querySelectorAll('li')];
+  const fillRows = rows.filter((row) =>
+    [...row.querySelectorAll('button')].some(
+      (button) => button.textContent?.trim() === 'Fill' && !button.disabled,
+    ),
+  );
+  const labels = fillRows.map(
+    (row) => row.querySelector('span')?.textContent?.replace(/\s+/g, ' ').trim() ?? null,
+  );
+  return {
+    expectedCount: expected.length,
+    fillRowCount: fillRows.length,
+    uniqueLabelCount: new Set(labels).size,
+    expectedLabelMatched: expected.map((label) => labels.includes(label)),
+  };
+}
+
+async function exactFillSelector(adapter, expected, proof) {
+  try {
+    return await adapter.waitFor(selectEligibleFillSelector, [expected]);
+  } catch (error) {
+    try {
+      proof.multiAccount.fillChoiceDiagnostic = await adapter.evaluate(eligibleFillDiagnostic, [
+        expected,
+      ]);
+    } catch {
+      proof.multiAccount.fillChoiceDiagnostic = { unavailable: true };
+    }
+    throw error;
+  }
 }
 
 /**
@@ -248,6 +282,7 @@ export async function runFirefoxMultiAccountChecks({
   accounts,
   selectedIndex,
   verifyAccountValues,
+  afterUpdate,
   proof,
 }) {
   assert.ok(
@@ -259,6 +294,8 @@ export async function runFirefoxMultiAccountChecks({
   );
   assert.equal(typeof probeFixtureBridge, 'function', 'multi_account_bridge_contract_invalid');
   assert.equal(typeof verifyAccountValues, 'function', 'multi_account_readback_contract_invalid');
+  if (afterUpdate !== undefined)
+    assert.equal(typeof afterUpdate, 'function', 'multi_account_after_update_contract_invalid');
   assert.ok(
     fixture && typeof fixture.baseUrl === 'string' && fixture.state,
     'multi_account_fixture_contract_invalid',
@@ -292,7 +329,24 @@ export async function runFirefoxMultiAccountChecks({
 
   const selected = accounts[selectedIndex];
   const itemIds = accounts.map((account) => account.itemId);
-  const selectedPrefix = idPrefix(selected.itemId, itemIds);
+  const fillAccounts = accounts.filter((account) => account.username.length > 0);
+  const missingUsernameAccounts = accounts.filter((account) => account.username.length === 0);
+  assert.equal(fillAccounts.length, 3, 'multi_account_fill_eligible_count_invalid');
+  assert.equal(
+    missingUsernameAccounts.length,
+    1,
+    'multi_account_missing_username_fixture_count_invalid',
+  );
+  assert.equal(
+    fillAccounts.some((account) => account.itemId === missingUsernameAccounts[0].itemId),
+    false,
+    'multi_account_missing_username_fill_included',
+  );
+  assert.ok(
+    fillAccounts.some((account) => account.itemId === selected.itemId),
+    'multi_account_selected_fill_ineligible',
+  );
+  const fillItemIds = fillAccounts.map((account) => account.itemId);
   const labels = [
     expectedUpdateTarget(selected, itemIds),
     ...accounts
@@ -314,6 +368,7 @@ export async function runFirefoxMultiAccountChecks({
     selectedStableIdClicked: false,
     selectedValuesUpdated: false,
     unselectedValuesUnchanged: false,
+    missingUsernameExcludedFromFill: false,
     freshFillFocused: false,
     fillStableIdExposed: false,
     exactFillClicked: false,
@@ -380,6 +435,10 @@ export async function runFirefoxMultiAccountChecks({
     assert.equal(values?.unselectedUnchanged, true, 'multi_account_unselected_values_changed');
     proof.multiAccount.selectedValuesUpdated = true;
     proof.multiAccount.unselectedValuesUnchanged = true;
+    if (afterUpdate) {
+      await afterUpdate();
+      proof.multiAccount.authenticatorPreservedAfterUpdate = true;
+    }
 
     await getContext('content');
     fillTab = (await wdPost(base, `/session/${sessionId}/window/new`, { type: 'tab' }))?.handle;
@@ -396,16 +455,23 @@ export async function runFirefoxMultiAccountChecks({
       outcome: (document) =>
         document.querySelector('button[title="Vault"]')?.getAttribute('aria-selected') === 'true',
     });
-    const fillLabels = accounts.map(
-      (account) => `${account.displayName} · ID ${idPrefix(account.itemId, itemIds)}`,
+    const fillLabels = fillAccounts.map(
+      (account) => `${account.displayName} · ID ${idPrefix(account.itemId, fillItemIds)}`,
     );
     const fillSelector = await exactFillSelector(
       adapter,
-      fillLabels,
-      `${selected.displayName} · ID ${selectedPrefix}`,
+      [
+        `${selected.displayName} · ID ${idPrefix(selected.itemId, fillItemIds)}`,
+        ...fillLabels.filter(
+          (label) =>
+            label !== `${selected.displayName} · ID ${idPrefix(selected.itemId, fillItemIds)}`,
+        ),
+      ],
+      proof,
     );
     assert.equal(typeof fillSelector, 'string', 'multi_account_exact_fill_choice_missing');
     proof.multiAccount.fillStableIdExposed = true;
+    proof.multiAccount.missingUsernameExcludedFromFill = true;
     await adapter.trustedClick(fillSelector, {
       outcome: (document) =>
         [...document.querySelectorAll('p')].some(

@@ -223,6 +223,52 @@ describe('VaultView focused child-frame projection', () => {
     );
   });
 
+  it('selects only the three username-eligible duplicate Fill rows by their stable suffix', async () => {
+    const first = 'aa111111-1111-4111-8111-111111111111';
+    const selected = 'aa222222-2222-4222-8222-222222222222';
+    const third = 'ab333333-3333-4333-8333-333333333333';
+    mocks.panelStatus = {
+      ...readyChildStatus,
+      itemIds: [first, selected, third],
+      matches: [
+        { item_id: first, display_name: 'Harbor Dental patient portal' },
+        { item_id: selected, display_name: 'Harbor Dental patient portal' },
+        { item_id: third, display_name: 'Harbor Dental patient portal' },
+      ],
+    };
+    render(<VaultView />);
+    const { selectEligibleFillSelector } = await import(
+      '../../../tests/browser/firefox-vault/multi-account-acceptance.mjs'
+    );
+    const expected = [
+      'Harbor Dental patient portal · ID aa2',
+      'Harbor Dental patient portal · ID aa1',
+      'Harbor Dental patient portal · ID ab',
+    ];
+    const selector = selectEligibleFillSelector(document, expected);
+    expect(typeof selector).toBe('string');
+    const chosen = document.querySelector(selector as string);
+    expect(chosen?.closest('li')?.textContent).toContain('ID aa2');
+
+    const clone = chosen?.closest('li')?.cloneNode(true) as Element | undefined;
+    chosen?.closest('li')?.parentElement?.append(clone as Node);
+    expect(selectEligibleFillSelector(document, expected)).toBeNull();
+    clone?.remove();
+    const duplicate = screen.getByText('· ID aa1');
+    duplicate.textContent = ' · ID aa2';
+    expect(selectEligibleFillSelector(document, expected)).toBeNull();
+    duplicate.textContent = ' · ID aa1';
+
+    fireEvent.click(chosen as HTMLElement);
+    await waitFor(() =>
+      expect(mocks.sendMessage).toHaveBeenCalledWith({
+        __matrx: true,
+        kind: 'credential-suggestions:panel-fill',
+        payload: { tabId: 47, offerId: OFFER_ID, itemId: selected },
+      }),
+    );
+  });
+
   it('sends the displayed child account with its exact offer id when Fill is clicked', async () => {
     render(<VaultView />);
     const account = await screen.findByText('Child personal');

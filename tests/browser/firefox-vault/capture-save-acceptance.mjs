@@ -358,9 +358,9 @@ export async function runFirefoxCaptureSaveCheck({
         accounts: saved,
         selectedIndex: multiAccount.selectedIndex,
         verifyAccountValues: multiAccount.verifyAccountValues,
+        afterUpdate: multiAccount.afterUpdate,
         proof,
       });
-      await multiAccount.afterUpdate?.();
     }
   } catch (error) {
     primary = error;
