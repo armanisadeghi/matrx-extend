@@ -17,8 +17,12 @@ const generatorMode = process.argv.includes('--generator');
 const generatorSourcePath = fileURLToPath(new URL('./generator-acceptance.mjs', import.meta.url));
 const captureMode = process.argv.includes('--capture');
 const captureSourcePath = fileURLToPath(new URL('./capture-decisions.mjs', import.meta.url));
+const captureSaveMode = process.argv.includes('--capture-save');
+// Checkpointed construction: this mode cannot take browser or credential custody yet.
+assert.ok(!captureSaveMode, 'capture_save_implementation_incomplete');
+const captureSaveSourcePath = fileURLToPath(new URL('./capture-save-acceptance.mjs', import.meta.url));
 const reconciliationMode = process.argv.includes('--reconcile-chrome');
-assert.ok([captureMode, generatorMode, reconciliationMode].filter(Boolean).length <= 1, 'one_firefox_journey_per_run');
+assert.ok([captureMode, captureSaveMode, generatorMode, reconciliationMode].filter(Boolean).length <= 1, 'one_firefox_journey_per_run');
 const FAILED_CHROME_RUN = 'b208d813-9a59-4d87-b437-772ee05eb3b7';
 const FAILED_CHROME_PROOF_SHA256 = '317bbc4724038577ec023b5ea797b559d9c91fb9cb4e4210f1a0768d1ec90d86';
 const CLEAN_BASELINE_SHA256 = '0b18f97a9727116b746ea4bc4432fcbd6bb1821f5449b0a219062e69b2726bab';
@@ -52,8 +56,21 @@ const xpi = join(artifactDirectory, 'matrx-extend-firefox-mv3.xpi');
 // Any driver or adapter change invalidates admission before credentials or launch.
 const LAUNCH_ENV = 'MATRX_FIREFOX_READONLY_AUTH_ACCEPTANCE';
 const HASH_ENV = 'MATRX_FIREFOX_REVIEWED_HARNESS_SHA256';
+const captureSaveAdmission = process.env.MATRX_FIREFOX_CAPTURE_SAVE_ADMISSION === 'RUN_RECEIPT_BACKED_CAPTURE_SAVE';
+const localCanonicalCleanupArmed = process.env.MATRX_FIREFOX_LOCAL_CANONICAL_CLEANUP === 'RUN_LOCAL_CANONICAL_CLEANUP';
+const localSourceRoot = process.env.MATRX_FIREFOX_LOCAL_SOURCE_ROOT;
+const localRouterHash = process.env.MATRX_FIREFOX_LOCAL_ROUTER_SHA256;
+const localServiceHash = process.env.MATRX_FIREFOX_LOCAL_SERVICE_SHA256;
+if (captureSaveMode) {
+  assert.equal(captureSaveAdmission, true, 'capture_save_admission_unarmed');
+  assert.equal(localCanonicalCleanupArmed, true, 'capture_save_cleanup_unarmed');
+  assert.equal(process.env.MATRX_FIREFOX_CAPTURE_SAVE_EXPECTED_COMMIT, SOURCE_COMMIT, 'capture_save_artifact_unpinned');
+  assert.ok(typeof localSourceRoot === 'string' && localSourceRoot.startsWith('/'), 'capture_save_source_root_invalid');
+  assert.ok(/^[a-f0-9]{64}$/.test(localRouterHash ?? '') && /^[a-f0-9]{64}$/.test(localServiceHash ?? ''), 'capture_save_cleanup_hash_invalid');
+  for (const key of ['MATRX_FIREFOX_GENERATOR', 'MATRX_FIREFOX_CAPTURE_RESPONSE_LOSS']) assert.equal(process.env[key], undefined, 'capture_save_incompatible_flag');
+}
 async function reviewedHarnessHash() {
-  return shaText(JSON.stringify(await Promise.all([harnessPath, adapterSourcePath, leaseSourcePath, ...(generatorMode ? [generatorSourcePath] : []), ...(captureMode ? [captureSourcePath] : [])].map(shaFile))));
+  return shaText(JSON.stringify(await Promise.all([harnessPath, adapterSourcePath, leaseSourcePath, ...(generatorMode ? [generatorSourcePath] : []), ...(captureMode ? [captureSourcePath] : []), ...(captureSaveMode ? [captureSaveSourcePath] : [])].map(shaFile))));
 }
 
 function shaText(value) { return createHash('sha256').update(value).digest('hex'); }
@@ -216,7 +233,7 @@ await mkdir(runRoot, { recursive: true, mode: 0o700 });
 const proof = {
   schema: 1,
   runId,
-  mode: reconciliationMode ? 'firefox_readonly_chrome_reconciliation' : generatorMode ? 'firefox_generator_auth_vault' : captureMode ? 'firefox_capture_decisions' : 'firefox_readonly_auth_vault',
+  mode: reconciliationMode ? 'firefox_readonly_chrome_reconciliation' : generatorMode ? 'firefox_generator_auth_vault' : captureMode ? 'firefox_capture_decisions' : captureSaveMode ? 'firefox_capture_save' : 'firefox_readonly_auth_vault',
   sourceCommit: SOURCE_COMMIT,
   credentialsRead: false,
   authenticationAttempted: false,
@@ -257,6 +274,7 @@ proof.hashes = {
   leaseSha256: await shaFile(leaseSourcePath),
   ...(generatorMode ? { generatorSha256: await shaFile(generatorSourcePath) } : {}),
   ...(captureMode ? { captureSha256: await shaFile(captureSourcePath) } : {}),
+  ...(captureSaveMode ? { captureSaveSha256: await shaFile(captureSaveSourcePath) } : {}),
   artifactManifestSha256: await shaFile(artifactManifestPath), artifactXpiSha256: artifactManifest.xpi.sha256,
 };
 proof.artifactManifestPath = artifactManifestPath;
@@ -271,7 +289,7 @@ let addonInstalled = false;
 let observerStarted = false;
 let adapter;
 let storageHandle;
-let token;
+let token, userId;
 let organizationId;
 let organizationSelectedByTrustedUi = false;
 let baselineIds;
@@ -405,6 +423,35 @@ const items = async () => {
   assert.ok(Array.isArray(response.items), 'item_list_shape');
   return response.items;
 };
+const shaFileHex = async path => createHash('sha256').update(await readFile(path)).digest('hex');
+async function reconcileCaptureSaveReceipts(keys) {
+  assert.ok(Array.isArray(keys) && keys.length >= 1 && keys.length <= 16 && new Set(keys).size === keys.length, 'capture_save_receipt_keys_invalid');
+  const python = '/Users/armanisadeghi/code/aidream/.venv/bin/python';
+  const result = JSON.parse((await execFileAsync(python, [join(root, '..', '..', 'reconcile-vault-canary.py'), userId, organizationId, ...keys], { cwd: '/Users/armanisadeghi/code/aidream', timeout: 15_000, maxBuffer: 32_768 })).stdout);
+  assert.ok(Array.isArray(result.results) && result.results.length === keys.length, 'capture_save_receipt_incomplete');
+  const ids = result.results.map(row => row.result_item_id);
+  assert.ok(ids.every(id => typeof id === 'string') && new Set(ids).size === ids.length && ids.every(id => !baselineIds.includes(id)), 'capture_save_receipt_scope_invalid');
+  return ids;
+}
+async function canonicalCleanupCaptureSave(keys, ids) {
+  const sourceRoot = localSourceRoot;
+  assert.ok(sourceRoot && localRouterHash && localServiceHash, 'capture_save_cleanup_configuration_missing');
+  assert.equal(await shaFileHex(join(sourceRoot, 'aidream/api/routers/vault.py')), localRouterHash, 'capture_save_router_hash_mismatch');
+  assert.equal(await shaFileHex(join(sourceRoot, 'aidream/services/user_secrets/vault.py')), localServiceHash, 'capture_save_service_hash_mismatch');
+  const input = JSON.stringify({ token, userId, organizationId, createKeys: keys, baselineIds, provenIDs: ids, expectedRouterSha256: localRouterHash, expectedServiceSha256: localServiceHash, sourceRoot });
+  assert.ok(Buffer.byteLength(input) < 32_768, 'capture_save_cleanup_input_capacity');
+  const python = '/Users/armanisadeghi/code/aidream/.venv/bin/python';
+  const cleanupPath = join(root, '..', '..', 'cleanup-vault-canary.py');
+  const result = await new Promise((resolve, reject) => {
+    const child = spawn(python, [cleanupPath], { cwd: sourceRoot, stdio: ['pipe', 'pipe', 'ignore'] }); let stdout = '';
+    child.stdout.setEncoding('utf8'); child.stdout.on('data', chunk => { stdout += chunk; if (stdout.length > 32_768) child.kill(); });
+    child.once('error', () => reject(new Error('capture_save_cleanup_spawn_refused')));
+    child.once('close', code => { try { const parsed = JSON.parse(stdout); if (code !== 0 || parsed?.ok !== true) reject(new Error('capture_save_cleanup_refused')); else resolve(parsed); } catch { reject(new Error('capture_save_cleanup_output_refused')); } });
+    child.stdin.once('error', () => reject(new Error('capture_save_cleanup_stdin_refused'))); child.stdin.end(input);
+  });
+  assert.ok(Array.isArray(result.attempts) && result.attempts.length === ids.length && result.attempts.every(row => ['already_cleaned', 'deleted_and_missing'].includes(row.terminal)), 'capture_save_cleanup_result_invalid');
+  return result;
+}
 
 try {
   acceptanceLease = await acquireVaultAcceptanceLease({ runId, kind: 'firefox' });
