@@ -50,6 +50,7 @@ branch/worktree. Full ruling: workspace root [`../CLAUDE.md`](../CLAUDE.md) § S
 
 ## Platform laws (one-liners — the rule bodies live at the links)
 
+- **The Platform List is Arman's alone.** At session start read `common-docs/operations/platform-list/LIST.md` if it is on this machine; if any row's Start date is today or past, tell Arman in your first reply (he snoozes by naming a new date). Only Arman adds, kills, or removes a row. Agents suggest in plain English and never write copies, histories, or "deleted" notes anywhere. Skill: `platform-list`.
 - **Mandates / no hardcoded agents.** Which agent/version/model runs is a DATABASE
   answer resolved at run time by `mandate_key` — never a constant. This repo has ZERO
   Mandate coverage and known hardcoded agent UUIDs (`AiExtractTab.tsx`,
