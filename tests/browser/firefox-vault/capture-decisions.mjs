@@ -7,7 +7,7 @@ const SETTLED_CAPTURE_BOUND_MS = 6_200;
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-function assertDependencies({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, proof }) {
+function assertDependencies({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, diagnoseFixtureCapture, proof }) {
   assert.ok(adapter && typeof adapter.evaluate === 'function' && typeof adapter.waitFor === 'function'
     && typeof adapter.trustedClick === 'function', 'capture_adapter_contract_invalid');
   assert.ok(typeof base === 'string' && base.startsWith('http'), 'capture_webdriver_base_invalid');
@@ -17,6 +17,7 @@ function assertDependencies({ adapter, base, sessionId, wdPost, wdGet, wdDelete,
   assert.equal(typeof wdDelete, 'function', 'capture_webdriver_delete_missing');
   assert.equal(typeof getContext, 'function', 'capture_context_helper_missing');
   assert.equal(typeof probeFixtureBridge, 'function', 'capture_bridge_probe_missing');
+  assert.equal(typeof diagnoseFixtureCapture, 'function', 'capture_diagnostic_probe_missing');
   assert.ok(proof && typeof proof === 'object' && !Array.isArray(proof), 'capture_proof_missing');
 }
 
@@ -116,7 +117,7 @@ async function assertSettledNoCapture(adapter) {
 
 export async function runFirefoxCaptureDecisionChecks(dependencies) {
   assertDependencies(dependencies);
-  const { adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, proof } = dependencies;
+  const { adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, diagnoseFixtureCapture, proof } = dependencies;
   const driver = { base, sessionId, wdPost };
   const fixture = await createFixture();
   let originalHandle = null;
@@ -171,6 +172,8 @@ export async function runFirefoxCaptureDecisionChecks(dependencies) {
     while (fixture.state.submissions !== 1 && Date.now() < submissionDeadline) await delay(50);
     assert.equal(fixture.state.submissions, 1, 'capture_fixture_submit_not_observed_once');
     proof.captureDecisions.nativeFixtureSubmittedOnce = true;
+    proof.captureDecisions.captureDiagnosticAfterSubmit = await diagnoseFixtureCapture(fixtureUrl)
+      .catch(() => ({ statusType: 'error' }));
 
     await getContext('chrome');
     await ensureVault(adapter);
@@ -193,6 +196,8 @@ export async function runFirefoxCaptureDecisionChecks(dependencies) {
       }, [], { timeoutMs: 15_000 });
     } catch (error) {
       proof.captureDecisions.pendingPromptDiagnostic = await pendingPromptDiagnostic(adapter).catch(() => ({ collected: false }));
+      proof.captureDecisions.captureDiagnosticAfterTimeout = await diagnoseFixtureCapture(fixtureUrl)
+        .catch(() => ({ statusType: 'error' }));
       throw error;
     }
     assert.ok(typeof notNowSelector === 'string' && notNowSelector.length > 0, 'capture_not_now_control_not_unique');

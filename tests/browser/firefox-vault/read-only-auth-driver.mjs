@@ -39,7 +39,7 @@ async function verifiedFailedChromeProof() {
   assert.ok(value.cleanup.receiptReconciled && value.cleanup.createdItemsGone && value.cleanup.profileRemoved && value.cleanup.browserClosed && value.cleanup.localAuthLogoutStatus === 204 && value.cleanup.remoteAuthRevocationStatus === 204, 'historical_chrome_owned_cleanup_missing');
   return ids;
 }
-const SOURCE_COMMIT = 'd648df949883c6c678d227021a3ab58558c128bf';
+const SOURCE_COMMIT = '766337d86e8a10b75babce9f4d3bb1a2b4344596';
 const RECORDS_SOURCE_COMMIT = 'c3f26c9e47f1a0ef18167592ebbdf032e45f9f67';
 const ADDON_ID = 'matrx-extend@aimatrx.com';
 const API = 'https://server.app.matrxserver.com';
@@ -47,7 +47,7 @@ const DB = 'https://db.matrxserver.com';
 const AUTH_ORIGIN = 'https://www.aimatrx.com';
 const firefox = '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/Firefox.app/Contents/MacOS/firefox';
 const geckodriver = '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/geckodriver';
-const artifactDirectory = join(root, '..', '..', 'firefox-current-build', 'artifact-2026-09-20T23-04-48-275Z-c17239a1-9515-43a6-8360-c20cdf2d0bb7');
+const artifactDirectory = join(root, '..', '..', 'firefox-current-build', 'artifact-2026-09-21T01-25-33-577Z-cbda1b67-a94c-46fb-ba8a-0a3f5880b1f5');
 const artifactRoot = join(artifactDirectory, 'extension');
 const artifactManifestPath = join(artifactDirectory, 'artifact-manifest.json');
 const xpi = join(artifactDirectory, 'matrx-extend-firefox-mv3.xpi');
@@ -294,6 +294,7 @@ let organizationId;
 let organizationSelectedByTrustedUi = false;
 let baselineIds;
 let baselineHash;
+let captureSaveCleanupAttempted = false;
 let signOutStartSequence;
 let failure;
 
@@ -335,6 +336,46 @@ const probeFixtureBridge = async fixtureUrl => {
         });
         return result.length === 1 && result[0]?.result === true;
       })().then(done, () => done(false));`, [fixtureUrl]);
+  } finally {
+    await getContext('content');
+    await wdPost(base, `/session/${sessionId}/window`, { handle: originalHandle });
+  }
+};
+const diagnoseFixtureCapture = async fixtureUrl => {
+  assert.ok(typeof fixtureUrl === 'string' && fixtureUrl.startsWith('http://127.0.0.1:'), 'capture_diagnostic_fixture_url_invalid');
+  assert.ok(storageHandle, 'storage_tab_handle_missing');
+  await getContext('content');
+  const originalHandle = await wdGet(base, `/session/${sessionId}/window`);
+  assert.ok(typeof originalHandle === 'string' && originalHandle.length > 0, 'capture_diagnostic_original_window_missing');
+  try {
+    await wdPost(base, `/session/${sessionId}/window`, { handle: storageHandle });
+    await getContext('content');
+    return await executeContentAsync(`
+      const done = arguments[arguments.length - 1];
+      (async () => {
+        const api = globalThis.browser ?? globalThis.chrome;
+        const expected = new URL(arguments[0]);
+        const tabs = await api.tabs.query({});
+        const fixture = tabs.filter(tab => tab.url === arguments[0] && Number.isInteger(tab.id));
+        if (fixture.length !== 1) return { fixtureTabFound: false, documentIdPresent: false, normalizedUrlMatch: false, fixtureTabActive: false, activeTabMatchesFixture: false, captureEnabled: null, statusType: 'absent', pendingIdPresent: false, pendingCount: 0 };
+        const tab = fixture[0];
+        const [frame, active, settings] = await Promise.all([
+          api.webNavigation.getFrame({ tabId: tab.id, frameId: 0 }).catch(() => null),
+          api.tabs.query({ active: true, currentWindow: true }).catch(() => []),
+          api.storage.local.get('matrx.settings.v1').catch(() => ({})),
+        ]);
+        let normalizedUrlMatch = false;
+        try { const current = new URL(frame?.url || ''); normalizedUrlMatch = current.origin === expected.origin && current.pathname === expected.pathname && current.search === expected.search; } catch {}
+        let response = null;
+        try { response = await api.runtime.sendMessage({ __matrx: true, kind: 'credential-capture:status', payload: { tabId: tab.id } }); } catch {}
+        const state = settings?.['matrx.settings.v1']?.state;
+        const enabled = typeof state?.captureLoginsEnabled === 'boolean' ? state.captureLoginsEnabled : null;
+        return { fixtureTabFound: true, documentIdPresent: typeof frame?.documentId === 'string' && frame.documentId.length > 0,
+          normalizedUrlMatch, fixtureTabActive: tab.active === true, activeTabMatchesFixture: active.length === 1 && active[0]?.id === tab.id,
+          captureEnabled: enabled, statusType: response === null ? 'null' : typeof response === 'object' ? 'object' : 'other',
+          pendingIdPresent: typeof response?.candidateId === 'string' && response.candidateId.length > 0,
+          pendingCount: response && typeof response === 'object' ? 1 : 0 };
+      })().then(done, () => done({ fixtureTabFound: false, documentIdPresent: false, normalizedUrlMatch: false, fixtureTabActive: false, activeTabMatchesFixture: false, captureEnabled: null, statusType: 'error', pendingIdPresent: false, pendingCount: 0 }));`, [fixtureUrl]);
   } finally {
     await getContext('content');
     await wdPost(base, `/session/${sessionId}/window`, { handle: originalHandle });
@@ -427,7 +468,8 @@ const shaFileHex = async path => createHash('sha256').update(await readFile(path
 async function reconcileCaptureSaveReceipts(keys) {
   assert.ok(Array.isArray(keys) && keys.length >= 1 && keys.length <= 16 && new Set(keys).size === keys.length, 'capture_save_receipt_keys_invalid');
   const python = '/Users/armanisadeghi/code/aidream/.venv/bin/python';
-  const result = JSON.parse((await execFileAsync(python, [join(root, '..', '..', 'reconcile-vault-canary.py'), userId, organizationId, ...keys], { cwd: '/Users/armanisadeghi/code/aidream', timeout: 15_000, maxBuffer: 32_768 })).stdout);
+  const reconciler = fileURLToPath(new URL('../reconcile-vault-canary.py', import.meta.url));
+  const result = JSON.parse((await execFileAsync(python, [reconciler, userId, organizationId, ...keys], { cwd: '/Users/armanisadeghi/code/aidream', timeout: 15_000, maxBuffer: 32_768 })).stdout);
   assert.ok(Array.isArray(result.results) && result.results.length === keys.length, 'capture_save_receipt_incomplete');
   const ids = result.results.map(row => row.result_item_id);
   assert.ok(ids.every(id => typeof id === 'string') && new Set(ids).size === ids.length && ids.every(id => !baselineIds.includes(id)), 'capture_save_receipt_scope_invalid');
@@ -441,7 +483,7 @@ async function canonicalCleanupCaptureSave(keys, ids) {
   const input = JSON.stringify({ token, userId, organizationId, createKeys: keys, baselineIds, provenIDs: ids, expectedRouterSha256: localRouterHash, expectedServiceSha256: localServiceHash, sourceRoot });
   assert.ok(Buffer.byteLength(input) < 32_768, 'capture_save_cleanup_input_capacity');
   const python = '/Users/armanisadeghi/code/aidream/.venv/bin/python';
-  const cleanupPath = join(root, '..', '..', 'cleanup-vault-canary.py');
+  const cleanupPath = fileURLToPath(new URL('../cleanup-vault-canary.py', import.meta.url));
   const result = await new Promise((resolve, reject) => {
     const child = spawn(python, [cleanupPath], { cwd: sourceRoot, stdio: ['pipe', 'pipe', 'ignore'] }); let stdout = '';
     child.stdout.setEncoding('utf8'); child.stdout.on('data', chunk => { stdout += chunk; if (stdout.length > 32_768) child.kill(); });
@@ -609,6 +651,7 @@ try {
   const identity = await api(`${DB}/auth/v1/user`, { headers: { apikey: publishableKey }, label: 'identity' });
   assert.equal(identity.email, adminEmail, 'independent_admin_email_mismatch');
   assert.equal(identity.id, session['matrx.user.profile'].id, 'independent_admin_id_mismatch');
+  userId = identity.id;
   proof.oauthConsentAuthorized = true;
   proof.oauthConsentEvidence = proof.oauthConsentDisposition === 'authorize_clicked'
     ? 'trusted_authorize_click_plus_independent_identity'
@@ -836,8 +879,20 @@ try {
   if (captureMode) {
     await checkpoint('capture_decisions');
     const { runFirefoxCaptureDecisionChecks } = await import('./capture-decisions.mjs');
-    await runFirefoxCaptureDecisionChecks({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, proof });
+    await runFirefoxCaptureDecisionChecks({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, diagnoseFixtureCapture, proof });
     assert.equal(proof.captureDecisions?.ok, true, 'firefox_capture_decisions_incomplete');
+    await persist();
+  }
+
+  if (captureSaveMode) {
+    await checkpoint('capture_save');
+    const { runFirefoxCaptureSaveCheck } = await import('./capture-save-acceptance.mjs');
+    await runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, proof });
+    const keys = proof.ownedCreateMutationKeys;
+    const proven = await reconcileCaptureSaveReceipts(keys);
+    const cleanup = await canonicalCleanupCaptureSave(keys, proven);
+    captureSaveCleanupAttempted = true;
+    proof.captureSave.cleanup = { receiptCount: proven.length, canonicalRoute: cleanup.route, receiptReconciled: true };
     await persist();
   }
 
@@ -926,7 +981,7 @@ try {
   await checkpoint('network_observer_final');
   const observed = await readOwnedNetworkObserver();
   recordObservedNetwork(observed);
-  assert.equal(proof.vaultMutationRequests, 0, 'vault_mutation_observed');
+  assert.equal(proof.vaultMutationRequests, captureSaveMode ? 1 : 0, 'vault_mutation_count_unexpected');
   assert.equal(observed.dropped, 0, 'network_observer_dropped_events');
   assert.equal(observed.observerErrors, 0, 'network_observer_errors');
   const disposed = await disposeOwnedNetworkObserver();
@@ -957,8 +1012,21 @@ try {
       }
     } catch {
       proof.cleanupAuthStorage = { unavailable: true, readFromExactOwnedProfile: false };
-    }
+  }
     await cleanupCheckpoint('owned_auth_recovery_finished');
+  }
+  if (captureSaveMode && !captureSaveCleanupAttempted && token && userId && organizationId
+    && Array.isArray(proof.ownedCreateMutationKeys) && proof.ownedCreateMutationKeys.length > 0) {
+    try {
+      const proven = await reconcileCaptureSaveReceipts(proof.ownedCreateMutationKeys);
+      const cleanup = await canonicalCleanupCaptureSave(proof.ownedCreateMutationKeys, proven);
+      captureSaveCleanupAttempted = true;
+      proof.captureSave ||= {};
+      proof.captureSave.cleanup = { receiptCount: proven.length, canonicalRoute: cleanup.route, receiptReconciled: true, recoveredAfterFailure: true };
+    } catch {
+      proof.captureSave ||= {};
+      proof.captureSave.cleanup = { receiptReconciled: false, recoveredAfterFailure: true };
+    }
   }
   if (token && baselineIds && baselineHash && !proof.baselineReconciled) {
     try {
@@ -1076,7 +1144,10 @@ try {
     'addonUninstalled', 'sessionDeleted', 'driverExited', 'firefoxExited', 'profileRemoved', 'allOwnedPidsGone',
   ];
   proof.ok = !failure && !proof.persistenceFailureDuringCleanup && proof.cleanupErrors.length === 0
-    && proof.vaultMutationRequests === 0 && (!generatorMode || proof.generator?.ok === true)
+    && (captureSaveMode
+      ? proof.vaultMutationRequests === 1 && proof.captureSave?.ok === true && proof.captureSave?.cleanup?.receiptReconciled === true
+      : proof.vaultMutationRequests === 0)
+    && (!generatorMode || proof.generator?.ok === true)
     && (!captureMode || proof.captureDecisions?.ok === true)
     && (!reconciliationMode || (proof.historicalReconciliation?.cleanBaselineBefore === true && proof.historicalReconciliation?.cleanBaselineAfter === true && proof.historicalReconciliation.ownedFixtureStatuses.length === 4 && proof.historicalReconciliation.ownedFixtureStatuses.every(item => item.status === 404)))
     && required.every(key => proof[key] === true);

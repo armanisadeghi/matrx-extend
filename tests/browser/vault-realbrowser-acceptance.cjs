@@ -11,7 +11,7 @@ const { execFile, spawn } = require('node:child_process');
 const { promisify } = require('node:util');
 const { acquireVaultAcceptanceLease } = require('./vault-acceptance-lease.cjs');
 const { FAILED_PROOF_PATH: reconciledChromeProofPath, verifyHistoricalChromeReconciliation } = require('./vault-historical-reconciliation.cjs');
-const { FAILED_PROOF_PATH: recovered7356ProofPath, verify7356RecoveryAdmission } = require('./vault-7356-reconciliation.cjs');
+const { FAILED_PROOF_PATH: recovered7356ProofPath, verify7356RecoveryAdmission, NO_COMMIT_PROOF_PATH, verifyNoCommitRecovery } = require('./vault-7356-reconciliation.cjs');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
 const { hasObservedReadOnlyCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
@@ -28,6 +28,7 @@ const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs'
 const { runCaptureDecisionChecks } = require('./vault-capture-decisions-acceptance.cjs');
 const { createAuthenticatorPreservation } = require('./vault-authenticator-preservation.cjs');
 const { createVaultSaveResponseLoss } = require('./vault-save-response-loss.cjs');
+const { createFixtureSetupWithRetry } = require('./vault-fixture-create-retry.cjs');
 // The extension deliberately does not ship Playwright.  Use an explicit test
 // runtime override or the documented workspace harness dependency.
 const playwrightRequire = createRequire(
@@ -419,9 +420,15 @@ async function refuseUnreconciledPriorRun() {
       reviewed7356Recovery = recovery.admitNewSerializedRun === true;
       proof.prior7356CleanupRecovery = recovery;
     }
+    let reviewedUncommittedRequest = false;
+    if (priorProofPath === NO_COMMIT_PROOF_PATH) {
+      const recovery = await verifyNoCommitRecovery();
+      reviewedUncommittedRequest = recovery.admitNewSerializedRun === true;
+      proof.priorUncommittedRequestRecovery = recovery;
+    }
     const receiptMode = prior?.mode === 'receipt_backed_save_update';
     assert(receiptMode
-      ? completedMutationCleanup || receiptModeZeroWriteCleanup || reviewedChromeReconciliation || reviewed7356Recovery
+      ? completedMutationCleanup || receiptModeZeroWriteCleanup || reviewedChromeReconciliation || reviewed7356Recovery || reviewedUncommittedRequest
       : completedAcceptance || completedMutationCleanup || vaultMutationFreeCleanup || authFailureBeforeWrites || reviewedHistoricalException || reviewedLaunchFailure || reviewedRecovery || reviewedGeneratorCleanup || hasObservedReadOnlyCleanup(prior) || hasPreBaselineAuthenticatedCleanup(prior),
     'previous_run_unreconciled');
   }
@@ -619,7 +626,7 @@ async function createFixture(displayName, fields) {
   createKeys.add(key);
   proof.ownedCreateMutationKeys = [...createKeys];
   persist();
-  const response = await api(`${API}/api/vault/items`, {
+  const options = {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'Idempotency-Key': key },
     body: JSON.stringify({
@@ -627,7 +634,22 @@ async function createFixture(displayName, fields) {
       fields, login_urls: [localUrl], uri_match_mode: 'host', browser_fill_enabled: true,
     }),
     label: 'fixture_create',
+  };
+  const headers = { ...options.headers, Authorization: `Bearer ${token}` };
+  if (organizationId) headers['X-Organization-Id'] = organizationId;
+  proof.setupRetry ||= { status: null, count: 0 };
+  persist();
+  const { response: rawResponse } = await createFixtureSetupWithRetry({
+    url: `${API}/api/vault/items`, headers, body: options.body, fetchImpl: fetch,
+    journalRequest: ({ url, method, headers: requestHeaders }) => journalVaultMutationRequest(url, method, requestHeaders),
+    recordRetry: ({ status }) => {
+      proof.setupRetry = { status, count: proof.setupRetry.count + 1 };
+      persist();
+    },
+    wait,
   });
+  assert(rawResponse.ok, `http_${rawResponse.status}_${options.label}`);
+  const response = rawResponse.status === 204 ? null : await rawResponse.json();
   assert(typeof response?.id === 'string', 'fixture_create_shape');
   createdIds.add(response.id);
   proof.ownedFixtureIds = [...createdIds];
@@ -1466,6 +1488,7 @@ async function materializedPassword(id) {
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
       setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
+      fixtureSetupRetry: await sha256(path.join(__dirname, 'vault-fixture-create-retry.cjs')),
       acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
       historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
       recovery7356: await sha256(path.join(__dirname, 'vault-7356-reconciliation.cjs')),
@@ -1501,6 +1524,7 @@ async function materializedPassword(id) {
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
       setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
+      fixtureSetupRetry: await sha256(path.join(__dirname, 'vault-fixture-create-retry.cjs')),
       acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
       historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
       recovery7356: await sha256(path.join(__dirname, 'vault-7356-reconciliation.cjs')),
@@ -1607,6 +1631,7 @@ async function materializedPassword(id) {
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
       setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
+      fixtureSetupRetry: await sha256(path.join(__dirname, 'vault-fixture-create-retry.cjs')),
       acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
       historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
       recovery7356: await sha256(path.join(__dirname, 'vault-7356-reconciliation.cjs')),
