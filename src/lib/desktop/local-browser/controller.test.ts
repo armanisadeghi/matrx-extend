@@ -54,7 +54,11 @@ const ids = {
 const actor = { userId: ids.user, organizationId: ids.org, sessionId: 'session' };
 const stopId = '00000000-0000-4000-8000-000000000015';
 
-function opaqueAdmitGrant(extensionGeneration: string, connectionId: string): string {
+function opaqueAdmitGrant(
+  extensionGeneration: string,
+  connectionId: string,
+  expiresAtSecond = Math.floor(Date.now() / 1000) + 30,
+): string {
   const payload = {
     v: 1,
     aud: 'browser-local-executor',
@@ -65,7 +69,7 @@ function opaqueAdmitGrant(extensionGeneration: string, connectionId: string): st
     profile_id: ids.profile,
     jti: ids.jti,
     iat: 1,
-    exp: Math.floor(Date.now() / 1000) + 30,
+    exp: expiresAtSecond,
     iss: 'https://server.example',
     tier_policy: 'none',
     scopes: [],
@@ -108,7 +112,11 @@ function opaqueDiscoverGrant(): string {
   return `header.${encoded}.signature`;
 }
 
-function opaqueCleanupGrant(extensionGeneration: string, connectionId: string): string {
+function opaqueCleanupGrant(
+  extensionGeneration: string,
+  connectionId: string,
+  expiresAtSecond = Math.floor(Date.now() / 1000) + 30,
+): string {
   const payload = {
     v: 1,
     aud: 'browser-local-executor',
@@ -119,7 +127,7 @@ function opaqueCleanupGrant(extensionGeneration: string, connectionId: string): 
     profile_id: ids.profile,
     jti: ids.jti,
     iat: 1,
-    exp: Math.floor(Date.now() / 1000) + 30,
+    exp: expiresAtSecond,
     iss: 'https://server.example',
     tier_policy: 'none',
     scopes: [],
@@ -985,6 +993,82 @@ describe('owned local-browser tab controller', () => {
     );
     expect(h.sent.at(-1)).toMatchObject({ operation: 'cleanup', receipt: 'closed' });
     expect(vi.mocked(log.warn)).not.toHaveBeenCalled();
+  });
+
+  it('retains cleanup identity when the original admission tombstone expires during close', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-01-01T00:00:00.000Z'));
+    try {
+      const h = harness();
+      const registration = await register(h);
+      h.deps.verify = vi.fn(async (request) =>
+        request.proof.operation === 'cleanup'
+          ? { ok: true as const, data: { status: 'accepted' as const, stop_id: stopId } }
+          : {
+              ok: true as const,
+              data: {
+                status: 'accepted' as const,
+                admission_id: ids.admission,
+                deadline_ms: Date.now() + 10_000,
+              },
+            },
+      );
+      h.deps.acknowledge = vi.fn(async (request) =>
+        request.operation === 'cleanup'
+          ? {
+              ok: true as const,
+              data: {
+                status: 'accepted' as const,
+                operation: 'cleanup' as const,
+                receipt: { stop_id: stopId, status: 'closed' as const },
+              },
+            }
+          : {
+              ok: true as const,
+              data: {
+                status: 'accepted' as const,
+                operation: 'admit' as const,
+                receipt: { admission_id: ids.admission, status: 'created' as const },
+                lease_expires_at_ms: Date.now() + 10_000,
+              },
+            },
+      );
+      await h.emit({
+        type: 'local_browser.execute',
+        version: 1,
+        call_id: ids.call,
+        operation: 'admit',
+        grant: opaqueAdmitGrant(
+          registration.generation,
+          registration.connection,
+          Math.floor(Date.now() / 1000) + 1,
+        ),
+      });
+      let releaseRemove!: () => void;
+      h.remove.mockImplementation(
+        () =>
+          new Promise<undefined>((resolve) => {
+            h.removed(42);
+            releaseRemove = () => resolve(undefined);
+          }),
+      );
+      const cleanup = h.emit({
+        type: 'local_browser.execute',
+        version: 1,
+        call_id: '00000000-0000-4000-8000-000000000026',
+        operation: 'cleanup',
+        grant: opaqueCleanupGrant(registration.generation, registration.connection),
+      });
+      await vi.waitFor(() => expect(releaseRemove).toBeTypeOf('function'));
+      await vi.advanceTimersByTimeAsync(1_001);
+      releaseRemove();
+      await cleanup;
+      expect(h.deps.acknowledge).toHaveBeenCalledTimes(2);
+      expect(h.sent.at(-1)).toMatchObject({ operation: 'cleanup', receipt: 'closed' });
+      h.controller.stop();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('logs only closed currentness labels when cleanup is invalidated after close', async () => {

@@ -472,6 +472,20 @@ export class LocalBrowserController {
     entry.terminalAdmissionReceipt = receipt;
     entry.tabId = null;
     entry.leaseExpiresAtMs = null;
+    this.armTerminalTombstone(entry);
+    if (tabId !== null) void this.closeTab(tabId);
+  }
+
+  private armTerminalTombstone(entry: OwnedRun): void {
+    // A Chrome removal event can arrive while cleanup awaits tabs.remove().
+    // Keep this exact entry through the in-flight cleanup acknowledgement; a
+    // completed cleanup persists its receipt separately and then re-arms the
+    // original bounded tombstone.
+    if (entry.cleanup) {
+      if (entry.expiryTimer) clearTimeout(entry.expiryTimer);
+      entry.expiryTimer = null;
+      return;
+    }
     if (entry.expiryTimer) clearTimeout(entry.expiryTimer);
     entry.expiryTimer = setTimeout(
       () => {
@@ -479,7 +493,6 @@ export class LocalBrowserController {
       },
       Math.max(0, entry.grantDeadlineMs - Date.now()),
     );
-    if (tabId !== null) void this.closeTab(tabId);
   }
 
   private async run(
@@ -1311,6 +1324,7 @@ export class LocalBrowserController {
       if (entry.cleanup === work) {
         entry.cleanup = null;
         entry.cleanupStopId = null;
+        if (entry.terminalAdmissionReceipt !== null) this.armTerminalTombstone(entry);
       }
       if (record.inFlight === work) record.inFlight = null;
     }
