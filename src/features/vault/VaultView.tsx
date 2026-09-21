@@ -590,7 +590,9 @@ function usePanelFill(
       )
         return;
       if (!mounted.current || !admission.current()) return;
+      let started = false;
       await admission.run(async () => {
+        started = true;
         setRunning(itemId);
         setOutcome(null);
         setOutcomeHost(safeParseUrl(snapshot.pageUrl)?.host ?? null);
@@ -624,6 +626,10 @@ function usePanelFill(
           }
         }
       });
+      if (!started && mounted.current && admission.current()) {
+        setOutcomeHost(null);
+        setOutcome('Could not start filling. Focus the login field, then try Fill again.');
+      }
     },
     [admission, running, snapshot, tabId],
   );

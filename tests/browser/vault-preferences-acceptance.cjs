@@ -215,6 +215,12 @@ exports.runVaultPreferencesChecks = async ({
     } catch {
       // The diagnostic must never replace the original acceptance failure.
     }
+    diagnostic.fixture = await page.evaluate(({ expectedUsername, expectedPassword }) => ({
+      usernameMatches: document.querySelector('#email')?.value === expectedUsername,
+      passwordMatches: document.querySelector('#password')?.value === expectedPassword,
+      documentFocused: document.hasFocus(),
+      credentialFocused: document.activeElement?.id === 'password',
+    }), { expectedUsername: username, expectedPassword: password }).catch(() => ({ unavailable: true }));
     if (proof) proof.preferencesQuietFillFailure = diagnostic;
     checkpoint('preferences_quiet_fill_diagnostic');
   };

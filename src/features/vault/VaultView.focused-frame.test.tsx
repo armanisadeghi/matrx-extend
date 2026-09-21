@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   organization: { id: 'org-focused-frame' },
   panelStatus: undefined as unknown,
   sendMessage: vi.fn(),
+  tabsQuery: vi.fn(),
   automaticLogin: vi.fn(),
   listeners: new Set<(message: unknown) => void>(),
 }));
@@ -83,13 +84,14 @@ beforeEach(() => {
     return null;
   });
   mocks.automaticLogin.mockReset();
+  mocks.tabsQuery.mockReset().mockResolvedValue([mocks.tab]);
   mocks.listeners.clear();
   const tabsActivated = event();
   const tabsUpdated = event();
   const windowFocused = event();
   Object.assign(chrome, {
     tabs: {
-      query: async () => [mocks.tab],
+      query: mocks.tabsQuery,
       create: vi.fn(),
       onActivated: tabsActivated,
       onUpdated: tabsUpdated,
@@ -167,4 +169,36 @@ describe('VaultView focused child-frame projection', () => {
     );
     expect(mocks.automaticLogin).not.toHaveBeenCalled();
   });
+
+  it.each([
+    ['has no active tab', async () => []],
+    [
+      'cannot query the active tab',
+      async () => {
+        throw new Error('tab_query_refused');
+      },
+    ],
+  ])(
+    'shows an actionable outcome when admission %s before Fill work starts',
+    async (_label, query) => {
+      mocks.tabsQuery.mockImplementation(query);
+      render(<VaultView />);
+      const account = await screen.findByText('Child personal');
+      const row = account.closest('li');
+      expect(row).toBeTruthy();
+
+      fireEvent.click(within(row as HTMLLIElement).getByRole('button', { name: 'Fill' }));
+
+      expect(
+        await screen.findByText(
+          'Could not start filling. Focus the login field, then try Fill again.',
+        ),
+      ).toBeTruthy();
+      expect(mocks.sendMessage).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          kind: 'credential-suggestions:panel-fill',
+        }),
+      );
+    },
+  );
 });

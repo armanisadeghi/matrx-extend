@@ -179,6 +179,11 @@ component, so all four must show identical rows in identical order.
 - **Compatibility:** The extension requires Chrome 116 or later. The chooser refuses to query or fill when top-document identity or `documentIds` targeting is unavailable; it never falls back to tab-wide injection.
 - **Privacy disclosure:** Focus-time matching sends only the current page origin/path and a generated field selector to the extension service worker. No field value is read, captured, or materialized until an account is explicitly selected.
 
+### Vault Fill admission refusal
+- **Steps:** Open the Vault on a login page, then make its active-tab identity unavailable before clicking **Fill**.
+- **Expected:** The panel says “Could not start filling. Focus the login field, then try Fill again.” and sends no fill request.
+- **Covered by:** `src/features/vault/VaultView.focused-frame.test.tsx`.
+
 ### Panel-opening remedies from explicit clicks
 - **What it does:** Every explicit request to open Matrx reports the actual browser result. A toolbar-popup refusal stays visible in the popup; a context-menu refusal appears in a browser notification; a clicked Agenda notification remains visible with its toolbar remedy; and a clicked login-capture recovery card shows its remedy inside that same card.
 - **Where to test:** A current unpacked Chrome artifact and a Firefox 153+ artifact, each in an isolated profile. This recipe does not establish Firefox support by itself.
