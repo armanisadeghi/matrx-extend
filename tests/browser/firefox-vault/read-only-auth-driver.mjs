@@ -467,9 +467,22 @@ const addonLogoutAfter = (observed, startSequence) => {
 };
 const recordObservedNetwork = observed => {
   const vaultEvents = observed.events.filter(event => event.origin === API && event.pathname.startsWith('/api/vault/'));
+  const isMaterialize = event => event.method === 'POST' && /^\/api\/vault\/browser-login\/[0-9a-f-]{36}\/materialize$/i.test(event.pathname);
   const mutationEvents = vaultEvents.filter(event => ['PUT', 'PATCH', 'DELETE'].includes(event.method)
-    || (event.method === 'POST' && !['/api/vault/browser-login/matches', '/api/vault/browser-login/capture-context'].includes(event.pathname)));
-  proof.vaultMutationRequests = mutationEvents.filter(event => event.phase === 'request').length;
+    || (event.method === 'POST' && !(coreUpdateFillMode && isMaterialize(event)) && !['/api/vault/browser-login/matches', '/api/vault/browser-login/capture-context'].includes(event.pathname)));
+  const mutationRequests = mutationEvents.filter(event => event.phase === 'request');
+  proof.vaultMutationRequests = mutationRequests.length;
+  const materializeRequests = vaultEvents.filter(event => event.phase === 'request' && isMaterialize(event));
+  proof.vaultMaterializeRequests = materializeRequests.length;
+  if (coreUpdateFillMode) {
+    const ownedId = proof.ownedFixtureIds?.length === 1 ? proof.ownedFixtureIds[0] : null;
+    const created = mutationRequests.filter(event => event.owner === 'addon_principal' && event.method === 'POST' && event.pathname === '/api/vault/items');
+    const updated = mutationRequests.filter(event => ownedId && event.owner === 'addon_principal' && event.method === 'PUT' && event.pathname.split('/').length === 8 && event.pathname.startsWith(`/api/vault/items/${ownedId}/fields/`) && /\/fields\/[0-9a-f-]{36}\/value$/i.test(event.pathname));
+    const materialize = materializeRequests.filter(event => ownedId && event.owner === 'addon_principal' && event.pathname === `/api/vault/browser-login/${ownedId}/materialize`);
+    const successfulMaterialize = materialize.filter(request => vaultEvents.some(event => event.phase === 'response' && event.owner === 'addon_principal' && event.requestId === request.requestId && event.pathname === request.pathname && event.method === request.method && event.status >= 200 && event.status < 300));
+    proof.coreNetwork = { createRequests: created.length, ownedUpdateRequests: updated.length, ownedMaterializeRequests: materialize.length, successfulMaterializeResponses: successfulMaterialize.length, unexpectedWrites: mutationRequests.length - created.length - updated.length, unexpectedMaterializeRequests: materializeRequests.length - materialize.length };
+    proof.coreNetwork.ok = created.length === 1 && updated.length === 1 && materialize.length === 1 && successfulMaterialize.length === 1 && proof.coreNetwork.unexpectedWrites === 0 && proof.coreNetwork.unexpectedMaterializeRequests === 0;
+  }
   proof.networkObserver = {
     captureContract: observed.captureContract,
     ownerScope: observed.ownerScope,
@@ -1122,6 +1135,7 @@ try {
   await checkpoint('network_observer_final');
   const observed = await readOwnedNetworkObserver();
   recordObservedNetwork(observed);
+  if (coreUpdateFillMode) assert.equal(proof.coreNetwork?.ok, true, 'core_update_fill_network_contract_failed');
   assert.equal(proof.vaultMutationRequests, coreUpdateFillMode ? 2 : captureSaveMode ? 1 : 0, 'vault_mutation_count_unexpected');
   assert.equal(observed.dropped, 0, 'network_observer_dropped_events');
   assert.equal(observed.observerErrors, 0, 'network_observer_errors');
@@ -1307,7 +1321,7 @@ try {
   ];
   proof.ok = !failure && !proof.persistenceFailureDuringCleanup && proof.cleanupErrors.length === 0
     && (captureSaveMode
-      ? proof.vaultMutationRequests === (coreUpdateFillMode ? 2 : 1) && (!coreUpdateFillMode || proof.coreUpdateFill?.ok === true) && proof.captureSave?.ok === true && proof.captureSave?.cleanup?.receiptReconciled === true
+      ? proof.vaultMutationRequests === (coreUpdateFillMode ? 2 : 1) && (!coreUpdateFillMode || (proof.coreUpdateFill?.ok === true && proof.coreNetwork?.ok === true)) && proof.captureSave?.ok === true && proof.captureSave?.cleanup?.receiptReconciled === true
       : proof.vaultMutationRequests === 0)
     && (!generatorMode || proof.generator?.ok === true)
     && (!captureMode || proof.captureDecisions?.ok === true)

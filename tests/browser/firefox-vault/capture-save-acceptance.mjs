@@ -134,6 +134,7 @@ export async function runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdP
   } catch (error) { primary = error; } finally {
     let frozenReceiptPersisted = false;
     if (observerStarted) try {
+      await getContext('chrome');
       const frozenReceipt = await adapter.freezeVaultCreateReceiptObserver();
       assert.equal(frozenReceipt?.frozen, true, 'capture_save_receipt_not_frozen');
       await persistObservedReceipt({ receipt: frozenReceipt, persistOwnedCreateMutationKeys, persistedKeys, proof });

@@ -18,6 +18,7 @@ function harness({ receipts, frozenReceipt, freezeFailure, saveClick, persistFai
   let fixtureUrl = null;
   let read = 0;
   let frozen = false;
+  let context = 'content';
   let persistAttempts = 0;
   const calls = [];
   const proof = {};
@@ -31,7 +32,7 @@ function harness({ receipts, frozenReceipt, freezeFailure, saveClick, persistFai
   const adapter = {
     trustedClick: async selector => {
       calls.push(`click:${selector}`);
-      if (selector === '#save') return saveClick();
+      if (selector === '#save') { context = 'content'; return saveClick(); }
     },
     waitFor: async () => '#save',
     startVaultCreateReceiptObserver: async () => calls.push('start'),
@@ -42,6 +43,7 @@ function harness({ receipts, frozenReceipt, freezeFailure, saveClick, persistFai
       return value;
     },
     freezeVaultCreateReceiptObserver: async () => {
+      assert.equal(context, 'chrome', 'receipt_freeze_requires_chrome_context');
       calls.push('freeze');
       if (freezeFailure) throw freezeFailure;
       frozen = true;
@@ -87,7 +89,7 @@ function harness({ receipts, frozenReceipt, freezeFailure, saveClick, persistFai
         wdGet: async (_base, path) =>
           path.endsWith('/window/handles') ? ['original-tab'] : 'original-tab',
         wdDelete: async () => ({}),
-        getContext: async () => undefined,
+        getContext: async value => { context = value; },
         probeFixtureBridge: async () => true,
         verifySavedLogin: async () => undefined,
         persistOwnedCreateMutationKeys,
