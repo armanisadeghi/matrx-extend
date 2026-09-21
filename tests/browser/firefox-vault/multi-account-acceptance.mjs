@@ -60,7 +60,7 @@ async function waitForBridge(probeFixtureBridge, url) {
 
 async function typeSearch(adapter, { base, sessionId, wdPost, wdDelete }, text) {
   const selector = '[aria-label="Search saved logins to update"]';
-  await adapter.trustedPress(selector, {
+  await adapter.trustedClick(selector, {
     outcome: (document) =>
       document.activeElement?.getAttribute('aria-label') === 'Search saved logins to update',
   });
@@ -195,10 +195,7 @@ export async function runFirefoxMultiAccountChecks({
   proof,
 }) {
   assert.ok(
-    adapter &&
-      typeof adapter.trustedClick === 'function' &&
-      typeof adapter.trustedPress === 'function' &&
-      typeof adapter.waitFor === 'function',
+    adapter && typeof adapter.trustedClick === 'function' && typeof adapter.waitFor === 'function',
     'multi_account_adapter_contract_invalid',
   );
   assert.equal(typeof probeFixtureBridge, 'function', 'multi_account_bridge_contract_invalid');
@@ -298,7 +295,8 @@ export async function runFirefoxMultiAccountChecks({
     proof.multiAccount.duplicateNamesHaveUniqueIdSuffixes = true;
     await typeSearch(adapter, { base, sessionId, wdPost, wdDelete }, selected.displayName);
     proof.multiAccount.searchTypedNatively = true;
-    await adapter.trustedClick(selector, {
+    const searchedSelector = await updateSelector(adapter, labels);
+    await adapter.trustedClick(searchedSelector, {
       outcome: (document) =>
         ![...document.querySelectorAll('p')].some(
           (node) =>
