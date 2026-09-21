@@ -84,3 +84,7 @@ lib64/
 
 # Local Vault browser artifacts and receipts; source harness lives in tests/browser.
 .matrx/task1-active/
+
+# Python bytecode from the vault canary test helpers
+__pycache__/
+*.pyc

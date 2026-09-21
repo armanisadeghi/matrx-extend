@@ -18,8 +18,6 @@ const generatorSourcePath = fileURLToPath(new URL('./generator-acceptance.mjs', 
 const captureMode = process.argv.includes('--capture');
 const captureSourcePath = fileURLToPath(new URL('./capture-decisions.mjs', import.meta.url));
 const captureSaveMode = process.argv.includes('--capture-save');
-// Checkpointed construction: this mode cannot take browser or credential custody yet.
-assert.ok(!captureSaveMode, 'capture_save_implementation_incomplete');
 const captureSaveSourcePath = fileURLToPath(new URL('./capture-save-acceptance.mjs', import.meta.url));
 const cleanupSourcePath = fileURLToPath(new URL('../cleanup-vault-canary.py', import.meta.url));
 const reconcileSourcePath = fileURLToPath(new URL('../reconcile-vault-canary.py', import.meta.url));
