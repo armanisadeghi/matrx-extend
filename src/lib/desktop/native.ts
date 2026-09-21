@@ -53,11 +53,37 @@ function ensurePort(): chrome.runtime.Port | null {
   return port;
 }
 
+/**
+ * Wait after the Nth consecutive miss before probing again; last is the
+ * ceiling. Same ladder, same reason as the HTTP port sweep in discovery.ts:
+ * the 30s desktop alarm calls this forever, and most machines never install
+ * the native host — matrx-local's own dev machines included. Retrying a
+ * connectNative to a host that is not registered, twice a minute, for the
+ * life of the browser, is noise, not resilience.
+ */
+const PROBE_BACKOFF_MS = [30_000, 60_000, 300_000, 900_000] as const;
+let consecutiveMisses = 0;
+let nextProbeAllowedAt = 0;
+
+/** Clear the probe rate limit. Explicit human actions only. */
+export function resetNativeProbeBackoff(): void {
+  consecutiveMisses = 0;
+  nextProbeAllowedAt = 0;
+}
+
 export async function probeNative(): Promise<DesktopHealth | null> {
+  if (Date.now() < nextProbeAllowedAt) return null;
   const result = await rpcNative({ command: 'health' }, 600);
-  if (!result.ok) return null;
-  const parsed = DesktopHealthSchema.safeParse(result.data);
-  return parsed.success ? parsed.data : null;
+  const parsed = result.ok ? DesktopHealthSchema.safeParse(result.data) : null;
+  if (!parsed?.success) {
+    const idx = Math.min(consecutiveMisses, PROBE_BACKOFF_MS.length - 1);
+    consecutiveMisses += 1;
+    nextProbeAllowedAt =
+      Date.now() + (PROBE_BACKOFF_MS[idx] ?? PROBE_BACKOFF_MS[PROBE_BACKOFF_MS.length - 1] ?? 900_000);
+    return null;
+  }
+  resetNativeProbeBackoff();
+  return parsed.data;
 }
 
 export function rpcNative(req: DesktopRpcRequest, timeoutMs = 30_000): Promise<DesktopRpcResponse> {

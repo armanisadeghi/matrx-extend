@@ -31,6 +31,7 @@ import {
   setEnginePortOverride,
 } from '@/lib/desktop/discovery';
 import { autoPair, clearPairToken, getPairToken, rpcHttp } from '@/lib/desktop/http';
+import { resetNativeProbeBackoff } from '@/lib/desktop/native';
 import { engineHealthState, formatDesktopConnectionLabel } from '@/lib/desktop/types';
 import {
   type WsControlResult,
@@ -307,6 +308,7 @@ function DiscoverySection() {
     // A person pressed the button: the background full-scan rate limit
     // must not make them wait out a backoff rung.
     resetEngineDiscoveryBackoff();
+    resetNativeProbeBackoff();
     await invalidateEnginePortCache();
     const r = await probeDesktop();
     if (r.transport !== 'none') {
