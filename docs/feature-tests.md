@@ -184,6 +184,12 @@ component, so all four must show identical rows in identical order.
 - **Expected:** The panel says “Could not start filling. Focus the login field, then try Fill again.” and sends no fill request.
 - **Covered by:** `src/features/vault/VaultView.focused-frame.test.tsx`.
 
+### Firefox Vault capture status
+
+- **Steps:** In an isolated Firefox profile, sign in to Matrx, submit a disposable login form, and open Vault. Choose Not now on its pending save card.
+- **Expected:** Firefox extension pages can read their own pending capture and assistance status. Other extensions and website tabs remain refused. Not now dismisses the card without saving a Vault item.
+- **Covered by:** Capture and assistance host tests exercise Chrome and Firefox extension roots, including a Firefox URL UUID distinct from its add-on ID. Actual Firefox browser acceptance is recorded separately.
+
 ### Vault manual recovery on inaccessible fields
 
 - **Steps:** Open Vault on a page with a closed shadow-root login, then on a restricted browser page. Return to a supported login and focus its password field.
