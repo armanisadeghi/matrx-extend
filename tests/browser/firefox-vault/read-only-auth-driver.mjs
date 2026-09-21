@@ -276,7 +276,7 @@ proof.hashes = {
   leaseSha256: await shaFile(leaseSourcePath),
   ...(generatorMode ? { generatorSha256: await shaFile(generatorSourcePath) } : {}),
   ...(captureMode ? { captureSha256: await shaFile(captureSourcePath) } : {}),
-  ...(captureSaveMode ? { captureSaveSha256: await shaFile(captureSaveSourcePath) } : {}),
+  ...(captureSaveMode ? { captureSaveSha256: await shaFile(captureSaveSourcePath), cleanupSha256: await shaFile(cleanupSourcePath), reconcileSha256: await shaFile(reconcileSourcePath) } : {}),
   artifactManifestSha256: await shaFile(artifactManifestPath), artifactXpiSha256: artifactManifest.xpi.sha256,
 };
 proof.artifactManifestPath = artifactManifestPath;
@@ -492,8 +492,13 @@ async function reconcileCaptureSaveReceipts(keys) {
   const reconciler = fileURLToPath(new URL('../reconcile-vault-canary.py', import.meta.url));
   const result = JSON.parse((await execFileAsync(python, [reconciler, userId, organizationId, ...keys], { cwd: '/Users/armanisadeghi/code/aidream', timeout: 15_000, maxBuffer: 32_768 })).stdout);
   assert.ok(Array.isArray(result.results) && result.results.length === keys.length, 'capture_save_receipt_incomplete');
+  assert.ok(new Set(result.results.map(row => row.mutation_id)).size === keys.length
+    && result.results.every(row => keys.includes(row.mutation_id) && row.user_id === userId
+      && row.organization_id === null && row.retired === false), 'capture_save_receipt_actor_mismatch');
   const ids = result.results.map(row => row.result_item_id);
   assert.ok(ids.every(id => typeof id === 'string') && new Set(ids).size === ids.length && ids.every(id => !baselineIds.includes(id)), 'capture_save_receipt_scope_invalid');
+  proof.ownedFixtureIds = ids;
+  await persist();
   return ids;
 }
 async function canonicalCleanupCaptureSave(keys, ids) {
@@ -513,6 +518,8 @@ async function canonicalCleanupCaptureSave(keys, ids) {
     child.stdin.once('error', () => reject(new Error('capture_save_cleanup_stdin_refused'))); child.stdin.end(input);
   });
   assert.ok(Array.isArray(result.attempts) && result.attempts.length === ids.length && result.attempts.every(row => ['already_cleaned', 'deleted_and_missing'].includes(row.terminal)), 'capture_save_cleanup_result_invalid');
+  assert.ok(new Set(result.attempts.map(row => row.id)).size === ids.length
+    && result.attempts.every(row => ids.includes(row.id)), 'capture_save_cleanup_target_mismatch');
   return result;
 }
 async function verifySavedLogin({ username, password, pageUrl }) {
