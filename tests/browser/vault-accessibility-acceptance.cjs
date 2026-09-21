@@ -124,7 +124,7 @@ async function runInlineChooserEscape({ context, fixturePage, targetName, getSub
 }
 
 exports.runVaultAccessibilityChecks = async ({
-  realPanel, context, fixturePage, targetName, assert, wait, checkpoint = () => {}, proof,
+  realPanel, context, worker, fixturePage, targetName, assert, wait, checkpoint = () => {}, proof,
   verifyRealVaultPanel, getSubmitCount, focusCredential,
 }) => {
   assert(realPanel && typeof realPanel.send === 'function' && typeof realPanel.evaluate === 'function'
@@ -143,10 +143,14 @@ exports.runVaultAccessibilityChecks = async ({
     inlineChooserDialogAndTargetAX: false,
     inlineChooserEscapeReturnsFocusWithoutSubmit: false,
     viewportRestored: false,
+    actualBrowserZoom200: false,
+    zoomedChooserKeyboardAndEscape: false,
+    browserZoomRestored: false,
   };
   let primaryFailure = null;
   let emulationSet = false;
   let viewportBefore = null;
+  let zoomBefore = null;
   try {
     checkpoint('vault_accessibility_panel_ready');
     await verifyRealVaultPanel();
@@ -197,9 +201,45 @@ exports.runVaultAccessibilityChecks = async ({
     });
     evidence.inlineChooserDialogAndTargetAX = chooser.exactTargetActionableAX;
     evidence.inlineChooserEscapeReturnsFocusWithoutSubmit = chooser.escapeReturnedFocusWithoutSubmit;
+
+    checkpoint('vault_accessibility_actual_browser_zoom');
+    assert(worker && typeof worker.evaluate === 'function', 'vault_accessibility_zoom_worker_missing');
+    zoomBefore = await worker.evaluate(async (url) => {
+      const tabs = (await chrome.tabs.query({})).filter(tab => tab.url === url);
+      if (tabs.length !== 1 || !Number.isInteger(tabs[0].id)) throw new Error('zoom_fixture_not_unique');
+      const id = tabs[0].id;
+      return { id, url, factor: await chrome.tabs.getZoom(id), settings: await chrome.tabs.getZoomSettings(id) };
+    }, fixturePage.url());
+    await worker.evaluate(async ({ id, url }) => {
+      if ((await chrome.tabs.get(id)).url !== url) throw new Error('zoom_fixture_changed');
+      await chrome.tabs.setZoomSettings(id, { mode: 'automatic', scope: 'per-tab' });
+      await chrome.tabs.setZoom(id, 2);
+    }, zoomBefore);
+    const actualZoom = await worker.evaluate(id => chrome.tabs.getZoom(id), zoomBefore.id);
+    assert(actualZoom === 2, 'vault_accessibility_actual_zoom_not_200');
+    evidence.actualBrowserZoom200 = true;
+    const zoomedChooser = await runInlineChooserEscape({
+      context, fixturePage, targetName, getSubmitCount, assert, wait, focusCredential,
+    });
+    evidence.zoomedChooserKeyboardAndEscape = zoomedChooser.exactTargetActionableAX
+      && zoomedChooser.escapeReturnedFocusWithoutSubmit;
+
   } catch (error) {
     primaryFailure = error;
   } finally {
+    if (zoomBefore) {
+      try {
+        const restored = await worker.evaluate(async ({ id, url, factor, settings }) => {
+          if ((await chrome.tabs.get(id)).url !== url) throw new Error('zoom_restore_fixture_changed');
+          await chrome.tabs.setZoom(id, factor);
+          await chrome.tabs.setZoomSettings(id, { mode: settings.mode, scope: settings.scope });
+          const after = await chrome.tabs.getZoomSettings(id);
+          return (await chrome.tabs.getZoom(id)) === factor && after.mode === settings.mode && after.scope === settings.scope;
+        }, zoomBefore);
+        assert(restored === true, 'vault_accessibility_browser_zoom_not_restored');
+        evidence.browserZoomRestored = true;
+      } catch (error) { if (!primaryFailure) primaryFailure = error; }
+    }
     if (emulationSet) {
       try {
         await realPanel.send('Emulation.clearDeviceMetricsOverride');
