@@ -613,7 +613,7 @@ export class LocalBrowserController {
         projection.approval_id !== claims.jti ||
         projection.run_id !== claims.run_id ||
         projection.app_instance_id !== claims.app_instance_id ||
-        projection.controller_revision !== registration.revision ||
+        projection.controller_revision !== claims.controller_revision ||
         projection.jti !== claims.jti ||
         canonicalGrantDeadlineMs(projection.deadline_ms) !== deadlineMs ||
         canonicalGrantDeadlineMs(projection.expires_at_ms) !== deadlineMs ||
@@ -631,7 +631,7 @@ export class LocalBrowserController {
           profileId: claims.profile_id,
           extensionGeneration: registration.extensionGeneration,
           connectionId: registration.connectionId,
-          controllerRevision: registration.revision,
+          controllerRevision: claims.controller_revision,
           admissionId: entry.admissionId,
           commandSequence: claims.sequence,
           commandId: claims.command_id,

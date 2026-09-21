@@ -28,10 +28,11 @@ vi.mock('./approvals', () => ({
   requestLocalBrowserApproval: vi.fn(async () => ({ decision: 'allow', policy: {} })),
 }));
 
+import { requestLocalBrowserApproval } from './approvals';
 import {
-  canonicalGrantDeadlineMs,
   LocalBrowserController,
   type LocalBrowserControllerDeps,
+  canonicalGrantDeadlineMs,
 } from './controller';
 
 const ids = {
@@ -138,6 +139,7 @@ function opaqueApproveGrant(
   extensionGeneration: string,
   connectionId: string,
   expiresAtSecond: number,
+  controllerRevision = 0,
 ): string {
   const payload = {
     v: 1,
@@ -157,7 +159,7 @@ function opaqueApproveGrant(
     admission_id: ids.admission,
     extension_generation: extensionGeneration,
     connection_id: connectionId,
-    controller_revision: 0,
+    controller_revision: controllerRevision,
     command_id: ids.call,
     sequence: 1,
     command_digest: 'a'.repeat(64),
@@ -252,13 +254,14 @@ function harness() {
 
 async function register(
   h: ReturnType<typeof harness>,
+  revision = 0,
 ): Promise<{ generation: string; connection: string }> {
   await h.emit(
     {
       type: 'local_browser.register_required',
       version: 1,
       engine_boot_id: ids.boot,
-      revision: 0,
+      revision,
     },
     false,
   );
@@ -271,7 +274,7 @@ async function register(
       version: 1,
       status: 'acknowledged',
       engine_boot_id: ids.boot,
-      expected_revision: 0,
+      expected_revision: revision,
       extension_generation: registration.extension_generation,
       connection_id: registration.connection_id,
     },
@@ -290,12 +293,17 @@ describe('owned local-browser tab controller', () => {
     expect(canonicalGrantDeadlineMs(1_700_000_001_000)).toBe(1_700_000_001_000);
   });
 
-  it('accepts a sub-second verified command projection, but refuses its next-second mismatch', async () => {
+  it('binds approval to the signed run revision and keeps deadline checks independent', async () => {
     const expiresAtSecond = Math.floor(Date.now() / 1000) + 30;
     const projectedDeadlineMs = expiresAtSecond * 1000 + 999;
-    const commandJson = JSON.stringify({ operation: 'navigate', url: 'https://example.test/after' });
+    const commandJson = JSON.stringify({
+      operation: 'navigate',
+      url: 'https://example.test/after',
+    });
     const h = harness();
-    const registration = await register(h);
+    const desktopContextRevision = 7;
+    const serverRunRevision = 0;
+    const registration = await register(h, desktopContextRevision);
     await h.emit({
       type: 'local_browser.execute',
       version: 1,
@@ -351,30 +359,32 @@ describe('owned local-browser tab controller', () => {
       },
     }));
     h.deps.command = {
-      verify: vi.fn(async () =>
-        ({
-          ok: true,
-          data: {
-            status: 'accepted',
-            operation: 'approve',
-            actor_id: ids.user,
-            organization_id: ids.org,
-            profile_id: ids.profile,
-            admission_id: ids.admission,
-            command_id: ids.call,
-            sequence: 1,
-            command_digest: 'a'.repeat(64),
-            approval_id: ids.jti,
-            deadline_ms: projectedDeadlineMs,
-            expires_at_ms: projectedDeadlineMs,
-            extension_generation: registration.generation,
-            connection_id: registration.connection,
-            run_id: ids.run,
-            app_instance_id: ids.app,
-            controller_revision: 0,
-            jti: ids.jti,
-          },
-        }) as never),
+      verify: vi.fn(
+        async () =>
+          ({
+            ok: true,
+            data: {
+              status: 'accepted',
+              operation: 'approve',
+              actor_id: ids.user,
+              organization_id: ids.org,
+              profile_id: ids.profile,
+              admission_id: ids.admission,
+              command_id: ids.call,
+              sequence: 1,
+              command_digest: 'a'.repeat(64),
+              approval_id: ids.jti,
+              deadline_ms: projectedDeadlineMs,
+              expires_at_ms: projectedDeadlineMs,
+              extension_generation: registration.generation,
+              connection_id: registration.connection,
+              run_id: ids.run,
+              app_instance_id: ids.app,
+              controller_revision: serverRunRevision,
+              jti: ids.jti,
+            },
+          }) as never,
+      ),
       approve,
       claim,
       complete,
@@ -386,10 +396,20 @@ describe('owned local-browser tab controller', () => {
       version: 1,
       call_id: ids.call,
       operation: 'approve',
-      grant: opaqueApproveGrant(registration.generation, registration.connection, expiresAtSecond),
+      grant: opaqueApproveGrant(
+        registration.generation,
+        registration.connection,
+        expiresAtSecond,
+        serverRunRevision,
+      ),
       command_json: commandJson,
     });
     expect(approve).toHaveBeenCalledOnce();
+    expect(vi.mocked(requestLocalBrowserApproval)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        binding: expect.objectContaining({ controllerRevision: serverRunRevision }),
+      }),
+    );
     expect(claim).toHaveBeenCalledWith(
       expect.objectContaining({ commandId: ids.call, command_json: commandJson }),
     );
@@ -408,34 +428,39 @@ describe('owned local-browser tab controller', () => {
     });
     const mismatchApprove = vi.fn();
     mismatch.deps.command = {
-      verify: vi.fn(async () =>
-        ({
-          ok: true,
-          data: {
-            status: 'accepted',
-            operation: 'approve',
-            actor_id: ids.user,
-            organization_id: ids.org,
-            profile_id: ids.profile,
-            admission_id: ids.admission,
-            command_id: ids.call,
-            sequence: 1,
-            command_digest: 'a'.repeat(64),
-            approval_id: ids.jti,
-            deadline_ms: expiresAtSecond * 1000 + 1000,
-            expires_at_ms: expiresAtSecond * 1000 + 1000,
-            extension_generation: mismatchRegistration.generation,
-            connection_id: mismatchRegistration.connection,
-            run_id: ids.run,
-            app_instance_id: ids.app,
-            controller_revision: 0,
-            jti: ids.jti,
-          },
-        }) as never),
+      verify: vi.fn(
+        async () =>
+          ({
+            ok: true,
+            data: {
+              status: 'accepted',
+              operation: 'approve',
+              actor_id: ids.user,
+              organization_id: ids.org,
+              profile_id: ids.profile,
+              admission_id: ids.admission,
+              command_id: ids.call,
+              sequence: 1,
+              command_digest: 'a'.repeat(64),
+              approval_id: ids.jti,
+              deadline_ms: expiresAtSecond * 1000 + 1000,
+              expires_at_ms: expiresAtSecond * 1000 + 1000,
+              extension_generation: mismatchRegistration.generation,
+              connection_id: mismatchRegistration.connection,
+              run_id: ids.run,
+              app_instance_id: ids.app,
+              controller_revision: serverRunRevision + 1,
+              jti: ids.jti,
+            },
+          }) as never,
+      ),
       approve: mismatchApprove,
       claim: vi.fn(),
       complete: vi.fn(),
-      currentDocument: vi.fn(async () => ({ documentId: ids.challenge, url: 'https://example.test/before' })),
+      currentDocument: vi.fn(async () => ({
+        documentId: ids.challenge,
+        url: 'https://example.test/before',
+      })),
     } satisfies NonNullable<LocalBrowserControllerDeps['command']>;
     await mismatch.emit({
       type: 'local_browser.execute',
@@ -456,6 +481,138 @@ describe('owned local-browser tab controller', () => {
       reason: 'binding_changed',
     });
     mismatch.controller.stop();
+  });
+
+  it('refuses approval when the desktop registration changes during verification', async () => {
+    const expiresAtSecond = Math.floor(Date.now() / 1000) + 30;
+    const h = harness();
+    const registration = await register(h, 7);
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: opaqueAdmitGrant(registration.generation, registration.connection),
+    });
+    type VerifyResult = Awaited<
+      ReturnType<NonNullable<LocalBrowserControllerDeps['command']>['verify']>
+    >;
+    let resolveVerify!: (value: VerifyResult) => void;
+    const approve = vi.fn();
+    h.deps.command = {
+      verify: vi.fn(
+        () =>
+          new Promise<VerifyResult>((resolve) => {
+            resolveVerify = resolve;
+          }),
+      ),
+      approve,
+      claim: vi.fn(),
+      complete: vi.fn(),
+      currentDocument: vi.fn(),
+    } satisfies NonNullable<LocalBrowserControllerDeps['command']>;
+    const pending = h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'approve',
+      grant: opaqueApproveGrant(registration.generation, registration.connection, expiresAtSecond),
+      command_json: JSON.stringify({ operation: 'inspect_login' }),
+    });
+    await vi.waitFor(() => expect(resolveVerify).toBeTypeOf('function'));
+    h.invalidated();
+    resolveVerify({
+      ok: true,
+      data: {
+        status: 'accepted',
+        operation: 'approve',
+        actor_id: ids.user,
+        organization_id: ids.org,
+        profile_id: ids.profile,
+        admission_id: ids.admission,
+        command_id: ids.call,
+        sequence: 1,
+        command_digest: 'a'.repeat(64),
+        approval_id: ids.jti,
+        deadline_ms: expiresAtSecond * 1000,
+        expires_at_ms: expiresAtSecond * 1000,
+        extension_generation: registration.generation,
+        connection_id: registration.connection,
+        run_id: ids.run,
+        app_instance_id: ids.app,
+        controller_revision: 0,
+        jti: ids.jti,
+      },
+    } as VerifyResult);
+    await pending;
+    expect(approve).not.toHaveBeenCalled();
+    expect(h.sent.at(-1)).toMatchObject({
+      operation: 'approve',
+      status: 'refused',
+      reason: 'binding_changed',
+    });
+    h.controller.stop();
+  });
+
+  it('refuses approval when the verified run revision differs from its signed grant', async () => {
+    const expiresAtSecond = Math.floor(Date.now() / 1000) + 30;
+    const h = harness();
+    const registration = await register(h, 7);
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: opaqueAdmitGrant(registration.generation, registration.connection),
+    });
+    const approve = vi.fn();
+    h.deps.command = {
+      verify: vi.fn(
+        async () =>
+          ({
+            ok: true,
+            data: {
+              status: 'accepted',
+              operation: 'approve',
+              actor_id: ids.user,
+              organization_id: ids.org,
+              profile_id: ids.profile,
+              admission_id: ids.admission,
+              command_id: ids.call,
+              sequence: 1,
+              command_digest: 'a'.repeat(64),
+              approval_id: ids.jti,
+              deadline_ms: expiresAtSecond * 1000,
+              expires_at_ms: expiresAtSecond * 1000,
+              extension_generation: registration.generation,
+              connection_id: registration.connection,
+              run_id: ids.run,
+              app_instance_id: ids.app,
+              controller_revision: 1,
+              jti: ids.jti,
+            },
+          }) as never,
+      ),
+      approve,
+      claim: vi.fn(),
+      complete: vi.fn(),
+      currentDocument: vi.fn(),
+    } satisfies NonNullable<LocalBrowserControllerDeps['command']>;
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'approve',
+      grant: opaqueApproveGrant(registration.generation, registration.connection, expiresAtSecond),
+      command_json: JSON.stringify({ operation: 'inspect_login' }),
+    });
+    expect(approve).not.toHaveBeenCalled();
+    expect(h.sent.at(-1)).toMatchObject({
+      operation: 'approve',
+      status: 'refused',
+      reason: 'binding_changed',
+    });
+    h.controller.stop();
   });
 
   it('re-registers with fresh private binding after an organization change on a healthy socket', async () => {
