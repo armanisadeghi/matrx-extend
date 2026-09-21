@@ -39,7 +39,7 @@ async function verifiedFailedChromeProof() {
   assert.ok(value.cleanup.receiptReconciled && value.cleanup.createdItemsGone && value.cleanup.profileRemoved && value.cleanup.browserClosed && value.cleanup.localAuthLogoutStatus === 204 && value.cleanup.remoteAuthRevocationStatus === 204, 'historical_chrome_owned_cleanup_missing');
   return ids;
 }
-const SOURCE_COMMIT = '766337d86e8a10b75babce9f4d3bb1a2b4344596';
+const SOURCE_COMMIT = '07782a07148ccbaeae2357d3d77d8b206eba7de2';
 const RECORDS_SOURCE_COMMIT = 'c3f26c9e47f1a0ef18167592ebbdf032e45f9f67';
 const ADDON_ID = 'matrx-extend@aimatrx.com';
 const API = 'https://server.app.matrxserver.com';
@@ -47,7 +47,7 @@ const DB = 'https://db.matrxserver.com';
 const AUTH_ORIGIN = 'https://www.aimatrx.com';
 const firefox = '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/Firefox.app/Contents/MacOS/firefox';
 const geckodriver = '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/geckodriver';
-const artifactDirectory = join(root, '..', '..', 'firefox-current-build', 'artifact-2026-09-21T01-25-33-577Z-cbda1b67-a94c-46fb-ba8a-0a3f5880b1f5');
+const artifactDirectory = join(root, '..', '..', 'firefox-current-build', 'artifact-2026-09-21T02-03-18-109Z-4f049d1a-c135-4905-8256-a67698c9c3f7');
 const artifactRoot = join(artifactDirectory, 'extension');
 const artifactManifestPath = join(artifactDirectory, 'artifact-manifest.json');
 const xpi = join(artifactDirectory, 'matrx-extend-firefox-mv3.xpi');
