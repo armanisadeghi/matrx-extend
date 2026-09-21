@@ -14,7 +14,7 @@ function receipt(keys, requests = [{ requestId: 'save-request' }]) {
   };
 }
 
-function harness({ receipts, saveClick }) {
+function harness({ receipts, saveClick, persistFailure = false }) {
   let fixtureUrl = null;
   let read = 0;
   const calls = [];
@@ -27,7 +27,11 @@ function harness({ receipts, saveClick }) {
     },
     waitFor: async () => '#save',
     startVaultCreateReceiptObserver: async () => calls.push('start'),
-    readVaultCreateReceiptObserver: async () => receipts[Math.min(read++, receipts.length - 1)],
+    readVaultCreateReceiptObserver: async () => {
+      const value = receipts[Math.min(read++, receipts.length - 1)];
+      if (value instanceof Error) throw value;
+      return value;
+    },
     disposeVaultCreateReceiptObserver: async () => {
       calls.push('dispose');
       assert.ok(calls.some(call => call.startsWith('persist:')), 'receipt_must_persist_before_dispose');
@@ -63,6 +67,7 @@ function harness({ receipts, saveClick }) {
         getContext: async () => undefined,
         probeFixtureBridge: async () => true,
         persistOwnedCreateMutationKeys: async keys => {
+          if (persistFailure) throw new Error('durable proof unavailable');
           persisted.push([...keys]);
           calls.push(`persist:${keys.length}`);
         },
@@ -103,4 +108,29 @@ test('fails acceptance but persists a later second observed key before disposal'
   assert.deepEqual(subject.persisted, [[FIRST_KEY], [FIRST_KEY, SECOND_KEY]]);
   assert.deepEqual(subject.proof.ownedCreateMutationKeys, [FIRST_KEY, SECOND_KEY]);
   assert.equal(subject.calls.at(-1), 'dispose');
+});
+
+test('retains the observer when the final receipt read fails after a trusted-click timeout', async () => {
+  const subject = harness({
+    receipts: [new Error('receipt read unavailable')],
+    saveClick: async () => {
+      throw new Error('trusted_click_timeout_after_commit');
+    },
+  });
+
+  await assert.rejects(subject.run(), /trusted_click_timeout_after_commit/);
+  assert.equal(subject.calls.includes('dispose'), false);
+  assert.equal(subject.proof.captureSave.receiptObserverDisposed, false);
+});
+
+test('retains the observer when receipt-key persistence fails', async () => {
+  const subject = harness({
+    receipts: [receipt([FIRST_KEY])],
+    saveClick: async () => undefined,
+    persistFailure: true,
+  });
+
+  await assert.rejects(subject.run(), /capture_save_receipt_persist_failed/);
+  assert.equal(subject.calls.includes('dispose'), false);
+  assert.equal(subject.proof.captureSave.receiptObserverDisposed, false);
 });
