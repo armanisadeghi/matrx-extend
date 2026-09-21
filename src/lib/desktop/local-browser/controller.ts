@@ -204,6 +204,29 @@ function mapPrivateFailure(error: string): LocalBrowserRefusalReason {
   }
 }
 
+function privateFailureDiagnosticLabel(
+  error: string,
+):
+  | 'identity_changed'
+  | 'invalid_response'
+  | 'deadline_exceeded'
+  | 'network_error'
+  | 'http_error'
+  | 'response_too_large'
+  | 'other' {
+  switch (error) {
+    case 'identity_changed':
+    case 'invalid_response':
+    case 'deadline_exceeded':
+    case 'network_error':
+    case 'http_error':
+    case 'response_too_large':
+      return error;
+    default:
+      return 'other';
+  }
+}
+
 function sameRegistration(left: Registration | null, right: Registration): boolean {
   return (
     left?.socketEpoch === right.socketEpoch &&
@@ -1277,9 +1300,13 @@ export class LocalBrowserController {
     ).then(resolveWork, () => resolveWork({ reason: 'authority_refused' }));
     try {
       const outcome = await work;
-      return 'receipt' in outcome && !this.canMutate(context, registration, deadlineMs)
-        ? { reason: 'binding_changed' }
-        : outcome;
+      if ('receipt' in outcome && !this.canMutate(context, registration, deadlineMs)) {
+        this.logCleanupDiagnostic('completion_fence', [
+          ...this.cleanupCurrentnessPredicates(context, registration, deadlineMs),
+        ]);
+        return { reason: 'binding_changed' };
+      }
+      return outcome;
     } finally {
       if (entry.cleanup === work) {
         entry.cleanup = null;
@@ -1299,7 +1326,10 @@ export class LocalBrowserController {
     entry: OwnedRun,
     record: CleanupReceipt,
   ): Promise<CleanupOutcome> {
-    if (!sameRegistration(entry.registration, registration)) return { reason: 'authority_refused' };
+    if (!sameRegistration(entry.registration, registration)) {
+      this.logCleanupDiagnostic('entry_fence', ['entry_registration']);
+      return { reason: 'authority_refused' };
+    }
     if (entry?.admitted) await entry.admitted;
     const verified = await this.deps.verify({
       grant: frame.grant,
@@ -1307,14 +1337,45 @@ export class LocalBrowserController {
       expectedActor: actor,
       deadlineMs,
     });
-    if (!verified.ok) return { reason: mapPrivateFailure(verified.error) };
-    if (verified.data.status !== 'accepted') return { reason: 'authority_refused' };
-    if (
-      !this.canMutate(context, registration, deadlineMs) ||
-      this.entries.get(entry.key) !== entry ||
-      this.cleanupReceipts.get(cleanupKey(claims)) !== record
-    )
+    if (!verified.ok) {
+      this.logCleanupDiagnostic('verify_failed', [
+        `verify_${privateFailureDiagnosticLabel(verified.error)}`,
+        ...this.cleanupCurrentnessPredicates(
+          context,
+          registration,
+          deadlineMs,
+          entry,
+          record,
+          claims,
+        ),
+      ]);
+      return { reason: mapPrivateFailure(verified.error) };
+    }
+    if (verified.data.status !== 'accepted') {
+      this.logCleanupDiagnostic('verify_not_accepted', [
+        ...this.cleanupCurrentnessPredicates(
+          context,
+          registration,
+          deadlineMs,
+          entry,
+          record,
+          claims,
+        ),
+      ]);
+      return { reason: 'authority_refused' };
+    }
+    const beforeRemove = this.cleanupCurrentnessPredicates(
+      context,
+      registration,
+      deadlineMs,
+      entry,
+      record,
+      claims,
+    );
+    if (beforeRemove.length) {
+      this.logCleanupDiagnostic('fence_before_remove', beforeRemove);
       return { reason: 'binding_changed' };
+    }
     if (entry.expiryTimer) clearTimeout(entry.expiryTimer);
     let receipt: 'closed' | 'already_absent' | 'unconfirmed' = 'already_absent';
     if (entry.tabId !== null) {
@@ -1325,12 +1386,18 @@ export class LocalBrowserController {
         receipt = 'unconfirmed';
       }
     }
-    if (
-      !this.canMutate(context, registration, deadlineMs) ||
-      this.entries.get(entry.key) !== entry ||
-      this.cleanupReceipts.get(cleanupKey(claims)) !== record
-    )
+    const afterRemove = this.cleanupCurrentnessPredicates(
+      context,
+      registration,
+      deadlineMs,
+      entry,
+      record,
+      claims,
+    );
+    if (afterRemove.length) {
+      this.logCleanupDiagnostic('fence_after_remove', afterRemove);
       return { reason: 'binding_changed' };
+    }
     record.receipt = receipt;
     entry.tabId = null;
     entry.leaseExpiresAtMs = null;
@@ -1366,15 +1433,72 @@ export class LocalBrowserController {
       expectedActor: actor,
       deadlineMs,
     });
-    if (
-      !this.canMutate(context, record.registration, deadlineMs) ||
-      this.cleanupReceipts.get(cleanupKey(claims)) !== record
-    )
+    const acknowledgementFence = this.cleanupCurrentnessPredicates(
+      context,
+      record.registration,
+      deadlineMs,
+      undefined,
+      record,
+      claims,
+    );
+    if (acknowledgementFence.length) {
+      this.logCleanupDiagnostic('ack_fence', acknowledgementFence);
       return { reason: 'binding_changed' };
-    if (!acknowledged.ok) return { reason: mapPrivateFailure(acknowledged.error) };
-    if (acknowledged.data.status !== 'accepted' || acknowledged.data.operation !== 'cleanup')
+    }
+    if (!acknowledged.ok) {
+      this.logCleanupDiagnostic('ack_failed', [
+        `ack_${privateFailureDiagnosticLabel(acknowledged.error)}`,
+        ...this.cleanupCurrentnessPredicates(
+          context,
+          record.registration,
+          deadlineMs,
+          undefined,
+          record,
+          claims,
+        ),
+      ]);
+      return { reason: mapPrivateFailure(acknowledged.error) };
+    }
+    if (acknowledged.data.status !== 'accepted' || acknowledged.data.operation !== 'cleanup') {
+      this.logCleanupDiagnostic('ack_not_accepted', [
+        ...this.cleanupCurrentnessPredicates(
+          context,
+          record.registration,
+          deadlineMs,
+          undefined,
+          record,
+          claims,
+        ),
+      ]);
       return { reason: 'authority_refused' };
+    }
     return { receipt: acknowledged.data.receipt.status };
+  }
+
+  private cleanupCurrentnessPredicates(
+    context: number,
+    registration: Registration,
+    deadlineMs: number,
+    entry?: OwnedRun,
+    record?: CleanupReceipt,
+    claims?: Extract<LocalBrowserGrantClaims, { operation: 'cleanup' }>,
+  ): string[] {
+    const predicates: string[] = [];
+    if (context !== this.contextGeneration) predicates.push('context');
+    if (registration.socketEpoch !== this.deps.getSocketEpoch()) predicates.push('socket');
+    if (!sameRegistration(this.activeRegistration, registration)) predicates.push('registration');
+    if (Date.now() >= deadlineMs) predicates.push('deadline_expired');
+    if (entry && this.entries.get(entry.key) !== entry) predicates.push('entry');
+    if (record && claims && this.cleanupReceipts.get(cleanupKey(claims)) !== record)
+      predicates.push('cleanup_record');
+    return predicates;
+  }
+
+  private logCleanupDiagnostic(stage: string, predicates: string[]): void {
+    log.warn(
+      'desktop',
+      `local_browser_cleanup_${stage}:${predicates.length ? predicates.join(',') : 'none'}`,
+    );
   }
 
   private purgeCleanupReceipts(): void {

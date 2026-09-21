@@ -924,6 +924,7 @@ describe('owned local-browser tab controller', () => {
   });
 
   it('acknowledges cleanup after Chrome reports the owned tab removed during close', async () => {
+    vi.mocked(log.warn).mockClear();
     const h = harness();
     const registration = await register(h);
     h.deps.verify = vi.fn(async (request) =>
@@ -983,9 +984,81 @@ describe('owned local-browser tab controller', () => {
       }),
     );
     expect(h.sent.at(-1)).toMatchObject({ operation: 'cleanup', receipt: 'closed' });
+    expect(vi.mocked(log.warn)).not.toHaveBeenCalled();
+  });
+
+  it('logs only closed currentness labels when cleanup is invalidated after close', async () => {
+    vi.mocked(log.warn).mockClear();
+    const h = harness();
+    const registration = await register(h);
+    h.deps.verify = vi.fn(async (request) =>
+      request.proof.operation === 'cleanup'
+        ? { ok: true as const, data: { status: 'accepted' as const, stop_id: stopId } }
+        : {
+            ok: true as const,
+            data: {
+              status: 'accepted' as const,
+              admission_id: ids.admission,
+              deadline_ms: Date.now() + 10_000,
+            },
+          },
+    );
+    h.deps.acknowledge = vi.fn(async (request) =>
+      request.operation === 'cleanup'
+        ? {
+            ok: true as const,
+            data: {
+              status: 'accepted' as const,
+              operation: 'cleanup' as const,
+              receipt: { stop_id: stopId, status: 'closed' as const },
+            },
+          }
+        : {
+            ok: true as const,
+            data: {
+              status: 'accepted' as const,
+              operation: 'admit' as const,
+              receipt: { admission_id: ids.admission, status: 'created' as const },
+              lease_expires_at_ms: Date.now() + 10_000,
+            },
+          },
+    );
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: opaqueAdmitGrant(registration.generation, registration.connection),
+    });
+    h.remove.mockImplementation(async () => {
+      h.invalidated();
+    });
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: '00000000-0000-4000-8000-000000000025',
+      operation: 'cleanup',
+      grant: opaqueCleanupGrant(registration.generation, registration.connection),
+    });
+    expect(h.remove).toHaveBeenCalledWith(42);
+    expect(h.deps.acknowledge).not.toHaveBeenCalledWith(
+      expect.objectContaining({ operation: 'cleanup' }),
+    );
+    expect(h.sent.at(-1)).toMatchObject({
+      operation: 'cleanup',
+      status: 'refused',
+      reason: 'binding_changed',
+    });
+    expect(vi.mocked(log.warn).mock.calls).toEqual([
+      [
+        'desktop',
+        'local_browser_cleanup_fence_after_remove:context,registration,entry,cleanup_record',
+      ],
+    ]);
   });
 
   it('never closes a tab when cleanup verification is HTTP-successful but refused', async () => {
+    vi.mocked(log.warn).mockClear();
     const h = harness();
     const registration = await register(h);
     await h.emit({
@@ -1008,9 +1081,13 @@ describe('owned local-browser tab controller', () => {
     });
     expect(h.remove).not.toHaveBeenCalled();
     expect(h.sent.at(-1)).toMatchObject({ operation: 'cleanup', status: 'refused' });
+    expect(vi.mocked(log.warn).mock.calls).toEqual([
+      ['desktop', 'local_browser_cleanup_verify_not_accepted:none'],
+    ]);
   });
 
   it('does not acknowledge a cleanup when its registration is invalidated during ack', async () => {
+    vi.mocked(log.warn).mockClear();
     const h = harness();
     const registration = await register(h);
     h.deps.verify = vi.fn(async (request) =>
@@ -1071,6 +1148,9 @@ describe('owned local-browser tab controller', () => {
     releaseCleanupAck();
     await cleanup;
     expect(h.sent.at(-1)).toMatchObject({ operation: 'cleanup', status: 'refused' });
+    expect(vi.mocked(log.warn).mock.calls).toEqual([
+      ['desktop', 'local_browser_cleanup_ack_fence:context,registration,cleanup_record'],
+    ]);
   });
 
   it('serializes two concurrent cleanup calls behind one exact close', async () => {
