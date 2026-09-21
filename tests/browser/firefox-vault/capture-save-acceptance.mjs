@@ -38,7 +38,7 @@ async function saveButton(adapter) {
   return adapter.waitFor(document => {
     const heading = [...document.querySelectorAll('p')].find(node => node.textContent?.trim() === 'Save this login to your Vault?' && node.getBoundingClientRect().height > 0);
     const card = heading?.parentElement?.parentElement?.parentElement;
-    const buttons = [...card?.querySelectorAll('button') ?? []].filter(button => button.textContent?.trim() === 'Save as new');
+    const buttons = [...card?.querySelectorAll('button') ?? []].filter(button => ['Save', 'Save as new'].includes(button.textContent?.trim()));
     if (buttons.length !== 1) return null;
     const path = [];
     for (let node = buttons[0]; node && node !== document.documentElement; node = node.parentElement) {
