@@ -85,6 +85,10 @@ import { type PanelActionAdmission, usePanelAdmission } from './usePanelAdmissio
 import { useCredentialLogin, useVault } from './useVault';
 
 const WEB_VAULT_URL = `${ENV.FRONTEND_URL}/vault`;
+const RESTRICTED_PAGE_REMEDY =
+  "This browser page can't be filled. Open a sign-in page on a regular website, or enter the login manually.";
+const UNAVAILABLE_PAGE_REMEDY =
+  'Saved logins are unavailable right now. Enter the login manually, or focus the username or password field on a supported sign-in page and try Fill again.';
 
 type Scope = 'mine' | 'shared';
 
@@ -195,17 +199,17 @@ function VaultSession({
         <SiteSection
           key={tab.id ?? 'no-tab'}
           host={panel.status === 'ready' ? (safeParseUrl(panel.pageUrl)?.host ?? null) : host}
-          allowAutomaticLogin={!panelUnavailable && !childOffer && login.supported}
+          allowAutomaticLogin={fillable && !panelUnavailable && !childOffer && login.supported}
           blockedReason={
-            panelUnavailable
-              ? panel.status === 'loading'
-                ? 'Checking saved logins…'
-                : 'Saved logins are unavailable right now. Focus the login field to try again.'
+            !fillable
+              ? RESTRICTED_PAGE_REMEDY
+              : panelUnavailable
+                ? panel.status === 'loading'
+                  ? 'Checking saved logins…'
+                  : UNAVAILABLE_PAGE_REMEDY
               : !login.supported && panel.status !== 'ready'
                 ? 'Browser login is not available in this browser yet.'
-                : !fillable
-                  ? 'Browser login only runs on https pages.'
-                  : null
+                : null
           }
           pageUrl={panel.status === 'ready' ? panel.pageUrl : pageUrl}
           matches={panel.status === 'ready' ? panel.matches : vault.matches}
