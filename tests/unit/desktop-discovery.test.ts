@@ -118,6 +118,51 @@ describe('desktop engine discovery', () => {
     await expect(getEngineBaseUrl()).resolves.toBeNull();
   });
 
+  it('verifies a port override instead of trusting it forever', async () => {
+    remoteQuery({ data: [], error: null });
+    await chrome.storage.local.set({ matrxLocalEnginePortOverride: 22141 });
+    const fetchMock = vi.fn(async (_input: string | URL | Request) => {
+      throw new Error('connection refused');
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const { getEngineBaseUrl } = await import('@/lib/desktop/discovery');
+    // An override skips DISCOVERY, not verification. Returning it unprobed
+    // made one stale value a permanent outage: no transport failure and no
+    // Re-discover could dislodge it, so the bridge reported "not running"
+    // forever with the engine alive on another port.
+    await expect(getEngineBaseUrl()).resolves.toBeNull();
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://127.0.0.1:22141/health',
+      expect.anything(),
+    );
+
+    // It must NOT silently fall through to whatever else answers the scan:
+    // an override names one specific engine on purpose.
+    expect(
+      fetchMock.mock.calls.some((c) => String(c[0]).includes('22147')),
+    ).toBe(false);
+  });
+
+  it('uses a port override that is actually answering', async () => {
+    remoteQuery({ data: [], error: null });
+    await chrome.storage.local.set({ matrxLocalEnginePortOverride: 22141 });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: string | URL | Request) => {
+        if (String(input) === 'http://127.0.0.1:22141/health') {
+          return new Response(
+            JSON.stringify({ status: 'ok', service: 'matrx-local', version: '1.4.15' }),
+            { status: 200 },
+          );
+        }
+        throw new Error('connection refused');
+      }),
+    );
+    const { getEngineBaseUrl } = await import('@/lib/desktop/discovery');
+    await expect(getEngineBaseUrl()).resolves.toBe('http://127.0.0.1:22141');
+  });
+
   it('rate-limits the full port sweep instead of re-scanning every 30s forever', async () => {
     remoteQuery({ data: [], error: null });
     const fetchMock = vi.fn(async () => Promise.reject(new Error('connection refused')));

@@ -177,6 +177,13 @@ async function resolveWsUrl(forceRediscover: boolean): Promise<ResolvedWsUrl> {
  */
 export async function connectWs(): Promise<WsControlResult> {
   installRouterIfNeeded();
+  // We are ATTEMPTING a connection, so whatever the last close meant is
+  // spent. Without this the bridge could go silently dead forever: an idle
+  // close sets `intentional`, and a reopen whose socket dies BEFORE it
+  // opens broadcasts no state at all (the offscreen only owns `state.ws`
+  // from the open listener onward), so the flag stayed true and the probe
+  // alarm refused to reopen a healthy engine's failed socket.
+  lastCloseWasIntentional = false;
   const resolved = await resolveWsUrl(false);
   if (!resolved.wsUrl) {
     const result: WsControlResult = {

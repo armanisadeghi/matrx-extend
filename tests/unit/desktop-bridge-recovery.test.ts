@@ -175,3 +175,106 @@ describe('only the service worker answers the offscreen', () => {
     expect(registered).not.toContain('ws:reconnect');
   });
 });
+
+describe('the bridge cannot go silently dead', () => {
+  it('announces a socket that dies before it ever opened', async () => {
+    // The dangerous shape found by review: the idle watchdog closes on
+    // purpose, the reopen attempt fails BEFORE the socket opens, and
+    // nothing says so — leaving the worker believing the last close was
+    // deliberate and refusing to reopen a healthy engine's dead socket.
+    const broadcasts: Array<{ kind: string; payload: unknown }> = [];
+    vi.doMock('@/lib/messaging/native', () => ({
+      broadcast: (kind: string, payload: unknown) => broadcasts.push({ kind, payload }),
+      send: vi.fn(async () => ({ ok: false })),
+      on: (kind: string, handler: (p: unknown) => unknown) => {
+        offscreenHandlers.set(kind, handler);
+        return () => undefined;
+      },
+    }));
+    const offscreenHandlers = new Map<string, (p: unknown) => unknown>();
+
+    class DyingSocket {
+      static readonly OPEN = 1;
+      static readonly CONNECTING = 0;
+      static last: DyingSocket | null = null;
+      readyState = 0;
+      private listeners = new Map<string, Array<(e: { code?: number; reason?: string }) => void>>();
+      constructor(_url: string) {
+        DyingSocket.last = this;
+      }
+      addEventListener(t: string, fn: (e: { code?: number; reason?: string }) => void): void {
+        this.listeners.set(t, [...(this.listeners.get(t) ?? []), fn]);
+      }
+      close(): void {
+        /* no-op */
+      }
+      send(): void {
+        /* no-op */
+      }
+      die(): void {
+        this.readyState = 3;
+        for (const fn of this.listeners.get('close') ?? []) fn({ code: 1006, reason: '' });
+      }
+    }
+    vi.stubGlobal('WebSocket', DyingSocket);
+    vi.stubGlobal('crypto', { randomUUID: () => 'epoch' });
+
+    const mod = await import('@/lib/desktop/ws-offscreen');
+    mod.startWsOffscreenRuntime();
+    const started = offscreenHandlers.get('ws:start')?.({
+      wsUrl: 'ws://127.0.0.1:22140/extension/ws?token=t',
+      identity: { extensionId: 'x', version: '1', name: 'test' },
+      backgroundBootId: 'boot',
+    });
+    for (let i = 0; i < 6; i++) await Promise.resolve();
+    DyingSocket.last?.die();
+    for (let i = 0; i < 6; i++) await Promise.resolve();
+    await started;
+
+    const states = broadcasts.filter((b) => b.kind === 'ws:state');
+    expect(states.length).toBeGreaterThan(0);
+    // And crucially it must NOT be flagged intentional.
+    expect(
+      states.every((b) => (b.payload as { intentional?: boolean }).intentional !== true),
+    ).toBe(true);
+  });
+
+  it('clears the intentional flag the moment a connection is attempted', async () => {
+    vi.stubGlobal('window', undefined);
+    vi.stubGlobal('document', undefined);
+    let listener: ((m: unknown) => boolean) | undefined;
+    vi.stubGlobal('crypto', { randomUUID: () => 'boot' });
+    vi.stubGlobal('chrome', {
+      runtime: {
+        onMessage: {
+          addListener: (fn: (m: unknown) => boolean) => {
+            listener = fn;
+          },
+        },
+        getManifest: () => ({ version: '1', name: 't' }),
+        id: 'x',
+      },
+    });
+    vi.doMock('@/lib/desktop/discovery', () => ({
+      getEngineBaseUrl: async () => null,
+      invalidateEnginePortCache: async () => undefined,
+    }));
+    vi.doMock('@/lib/desktop/http', () => ({ ensurePairToken: async () => null }));
+    vi.doMock('@/lib/stream/offscreen-proxy', () => ({ ensureOffscreen: async () => undefined }));
+
+    const ws = await import('@/lib/desktop/ws-client');
+    ws.installWsRouter();
+    listener?.({ __matrx: true, kind: 'ws:state', payload: { state: 'open' } });
+    listener?.({
+      __matrx: true,
+      kind: 'ws:state',
+      payload: { state: 'closed', intentional: true },
+    });
+    expect(ws.shouldBackgroundReopenWs()).toBe(false);
+
+    // Something asked for a connection (an outbound send, a person, a
+    // transport transition). Whatever the last close meant, it is spent.
+    await ws.connectWs();
+    expect(ws.shouldBackgroundReopenWs()).toBe(true);
+  });
+});

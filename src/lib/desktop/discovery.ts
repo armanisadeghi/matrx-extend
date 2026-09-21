@@ -9,7 +9,10 @@
  *
  * Resolution order:
  *   1. User override in chrome.storage.local (`matrxLocalEnginePortOverride`)
- *      — set from the Settings UI, skips probing entirely.
+ *      — set from the Settings UI. It skips DISCOVERY, not verification: the
+ *      port is probed, and a dead one returns null with a remedy rather than
+ *      falling through to whatever else answers the scan (which could
+ *      cross-connect a developer to the wrong engine).
  *   2. Cached port (`matrxLocalEnginePort` = `{port, expiresAt}`) if not
  *      expired. TTL is 30 minutes.
  *   3. The last port that ever answered (`matrxLocalEngineLastGoodPort`),
@@ -118,6 +121,8 @@ let nextSweepAllowedAt = 0;
  * all and never will.
  */
 let nextRemoteLookupAllowedAt = 0;
+/** Warn once per outage, not once per 30s tick. */
+let overrideReportedDead = false;
 
 /**
  * Clear the full-sweep rate limit so the next resolve scans immediately.
@@ -135,8 +140,28 @@ export function resetEngineDiscoveryBackoff(): void {
 export async function getEngineBaseUrl(): Promise<string | null> {
   const override = await getEnginePortOverride();
   if (override !== null) {
-    return `http://127.0.0.1:${override}`;
+    // An override is an explicit instruction about WHICH engine to talk to,
+    // so a dead one is never silently replaced by whatever else answers the
+    // scan — that could cross-connect a developer to the wrong engine. But
+    // it must not be a silent permanent outage either: it skipped every
+    // probe, and no transport failure or Re-discover could dislodge it, so
+    // one stale override meant "matrx-local is not running" forever with
+    // the app open. Probe it, and say exactly what is wrong when it is dead.
+    const alive = await probeOne(override).catch(() => null);
+    if (alive !== null) {
+      overrideReportedDead = false;
+      return `http://127.0.0.1:${override}`;
+    }
+    if (!overrideReportedDead) {
+      overrideReportedDead = true;
+      log.warn(
+        'desktop',
+        `desktop port override 127.0.0.1:${override} is not answering — no engine there. Clear or correct it in Settings → Desktop Bridge; auto-discovery stays off while an override is set.`,
+      );
+    }
+    return null;
   }
+  overrideReportedDead = false;
 
   const cached = await readCachedEntry();
   if (cached && cached.expiresAt > Date.now()) {

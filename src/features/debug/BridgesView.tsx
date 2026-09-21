@@ -22,7 +22,8 @@ import {
   useBridgeTrafficStore,
 } from '@/lib/debug/bridge-traffic';
 import { type DebugEvent, log, useDebugStore } from '@/lib/debug/log';
-import { type Transport, getDesktopState, probeDesktop } from '@/lib/desktop/bridge';
+import { useDesktopBridge } from '@/hooks/use-desktop';
+import type { Transport } from '@/lib/desktop/bridge';
 import {
   getEngineBaseUrl,
   getEnginePortOverride,
@@ -271,6 +272,8 @@ function ChannelBPanel() {
 }
 
 function DiscoverySection() {
+  // The worker's view of the bridge, delivered by DESKTOP_AVAILABILITY.
+  const desktop = useDesktopBridge();
   const [override, setOverrideState] = useState<number | null>(null);
   const [overrideDraft, setOverrideDraft] = useState('');
   const [resolved, setResolved] = useState<string | null>(null);
@@ -283,7 +286,11 @@ function DiscoverySection() {
     const ov = await getEnginePortOverride();
     setOverrideState(ov);
     setPaired((await getPairToken()) !== null);
-    const s = getDesktopState();
+    // The SHARED store, fed by the worker's DESKTOP_AVAILABILITY broadcast —
+    // not `getDesktopState()`, which is per-context module state that in a
+    // side panel only ever reflects a probe this panel ran itself. Reading
+    // that is how this screen showed a connection the worker did not have.
+    const s = desktop;
     if (s.transport !== 'none') {
       setResolved(formatDesktopConnectionLabel(s.transport, s.health));
       const state = engineHealthState(s.health);
@@ -296,7 +303,7 @@ function DiscoverySection() {
       setResolved(null);
       setHealthDetail(null);
     }
-  }, []);
+  }, [desktop]);
 
   useEffect(() => {
     void refresh();
@@ -310,10 +317,23 @@ function DiscoverySection() {
     // the socket all live there; resetting this context's own copies left
     // the background poll still backed off and every tool still offline
     // while this panel said "connected".
-    const r = await send<unknown, { transport: Transport; health: DesktopHealth | null }>(
-      CHANNELS.DESKTOP_REDISCOVER,
-      {},
-    ).catch(() => probeDesktop());
+    // No local fallback probe here. Probing from the side panel and
+    // presenting the result as the worker's answer is exactly how this
+    // screen used to say "connected" while every tool stayed offline.
+    let r: { transport: Transport; health: DesktopHealth | null };
+    try {
+      r = await send<unknown, { transport: Transport; health: DesktopHealth | null }>(
+        CHANNELS.DESKTOP_REDISCOVER,
+        {},
+      );
+    } catch (err) {
+      setResolved('could not reach the background worker');
+      setHealthDetail(
+        `${(err as Error).message} — the extension may be reloading; try again in a moment`,
+      );
+      setWorking(false);
+      return;
+    }
     if (r.transport !== 'none') {
       setResolved(formatDesktopConnectionLabel(r.transport, r.health));
       const state = engineHealthState(r.health);
@@ -344,6 +364,10 @@ function DiscoverySection() {
       await setEnginePortOverride(n);
       log.info('desktop', `bridges: override → ${n}`);
     }
+    // The worker owns the discovery gate and the socket; without this the
+    // new override sat unused behind the worker's backoff while this panel
+    // showed it as applied.
+    await send(CHANNELS.DESKTOP_REDISCOVER, {}).catch(() => undefined);
     await refresh();
   }, [overrideDraft, refresh]);
 
@@ -351,6 +375,7 @@ function DiscoverySection() {
     await setEnginePortOverride(null);
     setOverrideDraft('');
     log.info('desktop', 'bridges: override cleared');
+    await send(CHANNELS.DESKTOP_REDISCOVER, {}).catch(() => undefined);
     await refresh();
   }, [refresh]);
 
@@ -609,8 +634,22 @@ function WsSection() {
    * tear the connection down — a flip-flop on every alarm tick.
    */
   const wsControl = useCallback(
-    (action: 'connect' | 'disconnect' | 'reconnect') =>
-      send<{ action: typeof action }, WsControlResult>(CHANNELS.WS_RECONNECT, { action }),
+    async (action: 'connect' | 'disconnect' | 'reconnect'): Promise<WsControlResult> => {
+      try {
+        return await send<{ action: typeof action }, WsControlResult>(CHANNELS.WS_RECONNECT, {
+          action,
+        });
+      } catch (err) {
+        // A rejected send (worker updating, context invalidated) used to
+        // throw past the caller's `finally`: the spinner cleared and the
+        // screen said nothing at all. A button that did nothing must say so.
+        return {
+          ok: false,
+          error: `could not reach the background worker: ${(err as Error).message}`,
+          stage: 'send',
+        };
+      }
+    },
     [],
   );
 

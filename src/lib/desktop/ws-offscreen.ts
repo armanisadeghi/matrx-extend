@@ -320,6 +320,14 @@ async function openWebSocket(): Promise<void> {
 
         ws.addEventListener('close', (ev) => {
           clearTimeout(openTimeout);
+          // A socket that dies BEFORE it opens never became `state.ws`, so
+          // handleClose below does not run and nothing would announce the
+          // failure. Say it anyway — the SW distinguishes an intentional
+          // close from a failed one, and an unannounced failure left it
+          // believing the last close was deliberate and refusing to reopen.
+          if (state.ws !== ws) {
+            broadcast<{ state: 'closed' }>(CHANNELS.WS_STATE, { state: 'closed' });
+          }
           // Browsers redact WS handshake failure detail for security, so the
           // 'error' event arrives empty. The close event right after carries
           // the only signal we get: a numeric code (1006 = abnormal,
