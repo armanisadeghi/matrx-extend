@@ -341,6 +341,46 @@ const probeFixtureBridge = async fixtureUrl => {
     await wdPost(base, `/session/${sessionId}/window`, { handle: originalHandle });
   }
 };
+const diagnoseFixtureCapture = async fixtureUrl => {
+  assert.ok(typeof fixtureUrl === 'string' && fixtureUrl.startsWith('http://127.0.0.1:'), 'capture_diagnostic_fixture_url_invalid');
+  assert.ok(storageHandle, 'storage_tab_handle_missing');
+  await getContext('content');
+  const originalHandle = await wdGet(base, `/session/${sessionId}/window`);
+  assert.ok(typeof originalHandle === 'string' && originalHandle.length > 0, 'capture_diagnostic_original_window_missing');
+  try {
+    await wdPost(base, `/session/${sessionId}/window`, { handle: storageHandle });
+    await getContext('content');
+    return await executeContentAsync(`
+      const done = arguments[arguments.length - 1];
+      (async () => {
+        const api = globalThis.browser ?? globalThis.chrome;
+        const expected = new URL(arguments[0]);
+        const tabs = await api.tabs.query({});
+        const fixture = tabs.filter(tab => tab.url === arguments[0] && Number.isInteger(tab.id));
+        if (fixture.length !== 1) return { fixtureTabFound: false, documentIdPresent: false, normalizedUrlMatch: false, fixtureTabActive: false, activeTabMatchesFixture: false, captureEnabled: null, statusType: 'absent', pendingIdPresent: false, pendingCount: 0 };
+        const tab = fixture[0];
+        const [frame, active, settings] = await Promise.all([
+          api.webNavigation.getFrame({ tabId: tab.id, frameId: 0 }).catch(() => null),
+          api.tabs.query({ active: true, currentWindow: true }).catch(() => []),
+          api.storage.local.get('matrx.settings.v1').catch(() => ({})),
+        ]);
+        let normalizedUrlMatch = false;
+        try { const current = new URL(frame?.url || ''); normalizedUrlMatch = current.origin === expected.origin && current.pathname === expected.pathname && current.search === expected.search; } catch {}
+        let response = null;
+        try { response = await api.runtime.sendMessage({ __matrx: true, kind: 'credential-capture:status', payload: { tabId: tab.id } }); } catch {}
+        const state = settings?.['matrx.settings.v1']?.state;
+        const enabled = typeof state?.captureLoginsEnabled === 'boolean' ? state.captureLoginsEnabled : null;
+        return { fixtureTabFound: true, documentIdPresent: typeof frame?.documentId === 'string' && frame.documentId.length > 0,
+          normalizedUrlMatch, fixtureTabActive: tab.active === true, activeTabMatchesFixture: active.length === 1 && active[0]?.id === tab.id,
+          captureEnabled: enabled, statusType: response === null ? 'null' : typeof response === 'object' ? 'object' : 'other',
+          pendingIdPresent: typeof response?.candidateId === 'string' && response.candidateId.length > 0,
+          pendingCount: response && typeof response === 'object' ? 1 : 0 };
+      })().then(done, () => done({ fixtureTabFound: false, documentIdPresent: false, normalizedUrlMatch: false, fixtureTabActive: false, activeTabMatchesFixture: false, captureEnabled: null, statusType: 'error', pendingIdPresent: false, pendingCount: 0 }));`, [fixtureUrl]);
+  } finally {
+    await getContext('content');
+    await wdPost(base, `/session/${sessionId}/window`, { handle: originalHandle });
+  }
+};
 const readOwnedNetworkObserver = async () => {
   assert.ok(adapter, 'network_observer_adapter_missing');
   await getContext('chrome');
@@ -839,7 +879,7 @@ try {
   if (captureMode) {
     await checkpoint('capture_decisions');
     const { runFirefoxCaptureDecisionChecks } = await import('./capture-decisions.mjs');
-    await runFirefoxCaptureDecisionChecks({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, proof });
+    await runFirefoxCaptureDecisionChecks({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, diagnoseFixtureCapture, proof });
     assert.equal(proof.captureDecisions?.ok, true, 'firefox_capture_decisions_incomplete');
     await persist();
   }
