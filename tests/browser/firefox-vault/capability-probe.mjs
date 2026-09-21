@@ -118,6 +118,7 @@ const manifest = {
 };
 const background = `
 const senders = [];
+let sessionProbe = null;
 browser.runtime.onMessage.addListener((message, sender) => {
   if (message?.kind === 'sender-probe') {
     senders.push({
@@ -129,11 +130,18 @@ browser.runtime.onMessage.addListener((message, sender) => {
     });
     return Promise.resolve({ ok: true });
   }
-  if (message?.kind === 'get-senders') return Promise.resolve(senders);
+  if (message?.kind === 'session-probe') { sessionProbe = message.result; return Promise.resolve({ ok: true }); }
+  if (message?.kind === 'get-senders') return Promise.resolve({ senders, sessionProbe });
   if (message?.kind === 'sidebar-ping') return Promise.resolve({ ok: true, frameUrl: location.href });
 });`;
 const content = `
 browser.runtime.sendMessage({ kind: 'sender-probe' }).catch(() => undefined);
+(async () => {
+  const sessionPresent = !!browser.storage?.session;
+  let contentReadable = false;
+  try { await browser.storage.session.get('__matrx_probe_missing__'); contentReadable = true; } catch {}
+  browser.runtime.sendMessage({ kind: 'session-probe', result: { sessionPresent, contentReadable } }).catch(() => undefined);
+})();
 browser.runtime.onMessage.addListener(message => message?.kind === 'sidebar-ping'
   ? Promise.resolve({ ok: true, hrefMatches: location.protocol === 'http:' })
   : undefined);`;
@@ -229,7 +237,8 @@ try {
       const tabs = await browser.tabs.query({});
       const tab = tabs.find(candidate => candidate.url === arguments[0]);
       if (!tab?.id) throw new Error('fixture_tab_missing');
-      const senders = await browser.runtime.sendMessage({ kind: 'get-senders' });
+      const senderState = await browser.runtime.sendMessage({ kind: 'get-senders' });
+      const senders = senderState.senders;
       const topSender = senders.find(sender => sender.tabId === tab.id && sender.frameId === 0);
       const childSender = senders.find(sender => sender.tabId === tab.id && sender.frameId > 0);
       const allFrames = await browser.webNavigation.getAllFrames({ tabId: tab.id });
@@ -282,6 +291,11 @@ try {
         },
         scripting: executeDocumentIds,
         sidebarTabs: sidebarResult,
+        storageSession: {
+          setAccessLevelType: typeof browser.storage?.session?.setAccessLevel,
+          sessionPresent: senderState.sessionProbe?.sessionPresent === true,
+          contentReadable: senderState.sessionProbe?.contentReadable === true,
+        },
       };
     })().then(done, error => done({ fatal: { name: error?.name || 'Error' } }));`, args: [fixture.url] });
   assert.equal(result.fatal, undefined);
@@ -290,11 +304,13 @@ try {
   proof.webNavigation = result.webNavigation;
   proof.scripting = result.scripting;
   proof.sidebarTabs = result.sidebarTabs;
+  proof.storageSession = result.storageSession;
   proof.ok = result.sender.topDocumentIdPresent && result.sender.childDocumentIdPresent
     && result.webNavigation.getFrameDocumentIdPresent && result.webNavigation.getAllFramesEveryDocumentId
     && result.webNavigation.senderMatchesTopFrame && result.webNavigation.senderIdsFoundInAllFrames
     && result.scripting.accepted && result.scripting.exactDocumentMatched
-    && result.sidebarTabs?.queryActive && result.sidebarTabs?.getTab && result.sidebarTabs?.sendMessage;
+    && result.sidebarTabs?.queryActive && result.sidebarTabs?.getTab && result.sidebarTabs?.sendMessage
+    && result.storageSession?.sessionPresent === true;
 } catch (error) {
   failure = error;
   proof.error = safeError(error);
