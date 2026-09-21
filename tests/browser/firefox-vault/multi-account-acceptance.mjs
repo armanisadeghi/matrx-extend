@@ -139,8 +139,48 @@ export function selectUpdateSelector(document, expected) {
   return parts.length ? `html > ${parts.join(' > ')}` : null;
 }
 
-async function updateSelector(adapter, targets) {
-  return adapter.waitFor(selectUpdateSelector, [targets]);
+/** Fixed-shape metadata only: never returns text, field values, or credential data. */
+export function updateChoiceDiagnostic(document, expected) {
+  const headings = [...document.querySelectorAll('p')].filter(
+    (node) => node.textContent?.trim() === 'Save this login to your Vault?',
+  );
+  const updates = [...document.querySelectorAll('button')].filter((button) =>
+    button.textContent?.trim().startsWith('Update'),
+  );
+  return {
+    headingCount: headings.length,
+    visibleHeadingCount: headings.filter((node) => node.getBoundingClientRect().height > 0).length,
+    updateCount: updates.length,
+    saveAsNewCount: [...document.querySelectorAll('button')].filter(
+      (button) => button.textContent?.trim() === 'Save as new',
+    ).length,
+    choices: updates.slice(0, 12).map((button) => {
+      const spans = [...button.querySelectorAll('span')];
+      return {
+        spanCount: spans.length,
+        disabled: button.disabled,
+        primaryMatches: expected.map((target) => spans[0]?.textContent?.trim() === target.primary),
+        secondaryMatches: expected.map(
+          (target) => spans[1]?.textContent?.trim() === `· ${target.secondary}`,
+        ),
+      };
+    }),
+  };
+}
+
+async function updateSelector(adapter, targets, proof) {
+  try {
+    return await adapter.waitFor(selectUpdateSelector, [targets]);
+  } catch (error) {
+    try {
+      proof.multiAccount.updateChoiceDiagnostic = await adapter.evaluate(updateChoiceDiagnostic, [
+        targets,
+      ]);
+    } catch {
+      proof.multiAccount.updateChoiceDiagnostic = { unavailable: true };
+    }
+    throw error;
+  }
 }
 
 async function exactFillSelector(adapter, expectedLabels, selectedLabel) {
@@ -304,13 +344,13 @@ export async function runFirefoxMultiAccountChecks({
       outcome: (document) =>
         document.querySelector('button[title="Vault"]')?.getAttribute('aria-selected') === 'true',
     });
-    const selector = await updateSelector(adapter, labels);
+    const selector = await updateSelector(adapter, labels, proof);
     assert.equal(typeof selector, 'string', 'multi_account_four_exact_update_choices_missing');
     proof.multiAccount.fourSameSiteChoicesVisible = true;
     proof.multiAccount.duplicateNamesHaveUniqueIdSuffixes = true;
     await typeSearch(adapter, { base, sessionId, wdPost, wdDelete }, selected.displayName);
     proof.multiAccount.searchTypedNatively = true;
-    const searchedSelector = await updateSelector(adapter, labels);
+    const searchedSelector = await updateSelector(adapter, labels, proof);
     await adapter.trustedClick(searchedSelector, {
       outcome: (document) =>
         ![...document.querySelectorAll('p')].some(

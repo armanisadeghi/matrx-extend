@@ -696,7 +696,7 @@ describe('content prompt — page overlay', () => {
     };
     const { PendingCaptureCard } = await import('@/features/vault/PendingCaptureCard');
     const view = render(createElement(PendingCaptureCard, { tabId: 7, onSaved: () => undefined }));
-    const { selectUpdateSelector } = await import(
+    const { selectUpdateSelector, updateChoiceDiagnostic } = await import(
       '../browser/firefox-vault/multi-account-acceptance.mjs'
     );
     await act(async () => {
@@ -718,6 +718,16 @@ describe('content prompt — page overlay', () => {
     expect(typeof selector).toBe('string');
     const chosen = document.querySelector(selector as string);
     expect(chosen).toBe(selected);
+    const diagnostic = updateChoiceDiagnostic(document, expected);
+    expect(diagnostic.headingCount).toBe(1);
+    expect(diagnostic.visibleHeadingCount).toBe(1);
+    expect(diagnostic.updateCount).toBe(4);
+    expect(
+      diagnostic.choices.map((choice) => choice.secondaryMatches.filter(Boolean).length),
+    ).toEqual([1, 1, 1, 1]);
+    expect(JSON.stringify(diagnostic)).not.toContain('Example');
+    expect(JSON.stringify(diagnostic)).not.toContain('same-prefix');
+
     const extra = selected.cloneNode(true);
     selected.parentElement?.append(extra);
     expect(selectUpdateSelector(document, expected)).toBeNull();
