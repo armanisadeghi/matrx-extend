@@ -12,8 +12,11 @@ function idPrefix(itemId, itemIds) {
   throw new Error('multi_account_id_prefix_not_unique');
 }
 
-function expectedUpdateLabel(account, itemIds) {
-  return `Update${account.displayName} · ID ${idPrefix(account.itemId, itemIds)}`;
+function expectedUpdateTarget(account, itemIds) {
+  return {
+    primary: account.displayName,
+    secondary: `ID ${idPrefix(account.itemId, itemIds)}`,
+  };
 }
 
 async function elementId({ base, sessionId, wdPost }, selector) {
@@ -87,45 +90,57 @@ async function typeSearch(adapter, { base, sessionId, wdPost, wdDelete }, text) 
   );
 }
 
-async function updateSelector(adapter, labels) {
-  return adapter.waitFor(
-    (document, expected) => {
-      const heading = [...document.querySelectorAll('p')].filter(
-        (node) =>
-          node.textContent?.trim() === 'Save this login to your Vault?' &&
-          node.getBoundingClientRect().height > 0,
-      );
-      if (heading.length !== 1) return null;
-      const buttons = [...document.querySelectorAll('button')].filter((button) =>
-        button.textContent?.trim().startsWith('Update'),
-      );
-      const text = buttons.map((button) => button.textContent?.replace(/\s+/g, ' ').trim());
-      if (
-        buttons.length !== 4 ||
-        new Set(text).size !== 4 ||
-        expected.length !== 4 ||
-        !expected.every((label) => text.includes(label))
-      )
-        return null;
-      const chosen = buttons.filter(
-        (button) => button.textContent?.replace(/\s+/g, ' ').trim() === expected[0],
-      );
-      if (chosen.length !== 1) return null;
-      const parts = [];
-      for (
-        let node = chosen[0];
-        node && node !== document.documentElement;
-        node = node.parentElement
-      ) {
-        const parent = node.parentElement;
-        const index = parent ? [...parent.children].indexOf(node) + 1 : 0;
-        if (index < 1) return null;
-        parts.unshift(`${node.tagName.toLowerCase()}:nth-child(${index})`);
-      }
-      return parts.length ? `html > ${parts.join(' > ')}` : null;
-    },
-    [labels],
+/**
+ * Serialization-safe predicate for adapter.waitFor. PendingCaptureCard renders
+ * Update as a text node followed by primary and secondary spans, so do not
+ * compare its collapsed textContent (which has no space before the dot).
+ */
+export function selectUpdateSelector(document, expected) {
+  const heading = [...document.querySelectorAll('p')].filter(
+    (node) =>
+      node.textContent?.trim() === 'Save this login to your Vault?' &&
+      node.getBoundingClientRect().height > 0,
   );
+  if (heading.length !== 1) return null;
+  const buttons = [...document.querySelectorAll('button')].filter((button) =>
+    button.textContent?.trim().startsWith('Update'),
+  );
+  if (buttons.length !== 4) return null;
+  const choices = buttons.map((button) => {
+    const spans = [...button.querySelectorAll('span')];
+    if (spans.length !== 2) return null;
+    const primary = spans[0].textContent?.trim();
+    const secondary = spans[1].textContent?.trim();
+    if (!primary || secondary?.startsWith('· ') !== true) return null;
+    return { button, primary, secondary: secondary.slice(2) };
+  });
+  if (choices.some((choice) => choice === null)) return null;
+  const signatures = choices.map((choice) => `${choice.primary}\u0000${choice.secondary}`);
+  const required = expected.map((choice) => `${choice.primary}\u0000${choice.secondary}`);
+  if (new Set(signatures).size !== 4 || new Set(required).size !== 4) return null;
+  if (required.length !== 4 || !required.every((signature) => signatures.includes(signature)))
+    return null;
+  const matching = choices.filter(
+    (choice) =>
+      choice.primary === expected[0].primary && choice.secondary === expected[0].secondary,
+  );
+  if (matching.length !== 1) return null;
+  const parts = [];
+  for (
+    let node = matching[0].button;
+    node && node !== document.documentElement;
+    node = node.parentElement
+  ) {
+    const parent = node.parentElement;
+    const index = parent ? [...parent.children].indexOf(node) + 1 : 0;
+    if (index < 1) return null;
+    parts.unshift(`${node.tagName.toLowerCase()}:nth-child(${index})`);
+  }
+  return parts.length ? `html > ${parts.join(' > ')}` : null;
+}
+
+async function updateSelector(adapter, targets) {
+  return adapter.waitFor(selectUpdateSelector, [targets]);
 }
 
 async function exactFillSelector(adapter, expectedLabels, selectedLabel) {
@@ -235,10 +250,10 @@ export async function runFirefoxMultiAccountChecks({
   const itemIds = accounts.map((account) => account.itemId);
   const selectedPrefix = idPrefix(selected.itemId, itemIds);
   const labels = [
-    expectedUpdateLabel(selected, itemIds),
+    expectedUpdateTarget(selected, itemIds),
     ...accounts
       .filter((_, index) => index !== selectedIndex)
-      .map((account) => expectedUpdateLabel(account, itemIds)),
+      .map((account) => expectedUpdateTarget(account, itemIds)),
   ];
   const driver = { base, sessionId, wdPost };
   const nextPassword = `updated-${randomUUID()}`;

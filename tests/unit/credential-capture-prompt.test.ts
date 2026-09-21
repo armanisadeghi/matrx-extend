@@ -695,19 +695,46 @@ describe('content prompt — page overlay', () => {
       ],
     };
     const { PendingCaptureCard } = await import('@/features/vault/PendingCaptureCard');
-    render(createElement(PendingCaptureCard, { tabId: 7, onSaved: () => undefined }));
+    const view = render(createElement(PendingCaptureCard, { tabId: 7, onSaved: () => undefined }));
+    const { selectUpdateSelector } = await import(
+      '../browser/firefox-vault/multi-account-acceptance.mjs'
+    );
     await act(async () => {
       await Promise.resolve();
     });
 
     expect(screen.getByLabelText('Search saved logins to update')).toBeTruthy();
-    expect(screen.getByRole('button', { name: /ID same-prefix-d/i })).toBeTruthy();
+    const selected = view.getByRole('button', { name: /ID same-prefix-d/i });
+    expect(selected.textContent).toBe('UpdateExample· ID same-prefix-d');
+    const expected = [
+      { primary: 'Example', secondary: 'ID same-prefix-d' },
+      { primary: 'Example', secondary: 'ID same-prefix-a' },
+      { primary: 'Example', secondary: 'ID same-prefix-b' },
+      { primary: 'Example', secondary: 'ID same-prefix-c' },
+    ];
+    const heading = view.getByText('Save this login to your Vault?');
+    heading.getBoundingClientRect = () => ({ height: 1 }) as DOMRect;
+    const selector = selectUpdateSelector(document, expected);
+    expect(typeof selector).toBe('string');
+    const chosen = document.querySelector(selector as string);
+    expect(chosen).toBe(selected);
+    const extra = selected.cloneNode(true);
+    selected.parentElement?.append(extra);
+    expect(selectUpdateSelector(document, expected)).toBeNull();
+    extra.parentNode?.removeChild(extra);
+    const duplicate = view.getByRole('button', { name: /ID same-prefix-c/i });
+    const duplicateSuffix = duplicate.querySelectorAll('span')[1];
+    if (!duplicateSuffix) throw new Error('Update choice secondary label missing');
+    duplicateSuffix.textContent = '· ID same-prefix-d';
+    expect(selectUpdateSelector(document, expected)).toBeNull();
+    duplicateSuffix.textContent = '· ID same-prefix-c';
+    expect(selectUpdateSelector(document, expected)).toBeTruthy();
     expect(screen.getAllByRole('button', { name: /update/i })).toHaveLength(4);
     fireEvent.change(screen.getByLabelText('Search saved logins to update'), {
       target: { value: 'example' },
     });
     expect(screen.getAllByRole('button', { name: /update/i })).toHaveLength(4);
-    fireEvent.click(screen.getByRole('button', { name: /ID same-prefix-d/i }));
+    fireEvent.click(chosen as HTMLElement);
     expect(panelDecisions.at(-1)).toEqual({
       candidateId: 'cap-panel-four-targets',
       action: 'update',
