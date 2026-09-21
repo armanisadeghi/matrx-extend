@@ -1,15 +1,27 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { randomUUID } from 'node:crypto';
+import { runFirefoxCoreUpdateFillChecks } from './core-update-fill-acceptance.mjs';
 
 const ELEMENT_KEY = 'element-6066-11e4-a52e-4f735466cecf';
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function fixture() {
-  const state = { submissions: 0, closed: false };
+  const state = { submissions: 0, updateSubmissions: 0, fillSubmissions: 0, closed: false };
   const server = createServer((request, response) => {
-    if (request.method === 'POST' && request.url === '/submitted') { state.submissions += 1; response.writeHead(204).end(); return; }
+    const pathname = new URL(request.url, 'http://127.0.0.1').pathname;
+    if (request.method === 'POST' && pathname === '/submitted') { state.submissions += 1; response.writeHead(204).end(); return; }
+    if (request.method === 'POST' && pathname === '/submitted/update') { state.updateSubmissions += 1; response.writeHead(204).end(); return; }
+    if (request.method === 'POST' && pathname === '/submitted/fill') { state.fillSubmissions += 1; response.writeHead(204).end(); return; }
     response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+    if (pathname === '/update') {
+      response.end(`<!doctype html><form method="post" action="/submitted/update"><label>Username <input id="username" autocomplete="username"></label><label>Current password <input id="current-password" type="password" autocomplete="current-password"></label><label>New password <input id="new-password" type="password" autocomplete="new-password"></label><label>Confirm password <input id="confirm-password" type="password" autocomplete="new-password"></label><button type="submit">Change password</button></form><script>document.querySelector('form').addEventListener('submit', event => { event.preventDefault(); void fetch('/submitted/update', {method:'POST'}); });</script>`);
+      return;
+    }
+    if (pathname === '/fill') {
+      response.end(`<!doctype html><form method="post" action="/submitted/fill"><label>Username <input id="username" autocomplete="username"></label><label>Password <input id="password" type="password" autocomplete="current-password"></label><button type="submit">Sign in</button></form><script>document.querySelector('form').addEventListener('submit', event => { event.preventDefault(); void fetch('/submitted/fill', {method:'POST'}); });</script>`);
+      return;
+    }
     response.end(`<!doctype html><form method="post" action="/submitted"><label>Username <input id="username" autocomplete="username"></label><label>Password <input id="password" type="password" autocomplete="current-password"></label><button type="submit">Sign in</button></form><script>document.querySelector('form').addEventListener('submit', event => { event.preventDefault(); void fetch('/submitted', {method:'POST'}); });</script>`);
   });
   await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
@@ -73,10 +85,13 @@ async function persistObservedReceipt({ receipt, persistOwnedCreateMutationKeys,
   return receipt;
 }
 
-export async function runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, persistOwnedCreateMutationKeys, verifySavedLogin, proof }) {
+export async function runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, persistOwnedCreateMutationKeys, verifySavedLogin, coreUpdateFill, proof }) {
   assert.ok(adapter && typeof adapter.trustedClick === 'function' && typeof adapter.startVaultCreateReceiptObserver === 'function' && typeof adapter.readVaultCreateReceiptObserver === 'function' && typeof adapter.freezeVaultCreateReceiptObserver === 'function' && typeof adapter.disposeVaultCreateReceiptObserver === 'function', 'capture_save_adapter_contract_invalid');
   assert.equal(typeof persistOwnedCreateMutationKeys, 'function', 'capture_save_receipt_persist_contract_invalid');
   assert.equal(typeof verifySavedLogin, 'function', 'capture_save_readback_contract_invalid');
+  if (coreUpdateFill !== undefined) {
+    assert.ok(coreUpdateFill && typeof coreUpdateFill.targetName === 'string' && coreUpdateFill.targetName.length > 0 && typeof coreUpdateFill.verifyOwnedItemValues === 'function', 'capture_save_core_update_fill_contract_invalid');
+  }
   const server = await fixture(); let original = null; let tab = null; let primary; let cleanup; let observerStarted = false;
   const persistedKeys = new Set();
   proof.captureSave = { ok: false, nativeFixtureSubmittedOnce: false, pendingPromptObserved: false, trustedSaveClicked: false, pendingRemoved: false, receiptKeysPersisted: false, fixtureTabClosed: false, originalWindowRestored: false, fixtureServerClosed: false, receiptObserverDisposed: false };
@@ -104,8 +119,17 @@ export async function runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdP
       : null;
     proof.captureSave.receipt = { requestCount: receipt.requests.length, keyCount: receipt.keys.length, responseStatus: response?.status ?? null };
     assert.equal(receipt.requests.length, 1, 'capture_save_create_request_count'); assert.equal(receipt.keys.length, 1, 'capture_save_idempotency_key_count'); assert.ok(response, 'capture_save_create_response_missing');
-    await verifySavedLogin({ username, password, pageUrl: url });
+    const savedLogin = await verifySavedLogin({ username, password, pageUrl: url });
     proof.captureSave.savedValuesVerified = true;
+    if (coreUpdateFill !== undefined) {
+      assert.equal(typeof savedLogin?.itemId, 'string', 'capture_save_core_update_fill_item_missing');
+      await runFirefoxCoreUpdateFillChecks({
+        adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge,
+        ownedItemId: savedLogin.itemId, targetName: coreUpdateFill.targetName, username, password,
+        verifyOwnedItemValues: coreUpdateFill.verifyOwnedItemValues, fixture: { baseUrl: server.url, state: server.state }, proof,
+      });
+      proof.captureSave.coreUpdateFillCompleted = true;
+    }
   } catch (error) { primary = error; } finally {
     let frozenReceiptPersisted = false;
     if (observerStarted) try {
