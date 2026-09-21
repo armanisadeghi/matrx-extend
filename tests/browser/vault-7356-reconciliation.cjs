@@ -176,3 +176,39 @@ module.exports = {
   assert7356RecoveryAdmission,
   verify7356RecoveryAdmission,
 };
+
+// A later HTTP 503 failed before any item was committed. This exact record is
+// separate from successful cleanup: the original failed journey stays failed.
+const NO_COMMIT_RUN = '2c07e860-52fa-492c-b8bf-f044e32529ec';
+const NO_COMMIT_PROOF_PATH = path.join(REPO_ROOT, '.matrx/realbrowser-vault/save-update-headless', NO_COMMIT_RUN, 'proof.json');
+const NO_COMMIT_RECOVERY_PATH = path.join(REPO_ROOT, '.matrx/task1-active/recovery-2c07-no-commit.json');
+const NO_COMMIT_PROOF_SHA = '6092208eec4413e83fcd06ab81625eecdc8aac281fcfb802d50ad52565b7fcad';
+const NO_COMMIT_RECOVERY_SHA = 'b3947f3193fcff978c233dcf5af2184e52418d11b58f4e8f3c07f24eba9bedcf';
+function assertNoCommitRecords(failed, recovery) {
+  assert.equal(failed?.runId, NO_COMMIT_RUN);
+  assert.equal(failed?.ok, false);
+  assert.equal(failed?.failureCode, 'http_503_fixture_create');
+  assert.deepEqual(failed?.ownedFixtureIds, []);
+  assert.deepEqual(failed?.ownedCreateMutationKeys, ['3fab05d6-f77c-4162-a54a-56952b72a5bf']);
+  assert.equal(failed?.vaultMutationRequests, 1);
+  assert.equal(failed?.vaultItemPosts?.total, 1);
+  assert.equal(failed?.vaultItemPosts?.withIdempotencyHeader, 1);
+  for (const key of ['finalBaselineIdSetMatches', 'finalBaselineMetadataMatches', 'browserClosed', 'profileRemoved', 'localFixtureServerClosed']) assert.equal(failed?.cleanup?.[key], true);
+  assert.equal(failed?.cleanup?.localAuthLogoutStatus, 204);
+  assert.equal(failed?.cleanup?.remoteAuthRevocationStatus, 204);
+  assert.equal(recovery?.failedRunId, NO_COMMIT_RUN);
+  assert.equal(recovery?.failedProofSha256, NO_COMMIT_PROOF_SHA);
+  assert.equal(recovery?.actorId, '87a6e699-3622-4869-8843-d0867456c0dd');
+  assert.equal(recovery?.receiptOrganizationScope, 'all organizations; exact actor and mutation key, pending and completed');
+  assert.deepEqual(recovery?.ownedCreateMutationKeys, failed.ownedCreateMutationKeys);
+  assert.equal(recovery?.receiptCountIncludingIncomplete, 0);
+  for (const key of ['adminVerified', 'finalBaselineUnchanged', 'remoteLogout204', 'localResourcesGone', 'ownerProcessGone', 'originalRunRemainsFailed', 'leaseRetired']) assert.equal(recovery?.[key], true);
+}
+async function verifyNoCommitRecovery() {
+  const [failedRaw, recoveryRaw] = await Promise.all([readFile(NO_COMMIT_PROOF_PATH), readFile(NO_COMMIT_RECOVERY_PATH)]);
+  assert.equal(sha256(failedRaw), NO_COMMIT_PROOF_SHA);
+  assert.equal(sha256(recoveryRaw), NO_COMMIT_RECOVERY_SHA);
+  assertNoCommitRecords(JSON.parse(failedRaw), JSON.parse(recoveryRaw));
+  return { admitNewSerializedRun: true, originalRunRemainsFailed: true, exactOwnedRequestUncommitted: true, remoteLogout204: true };
+}
+Object.assign(module.exports, { NO_COMMIT_PROOF_PATH, NO_COMMIT_RECOVERY_PATH, _assertNoCommitRecords: assertNoCommitRecords, verifyNoCommitRecovery });

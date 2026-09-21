@@ -79,3 +79,18 @@ test('semantic validators reject missing cleanup, stale receipt, nonowned, logou
   mutate(lease, _assertLeaseRetirementRecord, record => { record.ownerSha256 = 'a'.repeat(64); }, /owner_hash_mismatch/);
   mutate(lease, _assertLeaseRetirementRecord, record => { record.oldRemoteRevocation = 'revoked'; }, /old_revocation_overclaimed/);
 });
+
+test('exact failed 503 retry requires zero receipts and complete baseline and resource evidence', async () => {
+  const { NO_COMMIT_PROOF_PATH, NO_COMMIT_RECOVERY_PATH, _assertNoCommitRecords, verifyNoCommitRecovery } = require('./vault-7356-reconciliation.cjs');
+  const fs = require('node:fs/promises');
+  const failed = JSON.parse(await fs.readFile(NO_COMMIT_PROOF_PATH, 'utf8'));
+  const recovery = JSON.parse(await fs.readFile(NO_COMMIT_RECOVERY_PATH, 'utf8'));
+  assert.equal((await verifyNoCommitRecovery()).originalRunRemainsFailed, true);
+  for (const field of ['adminVerified', 'finalBaselineUnchanged', 'remoteLogout204', 'localResourcesGone', 'ownerProcessGone', 'originalRunRemainsFailed', 'leaseRetired']) {
+    assert.throws(() => _assertNoCommitRecords(failed, { ...recovery, [field]: false }));
+  }
+  assert.throws(() => _assertNoCommitRecords(failed, { ...recovery, receiptCountIncludingIncomplete: 1 }));
+  assert.throws(() => _assertNoCommitRecords(failed, { ...recovery, actorId: 'another-actor' }));
+  assert.throws(() => _assertNoCommitRecords({ ...failed, ok: true }, recovery));
+  assert.throws(() => _assertNoCommitRecords({ ...failed, cleanup: { ...failed.cleanup, finalBaselineMetadataMatches: false } }, recovery));
+});
