@@ -10,6 +10,7 @@ const { createRequire } = require('node:module');
 const { execFile, spawn } = require('node:child_process');
 const { promisify } = require('node:util');
 const { acquireVaultAcceptanceLease } = require('./vault-acceptance-lease.cjs');
+const { FAILED_PROOF_PATH: reconciledChromeProofPath, verifyHistoricalChromeReconciliation } = require('./vault-historical-reconciliation.cjs');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
 const { hasObservedReadOnlyCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
@@ -95,7 +96,7 @@ const localCanonicalCleanupArmed = process.env.MATRX_VAULT_CANARY_LOCAL_CANONICA
 // making a Vault mutation; it is not a Save/Update acceptance result.
 const readOnlyAdmissionMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
 const receiptBackedSaveUpdateMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_RECEIPT_BACKED_SAVE_UPDATE';
-const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = 'abf1e889f78cb38927d1912515dd0b40064526b6';
+const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = '635389a41668ca8c7d31c056d2e1be292d29ba35';
 const RECEIPT_BACKED_ROUTER_SHA256 = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
 const RECEIPT_BACKED_SERVICE_SHA256 = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
 const generatorTransportMode = process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
@@ -398,9 +399,17 @@ async function refuseUnreconciledPriorRun() {
         remoteAuthRevocation: 'unknown',
       });
     }
+    // Exact independently reviewed recovery admits a new run only. The old
+    // failed receipt remains immutable and does not gain coverage credit.
+    let reviewedChromeReconciliation = false;
+    if (priorProofPath === reconciledChromeProofPath) {
+      const reconciliation = await verifyHistoricalChromeReconciliation();
+      reviewedChromeReconciliation = reconciliation.authResourceAndLeaseCleanupComplete === true;
+      proof.priorChromeCleanupReconciliation = reconciliation;
+    }
     const receiptMode = prior?.mode === 'receipt_backed_save_update';
     assert(receiptMode
-      ? completedMutationCleanup || receiptModeZeroWriteCleanup
+      ? completedMutationCleanup || receiptModeZeroWriteCleanup || reviewedChromeReconciliation
       : completedAcceptance || completedMutationCleanup || vaultMutationFreeCleanup || authFailureBeforeWrites || reviewedHistoricalException || reviewedLaunchFailure || reviewedRecovery || reviewedGeneratorCleanup || hasObservedReadOnlyCleanup(prior) || hasPreBaselineAuthenticatedCleanup(prior),
     'previous_run_unreconciled');
   }
@@ -1411,8 +1420,6 @@ async function materializedPassword(id) {
   // successful unlocked-session probe, before any artifact/browser/auth work.
   let generatorFocusPreflightRefused = generatorTransportMode && headedMode;
   try {
-    acceptanceLease = await acquireVaultAcceptanceLease({ runId, kind: edgeBrowserMode ? 'edge' : 'chrome' });
-    proof.acceptanceLeaseAcquired = true;
     // This must precede artifact admission and persistence. A locked desktop
     // cannot produce compositor focus, so recording it as an acceptance run
     // would create a false durable cleanup obligation without any browser or
@@ -1436,6 +1443,7 @@ async function materializedPassword(id) {
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
       acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
+      historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
     };
@@ -1445,6 +1453,8 @@ async function materializedPassword(id) {
     await verifyPinnedLocalCanonicalSource();
     // An invalid/tampered artifact is rejected before a durable run record,
     // so a safe negative test cannot create a fictional cleanup obligation.
+    acceptanceLease = await acquireVaultAcceptanceLease({ runId, kind: edgeBrowserMode ? 'edge' : 'chrome' });
+    proof.acceptanceLeaseAcquired = true;
     artifactAdmitted = true;
     persist();
     await authenticate(extension);
@@ -1466,6 +1476,7 @@ async function materializedPassword(id) {
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
       acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
+      historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
     };
@@ -1569,6 +1580,7 @@ async function materializedPassword(id) {
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
       acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
+      historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
         };
