@@ -64,7 +64,13 @@ export interface CredentialDomRequestMap {
     currentUrl: string;
     baseUri: string;
   };
-  focused_group: { selector?: string; field?: CredentialFieldRef; documentId?: string; requirePanelFocus?: boolean };
+  focused_group: {
+    selector?: string;
+    field?: CredentialFieldRef;
+    documentId?: string;
+    requirePanelFocus?: boolean;
+    requireDocumentFocus?: boolean;
+  };
   attempt_probe: { fieldSelectors: string[]; controlSelectors: string[] };
   auto_probe: {};
   fill: {
@@ -98,7 +104,10 @@ export interface CredentialDomResultMap {
   attempt_probe: SpecProbe;
   auto_probe: LoginFormProbe;
   fill: { ok: boolean; reason?: string };
-  discover_new_password_groups: { groups: GeneratedPasswordGroup[]; reason?: 'registry_unavailable' };
+  discover_new_password_groups: {
+    groups: GeneratedPasswordGroup[];
+    reason?: 'registry_unavailable';
+  };
   fill_new_password_group: { status: GeneratedPasswordFillStatus; reason?: string };
   submit_auto: { ok: boolean; mode: string };
   submit_explicit: { ok: boolean; mode: string };
@@ -173,11 +182,17 @@ export function credentialDomSource(
     }
     return primary;
   }
-  function focused(ref: CredentialFieldRef, documentId?: string, requirePanelFocus = false): BoundLoginGroup | null {
+  function focused(
+    ref: CredentialFieldRef,
+    documentId?: string,
+    requirePanelFocus = false,
+    requireDocumentFocus = false,
+  ): BoundLoginGroup | null {
     const selector = typeof ref === 'string' ? ref : null;
     const deepActive = (): Element | null => {
       let active: Element | null = document.activeElement;
-      while (active instanceof HTMLElement && active.shadowRoot?.mode === 'open') active = active.shadowRoot.activeElement;
+      while (active instanceof HTMLElement && active.shadowRoot?.mode === 'open')
+        active = active.shadowRoot.activeElement;
       return active;
     };
     function visibleEditable(input: HTMLInputElement): boolean {
@@ -226,7 +241,12 @@ export function credentialDomSource(
         if (matches.length !== 1 || !(matches[0] instanceof HTMLInputElement)) return null;
         anchor = matches[0];
       } else {
-        anchor = documentId ? window.__matrx_generation_target_registry__?.resolveInput((ref as { id: string }).id, documentId) ?? null : null;
+        anchor = documentId
+          ? (window.__matrx_generation_target_registry__?.resolveInput(
+              (ref as { id: string }).id,
+              documentId,
+            ) ?? null)
+          : null;
         if (!anchor) return null;
       }
     } catch {
@@ -242,16 +262,17 @@ export function credentialDomSource(
     )
       return null;
     const scope = anchor.form ?? anchor.parentElement ?? document.body;
-    const inputs = (scope instanceof HTMLFormElement
-      ? Array.from(scope.elements).filter(
-          (node): node is HTMLInputElement =>
-            node instanceof HTMLInputElement &&
-            node.form === scope &&
-            node.ownerDocument === document &&
-            node.isConnected &&
-            node.getRootNode() === scope.getRootNode(),
-        )
-      : Array.from(scope.querySelectorAll<HTMLInputElement>('input'))
+    const inputs = (
+      scope instanceof HTMLFormElement
+        ? Array.from(scope.elements).filter(
+            (node): node is HTMLInputElement =>
+              node instanceof HTMLInputElement &&
+              node.form === scope &&
+              node.ownerDocument === document &&
+              node.isConnected &&
+              node.getRootNode() === scope.getRootNode(),
+          )
+        : Array.from(scope.querySelectorAll<HTMLInputElement>('input'))
     ).filter(visibleEditable);
     const password =
       inputs.find(
@@ -296,6 +317,7 @@ export function credentialDomSource(
       deepActive() !== password
     )
       return null;
+    if (requireDocumentFocus && !document.hasFocus()) return null;
     const confirmation = inputs.filter(
       (i) => (i.type || '').toLowerCase() === 'password' && i !== password,
     );
@@ -453,7 +475,10 @@ export function credentialDomSource(
     }
     return { is_top_frame: window.top === window.self, origin: location.origin, fields, controls };
   }
-  function generatedPasswordGroups(documentId: string, expiresAt: number): {
+  function generatedPasswordGroups(
+    documentId: string,
+    expiresAt: number,
+  ): {
     groups: GeneratedPasswordGroup[];
     reason?: 'registry_unavailable';
   } {
@@ -489,20 +514,28 @@ export function credentialDomSource(
     };
     const candidates: HTMLInputElement[] = [];
     const visit = (root: Document | ShadowRoot) => {
-      for (const input of Array.from(root.querySelectorAll<HTMLInputElement>('input[type="password"]')))
+      for (const input of Array.from(
+        root.querySelectorAll<HTMLInputElement>('input[type="password"]'),
+      ))
         if (visibleEditable(input)) candidates.push(input);
       for (const host of Array.from(root.querySelectorAll<HTMLElement>('*')))
         if (host.shadowRoot) visit(host.shadowRoot);
     };
     visit(document);
     const description = (input: HTMLInputElement) =>
-      `${input.name} ${input.id} ${input.placeholder} ${input.getAttribute('aria-label') ?? ''} ${
-        Array.from(input.labels ?? []).map((label) => label.textContent ?? '').join(' ')
-      }`.toLowerCase();
+      `${input.name} ${input.id} ${input.placeholder} ${input.getAttribute('aria-label') ?? ''} ${Array.from(
+        input.labels ?? [],
+      )
+        .map((label) => label.textContent ?? '')
+        .join(' ')}`.toLowerCase();
     const excluded = (input: HTMLInputElement): boolean => {
       const auto = input.autocomplete.toLowerCase();
       const text = description(input);
-      return auto === 'current-password' || auto === 'one-time-code' || /\b(otp|mfa|2fa|verification)\b/.test(text);
+      return (
+        auto === 'current-password' ||
+        auto === 'one-time-code' ||
+        /\b(otp|mfa|2fa|verification)\b/.test(text)
+      );
     };
     const role = (input: HTMLInputElement): 'new_password' | 'confirmation' | null => {
       const auto = input.autocomplete.toLowerCase();
@@ -510,7 +543,9 @@ export function credentialDomSource(
       if (excluded(input)) return null;
       const confirmation = /\b(confirm|confirmation|repeat|re-enter|reenter|again)\b/.test(text);
       if (auto === 'new-password') return confirmation ? 'confirmation' : 'new_password';
-      return !confirmation && /\b(new|create|choose|set|reset|change)\b/.test(text) && /password|passcode/.test(text)
+      return !confirmation &&
+        /\b(new|create|choose|set|reset|change)\b/.test(text) &&
+        /password|passcode/.test(text)
         ? 'new_password'
         : confirmation && /password|passcode/.test(text)
           ? 'confirmation'
@@ -531,7 +566,9 @@ export function credentialDomSource(
       if (
         primaries.length !== 1 ||
         scoped.some((candidate) => role(candidate) === null && !excluded(candidate)) ||
-        confirmations.some((candidate) => candidate.autocomplete.toLowerCase() === 'current-password')
+        confirmations.some(
+          (candidate) => candidate.autocomplete.toLowerCase() === 'current-password',
+        )
       )
         continue;
       // The selected controls may be explicitly associated with a different
@@ -575,31 +612,54 @@ export function credentialDomSource(
     value: string,
   ): { status: GeneratedPasswordFillStatus; reason?: string } {
     const registry = window.__matrx_generation_target_registry__;
-    if (!registry || !documentId || !Number.isFinite(expiresAt) || expiresAt <= Date.now() || expiresAt - Date.now() > 30_000)
+    if (
+      !registry ||
+      !documentId ||
+      !Number.isFinite(expiresAt) ||
+      expiresAt <= Date.now() ||
+      expiresAt - Date.now() > 30_000
+    )
       return { status: 'refused_unchanged', reason: 'expired_or_unavailable' };
     if (!value || !Array.isArray(targets) || targets.length === 0)
       return { status: 'refused_unchanged', reason: 'invalid_request' };
     if (typeof registry.markSensitive !== 'function')
       return { status: 'refused_unchanged', reason: 'registry_unavailable' };
-    if (!registry.claim(targets.map((target) => target.id), documentId, expiresAt))
+    if (
+      !registry.claim(
+        targets.map((target) => target.id),
+        documentId,
+        expiresAt,
+      )
+    )
       return { status: 'refused_unchanged', reason: 'already_used_or_changed' };
     const resolved = targets.map((target) => registry.resolve(target.id, documentId, expiresAt));
     if (resolved.some((input) => !input))
       return { status: 'refused_unchanged', reason: 'target_changed' };
     const inputs = resolved as HTMLInputElement[];
     const textFor = (input: HTMLInputElement) =>
-      `${input.name} ${input.id} ${input.placeholder} ${input.getAttribute('aria-label') ?? ''} ${
-        Array.from(input.labels ?? []).map((label) => label.textContent ?? '').join(' ')
-      }`.toLowerCase();
+      `${input.name} ${input.id} ${input.placeholder} ${input.getAttribute('aria-label') ?? ''} ${Array.from(
+        input.labels ?? [],
+      )
+        .map((label) => label.textContent ?? '')
+        .join(' ')}`.toLowerCase();
     const roleFor = (input: HTMLInputElement): 'new_password' | 'confirmation' | null => {
       const text = textFor(input);
       const auto = input.autocomplete.toLowerCase();
-      if (auto === 'current-password' || auto === 'one-time-code' || /\b(otp|mfa|2fa|verification)\b/.test(text)) return null;
+      if (
+        auto === 'current-password' ||
+        auto === 'one-time-code' ||
+        /\b(otp|mfa|2fa|verification)\b/.test(text)
+      )
+        return null;
       const confirmation = /\b(confirm|confirmation|repeat|re-enter|reenter|again)\b/.test(text);
       if (auto === 'new-password') return confirmation ? 'confirmation' : 'new_password';
-      return !confirmation && /\b(new|create|choose|set|reset|change)\b/.test(text) && /password|passcode/.test(text)
+      return !confirmation &&
+        /\b(new|create|choose|set|reset|change)\b/.test(text) &&
+        /password|passcode/.test(text)
         ? 'new_password'
-        : confirmation && /password|passcode/.test(text) ? 'confirmation' : null;
+        : confirmation && /password|passcode/.test(text)
+          ? 'confirmation'
+          : null;
     };
     const scopeFor = (input: HTMLInputElement): Element | null =>
       input.closest('fieldset,[role="group"],[data-password-group]') ?? input.form;
@@ -623,36 +683,67 @@ export function credentialDomSource(
     const wholeGroupValid = () => {
       if (!group) return false;
       const currentMembers = group
-        ? Array.from(group.querySelectorAll<HTMLInputElement>('input[type="password"]')).filter((input) => {
-            const text = textFor(input);
-            return input.isConnected && input.type.toLowerCase() === 'password' &&
-              input.autocomplete.toLowerCase() !== 'current-password' && input.autocomplete.toLowerCase() !== 'one-time-code' &&
-              !/\b(otp|mfa|2fa|verification)\b/.test(text);
-          })
+        ? Array.from(group.querySelectorAll<HTMLInputElement>('input[type="password"]')).filter(
+            (input) => {
+              const text = textFor(input);
+              return (
+                input.isConnected &&
+                input.type.toLowerCase() === 'password' &&
+                input.autocomplete.toLowerCase() !== 'current-password' &&
+                input.autocomplete.toLowerCase() !== 'one-time-code' &&
+                !/\b(otp|mfa|2fa|verification)\b/.test(text)
+              );
+            },
+          )
         : [];
-      if (currentMembers.length !== inputs.length || currentMembers.some((input) => !inputs.includes(input))) return false;
-      return inputs.every((input, index) =>
-        registry.belongsTo(targets[index]!.id, input, group) &&
-        scopeFor(input) === group &&
-        roleFor(input) === targets[index]!.constraint.roleEvidence &&
-        samePath(shadowPathFor(input), targets[index]!.openShadowPath),
-      ) &&
-      targets.filter((target) => target.constraint.roleEvidence === 'new_password').length === 1;
+      if (
+        currentMembers.length !== inputs.length ||
+        currentMembers.some((input) => !inputs.includes(input))
+      )
+        return false;
+      return (
+        inputs.every(
+          (input, index) =>
+            registry.belongsTo(targets[index]!.id, input, group) &&
+            scopeFor(input) === group &&
+            roleFor(input) === targets[index]!.constraint.roleEvidence &&
+            samePath(shadowPathFor(input), targets[index]!.openShadowPath),
+        ) &&
+        targets.filter((target) => target.constraint.roleEvidence === 'new_password').length === 1
+      );
     };
     if (!wholeGroupValid() || !destinationsValid())
       return { status: 'refused_unchanged', reason: 'ambiguous_group' };
     const visibleEditable = (input: HTMLInputElement) => {
       const rect = input.getBoundingClientRect();
       const style = getComputedStyle(input);
-      return input.isConnected && !input.disabled && !input.readOnly && input.type.toLowerCase() === 'password' && rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+      return (
+        input.isConnected &&
+        !input.disabled &&
+        !input.readOnly &&
+        input.type.toLowerCase() === 'password' &&
+        rect.width > 0 &&
+        rect.height > 0 &&
+        style.display !== 'none' &&
+        style.visibility !== 'hidden'
+      );
     };
     const compatible = (input: HTMLInputElement): boolean => {
-      if (!visibleEditable(input) || input.autocomplete.toLowerCase() === 'current-password' || input.autocomplete.toLowerCase() === 'one-time-code') return false;
-      if ((input.minLength >= 0 && value.length < input.minLength) || (input.maxLength >= 0 && value.length > input.maxLength)) return false;
+      if (
+        !visibleEditable(input) ||
+        input.autocomplete.toLowerCase() === 'current-password' ||
+        input.autocomplete.toLowerCase() === 'one-time-code'
+      )
+        return false;
+      if (
+        (input.minLength >= 0 && value.length < input.minLength) ||
+        (input.maxLength >= 0 && value.length > input.maxLength)
+      )
+        return false;
       const pattern = input.getAttribute('pattern');
       if (pattern !== null) {
         try {
-          if (!(new RegExp(`^(?:${pattern})$`, 'v')).test(value)) return false;
+          if (!new RegExp(`^(?:${pattern})$`, 'v').test(value)) return false;
         } catch {
           return false;
         }
@@ -662,10 +753,17 @@ export function credentialDomSource(
     const hasUnsupportedPattern = inputs.some((input) => {
       const pattern = input.getAttribute('pattern');
       if (pattern === null) return false;
-      try { new RegExp(`^(?:${pattern})$`, 'v'); return false; } catch { return true; }
+      try {
+        new RegExp(`^(?:${pattern})$`, 'v');
+        return false;
+      } catch {
+        return true;
+      }
     });
-    if (hasUnsupportedPattern) return { status: 'refused_unchanged', reason: 'unsupported_constraint' };
-    if (!inputs.every(compatible)) return { status: 'refused_unchanged', reason: 'constraint_changed' };
+    if (hasUnsupportedPattern)
+      return { status: 'refused_unchanged', reason: 'unsupported_constraint' };
+    if (!inputs.every(compatible))
+      return { status: 'refused_unchanged', reason: 'constraint_changed' };
     const originals = inputs.map((input) => input.value);
     const setValue = (input: HTMLInputElement, next: string): boolean => {
       try {
@@ -673,7 +771,9 @@ export function credentialDomSource(
         if (setter) setter.call(input, next);
         else input.value = next;
         return true;
-      } catch { return false; }
+      } catch {
+        return false;
+      }
     };
     const dispatchOne = (input: HTMLInputElement, type: 'input' | 'change'): boolean => {
       try {
@@ -683,33 +783,79 @@ export function credentialDomSource(
         return false;
       }
     };
-    const current = () => targets.map((target) => registry.resolve(target.id, documentId, expiresAt));
+    const current = () =>
+      targets.map((target) => registry.resolve(target.id, documentId, expiresAt));
     const attempted: number[] = [];
     const rollback = (): GeneratedPasswordFillStatus => {
       let complete = true;
       for (const index of attempted) {
         const input = inputs[index];
         const original = originals[index];
-        if (!input || original === undefined || current()[index] !== input || input.value !== value) {
+        if (
+          !input ||
+          original === undefined ||
+          current()[index] !== input ||
+          input.value !== value
+        ) {
           complete = false;
           continue;
         }
-        if (!setValue(input, original) || input.value !== original || !dispatchOne(input, 'input') || current()[index] !== input || input.value !== original || !dispatchOne(input, 'change') || current()[index] !== input || input.value !== original) complete = false;
+        if (
+          !setValue(input, original) ||
+          input.value !== original ||
+          !dispatchOne(input, 'input') ||
+          current()[index] !== input ||
+          input.value !== original ||
+          !dispatchOne(input, 'change') ||
+          current()[index] !== input ||
+          input.value !== original
+        )
+          complete = false;
       }
-      if (attempted.some((index) => current()[index] !== inputs[index] || inputs[index]?.value !== originals[index])) complete = false;
+      if (
+        attempted.some(
+          (index) =>
+            current()[index] !== inputs[index] || inputs[index]?.value !== originals[index],
+        )
+      )
+        complete = false;
       return complete ? 'rolled_back' : 'partial_manual_check';
     };
     for (let index = 0; index < inputs.length; index++) {
       const input = inputs[index];
-      if (!input || current()[index] !== input || !wholeGroupValid() || !destinationsValid() || !inputs.every(compatible))
-        return attempted.length ? { status: rollback() } : { status: 'refused_unchanged', reason: 'target_changed' };
+      if (
+        !input ||
+        current()[index] !== input ||
+        !wholeGroupValid() ||
+        !destinationsValid() ||
+        !inputs.every(compatible)
+      )
+        return attempted.length
+          ? { status: rollback() }
+          : { status: 'refused_unchanged', reason: 'target_changed' };
       if (!registry.markSensitive(input))
-        return attempted.length ? { status: rollback() } : { status: 'refused_unchanged', reason: 'registry_unavailable' };
+        return attempted.length
+          ? { status: rollback() }
+          : { status: 'refused_unchanged', reason: 'registry_unavailable' };
       // Record before the setter: a controlled setter may mutate then throw.
       attempted.push(index);
-      if (!setValue(input, value) || current()[index] !== input || !wholeGroupValid() || !destinationsValid() || !inputs.every(compatible) || input.value !== value)
+      if (
+        !setValue(input, value) ||
+        current()[index] !== input ||
+        !wholeGroupValid() ||
+        !destinationsValid() ||
+        !inputs.every(compatible) ||
+        input.value !== value
+      )
         return { status: rollback() };
-      if (!dispatchOne(input, 'input') || current()[index] !== input || !wholeGroupValid() || !destinationsValid() || !inputs.every(compatible) || attempted.some((attemptedIndex) => inputs[attemptedIndex]?.value !== value))
+      if (
+        !dispatchOne(input, 'input') ||
+        current()[index] !== input ||
+        !wholeGroupValid() ||
+        !destinationsValid() ||
+        !inputs.every(compatible) ||
+        attempted.some((attemptedIndex) => inputs[attemptedIndex]?.value !== value)
+      )
         return { status: rollback() };
       if (!dispatchOne(input, 'change')) return { status: rollback() };
       if (
@@ -742,10 +888,21 @@ export function credentialDomSource(
         style.visibility !== 'hidden'
       );
     }
-    function inputFor(ref: CredentialFieldRef | null, documentId?: string): HTMLInputElement | null {
+    function inputFor(
+      ref: CredentialFieldRef | null,
+      documentId?: string,
+    ): HTMLInputElement | null {
       if (!ref) return null;
-      if (typeof ref !== 'string') return documentId ? window.__matrx_generation_target_registry__?.resolveInput(ref.id, documentId) ?? null : null;
-      try { const node = document.querySelector(ref); return node instanceof HTMLInputElement ? node : null; } catch { return null; }
+      if (typeof ref !== 'string')
+        return documentId
+          ? (window.__matrx_generation_target_registry__?.resolveInput(ref.id, documentId) ?? null)
+          : null;
+      try {
+        const node = document.querySelector(ref);
+        return node instanceof HTMLInputElement ? node : null;
+      } catch {
+        return null;
+      }
     }
     function write(input: HTMLInputElement, value: string): void {
       const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')?.set;
@@ -785,16 +942,27 @@ export function credentialDomSource(
     function sameNode(ref: CredentialFieldRef | null, node: HTMLInputElement | null): boolean {
       if (ref === null) return node === null;
       if (!node?.isConnected) return false;
-      if (typeof ref !== 'string') return !!documentId && window.__matrx_generation_target_registry__?.isRegisteredInput(ref.id, node) === true;
-      try { return document.querySelector(ref) === node; } catch { return false; }
+      if (typeof ref !== 'string')
+        return (
+          !!documentId &&
+          window.__matrx_generation_target_registry__?.isRegisteredInput(ref.id, node) === true
+        );
+      try {
+        return document.querySelector(ref) === node;
+      } catch {
+        return false;
+      }
     }
     const originalScope = anchor?.form ?? anchor?.parentElement ?? document.body;
     function safeGroup(): boolean {
       if (`${location.origin}${location.pathname}` !== group.pageUrl) return false;
       const currentAnchor = originals.anchor;
       if (!sameNode(group.anchor, currentAnchor)) return false;
-      if (!sameNode(group.username, originals.username)) return false;
-      if (!sameNode(group.password, originals.password)) return false;
+      // Optional field references can be absent at the injected boundary. An
+      // absent reference has the same one-field shape as null; the anchor
+      // remains strict and every resolved field is still bound to its node.
+      if (!sameNode(group.username ?? null, originals.username)) return false;
+      if (!sameNode(group.password ?? null, originals.password)) return false;
       if (!visibleEditable(currentAnchor)) return false;
       if (requirePanelFocus && document.visibilityState !== 'visible') return false;
       if (group.username && !visibleEditable(originals.username)) return false;
@@ -817,17 +985,21 @@ export function credentialDomSource(
       // A selector can continue to resolve after a site moves the same node.
       // Its original group root is part of the bound ownership contract.
       if (scope !== originalScope) return false;
-      const inputs = (scope instanceof HTMLFormElement
-        ? Array.from(scope.elements).filter(
-            (node): node is HTMLInputElement =>
-              node instanceof HTMLInputElement &&
-              node.form === scope &&
-              node.ownerDocument === document &&
-              node.isConnected &&
-              node.getRootNode() === scope.getRootNode(),
-          )
-        : Array.from(scope.querySelectorAll('input'))
-      ).filter((node): node is HTMLInputElement => node instanceof HTMLInputElement && visibleEditable(node));
+      const inputs = (
+        scope instanceof HTMLFormElement
+          ? Array.from(scope.elements).filter(
+              (node): node is HTMLInputElement =>
+                node instanceof HTMLInputElement &&
+                node.form === scope &&
+                node.ownerDocument === document &&
+                node.isConnected &&
+                node.getRootNode() === scope.getRootNode(),
+            )
+          : Array.from(scope.querySelectorAll('input'))
+      ).filter(
+        (node): node is HTMLInputElement =>
+          node instanceof HTMLInputElement && visibleEditable(node),
+      );
       const passwords = inputs.filter((node) => (node.type || '').toLowerCase() === 'password');
       if (passwords.length !== (group.password ? 1 : 0)) return false;
       if (passwords.some((node) => node.autocomplete.toLowerCase() === 'new-password'))
@@ -848,8 +1020,14 @@ export function credentialDomSource(
       return true;
     }
 
-    const refKey = (ref: CredentialFieldRef) => typeof ref === 'string' ? `selector:${ref}` : `registered:${ref.id}`;
-    const requestedBySelector = new Map(requested.map((field) => [refKey('field' in field ? field.field : field.selector), field.value]));
+    const refKey = (ref: CredentialFieldRef) =>
+      typeof ref === 'string' ? `selector:${ref}` : `registered:${ref.id}`;
+    const requestedBySelector = new Map(
+      requested.map((field) => [
+        refKey('field' in field ? field.field : field.selector),
+        field.value,
+      ]),
+    );
     const fields: Array<{
       input: HTMLInputElement;
       selector: CredentialFieldRef;
@@ -857,8 +1035,12 @@ export function credentialDomSource(
       original: string;
       attempted: boolean;
     }> = [];
-    const usernameValue = group.username ? requestedBySelector.get(refKey(group.username)) : undefined;
-    const passwordValue = group.password ? requestedBySelector.get(refKey(group.password)) : undefined;
+    const usernameValue = group.username
+      ? requestedBySelector.get(refKey(group.username))
+      : undefined;
+    const passwordValue = group.password
+      ? requestedBySelector.get(refKey(group.password))
+      : undefined;
     if (
       group.username &&
       usernameValue !== undefined &&
@@ -987,20 +1169,11 @@ export function credentialDomSource(
         const changeRestored = dispatchBound(field.input, 'change');
         if (!changeRestored || !exactOriginal(field)) complete = false;
       }
-      if (
-        unattemptedChanged ||
-        fields.some((field) => !exactOriginal(field))
-      )
-        complete = false;
+      if (unattemptedChanged || fields.some((field) => !exactOriginal(field))) complete = false;
       return complete ? { ok: false } : { ok: false, reason: 'partial_manual_check' };
     };
     for (const field of fields) {
-      if (
-        !safeGroupNow() ||
-        !stillWritten() ||
-        !unattemptedOriginal() ||
-        !writeField(field)
-      )
+      if (!safeGroupNow() || !stillWritten() || !unattemptedOriginal() || !writeField(field))
         return rollback();
     }
     return safeGroupNow() && stillWritten() ? { ok: true } : rollback();
@@ -1056,7 +1229,21 @@ export function credentialDomSource(
       ) as CredentialDomResultMap[CredentialDomOperation];
     case 'focused_group':
       return result(
-        request.field ? focused(request.field, request.documentId, request.requirePanelFocus) : request.selector ? focused(request.selector, request.documentId, request.requirePanelFocus) : null,
+        request.field
+          ? focused(
+              request.field,
+              request.documentId,
+              request.requirePanelFocus,
+              request.requireDocumentFocus,
+            )
+          : request.selector
+            ? focused(
+                request.selector,
+                request.documentId,
+                request.requirePanelFocus,
+                request.requireDocumentFocus,
+              )
+            : null,
       ) as CredentialDomResultMap[CredentialDomOperation];
     case 'attempt_probe':
       return result(
