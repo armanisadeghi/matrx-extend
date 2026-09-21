@@ -77,6 +77,7 @@ const port = () => ({
 });
 
 beforeEach(() => {
+  mocks.tab = { id: 47, url: 'https://parent.example/account' };
   mocks.panelStatus = readyChildStatus;
   mocks.sendMessage.mockReset().mockImplementation(async (message: { kind?: string }) => {
     if (message.kind === 'credential-suggestions:panel-status') return mocks.panelStatus;
@@ -143,12 +144,27 @@ describe('VaultView focused child-frame projection', () => {
 
     expect(
       await screen.findByText(
-        'Saved logins are unavailable right now. Focus the login field to try again.',
+        'Saved logins are unavailable right now. Enter the login manually, or focus the username or password field on a supported sign-in page and try Fill again.',
       ),
     ).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Fill' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Sign in' })).toBeNull();
     expect(screen.queryByText('Untrusted child account')).toBeNull();
+    expect(mocks.automaticLogin).not.toHaveBeenCalled();
+  });
+
+  it('guides a browser-restricted page to a regular sign-in website or manual entry', async () => {
+    mocks.tab = { id: 47, url: 'about:blank' };
+    mocks.panelStatus = { status: 'unavailable', itemIds: [] };
+    render(<VaultView />);
+
+    expect(
+      await screen.findByText(
+        "This browser page can't be filled. Open a sign-in page on a regular website, or enter the login manually.",
+      ),
+    ).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Fill' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Sign in' })).toBeNull();
     expect(mocks.automaticLogin).not.toHaveBeenCalled();
   });
 
